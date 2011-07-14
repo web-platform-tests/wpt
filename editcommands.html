@@ -686,8 +686,8 @@ case-insensitively</a>.
 
 <div class=note>
 <p>The methods in this section have mostly been designed so that the following
-invariants hold after <code><a href=#execcommand()>execCommand()</a></code> is called, assuming it didn't
-throw an exception:
+invariants hold after <code title="">execCommand()</code> is called, assuming it
+didn't throw an exception:
 
 <ul>
   <li><code title="">queryCommandIndeterm()</code> will return false (or throw an
@@ -705,11 +705,12 @@ throw an exception:
 <p>The first two points do not always hold for <code title="">strikethrough</code>
 or <code title="">underline</code>, because it can be impossible to unset
 text-decoration in CSS.  Also, by design, the state of <code title="">insertOrderedList</code> and <code title="">insertOrderedList</code> might
-not be the opposite after calling as before calling.  Finally, the state of the
-various <code title="">justify</code> commands should always be true after
-calling, and the value should always be the appropriate string ("center",
-"justify", "left", or "right").  Any other deviations from these invariants are
-bugs in the specification.
+be true both before and after calling, because they only remove one level of
+indentation.  <code title="">unlink</code> should set the value to null.  And
+finally, the state of the various <code title="">justify</code> commands should
+always be true after calling, and the value should always be the appropriate
+string ("center", "justify", "left", or "right").  Any other deviations from
+these invariants are bugs in the specification.
 </div>
 
 
@@ -2510,7 +2511,23 @@ don't either. -->
   <li><a href="#set-the-selection's-value">Set the selection's value</a> to <var title="">value</var>.
 </ol>
 
-<p class=XXX>Define state and value, although browsers don't.
+<!-- IE10PP2, Firefox 7.0a2, Chrome 14 dev, and Opera 11.50 all do not support
+indeterminate, state, or value for createLink or unlink.  I define
+indeterminate and value anyway because they make sense. -->
+<p><a href=#indeterminate>Indeterminate</a>: True if among <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>
+nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
+range</a>, there are two that have distinct <a href=#effective-command-value title="effective command
+value">effective command values</a>.  Otherwise false.
+
+<p><a href=#value>Value</a>: The <a href=#effective-command-value>effective command value</a> of the first
+<a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that is <a href=#effectively-contained>effectively contained</a>
+in the <a href=#active-range>active range</a>, or if there is no such node, the
+<a href=#effective-command-value>effective command value</a> of the <a href=#active-range>active range</a>'s
+<a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>.
+
+<p class=note>The effective command value of the active range's start node
+cannot be null, since the boundary point node of a selection must always be
+either an element or a text node that's the child of an element.
 
 
 <h3 id=the-fontname-command><span class=secno>7.10 </span><dfn>The <code title="">fontName</code> command</dfn></h3>
@@ -3253,6 +3270,25 @@ starting at 2011-05-13 at 16:53 EDT (UTC-0400).
 
   <li><a href=#clear-the-value>Clear the value</a> of each member of <var title="">hyperlinks</var>.
 </ol>
+
+<!-- IE10PP2, Firefox 7.0a2, Chrome 14 dev, and Opera 11.50 all do not support
+indeterminate, state, or value for createLink or unlink.  I define
+indeterminate and value anyway because they make sense. -->
+<p><a href=#indeterminate>Indeterminate</a>: True if among <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>
+nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
+range</a>, there are two that have distinct <a href=#effective-command-value title="effective command
+value">effective command values</a>.  Otherwise false.
+
+<p><a href=#value>Value</a>: The <a href=#effective-command-value>effective command value</a> of the first
+<a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that is <a href=#effectively-contained>effectively contained</a>
+in the <a href=#active-range>active range</a>, or if there is no such node, the
+<a href=#effective-command-value>effective command value</a> of the <a href=#active-range>active range</a>'s
+<a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>.
+
+<p class=note>The effective command value of the active range's start node
+cannot be null, since the boundary point node of a selection must always be
+either an element or a text node that's the child of an element.
+
 
 
 <h2 id=block-formatting-commands><span class=secno>8 </span>Block formatting commands</h2>
@@ -5677,6 +5713,9 @@ It wipes out intervening block containers too in some cases.  This might make
 sense for <address>/<h*>/<pre>, but other browsers don't do it.
 -->
 
+<p>A <dfn id=formattable-block-name>formattable block name</dfn> is "address", "dd", "div", "dt", "h1",
+"h2", "h3", "h4", "h5", "h6", "p", or "pre".
+
 <p><a href=#action>Action</a>:
 
 <ol>
@@ -5688,8 +5727,8 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
   <li>Let <var title="">value</var> be <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#converted-to-ascii-lowercase>converted to
   ASCII lowercase</a>.
 
-  <li>If <var title="">value</var> is not "address", "dd", "div", "dt", "h1", "h2",
-  "h3", "h4", "h5", "h6", "p", or "pre", raise a <code class=external data-anolis-spec=domcore title=dom-DOMException-SYNTAX_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-syntax_err>SYNTAX_ERR</a></code> exception.
+  <li>If <var title="">value</var> is not a <a href=#formattable-block-name>formattable block name</a>, raise a
+  <code class=external data-anolis-spec=domcore title=dom-DOMException-SYNTAX_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-syntax_err>SYNTAX_ERR</a></code> exception.
   <!--
   Opera 11.10 throws NOT_SUPPORTED_ERR for bad elements, all other tested
   browsers ignore the input.  Testing in IE9, Firefox 4.0, Chrome 13 dev, and
@@ -5728,11 +5767,10 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
 
   <li>For each <var title="">node</var> in <var title="">node list</var>, while <var title="">node</var>
   is the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendant</a> of an <a href=#editable>editable</a> <a href=#html-element>HTML element</a>
-  <a href=#in-the-same-editing-host>in the same editing host</a>, which has <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "address",
-  "dd", "div", "dt", "h1", "h2", "h3", "h4", "h5", "h6", "p", or "pre", and
-  which is not the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of a <a href=#prohibited-paragraph-child>prohibited paragraph child</a>,
-  <a href=#split-the-parent>split the parent</a> of the one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> list consisting of
-  <var title="">node</var>.
+  <a href=#in-the-same-editing-host>in the same editing host</a>, whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> is a
+  <a href=#formattable-block-name>formattable block name</a>, and which is not the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of a
+  <a href=#prohibited-paragraph-child>prohibited paragraph child</a>, <a href=#split-the-parent>split the parent</a> of the
+  one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> list consisting of <var title="">node</var>.
   <!--
   This tries to avoid misnesting if only some lines of an element are selected,
   so <h1>[foo]<br>bar</h1> becomes <p>[foo]</p><h1>bar</h1> instead of
@@ -5867,15 +5905,15 @@ sure what it does.  I'm speccing it just because it makes sense.
   <ol>
     <li>While <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is <a href=#editable>editable</a> and
     <a href=#in-the-same-editing-host>in the same editing host</a> as <var title="">node</var>, and
-    <var title="">node</var> is not an <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a>
-    "address", "div", "h1", "h2", "h3", "h4", "h5", "h6", "p", or "pre", set
-    <var title="">node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+    <var title="">node</var> is not an <a href=#html-element>HTML element</a> whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a>
+    is a <a href=#formattable-block-name>formattable block name</a>, set <var title="">node</var> to its
+    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
     <li>Let <var title="">current type</var> be the empty string.
 
     <li>If <var title="">node</var> is an <a href=#editable>editable</a> <a href=#html-element>HTML
-    element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "address", "div", "h1", "h2", "h3", "h4",
-    "h5", "h6", "p", or "pre", and <var title="">node</var> is not the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of a
+    element</a> whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> is a <a href=#formattable-block-name>formattable block
+    name</a>, and <var title="">node</var> is not the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of a
     <a href=#prohibited-paragraph-child>prohibited paragraph child</a>, set <var title="">current type</var> to
     <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a>.
 
@@ -5915,15 +5953,15 @@ writing means what Firefox supports plus div.
 
   <li>While <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is <a href=#editable>editable</a> and <a href=#in-the-same-editing-host>in
   the same editing host</a> as <var title="">node</var>, and <var title="">node</var> is not
-  an <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "address", "div", "h1", "h2",
-  "h3", "h4", "h5", "h6", "p", or "pre", set <var title="">node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+  an <a href=#html-element>HTML element</a> whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> is a <a href=#formattable-block-name>formattable block
+  name</a>, set <var title="">node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
   <!-- Opera 11.11 doesn't require it be editable, so it will return "DIV"
   instead of "" for <div contenteditable>foo</div>.  -->
 
   <li>If <var title="">node</var> is an <a href=#editable>editable</a> <a href=#html-element>HTML element</a>
-  with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "address", "div", "h1", "h2", "h3", "h4", "h5", "h6", "p",
-  or "pre", and <var title="">node</var> is not the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of a <a href=#prohibited-paragraph-child>prohibited
-  paragraph child</a>, return <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a>, <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#converted-to-ascii-lowercase>converted to ASCII lowercase</a>.
+  whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> is a <a href=#formattable-block-name>formattable block name</a>, and
+  <var title="">node</var> is not the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of a <a href=#prohibited-paragraph-child>prohibited paragraph
+  child</a>, return <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a>, <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#converted-to-ascii-lowercase>converted to ASCII lowercase</a>.
   <!--
   Chrome 14 dev will report "div" for <div><ol><li>foo</ol></div> or such.
   Opera 11.11 reports "".  IE and Firefox didn't cooperate with testing.  Opera

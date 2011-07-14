@@ -3393,6 +3393,13 @@ function doSetup(selector, idx) {
 }
 //@}
 
+function trivialPrettyPrint(value) {
+	if (typeof value == "string") {
+		return '"' + value.replace(/\\/g, "\\\\").replace(/"/g, '\\"') + '"';
+	}
+	return value;
+}
+
 function queryOutputHelper(beforeIndeterm, beforeState, beforeValue, afterIndeterm, afterState, afterValue, command, value) {
 //@{
 	var frag = document.createDocumentFragment();
@@ -3406,46 +3413,87 @@ function queryOutputHelper(beforeIndeterm, beforeState, beforeValue, afterIndete
 
 	beforeDiv.appendChild(document.createElement("span"));
 	afterDiv.appendChild(document.createElement("span"));
-	if (afterIndeterm !== "Exception") {
+	if ("indeterm" in commands[command]) {
+		// We only know it has to be either true or false.
+		if (beforeIndeterm !== true && beforeIndeterm !== false) {
+			beforeDiv.lastChild.className = "bad-result";
+		}
+	} else {
+		// It always has to be an exception.
+		beforeDiv.lastChild.className = beforeIndeterm === "Exception"
+			? "good-result"
+			: "bad-result";
+	}
+	// After running the command, indeterminate must always be false, except if
+	// it's an exception, or if it's insert*list and the state was true to
+	// begin with.
+	if (/^insert(un)?orderedlist$/.test(command) && beforeState) {
+		if (afterIndeterm !== true && afterIndeterm !== false) {
+			afterDiv.lastChild.className = "bad-result";
+		}
+	} else {
 		afterDiv.lastChild.className =
-			!afterIndeterm
+			("indeterm" in commands[command] && afterIndeterm === false)
+			|| (!("indeterm" in commands[command]) && afterIndeterm === "Exception")
 				? "good-result"
 				: "bad-result";
 	}
-	beforeDiv.lastChild.textContent = "indeterm " + beforeIndeterm;
-	afterDiv.lastChild.textContent = "indeterm " + afterIndeterm;
+	beforeDiv.lastChild.textContent = "indeterm " + trivialPrettyPrint(beforeIndeterm);
+	afterDiv.lastChild.textContent = "indeterm " + trivialPrettyPrint(afterIndeterm);
 
 	beforeDiv.appendChild(document.createTextNode(", "));
 	afterDiv.appendChild(document.createTextNode(", "));
 
 	beforeDiv.appendChild(document.createElement("span"));
 	afterDiv.appendChild(document.createElement("span"));
-	if ((beforeState !== "Exception" || afterState !== "Exception")
-	&& !/insert(un)?orderedlist|justify(center|full|left|right)/.test(command)) {
+	if (/^insert(un)?orderedlist$/.test(command)) {
+		// If the before state is true, the after state could be either true or
+		// false.  But if the before state is false, the after state has to be
+		// true.
+		if (beforeState !== true && beforeState !== false) {
+			beforeDiv.lastChild.className = "bad-result";
+		}
+		if (!beforeState) {
+			afterDiv.lastChild.className = afterState === true
+				? "good-result"
+				: "bad-result";
+		} else if (afterState !== true && afterState !== false) {
+			afterDiv.lastChild.className = "bad-result";
+		}
+	} else if (/^justify(center|full|left|right)$/.test(command)) {
+		// We don't know about the before state, but the after state is always
+		// supposed to be true.
+		if (beforeState !== true && beforeState !== false) {
+			beforeDiv.lastChild.className = "bad-result";
+		}
+		afterDiv.lastChild.className = afterState === true
+			? "good-result"
+			: "bad-result";
+	} else {
+		// The general rule is it must either throw an exception or flip the
+		// state.
 		beforeDiv.lastChild.className =
 		afterDiv.lastChild.className =
-			beforeState !== "Exception" && afterState !== "Exception" && beforeState === !afterState
+			("state" in commands[command] && typeof beforeState == "boolean" && typeof afterState == "boolean" && beforeState === !afterState)
+			|| (!("state" in commands[command]) && beforeState === "Exception" && afterState === "Exception")
 				? "good-result"
 				: "bad-result";
 	}
-	if (/^justify(center|full|left|right)$/.test(command)) {
-		afterDiv.lastChild.className =
-			beforeState !== "Exception" && afterState !== "Exception" && afterState
-				? "good-result"
-				: "bad-result";
-	}
-	beforeDiv.lastChild.textContent = "state " + beforeState;
-	afterDiv.lastChild.textContent = "state " + afterState;
+	beforeDiv.lastChild.textContent = "state " + trivialPrettyPrint(beforeState);
+	afterDiv.lastChild.textContent = "state " + trivialPrettyPrint(afterState);
 
 	beforeDiv.appendChild(document.createTextNode(", "));
 	afterDiv.appendChild(document.createTextNode(", "));
 
+	beforeDiv.appendChild(document.createElement("span"));
+	afterDiv.appendChild(document.createElement("span"));
+
+	// Direct equality comparison doesn't make sense in a bunch of cases.
 	if (command == "backcolor" || command == "forecolor" || command == "hilitecolor") {
 		if (/^([0-9a-fA-F]{3}){1,2}$/.test(value)) {
 			value = "#" + value;
 		}
-	}
-	if (command == "fontsize") {
+	} else if (command == "fontsize") {
 		value = normalizeFontSize(value);
 		var font = document.createElement("font");
 		document.body.appendChild(font);
@@ -3456,27 +3504,42 @@ function queryOutputHelper(beforeIndeterm, beforeState, beforeValue, afterIndete
 		}
 		value = getLegacyFontSize(parseInt(getComputedStyle(font).fontSize));
 		document.body.removeChild(font);
+	} else if (command == "formatblock") {
+		value = value.replace(/^<(.*)>$/, "$1").toLowerCase();
+	} else if (command == "unlink") {
+		value = null;
 	}
 
-	beforeDiv.appendChild(document.createElement("span"));
-	afterDiv.appendChild(document.createElement("span"));
-	if (afterValue !== "Exception"
-	&& typeof value != "undefined") {
+	if (/^justify(center|full|left|right)$/.test(command)) {
+		// We know there are only four correct values beforehand, and afterward
+		// the value has to be the one we set.
+		if (!/^(center|justify|left|right)$/.test(beforeValue)) {
+			beforeDiv.lastChild.className = "bad-result";
+		}
+		var expectedValue = command == "justifyfull"
+			? "justify"
+			: command.replace("justify", "");
+		afterDiv.lastChild.className = afterValue === expectedValue
+			? "good-result"
+			: "bad-result";
+	} else if (!("value" in commands[command])) {
+		// As usual, if it's not defined we want an exception.
+		beforeDiv.lastChild.className = beforeValue === "Exception"
+			? "good-result"
+			: "bad-result";
+		afterDiv.lastChild.className = afterValue === "Exception"
+			? "good-result"
+			: "bad-result";
+	} else {
+		// And in all other cases, the value afterwards has to be the one we
+		// set.
 		afterDiv.lastChild.className =
 			valuesEqual(command, afterValue, value)
 				? "good-result"
 				: "bad-result";
 	}
-	if (/^justify(center|full|left|right)$/.test(command)) {
-		var expectedValue = command == "justifyfull"
-			? "justify"
-			: command.replace("justify", "");
-		afterDiv.lastChild.className = afterValue == expectedValue
-			? "good-result"
-			: "bad-result";
-	}
-	beforeDiv.lastChild.textContent = "value " + beforeValue;
-	afterDiv.lastChild.textContent = "value " + afterValue;
+	beforeDiv.lastChild.textContent = "value " + trivialPrettyPrint(beforeValue);
+	afterDiv.lastChild.textContent = "value " + trivialPrettyPrint(afterValue);
 
 	return frag;
 }

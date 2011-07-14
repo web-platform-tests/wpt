@@ -635,8 +635,8 @@ case-insensitively</span>.
 
 <div class=note>
 <p>The methods in this section have mostly been designed so that the following
-invariants hold after <code>execCommand()</code> is called, assuming it didn't
-throw an exception:
+invariants hold after <code title>execCommand()</code> is called, assuming it
+didn't throw an exception:
 
 <ul>
   <li><code title>queryCommandIndeterm()</code> will return false (or throw an
@@ -655,11 +655,12 @@ throw an exception:
 or <code title>underline</code>, because it can be impossible to unset
 text-decoration in CSS.  Also, by design, the state of <code
 title>insertOrderedList</code> and <code title>insertOrderedList</code> might
-not be the opposite after calling as before calling.  Finally, the state of the
-various <code title>justify</code> commands should always be true after
-calling, and the value should always be the appropriate string ("center",
-"justify", "left", or "right").  Any other deviations from these invariants are
-bugs in the specification.
+be true both before and after calling, because they only remove one level of
+indentation.  <code title>unlink</code> should set the value to null.  And
+finally, the state of the various <code title>justify</code> commands should
+always be true after calling, and the value should always be the appropriate
+string ("center", "justify", "left", or "right").  Any other deviations from
+these invariants are bugs in the specification.
 </div>
 <!-- @} -->
 
@@ -2490,7 +2491,23 @@ don't either. -->
   <li><span>Set the selection's value</span> to <var>value</var>.
 </ol>
 
-<p class=XXX>Define state and value, although browsers don't.
+<!-- IE10PP2, Firefox 7.0a2, Chrome 14 dev, and Opera 11.50 all do not support
+indeterminate, state, or value for createLink or unlink.  I define
+indeterminate and value anyway because they make sense. -->
+<p><span>Indeterminate</span>: True if among <span>editable</span> [[text]]
+nodes that are <span>effectively contained</span> in the <span>active
+range</span>, there are two that have distinct <span title="effective command
+value">effective command values</span>.  Otherwise false.
+
+<p><span>Value</span>: The <span>effective command value</span> of the first
+<span>editable</span> [[text]] node that is <span>effectively contained</span>
+in the <span>active range</span>, or if there is no such node, the
+<span>effective command value</span> of the <span>active range</span>'s
+[[startnode]].
+
+<p class=note>The effective command value of the active range's start node
+cannot be null, since the boundary point node of a selection must always be
+either an element or a text node that's the child of an element.
 
 <!-- @} -->
 <h3><dfn>The <code title>fontName</code> command</dfn></h3>
@@ -3238,6 +3255,25 @@ starting at 2011-05-13 at 16:53 EDT (UTC-0400).
 
   <li><span>Clear the value</span> of each member of <var>hyperlinks</var>.
 </ol>
+
+<!-- IE10PP2, Firefox 7.0a2, Chrome 14 dev, and Opera 11.50 all do not support
+indeterminate, state, or value for createLink or unlink.  I define
+indeterminate and value anyway because they make sense. -->
+<p><span>Indeterminate</span>: True if among <span>editable</span> [[text]]
+nodes that are <span>effectively contained</span> in the <span>active
+range</span>, there are two that have distinct <span title="effective command
+value">effective command values</span>.  Otherwise false.
+
+<p><span>Value</span>: The <span>effective command value</span> of the first
+<span>editable</span> [[text]] node that is <span>effectively contained</span>
+in the <span>active range</span>, or if there is no such node, the
+<span>effective command value</span> of the <span>active range</span>'s
+[[startnode]].
+
+<p class=note>The effective command value of the active range's start node
+cannot be null, since the boundary point node of a selection must always be
+either an element or a text node that's the child of an element.
+
 <!-- @} -->
 
 <h2>Block formatting commands</h2>
@@ -5676,6 +5712,9 @@ It wipes out intervening block containers too in some cases.  This might make
 sense for <address>/<h*>/<pre>, but other browsers don't do it.
 -->
 
+<p>A <dfn>formattable block name</dfn> is "address", "dd", "div", "dt", "h1",
+"h2", "h3", "h4", "h5", "h6", "p", or "pre".
+
 <p><span>Action</span>:
 
 <ol>
@@ -5687,8 +5726,8 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
   <li>Let <var>value</var> be <span data-anolis-spec=domcore>converted to
   ASCII lowercase</span>.
 
-  <li>If <var>value</var> is not "address", "dd", "div", "dt", "h1", "h2",
-  "h3", "h4", "h5", "h6", "p", or "pre", raise a [[SYNTAX_ERR]] exception.
+  <li>If <var>value</var> is not a <span>formattable block name</span>, raise a
+  [[SYNTAX_ERR]] exception.
   <!--
   Opera 11.10 throws NOT_SUPPORTED_ERR for bad elements, all other tested
   browsers ignore the input.  Testing in IE9, Firefox 4.0, Chrome 13 dev, and
@@ -5727,11 +5766,10 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
 
   <li>For each <var>node</var> in <var>node list</var>, while <var>node</var>
   is the [[descendant]] of an <span>editable</span> <span>HTML element</span>
-  <span>in the same editing host</span>, which has [[localname]] "address",
-  "dd", "div", "dt", "h1", "h2", "h3", "h4", "h5", "h6", "p", or "pre", and
-  which is not the [[ancestor]] of a <span>prohibited paragraph child</span>,
-  <span>split the parent</span> of the one-[[node]] list consisting of
-  <var>node</var>.
+  <span>in the same editing host</span>, whose [[localname]] is a
+  <span>formattable block name</span>, and which is not the [[ancestor]] of a
+  <span>prohibited paragraph child</span>, <span>split the parent</span> of the
+  one-[[node]] list consisting of <var>node</var>.
   <!--
   This tries to avoid misnesting if only some lines of an element are selected,
   so <h1>[foo]<br>bar</h1> becomes <p>[foo]</p><h1>bar</h1> instead of
@@ -5866,15 +5904,15 @@ sure what it does.  I'm speccing it just because it makes sense.
   <ol>
     <li>While <var>node</var>'s [[parent]] is <span>editable</span> and
     <span>in the same editing host</span> as <var>node</var>, and
-    <var>node</var> is not an <span>HTML element</span> with [[localname]]
-    "address", "div", "h1", "h2", "h3", "h4", "h5", "h6", "p", or "pre", set
-    <var>node</var> to its [[parent]].
+    <var>node</var> is not an <span>HTML element</span> whose [[localname]]
+    is a <span>formattable block name</span>, set <var>node</var> to its
+    [[parent]].
 
     <li>Let <var>current type</var> be the empty string.
 
     <li>If <var>node</var> is an <span>editable</span> <span>HTML
-    element</span> with [[localname]] "address", "div", "h1", "h2", "h3", "h4",
-    "h5", "h6", "p", or "pre", and <var>node</var> is not the [[ancestor]] of a
+    element</span> whose [[localname]] is a <span>formattable block
+    name</span>, and <var>node</var> is not the [[ancestor]] of a
     <span>prohibited paragraph child</span>, set <var>current type</var> to
     <var>node</var>'s [[localname]].
 
@@ -5914,15 +5952,15 @@ writing means what Firefox supports plus div.
 
   <li>While <var>node</var>'s [[parent]] is <span>editable</span> and <span>in
   the same editing host</span> as <var>node</var>, and <var>node</var> is not
-  an <span>HTML element</span> with [[localname]] "address", "div", "h1", "h2",
-  "h3", "h4", "h5", "h6", "p", or "pre", set <var>node</var> to its [[parent]].
+  an <span>HTML element</span> whose [[localname]] is a <span>formattable block
+  name</span>, set <var>node</var> to its [[parent]].
   <!-- Opera 11.11 doesn't require it be editable, so it will return "DIV"
   instead of "" for <div contenteditable>foo</div>.  -->
 
   <li>If <var>node</var> is an <span>editable</span> <span>HTML element</span>
-  with [[localname]] "address", "div", "h1", "h2", "h3", "h4", "h5", "h6", "p",
-  or "pre", and <var>node</var> is not the [[ancestor]] of a <span>prohibited
-  paragraph child</span>, return <var>node</var>'s [[localname]], <span
+  whose [[localname]] is a <span>formattable block name</span>, and
+  <var>node</var> is not the [[ancestor]] of a <span>prohibited paragraph
+  child</span>, return <var>node</var>'s [[localname]], <span
   data-anolis-spec=domcore>converted to ASCII lowercase</span>.
   <!--
   Chrome 14 dev will report "div" for <div><ol><li>foo</ol></div> or such.

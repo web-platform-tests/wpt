@@ -134,6 +134,10 @@ function getFontSize(cssVal) {
 // test implementation.  It's not clear how all this should actually be specced
 // in practice, since CSS defines no notion of equality, does it?
 function valuesEqual(command, val1, val2) {
+	if (commands[command].relevantCssProperty === null) {
+		return val1 === val2;
+	}
+
 	if (val1 === null || val2 === null) {
 		return val1 === val2;
 	}
@@ -148,15 +152,6 @@ function valuesEqual(command, val1, val2) {
 			|| (val2.toLowerCase() == "bold" && val1 == "700")
 			|| (val1.toLowerCase() == "normal" && val2 == "400")
 			|| (val2.toLowerCase() == "normal" && val1 == "400");
-	}
-
-	// This code path should probably only be hit by queryOutputHelper() in
-	// tests.js.  Anything else is most likely a bug.
-	if (command == "fontname" && /^[1-7]$/.test(val1)) {
-		val1 = [, "xx-small", "small", "medium", "large", "x-large", "xx-large", "xxx-large"][val1];
-	}
-	if (command == "fontname" && /^[1-7]$/.test(val2)) {
-		val2 = [, "xx-small", "small", "medium", "large", "x-large", "xx-large", "xxx-large"][val2];
 	}
 
 	var property = commands[command].relevantCssProperty;
@@ -3065,6 +3060,28 @@ commands.createlink = {
 
 		// "Set the selection's value to value."
 		setSelectionValue("createlink", value);
+	}, indeterm: function() {
+		// "True if among editable Text nodes that are effectively contained in
+		// the active range, there are two that have distinct effective command
+		// values.  Otherwise false."
+		return getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
+			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
+		}).map(function(node) {
+			return getEffectiveCommandValue(node, "createlink");
+		}).filter(function(value, i, arr) {
+			return arr.slice(0, i).indexOf(value) == -1;
+		}).length >= 2;
+	}, value: function() {
+		// "The effective command value of the first editable Text node that is
+		// effectively contained in the active range, or if there is no such
+		// node, the effective command value of the active range's start node."
+		var node = getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
+			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
+		})[0];
+		if (node === undefined) {
+			node = getActiveRange().startContainer;
+		}
+		return getEffectiveCommandValue(node, "createlink");
 	}
 };
 
@@ -3681,6 +3698,28 @@ commands.unlink = {
 		for (var i = 0; i < hyperlinks.length; i++) {
 			clearValue(hyperlinks[i], "unlink");
 		}
+	}, indeterm: function() {
+		// "True if among editable Text nodes that are effectively contained in
+		// the active range, there are two that have distinct effective command
+		// values.  Otherwise false."
+		return getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
+			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
+		}).map(function(node) {
+			return getEffectiveCommandValue(node, "unlink");
+		}).filter(function(value, i, arr) {
+			return arr.slice(0, i).indexOf(value) == -1;
+		}).length >= 2;
+	}, value: function() {
+		// "The effective command value of the first editable Text node that is
+		// effectively contained in the active range, or if there is no such
+		// node, the effective command value of the active range's start node."
+		var node = getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
+			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
+		})[0];
+		if (node === undefined) {
+			node = getActiveRange().startContainer;
+		}
+		return getEffectiveCommandValue(node, "unlink");
 	}
 };
 
@@ -5967,6 +6006,11 @@ commands["delete"] = {
 //@}
 ///// The formatBlock command /////
 //@{
+// "A formattable block name is "address", "dd", "div", "dt", "h1", "h2", "h3",
+// "h4", "h5", "h6", "p", or "pre"."
+var formattableBlockNames = ["address", "dd", "div", "dt", "h1", "h2", "h3",
+	"h4", "h5", "h6", "p", "pre"];
+
 commands.formatblock = {
 	action: function(value) {
 		// "If value begins with a "<" character and ends with a ">" character,
@@ -5978,10 +6022,9 @@ commands.formatblock = {
 		// "Let value be converted to ASCII lowercase."
 		value = value.toLowerCase();
 
-		// "If value is not "address", "dd", "div", "dt", "h1", "h2", "h3",
-		// "h4", "h5", "h6", "p", or "pre", raise a SYNTAX_ERR exception."
-		if (["address", "dd", "div", "dt", "h1", "h2", "h3", "h4", "h5", "h6",
-		"p", "pre"].indexOf(value) == -1) {
+		// "If value is not a formattable block name, raise a SYNTAX_ERR
+		// exception."
+		if (formattableBlockNames.indexOf(value) == -1) {
 			throw "SYNTAX_ERR";
 		}
 
@@ -6007,17 +6050,16 @@ commands.formatblock = {
 		var values = recordValues(nodeList);
 
 		// "For each node in node list, while node is the descendant of an
-		// editable HTML element in the same editing host, which has local name
-		// "address", "dd", "div", "dt", "h1", "h2", "h3", "h4", "h5", "h6",
-		// "p", or "pre", and which is not the ancestor of a prohibited
-		// paragraph child, split the parent of the one-node list consisting of
-		// node."
+		// editable HTML element in the same editing host, whose local name is
+		// a formattable block name, and which is not the ancestor of a
+		// prohibited paragraph child, split the parent of the one-node list
+		// consisting of node."
 		for (var i = 0; i < nodeList.length; i++) {
 			var node = nodeList[i];
 			while (getAncestors(node).some(function(ancestor) {
 				return isEditable(ancestor)
 					&& inSameEditingHost(ancestor, node)
-					&& isHtmlElement(ancestor, ["address", "dd", "div", "dt", "h1", "h2", "h3", "h4", "h5", "h6", "p", "pre"])
+					&& isHtmlElement(ancestor, formattableBlockNames)
 					&& !getDescendants(ancestor).some(isProhibitedParagraphChild);
 			})) {
 				splitParent([node]);
@@ -6111,24 +6153,23 @@ commands.formatblock = {
 			var node = nodeList[i];
 
 			// "While node's parent is editable and in the same editing host as
-			// node, and node is not an HTML element with local name "address",
-			// "div", "h1", "h2", "h3", "h4", "h5", "h6", "p", or "pre", set
-			// node to its parent."
+			// node, and node is not an HTML element whose local name is a
+			// formattable block name, set node to its parent."
 			while (isEditable(node.parentNode)
 			&& inSameEditingHost(node, node.parentNode)
-			&& !isHtmlElement(node, ["address", "div", "h1", "h2", "h3", "h4", "h5", "h6", "p", "pre"])) {
+			&& !isHtmlElement(node, formattableBlockNames)) {
 				node = node.parentNode;
 			}
 
 			// "Let current type be the empty string."
 			var currentType = "";
 
-			// "If node is an editable HTML element with local name "address",
-			// "div", "h1", "h2", "h3", "h4", "h5", "h6", "p", or "pre", and
-			// node is not the ancestor of a prohibited paragraph child, set
-			// current type to node's local name."
+			// "If node is an editable HTML element whose local name is a
+			// formattable block name, and node is not the ancestor of a
+			// prohibited paragraph child, set current type to node's local
+			// name."
 			if (isEditable(node)
-			&& isHtmlElement(node, ["address", "div", "h1", "h2", "h3", "h4", "h5", "h6", "p", "pre"])
+			&& isHtmlElement(node, formattableBlockNames)
 			&& !getDescendants(node).some(isProhibitedParagraphChild)) {
 				currentType = node.tagName;
 			}
@@ -6163,21 +6204,20 @@ commands.formatblock = {
 		var node = nodes[0];
 
 		// "While node's parent is editable and in the same editing host as
-		// node, and node is not an HTML element with local name "address",
-		// "div", "h1", "h2", "h3", "h4", "h5", "h6", "p", or "pre", set node
-		// to its parent."
+		// node, and node is not an HTML element whose local name is a
+		// formattable block name, set node to its parent."
 		while (isEditable(node.parentNode)
 		&& inSameEditingHost(node, node.parentNode)
-		&& !isHtmlElement(node, ["address", "div", "h1", "h2", "h3", "h4", "h5", "h6", "p", "pre"])) {
+		&& !isHtmlElement(node, formattableBlockNames)) {
 			node = node.parentNode;
 		}
 
-		// "If node is an editable HTML element with local name "address",
-		// "div", "h1", "h2", "h3", "h4", "h5", "h6", "p", or "pre", and node
-		// is not the ancestor of a prohibited paragraph child, return node's
-		// local name, converted to ASCII lowercase."
+		// "If node is an editable HTML element whose local name is a
+		// formattable block name, and node is not the ancestor of a prohibited
+		// paragraph child, return node's local name, converted to ASCII
+		// lowercase."
 		if (isEditable(node)
-		&& isHtmlElement(node, ["address", "div", "h1", "h2", "h3", "h4", "h5", "h6", "p", "pre"])
+		&& isHtmlElement(node, formattableBlockNames)
 		&& !getDescendants(node).some(isProhibitedParagraphChild)) {
 			return node.tagName.toLowerCase();
 		}

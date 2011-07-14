@@ -1776,12 +1776,7 @@ var tests = {
 	insertorderedlist: [
 	//@{
 		'foo[]bar',
-		'<span>foo</span>{}<span>bar</span>',
-		'<span>foo[</span><span>]bar</span>',
 		'foo[bar]baz',
-		'foo]bar[baz',
-		'{<p><p> <p>foo</p>}',
-		'foo[bar<b>baz]qoz</b>quz',
 		'foo<br>[bar]',
 		'f[oo<br>b]ar<br>baz',
 		'<p>[foo]<br>bar</p>',
@@ -1793,21 +1788,13 @@ var tests = {
 		'foo<ol><li>[bar</ol><ul><li>baz]</ul>quz',
 
 		'<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
-		'<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table>',
-		'<table><tbody><tr data-start=0 data-end=2><td>foo<td>bar<td>baz</table>',
-		'<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<td>baz</table>',
-		'<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table>',
+		'<table><tbody><tr><td>fo[o<td>b]ar<td>baz</table>',
 		'{<table><tr><td>foo<td>bar<td>baz</table>}',
 
 		'<p>foo<p>[bar]<p>baz',
 		'<p>foo<blockquote>[bar]</blockquote><p>baz',
 		'<dl><dt>foo<dd>[bar]<dt>baz<dd>quz</dl>',
 		'<dl><dt>foo<dd>bar<dt>[baz]<dd>quz</dl>',
-
-		'<p>foo<p>b[a]r<p>baz',
-		'<p>foo<blockquote>b[a]r</blockquote><p>baz',
-		'<dl><dt>foo<dd>b[a]r<dt>baz<dd>quz</dl>',
-		'<dl><dt>foo<dd>bar<dt>b[a]z<dd>quz</dl>',
 
 		'<p>[foo<p>bar]<p>baz',
 		'<p>[foo<blockquote>bar]</blockquote><p>baz',
@@ -1819,7 +1806,6 @@ var tests = {
 
 		// Various <ol> stuff
 		'<ol><li>foo<li>[bar]<li>baz</ol>',
-		'<ol data-start=1 data-end=2><li>foo<li>bar<li>baz</ol>',
 		'<ol><li>foo</ol>[bar]',
 		'[foo]<ol><li>bar</ol>',
 		'<ol><li>foo</ol>[bar]<ol><li>baz</ol>',
@@ -1830,13 +1816,7 @@ var tests = {
 		'<ol><li>foo<ol><li>[bar]<li>baz</ol><li>quz</ol>',
 		'<ol><li>foo<ol><li>bar<li>[baz]</ol><li>quz</ol>',
 		'<ol><li>foo</li><ol><li>[bar]<li>baz</ol><li>quz</ol>',
-		'<ol><li>foo</li><ol data-start=0 data-end=1><li>bar<li>baz</ol><li>quz</ol>',
 		'<ol><li>foo</li><ol><li>bar<li>[baz]</ol><li>quz</ol>',
-		'<ol><li>foo</li><ol data-start=1 data-end=2><li>bar<li>baz</ol><li>quz</ol>',
-		'<ol><li>foo<ol><li>b[a]r</ol><li>baz</ol>',
-		'<ol><li>foo</li><ol><li>b[a]r</ol><li>baz</ol>',
-		'<ol><li>foo{<ol><li>bar</ol>}<li>baz</ol>',
-		'<ol><li>foo</li>{<ol><li>bar</ol>}<li>baz</ol>',
 		'<ol><li>[foo]<ol><li>bar</ol><li>baz</ol>',
 		'<ol><li>[foo]</li><ol><li>bar</ol><li>baz</ol>',
 		'<ol><li>foo<li>[bar]<ol><li>baz</ol><li>quz</ol>',
@@ -1845,14 +1825,10 @@ var tests = {
 		'<ol><li>foo</li><ol><li>bar<li>baz</ol><li>[quz]</ol>',
 
 		// Multiple items at once.
-		'<ol><li>foo<li>b[ar<li>baz]</ol>',
+		'<ol><li>foo<li>[bar<li>baz]</ol>',
 		'<ol><li>[foo<ol><li>bar]</ol><li>baz</ol>',
-		'<ol><li>[foo</li><ol><li>bar]</ol><li>baz</ol>',
 		'<ol><li>foo<ol><li>b[ar</ol><li>b]az</ol>',
-		'<ol><li>foo</li><ol><li>b[ar</ol><li>b]az</ol>',
 		'<ol><li>[foo<ol><li>bar</ol><li>baz]</ol><p>extra',
-		'<ol><li>[foo</li><ol><li>bar</ol><li>baz]</ol><p>extra',
-		'<ol><li>foo<li>[bar</li><ol><li>baz</ol><li>quz]</ol>',
 
 		// We probably can't actually get this DOM . . .
 		'<ol><li>[foo]<ol><li>bar</ol>baz</ol>',
@@ -1863,7 +1839,6 @@ var tests = {
 
 		// Same stuff but with <ul>
 		'<ul><li>foo<li>[bar]<li>baz</ul>',
-		'<ol data-start=1 data-end=2><li>foo<li>bar<li>baz</ul>',
 		'<ul><li>foo</ul>[bar]',
 		'[foo]<ul><li>bar</ul>',
 		'<ul><li>foo</ul>[bar]<ul><li>baz</ul>',
@@ -1874,13 +1849,7 @@ var tests = {
 		'<ul><li>foo<ul><li>[bar]<li>baz</ul><li>quz</ul>',
 		'<ul><li>foo<ul><li>bar<li>[baz]</ul><li>quz</ul>',
 		'<ul><li>foo</li><ul><li>[bar]<li>baz</ul><li>quz</ul>',
-		'<ul><li>foo</li><ul data-start=0 data-end=1><li>bar<li>baz</ul><li>quz</ul>',
 		'<ul><li>foo</li><ul><li>bar<li>[baz]</ul><li>quz</ul>',
-		'<ul><li>foo</li><ul data-start=1 data-end=2><li>bar<li>baz</ul><li>quz</ul>',
-		'<ul><li>foo<ul><li>b[a]r</ul><li>baz</ul>',
-		'<ul><li>foo</li><ul><li>b[a]r</ul><li>baz</ul>',
-		'<ul><li>foo{<ul><li>bar</ul>}<li>baz</ul>',
-		'<ul><li>foo</li>{<ul><li>bar</ul>}<li>baz</ul>',
 		'<ul><li>[foo]<ul><li>bar</ul><li>baz</ul>',
 		'<ul><li>[foo]</li><ul><li>bar</ul><li>baz</ul>',
 		'<ul><li>foo<li>[bar]<ul><li>baz</ul><li>quz</ul>',
@@ -1889,14 +1858,10 @@ var tests = {
 		'<ul><li>foo</li><ul><li>bar<li>baz</ul><li>[quz]</ul>',
 
 		// Multiple items at once.
-		'<ul><li>foo<li>b[ar<li>baz]</ul>',
+		'<ul><li>foo<li>[bar<li>baz]</ul>',
 		'<ul><li>[foo<ul><li>bar]</ul><li>baz</ul>',
-		'<ul><li>[foo</li><ul><li>bar]</ul><li>baz</ul>',
 		'<ul><li>foo<ul><li>b[ar</ul><li>b]az</ul>',
-		'<ul><li>foo</li><ul><li>b[ar</ul><li>b]az</ul>',
 		'<ul><li>[foo<ul><li>bar</ul><li>baz]</ul><p>extra',
-		'<ul><li>[foo</li><ul><li>bar</ul><li>baz]</ul><p>extra',
-		'<ul><li>foo<li>[bar</li><ul><li>baz</ul><li>quz]</ul>',
 
 		// We probably can't actually get this DOM . . .
 		'<ul><li>[foo]<ul><li>bar</ul>baz</ul>',
@@ -1910,8 +1875,6 @@ var tests = {
 		'foo<ol><li>bar</ol><ul><li>[baz</ul>quz]',
 		'foo<ul><li>[bar]</ul><ol><li>baz</ol>quz',
 		'[foo<ul><li>bar]</ul><ol><li>baz</ol>quz',
-		'<ol><li>foo</li><ul><li>[bar]</ul><li>baz</ol>',
-		'<ul><li>foo</li><ol><li>[bar]</ol><li>baz</ul>',
 
 		// Interaction with indentation
 		'[foo]<blockquote>bar</blockquote>baz',
@@ -1927,28 +1890,6 @@ var tests = {
 		'<p>foo<blockquote><p>[bar]</blockquote><p>baz',
 		'<p>[foo<blockquote><p>bar]</blockquote><p>baz',
 		'<ol><li>foo</ol><blockquote><p>[bar]</blockquote><p>baz',
-		'<p>[foo]<blockquote><ol><li><p>bar</ol></blockquote><p>baz',
-		'<p>foo<blockquote><p>[bar]<p>baz</blockquote>',
-		'<p>[foo<blockquote><p>bar]<p>baz</blockquote>',
-		'<ol><li>foo</ol><blockquote><p>[bar]<p>baz</blockquote>',
-
-		'[foo]<div style="margin: 0 40px">bar</div>baz',
-		'foo<div style="margin: 0 40px">[bar]</div>baz',
-		'[foo<div style="margin: 0 40px">bar]</div>baz',
-		'<ol><li>foo</ol><div style="margin: 0 40px">[bar]</div>baz',
-		'[foo]<div style="margin: 0 40px"><ol><li>bar</ol></div>baz',
-		'foo<div style="margin: 0 40px">[bar]<br>baz</div>',
-		'[foo<div style="margin: 0 40px">bar]<br>baz</div>',
-		'<ol><li>foo</ol><div style="margin: 0 40px">[bar]<br>baz</div>',
-
-		'<p>[foo]<div style="margin: 0 40px"><p>bar</div><p>baz',
-		'<p>foo<div style="margin: 0 40px"><p>[bar]</div><p>baz',
-		'<p>[foo<div style="margin: 0 40px"><p>bar]</div><p>baz',
-		'<ol><li>foo</ol><div style="margin: 0 40px"><p>[bar]</div><p>baz',
-		'<p>[foo]<div style="margin: 0 40px"><ol><li><p>bar</ol></div><p>baz',
-		'<p>foo<div style="margin: 0 40px"><p>[bar]<p>baz</div>',
-		'<p>[foo<div style="margin: 0 40px"><p>bar]<p>baz</div>',
-		'<ol><li>foo</ol><div style="margin: 0 40px"><p>[bar]<p>baz</div>',
 
 		// Attributes
 		'<ul id=abc><li>foo<li>[bar]<li>baz</ul>',
@@ -2171,12 +2112,7 @@ var tests = {
 	insertunorderedlist: [
 	//@{
 		'foo[]bar',
-		'<span>foo</span>{}<span>bar</span>',
-		'<span>foo[</span><span>]bar</span>',
 		'foo[bar]baz',
-		'foo]bar[baz',
-		'{<p><p> <p>foo</p>}',
-		'foo[bar<b>baz]qoz</b>quz',
 		'foo<br>[bar]',
 		'f[oo<br>b]ar<br>baz',
 		'<p>[foo]<br>bar</p>',
@@ -2188,21 +2124,13 @@ var tests = {
 		'foo<ol><li>[bar</ol><ul><li>baz]</ul>quz',
 
 		'<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
-		'<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table>',
-		'<table><tbody><tr data-start=0 data-end=2><td>foo<td>bar<td>baz</table>',
-		'<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<td>baz</table>',
-		'<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table>',
+		'<table><tbody><tr><td>fo[o<td>b]ar<td>baz</table>',
 		'{<table><tr><td>foo<td>bar<td>baz</table>}',
 
 		'<p>foo<p>[bar]<p>baz',
 		'<p>foo<blockquote>[bar]</blockquote><p>baz',
 		'<dl><dt>foo<dd>[bar]<dt>baz<dd>quz</dl>',
 		'<dl><dt>foo<dd>bar<dt>[baz]<dd>quz</dl>',
-
-		'<p>foo<p>b[a]r<p>baz',
-		'<p>foo<blockquote>b[a]r</blockquote><p>baz',
-		'<dl><dt>foo<dd>b[a]r<dt>baz<dd>quz</dl>',
-		'<dl><dt>foo<dd>bar<dt>b[a]z<dd>quz</dl>',
 
 		'<p>[foo<p>bar]<p>baz',
 		'<p>[foo<blockquote>bar]</blockquote><p>baz',
@@ -2214,7 +2142,6 @@ var tests = {
 
 		// Various <ol> stuff
 		'<ol><li>foo<li>[bar]<li>baz</ol>',
-		'<ol data-start=1 data-end=2><li>foo<li>bar<li>baz</ol>',
 		'<ol><li>foo</ol>[bar]',
 		'[foo]<ol><li>bar</ol>',
 		'<ol><li>foo</ol>[bar]<ol><li>baz</ol>',
@@ -2225,13 +2152,7 @@ var tests = {
 		'<ol><li>foo<ol><li>[bar]<li>baz</ol><li>quz</ol>',
 		'<ol><li>foo<ol><li>bar<li>[baz]</ol><li>quz</ol>',
 		'<ol><li>foo</li><ol><li>[bar]<li>baz</ol><li>quz</ol>',
-		'<ol><li>foo</li><ol data-start=0 data-end=1><li>bar<li>baz</ol><li>quz</ol>',
 		'<ol><li>foo</li><ol><li>bar<li>[baz]</ol><li>quz</ol>',
-		'<ol><li>foo</li><ol data-start=1 data-end=2><li>bar<li>baz</ol><li>quz</ol>',
-		'<ol><li>foo<ol><li>b[a]r</ol><li>baz</ol>',
-		'<ol><li>foo</li><ol><li>b[a]r</ol><li>baz</ol>',
-		'<ol><li>foo{<ol><li>bar</ol>}<li>baz</ol>',
-		'<ol><li>foo</li>{<ol><li>bar</ol>}<li>baz</ol>',
 		'<ol><li>[foo]<ol><li>bar</ol><li>baz</ol>',
 		'<ol><li>[foo]</li><ol><li>bar</ol><li>baz</ol>',
 		'<ol><li>foo<li>[bar]<ol><li>baz</ol><li>quz</ol>',
@@ -2240,14 +2161,10 @@ var tests = {
 		'<ol><li>foo</li><ol><li>bar<li>baz</ol><li>[quz]</ol>',
 
 		// Multiple items at once.
-		'<ol><li>foo<li>b[ar<li>baz]</ol>',
+		'<ol><li>foo<li>[bar<li>baz]</ol>',
 		'<ol><li>[foo<ol><li>bar]</ol><li>baz</ol>',
-		'<ol><li>[foo</li><ol><li>bar]</ol><li>baz</ol>',
 		'<ol><li>foo<ol><li>b[ar</ol><li>b]az</ol>',
-		'<ol><li>foo</li><ol><li>b[ar</ol><li>b]az</ol>',
 		'<ol><li>[foo<ol><li>bar</ol><li>baz]</ol><p>extra',
-		'<ol><li>[foo</li><ol><li>bar</ol><li>baz]</ol><p>extra',
-		'<ol><li>foo<li>[bar</li><ol><li>baz</ol><li>quz]</ol>',
 
 		// We probably can't actually get this DOM . . .
 		'<ol><li>[foo]<ol><li>bar</ol>baz</ol>',
@@ -2258,7 +2175,6 @@ var tests = {
 
 		// Same stuff but with <ul>
 		'<ul><li>foo<li>[bar]<li>baz</ul>',
-		'<ol data-start=1 data-end=2><li>foo<li>bar<li>baz</ul>',
 		'<ul><li>foo</ul>[bar]',
 		'[foo]<ul><li>bar</ul>',
 		'<ul><li>foo</ul>[bar]<ul><li>baz</ul>',
@@ -2269,13 +2185,7 @@ var tests = {
 		'<ul><li>foo<ul><li>[bar]<li>baz</ul><li>quz</ul>',
 		'<ul><li>foo<ul><li>bar<li>[baz]</ul><li>quz</ul>',
 		'<ul><li>foo</li><ul><li>[bar]<li>baz</ul><li>quz</ul>',
-		'<ul><li>foo</li><ul data-start=0 data-end=1><li>bar<li>baz</ul><li>quz</ul>',
 		'<ul><li>foo</li><ul><li>bar<li>[baz]</ul><li>quz</ul>',
-		'<ul><li>foo</li><ul data-start=1 data-end=2><li>bar<li>baz</ul><li>quz</ul>',
-		'<ul><li>foo<ul><li>b[a]r</ul><li>baz</ul>',
-		'<ul><li>foo</li><ul><li>b[a]r</ul><li>baz</ul>',
-		'<ul><li>foo{<ul><li>bar</ul>}<li>baz</ul>',
-		'<ul><li>foo</li>{<ul><li>bar</ul>}<li>baz</ul>',
 		'<ul><li>[foo]<ul><li>bar</ul><li>baz</ul>',
 		'<ul><li>[foo]</li><ul><li>bar</ul><li>baz</ul>',
 		'<ul><li>foo<li>[bar]<ul><li>baz</ul><li>quz</ul>',
@@ -2284,14 +2194,10 @@ var tests = {
 		'<ul><li>foo</li><ul><li>bar<li>baz</ul><li>[quz]</ul>',
 
 		// Multiple items at once.
-		'<ul><li>foo<li>b[ar<li>baz]</ul>',
+		'<ul><li>foo<li>[bar<li>baz]</ul>',
 		'<ul><li>[foo<ul><li>bar]</ul><li>baz</ul>',
-		'<ul><li>[foo</li><ul><li>bar]</ul><li>baz</ul>',
 		'<ul><li>foo<ul><li>b[ar</ul><li>b]az</ul>',
-		'<ul><li>foo</li><ul><li>b[ar</ul><li>b]az</ul>',
 		'<ul><li>[foo<ul><li>bar</ul><li>baz]</ul><p>extra',
-		'<ul><li>[foo</li><ul><li>bar</ul><li>baz]</ul><p>extra',
-		'<ul><li>foo<li>[bar</li><ul><li>baz</ul><li>quz]</ul>',
 
 		// We probably can't actually get this DOM . . .
 		'<ul><li>[foo]<ul><li>bar</ul>baz</ul>',
@@ -2305,8 +2211,6 @@ var tests = {
 		'foo<ol><li>bar</ol><ul><li>[baz</ul>quz]',
 		'foo<ul><li>[bar]</ul><ol><li>baz</ol>quz',
 		'[foo<ul><li>bar]</ul><ol><li>baz</ol>quz',
-		'<ol><li>foo</li><ul><li>[bar]</ul><li>baz</ol>',
-		'<ul><li>foo</li><ol><li>[bar]</ol><li>baz</ul>',
 
 		// Interaction with indentation
 		'[foo]<blockquote>bar</blockquote>baz',
@@ -2322,28 +2226,6 @@ var tests = {
 		'<p>foo<blockquote><p>[bar]</blockquote><p>baz',
 		'<p>[foo<blockquote><p>bar]</blockquote><p>baz',
 		'<ol><li>foo</ol><blockquote><p>[bar]</blockquote><p>baz',
-		'<p>[foo]<blockquote><ol><li><p>bar</ol></blockquote><p>baz',
-		'<p>foo<blockquote><p>[bar]<p>baz</blockquote>',
-		'<p>[foo<blockquote><p>bar]<p>baz</blockquote>',
-		'<ol><li>foo</ol><blockquote><p>[bar]<p>baz</blockquote>',
-
-		'[foo]<div style="margin: 0 40px">bar</div>baz',
-		'foo<div style="margin: 0 40px">[bar]</div>baz',
-		'[foo<div style="margin: 0 40px">bar]</div>baz',
-		'<ol><li>foo</ol><div style="margin: 0 40px">[bar]</div>baz',
-		'[foo]<div style="margin: 0 40px"><ol><li>bar</ol></div>baz',
-		'foo<div style="margin: 0 40px">[bar]<br>baz</div>',
-		'[foo<div style="margin: 0 40px">bar]<br>baz</div>',
-		'<ol><li>foo</ol><div style="margin: 0 40px">[bar]<br>baz</div>',
-
-		'<p>[foo]<div style="margin: 0 40px"><p>bar</div><p>baz',
-		'<p>foo<div style="margin: 0 40px"><p>[bar]</div><p>baz',
-		'<p>[foo<div style="margin: 0 40px"><p>bar]</div><p>baz',
-		'<ol><li>foo</ol><div style="margin: 0 40px"><p>[bar]</div><p>baz',
-		'<p>[foo]<div style="margin: 0 40px"><ol><li><p>bar</ol></div><p>baz',
-		'<p>foo<div style="margin: 0 40px"><p>[bar]<p>baz</div>',
-		'<p>[foo<div style="margin: 0 40px"><p>bar]<p>baz</div>',
-		'<ol><li>foo</ol><div style="margin: 0 40px"><p>[bar]<p>baz</div>',
 
 		// Attributes
 		'<ul id=abc><li>foo<li>[bar]<li>baz</ul>',

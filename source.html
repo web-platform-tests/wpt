@@ -1976,8 +1976,8 @@ different value.
     opaque with red, green, and blue components in the range 0 to 255:
     <!-- See comment for foreColor for discussion. -->
 
-    <p class=XXX>Check this more carefully for what happens if the components
-    are not integers or are out-of-range.
+    <!-- TODO: Define more carefully what happens when things are out of range
+    or not integers or whatever. -->
 
     <ol>
       <li>Let <var>new parent</var> be the result of calling <code
@@ -2248,12 +2248,15 @@ as desired.
       <dt>underline<dd>True if <var>new value</var> is "underline", false otherwise.
     </dl>
 
-    <li>If <var>command</var> has a <span>value</span> specified, unset the
-    <span>value override</span> if <var>new value</var> is null, and set the
-    <span>value override</span> to <var>new value</var> if it is not null.
+    <li>If <var>new value</var> is null, unset the <span>value override</span>
+    (if any).
 
-    <p class=XXX>This doesn't work as-is for fontSize, because that uses a
-    different format for the value.
+    <li>Otherwise, if <var>command</var> is "fontSize", set the <span>value
+    override</span> to the <span>legacy font size for</span> the result of
+    converting <var>new value</var> to pixels.
+
+    <li>Otherwise, if <var>command</var> has a <span>value</span> specified,
+    set the <span>value override</span> to <var>new value</var>.
 
     <li>Abort these steps.
   </ol>
@@ -2721,6 +2724,15 @@ browsers behave differently.  I see no reason to behave differently.
   cannot be null, since the boundary point node of a selection must always be
   either an element or a text node that's the child of an element.
 
+  <li>Return the <span>legacy font size for</span> <var>pixel size</var>.
+</ol>
+
+<p><span>Relevant CSS property</span>: "font-size"
+
+<p>The <dfn>legacy font size for</dfn> an integer <var>pixel size</var> is
+returned by the following algorithm:
+
+<ol>
   <li>Let <var>returned size</var> be 1.
 
   <li>While <var>returned size</var> is less than 7:
@@ -2745,9 +2757,6 @@ browsers behave differently.  I see no reason to behave differently.
 
   <li>Return "7".
 </ol>
-
-<p><span>Relevant CSS property</span>: "font-size"
-
 <!-- @} -->
 <h3><dfn>The <code title>foreColor</code> command</dfn></h3>
 <!-- @{ -->

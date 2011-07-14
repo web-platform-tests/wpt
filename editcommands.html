@@ -2008,8 +2008,8 @@ different value.
     opaque with red, green, and blue components in the range 0 to 255:
     <!-- See comment for foreColor for discussion. -->
 
-    <p class=XXX>Check this more carefully for what happens if the components
-    are not integers or are out-of-range.
+    <!-- TODO: Define more carefully what happens when things are out of range
+    or not integers or whatever. -->
 
     <ol>
       <li>Let <var title="">new parent</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("font")</a></code> on the
@@ -2269,12 +2269,15 @@ as desired.
       <dt>underline<dd>True if <var title="">new value</var> is "underline", false otherwise.
     </dl>
 
-    <li>If <var title="">command</var> has a <a href=#value>value</a> specified, unset the
-    <a href=#value-override>value override</a> if <var title="">new value</var> is null, and set the
-    <a href=#value-override>value override</a> to <var title="">new value</var> if it is not null.
+    <li>If <var title="">new value</var> is null, unset the <a href=#value-override>value override</a>
+    (if any).
 
-    <p class=XXX>This doesn't work as-is for fontSize, because that uses a
-    different format for the value.
+    <li>Otherwise, if <var title="">command</var> is "fontSize", set the <a href=#value-override>value
+    override</a> to the <a href=#legacy-font-size-for>legacy font size for</a> the result of
+    converting <var title="">new value</var> to pixels.
+
+    <li>Otherwise, if <var title="">command</var> has a <a href=#value>value</a> specified,
+    set the <a href=#value-override>value override</a> to <var title="">new value</var>.
 
     <li>Abort these steps.
   </ol>
@@ -2741,6 +2744,15 @@ browsers behave differently.  I see no reason to behave differently.
   cannot be null, since the boundary point node of a selection must always be
   either an element or a text node that's the child of an element.
 
+  <li>Return the <a href=#legacy-font-size-for>legacy font size for</a> <var title="">pixel size</var>.
+</ol>
+
+<p><a href=#relevant-css-property>Relevant CSS property</a>: "font-size"
+
+<p>The <dfn id=legacy-font-size-for>legacy font size for</dfn> an integer <var title="">pixel size</var> is
+returned by the following algorithm:
+
+<ol>
   <li>Let <var title="">returned size</var> be 1.
 
   <li>While <var title="">returned size</var> is less than 7:
@@ -2765,9 +2777,6 @@ browsers behave differently.  I see no reason to behave differently.
 
   <li>Return "7".
 </ol>
-
-<p><a href=#relevant-css-property>Relevant CSS property</a>: "font-size"
-
 
 <h3 id=the-forecolor-command><span class=secno>7.12 </span><dfn>The <code title="">foreColor</code> command</dfn></h3>
 

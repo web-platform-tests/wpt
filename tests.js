@@ -3440,11 +3440,22 @@ function queryOutputHelper(beforeIndeterm, beforeState, beforeValue, afterIndete
 	beforeDiv.appendChild(document.createTextNode(", "));
 	afterDiv.appendChild(document.createTextNode(", "));
 
-	// Hack to get highlighting working right for colors
 	if (command == "backcolor" || command == "forecolor" || command == "hilitecolor") {
 		if (/^([0-9a-fA-F]{3}){1,2}$/.test(value)) {
 			value = "#" + value;
 		}
+	}
+	if (command == "fontsize") {
+		value = normalizeFontSize(value);
+		var font = document.createElement("font");
+		document.body.appendChild(font);
+		if (value == "xxx-large") {
+			font.size = 7;
+		} else {
+			font.style.fontSize = value;
+		}
+		value = getLegacyFontSize(parseInt(getComputedStyle(font).fontSize));
+		document.body.removeChild(font);
 	}
 
 	beforeDiv.appendChild(document.createElement("span"));

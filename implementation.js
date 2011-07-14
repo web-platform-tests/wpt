@@ -2853,15 +2853,27 @@ function setSelectionValue(command, newValue) {
 			case "underline": setStateOverride(command, newValue === "underline");
 		}
 
-		// "If command has a value specified, unset the value override if new
-		// value is null, and set the value override to new value if it is not
-		// null."
-		if ("value" in commands[command]) {
-			if (newValue === null) {
-				unsetValueOverride(command);
+		// "If new value is null, unset the value override (if any)."
+		if (newValue === null) {
+			unsetValueOverride(command);
+
+		// "Otherwise, if command is "fontSize", set the value override to the
+		// legacy font size for the result of converting new value to pixels."
+		} else if (command == "fontsize") {
+			var font = document.createElement("font");
+			document.body.appendChild(font);
+			if (newValue == "xxx-large") {
+				font.size = 7;
 			} else {
-				setValueOverride(command, newValue);
+				font.style.fontSize = newValue;
 			}
+			setValueOverride(command, getLegacyFontSize(parseInt(getComputedStyle(font).fontSize)));
+			document.body.removeChild(font);
+
+		// "Otherwise, if command has a value specified, set the value override
+		// to new value."
+		} else if ("value" in commands[command]) {
+			setValueOverride(command, newValue);
 		}
 
 		// "Abort these steps."
@@ -3091,6 +3103,79 @@ commands.fontname = {
 //@}
 ///// The fontSize command /////
 //@{
+
+// Helper function for fontSize's action plus queryOutputHelper.  It's just the
+// middle of fontSize's action, ripped out into its own function.
+function normalizeFontSize(value) {
+	// "Strip leading and trailing whitespace from value."
+	//
+	// Cheap hack, not following the actual algorithm.
+	value = value.trim();
+
+	// "If value is a valid floating point number, or would be a valid
+	// floating point number if a single leading "+" character were
+	// stripped:"
+	if (/^[-+]?[0-9]+(\.[0-9]+)?([eE][-+]?[0-9]+)?$/.test(value)) {
+		var mode;
+
+		// "If the first character of value is "+", delete the character
+		// and let mode be "relative-plus"."
+		if (value[0] == "+") {
+			value = value.slice(1);
+			mode = "relative-plus";
+		// "Otherwise, if the first character of value is "-", delete the
+		// character and let mode be "relative-minus"."
+		} else if (value[0] == "-") {
+			value = value.slice(1);
+			mode = "relative-minus";
+		// "Otherwise, let mode be "absolute"."
+		} else {
+			mode = "absolute";
+		}
+
+		// "Apply the rules for parsing non-negative integers to value, and
+		// let number be the result."
+		//
+		// Another cheap hack.
+		var num = parseInt(value);
+
+		// "If mode is "relative-plus", add three to number."
+		if (mode == "relative-plus") {
+			num += 3;
+		}
+
+		// "If mode is "relative-minus", negate number, then add three to
+		// it."
+		if (mode == "relative-minus") {
+			num = 3 - num;
+		}
+
+		// "If number is less than one, let number equal 1."
+		if (num < 1) {
+			num = 1;
+		}
+
+		// "If number is greater than seven, let number equal 7."
+		if (num > 7) {
+			num = 7;
+		}
+
+		// "Set value to the string here corresponding to number:" [table
+		// omitted]
+		value = {
+			1: "xx-small",
+			2: "small",
+			3: "medium",
+			4: "large",
+			5: "x-large",
+			6: "xx-large",
+			7: "xxx-large"
+		}[num];
+	}
+
+	return value;
+}
+
 commands.fontsize = {
 	action: function(value) {
 		// "If value is the empty string, raise a SYNTAX_ERR exception."
@@ -3098,71 +3183,7 @@ commands.fontsize = {
 			throw "SYNTAX_ERR";
 		}
 
-		// "Strip leading and trailing whitespace from value."
-		//
-		// Cheap hack, not following the actual algorithm.
-		value = value.trim();
-
-		// "If value is a valid floating point number, or would be a valid
-		// floating point number if a single leading "+" character were
-		// stripped:"
-		if (/^[-+]?[0-9]+(\.[0-9]+)?([eE][-+]?[0-9]+)?$/.test(value)) {
-			var mode;
-
-			// "If the first character of value is "+", delete the character
-			// and let mode be "relative-plus"."
-			if (value[0] == "+") {
-				value = value.slice(1);
-				mode = "relative-plus";
-			// "Otherwise, if the first character of value is "-", delete the
-			// character and let mode be "relative-minus"."
-			} else if (value[0] == "-") {
-				value = value.slice(1);
-				mode = "relative-minus";
-			// "Otherwise, let mode be "absolute"."
-			} else {
-				mode = "absolute";
-			}
-
-			// "Apply the rules for parsing non-negative integers to value, and
-			// let number be the result."
-			//
-			// Another cheap hack.
-			var num = parseInt(value);
-
-			// "If mode is "relative-plus", add three to number."
-			if (mode == "relative-plus") {
-				num += 3;
-			}
-
-			// "If mode is "relative-minus", negate number, then add three to
-			// it."
-			if (mode == "relative-minus") {
-				num = 3 - num;
-			}
-
-			// "If number is less than one, let number equal 1."
-			if (num < 1) {
-				num = 1;
-			}
-
-			// "If number is greater than seven, let number equal 7."
-			if (num > 7) {
-				num = 7;
-			}
-
-			// "Set value to the string here corresponding to number:" [table
-			// omitted]
-			value = {
-				1: "xx-small",
-				2: "small",
-				3: "medium",
-				4: "large",
-				5: "x-large",
-				6: "xx-large",
-				7: "xxx-large"
-			}[num];
-		}
+		value = normalizeFontSize(value);
 
 		// "If value is not one of the strings "xx-small", "x-small", "small",
 		// "medium", "large", "x-large", "xx-large", "xxx-large", and is not a
@@ -3201,42 +3222,47 @@ commands.fontsize = {
 		}
 		var pixelSize = parseInt(getEffectiveCommandValue(node, "fontsize"));
 
-		// "Let returned size be 1."
-		var returnedSize = 1;
-
-		// "While returned size is less than 7:"
-		while (returnedSize < 7) {
-			// "Let lower bound be the resolved value of "font-size" in pixels
-			// of a font element whose size attribute is set to returned size."
-			var font = document.createElement("font");
-			font.size = returnedSize;
-			document.body.appendChild(font);
-			var lowerBound = parseInt(getComputedStyle(font).fontSize);
-
-			// "Let upper bound be the resolved value of "font-size" in pixels
-			// of a font element whose size attribute is set to one plus
-			// returned size."
-			font.size = 1 + returnedSize;
-			var upperBound = parseInt(getComputedStyle(font).fontSize);
-			document.body.removeChild(font);
-
-			// "Let average be the average of upper bound and lower bound."
-			var average = (upperBound + lowerBound)/2;
-
-			// "If pixel size is less than average, return the one-element
-			// string consisting of the digit returned size."
-			if (pixelSize < average) {
-				return String(returnedSize);
-			}
-
-			// "Add one to returned size."
-			returnedSize++;
-		}
-
-		// "Return "7"."
-		return "7";
+		// "Return the legacy font size for pixel size."
+		return getLegacyFontSize(pixelSize);
 	}, relevantCssProperty: "fontSize"
 };
+
+function getLegacyFontSize(pixelSize) {
+	// "Let returned size be 1."
+	var returnedSize = 1;
+
+	// "While returned size is less than 7:"
+	while (returnedSize < 7) {
+		// "Let lower bound be the resolved value of "font-size" in pixels
+		// of a font element whose size attribute is set to returned size."
+		var font = document.createElement("font");
+		font.size = returnedSize;
+		document.body.appendChild(font);
+		var lowerBound = parseInt(getComputedStyle(font).fontSize);
+
+		// "Let upper bound be the resolved value of "font-size" in pixels
+		// of a font element whose size attribute is set to one plus
+		// returned size."
+		font.size = 1 + returnedSize;
+		var upperBound = parseInt(getComputedStyle(font).fontSize);
+		document.body.removeChild(font);
+
+		// "Let average be the average of upper bound and lower bound."
+		var average = (upperBound + lowerBound)/2;
+
+		// "If pixel size is less than average, return the one-element
+		// string consisting of the digit returned size."
+		if (pixelSize < average) {
+			return String(returnedSize);
+		}
+
+		// "Add one to returned size."
+		returnedSize++;
+	}
+
+	// "Return "7"."
+	return "7";
+}
 
 //@}
 ///// The foreColor command /////

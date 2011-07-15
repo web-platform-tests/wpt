@@ -1,13 +1,11 @@
 <!doctype html>
-<html lang='en-us'>
+<html>
 <head>
-<title>HTML5 Conformance Test Results</title>
+<title>HTML5 Confomance Test Results</title>
 <script>
 var g_arrTestResultXml = new Array();
 var g_arrBrowsers = new Array();
 var g_iProcessedCounter = 0;
-var g_bUpdateFeatureNames = false;
-var g_arrApprovedTests;
 
 notWhitespace = /\S/;
 
@@ -38,157 +36,145 @@ function addBrowserResult(browser)
     // create a new Cell in the first row...
     oCell = oTable.rows[0].insertCell(-1);
     oCell.innerHTML = browser.name;
+    
     bFound = false;
+    
     // for each result - if a feature exists add result, else add new row and add result
     for (var k=0;k<browser.results.length;k++)
     {
         for (var j=1;j<oTable.rows.length;j++)
         {
-        
-             if ( browser.results[k].name.toLowerCase() == oTable.rows[j].cells[0].innerHTML)
+             if ( browser.results[k].name == oTable.rows[j].cells[0].innerHTML)
              {
                  oCell = oTable.rows[j].insertCell(-1);
-
                  oCell.innerHTML = Math.round(((browser.results[k].pass/(browser.results[k].fail+browser.results[k].pass))*100)*100)/100 + "%";
                  bFound = true;
+                 break;
              }
-
         }
-        if (!bFound)
+        if(!bFound)
         {
-            oCell = oTable.rows[j].insertCell(-1);
-            oCell.innerHTML = 'No Results';
-            bFound = false;
-        }
-    }
-}
-
-function addBrowserDetails(browser)
-{
-    oTable = document.getElementById('oTestDetails');
-
-    // create a new Cell in the first row...
-    var oCell = oTable.rows[0].insertCell(-1);
-    oCell.innerHTML = browser.name + '<br>(' + browser.dateran + ')';
-
-    for (var j=1;j<oTable.rows.length;j++)
-    {
-        oCell = oTable.rows[j].insertCell(-1);
-        oCell.innerHTML = 'No Result';
-        
-        for (var k=0;k<browser.details.length;k++)
-        {
-            var name = oTable.rows[j].cells[0].innerHTML.split('\n');
+            oRow = oTable.insertRow(-1);
+            var oCell;
             
-            if ( browser.details[k].name == (name[0] + ")") || browser.details[k].name == oTable.rows[j].cells[0].innerHTML)
+            for( var i=0;i<oTable.rows[0].cells.length;i++)
             {
-                oCell.innerHTML = "<a href='"+ browser.details[k].uri + "'>" + browser.details[k].result + "</a>";
+                oCell = oRow.insertCell(-1);
+                if (i!=0)
+                {
+                    oCell.innerHTML = 'No Results';
+                }
+                else
+                {
+                    oCell.innerHTML = browser.results[k].name;
+                }
             }
+            oCell.innerHTML = Math.round(((browser.results[k].pass/(browser.results[k].fail+browser.results[k].pass))*100)*100)/100 + "%";
         }
+        
+        bFound = false;
     }
-
+    
 }
 
 function processXmlFile()
 {  
-    var xmlhttp = new XMLHttpRequest();
+    xmlhttp = new XMLHttpRequest();
 
-    xmlhttp.onreadystatechange = function () {
-        if (xmlhttp.readyState == 4) {
-            try {
+    xmlhttp.onreadystatechange  = function()
+    { 
+        if(xmlhttp.readyState  == 4)
+        {
+           try
+           {            
                 xmlDom = xmlhttp.responseXML;
-
+                
                 cleanWhitespace(xmlDom);
-
+                
                 browser = new Object();
-                browser.ua = xmlDom.getElementsByTagName('ua')[0].firstChild.nodeValue;
-                browser.name = xmlDom.getElementsByTagName('browsername')[0].firstChild.nodeValue;
+                browser.ua      = xmlDom.getElementsByTagName('ua')[0].firstChild.nodeValue;
+                browser.name    = xmlDom.getElementsByTagName('browsername')[0].firstChild.nodeValue;
                 browser.dateran = xmlDom.getElementsByTagName('dateran')[0].firstChild.nodeValue;
                 browser.results = new Array();
-                browser.details = new Array();
-
+                
                 oTests = xmlDom.getElementsByTagName('test');
                 var oLastObject;
-
-                for (var i = 0; i < oTests.length; i++) {
+                
+                for (var i=0;i<oTests.length;i++)
+                {
                     // split and find feature name - e.g. 'canvas' in this uri
                     //"http://test.w3.org/html/tests/approved/canvas/canvastest.htm"
                     arrURI = xmlDom.getElementsByTagName('test')[i].firstChild.firstChild.nodeValue.split(/\//);
-                    // the name is 2nd to the last
-                    name = arrURI[arrURI.length - 2];
-
+                    name = arrURI[6];
+                    
                     result = xmlDom.getElementsByTagName('test')[i].firstChild.nextSibling.firstChild.nodeValue;
-
-                    details = new Object();
-                    details.uri = xmlDom.getElementsByTagName('test')[i].firstChild.firstChild.nodeValue;
-
-                    details.name = name + "(" + arrURI[arrURI.length - 1] + ")";
-                    details.result = result;
-
-                    browser.details.push(details);
-
+                    
                     // if (oLastObject && oLastObject.name == feature)
                     // set pass/fail data 
                     // else find it in the array, if not found the add it to the array
                     // 
-                    if (oLastObject && name == oLastObject.name) {
-                        if (result == "Pass") {
+                    if ( oLastObject && name == oLastObject.name)
+                    {
+                        if (result == "Pass")
+                        {
                             oLastObject.pass++;
                         }
-                        else if (result == "Fail") {
+                        else if (result == "Fail")
+                        {
                             oLastObject.fail++;
                         }
                     }
-                    else {
-                        bFound = false;
-
-                        for (var j = 0; j < browser.results.length; j++) {
-                            if (browser.results[j].name == name) {
-                                if (result == "Pass") {
+                    else
+                    {
+                         bFound = false;
+                         
+                         for (var j=0;j<browser.results.length;j++)
+                         {
+                            if(browser.results[j].name == name)
+                            {
+                                if (result == "Pass")
+                                {
                                     browser.results[j].pass++;
                                 }
-                                else if (result == "Fail") {
+                                else if (result == "Fail")
+                                {
                                     browser.results[j].fail++;
                                 }
                                 oLastObject = browser.results[j];
                                 bFound = true;
                                 break;
                             }
-                        }
-
-                        if (!bFound) {
+                         }
+                         
+                         if(!bFound)
+                         {
                             newResult = new Object();
                             newResult.name = name;
                             newResult.pass = 0;
                             newResult.fail = 0;
-
-                            if (result == "Pass") {
+                            
+                            if (result == "Pass")
+                            {
                                 newResult.pass++;
                             }
-                            else if (result == "Fail") {
+                            else if (result == "Fail")
+                            {
                                 newResult.fail++;
                             }
                             browser.results.push(newResult);
-                            oLastObject = browser.results[browser.results.length - 1];
-                        }
+                            oLastObject = browser.results[browser.results.length-1];
+                         }                         
 
                     }
                 }
-
+                
                 g_arrBrowsers.push(browser);
-
-                addBrowserResult(browser);
-                addBrowserDetails(browser);
-
-            } catch (e) { }
+                
+               addBrowserResult(browser);
+            }catch(e){}
 
             // Need to process next xml file
             processXmlFile();
-
-            if ( g_iProcessedCounter == g_arrTestResultXml.length)
-            {
-                UpdateFeatureNames();
-            }
         }
     }; 
 
@@ -199,51 +185,10 @@ function processXmlFile()
     }
 }
 
-function UpdateFeatureNames()
-{
-    if (g_bUpdateFeatureNames == true)
-    {
-        cells = document.getElementById('oTestResults').rows.length;
-        for (var i = 1; i < cells; i++) {
-            var name = document.getElementById('oTestResults').rows[i].cells[0].innerHTML;
-            var newname;
-
-            switch (name) {
-                case "attributes":
-                    newname = "Attributes";
-                    break;
-                case "audio":
-                    newname = "Audio";
-                    break;
-                case "canvas":
-                    newname = "Canvas";
-                    break;
-                case "getelementsbyclassname":
-                    newname = "getElementsByClassName";
-                    break;
-                case "foreigncontent":
-                    newname = "Foreign Content";
-                    break;
-                case "video":
-                    newname = "Video";
-                    break;
-                case "xhtml5":
-                    newname = "XHTML";
-                    break;
-                default:
-                    newname = name;
-            }
-            document.getElementById('oTestResults').rows[i].cells[0].innerHTML = newname;
-        }
-    }
-    g_bUpdateFeatureNames = true;
-}
-
 function processTestResults()
 {
     items = document.getElementsByTagName('iframe')[0].contentDocument.getElementsByTagName('a');
-    var temp = "";
-    
+
     for (var i = 0;i<items.length;i++)
     {
         if(items[i].href.match(/.xml/))
@@ -269,90 +214,19 @@ function processTestResults()
     oCell.setAttribute("bgColor","#1c6ca7");
     oCell.setAttribute("style","color: #FFFFFF;");
 
-    // add all the features 
-    for (var i=0;i<g_arrApprovedTests.length;i++)
-    {
-        arrURI = g_arrApprovedTests[i].split(/\//);
-        
-        if(arrURI.length == 8 && arrURI[arrURI.length-2] != temp)
-        {
-            oRow = oTable.insertRow(-1);
-            oCell = oRow.insertCell(-1);
-            oCell.innerHTML = arrURI[arrURI.length-2].toLowerCase();
-            
-            temp = arrURI[arrURI.length-2];
-        }
-    }
-    
-    oTable = document.getElementById('oTestDetails');
-    oTable.setAttribute("bgColor","#eeeeee"); 
-    oTable.setAttribute("style", "font-family: Helvetica Neue,Helvetica,Arial,Verdana,Geneva,sans-serif; color: #47587c; font-size: small;");
-    
-    oTable.setAttribute("cellpadding", "5");
-    oTable.setAttribute("border", "1");
-
-    // insert a row and a cell for Test
-    oRow = oTable.insertRow(-1);
-    oCell = oRow.insertCell(-1);
-    
-    oCell.innerHTML = "Tests";
-    oCell.setAttribute("bgColor","#1c6ca7");
-    oCell.setAttribute("style","color: #FFFFFF;");
-
-    // add all the Tests
-    for (var i=0;i<g_arrApprovedTests.length;i++)
-    {
-        arrURI = g_arrApprovedTests[i].split(/\//);
-        
-        oRow = oTable.insertRow(-1);
-        oCell = oRow.insertCell(-1);
-        
-        oCell.innerHTML = arrURI[arrURI.length-2] + "(" + arrURI[arrURI.length-1] + ")";
-
-    }
-    
     processXmlFile();
 }
 
 function getTestResultXmlFiles()
 {
-    // points to location of the approvedtest.txt file
-    var uri = "http://w3c-test.org/html/tests/harness/approvedtests.txt";
-    //var uri = "http://localhost/approvedtests.txt";
-   
-    var xmlhttp = new XMLHttpRequest();
-
-    xmlhttp.onreadystatechange  = function()
-    { 
-        if(xmlhttp.readyState  == 4)
-        {
-            var fileData = xmlhttp.responseText;
-            g_arrApprovedTests = fileData.split('\n');
-
-            document.getElementById('iTotalNumber').innerHTML = g_arrApprovedTests.length;
-
-            oIframe = document.createElement('iframe');
+    oIframe = document.createElement('iframe');
+    oIframe.setAttribute('style', 'display: none');
     
-            document.body.appendChild(oIframe);
+    document.body.appendChild(oIframe);
+    oIframe.onload = processTestResults;
 
-            if(window.addEventListener)
-            {
-                oIframe.onload = processTestResults;
-            }
-            else
-            {
-                oIframe.attachEvent('onload', processTestResults);
-            }
-
-            // points to location of xml files
-            oIframe.src = 'http://w3c-test.org/html/tests/reporting/';
-            // for testing
-            //oIframe.src = 'http://localhost/reporting/';
-        }
-    }; 
-
-    xmlhttp.open("GET", uri, true);
-    xmlhttp.send(null);
+    // points to location of xml files
+    oIframe.src = 'http://localhost/results/';
 }
 </script>
 <style>
@@ -385,65 +259,16 @@ H1
 	border-bottom-style: none;
 	color: #000;
 }
-IFRAME
-{
-        display: none;
-}
 </style>
 </head>
 <body onload='getTestResultXmlFiles()' >
 <img alt="W3C" src="http://www.w3.org/Icons/w3c_home" />
-<h1>HTML5 Test Suite Conformance Results</h1>
-<blockquote>
-  <p>&#8220;Interoperability is the ability of two or more systems or
-  components to exchange information and to use the information that
-  has been exchanged.&#8221;</p>
-  <p style='text-align: right;'>-IEEE</p>
-</blockquote>
-<p>Interoperability is important to web designers. Good test suites
-drive interoperability. They're a key part of making sure web
-standards are implemented correctly and consistently. More tests
-encourage more interoperability.</p>
-<p>
-  The HTML5 Test Suite Results aims to help implementers
-   write applications that support HTML5. In no way are these
-   conformance tests to be construed as providing certification or
-   branding of HTML5 implementations. The only claim that could be
-   made is that a particular implementation is conformant to a
-   particular version of the HTML5 Test Suite.
-</p>
-<div style="border: 4px solid red; padding: 1ex; width: 80%; margin: auto;border-radius: 30px;">
- <p>
-The HTML5 Test suite is still being developed.  The number of tests
-   and the results on these tests will change.
-</p>
-<p>
-The results in this document may be updated, replaced or obsoleted by
-others documents at any time.
-</p>
-<p>
-It is inappropriate to cite those results as other than work in
-progress and unstable.
-</p>
-</div>
-<p>
-Below is the results obtained when using the approved HTML5 tests that have been
-agreed upon by the HTML WG as valid per the HTML5 specification.  The
-tests can be run and inspected individually using our test runner,
-see the <a href='http://test.w3.org/html/tests/harness/harness.htm'>test harness</a>.
-If you have feedback about the tests please send email
-to <a href='mailto:public-html-testsuite@w3.org'>public-html-testsuite@w3.org</a>
-list.</p>
+<h1>Official HTML5 Test Suite Conformance Results</h1>
+<p>Interoperability is the ability of two or more systems or components to exchange information and to use the information that has been exchanged. IEEE</p>
+<p>Interoperability is important to web designers. Good test suites drive interoperability. They're a key part of making sure web standards are implemented correctly and consistently. More tests encourage more interoperability.</p>
+<p>Below is a summary of the offical approved HTML5 tests that have been agreed upon by the HTML WG as vaild per the HTML5 specification.  The tests can be ran and inspected individually using our test runner, see <a href='http://test.w3.org/html/tests/harness/harness.htm'>http://test.w3.org/html/tests/harness/harness.htm</a>.  If you have feedback about the tests please send email to <a href='mailto:public-html-testsuite@w3.org'>public-html-testsuite@w3.org</a> list.</p> 
 <center>
-<p>
-The test suite contains <span id='iTotalNumber'>0</span> tests. That's not enough and we need your help.
-</p>
-
 <table id='oTestResults'>
-</table>
-
-<p>This is the detailed results across the userAgents</p>
-<table id='oTestDetails' >
 </table>
 </center>
 </body>

@@ -11,6 +11,7 @@ March 5, 2009.
   <title>CSS and Quotes: Counting Right (Slightly Simpler Version)</title>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#quotes"/>
+  <link rel="reference" href="quotes-001-ref.xml"/>
   <meta name="flags" content="" />
   <style type="text/css">
   <![CDATA[

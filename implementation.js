@@ -216,29 +216,6 @@ function isHtmlNamespace(ns) {
 		|| ns === htmlNamespace;
 }
 
-// For computing indeterminate flags of the form "True if among editable Text
-// nodes that are effectively contained in the active range, there is at least
-// one with (property X) and at least one with (property not-X).  Otherwise
-// false."
-function indetermHelper(callback) {
-	var nodes = getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
-		return isEditable(node)
-			&& node.nodeType == Node.TEXT_NODE;
-	});
-	return nodes.some(callback) && !nodes.every(callback);
-}
-
-// For computing states of the form "True if every editable Text node that is
-// effectively contained in the active range (has property X), and there is at
-// least one such Text node.  Otherwise false."
-function stateHelper(callback) {
-	var nodes = getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
-		return isEditable(node)
-			&& node.nodeType == Node.TEXT_NODE;
-	});
-	return nodes.every(callback) && nodes.length >= 1;
-}
-
 // "the directionality" from HTML.  I don't bother caring about non-HTML
 // elements.
 //
@@ -1990,6 +1967,10 @@ function getEffectiveCommandValue(node, command) {
 		return null;
 	}
 
+	if (!("relevantCssProperty" in commands[command])) {
+		throw "Bug: no relevantCssProperty for " + command + " in getEffectiveCommandValue";
+	}
+
 	// "Return the resolved value for node of the relevant CSS property for
 	// command."
 	return getComputedStyle(node)[commands[command].relevantCssProperty];
@@ -2961,39 +2942,7 @@ commands.backcolor = {
 
 		// "Set the selection's value to value."
 		setSelectionValue("backcolor", value);
-	}, indeterm: function() {
-		// "True if among editable Text nodes that are effectively contained in
-		// the active range, there are two that have distinct effective command
-		// values.  Otherwise false."
-		return getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
-			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
-		}).map(function(node) {
-			return getEffectiveCommandValue(node, "backcolor");
-		}).filter(function(value, i, arr) {
-			return arr.slice(0, i).indexOf(value) == -1;
-		}).length >= 2;
-	}, value: function() {
-		// "The effective command value of the first editable Text node that is
-		// effectively contained in the active range, or if there is no such
-		// node, the effective command value of the active range's start node."
-		//
-		// Opera uses a different format, so let's be nice and support that for
-		// the time being (since all this resolved value stuff is underdefined
-		// anyway).
-		var node = getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
-			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
-		})[0];
-		if (node === undefined) {
-			node = getActiveRange().startContainer;
-		}
-		var value = getEffectiveCommandValue(node, "backcolor");
-		if (/^#[0-9a-f]{6}$/.test(value)) {
-			value = "rgb(" + parseInt(value.slice(1, 3), 16)
-				+ "," + parseInt(value.slice(3, 5), 16)
-				+ "," + parseInt(value.slice(5), 16) + ")";
-		}
-		return value;
-	}, relevantCssProperty: "backgroundColor"
+	}, standardInlineValueCommand: true, relevantCssProperty: "backgroundColor"
 };
 
 //@}
@@ -3008,28 +2957,8 @@ commands.bold = {
 		} else {
 			setSelectionValue("bold", "bold");
 		}
-	}, indeterm: function() { return indetermHelper(function(node) {
-		// "True if among editable Text nodes that are effectively contained in
-		// the active range, there is at least one with effective command value
-		// less than 600 and at least one with effective command value greater
-		// than or equal to 600."
-		var fontWeight = getEffectiveCommandValue(node, "bold");
-		return fontWeight === "bold"
-			|| fontWeight === "600"
-			|| fontWeight === "700"
-			|| fontWeight === "800"
-			|| fontWeight === "900";
-	})}, state: function() { return stateHelper(function(node) {
-		// "True if every editable Text node that is effectively contained in
-		// the active range has effective command value at least 600, and there
-		// is at least one such text node. Otherwise false."
-		var fontWeight = getEffectiveCommandValue(node, "bold");
-		return fontWeight === "bold"
-			|| fontWeight === "600"
-			|| fontWeight === "700"
-			|| fontWeight === "800"
-			|| fontWeight === "900";
-	})}, relevantCssProperty: "fontWeight"
+	}, inlineCommandActivatedValues: ["bold", "600", "700", "800", "900"],
+	relevantCssProperty: "fontWeight"
 };
 
 //@}
@@ -3060,29 +2989,7 @@ commands.createlink = {
 
 		// "Set the selection's value to value."
 		setSelectionValue("createlink", value);
-	}, indeterm: function() {
-		// "True if among editable Text nodes that are effectively contained in
-		// the active range, there are two that have distinct effective command
-		// values.  Otherwise false."
-		return getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
-			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
-		}).map(function(node) {
-			return getEffectiveCommandValue(node, "createlink");
-		}).filter(function(value, i, arr) {
-			return arr.slice(0, i).indexOf(value) == -1;
-		}).length >= 2;
-	}, value: function() {
-		// "The effective command value of the first editable Text node that is
-		// effectively contained in the active range, or if there is no such
-		// node, the effective command value of the active range's start node."
-		var node = getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
-			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
-		})[0];
-		if (node === undefined) {
-			node = getActiveRange().startContainer;
-		}
-		return getEffectiveCommandValue(node, "createlink");
-	}
+	}, standardInlineValueCommand: true
 };
 
 //@}
@@ -3092,29 +2999,7 @@ commands.fontname = {
 	action: function(value) {
 		// "Set the selection's value to value."
 		setSelectionValue("fontname", value);
-	}, indeterm: function() {
-		// "True if among editable Text nodes that are effectively contained in
-		// the active range, there are two that have distinct effective command
-		// values.  Otherwise false."
-		return getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
-			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
-		}).map(function(node) {
-			return getEffectiveCommandValue(node, "fontname");
-		}).filter(function(value, i, arr) {
-			return arr.slice(0, i).indexOf(value) == -1;
-		}).length >= 2;
-	}, value: function() {
-		// "The effective command value of the first editable Text node that is
-		// effectively contained in the active range, or if there is no such
-		// node, the effective command value of the active range's start node."
-		var node = getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
-			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
-		})[0];
-		if (node === undefined) {
-			node = getActiveRange().startContainer;
-		}
-		return getEffectiveCommandValue(node, "fontname");
-	}, relevantCssProperty: "fontFamily"
+	}, standardInlineValueCommand: true, relevantCssProperty: "fontFamily"
 };
 
 //@}
@@ -3305,39 +3190,7 @@ commands.forecolor = {
 
 		// "Set the selection's value to value."
 		setSelectionValue("forecolor", value);
-	}, indeterm: function() {
-		// "True if among editable Text nodes that are effectively contained in
-		// the active range, there are two that have distinct effective command
-		// values.  Otherwise false."
-		return getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
-			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
-		}).map(function(node) {
-			return getEffectiveCommandValue(node, "forecolor");
-		}).filter(function(value, i, arr) {
-			return arr.slice(0, i).indexOf(value) == -1;
-		}).length >= 2;
-	}, value: function() {
-		// "The effective command value of the first editable Text node that is
-		// effectively contained in the active range, or if there is no such
-		// node, the effective command value of the active range's start node."
-		//
-		// Opera uses a different format, so let's be nice and support that for
-		// the time being (since all this resolved value stuff is underdefined
-		// anyway).
-		var node = getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
-			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
-		})[0];
-		if (node === undefined) {
-			node = getActiveRange().startContainer;
-		}
-		var value = getEffectiveCommandValue(node, "forecolor");
-		if (/^#[0-9a-f]{6}$/.test(value)) {
-			value = "rgb(" + parseInt(value.slice(1, 3), 16)
-				+ "," + parseInt(value.slice(3, 5), 16)
-				+ "," + parseInt(value.slice(5), 16) + ")";
-		}
-		return value;
-	}, relevantCssProperty: "color"
+	}, standardInlineValueCommand: true, relevantCssProperty: "color"
 };
 
 //@}
@@ -3376,28 +3229,7 @@ commands.hilitecolor = {
 		}).filter(function(value, i, arr) {
 			return arr.slice(0, i).indexOf(value) == -1;
 		}).length >= 2;
-	}, value: function() {
-		// "The effective command value of the first editable Text node that is
-		// effectively contained in the active range, or if there is no such
-		// node, the effective command value of the active range's start node."
-		//
-		// Opera uses a different format, so let's be nice and support that for
-		// the time being (since all this resolved value stuff is underdefined
-		// anyway).
-		var node = getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
-			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
-		})[0];
-		if (node === undefined) {
-			node = getActiveRange().startContainer;
-		}
-		var value = getEffectiveCommandValue(node, "hilitecolor");
-		if (/^#[0-9a-f]{6}$/.test(value)) {
-			value = "rgb(" + parseInt(value.slice(1, 3), 16)
-				+ "," + parseInt(value.slice(3, 5), 16)
-				+ "," + parseInt(value.slice(5), 16) + ")";
-		}
-		return value;
-	}, relevantCssProperty: "backgroundColor"
+	}, standardInlineValueCommand: true, relevantCssProperty: "backgroundColor"
 };
 
 //@}
@@ -3412,21 +3244,8 @@ commands.italic = {
 		} else {
 			setSelectionValue("italic", "italic");
 		}
-	}, indeterm: function() { return indetermHelper(function(node) {
-		// "True if among editable Text nodes that are effectively contained in
-		// the active range, there is at least one with effective command value
-		// either "italic" or "oblique" and at least one with effective command
-		// value "normal". Otherwise false."
-		var value = getEffectiveCommandValue(node, "italic");
-		return value == "italic" || value == "oblique";
-	})}, state: function() { return stateHelper(function(node) {
-		// "True if every editable Text node that is effectively contained in
-		// the active range has effective command value either "italic" or
-		// "oblique", and there is at least one such Text node.  Otherwise
-		// false."
-		var value = getEffectiveCommandValue(node, "italic");
-		return value == "italic" || value == "oblique";
-	})}, relevantCssProperty: "fontStyle"
+	}, inlineCommandActivatedValues: ["italic", "oblique"],
+	relevantCssProperty: "fontStyle"
 };
 
 //@}
@@ -3543,18 +3362,7 @@ commands.strikethrough = {
 		} else {
 			setSelectionValue("strikethrough", "line-through");
 		}
-	}, indeterm: function() { return indetermHelper(function(node) {
-		// "True if among editable Text nodes that are effectively contained in
-		// the active range, there is at least one with effective command value
-		// "line-through" and at least one with effective command value null.
-		// Otherwise false."
-		return getEffectiveCommandValue(node, "strikethrough") == "line-through";
-	})}, state: function() { return stateHelper(function(node) {
-		// "True if every editable Text node that is effectively contained in
-		// the active range has effective command value "line-through", and
-		// there is at least one such Text node. Otherwise false."
-		return getEffectiveCommandValue(node, "strikethrough") == "line-through";
-	})}
+	}, inlineCommandActivatedValues: ["line-through"]
 };
 
 //@}
@@ -3585,12 +3393,8 @@ commands.subscript = {
 		return (nodes.some(function(node) { return getEffectiveCommandValue(node, "subscript") == "sub" })
 			&& nodes.some(function(node) { return getEffectiveCommandValue(node, "subscript") != "sub" }))
 			|| nodes.some(function(node) { return getEffectiveCommandValue(node, "subscript") == "mixed" });
-	}, state: function() { return stateHelper(function(node) {
-		// "True if every editable Text node that is effectively contained in
-		// the active range has effective command value "sub", and there is at
-		// least one such Text node. Otherwise false."
-		return getEffectiveCommandValue(node, "subscript") == "sub";
-	})}, relevantCssProperty: "verticalAlign"
+	}, inlineCommandActivatedValues: ["sub"],
+	relevantCssProperty: "verticalAlign"
 };
 
 //@}
@@ -3623,12 +3427,8 @@ commands.superscript = {
 		return (nodes.some(function(node) { return getEffectiveCommandValue(node, "superscript") == "super" })
 			&& nodes.some(function(node) { return getEffectiveCommandValue(node, "superscript") != "super" }))
 			|| nodes.some(function(node) { return getEffectiveCommandValue(node, "superscript") == "mixed" });
-	}, state: function() { return stateHelper(function(node) {
-		// "True if every editable Text node that is effectively contained in
-		// the active range has effective command value "super", and there is
-		// at least one such Text node. Otherwise false."
-		return getEffectiveCommandValue(node, "superscript") == "super";
-	})}, relevantCssProperty: "verticalAlign"
+	}, inlineCommandActivatedValues: ["super"],
+	relevantCssProperty: "verticalAlign"
 };
 
 //@}
@@ -3643,18 +3443,7 @@ commands.underline = {
 		} else {
 			setSelectionValue("underline", "underline");
 		}
-	}, indeterm: function() { return indetermHelper(function(node) {
-		// "True if among editable Text nodes that are effectively contained in
-		// the active range, there is at least one with effective command value
-		// "underline" and at least one with effective command value null.
-		// Otherwise false."
-		return getEffectiveCommandValue(node, "underline") === "underline";
-	})}, state: function() { return stateHelper(function(node) {
-		// "True if every editable Text node that is effectively contained in
-		// the active range has effective command value "underline", and there
-		// is at least one such Text node. Otherwise false."
-		return getEffectiveCommandValue(node, "underline") === "underline";
-	})}
+	}, inlineCommandActivatedValues: ["underline"]
 };
 
 //@}
@@ -3698,29 +3487,7 @@ commands.unlink = {
 		for (var i = 0; i < hyperlinks.length; i++) {
 			clearValue(hyperlinks[i], "unlink");
 		}
-	}, indeterm: function() {
-		// "True if among editable Text nodes that are effectively contained in
-		// the active range, there are two that have distinct effective command
-		// values.  Otherwise false."
-		return getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
-			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
-		}).map(function(node) {
-			return getEffectiveCommandValue(node, "unlink");
-		}).filter(function(value, i, arr) {
-			return arr.slice(0, i).indexOf(value) == -1;
-		}).length >= 2;
-	}, value: function() {
-		// "The effective command value of the first editable Text node that is
-		// effectively contained in the active range, or if there is no such
-		// node, the effective command value of the active range's start node."
-		var node = getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
-			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
-		})[0];
-		if (node === undefined) {
-			node = getActiveRange().startContainer;
-		}
-		return getEffectiveCommandValue(node, "unlink");
-	}
+	}, standardInlineValueCommand: true
 };
 
 //@}
@@ -7528,16 +7295,94 @@ commands.usecss = {
 		cssStylingFlag = String(value).toLowerCase() == "false";
 	}
 };
-
 //@}
-(function() {
+
+//@{ Some final setup
+Object.keys(commands).forEach(function(command) {
 	// "If a command does not have a relevant CSS property specified, it
 	// defaults to null."
-	for (var command in commands) {
-		if (!("relevantCssProperty" in commands[command])) {
-			commands[command].relevantCssProperty = null;
-		}
+	if (!("relevantCssProperty" in commands[command])) {
+		commands[command].relevantCssProperty = null;
 	}
-})();
+
+	// "If a command has inline command activated values defined but
+	// nothing else defines when it is indeterminate, it is indeterminate
+	// if among editable Text nodes effectively contained in the active
+	// range, there is at least one whose effective command value is one of
+	// the given values and at least one whose effective command value is
+	// not one of the given values."
+	if ("inlineCommandActivatedValues" in commands[command]
+	&& !("indeterminate" in commands[command])) {
+		commands[command].indeterminate = function() {
+			var values = getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
+				return isEditable(node)
+					&& node.nodeType == Node.TEXT_NODE;
+			}).map(function(node) { return getEffectiveCommandValue(node, command) });
+
+			var matchingValues = values.filter(function(value) {
+				return commands[command].inlineCommandActivatedValues.indexOf(value) != -1;
+			});
+
+			return matchingValues.length >= 1
+				&& values.length - matchingValues.length >= 1;
+		};
+	}
+
+	// "If a command has inline command activated values defined, its state
+	// is true if either no editable Text node is effectively contained in
+	// the active range, and the active range's start node's effective
+	// command value is one of the given values; or if there is at least
+	// one editable Text node effectively contained in the active range,
+	// and all of them have an effective command value equal to one of the
+	// given values."
+	if ("inlineCommandActivatedValues" in commands[command]) {
+		commands[command].state = function() {
+			var nodes = getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
+				return isEditable(node)
+					&& node.nodeType == Node.TEXT_NODE;
+			});
+
+			if (nodes.length == 0) {
+				return commands[command].inlineCommandActivatedValues
+					.indexOf(getEffectiveCommandValue(getActiveRange().startContainer, command)) != -1;
+			} else {
+				return nodes.every(function(node) {
+					return commands[command].inlineCommandActivatedValues
+						.indexOf(getEffectiveCommandValue(node, command)) != -1;
+				});
+			}
+		};
+	}
+
+	// "If a command is a standard inline value command, it is
+	// indeterminate if among editable Text nodes that are effectively
+	// contained in the active range, there are two that have distinct
+	// effective command values. Its value is the effective command value
+	// of the first editable Text node that is effectively contained in the
+	// active range, or if there is no such node, the effective command
+	// value of the active range's start node."
+	if ("standardInlineValueCommand" in commands[command]) {
+		commands[command].indeterminate = function() {
+			return getAllEffectivelyContainedNodes(getActiveRange())
+				.filter(function(node) { return isEditable(node) && node.nodeType == Node.TEXT_NODE })
+				.map(function(node) { return getEffectiveCommandValue(node, command) })
+				.length >= 2;
+		};
+
+		commands[command].value = function() {
+			var refNode = getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
+				return isEditable(node)
+					&& node.nodeType == Node.TEXT_NODE;
+			})[0];
+
+			if (typeof refNode == "undefined") {
+				refNode = getActiveRange().startContainer;
+			}
+
+			return getEffectiveCommandValue(refNode, command);
+		};
+	}
+});
+//@}
 
 // vim: foldmarker=@{,@} foldmethod=marker

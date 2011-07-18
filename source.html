@@ -1334,6 +1334,63 @@ which at least one of the following holds:
 <p class=note>Conceptually, a simple modifiable element is a modifiable element
 which specifies a value for at most one command.
 
+<p>If a <span>command</span> has <dfn>inline command activated values</dfn>
+defined but nothing else defines when it is <span>indeterminate</span>, it is
+<span>indeterminate</span> if among <span>editable</span> [[text]] nodes
+<span>effectively contained</span> in the <span>active range</span>, there is
+at least one whose <span>effective command value</span> is one of the given
+values and at least one whose <span>effective command value</span> is not one
+of the given values.
+
+<p>If a <span>command</span> has <span>inline command activated values</span>
+defined, its <span>state</span> is true if either no <span>editable</span>
+[[text]] node is <span>effectively contained</span> in the <span>active
+range</span>, and the <span>active range</span>'s [[startnode]]'s
+<span>effective command value</span> is one of the given values; or if there is
+at least one <span>editable</span> [[text]] node <span>effectively
+contained</span> in the <span>active range</span>, and all of them have an
+<span>effective command value</span> equal to one of the given values.
+<!--
+For bold and similar commands, IE 9 RC seems to consider the state true or
+false depending on the first element.  All other browsers follow the same
+general idea as the spec, considering a range bold only if all text in it is
+bold, and this seems to match at least OpenOffice.org's bold feature.  Opera
+11.11 seemingly doesn't take CSS into account, and only looks at whether
+something descends from a <b>.  I couldn't properly test IE9 because it threw
+exceptions (Error: Unspecified error.) on most of the tests I ran.  But what I
+have here seems to match Firefox 6.0a2 in every case, and Chrome 14 dev in all
+cases with a few exceptions.
+-->
+
+<p>If a command is a <dfn>standard inline value command</dfn>, it is
+<span>indeterminate</span> if among <span>editable</span> [[text]] nodes that
+are <span>effectively contained</span> in the <span>active range</span>, there
+are two that have distinct <span title="effective command value">effective
+command values</span>.  Its <span>value</span> is the <span>effective command
+value</span> of the first <span>editable</span> [[text]] node that is
+<span>effectively contained</span> in the <span>active range</span>, or if
+there is no such node, the <span>effective command value</span> of the
+<span>active range</span>'s [[startnode]].
+
+<p class=note>The effective command value of the active range's start node
+cannot be null, since the boundary point node of a selection must always be
+either an element or a text node that's the child of an element.
+<!--
+Testing with hiliteColor: Opera 11.11 seems to always return the effective
+command value of the active range's start node.  Chrome 14 dev returns boolean
+false consistently, bizarrely enough.  Firefox 6.0a2 seems to follow the same
+idea as the spec, but it likes to return "transparent", including sometimes
+when the answer really clearly should not be "transparent".  IE9 throws
+exceptions most of the time for backColor, so I can't say for sure, but in the
+few cases where it doesn't throw it returns a random-looking number, so I'll
+assume it's crazy like for foreColor.
+
+I decided on something that would guarantee the following invariant: whenever
+you execute a command with a value provided (assuming value is relevant),
+queryCommandValue() will always return something equivalent to what you set.
+-->
+
+
 <!-- @} -->
 <h3>Assorted inline formatting command algorithms</h3>
 <!-- @{ -->
@@ -2367,20 +2424,7 @@ identically.
   <li><span>Set the selection's value</span> to <var>value</var>.
 </ol>
 
-<p><span>Indeterminate</span>: True if among <span>editable</span> [[text]]
-nodes that are <span>effectively contained</span> in the <span>active
-range</span>, there are two that have distinct <span title="effective command
-value">effective command values</span>.  Otherwise false.
-
-<p><span>Value</span>: The <span>effective command value</span> of the first
-<span>editable</span> [[text]] node that is <span>effectively contained</span>
-in the <span>active range</span>, or if there is no such node, the
-<span>effective command value</span> of the <span>active range</span>'s
-[[startnode]].
-
-<p class=note>The effective command value of the active range's start node
-cannot be null, since the boundary point node of a selection must always be
-either an element or a text node that's the child of an element.
+<p><span>Standard inline value command</span>
 
 <p><span>Relevant CSS property</span>: "background-color"
 
@@ -2398,11 +2442,8 @@ title=queryCommandState()>queryCommandState("bold")</code> returns true,
 <span>set the selection's value</span> to "normal".  Otherwise <span>set the
 selection's value</span> to "bold".
 
-<p><span>Indeterminate</span>: True if among <span>editable</span> [[text]]
-nodes that are <span>effectively contained</span> in the <span>active
-range</span>, there is at least one with <span>effective command value</span>
-less than 600 and at least one with <span>effective command value</span>
-greater than or equal to 600.  Otherwise false.
+<p><span>Inline command activated values</span>: "bold", "600", "700", "800",
+or "900"
 <!--
 The cutoff of 600 (both here and for state) matches Chrome 14 dev.  The cutoff
 used by IE9 and Firefox 6.0a2 seems to be 500, and the distinction isn't
@@ -2418,22 +2459,6 @@ IE/Firefox, it would look wrong on all my browsers for font-weight: 500.
 700 actually makes more sense: then you'd view 100-300 as light, 400-600 as
 medium, 700-900 as bold.  But that's not how it seems to work in browsers, so
 I'll go with 600 as the cutoff.
--->
-
-<p><span>State</span>: True if every <span>editable</span> [[text]] node that
-is <span>effectively contained</span> in the <span>active range</span> has
-<span>effective command value</span> at least 600, and there is at least one
-such [[text]] node.  Otherwise false.
-<!--
-For bold and similar commands, IE 9 RC seems to consider the state true or
-false depending on the first element.  All other browsers follow the same
-general idea as the spec, considering a range bold only if all text in it is
-bold, and this seems to match at least OpenOffice.org's bold feature.  Opera
-11.11 seemingly doesn't take CSS into account, and only looks at whether
-something descends from a <b>.  I couldn't properly test IE9 because it threw
-exceptions (Error: Unspecified error.) on most of the tests I ran.  But what I
-have here seems to match Firefox 6.0a2 in every case, and Chrome 14 dev in all
-cases with a few exceptions.
 -->
 
 <p><span>Relevant CSS property</span>: "font-weight"
@@ -2496,20 +2521,7 @@ don't either. -->
 <!-- IE10PP2, Firefox 7.0a2, Chrome 14 dev, and Opera 11.50 all do not support
 indeterminate, state, or value for createLink or unlink.  I define
 indeterminate and value anyway because they make sense. -->
-<p><span>Indeterminate</span>: True if among <span>editable</span> [[text]]
-nodes that are <span>effectively contained</span> in the <span>active
-range</span>, there are two that have distinct <span title="effective command
-value">effective command values</span>.  Otherwise false.
-
-<p><span>Value</span>: The <span>effective command value</span> of the first
-<span>editable</span> [[text]] node that is <span>effectively contained</span>
-in the <span>active range</span>, or if there is no such node, the
-<span>effective command value</span> of the <span>active range</span>'s
-[[startnode]].
-
-<p class=note>The effective command value of the active range's start node
-cannot be null, since the boundary point node of a selection must always be
-either an element or a text node that's the child of an element.
+<p><span>Standard inline value command</span>
 
 <!-- @} -->
 <h3><dfn>The <code title>fontName</code> command</dfn></h3>
@@ -2537,23 +2549,9 @@ likely that the font list will be fixed by the author (how many users will
 understand CSS font-family syntax?), so I don't think such usability concerns
 apply. -->
 
-<p><span>Indeterminate</span>: True if among <span>editable</span> [[text]]
-nodes that are <span>effectively contained</span> in the <span>active
-range</span>, there are two that have distinct <span title="effective command
-value">effective command values</span>.  Otherwise false.
-<!-- This follows Firefox 6.0a2.  Chrome 14 dev always returns false. -->
-
-<p><span>Value</span>: The <span>effective command value</span> of the first
-<span>editable</span> [[text]] node that is <span>effectively contained</span>
-in the <span>active range</span>, or if there is no such node, the
-<span>effective command value</span> of the <span>active range</span>'s
-[[startnode]].
-
-<p class=note>The effective command value of the active range's start node
-cannot be null, since the boundary point node of a selection must always be
-either an element or a text node that's the child of an element.
+<p><span>Standard inline value command</span>
 <!--
-Complicated.
+The value is complicated.
 
 IE 9 RC: Always the empty string.  Not very useful.
 Firefox 4b11: Confusing.  Sometimes it returns generic family names, like
@@ -2569,8 +2567,6 @@ Opera 11: Returns the literal value of font-family, except if it's inherited
 I'm just going to punt on this and say it should be the resolved value of
 font-family.  I'll leave CSSOM to decide what that means if there are no
 applicable style rules.
-
-For deciding which node should be checked, see comment for hiliteColor.
 -->
 
 <p><span>Relevant CSS property</span>: "font-family"
@@ -2686,7 +2682,12 @@ respecifying non-interoperable behavior anyway.
 nodes that are <span>effectively contained</span> in the <span>active
 range</span>, there are two that have distinct <span title="effective command
 value">effective command values</span>.  Otherwise false.
-<!-- This follows Firefox 6.0a2.  Chrome 14 dev always returns false. -->
+<!-- This follows Firefox 6.0a2.  Chrome 14 dev always returns false.  Note
+that indeterminacy here keys off the effective command value, while the value
+is based only on an approximation (a number from one to seven).  Thus it's
+possible for every subrange of the selection to have the same value, but for
+the selection to still be indeterminate.  Setting the fontSize to the value
+will make it determinate without changing anything's value. -->
 
 <p><span>Value</span>:
 <!--
@@ -2718,11 +2719,8 @@ browsers behave differently.  I see no reason to behave differently.
   node, the <span>effective command value</span> of the <span>active
   range</span>'s [[startnode]], in either case interpreted as a number of
   pixels.
-  <!-- See comment for hiliteColor on how I decided on this choice of node. -->
-
-  <p class=note>The effective command value of the active range's start node
-  cannot be null, since the boundary point node of a selection must always be
-  either an element or a text node that's the child of an element.
+  <!-- See comment for standard inline value commands on how I decided on this
+  choice of node. -->
 
   <li>Return the <span>legacy font size for</span> <var>pixel size</var>.
 </ol>
@@ -2833,21 +2831,7 @@ browsers, but it's unlikely to hurt and it makes sense.
 applied, false otherwise, which seems fairly useless; authors want to use value
 here, not state.  So I'll match other browsers and not define any state. -->
 
-<p><span>Indeterminate</span>: True if among <span>editable</span> [[text]]
-nodes that are <span>effectively contained</span> in the <span>active
-range</span>, there are two that have distinct <span title="effective command
-value">effective command values</span>.  Otherwise false.
-<!-- This follows Firefox 6.0a2.  Chrome 14 dev always returns false. -->
-
-<p><span>Value</span>: The <span>effective command value</span> of the first
-<span>editable</span> [[text]] node that is <span>effectively contained</span>
-in the <span>active range</span>, or if there is no such node, the
-<span>effective command value</span> of the <span>active range</span>'s
-[[startnode]].
-
-<p class=note>The effective command value of the active range's start node
-cannot be null, since the boundary point node of a selection must always be
-either an element or a text node that's the child of an element.
+<p><span>Standard inline value command</span>
 <!--
 The spec essentially matches Firefox 6.0a2 and Chrome 14 dev, as far as how to
 decide what color the node has.  IE9 seems to always return the number 0 for
@@ -2855,9 +2839,6 @@ some bizarre reason.  There are some cases where Firefox returns the empty
 string for some reason, and it seems to select the active node a little
 differently.  Opera uses #xxxxxx format for getComputedStyle() but rgb() here,
 and also drops the transparent part of the color if there is any.
-
-For why I chose this node to key the color off of, see the comment for
-hiliteColor.
 -->
 
 <p><span>Relevant CSS property</span>: "color"
@@ -2899,36 +2880,9 @@ identically.
   <li><span>Set the selection's value</span> to <var>value</var>.
 </ol>
 
-<p><span>Indeterminate</span>: True if among <span>editable</span> [[text]]
-nodes that are <span>effectively contained</span> in the <span>active
-range</span>, there are two that have distinct <span title="effective command
-value">effective command values</span>.  Otherwise false.
-<!-- This follows no one.  Firefox 6.0a2 and Chrome 14 dev both always return
-false.  However, it makes sense. -->
-
-<p><span>Value</span>: The <span>effective command value</span> of the first
-<span>editable</span> [[text]] node that is <span>effectively contained</span>
-in the <span>active range</span>, or if there is no such node, the
-<span>effective command value</span> of the <span>active range</span>'s
-[[startnode]].
-
-<p class=note>The effective command value of the active range's start node
-cannot be null, since the boundary point node of a selection must always be
-either an element or a text node that's the child of an element.
-<!--
-Opera 11.11 seems to always return the effective command value of the active
-range's start node.  Chrome 14 dev returns boolean false consistently,
-bizarrely enough.  Firefox 6.0a2 seems to follow the same idea as the spec, but
-it likes to return "transparent", including sometimes when the answer really
-clearly should not be "transparent".  IE9 throws exceptions most of the time
-for backColor, so I can't say for sure, but in the few cases where it doesn't
-throw it returns a random-looking number, so I'll assume it's crazy like for
-foreColor.
-
-I decided on something that would guarantee the following invariant: whenever
-you execute a command with a value provided (assuming value is relevant),
-queryCommandValue() will always return something equivalent to what you set.
--->
+<p><span>Standard inline value command</span>
+<!-- For indeterminacy, this follows no one.  Firefox 6.0a2 and Chrome 14 dev
+both always return false.  However, it makes sense. -->
 
 <p><span>Relevant CSS property</span>: "background-color"
 
@@ -2940,16 +2894,7 @@ title=queryCommandState()>queryCommandState("italic")</code> returns true,
 <span>set the selection's value</span> to "normal".  Otherwise <span>set the
 selection's value</span> to "italic".
 
-<p><span>Indeterminate</span>: True if among <span>editable</span> [[text]]
-nodes that are <span>effectively contained</span> in the <span>active
-range</span>, there is at least one with <span>effective command value</span>
-either "italic" or "oblique" and at least one with <span>effective command
-value</span> "normal".  Otherwise false.
-
-<p><span>State</span>: True if every <span>editable</span> [[text]] node that
-is <span>effectively contained</span> in the <span>active range</span> has
-<span>effective command value</span> either "italic" or "oblique", and there is
-at least one such [[text]] node.  Otherwise false.
+<p><span>Inline command activated values</span>: "italic" or "oblique"
 
 <p><span>Relevant CSS property</span>: "font-style"
 
@@ -3089,16 +3034,7 @@ selection's value</span> to "line-through".
 
 <!-- TODO: See underline TODO. -->
 
-<p><span>Indeterminate</span>: True if among <span>editable</span> [[text]]
-nodes that are <span>effectively contained</span> in the <span>active
-range</span>, there is at least one with <span>effective command value</span>
-"line-through" and at least one with <span>effective command value</span> null.
-Otherwise false.
-
-<p><span>State</span>: True if every <span>editable</span> [[text]] node that
-is <span>effectively contained</span> in the <span>active range</span> has
-<span>effective command value</span> "line-through", and there is at least one
-such [[text]] node.  Otherwise false.
+<p><span>Inline command activated values</span>: "line-through"
 
 <!-- @} -->
 <h3><dfn>The <code title>subscript</code> command</dfn></h3>
@@ -3124,10 +3060,7 @@ if there is some <span>editable</span> [[text]] node <span>effectively
 contained</span> in the <span>active range</span> with <span>effective command
 value</span> "mixed".  Otherwise false.
 
-<p><span>State</span>: True if every <span>editable</span> [[text]] node that
-is <span>effectively contained</span> in the <span>active range</span> has
-<span>effective command value</span> "sub", and there is at least one such
-[[text]] node.  Otherwise false.
+<p><span>Inline command activated values</span>: "sub"
 <!--
 For <sup><sub>foo</sub></sup>, Firefox 6.0a2 and Opera 11.11 say the state is
 true for both superscript and subscript, and indeterminate is false; Chrome 14
@@ -3166,10 +3099,7 @@ or if there is some <span>editable</span> [[text]] node <span>effectively
 contained</span> in the <span>active range</span> with <span>effective command
 value</span> "mixed".  Otherwise false.
 
-<p><span>State</span>: True if every <span>editable</span> [[text]] node that
-is <span>effectively contained</span> in the <span>active range</span> has
-<span>effective command value</span> "super", and there is at least one such
-[[text]] node.  Otherwise false.
+<p><span>Inline command activated values</span>: "super"
 
 <p><span>Relevant CSS property</span>: "vertical-align"
 
@@ -3226,16 +3156,7 @@ working around them can be put off for now.
   http://lists.w3.org/Archives/Public/www-style/2011Mar/0591.html.
 -->
 
-<p><span>Indeterminate</span>: True if among <span>editable</span> [[text]]
-nodes that are <span>effectively contained</span> in the <span>active
-range</span>, there is at least one with <span>effective command value</span>
-"underline" and at least one with <span>effective command value</span> null.
-Otherwise false.
-
-<p><span>State</span>: True if every <span>editable</span> [[text]] node that
-is <span>effectively contained</span> in the <span>active range</span> has
-<span>effective command value</span> "underline", and there is at least one
-such [[text]] node.  Otherwise false.
+<p><span>Inline command activated values</span>: "underline"
 
 <!-- @} -->
 <h3><dfn>The <code title>unlink</code> command</dfn></h3>
@@ -3261,20 +3182,7 @@ starting at 2011-05-13 at 16:53 EDT (UTC-0400).
 <!-- IE10PP2, Firefox 7.0a2, Chrome 14 dev, and Opera 11.50 all do not support
 indeterminate, state, or value for createLink or unlink.  I define
 indeterminate and value anyway because they make sense. -->
-<p><span>Indeterminate</span>: True if among <span>editable</span> [[text]]
-nodes that are <span>effectively contained</span> in the <span>active
-range</span>, there are two that have distinct <span title="effective command
-value">effective command values</span>.  Otherwise false.
-
-<p><span>Value</span>: The <span>effective command value</span> of the first
-<span>editable</span> [[text]] node that is <span>effectively contained</span>
-in the <span>active range</span>, or if there is no such node, the
-<span>effective command value</span> of the <span>active range</span>'s
-[[startnode]].
-
-<p class=note>The effective command value of the active range's start node
-cannot be null, since the boundary point node of a selection must always be
-either an element or a text node that's the child of an element.
+<p><span>Standard inline value command</span>
 
 <!-- @} -->
 

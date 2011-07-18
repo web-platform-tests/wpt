@@ -81,11 +81,10 @@ var tests = {
 	bold: [
 	//@{
 		'foo[]bar',
+		'<b>foo[]bar</b>',
 		'<span>foo</span>{}<span>bar</span>',
 		'<span>foo[</span><span>]bar</span>',
 		'foo[bar]baz',
-		'foo]bar[baz',
-		'{<p><p> <p>foo</p>}',
 		'foo[bar<i>baz]qoz</i>quz',
 
 		'foo<span contenteditable=false>[bar]</span>baz',

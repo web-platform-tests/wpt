@@ -1375,6 +1375,63 @@ which at least one of the following holds:
 <p class=note>Conceptually, a simple modifiable element is a modifiable element
 which specifies a value for at most one command.
 
+<p>If a <a href=#command>command</a> has <dfn id=inline-command-activated-values>inline command activated values</dfn>
+defined but nothing else defines when it is <a href=#indeterminate>indeterminate</a>, it is
+<a href=#indeterminate>indeterminate</a> if among <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> nodes
+<a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a>, there is
+at least one whose <a href=#effective-command-value>effective command value</a> is one of the given
+values and at least one whose <a href=#effective-command-value>effective command value</a> is not one
+of the given values.
+
+<p>If a <a href=#command>command</a> has <a href=#inline-command-activated-values>inline command activated values</a>
+defined, its <a href=#state>state</a> is true if either no <a href=#editable>editable</a>
+<code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node is <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
+range</a>, and the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>'s
+<a href=#effective-command-value>effective command value</a> is one of the given values; or if there is
+at least one <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node <a href=#effectively-contained>effectively
+contained</a> in the <a href=#active-range>active range</a>, and all of them have an
+<a href=#effective-command-value>effective command value</a> equal to one of the given values.
+<!--
+For bold and similar commands, IE 9 RC seems to consider the state true or
+false depending on the first element.  All other browsers follow the same
+general idea as the spec, considering a range bold only if all text in it is
+bold, and this seems to match at least OpenOffice.org's bold feature.  Opera
+11.11 seemingly doesn't take CSS into account, and only looks at whether
+something descends from a <b>.  I couldn't properly test IE9 because it threw
+exceptions (Error: Unspecified error.) on most of the tests I ran.  But what I
+have here seems to match Firefox 6.0a2 in every case, and Chrome 14 dev in all
+cases with a few exceptions.
+-->
+
+<p>If a command is a <dfn id=standard-inline-value-command>standard inline value command</dfn>, it is
+<a href=#indeterminate>indeterminate</a> if among <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> nodes that
+are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a>, there
+are two that have distinct <a href=#effective-command-value title="effective command value">effective
+command values</a>.  Its <a href=#value>value</a> is the <a href=#effective-command-value>effective command
+value</a> of the first <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that is
+<a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a>, or if
+there is no such node, the <a href=#effective-command-value>effective command value</a> of the
+<a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>.
+
+<p class=note>The effective command value of the active range's start node
+cannot be null, since the boundary point node of a selection must always be
+either an element or a text node that's the child of an element.
+<!--
+Testing with hiliteColor: Opera 11.11 seems to always return the effective
+command value of the active range's start node.  Chrome 14 dev returns boolean
+false consistently, bizarrely enough.  Firefox 6.0a2 seems to follow the same
+idea as the spec, but it likes to return "transparent", including sometimes
+when the answer really clearly should not be "transparent".  IE9 throws
+exceptions most of the time for backColor, so I can't say for sure, but in the
+few cases where it doesn't throw it returns a random-looking number, so I'll
+assume it's crazy like for foreColor.
+
+I decided on something that would guarantee the following invariant: whenever
+you execute a command with a value provided (assuming value is relevant),
+queryCommandValue() will always return something equivalent to what you set.
+-->
+
+
 
 <h3 id=assorted-inline-formatting-command-algorithms><span class=secno>7.2 </span>Assorted inline formatting command algorithms</h3>
 
@@ -2388,20 +2445,7 @@ identically.
   <li><a href="#set-the-selection's-value">Set the selection's value</a> to <var title="">value</var>.
 </ol>
 
-<p><a href=#indeterminate>Indeterminate</a>: True if among <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>
-nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
-range</a>, there are two that have distinct <a href=#effective-command-value title="effective command
-value">effective command values</a>.  Otherwise false.
-
-<p><a href=#value>Value</a>: The <a href=#effective-command-value>effective command value</a> of the first
-<a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that is <a href=#effectively-contained>effectively contained</a>
-in the <a href=#active-range>active range</a>, or if there is no such node, the
-<a href=#effective-command-value>effective command value</a> of the <a href=#active-range>active range</a>'s
-<a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>.
-
-<p class=note>The effective command value of the active range's start node
-cannot be null, since the boundary point node of a selection must always be
-either an element or a text node that's the child of an element.
+<p><a href=#standard-inline-value-command>Standard inline value command</a>
 
 <p><a href=#relevant-css-property>Relevant CSS property</a>: "background-color"
 
@@ -2418,11 +2462,8 @@ nothing if the selection is empty.  Why strikethrough?  I don't know. -->
 <a href="#set-the-selection's-value">set the selection's value</a> to "normal".  Otherwise <a href="#set-the-selection's-value">set the
 selection's value</a> to "bold".
 
-<p><a href=#indeterminate>Indeterminate</a>: True if among <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>
-nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
-range</a>, there is at least one with <a href=#effective-command-value>effective command value</a>
-less than 600 and at least one with <a href=#effective-command-value>effective command value</a>
-greater than or equal to 600.  Otherwise false.
+<p><a href=#inline-command-activated-values>Inline command activated values</a>: "bold", "600", "700", "800",
+or "900"
 <!--
 The cutoff of 600 (both here and for state) matches Chrome 14 dev.  The cutoff
 used by IE9 and Firefox 6.0a2 seems to be 500, and the distinction isn't
@@ -2438,22 +2479,6 @@ IE/Firefox, it would look wrong on all my browsers for font-weight: 500.
 700 actually makes more sense: then you'd view 100-300 as light, 400-600 as
 medium, 700-900 as bold.  But that's not how it seems to work in browsers, so
 I'll go with 600 as the cutoff.
--->
-
-<p><a href=#state>State</a>: True if every <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that
-is <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a> has
-<a href=#effective-command-value>effective command value</a> at least 600, and there is at least one
-such <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node.  Otherwise false.
-<!--
-For bold and similar commands, IE 9 RC seems to consider the state true or
-false depending on the first element.  All other browsers follow the same
-general idea as the spec, considering a range bold only if all text in it is
-bold, and this seems to match at least OpenOffice.org's bold feature.  Opera
-11.11 seemingly doesn't take CSS into account, and only looks at whether
-something descends from a <b>.  I couldn't properly test IE9 because it threw
-exceptions (Error: Unspecified error.) on most of the tests I ran.  But what I
-have here seems to match Firefox 6.0a2 in every case, and Chrome 14 dev in all
-cases with a few exceptions.
 -->
 
 <p><a href=#relevant-css-property>Relevant CSS property</a>: "font-weight"
@@ -2516,20 +2541,7 @@ don't either. -->
 <!-- IE10PP2, Firefox 7.0a2, Chrome 14 dev, and Opera 11.50 all do not support
 indeterminate, state, or value for createLink or unlink.  I define
 indeterminate and value anyway because they make sense. -->
-<p><a href=#indeterminate>Indeterminate</a>: True if among <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>
-nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
-range</a>, there are two that have distinct <a href=#effective-command-value title="effective command
-value">effective command values</a>.  Otherwise false.
-
-<p><a href=#value>Value</a>: The <a href=#effective-command-value>effective command value</a> of the first
-<a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that is <a href=#effectively-contained>effectively contained</a>
-in the <a href=#active-range>active range</a>, or if there is no such node, the
-<a href=#effective-command-value>effective command value</a> of the <a href=#active-range>active range</a>'s
-<a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>.
-
-<p class=note>The effective command value of the active range's start node
-cannot be null, since the boundary point node of a selection must always be
-either an element or a text node that's the child of an element.
+<p><a href=#standard-inline-value-command>Standard inline value command</a>
 
 
 <h3 id=the-fontname-command><span class=secno>7.10 </span><dfn>The <code title="">fontName</code> command</dfn></h3>
@@ -2557,23 +2569,9 @@ likely that the font list will be fixed by the author (how many users will
 understand CSS font-family syntax?), so I don't think such usability concerns
 apply. -->
 
-<p><a href=#indeterminate>Indeterminate</a>: True if among <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>
-nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
-range</a>, there are two that have distinct <a href=#effective-command-value title="effective command
-value">effective command values</a>.  Otherwise false.
-<!-- This follows Firefox 6.0a2.  Chrome 14 dev always returns false. -->
-
-<p><a href=#value>Value</a>: The <a href=#effective-command-value>effective command value</a> of the first
-<a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that is <a href=#effectively-contained>effectively contained</a>
-in the <a href=#active-range>active range</a>, or if there is no such node, the
-<a href=#effective-command-value>effective command value</a> of the <a href=#active-range>active range</a>'s
-<a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>.
-
-<p class=note>The effective command value of the active range's start node
-cannot be null, since the boundary point node of a selection must always be
-either an element or a text node that's the child of an element.
+<p><a href=#standard-inline-value-command>Standard inline value command</a>
 <!--
-Complicated.
+The value is complicated.
 
 IE 9 RC: Always the empty string.  Not very useful.
 Firefox 4b11: Confusing.  Sometimes it returns generic family names, like
@@ -2589,8 +2587,6 @@ Opera 11: Returns the literal value of font-family, except if it's inherited
 I'm just going to punt on this and say it should be the resolved value of
 font-family.  I'll leave CSSOM to decide what that means if there are no
 applicable style rules.
-
-For deciding which node should be checked, see comment for hiliteColor.
 -->
 
 <p><a href=#relevant-css-property>Relevant CSS property</a>: "font-family"
@@ -2706,7 +2702,12 @@ respecifying non-interoperable behavior anyway.
 nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
 range</a>, there are two that have distinct <a href=#effective-command-value title="effective command
 value">effective command values</a>.  Otherwise false.
-<!-- This follows Firefox 6.0a2.  Chrome 14 dev always returns false. -->
+<!-- This follows Firefox 6.0a2.  Chrome 14 dev always returns false.  Note
+that indeterminacy here keys off the effective command value, while the value
+is based only on an approximation (a number from one to seven).  Thus it's
+possible for every subrange of the selection to have the same value, but for
+the selection to still be indeterminate.  Setting the fontSize to the value
+will make it determinate without changing anything's value. -->
 
 <p><a href=#value>Value</a>:
 <!--
@@ -2738,11 +2739,8 @@ browsers behave differently.  I see no reason to behave differently.
   node, the <a href=#effective-command-value>effective command value</a> of the <a href=#active-range>active
   range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, in either case interpreted as a number of
   pixels.
-  <!-- See comment for hiliteColor on how I decided on this choice of node. -->
-
-  <p class=note>The effective command value of the active range's start node
-  cannot be null, since the boundary point node of a selection must always be
-  either an element or a text node that's the child of an element.
+  <!-- See comment for standard inline value commands on how I decided on this
+  choice of node. -->
 
   <li>Return the <a href=#legacy-font-size-for>legacy font size for</a> <var title="">pixel size</var>.
 </ol>
@@ -2853,21 +2851,7 @@ browsers, but it's unlikely to hurt and it makes sense.
 applied, false otherwise, which seems fairly useless; authors want to use value
 here, not state.  So I'll match other browsers and not define any state. -->
 
-<p><a href=#indeterminate>Indeterminate</a>: True if among <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>
-nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
-range</a>, there are two that have distinct <a href=#effective-command-value title="effective command
-value">effective command values</a>.  Otherwise false.
-<!-- This follows Firefox 6.0a2.  Chrome 14 dev always returns false. -->
-
-<p><a href=#value>Value</a>: The <a href=#effective-command-value>effective command value</a> of the first
-<a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that is <a href=#effectively-contained>effectively contained</a>
-in the <a href=#active-range>active range</a>, or if there is no such node, the
-<a href=#effective-command-value>effective command value</a> of the <a href=#active-range>active range</a>'s
-<a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>.
-
-<p class=note>The effective command value of the active range's start node
-cannot be null, since the boundary point node of a selection must always be
-either an element or a text node that's the child of an element.
+<p><a href=#standard-inline-value-command>Standard inline value command</a>
 <!--
 The spec essentially matches Firefox 6.0a2 and Chrome 14 dev, as far as how to
 decide what color the node has.  IE9 seems to always return the number 0 for
@@ -2875,9 +2859,6 @@ some bizarre reason.  There are some cases where Firefox returns the empty
 string for some reason, and it seems to select the active node a little
 differently.  Opera uses #xxxxxx format for getComputedStyle() but rgb() here,
 and also drops the transparent part of the color if there is any.
-
-For why I chose this node to key the color off of, see the comment for
-hiliteColor.
 -->
 
 <p><a href=#relevant-css-property>Relevant CSS property</a>: "color"
@@ -2919,36 +2900,9 @@ identically.
   <li><a href="#set-the-selection's-value">Set the selection's value</a> to <var title="">value</var>.
 </ol>
 
-<p><a href=#indeterminate>Indeterminate</a>: True if among <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>
-nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
-range</a>, there are two that have distinct <a href=#effective-command-value title="effective command
-value">effective command values</a>.  Otherwise false.
-<!-- This follows no one.  Firefox 6.0a2 and Chrome 14 dev both always return
-false.  However, it makes sense. -->
-
-<p><a href=#value>Value</a>: The <a href=#effective-command-value>effective command value</a> of the first
-<a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that is <a href=#effectively-contained>effectively contained</a>
-in the <a href=#active-range>active range</a>, or if there is no such node, the
-<a href=#effective-command-value>effective command value</a> of the <a href=#active-range>active range</a>'s
-<a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>.
-
-<p class=note>The effective command value of the active range's start node
-cannot be null, since the boundary point node of a selection must always be
-either an element or a text node that's the child of an element.
-<!--
-Opera 11.11 seems to always return the effective command value of the active
-range's start node.  Chrome 14 dev returns boolean false consistently,
-bizarrely enough.  Firefox 6.0a2 seems to follow the same idea as the spec, but
-it likes to return "transparent", including sometimes when the answer really
-clearly should not be "transparent".  IE9 throws exceptions most of the time
-for backColor, so I can't say for sure, but in the few cases where it doesn't
-throw it returns a random-looking number, so I'll assume it's crazy like for
-foreColor.
-
-I decided on something that would guarantee the following invariant: whenever
-you execute a command with a value provided (assuming value is relevant),
-queryCommandValue() will always return something equivalent to what you set.
--->
+<p><a href=#standard-inline-value-command>Standard inline value command</a>
+<!-- For indeterminacy, this follows no one.  Firefox 6.0a2 and Chrome 14 dev
+both always return false.  However, it makes sense. -->
 
 <p><a href=#relevant-css-property>Relevant CSS property</a>: "background-color"
 
@@ -2959,16 +2913,7 @@ queryCommandValue() will always return something equivalent to what you set.
 <a href="#set-the-selection's-value">set the selection's value</a> to "normal".  Otherwise <a href="#set-the-selection's-value">set the
 selection's value</a> to "italic".
 
-<p><a href=#indeterminate>Indeterminate</a>: True if among <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>
-nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
-range</a>, there is at least one with <a href=#effective-command-value>effective command value</a>
-either "italic" or "oblique" and at least one with <a href=#effective-command-value>effective command
-value</a> "normal".  Otherwise false.
-
-<p><a href=#state>State</a>: True if every <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that
-is <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a> has
-<a href=#effective-command-value>effective command value</a> either "italic" or "oblique", and there is
-at least one such <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node.  Otherwise false.
+<p><a href=#inline-command-activated-values>Inline command activated values</a>: "italic" or "oblique"
 
 <p><a href=#relevant-css-property>Relevant CSS property</a>: "font-style"
 
@@ -3107,16 +3052,7 @@ selection's value</a> to "line-through".
 
 <!-- TODO: See underline TODO. -->
 
-<p><a href=#indeterminate>Indeterminate</a>: True if among <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>
-nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
-range</a>, there is at least one with <a href=#effective-command-value>effective command value</a>
-"line-through" and at least one with <a href=#effective-command-value>effective command value</a> null.
-Otherwise false.
-
-<p><a href=#state>State</a>: True if every <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that
-is <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a> has
-<a href=#effective-command-value>effective command value</a> "line-through", and there is at least one
-such <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node.  Otherwise false.
+<p><a href=#inline-command-activated-values>Inline command activated values</a>: "line-through"
 
 
 <h3 id=the-subscript-command><span class=secno>7.17 </span><dfn>The <code title="">subscript</code> command</dfn></h3>
@@ -3141,10 +3077,7 @@ if there is some <a href=#editable>editable</a> <code class=external data-anolis
 contained</a> in the <a href=#active-range>active range</a> with <a href=#effective-command-value>effective command
 value</a> "mixed".  Otherwise false.
 
-<p><a href=#state>State</a>: True if every <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that
-is <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a> has
-<a href=#effective-command-value>effective command value</a> "sub", and there is at least one such
-<code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node.  Otherwise false.
+<p><a href=#inline-command-activated-values>Inline command activated values</a>: "sub"
 <!--
 For <sup><sub>foo</sub></sup>, Firefox 6.0a2 and Opera 11.11 say the state is
 true for both superscript and subscript, and indeterminate is false; Chrome 14
@@ -3182,10 +3115,7 @@ or if there is some <a href=#editable>editable</a> <code class=external data-ano
 contained</a> in the <a href=#active-range>active range</a> with <a href=#effective-command-value>effective command
 value</a> "mixed".  Otherwise false.
 
-<p><a href=#state>State</a>: True if every <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that
-is <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a> has
-<a href=#effective-command-value>effective command value</a> "super", and there is at least one such
-<code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node.  Otherwise false.
+<p><a href=#inline-command-activated-values>Inline command activated values</a>: "super"
 
 <p><a href=#relevant-css-property>Relevant CSS property</a>: "vertical-align"
 
@@ -3241,16 +3171,7 @@ working around them can be put off for now.
   http://lists.w3.org/Archives/Public/www-style/2011Mar/0591.html.
 -->
 
-<p><a href=#indeterminate>Indeterminate</a>: True if among <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>
-nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
-range</a>, there is at least one with <a href=#effective-command-value>effective command value</a>
-"underline" and at least one with <a href=#effective-command-value>effective command value</a> null.
-Otherwise false.
-
-<p><a href=#state>State</a>: True if every <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that
-is <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a> has
-<a href=#effective-command-value>effective command value</a> "underline", and there is at least one
-such <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node.  Otherwise false.
+<p><a href=#inline-command-activated-values>Inline command activated values</a>: "underline"
 
 
 <h3 id=the-unlink-command><span class=secno>7.20 </span><dfn>The <code title="">unlink</code> command</dfn></h3>
@@ -3276,20 +3197,7 @@ starting at 2011-05-13 at 16:53 EDT (UTC-0400).
 <!-- IE10PP2, Firefox 7.0a2, Chrome 14 dev, and Opera 11.50 all do not support
 indeterminate, state, or value for createLink or unlink.  I define
 indeterminate and value anyway because they make sense. -->
-<p><a href=#indeterminate>Indeterminate</a>: True if among <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>
-nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
-range</a>, there are two that have distinct <a href=#effective-command-value title="effective command
-value">effective command values</a>.  Otherwise false.
-
-<p><a href=#value>Value</a>: The <a href=#effective-command-value>effective command value</a> of the first
-<a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that is <a href=#effectively-contained>effectively contained</a>
-in the <a href=#active-range>active range</a>, or if there is no such node, the
-<a href=#effective-command-value>effective command value</a> of the <a href=#active-range>active range</a>'s
-<a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>.
-
-<p class=note>The effective command value of the active range's start node
-cannot be null, since the boundary point node of a selection must always be
-either an element or a text node that's the child of an element.
+<p><a href=#standard-inline-value-command>Standard inline value command</a>
 
 
 

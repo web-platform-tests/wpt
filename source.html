@@ -802,6 +802,9 @@ of the [[range]] at a given index in the [[selection]] changes to something
 different, the <span>state override</span> and <span>value override</span> must
 be unset for every <span>command</span>.
 
+<p class=XXX>Figure out exactly what commands need to preserve state/value
+overrides.
+
 <p>When the user agent is instructed to run a particular method, it must follow
 the steps defined for that method in the appropriate specification, not act as
 though the method had actually been called from JavaScript.  In particular,
@@ -3590,6 +3593,8 @@ algorithm returns true:
 <!-- TODO: Consider what should happen for block merging in corner cases like
 display: inline-table. -->
 
+<p class=XXX>Needs to preserve state/value in some cases?
+
 <ol>
   <li>If <var>range</var> is null, abort these steps and do nothing.
 
@@ -3686,10 +3691,9 @@ display: inline-table. -->
     offset</var> to the [[nodelength]] of <var>reference node</var>.
   </ol>
 
-  <li>If (<var>end node</var>, <var>end offset</var>) is <span
-  data-anolis-spec=domrange title=concept-bp-before>before</span> (<var>start
-  node</var>, <var>start offset</var>), set <var>range</var>'s [[rangeend]] to
-  its [[rangestart]] and abort these steps.
+  <li>If (<var>end node</var>, <var>end offset</var>) is not [[bpafter]]
+  (<var>start node</var>, <var>start offset</var>), set <var>range</var>'s
+  [[rangeend]] to its [[rangestart]] and abort these steps.
 
   <li>If <var>start node</var> is a [[text]] node and <var>start offset</var>
   is 0, set <var>start offset</var> to the [[index]] of <var>start node</var>,
@@ -6722,8 +6726,11 @@ tests, where the value was always "a", IE9 and Firefox 5.0a2 match the spec
 exactly as far as I can tell; Chrome 14 dev and Opera 11.11 might match it in
 theory, but normalize the selection first, so they don't match it in practice.
 -->
+<p>A <dfn>command with insertion-affecting state</dfn> is "bold", "italic",
+"strikethrough", "subscript", "superscript", or "underline".
 
-<p class=XXX>Needs to handle overridden state/value.
+<p>A <dfn>command with insertion-affecting value</dfn> is "createLink",
+"fontName", "fontSize", "foreColor", or "hiliteColor".
 
 <p><span>Action</span>:
 
@@ -6859,40 +6866,81 @@ this, as Chrome 14 dev does.
   "pre-wrap", set <var>value</var> to a non-breaking space (U+00A0).
   <!-- This may change to a space when we canonicalize. -->
 
+  <li>For each <span>command with insertion-affecting state</span>, in order,
+  call <code>queryCommandState()</code> and record the result.
+
+  <li>For each <span>command with insertion-affecting value</span>, in order,
+  call <code>queryCommandValue()</code> and record the result.
+
   <li>If <var>node</var> is a [[text]] node:
 
   <ol>
     <li>Call [[insertdata|<var>offset</var>, <var>value</var>]] on
     <var>node</var>.
 
-    <li>Add <var>value</var>'s [[strlen]] to <var>offset</var>.
-
     <li>Call [[selcollapse|<var>node</var>, <var>offset</var>]] on the
     [[contextobject]]'s [[selection]].
 
-    <li><span>Canonicalize whitespace</span> at (<var>node</var>,
-    <var>offset</var> &minus; 1).
-
-    <li><span>Canonicalize whitespace</span> at (<var>node</var>,
-    <var>offset</var>).
-
-    <li>Abort these steps.
+    <li>Call [[extend|<var>node</var>, <var>offset</var> + 1]] on the
+    [[contextobject]]'s [[selection]].
   </ol>
 
-  <!-- If some text is inserted into <p><br></p> or similar, we no longer need
-  the <br>. -->
-  <li>If <var>node</var> has only one [[child]], which is a <span>collapsed
-  line break</span>, remove its [[child]] from it.
+  <li>Otherwise:
 
-  <li>Let <var>text</var> be the result of calling <code
-  data-anolis-spec=domcore
-  title=dom-Document-createTextNode>createTextNode(<var>value</var>)</code> on
-  the [[contextobject]].
+  <ol>
+    <!-- If some text is inserted into <p><br></p> or similar, we no longer need
+    the <br>. -->
+    <li>If <var>node</var> has only one [[child]], which is a <span>collapsed
+    line break</span>, remove its [[child]] from it.
 
-  <li>Call [[insertnode|<var>text</var>]] on the <span>active range</span>.
+    <li>Let <var>text</var> be the result of calling <code
+    data-anolis-spec=domcore
+    title=dom-Document-createTextNode>createTextNode(<var>value</var>)</code> on
+    the [[contextobject]].
 
-  <li>Call [[selcollapse|<var>text</var>, 1]] on the [[contextobject]]'s
-  [[selection]].
+    <li>Call [[insertnode|<var>text</var>]] on the <span>active range</span>.
+
+    <li>Call [[selcollapse|<var>text</var>, 0]] on the [[contextobject]]'s
+    [[selection]].
+
+    <li>Call [[extend|<var>text</var>, 1]] on the [[contextobject]]'s
+    [[selection]].
+  </ol>
+
+  <li>For each <span>command with insertion-affecting state</span>
+  <var>command</var>, in order:
+
+  <ol>
+    <li>Call <code
+    title=queryCommandState()>queryCommandState(<var>command</var>)</code>.
+
+    <li>If the result of the last step does not match the recorded
+    <span>state</span>, call <code
+    title=execCommand()>execCommand(<var>command</var>)</code>.
+  </ol>
+
+  <li>For each <span>command with insertion-affecting value</span>
+  <var>command</var>, in order:
+
+  <ol>
+    <li>Let <var>recorded value</var> be the recorded <span>value</span> for
+    <var>command</var>.
+
+    <li>Call <code
+    title=queryCommandValue()>queryCommandValue(<var>command</var>)</code>.
+
+    <li>If the result of the last step is not <var>recorded value</var>, call
+    <code title=execCommand()>execCommand(<var>command</var>, false,
+    <var>recorded value</var>)</code>.
+  </ol>
+
+  <li><span>Canonicalize whitespace</span> at the <span>active range</span>'s
+  [[rangestart]].
+
+  <li><span>Canonicalize whitespace</span> at the <span>active range</span>'s
+  [[rangeend]].
+
+  <li>Call [[collapsetoend]] on the [[contextobject]]'s [[selection]].
 </ol>
 
 <!-- @} -->

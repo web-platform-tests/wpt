@@ -4123,13 +4123,9 @@ function deleteContents() {
 		endOffset = getNodeLength(referenceNode);
 	}
 
-	// "If (end node, end offset) is before (start node, start offset), set
+	// "If (end node, end offset) is not after (start node, start offset), set
 	// range's end to its start and abort these steps."
-	var startPoint = document.createRange();
-	startPoint.setStart(startNode, startOffset);
-	var endPoint = document.createRange();
-	endPoint.setStart(endNode, endOffset);
-	if (startPoint.compareBoundaryPoints(Range.START_TO_START, endPoint) == 1) {
+	if (getPosition(endNode, endOffset, startNode, startOffset) !== "after") {
 		range.setEnd(range.startContainer, range.startOffset);
 		return;
 	}
@@ -6862,6 +6858,16 @@ commands.insertparagraph = {
 //@}
 ///// The insertText command /////
 //@{
+// "A command with insertion-affecting state is "bold", "italic",
+// "strikethrough", "subscript", "superscript", or "underline"."
+var commandsWithInsertionAffectingState = ["bold", "italic", "strikethrough",
+	"subscript", "superscript", "underline"];
+
+// "A command with insertion-affecting value is "createLink", "fontName",
+// "fontSize", "forecolor", or "hiliteColor"."
+var commandsWithInsertionAffectingValue = ["createlink", "fontname",
+	"fontsize", "forecolor", "hilitecolor"];
+
 commands.inserttext = {
 	action: function(value) {
 		// "Delete the contents of the active range."
@@ -6933,48 +6939,91 @@ commands.inserttext = {
 			value = "\xa0";
 		}
 
+		// "For each command with insertion-affecting state, in order, call
+		// queryCommandState() and record the result."
+		var recordedStates = {};
+		commandsWithInsertionAffectingState.forEach(function(command) {
+			recordedStates[command] = myQueryCommandState(command, getActiveRange());
+		});
+
+		// "For each command with insertion-affecting value, in order, call
+		// queryCommandValue() and record the result."
+		var recordedValues = {};
+		commandsWithInsertionAffectingValue.forEach(function(command) {
+			recordedValues[command] = myQueryCommandValue(command, getActiveRange());
+		})
+
 		// "If node is a Text node:"
 		if (node.nodeType == Node.TEXT_NODE) {
 			// "Call insertData(offset, value) on node."
 			node.insertData(offset, value);
 
-			// "Add the length of value to offset."
-			offset += value.length;
-
 			// "Call collapse(node, offset) on the context object's Selection."
+			//
+			// "Call extend(node, offset + 1) on the context object's
+			// Selection."
 			getActiveRange().setStart(node, offset);
-			getActiveRange().setEnd(node, offset);
+			getActiveRange().setEnd(node, offset + 1);
 
-			// "Canonicalize whitespace at (node, offset − 1)."
-			canonicalizeWhitespace(node, offset - 1);
+		// "Otherwise:"
+		} else {
+			// "If node has only one child, which is a collapsed line break,
+			// remove its child from it."
+			//
+			// FIXME: IE incorrectly returns false here instead of true
+			// sometimes?
+			if (node.childNodes.length == 1
+			&& isCollapsedLineBreak(node.firstChild)) {
+				node.removeChild(node.firstChild);
+			}
 
-			// "Canonicalize whitespace at (node, offset)."
-			canonicalizeWhitespace(node, offset);
+			// "Let text be the result of calling createTextNode(value) on the
+			// context object."
+			var text = document.createTextNode(value);
 
-			// "Abort these steps."
-			return;
+			// "Call insertNode(text) on the active range."
+			getActiveRange().insertNode(text);
+
+			// "Call collapse(text, 0) on the context object's Selection."
+			//
+			// "Call extend(text, 1) on the context object's Selection."
+			getActiveRange().setStart(text, 0);
+			getActiveRange().setEnd(text, 1);
 		}
 
-		// "If node has only one child, which is a collapsed line break, remove
-		// its child from it."
-		//
-		// FIXME: IE incorrectly returns false here instead of true sometimes?
-		if (node.childNodes.length == 1
-		&& isCollapsedLineBreak(node.firstChild)) {
-			node.removeChild(node.firstChild);
-		}
+		// "For each command with insertion-affecting state command, in order:"
+		commandsWithInsertionAffectingState.forEach(function(command) {
+			// "Call queryCommandState(command)."
+			//
+			// "If the result of the last step does not match the recorded
+			// state, call execCommand(command)."
+			if (myQueryCommandState(command, getActiveRange()) !== recordedStates[command]) {
+				myExecCommand(command, false, "", getActiveRange());
+			}
+		});
 
-		// "Let text be the result of calling createTextNode(value) on the
-		// context object."
-		var text = document.createTextNode(value);
+		// "For each command with insertion-affecting value command, in order:"
+		commandsWithInsertionAffectingValue.forEach(function(command) {
+			// "Let recorded value be the recorded value for command."
+			var recordedValue = recordedValues[command];
 
-		// "Call insertNode(text) on the active range."
-		getActiveRange().insertNode(text);
+			// "Call queryCommandValue(command)."
+			//
+			// "If the result of the last step is not recorded value, call
+			// execCommand(command, false, recorded value)."
+			if (myQueryCommandValue(command, getActiveRange()) !== recordedValue) {
+				myExecCommand(command, false, recordedValue, getActiveRange());
+			}
+		});
 
-		// "Call collapse(text, length) on the context object's Selection,
-		// where length is the length of text."
-		getActiveRange().setStart(text, text.length);
-		getActiveRange().setEnd(text, text.length);
+		// "Canonicalize whitespace at the active range's start."
+		canonicalizeWhitespace(getActiveRange().startContainer, getActiveRange().startOffset);
+
+		// "Canonicalize whitespace at the active range's end."
+		canonicalizeWhitespace(getActiveRange().endContainer, getActiveRange().endOffset);
+
+		// "Call collapseToEnd() on the context object's Selection."
+		getActiveRange().collapse(false);
 	}
 };
 

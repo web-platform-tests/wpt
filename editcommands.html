@@ -850,6 +850,9 @@ of the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/d
 different, the <a href=#state-override>state override</a> and <a href=#value-override>value override</a> must
 be unset for every <a href=#command>command</a>.
 
+<p class=XXX>Figure out exactly what commands need to preserve state/value
+overrides.
+
 <p>When the user agent is instructed to run a particular method, it must follow
 the steps defined for that method in the appropriate specification, not act as
 though the method had actually been called from JavaScript.  In particular,
@@ -3603,6 +3606,8 @@ algorithm returns true:
 <!-- TODO: Consider what should happen for block merging in corner cases like
 display: inline-table. -->
 
+<p class=XXX>Needs to preserve state/value in some cases?
+
 <ol>
   <li>If <var title="">range</var> is null, abort these steps and do nothing.
 
@@ -3699,9 +3704,9 @@ display: inline-table. -->
     offset</var> to the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">reference node</var>.
   </ol>
 
-  <li>If (<var title="">end node</var>, <var title="">end offset</var>) is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-bp-before title=concept-bp-before>before</a> (<var title="">start
-  node</var>, <var title="">start offset</var>), set <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> to
-  its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> and abort these steps.
+  <li>If (<var title="">end node</var>, <var title="">end offset</var>) is not <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-bp-after title=concept-bp-after>after</a>
+  (<var title="">start node</var>, <var title="">start offset</var>), set <var title="">range</var>'s
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> to its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> and abort these steps.
 
   <li>If <var title="">start node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node and <var title="">start offset</var>
   is 0, set <var title="">start offset</var> to the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of <var title="">start node</var>,
@@ -6719,8 +6724,11 @@ tests, where the value was always "a", IE9 and Firefox 5.0a2 match the spec
 exactly as far as I can tell; Chrome 14 dev and Opera 11.11 might match it in
 theory, but normalize the selection first, so they don't match it in practice.
 -->
+<p>A <dfn id=command-with-insertion-affecting-state>command with insertion-affecting state</dfn> is "bold", "italic",
+"strikethrough", "subscript", "superscript", or "underline".
 
-<p class=XXX>Needs to handle overridden state/value.
+<p>A <dfn id=command-with-insertion-affecting-value>command with insertion-affecting value</dfn> is "createLink",
+"fontName", "fontSize", "foreColor", or "hiliteColor".
 
 <p><a href=#action>Action</a>:
 
@@ -6856,38 +6864,76 @@ this, as Chrome 14 dev does.
   "pre-wrap", set <var title="">value</var> to a non-breaking space (U+00A0).
   <!-- This may change to a space when we canonicalize. -->
 
+  <li>For each <a href=#command-with-insertion-affecting-state>command with insertion-affecting state</a>, in order,
+  call <code><a href=#querycommandstate()>queryCommandState()</a></code> and record the result.
+
+  <li>For each <a href=#command-with-insertion-affecting-value>command with insertion-affecting value</a>, in order,
+  call <code><a href=#querycommandvalue()>queryCommandValue()</a></code> and record the result.
+
   <li>If <var title="">node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node:
 
   <ol>
     <li>Call <code class=external data-anolis-spec=domcore title=dom-CharacterData-insertData><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-insertdata>insertData(<var title="">offset</var>, <var title="">value</var>)</a></code> on
     <var title="">node</var>.
 
-    <li>Add <var title="">value</var>'s <a href=http://es5.github.com/#x15.5.5.1>length</a> to <var title="">offset</var>.
-
     <li>Call <code class=external data-anolis-spec=domrange title=dom-Selection-collapse><a href=http://html5.org/specs/dom-range.html#dom-selection-collapse>collapse(<var title="">node</var>, <var title="">offset</var>)</a></code> on the
     <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>'s <code class=external data-anolis-spec=domrange><a href=http://html5.org/specs/dom-range.html#selection>Selection</a></code>.
 
-    <li><a href=#canonicalize-whitespace>Canonicalize whitespace</a> at (<var title="">node</var>,
-    <var title="">offset</var> &minus; 1).
-
-    <li><a href=#canonicalize-whitespace>Canonicalize whitespace</a> at (<var title="">node</var>,
-    <var title="">offset</var>).
-
-    <li>Abort these steps.
+    <li>Call <code class=external data-anolis-spec=domrange title=dom-Selection-extend><a href=http://html5.org/specs/dom-range.html#dom-selection-extend>extend(<var title="">node</var>, <var title="">offset</var> + 1)</a></code> on the
+    <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>'s <code class=external data-anolis-spec=domrange><a href=http://html5.org/specs/dom-range.html#selection>Selection</a></code>.
   </ol>
 
-  <!-- If some text is inserted into <p><br></p> or similar, we no longer need
-  the <br>. -->
-  <li>If <var title="">node</var> has only one <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, which is a <a href=#collapsed-line-break>collapsed
-  line break</a>, remove its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> from it.
+  <li>Otherwise:
 
-  <li>Let <var title="">text</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createTextNode><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createtextnode>createTextNode(<var title="">value</var>)</a></code> on
-  the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.
+  <ol>
+    <!-- If some text is inserted into <p><br></p> or similar, we no longer need
+    the <br>. -->
+    <li>If <var title="">node</var> has only one <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, which is a <a href=#collapsed-line-break>collapsed
+    line break</a>, remove its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> from it.
 
-  <li>Call <code class=external data-anolis-spec=domrange title=dom-Range-insertNode><a href=http://html5.org/specs/dom-range.html#dom-range-insertnode>insertNode(<var title="">text</var>)</a></code> on the <a href=#active-range>active range</a>.
+    <li>Let <var title="">text</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createTextNode><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createtextnode>createTextNode(<var title="">value</var>)</a></code> on
+    the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.
 
-  <li>Call <code class=external data-anolis-spec=domrange title=dom-Selection-collapse><a href=http://html5.org/specs/dom-range.html#dom-selection-collapse>collapse(<var title="">text</var>, 1)</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>'s
-  <code class=external data-anolis-spec=domrange><a href=http://html5.org/specs/dom-range.html#selection>Selection</a></code>.
+    <li>Call <code class=external data-anolis-spec=domrange title=dom-Range-insertNode><a href=http://html5.org/specs/dom-range.html#dom-range-insertnode>insertNode(<var title="">text</var>)</a></code> on the <a href=#active-range>active range</a>.
+
+    <li>Call <code class=external data-anolis-spec=domrange title=dom-Selection-collapse><a href=http://html5.org/specs/dom-range.html#dom-selection-collapse>collapse(<var title="">text</var>, 0)</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>'s
+    <code class=external data-anolis-spec=domrange><a href=http://html5.org/specs/dom-range.html#selection>Selection</a></code>.
+
+    <li>Call <code class=external data-anolis-spec=domrange title=dom-Selection-extend><a href=http://html5.org/specs/dom-range.html#dom-selection-extend>extend(<var title="">text</var>, 1)</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>'s
+    <code class=external data-anolis-spec=domrange><a href=http://html5.org/specs/dom-range.html#selection>Selection</a></code>.
+  </ol>
+
+  <li>For each <a href=#command-with-insertion-affecting-state>command with insertion-affecting state</a>
+  <var title="">command</var>, in order:
+
+  <ol>
+    <li>Call <code title=queryCommandState()><a href=#querycommandstate()>queryCommandState(<var title="">command</var>)</a></code>.
+
+    <li>If the result of the last step does not match the recorded
+    <a href=#state>state</a>, call <code title=execCommand()><a href=#execcommand()>execCommand(<var title="">command</var>)</a></code>.
+  </ol>
+
+  <li>For each <a href=#command-with-insertion-affecting-value>command with insertion-affecting value</a>
+  <var title="">command</var>, in order:
+
+  <ol>
+    <li>Let <var title="">recorded value</var> be the recorded <a href=#value>value</a> for
+    <var title="">command</var>.
+
+    <li>Call <code title=queryCommandValue()><a href=#querycommandvalue()>queryCommandValue(<var title="">command</var>)</a></code>.
+
+    <li>If the result of the last step is not <var title="">recorded value</var>, call
+    <code title=execCommand()><a href=#execcommand()>execCommand(<var title="">command</var>, false,
+    <var title="">recorded value</var>)</a></code>.
+  </ol>
+
+  <li><a href=#canonicalize-whitespace>Canonicalize whitespace</a> at the <a href=#active-range>active range</a>'s
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>.
+
+  <li><a href=#canonicalize-whitespace>Canonicalize whitespace</a> at the <a href=#active-range>active range</a>'s
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a>.
+
+  <li>Call <code class=external data-anolis-spec=domrange title=dom-Selection-collapseToEnd><a href=http://html5.org/specs/dom-range.html#dom-selection-collapsetoend>collapseToEnd()</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>'s <code class=external data-anolis-spec=domrange><a href=http://html5.org/specs/dom-range.html#selection>Selection</a></code>.
 </ol>
 
 

@@ -26,6 +26,7 @@ replace = {
     'cdlength': '<code data-anolis-spec=domcore title=dom-CharacterData-length>length</code>',
     'child': '<span data-anolis-spec=domcore title=concept-tree-child>child</span>',
     'children': '<span data-anolis-spec=domcore title=concept-tree-child>children</span>',
+    'collapsetoend': '<code data-anolis-spec=domrange title=dom-Selection-collapseToEnd>collapseToEnd()</code>',
     'collection': '<span data-anolis-spec=domcore title=concept-collection>collection</span>',
     'contained': '<span data-anolis-spec=domrange>contained</span>',
     'comment': '<code data-anolis-spec=domcore>Comment</code>',

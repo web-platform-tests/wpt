@@ -707,7 +707,7 @@ function myQueryCommandValue(command, range) {
 	// "If command is not supported, raise a NOT_SUPPORTED_ERR exception."
 	//
 	// "If command has no value, raise an INVALID_ACCESS_ERR exception."
-	editCommandMethod(command, "value", range, function() {
+	return editCommandMethod(command, "value", range, function() {
 		// "If command is not enabled, return the empty string."
 		if (!myQueryCommandEnabled(command)) {
 			return "";

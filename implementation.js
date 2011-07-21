@@ -1051,6 +1051,17 @@ var getStateOverride, setStateOverride, unsetStateOverride,
 		delete valueOverrides[command];
 	}
 })();
+
+// "A command with insertion-affecting state is "bold", "italic",
+// "strikethrough", "subscript", "superscript", or "underline"."
+var commandsWithInsertionAffectingState = ["bold", "italic", "strikethrough",
+	"subscript", "superscript", "underline"];
+
+// "A command with insertion-affecting value is "createLink", "fontName",
+// "fontSize", "forecolor", or "hiliteColor"."
+var commandsWithInsertionAffectingValue = ["createlink", "fontname",
+	"fontsize", "forecolor", "hilitecolor"];
+
 //@}
 
 /////////////////////////////
@@ -1235,6 +1246,61 @@ function removeExtraneousLineBreaksFrom(node) {
 	removeExtraneousLineBreaksAtTheEndOf(node);
 }
 
+function recordCurrentStatesAndValues() {
+	// "Let states be a dictionary mapping commands to booleans, initially
+	// empty."
+	var states = {};
+
+	// "For each command with insertion-affecting state command, in order, add
+	// an entry to states mapping command to the result of
+	// queryCommandState(command)."
+	commandsWithInsertionAffectingState.forEach(function(command) {
+		states[command] = myQueryCommandState(command);
+	});
+
+	// "Let values be a dictionary mapping commands to strings, initially
+	// empty."
+	var values = {};
+
+	// "For each command with insertion-affecting value command, in order, add
+	// an entry to values mapping command to the result of
+	// queryCommandValue(command)."
+	commandsWithInsertionAffectingValue.forEach(function(command) {
+		values[command] = myQueryCommandValue(command);
+	});
+
+	// "Return (states, values)."
+	return [states, values];
+}
+
+function restoreStatesAndValues(record) {
+	var states = record[0];
+	var values = record[1];
+
+	// "For each command that is a key in states, in order:"
+	for (var command in states) {
+		// "Let state be the value of command in states."
+		var state = states[command];
+
+		// "If queryCommandState(command) returns something different from
+		// state, call execCommand(command)."
+		if (myQueryCommandState(command) !== state) {
+			myExecCommand(command);
+		}
+	}
+
+	// "For each command that is a key in values, in order:"
+	for (var command in values) {
+		// "Let value be the value of command in values."
+		var value = values[command];
+
+		// "If queryCommandValue(command) returns something different from
+		// value, call execCommand(command, false, value)."
+		if (myQueryCommandValue(command) !== value) {
+			myExecCommand(command, false, value);
+		}
+	}
+}
 
 //@}
 ///// Wrapping a list of nodes /////
@@ -4201,6 +4267,9 @@ function deleteContents() {
 		endBlock = null;
 	}
 
+	// "Record current states and values, and let record be the result."
+	var record = recordCurrentStatesAndValues();
+
 	// "If start node and end node are the same, and start node is an editable
 	// Text node:"
 	if (startNode == endNode
@@ -4215,6 +4284,9 @@ function deleteContents() {
 
 		// "Set range's end to its start."
 		range.setEnd(range.startContainer, range.startOffset);
+
+		// "Restore states and values from record."
+		restoreStatesAndValues(record);
 
 		// "Abort these steps."
 		return;
@@ -4286,14 +4358,19 @@ function deleteContents() {
 
 	// "If block merging is false, or start block or end block is null, or
 	// start block is not in the same editing host as end block, or start block
-	// and end block are the same, set range's end to its start and then abort
-	// these steps."
+	// and end block are the same:"
 	if (!blockMerging
 	|| !startBlock
 	|| !endBlock
 	|| !inSameEditingHost(startBlock, endBlock)
 	|| startBlock == endBlock) {
+		// "Set range's end to its start."
 		range.setEnd(range.startContainer, range.startOffset);
+
+		// "Restore states and values from record."
+		restoreStatesAndValues(record);
+
+		// "Abort these steps."
 		return;
 	}
 
@@ -4357,13 +4434,17 @@ function deleteContents() {
 				endBlock.parentNode.removeChild(endBlock);
 			}
 
+			// "Restore states and values from record."
+			restoreStatesAndValues(record);
+
 			// "Abort these steps."
 			return;
 		}
 
-		// "If end block's firstChild is not an inline node, abort these
-		// steps."
+		// "If end block's firstChild is not an inline node, restore states and
+		// values from record, then abort these steps."
 		if (!isInlineNode(endBlock.firstChild)) {
+			restoreStatesAndValues(record);
 			return;
 		}
 
@@ -4498,6 +4579,9 @@ function deleteContents() {
 	if (!startBlock.hasChildNodes()) {
 		startBlock.appendChild(document.createElement("br"));
 	}
+
+	// "Restore states and values from record."
+	restoreStatesAndValues(record);
 }
 
 
@@ -6870,16 +6954,6 @@ commands.insertparagraph = {
 //@}
 ///// The insertText command /////
 //@{
-// "A command with insertion-affecting state is "bold", "italic",
-// "strikethrough", "subscript", "superscript", or "underline"."
-var commandsWithInsertionAffectingState = ["bold", "italic", "strikethrough",
-	"subscript", "superscript", "underline"];
-
-// "A command with insertion-affecting value is "createLink", "fontName",
-// "fontSize", "forecolor", or "hiliteColor"."
-var commandsWithInsertionAffectingValue = ["createlink", "fontname",
-	"fontsize", "forecolor", "hilitecolor"];
-
 commands.inserttext = {
 	action: function(value) {
 		// "Delete the contents of the active range."
@@ -6951,19 +7025,8 @@ commands.inserttext = {
 			value = "\xa0";
 		}
 
-		// "For each command with insertion-affecting state, in order, call
-		// queryCommandState() and record the result."
-		var recordedStates = {};
-		commandsWithInsertionAffectingState.forEach(function(command) {
-			recordedStates[command] = myQueryCommandState(command, getActiveRange());
-		});
-
-		// "For each command with insertion-affecting value, in order, call
-		// queryCommandValue() and record the result."
-		var recordedValues = {};
-		commandsWithInsertionAffectingValue.forEach(function(command) {
-			recordedValues[command] = myQueryCommandValue(command, getActiveRange());
-		})
+		// "Record current states and values, and let record be the result."
+		var record = recordCurrentStatesAndValues();
 
 		// "If node is a Text node:"
 		if (node.nodeType == Node.TEXT_NODE) {
@@ -7003,30 +7066,8 @@ commands.inserttext = {
 			getActiveRange().setEnd(text, 1);
 		}
 
-		// "For each command with insertion-affecting state command, in order:"
-		commandsWithInsertionAffectingState.forEach(function(command) {
-			// "Call queryCommandState(command)."
-			//
-			// "If the result of the last step does not match the recorded
-			// state, call execCommand(command)."
-			if (myQueryCommandState(command, getActiveRange()) !== recordedStates[command]) {
-				myExecCommand(command, false, "", getActiveRange());
-			}
-		});
-
-		// "For each command with insertion-affecting value command, in order:"
-		commandsWithInsertionAffectingValue.forEach(function(command) {
-			// "Let recorded value be the recorded value for command."
-			var recordedValue = recordedValues[command];
-
-			// "Call queryCommandValue(command)."
-			//
-			// "If the result of the last step is not recorded value, call
-			// execCommand(command, false, recorded value)."
-			if (myQueryCommandValue(command, getActiveRange()) !== recordedValue) {
-				myExecCommand(command, false, recordedValue, getActiveRange());
-			}
-		});
+		// "Restore states and values from record."
+		restoreStatesAndValues(record);
 
 		// "Canonicalize whitespace at the active range's start."
 		canonicalizeWhitespace(getActiveRange().startContainer, getActiveRange().startOffset);

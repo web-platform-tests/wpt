@@ -38,7 +38,7 @@ a code { text-decoration: underline }
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing Commands</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-18-july-2011>Work in Progress &mdash; Last Update 18 July 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-20-july-2011>Work in Progress &mdash; Last Update 20 July 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;<a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a>&gt;
@@ -322,6 +322,8 @@ planning to fix just yet:
 
   <li>Have to make sure that in all the places where we set a selection, it's
   valid.
+
+  <li>Redefine things in terms of ranges, not selections.
 </ul>
 
 <p class=XXX>A variety of other issues are also noted in the text, formatted
@@ -853,6 +855,12 @@ be unset for every <a href=#command>command</a>.
 <p class=XXX>Figure out exactly what commands need to preserve state/value
 overrides.
 
+<p>A <dfn id=command-with-insertion-affecting-state>command with insertion-affecting state</dfn> is "bold", "italic",
+"strikethrough", "subscript", "superscript", or "underline".
+
+<p>A <dfn id=command-with-insertion-affecting-value>command with insertion-affecting value</dfn> is "createLink",
+"fontName", "fontSize", "foreColor", or "hiliteColor".
+
 <p>When the user agent is instructed to run a particular method, it must follow
 the steps defined for that method in the appropriate specification, not act as
 though the method had actually been called from JavaScript.  In particular,
@@ -970,6 +978,51 @@ instead follow these rules:
 <p>To <dfn id=remove-extraneous-line-breaks-from>remove extraneous line breaks from</dfn> a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, first
 <a href=#remove-extraneous-line-breaks-before>remove extraneous line breaks before</a> it, then <a href=#remove-extraneous-line-breaks-at-the-end-of>remove
 extraneous line breaks at the end of</a> it.
+
+<p>To <dfn id=record-current-states-and-values>record current states and values</dfn>:
+
+<ol>
+  <li>Let <var title="">states</var> be a dictionary mapping <a href=#command title=command>commands</a> to booleans, initially empty.
+
+  <li>For each <a href=#command-with-insertion-affecting-state>command with insertion-affecting state</a>
+  <var title="">command</var>, in order, add an entry to <var title="">states</var> mapping
+  <var title="">command</var> to the result of <code title=queryCommandState()><a href=#querycommandstate()>queryCommandState(<var title="">command</var>)</a></code>.
+
+  <li>Let <var title="">values</var> be a dictionary mapping <a href=#command title=command>commands</a> to strings, initially empty.
+
+  <li>For each <a href=#command-with-insertion-affecting-value>command with insertion-affecting value</a>
+  <var title="">command</var>, in order, add an entry to <var title="">values</var> mapping
+  <var title="">command</var> to the result of <code title=queryCommandValue()><a href=#querycommandvalue()>queryCommandValue(<var title="">command</var>)</a></code>.
+
+  <li>Return (<var title="">states</var>, <var title="">values</var>).
+</ol>
+
+<p>To <dfn id=restore-states-and-values>restore states and values</dfn> specified by dictionaries
+(<var title="">states</var>, <var title="">values</var>) returned by the <a href=#record-current-states-and-values>record current
+states and values</a> algorithm:
+
+<ol>
+  <li>For each <var title="">command</var> that is a key in <var title="">states</var>, in order:
+
+  <ol>
+    <li>Let <var title="">state</var> be the value of <var title="">command</var> in
+    <var title="">states</var>.
+
+    <li>If <code title=queryCommandState()><a href=#querycommandstate()>queryCommandState(<var title="">command</var>)</a></code>
+    returns something different from <var title="">state</var>, call <code title=execCommand()><a href=#execcommand()>execCommand(<var title="">command</var>)</a></code>.
+  </ol>
+
+  <li>For each <var title="">command</var> that is a key in <var title="">values</var>, in order:
+
+  <ol>
+    <li>Let <var title="">value</var> be the value of <var title="">command</var> in
+    <var title="">values</var>.
+
+    <li>If <code title=queryCommandValue()><a href=#querycommandvalue()>queryCommandValue(<var title="">command</var>)</a></code>
+    returns something different from <var title="">value</var>, call <code title=execCommand()><a href=#execcommand()>execCommand(<var title="">command</var>, false,
+    <var title="">value</var>)</a></code>.
+  </ol>
+</ol>
 
 
 <h3 id=wrapping-a-list-of-nodes><span class=secno>6.2 </span>Wrapping a list of nodes</h3>
@@ -3606,8 +3659,6 @@ algorithm returns true:
 <!-- TODO: Consider what should happen for block merging in corner cases like
 display: inline-table. -->
 
-<p class=XXX>Needs to preserve state/value in some cases?
-
 <ol>
   <li>If <var title="">range</var> is null, abort these steps and do nothing.
 
@@ -3777,6 +3828,9 @@ display: inline-table. -->
   <var title="">end block</var>, or <var title="">end block</var> is a <code class=external data-anolis-spec=html title="the td element"><a href=http://www.whatwg.org/html/#the-td-element>td</a></code> or <code class=external data-anolis-spec=html title="the th element"><a href=http://www.whatwg.org/html/#the-th-element>th</a></code>, set
   <var title="">end block</var> to null.
 
+  <li><a href=#record-current-states-and-values>Record current states and values</a>, and let <var title="">record</var>
+  be the result.
+
   <!-- This is based on deleteContents() in DOM Range. -->
   <li>If <var title="">start node</var> and <var title="">end node</var> are the same, and
   <var title="">start node</var> is an <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node:
@@ -3789,6 +3843,11 @@ display: inline-table. -->
     <var title="">start offset</var>).
 
     <li>Set <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> to its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>.
+
+    <li><a href=#restore-states-and-values>Restore states and values</a> from <var title="">record</var>.
+    <!-- This is needed to restore any overrides that would otherwise be lost.
+    TODO: In this and similar cases, we could optimize by saving only
+    overrides, not the full state/value. -->
 
     <li>Abort these steps.
   </ol>
@@ -3866,8 +3925,15 @@ display: inline-table. -->
   <li>If <var title="">block merging</var> is false, or <var title="">start block</var> or
   <var title="">end block</var> is null, or <var title="">start block</var> is not <a href=#in-the-same-editing-host>in the
   same editing host</a> as <var title="">end block</var>, or <var title="">start block</var>
-  and <var title="">end block</var> are the same, set <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> to
-  its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> and then abort these steps.
+  and <var title="">end block</var> are the same:
+
+  <ol>
+    <li>Set <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> to its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>.
+
+    <li><a href=#restore-states-and-values>Restore states and values</a> from <var title="">record</var>.
+
+    <li>Abort these steps.
+  </ol>
 
   <!--
   We might have added a br to the start/end block in an earlier step.  Now
@@ -3912,11 +3978,14 @@ display: inline-table. -->
       <li>If <var title="">end block</var> is <a href=#editable>editable</a>, remove it from its
       <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
+      <li><a href=#restore-states-and-values>Restore states and values</a> from <var title="">record</var>.
+
       <li>Abort these steps.
     </ol>
 
     <li>If <var title="">end block</var>'s <code class=external data-anolis-spec=domcore title=dom-Node-firstChild><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-firstchild>firstChild</a></code> is not an <a href=#inline-node>inline
-    node</a>, abort these steps.
+    node</a>, <a href=#restore-states-and-values>restore states and values</a> from <var title="">record</var>,
+    then abort these steps.
 
     <li>Let <var title="">children</var> be a list of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>, initially empty.
 
@@ -4006,6 +4075,8 @@ display: inline-table. -->
   <li>If <var title="">start block</var> has no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, call
   <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("br")</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a> and append the result as the
   last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">start block</var>.
+
+  <li><a href=#restore-states-and-values>Restore states and values</a> from <var title="">record</var>.
 </ol>
 
 
@@ -6724,12 +6795,6 @@ tests, where the value was always "a", IE9 and Firefox 5.0a2 match the spec
 exactly as far as I can tell; Chrome 14 dev and Opera 11.11 might match it in
 theory, but normalize the selection first, so they don't match it in practice.
 -->
-<p>A <dfn id=command-with-insertion-affecting-state>command with insertion-affecting state</dfn> is "bold", "italic",
-"strikethrough", "subscript", "superscript", or "underline".
-
-<p>A <dfn id=command-with-insertion-affecting-value>command with insertion-affecting value</dfn> is "createLink",
-"fontName", "fontSize", "foreColor", or "hiliteColor".
-
 <p><a href=#action>Action</a>:
 
 <!--
@@ -6864,11 +6929,8 @@ this, as Chrome 14 dev does.
   "pre-wrap", set <var title="">value</var> to a non-breaking space (U+00A0).
   <!-- This may change to a space when we canonicalize. -->
 
-  <li>For each <a href=#command-with-insertion-affecting-state>command with insertion-affecting state</a>, in order,
-  call <code><a href=#querycommandstate()>queryCommandState()</a></code> and record the result.
-
-  <li>For each <a href=#command-with-insertion-affecting-value>command with insertion-affecting value</a>, in order,
-  call <code><a href=#querycommandvalue()>queryCommandValue()</a></code> and record the result.
+  <li><a href=#record-current-states-and-values>Record current states and values</a>, and let <var title="">record</var>
+  be the result.
 
   <li>If <var title="">node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node:
 
@@ -6903,29 +6965,7 @@ this, as Chrome 14 dev does.
     <code class=external data-anolis-spec=domrange><a href=http://html5.org/specs/dom-range.html#selection>Selection</a></code>.
   </ol>
 
-  <li>For each <a href=#command-with-insertion-affecting-state>command with insertion-affecting state</a>
-  <var title="">command</var>, in order:
-
-  <ol>
-    <li>Call <code title=queryCommandState()><a href=#querycommandstate()>queryCommandState(<var title="">command</var>)</a></code>.
-
-    <li>If the result of the last step does not match the recorded
-    <a href=#state>state</a>, call <code title=execCommand()><a href=#execcommand()>execCommand(<var title="">command</var>)</a></code>.
-  </ol>
-
-  <li>For each <a href=#command-with-insertion-affecting-value>command with insertion-affecting value</a>
-  <var title="">command</var>, in order:
-
-  <ol>
-    <li>Let <var title="">recorded value</var> be the recorded <a href=#value>value</a> for
-    <var title="">command</var>.
-
-    <li>Call <code title=queryCommandValue()><a href=#querycommandvalue()>queryCommandValue(<var title="">command</var>)</a></code>.
-
-    <li>If the result of the last step is not <var title="">recorded value</var>, call
-    <code title=execCommand()><a href=#execcommand()>execCommand(<var title="">command</var>, false,
-    <var title="">recorded value</var>)</a></code>.
-  </ol>
+  <li><a href=#restore-states-and-values>Restore states and values</a> from <var title="">record</var>.
 
   <li><a href=#canonicalize-whitespace>Canonicalize whitespace</a> at the <a href=#active-range>active range</a>'s
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>.

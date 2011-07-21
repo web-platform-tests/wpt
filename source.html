@@ -254,6 +254,8 @@ planning to fix just yet:
 
   <li>Have to make sure that in all the places where we set a selection, it's
   valid.
+
+  <li>Redefine things in terms of ranges, not selections.
 </ul>
 
 <p class=XXX>A variety of other issues are also noted in the text, formatted
@@ -805,6 +807,12 @@ be unset for every <span>command</span>.
 <p class=XXX>Figure out exactly what commands need to preserve state/value
 overrides.
 
+<p>A <dfn>command with insertion-affecting state</dfn> is "bold", "italic",
+"strikethrough", "subscript", "superscript", or "underline".
+
+<p>A <dfn>command with insertion-affecting value</dfn> is "createLink",
+"fontName", "fontSize", "foreColor", or "hiliteColor".
+
 <p>When the user agent is instructed to run a particular method, it must follow
 the steps defined for that method in the appropriate specification, not act as
 though the method had actually been called from JavaScript.  In particular,
@@ -924,6 +932,59 @@ instead follow these rules:
 <p>To <dfn>remove extraneous line breaks from</dfn> a [[node]], first
 <span>remove extraneous line breaks before</span> it, then <span>remove
 extraneous line breaks at the end of</span> it.
+
+<p>To <dfn>record current states and values</dfn>:
+
+<ol>
+  <li>Let <var>states</var> be a dictionary mapping <span
+  title=command>commands</span> to booleans, initially empty.
+
+  <li>For each <span>command with insertion-affecting state</span>
+  <var>command</var>, in order, add an entry to <var>states</var> mapping
+  <var>command</var> to the result of <code
+  title=queryCommandState()>queryCommandState(<var>command</var>)</code>.
+
+  <li>Let <var>values</var> be a dictionary mapping <span
+  title=command>commands</span> to strings, initially empty.
+
+  <li>For each <span>command with insertion-affecting value</span>
+  <var>command</var>, in order, add an entry to <var>values</var> mapping
+  <var>command</var> to the result of <code
+  title=queryCommandValue()>queryCommandValue(<var>command</var>)</code>.
+
+  <li>Return (<var>states</var>, <var>values</var>).
+</ol>
+
+<p>To <dfn>restore states and values</dfn> specified by dictionaries
+(<var>states</var>, <var>values</var>) returned by the <span>record current
+states and values</span> algorithm:
+
+<ol>
+  <li>For each <var>command</var> that is a key in <var>states</var>, in order:
+
+  <ol>
+    <li>Let <var>state</var> be the value of <var>command</var> in
+    <var>states</var>.
+
+    <li>If <code
+    title=queryCommandState()>queryCommandState(<var>command</var>)</code>
+    returns something different from <var>state</var>, call <code
+    title=execCommand()>execCommand(<var>command</var>)</code>.
+  </ol>
+
+  <li>For each <var>command</var> that is a key in <var>values</var>, in order:
+
+  <ol>
+    <li>Let <var>value</var> be the value of <var>command</var> in
+    <var>values</var>.
+
+    <li>If <code
+    title=queryCommandValue()>queryCommandValue(<var>command</var>)</code>
+    returns something different from <var>value</var>, call <code
+    title=execCommand()>execCommand(<var>command</var>, false,
+    <var>value</var>)</code>.
+  </ol>
+</ol>
 
 <!-- @} -->
 <h3>Wrapping a list of nodes</h3>
@@ -3593,8 +3654,6 @@ algorithm returns true:
 <!-- TODO: Consider what should happen for block merging in corner cases like
 display: inline-table. -->
 
-<p class=XXX>Needs to preserve state/value in some cases?
-
 <ol>
   <li>If <var>range</var> is null, abort these steps and do nothing.
 
@@ -3764,6 +3823,9 @@ display: inline-table. -->
   <var>end block</var>, or <var>end block</var> is a [[td]] or [[th]], set
   <var>end block</var> to null.
 
+  <li><span>Record current states and values</span>, and let <var>record</var>
+  be the result.
+
   <!-- This is based on deleteContents() in DOM Range. -->
   <li>If <var>start node</var> and <var>end node</var> are the same, and
   <var>start node</var> is an <span>editable</span> [[text]] node:
@@ -3776,6 +3838,11 @@ display: inline-table. -->
     <var>start offset</var>).
 
     <li>Set <var>range</var>'s [[rangeend]] to its [[rangestart]].
+
+    <li><span>Restore states and values</span> from <var>record</var>.
+    <!-- This is needed to restore any overrides that would otherwise be lost.
+    TODO: In this and similar cases, we could optimize by saving only
+    overrides, not the full state/value. -->
 
     <li>Abort these steps.
   </ol>
@@ -3853,8 +3920,15 @@ display: inline-table. -->
   <li>If <var>block merging</var> is false, or <var>start block</var> or
   <var>end block</var> is null, or <var>start block</var> is not <span>in the
   same editing host</span> as <var>end block</var>, or <var>start block</var>
-  and <var>end block</var> are the same, set <var>range</var>'s [[rangeend]] to
-  its [[rangestart]] and then abort these steps.
+  and <var>end block</var> are the same:
+
+  <ol>
+    <li>Set <var>range</var>'s [[rangeend]] to its [[rangestart]].
+
+    <li><span>Restore states and values</span> from <var>record</var>.
+
+    <li>Abort these steps.
+  </ol>
 
   <!--
   We might have added a br to the start/end block in an earlier step.  Now
@@ -3899,11 +3973,14 @@ display: inline-table. -->
       <li>If <var>end block</var> is <span>editable</span>, remove it from its
       [[parent]].
 
+      <li><span>Restore states and values</span> from <var>record</var>.
+
       <li>Abort these steps.
     </ol>
 
     <li>If <var>end block</var>'s [[firstchild]] is not an <span>inline
-    node</span>, abort these steps.
+    node</span>, <span>restore states and values</span> from <var>record</var>,
+    then abort these steps.
 
     <li>Let <var>children</var> be a list of [[nodes]], initially empty.
 
@@ -3993,6 +4070,8 @@ display: inline-table. -->
   <li>If <var>start block</var> has no [[children]], call
   [[createelement|"br"]] on the [[contextobject]] and append the result as the
   last [[child]] of <var>start block</var>.
+
+  <li><span>Restore states and values</span> from <var>record</var>.
 </ol>
 
 <!-- @} -->
@@ -6726,12 +6805,6 @@ tests, where the value was always "a", IE9 and Firefox 5.0a2 match the spec
 exactly as far as I can tell; Chrome 14 dev and Opera 11.11 might match it in
 theory, but normalize the selection first, so they don't match it in practice.
 -->
-<p>A <dfn>command with insertion-affecting state</dfn> is "bold", "italic",
-"strikethrough", "subscript", "superscript", or "underline".
-
-<p>A <dfn>command with insertion-affecting value</dfn> is "createLink",
-"fontName", "fontSize", "foreColor", or "hiliteColor".
-
 <p><span>Action</span>:
 
 <!--
@@ -6866,11 +6939,8 @@ this, as Chrome 14 dev does.
   "pre-wrap", set <var>value</var> to a non-breaking space (U+00A0).
   <!-- This may change to a space when we canonicalize. -->
 
-  <li>For each <span>command with insertion-affecting state</span>, in order,
-  call <code>queryCommandState()</code> and record the result.
-
-  <li>For each <span>command with insertion-affecting value</span>, in order,
-  call <code>queryCommandValue()</code> and record the result.
+  <li><span>Record current states and values</span>, and let <var>record</var>
+  be the result.
 
   <li>If <var>node</var> is a [[text]] node:
 
@@ -6907,32 +6977,7 @@ this, as Chrome 14 dev does.
     [[selection]].
   </ol>
 
-  <li>For each <span>command with insertion-affecting state</span>
-  <var>command</var>, in order:
-
-  <ol>
-    <li>Call <code
-    title=queryCommandState()>queryCommandState(<var>command</var>)</code>.
-
-    <li>If the result of the last step does not match the recorded
-    <span>state</span>, call <code
-    title=execCommand()>execCommand(<var>command</var>)</code>.
-  </ol>
-
-  <li>For each <span>command with insertion-affecting value</span>
-  <var>command</var>, in order:
-
-  <ol>
-    <li>Let <var>recorded value</var> be the recorded <span>value</span> for
-    <var>command</var>.
-
-    <li>Call <code
-    title=queryCommandValue()>queryCommandValue(<var>command</var>)</code>.
-
-    <li>If the result of the last step is not <var>recorded value</var>, call
-    <code title=execCommand()>execCommand(<var>command</var>, false,
-    <var>recorded value</var>)</code>.
-  </ol>
+  <li><span>Restore states and values</span> from <var>record</var>.
 
   <li><span>Canonicalize whitespace</span> at the <span>active range</span>'s
   [[rangestart]].

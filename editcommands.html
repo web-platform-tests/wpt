@@ -38,7 +38,7 @@ a code { text-decoration: underline }
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing Commands</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-20-july-2011>Work in Progress &mdash; Last Update 20 July 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-21-july-2011>Work in Progress &mdash; Last Update 21 July 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;<a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a>&gt;
@@ -985,14 +985,16 @@ extraneous line breaks at the end of</a> it.
   <li>Let <var title="">states</var> be a dictionary mapping <a href=#command title=command>commands</a> to booleans, initially empty.
 
   <li>For each <a href=#command-with-insertion-affecting-state>command with insertion-affecting state</a>
-  <var title="">command</var>, in order, add an entry to <var title="">states</var> mapping
-  <var title="">command</var> to the result of <code title=queryCommandState()><a href=#querycommandstate()>queryCommandState(<var title="">command</var>)</a></code>.
+  <var title="">command</var>, in order, if there is a <a href=#state-override>state override</a> for
+  <var title="">command</var>, add an entry to <var title="">states</var> mapping
+  <var title="">command</var> to its <a href=#state-override>state override</a>.
 
   <li>Let <var title="">values</var> be a dictionary mapping <a href=#command title=command>commands</a> to strings, initially empty.
 
   <li>For each <a href=#command-with-insertion-affecting-value>command with insertion-affecting value</a>
-  <var title="">command</var>, in order, add an entry to <var title="">values</var> mapping
-  <var title="">command</var> to the result of <code title=queryCommandValue()><a href=#querycommandvalue()>queryCommandValue(<var title="">command</var>)</a></code>.
+  <var title="">command</var>, in order, if there is a <a href=#value-override>value override</a> for
+  <var title="">command</var>, add an entry to <var title="">values</var> mapping
+  <var title="">command</var> to its <a href=#value-override>value override</a>.
 
   <li>Return (<var title="">states</var>, <var title="">values</var>).
 </ol>

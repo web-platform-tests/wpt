@@ -1251,22 +1251,26 @@ function recordCurrentStatesAndValues() {
 	// empty."
 	var states = {};
 
-	// "For each command with insertion-affecting state command, in order, add
-	// an entry to states mapping command to the result of
-	// queryCommandState(command)."
+	// "For each command with insertion-affecting state command, in order, if
+	// there is a state override for command, add an entry to states mapping
+	// command to its state override."
 	commandsWithInsertionAffectingState.forEach(function(command) {
-		states[command] = myQueryCommandState(command);
+		if (getStateOverride(command) !== undefined) {
+			states[command] = getStateOverride(command);
+		}
 	});
 
 	// "Let values be a dictionary mapping commands to strings, initially
 	// empty."
 	var values = {};
 
-	// "For each command with insertion-affecting value command, in order, add
-	// an entry to values mapping command to the result of
-	// queryCommandValue(command)."
+	// "For each command with insertion-affecting value command, in order, if
+	// there is a value override for command, add an entry to values mapping
+	// command to its value override."
 	commandsWithInsertionAffectingValue.forEach(function(command) {
-		values[command] = myQueryCommandValue(command);
+		if (getValueOverride(command) !== undefined) {
+			values[command] = getValueOverride(command);
+		}
 	});
 
 	// "Return (states, values)."

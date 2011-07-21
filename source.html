@@ -940,17 +940,17 @@ extraneous line breaks at the end of</span> it.
   title=command>commands</span> to booleans, initially empty.
 
   <li>For each <span>command with insertion-affecting state</span>
-  <var>command</var>, in order, add an entry to <var>states</var> mapping
-  <var>command</var> to the result of <code
-  title=queryCommandState()>queryCommandState(<var>command</var>)</code>.
+  <var>command</var>, in order, if there is a <span>state override</span> for
+  <var>command</var>, add an entry to <var>states</var> mapping
+  <var>command</var> to its <span>state override</span>.
 
   <li>Let <var>values</var> be a dictionary mapping <span
   title=command>commands</span> to strings, initially empty.
 
   <li>For each <span>command with insertion-affecting value</span>
-  <var>command</var>, in order, add an entry to <var>values</var> mapping
-  <var>command</var> to the result of <code
-  title=queryCommandValue()>queryCommandValue(<var>command</var>)</code>.
+  <var>command</var>, in order, if there is a <span>value override</span> for
+  <var>command</var>, add an entry to <var>values</var> mapping
+  <var>command</var> to its <span>value override</span>.
 
   <li>Return (<var>states</var>, <var>values</var>).
 </ol>

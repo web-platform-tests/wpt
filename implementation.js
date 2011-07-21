@@ -2886,29 +2886,11 @@ function setSelectionValue(command, newValue) {
 	if (!getAllEffectivelyContainedNodes(getActiveRange())
 	.filter(function(node) { return node.nodeType == Node.TEXT_NODE})
 	.some(isEditable)) {
-		// "If command is in the following list, set the state override
-		// appropriately:"
-		switch (command) {
-			// "bold: True if new value is not null and is greater than or
-			// equal to 600, false otherwise."
-			case "bold": setStateOverride(command, newValue === "bold"); break;
-
-			// "italic: True if new value is "italic" or "oblique", false
-			// otherwise."
-			case "italic": setStateOverride(command, newValue === "italic"); break;
-
-			// "strikethrough: True if new value is "line-through", false
-			// otherwise."
-			case "strikethrough": setStateOverride(command, newValue === "line-through"); break;
-
-			// "subscript: True if new value is "sub", false otherwise."
-			case "subscript": setStateOverride(command, newValue === "sub"); break;
-
-			// "superscript: True if new value is "super", false otherwise."
-			case "superscript": setStateOverride(command, newValue === "super"); break;
-
-			// "underline: True if new value is "underline", false otherwise."
-			case "underline": setStateOverride(command, newValue === "underline");
+		// "If command has inline command activated values, set the state
+		// override to true if new value is among them and false if it's not."
+		if ("inlineCommandActivatedValues" in commands[command]) {
+			setStateOverride(command, commands[command].inlineCommandActivatedValues
+				.indexOf(newValue) != -1);
 		}
 
 		// "If command is "subscript", unset the state override for

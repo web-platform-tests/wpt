@@ -2331,24 +2331,9 @@ as desired.
   contained</span> in the <span>active range</span>:
 
   <ol>
-    <li>If <var>command</var> is in the following list, set the <span>state
-    override</span> appropriately:
-
-    <ul>
-      <li>bold: True if <var>new value</var> is not null and is greater than or equal
-      to 600, false otherwise.
-
-      <li>italic: True if <var>new value</var> is "italic" or "oblique", false
-      otherwise.
-
-      <li>strikethrough: True if <var>new value</var> is "line-through", false otherwise.
-
-      <li>subscript: True if <var>new value</var> is "sub", false otherwise.
-
-      <li>superscript: True if <var>new value</var> is "super", false otherwise.
-
-      <li>underline: True if <var>new value</var> is "underline", false otherwise.
-    </ul>
+    <li>If <var>command</var> has <span>inline command activated values</span>,
+    set the <span>state override</span> to true if <var>new value</var> is
+    among them and false if it's not.
 
     <li>If <var>command</var> is "subscript", unset the <span>state
     override</span> for "superscript".

@@ -2346,24 +2346,9 @@ as desired.
   contained</a> in the <a href=#active-range>active range</a>:
 
   <ol>
-    <li>If <var title="">command</var> is in the following list, set the <a href=#state-override>state
-    override</a> appropriately:
-
-    <ul>
-      <li>bold: True if <var title="">new value</var> is not null and is greater than or equal
-      to 600, false otherwise.
-
-      <li>italic: True if <var title="">new value</var> is "italic" or "oblique", false
-      otherwise.
-
-      <li>strikethrough: True if <var title="">new value</var> is "line-through", false otherwise.
-
-      <li>subscript: True if <var title="">new value</var> is "sub", false otherwise.
-
-      <li>superscript: True if <var title="">new value</var> is "super", false otherwise.
-
-      <li>underline: True if <var title="">new value</var> is "underline", false otherwise.
-    </ul>
+    <li>If <var title="">command</var> has <a href=#inline-command-activated-values>inline command activated values</a>,
+    set the <a href=#state-override>state override</a> to true if <var title="">new value</var> is
+    among them and false if it's not.
 
     <li>If <var title="">command</var> is "subscript", unset the <a href=#state-override>state
     override</a> for "superscript".

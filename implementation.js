@@ -2911,6 +2911,18 @@ function setSelectionValue(command, newValue) {
 			case "underline": setStateOverride(command, newValue === "underline");
 		}
 
+		// "If command is "subscript", unset the state override for
+		// "superscript"."
+		if (command == "subscript") {
+			unsetStateOverride("superscript");
+		}
+
+		// "If command is "superscript", unset the state override for
+		// "subscript"."
+		if (command == "superscript") {
+			unsetStateOverride("subscript");
+		}
+
 		// "If new value is null, unset the value override (if any)."
 		if (newValue === null) {
 			unsetValueOverride(command);

@@ -3307,10 +3307,8 @@ var tests = {
 		['foo[]bar', 'forecolor', ['inserttext', 'a']],
 		['foo[]bar', 'hilitecolor', ['inserttext', 'a']],
 
-		// Lots and lots of stuff in a row
-		['foo[]bar', 'bold', 'italic', 'strikethrough', 'subscript',
-		'superscript', 'underline', 'createlink', 'fontname', 'fontsize',
-		'forecolor', 'hilitecolor', ['inserttext', 'a']],
+		['foo[]bar', 'superscript', 'subscript', ['inserttext', 'a']],
+		['foo[]bar', 'subscript', 'superscript', ['inserttext', 'a']],
 	],
 	//@}
 };

@@ -1,0 +1,45 @@
+<!doctype html>
+<!-- This file was generated from 'preload-none-buffered.tpl' using 'tpl2tc.py'. Please do not edit manually! -->
+<title>HTMLMediaElement.preload:none 'buffered' should be empty - wave</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/common.js"></script>
+<p id="log">FAIL (script didn't run)</p>
+<audio preload="none" controls></audio>
+<video preload="none" controls></video>
+<script>
+var tests = init_tests("HTMLAudioElement.preload:none 'buffered' should be empty - wave", "HTMLVideoElement.preload:none 'buffered' should be empty - wave", {timeout:5000});
+tests.forEach(function(vars) {
+    var t = vars[0];
+    t.step(function() {
+	var tag_name = vars[1];
+	var node = document.getElementsByTagName(tag_name)[0];
+	startTest();
+
+	function startTest() {
+	    var events  = ['loadstart', 'progress', 'suspend', 'abort', 'error', 'loadedmetadata', 'loadeddata', 'canplay', 'canplaythrough'];
+	    for (var e in events) {
+		node.addEventListener(events[e], handleEvent, false);
+	    }
+	    node.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAAAA';
+	}
+
+	function handleEvent(e) {
+	    if (e.type == 'error' && !node.canPlayType(tag_name + '/wave')) {
+		t.step(function() {
+		    assert_unreached("Cannot play '" + tag_name + "/wave'");
+		    t.done();
+		});
+	    }
+	    if (e.type == 'suspend') endTest();
+	}
+
+	function endTest() {
+	    t.step(function() {
+		assert_equals(node.buffered.length, 0, "'buffered' should be empty");
+		t.done();
+	    });
+	}
+    });
+});
+</script>

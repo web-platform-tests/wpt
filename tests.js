@@ -2956,8 +2956,8 @@ var tests = {
 		'foo<span class=foo>b[a]r</span>baz',
 		'[foo<b style="font-weight: normal">bar</b>baz]',
 		'foo<b style="font-weight: normal">b[a]r</b>baz',
-		'<p style="background-color: blue">foo[bar]baz</p>',
-		'<p><span style="background-color: blue">foo[bar]baz</span></p>',
+		'<p style="background-color: aqua">foo[bar]baz</p>',
+		'<p><span style="background-color: aqua">foo[bar]baz</span></p>',
 		'<p style="font-weight: bold">foo[bar]baz</p>',
 		'<b><p style="font-weight: bold">foo[bar]baz</p></b>',
 		'<p style="font-variant: small-caps">foo[bar]baz</p>',
@@ -3290,6 +3290,29 @@ var tests = {
 	stylewithcss: ['foo[bar]baz'],
 	usecss: ['foo[bar]baz'],
 	quasit: ['foo[bar]baz'],
+	multitest: [
+	//@{
+		// Insertion-affecting state
+		['foo[]bar', 'bold', ['inserttext', 'a']],
+		['foo[]bar', 'italic', ['inserttext', 'a']],
+		['foo[]bar', 'strikethrough', ['inserttext', 'a']],
+		['foo[]bar', 'subscript', ['inserttext', 'a']],
+		['foo[]bar', 'superscript', ['inserttext', 'a']],
+		['foo[]bar', 'underline', ['inserttext', 'a']],
+
+		// Insertion-affecting value
+		['foo[]bar', 'createlink', ['inserttext', 'a']],
+		['foo[]bar', 'fontname', ['inserttext', 'a']],
+		['foo[]bar', 'fontsize', ['inserttext', 'a']],
+		['foo[]bar', 'forecolor', ['inserttext', 'a']],
+		['foo[]bar', 'hilitecolor', ['inserttext', 'a']],
+
+		// Lots and lots of stuff in a row
+		['foo[]bar', 'bold', 'italic', 'strikethrough', 'subscript',
+		'superscript', 'underline', 'createlink', 'fontname', 'fontsize',
+		'forecolor', 'hilitecolor', ['inserttext', 'a']],
+	],
+	//@}
 };
 tests.backcolor = tests.hilitecolor;
 tests.insertlinebreak = tests.insertparagraph;
@@ -3337,7 +3360,11 @@ var doubleTestingCommands = [
 
 function prettyPrint(value) {
 //@{
-	// Stolen from testharness.js
+	// Partly stolen from testharness.js
+	if (typeof value != "string") {
+		return String(value);
+	}
+
 	for (var i = 0; i < 32; i++) {
 		var replace = "\\";
 		switch (i) {
@@ -3376,7 +3403,7 @@ function prettyPrint(value) {
 		}
 		value = value.replace(String.fromCharCode(i), replace);
 	}
-	return value;
+	return '"' + value.replace(/\\/g, "\\\\").replace(/"/g, '\\"') + '"';
 }
 //@}
 
@@ -3391,13 +3418,6 @@ function doSetup(selector, idx) {
 	return tr;
 }
 //@}
-
-function trivialPrettyPrint(value) {
-	if (typeof value == "string") {
-		return '"' + value.replace(/\\/g, "\\\\").replace(/"/g, '\\"') + '"';
-	}
-	return value;
-}
 
 function queryOutputHelper(beforeIndeterm, beforeState, beforeValue, afterIndeterm, afterState, afterValue, command, value) {
 //@{
@@ -3437,8 +3457,8 @@ function queryOutputHelper(beforeIndeterm, beforeState, beforeValue, afterIndete
 				? "good-result"
 				: "bad-result";
 	}
-	beforeDiv.lastChild.textContent = "indeterm " + trivialPrettyPrint(beforeIndeterm);
-	afterDiv.lastChild.textContent = "indeterm " + trivialPrettyPrint(afterIndeterm);
+	beforeDiv.lastChild.textContent = "indeterm " + prettyPrint(beforeIndeterm);
+	afterDiv.lastChild.textContent = "indeterm " + prettyPrint(afterIndeterm);
 
 	beforeDiv.appendChild(document.createTextNode(", "));
 	afterDiv.appendChild(document.createTextNode(", "));
@@ -3478,8 +3498,8 @@ function queryOutputHelper(beforeIndeterm, beforeState, beforeValue, afterIndete
 				? "good-result"
 				: "bad-result";
 	}
-	beforeDiv.lastChild.textContent = "state " + trivialPrettyPrint(beforeState);
-	afterDiv.lastChild.textContent = "state " + trivialPrettyPrint(afterState);
+	beforeDiv.lastChild.textContent = "state " + prettyPrint(beforeState);
+	afterDiv.lastChild.textContent = "state " + prettyPrint(afterState);
 
 	beforeDiv.appendChild(document.createTextNode(", "));
 	afterDiv.appendChild(document.createTextNode(", "));
@@ -3537,45 +3557,94 @@ function queryOutputHelper(beforeIndeterm, beforeState, beforeValue, afterIndete
 				? "good-result"
 				: "bad-result";
 	}
-	beforeDiv.lastChild.textContent = "value " + trivialPrettyPrint(beforeValue);
-	afterDiv.lastChild.textContent = "value " + trivialPrettyPrint(afterValue);
+	beforeDiv.lastChild.textContent = "value " + prettyPrint(beforeValue);
+	afterDiv.lastChild.textContent = "value " + prettyPrint(afterValue);
 
 	return frag;
 }
 //@}
 
-function doInputCell(tr, test) {
+function normalizeTest(command, test, styleWithCss) {
 //@{
-	var value = null;
-	if (typeof test != "string") {
-		value = test[0];
-		test = test[1];
+	// Our standard format for test processing is:
+	//   [input HTML, [command1, value1], [command2, value2], ...]
+	// But this is verbose, so we actually use three different formats in the
+	// tests and multiTests arrays:
+	//
+	// 1) Plain string giving the input HTML.  The command is implicit from the
+	// key of the tests array.  If the command takes values, the value is given
+	// by defaultValues, otherwise it's "".  Has to be converted to
+	// [input HTML, [command, value].
+	//
+	// 2) Two-element array [value, input HTML].  Has to be converted to
+	// [input HTML, [command, value]].
+	//
+	// 3) An element of multiTests.  This just has to have values filled in.
+	//
+	// Optionally, a styleWithCss argument can be passed, either true or false.
+	// If it is, we'll prepend a styleWithCss invocation.
+	if (command == "multitest") {
+		// Magic
+		test = JSON.parse(test);
+	}
+
+	if (typeof test == "string") {
+		if (command in defaultValues) {
+			test = [test, [command, defaultValues[command]]];
+		} else {
+			test = [test, [command, ""]];
+		}
+	} else if (test.length == 2) {
+		test = [test[1], [command, String(test[0])]];
+	} else for (var i = 1; i < test.length; i++) {
+		if (typeof test[i] == "string"
+		&& test[i] in defaultValues) {
+			test[i] = [test[i], defaultValues[test[i]]];
+		} else if (typeof test[i] == "string") {
+			test[i] = [test[i], ""];
+		}
+	}
+
+	if (command != "multitest") {
+		test.splice(1, 0, ["stylewithcss", String(styleWithCss)]);
+	}
+
+	return test;
+}
+//@}
+
+function doInputCell(tr, test, command) {
+//@{
+	var testHtml = test[0];
+
+	var msg = null;
+	if (command in defaultValues) {
+		// Single command with a value, possibly with a styleWithCss stuck
+		// before.  We don't need to specify the command itself, since this
+		// presumably isn't in multiTests, so the command is already given by
+		// the section header.
+		msg = 'value: ' + prettyPrint(test[test.length - 1][1]);
+	} else if (command == "multitest") {
+		// Uses a different input format
+		msg = JSON.stringify(test);
 	}
 	var inputCell = document.createElement("td");
 	inputCell.innerHTML = "<div></div><div></div>";
-	inputCell.firstChild.innerHTML = test;
+	inputCell.firstChild.innerHTML = testHtml;
 	inputCell.lastChild.textContent = inputCell.firstChild.innerHTML;
-	if (value !== null) {
-		value = prettyPrint(value);
-		inputCell.lastChild.textContent += ' (value: "' + value + '")';
+	if (msg !== null) {
+		inputCell.lastChild.textContent += " (" + msg + ")";
 	}
 	tr.appendChild(inputCell);
 }
 //@}
 
-function doSpecCell(tr, test, command, styleWithCss) {
+function doSpecCell(tr, test, command) {
 //@{
-	var value;
-
-	if (typeof test != "string") {
-		value = test[0];
-		test = test[1];
-	}
-
 	var specCell = document.createElement("td");
 	tr.appendChild(specCell);
 	try {
-		var points = setupCell(specCell, test);
+		var points = setupCell(specCell, test[0]);
 		var range = document.createRange();
 		range.setStart(points[0], points[1]);
 		range.setEnd(points[2], points[3]);
@@ -3585,23 +3654,28 @@ function doSpecCell(tr, test, command, styleWithCss) {
 		}
 		specCell.firstChild.contentEditable = "true";
 		specCell.firstChild.spellcheck = false;
-		myExecCommand("styleWithCSS", false, styleWithCss, range);
 
-		try { var beforeIndeterm = myQueryCommandIndeterm(command, range) }
-		catch(e) { beforeIndeterm = "Exception" }
-		try { var beforeState = myQueryCommandState(command, range) }
-		catch(e) { beforeState = "Exception" }
-		try { var beforeValue = myQueryCommandValue(command, range) }
-		catch(e) { beforeValue = "Exception" }
+		if (command != "multitest") {
+			try { var beforeIndeterm = myQueryCommandIndeterm(command, range) }
+			catch(e) { beforeIndeterm = "Exception" }
+			try { var beforeState = myQueryCommandState(command, range) }
+			catch(e) { beforeState = "Exception" }
+			try { var beforeValue = myQueryCommandValue(command, range) }
+			catch(e) { beforeValue = "Exception" }
+		}
 
-		myExecCommand(command, false, value, range);
+		for (var i = 1; i < test.length; i++) {
+			myExecCommand(test[i][0], false, test[i][1], range);
+		}
 
-		try { var afterIndeterm = myQueryCommandIndeterm(command, range) }
-		catch(e) { afterIndeterm = "Exception" }
-		try { var afterState = myQueryCommandState(command, range) }
-		catch(e) { afterState = "Exception" }
-		try { var afterValue = myQueryCommandValue(command, range) }
-		catch(e) { afterValue = "Exception" }
+		if (command != "multitest") {
+			try { var afterIndeterm = myQueryCommandIndeterm(command, range) }
+			catch(e) { afterIndeterm = "Exception" }
+			try { var afterState = myQueryCommandState(command, range) }
+			catch(e) { afterState = "Exception" }
+			try { var afterValue = myQueryCommandValue(command, range) }
+			catch(e) { afterValue = "Exception" }
+		}
 
 		specCell.firstChild.contentEditable = "inherit";
 		specCell.firstChild.removeAttribute("spellcheck");
@@ -3634,10 +3708,12 @@ function doSpecCell(tr, test, command, styleWithCss) {
 		}
 
 		specCell.lastChild.textContent = specCell.firstChild.innerHTML;
-		specCell.lastChild.appendChild(queryOutputHelper(
-			beforeIndeterm, beforeState, beforeValue,
-			afterIndeterm, afterState, afterValue,
-			command, value));
+		if (command != "multitest") {
+			specCell.lastChild.appendChild(queryOutputHelper(
+				beforeIndeterm, beforeState, beforeValue,
+				afterIndeterm, afterState, afterValue,
+				command, test[2][1]));
+		}
 	} catch (e) {
 		specCell.firstChild.contentEditable = "inherit";
 		specCell.firstChild.removeAttribute("spellcheck");
@@ -3658,9 +3734,14 @@ function doSpecCell(tr, test, command, styleWithCss) {
 		}
 	}
 
-	var key = "execcommand-" + command
-		+ "-" + Number(styleWithCss)
-		+ "-" + tr.firstChild.lastChild.textContent;
+	if (command != "multitest") {
+		// Old storage format
+		var key = "execcommand-" + command
+			+ "-" + (test[1][1] == "false" ? "0" : "1")
+			+ "-" + tr.firstChild.lastChild.textContent;
+	} else {
+		var key = "execcommand-" + JSON.stringify(test);
+	}
 
 	// Use getItem() instead of direct property access to work around Firefox
 	// bug: https://bugzilla.mozilla.org/show_bug.cgi?id=532062
@@ -3815,7 +3896,7 @@ function doTearDown(command) {
 }
 //@}
 
-function setupCell(cell, test) {
+function setupCell(cell, html) {
 //@{
 	cell.innerHTML = "<div></div><div></div>";
 
@@ -3823,7 +3904,7 @@ function setupCell(cell, test) {
 	var re = /\{|\[|data-start/g;
 	var markers = [];
 	var marker;
-	while (marker = re.exec(test)) {
+	while (marker = re.exec(html)) {
 		markers.push(marker);
 	}
 	if (markers.length != 1) {
@@ -3833,7 +3914,7 @@ function setupCell(cell, test) {
 	var re = /\}|\]|data-end/g;
 	var markers = [];
 	var marker;
-	while (marker = re.exec(test)) {
+	while (marker = re.exec(html)) {
 		markers.push(marker);
 	}
 	if (markers.length != 1) {
@@ -3841,7 +3922,7 @@ function setupCell(cell, test) {
 	}
 
 	var node = cell.firstChild;
-	node.innerHTML = test;
+	node.innerHTML = html;
 
 	var startNode, startOffset, endNode, endOffset;
 

@@ -549,13 +549,15 @@ function parseSimpleColor(color) {
 /////////////////////////////////////////////////
 //@{
 
+var executionStackDepth = 0;
+
 // Helper function for common behavior.
-function setupEditCommandMethod(command, prop, range) {
-	// Set up our global range magic
-	globalRange = null;
-	if (typeof range != "undefined") {
+function editCommandMethod(command, prop, range, callback) {
+	// Set up our global range magic, but only if we're the outermost function
+	if (executionStackDepth == 0 && typeof range != "undefined") {
 		globalRange = range;
-	} else {
+	} else if (executionStackDepth == 0) {
+		globalRange = null;
 		globalRange = getActiveRange();
 	}
 
@@ -575,6 +577,16 @@ function setupEditCommandMethod(command, prop, range) {
 	&& !(prop in commands[command])) {
 		throw "INVALID_ACCESS_ERR";
 	}
+
+	executionStackDepth++;
+	try {
+		var ret = callback();
+	} catch(e) {
+		executionStackDepth--;
+		throw e;
+	}
+	executionStackDepth--;
+	return ret;
 }
 
 function myExecCommand(command, showUi, value, range) {
@@ -601,19 +613,19 @@ function myExecCommand(command, showUi, value, range) {
 	// "If command is not supported, raise a NOT_SUPPORTED_ERR exception."
 	//
 	// "If command has no action, raise an INVALID_ACCESS_ERR exception."
-	setupEditCommandMethod(command, "action", range);
+	return editCommandMethod(command, "action", range, (function(command, showUi, value) { return function() {
+		// "If command is not enabled, return false."
+		if (!myQueryCommandEnabled(command)) {
+			return false;
+		}
 
-	// "If command is not enabled, return false."
-	if (!myQueryCommandEnabled(command, range)) {
-		return false;
-	}
+		// "Take the action for command, passing value to the instructions as an
+		// argument."
+		commands[command].action(value);
 
-	// "Take the action for command, passing value to the instructions as an
-	// argument."
-	commands[command].action(value);
-
-	// "Return true."
-	return true;
+		// "Return true."
+		return true;
+	}})(command, showUi, value));
 }
 
 function myQueryCommandEnabled(command, range) {
@@ -622,17 +634,17 @@ function myQueryCommandEnabled(command, range) {
 	command = command.toLowerCase();
 
 	// "If command is not supported, raise a NOT_SUPPORTED_ERR exception."
-	setupEditCommandMethod(command, "action", range);
-
-	// "Among commands defined in this specification, those listed in
-	// Miscellaneous commands are always enabled. The other commands defined
-	// here are enabled if the active range is not null, and disabled
-	// otherwise."
-	return ["copy", "cut", "paste", "selectall", "stylewithcss", "usecss"].indexOf(command) != -1
-		|| getActiveRange() !== null;
+	return editCommandMethod(command, "action", range, (function(command) { return function() {
+		// "Among commands defined in this specification, those listed in
+		// Miscellaneous commands are always enabled. The other commands defined
+		// here are enabled if the active range is not null, and disabled
+		// otherwise."
+		return ["copy", "cut", "paste", "selectall", "stylewithcss", "usecss"].indexOf(command) != -1
+			|| getActiveRange() !== null;
+	}})(command));
 }
 
-function myQueryCommandIndeterm(command, range) {
+function myQueryCommandIndeterm(command) {
 	// "All of these methods must treat their command argument ASCII
 	// case-insensitively."
 	command = command.toLowerCase();
@@ -641,15 +653,15 @@ function myQueryCommandIndeterm(command, range) {
 	//
 	// "If command has no indeterminacy, raise an INVALID_ACCESS_ERR
 	// exception."
-	setupEditCommandMethod(command, "indeterm", range);
+	return editCommandMethod(command, "indeterm", range, (function(command) { return function() {
+		// "If command is not enabled, return false."
+		if (!myQueryCommandEnabled(command)) {
+			return false;
+		}
 
-	// "If command is not enabled, return false."
-	if (!myQueryCommandEnabled(command, range)) {
-		return false;
-	}
-
-	// "Return true if command is indeterminate, otherwise false."
-	return commands[command].indeterm();
+		// "Return true if command is indeterminate, otherwise false."
+		return commands[command].indeterm();
+	}})(command));
 }
 
 function myQueryCommandState(command, range) {
@@ -660,20 +672,20 @@ function myQueryCommandState(command, range) {
 	// "If command is not supported, raise a NOT_SUPPORTED_ERR exception."
 	//
 	// "If command has no state, raise an INVALID_ACCESS_ERR exception."
-	setupEditCommandMethod(command, "state", range);
+	return editCommandMethod(command, "state", range, (function(command) { return function() {
+		// "If command is not enabled, return false."
+		if (!myQueryCommandEnabled(command)) {
+			return false;
+		}
 
-	// "If command is not enabled, return false."
-	if (!myQueryCommandEnabled(command, range)) {
-		return false;
-	}
+		// "If the state override for command is set, return it."
+		if (typeof getStateOverride(command) != "undefined") {
+			return getStateOverride(command);
+		}
 
-	// "If the state override for command is set, return it."
-	if (typeof getStateOverride(command) != "undefined") {
-		return getStateOverride(command);
-	}
-
-	// "Return true if command's state is true, otherwise false."
-	return commands[command].state();
+		// "Return true if command's state is true, otherwise false."
+		return commands[command].state();
+	}})(command));
 }
 
 // "When the queryCommandSupported(command) method on the HTMLDocument
@@ -695,20 +707,20 @@ function myQueryCommandValue(command, range) {
 	// "If command is not supported, raise a NOT_SUPPORTED_ERR exception."
 	//
 	// "If command has no value, raise an INVALID_ACCESS_ERR exception."
-	setupEditCommandMethod(command, "value", range);
+	editCommandMethod(command, "value", range, function() {
+		// "If command is not enabled, return the empty string."
+		if (!myQueryCommandEnabled(command)) {
+			return "";
+		}
 
-	// "If command is not enabled, return the empty string."
-	if (!myQueryCommandEnabled(command, range)) {
-		return "";
-	}
+		// "If the value override for command is set, return it."
+		if (typeof getValueOverride(command) != "undefined") {
+			return getValueOverride(command);
+		}
 
-	// "If the value override for command is set, return it."
-	if (typeof getValueOverride(command) != "undefined") {
-		return getValueOverride(command);
-	}
-
-	// "Return command's value."
-	return commands[command].value();
+		// "Return command's value."
+		return commands[command].value();
+	});
 }
 //@}
 
@@ -2952,7 +2964,7 @@ commands.bold = {
 	action: function() {
 		// "If queryCommandState("bold") returns true, set the selection's
 		// value to "normal". Otherwise set the selection's value to "bold"."
-		if (myQueryCommandState("bold", getActiveRange())) {
+		if (myQueryCommandState("bold")) {
 			setSelectionValue("bold", "normal");
 		} else {
 			setSelectionValue("bold", "bold");
@@ -3239,7 +3251,7 @@ commands.italic = {
 	action: function() {
 		// "If queryCommandState("italic") returns true, set the selection's
 		// value to "normal". Otherwise set the selection's value to "italic"."
-		if (myQueryCommandState("italic", getActiveRange())) {
+		if (myQueryCommandState("italic")) {
 			setSelectionValue("italic", "normal");
 		} else {
 			setSelectionValue("italic", "italic");
@@ -3357,7 +3369,7 @@ commands.strikethrough = {
 		// "If queryCommandState("strikethrough") returns true, set the
 		// selection's value to null. Otherwise set the selection's value to
 		// "line-through"."
-		if (myQueryCommandState("strikethrough", getActiveRange())) {
+		if (myQueryCommandState("strikethrough")) {
 			setSelectionValue("strikethrough", null);
 		} else {
 			setSelectionValue("strikethrough", "line-through");
@@ -3371,7 +3383,7 @@ commands.strikethrough = {
 commands.subscript = {
 	action: function() {
 		// "Call queryCommandState("subscript"), and let state be the result."
-		var state = myQueryCommandState("subscript", getActiveRange());
+		var state = myQueryCommandState("subscript");
 
 		// "Set the selection's value to "baseline"."
 		setSelectionValue("subscript", "baseline");
@@ -3404,7 +3416,7 @@ commands.superscript = {
 	action: function() {
 		// "Call queryCommandState("superscript"), and let state be the
 		// result."
-		var state = myQueryCommandState("superscript", getActiveRange());
+		var state = myQueryCommandState("superscript");
 
 		// "Set the selection's value to "baseline"."
 		setSelectionValue("superscript", "baseline");
@@ -3438,7 +3450,7 @@ commands.underline = {
 	action: function() {
 		// "If queryCommandState("underline") returns true, set the selection's
 		// value to null. Otherwise set the selection's value to "underline"."
-		if (myQueryCommandState("underline", getActiveRange())) {
+		if (myQueryCommandState("underline")) {
 			setSelectionValue("underline", null);
 		} else {
 			setSelectionValue("underline", "underline");

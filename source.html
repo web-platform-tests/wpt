@@ -2246,39 +2246,14 @@ different value.
 
     <li>Remove <var>new parent</var> from its [[parent]].
 
-    <li>If <var>new parent</var> is a [[span]], and either a)
-    <var>command</var> is "underline" or "strikethrough", or b)
-    <var>command</var> is "fontSize" and <var>new value</var> is not
-    "xxx-large", or c) <var>command</var> is not "fontSize" and the
-    <span>relevant CSS property</span> for <var>command</var> is not null:
+    <li>Let <var>children</var> be all [[children]] of <var>node</var>,
+    omitting any that are [[element]]s whose <span>specified command
+    value</span> for <var>command</var> is neither null nor equal to <var>new
+    value</var>.
 
-    <ol>
-      <li>If the <span>relevant CSS property</span> for <var>command</var> is
-      not null, set that CSS property of <var>node</var> to <var>new
-      value</var>.
-
-      <li>If <var>command</var> is "strikethrough" and <var>new value</var> is
-      "line-through", alter the "text-decoration" property of <var>node</var>
-      to include "line-through" (preserving "overline" or "underline" if
-      present).
-
-      <li>If <var>command</var> is "underline" and <var>new value</var> is
-      "underline", alter the "text-decoration" property of <var>node</var> to
-      include "underline" (preserving "overline" or "line-through" if present).
-    </ol>
-
-    <li>Otherwise:
-
-    <ol>
-      <li>Let <var>children</var> be all [[children]] of <var>node</var>,
-      omitting any that are [[element]]s whose <span>specified command
-      value</span> for <var>command</var> is neither null nor equal to <var>new
-      value</var>.
-
-      <li><span>Force the value</span> of each [[node]] in <var>children</var>,
-      with <var>command</var> and <var>new value</var> as in this invocation
-      of the algorithm.
-    </ol>
+    <li><span>Force the value</span> of each [[node]] in <var>children</var>,
+    with <var>command</var> and <var>new value</var> as in this invocation of
+    the algorithm.
   </ol>
 </ol>
 

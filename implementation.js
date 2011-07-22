@@ -2848,70 +2848,26 @@ function forceValue(node, command, newValue) {
 		// "Remove new parent from its parent."
 		newParent.parentNode.removeChild(newParent);
 
-		// "If new parent is a span, and either a) command is "underline" or
-		// "strikethrough", or b) command is "fontSize" and new value is not
-		// "xxx-large", or c) command is not "fontSize" and the relevant CSS
-		// property for command is not null:"
-		if (newParent.tagName == "SPAN"
-		&& (
-			(command == "underline" || command == "strikethrough")
-			|| (command == "fontsize" && newValue != "xxx-large")
-			|| (command != "fontsize" && property !== null)
-		)) {
-			// "If the relevant CSS property for command is not null, set that
-			// CSS property of node to new value."
-			if (property !== null) {
-				node.style[property] = newValue;
-			}
+		// "Let children be all children of node, omitting any that are
+		// Elements whose specified command value for command is neither null
+		// nor equal to new value."
+		var children = [];
+		for (var i = 0; i < node.childNodes.length; i++) {
+			if (node.childNodes[i].nodeType == Node.ELEMENT_NODE) {
+				var specifiedValue = getSpecifiedCommandValue(node.childNodes[i], command);
 
-			// "If command is "strikethrough" and new value is "line-through",
-			// alter the "text-decoration" property of node to include
-			// "line-through" (preserving "overline" or "underline" if
-			// present)."
-			if (command == "strikethrough" && newValue == "line-through") {
-				if (node.style.textDecoration == ""
-				|| node.style.textDecoration == "none") {
-					node.style.textDecoration = "line-through";
-				} else {
-					node.style.textDecoration += " line-through";
+				if (specifiedValue !== null
+				&& !valuesEqual(command, newValue, specifiedValue)) {
+					continue;
 				}
 			}
+			children.push(node.childNodes[i]);
+		}
 
-			// "If command is "underline" and new value is "underline", alter
-			// the "text-decoration" property of node to include "underline"
-			// (preserving "overline" or "line-through" if present)."
-			if (command == "underline" && newValue == "underline") {
-				if (node.style.textDecoration == ""
-				|| node.style.textDecoration == "none") {
-					node.style.textDecoration = "underline";
-				} else {
-					node.style.textDecoration += " underline";
-				}
-			}
-
-		// "Otherwise:"
-		} else {
-			// "Let children be all children of node, omitting any that are
-			// Elements whose specified command value for command is neither
-			// null nor equal to new value."
-			var children = [];
-			for (var i = 0; i < node.childNodes.length; i++) {
-				if (node.childNodes[i].nodeType == Node.ELEMENT_NODE) {
-					var specifiedValue = getSpecifiedCommandValue(node.childNodes[i], command);
-
-					if (specifiedValue !== null
-					&& !valuesEqual(command, newValue, specifiedValue)) {
-						continue;
-					}
-				}
-				children.push(node.childNodes[i]);
-			}
-
-			// "Force the value of each Node in children, with command and new
-			// value as in this invocation of the algorithm."
-			for (var i = 0; i < children.length; i++) {
-				forceValue(children[i], command, newValue);
-			}
+		// "Force the value of each Node in children, with command and new
+		// value as in this invocation of the algorithm."
+		for (var i = 0; i < children.length; i++) {
+			forceValue(children[i], command, newValue);
 		}
 	}
 }

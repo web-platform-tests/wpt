@@ -2261,39 +2261,14 @@ different value.
 
     <li>Remove <var title="">new parent</var> from its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
-    <li>If <var title="">new parent</var> is a <code class=external data-anolis-spec=html title="the span element"><a href=http://www.whatwg.org/html/#the-span-element>span</a></code>, and either a)
-    <var title="">command</var> is "underline" or "strikethrough", or b)
-    <var title="">command</var> is "fontSize" and <var title="">new value</var> is not
-    "xxx-large", or c) <var title="">command</var> is not "fontSize" and the
-    <a href=#relevant-css-property>relevant CSS property</a> for <var title="">command</var> is not null:
+    <li>Let <var title="">children</var> be all <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> of <var title="">node</var>,
+    omitting any that are <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>s whose <a href=#specified-command-value>specified command
+    value</a> for <var title="">command</var> is neither null nor equal to <var title="">new
+    value</var>.
 
-    <ol>
-      <li>If the <a href=#relevant-css-property>relevant CSS property</a> for <var title="">command</var> is
-      not null, set that CSS property of <var title="">node</var> to <var title="">new
-      value</var>.
-
-      <li>If <var title="">command</var> is "strikethrough" and <var title="">new value</var> is
-      "line-through", alter the "text-decoration" property of <var title="">node</var>
-      to include "line-through" (preserving "overline" or "underline" if
-      present).
-
-      <li>If <var title="">command</var> is "underline" and <var title="">new value</var> is
-      "underline", alter the "text-decoration" property of <var title="">node</var> to
-      include "underline" (preserving "overline" or "line-through" if present).
-    </ol>
-
-    <li>Otherwise:
-
-    <ol>
-      <li>Let <var title="">children</var> be all <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> of <var title="">node</var>,
-      omitting any that are <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>s whose <a href=#specified-command-value>specified command
-      value</a> for <var title="">command</var> is neither null nor equal to <var title="">new
-      value</var>.
-
-      <li><a href=#force-the-value>Force the value</a> of each <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> in <var title="">children</var>,
-      with <var title="">command</var> and <var title="">new value</var> as in this invocation
-      of the algorithm.
-    </ol>
+    <li><a href=#force-the-value>Force the value</a> of each <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> in <var title="">children</var>,
+    with <var title="">command</var> and <var title="">new value</var> as in this invocation of
+    the algorithm.
   </ol>
 </ol>
 

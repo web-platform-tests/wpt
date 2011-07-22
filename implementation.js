@@ -512,7 +512,7 @@ function parseSimpleColor(color) {
 		// Maybe it's really black, maybe it's invalid.
 		outerSpan.color = "white";
 		color = getComputedStyle(innerSpan).color;
-		if (color == "rgb(0, 0, 0)") {
+		if (color != "rgb(0, 0, 0)") {
 			return null;
 		}
 	}

@@ -791,6 +791,10 @@ var tests = {
 		'foo<span id=purple>ba[r</span>ba]z',
 		'<span style="color: rgb(0, 0, 255)">foo<span id=purple>b[a]r</span>baz</span>',
 
+		['blue', '<a href=http://www.google.com>foo[bar]baz</a>'],
+		['#0000ff', '<a href=http://www.google.com>foo[bar]baz</a>'],
+		['rgb(0,0,255)', '<a href=http://www.google.com>foo[bar]baz</a>'],
+
 		// Tests for queryCommandValue()
 		'<font color="blue">[foo]</font>',
 		'<font color="0000ff">[foo]</font>',
@@ -3307,8 +3311,27 @@ var tests = {
 		['foo[]bar', 'forecolor', ['inserttext', 'a']],
 		['foo[]bar', 'hilitecolor', ['inserttext', 'a']],
 
+		// Test things that interfere with each other
 		['foo[]bar', 'superscript', 'subscript', ['inserttext', 'a']],
 		['foo[]bar', 'subscript', 'superscript', ['inserttext', 'a']],
+
+		['foo[]bar', 'createlink', ['forecolor', '#0000FF'], ['inserttext', 'a']],
+		['foo[]bar', ['forecolor', '#0000FF'], 'createlink', ['inserttext', 'a']],
+		['foo[]bar', 'createlink', ['forecolor', 'blue'], ['inserttext', 'a']],
+		['foo[]bar', ['forecolor', 'blue'], 'createlink', ['inserttext', 'a']],
+		['foo[]bar', 'createlink', ['forecolor', 'brown'], ['inserttext', 'a']],
+		['foo[]bar', ['forecolor', 'brown'], 'createlink', ['inserttext', 'a']],
+		['foo[]bar', 'createlink', ['forecolor', 'black'], ['inserttext', 'a']],
+		['foo[]bar', ['forecolor', 'black'], 'createlink', ['inserttext', 'a']],
+		['foo[]bar', 'createlink', 'underline', ['inserttext', 'a']],
+		['foo[]bar', 'underline', 'createlink', ['inserttext', 'a']],
+		['foo[]bar', 'createlink', 'underline', 'underline', ['inserttext', 'a']],
+		['foo[]bar', 'underline', 'underline', 'createlink', ['inserttext', 'a']],
+
+		['foo[]bar', 'subscript', ['fontsize', '2'], ['inserttext', 'a']],
+		['foo[]bar', ['fontsize', '2'], 'subscript', ['inserttext', 'a']],
+		['foo[]bar', 'subscript', ['fontsize', '3'], ['inserttext', 'a']],
+		['foo[]bar', ['fontsize', '3'], 'subscript', ['inserttext', 'a']],
 	],
 	//@}
 };

@@ -807,12 +807,6 @@ be unset for every <span>command</span>.
 <p class=XXX>Figure out exactly what commands need to preserve state/value
 overrides.
 
-<p>A <dfn>command with insertion-affecting state</dfn> is "bold", "italic",
-"strikethrough", "subscript", "superscript", or "underline".
-
-<p>A <dfn>command with insertion-affecting value</dfn> is "createLink",
-"fontName", "fontSize", "foreColor", or "hiliteColor".
-
 <p>When the user agent is instructed to run a particular method, it must follow
 the steps defined for that method in the appropriate specification, not act as
 though the method had actually been called from JavaScript.  In particular,
@@ -936,53 +930,53 @@ extraneous line breaks at the end of</span> it.
 <p>To <dfn>record current states and values</dfn>:
 
 <ol>
-  <li>Let <var>states</var> be a dictionary mapping <span
-  title=command>commands</span> to booleans, initially empty.
+  <li>Let <var>overrides</var> be a list of (string, string or boolean) ordered
+  pairs, initially empty.
 
-  <li>For each <span>command with insertion-affecting state</span>
-  <var>command</var>, in order, if there is a <span>state override</span> for
-  <var>command</var>, add an entry to <var>states</var> mapping
-  <var>command</var> to its <span>state override</span>.
+  <!--
+  When restoring, some commands can interfere with others.  Specifically, we
+  want to restore createLink before foreColor and underline, and subscript and
+  superscript before fontSize.  TODO: This approach only works for default
+  styles (although I'm not sure offhand how we could handle non-default styles
+  in principle).
+  -->
+  <li>If there is a <span>value override</span> for "createLink", add
+  ("createLink", <span>value override</span> for "createLink") to
+  <var>overrides</var>.
 
-  <li>Let <var>values</var> be a dictionary mapping <span
-  title=command>commands</span> to strings, initially empty.
+  <li>For each <var>command</var> in the list "bold", "italic",
+  "strikethrough", "subscript", "superscript", "underline", in order: if there
+  is a <span>state override</span> for <var>command</var>, add
+  (<var>command</var>, <var>command</var>'s <span>state override</span>) to
+  <var>overrides</var>.
 
-  <li>For each <span>command with insertion-affecting value</span>
-  <var>command</var>, in order, if there is a <span>value override</span> for
-  <var>command</var>, add an entry to <var>values</var> mapping
-  <var>command</var> to its <span>value override</span>.
+  <li>For each <var>command</var> in the list "fontName", "fontSize",
+  "foreColor", "hiliteColor", in order: if there is a <span>value
+  override</span> for <var>command</var>, add (<var>command</var>,
+  <var>command</var>'s <span>value override</span>) to <var>overrides</var>.
 
-  <li>Return (<var>states</var>, <var>values</var>).
+  <li>Return <var>overrides</var>.
 </ol>
 
-<p>To <dfn>restore states and values</dfn> specified by dictionaries
-(<var>states</var>, <var>values</var>) returned by the <span>record current
-states and values</span> algorithm:
+<p>To <dfn>restore states and values</dfn> specified by a list
+<var>overrides</var> returned by the <span>record current states and
+values</span> algorithm:
 
 <ol>
-  <li>For each <var>command</var> that is a key in <var>states</var>, in order:
+  <li>For each (<var>command</var>, <var>override</var>) pair in
+  <var>overrides</var>, in order:
 
   <ol>
-    <li>Let <var>state</var> be the value of <var>command</var> in
-    <var>states</var>.
-
-    <li>If <code
+    <li>If <var>override</var> is a boolean, and <code
     title=queryCommandState()>queryCommandState(<var>command</var>)</code>
-    returns something different from <var>state</var>, call <code
+    returns something different from <var>override</var>, call <code
     title=execCommand()>execCommand(<var>command</var>)</code>.
-  </ol>
 
-  <li>For each <var>command</var> that is a key in <var>values</var>, in order:
-
-  <ol>
-    <li>Let <var>value</var> be the value of <var>command</var> in
-    <var>values</var>.
-
-    <li>If <code
+    <li>If <var>override</var> is a string, and <code
     title=queryCommandValue()>queryCommandValue(<var>command</var>)</code>
-    returns something different from <var>value</var>, call <code
+    returns something different from <var>override</var>, call <code
     title=execCommand()>execCommand(<var>command</var>, false,
-    <var>value</var>)</code>.
+    <var>override</var>)</code>.
   </ol>
 </ol>
 

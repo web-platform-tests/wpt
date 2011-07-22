@@ -117,7 +117,7 @@ function convertProperty(property) {
 
 // Return the <font size=X> value for the given CSS size, or undefined if there
 // is none.
-function getFontSize(cssVal) {
+function cssSizeToLegacy(cssVal) {
 	return {
 		"xx-small": 1,
 		"small": 2,
@@ -134,7 +134,8 @@ function getFontSize(cssVal) {
 // test implementation.  It's not clear how all this should actually be specced
 // in practice, since CSS defines no notion of equality, does it?
 function valuesEqual(command, val1, val2) {
-	if (commands[command].relevantCssProperty === null) {
+	if (commands[command].relevantCssProperty === null
+	|| (command == "fontsize" && /^[1-7]$/.test(val1) && /^[1-7]$/.test(val2))) {
 		return val1 === val2;
 	}
 
@@ -170,14 +171,14 @@ function valuesEqual(command, val1, val2) {
 	// <font size="1">, and so on.  So we have to test both . . .
 	var test1b = null, test2b = null;
 	if (command == "fontsize") {
-		if (typeof getFontSize(val1) != "undefined") {
+		if (typeof cssSizeToLegacy(val1) != "undefined") {
 			test1b = document.createElement("font");
-			test1b.size = getFontSize(val1);
+			test1b.size = cssSizeToLegacy(val1);
 			document.body.appendChild(test1b);
 		}
-		if (typeof getFontSize(val2) != "undefined") {
+		if (typeof cssSizeToLegacy(val2) != "undefined") {
 			test2b = document.createElement("font");
-			test2b.size = getFontSize(val2);
+			test2b.size = cssSizeToLegacy(val2);
 			document.body.appendChild(test2b);
 		}
 	}
@@ -1052,16 +1053,6 @@ var getStateOverride, setStateOverride, unsetStateOverride,
 	}
 })();
 
-// "A command with insertion-affecting state is "bold", "italic",
-// "strikethrough", "subscript", "superscript", or "underline"."
-var commandsWithInsertionAffectingState = ["bold", "italic", "strikethrough",
-	"subscript", "superscript", "underline"];
-
-// "A command with insertion-affecting value is "createLink", "fontName",
-// "fontSize", "forecolor", or "hiliteColor"."
-var commandsWithInsertionAffectingValue = ["createlink", "fontname",
-	"fontsize", "forecolor", "hilitecolor"];
-
 //@}
 
 /////////////////////////////
@@ -1247,61 +1238,59 @@ function removeExtraneousLineBreaksFrom(node) {
 }
 
 function recordCurrentStatesAndValues() {
-	// "Let states be a dictionary mapping commands to booleans, initially
-	// empty."
-	var states = {};
+	// "Let overrides be a list of (string, string or boolean) ordered pairs,
+	// initially empty."
+	var overrides = [];
 
-	// "For each command with insertion-affecting state command, in order, if
-	// there is a state override for command, add an entry to states mapping
-	// command to its state override."
-	commandsWithInsertionAffectingState.forEach(function(command) {
-		if (getStateOverride(command) !== undefined) {
-			states[command] = getStateOverride(command);
-		}
-	});
-
-	// "Let values be a dictionary mapping commands to strings, initially
-	// empty."
-	var values = {};
-
-	// "For each command with insertion-affecting value command, in order, if
-	// there is a value override for command, add an entry to values mapping
-	// command to its value override."
-	commandsWithInsertionAffectingValue.forEach(function(command) {
-		if (getValueOverride(command) !== undefined) {
-			values[command] = getValueOverride(command);
-		}
-	});
-
-	// "Return (states, values)."
-	return [states, values];
-}
-
-function restoreStatesAndValues(record) {
-	var states = record[0];
-	var values = record[1];
-
-	// "For each command that is a key in states, in order:"
-	for (var command in states) {
-		// "Let state be the value of command in states."
-		var state = states[command];
-
-		// "If queryCommandState(command) returns something different from
-		// state, call execCommand(command)."
-		if (myQueryCommandState(command) !== state) {
-			myExecCommand(command);
-		}
+	// "If there is a value override for "createLink", add ("createLink", value
+	// override for "createLink") to overrides."
+	if (getValueOverride("createlink") !== undefined) {
+		overrides.push(["createlink", getValueOverride("createlink")]);
 	}
 
-	// "For each command that is a key in values, in order:"
-	for (var command in values) {
-		// "Let value be the value of command in values."
-		var value = values[command];
+	// "For each command in the list "bold", "italic", "strikethrough",
+	// "subscript", "superscript", "underline", in order: if there is a state
+	// override for command, add (command, command's state override) to
+	// overrides."
+	["bold", "italic", "strikethrough", "subscript", "superscript",
+	"underline"].forEach(function(command) {
+		if (getStateOverride(command) !== undefined) {
+			overrides.push([command, getStateOverride(command)]);
+		}
+	});
 
-		// "If queryCommandValue(command) returns something different from
-		// value, call execCommand(command, false, value)."
-		if (myQueryCommandValue(command) !== value) {
-			myExecCommand(command, false, value);
+	// "For each command in the list "fontName", "fontSize", "foreColor",
+	// "hiliteColor", in order: if there is a value override for command, add
+	// (command, command's value override) to overrides."
+	["fontname", "fontsize", "forecolor", "hilitecolor"].forEach(function(command) {
+		if (getValueOverride(command) !== undefined) {
+			overrides.push([command, getValueOverride(command)]);
+		}
+	});
+
+	// "Return overrides."
+	return overrides;
+}
+
+function restoreStatesAndValues(overrides) {
+	// "For each (command, override) pair in overrides, in order:"
+	for (var i = 0; i < overrides.length; i++) {
+		var command = overrides[i][0];
+		var override = overrides[i][1];
+
+		// "If override is a boolean, and queryCommandState(command) returns
+		// something different from override, call execCommand(command)."
+		if (typeof override == "boolean"
+		&& myQueryCommandState(command) != override) {
+			myExecCommand(command);
+		}
+
+		// "If override is a string, and queryCommandValue(command) returns
+		// something different from override, call execCommand(command, false,
+		// override)."
+		if (typeof override == "string"
+		&& !valuesEqual(command, myQueryCommandValue(command), override)) {
+			myExecCommand(command, false, override);
 		}
 	}
 }

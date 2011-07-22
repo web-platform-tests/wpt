@@ -855,12 +855,6 @@ be unset for every <a href=#command>command</a>.
 <p class=XXX>Figure out exactly what commands need to preserve state/value
 overrides.
 
-<p>A <dfn id=command-with-insertion-affecting-state>command with insertion-affecting state</dfn> is "bold", "italic",
-"strikethrough", "subscript", "superscript", or "underline".
-
-<p>A <dfn id=command-with-insertion-affecting-value>command with insertion-affecting value</dfn> is "createLink",
-"fontName", "fontSize", "foreColor", or "hiliteColor".
-
 <p>When the user agent is instructed to run a particular method, it must follow
 the steps defined for that method in the appropriate specification, not act as
 though the method had actually been called from JavaScript.  In particular,
@@ -982,47 +976,49 @@ extraneous line breaks at the end of</a> it.
 <p>To <dfn id=record-current-states-and-values>record current states and values</dfn>:
 
 <ol>
-  <li>Let <var title="">states</var> be a dictionary mapping <a href=#command title=command>commands</a> to booleans, initially empty.
+  <li>Let <var title="">overrides</var> be a list of (string, string or boolean) ordered
+  pairs, initially empty.
 
-  <li>For each <a href=#command-with-insertion-affecting-state>command with insertion-affecting state</a>
-  <var title="">command</var>, in order, if there is a <a href=#state-override>state override</a> for
-  <var title="">command</var>, add an entry to <var title="">states</var> mapping
-  <var title="">command</var> to its <a href=#state-override>state override</a>.
+  <!--
+  When restoring, some commands can interfere with others.  Specifically, we
+  want to restore createLink before foreColor and underline, and subscript and
+  superscript before fontSize.  TODO: This approach only works for default
+  styles (although I'm not sure offhand how we could handle non-default styles
+  in principle).
+  -->
+  <li>If there is a <a href=#value-override>value override</a> for "createLink", add
+  ("createLink", <a href=#value-override>value override</a> for "createLink") to
+  <var title="">overrides</var>.
 
-  <li>Let <var title="">values</var> be a dictionary mapping <a href=#command title=command>commands</a> to strings, initially empty.
+  <li>For each <var title="">command</var> in the list "bold", "italic",
+  "strikethrough", "subscript", "superscript", "underline", in order: if there
+  is a <a href=#state-override>state override</a> for <var title="">command</var>, add
+  (<var title="">command</var>, <var title="">command</var>'s <a href=#state-override>state override</a>) to
+  <var title="">overrides</var>.
 
-  <li>For each <a href=#command-with-insertion-affecting-value>command with insertion-affecting value</a>
-  <var title="">command</var>, in order, if there is a <a href=#value-override>value override</a> for
-  <var title="">command</var>, add an entry to <var title="">values</var> mapping
-  <var title="">command</var> to its <a href=#value-override>value override</a>.
+  <li>For each <var title="">command</var> in the list "fontName", "fontSize",
+  "foreColor", "hiliteColor", in order: if there is a <a href=#value-override>value
+  override</a> for <var title="">command</var>, add (<var title="">command</var>,
+  <var title="">command</var>'s <a href=#value-override>value override</a>) to <var title="">overrides</var>.
 
-  <li>Return (<var title="">states</var>, <var title="">values</var>).
+  <li>Return <var title="">overrides</var>.
 </ol>
 
-<p>To <dfn id=restore-states-and-values>restore states and values</dfn> specified by dictionaries
-(<var title="">states</var>, <var title="">values</var>) returned by the <a href=#record-current-states-and-values>record current
-states and values</a> algorithm:
+<p>To <dfn id=restore-states-and-values>restore states and values</dfn> specified by a list
+<var title="">overrides</var> returned by the <a href=#record-current-states-and-values>record current states and
+values</a> algorithm:
 
 <ol>
-  <li>For each <var title="">command</var> that is a key in <var title="">states</var>, in order:
+  <li>For each (<var title="">command</var>, <var title="">override</var>) pair in
+  <var title="">overrides</var>, in order:
 
   <ol>
-    <li>Let <var title="">state</var> be the value of <var title="">command</var> in
-    <var title="">states</var>.
+    <li>If <var title="">override</var> is a boolean, and <code title=queryCommandState()><a href=#querycommandstate()>queryCommandState(<var title="">command</var>)</a></code>
+    returns something different from <var title="">override</var>, call <code title=execCommand()><a href=#execcommand()>execCommand(<var title="">command</var>)</a></code>.
 
-    <li>If <code title=queryCommandState()><a href=#querycommandstate()>queryCommandState(<var title="">command</var>)</a></code>
-    returns something different from <var title="">state</var>, call <code title=execCommand()><a href=#execcommand()>execCommand(<var title="">command</var>)</a></code>.
-  </ol>
-
-  <li>For each <var title="">command</var> that is a key in <var title="">values</var>, in order:
-
-  <ol>
-    <li>Let <var title="">value</var> be the value of <var title="">command</var> in
-    <var title="">values</var>.
-
-    <li>If <code title=queryCommandValue()><a href=#querycommandvalue()>queryCommandValue(<var title="">command</var>)</a></code>
-    returns something different from <var title="">value</var>, call <code title=execCommand()><a href=#execcommand()>execCommand(<var title="">command</var>, false,
-    <var title="">value</var>)</a></code>.
+    <li>If <var title="">override</var> is a string, and <code title=queryCommandValue()><a href=#querycommandvalue()>queryCommandValue(<var title="">command</var>)</a></code>
+    returns something different from <var title="">override</var>, call <code title=execCommand()><a href=#execcommand()>execCommand(<var title="">command</var>, false,
+    <var title="">override</var>)</a></code>.
   </ol>
 </ol>
 

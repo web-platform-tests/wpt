@@ -95,3 +95,7 @@ ol ol ol { list-style-type: lower-roman }
 	text-align: center;
 	padding: 2em;
 }
+/* Some tests assume links are blue, for the sake of argument, but they aren't
+ * blue in any browser.  And :visited definitely isn't blue, except in engines
+ * like Gecko that lie. */
+:link, :visited { color: blue }

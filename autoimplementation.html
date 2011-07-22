@@ -69,6 +69,11 @@ function runTests(command) {
 
 	runTestsButton.parentNode.removeChild(runTestsButton);
 
+	// Make sure styleWithCss is always reset to false at the start of a test
+	// run
+	myExecCommand("stylewithcss", false, "false");
+	try { document.execCommand("stylewithcss", false, "false") } catch(e) {}
+
 	var addTestButton = document.querySelector("#" + command + " button");
 	var inputs = document.getElementById(command).getElementsByTagName("input");
 	for (var i = 0; i < tests[command].length; i++) {

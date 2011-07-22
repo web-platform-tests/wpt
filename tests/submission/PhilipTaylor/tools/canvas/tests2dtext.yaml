@@ -94,6 +94,10 @@
     ctx.font = '10px inherit';
     @assert ctx.font === '20px serif';
 
+    ctx.font = '20px serif';
+    ctx.font = '1em serif; background: green; margin: 10px';
+    @assert ctx.font === '20px serif';
+
 - name: 2d.text.font.default
   testing:
     - 2d.text.font.default

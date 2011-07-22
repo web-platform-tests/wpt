@@ -64,6 +64,7 @@ body > div > table > tbody > tr > td:last-child,
 body > div > table > tbody > tr > th:last-child {
 	width: 10%;
 }
+body > div > p > label > input { width: 30% }
 #toolbar {
 	position: fixed;
 	top: 0;

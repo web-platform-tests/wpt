@@ -1237,7 +1237,7 @@ function removeExtraneousLineBreaksFrom(node) {
 	removeExtraneousLineBreaksAtTheEndOf(node);
 }
 
-function recordCurrentStatesAndValues() {
+function recordCurrentOverrides() {
 	// "Let overrides be a list of (string, string or boolean) ordered pairs,
 	// initially empty."
 	var overrides = [];
@@ -1272,25 +1272,77 @@ function recordCurrentStatesAndValues() {
 	return overrides;
 }
 
-function restoreStatesAndValues(overrides) {
-	// "For each (command, override) pair in overrides, in order:"
-	for (var i = 0; i < overrides.length; i++) {
-		var command = overrides[i][0];
-		var override = overrides[i][1];
+function recordCurrentStatesAndValues() {
+	// "Let overrides be a list of (string, string or boolean) ordered pairs,
+	// initially empty."
+	var overrides = [];
 
-		// "If override is a boolean, and queryCommandState(command) returns
-		// something different from override, call execCommand(command)."
-		if (typeof override == "boolean"
-		&& myQueryCommandState(command) != override) {
-			myExecCommand(command);
+	// "Add ("createLink", queryCommandValue("createLink")) to overrides."
+	overrides.push(["createlink", myQueryCommandValue("createlink")]);
+
+	// "For each command in the list "bold", "italic", "strikethrough",
+	// "subscript", "superscript", "underline", in order: add (command,
+	// queryCommandState(command)) to overrides."
+	["bold", "italic", "strikethrough", "subscript", "superscript",
+	"underline"].forEach(function(command) {
+		overrides.push([command, myQueryCommandState(command)]);
+	});
+
+	// "For each command in the list "fontName", "fontSize", "foreColor",
+	// "hiliteColor", in order: add (command, queryCommandValue(command)) to
+	// overrides."
+	["fontname", "fontsize", "forecolor", "hilitecolor"].forEach(function(command) {
+		overrides.push([command, myQueryCommandValue(command)]);
+	});
+
+	// "Return overrides."
+	return overrides;
+}
+
+function restoreStatesAndValues(overrides) {
+	// "If there is some editable Text node effectively contained in the active
+	// range, then for each (command, override) pair in overrides, in order:"
+	if (getAllEffectivelyContainedNodes(getActiveRange()).some(function(node) {
+		return isEditable(node) && node.nodeType == Node.TEXT_NODE
+	})) {
+		for (var i = 0; i < overrides.length; i++) {
+			var command = overrides[i][0];
+			var override = overrides[i][1];
+
+			// "If override is a boolean, and queryCommandState(command)
+			// returns something different from override, call
+			// execCommand(command)."
+			if (typeof override == "boolean"
+			&& myQueryCommandState(command) != override) {
+				myExecCommand(command);
+			}
+
+			// "If override is a string, and queryCommandValue(command) returns
+			// something different from override, call execCommand(command,
+			// false, override)."
+			if (typeof override == "string"
+			&& !valuesEqual(command, myQueryCommandValue(command), override)) {
+				myExecCommand(command, false, override);
+			}
 		}
 
-		// "If override is a string, and queryCommandValue(command) returns
-		// something different from override, call execCommand(command, false,
-		// override)."
-		if (typeof override == "string"
-		&& !valuesEqual(command, myQueryCommandValue(command), override)) {
-			myExecCommand(command, false, override);
+	// "Otherwise, for each (command, override) pair in overrides, in order:"
+	} else {
+		for (var i = 0; i < overrides.length; i++) {
+			var command = overrides[i][0];
+			var override = overrides[i][1];
+
+			// "If override is a boolean, set the state override for command to
+			// override."
+			if (typeof override == "boolean") {
+				setStateOverride(command, override);
+			}
+
+			// "If override is a string, set the value override for command to
+			// override."
+			if (typeof override == "string") {
+				setValueOverride(command, override);
+			}
 		}
 	}
 }
@@ -4254,8 +4306,8 @@ function deleteContents() {
 		endBlock = null;
 	}
 
-	// "Record current states and values, and let record be the result."
-	var record = recordCurrentStatesAndValues();
+	// "Record current states and values, and let overrides be the result."
+	var overrides = recordCurrentStatesAndValues();
 
 	// "If start node and end node are the same, and start node is an editable
 	// Text node:"
@@ -4272,8 +4324,8 @@ function deleteContents() {
 		// "Set range's end to its start."
 		range.setEnd(range.startContainer, range.startOffset);
 
-		// "Restore states and values from record."
-		restoreStatesAndValues(record);
+		// "Restore states and values from overrides."
+		restoreStatesAndValues(overrides);
 
 		// "Abort these steps."
 		return;
@@ -4354,8 +4406,8 @@ function deleteContents() {
 		// "Set range's end to its start."
 		range.setEnd(range.startContainer, range.startOffset);
 
-		// "Restore states and values from record."
-		restoreStatesAndValues(record);
+		// "Restore states and values from overrides."
+		restoreStatesAndValues(overrides);
 
 		// "Abort these steps."
 		return;
@@ -4421,17 +4473,17 @@ function deleteContents() {
 				endBlock.parentNode.removeChild(endBlock);
 			}
 
-			// "Restore states and values from record."
-			restoreStatesAndValues(record);
+			// "Restore states and values from overrides."
+			restoreStatesAndValues(overrides);
 
 			// "Abort these steps."
 			return;
 		}
 
 		// "If end block's firstChild is not an inline node, restore states and
-		// values from record, then abort these steps."
+		// values from overrides, then abort these steps."
 		if (!isInlineNode(endBlock.firstChild)) {
-			restoreStatesAndValues(record);
+			restoreStatesAndValues(overrides);
 			return;
 		}
 
@@ -4567,8 +4619,8 @@ function deleteContents() {
 		startBlock.appendChild(document.createElement("br"));
 	}
 
-	// "Restore states and values from record."
-	restoreStatesAndValues(record);
+	// "Restore states and values from overrides."
+	restoreStatesAndValues(overrides);
 }
 
 
@@ -7012,8 +7064,8 @@ commands.inserttext = {
 			value = "\xa0";
 		}
 
-		// "Record current states and values, and let record be the result."
-		var record = recordCurrentStatesAndValues();
+		// "Record current overrides, and let overrides be the result."
+		var overrides = recordCurrentOverrides();
 
 		// "If node is a Text node:"
 		if (node.nodeType == Node.TEXT_NODE) {
@@ -7053,8 +7105,8 @@ commands.inserttext = {
 			getActiveRange().setEnd(text, 1);
 		}
 
-		// "Restore states and values from record."
-		restoreStatesAndValues(record);
+		// "Restore states and values from overrides."
+		restoreStatesAndValues(overrides);
 
 		// "Canonicalize whitespace at the active range's start."
 		canonicalizeWhitespace(getActiveRange().startContainer, getActiveRange().startOffset);

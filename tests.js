@@ -2110,6 +2110,7 @@ var tests = {
 		'{}<br>',
 		'<p>{}<br>',
 		'<p><span>{}<br></span>',
+		'foo<a href=http://www.google.com/><font color=black>[bar]</font></a>baz',
 	],
 	//@}
 	insertunorderedlist: [
@@ -3332,6 +3333,42 @@ var tests = {
 		['foo[]bar', ['fontsize', '2'], 'subscript', ['inserttext', 'a']],
 		['foo[]bar', 'subscript', ['fontsize', '3'], ['inserttext', 'a']],
 		['foo[]bar', ['fontsize', '3'], 'subscript', ['inserttext', 'a']],
+
+
+		// Now the same tests, but with a nonempty selection
+		['foo[bar]baz', 'bold', ['inserttext', 'a']],
+		['foo[bar]baz', 'italic', ['inserttext', 'a']],
+		['foo[bar]baz', 'strikethrough', ['inserttext', 'a']],
+		['foo[bar]baz', 'subscript', ['inserttext', 'a']],
+		['foo[bar]baz', 'superscript', ['inserttext', 'a']],
+		['foo[bar]baz', 'underline', ['inserttext', 'a']],
+
+		['foo[bar]baz', 'createlink', ['inserttext', 'a']],
+		['foo[bar]baz', 'fontname', ['inserttext', 'a']],
+		['foo[bar]baz', 'fontsize', ['inserttext', 'a']],
+		['foo[bar]baz', 'forecolor', ['inserttext', 'a']],
+		['foo[bar]baz', 'hilitecolor', ['inserttext', 'a']],
+
+		['foo[bar]baz', 'superscript', 'subscript', ['inserttext', 'a']],
+		['foo[bar]baz', 'subscript', 'superscript', ['inserttext', 'a']],
+
+		['foo[bar]baz', 'createlink', ['forecolor', '#0000FF'], ['inserttext', 'a']],
+		['foo[bar]baz', ['forecolor', '#0000FF'], 'createlink', ['inserttext', 'a']],
+		['foo[bar]baz', 'createlink', ['forecolor', 'blue'], ['inserttext', 'a']],
+		['foo[bar]baz', ['forecolor', 'blue'], 'createlink', ['inserttext', 'a']],
+		['foo[bar]baz', 'createlink', ['forecolor', 'brown'], ['inserttext', 'a']],
+		['foo[bar]baz', ['forecolor', 'brown'], 'createlink', ['inserttext', 'a']],
+		['foo[bar]baz', 'createlink', ['forecolor', 'black'], ['inserttext', 'a']],
+		['foo[bar]baz', ['forecolor', 'black'], 'createlink', ['inserttext', 'a']],
+		['foo[bar]baz', 'createlink', 'underline', ['inserttext', 'a']],
+		['foo[bar]baz', 'underline', 'createlink', ['inserttext', 'a']],
+		['foo[bar]baz', 'createlink', 'underline', 'underline', ['inserttext', 'a']],
+		['foo[bar]baz', 'underline', 'underline', 'createlink', ['inserttext', 'a']],
+
+		['foo[bar]baz', 'subscript', ['fontsize', '2'], ['inserttext', 'a']],
+		['foo[bar]baz', ['fontsize', '2'], 'subscript', ['inserttext', 'a']],
+		['foo[bar]baz', 'subscript', ['fontsize', '3'], ['inserttext', 'a']],
+		['foo[bar]baz', ['fontsize', '3'], 'subscript', ['inserttext', 'a']],
 	],
 	//@}
 };
@@ -3610,6 +3647,15 @@ function normalizeTest(command, test, styleWithCss) {
 	if (command == "multitest") {
 		// Magic
 		test = JSON.parse(test);
+		for (var i = 1; i < test.length; i++) {
+			if (typeof test[i] == "string"
+			&& test[i] in defaultValues) {
+				test[i] = [test[i], defaultValues[test[i]]];
+			} else if (typeof test[i] == "string") {
+				test[i] = [test[i], ""];
+			}
+		}
+		return test;
 	}
 
 	if (typeof test == "string") {
@@ -3620,16 +3666,9 @@ function normalizeTest(command, test, styleWithCss) {
 		}
 	} else if (test.length == 2) {
 		test = [test[1], [command, String(test[0])]];
-	} else for (var i = 1; i < test.length; i++) {
-		if (typeof test[i] == "string"
-		&& test[i] in defaultValues) {
-			test[i] = [test[i], defaultValues[test[i]]];
-		} else if (typeof test[i] == "string") {
-			test[i] = [test[i], ""];
-		}
 	}
 
-	if (command != "multitest") {
+	if (styleWithCss !== undefined) {
 		test.splice(1, 0, ["stylewithcss", String(styleWithCss)]);
 	}
 

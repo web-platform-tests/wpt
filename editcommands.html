@@ -38,7 +38,7 @@ a code { text-decoration: underline }
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing Commands</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-21-july-2011>Work in Progress &mdash; Last Update 21 July 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-22-july-2011>Work in Progress &mdash; Last Update 22 July 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;<a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a>&gt;
@@ -973,7 +973,7 @@ instead follow these rules:
 <a href=#remove-extraneous-line-breaks-before>remove extraneous line breaks before</a> it, then <a href=#remove-extraneous-line-breaks-at-the-end-of>remove
 extraneous line breaks at the end of</a> it.
 
-<p>To <dfn id=record-current-states-and-values>record current states and values</dfn>:
+<p>To <dfn id=record-current-overrides>record current overrides</dfn>:
 
 <ol>
   <li>Let <var title="">overrides</var> be a list of (string, string or boolean) ordered
@@ -1004,13 +1004,36 @@ extraneous line breaks at the end of</a> it.
   <li>Return <var title="">overrides</var>.
 </ol>
 
+<p>To <dfn id=record-current-states-and-values>record current states and values</dfn>:
+
+<ol>
+  <li>Let <var title="">overrides</var> be a list of (string, string or boolean) ordered
+  pairs, initially empty.
+
+  <li>Add ("createLink", <code title=queryCommandValue()><a href=#querycommandvalue()>queryCommandValue("createLink")</a></code>) to
+  <var title="">overrides</var>.
+
+  <li>For each <var title="">command</var> in the list "bold", "italic",
+  "strikethrough", "subscript", "superscript", "underline", in order: add
+  (<var title="">command</var>, <code title=queryCommandState()><a href=#querycommandstate()>queryCommandState(<var title="">command</var>)</a></code>) to
+  <var title="">overrides</var>.
+
+  <li>For each <var title="">command</var> in the list "fontName", "fontSize",
+  "foreColor", "hiliteColor", in order: add (<var title="">command</var>, <code title=queryCommandValue()><a href=#querycommandvalue()>queryCommandValue(<var title="">command</var>)</a></code>) to
+  <var title="">overrides</var>.
+
+  <li>Return <var title="">overrides</var>.
+</ol>
+
 <p>To <dfn id=restore-states-and-values>restore states and values</dfn> specified by a list
 <var title="">overrides</var> returned by the <a href=#record-current-states-and-values>record current states and
 values</a> algorithm:
 
 <ol>
-  <li>For each (<var title="">command</var>, <var title="">override</var>) pair in
-  <var title="">overrides</var>, in order:
+  <li>If there is some <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node <a href=#effectively-contained>effectively
+  contained</a> in the <a href=#active-range>active range</a>, then for each
+  (<var title="">command</var>, <var title="">override</var>) pair in <var title="">overrides</var>, in
+  order:
 
   <ol>
     <li>If <var title="">override</var> is a boolean, and <code title=queryCommandState()><a href=#querycommandstate()>queryCommandState(<var title="">command</var>)</a></code>
@@ -1019,6 +1042,17 @@ values</a> algorithm:
     <li>If <var title="">override</var> is a string, and <code title=queryCommandValue()><a href=#querycommandvalue()>queryCommandValue(<var title="">command</var>)</a></code>
     returns something different from <var title="">override</var>, call <code title=execCommand()><a href=#execcommand()>execCommand(<var title="">command</var>, false,
     <var title="">override</var>)</a></code>.
+  </ol>
+
+  <li>Otherwise, for each (<var title="">command</var>, <var title="">override</var>) pair in
+  <var title="">overrides</var>, in order:
+
+  <ol>
+    <li>If <var title="">override</var> is a boolean, set the <a href=#state-override>state
+    override</a> for <var title="">command</var> to <var title="">override</var>.
+
+    <li>If <var title="">override</var> is a string, set the <a href=#value-override>value override</a>
+    for <var title="">command</var> to <var title="">override</var>.
   </ol>
 </ol>
 
@@ -3817,8 +3851,8 @@ display: inline-table. -->
   <var title="">end block</var>, or <var title="">end block</var> is a <code class=external data-anolis-spec=html title="the td element"><a href=http://www.whatwg.org/html/#the-td-element>td</a></code> or <code class=external data-anolis-spec=html title="the th element"><a href=http://www.whatwg.org/html/#the-th-element>th</a></code>, set
   <var title="">end block</var> to null.
 
-  <li><a href=#record-current-states-and-values>Record current states and values</a>, and let <var title="">record</var>
-  be the result.
+  <li><a href=#record-current-states-and-values>Record current states and values</a>, and let
+  <var title="">overrides</var> be the result.
 
   <!-- This is based on deleteContents() in DOM Range. -->
   <li>If <var title="">start node</var> and <var title="">end node</var> are the same, and
@@ -3833,7 +3867,7 @@ display: inline-table. -->
 
     <li>Set <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> to its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>.
 
-    <li><a href=#restore-states-and-values>Restore states and values</a> from <var title="">record</var>.
+    <li><a href=#restore-states-and-values>Restore states and values</a> from <var title="">overrides</var>.
     <!-- This is needed to restore any overrides that would otherwise be lost.
     TODO: In this and similar cases, we could optimize by saving only
     overrides, not the full state/value. -->
@@ -3919,7 +3953,7 @@ display: inline-table. -->
   <ol>
     <li>Set <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> to its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>.
 
-    <li><a href=#restore-states-and-values>Restore states and values</a> from <var title="">record</var>.
+    <li><a href=#restore-states-and-values>Restore states and values</a> from <var title="">overrides</var>.
 
     <li>Abort these steps.
   </ol>
@@ -3967,7 +4001,7 @@ display: inline-table. -->
       <li>If <var title="">end block</var> is <a href=#editable>editable</a>, remove it from its
       <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
-      <li><a href=#restore-states-and-values>Restore states and values</a> from <var title="">record</var>.
+      <li><a href=#restore-states-and-values>Restore states and values</a> from <var title="">overrides</var>.
 
       <li>Abort these steps.
     </ol>
@@ -4065,7 +4099,7 @@ display: inline-table. -->
   <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("br")</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a> and append the result as the
   last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">start block</var>.
 
-  <li><a href=#restore-states-and-values>Restore states and values</a> from <var title="">record</var>.
+  <li><a href=#restore-states-and-values>Restore states and values</a> from <var title="">overrides</var>.
 </ol>
 
 
@@ -6918,8 +6952,8 @@ this, as Chrome 14 dev does.
   "pre-wrap", set <var title="">value</var> to a non-breaking space (U+00A0).
   <!-- This may change to a space when we canonicalize. -->
 
-  <li><a href=#record-current-states-and-values>Record current states and values</a>, and let <var title="">record</var>
-  be the result.
+  <li><a href=#record-current-overrides>Record current overrides</a>, and let <var title="">overrides</var> be
+  the result.
 
   <li>If <var title="">node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node:
 
@@ -6954,7 +6988,7 @@ this, as Chrome 14 dev does.
     <code class=external data-anolis-spec=domrange><a href=http://html5.org/specs/dom-range.html#selection>Selection</a></code>.
   </ol>
 
-  <li><a href=#restore-states-and-values>Restore states and values</a> from <var title="">record</var>.
+  <li><a href=#restore-states-and-values>Restore states and values</a> from <var title="">overrides</var>.
 
   <li><a href=#canonicalize-whitespace>Canonicalize whitespace</a> at the <a href=#active-range>active range</a>'s
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>.

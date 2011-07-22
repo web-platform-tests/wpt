@@ -927,7 +927,7 @@ instead follow these rules:
 <span>remove extraneous line breaks before</span> it, then <span>remove
 extraneous line breaks at the end of</span> it.
 
-<p>To <dfn>record current states and values</dfn>:
+<p>To <dfn>record current overrides</dfn>:
 
 <ol>
   <li>Let <var>overrides</var> be a list of (string, string or boolean) ordered
@@ -958,13 +958,39 @@ extraneous line breaks at the end of</span> it.
   <li>Return <var>overrides</var>.
 </ol>
 
+<p>To <dfn>record current states and values</dfn>:
+
+<ol>
+  <li>Let <var>overrides</var> be a list of (string, string or boolean) ordered
+  pairs, initially empty.
+
+  <li>Add ("createLink", <code
+  title=queryCommandValue()>queryCommandValue("createLink")</code>) to
+  <var>overrides</var>.
+
+  <li>For each <var>command</var> in the list "bold", "italic",
+  "strikethrough", "subscript", "superscript", "underline", in order: add
+  (<var>command</var>, <code
+  title=queryCommandState()>queryCommandState(<var>command</var>)</code>) to
+  <var>overrides</var>.
+
+  <li>For each <var>command</var> in the list "fontName", "fontSize",
+  "foreColor", "hiliteColor", in order: add (<var>command</var>, <code
+  title=queryCommandValue()>queryCommandValue(<var>command</var>)</code>) to
+  <var>overrides</var>.
+
+  <li>Return <var>overrides</var>.
+</ol>
+
 <p>To <dfn>restore states and values</dfn> specified by a list
 <var>overrides</var> returned by the <span>record current states and
 values</span> algorithm:
 
 <ol>
-  <li>For each (<var>command</var>, <var>override</var>) pair in
-  <var>overrides</var>, in order:
+  <li>If there is some <span>editable</span> [[text]] node <span>effectively
+  contained</span> in the <span>active range</span>, then for each
+  (<var>command</var>, <var>override</var>) pair in <var>overrides</var>, in
+  order:
 
   <ol>
     <li>If <var>override</var> is a boolean, and <code
@@ -977,6 +1003,17 @@ values</span> algorithm:
     returns something different from <var>override</var>, call <code
     title=execCommand()>execCommand(<var>command</var>, false,
     <var>override</var>)</code>.
+  </ol>
+
+  <li>Otherwise, for each (<var>command</var>, <var>override</var>) pair in
+  <var>overrides</var>, in order:
+
+  <ol>
+    <li>If <var>override</var> is a boolean, set the <span>state
+    override</span> for <var>command</var> to <var>override</var>.
+
+    <li>If <var>override</var> is a string, set the <span>value override</span>
+    for <var>command</var> to <var>override</var>.
   </ol>
 </ol>
 
@@ -3808,8 +3845,8 @@ display: inline-table. -->
   <var>end block</var>, or <var>end block</var> is a [[td]] or [[th]], set
   <var>end block</var> to null.
 
-  <li><span>Record current states and values</span>, and let <var>record</var>
-  be the result.
+  <li><span>Record current states and values</span>, and let
+  <var>overrides</var> be the result.
 
   <!-- This is based on deleteContents() in DOM Range. -->
   <li>If <var>start node</var> and <var>end node</var> are the same, and
@@ -3824,7 +3861,7 @@ display: inline-table. -->
 
     <li>Set <var>range</var>'s [[rangeend]] to its [[rangestart]].
 
-    <li><span>Restore states and values</span> from <var>record</var>.
+    <li><span>Restore states and values</span> from <var>overrides</var>.
     <!-- This is needed to restore any overrides that would otherwise be lost.
     TODO: In this and similar cases, we could optimize by saving only
     overrides, not the full state/value. -->
@@ -3910,7 +3947,7 @@ display: inline-table. -->
   <ol>
     <li>Set <var>range</var>'s [[rangeend]] to its [[rangestart]].
 
-    <li><span>Restore states and values</span> from <var>record</var>.
+    <li><span>Restore states and values</span> from <var>overrides</var>.
 
     <li>Abort these steps.
   </ol>
@@ -3958,7 +3995,7 @@ display: inline-table. -->
       <li>If <var>end block</var> is <span>editable</span>, remove it from its
       [[parent]].
 
-      <li><span>Restore states and values</span> from <var>record</var>.
+      <li><span>Restore states and values</span> from <var>overrides</var>.
 
       <li>Abort these steps.
     </ol>
@@ -4056,7 +4093,7 @@ display: inline-table. -->
   [[createelement|"br"]] on the [[contextobject]] and append the result as the
   last [[child]] of <var>start block</var>.
 
-  <li><span>Restore states and values</span> from <var>record</var>.
+  <li><span>Restore states and values</span> from <var>overrides</var>.
 </ol>
 
 <!-- @} -->
@@ -6924,8 +6961,8 @@ this, as Chrome 14 dev does.
   "pre-wrap", set <var>value</var> to a non-breaking space (U+00A0).
   <!-- This may change to a space when we canonicalize. -->
 
-  <li><span>Record current states and values</span>, and let <var>record</var>
-  be the result.
+  <li><span>Record current overrides</span>, and let <var>overrides</var> be
+  the result.
 
   <li>If <var>node</var> is a [[text]] node:
 
@@ -6962,7 +6999,7 @@ this, as Chrome 14 dev does.
     [[selection]].
   </ol>
 
-  <li><span>Restore states and values</span> from <var>record</var>.
+  <li><span>Restore states and values</span> from <var>overrides</var>.
 
   <li><span>Canonicalize whitespace</span> at the <span>active range</span>'s
   [[rangestart]].

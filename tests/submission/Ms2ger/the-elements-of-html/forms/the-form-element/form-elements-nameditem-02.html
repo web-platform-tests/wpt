@@ -3,8 +3,9 @@
 <link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
 <link rel="help" href="http://www.whatwg.org/html5/#dom-form-elements">
 <link rel="help" href="http://www.whatwg.org/html5/#parsing-main-intr">
-<body>
-<script src="../../../support/test.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
 <div id="test">
 <form id=form>
 <table>
@@ -17,11 +18,11 @@
 </form>
 </div>
 <script>
-Test.run([function() {
+test(function() {
   var form = document.getElementById("form");
-  Test.isList(form.elements,
-              [document.getElementById("r0"),
-               document.getElementById("r1"),
-               document.getElementById("r2")]);
-}]);
+  assert_array_equals(form.elements,
+                      [document.getElementById("r0"),
+                       document.getElementById("r1"),
+                       document.getElementById("r2")]);
+}, "form.elements should work correctly in the face of table syntax errors")
 </script>

@@ -3,23 +3,18 @@
 <link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
 <link rel="help" href="http://www.whatwg.org/html5/#dom-form-elements">
 <link rel="help" href="http://www.whatwg.org/html5/#htmlformcontrolscollection">
-<body>
-<script src="../../../support/test.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
 <script>
-try {
+test(function() {
   var form = document.createElement("form");
-  try {
-    Test.ok(form.elements instanceof HTMLFormControlsCollection);
-  } catch (e) {
-    Test.fail("No exception should have been thrown.");
-  }
-  try {
-    Test.ok(form.elements instanceof HTMLCollection);
-  } catch (e) {
-    Test.fail("No exception should have been thrown.");
-  }
-} catch (e) {
-  Test.fail("No exception should have been thrown.");
-}
-Test.finish();
+  ["HTMLFormControlsCollection", "HTMLCollection"].forEach(function(i) {
+    test(function() {
+      assert_true(i in window, "Interface should exist")
+      assert_true(form.elements instanceof window[i],
+                  "elements should implement the interface")
+    }, "Testing interface " + i)
+  })
+})
 </script>

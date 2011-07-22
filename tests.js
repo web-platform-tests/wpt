@@ -3386,6 +3386,9 @@ function prettyPrint(value) {
 		return String(value);
 	}
 
+	value = value.replace(/\\/g, "\\\\")
+		.replace(/"/g, '\\"');
+
 	for (var i = 0; i < 32; i++) {
 		var replace = "\\";
 		switch (i) {
@@ -3422,9 +3425,9 @@ function prettyPrint(value) {
 		case 30: replace += "x1e"; break;
 		case 31: replace += "x1f"; break;
 		}
-		value = value.replace(String.fromCharCode(i), replace);
+		value = value.replace(new RegExp(String.fromCharCode(i), "g"), replace);
 	}
-	return '"' + value.replace(/\\/g, "\\\\").replace(/"/g, '\\"') + '"';
+	return '"' + value + '"';
 }
 //@}
 

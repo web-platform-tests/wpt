@@ -5,14 +5,12 @@
 <link rel="help" href="http://www.whatwg.org/html5/#dom-document-compatmode"/>
 </head>
 <body>
-<script src="../support/test.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
 <script>
-try {
-  Test.is(document.compatMode, "CSS1Compat");
-} catch (e) {
-  Test.fail("Exception was thrown.");
-}
-Test.finish();
+test(function() {
+  assert_equals(document.compatMode, "CSS1Compat");
+})
 </script>
 </body>
 </html>

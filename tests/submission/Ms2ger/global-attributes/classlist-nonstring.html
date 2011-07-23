@@ -5,8 +5,9 @@
 <link rel="help" href="http://www.whatwg.org/html5/#domtokenlist">
 <link rel="help" href="http://dev.w3.org/2006/webapi/WebIDL/#es-DOMString">
 <link rel="help" href="http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-262.pdf#page=57">
-<body>
-<script src="../support/test.js"></script>
+<script src="resources/testharness.js"></script>
+<script src="resources/testharnessreport.js"></script>
+<div id="log"></div>
 <div id="test">
 <ul>
 <li class=undefined>
@@ -31,17 +32,13 @@ var results = [
 </script>
 </div>
 <script>
-try {
+test(function() {
   for (var i = 0, il = items.length; i < il; ++i) {
-    if (i) {
-      Test.separate();
-    }
-    for (var j = 0, jl = tests.length; j < jl; ++j) {
-      Test.is(items[i].classList.contains(tests[j]), results[i][j]);
-    }
+    test(function() {
+      for (var j = 0, jl = tests.length; j < jl; ++j) {
+        assert_equals(items[i].classList.contains(tests[j]), results[i][j]);
+      }
+    })
   }
-} catch (e) {
-  Test.fail("Exception was thrown.");
-}
-Test.finish();
+})
 </script>

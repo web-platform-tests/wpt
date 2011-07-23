@@ -4,7 +4,6 @@
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
 <script>
-// XXX test non-Element nodes
 test(function() {
   var HTMLNS = "http://www.w3.org/1999/xhtml",
       SVGNS = "http://www.w3.org/2000/svg"
@@ -13,8 +12,21 @@ test(function() {
   assert_equals(document.createElementNS(SVGNS, "svg").nodeName, "svg")
   assert_equals(document.createElementNS(SVGNS, "SVG").nodeName, "SVG")
   assert_equals(document.createElementNS(HTMLNS, "x:b").nodeName, "X:B")
-}, "For elements, nodeName should return the same as tagName.")
+}, "For Element nodes, nodeName should return the same as tagName.")
 test(function() {
   assert_equals(document.createTextNode("foo").nodeName, "#text")
-}, "For text nodes, nodeName should return \"#text\"")
+}, "For Text nodes, nodeName should return \"#text\".")
+test(function() {
+  assert_equals(document.createComment("foo").nodeName, "#comment")
+}, "For Comment nodes, nodeName should return \"#comment\".")
+test(function() {
+  assert_equals(document.nodeName, "#document")
+}, "For Document nodes, nodeName should return \"#document\".")
+test(function() {
+  assert_equals(document.doctype.nodeName, "html")
+}, "For DocumentType nodes, nodeName should return the name.")
+test(function() {
+  assert_equals(document.createDocumentFragment().nodeName,
+                "#document-fragment")
+}, "For DocumentFragment nodes, nodeName should return \"#document-fragment\".")
 </script>

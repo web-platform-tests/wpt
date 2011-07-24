@@ -3874,11 +3874,24 @@ display: inline-table. -->
 
     <li>Remove <var>node</var> from <var>parent</var>.
 
-    <li>If <var>strip wrappers</var> is true, while <var>parent</var> is an
-    <span>editable</span> <span>inline node</span> with [[nodelength]] 0, let
-    <var>grandparent</var> be the [[parent]] of <var>parent</var>, then remove
-    <var>parent</var> from <var>grandparent</var>, then set <var>parent</var>
-    to <var>grandparent</var>.
+    <li>If <var>strip wrappers</var> is true or <var>parent</var> is not an
+    [[ancestorcontainer]] of <var>start node</var>, while <var>parent</var> is
+    an <span>editable</span> <span>inline node</span> with [[nodelength]] 0,
+    let <var>grandparent</var> be the [[parent]] of <var>parent</var>, then
+    remove <var>parent</var> from <var>grandparent</var>, then set
+    <var>parent</var> to <var>grandparent</var>.
+    <!--
+    Taking insertText to test the case where strip wrappers is false, with
+    value a: <p>[foo<b>bar</b>]baz becomes <p>a[]baz per spec, in IE9, and in
+    Chrome 14 dev.  Firefox 7.0a2 and Opera 11.50 make it <p>a[]<b></b>baz,
+    with a useless wrapper.  <p>foo<b>[bar</b>baz] becomes <p>foo<b>a[]</b> per
+    spec and in IE9 and Firefox 7.0a2 and Opera 11.50; in Chrome 14 dev
+    apparently it initially becomes <p>fooa[], but then the style is recreated.
+    This is detectable if you do something weird like <span
+    style=color:#aBcDeF> instead of <b>: it comes <font class=Apple-style-span
+    color=#abcdef> or such.  I follow IE9 in all cases, because it makes the
+    most sense.
+    -->
 
     <li>If <var>parent</var> is <span>editable</span> or an <span>editing
     host</span>, is not an <span>inline node</span>, and has no [[children]],

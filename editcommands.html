@@ -3880,11 +3880,24 @@ display: inline-table. -->
 
     <li>Remove <var title="">node</var> from <var title="">parent</var>.
 
-    <li>If <var title="">strip wrappers</var> is true, while <var title="">parent</var> is an
-    <a href=#editable>editable</a> <a href=#inline-node>inline node</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> 0, let
-    <var title="">grandparent</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">parent</var>, then remove
-    <var title="">parent</var> from <var title="">grandparent</var>, then set <var title="">parent</var>
-    to <var title="">grandparent</var>.
+    <li>If <var title="">strip wrappers</var> is true or <var title="">parent</var> is not an
+    <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#ancestor-container title="ancestor container">ancestor container</a> of <var title="">start node</var>, while <var title="">parent</var> is
+    an <a href=#editable>editable</a> <a href=#inline-node>inline node</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> 0,
+    let <var title="">grandparent</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">parent</var>, then
+    remove <var title="">parent</var> from <var title="">grandparent</var>, then set
+    <var title="">parent</var> to <var title="">grandparent</var>.
+    <!--
+    Taking insertText to test the case where strip wrappers is false, with
+    value a: <p>[foo<b>bar</b>]baz becomes <p>a[]baz per spec, in IE9, and in
+    Chrome 14 dev.  Firefox 7.0a2 and Opera 11.50 make it <p>a[]<b></b>baz,
+    with a useless wrapper.  <p>foo<b>[bar</b>baz] becomes <p>foo<b>a[]</b> per
+    spec and in IE9 and Firefox 7.0a2 and Opera 11.50; in Chrome 14 dev
+    apparently it initially becomes <p>fooa[], but then the style is recreated.
+    This is detectable if you do something weird like <span
+    style=color:#aBcDeF> instead of <b>: it comes <font class=Apple-style-span
+    color=#abcdef> or such.  I follow IE9 in all cases, because it makes the
+    most sense.
+    -->
 
     <li>If <var title="">parent</var> is <a href=#editable>editable</a> or an <a href=#editing-host>editing
     host</a>, is not an <a href=#inline-node>inline node</a>, and has no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>,

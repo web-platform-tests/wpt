@@ -4323,10 +4323,12 @@ function deleteContents() {
 		// "Remove node from parent."
 		parent_.removeChild(node);
 
-		// "If strip wrappers is true, while parent is an editable inline node
-		// with length 0, let grandparent be the parent of parent, then remove
-		// parent from grandparent, then set parent to grandparent."
-		if (stripWrappers) {
+		// "If strip wrappers is true or parent is not an ancestor container of
+		// start node, while parent is an editable inline node with length 0,
+		// let grandparent be the parent of parent, then remove parent from
+		// grandparent, then set parent to grandparent."
+		if (stripWrappers
+		|| (!isAncestor(parent_, startNode) && parent_ != startNode)) {
 			while (isEditable(parent_)
 			&& isInlineNode(parent_)
 			&& getNodeLength(parent_) == 0) {

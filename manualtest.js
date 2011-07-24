@@ -54,21 +54,15 @@ function addTest() {
 	var tr = doSetup("#tests table", 0);
 	var input = document.querySelector("#tests label input");
 	var test = input.value;
-	if (command in defaultValues) {
-		test = ["globalValue" in window ? globalValue : defaultValues[command], test];
-	}
-	doInputCell(tr, test);
-	doSpecCell(tr, test, command, false);
-	if (typeof test != "string") {
-		// Yay hack
-		test = test[1];
-	}
-	if (localStorage.getItem(keyname + "test-" + test) !== null) {
+	var normalizedTest = normalizeTest(command, test);
+	doInputCell(tr, normalizedTest, command);
+	doSpecCell(tr, normalizedTest, command);
+	if (localStorage.getItem(keyname + "test-" + normalizedTest[0]) !== null) {
 		// Yay, I get to cheat.  Remove the overlay div so the user doesn't
 		// keep hitting the key, in case it takes a while.
 		var browserCell = document.createElement("td");
 		tr.appendChild(browserCell);
-		browserCell.innerHTML = localStorage[keyname + "test-" + test];
+		browserCell.innerHTML = localStorage[keyname + "test-" + normalizedTest[0]];
 		document.getElementById("overlay").style.display = "";
 		doSameCell(tr);
 		runNextTest(test);

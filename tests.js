@@ -3775,7 +3775,7 @@ function doSpecCell(tr, test, command) {
 			specCell.lastChild.appendChild(queryOutputHelper(
 				beforeIndeterm, beforeState, beforeValue,
 				afterIndeterm, afterState, afterValue,
-				command, test[2][1]));
+				command, test[test.length - 1][1]));
 		}
 	} catch (e) {
 		specCell.firstChild.contentEditable = "inherit";

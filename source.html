@@ -927,109 +927,6 @@ instead follow these rules:
 <span>remove extraneous line breaks before</span> it, then <span>remove
 extraneous line breaks at the end of</span> it.
 
-<p>To <dfn>record current overrides</dfn>:
-
-<ol>
-  <li>Let <var>overrides</var> be a list of (string, string or boolean) ordered
-  pairs, initially empty.
-
-  <!--
-  When restoring, some commands can interfere with others.  Specifically, we
-  want to restore createLink before foreColor and underline, and subscript and
-  superscript before fontSize.  TODO: This approach only works for default
-  styles (although I'm not sure offhand how we could handle non-default styles
-  in principle).
-  -->
-  <li>If there is a <span>value override</span> for "createLink", add
-  ("createLink", <span>value override</span> for "createLink") to
-  <var>overrides</var>.
-
-  <li>For each <var>command</var> in the list "bold", "italic",
-  "strikethrough", "subscript", "superscript", "underline", in order: if there
-  is a <span>state override</span> for <var>command</var>, add
-  (<var>command</var>, <var>command</var>'s <span>state override</span>) to
-  <var>overrides</var>.
-
-  <li>For each <var>command</var> in the list "fontName", "fontSize",
-  "foreColor", "hiliteColor", in order: if there is a <span>value
-  override</span> for <var>command</var>, add (<var>command</var>,
-  <var>command</var>'s <span>value override</span>) to <var>overrides</var>.
-
-  <li>Return <var>overrides</var>.
-</ol>
-
-<p>To <dfn>record current states and values</dfn>:
-
-<ol>
-  <li>Let <var>overrides</var> be a list of (string, string or boolean) ordered
-  pairs, initially empty.
-
-  <li>Let <var>node</var> be the first <span>editable</span> [[text]] node
-  <span>effectively contained</span> in the <span>active range</span>, or null
-  if there is none.
-
-  <li>If <var>node</var> is null, return <var>overrides</var>.
-
-  <li>Add ("createLink", <span>value</span> for "createLink") to
-  <var>overrides</var>.
-
-  <li>For each <var>command</var> in the list "bold", "italic",
-  "strikethrough", "subscript", "superscript", "underline", in order: if
-  <var>node</var>'s <span>effective command value</span> for <var>command</var>
-  is one of its <span>inline command activated values</span>, add
-  (<var>command</var>, true) to <var>overrides</var>, and otherwise add
-  (<var>command</var>, false) to <var>overrides</var>.
-  <!--
-  Thus we will set state overrides based on the first editable text node, to
-  match values.  This means that if you have <p>foo<b>[bar</b>baz]</p> and hit
-  backspace and hit A, you'll get <p>foo<b>a[]</b></p>, although bold was
-  previously indeterminate.  This is needed to match the behavior of hitting A
-  straight away, since innerText doesn't strip wrappers when it invokes "delete
-  the contents".
-  -->
-
-  <li>For each <var>command</var> in the list "fontName", "fontSize",
-  "foreColor", "hiliteColor", in order: add (<var>command</var>,
-  <var>command</var>'s <span>value</span>) to <var>overrides</var>.
-
-  <li>Return <var>overrides</var>.
-</ol>
-
-<p>To <dfn>restore states and values</dfn> specified by a list
-<var>overrides</var> returned by the <span>record current overrides</span> or
-<span>record current states and values</span> algorithm:
-
-<ol>
-  <li>If there is some <span>editable</span> [[text]] node <span>effectively
-  contained</span> in the <span>active range</span>, then for each
-  (<var>command</var>, <var>override</var>) pair in <var>overrides</var>, in
-  order:
-
-  <ol>
-    <li>If <var>override</var> is a boolean, and <code
-    title=queryCommandState()>queryCommandState(<var>command</var>)</code>
-    returns something different from <var>override</var>, call <code
-    title=execCommand()>execCommand(<var>command</var>)</code>.
-
-    <li>If <var>override</var> is a string, and <code
-    title=queryCommandValue()>queryCommandValue(<var>command</var>)</code>
-    returns something different from <var>override</var>, call <code
-    title=execCommand()>execCommand(<var>command</var>, false,
-    <var>override</var>)</code>.
-  </ol>
-
-  <li>Otherwise, for each (<var>command</var>, <var>override</var>) pair in
-  <var>overrides</var>, in order:
-
-  <ol>
-    <li>If <var>override</var> is a boolean, set the <span>state
-    override</span> for <var>command</var> to <var>override</var>.
-
-    <li>If <var>override</var> is a string, set the <span>value override</span>
-    for <var>command</var> to <var>override</var>.
-  </ol>
-</ol>
-
 <!-- @} -->
 <h3>Wrapping a list of nodes</h3>
 <!-- @{ -->
@@ -3657,6 +3554,113 @@ algorithm returns true:
 </ol>
 
 <!-- @} -->
+<h3>Recording and restoring overrides</h3>
+<!--@{-->
+
+<p>To <dfn>record current overrides</dfn>:
+
+<ol>
+  <li>Let <var>overrides</var> be a list of (string, string or boolean) ordered
+  pairs, initially empty.
+
+  <!--
+  When restoring, some commands can interfere with others.  Specifically, we
+  want to restore createLink before foreColor and underline, and subscript and
+  superscript before fontSize.  TODO: This approach only works for default
+  styles (although I'm not sure offhand how we could handle non-default styles
+  in principle).
+  -->
+  <li>If there is a <span>value override</span> for "createLink", add
+  ("createLink", <span>value override</span> for "createLink") to
+  <var>overrides</var>.
+
+  <li>For each <var>command</var> in the list "bold", "italic",
+  "strikethrough", "subscript", "superscript", "underline", in order: if there
+  is a <span>state override</span> for <var>command</var>, add
+  (<var>command</var>, <var>command</var>'s <span>state override</span>) to
+  <var>overrides</var>.
+
+  <li>For each <var>command</var> in the list "fontName", "fontSize",
+  "foreColor", "hiliteColor", in order: if there is a <span>value
+  override</span> for <var>command</var>, add (<var>command</var>,
+  <var>command</var>'s <span>value override</span>) to <var>overrides</var>.
+
+  <li>Return <var>overrides</var>.
+</ol>
+
+<p>To <dfn>record current states and values</dfn>:
+
+<ol>
+  <li>Let <var>overrides</var> be a list of (string, string or boolean) ordered
+  pairs, initially empty.
+
+  <li>Let <var>node</var> be the first <span>editable</span> [[text]] node
+  <span>effectively contained</span> in the <span>active range</span>, or null
+  if there is none.
+
+  <li>If <var>node</var> is null, return <var>overrides</var>.
+
+  <li>Add ("createLink", <span>value</span> for "createLink") to
+  <var>overrides</var>.
+
+  <li>For each <var>command</var> in the list "bold", "italic",
+  "strikethrough", "subscript", "superscript", "underline", in order: if
+  <var>node</var>'s <span>effective command value</span> for <var>command</var>
+  is one of its <span>inline command activated values</span>, add
+  (<var>command</var>, true) to <var>overrides</var>, and otherwise add
+  (<var>command</var>, false) to <var>overrides</var>.
+  <!--
+  Thus we will set state overrides based on the first editable text node, to
+  match values.  This means that if you have <p>foo<b>[bar</b>baz]</p> and hit
+  backspace and hit A, you'll get <p>foo<b>a[]</b></p>, although bold was
+  previously indeterminate.  This is needed to match the behavior of hitting A
+  straight away, since innerText doesn't strip wrappers when it invokes "delete
+  the contents".
+  -->
+
+  <li>For each <var>command</var> in the list "fontName", "fontSize",
+  "foreColor", "hiliteColor", in order: add (<var>command</var>,
+  <var>command</var>'s <span>value</span>) to <var>overrides</var>.
+
+  <li>Return <var>overrides</var>.
+</ol>
+
+<p>To <dfn>restore states and values</dfn> specified by a list
+<var>overrides</var> returned by the <span>record current overrides</span> or
+<span>record current states and values</span> algorithm:
+
+<ol>
+  <li>If there is some <span>editable</span> [[text]] node <span>effectively
+  contained</span> in the <span>active range</span>, then for each
+  (<var>command</var>, <var>override</var>) pair in <var>overrides</var>, in
+  order:
+
+  <ol>
+    <li>If <var>override</var> is a boolean, and <code
+    title=queryCommandState()>queryCommandState(<var>command</var>)</code>
+    returns something different from <var>override</var>, call <code
+    title=execCommand()>execCommand(<var>command</var>)</code>.
+
+    <li>If <var>override</var> is a string, and <code
+    title=queryCommandValue()>queryCommandValue(<var>command</var>)</code>
+    returns something different from <var>override</var>, call <code
+    title=execCommand()>execCommand(<var>command</var>, false,
+    <var>override</var>)</code>.
+  </ol>
+
+  <li>Otherwise, for each (<var>command</var>, <var>override</var>) pair in
+  <var>overrides</var>, in order:
+
+  <ol>
+    <li>If <var>override</var> is a boolean, set the <span>state
+    override</span> for <var>command</var> to <var>override</var>.
+
+    <li>If <var>override</var> is a string, set the <span>value override</span>
+    for <var>command</var> to <var>override</var>.
+  </ol>
+</ol>
+
+<!--@}-->
 <h3>Deleting the contents of a range</h3>
 <!-- @{ -->
 <p>To <dfn>delete the contents</dfn> of a [[range]] <var>range</var>, given a

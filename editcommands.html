@@ -109,29 +109,30 @@ of my other e-mail addresses) to make sure I see it.
    <li><a href=#block-formatting-command-definitions><span class=secno>8.1 </span>Block formatting command definitions</a></li>
    <li><a href=#assorted-block-formatting-command-algorithms><span class=secno>8.2 </span>Assorted block formatting command algorithms</a></li>
    <li><a href=#block-extending-a-range><span class=secno>8.3 </span>Block-extending a range</a></li>
-   <li><a href=#deleting-the-contents-of-a-range><span class=secno>8.4 </span>Deleting the contents of a range</a></li>
-   <li><a href="#splitting-a-node-list's-parent"><span class=secno>8.5 </span>Splitting a node list's parent</a></li>
-   <li><a href=#canonical-space-sequences><span class=secno>8.6 </span>Canonical space sequences</a></li>
-   <li><a href=#indenting-and-outdenting><span class=secno>8.7 </span>Indenting and outdenting</a></li>
-   <li><a href=#toggling-lists><span class=secno>8.8 </span>Toggling lists</a></li>
-   <li><a href=#justifying-the-selection><span class=secno>8.9 </span>Justifying the selection</a></li>
-   <li><a href=#the-delete-command><span class=secno>8.10 </span>The <code title="">delete</code> command</a></li>
-   <li><a href=#the-formatblock-command><span class=secno>8.11 </span>The <code title="">formatBlock</code> command</a></li>
-   <li><a href=#the-forwarddelete-command><span class=secno>8.12 </span>The <code title="">forwardDelete</code> command</a></li>
-   <li><a href=#the-indent-command><span class=secno>8.13 </span>The <code title="">indent</code> command</a></li>
-   <li><a href=#the-inserthorizontalrule-command><span class=secno>8.14 </span>The <code title="">insertHorizontalRule</code> command</a></li>
-   <li><a href=#the-inserthtml-command><span class=secno>8.15 </span>The <code title="">insertHTML</code> command</a></li>
-   <li><a href=#the-insertimage-command><span class=secno>8.16 </span>The <code title="">insertImage</code> command</a></li>
-   <li><a href=#the-insertlinebreak-command><span class=secno>8.17 </span>The <code title="">insertLineBreak</code> command</a></li>
-   <li><a href=#the-insertorderedlist-command><span class=secno>8.18 </span>The <code title="">insertOrderedList</code> command</a></li>
-   <li><a href=#the-insertparagraph-command><span class=secno>8.19 </span>The <code title="">insertParagraph</code> command</a></li>
-   <li><a href=#the-inserttext-command><span class=secno>8.20 </span>The <code title="">insertText</code> command</a></li>
-   <li><a href=#the-insertunorderedlist-command><span class=secno>8.21 </span>The <code title="">insertUnorderedList</code> command</a></li>
-   <li><a href=#the-justifycenter-command><span class=secno>8.22 </span>The <code title="">justifyCenter</code> command</a></li>
-   <li><a href=#the-justifyfull-command><span class=secno>8.23 </span>The <code title="">justifyFull</code> command</a></li>
-   <li><a href=#the-justifyleft-command><span class=secno>8.24 </span>The <code title="">justifyLeft</code> command</a></li>
-   <li><a href=#the-justifyright-command><span class=secno>8.25 </span>The <code title="">justifyRight</code> command</a></li>
-   <li><a href=#the-outdent-command><span class=secno>8.26 </span>The <code title="">outdent</code> command</a></ol></li>
+   <li><a href=#recording-and-restoring-overrides><span class=secno>8.4 </span>Recording and restoring overrides</a></li>
+   <li><a href=#deleting-the-contents-of-a-range><span class=secno>8.5 </span>Deleting the contents of a range</a></li>
+   <li><a href="#splitting-a-node-list's-parent"><span class=secno>8.6 </span>Splitting a node list's parent</a></li>
+   <li><a href=#canonical-space-sequences><span class=secno>8.7 </span>Canonical space sequences</a></li>
+   <li><a href=#indenting-and-outdenting><span class=secno>8.8 </span>Indenting and outdenting</a></li>
+   <li><a href=#toggling-lists><span class=secno>8.9 </span>Toggling lists</a></li>
+   <li><a href=#justifying-the-selection><span class=secno>8.10 </span>Justifying the selection</a></li>
+   <li><a href=#the-delete-command><span class=secno>8.11 </span>The <code title="">delete</code> command</a></li>
+   <li><a href=#the-formatblock-command><span class=secno>8.12 </span>The <code title="">formatBlock</code> command</a></li>
+   <li><a href=#the-forwarddelete-command><span class=secno>8.13 </span>The <code title="">forwardDelete</code> command</a></li>
+   <li><a href=#the-indent-command><span class=secno>8.14 </span>The <code title="">indent</code> command</a></li>
+   <li><a href=#the-inserthorizontalrule-command><span class=secno>8.15 </span>The <code title="">insertHorizontalRule</code> command</a></li>
+   <li><a href=#the-inserthtml-command><span class=secno>8.16 </span>The <code title="">insertHTML</code> command</a></li>
+   <li><a href=#the-insertimage-command><span class=secno>8.17 </span>The <code title="">insertImage</code> command</a></li>
+   <li><a href=#the-insertlinebreak-command><span class=secno>8.18 </span>The <code title="">insertLineBreak</code> command</a></li>
+   <li><a href=#the-insertorderedlist-command><span class=secno>8.19 </span>The <code title="">insertOrderedList</code> command</a></li>
+   <li><a href=#the-insertparagraph-command><span class=secno>8.20 </span>The <code title="">insertParagraph</code> command</a></li>
+   <li><a href=#the-inserttext-command><span class=secno>8.21 </span>The <code title="">insertText</code> command</a></li>
+   <li><a href=#the-insertunorderedlist-command><span class=secno>8.22 </span>The <code title="">insertUnorderedList</code> command</a></li>
+   <li><a href=#the-justifycenter-command><span class=secno>8.23 </span>The <code title="">justifyCenter</code> command</a></li>
+   <li><a href=#the-justifyfull-command><span class=secno>8.24 </span>The <code title="">justifyFull</code> command</a></li>
+   <li><a href=#the-justifyleft-command><span class=secno>8.25 </span>The <code title="">justifyLeft</code> command</a></li>
+   <li><a href=#the-justifyright-command><span class=secno>8.26 </span>The <code title="">justifyRight</code> command</a></li>
+   <li><a href=#the-outdent-command><span class=secno>8.27 </span>The <code title="">outdent</code> command</a></ol></li>
  <li><a href=#miscellaneous-commands><span class=secno>9 </span>Miscellaneous commands</a>
   <ol>
    <li><a href=#the-copy-command><span class=secno>9.1 </span>The <code title="">copy</code> command</a></li>
@@ -972,105 +973,6 @@ instead follow these rules:
 <p>To <dfn id=remove-extraneous-line-breaks-from>remove extraneous line breaks from</dfn> a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, first
 <a href=#remove-extraneous-line-breaks-before>remove extraneous line breaks before</a> it, then <a href=#remove-extraneous-line-breaks-at-the-end-of>remove
 extraneous line breaks at the end of</a> it.
-
-<p>To <dfn id=record-current-overrides>record current overrides</dfn>:
-
-<ol>
-  <li>Let <var title="">overrides</var> be a list of (string, string or boolean) ordered
-  pairs, initially empty.
-
-  <!--
-  When restoring, some commands can interfere with others.  Specifically, we
-  want to restore createLink before foreColor and underline, and subscript and
-  superscript before fontSize.  TODO: This approach only works for default
-  styles (although I'm not sure offhand how we could handle non-default styles
-  in principle).
-  -->
-  <li>If there is a <a href=#value-override>value override</a> for "createLink", add
-  ("createLink", <a href=#value-override>value override</a> for "createLink") to
-  <var title="">overrides</var>.
-
-  <li>For each <var title="">command</var> in the list "bold", "italic",
-  "strikethrough", "subscript", "superscript", "underline", in order: if there
-  is a <a href=#state-override>state override</a> for <var title="">command</var>, add
-  (<var title="">command</var>, <var title="">command</var>'s <a href=#state-override>state override</a>) to
-  <var title="">overrides</var>.
-
-  <li>For each <var title="">command</var> in the list "fontName", "fontSize",
-  "foreColor", "hiliteColor", in order: if there is a <a href=#value-override>value
-  override</a> for <var title="">command</var>, add (<var title="">command</var>,
-  <var title="">command</var>'s <a href=#value-override>value override</a>) to <var title="">overrides</var>.
-
-  <li>Return <var title="">overrides</var>.
-</ol>
-
-<p>To <dfn id=record-current-states-and-values>record current states and values</dfn>:
-
-<ol>
-  <li>Let <var title="">overrides</var> be a list of (string, string or boolean) ordered
-  pairs, initially empty.
-
-  <li>Let <var title="">node</var> be the first <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node
-  <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a>, or null
-  if there is none.
-
-  <li>If <var title="">node</var> is null, return <var title="">overrides</var>.
-
-  <li>Add ("createLink", <a href=#value>value</a> for "createLink") to
-  <var title="">overrides</var>.
-
-  <li>For each <var title="">command</var> in the list "bold", "italic",
-  "strikethrough", "subscript", "superscript", "underline", in order: if
-  <var title="">node</var>'s <a href=#effective-command-value>effective command value</a> for <var title="">command</var>
-  is one of its <a href=#inline-command-activated-values>inline command activated values</a>, add
-  (<var title="">command</var>, true) to <var title="">overrides</var>, and otherwise add
-  (<var title="">command</var>, false) to <var title="">overrides</var>.
-  <!--
-  Thus we will set state overrides based on the first editable text node, to
-  match values.  This means that if you have <p>foo<b>[bar</b>baz]</p> and hit
-  backspace and hit A, you'll get <p>foo<b>a[]</b></p>, although bold was
-  previously indeterminate.  This is needed to match the behavior of hitting A
-  straight away, since innerText doesn't strip wrappers when it invokes "delete
-  the contents".
-  -->
-
-  <li>For each <var title="">command</var> in the list "fontName", "fontSize",
-  "foreColor", "hiliteColor", in order: add (<var title="">command</var>,
-  <var title="">command</var>'s <a href=#value>value</a>) to <var title="">overrides</var>.
-
-  <li>Return <var title="">overrides</var>.
-</ol>
-
-<p>To <dfn id=restore-states-and-values>restore states and values</dfn> specified by a list
-<var title="">overrides</var> returned by the <a href=#record-current-overrides>record current overrides</a> or
-<a href=#record-current-states-and-values>record current states and values</a> algorithm:
-
-<ol>
-  <li>If there is some <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node <a href=#effectively-contained>effectively
-  contained</a> in the <a href=#active-range>active range</a>, then for each
-  (<var title="">command</var>, <var title="">override</var>) pair in <var title="">overrides</var>, in
-  order:
-
-  <ol>
-    <li>If <var title="">override</var> is a boolean, and <code title=queryCommandState()><a href=#querycommandstate()>queryCommandState(<var title="">command</var>)</a></code>
-    returns something different from <var title="">override</var>, call <code title=execCommand()><a href=#execcommand()>execCommand(<var title="">command</var>)</a></code>.
-
-    <li>If <var title="">override</var> is a string, and <code title=queryCommandValue()><a href=#querycommandvalue()>queryCommandValue(<var title="">command</var>)</a></code>
-    returns something different from <var title="">override</var>, call <code title=execCommand()><a href=#execcommand()>execCommand(<var title="">command</var>, false,
-    <var title="">override</var>)</a></code>.
-  </ol>
-
-  <li>Otherwise, for each (<var title="">command</var>, <var title="">override</var>) pair in
-  <var title="">overrides</var>, in order:
-
-  <ol>
-    <li>If <var title="">override</var> is a boolean, set the <a href=#state-override>state
-    override</a> for <var title="">command</var> to <var title="">override</var>.
-
-    <li>If <var title="">override</var> is a string, set the <a href=#value-override>value override</a>
-    for <var title="">command</var> to <var title="">override</var>.
-  </ol>
-</ol>
 
 
 <h3 id=wrapping-a-list-of-nodes><span class=secno>6.2 </span>Wrapping a list of nodes</h3>
@@ -3666,7 +3568,110 @@ algorithm returns true:
 </ol>
 
 
-<h3 id=deleting-the-contents-of-a-range><span class=secno>8.4 </span>Deleting the contents of a range</h3>
+<h3 id=recording-and-restoring-overrides><span class=secno>8.4 </span>Recording and restoring overrides</h3>
+<!--@{-->
+
+<p>To <dfn id=record-current-overrides>record current overrides</dfn>:
+
+<ol>
+  <li>Let <var title="">overrides</var> be a list of (string, string or boolean) ordered
+  pairs, initially empty.
+
+  <!--
+  When restoring, some commands can interfere with others.  Specifically, we
+  want to restore createLink before foreColor and underline, and subscript and
+  superscript before fontSize.  TODO: This approach only works for default
+  styles (although I'm not sure offhand how we could handle non-default styles
+  in principle).
+  -->
+  <li>If there is a <a href=#value-override>value override</a> for "createLink", add
+  ("createLink", <a href=#value-override>value override</a> for "createLink") to
+  <var title="">overrides</var>.
+
+  <li>For each <var title="">command</var> in the list "bold", "italic",
+  "strikethrough", "subscript", "superscript", "underline", in order: if there
+  is a <a href=#state-override>state override</a> for <var title="">command</var>, add
+  (<var title="">command</var>, <var title="">command</var>'s <a href=#state-override>state override</a>) to
+  <var title="">overrides</var>.
+
+  <li>For each <var title="">command</var> in the list "fontName", "fontSize",
+  "foreColor", "hiliteColor", in order: if there is a <a href=#value-override>value
+  override</a> for <var title="">command</var>, add (<var title="">command</var>,
+  <var title="">command</var>'s <a href=#value-override>value override</a>) to <var title="">overrides</var>.
+
+  <li>Return <var title="">overrides</var>.
+</ol>
+
+<p>To <dfn id=record-current-states-and-values>record current states and values</dfn>:
+
+<ol>
+  <li>Let <var title="">overrides</var> be a list of (string, string or boolean) ordered
+  pairs, initially empty.
+
+  <li>Let <var title="">node</var> be the first <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node
+  <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a>, or null
+  if there is none.
+
+  <li>If <var title="">node</var> is null, return <var title="">overrides</var>.
+
+  <li>Add ("createLink", <a href=#value>value</a> for "createLink") to
+  <var title="">overrides</var>.
+
+  <li>For each <var title="">command</var> in the list "bold", "italic",
+  "strikethrough", "subscript", "superscript", "underline", in order: if
+  <var title="">node</var>'s <a href=#effective-command-value>effective command value</a> for <var title="">command</var>
+  is one of its <a href=#inline-command-activated-values>inline command activated values</a>, add
+  (<var title="">command</var>, true) to <var title="">overrides</var>, and otherwise add
+  (<var title="">command</var>, false) to <var title="">overrides</var>.
+  <!--
+  Thus we will set state overrides based on the first editable text node, to
+  match values.  This means that if you have <p>foo<b>[bar</b>baz]</p> and hit
+  backspace and hit A, you'll get <p>foo<b>a[]</b></p>, although bold was
+  previously indeterminate.  This is needed to match the behavior of hitting A
+  straight away, since innerText doesn't strip wrappers when it invokes "delete
+  the contents".
+  -->
+
+  <li>For each <var title="">command</var> in the list "fontName", "fontSize",
+  "foreColor", "hiliteColor", in order: add (<var title="">command</var>,
+  <var title="">command</var>'s <a href=#value>value</a>) to <var title="">overrides</var>.
+
+  <li>Return <var title="">overrides</var>.
+</ol>
+
+<p>To <dfn id=restore-states-and-values>restore states and values</dfn> specified by a list
+<var title="">overrides</var> returned by the <a href=#record-current-overrides>record current overrides</a> or
+<a href=#record-current-states-and-values>record current states and values</a> algorithm:
+
+<ol>
+  <li>If there is some <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node <a href=#effectively-contained>effectively
+  contained</a> in the <a href=#active-range>active range</a>, then for each
+  (<var title="">command</var>, <var title="">override</var>) pair in <var title="">overrides</var>, in
+  order:
+
+  <ol>
+    <li>If <var title="">override</var> is a boolean, and <code title=queryCommandState()><a href=#querycommandstate()>queryCommandState(<var title="">command</var>)</a></code>
+    returns something different from <var title="">override</var>, call <code title=execCommand()><a href=#execcommand()>execCommand(<var title="">command</var>)</a></code>.
+
+    <li>If <var title="">override</var> is a string, and <code title=queryCommandValue()><a href=#querycommandvalue()>queryCommandValue(<var title="">command</var>)</a></code>
+    returns something different from <var title="">override</var>, call <code title=execCommand()><a href=#execcommand()>execCommand(<var title="">command</var>, false,
+    <var title="">override</var>)</a></code>.
+  </ol>
+
+  <li>Otherwise, for each (<var title="">command</var>, <var title="">override</var>) pair in
+  <var title="">overrides</var>, in order:
+
+  <ol>
+    <li>If <var title="">override</var> is a boolean, set the <a href=#state-override>state
+    override</a> for <var title="">command</var> to <var title="">override</var>.
+
+    <li>If <var title="">override</var> is a string, set the <a href=#value-override>value override</a>
+    for <var title="">command</var> to <var title="">override</var>.
+  </ol>
+</ol>
+
+<!--@}-->
+<h3 id=deleting-the-contents-of-a-range><span class=secno>8.5 </span>Deleting the contents of a range</h3>
 
 <p>To <dfn id=delete-the-contents>delete the contents</dfn> of a <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> <var title="">range</var>, given a
 <var title="">block merging</var> flag that defaults to true and a <var title="">strip
@@ -4108,7 +4113,7 @@ display: inline-table. -->
 </ol>
 
 
-<h3 id="splitting-a-node-list's-parent"><span class=secno>8.5 </span>Splitting a node list's parent</h3>
+<h3 id="splitting-a-node-list's-parent"><span class=secno>8.6 </span>Splitting a node list's parent</h3>
 
 <p>To <dfn id=split-the-parent>split the parent</dfn> of a list <var title="">node list</var> of consecutive
 <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-sibling title=concept-tree-sibling>sibling</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>:
@@ -4235,7 +4240,7 @@ descendants</dfn>, <a href=#split-the-parent>split the parent</a> of <var title=
 its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
 
-<h3 id=canonical-space-sequences><span class=secno>8.6 </span>Canonical space sequences</h3>
+<h3 id=canonical-space-sequences><span class=secno>8.7 </span>Canonical space sequences</h3>
 
 <p>The <dfn id=canonical-space-sequence>canonical space sequence</dfn> of length <var title="">n</var>, with boolean
 flags <var title="">non-breaking start</var> and <var title="">non-breaking end</var>, is
@@ -4426,7 +4431,7 @@ returned by the following algorithm:
 </ol>
 
 
-<h3 id=indenting-and-outdenting><span class=secno>8.7 </span>Indenting and outdenting</h3>
+<h3 id=indenting-and-outdenting><span class=secno>8.8 </span>Indenting and outdenting</h3>
 
 <p>To <dfn id=indent>indent</dfn> a list <var title="">node list</var> of consecutive <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-sibling title=concept-tree-sibling>sibling</a>
 <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>:
@@ -4720,7 +4725,7 @@ insertOrderedList.
 </ol>
 
 
-<h3 id=toggling-lists><span class=secno>8.8 </span>Toggling lists</h3>
+<h3 id=toggling-lists><span class=secno>8.9 </span>Toggling lists</h3>
 
 <!--
 Research for insertOrderedList/insertUnorderedList: tested the following
@@ -5274,7 +5279,7 @@ or "ul"):
 </ol>
 
 
-<h3 id=justifying-the-selection><span class=secno>8.9 </span>Justifying the selection</h3>
+<h3 id=justifying-the-selection><span class=secno>8.10 </span>Justifying the selection</h3>
 
 <!--
 There are two basic ways it works: using the align attribute, and using CSS
@@ -5388,7 +5393,7 @@ would be worth the added complexity.
 </ol>
 
 
-<h3 id=the-delete-command><span class=secno>8.10 </span><dfn>The <code title="">delete</code> command</dfn></h3>
+<h3 id=the-delete-command><span class=secno>8.11 </span><dfn>The <code title="">delete</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>:
 <!--
@@ -5701,7 +5706,7 @@ in the DOM, which is unhelpful, so I don't.
 </ol>
 
 
-<h3 id=the-formatblock-command><span class=secno>8.11 </span><dfn>The <code title="">formatBlock</code> command</dfn></h3>
+<h3 id=the-formatblock-command><span class=secno>8.12 </span><dfn>The <code title="">formatBlock</code> command</dfn></h3>
 
 <!--
 Tested browser versions: IE9, Firefox 4.0, Chrome 13 dev, Opera 11.10.
@@ -5996,7 +6001,7 @@ writing means what Firefox supports plus div.
 </ol>
 
 
-<h3 id=the-forwarddelete-command><span class=secno>8.12 </span><dfn>The <code title="">forwardDelete</code> command</dfn></h3>
+<h3 id=the-forwarddelete-command><span class=secno>8.13 </span><dfn>The <code title="">forwardDelete</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>:
 <!-- Copy-pasted from delete, see there for comments. -->
@@ -6151,7 +6156,7 @@ writing means what Firefox supports plus div.
 </ol>
 
 
-<h3 id=the-indent-command><span class=secno>8.13 </span><dfn>The <code title="">indent</code> command</dfn></h3>
+<h3 id=the-indent-command><span class=secno>8.14 </span><dfn>The <code title="">indent</code> command</dfn></h3>
 
 <!--
 IE9: Outputs <blockquote style="margin-right: 0px" dir="ltr">, or when
@@ -6247,7 +6252,7 @@ differing from all browsers in lots of ways.
 </ol>
 
 
-<h3 id=the-inserthorizontalrule-command><span class=secno>8.14 </span><dfn>The <code title="">insertHorizontalRule</code> command</dfn></h3>
+<h3 id=the-inserthorizontalrule-command><span class=secno>8.15 </span><dfn>The <code title="">insertHorizontalRule</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>:
 
@@ -6313,7 +6318,7 @@ splitting up parents to ensure validity . . . -->
 </ol>
 
 
-<h3 id=the-inserthtml-command><span class=secno>8.15 </span><dfn>The <code title="">insertHTML</code> command</dfn></h3>
+<h3 id=the-inserthtml-command><span class=secno>8.16 </span><dfn>The <code title="">insertHTML</code> command</dfn></h3>
 
 <!--
 Not supported by IE9.  Handling of disallowed children is interesting:
@@ -6420,7 +6425,7 @@ parser.
 </ol>
 
 
-<h3 id=the-insertimage-command><span class=secno>8.16 </span><dfn>The <code title="">insertImage</code> command</dfn></h3>
+<h3 id=the-insertimage-command><span class=secno>8.17 </span><dfn>The <code title="">insertImage</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>:
 
@@ -6479,7 +6484,7 @@ parser.
 </ol>
 
 
-<h3 id=the-insertlinebreak-command><span class=secno>8.17 </span><dfn>The <code title="">insertLineBreak</code> command</dfn></h3>
+<h3 id=the-insertlinebreak-command><span class=secno>8.18 </span><dfn>The <code title="">insertLineBreak</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>:
 
@@ -6548,7 +6553,7 @@ Opera 11.11 isn't heedful of <xmp>, and treats <pre> somewhat oddly.
 </ol>
 
 
-<h3 id=the-insertorderedlist-command><span class=secno>8.18 </span><dfn>The <code title="">insertOrderedList</code> command</dfn></h3>
+<h3 id=the-insertorderedlist-command><span class=secno>8.19 </span><dfn>The <code title="">insertOrderedList</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: <a href=#toggle-lists>Toggle lists</a> with <var title="">tag name</var>
 "ol".
@@ -6573,7 +6578,7 @@ except with a few weird random mismatches that looked like browser bugs to me.
 -->
 
 
-<h3 id=the-insertparagraph-command><span class=secno>8.19 </span><dfn>The <code title="">insertParagraph</code> command</dfn></h3>
+<h3 id=the-insertparagraph-command><span class=secno>8.20 </span><dfn>The <code title="">insertParagraph</code> command</dfn></h3>
 
 <!--
 There are three major behaviors here.  Firefox 5.0a2 behaves identically to
@@ -6845,7 +6850,7 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
 </ol>
 
 
-<h3 id=the-inserttext-command><span class=secno>8.20 </span><dfn>The <code title="">insertText</code> command</dfn></h3>
+<h3 id=the-inserttext-command><span class=secno>8.21 </span><dfn>The <code title="">insertText</code> command</dfn></h3>
 
 <!--
 Supported only by WebKit.  Tests in other browsers were manual.  In the manual
@@ -7055,7 +7060,7 @@ this, as Chrome 14 dev does.
 </ol>
 
 
-<h3 id=the-insertunorderedlist-command><span class=secno>8.21 </span><dfn>The <code title="">insertUnorderedList</code> command</dfn></h3>
+<h3 id=the-insertunorderedlist-command><span class=secno>8.22 </span><dfn>The <code title="">insertUnorderedList</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: <a href=#toggle-lists>Toggle lists</a> with <var title="">tag name</var>
 "ul".
@@ -7067,7 +7072,7 @@ is "mixed" or "mixed ul", false otherwise.
 false otherwise.
 
 
-<h3 id=the-justifycenter-command><span class=secno>8.22 </span><dfn>The <code title="">justifyCenter</code> command</dfn></h3>
+<h3 id=the-justifycenter-command><span class=secno>8.23 </span><dfn>The <code title="">justifyCenter</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: <a href=#justify-the-selection>Justify the selection</a> with
 <var title="">alignment</var> "center".
@@ -7132,7 +7137,7 @@ string, as usual.  Opera 11.11 always returns the empty string.
 -->
 
 
-<h3 id=the-justifyfull-command><span class=secno>8.23 </span><dfn>The <code title="">justifyFull</code> command</dfn></h3>
+<h3 id=the-justifyfull-command><span class=secno>8.24 </span><dfn>The <code title="">justifyFull</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: <a href=#justify-the-selection>Justify the selection</a> with
 <var title="">alignment</var> "justify".
@@ -7155,7 +7160,7 @@ and return the <a href=#alignment-value>alignment value</a> of the first <a href
 <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.  If there is no such <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, return "left".
 
 
-<h3 id=the-justifyleft-command><span class=secno>8.24 </span><dfn>The <code title="">justifyLeft</code> command</dfn></h3>
+<h3 id=the-justifyleft-command><span class=secno>8.25 </span><dfn>The <code title="">justifyLeft</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: <a href=#justify-the-selection>Justify the selection</a> with
 <var title="">alignment</var> "left".
@@ -7178,7 +7183,7 @@ and return the <a href=#alignment-value>alignment value</a> of the first <a href
 <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.  If there is no such <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, return "left".
 
 
-<h3 id=the-justifyright-command><span class=secno>8.25 </span><dfn>The <code title="">justifyRight</code> command</dfn></h3>
+<h3 id=the-justifyright-command><span class=secno>8.26 </span><dfn>The <code title="">justifyRight</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: <a href=#justify-the-selection>Justify the selection</a> with
 <var title="">alignment</var> "right".
@@ -7201,7 +7206,7 @@ and return the <a href=#alignment-value>alignment value</a> of the first <a href
 <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.  If there is no such <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, return "left".
 
 
-<h3 id=the-outdent-command><span class=secno>8.26 </span><dfn>The <code title="">outdent</code> command</dfn></h3>
+<h3 id=the-outdent-command><span class=secno>8.27 </span><dfn>The <code title="">outdent</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>:
 

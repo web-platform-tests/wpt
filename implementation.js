@@ -1237,132 +1237,6 @@ function removeExtraneousLineBreaksFrom(node) {
 	removeExtraneousLineBreaksAtTheEndOf(node);
 }
 
-function recordCurrentOverrides() {
-	// "Let overrides be a list of (string, string or boolean) ordered pairs,
-	// initially empty."
-	var overrides = [];
-
-	// "If there is a value override for "createLink", add ("createLink", value
-	// override for "createLink") to overrides."
-	if (getValueOverride("createlink") !== undefined) {
-		overrides.push(["createlink", getValueOverride("createlink")]);
-	}
-
-	// "For each command in the list "bold", "italic", "strikethrough",
-	// "subscript", "superscript", "underline", in order: if there is a state
-	// override for command, add (command, command's state override) to
-	// overrides."
-	["bold", "italic", "strikethrough", "subscript", "superscript",
-	"underline"].forEach(function(command) {
-		if (getStateOverride(command) !== undefined) {
-			overrides.push([command, getStateOverride(command)]);
-		}
-	});
-
-	// "For each command in the list "fontName", "fontSize", "foreColor",
-	// "hiliteColor", in order: if there is a value override for command, add
-	// (command, command's value override) to overrides."
-	["fontname", "fontsize", "forecolor", "hilitecolor"].forEach(function(command) {
-		if (getValueOverride(command) !== undefined) {
-			overrides.push([command, getValueOverride(command)]);
-		}
-	});
-
-	// "Return overrides."
-	return overrides;
-}
-
-function recordCurrentStatesAndValues() {
-	// "Let overrides be a list of (string, string or boolean) ordered pairs,
-	// initially empty."
-	var overrides = [];
-
-	// "Let node be the first editable Text node effectively contained in the
-	// active range, or null if there is none."
-	var node = getAllEffectivelyContainedNodes(getActiveRange())
-		.filter(function(node) { return isEditable(node) && node.nodeType == Node.TEXT_NODE })[0];
-
-	// "If node is null, return overrides."
-	if (!node) {
-		return overrides;
-	}
-
-	// "Add ("createLink", value for "createLink") to overrides."
-	overrides.push(["createlink", commands.createlink.value()]);
-
-	// "For each command in the list "bold", "italic", "strikethrough",
-	// "subscript", "superscript", "underline", in order: if node's effective
-	// command value for command is one of its inline command activated values,
-	// add (command, true) to overrides, and otherwise add (command, false) to
-	// overrides."
-	["bold", "italic", "strikethrough", "subscript", "superscript",
-	"underline"].forEach(function(command) {
-		if (commands[command].inlineCommandActivatedValues
-		.indexOf(getEffectiveCommandValue(node, command)) != -1) {
-			overrides.push([command, true]);
-		} else {
-			overrides.push([command, false]);
-		}
-	});
-
-	// "For each command in the list "fontName", "fontSize", "foreColor",
-	// "hiliteColor", in order: add (command, command's value) to overrides."
-	["fontname", "fontsize", "forecolor", "hilitecolor"].forEach(function(command) {
-		overrides.push([command, commands[command].value()]);
-	});
-
-	// "Return overrides."
-	return overrides;
-}
-
-function restoreStatesAndValues(overrides) {
-	// "If there is some editable Text node effectively contained in the active
-	// range, then for each (command, override) pair in overrides, in order:"
-	if (getAllEffectivelyContainedNodes(getActiveRange()).some(function(node) {
-		return isEditable(node) && node.nodeType == Node.TEXT_NODE
-	})) {
-		for (var i = 0; i < overrides.length; i++) {
-			var command = overrides[i][0];
-			var override = overrides[i][1];
-
-			// "If override is a boolean, and queryCommandState(command)
-			// returns something different from override, call
-			// execCommand(command)."
-			if (typeof override == "boolean"
-			&& myQueryCommandState(command) != override) {
-				myExecCommand(command);
-			}
-
-			// "If override is a string, and queryCommandValue(command) returns
-			// something different from override, call execCommand(command,
-			// false, override)."
-			if (typeof override == "string"
-			&& !valuesEqual(command, myQueryCommandValue(command), override)) {
-				myExecCommand(command, false, override);
-			}
-		}
-
-	// "Otherwise, for each (command, override) pair in overrides, in order:"
-	} else {
-		for (var i = 0; i < overrides.length; i++) {
-			var command = overrides[i][0];
-			var override = overrides[i][1];
-
-			// "If override is a boolean, set the state override for command to
-			// override."
-			if (typeof override == "boolean") {
-				setStateOverride(command, override);
-			}
-
-			// "If override is a string, set the value override for command to
-			// override."
-			if (typeof override == "string") {
-				setValueOverride(command, override);
-			}
-		}
-	}
-}
-
 //@}
 ///// Wrapping a list of nodes /////
 //@{
@@ -4090,6 +3964,135 @@ function precedesLineBreak(node) {
 	return getPosition(newRange.endContainer, newRange.endOffset, node, offset) != "after";
 }
 
+//@}
+///// Recording and restoring overrides /////
+//@{
+
+function recordCurrentOverrides() {
+	// "Let overrides be a list of (string, string or boolean) ordered pairs,
+	// initially empty."
+	var overrides = [];
+
+	// "If there is a value override for "createLink", add ("createLink", value
+	// override for "createLink") to overrides."
+	if (getValueOverride("createlink") !== undefined) {
+		overrides.push(["createlink", getValueOverride("createlink")]);
+	}
+
+	// "For each command in the list "bold", "italic", "strikethrough",
+	// "subscript", "superscript", "underline", in order: if there is a state
+	// override for command, add (command, command's state override) to
+	// overrides."
+	["bold", "italic", "strikethrough", "subscript", "superscript",
+	"underline"].forEach(function(command) {
+		if (getStateOverride(command) !== undefined) {
+			overrides.push([command, getStateOverride(command)]);
+		}
+	});
+
+	// "For each command in the list "fontName", "fontSize", "foreColor",
+	// "hiliteColor", in order: if there is a value override for command, add
+	// (command, command's value override) to overrides."
+	["fontname", "fontsize", "forecolor", "hilitecolor"].forEach(function(command) {
+		if (getValueOverride(command) !== undefined) {
+			overrides.push([command, getValueOverride(command)]);
+		}
+	});
+
+	// "Return overrides."
+	return overrides;
+}
+
+function recordCurrentStatesAndValues() {
+	// "Let overrides be a list of (string, string or boolean) ordered pairs,
+	// initially empty."
+	var overrides = [];
+
+	// "Let node be the first editable Text node effectively contained in the
+	// active range, or null if there is none."
+	var node = getAllEffectivelyContainedNodes(getActiveRange())
+		.filter(function(node) { return isEditable(node) && node.nodeType == Node.TEXT_NODE })[0];
+
+	// "If node is null, return overrides."
+	if (!node) {
+		return overrides;
+	}
+
+	// "Add ("createLink", value for "createLink") to overrides."
+	overrides.push(["createlink", commands.createlink.value()]);
+
+	// "For each command in the list "bold", "italic", "strikethrough",
+	// "subscript", "superscript", "underline", in order: if node's effective
+	// command value for command is one of its inline command activated values,
+	// add (command, true) to overrides, and otherwise add (command, false) to
+	// overrides."
+	["bold", "italic", "strikethrough", "subscript", "superscript",
+	"underline"].forEach(function(command) {
+		if (commands[command].inlineCommandActivatedValues
+		.indexOf(getEffectiveCommandValue(node, command)) != -1) {
+			overrides.push([command, true]);
+		} else {
+			overrides.push([command, false]);
+		}
+	});
+
+	// "For each command in the list "fontName", "fontSize", "foreColor",
+	// "hiliteColor", in order: add (command, command's value) to overrides."
+	["fontname", "fontsize", "forecolor", "hilitecolor"].forEach(function(command) {
+		overrides.push([command, commands[command].value()]);
+	});
+
+	// "Return overrides."
+	return overrides;
+}
+
+function restoreStatesAndValues(overrides) {
+	// "If there is some editable Text node effectively contained in the active
+	// range, then for each (command, override) pair in overrides, in order:"
+	if (getAllEffectivelyContainedNodes(getActiveRange()).some(function(node) {
+		return isEditable(node) && node.nodeType == Node.TEXT_NODE
+	})) {
+		for (var i = 0; i < overrides.length; i++) {
+			var command = overrides[i][0];
+			var override = overrides[i][1];
+
+			// "If override is a boolean, and queryCommandState(command)
+			// returns something different from override, call
+			// execCommand(command)."
+			if (typeof override == "boolean"
+			&& myQueryCommandState(command) != override) {
+				myExecCommand(command);
+			}
+
+			// "If override is a string, and queryCommandValue(command) returns
+			// something different from override, call execCommand(command,
+			// false, override)."
+			if (typeof override == "string"
+			&& !valuesEqual(command, myQueryCommandValue(command), override)) {
+				myExecCommand(command, false, override);
+			}
+		}
+
+	// "Otherwise, for each (command, override) pair in overrides, in order:"
+	} else {
+		for (var i = 0; i < overrides.length; i++) {
+			var command = overrides[i][0];
+			var override = overrides[i][1];
+
+			// "If override is a boolean, set the state override for command to
+			// override."
+			if (typeof override == "boolean") {
+				setStateOverride(command, override);
+			}
+
+			// "If override is a string, set the value override for command to
+			// override."
+			if (typeof override == "string") {
+				setValueOverride(command, override);
+			}
+		}
+	}
+}
 
 //@}
 ///// Deleting the contents of a range /////

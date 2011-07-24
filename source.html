@@ -964,27 +964,40 @@ extraneous line breaks at the end of</span> it.
   <li>Let <var>overrides</var> be a list of (string, string or boolean) ordered
   pairs, initially empty.
 
-  <li>Add ("createLink", <code
-  title=queryCommandValue()>queryCommandValue("createLink")</code>) to
+  <li>Let <var>node</var> be the first <span>editable</span> [[text]] node
+  <span>effectively contained</span> in the <span>active range</span>, or null
+  if there is none.
+
+  <li>If <var>node</var> is null, return <var>overrides</var>.
+
+  <li>Add ("createLink", <span>value</span> for "createLink") to
   <var>overrides</var>.
 
   <li>For each <var>command</var> in the list "bold", "italic",
-  "strikethrough", "subscript", "superscript", "underline", in order: add
-  (<var>command</var>, <code
-  title=queryCommandState()>queryCommandState(<var>command</var>)</code>) to
-  <var>overrides</var>.
+  "strikethrough", "subscript", "superscript", "underline", in order: if
+  <var>node</var>'s <span>effective command value</span> for <var>command</var>
+  is one of its <span>inline command activated values</span>, add
+  (<var>command</var>, true) to <var>overrides</var>, and otherwise add
+  (<var>command</var>, false) to <var>overrides</var>.
+  <!--
+  Thus we will set state overrides based on the first editable text node, to
+  match values.  This means that if you have <p>foo<b>[bar</b>baz]</p> and hit
+  backspace and hit A, you'll get <p>foo<b>a[]</b></p>, although bold was
+  previously indeterminate.  This is needed to match the behavior of hitting A
+  straight away, since innerText doesn't strip wrappers when it invokes "delete
+  the contents".
+  -->
 
   <li>For each <var>command</var> in the list "fontName", "fontSize",
-  "foreColor", "hiliteColor", in order: add (<var>command</var>, <code
-  title=queryCommandValue()>queryCommandValue(<var>command</var>)</code>) to
-  <var>overrides</var>.
+  "foreColor", "hiliteColor", in order: add (<var>command</var>,
+  <var>command</var>'s <span>value</span>) to <var>overrides</var>.
 
   <li>Return <var>overrides</var>.
 </ol>
 
 <p>To <dfn>restore states and values</dfn> specified by a list
-<var>overrides</var> returned by the <span>record current states and
-values</span> algorithm:
+<var>overrides</var> returned by the <span>record current overrides</span> or
+<span>record current states and values</span> algorithm:
 
 <ol>
   <li>If there is some <span>editable</span> [[text]] node <span>effectively
@@ -6937,8 +6950,19 @@ this, as Chrome 14 dev does.
   defined behavior in this case at all, so I follow Chrome.
 
   IE9, Firefox 7.0a2, Chrome 14 dev, and Opera 11.50 all don't strip wrappers,
-  except that as usual, Gecko doesn't if you select the whole wrapper, like
-  {<b>foo</b>}.
+  except that as usual, Gecko does if you select the whole wrapper, like
+  {<b>foo</b>}.  Also, Chrome 14 dev seems to strip the wrapper and try
+  recreating the style in cases like <b>[foo</b>bar], where it starts in a
+  wrapper but ends after it; this doesn't always work so well, so I don't do
+  it.  Firefox 7.0a2 also has the deletion set overrides for indeterminate
+  state commands, so if you run insertText on [foo<b>bar</b>baz] it will make
+  the result bold.
+
+  These things don't make any sense to me, so I don't do them.  I set overrides
+  based on the first editable text node in the range when deleting; preserve
+  any wrappers at the start of the range; and restore the overrides in case
+  preserving the wrappers isn't enough (like if they weren't set by deletion at
+  all).  This behavior seems to closely match IE9.
   -->
 
   <li>If the <span>active range</span>'s [[startnode]] is neither

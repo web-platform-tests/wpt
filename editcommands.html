@@ -1010,24 +1010,40 @@ extraneous line breaks at the end of</a> it.
   <li>Let <var title="">overrides</var> be a list of (string, string or boolean) ordered
   pairs, initially empty.
 
-  <li>Add ("createLink", <code title=queryCommandValue()><a href=#querycommandvalue()>queryCommandValue("createLink")</a></code>) to
+  <li>Let <var title="">node</var> be the first <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node
+  <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a>, or null
+  if there is none.
+
+  <li>If <var title="">node</var> is null, return <var title="">overrides</var>.
+
+  <li>Add ("createLink", <a href=#value>value</a> for "createLink") to
   <var title="">overrides</var>.
 
   <li>For each <var title="">command</var> in the list "bold", "italic",
-  "strikethrough", "subscript", "superscript", "underline", in order: add
-  (<var title="">command</var>, <code title=queryCommandState()><a href=#querycommandstate()>queryCommandState(<var title="">command</var>)</a></code>) to
-  <var title="">overrides</var>.
+  "strikethrough", "subscript", "superscript", "underline", in order: if
+  <var title="">node</var>'s <a href=#effective-command-value>effective command value</a> for <var title="">command</var>
+  is one of its <a href=#inline-command-activated-values>inline command activated values</a>, add
+  (<var title="">command</var>, true) to <var title="">overrides</var>, and otherwise add
+  (<var title="">command</var>, false) to <var title="">overrides</var>.
+  <!--
+  Thus we will set state overrides based on the first editable text node, to
+  match values.  This means that if you have <p>foo<b>[bar</b>baz]</p> and hit
+  backspace and hit A, you'll get <p>foo<b>a[]</b></p>, although bold was
+  previously indeterminate.  This is needed to match the behavior of hitting A
+  straight away, since innerText doesn't strip wrappers when it invokes "delete
+  the contents".
+  -->
 
   <li>For each <var title="">command</var> in the list "fontName", "fontSize",
-  "foreColor", "hiliteColor", in order: add (<var title="">command</var>, <code title=queryCommandValue()><a href=#querycommandvalue()>queryCommandValue(<var title="">command</var>)</a></code>) to
-  <var title="">overrides</var>.
+  "foreColor", "hiliteColor", in order: add (<var title="">command</var>,
+  <var title="">command</var>'s <a href=#value>value</a>) to <var title="">overrides</var>.
 
   <li>Return <var title="">overrides</var>.
 </ol>
 
 <p>To <dfn id=restore-states-and-values>restore states and values</dfn> specified by a list
-<var title="">overrides</var> returned by the <a href=#record-current-states-and-values>record current states and
-values</a> algorithm:
+<var title="">overrides</var> returned by the <a href=#record-current-overrides>record current overrides</a> or
+<a href=#record-current-states-and-values>record current states and values</a> algorithm:
 
 <ol>
   <li>If there is some <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node <a href=#effectively-contained>effectively
@@ -6928,8 +6944,19 @@ this, as Chrome 14 dev does.
   defined behavior in this case at all, so I follow Chrome.
 
   IE9, Firefox 7.0a2, Chrome 14 dev, and Opera 11.50 all don't strip wrappers,
-  except that as usual, Gecko doesn't if you select the whole wrapper, like
-  {<b>foo</b>}.
+  except that as usual, Gecko does if you select the whole wrapper, like
+  {<b>foo</b>}.  Also, Chrome 14 dev seems to strip the wrapper and try
+  recreating the style in cases like <b>[foo</b>bar], where it starts in a
+  wrapper but ends after it; this doesn't always work so well, so I don't do
+  it.  Firefox 7.0a2 also has the deletion set overrides for indeterminate
+  state commands, so if you run insertText on [foo<b>bar</b>baz] it will make
+  the result bold.
+
+  These things don't make any sense to me, so I don't do them.  I set overrides
+  based on the first editable text node in the range when deleting; preserve
+  any wrappers at the start of the range; and restore the overrides in case
+  preserving the wrappers isn't enough (like if they weren't set by deletion at
+  all).  This behavior seems to closely match IE9.
   -->
 
   <li>If the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is neither

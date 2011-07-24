@@ -25,6 +25,10 @@ function clearCachedResults() {
 
 var numManualTests = 0;
 
+// Make sure styleWithCss is always reset to false at the start of a test run
+// (I'm looking at you, Firefox)
+try { document.execCommand("stylewithcss", false, "false") } catch(e) {}
+
 function runTests() {
 //@{
 	// We don't ask the user to hit a key on all tests, so make sure not to

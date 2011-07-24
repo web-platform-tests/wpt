@@ -6395,7 +6395,7 @@ commands.inserthorizontalrule = {
 		if (getActiveRange().startContainer.nodeType == Node.TEXT_NODE
 		&& getActiveRange().startOffset == 0) {
 			getActiveRange().setStart(getActiveRange().startContainer.parentNode, getNodeIndex(getActiveRange().startContainer));
-			getActiveRange().setEnd(getActiveRange().startContainer.parentNode, getNodeIndex(getActiveRange().startContainer));
+			getActiveRange().collapse(true);
 		}
 
 		// "If the active range's start node is a Text node and its start
@@ -6404,7 +6404,7 @@ commands.inserthorizontalrule = {
 		if (getActiveRange().startContainer.nodeType == Node.TEXT_NODE
 		&& getActiveRange().startOffset == getNodeLength(getActiveRange().startContainer)) {
 			getActiveRange().setStart(getActiveRange().startContainer.parentNode, 1 + getNodeIndex(getActiveRange().startContainer));
-			getActiveRange().setEnd(getActiveRange().startContainer.parentNode, 1 + getNodeIndex(getActiveRange().startContainer));
+			getActiveRange().collapse(true);
 		}
 
 		// "Let hr be the result of calling createElement("hr") on the
@@ -6592,7 +6592,7 @@ commands.insertlinebreak = {
 		if (getActiveRange().startContainer.nodeType == Node.TEXT_NODE
 		&& getActiveRange().startOffset == 0) {
 			getActiveRange().setStart(getActiveRange().startContainer.parentNode, getNodeIndex(getActiveRange().startContainer));
-			getActiveRange().setEnd(getActiveRange().startContainer.parentNode, getNodeIndex(getActiveRange().startContainer));
+			getActiveRange().collapse(true);
 		}
 
 		// "If the active range's start node is a Text node and its start
@@ -6601,7 +6601,7 @@ commands.insertlinebreak = {
 		if (getActiveRange().startContainer.nodeType == Node.TEXT_NODE
 		&& getActiveRange().startOffset == getNodeLength(getActiveRange().startContainer)) {
 			getActiveRange().setStart(getActiveRange().startContainer.parentNode, 1 + getNodeIndex(getActiveRange().startContainer));
-			getActiveRange().setEnd(getActiveRange().startContainer.parentNode, 1 + getNodeIndex(getActiveRange().startContainer));
+			getActiveRange().collapse(true);
 		}
 
 		// "Let br be the result of calling createElement("br") on the context

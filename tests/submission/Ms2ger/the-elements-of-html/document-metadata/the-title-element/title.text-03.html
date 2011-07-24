@@ -2,96 +2,94 @@
 <title> title.text  and space normalization  </title>
 <link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
 <link rel="help" href="http://www.whatwg.org/html5/#dom-title-text">
-<body>
-<script src="../../../support/test.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
 <script>
-try {
-  Test.is(document.getElementsByTagName("title")[0].text,
+test(function() {
+  assert_equals(document.getElementsByTagName("title")[0].text,
     " title.text  and space normalization  ");
-  Test.is(document.getElementsByTagName("title")[0].textContent,
+  assert_equals(document.getElementsByTagName("title")[0].textContent,
     " title.text  and space normalization  ");
-  Test.is(document.getElementsByTagName("title")[0].firstChild.nodeValue,
+  assert_equals(document.getElementsByTagName("title")[0].firstChild.nodeValue,
     " title.text  and space normalization  ");
-
-  Test.separate();
+})
+test(function() {
   document.title = "one space";
-  Test.is(document.getElementsByTagName("title")[0].text, "one space");
-  Test.is(document.getElementsByTagName("title")[0].textContent, "one space");
-  Test.is(document.getElementsByTagName("title")[0].firstChild.nodeValue,
+  assert_equals(document.getElementsByTagName("title")[0].text, "one space");
+  assert_equals(document.getElementsByTagName("title")[0].textContent, "one space");
+  assert_equals(document.getElementsByTagName("title")[0].firstChild.nodeValue,
     "one space");
-
-  Test.separate();
+})
+test(function() {
   document.title = "two  spaces";
-  Test.is(document.getElementsByTagName("title")[0].text, "two  spaces");
-  Test.is(document.getElementsByTagName("title")[0].textContent, "two  spaces");
-  Test.is(document.getElementsByTagName("title")[0].firstChild.nodeValue,
+  assert_equals(document.getElementsByTagName("title")[0].text, "two  spaces");
+  assert_equals(document.getElementsByTagName("title")[0].textContent, "two  spaces");
+  assert_equals(document.getElementsByTagName("title")[0].firstChild.nodeValue,
     "two  spaces");
-
-  Test.separate();
+})
+test(function() {
   document.title = "one\ttab";
-  Test.is(document.getElementsByTagName("title")[0].text, "one\ttab");
-  Test.is(document.getElementsByTagName("title")[0].textContent, "one\ttab");
-  Test.is(document.getElementsByTagName("title")[0].firstChild.nodeValue,
+  assert_equals(document.getElementsByTagName("title")[0].text, "one\ttab");
+  assert_equals(document.getElementsByTagName("title")[0].textContent, "one\ttab");
+  assert_equals(document.getElementsByTagName("title")[0].firstChild.nodeValue,
     "one\ttab");
-
-  Test.separate();
+})
+test(function() {
   document.title = "two\t\ttabs";
-  Test.is(document.getElementsByTagName("title")[0].text, "two\t\ttabs");
-  Test.is(document.getElementsByTagName("title")[0].textContent, "two\t\ttabs");
-  Test.is(document.getElementsByTagName("title")[0].firstChild.nodeValue,
+  assert_equals(document.getElementsByTagName("title")[0].text, "two\t\ttabs");
+  assert_equals(document.getElementsByTagName("title")[0].textContent, "two\t\ttabs");
+  assert_equals(document.getElementsByTagName("title")[0].firstChild.nodeValue,
     "two\t\ttabs");
-
-  Test.separate();
+})
+test(function() {
   document.title = "one\nnewline";
-  Test.is(document.getElementsByTagName("title")[0].text, "one\nnewline");
-  Test.is(document.getElementsByTagName("title")[0].textContent,
+  assert_equals(document.getElementsByTagName("title")[0].text, "one\nnewline");
+  assert_equals(document.getElementsByTagName("title")[0].textContent,
     "one\nnewline");
-  Test.is(document.getElementsByTagName("title")[0].firstChild.nodeValue,
+  assert_equals(document.getElementsByTagName("title")[0].firstChild.nodeValue,
    "one\nnewline");
-
-  Test.separate();
+})
+test(function() {
   document.title = "two\n\nnewlines";
-  Test.is(document.getElementsByTagName("title")[0].text, "two\n\nnewlines");
-  Test.is(document.getElementsByTagName("title")[0].textContent,
+  assert_equals(document.getElementsByTagName("title")[0].text, "two\n\nnewlines");
+  assert_equals(document.getElementsByTagName("title")[0].textContent,
     "two\n\nnewlines");
-  Test.is(document.getElementsByTagName("title")[0].firstChild.nodeValue,
+  assert_equals(document.getElementsByTagName("title")[0].firstChild.nodeValue,
     "two\n\nnewlines");
-
-  Test.separate();
+})
+test(function() {
   document.title = "one\fform feed";
-  Test.is(document.getElementsByTagName("title")[0].text, "one\fform feed");
-  Test.is(document.getElementsByTagName("title")[0].textContent,
+  assert_equals(document.getElementsByTagName("title")[0].text, "one\fform feed");
+  assert_equals(document.getElementsByTagName("title")[0].textContent,
     "one\fform feed");
-  Test.is(document.getElementsByTagName("title")[0].firstChild.nodeValue,
+  assert_equals(document.getElementsByTagName("title")[0].firstChild.nodeValue,
     "one\fform feed");
-
-  Test.separate();
+})
+test(function() {
   document.title = "two\f\fform feeds";
-  Test.is(document.getElementsByTagName("title")[0].text, "two\f\fform feeds");
-  Test.is(document.getElementsByTagName("title")[0].textContent,
+  assert_equals(document.getElementsByTagName("title")[0].text, "two\f\fform feeds");
+  assert_equals(document.getElementsByTagName("title")[0].textContent,
     "two\f\fform feeds");
-  Test.is(document.getElementsByTagName("title")[0].firstChild.nodeValue,
+  assert_equals(document.getElementsByTagName("title")[0].firstChild.nodeValue,
     "two\f\fform feeds");
-
-  Test.separate();
+})
+test(function() {
   document.title = "one\rcarriage return";
-  Test.is(document.getElementsByTagName("title")[0].text,
+  assert_equals(document.getElementsByTagName("title")[0].text,
     "one\rcarriage return");
-  Test.is(document.getElementsByTagName("title")[0].textContent,
+  assert_equals(document.getElementsByTagName("title")[0].textContent,
     "one\rcarriage return");
-  Test.is(document.getElementsByTagName("title")[0].firstChild.nodeValue,
+  assert_equals(document.getElementsByTagName("title")[0].firstChild.nodeValue,
     "one\rcarriage return");
-
-  Test.separate();
+})
+test(function() {
   document.title = "two\r\rcarriage returns";
-  Test.is(document.getElementsByTagName("title")[0].text,
+  assert_equals(document.getElementsByTagName("title")[0].text,
     "two\r\rcarriage returns");
-  Test.is(document.getElementsByTagName("title")[0].textContent,
+  assert_equals(document.getElementsByTagName("title")[0].textContent,
     "two\r\rcarriage returns");
-  Test.is(document.getElementsByTagName("title")[0].firstChild.nodeValue,
+  assert_equals(document.getElementsByTagName("title")[0].firstChild.nodeValue,
     "two\r\rcarriage returns");
-} catch (e) {
-  Test.fail("Exception was thrown.");
-}
-Test.finish();
+});
 </script>

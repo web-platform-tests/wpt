@@ -2,8 +2,9 @@
 <title>title.text with comment and element children.</title>
 <link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
 <link rel="help" href="http://www.whatwg.org/html5/#dom-title-text">
-<body>
-<script src="../../../support/test.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
 <script>
 try {
   var title = document.getElementsByTagName("title")[0];
@@ -11,18 +12,14 @@ try {
     title.removeChild(title.childNodes[0]);
   title.appendChild(document.createComment("COMMENT"));
   title.appendChild(document.createTextNode("TEXT"));
-  title.appendChild(document.createElement("a")
-                            .appendChild(document.createTextNode("ELEMENT"))
-                            .parentNode);
+  title.appendChild(document.createElement("a"))
+       .appendChild(document.createTextNode("ELEMENT"))
 } catch (e) {
 }
 </script>
 <script>
-try {
-  Test.is(title.text, "TEXT");
-  Test.is(title.textContent, "TEXTELEMENT");
-} catch (e) {
-  Test.fail("Exception was thrown.");
-}
-Test.finish();
+test(function() {
+  assert_equals(title.text, "TEXT");
+  assert_equals(title.textContent, "TEXTELEMENT");
+})
 </script>

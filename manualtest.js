@@ -1,22 +1,35 @@
-// If globalValue isn't set, we don't support non-default values for manual
-// tests, so only strings need apply.
+// Initial setup
 //@{
-if ("globalValue" in window) {
-	tests = tests[command].filter(function(test) {
-		return typeof test == "object"
-			&& test[0] == globalValue;
-	}).map(function(test) { return test[1] });
-} else {
-	tests = tests[command].filter(function(test) { return typeof test == "string"});
+var globalValue;
+if (globalValue === undefined) {
+	globalValue = command in defaultValues ? defaultValues[command] : "";
 }
-//@}
+var keyPrefix = globalValue == ""
+	? "manualtest-" + command + "-"
+	: "manualtest-" + command + "-" + globalValue + "-";
+(function(){
+	var manualTests = tests[command]
+		.map(function(test) { return normalizeTest(command, test) })
+		.filter(function(test) { return test[1][1] == globalValue });
+	var relevantMultiTests = tests.multitest
+		.map(function(test) { return normalizeTest("multitest", test) })
+		.filter(function(test) {
+			// We only want multitests if there's exactly one occurrence of the
+			// command we're testing for, and the value is correct, and that's
+			// the last command we're testing.  Some of these limitations could
+			// be removed in the future.
+			return test[test.length - 1][0] === command
+				&& test[test.length - 1][1] === globalValue;
+		});
 
-var testsRunning = false;
+	tests = manualTests.concat(relevantMultiTests);
+})();
+//@}
 
 function clearCachedResults() {
 //@{
 	for (var key in localStorage) {
-		if (RegExp("^" + keyname + "test-").test(key)) {
+		if (key.indexOf(keyPrefix) === 0) {
 			localStorage.removeItem(key);
 		}
 	}
@@ -24,6 +37,7 @@ function clearCachedResults() {
 //@}
 
 var numManualTests = 0;
+var currentTestIdx = null;
 
 // Make sure styleWithCss is always reset to false at the start of a test run
 // (I'm looking at you, Firefox)
@@ -34,12 +48,13 @@ function runTests() {
 	// We don't ask the user to hit a key on all tests, so make sure not to
 	// claim more tests are going to be run than actually are.
 	for (var i = 0; i < tests.length; i++) {
-		if (localStorage.getItem(keyname + "test-" + tests[i]) === null) {
+		if (localStorage.getItem(keyPrefix + JSON.stringify(tests[i])) === null) {
 			numManualTests++;
 		}
 	}
 
-	testsRunning = true;
+	currentTestIdx = 0;
+
 	var runTestsButton = document.querySelector("#tests input[type=button]");
 	runTestsButton.parentNode.removeChild(runTestsButton);
 
@@ -47,7 +62,7 @@ function runTests() {
 	var input = document.querySelector("#tests label input");
 	// This code actually focuses and clicks everything because for some
 	// reason, anything else doesn't work in IE9 . . .
-	input.value = tests[0];
+	input.value = JSON.stringify(tests[0]);
 	input.focus();
 	addTestButton.click();
 }
@@ -57,16 +72,15 @@ function addTest() {
 //@{
 	var tr = doSetup("#tests table", 0);
 	var input = document.querySelector("#tests label input");
-	var test = input.value;
-	var normalizedTest = normalizeTest(command, test);
-	doInputCell(tr, normalizedTest, command);
-	doSpecCell(tr, normalizedTest, command);
-	if (localStorage.getItem(keyname + "test-" + normalizedTest[0]) !== null) {
+	var test = JSON.parse(input.value);
+	doInputCell(tr, test, test.length == 2 ? command : "multitest");
+	doSpecCell(tr, test, test.length == 2 ? command : "multitest");
+	if (localStorage.getItem(keyPrefix + JSON.stringify(test)) !== null) {
 		// Yay, I get to cheat.  Remove the overlay div so the user doesn't
 		// keep hitting the key, in case it takes a while.
 		var browserCell = document.createElement("td");
 		tr.appendChild(browserCell);
-		browserCell.innerHTML = localStorage[keyname + "test-" + normalizedTest[0]];
+		browserCell.innerHTML = localStorage[keyPrefix + JSON.stringify(test)];
 		document.getElementById("overlay").style.display = "";
 		doSameCell(tr);
 		runNextTest(test);
@@ -79,26 +93,19 @@ function addTest() {
 }
 //@}
 
-function runNextTest(test) {
+function runNextTest() {
 //@{
 	doTearDown();
 	var input = document.querySelector("#tests label input");
-	if (!testsRunning) {
+	if (currentTestIdx === null
+	|| currentTestIdx + 1 >= tests.length) {
+		currentTestIdx = null;
 		document.getElementById("overlay").style.display = "";
-		return;
-	}
-	var idx = tests.indexOf(test);
-	if (idx != tests.lastIndexOf(test)) {
-		// Cheap and effective error reporting
-		document.body.textContent = "Duplicate test: " + test;
-	}
-	if (idx + 1 >= tests.length) {
-		document.getElementById("overlay").style.display = "";
-		testsRunning = false;
 		input.value = "";
 		return;
 	}
-	input.value = tests[idx + 1];
+	currentTestIdx++;
+	input.value = JSON.stringify(tests[currentTestIdx]);
 	input.focus();
 	addTest();
 }
@@ -110,7 +117,7 @@ function doBrowserCell(tr, test, callback) {
 	tr.appendChild(browserCell);
 
 	try {
-		var points = setupCell(browserCell, test);
+		var points = setupCell(browserCell, test[0]);
 
 		var testDiv = browserCell.firstChild;
 		// Work around weird Firefox bug:
@@ -122,8 +129,7 @@ function doBrowserCell(tr, test, callback) {
 		};
 		testDiv.contentEditable = "true";
 		testDiv.spellcheck = false;
-		var idx = tests.indexOf(test);
-		if (idx == -1) {
+		if (currentTestIdx === null) {
 			document.getElementById("testcount").style.display = "none";
 		} else {
 			document.getElementById("testcount").style.display = "";
@@ -133,6 +139,10 @@ function doBrowserCell(tr, test, callback) {
 		document.getElementById("overlay").style.display = "block";
 		testDiv.focus();
 		setSelection(points[0], points[1], points[2], points[3]);
+		// Execute any extra commands beforehand, for multitests
+		for (var i = 1; i < test.length - 1; i++) {
+			document.execCommand(test[i][0], false, test[i][1]);
+		}
 	} catch (e) {
 		browserCellException(e, testDiv, browserCell);
 		callback();
@@ -184,7 +194,7 @@ function continueBrowserCell(test, testDiv, browserCell) {
 		browserCellException(e, testDiv, browserCell);
 	}
 
-	localStorage[keyname + "test-" + test] = browserCell.innerHTML;
+	localStorage[keyPrefix + JSON.stringify(test)] = browserCell.innerHTML;
 }
 //@}
 // vim: foldmarker=@{,@} foldmethod=marker

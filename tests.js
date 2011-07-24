@@ -3807,8 +3807,9 @@ function normalizeTest(command, test, styleWithCss) {
 	// Optionally, a styleWithCss argument can be passed, either true or false.
 	// If it is, we'll prepend a styleWithCss invocation.
 	if (command == "multitest") {
-		// Magic
-		test = JSON.parse(test);
+		if (typeof test == "string") {
+			test = JSON.parse(test);
+		}
 		for (var i = 1; i < test.length; i++) {
 			if (typeof test[i] == "string"
 			&& test[i] in defaultValues) {
@@ -3962,7 +3963,7 @@ function doSpecCell(tr, test, command) {
 	if (command != "multitest") {
 		// Old storage format
 		var key = "execcommand-" + command
-			+ "-" + (test[1][1] == "false" ? "0" : "1")
+			+ "-" + (test.length == 2 || test[1][1] == "false" ? "0" : "1")
 			+ "-" + tr.firstChild.lastChild.textContent;
 	} else {
 		var key = "execcommand-" + JSON.stringify(test);

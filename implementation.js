@@ -7405,8 +7405,17 @@ commands.usecss = {
 };
 //@}
 
-//@{ Some final setup
-Object.keys(commands).forEach(function(command) {
+// Some final setup
+//@{
+(function() {
+// Opera 11.50 doesn't implement Object.keys, so I have to make an explicit
+// temporary, which means I need an extra closure to not leak the temporaries
+// into the global namespace.  >:(
+var commandNames = [];
+for (var command in commands) {
+	commandNames.push(command);
+}
+commandNames.forEach(function(command) {
 	// "If a command does not have a relevant CSS property specified, it
 	// defaults to null."
 	if (!("relevantCssProperty" in commands[command])) {
@@ -7491,6 +7500,7 @@ Object.keys(commands).forEach(function(command) {
 		};
 	}
 });
+})();
 //@}
 
 // vim: foldmarker=@{,@} foldmethod=marker

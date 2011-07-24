@@ -8,8 +8,9 @@
     <div id="log"></div>
     <script src="../common.js"></script>
     <script src="../test.js"></script>
-    <script src="../../../../resources/testharness.js"></script>
-    <script src="../../../../resources/testharnessreport.js"></script>
+    <script src="../template.js"></script>
+    <script src="${harness_prefix}testharness.js"></script>
+    <script src="${harness_prefix}testharnessreport.js"></script>
     <script>
       var num_iframes = 8;
 

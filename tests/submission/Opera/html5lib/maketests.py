@@ -26,14 +26,16 @@ def get_hash(data, container=None):
     return hashlib.sha1("#container%s#data%s"%(container.encode("utf8"),
                                                data.encode("utf8"))).hexdigest()
 
-def make_tests(input_file_name, test_data):
+def make_tests(input_file_name, test_data, harness_prefix):
     tests = []
     innerHTML_tests = []
     ids_seen = {}
+    print input_file_name
     for test in test_data:
         is_innerHTML = "document-fragment" in test
         data = test["data"]
         container = test["document-fragment"] if is_innerHTML else None
+        assert test["document"], test
         expected = get_expected(test["document"])
         test_list = innerHTML_tests if is_innerHTML else tests
         test_id = get_hash(data, container);
@@ -50,21 +52,23 @@ def make_tests(input_file_name, test_data):
                           })
     path_normal = None
     if tests:
-        path_normal = write_test_file(tests, "test_%s"%input_file_name, "test.xml")
+        path_normal = write_test_file(tests, "test_%s"%input_file_name, 
+                                      harness_prefix, "test.xml")
     path_innerHTML = None
     if innerHTML_tests:
         path_innerHTML = write_test_file(innerHTML_tests, "testInnerHTML_%s"%input_file_name,
-                                         "test_fragment.xml")
+                                         harness_prefix, "test_fragment.xml")
 
     return path_normal, path_innerHTML
 
-def write_test_file(tests, file_name, template_file_name):
+def write_test_file(tests, file_name, harness_prefix, template_file_name):
     file_name = os.path.join("tests", file_name + ".html")
     template = MarkupTemplate(open(os.path.join(file_base, template_file_name)))
     
     out_f = open(file_name, "w")
     stream = template.generate(file_name=file_name, tests=tests,
-                               file_timeout=1000*len(tests), test_timeout=1000)
+                               file_timeout=1000*len(tests), test_timeout=1000,
+                               harness_prefix=harness_prefix)
 
     out_f.write(stream.render('html', doctype='html5', 
                               encoding="utf8"))
@@ -72,27 +76,6 @@ def write_test_file(tests, file_name, template_file_name):
 
 def escape_js_string(in_data):
     return in_data.encode("utf8").encode("string-escape")
-
-def make_fragment_test(input_file_name, test):
-    data = test["data"]
-    expected = get_expected(test["document"])
-    input_hash = hashlib.sha1(data.encode("utf8"))
-    input_id = input_hash.hexdigest() + "_" + test["document-fragment"].replace(" ", "-")
-    file_name = os.path.join("tests", "test_%s_%s.html"%(input_file_name, input_id))
-    
-    out_f = open(file_name, "w")
-
-    template = MarkupTemplate(open('test_fragment.xml'))
-    stream = template.generate(string_input=json.dumps(data),
-                               container=test["document-fragment"],
-                               input=data,
-                               expected=expected,
-                               string_escaped_expected=json.dumps(urllib.quote(expected.encode("utf8")))
-                               )
-    out_f.write(stream.render('html', doctype='html5', 
-                              encoding="utf-8"))
-    return file_name
-    
 
 def serialize_filenames(test_filenames):
     return "[" + ",\n".join("\"%s\""%item for item in test_filenames) + "]"
@@ -107,17 +90,17 @@ def make_index(test_filenames, inner_html_files):
                               encoding="utf-8"))
 
 def make_manifest(test_filenames, inner_html_file_names):
-    manifest_items =  [{"type":"js", "url":"%s"%item} for
+    manifest_items =  [{"type":"post", "url":"%s"%item} for
                         item in test_filenames + inner_html_file_names]
     
-    manifest_items.extend({"type":"js", "url":"%s?run_type=write"%item} for
+    manifest_items.extend({"type":"post", "url":"%s?run_type=write"%item} for
                           item in test_filenames)
-    manifest_items.extend({"type":"js", "url":"%s?run_type=write_single"%item} for
+    manifest_items.extend({"type":"post", "url":"%s?run_type=write_single"%item} for
                           item in test_filenames)
     out_f = open("parser.manifest", "w")
     json.dump(manifest_items, out_f, indent=0)
 
-def main():
+def main(harness_prefix):
     test_files = []
     inner_html_files = []
 
@@ -129,11 +112,11 @@ def main():
                    "common.js", "test.js", "testharness.css"]:
             shutil.copy(os.path.join(file_base, fn) , cur_dir)
 
-    if len(sys.argv) > 1:
+    if len(sys.argv) > 2:
         test_iterator = itertools.izip(
             itertools.repeat(False), 
             sorted(os.path.abspath(item) for item in 
-                   glob.glob(os.path.join(sys.argv[1], "*.dat"))))
+                   glob.glob(os.path.join(sys.argv[2], "*.dat"))))
     else:
         test_iterator = itertools.chain(
             itertools.izip(itertools.repeat(False), 
@@ -143,12 +126,11 @@ def main():
                         os.path.join("tree-construction", "scripted")))))
 
     for (scripted, test_file) in test_iterator:
-
         input_file_name = os.path.splitext(os.path.split(test_file)[1])[0]
         if scripted:
             input_file_name = "scripted_" + input_file_name
         test_data = support.TestData(test_file)
-        test_filename, inner_html_file_name = make_tests(input_file_name, test_data)
+        test_filename, inner_html_file_name = make_tests(input_file_name, test_data, harness_prefix)
         if test_filename is not None:
             test_files.append(test_filename)
         if inner_html_file_name is not None:
@@ -158,4 +140,10 @@ def main():
     make_manifest(test_files, inner_html_files)
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) == 1:
+        harness_prefix = "../"
+    else:
+        harness_prefix = sys.argv[1]
+    if harness_prefix[-1] != "/":
+        harness_prefix += "/"
+    main(harness_prefix)

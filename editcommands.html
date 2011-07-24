@@ -38,7 +38,7 @@ a code { text-decoration: underline }
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing Commands</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-22-july-2011>Work in Progress &mdash; Last Update 22 July 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-24-july-2011>Work in Progress &mdash; Last Update 24 July 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;<a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a>&gt;
@@ -3653,7 +3653,8 @@ algorithm returns true:
 <h3 id=deleting-the-contents-of-a-range><span class=secno>8.4 </span>Deleting the contents of a range</h3>
 
 <p>To <dfn id=delete-the-contents>delete the contents</dfn> of a <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> <var title="">range</var>, given a
-<var title="">block merging</var> flag that defaults to true:
+<var title="">block merging</var> flag that defaults to true and a <var title="">strip
+wrappers</var> flag that defaults to true:
 <!-- TODO: Consider what should happen for block merging in corner cases like
 display: inline-table. -->
 
@@ -3879,11 +3880,11 @@ display: inline-table. -->
 
     <li>Remove <var title="">node</var> from <var title="">parent</var>.
 
-    <li>While <var title="">parent</var> is an <a href=#editable>editable</a> <a href=#inline-node>inline
-    node</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> 0, let <var title="">grandparent</var> be the
-    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">parent</var>, then remove <var title="">parent</var> from
-    <var title="">grandparent</var>, then set <var title="">parent</var> to
-    <var title="">grandparent</var>.
+    <li>If <var title="">strip wrappers</var> is true, while <var title="">parent</var> is an
+    <a href=#editable>editable</a> <a href=#inline-node>inline node</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> 0, let
+    <var title="">grandparent</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">parent</var>, then remove
+    <var title="">parent</var> from <var title="">grandparent</var>, then set <var title="">parent</var>
+    to <var title="">grandparent</var>.
 
     <li>If <var title="">parent</var> is <a href=#editable>editable</a> or an <a href=#editing-host>editing
     host</a>, is not an <a href=#inline-node>inline node</a>, and has no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>,
@@ -5361,6 +5362,13 @@ would be worth the added complexity.
 <h3 id=the-delete-command><span class=secno>8.10 </span><dfn>The <code title="">delete</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>:
+<!--
+For all the deletions here, Firefox 7.0a2 will remove wrapper elements like <b>
+only if they're selected, like {<b>foo</b>}.  IE9, Chrome 14 dev, and Opera
+11.50 will all remove them even if only their contents are selected, like
+<b>[foo]</b>.  Gecko's behavior in the latter case leaves things like <b>{}</b>
+in the DOM, which is unhelpful, so I don't.
+-->
 
 <ol>
   <li>If the <a href=#active-range>active range</a> is not <code class=external data-anolis-spec=domrange title=dom-Range-collapsed><a href=http://html5.org/specs/dom-range.html#dom-range-collapsed>collapsed</a></code>, <a href=#delete-the-contents>delete the contents</a>
@@ -6309,8 +6317,14 @@ parser.
 
 <ol>
   <li><a href=#delete-the-contents>Delete the contents</a> of the <a href=#active-range>active range</a>.
-  <!-- Chrome 14 dev and Opera 11.11 do this even if the value is empty.
-  Firefox 5.0a2 throws an exception. -->
+  <!--
+  Chrome 14 dev and Opera 11.11 do this even if the value is empty.  Firefox
+  5.0a2 throws an exception.
+
+  Firefox 7.0a2 and Chrome 14 dev do strip wrappers here, so inserting HTML in
+  the place of <b>[foo]</b> will remove the <b>.  Opera 11.50 keeps the
+  wrappers.  I follow the majority.
+  -->
 
   <li>If the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is neither
   <a href=#editable>editable</a> nor an <a href=#editing-host>editing host</a>, abort these steps.
@@ -6393,7 +6407,17 @@ parser.
 
   <li>Let <var title="">range</var> be the <a href=#active-range>active range</a>.
 
-  <li><a href=#delete-the-contents>Delete the contents</a> of <var title="">range</var>.
+  <li><a href=#delete-the-contents>Delete the contents</a> of <var title="">range</var>, with <var title="">strip
+  wrappers</var> false.
+  <!--
+  Firefox 7.0a2 seems to strip the wrapper or not depending on the exact
+  positioning of the selection: <b>{foo}</b> yes, <b>[foo]</b> no.  Chrome 14
+  dev seems to strip the wrapper regardless.  Opera 11.50 seems to keep the
+  wrapper, but place the image outside it.  I didn't get IE to cooperate with
+  my tests.  I chose to leave wrappers across the board because they might be
+  meaningful: e.g., a background-color when the image is small or not fully
+  opaque.
+  -->
 
   <li>If the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is neither
   <a href=#editable>editable</a> nor an <a href=#editing-host>editing host</a>, abort these steps.
@@ -6447,7 +6471,14 @@ Opera 11.11 isn't heedful of <xmp>, and treats <pre> somewhat oddly.
 -->
 
 <ol>
-  <li><a href=#delete-the-contents>Delete the contents</a> of the <a href=#active-range>active range</a>.
+  <li><a href=#delete-the-contents>Delete the contents</a> of the <a href=#active-range>active range</a>, with
+  <var title="">strip wrappers</var> false.
+  <!--
+  IE9 doesn't strip wrappers (IE10PP2 didn't work in tests).  Firefox 7.0a2
+  strips wrappers inconsistently depending on the exact selection endpoints.
+  Chrome 14 dev strips wrappers but recreates any styles using new wrappers.
+  Opera 11.50 strips all wrappers.
+  -->
 
   <li>If the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is neither
   <a href=#editable>editable</a> nor an <a href=#editing-host>editing host</a>, abort these steps.
@@ -6876,8 +6907,17 @@ this, as Chrome 14 dev does.
 -->
 
 <ol>
-  <li><a href=#delete-the-contents>Delete the contents</a> of the <a href=#active-range>active range</a>.
-  <!-- Chrome 14 dev does this even if passed the empty string. -->
+  <li><a href=#delete-the-contents>Delete the contents</a> of the <a href=#active-range>active range</a>, with
+  <var title="">strip wrappers</var> false.
+  <!--
+  Chrome 14 dev does the deletion even if the value is empty.  Of course, other
+  browsers don't expose this as an execCommand(), so no one else has any
+  defined behavior in this case at all, so I follow Chrome.
+
+  IE9, Firefox 7.0a2, Chrome 14 dev, and Opera 11.50 all don't strip wrappers,
+  except that as usual, Gecko doesn't if you select the whole wrapper, like
+  {<b>foo</b>}.
+  -->
 
   <li>If the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is neither
   <a href=#editable>editable</a> nor an <a href=#editing-host>editing host</a>, abort these steps.

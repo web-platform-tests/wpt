@@ -4084,14 +4084,17 @@ function deleteContents() {
 	//
 	// 1) A single argument, which is a range.
 	//
-	// 2) Two arguments, the first being a range and the second the
-	// blockMerging flag.
+	// 2) Two arguments, the first being a range and the second flags.
 	//
 	// 3) Four arguments, the start and end of a range.
 	//
-	// 4) Five arguments, the start and end of a range plus blockMerging.
+	// 4) Five arguments, the start and end of a range plus flags.
+	//
+	// The flags argument is a dictionary that can have up to two keys,
+	// blockMerging and stripWrappers, whose corresponding values are
+	// interpreted as boolean.  E.g., {stripWrappers: false}.
 	var range;
-	var blockMerging = true;
+	var flags = {};
 
 	if (arguments.length < 3) {
 		range = arguments[0];
@@ -4101,11 +4104,14 @@ function deleteContents() {
 		range.setEnd(arguments[2], arguments[3]);
 	}
 	if (arguments.length == 2) {
-		blockMerging = arguments[1];
+		flags = arguments[1];
 	}
 	if (arguments.length == 5) {
-		blockMerging = arguments[4];
+		flags = arguments[4];
 	}
+
+	var blockMerging = "blockMerging" in flags ? !!flags.blockMerging : true;
+	var stripWrappers = "stripWrappers" in flags ? !!flags.stripWrappers : true;
 
 	// "If range is null, abort these steps and do nothing."
 	if (!range) {
@@ -4317,15 +4323,17 @@ function deleteContents() {
 		// "Remove node from parent."
 		parent_.removeChild(node);
 
-		// "While parent is an editable inline node with length 0, let
-		// grandparent be the parent of parent, then remove parent from
-		// grandparent, then set parent to grandparent."
-		while (isEditable(parent_)
-		&& isInlineNode(parent_)
-		&& getNodeLength(parent_) == 0) {
-			var grandparent = parent_.parentNode;
-			grandparent.removeChild(parent_);
-			parent_ = grandparent;
+		// "If strip wrappers is true, while parent is an editable inline node
+		// with length 0, let grandparent be the parent of parent, then remove
+		// parent from grandparent, then set parent to grandparent."
+		if (stripWrappers) {
+			while (isEditable(parent_)
+			&& isInlineNode(parent_)
+			&& getNodeLength(parent_) == 0) {
+				var grandparent = parent_.parentNode;
+				grandparent.removeChild(parent_);
+				parent_ = grandparent;
+			}
 		}
 
 		// "If parent is editable or an editing host, is not an inline node,
@@ -6380,7 +6388,7 @@ commands.inserthorizontalrule = {
 		}
 
 		// "Delete the contents of range, with block merging false."
-		deleteContents(range, false);
+		deleteContents(range, {blockMerging: false});
 
 		// "If the active range's start node is neither editable nor an editing
 		// host, abort these steps."
@@ -6508,8 +6516,8 @@ commands.insertimage = {
 		// "Let range be the active range."
 		var range = getActiveRange();
 
-		// "Delete the contents of range."
-		deleteContents(range);
+		// "Delete the contents of range, with strip wrappers false."
+		deleteContents(range, {stripWrappers: false});
 
 		// "If the active range's start node is neither editable nor an editing
 		// host, abort these steps."
@@ -6561,8 +6569,8 @@ commands.insertimage = {
 //@{
 commands.insertlinebreak = {
 	action: function(value) {
-		// "Delete the contents of the active range."
-		deleteContents(getActiveRange());
+		// "Delete the contents of the active range, with strip wrappers false."
+		deleteContents(getActiveRange(), {stripWrappers: false});
 
 		// "If the active range's start node is neither editable nor an editing
 		// host, abort these steps."
@@ -6951,8 +6959,9 @@ commands.insertparagraph = {
 //@{
 commands.inserttext = {
 	action: function(value) {
-		// "Delete the contents of the active range."
-		deleteContents(getActiveRange());
+		// "Delete the contents of the active range, with strip wrappers
+		// false."
+		deleteContents(getActiveRange(), {stripWrappers: false});
 
 		// "If the active range's start node is neither editable nor an editing
 		// host, abort these steps."

@@ -465,6 +465,9 @@ var tests = {
 
 		// Uncollapsed selection
 		'foo[bar]baz',
+		'<p>foo<span style=color:#aBcDeF>[bar]</span>baz',
+		'<p>foo<span style=color:#aBcDeF>{bar}</span>baz',
+		'<p>foo{<span style=color:#aBcDeF>bar</span>}baz',
 
 		'foo<b>[bar]</b>baz',
 		'foo<b>{bar}</b>baz',
@@ -1268,6 +1271,9 @@ var tests = {
 
 		// Uncollapsed selection (should be same as delete command)
 		'foo[bar]baz',
+		'<p>foo<span style=color:#aBcDeF>[bar]</span>baz',
+		'<p>foo<span style=color:#aBcDeF>{bar}</span>baz',
+		'<p>foo{<span style=color:#aBcDeF>bar</span>}baz',
 
 		'foo<b>[bar]</b>baz',
 		'foo<b>{bar}</b>baz',
@@ -1660,6 +1666,9 @@ var tests = {
 	//@{
 		'foo[]bar',
 		'foo[bar]baz',
+		'foo<span style=color:#aBcDeF>[bar]</span>baz',
+		'foo<span style=color:#aBcDeF>{bar}</span>baz',
+		'foo{<span style=color:#aBcDeF>bar</span>}baz',
 		['', 'foo[bar]baz'],
 		['\0', 'foo[bar]baz'],
 		['\x07', 'foo[bar]baz'],
@@ -1729,6 +1738,9 @@ var tests = {
 		'<span>foo[</span><span>]bar</span>',
 		["", 'foo[bar]baz'],
 		'foo[bar]baz',
+		'foo<span style=color:#aBcDeF>[bar]</span>baz',
+		'foo<span style=color:#aBcDeF>{bar}</span>baz',
+		'foo{<span style=color:#aBcDeF>bar</span>}baz',
 
 		'foo<b>[bar]</b>baz',
 		'foo<b>{bar}</b>baz',
@@ -2026,6 +2038,10 @@ var tests = {
 
 		'<p>foo[]<!--bar-->',
 		'<p><!--foo-->[]bar',
+
+		'<p>foo<span style=color:#aBcDeF>[bar]</span>baz',
+		'<p>foo<span style=color:#aBcDeF>{bar}</span>baz',
+		'<p>foo{<span style=color:#aBcDeF>bar</span>}baz',
 	],
 	//@}
 	inserttext: [
@@ -2110,6 +2126,9 @@ var tests = {
 		'{}<br>',
 		'<p>{}<br>',
 		'<p><span>{}<br></span>',
+		'<p>foo<span style=color:#aBcDeF>[bar]</span>baz',
+		'<p>foo<span style=color:#aBcDeF>{bar}</span>baz',
+		'<p>foo{<span style=color:#aBcDeF>bar</span>}baz',
 		'foo<a href=http://www.google.com/><font color=black>[bar]</font></a>baz',
 	],
 	//@}

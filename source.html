@@ -3647,7 +3647,8 @@ algorithm returns true:
 <h3>Deleting the contents of a range</h3>
 <!-- @{ -->
 <p>To <dfn>delete the contents</dfn> of a [[range]] <var>range</var>, given a
-<var>block merging</var> flag that defaults to true:
+<var>block merging</var> flag that defaults to true and a <var>strip
+wrappers</var> flag that defaults to true:
 <!-- TODO: Consider what should happen for block merging in corner cases like
 display: inline-table. -->
 
@@ -3873,11 +3874,11 @@ display: inline-table. -->
 
     <li>Remove <var>node</var> from <var>parent</var>.
 
-    <li>While <var>parent</var> is an <span>editable</span> <span>inline
-    node</span> with [[nodelength]] 0, let <var>grandparent</var> be the
-    [[parent]] of <var>parent</var>, then remove <var>parent</var> from
-    <var>grandparent</var>, then set <var>parent</var> to
-    <var>grandparent</var>.
+    <li>If <var>strip wrappers</var> is true, while <var>parent</var> is an
+    <span>editable</span> <span>inline node</span> with [[nodelength]] 0, let
+    <var>grandparent</var> be the [[parent]] of <var>parent</var>, then remove
+    <var>parent</var> from <var>grandparent</var>, then set <var>parent</var>
+    to <var>grandparent</var>.
 
     <li>If <var>parent</var> is <span>editable</span> or an <span>editing
     host</span>, is not an <span>inline node</span>, and has no [[children]],
@@ -5365,6 +5366,13 @@ would be worth the added complexity.
 <h3><dfn>The <code title>delete</code> command</dfn></h3>
 <!-- @{ -->
 <p><span>Action</span>:
+<!--
+For all the deletions here, Firefox 7.0a2 will remove wrapper elements like <b>
+only if they're selected, like {<b>foo</b>}.  IE9, Chrome 14 dev, and Opera
+11.50 will all remove them even if only their contents are selected, like
+<b>[foo]</b>.  Gecko's behavior in the latter case leaves things like <b>{}</b>
+in the DOM, which is unhelpful, so I don't.
+-->
 
 <ol>
   <li>If the <span>active range</span> is not <code data-anolis-spec=domrange
@@ -6316,8 +6324,14 @@ parser.
 
 <ol>
   <li><span>Delete the contents</span> of the <span>active range</span>.
-  <!-- Chrome 14 dev and Opera 11.11 do this even if the value is empty.
-  Firefox 5.0a2 throws an exception. -->
+  <!--
+  Chrome 14 dev and Opera 11.11 do this even if the value is empty.  Firefox
+  5.0a2 throws an exception.
+
+  Firefox 7.0a2 and Chrome 14 dev do strip wrappers here, so inserting HTML in
+  the place of <b>[foo]</b> will remove the <b>.  Opera 11.50 keeps the
+  wrappers.  I follow the majority.
+  -->
 
   <li>If the <span>active range</span>'s [[startnode]] is neither
   <span>editable</span> nor an <span>editing host</span>, abort these steps.
@@ -6401,7 +6415,17 @@ parser.
 
   <li>Let <var>range</var> be the <span>active range</span>.
 
-  <li><span>Delete the contents</span> of <var>range</var>.
+  <li><span>Delete the contents</span> of <var>range</var>, with <var>strip
+  wrappers</var> false.
+  <!--
+  Firefox 7.0a2 seems to strip the wrapper or not depending on the exact
+  positioning of the selection: <b>{foo}</b> yes, <b>[foo]</b> no.  Chrome 14
+  dev seems to strip the wrapper regardless.  Opera 11.50 seems to keep the
+  wrapper, but place the image outside it.  I didn't get IE to cooperate with
+  my tests.  I chose to leave wrappers across the board because they might be
+  meaningful: e.g., a background-color when the image is small or not fully
+  opaque.
+  -->
 
   <li>If the <span>active range</span>'s [[startnode]] is neither
   <span>editable</span> nor an <span>editing host</span>, abort these steps.
@@ -6455,7 +6479,14 @@ Opera 11.11 isn't heedful of <xmp>, and treats <pre> somewhat oddly.
 -->
 
 <ol>
-  <li><span>Delete the contents</span> of the <span>active range</span>.
+  <li><span>Delete the contents</span> of the <span>active range</span>, with
+  <var>strip wrappers</var> false.
+  <!--
+  IE9 doesn't strip wrappers (IE10PP2 didn't work in tests).  Firefox 7.0a2
+  strips wrappers inconsistently depending on the exact selection endpoints.
+  Chrome 14 dev strips wrappers but recreates any styles using new wrappers.
+  Opera 11.50 strips all wrappers.
+  -->
 
   <li>If the <span>active range</span>'s [[startnode]] is neither
   <span>editable</span> nor an <span>editing host</span>, abort these steps.
@@ -6885,8 +6916,17 @@ this, as Chrome 14 dev does.
 -->
 
 <ol>
-  <li><span>Delete the contents</span> of the <span>active range</span>.
-  <!-- Chrome 14 dev does this even if passed the empty string. -->
+  <li><span>Delete the contents</span> of the <span>active range</span>, with
+  <var>strip wrappers</var> false.
+  <!--
+  Chrome 14 dev does the deletion even if the value is empty.  Of course, other
+  browsers don't expose this as an execCommand(), so no one else has any
+  defined behavior in this case at all, so I follow Chrome.
+
+  IE9, Firefox 7.0a2, Chrome 14 dev, and Opera 11.50 all don't strip wrappers,
+  except that as usual, Gecko doesn't if you select the whole wrapper, like
+  {<b>foo</b>}.
+  -->
 
   <li>If the <span>active range</span>'s [[startnode]] is neither
   <span>editable</span> nor an <span>editing host</span>, abort these steps.

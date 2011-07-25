@@ -117,6 +117,10 @@ policies and contribution forms [3].
  * explicit_done - Wait for an explicit call to done() before declaring all tests
  *                 complete (see below)
  *
+ * output_document - The document to which results should be logged. By default this is
+ *                   the current document but could be an ancestor document in some cases
+ *                   e.g. a SVG test loaded in an HTML wrapper
+ *
  * == Determining when all tests are complete ==
  *
  * By default the test harness will assume there are no more results to come
@@ -186,11 +190,11 @@ policies and contribution forms [3].
  *
  * In order to collect the results of multiple pages containing tests, the test
  * harness will, when loaded in a nested browsing context, attempt to call
- * certain functions in the top level browsing context:
+ * certain functions in each ancestor browsing context:
  *
- * start - top.start_callback
- * result - top.result_callback
- * complete - top.completion_callback
+ * start - start_callback
+ * result - result_callback
+ * complete - completion_callback
  *
  * These are given the same arguments as the corresponding internal callbacks
  * described above.
@@ -262,6 +266,8 @@ policies and contribution forms [3].
     var default_timeout = 5000;
     var default_test_timeout = 2000;
 
+    var xhtml_ns = "http://www.w3.org/1999/xhtml";
+
     /*
      * API functions
      */
@@ -297,19 +303,20 @@ policies and contribution forms [3].
         return test_obj;
     }
 
-    function setup(func_or_properties, properties_or_func)
+    function setup(func_or_properties, maybe_properties)
     {
         var func = null;
         var properties = {};
         if (arguments.length === 2) {
             func = func_or_properties;
-            properties = properties_or_func;
+            properties = maybe_properties;
         } else if (func_or_properties instanceof Function){
             func = func_or_properties;
         } else {
             properties = func_or_properties;
 
         }
+
         tests.setup(func, properties);
     }
 
@@ -912,6 +919,7 @@ policies and contribution forms [3].
                          this_obj.complete();
                      }
                  });
+        this.properties = {};
     }
 
     Tests.prototype.setup = function(func, properties)
@@ -922,6 +930,8 @@ policies and contribution forms [3].
         if (this.phase < this.phases.SETUP) {
             this.phase = this.phases.SETUP;
         }
+
+        this.properties = properties;
 
         if (properties.timeout)
         {
@@ -992,22 +1002,26 @@ policies and contribution forms [3].
         forEach (this.start_callbacks,
                  function(callback)
                  {
-                     callback(this_obj);
+                     callback(this_obj.properties);
                  });
-        if(top !== window && top.start_callback)
-        {
-            try
-            {
-                top.start_callback.call(this_obj);
-            }
-            catch(e)
-            {
-                if (debug)
+        forEach(ancestor_windows(),
+                function(w)
                 {
-                    throw(e);
-                }
-            }
-        }
+                    if(w.start_callback)
+                    {
+                        try
+                        {
+                            w.start_callback(this_obj.properties);
+                        }
+                        catch(e)
+                        {
+                            if (debug)
+                            {
+                                throw(e);
+                            }
+                        }
+                    }
+                });
     };
 
     Tests.prototype.result = function(test)
@@ -1030,25 +1044,28 @@ policies and contribution forms [3].
                     callback(test, this_obj);
                 });
 
-        if(top !== window && top.result_callback)
-        {
-            try
-            {
-                top.result_callback.call(this_obj, test);
-            }
-            catch(e)
-            {
-                if(debug) {
-                    throw e;
-                }
-            }
-        }
+        forEach(ancestor_windows(),
+                function(w)
+                {
+                    if(w.result_callback)
+                    {
+                        try
+                        {
+                            w.result_callback(test);
+                        }
+                        catch(e)
+                        {
+                            if(debug) {
+                                throw e;
+                            }
+                        }
+                    }
+                });
         this.processing_callbacks = false;
-        if (this.all_done())
+        if (this_obj.all_done())
         {
-            this.complete();
+            this_obj.complete();
         }
-
     };
 
     Tests.prototype.complete = function() {
@@ -1073,26 +1090,28 @@ policies and contribution forms [3].
                  {
                      callback(this_obj.tests, this_obj.status);
                  });
-        if(top !== window && top.completion_callback)
-        {
-            try
-            {
-                top.completion_callback(this_obj.tests, this.status);
-            }
-            catch(e)
-            {
-                if (debug)
-                {
-                    throw e;
-                }
-            }
 
-        }
+        forEach(ancestor_windows(),
+                function(w)
+                {
+                    if(w.completion_callback)
+                    {
+                        try
+                        {
+                            w.completion_callback(this_obj.tests, this_obj.status);
+                        }
+                        catch(e)
+                        {
+                            if (debug)
+                            {
+                                throw e;
+                            }
+                        }
+                    }
+                });
     };
 
     var tests = new Tests();
-    add_completion_callback(output_results);
-
 
     function add_start_callback(callback) {
         tests.start_callbacks.push(callback);
@@ -1116,66 +1135,118 @@ policies and contribution forms [3].
      * Output listener
     */
 
-    (function show_status() {
-        var done_count = 0;
-         function on_done(test, tests) {
-             var log = document.getElementById("log");
-             done_count++;
-             if (log)
-             {
-                 if (log.lastChild) {
-                     log.removeChild(log.lastChild);
-                 }
-                 var nodes = render([["{text}", "Running, ${done} complete"],
-                                 function() {
-                                     if (tests.all_done) {
-                                         return ["{text}", " ${pending} remain"];
-                                     } else {
-                                         return null;
-                                     }
-                                 }
-                                    ], {done:done_count,
-                                        pending:tests.num_pending});
-                 forEach(nodes, function(node) {
-                             log.appendChild(node);
-                         });
-                 log.normalize();
-             }
-         }
-         if (document.getElementById("log"))
-         {
-             add_result_callback(on_done);
-         }
-     })();
+    function Output() {
+      this.output_document = null;
+      this.output_node = null;
+      this.done_count = 0;
+      this.phase = this.INITIAL;
+    }
 
-    function output_results(tests, harness_status)
+    Output.prototype.INITIAL = 0;
+    Output.prototype.SETUP = 1;
+    Output.prototype.HAVE_RESULTS = 2;
+    Output.prototype.COMPLETE = 3;
+
+    Output.prototype.setup = function(properties)
     {
-        var log = document.getElementById("log");
+        if (this.phase >= this.SETUP) {
+            return;
+        }
+        if (properties.output_document) {
+            this.output_document = properties.output_document;
+        } else {
+            this.output_document = document;
+        }
+        this.phase = this.SETUP;
+    };
+
+    Output.prototype.resolve_log = function()
+    {
+        if (!this.output_document) {
+            return;
+        }
+        var node = this.output_document.getElementById("log");
+        if (node) {
+            this.output_node = node;
+        }
+    };
+
+    Output.prototype.show_status = function(test)
+    {
+        if (this.phase < this.SETUP)
+        {
+            this.setup();
+        }
+        if (this.phase < this.HAVE_RESULTS)
+        {
+            this.resolve_log();
+            this.phase = this.HAVE_RESULTS;
+        }
+        this.done_count++;
+        if (this.output_node)
+        {
+            var log = this.output_node;
+            if (log.lastChild) {
+                log.removeChild(log.lastChild);
+            }
+            var nodes = render([["{text}", "Running, ${done} complete, ${pending} remain"]],
+                               {done:this.done_count,
+                                pending:tests.num_pending}, this.output_document);
+            forEach(nodes, function(node) {
+                        log.appendChild(node);
+                    });
+            log.normalize();
+        }
+    };
+
+    Output.prototype.show_results = function (tests, harness_status)
+    {
+        if (this.phase >= this.COMPLETE) {
+            return;
+        }
+        if (!this.output_node) {
+            this.resolve_log();
+        }
+        this.phase = this.COMPLETE;
+
+        var log = this.output_node;
         if (!log)
         {
             return;
         }
+        var output_document = this.output_document;
+
         while (log.lastChild)
         {
             log.removeChild(log.lastChild);
         }
+
         var prefix = null;
         var scripts = document.getElementsByTagName("script");
         for (var i=0; i<scripts.length; i++)
         {
-            var src = scripts[i].src;
+            if (scripts[i].src)
+            {
+                var src = scripts[i].src;
+            }
+            else if (scripts[i].href)
+            {
+                //SVG case
+                var src = scripts[i].href.baseVal;
+            }
             if (src.slice(src.length - "testharness.js".length) === "testharness.js")
             {
                 prefix = src.slice(0, src.length - "testharness.js".length);
                 break;
             }
         }
+
         if (prefix != null) {
-            var stylesheet = document.createElement("link");
+            var stylesheet = output_document.createElementNS(xhtml_ns, "link");
             stylesheet.setAttribute("rel", "stylesheet");
             stylesheet.setAttribute("href", prefix + "testharness.css");
-            var heads = document.getElementsByTagName("head");
-            if (heads) {
+            var heads = output_document.getElementsByTagName("head");
+            if (heads.length) {
                 heads[0].appendChild(stylesheet);
             }
         }
@@ -1220,26 +1291,26 @@ policies and contribution forms [3].
                                     return rv;
                                 }];
 
-        log.appendChild(render(summary_template, {num_tests:tests.length}));
+        log.appendChild(render(summary_template, {num_tests:tests.length}, output_document));
 
-        forEach(document.querySelectorAll("section#summary input"),
+        forEach(output_document.querySelectorAll("section#summary input"),
                 function(element)
                 {
                     on_event(element, "click",
                              function(e)
                              {
-                                 if (document.getElementById("results") === null)
+                                 if (output_document.getElementById("results") === null)
                                  {
                                      e.preventDefault();
                                      return;
                                  }
                                  var result_class = element.parentNode.getAttribute("class");
-                                 var style_element = document.querySelector("style#hide-" + result_class);
+                                 var style_element = output_document.querySelector("style#hide-" + result_class);
                                  if (!style_element && !element.checked) {
-                                     style_element = document.createElement("style");
+                                     style_element = output_document.createElementNS(xhtml_ns, "style");
                                      style_element.id = "hide-" + result_class;
                                      style_element.innerHTML = "table#results > tbody > tr."+result_class+"{display:none}";
-                                     document.body.appendChild(style_element);
+                                     output_document.body.appendChild(style_element);
                                  } else if (style_element && element.checked) {
                                      style_element.parentNode.removeChild(style_element);
                                  }
@@ -1268,10 +1339,13 @@ policies and contribution forms [3].
                         }]
                        ]];
 
-        log.appendChild(render(template, {tests:tests}));
+        log.appendChild(render(template, {tests:tests}, output_document));
+    };
 
-    }
-
+    var output = new Output();
+    add_start_callback(function (properties) {output.setup(properties);});
+    add_result_callback(function (test) {output.show_status(tests);});
+    add_completion_callback(function (tests, harness_status) {output.show_results(tests, harness_status);});
 
     /*
      * Template code
@@ -1408,62 +1482,63 @@ policies and contribution forms [3].
         return rv;
     }
 
-    function make_dom_single(template)
-    {
-        if (template[0] === "{text}")
-        {
-            var element = document.createTextNode("");
-            for (var i=1; i<template.length; i++)
-            {
-                element.data += template[i];
-            }
-        }
-        else
-        {
-            var element = document.createElement(template[0]);
-            for (var name in template[1]) {
-                if (template[1].hasOwnProperty(name))
-                {
-                    element.setAttribute(name, template[1][name]);
-                }
-            }
-            for (var i=2; i<template.length; i++)
-            {
-                if (template[i] instanceof Object)
-                {
-                    var sub_element = make_dom(template[i]);
-                    element.appendChild(sub_element);
-                }
-                else
-                {
-                    var text_node = document.createTextNode(template[i]);
-                    element.appendChild(text_node);
-                }
-            }
-        }
+ function make_dom_single(template, doc)
+ {
+     var output_document = doc || document;
+     if (template[0] === "{text}")
+     {
+         var element = output_document.createTextNode("");
+         for (var i=1; i<template.length; i++)
+         {
+             element.data += template[i];
+         }
+     }
+     else
+     {
+         var element = output_document.createElementNS(xhtml_ns, template[0]);
+         for (var name in template[1]) {
+             if (template[1].hasOwnProperty(name))
+             {
+                 element.setAttribute(name, template[1][name]);
+             }
+         }
+         for (var i=2; i<template.length; i++)
+         {
+             if (template[i] instanceof Object)
+             {
+                 var sub_element = make_dom(template[i]);
+                 element.appendChild(sub_element);
+             }
+             else
+             {
+                 var text_node = output_document.createTextNode(template[i]);
+                 element.appendChild(text_node);
+             }
+         }
+     }
 
-        return element;
-    }
+     return element;
+ }
 
 
 
-    function make_dom(template, substitutions)
+ function make_dom(template, substitutions, output_document)
     {
         if (is_single_node(template))
         {
-            return make_dom_single(template);
+            return make_dom_single(template, output_document);
         }
         else
         {
             return map(template, function(x) {
-                           return make_dom_single(x);
+                           return make_dom_single(x, output_document);
                        });
         }
     }
 
-    function render(template, substitutions)
+ function render(template, substitutions, output_document)
     {
-        return make_dom(substitute(template, substitutions));
+        return make_dom(substitute(template, substitutions), output_document);
     }
 
     /*
@@ -1569,6 +1644,21 @@ policies and contribution forms [3].
         }
         target[components[components.length - 1]] = object;
     }
+
+ function ancestor_windows() {
+     //Get the windows [self ... top] as an array
+     var rv = [self];
+     var w = self;
+     do
+     {
+
+         w = w.parent;
+         if (w != self) {
+             rv.push(w);
+         }
+     } while(w.parent !== w)
+     return rv;
+ }
 
 })();
 // vim: set expandtab shiftwidth=4 tabstop=4:

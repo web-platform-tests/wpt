@@ -220,44 +220,6 @@ planning to fix just yet:
   now.
 </ul>
 
-<p>Things I need to fix before announcing that the draft is basically complete:
-
-<ul>
-  <li>Some more thought needs to go into what happens to the selection when you
-  mutate the DOM.  In some cases the results are pretty arbitrary.  It might
-  make sense to do some kind of normalization.
-
-  <li>I'm sloppy about handling things like nodes that don't descend from a
-  Document, comments that are children of a Document, that sort of thing.  Not
-  essential for prototyping, but needs to be cleaned up eventually.  Mostly we
-  should be able to avoid the problems by requiring that everything be
-  editable, since that immediately means it has to descend from an element or
-  Document (and cannot be parentless itself).
-
-  <li>I need to pay more attention to invisible nodes.  These will have no
-  visual effect, but they'll make many algorithms behave differently:
-  decomposing a range, block-extending, etc.  Also, need to improve the
-  definition to include things like whitespace-only nodes.
-
-  <li>Tim Down <a href="http://lists.whatwg.org/pipermail/whatwg-whatwg.org/2011-May/031655.html">points
-  out</a> that browsers have special behavior for formatting commands when the
-  selection is collapsed.  Needs investigation.
-
-  <li>What should be used as a line separator?  See <a
-  href=http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html>lengthy
-  discussion</a>.  This affects not only what happens when the user hits Enter,
-  but also what happens when we need to separate lines for other reasons (e.g.,
-  outdenting a list).  We likely want switches to allow authors to control this
-  behavior, like Gecko's insertBrOnReturn and Opera's opera-defaultblock.
-  Previously the spec assumed [[br]] should separate lines, which is like Gecko
-  and sometimes WebKit, but I'm moving it to use [[p]] instead.
-
-  <li>Have to make sure that in all the places where we set a selection, it's
-  valid.
-
-  <li>Redefine things in terms of ranges, not selections.
-</ul>
-
 <p class=XXX>A variety of other issues are also noted in the text, formatted
 like this.  Feedback would be appreciated on all of them.
 
@@ -281,6 +243,29 @@ TODO:
 * What happens if you do something like delete a selection or insert text or
   whatnot in the middle of a surrogate pair?  This could make the content not
   serialize through a character encoding change.
+
+* Probably need to record and restore overrides in some more places.
+
+* Some more thought needs to go into what happens to the selection when you
+  mutate the DOM.  In some cases the results are pretty arbitrary.  It might
+  make sense to do some kind of normalization.
+
+* I'm sloppy about handling things like nodes that don't descend from a
+  Document, comments that are children of a Document, that sort of thing.  Not
+  essential for prototyping, but needs to be cleaned up eventually.  Mostly we
+  should be able to avoid the problems by requiring that everything be
+  editable, since that immediately means it has to descend from an element or
+  Document (and cannot be parentless itself).
+
+* I need to pay more attention to invisible nodes.  These will have no visual
+  effect, but they'll make many algorithms behave differently: decomposing a
+  range, block-extending, etc.  Also, need to improve the definition to include
+  things like whitespace-only nodes.
+
+* Have to make sure that in all the places where we set a selection, it's
+  valid.
+
+* Redefine things in terms of ranges, not selections.
 -->
 
 <!--

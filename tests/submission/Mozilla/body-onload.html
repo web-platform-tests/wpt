@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<title>HTMLBodyElement.onload</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+var t = async_test("body.onload should set the window.onload handler")
+window.onload = t.step_func(function() {
+  assert_unreached("This handler should be overwritten.")
+})
+var b = document.createElement("body")
+b.onload = t.step_func(function(e) {
+  assert_equals(e.currentTarget, window,
+                "The event should be fired at the window.")
+  t.done()
+})
+</script>

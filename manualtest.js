@@ -81,13 +81,14 @@ function addTest() {
 		var browserCell = document.createElement("td");
 		tr.appendChild(browserCell);
 		browserCell.innerHTML = localStorage[keyPrefix + JSON.stringify(test)];
+		doBrowserCellButton(browserCell, test);
 		document.getElementById("overlay").style.display = "";
 		doSameCell(tr);
 		runNextTest(test);
 	} else {
 		doBrowserCell(tr, test, function() {
 			doSameCell(tr);
-			runNextTest(test);
+			runNextTest();
 		});
 	}
 }
@@ -195,6 +196,30 @@ function continueBrowserCell(test, testDiv, browserCell) {
 	}
 
 	localStorage[keyPrefix + JSON.stringify(test)] = browserCell.innerHTML;
+
+	doBrowserCellButton(browserCell, test);
+}
+//@}
+
+function doBrowserCellButton(browserCell, test) {
+//@{
+	var button = document.createElement("button");
+	browserCell.lastChild.appendChild(button);
+	button.textContent = "Redo browser output";
+	button.onclick = function() {
+		localStorage.removeItem(keyPrefix + JSON.stringify(test));
+		var tr = browserCell.parentNode;
+		while (browserCell.nextSibling) {
+			tr.removeChild(browserCell.nextSibling);
+		}
+		tr.removeChild(browserCell);
+		doBrowserCell(tr, test, function() {
+			doSameCell(tr);
+			doTearDown();
+			document.getElementById("overlay").style.display = "";
+			tr.scrollIntoView();
+		});
+	};
 }
 //@}
 // vim: foldmarker=@{,@} foldmethod=marker

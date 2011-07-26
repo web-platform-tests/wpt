@@ -1,12 +1,12 @@
 ANOLIS = anolis
 
-#all: editcommands.html xrefs.json
-all: editcommands.html
+#all: editing.html xrefs.json
+all: editing.html
 
 intermediate.html: source.html preprocess Makefile
 	./preprocess
 
-editcommands.html: intermediate.html data Makefile
+editing.html: intermediate.html data Makefile
 	$(ANOLIS) --output-encoding=ascii --omit-optional-tags --enable=xspecxref \
 	--w3c-compat-xref-a-placement --use-strict $< $@
 

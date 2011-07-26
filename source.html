@@ -1,7 +1,7 @@
 <!doctype html>
 <!-- @{ -->
 <meta charset=utf-8>
-<title>HTML Editing Commands</title>
+<title>HTML Editing APIs</title>
 <link rel=stylesheet href=http://www.whatwg.org/style/specification>
 <style>
 pre, code, xmp { font-family:monospace, sans-serif; }
@@ -39,23 +39,27 @@ a code { text-decoration: underline }
 </style>
 <body class=draft>
 <div class=head id=head>
-<h1>HTML Editing Commands</h1>
+<h1>HTML Editing APIs</h1>
 <h2 class="no-num no-toc">Work in Progress &mdash; Last Update [DATE: 01 Jan 1901]</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;<a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a>>
 
+ <dt>Latest version (may be unstable)
+ <dd><a href=http://aryeh.name/spec/editing/editing.html>http://aryeh.name/spec/editing/editing.html</a>
+
  <dt>Version history
- <dd><a href=http://aryeh.name/gitweb.cgi?p=editcommands>http://aryeh.name/gitweb.cgi?p=editcommands</a>
+ <dd><a href=http://aryeh.name/gitweb.cgi?p=editing>http://aryeh.name/gitweb.cgi?p=editing</a>
+ <dd><a href=https://github.com/ayg/editing>https://github.com/ayg/editing</a>
 </dl>
 </div>
 <!-- @} -->
 
 <h2 class=no-num>Status of this Document</h2>
 <!-- @{ -->
-<p>This document is an early draft of a specification for HTML editing APIs,
-defining <code>execCommand()</code> and related functions.  It largely replaces
-the <a
+<p>This document is a preliminary draft of a specification for HTML editing
+APIs, mainly defining <code>execCommand()</code> and related functions.  It
+largely replaces the <a
 href=http://www.whatwg.org/specs/web-apps/current-work/multipage/dnd.html#editing-apis>Editing
 APIs</a> section of the <a href=http://www.whatwg.org/html>HTML</a>
 specification.  Feedback should preferably be sent to <a
@@ -65,6 +69,11 @@ href=http://lists.w3.org/Archives/Public/public-html/>public-html</a> for those
 who prefer the W3C.  In either case, include the string "[editing]" somewhere
 in the subject, and CC <a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a> (or any
 of my other e-mail addresses) to make sure I see it.
+
+<p>This specification, along with the accompanying JavaScript implementation
+and tests, are copyright Google, 2011.  They may be used under the terms of the
+<a href=http://creativecommons.org/publicdomain/zero/1.0/>CC0 1.0 Universal
+License</a>.
 <!-- @} -->
 
 <h2 class=no-num>Table of contents</h2>
@@ -108,9 +117,11 @@ commonly record what the major browsers do and other essential information.
   anything other than presentational markup related to that command.  If an
   element has non-presentational attributes like id or class, don't split it up
   or remove it or anything.  At most convert it to a span, if it's some type of
-  presentational element (where "presentational" here really means "browsers
+  presentational element.  ("Presentational" here really means "browsers
   produce it in response to execCommand() so we need to treat it as
-  presentational", so it includes things like [[strong]] and [[em]]).
+  presentational", so it includes things like [[strong]] and [[em]].)  Of
+  course, in some cases we have to remove elements, like when merging two
+  blocks.
 
   <li>Don't interfere with more markup than necessary.  If the user modifies
   only a small run of text, don't go around simplifying ancestors or siblings
@@ -138,12 +149,6 @@ commonly record what the major browsers do and other essential information.
   having to use inline CSS, and make sure to tidy up any styles on elements
   that we happen to be modifying anyway.  Previous principles take precedence
   over this one, however.
-
-  <li>I'm generally ignoring the existence of processing instructions, so
-  they'll be treated more or less randomly.  (I'm ensuring that behavior is
-  well-defined, I just don't care what it is.)  Comments are also unlikely to
-  occur much for our purposes, but I try a little harder to make them behave
-  not too unreasonably.
 </ul>
 <!-- @} -->
 
@@ -153,7 +158,8 @@ commonly record what the major browsers do and other essential information.
 implemented in JavaScript, and has been tested on a fairly significant amount
 of artificial input.  It has not been tested on real-world sites that use
 execCommand(), and has not been thoroughly reviewed by anyone other than me.
-I'm close to calling it stable and ready for implementer feedback.
+It should be considered mostly stable and awaiting implementater review and
+feedback.
 
 <p>Significant known issues that I need feedback on, or otherwise am not
 planning to fix just yet:
@@ -228,6 +234,8 @@ to fix right now are in comments prefixed with "TODO".
 
 <!--
 TODO:
+
+* Scour browser bug trackers to try spotting issues I haven't thought of.
 
 * The wording I use for DOM stuff is not maximally precise.  Really I want DOM
   Core to define nice concepts that I can xref, like "insert a node".  I

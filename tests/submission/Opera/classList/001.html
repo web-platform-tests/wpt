@@ -52,10 +52,10 @@ test(function () {
 	...
 	"The term[...] supported property indices [is] used as defined in the WebIDL specification."
 	WebIDL creates actual OwnProperties and then [] just acts as a normal property lookup */
-	assert_equals( elem.classList[0], window.undefined );
+	assert_equals( elem.classList[0], undefined );
 }, 'classList[index] must be undefined for out-of-range index');
 test(function () {
-	assert_equals( elem.classList[-1], window.undefined );
+	assert_equals( elem.classList[-1], undefined );
 }, 'classList[index] must be undefined for negative index');
 test(function () {
 	assert_equals( elem.className, ' ' );
@@ -138,7 +138,7 @@ test(function () {
 	...
 	"The term[...] supported property indices [is] used as defined in the WebIDL specification."
 	WebIDL creates actual OwnProperties and then [] just acts as a normal property lookup */
-	assert_equals( elem.classList[2], window.undefined );
+	assert_equals( elem.classList[2], undefined );
 }, 'classList[index] must still be undefined for out-of-range index when earlier indexes exist');
 test(function () {
 	assert_equals( elem.className, 'foo FOO' );
@@ -242,7 +242,7 @@ test(function () {
 	...
 	"The term[...] supported property indices [is] used as defined in the WebIDL specification."
 	WebIDL creates actual OwnProperties and then [] just acts as a normal property lookup */
-	assert_equals( elem.classList[0], window.undefined );
+	assert_equals( elem.classList[0], undefined );
 }, 'classList[0] must be undefined when all classes have been removed');
 //if the last character of DOMTokenSting underlying character is not a space character, append U+0020", where "space character" is from " \t\r\n\f"
 test(function () {

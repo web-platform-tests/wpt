@@ -2848,12 +2848,15 @@ function setSelectionValue(command, newValue) {
 	&& getActiveRange().endOffset != 0
 	&& getActiveRange().endOffset != getNodeLength(getActiveRange().endContainer)) {
 		// IE seems to mutate the range incorrectly here, so we need correction
-		// here as well.
-		var newStart = [getActiveRange().startContainer, getActiveRange().startOffset];
-		var newEnd = [getActiveRange().endContainer, getActiveRange().endOffset];
-		getActiveRange().endContainer.splitText(getActiveRange().endOffset);
-		getActiveRange().setStart(newStart[0], newStart[1]);
-		getActiveRange().setEnd(newEnd[0], newEnd[1]);
+		// here as well.  The active range will be temporarily in orphaned
+		// nodes, so calling getActiveRange() after splitText() but before
+		// fixing the range will throw an exception.
+		var activeRange = getActiveRange();
+		var newStart = [activeRange.startContainer, activeRange.startOffset];
+		var newEnd = [activeRange.endContainer, activeRange.endOffset];
+		activeRange.endContainer.splitText(activeRange.endOffset);
+		activeRange.setStart(newStart[0], newStart[1]);
+		activeRange.setEnd(newEnd[0], newEnd[1]);
 	}
 
 	// "Let element list be all editable Elements effectively contained in the

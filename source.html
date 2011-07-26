@@ -2245,6 +2245,10 @@ as desired.
 
   <li>If there is no <span>editable</span> [[text]] node <span>effectively
   contained</span> in the <span>active range</span>:
+  <!-- IE9 seems to wrap the whole line instead, or something like that,
+  although it does nothing for createLink.  We follow all other browsers'
+  general behavior: change the state/value, and then make sure that takes
+  effect if the user types something before changing the cursor position. -->
 
   <ol>
     <li>If <var>command</var> has <span>inline command activated values</span>,
@@ -3573,12 +3577,25 @@ algorithm returns true:
   <li>If there is a <span>value override</span> for "createLink", add
   ("createLink", <span>value override</span> for "createLink") to
   <var>overrides</var>.
+  <!--
+  Firefox 7.0a2 and Opera 11.50 don't honor createLink with collapsed
+  selections.  If you insert text, it's not linked.  The spec follows Chrome 14
+  dev.  IE9 also ignores createLink with collapsed selections, but its behavior
+  in other cases for collapsed selections is totally different from all other
+  browsers, so it's not a fair comparison.
+  -->
 
   <li>For each <var>command</var> in the list "bold", "italic",
   "strikethrough", "subscript", "superscript", "underline", in order: if there
   is a <span>state override</span> for <var>command</var>, add
   (<var>command</var>, <var>command</var>'s <span>state override</span>) to
   <var>overrides</var>.
+  <!--
+  Firefox 7.0a2 and Opera 11.50 will honor repeated subscript/superscript
+  commands on a collapsed selection, allowing you to nest them.  The spec
+  follows the general philosophy that we don't allow users to nest
+  subscript/superscript, so the last one wins.  Chrome 14 dev is similar.
+  -->
 
   <li>For each <var>command</var> in the list "fontName", "fontSize",
   "foreColor", "hiliteColor", in order: if there is a <span>value
@@ -3840,6 +3857,17 @@ display: inline-table. -->
 
   <li><span>Record current states and values</span>, and let
   <var>overrides</var> be the result.
+  <!--
+  As far as I can tell, IE9 and Opera 11.50 don't do this at all.  If you
+  delete a selection and then start typing, the new text doesn't take on the
+  styles of the old text.
+
+  Firefox 7.0a2 seems to do it for some styles but not others.  Strikethrough,
+  superscript, subscript, and links seem to be lost, at a minimum.
+
+  The spec goes with something like Chrome 14 dev, which tries to preserve lots
+  of stuff.
+  -->
 
   <!-- This is based on deleteContents() in DOM Range. -->
   <li>If <var>start node</var> and <var>end node</var> are the same, and

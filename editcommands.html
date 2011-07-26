@@ -38,7 +38,7 @@ a code { text-decoration: underline }
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing Commands</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-24-july-2011>Work in Progress &mdash; Last Update 24 July 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-26-july-2011>Work in Progress &mdash; Last Update 26 July 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;<a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a>&gt;
@@ -2267,6 +2267,10 @@ as desired.
 
   <li>If there is no <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node <a href=#effectively-contained>effectively
   contained</a> in the <a href=#active-range>active range</a>:
+  <!-- IE9 seems to wrap the whole line instead, or something like that,
+  although it does nothing for createLink.  We follow all other browsers'
+  general behavior: change the state/value, and then make sure that takes
+  effect if the user types something before changing the cursor position. -->
 
   <ol>
     <li>If <var title="">command</var> has <a href=#inline-command-activated-values>inline command activated values</a>,
@@ -3587,12 +3591,25 @@ algorithm returns true:
   <li>If there is a <a href=#value-override>value override</a> for "createLink", add
   ("createLink", <a href=#value-override>value override</a> for "createLink") to
   <var title="">overrides</var>.
+  <!--
+  Firefox 7.0a2 and Opera 11.50 don't honor createLink with collapsed
+  selections.  If you insert text, it's not linked.  The spec follows Chrome 14
+  dev.  IE9 also ignores createLink with collapsed selections, but its behavior
+  in other cases for collapsed selections is totally different from all other
+  browsers, so it's not a fair comparison.
+  -->
 
   <li>For each <var title="">command</var> in the list "bold", "italic",
   "strikethrough", "subscript", "superscript", "underline", in order: if there
   is a <a href=#state-override>state override</a> for <var title="">command</var>, add
   (<var title="">command</var>, <var title="">command</var>'s <a href=#state-override>state override</a>) to
   <var title="">overrides</var>.
+  <!--
+  Firefox 7.0a2 and Opera 11.50 will honor repeated subscript/superscript
+  commands on a collapsed selection, allowing you to nest them.  The spec
+  follows the general philosophy that we don't allow users to nest
+  subscript/superscript, so the last one wins.  Chrome 14 dev is similar.
+  -->
 
   <li>For each <var title="">command</var> in the list "fontName", "fontSize",
   "foreColor", "hiliteColor", in order: if there is a <a href=#value-override>value
@@ -3850,6 +3867,17 @@ display: inline-table. -->
 
   <li><a href=#record-current-states-and-values>Record current states and values</a>, and let
   <var title="">overrides</var> be the result.
+  <!--
+  As far as I can tell, IE9 and Opera 11.50 don't do this at all.  If you
+  delete a selection and then start typing, the new text doesn't take on the
+  styles of the old text.
+
+  Firefox 7.0a2 seems to do it for some styles but not others.  Strikethrough,
+  superscript, subscript, and links seem to be lost, at a minimum.
+
+  The spec goes with something like Chrome 14 dev, which tries to preserve lots
+  of stuff.
+  -->
 
   <!-- This is based on deleteContents() in DOM Range. -->
   <li>If <var title="">start node</var> and <var title="">end node</var> are the same, and

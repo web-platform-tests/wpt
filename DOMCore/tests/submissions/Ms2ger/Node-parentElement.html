@@ -19,10 +19,6 @@ test(function() {
   assert_equals(comment.parentElement, null)
 }, "When the parent is a document, parentElement should be null (comment)")
 test(function() {
-  var text = document.appendChild(document.createTextNode("bar"))
-  assert_equals(text.parentElement, null)
-}, "When the parent is a document, parentElement should be null (text)")
-test(function() {
   var df = document.createDocumentFragment()
   assert_equals(df.parentElement, null)
   var el = document.createElement("div")

@@ -1547,6 +1547,14 @@ var tests = {
 		'<ol><li>foo<ol><li>bar<li>baz</ol><li>[quz]</ol>',
 		'<ol><li>foo</li><ol><li>bar<li>baz</ol><li>[quz]</ol>',
 
+		// Lists with id's:
+		// http://lists.whatwg.org/pipermail/whatwg-whatwg.org/2009-July/020721.html
+		'<ol><ol id=u1><li id=i1>foo</ol><li id=i2>[bar]</li><ol id=u3><li id=i3>baz</ol></ol>',
+		'<ol><ol><li id=i1>foo</ol><li id=i2>[bar]</li><ol id=u3><li id=i3>baz</ol></ol>',
+		'<ol><ol id=u1><li id=i1>foo</ol><li id=i2>[bar]</li><ol><li id=i3>baz</ol></ol>',
+		'<ol><li id=i2>[bar]</li><ol id=u3><li id=i3>baz</ol></ol>',
+		'<ol><ol id=u1><li id=i1>foo</ol><li id=i2>[bar]</ol>',
+
 		// Try indenting multiple items at once.
 		'<ol><li>foo<li>b[ar<li>baz]</ol>',
 		'<ol><li>[foo<ol><li>bar]</ol><li>baz</ol>',

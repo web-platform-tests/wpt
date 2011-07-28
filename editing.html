@@ -821,6 +821,11 @@ either <a href=#invisible>invisible</a> or <a href=#collapsed-block-prop title="
 block props</a> and that has at least one <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> that is a
 <a href=#collapsed-block-prop>collapsed block prop</a>.
 
+<p class=note>A collapsed block prop is something like the <code title="">&lt;br&gt;</code> in <code title="">&lt;p&gt;&lt;br&gt;&lt;/p&gt;</code>, or the <code title="">&lt;br&gt;</code> and <code title="">&lt;span&gt;</code> in <code title="">&lt;p&gt;&lt;span&gt;&lt;br&gt;&lt;/span&gt;&lt;/p&gt;</code>.  These are necessary to
+stop the block from having zero height when it has no other contents, but serve
+no purpose and should be removed once the block has other contents that stop it
+from collapsing.
+
 <p>The <dfn id=active-range>active range</dfn> is the first <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> in the <code class=external data-anolis-spec=domrange><a href=http://html5.org/specs/dom-range.html#selection>Selection</a></code>
 given by calling <code class=external data-anolis-spec=domrange title=dom-Document-getSelection><a href=http://html5.org/specs/dom-range.html#dom-document-getselection>getSelection()</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>, or null if there is
 no such <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>.

@@ -770,6 +770,14 @@ either <span>invisible</span> or <span title="collapsed block prop">collapsed
 block props</span> and that has at least one [[child]] that is a
 <span>collapsed block prop</span>.
 
+<p class=note>A collapsed block prop is something like the <code
+title>&lt;br></code> in <code title>&lt;p>&lt;br>&lt;/p></code>, or the <code
+title>&lt;br></code> and <code title>&lt;span></code> in <code
+title>&lt;p>&lt;span>&lt;br>&lt;/span>&lt;/p></code>.  These are necessary to
+stop the block from having zero height when it has no other contents, but serve
+no purpose and should be removed once the block has other contents that stop it
+from collapsing.
+
 <p>The <dfn>active range</dfn> is the first [[range]] in the [[selection]]
 given by calling [[getselection]] on the [[contextobject]], or null if there is
 no such [[range]].

@@ -856,11 +856,12 @@ be unset for every <a href=#command>command</a>.
 <p class=XXX>Figure out exactly what commands need to preserve state/value
 overrides.
 
-<p>When the user agent is instructed to run a particular method, it must follow
-the steps defined for that method in the appropriate specification, not act as
-though the method had actually been called from JavaScript.  In particular,
-if the author has overridden the method with a custom method, the standard
-method must be run rather than the custom one.
+<p>When this specification refers to a method or attribute that is defined in a
+specification, the user agent must treat the method or attribute as defined by
+that specification.  In particular, if a script has overridden a standard
+property with a custom one, the user agent must only use the overridden
+property when a script refers to it, and must continue to use the
+specification-defined behavior when this specification refers to it.
 
 <p>When a list or set of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> is assigned to a variable without specifying
 the order, they must be initially in <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#tree-order>tree order</a>, if they share a root.

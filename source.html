@@ -196,13 +196,6 @@ planning to fix just yet:
   "collapsed block prop", but there's lots of other special-case handling
   scattered about.  Feedback appreciated.  How do browsers handle this?
 
-  <li>Where methods take a value, I've decided they should throw SYNTAX_ERR
-  instead of doing nothing if the value makes no sense.  As a rule, this
-  doesn't match browsers.  I think it's more useful to authors, however,
-  especially since in many cases, the command's effect isn't currently
-  interoperable anyway.  I'll switch them back to doing nothing if implementers
-  think this is a problem.
-
   <li>The CSS styling flag is an issue.  Currently authors are forced to turn
   it entirely on or entirely off.  If it's on, it produces stuff like <code
   title>&lt;span style=font-weight:bold></code> instead of <code
@@ -2397,7 +2390,7 @@ identically.
   <li>If <var>value</var> is not a valid CSS color, prepend "#" to it.
 
   <li>If <var>value</var> is still not a valid CSS color, or if it is
-  currentColor, raise a [[SYNTAX_ERR]] exception.
+  currentColor, abort these steps and do nothing.
 
   <li><span>Set the selection's value</span> to <var>value</var>.
 </ol>
@@ -2451,8 +2444,8 @@ doesn't change anything), then Chrome 12 dev inserts a link at the selection
 start, with the text equal to the link URL.  Other browsers don't do it, so I
 don't either. -->
 <ol>
-  <li>If <var>value</var> is the empty string, raise a [[SYNTAX_ERR]]
-  exception.
+  <li>If <var>value</var> is the empty string, abort these steps and do
+  nothing.
   <!--
   Firefox 4b11 and Chrome 11 dev both silently do nothing in this case.
   IE 9 RC and Opera 11 both treat the request literally.  Gecko and WebKit
@@ -2460,9 +2453,6 @@ don't either. -->
   to link to a relative URL resolving to the current document.  If they really
   want to, they can always specify "#" for the value, or the author can rewrite
   it, so it's not like this makes the API less useful.
-
-  As in other cases, I raise a SYNTAX_ERR instead of silently failing, because
-  I think that's more useful.  See issues.
   -->
 
   <li>For each <span>editable</span> [[a]] element that has an [[href]]
@@ -2583,8 +2573,8 @@ thing in IE and Firefox should still do the same thing here, so I'm only
 respecifying non-interoperable behavior anyway.
 -->
 <ol>
-  <li>If <var>value</var> is the empty string, raise a [[SYNTAX_ERR]]
-  exception.
+  <li>If <var>value</var> is the empty string, abort these steps and do
+  nothing.
 
   <li><span data-anolis-spec=html>Strip leading and trailing whitespace</span>
   from <var>value</var>.
@@ -2642,7 +2632,7 @@ respecifying non-interoperable behavior anyway.
 
   <li>If <var>value</var> is not one of the strings "xx-small", "x-small",
   "small", "medium", "large", "x-large", "xx-large", "xxx-large", and is not a
-  valid CSS absolute length, then raise a [[SYNTAX_ERR]] exception.
+  valid CSS absolute length, then abort these steps and do nothing.
   <!--
   Not sure this is the best way to do it.  We don't want to allow relative
   lengths, because those can have very weird user-visible behavior.  For
@@ -2798,7 +2788,7 @@ browsers, but it's unlikely to hurt and it makes sense.
   <li>If <var>value</var> is not a valid CSS color, prepend "#" to it.
 
   <li>If <var>value</var> is still not a valid CSS color, or if it is
-  currentColor, raise a [[SYNTAX_ERR]] exception.
+  currentColor, abort these steps and do nothing.
   <!-- currentColor is bad for the same reason as relative font sizes.  It will
   confuse the algorithm, and doesn't seem very useful anyway. -->
 
@@ -2849,7 +2839,7 @@ identically.
   <li>If <var>value</var> is not a valid CSS color, prepend "#" to it.
 
   <li>If <var>value</var> is still not a valid CSS color, or if it is
-  currentColor, raise a [[SYNTAX_ERR]] exception.
+  currentColor, abort these steps and do nothing.
   <!-- currentColor is bad for the same reason as relative font sizes.  It will
   confuse the algorithm, and doesn't seem very useful anyway.  For hiliteColor
   you could conceive of it being useful, but it will still confuse the
@@ -5785,8 +5775,8 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
   <li>Let <var>value</var> be <span data-anolis-spec=domcore>converted to
   ASCII lowercase</span>.
 
-  <li>If <var>value</var> is not a <span>formattable block name</span>, raise a
-  [[SYNTAX_ERR]] exception.
+  <li>If <var>value</var> is not a <span>formattable block name</span>, abort
+  these steps and do nothing.
   <!--
   Opera 11.10 throws NOT_SUPPORTED_ERR for bad elements, all other tested
   browsers ignore the input.  Testing in IE9, Firefox 4.0, Chrome 13 dev, and
@@ -6465,8 +6455,8 @@ parser.
 <p><span>Action</span>:
 
 <ol>
-  <li>If <var>value</var> is the empty string, raise a [[SYNTAX_ERR]]
-  exception.
+  <li>If <var>value</var> is the empty string, abort these steps and do
+  nothing.
   <!-- Similar logic to createLink, except even more compelling, since an HTML
   document linking to itself as an image is just silly.  In fact, the current
   HTML spec instructs UAs to not even try displaying the image, and just fail

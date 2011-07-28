@@ -3953,19 +3953,15 @@ function doSpecCell(tr, test, command) {
 		specCell.firstChild.removeAttribute("spellcheck");
 		specCell.lastChild.textContent = "Exception: " + e;
 
-		// If it's "SYNTAX_ERR", then we threw it, so all is well.  Otherwise,
-		// flag as an alert.
-		if (e !== "SYNTAX_ERR") {
-			specCell.parentNode.className = "alert";
-			specCell.lastChild.className = "alert";
-			if (typeof e == "object" && "stack" in e) {
-				specCell.lastChild.textContent += " (stack: " + e.stack + ")";
-			}
-
-			// Don't bother comparing to localStorage, this is always wrong no
-			// matter what.
-			return;
+		specCell.parentNode.className = "alert";
+		specCell.lastChild.className = "alert";
+		if (typeof e == "object" && "stack" in e) {
+			specCell.lastChild.textContent += " (stack: " + e.stack + ")";
 		}
+
+		// Don't bother comparing to localStorage, this is always wrong no
+		// matter what.
+		return;
 	}
 
 	if (command != "multitest") {

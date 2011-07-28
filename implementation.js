@@ -2894,7 +2894,7 @@ commands.backcolor = {
 		// "If value is not a valid CSS color, prepend "#" to it."
 		//
 		// "If value is still not a valid CSS color, or if it is currentColor,
-		// raise a SYNTAX_ERR exception."
+		// abort these steps and do nothing."
 		//
 		// Cheap hack for testing, no attempt to be comprehensive.
 		if (/^([0-9a-fA-F]{3}){1,2}$/.test(value)) {
@@ -2903,7 +2903,7 @@ commands.backcolor = {
 		if (!/^(rgba?|hsla?)\(.*\)$/.test(value)
 		&& !parseSimpleColor(value)
 		&& value.toLowerCase() != "transparent") {
-			throw "SYNTAX_ERR";
+			return;
 		}
 
 		// "Set the selection's value to value."
@@ -2932,9 +2932,9 @@ commands.bold = {
 //@{
 commands.createlink = {
 	action: function(value) {
-		// "If value is the empty string, raise a SYNTAX_ERR exception."
+		// "If value is the empty string, abort these steps and do nothing."
 		if (value === "") {
-			throw "SYNTAX_ERR";
+			return;
 		}
 
 		// "For each editable a element that has an href attribute and is an
@@ -3046,21 +3046,21 @@ function normalizeFontSize(value) {
 
 commands.fontsize = {
 	action: function(value) {
-		// "If value is the empty string, raise a SYNTAX_ERR exception."
+		// "If value is the empty string, abort these steps and do nothing."
 		if (value === "") {
-			throw "SYNTAX_ERR";
+			return;
 		}
 
 		value = normalizeFontSize(value);
 
 		// "If value is not one of the strings "xx-small", "x-small", "small",
 		// "medium", "large", "x-large", "xx-large", "xxx-large", and is not a
-		// valid CSS absolute length, then raise a SYNTAX_ERR exception."
+		// valid CSS absolute length, then abort these steps and do nothing."
 		//
 		// More cheap hacks to skip valid CSS absolute length checks.
 		if (["xx-small", "x-small", "small", "medium", "large", "x-large", "xx-large", "xxx-large"].indexOf(value) == -1
 		&& !/^[0-9]+(\.[0-9]+)?(cm|mm|in|pt|pc)$/.test(value)) {
-			throw "SYNTAX_ERR";
+			return;
 		}
 
 		// "Set the selection's value to value."
@@ -3142,7 +3142,7 @@ commands.forecolor = {
 		// "If value is not a valid CSS color, prepend "#" to it."
 		//
 		// "If value is still not a valid CSS color, or if it is currentColor,
-		// raise a SYNTAX_ERR exception."
+		// abort these steps and do nothing."
 		//
 		// Cheap hack for testing, no attempt to be comprehensive.
 		if (/^([0-9a-fA-F]{3}){1,2}$/.test(value)) {
@@ -3151,7 +3151,7 @@ commands.forecolor = {
 		if (!/^(rgba?|hsla?)\(.*\)$/.test(value)
 		&& !parseSimpleColor(value)
 		&& value.toLowerCase() != "transparent") {
-			throw "SYNTAX_ERR";
+			return;
 		}
 
 		// "Set the selection's value to value."
@@ -3170,7 +3170,7 @@ commands.hilitecolor = {
 		// "If value is not a valid CSS color, prepend "#" to it."
 		//
 		// "If value is still not a valid CSS color, or if it is currentColor,
-		// raise a SYNTAX_ERR exception."
+		// abort these steps and do nothing."
 		//
 		// Cheap hack for testing, no attempt to be comprehensive.
 		if (/^([0-9a-fA-F]{3}){1,2}$/.test(value)) {
@@ -3179,7 +3179,7 @@ commands.hilitecolor = {
 		if (!/^(rgba?|hsla?)\(.*\)$/.test(value)
 		&& !parseSimpleColor(value)
 		&& value.toLowerCase() != "transparent") {
-			throw "SYNTAX_ERR";
+			return;
 		}
 
 		// "Set the selection's value to value."
@@ -5908,10 +5908,10 @@ commands.formatblock = {
 		// "Let value be converted to ASCII lowercase."
 		value = value.toLowerCase();
 
-		// "If value is not a formattable block name, raise a SYNTAX_ERR
-		// exception."
+		// "If value is not a formattable block name, abort these steps and do
+		// nothing."
 		if (formattableBlockNames.indexOf(value) == -1) {
-			throw "SYNTAX_ERR";
+			return;
 		}
 
 		// "Block-extend the active range, and let new range be the result."
@@ -6532,9 +6532,9 @@ commands.inserthtml = {
 //@{
 commands.insertimage = {
 	action: function(value) {
-		// "If value is the empty string, raise a SYNTAX_ERR exception."
+		// "If value is the empty string, abort these steps and do nothing."
 		if (value === "") {
-			throw "SYNTAX_ERR";
+			return;
 		}
 
 		// "Let range be the active range."

@@ -270,13 +270,6 @@ planning to fix just yet:
   "collapsed block prop", but there's lots of other special-case handling
   scattered about.  Feedback appreciated.  How do browsers handle this?
 
-  <li>Where methods take a value, I've decided they should throw SYNTAX_ERR
-  instead of doing nothing if the value makes no sense.  As a rule, this
-  doesn't match browsers.  I think it's more useful to authors, however,
-  especially since in many cases, the command's effect isn't currently
-  interoperable anyway.  I'll switch them back to doing nothing if implementers
-  think this is a problem.
-
   <li>The CSS styling flag is an issue.  Currently authors are forced to turn
   it entirely on or entirely off.  If it's on, it produces stuff like <code title="">&lt;span style=font-weight:bold&gt;</code> instead of <code title="">&lt;b&gt;</code>, while if it's off, it produces stuff like <code title="">&lt;font color=red&gt;</code> instead of <code title="">&lt;span
   style=color:red&gt;</code>.  The issue is that authors might want a mix, like
@@ -2417,7 +2410,7 @@ identically.
   <li>If <var title="">value</var> is not a valid CSS color, prepend "#" to it.
 
   <li>If <var title="">value</var> is still not a valid CSS color, or if it is
-  currentColor, raise a <code class=external data-anolis-spec=domcore title=dom-DOMException-SYNTAX_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-syntax_err>SYNTAX_ERR</a></code> exception.
+  currentColor, abort these steps and do nothing.
 
   <li><a href="#set-the-selection's-value">Set the selection's value</a> to <var title="">value</var>.
 </ol>
@@ -2470,8 +2463,8 @@ doesn't change anything), then Chrome 12 dev inserts a link at the selection
 start, with the text equal to the link URL.  Other browsers don't do it, so I
 don't either. -->
 <ol>
-  <li>If <var title="">value</var> is the empty string, raise a <code class=external data-anolis-spec=domcore title=dom-DOMException-SYNTAX_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-syntax_err>SYNTAX_ERR</a></code>
-  exception.
+  <li>If <var title="">value</var> is the empty string, abort these steps and do
+  nothing.
   <!--
   Firefox 4b11 and Chrome 11 dev both silently do nothing in this case.
   IE 9 RC and Opera 11 both treat the request literally.  Gecko and WebKit
@@ -2479,9 +2472,6 @@ don't either. -->
   to link to a relative URL resolving to the current document.  If they really
   want to, they can always specify "#" for the value, or the author can rewrite
   it, so it's not like this makes the API less useful.
-
-  As in other cases, I raise a SYNTAX_ERR instead of silently failing, because
-  I think that's more useful.  See issues.
   -->
 
   <li>For each <a href=#editable>editable</a> <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code> element that has an <code class=external data-anolis-spec=html title=attr-hyperlink-href><a href=http://www.whatwg.org/html/#attr-hyperlink-href>href</a></code>
@@ -2602,8 +2592,8 @@ thing in IE and Firefox should still do the same thing here, so I'm only
 respecifying non-interoperable behavior anyway.
 -->
 <ol>
-  <li>If <var title="">value</var> is the empty string, raise a <code class=external data-anolis-spec=domcore title=dom-DOMException-SYNTAX_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-syntax_err>SYNTAX_ERR</a></code>
-  exception.
+  <li>If <var title="">value</var> is the empty string, abort these steps and do
+  nothing.
 
   <li><a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#strip-leading-and-trailing-whitespace>Strip leading and trailing whitespace</a>
   from <var title="">value</var>.
@@ -2661,7 +2651,7 @@ respecifying non-interoperable behavior anyway.
 
   <li>If <var title="">value</var> is not one of the strings "xx-small", "x-small",
   "small", "medium", "large", "x-large", "xx-large", "xxx-large", and is not a
-  valid CSS absolute length, then raise a <code class=external data-anolis-spec=domcore title=dom-DOMException-SYNTAX_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-syntax_err>SYNTAX_ERR</a></code> exception.
+  valid CSS absolute length, then abort these steps and do nothing.
   <!--
   Not sure this is the best way to do it.  We don't want to allow relative
   lengths, because those can have very weird user-visible behavior.  For
@@ -2817,7 +2807,7 @@ browsers, but it's unlikely to hurt and it makes sense.
   <li>If <var title="">value</var> is not a valid CSS color, prepend "#" to it.
 
   <li>If <var title="">value</var> is still not a valid CSS color, or if it is
-  currentColor, raise a <code class=external data-anolis-spec=domcore title=dom-DOMException-SYNTAX_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-syntax_err>SYNTAX_ERR</a></code> exception.
+  currentColor, abort these steps and do nothing.
   <!-- currentColor is bad for the same reason as relative font sizes.  It will
   confuse the algorithm, and doesn't seem very useful anyway. -->
 
@@ -2868,7 +2858,7 @@ identically.
   <li>If <var title="">value</var> is not a valid CSS color, prepend "#" to it.
 
   <li>If <var title="">value</var> is still not a valid CSS color, or if it is
-  currentColor, raise a <code class=external data-anolis-spec=domcore title=dom-DOMException-SYNTAX_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-syntax_err>SYNTAX_ERR</a></code> exception.
+  currentColor, abort these steps and do nothing.
   <!-- currentColor is bad for the same reason as relative font sizes.  It will
   confuse the algorithm, and doesn't seem very useful anyway.  For hiliteColor
   you could conceive of it being useful, but it will still confuse the
@@ -5782,8 +5772,8 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
   <li>Let <var title="">value</var> be <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#converted-to-ascii-lowercase>converted to
   ASCII lowercase</a>.
 
-  <li>If <var title="">value</var> is not a <a href=#formattable-block-name>formattable block name</a>, raise a
-  <code class=external data-anolis-spec=domcore title=dom-DOMException-SYNTAX_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-syntax_err>SYNTAX_ERR</a></code> exception.
+  <li>If <var title="">value</var> is not a <a href=#formattable-block-name>formattable block name</a>, abort
+  these steps and do nothing.
   <!--
   Opera 11.10 throws NOT_SUPPORTED_ERR for bad elements, all other tested
   browsers ignore the input.  Testing in IE9, Firefox 4.0, Chrome 13 dev, and
@@ -6459,8 +6449,8 @@ parser.
 <p><a href=#action>Action</a>:
 
 <ol>
-  <li>If <var title="">value</var> is the empty string, raise a <code class=external data-anolis-spec=domcore title=dom-DOMException-SYNTAX_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-syntax_err>SYNTAX_ERR</a></code>
-  exception.
+  <li>If <var title="">value</var> is the empty string, abort these steps and do
+  nothing.
   <!-- Similar logic to createLink, except even more compelling, since an HTML
   document linking to itself as an image is just silly.  In fact, the current
   HTML spec instructs UAs to not even try displaying the image, and just fail

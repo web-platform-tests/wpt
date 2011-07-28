@@ -5618,6 +5618,16 @@ commands["delete"] = {
 				node = node.parentNode;
 
 			// "Otherwise, if node has a child with index offset − 1 and that
+			// child is an editable a, remove that child from node, preserving
+			// its descendants. Then abort these steps."
+			} else if (0 <= offset - 1
+			&& offset - 1 < node.childNodes.length
+			&& isEditable(node.childNodes[offset - 1])
+			&& isHtmlElement(node.childNodes[offset - 1], "a")) {
+				removePreservingDescendants(node.childNodes[offset - 1]);
+				return;
+
+			// "Otherwise, if node has a child with index offset − 1 and that
 			// child is not a block node or a br or an img, set node to that
 			// child, then set offset to the length of node."
 			} else if (0 <= offset - 1

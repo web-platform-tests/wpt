@@ -5466,6 +5466,17 @@ in the DOM, which is unhelpful, so I don't.
     <span>invisible</span> [[node]], set <var>offset</var> to the [[index]] of
     <var>node</var>, then set <var>node</var> to its [[parent]].
 
+    <!--
+    When backspacing a link, Firefox 7.0a2, Chrome 14 dev, Opera 11.50, and
+    OpenOffice.org 3.2.1 Ubuntu have no special behavior.  IE9 and Word 2007
+    remove the link instead of deleting its last character.  The latter
+    behavior seems more useful and intuitive.
+    -->
+    <li>Otherwise, if <var>node</var> has a [[child]] with [[index]]
+    <var>offset</var> &minus; 1 and that [[child]] is an <span>editable</span>
+    [[a]], remove that [[child]] from <var>node</var>, <span>preserving its
+    descendants</span>.  Then abort these steps.
+
     <li>Otherwise, if <var>node</var> has a [[child]] with [[index]]
     <var>offset</var> &minus; 1 and that [[child]] is not a <span>block
     node</span> or a [[br]] or an [[img]], set <var>node</var> to that
@@ -7572,6 +7583,7 @@ insertions.
   Julie Parent,
   Simon Pieters,
   Michael A. Puls II,
+  Rich Schwerdtfeger,
   Henri Sivonen,
   Smylers,
   Hallvord R. M. Steen,
@@ -7581,7 +7593,7 @@ insertions.
   and
   Boris Zbarsky
   for their feedback on drafts of this document and participation in related
-  mailing list discussions
+  mailing list and Bugzilla discussions
   <li>Tab Atkins, Ian Hickson, Glenn Maynard, Ms2ger, Simon Pieters, and most
   of the rest of the <a href=irc://irc.freenode.net/whatwg>#whatwg</a> crowd
   for giving quick online feedback when I have questions or need to solicit

@@ -5463,6 +5463,17 @@ in the DOM, which is unhelpful, so I don't.
     <a href=#invisible>invisible</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, set <var title="">offset</var> to the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of
     <var title="">node</var>, then set <var title="">node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
+    <!--
+    When backspacing a link, Firefox 7.0a2, Chrome 14 dev, Opera 11.50, and
+    OpenOffice.org 3.2.1 Ubuntu have no special behavior.  IE9 and Word 2007
+    remove the link instead of deleting its last character.  The latter
+    behavior seems more useful and intuitive.
+    -->
+    <li>Otherwise, if <var title="">node</var> has a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>
+    <var title="">offset</var> &minus; 1 and that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is an <a href=#editable>editable</a>
+    <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code>, remove that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> from <var title="">node</var>, <a href=#preserving-its-descendants>preserving its
+    descendants</a>.  Then abort these steps.
+
     <li>Otherwise, if <var title="">node</var> has a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>
     <var title="">offset</var> &minus; 1 and that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is not a <a href=#block-node>block
     node</a> or a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code> or an <code class=external data-anolis-spec=html title="the img element"><a href=http://www.whatwg.org/html/#the-img-element>img</a></code>, set <var title="">node</var> to that
@@ -7554,6 +7565,7 @@ insertions.
   Julie Parent,
   Simon Pieters,
   Michael A. Puls II,
+  Rich Schwerdtfeger,
   Henri Sivonen,
   Smylers,
   Hallvord R. M. Steen,
@@ -7563,7 +7575,7 @@ insertions.
   and
   Boris Zbarsky
   for their feedback on drafts of this document and participation in related
-  mailing list discussions
+  mailing list and Bugzilla discussions
   <li>Tab Atkins, Ian Hickson, Glenn Maynard, Ms2ger, Simon Pieters, and most
   of the rest of the <a href=irc://irc.freenode.net/whatwg>#whatwg</a> crowd
   for giving quick online feedback when I have questions or need to solicit

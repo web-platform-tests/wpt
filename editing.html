@@ -7501,9 +7501,16 @@ should be platform-agnostic.  If anyone has suggestions as to particular things
 that should be left up to platform behavior, please say so.
 
 <p>When the user instructs the user agent to insert a line break inside an
-<a href=#editing-host>editing host</a>, such as by pressing the Return key while the cursor
+<a href=#editing-host>editing host</a>, such as by pressing the Enter key while the cursor
 is in an <a href=#editable>editable</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, the user agent must take the
 <a href=#action>action</a> for <a href=#the-insertparagraph-command>the <code title="">insertParagraph</code>
+command</a>.
+
+<p>When the user instructs the user agent to insert a line break inside an
+<a href=#editing-host>editing host</a> without breaking out of the current block, such as by
+pressing Shift-Enter or Option-Enter while the cursor is in an
+<a href=#editable>editable</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, the user agent must take the
+<a href=#action>action</a> for <a href=#the-insertlinebreak-command>the <code title="">insertLineBreak</code>
 command</a>.
 
 <p>When the user instructs the user agent to delete the previous character

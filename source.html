@@ -7518,9 +7518,16 @@ should be platform-agnostic.  If anyone has suggestions as to particular things
 that should be left up to platform behavior, please say so.
 
 <p>When the user instructs the user agent to insert a line break inside an
-<span>editing host</span>, such as by pressing the Return key while the cursor
+<span>editing host</span>, such as by pressing the Enter key while the cursor
 is in an <span>editable</span> [[node]], the user agent must take the
 <span>action</span> for <span>the <code title>insertParagraph</code>
+command</span>.
+
+<p>When the user instructs the user agent to insert a line break inside an
+<span>editing host</span> without breaking out of the current block, such as by
+pressing Shift-Enter or Option-Enter while the cursor is in an
+<span>editable</span> [[node]], the user agent must take the
+<span>action</span> for <span>the <code title>insertLineBreak</code>
 command</span>.
 
 <p>When the user instructs the user agent to delete the previous character

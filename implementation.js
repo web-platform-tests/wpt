@@ -7552,10 +7552,15 @@ commandNames.forEach(function(command) {
 	// value of the active range's start node."
 	if ("standardInlineValueCommand" in commands[command]) {
 		commands[command].indeterm = function() {
-			return getAllEffectivelyContainedNodes(getActiveRange())
+			var values = getAllEffectivelyContainedNodes(getActiveRange())
 				.filter(function(node) { return isEditable(node) && node.nodeType == Node.TEXT_NODE })
-				.map(function(node) { return getEffectiveCommandValue(node, command) })
-				.length >= 2;
+				.map(function(node) { return getEffectiveCommandValue(node, command) });
+			for (var i = 1; i < values.length; i++) {
+				if (values[i] != values[i - 1]) {
+					return true;
+				}
+			}
+			return false;
 		};
 
 		commands[command].value = function() {

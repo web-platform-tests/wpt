@@ -3764,7 +3764,12 @@ function queryOutputHelper(beforeIndeterm, beforeState, beforeValue, afterIndete
 		value = null;
 	}
 
-	if (/^justify(center|full|left|right)$/.test(command)) {
+	if (command == "createlink" && value === "") {
+		// It should just do nothing.
+		afterDiv.lastChild.className = beforeValue === afterValue
+			? "good-result"
+			: "bad-result";
+	} else if (/^justify(center|full|left|right)$/.test(command)) {
 		// We know there are only four correct values beforehand, and afterward
 		// the value has to be the one we set.
 		if (!/^(center|justify|left|right)$/.test(beforeValue)) {

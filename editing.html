@@ -38,7 +38,7 @@ a code { text-decoration: underline }
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing APIs</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-28-july-2011>Work in Progress &mdash; Last Update 28 July 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-29-july-2011>Work in Progress &mdash; Last Update 29 July 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;<a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a>&gt;
@@ -239,9 +239,7 @@ planning to fix just yet:
 <ul>
   <li>Need to make CSS terminology more precise, about setting/unsetting CSS
   properties.  The intent is to modify the style attribute, CSSOM-style.
-  Likewise, CSS value comparisons need to be done after serializing both
-  values, so "bold" == "700" and "red" == "#f00" and so on.  Suggestions
-  appreciated on how I should spec this.
+  Suggestions appreciated on how I should spec this.
 
   <li>I use <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved value</a> instead of computed or used or anything like that, just
   because that's what my test implementation uses (via getComputedStyle).  This
@@ -1375,6 +1373,28 @@ which at least one of the following holds:
 <p class=note>Conceptually, a simple modifiable element is a modifiable element
 which specifies a value for at most one command.
 
+<p>Two quantities are <dfn id=equivalent-values>equivalent values</dfn> for a <a href=#command>command</a>
+if either both are null, or both are strings and they're equal and the
+<a href=#command>command</a> does not define any <a href=#equivalent-values>equivalent values</a>, or
+both are strings and the <a href=#command>command</a> defines <a href=#equivalent-values>equivalent
+values</a> and they match the definition.
+
+<p>Two quantities are <dfn id=loosely-equivalent-values>loosely equivalent values</dfn> for a
+<a href=#command>command</a> if either they are <a href=#equivalent-values>equivalent values</a> for the
+<a href=#command>command</a>, or if the <a href=#command>command</a> is <a href=#the-fontsize-command>the <code title="">fontSize</code> command</a>; one of the quantities is one of
+"xx-small", "small", "medium", "large", "x-large", "xx-large", or "xxx-large";
+and the other quantity is the <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved value</a> of "font-size" on a <code class=external data-anolis-spec=html title=font><a href=http://www.whatwg.org/html/#font>font</a></code> element
+whose <code class=external data-anolis-spec=html title=dom-font-size><a href=http://www.whatwg.org/html/#dom-font-size>size</a></code> attribute has the corresponding value set ("1" through "7"
+respectively).
+
+<p class=note>Loose equivalence needs to be used when comparing effective
+command values to other values, while regular equivalence is used in other
+cases.  The effective command value for fontSize is converted to pixels, so
+comparing it to a specified value literally would produce false negatives.  But
+a <em>specified</em> value in pixels is actually different from a
+<em>specified</em> value like "small" or "x-large", because there is no precise
+mapping from such keywords to pixels.
+
 <p>If a <a href=#command>command</a> has <dfn id=inline-command-activated-values>inline command activated values</dfn>
 defined but nothing else defines when it is <a href=#indeterminate>indeterminate</a>, it is
 <a href=#indeterminate>indeterminate</a> if among <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> nodes
@@ -1617,13 +1637,15 @@ value</var>:
   <var title="">candidate</var> has exactly one <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, and that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is also a
   <a href=#modifiable-element>modifiable element</a>, and <var title="">candidate</var> is not a
   <a href=#simple-modifiable-element>simple modifiable element</a> or <var title="">candidate</var>'s
-  <a href=#specified-command-value>specified command value</a> for <var title="">command</var> is not <var title="">new
-  value</var>, set <var title="">candidate</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>.
+  <a href=#specified-command-value>specified command value</a> for <var title="">command</var> is not <a href=#equivalent-values title="equivalent values">equivalent</a> to <var title="">new value</var>, set
+  <var title="">candidate</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>.
 
   <li>If <var title="">candidate</var> is <var title="">node</var>, or is not a <a href=#simple-modifiable-element>simple
-  modifiable element</a>, or its <a href=#specified-command-value>specified command value</a> and
-  <a href=#effective-command-value>effective command value</a> for <var title="">command</var> are not both
-  <var title="">new value</var>, abort these steps.
+  modifiable element</a>, or its <a href=#specified-command-value>specified command value</a> is not
+  <a href=#equivalent-values title="equivalent values">equivalent</a> to <var title="">new value</var>, or
+  its <a href=#effective-command-value>effective command value</a> is not <a href=#loosely-equivalent-values title="loosely
+  equivalent values">loosely equivalent</a> to <var title="">new value</var>, abort
+  these steps.
 
   <li>While <var title="">candidate</var> has <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, insert the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>
   of <var title="">candidate</var> into <var title="">candidate</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> immediately
@@ -1710,10 +1732,10 @@ returned by the <a href=#record-the-values>record the values</a> algorithm:
     with <var title="">new value</var> null.
 
     <li>Otherwise, if <var title="">ancestor</var> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> and its
-    <a href=#specified-command-value>specified command value</a> for <var title="">command</var> is different
-    from <var title="">value</var>, or if <var title="">ancestor</var> is not an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> and
-    <var title="">value</var> is not null, <a href=#force-the-value>force the value</a> of
-    <var title="">command</var> to <var title="">value</var> on <var title="">node</var>.
+    <a href=#specified-command-value>specified command value</a> for <var title="">command</var> is not <a href=#equivalent-values title="equivalent values">equivalent</a> to <var title="">value</var>, or if
+    <var title="">ancestor</var> is not an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> and <var title="">value</var> is not null,
+    <a href=#force-the-value>force the value</a> of <var title="">command</var> to <var title="">value</var> on
+    <var title="">node</var>.
   </ol>
 </ol>
 
@@ -1839,7 +1861,8 @@ with a <code data-anolis-spec=html title="the style attribute">style</code> attr
   algorithm. <!-- E.g., a text node child of a document fragment. -->
 
   <li>If the <a href=#effective-command-value>effective command value</a> of <var title="">command</var> is
-  <var title="">new value</var> on <var title="">node</var>, abort this algorithm.
+  <a href=#loosely-equivalent-values title="loosely equivalent values">loosely equivalent</a> to <var title="">new value</var> on <var title="">node</var>, abort this
+  algorithm.
 
   <li>Let <var title="">current ancestor</var> be <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
@@ -1847,9 +1870,9 @@ with a <code data-anolis-spec=html title="the style attribute">style</code> attr
 
   <li>While <var title="">current ancestor</var> is an <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>
   and the <a href=#effective-command-value>effective command value</a> of <var title="">command</var> is not
-  <var title="">new value</var> on it, append <var title="">current ancestor</var> to
-  <var title="">ancestor list</var>, then set <var title="">current ancestor</var> to its
-  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+  <a href=#loosely-equivalent-values title="loosely equivalent values">loosely equivalent</a> to <var title="">new value</var> on it, append <var title="">current
+  ancestor</var> to <var title="">ancestor list</var>, then set <var title="">current
+  ancestor</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
   <li>If <var title="">ancestor list</var> is empty, abort this algorithm.
 
@@ -1893,8 +1916,9 @@ with a <code data-anolis-spec=html title="the style attribute">style</code> attr
   we're styling something that includes the first or last child).
   -->
   <li>If the <a href=#effective-command-value>effective command value</a> of <var title="">command</var> is not
-  <var title="">new value</var> on the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of the last member of <var title="">ancestor
-  list</var>, and <var title="">new value</var> is not null, abort this algorithm.
+  <a href=#loosely-equivalent-values title="loosely equivalent values">loosely equivalent</a> to <var title="">new value</var> on the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of the last
+  member of <var title="">ancestor list</var>, and <var title="">new value</var> is not null,
+  abort this algorithm.
 
   <li>While <var title="">ancestor list</var> is not empty:
 
@@ -1922,8 +1946,8 @@ with a <code data-anolis-spec=html title="the style attribute">style</code> attr
       <var title="">child</var>.
 
       <li>If <var title="">child</var> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> whose <a href=#specified-command-value>specified command
-      value</a> for <var title="">command</var> is neither null nor equal to
-      <var title="">propagated value</var>, continue with the next <var title="">child</var>.
+      value</a> for <var title="">command</var> is neither null nor <a href=#equivalent-values title="equivalent values">equivalent</a> to <var title="">propagated
+      value</var>, continue with the next <var title="">child</var>.
       <!--
       TODO: This will be incorrect for relative font sizes.  If the font size
       on the parent was removed and the font size on the child is in ems or
@@ -1982,24 +2006,24 @@ different value.
 
     <li><a href=#wrap>Wrap</a> the one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> list consisting of <var title="">node</var>,
     with <a href=#sibling-criteria>sibling criteria</a> matching a <a href=#simple-modifiable-element>simple modifiable
-    element</a> whose <a href=#specified-command-value>specified command value</a> and
-    <a href=#effective-command-value>effective command value</a> for <var title="">command</var> are both
-    <var title="">new value</var>, and with <a href=#new-parent-instructions>new parent instructions</a>
-    returning null.
+    element</a> whose <a href=#specified-command-value>specified command value</a> is <a href=#equivalent-values title="equivalent values">equivalent</a>
+    to <var title="">new value</var> and whose <a href=#effective-command-value>effective command value</a> is
+    <a href=#loosely-equivalent-values title="loosely equivalent values">loosely equivalent</a> to <var title="">new value</var>, and with <a href=#new-parent-instructions>new parent
+    instructions</a> returning null.
     <!-- The new parent instructions are too complicated to reasonably feed
     into the wrap algorithm. -->
   </ol>
 
   <li>If the <a href=#effective-command-value>effective command value</a> of <var title="">command</var> is
-  <var title="">new value</var> on <var title="">node</var>, abort this algorithm.
+  <a href=#loosely-equivalent-values title="loosely equivalent values">loosely equivalent</a> to <var title="">new value</var> on <var title="">node</var>, abort this
+  algorithm.
 
   <li>If <var title="">node</var> is not an <a href=#allowed-child>allowed child</a> of "span":
 
   <ol>
     <li>Let <var title="">children</var> be all <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> of <var title="">node</var>,
     omitting any that are <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>s whose <a href=#specified-command-value>specified command
-    value</a> for <var title="">command</var> is neither null nor equal to <var title="">new
-    value</var>.
+    value</a> for <var title="">command</var> is neither null nor <a href=#equivalent-values title="equivalent values">equivalent</a> to <var title="">new value</var>.
 
     <li><a href=#force-the-value>Force the value</a> of each <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> in <var title="">children</var>,
     with <var title="">command</var> and <var title="">new value</var> as in this invocation of
@@ -2014,7 +2038,8 @@ different value.
   </ol>
 
   <li>If the <a href=#effective-command-value>effective command value</a> of <var title="">command</var> is
-  <var title="">new value</var> on <var title="">node</var>, abort this algorithm.
+  <a href=#loosely-equivalent-values title="loosely equivalent values">loosely equivalent</a> to <var title="">new value</var> on <var title="">node</var>, abort this
+  algorithm.
 
   <li>Let <var title="">new parent</var> be null.
 
@@ -2145,10 +2170,13 @@ different value.
   -->
 
   <li>If the <a href=#effective-command-value>effective command value</a> of <var title="">command</var> for
-  <var title="">new parent</var> is not <var title="">new value</var>, and the <a href=#relevant-css-property>relevant CSS
-  property</a> for <var title="">command</var> is not null, set that CSS property of
-  <var title="">new parent</var> to <var title="">new value</var> (if the new value would be
-  valid).
+  <var title="">new parent</var> is not <a href=#loosely-equivalent-values title="loosely equivalent values">loosely equivalent</a> to <var title="">new value</var>,
+  and the <a href=#relevant-css-property>relevant CSS property</a> for <var title="">command</var> is not
+  null, set that CSS property of <var title="">new parent</var> to <var title="">new value</var>
+  (if the new value would be valid).
+
+  <p class=XXX>Need to be explicit.  I think "if the new value would be valid"
+  means "if the new value isn't xxx-large for font-size", need to double-check.
 
   <li>If <var title="">command</var> is "strikethrough", and <var title="">new value</var> is
   "line-through", and the <a href=#effective-command-value>effective command value</a> of
@@ -2164,8 +2192,8 @@ different value.
   <a href=#preserving-ranges>preserving ranges</a>.
 
   <li>If <var title="">node</var> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> and the <a href=#effective-command-value>effective command
-  value</a> of <var title="">command</var> for <var title="">node</var> is not <var title="">new
-  value</var>:
+  value</a> of <var title="">command</var> for <var title="">node</var> is not
+  <a href=#loosely-equivalent-values title="loosely equivalent values">loosely equivalent</a> to <var title="">new value</var>:
 
   <ol>
     <li>Insert <var title="">node</var> into the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">new parent</var>
@@ -2175,8 +2203,7 @@ different value.
 
     <li>Let <var title="">children</var> be all <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> of <var title="">node</var>,
     omitting any that are <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>s whose <a href=#specified-command-value>specified command
-    value</a> for <var title="">command</var> is neither null nor equal to <var title="">new
-    value</var>.
+    value</a> for <var title="">command</var> is neither null nor <a href=#equivalent-values title="equivalent values">equivalent</a> to <var title="">new value</var>.
 
     <li><a href=#force-the-value>Force the value</a> of each <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> in <var title="">children</var>,
     with <var title="">command</var> and <var title="">new value</var> as in this invocation of
@@ -2279,10 +2306,6 @@ as desired.
 
     <li>If <var title="">new value</var> is null, unset the <a href=#value-override>value override</a>
     (if any).
-
-    <li>Otherwise, if <var title="">command</var> is "fontSize", set the <a href=#value-override>value
-    override</a> to the <a href=#legacy-font-size-for>legacy font size for</a> the result of
-    converting <var title="">new value</var> to pixels.
 
     <li>Otherwise, if <var title="">command</var> has a <a href=#value>value</a> specified,
     set the <a href=#value-override>value override</a> to <var title="">new value</var>.
@@ -2419,6 +2442,10 @@ identically.
 
 <p><a href=#relevant-css-property>Relevant CSS property</a>: "background-color"
 
+<p><a href=#equivalent-values>Equivalent values</a>: Either both strings are valid CSS colors and
+have the same red, green, blue, and alpha components, or neither string is a
+valid CSS color.
+
 
 <h3 id=the-bold-command><span class=secno>7.8 </span><dfn>The <code title="">bold</code> command</dfn></h3>
 
@@ -2452,6 +2479,9 @@ I'll go with 600 as the cutoff.
 -->
 
 <p><a href=#relevant-css-property>Relevant CSS property</a>: "font-weight"
+
+<p><a href=#equivalent-values>Equivalent values</a>: Either the two strings are equal, or one is
+"bold" and the other is "700", or one is "normal" and the other is "400".
 
 
 <h3 id=the-createlink-command><span class=secno>7.9 </span><dfn>The <code title="">createLink</code> command</dfn></h3>
@@ -2830,6 +2860,10 @@ and also drops the transparent part of the color if there is any.
 
 <p><a href=#relevant-css-property>Relevant CSS property</a>: "color"
 
+<p><a href=#equivalent-values>Equivalent values</a>: Either both strings are valid CSS colors and
+have the same red, green, blue, and alpha components, or neither string is a
+valid CSS color.
+
 
 <h3 id=the-hilitecolor-command><span class=secno>7.13 </span><dfn>The <code title="">hiliteColor</code> command</dfn></h3>
 
@@ -2872,6 +2906,10 @@ identically.
 both always return false.  However, it makes sense. -->
 
 <p><a href=#relevant-css-property>Relevant CSS property</a>: "background-color"
+
+<p><a href=#equivalent-values>Equivalent values</a>: Either both strings are valid CSS colors and
+have the same red, green, blue, and alpha components, or neither string is a
+valid CSS color.
 
 
 <h3 id=the-italic-command><span class=secno>7.14 </span><dfn>The <code title="">italic</code> command</dfn></h3>
@@ -3640,9 +3678,13 @@ algorithm returns true:
   the contents".
   -->
 
-  <li>For each <var title="">command</var> in the list "fontName", "fontSize",
-  "foreColor", "hiliteColor", in order: add (<var title="">command</var>,
-  <var title="">command</var>'s <a href=#value>value</a>) to <var title="">overrides</var>.
+  <li>For each <var title="">command</var> in the list "fontName", "foreColor",
+  "hiliteColor", in order: add (<var title="">command</var>, <var title="">command</var>'s
+  <a href=#value>value</a>) to <var title="">overrides</var>.
+
+  <!-- Special case for fontSize, because its values are weird. -->
+  <li>Add ("fontSize", <var title="">node</var>'s <a href=#effective-command-value>effective command value</a>
+  for "fontSize") to <var title="">overrides</var>.
 
   <li>Return <var title="">overrides</var>.
 </ol>
@@ -3652,18 +3694,30 @@ algorithm returns true:
 <a href=#record-current-states-and-values>record current states and values</a> algorithm:
 
 <ol>
-  <li>If there is some <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node <a href=#effectively-contained>effectively
-  contained</a> in the <a href=#active-range>active range</a>, then for each
-  (<var title="">command</var>, <var title="">override</var>) pair in <var title="">overrides</var>, in
-  order:
+  <li>Let <var title="">node</var> be the first <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node
+  <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a>, or null
+  if there is none.
+
+  <li>If <var title="">node</var> is not null, then for each (<var title="">command</var>,
+  <var title="">override</var>) pair in <var title="">overrides</var>, in order:
 
   <ol>
     <li>If <var title="">override</var> is a boolean, and <code title=queryCommandState()><a href=#querycommandstate()>queryCommandState(<var title="">command</var>)</a></code>
     returns something different from <var title="">override</var>, call <code title=execCommand()><a href=#execcommand()>execCommand(<var title="">command</var>)</a></code>.
 
-    <li>If <var title="">override</var> is a string, and <code title=queryCommandValue()><a href=#querycommandvalue()>queryCommandValue(<var title="">command</var>)</a></code>
-    returns something different from <var title="">override</var>, call <code title=execCommand()><a href=#execcommand()>execCommand(<var title="">command</var>, false,
+    <li>If <var title="">override</var> is a string, and <var title="">command</var> is not
+    "fontSize", and <code title=queryCommandValue()><a href=#querycommandvalue()>queryCommandValue(<var title="">command</var>)</a></code>
+    returns something not <a href=#equivalent-values title="equivalent values">equivalent</a> to
+    <var title="">override</var>, call <code title=execCommand()><a href=#execcommand()>execCommand(<var title="">command</var>, false,
     <var title="">override</var>)</a></code>.
+
+    <li>If <var title="">override</var> is a string; and <var title="">command</var> is
+    "fontSize"; and either there is a <a href=#value-override>value override</a> for
+    "fontSize" that is not equal to <var title="">override</var>, or there is no
+    <a href=#value-override>value override</a> for "fontSize" and <var title="">node</var>'s
+    <a href=#effective-command-value>effective command value</a> for "fontSize" is not
+    <a href=#loosely-equivalent-values title="loosely equivalent values">loosely equivalent</a> to <var title="">override</var>: call
+    <code title=execCommand()><a href=#execcommand()>execCommand("fontSize", false, <var title="">override</var>)</a></code>.
   </ol>
 
   <li>Otherwise, for each (<var title="">command</var>, <var title="">override</var>) pair in

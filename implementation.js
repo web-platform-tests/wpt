@@ -129,86 +129,17 @@ function cssSizeToLegacy(cssVal) {
 	}[cssVal];
 }
 
-// This entire function is a massive hack to work around browser
-// incompatibility.  It wouldn't work in real life, but it's good enough for a
-// test implementation.  It's not clear how all this should actually be specced
-// in practice, since CSS defines no notion of equality, does it?
-function valuesEqual(command, val1, val2) {
-	if (commands[command].relevantCssProperty === null
-	|| (command == "fontsize" && /^[1-7]$/.test(val1) && /^[1-7]$/.test(val2))) {
-		return val1 === val2;
-	}
-
-	if (val1 === null || val2 === null) {
-		return val1 === val2;
-	}
-
-	if (command == "subscript" || command == "superscript") {
-		return val1 === val2;
-	}
-
-	if (command == "bold") {
-		return val1 == val2
-			|| (val1.toLowerCase() == "bold" && val2 == "700")
-			|| (val2.toLowerCase() == "bold" && val1 == "700")
-			|| (val1.toLowerCase() == "normal" && val2 == "400")
-			|| (val2.toLowerCase() == "normal" && val1 == "400");
-	}
-
-	var property = commands[command].relevantCssProperty;
-	var test1 = document.createElement("span");
-	test1.style[property] = val1;
-	var test2 = document.createElement("span");
-	test2.style[property] = val2;
-
-	// Computing style doesn't seem to always work if the elements aren't in
-	// the body?
-	document.body.appendChild(test1);
-	document.body.appendChild(test2);
-
-	// We can't test xxx-large with CSS.  Also, some browsers (WebKit?) don't
-	// actually make <span style="font-size: xx-small"> have the same size as
-	// <font size="1">, and so on.  So we have to test both . . .
-	var test1b = null, test2b = null;
-	if (command == "fontsize") {
-		if (typeof cssSizeToLegacy(val1) != "undefined") {
-			test1b = document.createElement("font");
-			test1b.size = cssSizeToLegacy(val1);
-			document.body.appendChild(test1b);
-		}
-		if (typeof cssSizeToLegacy(val2) != "undefined") {
-			test2b = document.createElement("font");
-			test2b.size = cssSizeToLegacy(val2);
-			document.body.appendChild(test2b);
-		}
-	}
-
-	var computed1b = test1b
-		? getComputedStyle(test1b)[property]
-		: null;
-	var computed2b = test2b
-		? getComputedStyle(test2b)[property]
-		: null;
-	var computed1 = command == "fontsize" && val1 == "xxx-large"
-		? computed1b
-		: getComputedStyle(test1)[property];
-	var computed2 = command == "fontsize" && val2 == "xxx-large"
-		? computed2b
-		: getComputedStyle(test2)[property];
-
-	document.body.removeChild(test1);
-	document.body.removeChild(test2);
-
-	if (test1b) {
-		document.body.removeChild(test1b);
-	}
-	if (test2b) {
-		document.body.removeChild(test2b);
-	}
-
-	return computed1 == computed2
-		|| computed1 === computed2b
-		|| computed1b === computed2;
+// Return the CSS size given a legacy size.
+function legacySizeToCss(legacyVal) {
+	return {
+		1: "xx-small",
+		2: "small",
+		3: "medium",
+		4: "large",
+		5: "x-large",
+		6: "xx-large",
+		7: "xxx-large",
+	}[legacyVal];
 }
 
 // Opera 11 puts HTML elements in the null namespace, it seems.
@@ -462,12 +393,52 @@ function getAllContainedNodes(range, condition) {
 	return nodeList;
 }
 
+// Returns either null, or something of the form rgb(x, y, z), or something of
+// the form rgb(x, y, z, w) with w != 0.
+function normalizeColor(color) {
+	if (color.toLowerCase() == "currentcolor") {
+		return null;
+	}
+
+	var outerSpan = document.createElement("span");
+	document.body.appendChild(outerSpan);
+	outerSpan.style.color = "black";
+
+	var innerSpan = document.createElement("span");
+	outerSpan.appendChild(innerSpan);
+	innerSpan.style.color = color;
+	color = getComputedStyle(innerSpan).color;
+
+	if (color == "rgb(0, 0, 0)") {
+		// Maybe it's really black, maybe it's invalid.
+		outerSpan.color = "white";
+		color = getComputedStyle(innerSpan).color;
+		if (color != "rgb(0, 0, 0)") {
+			return null;
+		}
+	}
+
+	document.body.removeChild(outerSpan);
+
+	// I rely on the fact that browsers generally provide consistent syntax for
+	// getComputedStyle(), although it's not standardized.  There are only two
+	// exceptions I found:
+	if (/^rgba\([0-9]+, [0-9]+, [0-9]+, 1\)$/.test(color)) {
+		// IE10PP2 seems to do this sometimes.
+		return color.replace("rgba", "rgb").replace(", 1)", ")");
+	}
+	if (color == "transparent") {
+		// IE10PP2, Firefox 7.0a2, and Opera 11.50 all return "transparent" if
+		// the specified value is "transparent".
+		return "rgba(0, 0, 0, 0)";
+	}
+	return color;
+}
+
 // Returns either null, or something of the form #xxxxxx, or the color itself
 // if it's a valid keyword.
 function parseSimpleColor(color) {
 	color = color.toLowerCase();
-	// Yay for Gecko allowing you to select a column of a table without
-	// selecting anything from other columns.
 	if (["aliceblue", "antiquewhite", "aqua", "aquamarine", "azure", "beige",
 	"bisque", "black", "blanchedalmond", "blue", "blueviolet", "brown",
 	"burlywood", "cadetblue", "chartreuse", "chocolate", "coral",
@@ -499,36 +470,7 @@ function parseSimpleColor(color) {
 		return color;
 	}
 
-	var outerSpan = document.createElement("span");
-	document.body.appendChild(outerSpan);
-	outerSpan.style.color = "black";
-
-	var innerSpan = document.createElement("span");
-	outerSpan.appendChild(innerSpan);
-	innerSpan.style.color = color;
-	color = getComputedStyle(innerSpan).color;
-
-	if (color == "rgb(0, 0, 0)") {
-		// Maybe it's really black, maybe it's invalid.
-		outerSpan.color = "white";
-		color = getComputedStyle(innerSpan).color;
-		if (color != "rgb(0, 0, 0)") {
-			return null;
-		}
-	}
-
-	document.body.removeChild(outerSpan);
-
-	if (/^rgba\([0-9]+, [0-9]+, [0-9]+, 1\)$/.test(color)) {
-		// IE10PP2 seems to do this sometimes.
-		color = color.replace("rgba", "rgb").replace(", 1)", ")");
-	}
-	// I rely on the fact that browsers generally provide consistent syntax for
-	// getComputedStyle(), although it's not standardized.  In particular, they
-	// seem to clamp the components to integers between 0 and 255, and use
-	// consistent spacing, and always return rgb() syntax.  (Firefox 7.0a2
-	// sometimes returns "transparent", but we need to return null then
-	// anyway.)
+	color = normalizeColor(color);
 	var matches = /^rgb\(([0-9]+), ([0-9]+), ([0-9]+)\)$/.exec(color);
 	if (matches) {
 		return "#"
@@ -1838,6 +1780,66 @@ function isSimpleModifiableElement(node) {
 	return false;
 }
 
+// "Two quantities are equivalent values for a command if either both are null,
+// or both are strings and they're equal and the command does not define any
+// equivalent values, or both are strings and the command defines equivalent
+// values and they match the definition."
+function areEquivalentValues(command, val1, val2) {
+	if (val1 === null && val2 === null) {
+		return true;
+	}
+
+	if (typeof val1 == "string"
+	&& typeof val2 == "string"
+	&& val1 == val2
+	&& !("equivalentValues" in commands[command])) {
+		return true;
+	}
+
+	if (typeof val1 == "string"
+	&& typeof val2 == "string"
+	&& "equivalentValues" in commands[command]
+	&& commands[command].equivalentValues(val1, val2)) {
+		return true;
+	}
+
+	return false;
+}
+
+// "Two quantities are loosely equivalent values for a command if either they
+// are equivalent values for the command, or if the command is the fontSize
+// command; one of the quantities is one of "xx-small", "small", "medium",
+// "large", "x-large", "xx-large", or "xxx-large"; and the other quantity is
+// the resolved value of "font-size" on a font element whose size attribute has
+// the corresponding value set ("1" through "7" respectively)."
+function areLooselyEquivalentValues(command, val1, val2) {
+	if (areEquivalentValues(command, val1, val2)) {
+		return true;
+	}
+
+	if (command != "fontsize"
+	|| typeof val1 != "string"
+	|| typeof val2 != "string") {
+		return false;
+	}
+
+	// Static variables in JavaScript?
+	var callee = areLooselyEquivalentValues;
+	if (callee.sizeMap === undefined) {
+		callee.sizeMap = {};
+		var font = document.createElement("font");
+		document.body.appendChild(font);
+		["xx-small", "small", "medium", "large", "x-large", "xx-large",
+		"xxx-large"].forEach(function(keyword) {
+			font.size = cssSizeToLegacy(keyword);
+			callee.sizeMap[keyword] = getComputedStyle(font).fontSize;
+		});
+		document.body.removeChild(font);
+	}
+
+	return val1 === callee.sizeMap[val2]
+		|| val2 === callee.sizeMap[val1];
+}
 
 //@}
 ///// Assorted inline formatting command algorithms /////
@@ -2152,21 +2154,23 @@ function reorderModifiableDescendants(node, command, newValue) {
 	// "While candidate is a modifiable element, and candidate has exactly one
 	// child, and that child is also a modifiable element, and candidate is not
 	// a simple modifiable element or candidate's specified command value for
-	// command is not new value, set candidate to its child."
+	// command is not equivalent to new value, set candidate to its child."
 	while (isModifiableElement(candidate)
 	&& candidate.childNodes.length == 1
+	&& isModifiableElement(candidate.firstChild)
 	&& (!isSimpleModifiableElement(candidate)
-	|| !valuesEqual(command, getSpecifiedCommandValue(candidate, command), newValue))) {
+	|| !areEquivalentValues(command, getSpecifiedCommandValue(candidate, command), newValue))) {
 		candidate = candidate.firstChild;
 	}
 
 	// "If candidate is node, or is not a simple modifiable element, or its
-	// specified command value and effective command value for command are not
-	// both new value, abort these steps."
+	// specified command value is not equivalent to new value, or its effective
+	// command value is not loosely equivalent to new value, abort these
+	// steps."
 	if (candidate == node
 	|| !isSimpleModifiableElement(candidate)
-	|| !valuesEqual(command, getSpecifiedCommandValue(candidate, command), newValue)
-	|| !valuesEqual(command, getEffectiveCommandValue(candidate, command), newValue)) {
+	|| !areEquivalentValues(command, getSpecifiedCommandValue(candidate, command), newValue)
+	|| !areLooselyEquivalentValues(command, getEffectiveCommandValue(candidate, command), newValue)) {
 		return;
 	}
 
@@ -2256,12 +2260,12 @@ function restoreValues(values) {
 			pushDownValues(node, command, null);
 
 		// "Otherwise, if ancestor is an Element and its specified command
-		// value for command is different from value, or if ancestor is not an
-		// Element and value is not null, force the value of command to value
-		// on node."
+		// value for command is not equivalent to value, or if ancestor is not
+		// an Element and value is not null, force the value of command to
+		// value on node."
 		} else if ((ancestor
 		&& ancestor.nodeType == Node.ELEMENT_NODE
-		&& !valuesEqual(command, getSpecifiedCommandValue(ancestor, command), value))
+		&& !areEquivalentValues(command, getSpecifiedCommandValue(ancestor, command), value))
 		|| ((!ancestor || ancestor.nodeType != Node.ELEMENT_NODE)
 		&& value !== null)) {
 			forceValue(node, command, value);
@@ -2391,9 +2395,9 @@ function pushDownValues(node, command, newValue) {
 		return;
 	}
 
-	// "If the effective command value of command is new value on node, abort
-	// this algorithm."
-	if (valuesEqual(command, getEffectiveCommandValue(node, command), newValue)) {
+	// "If the effective command value of command is loosely equivalent to new
+	// value on node, abort this algorithm."
+	if (areLooselyEquivalentValues(command, getEffectiveCommandValue(node, command), newValue)) {
 		return;
 	}
 
@@ -2404,11 +2408,12 @@ function pushDownValues(node, command, newValue) {
 	var ancestorList = [];
 
 	// "While current ancestor is an editable Element and the effective command
-	// value of command is not new value on it, append current ancestor to
-	// ancestor list, then set current ancestor to its parent."
+	// value of command is not loosely equivalent to new value on it, append
+	// current ancestor to ancestor list, then set current ancestor to its
+	// parent."
 	while (isEditable(currentAncestor)
 	&& currentAncestor.nodeType == Node.ELEMENT_NODE
-	&& !valuesEqual(command, getEffectiveCommandValue(currentAncestor, command), newValue)) {
+	&& !areLooselyEquivalentValues(command, getEffectiveCommandValue(currentAncestor, command), newValue)) {
 		ancestorList.push(currentAncestor);
 		currentAncestor = currentAncestor.parentNode;
 	}
@@ -2428,11 +2433,11 @@ function pushDownValues(node, command, newValue) {
 		return;
 	}
 
-	// "If the effective command value of command is not new value on the
-	// parent of the last member of ancestor list, and new value is not null,
-	// abort this algorithm."
+	// "If the effective command value for the parent of the last member of
+	// ancestor list is not loosely equivalent to new value, and new value is
+	// not null, abort this algorithm."
 	if (newValue !== null
-	&& !valuesEqual(command, getEffectiveCommandValue(ancestorList[ancestorList.length - 1].parentNode, command), newValue)) {
+	&& !areLooselyEquivalentValues(command, getEffectiveCommandValue(ancestorList[ancestorList.length - 1].parentNode, command), newValue)) {
 		return;
 	}
 
@@ -2467,11 +2472,11 @@ function pushDownValues(node, command, newValue) {
 			}
 
 			// "If child is an Element whose specified command value for
-			// command is neither null nor equal to propagated value, continue
-			// with the next child."
+			// command is neither null nor equivalent to propagated value,
+			// continue with the next child."
 			if (child.nodeType == Node.ELEMENT_NODE
 			&& getSpecifiedCommandValue(child, command) !== null
-			&& !valuesEqual(command, propagatedValue, getSpecifiedCommandValue(child, command))) {
+			&& !areEquivalentValues(command, propagatedValue, getSpecifiedCommandValue(child, command))) {
 				continue;
 			}
 
@@ -2514,21 +2519,22 @@ function forceValue(node, command, newValue) {
 
 		// "Wrap the one-node list consisting of node, with sibling criteria
 		// matching a simple modifiable element whose specified command value
-		// and effective command value for command are both new value, and with
-		// new parent instructions returning null."
+		// is equivalent to new value and whose effective command value is
+		// loosely equivalent to new value, and with new parent instructions
+		// returning null."
 		wrap([node],
 			function(node) {
 				return isSimpleModifiableElement(node)
-					&& valuesEqual(command, getSpecifiedCommandValue(node, command), newValue)
-					&& valuesEqual(command, getEffectiveCommandValue(node, command), newValue);
+					&& areEquivalentValues(command, getSpecifiedCommandValue(node, command), newValue)
+					&& areLooselyEquivalentValues(command, getEffectiveCommandValue(node, command), newValue);
 			},
 			function() { return null }
 		);
 	}
 
-	// "If the effective command value of command is new value on node, abort
-	// this algorithm."
-	if (valuesEqual(command, getEffectiveCommandValue(node, command), newValue)) {
+	// "If the effective command value of command is loosely equivalent to new
+	// value on node, abort this algorithm."
+	if (areLooselyEquivalentValues(command, getEffectiveCommandValue(node, command), newValue)) {
 		return;
 	}
 
@@ -2536,14 +2542,14 @@ function forceValue(node, command, newValue) {
 	if (!isAllowedChild(node, "span")) {
 		// "Let children be all children of node, omitting any that are
 		// Elements whose specified command value for command is neither null
-		// nor equal to new value."
+		// nor equivalent to new value."
 		var children = [];
 		for (var i = 0; i < node.childNodes.length; i++) {
 			if (node.childNodes[i].nodeType == Node.ELEMENT_NODE) {
 				var specifiedValue = getSpecifiedCommandValue(node.childNodes[i], command);
 
 				if (specifiedValue !== null
-				&& !valuesEqual(command, newValue, specifiedValue)) {
+				&& !areEquivalentValues(command, newValue, specifiedValue)) {
 					continue;
 				}
 			}
@@ -2560,9 +2566,9 @@ function forceValue(node, command, newValue) {
 		return;
 	}
 
-	// "If the effective command value of command is new value on node, abort
-	// this algorithm."
-	if (valuesEqual(command, getEffectiveCommandValue(node, command), newValue)) {
+	// "If the effective command value of command is loosely equivalent to new
+	// value on node, abort this algorithm."
+	if (areLooselyEquivalentValues(command, getEffectiveCommandValue(node, command), newValue)) {
 		return;
 	}
 
@@ -2658,15 +2664,7 @@ function forceValue(node, command, newValue) {
 	&& ["xx-small", "small", "medium", "large", "x-large", "xx-large", "xxx-large"].indexOf(newValue) != -1
 	&& (!cssStylingFlag || newValue == "xxx-large")) {
 		newParent = node.ownerDocument.createElement("font");
-		newParent.size = {
-			"xx-small": 1,
-			"small": 2,
-			"medium": 3,
-			"large": 4,
-			"x-large": 5,
-			"xx-large": 6,
-			"xxx-large": 7
-		}[newValue];
+		newParent.size = cssSizeToLegacy(newValue);
 	}
 
 	// "If command is "subscript" or "superscript" and new value is "sub", let
@@ -2694,13 +2692,13 @@ function forceValue(node, command, newValue) {
 	// "Insert new parent in node's parent before node."
 	node.parentNode.insertBefore(newParent, node);
 
-	// "If the effective command value of command for new parent is not new
-	// value, and the relevant CSS property for command is not null, set that
-	// CSS property of new parent to new value (if the new value would be
-	// valid)."
+	// "If the effective command value of command for new parent is not loosely
+	// equivalent to new value, and the relevant CSS property for command is
+	// not null, set that CSS property of new parent to new value (if the new
+	// value would be valid)."
 	var property = commands[command].relevantCssProperty;
 	if (property !== null
-	&& !valuesEqual(command, getEffectiveCommandValue(newParent, command), newValue)) {
+	&& !areLooselyEquivalentValues(command, getEffectiveCommandValue(newParent, command), newValue)) {
 		newParent.style[property] = newValue;
 	}
 
@@ -2728,9 +2726,9 @@ function forceValue(node, command, newValue) {
 	movePreservingRanges(node, newParent, newParent.childNodes.length);
 
 	// "If node is an Element and the effective command value of command for
-	// node is not new value:"
+	// node is not loosely equivalent to new value:"
 	if (node.nodeType == Node.ELEMENT_NODE
-	&& !valuesEqual(command, getEffectiveCommandValue(node, command), newValue)) {
+	&& !areEquivalentValues(command, getEffectiveCommandValue(node, command), newValue)) {
 		// "Insert node into the parent of new parent before new parent,
 		// preserving ranges."
 		movePreservingRanges(node, newParent.parentNode, getNodeIndex(newParent));
@@ -2740,14 +2738,14 @@ function forceValue(node, command, newValue) {
 
 		// "Let children be all children of node, omitting any that are
 		// Elements whose specified command value for command is neither null
-		// nor equal to new value."
+		// nor equivalent to new value."
 		var children = [];
 		for (var i = 0; i < node.childNodes.length; i++) {
 			if (node.childNodes[i].nodeType == Node.ELEMENT_NODE) {
 				var specifiedValue = getSpecifiedCommandValue(node.childNodes[i], command);
 
 				if (specifiedValue !== null
-				&& !valuesEqual(command, newValue, specifiedValue)) {
+				&& !areEquivalentValues(command, newValue, specifiedValue)) {
 					continue;
 				}
 			}
@@ -2795,19 +2793,6 @@ function setSelectionValue(command, newValue) {
 		// "If new value is null, unset the value override (if any)."
 		if (newValue === null) {
 			unsetValueOverride(command);
-
-		// "Otherwise, if command is "fontSize", set the value override to the
-		// legacy font size for the result of converting new value to pixels."
-		} else if (command == "fontsize") {
-			var font = document.createElement("font");
-			document.body.appendChild(font);
-			if (newValue == "xxx-large") {
-				font.size = 7;
-			} else {
-				font.style.fontSize = newValue;
-			}
-			setValueOverride(command, getLegacyFontSize(parseInt(getComputedStyle(font).fontSize)));
-			document.body.removeChild(font);
 
 		// "Otherwise, if command has a value specified, set the value override
 		// to new value."
@@ -2908,7 +2893,13 @@ commands.backcolor = {
 
 		// "Set the selection's value to value."
 		setSelectionValue("backcolor", value);
-	}, standardInlineValueCommand: true, relevantCssProperty: "backgroundColor"
+	}, standardInlineValueCommand: true, relevantCssProperty: "backgroundColor",
+	equivalentValues: function(val1, val2) {
+		// "Either both strings are valid CSS colors and have the same red,
+		// green, blue, and alpha components, or neither string is a valid CSS
+		// color."
+		return normalizeColor(val1) === normalizeColor(val2);
+	},
 };
 
 //@}
@@ -2924,7 +2915,16 @@ commands.bold = {
 			setSelectionValue("bold", "bold");
 		}
 	}, inlineCommandActivatedValues: ["bold", "600", "700", "800", "900"],
-	relevantCssProperty: "fontWeight"
+	relevantCssProperty: "fontWeight",
+	equivalentValues: function(val1, val2) {
+		// "Either the two strings are equal, or one is "bold" and the other is
+		// "700", or one is "normal" and the other is "400"."
+		return val1 == val2
+			|| (val1 == "bold" && val2 == "700")
+			|| (val1 == "700" && val2 == "bold")
+			|| (val1 == "normal" && val2 == "400")
+			|| (val1 == "400" && val2 == "normal");
+	},
 };
 
 //@}
@@ -3156,7 +3156,13 @@ commands.forecolor = {
 
 		// "Set the selection's value to value."
 		setSelectionValue("forecolor", value);
-	}, standardInlineValueCommand: true, relevantCssProperty: "color"
+	}, standardInlineValueCommand: true, relevantCssProperty: "color",
+	equivalentValues: function(val1, val2) {
+		// "Either both strings are valid CSS colors and have the same red,
+		// green, blue, and alpha components, or neither string is a valid CSS
+		// color."
+		return normalizeColor(val1) === normalizeColor(val2);
+	},
 };
 
 //@}
@@ -3195,7 +3201,13 @@ commands.hilitecolor = {
 		}).filter(function(value, i, arr) {
 			return arr.slice(0, i).indexOf(value) == -1;
 		}).length >= 2;
-	}, standardInlineValueCommand: true, relevantCssProperty: "backgroundColor"
+	}, standardInlineValueCommand: true, relevantCssProperty: "backgroundColor",
+	equivalentValues: function(val1, val2) {
+		// "Either both strings are valid CSS colors and have the same red,
+		// green, blue, and alpha components, or neither string is a valid CSS
+		// color."
+		return normalizeColor(val1) === normalizeColor(val2);
+	},
 };
 
 //@}
@@ -3993,10 +4005,10 @@ function recordCurrentOverrides() {
 		}
 	});
 
-	// "For each command in the list "fontName", "fontSize", "foreColor",
-	// "hiliteColor", in order: if there is a value override for command, add
-	// (command, command's value override) to overrides."
-	["fontname", "fontsize", "forecolor", "hilitecolor"].forEach(function(command) {
+	// "For each command in the list "fontName", "foreColor", "hiliteColor", in
+	// order: if there is a value override for command, add (command, command's
+	// value override) to overrides."
+	["fontname", "forecolor", "hilitecolor"].forEach(function(command) {
 		if (getValueOverride(command) !== undefined) {
 			overrides.push([command, getValueOverride(command)]);
 		}
@@ -4039,22 +4051,29 @@ function recordCurrentStatesAndValues() {
 		}
 	});
 
-	// "For each command in the list "fontName", "fontSize", "foreColor",
-	// "hiliteColor", in order: add (command, command's value) to overrides."
+	// "For each command in the list "fontName", "foreColor", "hiliteColor", in
+	// order: add (command, command's value) to overrides."
 	["fontname", "fontsize", "forecolor", "hilitecolor"].forEach(function(command) {
 		overrides.push([command, commands[command].value()]);
 	});
+
+	// "Add ("fontSize", node's effective command value for "fontSize") to
+	// overrides."
+	overrides.push("fontsize", getEffectiveCommandValue(node, "fontsize"));
 
 	// "Return overrides."
 	return overrides;
 }
 
 function restoreStatesAndValues(overrides) {
-	// "If there is some editable Text node effectively contained in the active
-	// range, then for each (command, override) pair in overrides, in order:"
-	if (getAllEffectivelyContainedNodes(getActiveRange()).some(function(node) {
-		return isEditable(node) && node.nodeType == Node.TEXT_NODE
-	})) {
+	// "Let node be the first editable Text node effectively contained in the
+	// active range, or null if there is none."
+	var node = getAllEffectivelyContainedNodes(getActiveRange())
+		.filter(function(node) { return isEditable(node) && node.nodeType == Node.TEXT_NODE })[0];
+
+	// "If node is not null, then for each (command, override) pair in
+	// overrides, in order:"
+	if (node) {
 		for (var i = 0; i < overrides.length; i++) {
 			var command = overrides[i][0];
 			var override = overrides[i][1];
@@ -4067,12 +4086,33 @@ function restoreStatesAndValues(overrides) {
 				myExecCommand(command);
 			}
 
-			// "If override is a string, and queryCommandValue(command) returns
-			// something different from override, call execCommand(command,
-			// false, override)."
+			// "If override is a string, and command is not "fontSize", and
+			// queryCommandValue(command) returns something not equivalent to
+			// override, call execCommand(command, false, override)."
 			if (typeof override == "string"
-			&& !valuesEqual(command, myQueryCommandValue(command), override)) {
+			&& command != "fontsize"
+			&& !areEquivalentValues(command, myQueryCommandValue(command), override)) {
 				myExecCommand(command, false, override);
+			}
+
+			// "If override is a string; and command is "fontSize"; and either
+			// there is a value override for "fontSize" that is not equal to
+			// override, or there is no value override for "fontSize" and
+			// node's effective command value for "fontSize" is not loosely
+			// equivalent to override: call execCommand("fontSize", false,
+			// override)."
+			if (typeof override == "string"
+			&& command == "fontsize"
+			&& (
+				(
+					getValueOverride("fontsize") !== undefined
+					&& getValueOverride("fontsize") !== override
+				) || (
+					getValueOverride("fontsize") === undefined
+					&& !areLooselyEquivalentValues(command, getEffectiveCommandValue(node, "fontsize"), override)
+				)
+			)) {
+				myExecCommand("fontsize", false, override);
 			}
 		}
 

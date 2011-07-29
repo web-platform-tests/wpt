@@ -165,9 +165,7 @@ planning to fix just yet:
 <ul>
   <li>Need to make CSS terminology more precise, about setting/unsetting CSS
   properties.  The intent is to modify the style attribute, CSSOM-style.
-  Likewise, CSS value comparisons need to be done after serializing both
-  values, so "bold" == "700" and "red" == "#f00" and so on.  Suggestions
-  appreciated on how I should spec this.
+  Suggestions appreciated on how I should spec this.
 
   <li>I use [[resval]] instead of computed or used or anything like that, just
   because that's what my test implementation uses (via getComputedStyle).  This
@@ -1335,6 +1333,29 @@ which at least one of the following holds:
 <p class=note>Conceptually, a simple modifiable element is a modifiable element
 which specifies a value for at most one command.
 
+<p>Two quantities are <dfn>equivalent values</dfn> for a <span>command</span>
+if either both are null, or both are strings and they're equal and the
+<span>command</span> does not define any <span>equivalent values</span>, or
+both are strings and the <span>command</span> defines <span>equivalent
+values</span> and they match the definition.
+
+<p>Two quantities are <dfn>loosely equivalent values</dfn> for a
+<span>command</span> if either they are <span>equivalent values</span> for the
+<span>command</span>, or if the <span>command</span> is <span>the <code
+title>fontSize</code> command</span>; one of the quantities is one of
+"xx-small", "small", "medium", "large", "x-large", "xx-large", or "xxx-large";
+and the other quantity is the [[resval]] of "font-size" on a [[font]] element
+whose [[fontsize]] attribute has the corresponding value set ("1" through "7"
+respectively).
+
+<p class=note>Loose equivalence needs to be used when comparing effective
+command values to other values, while regular equivalence is used in other
+cases.  The effective command value for fontSize is converted to pixels, so
+comparing it to a specified value literally would produce false negatives.  But
+a <em>specified</em> value in pixels is actually different from a
+<em>specified</em> value like "small" or "x-large", because there is no precise
+mapping from such keywords to pixels.
+
 <p>If a <span>command</span> has <dfn>inline command activated values</dfn>
 defined but nothing else defines when it is <span>indeterminate</span>, it is
 <span>indeterminate</span> if among <span>editable</span> [[text]] nodes
@@ -1577,13 +1598,16 @@ value</var>:
   <var>candidate</var> has exactly one [[child]], and that [[child]] is also a
   <span>modifiable element</span>, and <var>candidate</var> is not a
   <span>simple modifiable element</span> or <var>candidate</var>'s
-  <span>specified command value</span> for <var>command</var> is not <var>new
-  value</var>, set <var>candidate</var> to its [[child]].
+  <span>specified command value</span> for <var>command</var> is not <span
+  title="equivalent values">equivalent</span> to <var>new value</var>, set
+  <var>candidate</var> to its [[child]].
 
   <li>If <var>candidate</var> is <var>node</var>, or is not a <span>simple
-  modifiable element</span>, or its <span>specified command value</span> and
-  <span>effective command value</span> for <var>command</var> are not both
-  <var>new value</var>, abort these steps.
+  modifiable element</span>, or its <span>specified command value</span> is not
+  <span title="equivalent values">equivalent</span> to <var>new value</var>, or
+  its <span>effective command value</span> is not <span title="loosely
+  equivalent values">loosely equivalent</span> to <var>new value</var>, abort
+  these steps.
 
   <li>While <var>candidate</var> has [[children]], insert the first [[child]]
   of <var>candidate</var> into <var>candidate</var>'s [[parent]] immediately
@@ -1670,10 +1694,11 @@ returned by the <span>record the values</span> algorithm:
     with <var>new value</var> null.
 
     <li>Otherwise, if <var>ancestor</var> is an [[element]] and its
-    <span>specified command value</span> for <var>command</var> is different
-    from <var>value</var>, or if <var>ancestor</var> is not an [[element]] and
-    <var>value</var> is not null, <span>force the value</span> of
-    <var>command</var> to <var>value</var> on <var>node</var>.
+    <span>specified command value</span> for <var>command</var> is not <span
+    title="equivalent values">equivalent</span> to <var>value</var>, or if
+    <var>ancestor</var> is not an [[element]] and <var>value</var> is not null,
+    <span>force the value</span> of <var>command</var> to <var>value</var> on
+    <var>node</var>.
   </ol>
 </ol>
 
@@ -1799,7 +1824,8 @@ with a [[style]] attribute).
   algorithm. <!-- E.g., a text node child of a document fragment. -->
 
   <li>If the <span>effective command value</span> of <var>command</var> is
-  <var>new value</var> on <var>node</var>, abort this algorithm.
+  [[looselyequivalent]] to <var>new value</var> on <var>node</var>, abort this
+  algorithm.
 
   <li>Let <var>current ancestor</var> be <var>node</var>'s [[parent]].
 
@@ -1807,9 +1833,9 @@ with a [[style]] attribute).
 
   <li>While <var>current ancestor</var> is an <span>editable</span> [[element]]
   and the <span>effective command value</span> of <var>command</var> is not
-  <var>new value</var> on it, append <var>current ancestor</var> to
-  <var>ancestor list</var>, then set <var>current ancestor</var> to its
-  [[parent]].
+  [[looselyequivalent]] to <var>new value</var> on it, append <var>current
+  ancestor</var> to <var>ancestor list</var>, then set <var>current
+  ancestor</var> to its [[parent]].
 
   <li>If <var>ancestor list</var> is empty, abort this algorithm.
 
@@ -1853,8 +1879,9 @@ with a [[style]] attribute).
   we're styling something that includes the first or last child).
   -->
   <li>If the <span>effective command value</span> of <var>command</var> is not
-  <var>new value</var> on the [[parent]] of the last member of <var>ancestor
-  list</var>, and <var>new value</var> is not null, abort this algorithm.
+  [[looselyequivalent]] to <var>new value</var> on the [[parent]] of the last
+  member of <var>ancestor list</var>, and <var>new value</var> is not null,
+  abort this algorithm.
 
   <li>While <var>ancestor list</var> is not empty:
 
@@ -1882,8 +1909,9 @@ with a [[style]] attribute).
       <var>child</var>.
 
       <li>If <var>child</var> is an [[element]] whose <span>specified command
-      value</span> for <var>command</var> is neither null nor equal to
-      <var>propagated value</var>, continue with the next <var>child</var>.
+      value</span> for <var>command</var> is neither null nor <span
+      title="equivalent values">equivalent</span> to <var>propagated
+      value</var>, continue with the next <var>child</var>.
       <!--
       TODO: This will be incorrect for relative font sizes.  If the font size
       on the parent was removed and the font size on the child is in ems or
@@ -1943,24 +1971,25 @@ different value.
 
     <li><span>Wrap</span> the one-[[node]] list consisting of <var>node</var>,
     with <span>sibling criteria</span> matching a <span>simple modifiable
-    element</span> whose <span>specified command value</span> and
-    <span>effective command value</span> for <var>command</var> are both
-    <var>new value</var>, and with <span>new parent instructions</span>
-    returning null.
+    element</span> whose <span>specified command value</span> is [[equivalent]]
+    to <var>new value</var> and whose <span>effective command value</span> is
+    [[looselyequivalent]] to <var>new value</var>, and with <span>new parent
+    instructions</span> returning null.
     <!-- The new parent instructions are too complicated to reasonably feed
     into the wrap algorithm. -->
   </ol>
 
   <li>If the <span>effective command value</span> of <var>command</var> is
-  <var>new value</var> on <var>node</var>, abort this algorithm.
+  [[looselyequivalent]] to <var>new value</var> on <var>node</var>, abort this
+  algorithm.
 
   <li>If <var>node</var> is not an <span>allowed child</span> of "span":
 
   <ol>
     <li>Let <var>children</var> be all [[children]] of <var>node</var>,
     omitting any that are [[element]]s whose <span>specified command
-    value</span> for <var>command</var> is neither null nor equal to <var>new
-    value</var>.
+    value</span> for <var>command</var> is neither null nor <span
+    title="equivalent values">equivalent</span> to <var>new value</var>.
 
     <li><span>Force the value</span> of each [[node]] in <var>children</var>,
     with <var>command</var> and <var>new value</var> as in this invocation of
@@ -1975,7 +2004,8 @@ different value.
   </ol>
 
   <li>If the <span>effective command value</span> of <var>command</var> is
-  <var>new value</var> on <var>node</var>, abort this algorithm.
+  [[looselyequivalent]] to <var>new value</var> on <var>node</var>, abort this
+  algorithm.
 
   <li>Let <var>new parent</var> be null.
 
@@ -2124,10 +2154,13 @@ different value.
   -->
 
   <li>If the <span>effective command value</span> of <var>command</var> for
-  <var>new parent</var> is not <var>new value</var>, and the <span>relevant CSS
-  property</span> for <var>command</var> is not null, set that CSS property of
-  <var>new parent</var> to <var>new value</var> (if the new value would be
-  valid).
+  <var>new parent</var> is not [[looselyequivalent]] to <var>new value</var>,
+  and the <span>relevant CSS property</span> for <var>command</var> is not
+  null, set that CSS property of <var>new parent</var> to <var>new value</var>
+  (if the new value would be valid).
+
+  <p class=XXX>Need to be explicit.  I think "if the new value would be valid"
+  means "if the new value isn't xxx-large for font-size", need to double-check.
 
   <li>If <var>command</var> is "strikethrough", and <var>new value</var> is
   "line-through", and the <span>effective command value</span> of
@@ -2143,8 +2176,8 @@ different value.
   <span>preserving ranges</span>.
 
   <li>If <var>node</var> is an [[element]] and the <span>effective command
-  value</span> of <var>command</var> for <var>node</var> is not <var>new
-  value</var>:
+  value</span> of <var>command</var> for <var>node</var> is not
+  [[looselyequivalent]] to <var>new value</var>:
 
   <ol>
     <li>Insert <var>node</var> into the [[parent]] of <var>new parent</var>
@@ -2154,8 +2187,8 @@ different value.
 
     <li>Let <var>children</var> be all [[children]] of <var>node</var>,
     omitting any that are [[element]]s whose <span>specified command
-    value</span> for <var>command</var> is neither null nor equal to <var>new
-    value</var>.
+    value</span> for <var>command</var> is neither null nor <span
+    title="equivalent values">equivalent</span> to <var>new value</var>.
 
     <li><span>Force the value</span> of each [[node]] in <var>children</var>,
     with <var>command</var> and <var>new value</var> as in this invocation of
@@ -2259,10 +2292,6 @@ as desired.
 
     <li>If <var>new value</var> is null, unset the <span>value override</span>
     (if any).
-
-    <li>Otherwise, if <var>command</var> is "fontSize", set the <span>value
-    override</span> to the <span>legacy font size for</span> the result of
-    converting <var>new value</var> to pixels.
 
     <li>Otherwise, if <var>command</var> has a <span>value</span> specified,
     set the <span>value override</span> to <var>new value</var>.
@@ -2399,6 +2428,10 @@ identically.
 
 <p><span>Relevant CSS property</span>: "background-color"
 
+<p><span>Equivalent values</span>: Either both strings are valid CSS colors and
+have the same red, green, blue, and alpha components, or neither string is a
+valid CSS color.
+
 <!-- @} -->
 <h3><dfn>The <code title>bold</code> command</dfn></h3>
 <!-- @{ -->
@@ -2433,6 +2466,9 @@ I'll go with 600 as the cutoff.
 -->
 
 <p><span>Relevant CSS property</span>: "font-weight"
+
+<p><span>Equivalent values</span>: Either the two strings are equal, or one is
+"bold" and the other is "700", or one is "normal" and the other is "400".
 
 <!-- @} -->
 <h3><dfn>The <code title>createLink</code> command</dfn></h3>
@@ -2811,6 +2847,10 @@ and also drops the transparent part of the color if there is any.
 
 <p><span>Relevant CSS property</span>: "color"
 
+<p><span>Equivalent values</span>: Either both strings are valid CSS colors and
+have the same red, green, blue, and alpha components, or neither string is a
+valid CSS color.
+
 <!-- @} -->
 <h3><dfn>The <code title>hiliteColor</code> command</dfn></h3>
 <!-- @{ -->
@@ -2853,6 +2893,10 @@ identically.
 both always return false.  However, it makes sense. -->
 
 <p><span>Relevant CSS property</span>: "background-color"
+
+<p><span>Equivalent values</span>: Either both strings are valid CSS colors and
+have the same red, green, blue, and alpha components, or neither string is a
+valid CSS color.
 
 <!-- @} -->
 <h3><dfn>The <code title>italic</code> command</dfn></h3>
@@ -3628,9 +3672,13 @@ algorithm returns true:
   the contents".
   -->
 
-  <li>For each <var>command</var> in the list "fontName", "fontSize",
-  "foreColor", "hiliteColor", in order: add (<var>command</var>,
-  <var>command</var>'s <span>value</span>) to <var>overrides</var>.
+  <li>For each <var>command</var> in the list "fontName", "foreColor",
+  "hiliteColor", in order: add (<var>command</var>, <var>command</var>'s
+  <span>value</span>) to <var>overrides</var>.
+
+  <!-- Special case for fontSize, because its values are weird. -->
+  <li>Add ("fontSize", <var>node</var>'s <span>effective command value</span>
+  for "fontSize") to <var>overrides</var>.
 
   <li>Return <var>overrides</var>.
 </ol>
@@ -3640,10 +3688,12 @@ algorithm returns true:
 <span>record current states and values</span> algorithm:
 
 <ol>
-  <li>If there is some <span>editable</span> [[text]] node <span>effectively
-  contained</span> in the <span>active range</span>, then for each
-  (<var>command</var>, <var>override</var>) pair in <var>overrides</var>, in
-  order:
+  <li>Let <var>node</var> be the first <span>editable</span> [[text]] node
+  <span>effectively contained</span> in the <span>active range</span>, or null
+  if there is none.
+
+  <li>If <var>node</var> is not null, then for each (<var>command</var>,
+  <var>override</var>) pair in <var>overrides</var>, in order:
 
   <ol>
     <li>If <var>override</var> is a boolean, and <code
@@ -3651,11 +3701,21 @@ algorithm returns true:
     returns something different from <var>override</var>, call <code
     title=execCommand()>execCommand(<var>command</var>)</code>.
 
-    <li>If <var>override</var> is a string, and <code
+    <li>If <var>override</var> is a string, and <var>command</var> is not
+    "fontSize", and <code
     title=queryCommandValue()>queryCommandValue(<var>command</var>)</code>
-    returns something different from <var>override</var>, call <code
+    returns something not <span title="equivalent values">equivalent</span> to
+    <var>override</var>, call <code
     title=execCommand()>execCommand(<var>command</var>, false,
     <var>override</var>)</code>.
+
+    <li>If <var>override</var> is a string; and <var>command</var> is
+    "fontSize"; and either there is a <span>value override</span> for
+    "fontSize" that is not equal to <var>override</var>, or there is no
+    <span>value override</span> for "fontSize" and <var>node</var>'s
+    <span>effective command value</span> for "fontSize" is not
+    [[looselyequivalent]] to <var>override</var>: call
+    [[execcommand|"fontSize", false, <var>override</var>]].
   </ol>
 
   <li>Otherwise, for each (<var>command</var>, <var>override</var>) pair in

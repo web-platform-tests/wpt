@@ -446,6 +446,8 @@ var tests = {
 		// Styled stuff with collapsed selection
 		'<p style=color:blue>foo<p>[]bar',
 		'<p style=color:blue>foo<p style=color:brown>[]bar',
+		'<p style=color:blue>foo<p style=color:rgba(0,0,255,1)>[]bar',
+		'<p style=color:transparent>foo<p style=color:rgba(0,0,0,0)>[]bar',
 		'<p>foo<p style=color:brown>[]bar',
 		'<p><font color=blue>foo</font><p>[]bar',
 		'<p><font color=blue>foo</font><p><font color=brown>[]bar</font>',
@@ -3755,16 +3757,7 @@ function queryOutputHelper(beforeIndeterm, beforeState, beforeValue, afterIndete
 			value = "#" + value;
 		}
 	} else if (command == "fontsize") {
-		value = normalizeFontSize(value);
-		var font = document.createElement("font");
-		document.body.appendChild(font);
-		if (value == "xxx-large") {
-			font.size = 7;
-		} else {
-			font.style.fontSize = value;
-		}
-		value = getLegacyFontSize(parseInt(getComputedStyle(font).fontSize));
-		document.body.removeChild(font);
+		afterValue = legacySizeToCss(afterValue);
 	} else if (command == "formatblock") {
 		value = value.replace(/^<(.*)>$/, "$1").toLowerCase();
 	} else if (command == "unlink") {
@@ -3795,7 +3788,7 @@ function queryOutputHelper(beforeIndeterm, beforeState, beforeValue, afterIndete
 		// And in all other cases, the value afterwards has to be the one we
 		// set.
 		afterDiv.lastChild.className =
-			valuesEqual(command, afterValue, value)
+			areEquivalentValues(command, afterValue, value)
 				? "good-result"
 				: "bad-result";
 	}

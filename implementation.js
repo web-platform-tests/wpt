@@ -587,7 +587,7 @@ function myQueryCommandEnabled(command, range) {
 	}})(command));
 }
 
-function myQueryCommandIndeterm(command) {
+function myQueryCommandIndeterm(command, range) {
 	// "All of these methods must treat their command argument ASCII
 	// case-insensitively."
 	command = command.toLowerCase();
@@ -7501,8 +7501,8 @@ commandNames.forEach(function(command) {
 	// the given values and at least one whose effective command value is
 	// not one of the given values."
 	if ("inlineCommandActivatedValues" in commands[command]
-	&& !("indeterminate" in commands[command])) {
-		commands[command].indeterminate = function() {
+	&& !("indeterm" in commands[command])) {
+		commands[command].indeterm = function() {
 			var values = getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
 				return isEditable(node)
 					&& node.nodeType == Node.TEXT_NODE;
@@ -7551,7 +7551,7 @@ commandNames.forEach(function(command) {
 	// active range, or if there is no such node, the effective command
 	// value of the active range's start node."
 	if ("standardInlineValueCommand" in commands[command]) {
-		commands[command].indeterminate = function() {
+		commands[command].indeterm = function() {
 			return getAllEffectivelyContainedNodes(getActiveRange())
 				.filter(function(node) { return isEditable(node) && node.nodeType == Node.TEXT_NODE })
 				.map(function(node) { return getEffectiveCommandValue(node, command) })

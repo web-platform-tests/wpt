@@ -3951,6 +3951,9 @@ function doSpecCell(tr, test, command) {
 				beforeIndeterm, beforeState, beforeValue,
 				afterIndeterm, afterState, afterValue,
 				command, test[test.length - 1][1]));
+			if (specCell.querySelector(".bad-result")) {
+				specCell.parentNode.className = "alert";
+			}
 		}
 	} catch (e) {
 		specCell.firstChild.contentEditable = "inherit";

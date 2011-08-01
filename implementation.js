@@ -5275,18 +5275,33 @@ function toggleLists(tagName) {
 
 	// "Let items be a list of all lis that are ancestor containers of the
 	// range's start and/or end node."
-	var items = getDescendants(document).filter(function(node) {
-		return isHtmlElement(node, "li")
-			&& (isAncestor(node, range.startContainer)
-			|| node == range.startContainer
-			|| isAncestor(node, range.endContainer)
-			|| node == range.endContainer);
-	});
+	//
+	// It's annoying to get this in tree order using functional stuff without
+	// doing getDescendants(document), which is slow, so I do it imperatively.
+	var items = [];
+	(function(){
+		for (
+			var ancestorContainer = range.endContainer;
+			ancestorContainer != range.commonAncestorContainer;
+			ancestorContainer = ancestorContainer.parentNode
+		) {
+			if (isHtmlElement(ancestorContainer, "li")) {
+				items.unshift(ancestorContainer);
+			}
+		}
+		for (
+			var ancestorContainer = range.startContainer;
+			ancestorContainer;
+			ancestorContainer = ancestorContainer.parentNode
+		) {
+			if (isHtmlElement(ancestorContainer, "li")) {
+				items.unshift(ancestorContainer);
+			}
+		}
+	})();
 
 	// "For each item in items, normalize sublists of item."
-	for (var i = 0; i < items.length; i++) {
-		normalizeSublists(items[i]);
-	}
+	items.forEach(normalizeSublists);
 
 	// "Block-extend the range, and let new range be the result."
 	var newRange = blockExtend(range);
@@ -7371,19 +7386,35 @@ commands.justifyright = {
 commands.outdent = {
 	action: function() {
 		// "Let items be a list of all lis that are ancestor containers of the
-		// active range's start and/or end node."
-		var items = getDescendants(document).filter(function(node) {
-			return isHtmlElement(node, "li")
-				&& (isAncestor(node, getActiveRange().startContainer)
-				|| node == getActiveRange().startContainer
-				|| isAncestor(node, getActiveRange().endContainer)
-				|| node == getActiveRange().endContainer);
-		});
+		// range's start and/or end node."
+		//
+		// It's annoying to get this in tree order using functional stuff
+		// without doing getDescendants(document), which is slow, so I do it
+		// imperatively.
+		var items = [];
+		(function(){
+			for (
+				var ancestorContainer = getActiveRange().endContainer;
+				ancestorContainer != getActiveRange().commonAncestorContainer;
+				ancestorContainer = ancestorContainer.parentNode
+			) {
+				if (isHtmlElement(ancestorContainer, "li")) {
+					items.unshift(ancestorContainer);
+				}
+			}
+			for (
+				var ancestorContainer = getActiveRange().startContainer;
+				ancestorContainer;
+				ancestorContainer = ancestorContainer.parentNode
+			) {
+				if (isHtmlElement(ancestorContainer, "li")) {
+					items.unshift(ancestorContainer);
+				}
+			}
+		})();
 
 		// "For each item in items, normalize sublists of item."
-		for (var i = 0; i < items.length; i++) {
-			normalizeSublists(items[i]);
-		}
+		items.forEach(normalizeSublists);
 
 		// "Block-extend the active range, and let new range be the result."
 		var newRange = blockExtend(getActiveRange());

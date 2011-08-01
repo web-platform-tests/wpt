@@ -656,6 +656,14 @@ function myQueryCommandValue(command, range) {
 			return "";
 		}
 
+		// "If command is "fontSize" and its value override is set, convert the
+		// value override to an integer number of pixels and return the legacy
+		// font size for the result."
+		if (command == "fontsize"
+		&& getValueOverride("fontsize") !== undefined) {
+			return getLegacyFontSize(getValueOverride("fontsize"));
+		}
+
 		// "If the value override for command is set, return it."
 		if (typeof getValueOverride(command) != "undefined") {
 			return getValueOverride(command);
@@ -3088,14 +3096,35 @@ commands.fontsize = {
 		if (node === undefined) {
 			node = getActiveRange().startContainer;
 		}
-		var pixelSize = parseInt(getEffectiveCommandValue(node, "fontsize"));
+		var pixelSize = getEffectiveCommandValue(node, "fontsize");
 
 		// "Return the legacy font size for pixel size."
 		return getLegacyFontSize(pixelSize);
 	}, relevantCssProperty: "fontSize"
 };
 
-function getLegacyFontSize(pixelSize) {
+function getLegacyFontSize(size) {
+	// For convenience in other places in my code, I handle all sizes, not just
+	// pixel sizes as the spec says.  This means pixel sizes have to be passed
+	// in suffixed with "px", not as plain numbers.
+	size = normalizeFontSize(size);
+
+	if (["xx-small", "x-small", "small", "medium", "large", "x-large", "xx-large", "xxx-large"].indexOf(size) == -1
+	&& !/^[0-9]+(\.[0-9]+)?(cm|mm|in|pt|pc|px)$/.test(size)) {
+		// There is no sensible legacy size for things like "2em".
+		return null;
+	}
+
+	var font = document.createElement("font");
+	document.body.appendChild(font);
+	if (size == "xxx-large") {
+		font.size = 7;
+	} else {
+		font.style.fontSize = size;
+	}
+	var pixelSize = parseInt(getComputedStyle(font).fontSize);
+	document.body.removeChild(font);
+
 	// "Let returned size be 1."
 	var returnedSize = 1;
 

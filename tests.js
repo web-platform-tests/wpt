@@ -3757,7 +3757,9 @@ function queryOutputHelper(beforeIndeterm, beforeState, beforeValue, afterIndete
 			value = "#" + value;
 		}
 	} else if (command == "fontsize") {
+		beforeValue = legacySizeToCss(beforeValue);
 		afterValue = legacySizeToCss(afterValue);
+		value = legacySizeToCss(getLegacyFontSize(value));
 	} else if (command == "formatblock") {
 		value = value.replace(/^<(.*)>$/, "$1").toLowerCase();
 	} else if (command == "unlink") {
@@ -3765,6 +3767,12 @@ function queryOutputHelper(beforeIndeterm, beforeState, beforeValue, afterIndete
 	}
 
 	if (command == "createlink" && value === "") {
+		// It should just do nothing.
+		afterDiv.lastChild.className = beforeValue === afterValue
+			? "good-result"
+			: "bad-result";
+	} else if (command == "fontsize"
+	&& value === undefined) {
 		// It should just do nothing.
 		afterDiv.lastChild.className = beforeValue === afterValue
 			? "good-result"

@@ -666,6 +666,13 @@ invoked, the user agent must run the following steps:
   seems to return the string "false", and IE9 seems to return boolean false.
   -->
 
+  <li>If <var title="">command</var> is "fontSize" and its <a href=#value-override>value override</a>
+  is set, convert the <a href=#value-override>value override</a> to an integer number of
+  pixels and return the <a href=#legacy-font-size-for>legacy font size for</a> the result.
+  <!-- Yuck.  This is incredibly messy, as are lots of other fontSize-related
+  things, but I don't want to define a whole second notion of value for the
+  sake of a single command . . . -->
+
   <li>If the <a href=#value-override>value override</a> for <var title="">command</var> is set, return
   it.
 
@@ -3685,6 +3692,12 @@ algorithm returns true:
   <!-- Special case for fontSize, because its values are weird. -->
   <li>Add ("fontSize", <var title="">node</var>'s <a href=#effective-command-value>effective command value</a>
   for "fontSize") to <var title="">overrides</var>.
+
+  <p class=XXX>This is wrong: it will convert non-pixel sizes to pixel sizes.
+  But I don't see any way to avoid it.  Hopefully it won't come up too often.
+  font-size is a real problem, because the mapping from specified value to
+  computed value is lossy and not fully defined (e.g., how many px is
+  "small"?).
 
   <li>Return <var title="">overrides</var>.
 </ol>

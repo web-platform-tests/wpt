@@ -92,9 +92,10 @@ function getAncestors(node) {
 
 function getDescendants(node) {
 	var descendants = [];
-	for (var i = 0; i < node.childNodes.length; i++) {
-		descendants.push(node.childNodes[i]);
-		descendants = descendants.concat(getDescendants(node.childNodes[i]));
+	var stop = nextNodeDescendants(node);
+	while ((node = nextNode(node))
+	&& node != stop) {
+		descendants.push(node);
 	}
 	return descendants;
 }

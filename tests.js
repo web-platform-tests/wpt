@@ -3689,8 +3689,10 @@ function queryOutputHelper(beforeIndeterm, beforeState, beforeValue, afterIndete
 	}
 	// After running the command, indeterminate must always be false, except if
 	// it's an exception, or if it's insert*list and the state was true to
-	// begin with.
-	if (/^insert(un)?orderedlist$/.test(command) && beforeState) {
+	// begin with.  And we can't help strikethrough/underline.
+	if ((/^insert(un)?orderedlist$/.test(command) && beforeState)
+	|| command == "strikethrough"
+	|| command == "underline") {
 		if (afterIndeterm !== true && afterIndeterm !== false) {
 			afterDiv.lastChild.className = "bad-result";
 		}
@@ -3732,6 +3734,15 @@ function queryOutputHelper(beforeIndeterm, beforeState, beforeValue, afterIndete
 		afterDiv.lastChild.className = afterState === true
 			? "good-result"
 			: "bad-result";
+	} else if (command == "strikethrough" || command == "underline") {
+		// The only thing we can say is the before/after states need to be
+		// either true or false.
+		if (beforeState !== true && beforeState !== false) {
+			beforeDiv.lastChild.className = "bad-result";
+		}
+		if (afterState !== true && afterState !== false) {
+			afterDiv.lastChild.className = "bad-result";
+		}
 	} else {
 		// The general rule is it must either throw an exception or flip the
 		// state.
@@ -3766,14 +3777,10 @@ function queryOutputHelper(beforeIndeterm, beforeState, beforeValue, afterIndete
 		value = null;
 	}
 
-	if (command == "createlink" && value === "") {
-		// It should just do nothing.
-		afterDiv.lastChild.className = beforeValue === afterValue
-			? "good-result"
-			: "bad-result";
-	} else if (command == "fontsize"
-	&& value === undefined) {
-		// It should just do nothing.
+	if (((command == "backcolor" || command == "forecolor" || command == "hilitecolor") && value.toLowerCase() == "currentcolor")
+	|| (command == "createlink" && value === "")
+	|| (command == "fontsize" && value === undefined)
+	|| (command == "formatblock" && formattableBlockNames.indexOf(value.replace(/^<(.*)>$/, "$1").trim()) == -1)) {
 		afterDiv.lastChild.className = beforeValue === afterValue
 			? "good-result"
 			: "bad-result";

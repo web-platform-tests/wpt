@@ -3720,8 +3720,8 @@ function getSelectionListState() {
 	}
 
 	// "If every member of node list is either an ol or the child of an ol or
-	// the child of a child of an li child of an ol, and none is a ul or an
-	// ancestor of a ul, return "ol"."
+	// the child of an li child of an ol, and none is a ul or an ancestor of a
+	// ul, return "ol"."
 	if (nodeList.every(function(node) {
 		return isHtmlElement(node, "ol")
 			|| isHtmlElement(node.parentNode, "ol")

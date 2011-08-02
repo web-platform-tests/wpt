@@ -30,6 +30,7 @@ div.note > p:first-child::before { content: 'Note: '; }
 dd .XXX p { margin: 1em 0 }
 ol li { margin: 1em 0 }
 li li, li li > p { margin: 0 }
+li p + * > li:first-child { margin-top: -1em }
 table { margin: 1em 0 }
 /* Overwrite the underline so it's orange instead of blue, thus looks less
  * silly */
@@ -3441,37 +3442,44 @@ element</a> that has no attributes other than one or more of
   attribute.
 </ul>
 
+<p class=comments>listing and xmp are included because otherwise
+insertParagraph inside them won't work, since paragraphs aren't an allowed
+child.
+
 <p>A <dfn id=non-list-single-line-container>non-list single-line container</dfn> is an <a href=#html-element>HTML element</a>
 with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "address", "div", "h1", "h2", "h3", "h4", "h5", "h6",
 "listing", "p", "pre", or "xmp".
-<!-- listing and xmp are included because otherwise insertParagraph inside them
-won't work, since paragraphs aren't an allowed child. -->
 
 <p>A <dfn id=single-line-container>single-line container</dfn> is either a <a href=#non-list-single-line-container>non-list single-line
 container</a>, or an <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "li",
 "dt", or "dd".
 
+<p class=comments>TODO: Make this configurable.
+
 <p>The <dfn id=default-single-line-container-name>default single-line container name</dfn> is "p".
-<!-- TODO: Make this configurable. -->
 
 
 <h3 id=assorted-block-formatting-command-algorithms><span class=secno>8.2 </span>Assorted block formatting command algorithms</h3>
 
+<p class=comments>TODO: When breaking a non-inline element out of an inline
+element, like p in b or whatever, it would make sense to re-wrap the contents
+in the inline tag.
+
 <p>To <dfn id=fix-disallowed-ancestors>fix disallowed ancestors</dfn> of <var title="">node</var>:
-<!-- TODO: When breaking a non-inline element out of an inline element, like p
-in b or whatever, it would make sense to re-wrap the contents in the inline
-tag. -->
+
 
 <ol>
   <li>If <var title="">node</var> is not <a href=#editable>editable</a>, abort these steps.
 
-  <li>If <var title="">node</var> is not an <a href=#allowed-child>allowed child</a> of any of its
+  <li>
+  <p class=comments>The requirement about default containers is to prevent an
+  infinite loop.  This case is really intended to handle stuff like list items
+  or table cells that wander outside their proper place.
+
+  <p>If <var title="">node</var> is not an <a href=#allowed-child>allowed child</a> of any of its
   <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestors</a> <a href=#in-the-same-editing-host>in the same editing host</a>, and is not an <a href=#html-element>HTML
   element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> equal to the <a href=#default-single-line-container-name>default single-line
   container name</a>:
-  <!-- The requirement about default containers is to prevent an infinite loop.
-  This case is really intended to handle stuff like list items or table cells
-  that wander outside their proper place. -->
 
   <ol>
     <li>If <var title="">node</var> is a <code class=external data-anolis-spec=html title="the dd element"><a href=http://www.whatwg.org/html/#the-dd-element>dd</a></code> or <code class=external data-anolis-spec=html title="the dt element"><a href=http://www.whatwg.org/html/#the-dt-element>dt</a></code>, <a href=#wrap>wrap</a> the
@@ -3486,9 +3494,11 @@ tag. -->
     <li><a href=#set-the-tag-name>Set the tag name</a> of <var title="">node</var> to the <a href=#default-single-line-container-name>default
     single-line container name</a>, and let <var title="">node</var> be the result.
 
-    <li><a href=#fix-disallowed-ancestors>Fix disallowed ancestors</a> of <var title="">node</var>.
-    <!-- Because maybe it somehow wound up as the child of a p, like via
-    insertHTML. -->
+    <li>
+    <p class=comments>Because maybe it somehow wound up as the child of a p,
+    like via insertHTML.
+
+    <p><a href=#fix-disallowed-ancestors>Fix disallowed ancestors</a> of <var title="">node</var>.
 
     <li>Let <var title="">descendants</var> be all <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendants</a> of <var title="">node</var>.
 
@@ -3508,19 +3518,18 @@ tag. -->
   <li><a href=#restore-the-values>Restore the values</a> from <var title="">values</var>.
 </ol>
 
-<p>To <dfn id=normalize-sublists>normalize sublists</dfn> in a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">item</var>:
-<!--
-This algorithm implies that we don't support a sublist in the middle of an
+<div class=comments>
+<p>This algorithm implies that we don't support a sublist in the middle of an
 item, only at the end.  For instance,
 
-  <li>foo<ol>...</ol>bar</li>
+  <pre>&lt;li&gt;foo&lt;ol&gt;...&lt;/ol&gt;bar&lt;/li&gt;</pre>
 
-gets transformed to
+<p>gets transformed to
 
-  <li>foo</li><ol>...</ol><li>bar</li>
+  <pre>&lt;li&gt;foo&lt;/li&gt;&lt;ol&gt;...&lt;/ol&gt;&lt;li&gt;bar&lt;/li&gt;</pre>
 
-which in particular creates an extra list marker for "bar".  This is okay; we
-don't need to expose all of HTML's markup abilities through execCommand().
+<p>which in particular creates an extra list marker for "bar".  This is okay;
+we don't need to expose all of HTML's markup abilities through execCommand().
 Similarly, the superscript and subscript commands don't allow nesting.  I
 didn't see any way to get a sublist in the middle of an item in Word 2007 or in
 OpenOffice.org 3.2.1 Ubuntu package, nor in  any browser using just
@@ -3528,17 +3537,19 @@ execCommand(), so it should be no big problem if we require that such nesting
 not occur.  (Existing browsers behave weirdly and inconsistently when
 confronted with this kind of nesting.)
 
-The reason we need this is that otherwise it gets very confusing to figure out
+<p>The reason we need this is that otherwise it gets very confusing to figure out
 what happens in cases like trying to outdent
-  <ol><li>[foo<ol><li>bar]</ol>baz</ol>
-If we first normalize, then the natural answer is something like
-  <p>[foo<ol><li>bar]<li>baz</ol>
-but if we don't, we'd have to special-case in the toggle lists and outdent
+  <pre>&lt;ol&gt;&lt;li&gt;[foo&lt;ol&gt;&lt;li&gt;bar]&lt;/ol&gt;baz&lt;/ol&gt;</pre>
+<p>If we first normalize, then the natural answer is something like
+  <pre>&lt;p&gt;[foo&lt;ol&gt;&lt;li&gt;bar]&lt;li&gt;baz&lt;/ol&gt;</pre>
+<p>but if we don't, we'd have to special-case in the toggle lists and outdent
 algorithms.  This might be worthwhile, but it's not at all clear, and what I
 have works okay, so I'll stick with it for now.
 
-TODO: Investigate fixing this.
--->
+<p>TODO: Investigate fixing this.
+</div>
+
+<p>To <dfn id=normalize-sublists>normalize sublists</dfn> in a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">item</var>:
 
 <ol>
   <li>If <var title="">item</var> is not an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code> or it is not <a href=#editable>editable</a> or
@@ -3597,33 +3608,36 @@ algorithm:
 
   <li>If <var title="">node list</var> is empty, return "none".
 
-  <li>If every member of <var title="">node list</var> is either an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or the
-  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>
-  of an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code>, and none is a <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code> or an <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of a <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, return
-  "ol".
-  <!--
-  The child-of-child case is necessary right now because of the following:
-    <ol><li>[foo<ol><li>bar]</ol>baz</ol>
-  With the current (July 2011) block-extend algorithm, this will become:
-    {<ol><li>foo<ol><li>bar</ol>}baz</ol>
-  because of the magical li handling in block-extend.  We want this to register
-  as ol, because after normalizing sublists it will become
-    {<ol><li>foo</li><ol><li>bar</ol>}<li>baz</ol>
+  <li>
+  <div class=comments>
+  <p>The child-of-child case is necessary right now because of the following:
+    <pre>&lt;ol&gt;&lt;li&gt;[foo&lt;ol&gt;&lt;li&gt;bar]&lt;/ol&gt;baz&lt;/ol&gt;</pre>
+  <p>With the current (July 2011) block-extend algorithm, this will become:
+    <pre>{&lt;ol&gt;&lt;li&gt;foo&lt;ol&gt;&lt;li&gt;bar&lt;/ol&gt;}baz&lt;/ol&gt;</pre>
+  <p>because of the magical li handling in block-extend.  We want this to
+  register as ol, because after normalizing sublists it will become
+    <pre>{&lt;ol&gt;&lt;li&gt;foo&lt;/li&gt;&lt;ol&gt;&lt;li&gt;bar&lt;/ol&gt;}&lt;li&gt;baz&lt;/ol&gt;</pre>
 
-  But the text node "foo" will wind up in node list, and is not the child of an
+  <p>But the text node "foo" will wind up in node list, and is not the child of an
   ol.  This is all very messy and has to do with questionable decisions about
   how to handle nested lists.
-  -->
+  </div>
 
-  <li>If every member of <var title="">node list</var> is either a <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code> or the
+  <p>If every member of <var title="">node list</var> is either an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or the
+  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code>,
+  and none is a <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code> or an <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of a <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, return "ol".
+
+  <li>
+  <p class=comments>This condition and the last are mutually exclusive, so the
+  order is actually irrelevant.  Clearly they could only both hold if no member
+  of node list is an ol or ul, so if they both held, every member would have to
+  be either the child of an ol and of a ul, or of an ol and an li, or a ul and
+  an li, or of an li that's the child of both an ol and a ul.  This is
+  impossible unless the list is empty, in which case we already aborted.
+
+  <p>If every member of <var title="">node list</var> is either a <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code> or the
   <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of a <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code> or the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of a <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>,
   and none is an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or an <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code>, return "ul".
-  <!-- The previous two conditions are mutually exclusive, so the order is
-  actually irrelevant.  Clearly they could only both hold if no member of node
-  list is an ol or ul, so if they both held, every member would have to be
-  either the child of an ol and of a ul, or of an ol and an li, or a ul and an
-  li, or of an li that's the child of both an ol and a ul.  This is impossible
-  unless the list is empty, in which case we already aborted. -->
 
   <li>If some member of <var title="">node list</var> is either an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or the
   <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> or <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code>
@@ -3642,13 +3656,11 @@ algorithm:
   <li>Return "none".
 </ol>
 
-<p>The <dfn id=alignment-value>alignment value</dfn> of a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var> is returned by
-the following algorithm:
-<!--
-When querying the value of justify*, IE9 seems to return boolean false across
-the board when it doesn't throw exceptions, which it usually does in my tests.
-Chrome 14 dev returns the string "true" or "false" depending on state, as in
-other cases, which is useless.  Opera 11.11 returns "" across the board.
+<div class=comments>
+<p>When querying the value of justify*, IE9 seems to return boolean false
+across the board when it doesn't throw exceptions, which it usually does in my
+tests.  Chrome 14 dev returns the string "true" or "false" depending on state,
+as in other cases, which is useless.  Opera 11.11 returns "" across the board.
 Firefox 6.0a2 behaves like with other command values: it returns
 "center"/"justify"/"left"/"right" depending on the active range's start node.
 Since this is the only behavior that's possibly useful, it's what I specced.
@@ -3656,21 +3668,27 @@ Firefox ties the value closely to the state, returning true for the state if
 and only if the value matches the desired value, but this seems less useful
 than what I've specced for the state.
 
-This API is based on the four-state text-align of CSS 2.1.  We do some crude
+<p>This API is based on the four-state text-align of CSS 2.1.  We do some crude
 mapping to make it not break too badly with CSS3 values, but it's not going to
 work well given the design of the API.
--->
+</div>
+
+<p>The <dfn id=alignment-value>alignment value</dfn> of a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var> is returned by
+the following algorithm:
+
 <ol>
   <li>While <var title="">node</var> is neither null nor an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, or it is an
   <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> but its "display" property has <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved value</a> "inline" or "none",
   set <var title="">node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
-  <li>If <var title="">node</var> is not an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, return "left".
-  <!-- This means there's no applicable style rule, so probably it will wind up
-  left-aligned.  Of course this ignores the fact that the alignment will really
-  be "start", so this is wrong for RTL, but it's a pretty marginal corner case
-  anyway.  (It will only happen if, e.g., everything up to and including the
-  html and body elements have display: inline or none.) -->
+  <li>
+  <p class=comments>This means there's no applicable style rule, so probably it
+  will wind up left-aligned.  Of course this ignores the fact that the
+  alignment will really be "start", so this is wrong for RTL, but it's a pretty
+  marginal corner case anyway.  (It will only happen if, e.g., everything up to
+  and including the html and body elements have display: inline or none.)
+
+  <p>If <var title="">node</var> is not an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, return "left".
 
   <li>If <var title="">node</var>'s "text-align" property has <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved value</a> "start",
   return "left" if the <a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#the-directionality title="the directionality">directionality</a> of <var title="">node</var> is "ltr", "right"

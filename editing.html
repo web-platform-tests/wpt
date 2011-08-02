@@ -29,16 +29,38 @@ div.note > p:first-child::before { content: 'Note: '; }
 }
 dd .XXX p { margin: 1em 0 }
 ol li { margin: 1em 0 }
-li li { margin: 0 }
+li li, li li > p { margin: 0 }
 table { margin: 1em 0 }
 /* Overwrite the underline so it's orange instead of blue, thus looks less
  * silly */
 a code { text-decoration: underline }
+/* Comments stuff */
+.comments { display: none }
+.comments-wrapper {
+  font-size: small;
+  color: #333;
+}
+.comments-wrapper > button {
+  float: right;
+  margin-left: 0.3em;
+}
+.comments-expanded {
+  position: absolute;
+  z-index: 1;
+  right: 0;
+  width: 50%;
+  background: white;
+  border: 1px solid gray;
+  padding: 0.5em;
+  margin-top: 2em;
+}
+.comments-expanded :first-child { margin-top: 0 }
+.comments-expanded :last-child { margin-bottom: 0 }
 </style>
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing APIs</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-29-july-2011>Work in Progress &mdash; Last Update 29 July 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-2-august-2011>Work in Progress &mdash; Last Update 2 August 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;<a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a>&gt;
@@ -440,6 +462,12 @@ with it:
 
 <h3 id=supported-commands><span class=secno>3.2 </span>Supported commands</h3>
 
+<p class=comments>If you try doing anything with an unrecognized command, IE9
+throws an "Invalid argument" exception, and Firefox 6.0a2 throws
+NS_ERROR_NOT_IMPLEMENTED.  Chrome 14 dev and Opera 11.11 both just return a
+useless value.  I go with IE/Gecko, although of course with a standard
+exception type.
+
 <p>Some <a href=#command title=command>commands</a> will be <dfn id=supported>supported</dfn> in a
 given user agent, and some will not.  All <a href=#command title=command>commands</a>
 defined in this specification must be <a href=#supported>supported</a>, except optionally
@@ -448,19 +476,16 @@ command</a>.  Additional <a href=#command title=command>commands</a> can also be
 <a href=#supported>supported</a>, but implementers should prefix any nonstandard
 <a href=#command>command</a> names with a vendor-specific string (e.g., "ms", "gecko",
 "webkit", "opera").
-<!-- If you try doing anything with an unrecognized command, IE9 throws an
-"Invalid argument" exception, and Firefox 6.0a2 throws
-NS_ERROR_NOT_IMPLEMENTED.  Chrome 14 dev and Opera 11.11 both just return a
-useless value.  I go with IE/Gecko, although of course with a standard
-exception type. -->
+
+<p class=comments>I.e., no trying to look good on lazy conformance tests by
+just sticking in a stub implementation that does nothing.
 
 <p>A <a href=#command>command</a> that does absolutely nothing in a particular user
 agent, such that <code><a href=#execcommand()>execCommand()</a></code> never has any effect and
 <code><a href=#querycommandenabled()>queryCommandEnabled()</a></code> and <code><a href=#querycommandindeterm()>queryCommandIndeterm()</a></code> and
 <code><a href=#querycommandstate()>queryCommandState()</a></code> and <code><a href=#querycommandvalue()>queryCommandValue()</a></code> each
 return the same value all the time, must not be <a href=#supported>supported</a>.
-<!-- I.e., no trying to look good on lazy conformance tests by just sticking in
-a stub implementation that does nothing. -->
+
 
 <p>In a particular user agent, every <a href=#command>command</a> must be consistently
 either <a href=#supported>supported</a> or not.  Specifically, a user agent must not
@@ -483,44 +508,46 @@ using <code><a href=#querycommandsupported()>queryCommandSupported()</a></code>.
 currently <a href=#enabled>enabled</a> using <code><a href=#querycommandenabled()>queryCommandEnabled()</a></code>.  <a href=#command title=command>Commands</a> that are not <a href=#enabled>enabled</a> do nothing, as
 described in the definitions of the various methods that invoke <a href=#command title=command>commands</a>.
 
-<p>Among <a href=#command title=command>commands</a> defined in this specification,
-those listed in <a href=#miscellaneous-commands>Miscellaneous commands</a> are
-always <a href=#enabled>enabled</a>.  The other <a href=#command title=command>commands</a>
-defined here are <a href=#enabled>enabled</a> if the <a href=#active-range>active range</a> is not
-null, and disabled otherwise.
+<div class=comments>
+<p>Testing with bold:
 
-<!--
-Testing with bold:
-
-IE10PP2 seems to return true if the active range's start node is editable,
+<p>IE10PP2 seems to return true if the active range's start node is editable,
 false otherwise.
 
-Firefox 6.0a2 seems to always return true if there's anything editable on the
+<p>Firefox 6.0a2 seems to always return true if there's anything editable on the
 page, and throw otherwise.
 
-Chrome 14 dev seems to behave the same as IE10PP2.
+<p>Chrome 14 dev seems to behave the same as IE10PP2.
 
-Opera 11.11 seems to always return true if there's anything editable on the
+<p>Opera 11.11 seems to always return true if there's anything editable on the
 page, and false otherwise.
 
-Firefox and Opera behave more or less uselessly.  IE doesn't make much sense,
+<p>Firefox and Opera behave more or less uselessly.  IE doesn't make much sense,
 in that whether a command is enabled seems meaningless: it will execute it on
 all nodes in the selection, editable or not.  Chrome's definition makes sense
 in that it will only run the command if it's enabled, but it doesn't make much
 sense to only have the command run if the start is editable.
 
-It's not clear to me what the point of this method is.  There's no way we're
+<p>It's not clear to me what the point of this method is.  There's no way we're
 going to always return true if the command will do something and false if it
 won't.  I just stuck with a really conservative definition that happens to be
 convenient: if there's nothing selected, obviously nothing will work, and we
 want to bail out early in that case anyway because all the algorithms will talk
 about the active range.  If there are use-cases for it to be more precise, I
 could make it so.
--->
+</div>
+
+<p>Among <a href=#command title=command>commands</a> defined in this specification,
+those listed in <a href=#miscellaneous-commands>Miscellaneous commands</a> are
+always <a href=#enabled>enabled</a>.  The other <a href=#command title=command>commands</a>
+defined here are <a href=#enabled>enabled</a> if the <a href=#active-range>active range</a> is not
+null, and disabled otherwise.
 
 
 
 <h2 id=methods-of-the-htmldocument-interface><span class=secno>4 </span>Methods of the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface</h2>
+
+<p class=comments>TODO: Define behavior for <var title="">show UI</var>.
 
 <p>When the <dfn id=execcommand() title=execCommand()><code>execCommand(<var title="">command</var>,
 <var title="">show UI</var>, <var title="">value</var>)</code></dfn> method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface is invoked, the user agent
@@ -535,31 +562,30 @@ must run the following steps:
   <li>If <var title="">command</var> is not <a href=#supported>supported</a>, raise a
   <code class=external data-anolis-spec=domcore title=dom-DOMException-NOT_SUPPORTED_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-not_supported_err>NOT_SUPPORTED_ERR</a></code> exception.
 
-  <li>If <var title="">command</var> has no <a href=#action>action</a>, raise an
+  <li>
+  <p class=comments>I'm just speccing INVALID_ACCESS_ERR for consistency.  I
+  don't expect real-world commands are likely to not have an action defined,
+  but you never know.
+
+  <p>If <var title="">command</var> has no <a href=#action>action</a>, raise an
   <code class=external data-anolis-spec=domcore title=dom-DOMException-INVALID_ACCESS_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-invalid_access_err>INVALID_ACCESS_ERR</a></code> exception.
 
   <p class=note>No such <a href=#command>command</a> is defined in this specification.
-  <!-- I'm just speccing INVALID_ACCESS_ERR for consistency.  I don't expect
-  real-world commands are likely to not have an action defined, but you never
-  know. -->
 
-  <li>If <var title="">command</var> is not <a href=#enabled>enabled</a>, return false.
-  <!--
-  I didn't research this closely, but at a first glance, this is possibly how
-  Chrome 14 dev and Opera 11.11 behave.  Maybe also Firefox 6.0a2, except it
-  throws if the command isn't enabled, I think.  IE9 returns true in at least
-  some cases even if the command is disabled.
-  -->
-  <!-- TODO: Is this right?  Maybe we should be returning false in other cases
-  too? -->
+  <li>
+  <p class=comments>I didn't research this closely, but at a first glance, this
+  is possibly how Chrome 14 dev and Opera 11.11 behave.  Maybe also Firefox
+  6.0a2, except it throws if the command isn't enabled, I think.  IE9 returns
+  true in at least some cases even if the command is disabled.  TODO: Is this
+  right?  Maybe we should be returning false in other cases too?
+
+  <p>If <var title="">command</var> is not <a href=#enabled>enabled</a>, return false.
 
   <li>Take the <a href=#action>action</a> for <var title="">command</var>, passing
   <var title="">value</var> to the instructions as an argument.
 
   <li>Return true.
 </ol>
-
-<!-- TODO: Define behavior for <var title>show UI</var>. -->
 
 <p>When the <dfn id=querycommandenabled() title=queryCommandEnabled()><code>queryCommandEnabled(<var title="">command</var>)</code></dfn>
 method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface is
@@ -573,6 +599,30 @@ invoked, the user agent must run the following steps:
   otherwise.
 </ol>
 
+<div class=comments>
+<p>What happens if you call queryCommand(Indeterm|State|Value)() on a command
+where it makes no sense?
+
+<p>IE9 consistently returns false for all three.
+
+<p>Firefox 6.0a2 consistently throws NS_ERROR_FAILURE for indeterm/state if not
+supported, and returns an empty string for value.  Exceptions include unlink
+(seems to always return indeterm/state false), and styleWithCss/useCss (throw
+NS_ERROR_FAILURE even for value).
+
+<p>Chrome 14 dev returns false for all three, and even does this for unrecognized
+commands.  It also always defines value if state is defined: it returns the
+state cast to a string, either "true" or "false".
+
+<p>Opera 11.11 returns false for state and "" for value (it doesn't support
+indeterm).  Like Chrome, this is even for unrecognized commands.
+
+<p>Gecko's behavior is the most useful.  If the author tries querying some aspect
+of a command that makes no sense, they shouldn't receive a value that looks
+like it might make sense but is actually just a constant.  However, I go even
+further than Gecko: I require exceptions even for value, since doing otherwise
+makes no sense.
+</div>
 <p>When the <dfn id=querycommandindeterm() title=queryCommandIndeterm()><code>queryCommandIndeterm(<var title="">command</var>)</code></dfn>
 method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface is
 invoked, the user agent must run the following steps:
@@ -589,30 +639,6 @@ invoked, the user agent must run the following steps:
   <li>Return true if <var title="">command</var> is <a href=#indeterminate>indeterminate</a>,
   otherwise false.
 </ol>
-<!--
-What happens if you call queryCommand(Indeterm|State|Value)() on a command
-where it makes no sense?
-
-IE9 consistently returns false for all three.
-
-Firefox 6.0a2 consistently throws NS_ERROR_FAILURE for indeterm/state if not
-supported, and returns an empty string for value.  Exceptions include unlink
-(seems to always return indeterm/state false), and styleWithCss/useCss (throw
-NS_ERROR_FAILURE even for value).
-
-Chrome 14 dev returns false for all three, and even does this for unrecognized
-commands.  It also always defines value if state is defined: it returns the
-state cast to a string, either "true" or "false".
-
-Opera 11.11 returns false for state and "" for value (it doesn't support
-indeterm).  Like Chrome, this is even for unrecognized commands.
-
-Gecko's behavior is the most useful.  If the author tries querying some aspect
-of a command that makes no sense, they shouldn't receive a value that looks
-like it might make sense but is actually just a constant.  However, I go even
-further than Gecko: I require exceptions even for value, since doing otherwise
-makes no sense.
--->
 
 <p>When the <dfn id=querycommandstate() title=queryCommandState()><code>queryCommandState(<var title="">command</var>)</code></dfn>
 method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface is
@@ -634,20 +660,19 @@ invoked, the user agent must run the following steps:
   false.
 </ol>
 
+<p class=comments>Firefox 6.0a2 always throws an exception when this is
+called.  Opera 11.11 seems to return false if there's nothing editable on the
+page, which is unhelpful.  The spec follows IE9 and Chrome 14 dev.  The reason
+this is useful, compared to just running one of the other methods and seeing if
+you get a NOT_SUPPORTED_ERR, is that other methods might throw different
+exceptions for other reasons.  It's easier to check a boolean than to check
+exception types, especially since as of June 2011 UAs aren't remotely
+consistent on what they do with unsupported commands.
+
 <p>When the <dfn id=querycommandsupported() title=queryCommandSupported()><code>queryCommandSupported(<var title="">command</var>)</code></dfn>
 method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface is
 invoked, the user agent must return true if <var title="">command</var> is
 <a href=#supported>supported</a>, and false otherwise.
-<!--
-Firefox 6.0a2 always throws an exception when this is called.  Opera 11.11
-seems to return false if there's nothing editable on the page, which is
-unhelpful.  The spec follows IE9 and Chrome 14 dev.  The reason this is useful,
-compared to just running one of the other methods and seeing if you get a
-NOT_SUPPORTED_ERR, is that other methods might throw different exceptions for
-other reasons.  It's easier to check a boolean than to check exception types,
-especially since as of June 2011 UAs aren't remotely consistent on what they do
-with unsupported commands.
--->
 
 <p>When the <dfn id=querycommandvalue() title=queryCommandValue()><code>queryCommandValue(<var title="">command</var>)</code></dfn>
 method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface is
@@ -660,18 +685,21 @@ invoked, the user agent must run the following steps:
   <li>If <var title="">command</var> has no <a href=#value>value</a>, raise an
   <code class=external data-anolis-spec=domcore title=dom-DOMException-INVALID_ACCESS_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-invalid_access_err>INVALID_ACCESS_ERR</a></code> exception.
 
-  <li>If <var title="">command</var> is not <a href=#enabled>enabled</a>, return the empty
-  string.
-  <!-- This is what Firefox 6.0a2 and Opera 11.11 seem to do.  Chrome 14 dev
+  <li>
+  <p class=comments>This is what Firefox 6.0a2 and Opera 11.11 seem to do.  Chrome 14 dev
   seems to return the string "false", and IE9 seems to return boolean false.
-  -->
 
-  <li>If <var title="">command</var> is "fontSize" and its <a href=#value-override>value override</a>
+  <p>If <var title="">command</var> is not <a href=#enabled>enabled</a>, return the empty
+  string.
+
+  <li>
+  <p class=comments>Yuck.  This is incredibly messy, as are lots of other
+  fontSize-related things, but I don't want to define a whole second notion of
+  value for the sake of a single command . . .
+
+  <p>If <var title="">command</var> is "fontSize" and its <a href=#value-override>value override</a>
   is set, convert the <a href=#value-override>value override</a> to an integer number of
   pixels and return the <a href=#legacy-font-size-for>legacy font size for</a> the result.
-  <!-- Yuck.  This is incredibly messy, as are lots of other fontSize-related
-  things, but I don't want to define a whole second notion of value for the
-  sake of a single command . . . -->
 
   <li>If the <a href=#value-override>value override</a> for <var title="">command</var> is set, return
   it.
@@ -724,11 +752,18 @@ these invariants are bugs in the specification.
 "menu", "nav", "ol", "p", "plaintext", "pre", "section", "summary", "table",
 "tbody", "td", "tfoot", "th", "thead", "tr", "ul", or "xmp".
 
+<p class=comments>These are all the things that will close a &lt;p&gt; if found as
+a descendant.  I think.  Plus table stuff, since that can't be a descendant of
+a p either, although it won't auto-close it.
+
 <p>A <dfn id=prohibited-paragraph-child>prohibited paragraph child</dfn> is an <a href=#html-element>HTML element</a>
 whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> is a <a href=#prohibited-paragraph-child-name>prohibited paragraph child name</a>.
-<!-- These are all the things that will close a <p> if found as a descendant.
-I think.  Plus table stuff, since that can't be a descendant of a p either,
-although it won't auto-close it. -->
+
+<p class=comments>The block/inline node definitions are CSS-based.  "Prohibited
+paragraph child" is conceptually similar to "block node", but based on the
+element name.  Generally we want to use block/inline node when we're interested
+in the visual effect, and prohibited paragraph children when we're concerned
+about parsing or semantics.
 
 <p>A <dfn id=block-node>block node</dfn> is either an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> whose "display" property
 does not have <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved value</a> "inline" or "inline-block" or "inline-table" or
@@ -736,13 +771,6 @@ does not have <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved val
 
 <p>An <dfn id=inline-node>inline node</dfn> is a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is not a <a href=#block-node>block
 node</a>.
-<!--
-The block/inline node definitions are CSS-based.  "Prohibited paragraph child"
-is conceptually similar to "block node", but based on the element name.
-Generally we want to use block/inline node when we're interested in the visual
-effect, and prohibited paragraph children when we're concerned about parsing or
-semantics.
--->
 
 <p>An <dfn id=editing-host>editing host</dfn> is a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is either an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> with
 a <code class=external data-anolis-spec=html title=attr-contenteditable><a href=http://www.whatwg.org/html/#attr-contenteditable>contenteditable</a></code>
@@ -787,6 +815,11 @@ collapsed.  But what if it happens to be display: none right now, for instance?
 Or its ancestor has a fixed height?  Would it be better to use some DOM-based
 definition?
 
+<p class=comments>TODO: The thing about li is a not very nice hack.  The issue
+is that an li won't collapse even if it has no children at all, but that's not
+true in all browsers (at least not in Opera 11.11), and also it breaks
+assumptions elsewhere.  E.g., if it gets turned into a p.
+
 <p>An <dfn id=extraneous-line-break>extraneous line break</dfn> is a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code> that has no visual effect,
 in that removing it from the DOM would not change layout, except that a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>
 that is the sole child of an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code> is not extraneous.
@@ -794,11 +827,6 @@ that is the sole child of an <code class=external data-anolis-spec=html title="t
 <p class=XXX>Also possibly a bad definition.  Again, I test by just removing it
 and seeing what happens.  (Actually, setting display: none, so that it doesn't
 mess up ranges.)
-
-<!-- TODO: The thing about li is a not very nice hack.  The issue is that an li
-won't collapse even if it has no children at all, but that's not true in all
-browsers (at least not in Opera 11.11), and also it breaks assumptions
-elsewhere.  E.g., if it gets turned into a p. -->
 
 <p>Something is <dfn id=visible>visible</dfn> if it is a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that either is a
 <a href=#block-node>block node</a>, or a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node whose <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> is not empty, or
@@ -824,16 +852,16 @@ stop the block from having zero height when it has no other contents, but serve
 no purpose and should be removed once the block has other contents that stop it
 from collapsing.
 
+<p class=comments>TODO: I say "first range" because I think that's what Gecko
+actually does, and Gecko is the only one that allows multiple ranges in a
+selection.  This is keeping in mind that it stores ranges sorted by start, not
+by the order the user added them, and silently removes or shortens existing
+ranges to avoid overlap.  It probably makes the most sense in the long term to
+have the command affect all ranges.  But I'll leave this for later.
+
 <p>The <dfn id=active-range>active range</dfn> is the first <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> in the <code class=external data-anolis-spec=domrange><a href=http://html5.org/specs/dom-range.html#selection>Selection</a></code>
 given by calling <code class=external data-anolis-spec=domrange title=dom-Document-getSelection><a href=http://html5.org/specs/dom-range.html#dom-document-getselection>getSelection()</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>, or null if there is
 no such <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>.
-
-<!-- TODO: I say "first range" because I think that's what Gecko actually does,
-and Gecko is the only one that allows multiple ranges in a selection.  This is
-keeping in mind that it stores ranges sorted by start, not by the order the
-user added them, and silently removes or shortens existing ranges to avoid
-overlap.  It probably makes the most sense in the long term to have the command
-affect all ranges.  But I'll leave this for later. -->
 
 <p>Each <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> has a boolean <dfn id=css-styling-flag>CSS styling flag</dfn> associated
 with it, which must initially be false.  (<a href=#the-stylewithcss-command>The <code title="">styleWithCSS</code> command</a> can be used to modify or query it, by
@@ -883,9 +911,12 @@ instead follow these rules:
   and <var title="">new parent</var> and <var title="">new index</var> be the new <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> and
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>.
 
-  <li>If a <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point title=concept-boundary-point>boundary point</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is the same as or a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendant</a> of
-  <var title="">node</var>, leave it unchanged, so it moves to the new location.  <!--
-  This is actually implicit, but I state it anyway for completeness. -->
+  <li>
+  <p class=comments>This is actually implicit, but I state it anyway for
+  completeness.
+
+  <p>If a <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point title=concept-boundary-point>boundary point</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is the same as or a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendant</a> of
+  <var title="">node</var>, leave it unchanged, so it moves to the new location.
 
   <li>If a <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point title=concept-boundary-point>boundary point</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is <var title="">new parent</var> and its
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> is greater than <var title="">new index</var>, add one to its
@@ -901,11 +932,11 @@ instead follow these rules:
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a>.
 </ol>
 
+<p class=comments>TODO: Do we want to get rid of attributes that are no longer
+allowed here?
+
 <p>To <dfn id=set-the-tag-name>set the tag name</dfn> of an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> <var title="">element</var> to
 <var title="">new name</var>:
-
-<!-- TODO: Do we want to get rid of attributes that are no longer allowed here?
--->
 
 <ol>
   <li>If <var title="">element</var> is an <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a>
@@ -986,12 +1017,14 @@ instructions</a> return null.
   <li>If <var title="">node list</var> is empty, or the first member of <var title="">node
   list</var> is not <a href=#editable>editable</a>, return null and abort these steps.
 
-  <li>If <var title="">node list</var>'s last member is an <a href=#inline-node>inline node</a>
+  <li>
+  <p class=comments>Trailing br's like this always need to go along with their
+  line.  Otherwise they'll create an extra line if we wrap in a block element,
+  instead of vanishing as they should.
+
+  <p>If <var title="">node list</var>'s last member is an <a href=#inline-node>inline node</a>
   that's not a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, and <var title="">node list</var>'s last member's <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code>
   is a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, append that <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code> to <var title="">node list</var>.
-  <!-- Trailing br's like this always need to go along with their line.
-  Otherwise they'll create an extra line if we wrap in a block element, instead
-  of vanishing as they should. -->
 
   <li>If the <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> of the first member of <var title="">node list</var>
   is <a href=#editable>editable</a> and meets the <a href=#sibling-criteria>sibling criteria</a>, let
@@ -1006,10 +1039,12 @@ instructions</a> return null.
   <li>Otherwise, run the <a href=#new-parent-instructions>new parent instructions</a>, and let <var title="">new
   parent</var> be the result.
 
-  <li>If <var title="">new parent</var> is null, abort these steps and return null.
-  <!-- This can only happen if the new parent instructions are run and they
-  return null.  This can be used to only merge with adjacent siblings, in case
-  you don't want to create a new parent if that fails. -->
+  <li>
+  <p class=comments>This can only happen if the new parent instructions are run
+  and they return null.  This can be used to only merge with adjacent siblings,
+  in case you don't want to create a new parent if that fails.
+
+  <p>If <var title="">new parent</var> is null, abort these steps and return null.
 
   <li>If <var title="">new parent</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is null:
 
@@ -1018,59 +1053,61 @@ instructions</a> return null.
     <var title="">node list</var> immediately before the first member of <var title="">node
     list</var>.
 
-    <li>If any <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> has a <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point title=concept-boundary-point>boundary point</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> equal to the
-    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">new parent</var> and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> equal to the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>
-    of <var title="">new parent</var>, add one to that <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point title=concept-boundary-point>boundary point</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a>.
-    <!--
-    Basically, we want any boundary points around the wrapped nodes to go
-    inside the wrapper.  Without this step, wrapping "{}<br>" in a blockquote
+    <li>
+    <div class=comments>
+    <p>Basically, we want any boundary points around the wrapped nodes to go
+    inside the wrapper.  Without this step, wrapping "{}&lt;br&gt;" in a blockquote
     would go like
 
-      {}<br>
-      -> {}<blockquote></blockquote><br>
-      -> {}<blockquote><br></blockquote>.
+    <pre>{}&lt;br&gt;
+-&gt; {}&lt;blockquote&gt;&lt;/blockquote&gt;&lt;br&gt;
+-&gt; {}&lt;blockquote&gt;&lt;br&gt;&lt;/blockquote&gt;.</pre>
 
-    The second line is due to range mutation rules: a boundary point with an
+    <p>The second line is due to range mutation rules: a boundary point with an
     offset equal to the index of a newly-inserted node stays put, so it remains
     before it.  With this step, it goes like
 
-      {}<br>
-      -> {}<blockquote></blockquote><br>
-      -> <blockquote></blockquote>{}<br>
-      -> <blockquote>{}<br></blockquote>.
+    <pre>{}&lt;br&gt;
+-&gt; {}&lt;blockquote&gt;&lt;/blockquote&gt;&lt;br&gt;
+-&gt; &lt;blockquote&gt;&lt;/blockquote&gt;{}&lt;br&gt;
+-&gt; &lt;blockquote&gt;{}&lt;br&gt;&lt;/blockquote&gt;.</pre>
 
-    The difference in the final step is because we move the <br> "preserving
+    <p>The difference in the final step is because we move the &lt;br&gt; "preserving
     ranges".  This means that adjacent boundary points get swept along with it.
-    Previously, the <blockquote> intervened, so a boundary point after it would
+    Previously, the &lt;blockquote&gt; intervened, so a boundary point after it would
     get taken along but one before it would not.
 
-    Another solution that one might be tempted to consider would be to just put
+    <p>Another solution that one might be tempted to consider would be to just put
     the wrapper after the wrapped elements.  Then the boundary points would
     stay put, before the wrapper, so they'd still be adjacent to the nodes to
     be wrapped, like:
 
-      {<p>foo</p>}
-      -> {<p>foo</p>}<blockquote></blockquote>
-      -> <blockquote>{<p>foo</p>}</blockquote>.
+    <pre>{&lt;p&gt;foo&lt;/p&gt;}
+-&gt; {&lt;p&gt;foo&lt;/p&gt;}&lt;blockquote&gt;&lt;/blockquote&gt;
+-&gt; &lt;blockquote&gt;{&lt;p&gt;foo&lt;/p&gt;}&lt;/blockquote&gt;.</pre>
 
-    The problem is that this completely breaks if you're wrapping multiple
+    <p>The problem is that this completely breaks if you're wrapping multiple
     things and not all are selected.  It would go like this:
 
-      <p>foo</p>{<p>bar</p>}
-      -> <p>foo</p>{<p>bar</p>}<blockquote></blockquote>
-      -> <p>foo</p><blockquote>{<p>bar</p>}</blockquote>
-      -> <blockquote>{<p>foo</p><p>bar</p>}</blockquote>.
+    <pre>&lt;p&gt;foo&lt;/p&gt;{&lt;p&gt;bar&lt;/p&gt;}
+-&gt; &lt;p&gt;foo&lt;/p&gt;{&lt;p&gt;bar&lt;/p&gt;}&lt;blockquote&gt;&lt;/blockquote&gt;
+-&gt; &lt;p&gt;foo&lt;/p&gt;&lt;blockquote&gt;{&lt;p&gt;bar&lt;/p&gt;}&lt;/blockquote&gt;
+-&gt; &lt;blockquote&gt;{&lt;p&gt;foo&lt;/p&gt;&lt;p&gt;bar&lt;/p&gt;}&lt;/blockquote&gt;.</pre>
 
-    The last step is again because of the range mutation rules: the boundary
+    <p>The last step is again because of the range mutation rules: the boundary
     point stays put when a new node is inserted.  They're fundamentally
     asymmetric.
 
-    An alternative solution would be to define the concept of moving a list of
+    <p>An alternative solution would be to define the concept of moving a list of
     adjacent sibling nodes while preserving ranges, and handle this explicitly
     at a more abstract level.
 
-    TODO: Think about this some more.  Maybe there's a better way.
-    -->
+    <p>TODO: Think about this some more.  Maybe there's a better way.
+    </div>
+
+    <p>If any <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> has a <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point title=concept-boundary-point>boundary point</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> equal to the
+    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">new parent</var> and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> equal to the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>
+    of <var title="">new parent</var>, add one to that <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point title=concept-boundary-point>boundary point</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a>.
   </ol>
 
   <li>Let <var title="">original parent</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of the first member of
@@ -1107,15 +1144,19 @@ instructions</a> return null.
     parent</var>, <a href=#preserving-ranges>preserving ranges</a>.
   </ol>
 
-  <li>If <var title="">original parent</var> is <a href=#editable>editable</a> and has no
-  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, remove it from its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
-  <!-- This could happen if the new parent instructions returned a node whose
-  parent wasn't null. -->
+  <li>
+  <p class=comments>This could happen if the new parent instructions returned a
+  node whose parent wasn't null.
 
-  <li>If <var title="">new parent</var>'s <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> is <a href=#editable>editable</a> and
+  <p>If <var title="">original parent</var> is <a href=#editable>editable</a> and has no
+  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, remove it from its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+
+  <li>
+  <p class=comments>Probably because both the previous and next sibling met
+  them.  We want to merge them in this case.
+
+  <p>If <var title="">new parent</var>'s <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> is <a href=#editable>editable</a> and
   meets the <a href=#sibling-criteria>sibling criteria</a>:
-  <!-- Probably because both the previous and next sibling met them.  We want
-  to merge them in this case. -->
 
   <ol>
     <li>If <var title="">new parent</var> is not an <a href=#inline-node>inline node</a>, but
@@ -1141,49 +1182,52 @@ instructions</a> return null.
 
 <h3 id=allowed-children><span class=secno>6.3 </span>Allowed children</h3>
 
+<div class=comments>
+<p>List is mostly based on current HTML5, together with obsolete
+elements.  I mostly got the obsolete element list by testing what Firefox 5.0a2
+splits when you do insertHorizontalRule.
+
+<p>At the time of this writing (July 2011), dt is only allowed to contain
+inline contents by HTML.  I deliberately omit it from the list regardless,
+because I don't like the fact that including it will cause various commands to
+break apart lists rather than put bad things inside dt.  I filed a <a href="http://www.w3.org/Bugs/Public/show_bug.cgi?id=13201">bug</a> asking that
+the spec be changed.
+
+<p>TODO: The definitions of prohibited paragraph children and elements with
+inline contents should be in the HTML spec (possibly under a different name) so
+they don't fall out of sync.  They'll do for now.
+</div>
+
 <p>A <dfn id=name-of-an-element-with-inline-contents>name of an element with inline contents</dfn> is "a", "abbr", "b",
 "bdi", "bdo", "cite", "code", "dfn", "em", "h1", "h2", "h3", "h4", "h5", "h6",
 "i", "kbd", "mark", "p", "pre", "q", "rp", "rt", "ruby", "s", "samp", "small",
 "span", "strong", "sub", "sup", "u", "var", "acronym", "listing", "strike",
 "xmp", "big", "blink", "font", "marquee", "nobr", or "tt".
-<!--
-At the time of this writing (July 2011), dt is only allowed to contain inline
-contents by HTML.  I deliberately omit it from the list regardless, because I
-don't like the fact that including it will cause various commands to break
-apart lists rather than put bad things inside dt.  I filed a bug asking that
-the spec be changed: http://www.w3.org/Bugs/Public/show_bug.cgi?id=13201
--->
 
 <p>An <dfn id=element-with-inline-contents>element with inline contents</dfn> is an <a href=#html-element>HTML element</a>
 whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> is a <a href=#name-of-an-element-with-inline-contents>name of an element with inline contents</a>.
-<!-- List is mostly based on current HTML5, together with obsolete elements.  I
-mostly got the obsolete element list by testing what Firefox 5.0a2 splits when
-you do insertHorizontalRule. -->
 
-<!--
-TODO: The definitions of prohibited paragraph children and elements with inline
-contents should be in the HTML spec (possibly under a different name) so they
-don't fall out of sync.  They'll do for now.
--->
+<div class=comments>
+<p>TODO: This list doesn't currently match HTML's validity requirements for a
+few reasons:
+
+<ol>
+  <li>We need to handle invalid elements, which have no conformance
+  requirements but should be treated properly.  In particular, they can
+  interfere with serialization (e.g., center cannot descend from p).
+
+  <li> Sometimes users give instructions that have to produce invalid DOMs to
+  get the expected effect, like indenting the first item of a list.
+
+  <li>The HTML validity requirements are sometimes quite complicated.
+
+  <li>I just haven't had bothered to be systematic about it yet.  I've only
+  covered what's come up in my tests.
+</ol>
+</div>
 
 <p>A <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> or string <var title="">child</var> is an <dfn id=allowed-child>allowed child</dfn> of a
 <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> or string <var title="">parent</var> if the following algorithm returns true:
-<!--
-TODO: This list doesn't currently match HTML's validity requirements for a few
-reasons:
-
-1) We need to handle invalid elements, which have no conformance requirements
-but should be treated properly.  In particular, they can interfere with
-serialization (e.g., center cannot descend from p).
-
-2) Sometimes users give instructions that have to produce invalid DOMs to get
-the expected effect, like indenting the first item of a list.
-
-3) The HTML validity requirements are sometimes quite complicated.
-
-4) I just haven't had bothered to be systematic about it yet.  I've only
-covered what's come up in my tests.
--->
 
 <ol>
   <li>If <var title="">parent</var> is "colgroup", "table", "tbody", "tfoot", "thead",
@@ -1191,11 +1235,13 @@ covered what's come up in my tests.
   those, and <var title="">child</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node whose <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> does not
   consist solely of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#space-character title="space character">space characters</a>, return false.
 
-  <li>If <var title="">parent</var> is "script", "style", "plaintext", or "xmp", or an
+  <li>
+  <p class=comments> Actually, no node can occur in the DOM after plaintext,
+  generally.  But let's not get too carried away.
+
+  <p>If <var title="">parent</var> is "script", "style", "plaintext", or "xmp", or an
   <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> equal to one of those, and
   <var title="">child</var> is not a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node, return false.
-  <!-- Actually, no node can occur in the DOM after plaintext, generally.  But
-  let's not get too carried away. -->
 
   <li>If <var title="">child</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document>Document</a></code>, <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#documentfragment>DocumentFragment</a></code>, or
   <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#documenttype>DocumentType</a></code>, return false.
@@ -1208,29 +1254,38 @@ covered what's come up in my tests.
   <li>If <var title="">parent</var> is an <a href=#html-element>HTML element</a>:
 
   <ol>
-    <li>If <var title="">child</var> is "a", and <var title="">parent</var> or some <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a>
-    of <var title="">parent</var> is an <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code>, return false.
-    <!-- Cannot be serialized as text/html.  In some cases it can, like
-    <a>foo<table><td><a>bar</a></td></table>baz</a>, but it's invalid in those
-    cases too, so no need for complication. -->
+    <li>
+    <p class=comments>Cannot be serialized as text/html.  In some cases it can,
+    like
+    &lt;a&gt;foo&lt;table&gt;&lt;td&gt;&lt;a&gt;bar&lt;/a&gt;&lt;/td&gt;&lt;/table&gt;baz&lt;/a&gt;,
+    but it's invalid in those cases too, so no need for complication.
 
-    <li>If <var title="">child</var> is a <a href=#prohibited-paragraph-child-name>prohibited paragraph child name</a>
+    <p>If <var title="">child</var> is "a", and <var title="">parent</var> or some <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a>
+    of <var title="">parent</var> is an <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code>, return false.
+
+    <li>
+    <p class=comments>This generally cannot be serialized either, for p.  For
+    other elements with inline contents, this serves to prevent things like
+    &lt;span&gt;&lt;p&gt;foo&lt;/p&gt;&lt;/span&gt;, which will parse fine but aren't
+    supposed to happen anyway.
+
+    <p>If <var title="">child</var> is a <a href=#prohibited-paragraph-child-name>prohibited paragraph child name</a>
     and <var title="">parent</var> or some <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of <var title="">parent</var> is an
     <a href=#element-with-inline-contents>element with inline contents</a>, return false.
-    <!-- This generally cannot be serialized either, for p.  For other elements
-    with inline contents, this serves to prevent things like
-    <span><p>foo</p></span>, which will parse fine but aren't supposed to
-    happen anyway. -->
 
-    <li>If <var title="">child</var> is "h1", "h2", "h3", "h4", "h5", or "h6", and
+    <li>
+    <p class=comments>Also can't be serialized as text/html.
+
+    <p>If <var title="">child</var> is "h1", "h2", "h3", "h4", "h5", or "h6", and
     <var title="">parent</var> or some <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of <var title="">parent</var> is an
     <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "h1", "h2", "h3", "h4", "h5",
     or "h6", return false.
-    <!-- Nor this. -->
 
-    <li>Let <var title="">parent</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> of <var title="">parent</var>.
-    <!-- Further requirements only care about the parent itself, not ancestors,
-    so we don't need to know the node itself. -->
+    <li>
+    <p class=comments>Further requirements only care about the parent itself,
+    not ancestors, so we don't need to know the node itself.
+
+    <p>Let <var title="">parent</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> of <var title="">parent</var>.
   </ol>
 
   <li>If <var title="">parent</var> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> or <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#documentfragment>DocumentFragment</a></code>, return
@@ -1238,11 +1293,13 @@ covered what's come up in my tests.
 
   <li>If <var title="">parent</var> is not a string, return false.
 
-  <li>If <var title="">parent</var> is on the left-hand side of an entry on the
+  <li>
+  <p class=comments>We allow children even where some intervening nodes will be
+  inserted, like tr as a child of table.
+
+  <p>If <var title="">parent</var> is on the left-hand side of an entry on the
   following list, then return true if <var title="">child</var> is listed on the
   right-hand side of that entry, and false otherwise.
-  <!-- We allow children even where some intervening nodes will be inserted,
-  like tr as a child of table. -->
 
   <ul>
     <li>colgroup: col
@@ -1258,9 +1315,11 @@ covered what's come up in my tests.
   "frameset", "head", "html", "tbody", "td", "tfoot", "th", "thead", or "tr",
   return false.
 
-  <!-- dd/dt/li will serialize fine as the child of random stuff, but it makes
-  no sense at all, so we want to avoid it anyway. -->
-  <li>If <var title="">child</var> is "dd" or "dt" and <var title="">parent</var> is not "dl",
+  <li>
+  <p class=comments>dd/dt/li will serialize fine as the child of random stuff,
+  but it makes no sense at all, so we want to avoid it anyway.
+
+  <p>If <var title="">child</var> is "dd" or "dt" and <var title="">parent</var> is not "dl",
   return false.
 
   <li>If <var title="">child</var> is "li" and <var title="">parent</var> is not "ol" or "ul",
@@ -1290,29 +1349,38 @@ covered what's come up in my tests.
 
 <h3 id=inline-formatting-command-definitions><span class=secno>7.1 </span>Inline formatting command definitions</h3>
 
+<p class=comments>The difference between "contained" and "effectively
+contained" is basically that 1) in &lt;b&gt;[foo]&lt;/b&gt;, the text node and the
+&lt;b&gt; are effectively contained but not contained; and 2) in
+&lt;b&gt;f[o]o&lt;/b&gt;, the text node is effectively contained but not contained,
+and the &lt;b&gt; is neither effectively contained nor contained.
+
 <p>A <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var> is <dfn id=effectively-contained>effectively contained</dfn> in a
 <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> <var title="">range</var> if at least one of the following holds:
-<!--
-The difference between "contained" and "effectively contained" is basically
-that 1) in <b>[foo]</b>, the text node and the <b> are effectively contained
-but not contained; and 2) in <b>f[o]o</b>, the text node is effectively
-contained but not contained, and the <b> is neither effectively contained nor
-contained.
--->
+
 <ul>
   <li><var title="">node</var> is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in <var title="">range</var>.
 
-  <li><var title="">node</var> is <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, it is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>
+  <li>
+  <p class=comments> So like &lt;b&gt;f[oo]&lt;/b&gt; or &lt;b&gt;f[o]o&lt;/b&gt; or
+  &lt;b&gt;f[oo&lt;/b&gt;}, but not &lt;b&gt;foo[&lt;/b&gt;} or &lt;b&gt;f[]oo&lt;/b&gt;.
+
+  <p><var title="">node</var> is <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, it is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>
   node, its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> is different from <var title="">range</var>'s
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a>, and <var title="">range</var> is not <code class=external data-anolis-spec=domrange title=dom-Range-collapsed><a href=http://html5.org/specs/dom-range.html#dom-range-collapsed>collapsed</a></code>.
-  <!-- So like <b>f[oo]</b> or <b>f[o]o</b> or <b>f[oo</b>}, but not
-  <b>foo[</b>} or <b>f[]oo</b>. -->
 
   <li><var title="">node</var> is <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, it is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node,
   <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> is not 0, and <var title="">range</var> is not
   <code class=external data-anolis-spec=domrange title=dom-Range-collapsed><a href=http://html5.org/specs/dom-range.html#dom-range-collapsed>collapsed</a></code>.
 
-  <li><var title="">node</var> has at least one <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>; and all its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> are
+  <li>
+  <p class=comments>Basically, anything whose children are all effectively
+  contained should be effectively contained itself, except that in a case like
+  &lt;b&gt;f[o]o&lt;/b&gt; we don't want &lt;b&gt; to be effectively contained even
+  though the text node is.  That's because we split the text node before we
+  actually do anything, and the &lt;b&gt; will no longer be effectively contained.
+
+  <p><var title="">node</var> has at least one <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>; and all its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> are
   <a href=#effectively-contained>effectively contained</a> in <var title="">range</var>; and either
   <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is not a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendant</a> of <var title="">node</var>
   or is not a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node or <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> is zero or
@@ -1320,13 +1388,6 @@ contained.
   is not a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendant</a> of <var title="">node</var> or is not a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node or
   <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> is its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> or
   <var title="">range</var> is <code class=external data-anolis-spec=domrange title=dom-Range-collapsed><a href=http://html5.org/specs/dom-range.html#dom-range-collapsed>collapsed</a></code>.
-  <!--
-  Basically, anything whose children are all effectively contained should be
-  effectively contained itself, except that in a case like <b>f[o]o</b> we
-  don't want <b> to be effectively contained even though the text node is.
-  That's because we split the text node before we actually do anything, and the
-  <b> will no longer be effectively contained.
-  -->
 </ul>
 
 <p>A <dfn id=modifiable-element>modifiable element</dfn> is a <code class=external data-anolis-spec=html title="the b element"><a href=http://www.whatwg.org/html/#the-b-element>b</a></code>, <code class=external data-anolis-spec=html title="the em element"><a href=http://www.whatwg.org/html/#the-em-element>em</a></code>, <code class=external data-anolis-spec=html title="the i element"><a href=http://www.whatwg.org/html/#the-i-element>i</a></code>, <code class=external data-anolis-spec=html title="the s element"><a href=http://www.whatwg.org/html/#the-s-element>s</a></code>, <code class=external data-anolis-spec=html title="the span element"><a href=http://www.whatwg.org/html/#the-span-element>span</a></code>,
@@ -1410,6 +1471,16 @@ at least one whose <a href=#effective-command-value>effective command value</a> 
 values and at least one whose <a href=#effective-command-value>effective command value</a> is not one
 of the given values.
 
+<p class=comments> For bold and similar commands, IE 9 RC seems to consider the
+state true or false depending on the first element.  All other browsers follow
+the same general idea as the spec, considering a range bold only if all text in
+it is bold, and this seems to match at least OpenOffice.org's bold feature.
+Opera 11.11 seemingly doesn't take CSS into account, and only looks at whether
+something descends from a &lt;b&gt;.  I couldn't properly test IE9 because it
+threw exceptions (Error: Unspecified error.) on most of the tests I ran.  But
+what I have here seems to match Firefox 6.0a2 in every case, and Chrome 14 dev
+in all cases with a few exceptions.
+
 <p>If a <a href=#command>command</a> has <a href=#inline-command-activated-values>inline command activated values</a>
 defined, its <a href=#state>state</a> is true if either no <a href=#editable>editable</a>
 <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node is <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
@@ -1418,17 +1489,21 @@ range</a>, and the <a href=#active-range>active range</a>'s <a class=external da
 at least one <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node <a href=#effectively-contained>effectively
 contained</a> in the <a href=#active-range>active range</a>, and all of them have an
 <a href=#effective-command-value>effective command value</a> equal to one of the given values.
-<!--
-For bold and similar commands, IE 9 RC seems to consider the state true or
-false depending on the first element.  All other browsers follow the same
-general idea as the spec, considering a range bold only if all text in it is
-bold, and this seems to match at least OpenOffice.org's bold feature.  Opera
-11.11 seemingly doesn't take CSS into account, and only looks at whether
-something descends from a <b>.  I couldn't properly test IE9 because it threw
-exceptions (Error: Unspecified error.) on most of the tests I ran.  But what I
-have here seems to match Firefox 6.0a2 in every case, and Chrome 14 dev in all
-cases with a few exceptions.
--->
+
+<div class=comments>
+<p>Testing with hiliteColor: Opera 11.11 seems to always return the effective
+command value of the active range's start node.  Chrome 14 dev returns boolean
+false consistently, bizarrely enough.  Firefox 6.0a2 seems to follow the same
+idea as the spec, but it likes to return "transparent", including sometimes
+when the answer really clearly should not be "transparent".  IE9 throws
+exceptions most of the time for backColor, so I can't say for sure, but in the
+few cases where it doesn't throw it returns a random-looking number, so I'll
+assume it's crazy like for foreColor.
+
+<p>I decided on something that would guarantee the following invariant: whenever
+you execute a command with a value provided (assuming value is relevant),
+queryCommandValue() will always return something equivalent to what you set.
+</div>
 
 <p>If a command is a <dfn id=standard-inline-value-command>standard inline value command</dfn>, it is
 <a href=#indeterminate>indeterminate</a> if among <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> nodes that
@@ -1443,20 +1518,6 @@ there is no such node, the <a href=#effective-command-value>effective command va
 <p class=note>The effective command value of the active range's start node
 cannot be null, since the boundary point node of a selection must always be
 either an element or a text node that's the child of an element.
-<!--
-Testing with hiliteColor: Opera 11.11 seems to always return the effective
-command value of the active range's start node.  Chrome 14 dev returns boolean
-false consistently, bizarrely enough.  Firefox 6.0a2 seems to follow the same
-idea as the spec, but it likes to return "transparent", including sometimes
-when the answer really clearly should not be "transparent".  IE9 throws
-exceptions most of the time for backColor, so I can't say for sure, but in the
-few cases where it doesn't throw it returns a random-looking number, so I'll
-assume it's crazy like for foreColor.
-
-I decided on something that would guarantee the following invariant: whenever
-you execute a command with a value provided (assuming value is relevant),
-queryCommandValue() will always return something equivalent to what you set.
--->
 
 
 
@@ -1507,12 +1568,15 @@ return either a string or null:
     <li>While <var title="">node</var> is an <a href=#inline-node>inline node</a>:
 
     <ol>
-      <!-- Firefox 6.0a2 ignores vertical-align for this purpose, and only
-      cares about <sub> and <sup> tags themselves.  Opera 11.11 is similar, and
-      in fact behaves like that even for commands like bold.  The spec follows
-      Chrome 14 dev, mainly because WebKit itself will produce spans with
-      vertical-align sub or super, and we want to handle them correctly. -->
-      <li>If <var title="">node</var>'s "vertical-align" property has <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved value</a> "sub",
+      <li>
+      <p class=comments>Firefox 6.0a2 ignores vertical-align for this purpose,
+      and only cares about &lt;sub&gt; and &lt;sup&gt; tags themselves.  Opera 11.11
+      is similar, and in fact behaves like that even for commands like bold.
+      The spec follows Chrome 14 dev, mainly because WebKit itself will produce
+      spans with vertical-align sub or super, and we want to handle them
+      correctly.
+
+      <p>If <var title="">node</var>'s "vertical-align" property has <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved value</a> "sub",
       set <var title="">affected by subscript</var> to true.
 
       <li>Otherwise, if <var title="">node</var>'s "vertical-align" property has
@@ -1658,30 +1722,32 @@ value</var>:
   of <var title="">candidate</var> into <var title="">candidate</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> immediately
   before <var title="">candidate</var>, <a href=#preserving-ranges>preserving ranges</a>.
 
-  <li>Insert <var title="">candidate</var> into <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> immediately
-  after <var title="">node</var>.
-  <!--
-  If candidate had no children, any boundary point inside it will get moved to
+  <li>
+  <div class=comments>
+  <p>If candidate had no children, any boundary point inside it will get moved to
   its parent here, which is okay.  We don't want to preserve ranges, because
   that would move boundary points that originally were in candidate but were
   moved to its parent by the last step to move to node's parent.
 
-  We move to after node so that boundary points before and after node wind up
+  <p>We move to after node so that boundary points before and after node wind up
   consistently inside candidate when we move preserving ranges.  If we had
-    {<node>foo<candidate></candidate></node>}
-  it thus becomes
-    {<node>foo</node>}<candidate></candidate>
-  by the range mutation rules, and then when we move preserving ranges, it
+    <pre>{&lt;node&gt;foo&lt;candidate&gt;&lt;/candidate&gt;&lt;/node&gt;}</pre>
+  <p>it thus becomes
+    <pre>{&lt;node&gt;foo&lt;/node&gt;}&lt;candidate&gt;&lt;/candidate&gt;</pre>
+  <p>by the range mutation rules, and then when we move preserving ranges, it
   becomes
-    <candidate>{<node>foo</node>}</candidate>
-  which is reasonable.
+    <pre>&lt;candidate&gt;{&lt;node&gt;foo&lt;/node&gt;}&lt;/candidate&gt;</pre>
+  <p>which is reasonable.
 
-  If we had inserted candidate before node, instead it would go
-    {<candidate></candidate><node>foo</node>}
-    {<candidate><node>foo</node>}</candidate>
-  because of the interaction of regular range mutation rules with
+  <p>If we had inserted candidate before node, instead it would go
+<pre>{&lt;candidate&gt;&lt;/candidate&gt;&lt;node&gt;foo&lt;/node&gt;}
+{&lt;candidate&gt;&lt;node&gt;foo&lt;/node&gt;}&lt;/candidate&gt;</pre>
+  <p>because of the interaction of regular range mutation rules with
   preserving-ranges rules.
-  -->
+  </div>
+
+  <p>Insert <var title="">candidate</var> into <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> immediately
+  after <var title="">node</var>.
 
   <li>Append the <var title="">node</var> as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">candidate</var>,
   <a href=#preserving-ranges>preserving ranges</a>.
@@ -1693,13 +1759,15 @@ value</var>:
   <li>Let <var title="">values</var> be a list of (<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, <a href=#command>command</a>,
   <a href=#specified-command-value>specified command value</a>) triples, initially empty.
 
-  <li>For each <var title="">node</var> in <var title="">node list</var>, for each
+  <li>
+  <p class=comments>As with removeFormat, we put subscript first so it doesn't
+  interfere with fontSize, and omit superscript because it's redundant with
+  subscript.
+
+  <p>For each <var title="">node</var> in <var title="">node list</var>, for each
   <var title="">command</var> in the list "subscript", "bold", "fontName", "fontSize",
   "foreColor", "hiliteColor", "italic", "strikethrough", and "underline" in
   that order:
-  <!-- As with removeFormat, we put subscript first so it doesn't interfere
-  with fontSize, and omit superscript because it's redundant with subscript.
-  -->
 
   <ol>
     <li>Let <var title="">ancestor</var> equal <var title="">node</var>.
@@ -1713,7 +1781,8 @@ value</var>:
     <li>If <var title="">ancestor</var> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, add (<var title="">node</var>,
     <var title="">command</var>, <var title="">ancestor</var>'s <a href=#specified-command-value>specified command
     value</a> for <var title="">command</var>) to <var title="">values</var>.  Otherwise add
-    (<var title="">node</var>, <var title="">command</var>, null) to <var title="">values</var>.  </ol>
+    (<var title="">node</var>, <var title="">command</var>, null) to <var title="">values</var>.
+  </ol>
 
   <li>Return <var title="">values</var>.
 </ol>
@@ -1750,6 +1819,10 @@ returned by the <a href=#record-the-values>record the values</a> algorithm:
 
 <h3 id="clearing-an-element's-value"><span class=secno>7.3 </span>Clearing an element's value</h3>
 
+<p class=comments> If we wanted to be extra-pedantic, we could convert, e.g.,
+&lt;font color=red id=foo&gt; into &lt;span id=foo&gt; instead of &lt;font id=foo&gt;,
+but probably not worth it.
+
 <p>To <dfn id=clear-the-value>clear the value</dfn> of an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> <var title="">element</var>:
 
 <p class=note>Clearing the value of an element can remove it from its parent
@@ -1758,20 +1831,18 @@ the value of all children of an element, they should take care not to assume
 that the set of children won't change as they're cleared.  If the element is
 removed, the algorithm will return the list of nodes inserted in its place.
 
-<!-- If we wanted to be extra-pedantic, we could convert, e.g., <font color=red
-id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
--->
-
 <ol>
   <li>Let <var title="">command</var> be the current <a href=#command>command</a>.
 
   <li>If <var title="">element</var> is not <a href=#editable>editable</a>, return the empty
   list.
 
-  <li>If <var title="">element</var>'s <a href=#specified-command-value>specified command value</a> for
-  <var title="">command</var> is null, return the empty list.  <!-- We want to abort
-  early so that we don't try unsetting background-color on a non-inline
-  element. -->
+  <li>
+  <p class=comments>We want to abort early so that we don't try unsetting
+  background-color on a non-inline element.
+
+  <p>If <var title="">element</var>'s <a href=#specified-command-value>specified command value</a> for
+  <var title="">command</var> is null, return the empty list.
 
   <li>If <var title="">element</var> is a <a href=#simple-modifiable-element>simple modifiable element</a>:
 
@@ -1814,10 +1885,13 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
   <li>If <var title="">element</var> is an <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code> element and <var title="">command</var> is
   "createLink" or "unlink", unset the <code class=external data-anolis-spec=html title=attr-hyperlink-href><a href=http://www.whatwg.org/html/#attr-hyperlink-href>href</a></code> property of <var title="">element</var>.
 
-  <li>If <var title="">element</var>'s <a href=#specified-command-value>specified command value</a> for
+  <li>
+  <p class=comments>If we get past this step, we're something like &lt;b
+  class=foo&gt; where we want to keep the extra attributes, so we stick them on a
+  span.
+
+  <p>If <var title="">element</var>'s <a href=#specified-command-value>specified command value</a> for
   <var title="">command</var> is null, return the empty list.
-  <!-- If we get past this step, we're something like <b class=foo> where we
-  want to keep the extra attributes, so we stick them on a span. -->
 
   <li><a href=#set-the-tag-name>Set the tag name</a> of <var title="">element</var> to "span", and return
   the one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> list consisting of the result.
@@ -1826,46 +1900,49 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
 
 <h3 id=pushing-down-values><span class=secno>7.4 </span>Pushing down values</h3>
 
-<p>To <dfn id=push-down-values>push down values</dfn> to a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var>, given a new
-value <var title="">new value</var>:
-
-<!--
-This algorithm goes up to just below the nearest ancestor with the right
+<div class=comments>
+<p>This algorithm goes up to just below the nearest ancestor with the right
 style, then re-applies the bad styles repeatedly going down, omitting the
 things we want to have the new style.  This is basically what WebKit does,
 although WebKit sometimes starts higher up and therefore makes more intrusive
 changes, often creating more markup.  IE follows the same general approach too.
 
-Gecko instead seems to start breaking up elements from the bottom, so that the
+<p>Gecko instead seems to start breaking up elements from the bottom, so that the
 range consists of a few consecutive siblings, and it can then break up the
 problematic element into a maximum of two pieces.  The spec's approach seems to
 create fewer elements and simpler markup (or at least markup that's no more
 complex) in most cases I throw at it.
 
-Gecko's approach does have the major advantage that it gets underlines right in
+<p>Gecko's approach does have the major advantage that it gets underlines right in
 many cases for free.  E.g.,
 
-  <u>foo<font color=red>[bar]baz</font></u>
-  -> <u>foo</u><font color=red>bar<u>baz</u></font> (spec)
-  -> <u>foo</u><font color=red>bar</font><u><font color=red>baz</font></u> (Gecko)
+<pre>&lt;u&gt;foo&lt;font color=red&gt;[bar]baz&lt;/font&gt;&lt;/u&gt;
+-&gt; &lt;u&gt;foo&lt;/u&gt;&lt;font color=red&gt;bar&lt;u&gt;baz&lt;/u&gt;&lt;/font&gt; (spec)
+-&gt; &lt;u&gt;foo&lt;/u&gt;&lt;font color=red&gt;bar&lt;/font&gt;&lt;u&gt;&lt;font color=red&gt;baz&lt;/font&gt;&lt;/u&gt; (Gecko)</pre>
 
-The spec's markup here is much shorter and contains fewer elements, but is
+<p>The spec's markup here is much shorter and contains fewer elements, but is
 wrong: the underline under "baz" has changed color from black to red.  It might
 be worth trying to copy Gecko's results in such cases, but that won't solve all
 underline problems, so perhaps it's not worth it.
 
-Opera also seems to break up the markup surrounding the range, but even more
+<p>Opera also seems to break up the markup surrounding the range, but even more
 aggressively: even if it doesn't need to pull down styles.  In some cases this
 does actually result in shorter markup, specifically if the existing tags are
-short (like <code data-anolis-spec=html title="the i element">i</code> or <code data-anolis-spec=html title="the b element">b</code>) and we're adding tags that are long (like <code data-anolis-spec=html title="the span element">span</code>
-with a <code data-anolis-spec=html title="the style attribute">style</code> attribute).
--->
+short (like i or b) and we're adding tags that are long (like span with a style
+attribute).
+</div>
+
+<p>To <dfn id=push-down-values>push down values</dfn> to a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var>, given a new
+value <var title="">new value</var>:
 
 <ol>
   <li>Let <var title="">command</var> be the current <a href=#command>command</a>.
 
-  <li>If <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is not an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, abort this
-  algorithm. <!-- E.g., a text node child of a document fragment. -->
+  <li>
+  <p class=comments>E.g., a text node child of a document fragment.
+
+  <p>If <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is not an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, abort this
+  algorithm.
 
   <li>If the <a href=#effective-command-value>effective command value</a> of <var title="">command</var> is
   <a href=#loosely-equivalent-values title="loosely equivalent values">loosely equivalent</a> to <var title="">new value</var> on <var title="">node</var>, abort this
@@ -1887,42 +1964,46 @@ with a <code data-anolis-spec=html title="the style attribute">style</code> attr
   value</a> of <var title="">command</var> on the last member of <var title="">ancestor
   list</var>.
 
-  <!-- We can only remove specified values, so if the value isn't specified,
-  give up.  Unless we're actually trying to push down a null specified value,
-  like for unlink. -->
-  <li>If <var title="">propagated value</var> is null and is not equal to <var title="">new
+  <li>
+  <p class=comments>We can only remove specified values, so if the value isn't
+  specified, give up.  Unless we're actually trying to push down a null
+  specified value, like for unlink.
+
+  <p>If <var title="">propagated value</var> is null and is not equal to <var title="">new
   value</var>, abort this algorithm.
 
-  <!--
-  If we go all the way up to the root and still don't have the desired value,
+  <li>
+  <div class=comments>
+  <p>If we go all the way up to the root and still don't have the desired value,
   pushing down values is pointless.  It will create extra markup for no
   purpose.  Except if the value is null, which basically just means "try to get
   rid of anything affecting the current element but don't aim for any specific
   value".
 
-  Nevertheless, Chrome 14 dev does seem to do this.  Running bold on <span
-  style=font-weight:300>f[o]o</span> breaks up the span and adds a <b> as a
-  sibling.  In IE9, Firefox 6.0a2, and Opera 11.50, it instead nests the <b>
-  inside the <span>.  It's a tradeoff: WebKit's behavior is better for things
-  like
+  <p>Nevertheless, Chrome 14 dev does seem to do this.  Running bold on
+  &lt;span style=font-weight:300&gt;f[o]o&lt;/span&gt; breaks up the span and adds a
+  &lt;b&gt; as a sibling.  In IE9, Firefox 6.0a2, and Opera 11.50, it instead
+  nests the &lt;b&gt; inside the &lt;span&gt;.  It's a tradeoff: WebKit's behavior is
+  better for things like
 
-    <font color=red>fo[o</font><font color=blue>b]ar</font>
-    -> <font color=red>fo</font><font color=green>[ob]</font><font color=blue>ar</font>
+<pre>&lt;font color=red&gt;fo[o&lt;/font&gt;&lt;font color=blue&gt;b]ar&lt;/font&gt;
+-&gt; &lt;font color=red&gt;fo&lt;/font&gt;&lt;font color=green&gt;[ob]&lt;/font&gt;&lt;font color=blue&gt;ar&lt;/font&gt;</pre>
 
-  (where the spec adds two extra font tags instead of one), but the spec is
+  <p>(where the spec adds two extra font tags instead of one), but the spec is
   simpler for things like
 
-    <font color=red>f[o]o</font>
-    -> <font color=red>f<font color=green>[o]</font>o</font>
+<pre>&lt;font color=red&gt;f[o]o&lt;/font&gt;
+-&gt; &lt;font color=red&gt;f&lt;font color=green&gt;[o]&lt;/font&gt;o&lt;/font&gt;</pre>
 
-  (where WebKit splits the existing tag up in addition to creating a new tag).
+  <p>(where WebKit splits the existing tag up in addition to creating a new tag).
   I'm not particularly sure which approach is better overall, so I'll go with
   the majority of browsers.  If these algorithms move to use runs of
   consecutive siblings instead of doing everything node-by-node, it might make
   sense to break up the parent as long as it won't create an extra node (i.e.,
   we're styling something that includes the first or last child).
-  -->
-  <li>If the <a href=#effective-command-value>effective command value</a> of <var title="">command</var> is not
+  </div>
+
+  <p>If the <a href=#effective-command-value>effective command value</a> of <var title="">command</var> is not
   <a href=#loosely-equivalent-values title="loosely equivalent values">loosely equivalent</a> to <var title="">new value</var> on the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of the last
   member of <var title="">ancestor list</var>, and <var title="">new value</var> is not null,
   abort this algorithm.
@@ -1952,15 +2033,15 @@ with a <code data-anolis-spec=html title="the style attribute">style</code> attr
       <li>If <var title="">child</var> is <var title="">node</var>, continue with the next
       <var title="">child</var>.
 
-      <li>If <var title="">child</var> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> whose <a href=#specified-command-value>specified command
+      <li>
+      <p class=comments> TODO: This will be incorrect for relative font sizes.
+      If the font size on the parent was removed and the font size on the child
+      is in ems or percents or something, it will now change value.  This isn't
+      likely to come up, so we'll ignore it for now.
+
+      <p>If <var title="">child</var> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> whose <a href=#specified-command-value>specified command
       value</a> for <var title="">command</var> is neither null nor <a href=#equivalent-values title="equivalent values">equivalent</a> to <var title="">propagated
       value</var>, continue with the next <var title="">child</var>.
-      <!--
-      TODO: This will be incorrect for relative font sizes.  If the font size
-      on the parent was removed and the font size on the child is in ems or
-      percents or something, it will now change value.  This isn't likely to
-      come up, so we'll ignore it for now.
-      -->
 
       <li>If <var title="">child</var> is the last member of <var title="">ancestor list</var>,
       continue with the next <var title="">child</var>.
@@ -1995,30 +2076,37 @@ different value.
   <li>If <var title="">node</var> is an <a href=#allowed-child>allowed child</a> of "span":
 
   <ol>
-    <!-- Even if the value matches, we stick it in a preceding sibling if
-    possible.  This ensures "a<cite>b</cite>c" -> "<i>a<cite>b</cite>c</i>"
-    instead of "<i>a</i><cite>b</cite><i>c</i>".  While we're at it, we also
-    handle more elaborate cases like <b>foo</b>[bar]<b>baz</b> and even
-    <i><b>foo</b></i>[bar]<i><b>baz</b></i> (the latter becomes
-    <b><i>foo</i>bar<i>baz</i></b>).
+    <li>
+    <div class=comments>
+    <p>Even if the value matches, we stick it in a preceding sibling if
+    possible.  This ensures "a&lt;cite&gt;b&lt;/cite&gt;c" -&gt;
+    "&lt;i&gt;a&lt;cite&gt;b&lt;/cite&gt;c&lt;/i&gt;" instead of
+    "&lt;i&gt;a&lt;/i&gt;&lt;cite&gt;b&lt;/cite&gt;&lt;i&gt;c&lt;/i&gt;".  While we're at it, we
+    also handle more elaborate cases like &lt;b&gt;foo&lt;/b&gt;[bar]&lt;b&gt;baz&lt;/b&gt;
+    and even &lt;i&gt;&lt;b&gt;foo&lt;/b&gt;&lt;/i&gt;[bar]&lt;i&gt;&lt;b&gt;baz&lt;/b&gt;&lt;/i&gt;
+    (the latter becomes &lt;b&gt;&lt;i&gt;foo&lt;/i&gt;bar&lt;i&gt;baz&lt;/i&gt;&lt;/b&gt;).
 
-    Theoretically this algorithm could pointlessly reorganize the DOM in the
+    <p>Theoretically this algorithm could pointlessly reorganize the DOM in the
     event of unreasonable style rules, but it's not a big enough deal for us to
-    care, since the resulting style will still be right. -->
-    <li><a href=#reorder-modifiable-descendants>Reorder modifiable descendants</a> of <var title="">node</var>'s
+    care, since the resulting style will still be right.
+    </div>
+
+    <p><a href=#reorder-modifiable-descendants>Reorder modifiable descendants</a> of <var title="">node</var>'s
     <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code>.
 
     <li><a href=#reorder-modifiable-descendants>Reorder modifiable descendants</a> of <var title="">node</var>'s
     <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code>.
 
-    <li><a href=#wrap>Wrap</a> the one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> list consisting of <var title="">node</var>,
+    <li>
+    <p class=comments>The new parent instructions are too complicated to
+    reasonably feed into the wrap algorithm.
+
+    <p><a href=#wrap>Wrap</a> the one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> list consisting of <var title="">node</var>,
     with <a href=#sibling-criteria>sibling criteria</a> matching a <a href=#simple-modifiable-element>simple modifiable
     element</a> whose <a href=#specified-command-value>specified command value</a> is <a href=#equivalent-values title="equivalent values">equivalent</a>
     to <var title="">new value</var> and whose <a href=#effective-command-value>effective command value</a> is
     <a href=#loosely-equivalent-values title="loosely equivalent values">loosely equivalent</a> to <var title="">new value</var>, and with <a href=#new-parent-instructions>new parent
     instructions</a> returning null.
-    <!-- The new parent instructions are too complicated to reasonably feed
-    into the wrap algorithm. -->
   </ol>
 
   <li>If the <a href=#effective-command-value>effective command value</a> of <var title="">command</var> is
@@ -2032,14 +2120,16 @@ different value.
     omitting any that are <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>s whose <a href=#specified-command-value>specified command
     value</a> for <var title="">command</var> is neither null nor <a href=#equivalent-values title="equivalent values">equivalent</a> to <var title="">new value</var>.
 
-    <li><a href=#force-the-value>Force the value</a> of each <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> in <var title="">children</var>,
+    <li>
+    <p class=comments>This means that if it has no children, we do nothing.
+    IE9 inserts an empty wrapper element in that case, but I'm not sure what
+    the point is, and no one else does, so I don't.  WebKit seems to ignore the
+    node if its only child consists solely of whitespace, but I don't see any
+    grounds for that and no one else does, so I don't.
+
+    <p><a href=#force-the-value>Force the value</a> of each <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> in <var title="">children</var>,
     with <var title="">command</var> and <var title="">new value</var> as in this invocation of
     the algorithm.
-    <!-- This means that if it has no children, we do nothing.  IE9 inserts an
-    empty wrapper element in that case, but I'm not sure what the point is, and
-    no one else does, so I don't.  WebKit seems to ignore the node if its only
-    child consists solely of whitespace, but I don't see any grounds for that
-    and no one else does, so I don't. -->
 
     <li>Abort this algorithm.
   </ol>
@@ -2061,25 +2151,26 @@ different value.
     "italic", let <var title="">new parent</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("i")</a></code> on the
     <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>.
 
-    <li>If <var title="">command</var> is "strikethrough" and <var title="">new value</var> is
+    <li>
+    <p class=comments>TODO: Actual UAs use strike, not s, but s is shorter and
+    HTML5 makes strike invalid.  I've gone with s for now, but maybe we want to
+    change the spec to require strike.
+
+    <p>If <var title="">command</var> is "strikethrough" and <var title="">new value</var> is
     "line-through", let <var title="">new parent</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("s")</a></code> on the
     <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>.
-    <!--
-    TODO: Actual UAs use strike, not s, but s is shorter and HTML5 makes strike
-    invalid.  I've gone with s for now, but maybe we want to change the spec to
-    require strike.
-    -->
 
     <li>If <var title="">command</var> is "underline" and <var title="">new value</var> is
     "underline", let <var title="">new parent</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("u")</a></code> on the
     <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>.
 
-    <li>If <var title="">command</var> is "foreColor", and <var title="">new value</var> is fully
-    opaque with red, green, and blue components in the range 0 to 255:
-    <!-- See comment for foreColor for discussion. -->
+    <li>
+    <p class=comments>See comment for foreColor for discussion.  TODO: Define
+    more carefully what happens when things are out of range or not integers or
+    whatever.
 
-    <!-- TODO: Define more carefully what happens when things are out of range
-    or not integers or whatever. -->
+    <p>If <var title="">command</var> is "foreColor", and <var title="">new value</var> is fully
+    opaque with red, green, and blue components in the range 0 to 255:
 
     <ol>
       <li>Let <var title="">new parent</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("font")</a></code> on the
@@ -2110,32 +2201,36 @@ different value.
     <li>Set the <code class=external data-anolis-spec=html title=attr-hyperlink-href><a href=http://www.whatwg.org/html/#attr-hyperlink-href>href</a></code> attribute of <var title="">new parent</var> to <var title="">new
     value</var>.
 
-    <!-- Nested a elements are bad, because they can't be serialized to
-    text/html.  hrefs should already have been cleared in a previous step, but
-    we might have <a name> or such lurking about. -->
-    <li>Let <var title="">ancestor</var> be <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+    <li>
+    <p class=comments>Nested a elements are bad, because they can't be
+    serialized to text/html.  hrefs should already have been cleared in a
+    previous step, but we might have &lt;a name&gt; or such lurking about.
+
+    <p>Let <var title="">ancestor</var> be <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
     <li>While <var title="">ancestor</var> is not null:
 
     <ol>
-      <li>If <var title="">ancestor</var> is an <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code>, <a href=#set-the-tag-name>set the tag name</a> of
+      <li>
+      <p class=comments> TODO: This will mean any link-specific attributes will
+      be transferred, which makes them both invalid and useless.  Is that okay?
+      I don't really want to list them all, because that sort of list is prone
+      to bitrot.
+
+      <p>If <var title="">ancestor</var> is an <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code>, <a href=#set-the-tag-name>set the tag name</a> of
       <var title="">ancestor</var> to "span", and let <var title="">ancestor</var> be the
       result.
-
-      <!--
-      TODO: This will mean any link-specific attributes will be transferred,
-      which makes them both invalid and useless.  Is that okay?  I don't really
-      want to list them all, because that sort of list is prone to bitrot.
-      -->
 
       <li>Set <var title="">ancestor</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
     </ol>
   </ol>
 
-  <!-- WebKit is the only engine that ever outputs anything but font tags for
-  fontSize.  For size=7, it uses font-size: -webkit-xxx-large.  We just output
-  a font tag no matter what. -->
-  <li>If <var title="">command</var> is "fontSize"; and <var title="">new value</var> is one of
+  <li>
+  <p class=comments>WebKit is the only engine that ever outputs anything but
+  font tags for fontSize.  For size=7, it uses font-size: -webkit-xxx-large.
+  We just output a font tag no matter what for size=7.
+
+  <p>If <var title="">command</var> is "fontSize"; and <var title="">new value</var> is one of
   "xx-small", "small", "medium", "large", "x-large", "xx-large", or
   "xxx-large"; and either the <a href=#css-styling-flag>CSS styling flag</a> is false, or
   <var title="">new value</var> is "xxx-large": let <var title="">new parent</var> be the result
@@ -2154,11 +2249,13 @@ different value.
     <li>xxx-large: 7
   </ul>
 
-  <!-- We always use sup/sub elements, even in CSS mode, following Gecko and
-  contradicting WebKit.  This is because <span value="vertical-align:
-  sub/super">, the obvious equivalent (and what WebKit uses), behaves quite
-  differently: it doesn't reduce font-size, which is ugly. -->
-  <li>If <var title="">command</var> is "subscript" or "superscript" and <var title="">new
+  <li>
+  <p class=comments>We always use sup/sub elements, even in CSS mode, following
+  Gecko and contradicting WebKit.  This is because &lt;span
+  value="vertical-align: sub/super"&gt;, the obvious equivalent (and what WebKit
+  uses), behaves quite differently: it doesn't reduce font-size, which is ugly.
+
+  <p>If <var title="">command</var> is "subscript" or "superscript" and <var title="">new
   value</var> is "sub", let <var title="">new parent</var> be the result of calling
   <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("sub")</a></code> on the
   <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>.
@@ -2172,9 +2269,11 @@ different value.
   of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("span")</a></code> on the
   <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>.
 
-  <li>Insert <var title="">new parent</var> in <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> before
-  <var title="">node</var>.  <!-- This preserves boundary points correctly, as usual.
-  -->
+  <li>
+  <p class=comments>This preserves boundary points correctly, as usual.
+
+  <p>Insert <var title="">new parent</var> in <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> before
+  <var title="">node</var>.
 
   <li>If the <a href=#effective-command-value>effective command value</a> of <var title="">command</var> for
   <var title="">new parent</var> is not <a href=#loosely-equivalent-values title="loosely equivalent values">loosely equivalent</a> to <var title="">new value</var>,
@@ -2293,12 +2392,14 @@ as desired.
 <ol>
   <li>Let <var title="">command</var> be the current <a href=#command>command</a>.
 
-  <li>If there is no <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node <a href=#effectively-contained>effectively
-  contained</a> in the <a href=#active-range>active range</a>:
-  <!-- IE9 seems to wrap the whole line instead, or something like that,
-  although it does nothing for createLink.  We follow all other browsers'
+  <li>
+  <p class=comments>IE9 seems to wrap the whole line instead, or something like
+  that, although it does nothing for createLink.  We follow all other browsers'
   general behavior: change the state/value, and then make sure that takes
-  effect if the user types something before changing the cursor position. -->
+  effect if the user types something before changing the cursor position.
+
+  <p>If there is no <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node <a href=#effectively-contained>effectively
+  contained</a> in the <a href=#active-range>active range</a>:
 
   <ol>
     <li>If <var title="">command</var> has <a href=#inline-command-activated-values>inline command activated values</a>,
@@ -2320,13 +2421,16 @@ as desired.
     <li>Abort these steps.
   </ol>
 
-  <li>If the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is an
+  <li>
+  <p class=comments>The last sentence here just prettifies the resulting range
+  a bit.
+
+  <p>If the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is an
   <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node, and its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> is neither zero
   nor its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a>, call <code class=external data-anolis-spec=domcore title=dom-Text-splitText><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-text-splittext>splitText()</a></code> on the <a href=#active-range>active
   range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, with argument equal to the <a href=#active-range>active
   range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a>.  Then set the <a href=#active-range>active range</a>'s
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> to the result, and its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> to zero.
-  <!-- This last sentence just prettifies the resulting range a bit. -->
 
   <li>If the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is an
   <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node, and its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> is neither zero
@@ -2340,52 +2444,61 @@ as desired.
   <li>For each <var title="">element</var> in <var title="">element list</var>, <a href=#clear-the-value>clear the
   value</a> of <var title="">element</var>.
 
-  <li>Let <var title="">node list</var> be all <a href=#editable>editable</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>
-  <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a>.
-  <!--
-  We skip non-editable nodes.
+  <li>
+  <div class=comments>
+  <p>We skip non-editable nodes.
 
-  IE9: Allows everything to be modified by execCommand(), regardless of whether
-    it's editable.
-  Firefox 4.0: Ignores execCommand() if the start and end of the selection are
-    not both editable.  If the start and end are editable but something in the
+  <dl>
+    <dt>IE9
+    <dd>Allows everything to be modified by execCommand(), regardless of
+    whether it's editable.
+
+    <dt>Firefox 4.0
+    <dd>Ignores execCommand() if the start and end of the selection are not
+    both editable.  If the start and end are editable but something in the
     middle is not, seems to relocate the non-editable part in the middle or
     something like that.
-  Chrome 12 dev: Ignores execCommand() if the start and end of the selection
-    are not both editable.  If the start and end are editable but something in
-    the middle is not, applies the given command but skips the non-editable
-    parts.  But the state doesn't ignore the non-editable parts, so if you bold
-    such a selection you can't unbold it, for instance, since the middle part
-    will remain bold (so it will keep on trying to bold it instead of switching
-    to unbold).
-  Opera 11.00: Ignores execCommand() if the start and end of the selection are
-    not both editable.  If the start and end are editable but something in the
+
+    <dt>Chrome 12 dev
+    <dd>Ignores execCommand() if the start and end of the selection are not
+    both editable.  If the start and end are editable but something in the
+    middle is not, applies the given command but skips the non-editable parts.
+    But the state doesn't ignore the non-editable parts, so if you bold such a
+    selection you can't unbold it, for instance, since the middle part will
+    remain bold (so it will keep on trying to bold it instead of switching to
+    unbold).
+
+    <dt>Opera 11.00
+    <dd>Ignores execCommand() if the start and end of the selection are not
+    both editable.  If the start and end are editable but something in the
     middle is not, applies the command to everything, even the non-editable
     part.
+  </dl>
 
-  I chose to go with the non-IE behavior, per this discussion:
-  http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-April/031147.html
+  <p>I chose to go with the non-IE behavior, per <a href=http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-April/031147.html>discussion</a>.
   Ignoring non-editable things is convenient for the common use-case of an
   editor, where you don't want the user to bold random parts of the UI when
   they hit the bold button.  For cases where it's not desired, you can always
   turn designMode on briefly before using execCommand(), so the non-IE behavior
   is a lot easier to work around than the IE behavior.
 
-  I don't see the value in ever just ignoring execCommand().  If the start and
-  end are not editable, I'm going to say you should still style any editable
-  nodes in between.  I'm also going to ignore non-editable nodes for the
-  purposes of determining state, so (for instance) if all the editable nodes
-  are bolded, it will unbold instead of bolding.
-  -->
+  <p>I don't see the value in ever just ignoring execCommand().  If the start
+  and end are not editable, I'm going to say you should still style any
+  editable nodes in between.  I'm also going to ignore non-editable nodes for
+  the purposes of determining state, so (for instance) if all the editable
+  nodes are bolded, it will unbold instead of bolding.
+  </div>
 
-  <li>For each <var title="">node</var> in <var title="">node list</var>:
+  <p>Let <var title="">node list</var> be all <a href=#editable>editable</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>
+  <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a>.
 
-  <!--
-  TODO: This is inefficient.  It would be most efficient to only push down
-  values on the highest-level effectively contained nodes, and to batch
-  operations so we handle runs of adjacent siblings at once.  Should we bother
-  fixing this?
-  -->
+  <li>
+  <p class=comments>TODO: This is inefficient.  It would be most efficient to
+  only push down values on the highest-level effectively contained nodes, and
+  to batch operations so we handle runs of adjacent siblings at once.  Should
+  we bother fixing this?
+
+  <p>For each <var title="">node</var> in <var title="">node list</var>:
 
   <ol>
     <li><a href=#push-down-values>Push down values</a> on <var title="">node</var>.
@@ -2397,24 +2510,29 @@ as desired.
 
 <h3 id=the-backcolor-command><span class=secno>7.7 </span><dfn>The <code title="">backColor</code> command</dfn></h3>
 
-<!--
-We have three behaviors to choose from for this one:
+<p class=note>For historical reasons, backColor and hiliteColor behave
+identically.
 
-1) Chrome 11 dev and IE 9 RC treat it the same as hiliteColor (although IE 9 RC
-doesn't support hiliteColor itself).
+<div class=comments>
+<p>We have three behaviors to choose from for this one:
 
-2) Firefox 4 in non-CSS mode sets the bgcolor of the nearest td or body, or
-something like that.  In testing, it seems to jump out of contenteditable
-elements to style non-editable ancestors, which is alarming.
+<ol>
+  <li>Chrome 11 dev and IE 9 RC treat it the same as hiliteColor (although IE 9
+  RC doesn't support hiliteColor itself).
 
-3) Firefox 4 in CSS mode and Opera 11 set the background of the nearest block
-container, although it doesn't seem to be very dependable (probably I just
-don't get what exactlyit's doing).
+  <li>Firefox 4 in non-CSS mode sets the bgcolor of the nearest td or body, or
+  something like that.  In testing, it seems to jump out of contenteditable
+  elements to style non-editable ancestors, which is alarming.
 
-(1) is obviously redundant, but has plurality support, so we could spec it that
-way if the other ways were useless.
+  <li>Firefox 4 in CSS mode and Opera 11 set the background of the nearest
+  block container, although it doesn't seem to be very dependable (probably I
+  just don't get what exactlyit's doing).
+</ol>
 
-(3) is incoherent from a user perspective.  For instance, if you try it on
+<p>(1) is obviously redundant, but has plurality support, so we could spec it
+that way if the other ways were useless.
+
+<p>(3) is incoherent from a user perspective.  For instance, if you try it on
 paragraphs the background will have big gaps where the margins are.  If you try
 it on an inline element that's a child of the editing host, it will do nothing
 or apply the background to everything or such, even though such an inline
@@ -2423,16 +2541,14 @@ would only make sense if we take considerable effort to ensure that block
 elements all have no margins, or if we wrap things in a div if they have
 margins, or something like that.
 
-That leaves (2).  That might be useful if it actually set the document's
+<p>That leaves (2).  That might be useful if it actually set the document's
 background color, but it seems like it sets table cell backgrounds sometimes
 instead, which is really confusing.
 
-The path of least resistance is to standardize this as meaning the same thing
-as hiliteColor, and make up new commands if we want to do things like set the
-document background color.  See hiliteColor for comments.
--->
-<p class=note>For historical reasons, backColor and hiliteColor behave
-identically.
+<p>The path of least resistance is to standardize this as meaning the same
+thing as hiliteColor, and make up new commands if we want to do things like set
+the document background color.  See hiliteColor for comments.
+</div>
 
 <p><a href=#action>Action</a>:
 
@@ -2456,34 +2572,36 @@ valid CSS color.
 
 <h3 id=the-bold-command><span class=secno>7.8 </span><dfn>The <code title="">bold</code> command</dfn></h3>
 
-<!-- If the selection is collapsed (but not if it contains nothing but is not
-collapsed), IE9 wraps the whole line in a <strong>.  This seems bizarre and no
-one else does it, so I don't do it.  It's a similar story for similar commands
-(fontName, italic, etc.).  Except not for strikethrough, where it just does
-nothing if the selection is empty.  Why strikethrough?  I don't know. -->
+<p class=comments>If the selection is collapsed (but not if it contains nothing
+but is not collapsed), IE9 wraps the whole line in a &lt;strong&gt;.  This seems
+bizarre and no one else does it, so I don't do it.  It's a similar story for
+similar commands (fontName, italic, etc.).  Except not for strikethrough, where
+it just does nothing if the selection is empty.  Why strikethrough?  I don't
+know.
 
 <p><a href=#action>Action</a>: If <code title=queryCommandState()><a href=#querycommandstate()>queryCommandState("bold")</a></code> returns true,
 <a href="#set-the-selection's-value">set the selection's value</a> to "normal".  Otherwise <a href="#set-the-selection's-value">set the
 selection's value</a> to "bold".
 
-<p><a href=#inline-command-activated-values>Inline command activated values</a>: "bold", "600", "700", "800",
-or "900"
-<!--
-The cutoff of 600 (both here and for state) matches Chrome 14 dev.  The cutoff
-used by IE9 and Firefox 6.0a2 seems to be 500, and the distinction isn't
-relevant for Opera 11.11 (it doesn't use CSS here at all AFAICT).  On my test
-systems with default fonts, Chrome 14 dev displays 700 and up as bold, while
-the other three display 600 and up as bold.
+<div class=comments>
+<p>The cutoff of 600 matches Chrome 14 dev.  The cutoff used by IE9 and Firefox
+6.0a2 seems to be 500, and the distinction isn't relevant for Opera 11.11 (it
+doesn't use CSS here at all AFAICT).  On my test systems with default fonts,
+Chrome 14 dev displays 700 and up as bold, while the other three display 600
+and up as bold.
 
-Thus in Chrome on my system, the bold command will behave a bit oddly the first
+<p>Thus in Chrome on my system, the bold command will behave a bit oddly the first
 time you hit it if there's anything in the range with font-weight: 600, but it
 will look right in other browsers.  On the other hand, if I followed
 IE/Firefox, it would look wrong on all my browsers for font-weight: 500.
 
-700 actually makes more sense: then you'd view 100-300 as light, 400-600 as
+<p>700 actually makes more sense: then you'd view 100-300 as light, 400-600 as
 medium, 700-900 as bold.  But that's not how it seems to work in browsers, so
 I'll go with 600 as the cutoff.
--->
+</div>
+
+<p><a href=#inline-command-activated-values>Inline command activated values</a>: "bold", "600", "700", "800",
+or "900"
 
 <p><a href=#relevant-css-property>Relevant CSS property</a>: "font-weight"
 
@@ -2493,141 +2611,177 @@ I'll go with 600 as the cutoff.
 
 <h3 id=the-createlink-command><span class=secno>7.9 </span><dfn>The <code title="">createLink</code> command</dfn></h3>
 
+<p class=comments> If the selection doesn't contain anything (meaning, e.g.,
+deleteContents() doesn't change anything), then Chrome 12 dev inserts a link at
+the selection start, with the text equal to the link URL.  Other browsers don't
+do it, so I don't either.
+
 <p><a href=#action>Action</a>:
 
-<!-- If the selection doesn't contain anything (meaning, e.g., deleteContents()
-doesn't change anything), then Chrome 12 dev inserts a link at the selection
-start, with the text equal to the link URL.  Other browsers don't do it, so I
-don't either. -->
 <ol>
-  <li>If <var title="">value</var> is the empty string, abort these steps and do
-  nothing.
-  <!--
-  Firefox 4b11 and Chrome 11 dev both silently do nothing in this case.
-  IE 9 RC and Opera 11 both treat the request literally.  Gecko and WebKit
-  probably have it right here: users who enter no URL are very unlikely to want
-  to link to a relative URL resolving to the current document.  If they really
-  want to, they can always specify "#" for the value, or the author can rewrite
-  it, so it's not like this makes the API less useful.
-  -->
+  <li>
+  <p class=comments> Firefox 4b11 and Chrome 11 dev both silently do nothing in
+  this case.  IE 9 RC and Opera 11 both treat the request literally.  Gecko and
+  WebKit probably have it right here: users who enter no URL are very unlikely
+  to want to link to a relative URL resolving to the current document.  If they
+  really want to, they can always specify "#" for the value, or the author can
+  rewrite it, so it's not like this makes the API less useful.
 
-  <li>For each <a href=#editable>editable</a> <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code> element that has an <code class=external data-anolis-spec=html title=attr-hyperlink-href><a href=http://www.whatwg.org/html/#attr-hyperlink-href>href</a></code>
+  <p>If <var title="">value</var> is the empty string, abort these steps and do
+  nothing.
+
+  <li>
+  <div class=comments>
+  <p>There are three approaches here.  For instance, if you ask browsers to
+  create a link to "http://example.org" on the "b" here:
+
+    <pre>&lt;a href=http://example.com&gt;&lt;b&gt;Abc&lt;/b&gt;&lt;/a&gt;</pre>
+
+  <p>Chrome 10 dev produces:
+
+    <pre>&lt;b&gt;&lt;a href=http://example.com&gt;A&lt;/a&gt;&lt;a href=http://example.org&gt;b&lt;/a&gt;&lt;a href=http://example.com&gt;c&lt;/a&gt;&lt;/b&gt;</pre>
+
+  <p>Firefox 4b11 produces (roughly):
+
+    <pre>&lt;a href=http://example.com&gt;&lt;b&gt;A&lt;a href=http://example.org&gt;b&lt;/a&gt;c&lt;/b&gt;&lt;/a&gt;</pre>
+
+  <p>(This doesn't round-trip through text/html serialization.)  IE 9 RC and Opera
+  11 produce simply:
+
+    <pre>&lt;a href=http://example.org&gt;&lt;b&gt;Abc&lt;/b&gt;&lt;/a&gt;</pre>
+
+  <p>The last behavior probably best matches user expectations.  If you happen to
+  miss out a character when selecting the link you want to change, do you
+  really intend to only change the link of part of it?
+  </div>
+
+  <p>For each <a href=#editable>editable</a> <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code> element that has an <code class=external data-anolis-spec=html title=attr-hyperlink-href><a href=http://www.whatwg.org/html/#attr-hyperlink-href>href</a></code>
   attribute and is an <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of some <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <a href=#effectively-contained>effectively
   contained</a> in the <a href=#active-range>active range</a>, set that <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code> element's
   <code class=external data-anolis-spec=html title=attr-hyperlink-href><a href=http://www.whatwg.org/html/#attr-hyperlink-href>href</a></code> attribute to <var title="">value</var>.
-  <!-- There are three approaches here.  For instance, if you ask browsers to
-  create a link to "http://example.org" on the "b" here:
-
-    <a href=http://example.com><b>Abc</b></a>
-
-  Chrome 10 dev produces:
-
-    <b><a href=http://example.com>A</a><a href=http://example.org>b</a>
-    <a href=http://example.com>c</a></b>
-
-  Firefox 4b11 produces (roughly):
-
-    <a href=http://example.com><b>A<a href=http://example.org>b</a>c</b></a>
-
-  (This doesn't round-trip through text/html serialization.)  IE 9 RC and Opera
-  11 produce simply:
-
-    <a href=http://example.org><b>Abc</b></a>
-
-  The last behavior probably best matches user expectations.  If you happen to
-  miss out a character when selecting the link you want to change, do you
-  really intend to only change the link of part of it?
-  -->
 
   <li><a href="#set-the-selection's-value">Set the selection's value</a> to <var title="">value</var>.
 </ol>
 
-<!-- IE10PP2, Firefox 7.0a2, Chrome 14 dev, and Opera 11.50 all do not support
-indeterminate, state, or value for createLink or unlink.  I define
-indeterminate and value anyway because they make sense. -->
+<p class=comments>IE10PP2, Firefox 7.0a2, Chrome 14 dev, and Opera 11.50 all do
+not support indeterminate, state, or value for createLink or unlink.  I define
+indeterminate and value anyway because they make sense.
+
 <p><a href=#standard-inline-value-command>Standard inline value command</a>
 
 
 <h3 id=the-fontname-command><span class=secno>7.10 </span><dfn>The <code title="">fontName</code> command</dfn></h3>
 
-<p><a href=#action>Action</a>: <a href="#set-the-selection's-value">Set the selection's value</a> to
-<var title="">value</var>.
-<!-- UAs differ a bit in the details here:
+<div class=comments>
+<p>UAs differ a bit in the details here:
 
-IE 9 RC: Empty string sets <font face="">
-Firefox 4b11: Empty string does nothing
-Chrome 11 dev: Empty string does nothing, '"monospace"' same as 'monospace'
-  (i.e., cannot escape font-family keywords because quotes are stripped,
-  clearly wrong)
-Opera 11: Empty string sets <font face="">
+<dl>
+  <dt>IE 9 RC
+  <dd>Empty string sets &lt;font face=""&gt;
 
-Setting an empty font-family has the effect of inheriting the font from the
+  <dt>Firefox 4b11
+  <dd>Empty string does nothing
+
+  <dt>Chrome 11 dev
+  <dd>Empty string does nothing, '"monospace"' same as 'monospace' (i.e.,
+  cannot escape font-family keywords because quotes are stripped, clearly
+  wrong)
+
+  <dt>Opera 11
+  <dd>Empty string sets &lt;font face=""&gt;
+</dl>
+
+<p>Setting an empty font-family has the effect of inheriting the font from the
 parent (although I don't see where the February 24, 2011 CSS 3 Fonts draft says
 that).  Thus it makes sense that if we special-case this, it should be to unset
 the font somehow.
 
-Special-casing the empty string to do nothing doesn't make sense to me.  With
+<p>Special-casing the empty string to do nothing doesn't make sense to me.  With
 createLink we'd expect the user to enter the URL themselves, so it makes sense
 to special-case clicking OK without entering anything.  But here it's very
 likely that the font list will be fixed by the author (how many users will
 understand CSS font-family syntax?), so I don't think such usability concerns
-apply. -->
+apply.
+</div>
 
-<p><a href=#standard-inline-value-command>Standard inline value command</a>
-<!--
-The value is complicated.
+<p><a href=#action>Action</a>: <a href="#set-the-selection's-value">Set the selection's value</a> to
+<var title="">value</var>.
 
-IE 9 RC: Always the empty string.  Not very useful.
-Firefox 4b11: Confusing.  Sometimes it returns generic family names, like
-  "sans-serif".  Sometimes it gives specific font names, like "tt" when the
-  font is specified as "monospace".  Sometimes it gives the literal font-family
-  string.  Not sure what it's doing here.
-Chrome 11 dev: Gives the literal value of font-family, except if it's inherited
-  from default values (no explicit style declarations anywhere), when it seems
-  to return the exact font name.
-Opera 11: Returns the literal value of font-family, except if it's inherited
+<div class=comments>
+<p>The value is complicated.
+
+<dl>
+  <dt>IE 9 RC
+  <dd>Always the empty string.  Not very useful.
+
+  <dt>Firefox 4b11
+  <dd>Confusing.  Sometimes it returns generic family names, like "sans-serif".
+  Sometimes it gives specific font names, like "tt" when the font is specified
+  as "monospace".  Sometimes it gives the literal font-family string.  Not sure
+  what it's doing here.
+
+  <dt>Chrome 11 dev
+  <dd>Gives the literal value of font-family, except if it's inherited from
+  default values (no explicit style declarations anywhere), when it seems to
+  return the exact font name.
+
+  <dt>Opera 11
+  <dd>Returns the literal value of font-family, except if it's inherited
   from default values, when it returns the empty string.
+</dl>
 
-I'm just going to punt on this and say it should be the resolved value of
+<p>I'm just going to punt on this and say it should be the resolved value of
 font-family.  I'll leave CSSOM to decide what that means if there are no
 applicable style rules.
--->
+</div>
+
+<p><a href=#standard-inline-value-command>Standard inline value command</a>
 
 <p><a href=#relevant-css-property>Relevant CSS property</a>: "font-family"
 
 
 <h3 id=the-fontsize-command><span class=secno>7.11 </span><dfn>The <code title="">fontSize</code> command</dfn></h3>
 
-<p><a href=#action>Action</a>:
-
-<!--
-IE 9: Parses the value as a number (allowing floating-point), rounds to the
+<div class=comments>
+<dl>
+  <dt>IE 9
+  <dd>Parses the value as a number (allowing floating-point), rounds to the
   nearest integer, then clamps to the range 1 to 7.  If the value is not a
   valid number, including if it has trailing characters (like "2em"), does
   nothing.  Normalizes relative sizes, so "+0" is the same as "+3", etc.
   Treats empty string the same as "1".
-Firefox 4.0: Passes the value through literally to <font size=>, so "2em" gets
-  you <font size="2em">.  Always uses <font>, even with styleWithCss true.
-  Ignores the command if the value is the empty string.
-Chrome 12 dev: Parses the value as a legacy font size, so "2em" becomes "2",
-  then outputs a <font> with the resulting number.  If there is no resulting
-  number, like for a value of "xx-small", does nothing.  In styleWithCss mode,
-  outputs a span with corresponding CSS keywords: 1 = x-small, 2 = small,
-  . . ., 6 = xx-large, 7 = -webkit-xxx-large.  Normalizes relative sizes, so
-  "+0" is the same as "3", etc.  Ignores the command if the value is the empty
-  string.
-Opera 11: Parses the value as an integer (ignoring floating-point as trailing
-  characters), then outputs that.  This means that "+0" becomes <font size=0>
-  instead of <font size=+0> or <font size=3>.  Non-numeric values get
-  interpreted as 0.  Does not clamp, and is willing to output negative numbers.
-  Treats empty string as "0".
 
-What all of these have in common is that they force the author to deal with
+  <dt>Firefox 4.0
+  <dd>Passes the value through literally to &lt;font size=&gt;, so "2em" gets you
+  &lt;font size="2em"&gt;.  Always uses &lt;font&gt;, even with styleWithCss true.
+  Ignores the command if the value is the empty string.
+
+  <dt>Chrome 12 dev
+  <dd>Parses the value as a legacy font size, so "2em" becomes "2", then
+  outputs a &lt;font&gt; with the resulting number.  If there is no resulting
+  number, like for a value of "xx-small", does nothing.  In styleWithCss mode,
+  outputs a span with corresponding CSS keywords: 1 = x-small, 2 = small, . .
+  ., 6 = xx-large, 7 = -webkit-xxx-large.  Normalizes relative sizes, so "+0"
+  is the same as "3", etc.  Ignores the command if the value is the empty
+  string.
+
+  <dt>Opera 11
+  <dd>Parses the value as an integer (ignoring floating-point as trailing
+  characters), then outputs that.  This means that "+0" becomes &lt;font
+  size=0&gt; instead of &lt;font size=+0&gt; or &lt;font size=3&gt;.  Non-numeric values
+  get interpreted as 0.  Does not clamp, and is willing to output negative
+  numbers.  Treats empty string as "0".
+</dl>
+
+<p>What all of these have in common is that they force the author to deal with
 legacy font values and don't let them use CSS.  This is undesirable, so I
 ignore how implementations behave.  Practically any value that did the same
 thing in IE and Firefox should still do the same thing here, so I'm only
 respecifying non-interoperable behavior anyway.
--->
+</div>
+
+<p><a href=#action>Action</a>:
+
 <ol>
   <li>If <var title="">value</var> is the empty string, abort these steps and do
   nothing.
@@ -2665,6 +2819,14 @@ respecifying non-interoperable behavior anyway.
     <li>Set <var title="">value</var> to the string here corresponding to
     <var title="">number</var>:
 
+    <p class=comments> The entry for 7 here is an issue: there's no CSS value
+    that corresponds to it.  Even if we got one added to the drafts, it
+    wouldn't be backward-compatible to use it.  WebKit is the only engine that
+    supports CSS output for fontSize, and it uses -webkit-xxx-large in this
+    case, which is unworkable.  Instead, we just always output a font tag for
+    size 7.  If authors want conforming markup, they'll need to give CSS sizes
+    above size 7, not legacy sizes.
+
     <ul>
       <li>1: xx-small
       <li>2: small
@@ -2674,77 +2836,78 @@ respecifying non-interoperable behavior anyway.
       <li>6: xx-large
       <li>7: xxx-large
     </ul>
-
-    <!--
-    The entry for 7 here is an issue: there's no CSS value that corresponds to
-    it.  Even if we got one added to the drafts, it wouldn't be
-    backward-compatible to use it.  WebKit is the only engine that supports CSS
-    output for fontSize, and it uses -webkit-xxx-large in this case, which is
-    unworkable.  Instead, we just always output a font tag for size 7.  If
-    authors want conforming markup, they'll need to give CSS sizes above size
-    7, not legacy sizes.
-    -->
   </ol>
 
-  <li>If <var title="">value</var> is not one of the strings "xx-small", "x-small",
+  <li>
+  <p class=comments> Not sure this is the best way to do it.  We don't want to
+  allow relative lengths, because those can have very weird user-visible
+  behavior.  For instance, a size of 2em would sometimes double the text size,
+  but if you applied it a second time it would do nothing, but if you
+  deselected one character it would suddenly double the size again.  Current
+  UAs just only allow numeric values.  There's no harm in allowing "x-small"
+  and absolute sizes, I don't think.
+
+  <p>If <var title="">value</var> is not one of the strings "xx-small", "x-small",
   "small", "medium", "large", "x-large", "xx-large", "xxx-large", and is not a
   valid CSS absolute length, then abort these steps and do nothing.
-  <!--
-  Not sure this is the best way to do it.  We don't want to allow relative
-  lengths, because those can have very weird user-visible behavior.  For
-  instance, a size of 2em would sometimes double the text size, but if you
-  applied it a second time it would do nothing, but if you deselected one
-  character it would suddenly double the size again.  Current UAs just only
-  allow numeric values.  There's no harm in allowing "x-small" and absolute
-  sizes, I don't think.
-  -->
 
   <li><a href="#set-the-selection's-value">Set the selection's value</a> to <var title="">value</var>.
 </ol>
+
+<p class=comments>This follows Firefox 6.0a2.  Chrome 14 dev always returns
+false.  Note that indeterminacy here keys off the effective command value,
+while the value is based only on an approximation (a number from one to seven).
+Thus it's possible for every subrange of the selection to have the same value,
+but for the selection to still be indeterminate.  Setting the fontSize to the
+value will make it determinate without changing anything's value.
 
 <p><a href=#indeterminate>Indeterminate</a>: True if among <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>
 nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
 range</a>, there are two that have distinct <a href=#effective-command-value title="effective command
 value">effective command values</a>.  Otherwise false.
-<!-- This follows Firefox 6.0a2.  Chrome 14 dev always returns false.  Note
-that indeterminacy here keys off the effective command value, while the value
-is based only on an approximation (a number from one to seven).  Thus it's
-possible for every subrange of the selection to have the same value, but for
-the selection to still be indeterminate.  Setting the fontSize to the value
-will make it determinate without changing anything's value. -->
+
+<div class=comments>
+<dl>
+  <dt>IE9
+  <dd>Seems to return a number based on the computed font-size, but only if
+  it's exactly right, otherwise it returns null.  Something like that.
+
+  <dt>Firefox 6.0a2
+  <dd>Seemingly goes up to the nearest ancestor that's a &lt;font size&gt; and
+  returns the literal value of that attribute, or "" if there's no such
+  ancestor.
+
+  <dt>Chrome 14 dev
+  <dd>Gets the computed font-size in pixels, and rounds to the nearest &lt;font
+  size&gt; equivalent, rounding up in the event of a tie.  Except that if it's
+  small enough, it returns "0", which doesn't make sense because that behaves
+  the same as "1".
+
+  <dt>Opera 11.11
+  <dd>Like Firefox, except it returns "3" if there's no &lt;font size&gt;
+  ancestor, and it converts relative values to absolute ("+1" -&gt; "4").
+</dl>
+
+<p>Chrome's behavior seems the most useful.  As usual, IE returns a variable
+type and all other browsers return strings, and we follow other browsers.
+
+<p>If the selection isn't someplace editable, Chrome works like usual; some
+other browsers behave differently.  I see no reason to behave differently.
+</div>
 
 <p><a href=#value>Value</a>:
-<!--
-IE9: Seems to return a number based on the computed font-size, but only if it's
-exactly right, otherwise it returns null.  Something like that.
 
-Firefox 6.0a2: Seemingly goes up to the nearest ancestor that's a <font size>
-and returns the literal value of that attribute, or "" if there's no such
-ancestor.
-
-Chrome 14 dev: Gets the computed font-size in pixels, and rounds to the nearest
-<font size> equivalent, rounding up in the event of a tie.  Except that if it's
-small enough, it returns "0", which doesn't make sense because that behaves the
-same as "1".
-
-Opera 11.11: Like Firefox, except it returns "3" if there's no <font size>
-ancestor, and it converts relative values to absolute ("+1" -> "4").
-
-Chrome's behavior seems the most useful.  As usual, IE returns a variable type
-and all other browsers return strings, and we follow other browsers.
-
-If the selection isn't someplace editable, Chrome works like usual; some other
-browsers behave differently.  I see no reason to behave differently.
--->
 <ol>
-  <li>Let <var title="">pixel size</var> be the <a href=#effective-command-value>effective command value</a> of
+  <li>
+  <p class=comments>See comment for standard inline value commands on how I
+  decided on this choice of node.
+
+  <p>Let <var title="">pixel size</var> be the <a href=#effective-command-value>effective command value</a> of
   the first <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that is <a href=#effectively-contained>effectively
   contained</a> in the <a href=#active-range>active range</a>, or if there is no such
   node, the <a href=#effective-command-value>effective command value</a> of the <a href=#active-range>active
   range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, in either case interpreted as a number of
   pixels.
-  <!-- See comment for standard inline value commands on how I decided on this
-  choice of node. -->
 
   <li>Return the <a href=#legacy-font-size-for>legacy font size for</a> <var title="">pixel size</var>.
 </ol>
@@ -2782,11 +2945,15 @@ returned by the following algorithm:
 
 <h3 id=the-forecolor-command><span class=secno>7.12 </span><dfn>The <code title="">foreColor</code> command</dfn></h3>
 
-<p><a href=#action>Action</a>:
+<div class=comments>
+<p>Color interpretations:
 
-<!-- Color interpretations (wide screen recommended):
-
-                        IE10PP2       Firefox 7.0a2            Chrome 14 dev            Opera 11.50
+<!-- I wanted the table to stretch out to the left.  CSS doesn't support this
+directly, but where there's a will, there's a way! -->
+<div style=height:1px;background:white;z-index:2;position:absolute;left:0;right:0></div>
+<pre style="white-space:pre; overflow:auto; float:right; background:white;
+padding:0.5em; border: 1px solid gray; border-right: none; margin-top: 0;
+margin-bottom: 0">                        IE10PP2       Firefox 7.0a2            Chrome 14 dev            Opera 11.50
 blue                    blue          blue                     #0000ff                  #0000ff
 f                       #f            -                        -                        #f00000
 #f                      #f            -                        -                        #f00000
@@ -2808,62 +2975,85 @@ hsl(240, 100%, 50%)     #000150       rgb(0, 0, 255)           #0000ff          
 cornsilk                cornsilk      cornsilk                 #fff8dc                  #fff8dc
 potato quiche           #0000c0       -                        -                        #000a00
 transparent             transparent   -                        rgba(0, 0, 0, 0)         #00a000
-currentColor            #c0e000       currentcolor             rgba(0, 0, 0, 0)         #c000e0
+currentColor            #c0e000       currentcolor             rgba(0, 0, 0, 0)         #c000e0</pre>
+<div style=clear:right></div>
+<div style=height:1px;background:white;z-index:2;position:absolute;left:0;right:0;margin-top:-1px></div>
 
-The interpretations given for Firefox are only in styleWithCSS mode.  In
-non-styleWithCSS mode, it just outputs the string literally as the <font color>
-attribute value, which can lead to different results.  The given output for
-Chrome is for <font>; the output in styleWithCSS mode is the same, but rgb() is
-used instead of hex notation, and "transparent" and "currentcolor" are passed
-through under those names.  IE and Opera only support <font> to begin with.
+<p>The interpretations given for Firefox are only in styleWithCSS mode.  In
+non-styleWithCSS mode, it just outputs the string literally as the &lt;font
+color&gt; attribute value, which can lead to different results.  The given output
+for Chrome is for &lt;font&gt;; the output in styleWithCSS mode is the same, but
+rgb() is used instead of hex notation, and "transparent" and "currentcolor" are
+passed through under those names.  IE and Opera only support &lt;font&gt; to begin
+with.
 
-Conclusions:
+<p>Conclusions:
 
-* Everyone accepts simple color keywords and #xxxxxx notation.
-* Opera mangles #xxx, but everyone else handles it fine.
-* The leading # is optional in all browsers but Gecko.
-* rgb() is accepted by everyone but Opera.
-* rgba() and hsl() are accepted by Gecko and WebKit, but rejected by IE and
+<ul>
+  <li>Everyone accepts simple color keywords and #xxxxxx notation.
+
+  <li>Opera mangles #xxx, but everyone else handles it fine.
+
+  <li>The leading # is optional in all browsers but Gecko.
+
+  <li>rgb() is accepted by everyone but Opera.
+
+  <li>rgba() and hsl() are accepted by Gecko and WebKit, but rejected by IE and
   Opera.
-* IE and Opera mangle unrecognized stuff, Gecko and WebKit ignore.
-* Browsers will happily output stuff like "transparent" and "rgba()" into <font
-  color> even though it won't be uniformly accepted there.
-* Opera and WebKit normalize the output color very aggressively, Gecko leaves
-  keywords intact but otherwise normalizes for CSS output (but doesn't
-  normalize at all for <font>), and IE normalizes inconsistently.
 
-What I'm going to say is that it either has to be a valid CSS color, or
-prefixing it with # must result in a valid CSS color.  For <font>, I'll say
+  <li>IE and Opera mangle unrecognized stuff, Gecko and WebKit ignore.
+
+  <li>Browsers will happily output stuff like "transparent" and "rgba()" into
+  &lt;font color&gt; even though it won't be uniformly accepted there.
+
+  <li>Opera and WebKit normalize the output color very aggressively, Gecko
+  leaves keywords intact but otherwise normalizes for CSS output (but doesn't
+  normalize at all for &lt;font&gt;), and IE normalizes inconsistently.
+</ul>
+
+<p>What I'm going to say is that it either has to be a valid CSS color, or
+prefixing it with # must result in a valid CSS color.  For &lt;font&gt;, I'll say
 that the output color should be normalized to #xxxxxx form unless it's an SVG
 color keyword, in which case it's passed through intact.  If the color is not a
 simple color (fully opaque with all channels between 0 and 255), I'll force
 style="" even if styleWithCSS mode is off.  Some of this disagrees with all
 browsers, but it's unlikely to hurt and it makes sense.
--->
-<ol>
-  <li>If <var title="">value</var> is not a valid CSS color, prepend "#" to it.
+</div>
 
-  <li>If <var title="">value</var> is still not a valid CSS color, or if it is
+<p><a href=#action>Action</a>:
+
+<ol>
+  <li>
+  <p class=comments>TODO: Define "valid CSS color" (here and in other color
+  places).
+
+  <p>If <var title="">value</var> is not a valid CSS color, prepend "#" to it.
+
+  <li>
+  <p class=comments>currentColor is bad for the same reason as relative font
+  sizes.  It will confuse the algorithm, and doesn't seem very useful anyway.
+
+  <p>If <var title="">value</var> is still not a valid CSS color, or if it is
   currentColor, abort these steps and do nothing.
-  <!-- currentColor is bad for the same reason as relative font sizes.  It will
-  confuse the algorithm, and doesn't seem very useful anyway. -->
 
   <li><a href="#set-the-selection's-value">Set the selection's value</a> to <var title="">value</var>.
 </ol>
 
-<!-- Opera 11 seems to return true for the state if there's some color style
-applied, false otherwise, which seems fairly useless; authors want to use value
-here, not state.  So I'll match other browsers and not define any state. -->
+<div class=comments>
+<p>Opera 11 seems to return true for the state if there's some
+color style applied, false otherwise, which seems fairly useless; authors want
+to use value here, not state.  So I'll match other browsers and not define any
+state.
+
+<p>For value, the spec essentially matches Firefox 6.0a2 and Chrome 14 dev, as
+far as how to decide what color the node has.  IE9 seems to always return the
+number 0 for some bizarre reason.  There are some cases where Firefox returns
+the empty string for some reason, and it seems to select the active node a
+little differently.  Opera uses #xxxxxx format for getComputedStyle() but rgb()
+here, and also drops the transparent part of the color if there is any.
+</div>
 
 <p><a href=#standard-inline-value-command>Standard inline value command</a>
-<!--
-The spec essentially matches Firefox 6.0a2 and Chrome 14 dev, as far as how to
-decide what color the node has.  IE9 seems to always return the number 0 for
-some bizarre reason.  There are some cases where Firefox returns the empty
-string for some reason, and it seems to select the active node a little
-differently.  Opera uses #xxxxxx format for getComputedStyle() but rgb() here,
-and also drops the transparent part of the color if there is any.
--->
 
 <p><a href=#relevant-css-property>Relevant CSS property</a>: "color"
 
@@ -2874,43 +3064,50 @@ valid CSS color.
 
 <h3 id=the-hilitecolor-command><span class=secno>7.13 </span><dfn>The <code title="">hiliteColor</code> command</dfn></h3>
 
-<!-- IE 9 RC doesn't support this.  It uses backColor instead, but Gecko and
+<p class=note>For historical reasons, backColor and hiliteColor behave
+identically.
+
+<div class=comments>
+<p>IE 9 RC doesn't support this.  It uses backColor instead, but Gecko and
 Opera treat that differently, while all non-IE browsers treat hiliteColor the
 same, so I'm standardizing hiliteColor as the way to highlight text.
 
-This is slightly tricky, because background-color does different things on
+<p>This is slightly tricky, because background-color does different things on
 block and inline elements.  Given the name ("hiliteColor"), we really only want
 to apply it to inline elements.  This is how everyone but Gecko behaves, but
 Gecko sometimes applies it to blocks too.  WebKit doesn't set it on non-inline
 elements, but does clear it and push it down from them.
 
-The spec doesn't do any of these: background-color on non-inline elements is
+<p>The spec doesn't do any of these: background-color on non-inline elements is
 not touched by hiliteColor, neither created nor removed.  If users want to
 remove the style, they need to use removeFormat.  Adding it usually makes no
 sense; see the comment for backColor.
 
-For color parsing, see the comment for foreColor. -->
-<p class=note>For historical reasons, backColor and hiliteColor behave
-identically.
+<p>For color parsing, see the comment for foreColor.
+</div>
 
 <p><a href=#action>Action</a>:
 
 <ol>
   <li>If <var title="">value</var> is not a valid CSS color, prepend "#" to it.
 
-  <li>If <var title="">value</var> is still not a valid CSS color, or if it is
+  <li>
+  <p class=comments>currentColor is bad for the same reason as relative font
+  sizes.  It will confuse the algorithm, and doesn't seem very useful anyway.
+  For hiliteColor you could conceive of it being useful, but it will still
+  confuse the algorithm, so ban it for now anyway.
+
+  <p>If <var title="">value</var> is still not a valid CSS color, or if it is
   currentColor, abort these steps and do nothing.
-  <!-- currentColor is bad for the same reason as relative font sizes.  It will
-  confuse the algorithm, and doesn't seem very useful anyway.  For hiliteColor
-  you could conceive of it being useful, but it will still confuse the
-  algorithm, so ban it for now anyway. -->
 
   <li><a href="#set-the-selection's-value">Set the selection's value</a> to <var title="">value</var>.
 </ol>
 
+<p class=comments>For indeterminacy, this follows no one.  Firefox 6.0a2 and
+Chrome 14 dev both always return false.  However, the spec makes sense, since
+it's consistent with other commands.
+
 <p><a href=#standard-inline-value-command>Standard inline value command</a>
-<!-- For indeterminacy, this follows no one.  Firefox 6.0a2 and Chrome 14 dev
-both always return false.  However, it makes sense. -->
 
 <p><a href=#relevant-css-property>Relevant CSS property</a>: "background-color"
 
@@ -2932,50 +3129,53 @@ selection's value</a> to "italic".
 
 <h3 id=the-removeformat-command><span class=secno>7.15 </span><dfn>The <code title="">removeFormat</code> command</dfn></h3>
 
-<!--
-Tested in IE 9, Firefox 4.0, Chrome 12 dev, Opera 11.00.
+<div class=comments>
+<p>Tested in IE 9, Firefox 4.0, Chrome 12 dev, Opera 11.00.
 
-Tags stripped by everyone: b big cite code dfn em font i ins kbd samp s small
-  strike strong sub sup tt u var
-Tags left alone by everyone: br hr img
+<ul>
+<li>Tags stripped by everyone: b big cite code dfn em font i ins kbd samp s
+small strike strong sub sup tt u var
 
-Unrecognized elements: stripped by Firefox and Opera, left alone by IE and
-  Chrome.
+<li>Tags left alone by everyone: br hr img
 
-blink: stripped only by IE
-abbr: stripped only by Firefox
-a, wbr: stripped only by Opera
+<li>Unrecognized elements: stripped by Firefox and Opera, left alone by IE and
+Chrome.
 
-nobr: left alone only by Firefox
-acronym, bdo, q: left alone only by Opera
+<li>blink: stripped only by IE
+<li>abbr: stripped only by Firefox
+<li>a, wbr: stripped only by Opera
 
-bdi, del, mark, span, svg: treated the same as unknown elements
+<li>nobr: left alone only by Firefox
+<li>acronym, bdo, q: left alone only by Opera
 
-All elements whose default rendering is display: block are left untouched by
-all browsers (although IE seems to throw an exception on <marquee> for some
+<li>bdi, del, mark, span, svg: treated the same as unknown elements
+</ul>
+
+<p>All elements whose default rendering is display: block are left untouched by
+all browsers (although IE seems to throw an exception on &lt;marquee&gt; for some
 reason).
 
-It's not clear to me why we should leave <a> alone, but everyone but Opera
+<p>It's not clear to me why we should leave &lt;a&gt; alone, but everyone but Opera
 does.  In OpenOffice.org 3.2.1, doing "Default Formatting (Ctrl+M)" doesn't
 remove links.  In Microsoft Word 2007, doing "Clear Formatting" also doesn't
 remove links.  Verdict: don't remove links.  Apparently they don't logically
 qualify as "formatting".
 
-Conclusion: leave alone a, br, hr, img, wbr.  Strip everything else, including
+<p>Conclusion: leave alone a, br, hr, img, wbr.  Strip everything else, including
 unrecognized elements, although of course not block elements.  Also we should
-probably treat all replaced elements the same as <img>, although I didn't test
-that (somehow I doubt it will come up much).  <video> behaves the same as
-<img>, although Firefox adds tabindex=0 (???), so I'm assuming the rest are
+probably treat all replaced elements the same as &lt;img&gt;, although I didn't test
+that (somehow I doubt it will come up much).  &lt;video&gt; behaves the same as
+&lt;img&gt;, although Firefox adds tabindex=0 (???), so I'm assuming the rest are
 similar.  Also, I'll keep all foreign elements and form elements.
 
-Browsers will split up all these inline elements if the selection is contained
+<p>Browsers will split up all these inline elements if the selection is contained
 within them.  Opera does strip unrecognized elements with display: block if
 they're within the selection, but doesn't split them up if they contain the
 selection.
 
-Chrome 14 dev removes style attributes from every element in the range, but
+<p>Chrome 14 dev removes style attributes from every element in the range, but
 IE10PP2, Firefox 7.0a2, and Opera 11.50 do not, so I go with them.
--->
+</div>
 
 <p><a href=#action>Action</a>:
 
@@ -3004,13 +3204,16 @@ IE10PP2, Firefox 7.0a2, and Opera 11.50 do not, so I go with them.
     <li>Remove <var title="">element</var> from its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
   </ol>
 
-  <li>If the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is an
+  <li>
+  <p class=comments>The last sentence just prettifies the resulting range a
+  bit.
+
+  <p>If the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is an
   <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node, and its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> is neither zero
   nor its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a>, call <code class=external data-anolis-spec=domcore title=dom-Text-splitText><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-text-splittext>splitText()</a></code> on the <a href=#active-range>active
   range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, with argument equal to the <a href=#active-range>active
   range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a>.  Then set the <a href=#active-range>active range</a>'s
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> to the result, and its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> to zero.
-  <!-- This last sentence just prettifies the resulting range a bit. -->
 
   <li>If the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is an
   <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node, and its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> is neither zero
@@ -3021,7 +3224,12 @@ IE10PP2, Firefox 7.0a2, and Opera 11.50 do not, so I go with them.
   <li>Let <var title="">node list</var> consist of all <a href=#editable>editable</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>
   <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a>.
 
-  <li>For each <var title="">node</var> in <var title="">node list</var>, while <var title="">node</var>'s
+  <li>
+  <p class=comments> TODO: Splitting the parent is really a block algorithm.
+  It's not clear whether it's desirable to use for inline nodes.  Perhaps it's
+  okay, but it makes me a little uneasy.
+
+  <p>For each <var title="">node</var> in <var title="">node list</var>, while <var title="">node</var>'s
   <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is an <a href=#editable>editable</a> <a href=#html-element>HTML element</a> <a href=#in-the-same-editing-host>in the
   same editing host</a> as <var title="">node</var>, and <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>
   is not a <a href=#prohibited-paragraph-child>prohibited paragraph child</a> and does not have
@@ -3029,21 +3237,19 @@ IE10PP2, Firefox 7.0a2, and Opera 11.50 do not, so I go with them.
   <a href=#split-the-parent>split the parent</a> of the one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> list consisting of
   <var title="">node</var>.
 
-  <!--
-  TODO: Splitting the parent is really a block algorithm.  It's not clear
-  whether it's desirable to use for inline nodes.  Perhaps it's okay, but it
-  makes me a little uneasy.
-  -->
+  <li>
+  <p class=comments>This step is for cases like &lt;p
+  style=font-weight:bold&gt;foo[bar]baz&lt;/p&gt;, where splitting/removing tags
+  won't help.  We don't need to run superscript, since subscript does the same
+  thing here.  We run subscript first so &lt;sub&gt;/&lt;sup&gt; won't upset
+  fontSize.
 
-  <li>For each of the entries in the following list, in the given order,
+  <p>For each of the entries in the following list, in the given order,
   <a href="#set-the-selection's-value">set the selection's value</a> to null, with <var title="">command</var> as
   given.
-  <!-- For cases like <p style=font-weight:bold>foo[bar]baz</p>. -->
 
   <ol>
     <li>subscript
-    <!-- superscript not needed, subscript does the same thing.  We run this
-    first so <sub>/<sup> won't upset fontSize. -->
     <li>bold
     <li>fontName
     <li>fontSize
@@ -3058,11 +3264,11 @@ IE10PP2, Firefox 7.0a2, and Opera 11.50 do not, so I go with them.
 
 <h3 id=the-strikethrough-command><span class=secno>7.16 </span><dfn>The <code title="">strikethrough</code> command</dfn></h3>
 
+<p class=comments>TODO: See underline TODO.
+
 <p><a href=#action>Action</a>: If <code title=queryCommandState()><a href=#querycommandstate()>queryCommandState("strikethrough")</a></code> returns
 true, <a href="#set-the-selection's-value">set the selection's value</a> to null.  Otherwise <a href="#set-the-selection's-value">set the
 selection's value</a> to "line-through".
-
-<!-- TODO: See underline TODO. -->
 
 <p><a href=#inline-command-activated-values>Inline command activated values</a>: "line-through"
 
@@ -3089,18 +3295,18 @@ if there is some <a href=#editable>editable</a> <code class=external data-anolis
 contained</a> in the <a href=#active-range>active range</a> with <a href=#effective-command-value>effective command
 value</a> "mixed".  Otherwise false.
 
+<p class=comments> For &lt;sup&gt;&lt;sub&gt;foo&lt;/sub&gt;&lt;/sup&gt;, Firefox 6.0a2 and
+Opera 11.11 say the state is true for both superscript and subscript, and
+indeterminate is false; Chrome 14 dev says it's true for subscript but not
+superscript, and indeterminate is false.  We follow neither of these behaviors:
+we return false for both states, and say indeterminate is true.  The reason is
+because we want to return true for a state if we'll do nothing, false if we'll
+do something; and if we have nesting like this, we'll always do something,
+namely get rid of all those ancestors and replace them with a single tag.  This
+matches what happens in other indeterminate situations, so it's fair to
+consider it indeterminate.
+
 <p><a href=#inline-command-activated-values>Inline command activated values</a>: "sub"
-<!--
-For <sup><sub>foo</sub></sup>, Firefox 6.0a2 and Opera 11.11 say the state is
-true for both superscript and subscript, and indeterminate is false; Chrome 14
-dev says it's true for subscript but not superscript, and indeterminate is
-false.  We follow neither of these behaviors: we return false for both states,
-and say indeterminate is true.  The reason is because we want to return true
-for a state if we'll do nothing, false if we'll do something; and if we have
-nesting like this, we'll always do something, namely get rid of all those
-ancestors and replace them with a single tag.  This matches what happens in
-other indeterminate situations, so it's fair to consider it indeterminate.
--->
 
 <p><a href=#relevant-css-property>Relevant CSS property</a>: "vertical-align"
 
@@ -3134,17 +3340,14 @@ value</a> "mixed".  Otherwise false.
 
 <h3 id=the-underline-command><span class=secno>7.19 </span><dfn>The <code title="">underline</code> command</dfn></h3>
 
-<p><a href=#action>Action</a>: If <code title=queryCommandState()><a href=#querycommandstate()>queryCommandState("underline")</a></code> returns true,
-<a href="#set-the-selection's-value">set the selection's value</a> to null.  Otherwise <a href="#set-the-selection's-value">set the
-selection's value</a> to "underline".
+<div class=comments>
+<p>TODO: There are a lot of problems with underline color and thickness,
+because text-decoration in CSS is horrible.  These aren't prohibitive for
+normal use and existing browsers don't handle them either, so fixing these
+problems or working around them can be put off for now.
 
-<!--
-TODO: There are a lot of problems with underline color and thickness, because
-text-decoration in CSS is horrible.  These aren't prohibitive for normal use
-and existing browsers don't handle them either, so fixing these problems or
-working around them can be put off for now.
-
-* Pushing down underlines can change their color, since the color of an
+<ul>
+  <li>Pushing down underlines can change their color, since the color of an
   underline follows the color of the element where it's declared instead of the
   text it's drawn under.  This could be fixed by adding a special case for this
   condition and inserting extra color rules, such as by setting a color on the
@@ -3153,51 +3356,55 @@ working around them can be put off for now.
   text-decoration-color property in the CSS 3 Text draft could come in handy
   here, in which case we'd degrade pretty gracefully in legacy UAs.
 
-* Underline thickness depends on font-size in all rendering engines but WebKit,
-  so pushing them down creates thickness problems as well as color problems.
-  Working around this is a similar story to the previous, except we have no
-  text-decoration-width property yet (see
-  http://lists.w3.org/Archives/Public/www-style/2011Mar/0593.html).
+  <li>Underline thickness depends on font-size in all rendering engines but
+  WebKit, so pushing them down creates thickness problems as well as color
+  problems.  Working around this is a similar story to the previous, except we
+  have no text-decoration-width property yet (see <a href=http://lists.w3.org/Archives/Public/www-style/2011Mar/0593.html>www-style
+  post</a>).
 
-* The preceding two points can't be avoided, because the only way to remove
+  <li>The preceding two points can't be avoided, because the only way to remove
   underlines in CSS is to push down styles (unlike most other things where you
   could override it).  Recent (February 2011) CSS 3 Text drafts have added
   support for a "text-decoration-line: cancel-underline" property, but we can
   only use that if there's no other possibility, since it won't work in legacy
   browsers.  (Although we should use it once there's no other possibility.)
 
-* More generally, from a user's perspective, color and thickness of underlines
-  is going to be more or less random if they're applying them to text with
-  varying size or color.  If they underline a bunch of text all at once, it
-  will all get the same color/thickness, probably.  But if they underline
-  letter-by-letter, it probably will vary.  But sometimes when they underline a
-  bunch of text at once it will also vary, if the algorithm decides to create
-  multiple elements for whatever reason (like an intervening unwrappable node).
-  This is unlikely to match user expectations.  There's not much we can do
-  about this without entirely revamping text-decoration, so we'll have to live
-  with it.
+  <li>More generally, from a user's perspective, color and thickness of
+  underlines is going to be more or less random if they're applying them to
+  text with varying size or color.  If they underline a bunch of text all at
+  once, it will all get the same color/thickness, probably.  But if they
+  underline letter-by-letter, it probably will vary.  But sometimes when they
+  underline a bunch of text at once it will also vary, if the algorithm decides
+  to create multiple elements for whatever reason (like an intervening
+  unwrappable node).  This is unlikely to match user expectations.  There's not
+  much we can do about this without entirely revamping text-decoration, so
+  we'll have to live with it.
 
-* Currently we don't treat non-underline text-decorations properly, because we
-  have no way to set (or cancel) underlines independently of other
-  text-decorations from within CSS.  I've sent feedback to www-style:
-  http://lists.w3.org/Archives/Public/www-style/2011Mar/0591.html.
--->
+  <li>Currently we don't treat non-underline text-decorations properly, because
+  we have no way to set (or cancel) underlines independently of other
+  text-decorations from within CSS.  I've sent <a href=http://lists.w3.org/Archives/Public/www-style/2011Mar/0591.html>feedback</a>
+  to www-style.
+</ul>
+</div>
+
+<p><a href=#action>Action</a>: If <code title=queryCommandState()><a href=#querycommandstate()>queryCommandState("underline")</a></code> returns true,
+<a href="#set-the-selection's-value">set the selection's value</a> to null.  Otherwise <a href="#set-the-selection's-value">set the
+selection's value</a> to "underline".
 
 <p><a href=#inline-command-activated-values>Inline command activated values</a>: "underline"
 
 
 <h3 id=the-unlink-command><span class=secno>7.20 </span><dfn>The <code title="">unlink</code> command</dfn></h3>
 
-<p><a href=#action>Action</a>:
-
-<!--
-IE 9 RC unlinks the whole link you're pointing at, while others only
-unlink the current text.  The latter behavior seems less expected, as with
-createLink, although I can't articulate precisely why.  Word 2007 and
+<p class=comments>IE 9 RC unlinks the whole link you're pointing at, while
+others only unlink the current text.  The latter behavior seems less expected,
+as with createLink, although I can't articulate precisely why.  Word 2007 and
 OpenOffice.org 3.2.1 (Ubuntu) seem to give an option to remove the whole link
 or none of it, which backs the spec's requirement.  See also #whatwg logs
 starting at 2011-05-13 at 16:53 EDT (UTC-0400).
--->
+
+<p><a href=#action>Action</a>:
+
 <ol>
   <li>Let <var title="">hyperlinks</var> be a list of every <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code> element that has an
   <code class=external data-anolis-spec=html title=attr-hyperlink-href><a href=http://www.whatwg.org/html/#attr-hyperlink-href>href</a></code> attribute and is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in the <a href=#active-range>active range</a> or
@@ -3206,9 +3413,10 @@ starting at 2011-05-13 at 16:53 EDT (UTC-0400).
   <li><a href=#clear-the-value>Clear the value</a> of each member of <var title="">hyperlinks</var>.
 </ol>
 
-<!-- IE10PP2, Firefox 7.0a2, Chrome 14 dev, and Opera 11.50 all do not support
-indeterminate, state, or value for createLink or unlink.  I define
-indeterminate and value anyway because they make sense. -->
+<p class=comments>IE10PP2, Firefox 7.0a2, Chrome 14 dev, and Opera 11.50 all do
+not support indeterminate, state, or value for createLink or unlink.  I define
+indeterminate and value anyway because they make sense.
+
 <p><a href=#standard-inline-value-command>Standard inline value command</a>
 
 
@@ -7650,4 +7858,22 @@ insertions.
   opinions.
 </ul>
 
+<script>
+
+[].forEach.call(document.querySelectorAll(".comments"), function(node) {
+  var button = document.createElement("button");
+  button.textContent = "Comments";
+  button.onclick = function() {
+    node.className = node.className == "comments" ? "comments-expanded" : "comments";
+  };
+
+  var wrapper = document.createElement("div");
+  wrapper.className = "comments-wrapper";
+  node.parentNode.insertBefore(wrapper, node);
+
+  wrapper.appendChild(button);
+  wrapper.appendChild(node);
+});
+
+</script>
 <script src=http://www.whatwg.org/specs/web-apps/current-work/dfn.js></script>

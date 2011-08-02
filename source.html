@@ -31,11 +31,33 @@ div.note > p:first-child::before { content: 'Note: '; }
 }
 dd .XXX p { margin: 1em 0 }
 ol li { margin: 1em 0 }
-li li { margin: 0 }
+li li, li li > p { margin: 0 }
 table { margin: 1em 0 }
 /* Overwrite the underline so it's orange instead of blue, thus looks less
  * silly */
 a code { text-decoration: underline }
+/* Comments stuff */
+.comments { display: none }
+.comments-wrapper {
+  font-size: small;
+  color: #333;
+}
+.comments-wrapper > button {
+  float: right;
+  margin-left: 0.3em;
+}
+.comments-expanded {
+  position: absolute;
+  z-index: 1;
+  right: 0;
+  width: 50%;
+  background: white;
+  border: 1px solid gray;
+  padding: 0.5em;
+  margin-top: 2em;
+}
+.comments-expanded :first-child { margin-top: 0 }
+.comments-expanded :last-child { margin-bottom: 0 }
 </style>
 <body class=draft>
 <div class=head id=head>
@@ -376,6 +398,12 @@ with it:
 <!-- @} -->
 <h3>Supported commands</h3>
 <!-- @{ -->
+<p class=comments>If you try doing anything with an unrecognized command, IE9
+throws an "Invalid argument" exception, and Firefox 6.0a2 throws
+NS_ERROR_NOT_IMPLEMENTED.  Chrome 14 dev and Opera 11.11 both just return a
+useless value.  I go with IE/Gecko, although of course with a standard
+exception type.
+
 <p>Some <span title=command>commands</span> will be <dfn>supported</dfn> in a
 given user agent, and some will not.  All <span title=command>commands</span>
 defined in this specification must be <span>supported</span>, except optionally
@@ -385,19 +413,16 @@ command</span>.  Additional <span title=command>commands</span> can also be
 <span>supported</span>, but implementers should prefix any nonstandard
 <span>command</span> names with a vendor-specific string (e.g., "ms", "gecko",
 "webkit", "opera").
-<!-- If you try doing anything with an unrecognized command, IE9 throws an
-"Invalid argument" exception, and Firefox 6.0a2 throws
-NS_ERROR_NOT_IMPLEMENTED.  Chrome 14 dev and Opera 11.11 both just return a
-useless value.  I go with IE/Gecko, although of course with a standard
-exception type. -->
+
+<p class=comments>I.e., no trying to look good on lazy conformance tests by
+just sticking in a stub implementation that does nothing.
 
 <p>A <span>command</span> that does absolutely nothing in a particular user
 agent, such that <code>execCommand()</code> never has any effect and
 <code>queryCommandEnabled()</code> and <code>queryCommandIndeterm()</code> and
 <code>queryCommandState()</code> and <code>queryCommandValue()</code> each
 return the same value all the time, must not be <span>supported</span>.
-<!-- I.e., no trying to look good on lazy conformance tests by just sticking in
-a stub implementation that does nothing. -->
+
 
 <p>In a particular user agent, every <span>command</span> must be consistently
 either <span>supported</span> or not.  Specifically, a user agent must not
@@ -422,45 +447,47 @@ title=command>Commands</span> that are not <span>enabled</span> do nothing, as
 described in the definitions of the various methods that invoke <span
 title=command>commands</span>.
 
-<p>Among <span title=command>commands</span> defined in this specification,
-those listed in <a href=#miscellaneous-commands>Miscellaneous commands</a> are
-always <span>enabled</span>.  The other <span title=command>commands</span>
-defined here are <span>enabled</span> if the <span>active range</span> is not
-null, and disabled otherwise.
+<div class=comments>
+<p>Testing with bold:
 
-<!--
-Testing with bold:
-
-IE10PP2 seems to return true if the active range's start node is editable,
+<p>IE10PP2 seems to return true if the active range's start node is editable,
 false otherwise.
 
-Firefox 6.0a2 seems to always return true if there's anything editable on the
+<p>Firefox 6.0a2 seems to always return true if there's anything editable on the
 page, and throw otherwise.
 
-Chrome 14 dev seems to behave the same as IE10PP2.
+<p>Chrome 14 dev seems to behave the same as IE10PP2.
 
-Opera 11.11 seems to always return true if there's anything editable on the
+<p>Opera 11.11 seems to always return true if there's anything editable on the
 page, and false otherwise.
 
-Firefox and Opera behave more or less uselessly.  IE doesn't make much sense,
+<p>Firefox and Opera behave more or less uselessly.  IE doesn't make much sense,
 in that whether a command is enabled seems meaningless: it will execute it on
 all nodes in the selection, editable or not.  Chrome's definition makes sense
 in that it will only run the command if it's enabled, but it doesn't make much
 sense to only have the command run if the start is editable.
 
-It's not clear to me what the point of this method is.  There's no way we're
+<p>It's not clear to me what the point of this method is.  There's no way we're
 going to always return true if the command will do something and false if it
 won't.  I just stuck with a really conservative definition that happens to be
 convenient: if there's nothing selected, obviously nothing will work, and we
 want to bail out early in that case anyway because all the algorithms will talk
 about the active range.  If there are use-cases for it to be more precise, I
 could make it so.
--->
+</div>
+
+<p>Among <span title=command>commands</span> defined in this specification,
+those listed in <a href=#miscellaneous-commands>Miscellaneous commands</a> are
+always <span>enabled</span>.  The other <span title=command>commands</span>
+defined here are <span>enabled</span> if the <span>active range</span> is not
+null, and disabled otherwise.
 
 <!-- @} -->
 
 <h2>Methods of the <code data-anolis-spec=html>HTMLDocument</code> interface</h2>
 <!-- @{ -->
+<p class=comments>TODO: Define behavior for <var>show UI</var>.
+
 <p>When the <dfn title=execCommand()><code>execCommand(<var>command</var>,
 <var>show UI</var>, <var>value</var>)</code></dfn> method on the <code
 data-anolis-spec=html>HTMLDocument</code> interface is invoked, the user agent
@@ -475,31 +502,30 @@ must run the following steps:
   <li>If <var>command</var> is not <span>supported</span>, raise a
   [[NOT_SUPPORTED_ERR]] exception.
 
-  <li>If <var>command</var> has no <span>action</span>, raise an
+  <li>
+  <p class=comments>I'm just speccing INVALID_ACCESS_ERR for consistency.  I
+  don't expect real-world commands are likely to not have an action defined,
+  but you never know.
+
+  <p>If <var>command</var> has no <span>action</span>, raise an
   [[INVALID_ACCESS_ERR]] exception.
 
   <p class=note>No such <span>command</span> is defined in this specification.
-  <!-- I'm just speccing INVALID_ACCESS_ERR for consistency.  I don't expect
-  real-world commands are likely to not have an action defined, but you never
-  know. -->
 
-  <li>If <var>command</var> is not <span>enabled</span>, return false.
-  <!--
-  I didn't research this closely, but at a first glance, this is possibly how
-  Chrome 14 dev and Opera 11.11 behave.  Maybe also Firefox 6.0a2, except it
-  throws if the command isn't enabled, I think.  IE9 returns true in at least
-  some cases even if the command is disabled.
-  -->
-  <!-- TODO: Is this right?  Maybe we should be returning false in other cases
-  too? -->
+  <li>
+  <p class=comments>I didn't research this closely, but at a first glance, this
+  is possibly how Chrome 14 dev and Opera 11.11 behave.  Maybe also Firefox
+  6.0a2, except it throws if the command isn't enabled, I think.  IE9 returns
+  true in at least some cases even if the command is disabled.  TODO: Is this
+  right?  Maybe we should be returning false in other cases too?
+
+  <p>If <var>command</var> is not <span>enabled</span>, return false.
 
   <li>Take the <span>action</span> for <var>command</var>, passing
   <var>value</var> to the instructions as an argument.
 
   <li>Return true.
 </ol>
-
-<!-- TODO: Define behavior for <var>show UI</var>. -->
 
 <p>When the <dfn
 title=queryCommandEnabled()><code>queryCommandEnabled(<var>command</var>)</code></dfn>
@@ -514,6 +540,30 @@ invoked, the user agent must run the following steps:
   otherwise.
 </ol>
 
+<div class=comments>
+<p>What happens if you call queryCommand(Indeterm|State|Value)() on a command
+where it makes no sense?
+
+<p>IE9 consistently returns false for all three.
+
+<p>Firefox 6.0a2 consistently throws NS_ERROR_FAILURE for indeterm/state if not
+supported, and returns an empty string for value.  Exceptions include unlink
+(seems to always return indeterm/state false), and styleWithCss/useCss (throw
+NS_ERROR_FAILURE even for value).
+
+<p>Chrome 14 dev returns false for all three, and even does this for unrecognized
+commands.  It also always defines value if state is defined: it returns the
+state cast to a string, either "true" or "false".
+
+<p>Opera 11.11 returns false for state and "" for value (it doesn't support
+indeterm).  Like Chrome, this is even for unrecognized commands.
+
+<p>Gecko's behavior is the most useful.  If the author tries querying some aspect
+of a command that makes no sense, they shouldn't receive a value that looks
+like it might make sense but is actually just a constant.  However, I go even
+further than Gecko: I require exceptions even for value, since doing otherwise
+makes no sense.
+</div>
 <p>When the <dfn
 title=queryCommandIndeterm()><code>queryCommandIndeterm(<var>command</var>)</code></dfn>
 method on the <code data-anolis-spec=html>HTMLDocument</code> interface is
@@ -532,30 +582,6 @@ invoked, the user agent must run the following steps:
   <li>Return true if <var>command</var> is <span>indeterminate</span>,
   otherwise false.
 </ol>
-<!--
-What happens if you call queryCommand(Indeterm|State|Value)() on a command
-where it makes no sense?
-
-IE9 consistently returns false for all three.
-
-Firefox 6.0a2 consistently throws NS_ERROR_FAILURE for indeterm/state if not
-supported, and returns an empty string for value.  Exceptions include unlink
-(seems to always return indeterm/state false), and styleWithCss/useCss (throw
-NS_ERROR_FAILURE even for value).
-
-Chrome 14 dev returns false for all three, and even does this for unrecognized
-commands.  It also always defines value if state is defined: it returns the
-state cast to a string, either "true" or "false".
-
-Opera 11.11 returns false for state and "" for value (it doesn't support
-indeterm).  Like Chrome, this is even for unrecognized commands.
-
-Gecko's behavior is the most useful.  If the author tries querying some aspect
-of a command that makes no sense, they shouldn't receive a value that looks
-like it might make sense but is actually just a constant.  However, I go even
-further than Gecko: I require exceptions even for value, since doing otherwise
-makes no sense.
--->
 
 <p>When the <dfn
 title=queryCommandState()><code>queryCommandState(<var>command</var>)</code></dfn>
@@ -578,21 +604,20 @@ invoked, the user agent must run the following steps:
   false.
 </ol>
 
+<p class=comments>Firefox 6.0a2 always throws an exception when this is
+called.  Opera 11.11 seems to return false if there's nothing editable on the
+page, which is unhelpful.  The spec follows IE9 and Chrome 14 dev.  The reason
+this is useful, compared to just running one of the other methods and seeing if
+you get a NOT_SUPPORTED_ERR, is that other methods might throw different
+exceptions for other reasons.  It's easier to check a boolean than to check
+exception types, especially since as of June 2011 UAs aren't remotely
+consistent on what they do with unsupported commands.
+
 <p>When the <dfn
 title=queryCommandSupported()><code>queryCommandSupported(<var>command</var>)</code></dfn>
 method on the <code data-anolis-spec=html>HTMLDocument</code> interface is
 invoked, the user agent must return true if <var>command</var> is
 <span>supported</span>, and false otherwise.
-<!--
-Firefox 6.0a2 always throws an exception when this is called.  Opera 11.11
-seems to return false if there's nothing editable on the page, which is
-unhelpful.  The spec follows IE9 and Chrome 14 dev.  The reason this is useful,
-compared to just running one of the other methods and seeing if you get a
-NOT_SUPPORTED_ERR, is that other methods might throw different exceptions for
-other reasons.  It's easier to check a boolean than to check exception types,
-especially since as of June 2011 UAs aren't remotely consistent on what they do
-with unsupported commands.
--->
 
 <p>When the <dfn
 title=queryCommandValue()><code>queryCommandValue(<var>command</var>)</code></dfn>
@@ -606,18 +631,21 @@ invoked, the user agent must run the following steps:
   <li>If <var>command</var> has no <span>value</span>, raise an
   [[INVALID_ACCESS_ERR]] exception.
 
-  <li>If <var>command</var> is not <span>enabled</span>, return the empty
-  string.
-  <!-- This is what Firefox 6.0a2 and Opera 11.11 seem to do.  Chrome 14 dev
+  <li>
+  <p class=comments>This is what Firefox 6.0a2 and Opera 11.11 seem to do.  Chrome 14 dev
   seems to return the string "false", and IE9 seems to return boolean false.
-  -->
 
-  <li>If <var>command</var> is "fontSize" and its <span>value override</span>
+  <p>If <var>command</var> is not <span>enabled</span>, return the empty
+  string.
+
+  <li>
+  <p class=comments>Yuck.  This is incredibly messy, as are lots of other
+  fontSize-related things, but I don't want to define a whole second notion of
+  value for the sake of a single command . . .
+
+  <p>If <var>command</var> is "fontSize" and its <span>value override</span>
   is set, convert the <span>value override</span> to an integer number of
   pixels and return the <span>legacy font size for</span> the result.
-  <!-- Yuck.  This is incredibly messy, as are lots of other fontSize-related
-  things, but I don't want to define a whole second notion of value for the
-  sake of a single command . . . -->
 
   <li>If the <span>value override</span> for <var>command</var> is set, return
   it.
@@ -672,11 +700,18 @@ these invariants are bugs in the specification.
 "menu", "nav", "ol", "p", "plaintext", "pre", "section", "summary", "table",
 "tbody", "td", "tfoot", "th", "thead", "tr", "ul", or "xmp".
 
+<p class=comments>These are all the things that will close a &lt;p> if found as
+a descendant.  I think.  Plus table stuff, since that can't be a descendant of
+a p either, although it won't auto-close it.
+
 <p>A <dfn>prohibited paragraph child</dfn> is an <span>HTML element</span>
 whose [[localname]] is a <span>prohibited paragraph child name</span>.
-<!-- These are all the things that will close a <p> if found as a descendant.
-I think.  Plus table stuff, since that can't be a descendant of a p either,
-although it won't auto-close it. -->
+
+<p class=comments>The block/inline node definitions are CSS-based.  "Prohibited
+paragraph child" is conceptually similar to "block node", but based on the
+element name.  Generally we want to use block/inline node when we're interested
+in the visual effect, and prohibited paragraph children when we're concerned
+about parsing or semantics.
 
 <p>A <dfn>block node</dfn> is either an [[element]] whose "display" property
 does not have [[resval]] "inline" or "inline-block" or "inline-table" or
@@ -684,13 +719,6 @@ does not have [[resval]] "inline" or "inline-block" or "inline-table" or
 
 <p>An <dfn>inline node</dfn> is a [[node]] that is not a <span>block
 node</span>.
-<!--
-The block/inline node definitions are CSS-based.  "Prohibited paragraph child"
-is conceptually similar to "block node", but based on the element name.
-Generally we want to use block/inline node when we're interested in the visual
-effect, and prohibited paragraph children when we're concerned about parsing or
-semantics.
--->
 
 <p>An <dfn>editing host</dfn> is a [[node]] that is either an [[element]] with
 a <code data-anolis-spec=html title=attr-contenteditable>contenteditable</code>
@@ -736,6 +764,11 @@ collapsed.  But what if it happens to be display: none right now, for instance?
 Or its ancestor has a fixed height?  Would it be better to use some DOM-based
 definition?
 
+<p class=comments>TODO: The thing about li is a not very nice hack.  The issue
+is that an li won't collapse even if it has no children at all, but that's not
+true in all browsers (at least not in Opera 11.11), and also it breaks
+assumptions elsewhere.  E.g., if it gets turned into a p.
+
 <p>An <dfn>extraneous line break</dfn> is a [[br]] that has no visual effect,
 in that removing it from the DOM would not change layout, except that a [[br]]
 that is the sole child of an [[li]] is not extraneous.
@@ -743,11 +776,6 @@ that is the sole child of an [[li]] is not extraneous.
 <p class=XXX>Also possibly a bad definition.  Again, I test by just removing it
 and seeing what happens.  (Actually, setting display: none, so that it doesn't
 mess up ranges.)
-
-<!-- TODO: The thing about li is a not very nice hack.  The issue is that an li
-won't collapse even if it has no children at all, but that's not true in all
-browsers (at least not in Opera 11.11), and also it breaks assumptions
-elsewhere.  E.g., if it gets turned into a p. -->
 
 <p>Something is <dfn>visible</dfn> if it is a [[node]] that either is a
 <span>block node</span>, or a [[text]] node whose [[cddata]] is not empty, or
@@ -776,16 +804,16 @@ stop the block from having zero height when it has no other contents, but serve
 no purpose and should be removed once the block has other contents that stop it
 from collapsing.
 
+<p class=comments>TODO: I say "first range" because I think that's what Gecko
+actually does, and Gecko is the only one that allows multiple ranges in a
+selection.  This is keeping in mind that it stores ranges sorted by start, not
+by the order the user added them, and silently removes or shortens existing
+ranges to avoid overlap.  It probably makes the most sense in the long term to
+have the command affect all ranges.  But I'll leave this for later.
+
 <p>The <dfn>active range</dfn> is the first [[range]] in the [[selection]]
 given by calling [[getselection]] on the [[contextobject]], or null if there is
 no such [[range]].
-
-<!-- TODO: I say "first range" because I think that's what Gecko actually does,
-and Gecko is the only one that allows multiple ranges in a selection.  This is
-keeping in mind that it stores ranges sorted by start, not by the order the
-user added them, and silently removes or shortens existing ranges to avoid
-overlap.  It probably makes the most sense in the long term to have the command
-affect all ranges.  But I'll leave this for later. -->
 
 <p>Each [[htmldocument]] has a boolean <dfn>CSS styling flag</dfn> associated
 with it, which must initially be false.  (<span>The <code
@@ -836,9 +864,12 @@ instead follow these rules:
   and <var>new parent</var> and <var>new index</var> be the new [[parent]] and
   [[index]].
 
-  <li>If a [[boundarypoint]]'s [[bpnode]] is the same as or a [[descendant]] of
-  <var>node</var>, leave it unchanged, so it moves to the new location.  <!--
-  This is actually implicit, but I state it anyway for completeness. -->
+  <li>
+  <p class=comments>This is actually implicit, but I state it anyway for
+  completeness.
+
+  <p>If a [[boundarypoint]]'s [[bpnode]] is the same as or a [[descendant]] of
+  <var>node</var>, leave it unchanged, so it moves to the new location.
 
   <li>If a [[boundarypoint]]'s [[bpnode]] is <var>new parent</var> and its
   [[bpoffset]] is greater than <var>new index</var>, add one to its
@@ -854,11 +885,11 @@ instead follow these rules:
   [[bpoffset]].
 </ol>
 
+<p class=comments>TODO: Do we want to get rid of attributes that are no longer
+allowed here?
+
 <p>To <dfn>set the tag name</dfn> of an [[element]] <var>element</var> to
 <var>new name</var>:
-
-<!-- TODO: Do we want to get rid of attributes that are no longer allowed here?
--->
 
 <ol>
   <li>If <var>element</var> is an <span>HTML element</span> with [[localname]]
@@ -941,12 +972,14 @@ instructions</span> return null.
   <li>If <var>node list</var> is empty, or the first member of <var>node
   list</var> is not <span>editable</span>, return null and abort these steps.
 
-  <li>If <var>node list</var>'s last member is an <span>inline node</span>
+  <li>
+  <p class=comments>Trailing br's like this always need to go along with their
+  line.  Otherwise they'll create an extra line if we wrap in a block element,
+  instead of vanishing as they should.
+
+  <p>If <var>node list</var>'s last member is an <span>inline node</span>
   that's not a [[br]], and <var>node list</var>'s last member's [[nextsibling]]
   is a [[br]], append that [[br]] to <var>node list</var>.
-  <!-- Trailing br's like this always need to go along with their line.
-  Otherwise they'll create an extra line if we wrap in a block element, instead
-  of vanishing as they should. -->
 
   <li>If the [[previoussibling]] of the first member of <var>node list</var>
   is <span>editable</span> and meets the <span>sibling criteria</span>, let
@@ -961,10 +994,12 @@ instructions</span> return null.
   <li>Otherwise, run the <span>new parent instructions</span>, and let <var>new
   parent</var> be the result.
 
-  <li>If <var>new parent</var> is null, abort these steps and return null.
-  <!-- This can only happen if the new parent instructions are run and they
-  return null.  This can be used to only merge with adjacent siblings, in case
-  you don't want to create a new parent if that fails. -->
+  <li>
+  <p class=comments>This can only happen if the new parent instructions are run
+  and they return null.  This can be used to only merge with adjacent siblings,
+  in case you don't want to create a new parent if that fails.
+
+  <p>If <var>new parent</var> is null, abort these steps and return null.
 
   <li>If <var>new parent</var>'s [[parent]] is null:
 
@@ -973,59 +1008,65 @@ instructions</span> return null.
     <var>node list</var> immediately before the first member of <var>node
     list</var>.
 
-    <li>If any [[range]] has a [[boundarypoint]] with [[bpnode]] equal to the
-    [[parent]] of <var>new parent</var> and [[bpoffset]] equal to the [[index]]
-    of <var>new parent</var>, add one to that [[boundarypoint]]'s [[bpoffset]].
-    <!--
-    Basically, we want any boundary points around the wrapped nodes to go
-    inside the wrapper.  Without this step, wrapping "{}<br>" in a blockquote
+    <li>
+    <div class=comments>
+    <p>Basically, we want any boundary points around the wrapped nodes to go
+    inside the wrapper.  Without this step, wrapping "{}&lt;br>" in a blockquote
     would go like
 
-      {}<br>
-      -> {}<blockquote></blockquote><br>
-      -> {}<blockquote><br></blockquote>.
+    <pre>
+{}&lt;br>
+-> {}&lt;blockquote>&lt;/blockquote>&lt;br>
+-> {}&lt;blockquote>&lt;br>&lt;/blockquote>.</pre>
 
-    The second line is due to range mutation rules: a boundary point with an
+    <p>The second line is due to range mutation rules: a boundary point with an
     offset equal to the index of a newly-inserted node stays put, so it remains
     before it.  With this step, it goes like
 
-      {}<br>
-      -> {}<blockquote></blockquote><br>
-      -> <blockquote></blockquote>{}<br>
-      -> <blockquote>{}<br></blockquote>.
+    <pre>
+{}&lt;br>
+-> {}&lt;blockquote>&lt;/blockquote>&lt;br>
+-> &lt;blockquote>&lt;/blockquote>{}&lt;br>
+-> &lt;blockquote>{}&lt;br>&lt;/blockquote>.</pre>
 
-    The difference in the final step is because we move the <br> "preserving
+    <p>The difference in the final step is because we move the &lt;br> "preserving
     ranges".  This means that adjacent boundary points get swept along with it.
-    Previously, the <blockquote> intervened, so a boundary point after it would
+    Previously, the &lt;blockquote> intervened, so a boundary point after it would
     get taken along but one before it would not.
 
-    Another solution that one might be tempted to consider would be to just put
+    <p>Another solution that one might be tempted to consider would be to just put
     the wrapper after the wrapped elements.  Then the boundary points would
     stay put, before the wrapper, so they'd still be adjacent to the nodes to
     be wrapped, like:
 
-      {<p>foo</p>}
-      -> {<p>foo</p>}<blockquote></blockquote>
-      -> <blockquote>{<p>foo</p>}</blockquote>.
+    <pre>
+{&lt;p>foo&lt;/p>}
+-> {&lt;p>foo&lt;/p>}&lt;blockquote>&lt;/blockquote>
+-> &lt;blockquote>{&lt;p>foo&lt;/p>}&lt;/blockquote>.</pre>
 
-    The problem is that this completely breaks if you're wrapping multiple
+    <p>The problem is that this completely breaks if you're wrapping multiple
     things and not all are selected.  It would go like this:
 
-      <p>foo</p>{<p>bar</p>}
-      -> <p>foo</p>{<p>bar</p>}<blockquote></blockquote>
-      -> <p>foo</p><blockquote>{<p>bar</p>}</blockquote>
-      -> <blockquote>{<p>foo</p><p>bar</p>}</blockquote>.
+    <pre>
+&lt;p>foo&lt;/p>{&lt;p>bar&lt;/p>}
+-> &lt;p>foo&lt;/p>{&lt;p>bar&lt;/p>}&lt;blockquote>&lt;/blockquote>
+-> &lt;p>foo&lt;/p>&lt;blockquote>{&lt;p>bar&lt;/p>}&lt;/blockquote>
+-> &lt;blockquote>{&lt;p>foo&lt;/p>&lt;p>bar&lt;/p>}&lt;/blockquote>.</pre>
 
-    The last step is again because of the range mutation rules: the boundary
+    <p>The last step is again because of the range mutation rules: the boundary
     point stays put when a new node is inserted.  They're fundamentally
     asymmetric.
 
-    An alternative solution would be to define the concept of moving a list of
+    <p>An alternative solution would be to define the concept of moving a list of
     adjacent sibling nodes while preserving ranges, and handle this explicitly
     at a more abstract level.
 
-    TODO: Think about this some more.  Maybe there's a better way.
-    -->
+    <p>TODO: Think about this some more.  Maybe there's a better way.
+    </div>
+
+    <p>If any [[range]] has a [[boundarypoint]] with [[bpnode]] equal to the
+    [[parent]] of <var>new parent</var> and [[bpoffset]] equal to the [[index]]
+    of <var>new parent</var>, add one to that [[boundarypoint]]'s [[bpoffset]].
   </ol>
 
   <li>Let <var>original parent</var> be the [[parent]] of the first member of
@@ -1066,15 +1107,19 @@ instructions</span> return null.
     parent</var>, <span>preserving ranges</span>.
   </ol>
 
-  <li>If <var>original parent</var> is <span>editable</span> and has no
-  [[children]], remove it from its [[parent]].
-  <!-- This could happen if the new parent instructions returned a node whose
-  parent wasn't null. -->
+  <li>
+  <p class=comments>This could happen if the new parent instructions returned a
+  node whose parent wasn't null.
 
-  <li>If <var>new parent</var>'s [[nextsibling]] is <span>editable</span> and
+  <p>If <var>original parent</var> is <span>editable</span> and has no
+  [[children]], remove it from its [[parent]].
+
+  <li>
+  <p class=comments>Probably because both the previous and next sibling met
+  them.  We want to merge them in this case.
+
+  <p>If <var>new parent</var>'s [[nextsibling]] is <span>editable</span> and
   meets the <span>sibling criteria</span>:
-  <!-- Probably because both the previous and next sibling met them.  We want
-  to merge them in this case. -->
 
   <ol>
     <li>If <var>new parent</var> is not an <span>inline node</span>, but
@@ -1101,49 +1146,53 @@ instructions</span> return null.
 <!-- @} -->
 <h3>Allowed children</h3>
 <!-- @{ -->
+<div class=comments>
+<p>List is mostly based on current HTML5, together with obsolete
+elements.  I mostly got the obsolete element list by testing what Firefox 5.0a2
+splits when you do insertHorizontalRule.
+
+<p>At the time of this writing (July 2011), dt is only allowed to contain
+inline contents by HTML.  I deliberately omit it from the list regardless,
+because I don't like the fact that including it will cause various commands to
+break apart lists rather than put bad things inside dt.  I filed a <a
+href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=13201>bug</a> asking that
+the spec be changed.
+
+<p>TODO: The definitions of prohibited paragraph children and elements with
+inline contents should be in the HTML spec (possibly under a different name) so
+they don't fall out of sync.  They'll do for now.
+</div>
+
 <p>A <dfn>name of an element with inline contents</dfn> is "a", "abbr", "b",
 "bdi", "bdo", "cite", "code", "dfn", "em", "h1", "h2", "h3", "h4", "h5", "h6",
 "i", "kbd", "mark", "p", "pre", "q", "rp", "rt", "ruby", "s", "samp", "small",
 "span", "strong", "sub", "sup", "u", "var", "acronym", "listing", "strike",
 "xmp", "big", "blink", "font", "marquee", "nobr", or "tt".
-<!--
-At the time of this writing (July 2011), dt is only allowed to contain inline
-contents by HTML.  I deliberately omit it from the list regardless, because I
-don't like the fact that including it will cause various commands to break
-apart lists rather than put bad things inside dt.  I filed a bug asking that
-the spec be changed: http://www.w3.org/Bugs/Public/show_bug.cgi?id=13201
--->
 
 <p>An <dfn>element with inline contents</dfn> is an <span>HTML element</span>
 whose [[localname]] is a <span>name of an element with inline contents</span>.
-<!-- List is mostly based on current HTML5, together with obsolete elements.  I
-mostly got the obsolete element list by testing what Firefox 5.0a2 splits when
-you do insertHorizontalRule. -->
 
-<!--
-TODO: The definitions of prohibited paragraph children and elements with inline
-contents should be in the HTML spec (possibly under a different name) so they
-don't fall out of sync.  They'll do for now.
--->
+<div class=comments>
+<p>TODO: This list doesn't currently match HTML's validity requirements for a
+few reasons:
+
+<ol>
+  <li>We need to handle invalid elements, which have no conformance
+  requirements but should be treated properly.  In particular, they can
+  interfere with serialization (e.g., center cannot descend from p).
+
+  <li> Sometimes users give instructions that have to produce invalid DOMs to
+  get the expected effect, like indenting the first item of a list.
+
+  <li>The HTML validity requirements are sometimes quite complicated.
+
+  <li>I just haven't had bothered to be systematic about it yet.  I've only
+  covered what's come up in my tests.
+</ol>
+</div>
 
 <p>A [[node]] or string <var>child</var> is an <dfn>allowed child</dfn> of a
 [[node]] or string <var>parent</var> if the following algorithm returns true:
-<!--
-TODO: This list doesn't currently match HTML's validity requirements for a few
-reasons:
-
-1) We need to handle invalid elements, which have no conformance requirements
-but should be treated properly.  In particular, they can interfere with
-serialization (e.g., center cannot descend from p).
-
-2) Sometimes users give instructions that have to produce invalid DOMs to get
-the expected effect, like indenting the first item of a list.
-
-3) The HTML validity requirements are sometimes quite complicated.
-
-4) I just haven't had bothered to be systematic about it yet.  I've only
-covered what's come up in my tests.
--->
 
 <ol>
   <li>If <var>parent</var> is "colgroup", "table", "tbody", "tfoot", "thead",
@@ -1151,11 +1200,13 @@ covered what's come up in my tests.
   those, and <var>child</var> is a [[text]] node whose [[cddata]] does not
   consist solely of [[spacecharacters]], return false.
 
-  <li>If <var>parent</var> is "script", "style", "plaintext", or "xmp", or an
+  <li>
+  <p class=comments> Actually, no node can occur in the DOM after plaintext,
+  generally.  But let's not get too carried away.
+
+  <p>If <var>parent</var> is "script", "style", "plaintext", or "xmp", or an
   <span>HTML element</span> with [[localname]] equal to one of those, and
   <var>child</var> is not a [[text]] node, return false.
-  <!-- Actually, no node can occur in the DOM after plaintext, generally.  But
-  let's not get too carried away. -->
 
   <li>If <var>child</var> is a [[document]], [[documentfragment]], or
   [[documenttype]], return false.
@@ -1168,29 +1219,38 @@ covered what's come up in my tests.
   <li>If <var>parent</var> is an <span>HTML element</span>:
 
   <ol>
-    <li>If <var>child</var> is "a", and <var>parent</var> or some [[ancestor]]
-    of <var>parent</var> is an [[a]], return false.
-    <!-- Cannot be serialized as text/html.  In some cases it can, like
-    <a>foo<table><td><a>bar</a></td></table>baz</a>, but it's invalid in those
-    cases too, so no need for complication. -->
+    <li>
+    <p class=comments>Cannot be serialized as text/html.  In some cases it can,
+    like
+    &lt;a>foo&lt;table>&lt;td>&lt;a>bar&lt;/a>&lt;/td>&lt;/table>baz&lt;/a>,
+    but it's invalid in those cases too, so no need for complication.
 
-    <li>If <var>child</var> is a <span>prohibited paragraph child name</span>
+    <p>If <var>child</var> is "a", and <var>parent</var> or some [[ancestor]]
+    of <var>parent</var> is an [[a]], return false.
+
+    <li>
+    <p class=comments>This generally cannot be serialized either, for p.  For
+    other elements with inline contents, this serves to prevent things like
+    &lt;span>&lt;p>foo&lt;/p>&lt;/span>, which will parse fine but aren't
+    supposed to happen anyway.
+
+    <p>If <var>child</var> is a <span>prohibited paragraph child name</span>
     and <var>parent</var> or some [[ancestor]] of <var>parent</var> is an
     <span>element with inline contents</span>, return false.
-    <!-- This generally cannot be serialized either, for p.  For other elements
-    with inline contents, this serves to prevent things like
-    <span><p>foo</p></span>, which will parse fine but aren't supposed to
-    happen anyway. -->
 
-    <li>If <var>child</var> is "h1", "h2", "h3", "h4", "h5", or "h6", and
+    <li>
+    <p class=comments>Also can't be serialized as text/html.
+
+    <p>If <var>child</var> is "h1", "h2", "h3", "h4", "h5", or "h6", and
     <var>parent</var> or some [[ancestor]] of <var>parent</var> is an
     <span>HTML element</span> with [[localname]] "h1", "h2", "h3", "h4", "h5",
     or "h6", return false.
-    <!-- Nor this. -->
 
-    <li>Let <var>parent</var> be the [[localname]] of <var>parent</var>.
-    <!-- Further requirements only care about the parent itself, not ancestors,
-    so we don't need to know the node itself. -->
+    <li>
+    <p class=comments>Further requirements only care about the parent itself,
+    not ancestors, so we don't need to know the node itself.
+
+    <p>Let <var>parent</var> be the [[localname]] of <var>parent</var>.
   </ol>
 
   <li>If <var>parent</var> is an [[element]] or [[documentfragment]], return
@@ -1198,11 +1258,13 @@ covered what's come up in my tests.
 
   <li>If <var>parent</var> is not a string, return false.
 
-  <li>If <var>parent</var> is on the left-hand side of an entry on the
+  <li>
+  <p class=comments>We allow children even where some intervening nodes will be
+  inserted, like tr as a child of table.
+
+  <p>If <var>parent</var> is on the left-hand side of an entry on the
   following list, then return true if <var>child</var> is listed on the
   right-hand side of that entry, and false otherwise.
-  <!-- We allow children even where some intervening nodes will be inserted,
-  like tr as a child of table. -->
 
   <ul>
     <li>colgroup: col
@@ -1218,9 +1280,11 @@ covered what's come up in my tests.
   "frameset", "head", "html", "tbody", "td", "tfoot", "th", "thead", or "tr",
   return false.
 
-  <!-- dd/dt/li will serialize fine as the child of random stuff, but it makes
-  no sense at all, so we want to avoid it anyway. -->
-  <li>If <var>child</var> is "dd" or "dt" and <var>parent</var> is not "dl",
+  <li>
+  <p class=comments>dd/dt/li will serialize fine as the child of random stuff,
+  but it makes no sense at all, so we want to avoid it anyway.
+
+  <p>If <var>child</var> is "dd" or "dt" and <var>parent</var> is not "dl",
   return false.
 
   <li>If <var>child</var> is "li" and <var>parent</var> is not "ol" or "ul",
@@ -1250,29 +1314,38 @@ covered what's come up in my tests.
 
 <h3>Inline formatting command definitions</h3>
 <!-- @{ -->
+<p class=comments>The difference between "contained" and "effectively
+contained" is basically that 1) in &lt;b>[foo]&lt;/b>, the text node and the
+&lt;b> are effectively contained but not contained; and 2) in
+&lt;b>f[o]o&lt;/b>, the text node is effectively contained but not contained,
+and the &lt;b> is neither effectively contained nor contained.
+
 <p>A [[node]] <var>node</var> is <dfn>effectively contained</dfn> in a
 [[range]] <var>range</var> if at least one of the following holds:
-<!--
-The difference between "contained" and "effectively contained" is basically
-that 1) in <b>[foo]</b>, the text node and the <b> are effectively contained
-but not contained; and 2) in <b>f[o]o</b>, the text node is effectively
-contained but not contained, and the <b> is neither effectively contained nor
-contained.
--->
+
 <ul>
   <li><var>node</var> is [[contained]] in <var>range</var>.
 
-  <li><var>node</var> is <var>range</var>'s [[startnode]], it is a [[text]]
+  <li>
+  <p class=comments> So like &lt;b>f[oo]&lt;/b> or &lt;b>f[o]o&lt;/b> or
+  &lt;b>f[oo&lt;/b>}, but not &lt;b>foo[&lt;/b>} or &lt;b>f[]oo&lt;/b>.
+
+  <p><var>node</var> is <var>range</var>'s [[startnode]], it is a [[text]]
   node, its [[nodelength]] is different from <var>range</var>'s
   [[startoffset]], and <var>range</var> is not [[rangecollapsed]].
-  <!-- So like <b>f[oo]</b> or <b>f[o]o</b> or <b>f[oo</b>}, but not
-  <b>foo[</b>} or <b>f[]oo</b>. -->
 
   <li><var>node</var> is <var>range</var>'s [[endnode]], it is a [[text]] node,
   <var>range</var>'s [[endoffset]] is not 0, and <var>range</var> is not
   [[rangecollapsed]].
 
-  <li><var>node</var> has at least one [[child]]; and all its [[children]] are
+  <li>
+  <p class=comments>Basically, anything whose children are all effectively
+  contained should be effectively contained itself, except that in a case like
+  &lt;b>f[o]o&lt;/b> we don't want &lt;b> to be effectively contained even
+  though the text node is.  That's because we split the text node before we
+  actually do anything, and the &lt;b> will no longer be effectively contained.
+
+  <p><var>node</var> has at least one [[child]]; and all its [[children]] are
   <span>effectively contained</span> in <var>range</var>; and either
   <var>range</var>'s [[startnode]] is not a [[descendant]] of <var>node</var>
   or is not a [[text]] node or <var>range</var>'s [[startoffset]] is zero or
@@ -1280,13 +1353,6 @@ contained.
   is not a [[descendant]] of <var>node</var> or is not a [[text]] node or
   <var>range</var>'s [[endoffset]] is its [[endnode]]'s [[length]] or
   <var>range</var> is [[rangecollapsed]].
-  <!--
-  Basically, anything whose children are all effectively contained should be
-  effectively contained itself, except that in a case like <b>f[o]o</b> we
-  don't want <b> to be effectively contained even though the text node is.
-  That's because we split the text node before we actually do anything, and the
-  <b> will no longer be effectively contained.
-  -->
 </ul>
 
 <p>A <dfn>modifiable element</dfn> is a [[b]], [[em]], [[i]], [[s]], [[span]],
@@ -1371,6 +1437,16 @@ at least one whose <span>effective command value</span> is one of the given
 values and at least one whose <span>effective command value</span> is not one
 of the given values.
 
+<p class=comments> For bold and similar commands, IE 9 RC seems to consider the
+state true or false depending on the first element.  All other browsers follow
+the same general idea as the spec, considering a range bold only if all text in
+it is bold, and this seems to match at least OpenOffice.org's bold feature.
+Opera 11.11 seemingly doesn't take CSS into account, and only looks at whether
+something descends from a &lt;b>.  I couldn't properly test IE9 because it
+threw exceptions (Error: Unspecified error.) on most of the tests I ran.  But
+what I have here seems to match Firefox 6.0a2 in every case, and Chrome 14 dev
+in all cases with a few exceptions.
+
 <p>If a <span>command</span> has <span>inline command activated values</span>
 defined, its <span>state</span> is true if either no <span>editable</span>
 [[text]] node is <span>effectively contained</span> in the <span>active
@@ -1379,17 +1455,21 @@ range</span>, and the <span>active range</span>'s [[startnode]]'s
 at least one <span>editable</span> [[text]] node <span>effectively
 contained</span> in the <span>active range</span>, and all of them have an
 <span>effective command value</span> equal to one of the given values.
-<!--
-For bold and similar commands, IE 9 RC seems to consider the state true or
-false depending on the first element.  All other browsers follow the same
-general idea as the spec, considering a range bold only if all text in it is
-bold, and this seems to match at least OpenOffice.org's bold feature.  Opera
-11.11 seemingly doesn't take CSS into account, and only looks at whether
-something descends from a <b>.  I couldn't properly test IE9 because it threw
-exceptions (Error: Unspecified error.) on most of the tests I ran.  But what I
-have here seems to match Firefox 6.0a2 in every case, and Chrome 14 dev in all
-cases with a few exceptions.
--->
+
+<div class=comments>
+<p>Testing with hiliteColor: Opera 11.11 seems to always return the effective
+command value of the active range's start node.  Chrome 14 dev returns boolean
+false consistently, bizarrely enough.  Firefox 6.0a2 seems to follow the same
+idea as the spec, but it likes to return "transparent", including sometimes
+when the answer really clearly should not be "transparent".  IE9 throws
+exceptions most of the time for backColor, so I can't say for sure, but in the
+few cases where it doesn't throw it returns a random-looking number, so I'll
+assume it's crazy like for foreColor.
+
+<p>I decided on something that would guarantee the following invariant: whenever
+you execute a command with a value provided (assuming value is relevant),
+queryCommandValue() will always return something equivalent to what you set.
+</div>
 
 <p>If a command is a <dfn>standard inline value command</dfn>, it is
 <span>indeterminate</span> if among <span>editable</span> [[text]] nodes that
@@ -1404,20 +1484,6 @@ there is no such node, the <span>effective command value</span> of the
 <p class=note>The effective command value of the active range's start node
 cannot be null, since the boundary point node of a selection must always be
 either an element or a text node that's the child of an element.
-<!--
-Testing with hiliteColor: Opera 11.11 seems to always return the effective
-command value of the active range's start node.  Chrome 14 dev returns boolean
-false consistently, bizarrely enough.  Firefox 6.0a2 seems to follow the same
-idea as the spec, but it likes to return "transparent", including sometimes
-when the answer really clearly should not be "transparent".  IE9 throws
-exceptions most of the time for backColor, so I can't say for sure, but in the
-few cases where it doesn't throw it returns a random-looking number, so I'll
-assume it's crazy like for foreColor.
-
-I decided on something that would guarantee the following invariant: whenever
-you execute a command with a value provided (assuming value is relevant),
-queryCommandValue() will always return something equivalent to what you set.
--->
 
 
 <!-- @} -->
@@ -1468,12 +1534,15 @@ return either a string or null:
     <li>While <var>node</var> is an <span>inline node</span>:
 
     <ol>
-      <!-- Firefox 6.0a2 ignores vertical-align for this purpose, and only
-      cares about <sub> and <sup> tags themselves.  Opera 11.11 is similar, and
-      in fact behaves like that even for commands like bold.  The spec follows
-      Chrome 14 dev, mainly because WebKit itself will produce spans with
-      vertical-align sub or super, and we want to handle them correctly. -->
-      <li>If <var>node</var>'s "vertical-align" property has [[resval]] "sub",
+      <li>
+      <p class=comments>Firefox 6.0a2 ignores vertical-align for this purpose,
+      and only cares about &lt;sub> and &lt;sup> tags themselves.  Opera 11.11
+      is similar, and in fact behaves like that even for commands like bold.
+      The spec follows Chrome 14 dev, mainly because WebKit itself will produce
+      spans with vertical-align sub or super, and we want to handle them
+      correctly.
+
+      <p>If <var>node</var>'s "vertical-align" property has [[resval]] "sub",
       set <var>affected by subscript</var> to true.
 
       <li>Otherwise, if <var>node</var>'s "vertical-align" property has
@@ -1620,30 +1689,32 @@ value</var>:
   of <var>candidate</var> into <var>candidate</var>'s [[parent]] immediately
   before <var>candidate</var>, <span>preserving ranges</span>.
 
-  <li>Insert <var>candidate</var> into <var>node</var>'s [[parent]] immediately
-  after <var>node</var>.
-  <!--
-  If candidate had no children, any boundary point inside it will get moved to
+  <li>
+  <div class=comments>
+  <p>If candidate had no children, any boundary point inside it will get moved to
   its parent here, which is okay.  We don't want to preserve ranges, because
   that would move boundary points that originally were in candidate but were
   moved to its parent by the last step to move to node's parent.
 
-  We move to after node so that boundary points before and after node wind up
+  <p>We move to after node so that boundary points before and after node wind up
   consistently inside candidate when we move preserving ranges.  If we had
-    {<node>foo<candidate></candidate></node>}
-  it thus becomes
-    {<node>foo</node>}<candidate></candidate>
-  by the range mutation rules, and then when we move preserving ranges, it
+    <pre>{&lt;node>foo&lt;candidate>&lt;/candidate>&lt;/node>}</pre>
+  <p>it thus becomes
+    <pre>{&lt;node>foo&lt;/node>}&lt;candidate>&lt;/candidate></pre>
+  <p>by the range mutation rules, and then when we move preserving ranges, it
   becomes
-    <candidate>{<node>foo</node>}</candidate>
-  which is reasonable.
+    <pre>&lt;candidate>{&lt;node>foo&lt;/node>}&lt;/candidate></pre>
+  <p>which is reasonable.
 
-  If we had inserted candidate before node, instead it would go
-    {<candidate></candidate><node>foo</node>}
-    {<candidate><node>foo</node>}</candidate>
-  because of the interaction of regular range mutation rules with
+  <p>If we had inserted candidate before node, instead it would go
+<pre>{&lt;candidate>&lt;/candidate>&lt;node>foo&lt;/node>}
+{&lt;candidate>&lt;node>foo&lt;/node>}&lt;/candidate></pre>
+  <p>because of the interaction of regular range mutation rules with
   preserving-ranges rules.
-  -->
+  </div>
+
+  <p>Insert <var>candidate</var> into <var>node</var>'s [[parent]] immediately
+  after <var>node</var>.
 
   <li>Append the <var>node</var> as the last [[child]] of <var>candidate</var>,
   <span>preserving ranges</span>.
@@ -1655,13 +1726,15 @@ value</var>:
   <li>Let <var>values</var> be a list of ([[node]], <span>command</span>,
   <span>specified command value</span>) triples, initially empty.
 
-  <li>For each <var>node</var> in <var>node list</var>, for each
+  <li>
+  <p class=comments>As with removeFormat, we put subscript first so it doesn't
+  interfere with fontSize, and omit superscript because it's redundant with
+  subscript.
+
+  <p>For each <var>node</var> in <var>node list</var>, for each
   <var>command</var> in the list "subscript", "bold", "fontName", "fontSize",
   "foreColor", "hiliteColor", "italic", "strikethrough", and "underline" in
   that order:
-  <!-- As with removeFormat, we put subscript first so it doesn't interfere
-  with fontSize, and omit superscript because it's redundant with subscript.
-  -->
 
   <ol>
     <li>Let <var>ancestor</var> equal <var>node</var>.
@@ -1675,7 +1748,8 @@ value</var>:
     <li>If <var>ancestor</var> is an [[element]], add (<var>node</var>,
     <var>command</var>, <var>ancestor</var>'s <span>specified command
     value</span> for <var>command</var>) to <var>values</var>.  Otherwise add
-    (<var>node</var>, <var>command</var>, null) to <var>values</var>.  </ol>
+    (<var>node</var>, <var>command</var>, null) to <var>values</var>.
+  </ol>
 
   <li>Return <var>values</var>.
 </ol>
@@ -1713,6 +1787,10 @@ returned by the <span>record the values</span> algorithm:
 <!-- @} -->
 <h3>Clearing an element's value</h3>
 <!-- @{ -->
+<p class=comments> If we wanted to be extra-pedantic, we could convert, e.g.,
+&lt;font color=red id=foo> into &lt;span id=foo> instead of &lt;font id=foo>,
+but probably not worth it.
+
 <p>To <dfn>clear the value</dfn> of an [[element]] <var>element</var>:
 
 <p class=note>Clearing the value of an element can remove it from its parent
@@ -1721,20 +1799,18 @@ the value of all children of an element, they should take care not to assume
 that the set of children won't change as they're cleared.  If the element is
 removed, the algorithm will return the list of nodes inserted in its place.
 
-<!-- If we wanted to be extra-pedantic, we could convert, e.g., <font color=red
-id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
--->
-
 <ol>
   <li>Let <var>command</var> be the current <span>command</span>.
 
   <li>If <var>element</var> is not <span>editable</span>, return the empty
   list.
 
-  <li>If <var>element</var>'s <span>specified command value</span> for
-  <var>command</var> is null, return the empty list.  <!-- We want to abort
-  early so that we don't try unsetting background-color on a non-inline
-  element. -->
+  <li>
+  <p class=comments>We want to abort early so that we don't try unsetting
+  background-color on a non-inline element.
+
+  <p>If <var>element</var>'s <span>specified command value</span> for
+  <var>command</var> is null, return the empty list.
 
   <li>If <var>element</var> is a <span>simple modifiable element</span>:
 
@@ -1777,10 +1853,13 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
   <li>If <var>element</var> is an [[a]] element and <var>command</var> is
   "createLink" or "unlink", unset the [[href]] property of <var>element</var>.
 
-  <li>If <var>element</var>'s <span>specified command value</span> for
+  <li>
+  <p class=comments>If we get past this step, we're something like &lt;b
+  class=foo> where we want to keep the extra attributes, so we stick them on a
+  span.
+
+  <p>If <var>element</var>'s <span>specified command value</span> for
   <var>command</var> is null, return the empty list.
-  <!-- If we get past this step, we're something like <b class=foo> where we
-  want to keep the extra attributes, so we stick them on a span. -->
 
   <li><span>Set the tag name</span> of <var>element</var> to "span", and return
   the one-[[node]] list consisting of the result.
@@ -1789,46 +1868,50 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
 <!-- @} -->
 <h3>Pushing down values</h3>
 <!-- @{ -->
-<p>To <dfn>push down values</dfn> to a [[node]] <var>node</var>, given a new
-value <var>new value</var>:
-
-<!--
-This algorithm goes up to just below the nearest ancestor with the right
+<div class=comments>
+<p>This algorithm goes up to just below the nearest ancestor with the right
 style, then re-applies the bad styles repeatedly going down, omitting the
 things we want to have the new style.  This is basically what WebKit does,
 although WebKit sometimes starts higher up and therefore makes more intrusive
 changes, often creating more markup.  IE follows the same general approach too.
 
-Gecko instead seems to start breaking up elements from the bottom, so that the
+<p>Gecko instead seems to start breaking up elements from the bottom, so that the
 range consists of a few consecutive siblings, and it can then break up the
 problematic element into a maximum of two pieces.  The spec's approach seems to
 create fewer elements and simpler markup (or at least markup that's no more
 complex) in most cases I throw at it.
 
-Gecko's approach does have the major advantage that it gets underlines right in
+<p>Gecko's approach does have the major advantage that it gets underlines right in
 many cases for free.  E.g.,
 
-  <u>foo<font color=red>[bar]baz</font></u>
-  -> <u>foo</u><font color=red>bar<u>baz</u></font> (spec)
-  -> <u>foo</u><font color=red>bar</font><u><font color=red>baz</font></u> (Gecko)
+<pre>
+&lt;u>foo&lt;font color=red>[bar]baz&lt;/font>&lt;/u>
+-> &lt;u>foo&lt;/u>&lt;font color=red>bar&lt;u>baz&lt;/u>&lt;/font> (spec)
+-> &lt;u>foo&lt;/u>&lt;font color=red>bar&lt;/font>&lt;u>&lt;font color=red>baz&lt;/font>&lt;/u> (Gecko)</pre>
 
-The spec's markup here is much shorter and contains fewer elements, but is
+<p>The spec's markup here is much shorter and contains fewer elements, but is
 wrong: the underline under "baz" has changed color from black to red.  It might
 be worth trying to copy Gecko's results in such cases, but that won't solve all
 underline problems, so perhaps it's not worth it.
 
-Opera also seems to break up the markup surrounding the range, but even more
+<p>Opera also seems to break up the markup surrounding the range, but even more
 aggressively: even if it doesn't need to pull down styles.  In some cases this
 does actually result in shorter markup, specifically if the existing tags are
-short (like [[i]] or [[b]]) and we're adding tags that are long (like [[span]]
-with a [[style]] attribute).
--->
+short (like i or b) and we're adding tags that are long (like span with a style
+attribute).
+</div>
+
+<p>To <dfn>push down values</dfn> to a [[node]] <var>node</var>, given a new
+value <var>new value</var>:
 
 <ol>
   <li>Let <var>command</var> be the current <span>command</span>.
 
-  <li>If <var>node</var>'s [[parent]] is not an [[element]], abort this
-  algorithm. <!-- E.g., a text node child of a document fragment. -->
+  <li>
+  <p class=comments>E.g., a text node child of a document fragment.
+
+  <p>If <var>node</var>'s [[parent]] is not an [[element]], abort this
+  algorithm.
 
   <li>If the <span>effective command value</span> of <var>command</var> is
   [[looselyequivalent]] to <var>new value</var> on <var>node</var>, abort this
@@ -1850,42 +1933,48 @@ with a [[style]] attribute).
   value</span> of <var>command</var> on the last member of <var>ancestor
   list</var>.
 
-  <!-- We can only remove specified values, so if the value isn't specified,
-  give up.  Unless we're actually trying to push down a null specified value,
-  like for unlink. -->
-  <li>If <var>propagated value</var> is null and is not equal to <var>new
+  <li>
+  <p class=comments>We can only remove specified values, so if the value isn't
+  specified, give up.  Unless we're actually trying to push down a null
+  specified value, like for unlink.
+
+  <p>If <var>propagated value</var> is null and is not equal to <var>new
   value</var>, abort this algorithm.
 
-  <!--
-  If we go all the way up to the root and still don't have the desired value,
+  <li>
+  <div class=comments>
+  <p>If we go all the way up to the root and still don't have the desired value,
   pushing down values is pointless.  It will create extra markup for no
   purpose.  Except if the value is null, which basically just means "try to get
   rid of anything affecting the current element but don't aim for any specific
   value".
 
-  Nevertheless, Chrome 14 dev does seem to do this.  Running bold on <span
-  style=font-weight:300>f[o]o</span> breaks up the span and adds a <b> as a
-  sibling.  In IE9, Firefox 6.0a2, and Opera 11.50, it instead nests the <b>
-  inside the <span>.  It's a tradeoff: WebKit's behavior is better for things
-  like
+  <p>Nevertheless, Chrome 14 dev does seem to do this.  Running bold on
+  &lt;span style=font-weight:300>f[o]o&lt;/span> breaks up the span and adds a
+  &lt;b> as a sibling.  In IE9, Firefox 6.0a2, and Opera 11.50, it instead
+  nests the &lt;b> inside the &lt;span>.  It's a tradeoff: WebKit's behavior is
+  better for things like
 
-    <font color=red>fo[o</font><font color=blue>b]ar</font>
-    -> <font color=red>fo</font><font color=green>[ob]</font><font color=blue>ar</font>
+<pre>
+&lt;font color=red>fo[o&lt;/font>&lt;font color=blue>b]ar&lt;/font>
+-> &lt;font color=red>fo&lt;/font>&lt;font color=green>[ob]&lt;/font>&lt;font color=blue>ar&lt;/font></pre>
 
-  (where the spec adds two extra font tags instead of one), but the spec is
+  <p>(where the spec adds two extra font tags instead of one), but the spec is
   simpler for things like
 
-    <font color=red>f[o]o</font>
-    -> <font color=red>f<font color=green>[o]</font>o</font>
+<pre>
+&lt;font color=red>f[o]o&lt;/font>
+-> &lt;font color=red>f&lt;font color=green>[o]&lt;/font>o&lt;/font></pre>
 
-  (where WebKit splits the existing tag up in addition to creating a new tag).
+  <p>(where WebKit splits the existing tag up in addition to creating a new tag).
   I'm not particularly sure which approach is better overall, so I'll go with
   the majority of browsers.  If these algorithms move to use runs of
   consecutive siblings instead of doing everything node-by-node, it might make
   sense to break up the parent as long as it won't create an extra node (i.e.,
   we're styling something that includes the first or last child).
-  -->
-  <li>If the <span>effective command value</span> of <var>command</var> is not
+  </div>
+
+  <p>If the <span>effective command value</span> of <var>command</var> is not
   [[looselyequivalent]] to <var>new value</var> on the [[parent]] of the last
   member of <var>ancestor list</var>, and <var>new value</var> is not null,
   abort this algorithm.
@@ -1915,16 +2004,16 @@ with a [[style]] attribute).
       <li>If <var>child</var> is <var>node</var>, continue with the next
       <var>child</var>.
 
-      <li>If <var>child</var> is an [[element]] whose <span>specified command
+      <li>
+      <p class=comments> TODO: This will be incorrect for relative font sizes.
+      If the font size on the parent was removed and the font size on the child
+      is in ems or percents or something, it will now change value.  This isn't
+      likely to come up, so we'll ignore it for now.
+
+      <p>If <var>child</var> is an [[element]] whose <span>specified command
       value</span> for <var>command</var> is neither null nor <span
       title="equivalent values">equivalent</span> to <var>propagated
       value</var>, continue with the next <var>child</var>.
-      <!--
-      TODO: This will be incorrect for relative font sizes.  If the font size
-      on the parent was removed and the font size on the child is in ems or
-      percents or something, it will now change value.  This isn't likely to
-      come up, so we'll ignore it for now.
-      -->
 
       <li>If <var>child</var> is the last member of <var>ancestor list</var>,
       continue with the next <var>child</var>.
@@ -1960,30 +2049,37 @@ different value.
   <li>If <var>node</var> is an <span>allowed child</span> of "span":
 
   <ol>
-    <!-- Even if the value matches, we stick it in a preceding sibling if
-    possible.  This ensures "a<cite>b</cite>c" -> "<i>a<cite>b</cite>c</i>"
-    instead of "<i>a</i><cite>b</cite><i>c</i>".  While we're at it, we also
-    handle more elaborate cases like <b>foo</b>[bar]<b>baz</b> and even
-    <i><b>foo</b></i>[bar]<i><b>baz</b></i> (the latter becomes
-    <b><i>foo</i>bar<i>baz</i></b>).
+    <li>
+    <div class=comments>
+    <p>Even if the value matches, we stick it in a preceding sibling if
+    possible.  This ensures "a&lt;cite>b&lt;/cite>c" ->
+    "&lt;i>a&lt;cite>b&lt;/cite>c&lt;/i>" instead of
+    "&lt;i>a&lt;/i>&lt;cite>b&lt;/cite>&lt;i>c&lt;/i>".  While we're at it, we
+    also handle more elaborate cases like &lt;b>foo&lt;/b>[bar]&lt;b>baz&lt;/b>
+    and even &lt;i>&lt;b>foo&lt;/b>&lt;/i>[bar]&lt;i>&lt;b>baz&lt;/b>&lt;/i>
+    (the latter becomes &lt;b>&lt;i>foo&lt;/i>bar&lt;i>baz&lt;/i>&lt;/b>).
 
-    Theoretically this algorithm could pointlessly reorganize the DOM in the
+    <p>Theoretically this algorithm could pointlessly reorganize the DOM in the
     event of unreasonable style rules, but it's not a big enough deal for us to
-    care, since the resulting style will still be right. -->
-    <li><span>Reorder modifiable descendants</span> of <var>node</var>'s
+    care, since the resulting style will still be right.
+    </div>
+
+    <p><span>Reorder modifiable descendants</span> of <var>node</var>'s
     [[previoussibling]].
 
     <li><span>Reorder modifiable descendants</span> of <var>node</var>'s
     [[nextsibling]].
 
-    <li><span>Wrap</span> the one-[[node]] list consisting of <var>node</var>,
+    <li>
+    <p class=comments>The new parent instructions are too complicated to
+    reasonably feed into the wrap algorithm.
+
+    <p><span>Wrap</span> the one-[[node]] list consisting of <var>node</var>,
     with <span>sibling criteria</span> matching a <span>simple modifiable
     element</span> whose <span>specified command value</span> is [[equivalent]]
     to <var>new value</var> and whose <span>effective command value</span> is
     [[looselyequivalent]] to <var>new value</var>, and with <span>new parent
     instructions</span> returning null.
-    <!-- The new parent instructions are too complicated to reasonably feed
-    into the wrap algorithm. -->
   </ol>
 
   <li>If the <span>effective command value</span> of <var>command</var> is
@@ -1998,14 +2094,16 @@ different value.
     value</span> for <var>command</var> is neither null nor <span
     title="equivalent values">equivalent</span> to <var>new value</var>.
 
-    <li><span>Force the value</span> of each [[node]] in <var>children</var>,
+    <li>
+    <p class=comments>This means that if it has no children, we do nothing.
+    IE9 inserts an empty wrapper element in that case, but I'm not sure what
+    the point is, and no one else does, so I don't.  WebKit seems to ignore the
+    node if its only child consists solely of whitespace, but I don't see any
+    grounds for that and no one else does, so I don't.
+
+    <p><span>Force the value</span> of each [[node]] in <var>children</var>,
     with <var>command</var> and <var>new value</var> as in this invocation of
     the algorithm.
-    <!-- This means that if it has no children, we do nothing.  IE9 inserts an
-    empty wrapper element in that case, but I'm not sure what the point is, and
-    no one else does, so I don't.  WebKit seems to ignore the node if its only
-    child consists solely of whitespace, but I don't see any grounds for that
-    and no one else does, so I don't. -->
 
     <li>Abort this algorithm.
   </ol>
@@ -2031,16 +2129,16 @@ different value.
     title=dom-Document-createElement>createElement("i")</code> on the
     [[ownerdocument]] of <var>node</var>.
 
-    <li>If <var>command</var> is "strikethrough" and <var>new value</var> is
+    <li>
+    <p class=comments>TODO: Actual UAs use strike, not s, but s is shorter and
+    HTML5 makes strike invalid.  I've gone with s for now, but maybe we want to
+    change the spec to require strike.
+
+    <p>If <var>command</var> is "strikethrough" and <var>new value</var> is
     "line-through", let <var>new parent</var> be the result of calling <code
     data-anolis-spec=domcore
     title=dom-Document-createElement>createElement("s")</code> on the
     [[ownerdocument]] of <var>node</var>.
-    <!--
-    TODO: Actual UAs use strike, not s, but s is shorter and HTML5 makes strike
-    invalid.  I've gone with s for now, but maybe we want to change the spec to
-    require strike.
-    -->
 
     <li>If <var>command</var> is "underline" and <var>new value</var> is
     "underline", let <var>new parent</var> be the result of calling <code
@@ -2048,12 +2146,13 @@ different value.
     title=dom-Document-createElement>createElement("u")</code> on the
     [[ownerdocument]] of <var>node</var>.
 
-    <li>If <var>command</var> is "foreColor", and <var>new value</var> is fully
-    opaque with red, green, and blue components in the range 0 to 255:
-    <!-- See comment for foreColor for discussion. -->
+    <li>
+    <p class=comments>See comment for foreColor for discussion.  TODO: Define
+    more carefully what happens when things are out of range or not integers or
+    whatever.
 
-    <!-- TODO: Define more carefully what happens when things are out of range
-    or not integers or whatever. -->
+    <p>If <var>command</var> is "foreColor", and <var>new value</var> is fully
+    opaque with red, green, and blue components in the range 0 to 255:
 
     <ol>
       <li>Let <var>new parent</var> be the result of calling <code
@@ -2090,32 +2189,36 @@ different value.
     <li>Set the [[href]] attribute of <var>new parent</var> to <var>new
     value</var>.
 
-    <!-- Nested a elements are bad, because they can't be serialized to
-    text/html.  hrefs should already have been cleared in a previous step, but
-    we might have <a name> or such lurking about. -->
-    <li>Let <var>ancestor</var> be <var>node</var>'s [[parent]].
+    <li>
+    <p class=comments>Nested a elements are bad, because they can't be
+    serialized to text/html.  hrefs should already have been cleared in a
+    previous step, but we might have &lt;a name> or such lurking about.
+
+    <p>Let <var>ancestor</var> be <var>node</var>'s [[parent]].
 
     <li>While <var>ancestor</var> is not null:
 
     <ol>
-      <li>If <var>ancestor</var> is an [[a]], <span>set the tag name</span> of
+      <li>
+      <p class=comments> TODO: This will mean any link-specific attributes will
+      be transferred, which makes them both invalid and useless.  Is that okay?
+      I don't really want to list them all, because that sort of list is prone
+      to bitrot.
+
+      <p>If <var>ancestor</var> is an [[a]], <span>set the tag name</span> of
       <var>ancestor</var> to "span", and let <var>ancestor</var> be the
       result.
-
-      <!--
-      TODO: This will mean any link-specific attributes will be transferred,
-      which makes them both invalid and useless.  Is that okay?  I don't really
-      want to list them all, because that sort of list is prone to bitrot.
-      -->
 
       <li>Set <var>ancestor</var> to its [[parent]].
     </ol>
   </ol>
 
-  <!-- WebKit is the only engine that ever outputs anything but font tags for
-  fontSize.  For size=7, it uses font-size: -webkit-xxx-large.  We just output
-  a font tag no matter what. -->
-  <li>If <var>command</var> is "fontSize"; and <var>new value</var> is one of
+  <li>
+  <p class=comments>WebKit is the only engine that ever outputs anything but
+  font tags for fontSize.  For size=7, it uses font-size: -webkit-xxx-large.
+  We just output a font tag no matter what for size=7.
+
+  <p>If <var>command</var> is "fontSize"; and <var>new value</var> is one of
   "xx-small", "small", "medium", "large", "x-large", "xx-large", or
   "xxx-large"; and either the <span>CSS styling flag</span> is false, or
   <var>new value</var> is "xxx-large": let <var>new parent</var> be the result
@@ -2135,11 +2238,13 @@ different value.
     <li>xxx-large: 7
   </ul>
 
-  <!-- We always use sup/sub elements, even in CSS mode, following Gecko and
-  contradicting WebKit.  This is because <span value="vertical-align:
-  sub/super">, the obvious equivalent (and what WebKit uses), behaves quite
-  differently: it doesn't reduce font-size, which is ugly. -->
-  <li>If <var>command</var> is "subscript" or "superscript" and <var>new
+  <li>
+  <p class=comments>We always use sup/sub elements, even in CSS mode, following
+  Gecko and contradicting WebKit.  This is because &lt;span
+  value="vertical-align: sub/super">, the obvious equivalent (and what WebKit
+  uses), behaves quite differently: it doesn't reduce font-size, which is ugly.
+
+  <p>If <var>command</var> is "subscript" or "superscript" and <var>new
   value</var> is "sub", let <var>new parent</var> be the result of calling
   <code data-anolis-spec=domcore
   title=dom-Document-createElement>createElement("sub")</code> on the
@@ -2156,9 +2261,11 @@ different value.
   title=dom-Document-createElement>createElement("span")</code> on the
   [[ownerdocument]] of <var>node</var>.
 
-  <li>Insert <var>new parent</var> in <var>node</var>'s [[parent]] before
-  <var>node</var>.  <!-- This preserves boundary points correctly, as usual.
-  -->
+  <li>
+  <p class=comments>This preserves boundary points correctly, as usual.
+
+  <p>Insert <var>new parent</var> in <var>node</var>'s [[parent]] before
+  <var>node</var>.
 
   <li>If the <span>effective command value</span> of <var>command</var> for
   <var>new parent</var> is not [[looselyequivalent]] to <var>new value</var>,
@@ -2279,12 +2386,14 @@ as desired.
 <ol>
   <li>Let <var>command</var> be the current <span>command</span>.
 
-  <li>If there is no <span>editable</span> [[text]] node <span>effectively
-  contained</span> in the <span>active range</span>:
-  <!-- IE9 seems to wrap the whole line instead, or something like that,
-  although it does nothing for createLink.  We follow all other browsers'
+  <li>
+  <p class=comments>IE9 seems to wrap the whole line instead, or something like
+  that, although it does nothing for createLink.  We follow all other browsers'
   general behavior: change the state/value, and then make sure that takes
-  effect if the user types something before changing the cursor position. -->
+  effect if the user types something before changing the cursor position.
+
+  <p>If there is no <span>editable</span> [[text]] node <span>effectively
+  contained</span> in the <span>active range</span>:
 
   <ol>
     <li>If <var>command</var> has <span>inline command activated values</span>,
@@ -2306,13 +2415,16 @@ as desired.
     <li>Abort these steps.
   </ol>
 
-  <li>If the <span>active range</span>'s [[startnode]] is an
+  <li>
+  <p class=comments>The last sentence here just prettifies the resulting range
+  a bit.
+
+  <p>If the <span>active range</span>'s [[startnode]] is an
   <span>editable</span> [[text]] node, and its [[startoffset]] is neither zero
   nor its [[startnode]]'s [[length]], call [[splittext|]] on the <span>active
   range</span>'s [[startnode]], with argument equal to the <span>active
   range</span>'s [[startoffset]].  Then set the <span>active range</span>'s
   [[startnode]] to the result, and its [[startoffset]] to zero.
-  <!-- This last sentence just prettifies the resulting range a bit. -->
 
   <li>If the <span>active range</span>'s [[endnode]] is an
   <span>editable</span> [[text]] node, and its [[endoffset]] is neither zero
@@ -2326,52 +2438,62 @@ as desired.
   <li>For each <var>element</var> in <var>element list</var>, <span>clear the
   value</span> of <var>element</var>.
 
-  <li>Let <var>node list</var> be all <span>editable</span> [[nodes]]
-  <span>effectively contained</span> in the <span>active range</span>.
-  <!--
-  We skip non-editable nodes.
+  <li>
+  <div class=comments>
+  <p>We skip non-editable nodes.
 
-  IE9: Allows everything to be modified by execCommand(), regardless of whether
-    it's editable.
-  Firefox 4.0: Ignores execCommand() if the start and end of the selection are
-    not both editable.  If the start and end are editable but something in the
+  <dl>
+    <dt>IE9
+    <dd>Allows everything to be modified by execCommand(), regardless of
+    whether it's editable.
+
+    <dt>Firefox 4.0
+    <dd>Ignores execCommand() if the start and end of the selection are not
+    both editable.  If the start and end are editable but something in the
     middle is not, seems to relocate the non-editable part in the middle or
     something like that.
-  Chrome 12 dev: Ignores execCommand() if the start and end of the selection
-    are not both editable.  If the start and end are editable but something in
-    the middle is not, applies the given command but skips the non-editable
-    parts.  But the state doesn't ignore the non-editable parts, so if you bold
-    such a selection you can't unbold it, for instance, since the middle part
-    will remain bold (so it will keep on trying to bold it instead of switching
-    to unbold).
-  Opera 11.00: Ignores execCommand() if the start and end of the selection are
-    not both editable.  If the start and end are editable but something in the
+
+    <dt>Chrome 12 dev
+    <dd>Ignores execCommand() if the start and end of the selection are not
+    both editable.  If the start and end are editable but something in the
+    middle is not, applies the given command but skips the non-editable parts.
+    But the state doesn't ignore the non-editable parts, so if you bold such a
+    selection you can't unbold it, for instance, since the middle part will
+    remain bold (so it will keep on trying to bold it instead of switching to
+    unbold).
+
+    <dt>Opera 11.00
+    <dd>Ignores execCommand() if the start and end of the selection are not
+    both editable.  If the start and end are editable but something in the
     middle is not, applies the command to everything, even the non-editable
     part.
+  </dl>
 
-  I chose to go with the non-IE behavior, per this discussion:
-  http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-April/031147.html
+  <p>I chose to go with the non-IE behavior, per <a
+  href=http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-April/031147.html>discussion</a>.
   Ignoring non-editable things is convenient for the common use-case of an
   editor, where you don't want the user to bold random parts of the UI when
   they hit the bold button.  For cases where it's not desired, you can always
   turn designMode on briefly before using execCommand(), so the non-IE behavior
   is a lot easier to work around than the IE behavior.
 
-  I don't see the value in ever just ignoring execCommand().  If the start and
-  end are not editable, I'm going to say you should still style any editable
-  nodes in between.  I'm also going to ignore non-editable nodes for the
-  purposes of determining state, so (for instance) if all the editable nodes
-  are bolded, it will unbold instead of bolding.
-  -->
+  <p>I don't see the value in ever just ignoring execCommand().  If the start
+  and end are not editable, I'm going to say you should still style any
+  editable nodes in between.  I'm also going to ignore non-editable nodes for
+  the purposes of determining state, so (for instance) if all the editable
+  nodes are bolded, it will unbold instead of bolding.
+  </div>
 
-  <li>For each <var>node</var> in <var>node list</var>:
+  <p>Let <var>node list</var> be all <span>editable</span> [[nodes]]
+  <span>effectively contained</span> in the <span>active range</span>.
 
-  <!--
-  TODO: This is inefficient.  It would be most efficient to only push down
-  values on the highest-level effectively contained nodes, and to batch
-  operations so we handle runs of adjacent siblings at once.  Should we bother
-  fixing this?
-  -->
+  <li>
+  <p class=comments>TODO: This is inefficient.  It would be most efficient to
+  only push down values on the highest-level effectively contained nodes, and
+  to batch operations so we handle runs of adjacent siblings at once.  Should
+  we bother fixing this?
+
+  <p>For each <var>node</var> in <var>node list</var>:
 
   <ol>
     <li><span>Push down values</span> on <var>node</var>.
@@ -2383,24 +2505,29 @@ as desired.
 <!-- @} -->
 <h3><dfn>The <code title>backColor</code> command</dfn></h3>
 <!-- @{ -->
-<!--
-We have three behaviors to choose from for this one:
+<p class=note>For historical reasons, backColor and hiliteColor behave
+identically.
 
-1) Chrome 11 dev and IE 9 RC treat it the same as hiliteColor (although IE 9 RC
-doesn't support hiliteColor itself).
+<div class=comments>
+<p>We have three behaviors to choose from for this one:
 
-2) Firefox 4 in non-CSS mode sets the bgcolor of the nearest td or body, or
-something like that.  In testing, it seems to jump out of contenteditable
-elements to style non-editable ancestors, which is alarming.
+<ol>
+  <li>Chrome 11 dev and IE 9 RC treat it the same as hiliteColor (although IE 9
+  RC doesn't support hiliteColor itself).
 
-3) Firefox 4 in CSS mode and Opera 11 set the background of the nearest block
-container, although it doesn't seem to be very dependable (probably I just
-don't get what exactlyit's doing).
+  <li>Firefox 4 in non-CSS mode sets the bgcolor of the nearest td or body, or
+  something like that.  In testing, it seems to jump out of contenteditable
+  elements to style non-editable ancestors, which is alarming.
 
-(1) is obviously redundant, but has plurality support, so we could spec it that
-way if the other ways were useless.
+  <li>Firefox 4 in CSS mode and Opera 11 set the background of the nearest
+  block container, although it doesn't seem to be very dependable (probably I
+  just don't get what exactlyit's doing).
+</ol>
 
-(3) is incoherent from a user perspective.  For instance, if you try it on
+<p>(1) is obviously redundant, but has plurality support, so we could spec it
+that way if the other ways were useless.
+
+<p>(3) is incoherent from a user perspective.  For instance, if you try it on
 paragraphs the background will have big gaps where the margins are.  If you try
 it on an inline element that's a child of the editing host, it will do nothing
 or apply the background to everything or such, even though such an inline
@@ -2409,16 +2536,14 @@ would only make sense if we take considerable effort to ensure that block
 elements all have no margins, or if we wrap things in a div if they have
 margins, or something like that.
 
-That leaves (2).  That might be useful if it actually set the document's
+<p>That leaves (2).  That might be useful if it actually set the document's
 background color, but it seems like it sets table cell backgrounds sometimes
 instead, which is really confusing.
 
-The path of least resistance is to standardize this as meaning the same thing
-as hiliteColor, and make up new commands if we want to do things like set the
-document background color.  See hiliteColor for comments.
--->
-<p class=note>For historical reasons, backColor and hiliteColor behave
-identically.
+<p>The path of least resistance is to standardize this as meaning the same
+thing as hiliteColor, and make up new commands if we want to do things like set
+the document background color.  See hiliteColor for comments.
+</div>
 
 <p><span>Action</span>:
 
@@ -2442,35 +2567,37 @@ valid CSS color.
 <!-- @} -->
 <h3><dfn>The <code title>bold</code> command</dfn></h3>
 <!-- @{ -->
-<!-- If the selection is collapsed (but not if it contains nothing but is not
-collapsed), IE9 wraps the whole line in a <strong>.  This seems bizarre and no
-one else does it, so I don't do it.  It's a similar story for similar commands
-(fontName, italic, etc.).  Except not for strikethrough, where it just does
-nothing if the selection is empty.  Why strikethrough?  I don't know. -->
+<p class=comments>If the selection is collapsed (but not if it contains nothing
+but is not collapsed), IE9 wraps the whole line in a &lt;strong>.  This seems
+bizarre and no one else does it, so I don't do it.  It's a similar story for
+similar commands (fontName, italic, etc.).  Except not for strikethrough, where
+it just does nothing if the selection is empty.  Why strikethrough?  I don't
+know.
 
 <p><span>Action</span>: If <code
 title=queryCommandState()>queryCommandState("bold")</code> returns true,
 <span>set the selection's value</span> to "normal".  Otherwise <span>set the
 selection's value</span> to "bold".
 
-<p><span>Inline command activated values</span>: "bold", "600", "700", "800",
-or "900"
-<!--
-The cutoff of 600 (both here and for state) matches Chrome 14 dev.  The cutoff
-used by IE9 and Firefox 6.0a2 seems to be 500, and the distinction isn't
-relevant for Opera 11.11 (it doesn't use CSS here at all AFAICT).  On my test
-systems with default fonts, Chrome 14 dev displays 700 and up as bold, while
-the other three display 600 and up as bold.
+<div class=comments>
+<p>The cutoff of 600 matches Chrome 14 dev.  The cutoff used by IE9 and Firefox
+6.0a2 seems to be 500, and the distinction isn't relevant for Opera 11.11 (it
+doesn't use CSS here at all AFAICT).  On my test systems with default fonts,
+Chrome 14 dev displays 700 and up as bold, while the other three display 600
+and up as bold.
 
-Thus in Chrome on my system, the bold command will behave a bit oddly the first
+<p>Thus in Chrome on my system, the bold command will behave a bit oddly the first
 time you hit it if there's anything in the range with font-weight: 600, but it
 will look right in other browsers.  On the other hand, if I followed
 IE/Firefox, it would look wrong on all my browsers for font-weight: 500.
 
-700 actually makes more sense: then you'd view 100-300 as light, 400-600 as
+<p>700 actually makes more sense: then you'd view 100-300 as light, 400-600 as
 medium, 700-900 as bold.  But that's not how it seems to work in browsers, so
 I'll go with 600 as the cutoff.
--->
+</div>
+
+<p><span>Inline command activated values</span>: "bold", "600", "700", "800",
+or "900"
 
 <p><span>Relevant CSS property</span>: "font-weight"
 
@@ -2480,141 +2607,177 @@ I'll go with 600 as the cutoff.
 <!-- @} -->
 <h3><dfn>The <code title>createLink</code> command</dfn></h3>
 <!-- @{ -->
+<p class=comments> If the selection doesn't contain anything (meaning, e.g.,
+deleteContents() doesn't change anything), then Chrome 12 dev inserts a link at
+the selection start, with the text equal to the link URL.  Other browsers don't
+do it, so I don't either.
+
 <p><span>Action</span>:
 
-<!-- If the selection doesn't contain anything (meaning, e.g., deleteContents()
-doesn't change anything), then Chrome 12 dev inserts a link at the selection
-start, with the text equal to the link URL.  Other browsers don't do it, so I
-don't either. -->
 <ol>
-  <li>If <var>value</var> is the empty string, abort these steps and do
-  nothing.
-  <!--
-  Firefox 4b11 and Chrome 11 dev both silently do nothing in this case.
-  IE 9 RC and Opera 11 both treat the request literally.  Gecko and WebKit
-  probably have it right here: users who enter no URL are very unlikely to want
-  to link to a relative URL resolving to the current document.  If they really
-  want to, they can always specify "#" for the value, or the author can rewrite
-  it, so it's not like this makes the API less useful.
-  -->
+  <li>
+  <p class=comments> Firefox 4b11 and Chrome 11 dev both silently do nothing in
+  this case.  IE 9 RC and Opera 11 both treat the request literally.  Gecko and
+  WebKit probably have it right here: users who enter no URL are very unlikely
+  to want to link to a relative URL resolving to the current document.  If they
+  really want to, they can always specify "#" for the value, or the author can
+  rewrite it, so it's not like this makes the API less useful.
 
-  <li>For each <span>editable</span> [[a]] element that has an [[href]]
+  <p>If <var>value</var> is the empty string, abort these steps and do
+  nothing.
+
+  <li>
+  <div class=comments>
+  <p>There are three approaches here.  For instance, if you ask browsers to
+  create a link to "http://example.org" on the "b" here:
+
+    <pre>&lt;a href=http://example.com>&lt;b>Abc&lt;/b>&lt;/a></pre>
+
+  <p>Chrome 10 dev produces:
+
+    <pre>&lt;b>&lt;a href=http://example.com>A&lt;/a>&lt;a href=http://example.org>b&lt;/a>&lt;a href=http://example.com>c&lt;/a>&lt;/b></pre>
+
+  <p>Firefox 4b11 produces (roughly):
+
+    <pre>&lt;a href=http://example.com>&lt;b>A&lt;a href=http://example.org>b&lt;/a>c&lt;/b>&lt;/a></pre>
+
+  <p>(This doesn't round-trip through text/html serialization.)  IE 9 RC and Opera
+  11 produce simply:
+
+    <pre>&lt;a href=http://example.org>&lt;b>Abc&lt;/b>&lt;/a></pre>
+
+  <p>The last behavior probably best matches user expectations.  If you happen to
+  miss out a character when selecting the link you want to change, do you
+  really intend to only change the link of part of it?
+  </div>
+
+  <p>For each <span>editable</span> [[a]] element that has an [[href]]
   attribute and is an [[ancestor]] of some [[node]] <span>effectively
   contained</span> in the <span>active range</span>, set that [[a]] element's
   [[href]] attribute to <var>value</var>.
-  <!-- There are three approaches here.  For instance, if you ask browsers to
-  create a link to "http://example.org" on the "b" here:
-
-    <a href=http://example.com><b>Abc</b></a>
-
-  Chrome 10 dev produces:
-
-    <b><a href=http://example.com>A</a><a href=http://example.org>b</a>
-    <a href=http://example.com>c</a></b>
-
-  Firefox 4b11 produces (roughly):
-
-    <a href=http://example.com><b>A<a href=http://example.org>b</a>c</b></a>
-
-  (This doesn't round-trip through text/html serialization.)  IE 9 RC and Opera
-  11 produce simply:
-
-    <a href=http://example.org><b>Abc</b></a>
-
-  The last behavior probably best matches user expectations.  If you happen to
-  miss out a character when selecting the link you want to change, do you
-  really intend to only change the link of part of it?
-  -->
 
   <li><span>Set the selection's value</span> to <var>value</var>.
 </ol>
 
-<!-- IE10PP2, Firefox 7.0a2, Chrome 14 dev, and Opera 11.50 all do not support
-indeterminate, state, or value for createLink or unlink.  I define
-indeterminate and value anyway because they make sense. -->
+<p class=comments>IE10PP2, Firefox 7.0a2, Chrome 14 dev, and Opera 11.50 all do
+not support indeterminate, state, or value for createLink or unlink.  I define
+indeterminate and value anyway because they make sense.
+
 <p><span>Standard inline value command</span>
 
 <!-- @} -->
 <h3><dfn>The <code title>fontName</code> command</dfn></h3>
 <!-- @{ -->
-<p><span>Action</span>: <span>Set the selection's value</span> to
-<var>value</var>.
-<!-- UAs differ a bit in the details here:
+<div class=comments>
+<p>UAs differ a bit in the details here:
 
-IE 9 RC: Empty string sets <font face="">
-Firefox 4b11: Empty string does nothing
-Chrome 11 dev: Empty string does nothing, '"monospace"' same as 'monospace'
-  (i.e., cannot escape font-family keywords because quotes are stripped,
-  clearly wrong)
-Opera 11: Empty string sets <font face="">
+<dl>
+  <dt>IE 9 RC
+  <dd>Empty string sets &lt;font face="">
 
-Setting an empty font-family has the effect of inheriting the font from the
+  <dt>Firefox 4b11
+  <dd>Empty string does nothing
+
+  <dt>Chrome 11 dev
+  <dd>Empty string does nothing, '"monospace"' same as 'monospace' (i.e.,
+  cannot escape font-family keywords because quotes are stripped, clearly
+  wrong)
+
+  <dt>Opera 11
+  <dd>Empty string sets &lt;font face="">
+</dl>
+
+<p>Setting an empty font-family has the effect of inheriting the font from the
 parent (although I don't see where the February 24, 2011 CSS 3 Fonts draft says
 that).  Thus it makes sense that if we special-case this, it should be to unset
 the font somehow.
 
-Special-casing the empty string to do nothing doesn't make sense to me.  With
+<p>Special-casing the empty string to do nothing doesn't make sense to me.  With
 createLink we'd expect the user to enter the URL themselves, so it makes sense
 to special-case clicking OK without entering anything.  But here it's very
 likely that the font list will be fixed by the author (how many users will
 understand CSS font-family syntax?), so I don't think such usability concerns
-apply. -->
+apply.
+</div>
 
-<p><span>Standard inline value command</span>
-<!--
-The value is complicated.
+<p><span>Action</span>: <span>Set the selection's value</span> to
+<var>value</var>.
 
-IE 9 RC: Always the empty string.  Not very useful.
-Firefox 4b11: Confusing.  Sometimes it returns generic family names, like
-  "sans-serif".  Sometimes it gives specific font names, like "tt" when the
-  font is specified as "monospace".  Sometimes it gives the literal font-family
-  string.  Not sure what it's doing here.
-Chrome 11 dev: Gives the literal value of font-family, except if it's inherited
-  from default values (no explicit style declarations anywhere), when it seems
-  to return the exact font name.
-Opera 11: Returns the literal value of font-family, except if it's inherited
+<div class=comments>
+<p>The value is complicated.
+
+<dl>
+  <dt>IE 9 RC
+  <dd>Always the empty string.  Not very useful.
+
+  <dt>Firefox 4b11
+  <dd>Confusing.  Sometimes it returns generic family names, like "sans-serif".
+  Sometimes it gives specific font names, like "tt" when the font is specified
+  as "monospace".  Sometimes it gives the literal font-family string.  Not sure
+  what it's doing here.
+
+  <dt>Chrome 11 dev
+  <dd>Gives the literal value of font-family, except if it's inherited from
+  default values (no explicit style declarations anywhere), when it seems to
+  return the exact font name.
+
+  <dt>Opera 11
+  <dd>Returns the literal value of font-family, except if it's inherited
   from default values, when it returns the empty string.
+</dl>
 
-I'm just going to punt on this and say it should be the resolved value of
+<p>I'm just going to punt on this and say it should be the resolved value of
 font-family.  I'll leave CSSOM to decide what that means if there are no
 applicable style rules.
--->
+</div>
+
+<p><span>Standard inline value command</span>
 
 <p><span>Relevant CSS property</span>: "font-family"
 
 <!-- @} -->
 <h3><dfn>The <code title>fontSize</code> command</dfn></h3>
 <!-- @{ -->
-<p><span>Action</span>:
-
-<!--
-IE 9: Parses the value as a number (allowing floating-point), rounds to the
+<div class=comments>
+<dl>
+  <dt>IE 9
+  <dd>Parses the value as a number (allowing floating-point), rounds to the
   nearest integer, then clamps to the range 1 to 7.  If the value is not a
   valid number, including if it has trailing characters (like "2em"), does
   nothing.  Normalizes relative sizes, so "+0" is the same as "+3", etc.
   Treats empty string the same as "1".
-Firefox 4.0: Passes the value through literally to <font size=>, so "2em" gets
-  you <font size="2em">.  Always uses <font>, even with styleWithCss true.
-  Ignores the command if the value is the empty string.
-Chrome 12 dev: Parses the value as a legacy font size, so "2em" becomes "2",
-  then outputs a <font> with the resulting number.  If there is no resulting
-  number, like for a value of "xx-small", does nothing.  In styleWithCss mode,
-  outputs a span with corresponding CSS keywords: 1 = x-small, 2 = small,
-  . . ., 6 = xx-large, 7 = -webkit-xxx-large.  Normalizes relative sizes, so
-  "+0" is the same as "3", etc.  Ignores the command if the value is the empty
-  string.
-Opera 11: Parses the value as an integer (ignoring floating-point as trailing
-  characters), then outputs that.  This means that "+0" becomes <font size=0>
-  instead of <font size=+0> or <font size=3>.  Non-numeric values get
-  interpreted as 0.  Does not clamp, and is willing to output negative numbers.
-  Treats empty string as "0".
 
-What all of these have in common is that they force the author to deal with
+  <dt>Firefox 4.0
+  <dd>Passes the value through literally to &lt;font size=>, so "2em" gets you
+  &lt;font size="2em">.  Always uses &lt;font>, even with styleWithCss true.
+  Ignores the command if the value is the empty string.
+
+  <dt>Chrome 12 dev
+  <dd>Parses the value as a legacy font size, so "2em" becomes "2", then
+  outputs a &lt;font> with the resulting number.  If there is no resulting
+  number, like for a value of "xx-small", does nothing.  In styleWithCss mode,
+  outputs a span with corresponding CSS keywords: 1 = x-small, 2 = small, . .
+  ., 6 = xx-large, 7 = -webkit-xxx-large.  Normalizes relative sizes, so "+0"
+  is the same as "3", etc.  Ignores the command if the value is the empty
+  string.
+
+  <dt>Opera 11
+  <dd>Parses the value as an integer (ignoring floating-point as trailing
+  characters), then outputs that.  This means that "+0" becomes &lt;font
+  size=0> instead of &lt;font size=+0> or &lt;font size=3>.  Non-numeric values
+  get interpreted as 0.  Does not clamp, and is willing to output negative
+  numbers.  Treats empty string as "0".
+</dl>
+
+<p>What all of these have in common is that they force the author to deal with
 legacy font values and don't let them use CSS.  This is undesirable, so I
 ignore how implementations behave.  Practically any value that did the same
 thing in IE and Firefox should still do the same thing here, so I'm only
 respecifying non-interoperable behavior anyway.
--->
+</div>
+
+<p><span>Action</span>:
+
 <ol>
   <li>If <var>value</var> is the empty string, abort these steps and do
   nothing.
@@ -2652,6 +2815,14 @@ respecifying non-interoperable behavior anyway.
     <li>Set <var>value</var> to the string here corresponding to
     <var>number</var>:
 
+    <p class=comments> The entry for 7 here is an issue: there's no CSS value
+    that corresponds to it.  Even if we got one added to the drafts, it
+    wouldn't be backward-compatible to use it.  WebKit is the only engine that
+    supports CSS output for fontSize, and it uses -webkit-xxx-large in this
+    case, which is unworkable.  Instead, we just always output a font tag for
+    size 7.  If authors want conforming markup, they'll need to give CSS sizes
+    above size 7, not legacy sizes.
+
     <ul>
       <li>1: xx-small
       <li>2: small
@@ -2661,77 +2832,78 @@ respecifying non-interoperable behavior anyway.
       <li>6: xx-large
       <li>7: xxx-large
     </ul>
-
-    <!--
-    The entry for 7 here is an issue: there's no CSS value that corresponds to
-    it.  Even if we got one added to the drafts, it wouldn't be
-    backward-compatible to use it.  WebKit is the only engine that supports CSS
-    output for fontSize, and it uses -webkit-xxx-large in this case, which is
-    unworkable.  Instead, we just always output a font tag for size 7.  If
-    authors want conforming markup, they'll need to give CSS sizes above size
-    7, not legacy sizes.
-    -->
   </ol>
 
-  <li>If <var>value</var> is not one of the strings "xx-small", "x-small",
+  <li>
+  <p class=comments> Not sure this is the best way to do it.  We don't want to
+  allow relative lengths, because those can have very weird user-visible
+  behavior.  For instance, a size of 2em would sometimes double the text size,
+  but if you applied it a second time it would do nothing, but if you
+  deselected one character it would suddenly double the size again.  Current
+  UAs just only allow numeric values.  There's no harm in allowing "x-small"
+  and absolute sizes, I don't think.
+
+  <p>If <var>value</var> is not one of the strings "xx-small", "x-small",
   "small", "medium", "large", "x-large", "xx-large", "xxx-large", and is not a
   valid CSS absolute length, then abort these steps and do nothing.
-  <!--
-  Not sure this is the best way to do it.  We don't want to allow relative
-  lengths, because those can have very weird user-visible behavior.  For
-  instance, a size of 2em would sometimes double the text size, but if you
-  applied it a second time it would do nothing, but if you deselected one
-  character it would suddenly double the size again.  Current UAs just only
-  allow numeric values.  There's no harm in allowing "x-small" and absolute
-  sizes, I don't think.
-  -->
 
   <li><span>Set the selection's value</span> to <var>value</var>.
 </ol>
+
+<p class=comments>This follows Firefox 6.0a2.  Chrome 14 dev always returns
+false.  Note that indeterminacy here keys off the effective command value,
+while the value is based only on an approximation (a number from one to seven).
+Thus it's possible for every subrange of the selection to have the same value,
+but for the selection to still be indeterminate.  Setting the fontSize to the
+value will make it determinate without changing anything's value.
 
 <p><span>Indeterminate</span>: True if among <span>editable</span> [[text]]
 nodes that are <span>effectively contained</span> in the <span>active
 range</span>, there are two that have distinct <span title="effective command
 value">effective command values</span>.  Otherwise false.
-<!-- This follows Firefox 6.0a2.  Chrome 14 dev always returns false.  Note
-that indeterminacy here keys off the effective command value, while the value
-is based only on an approximation (a number from one to seven).  Thus it's
-possible for every subrange of the selection to have the same value, but for
-the selection to still be indeterminate.  Setting the fontSize to the value
-will make it determinate without changing anything's value. -->
+
+<div class=comments>
+<dl>
+  <dt>IE9
+  <dd>Seems to return a number based on the computed font-size, but only if
+  it's exactly right, otherwise it returns null.  Something like that.
+
+  <dt>Firefox 6.0a2
+  <dd>Seemingly goes up to the nearest ancestor that's a &lt;font size> and
+  returns the literal value of that attribute, or "" if there's no such
+  ancestor.
+
+  <dt>Chrome 14 dev
+  <dd>Gets the computed font-size in pixels, and rounds to the nearest &lt;font
+  size> equivalent, rounding up in the event of a tie.  Except that if it's
+  small enough, it returns "0", which doesn't make sense because that behaves
+  the same as "1".
+
+  <dt>Opera 11.11
+  <dd>Like Firefox, except it returns "3" if there's no &lt;font size>
+  ancestor, and it converts relative values to absolute ("+1" -> "4").
+</dl>
+
+<p>Chrome's behavior seems the most useful.  As usual, IE returns a variable
+type and all other browsers return strings, and we follow other browsers.
+
+<p>If the selection isn't someplace editable, Chrome works like usual; some
+other browsers behave differently.  I see no reason to behave differently.
+</div>
 
 <p><span>Value</span>:
-<!--
-IE9: Seems to return a number based on the computed font-size, but only if it's
-exactly right, otherwise it returns null.  Something like that.
 
-Firefox 6.0a2: Seemingly goes up to the nearest ancestor that's a <font size>
-and returns the literal value of that attribute, or "" if there's no such
-ancestor.
-
-Chrome 14 dev: Gets the computed font-size in pixels, and rounds to the nearest
-<font size> equivalent, rounding up in the event of a tie.  Except that if it's
-small enough, it returns "0", which doesn't make sense because that behaves the
-same as "1".
-
-Opera 11.11: Like Firefox, except it returns "3" if there's no <font size>
-ancestor, and it converts relative values to absolute ("+1" -> "4").
-
-Chrome's behavior seems the most useful.  As usual, IE returns a variable type
-and all other browsers return strings, and we follow other browsers.
-
-If the selection isn't someplace editable, Chrome works like usual; some other
-browsers behave differently.  I see no reason to behave differently.
--->
 <ol>
-  <li>Let <var>pixel size</var> be the <span>effective command value</span> of
+  <li>
+  <p class=comments>See comment for standard inline value commands on how I
+  decided on this choice of node.
+
+  <p>Let <var>pixel size</var> be the <span>effective command value</span> of
   the first <span>editable</span> [[text]] node that is <span>effectively
   contained</span> in the <span>active range</span>, or if there is no such
   node, the <span>effective command value</span> of the <span>active
   range</span>'s [[startnode]], in either case interpreted as a number of
   pixels.
-  <!-- See comment for standard inline value commands on how I decided on this
-  choice of node. -->
 
   <li>Return the <span>legacy font size for</span> <var>pixel size</var>.
 </ol>
@@ -2769,10 +2941,15 @@ returned by the following algorithm:
 <!-- @} -->
 <h3><dfn>The <code title>foreColor</code> command</dfn></h3>
 <!-- @{ -->
-<p><span>Action</span>:
+<div class=comments>
+<p>Color interpretations:
 
-<!-- Color interpretations (wide screen recommended):
-
+<!-- I wanted the table to stretch out to the left.  CSS doesn't support this
+directly, but where there's a will, there's a way! -->
+<div style="height:1px;background:white;z-index:2;position:absolute;left:0;right:0"></div>
+<pre style="white-space:pre; overflow:auto; float:right; background:white;
+padding:0.5em; border: 1px solid gray; border-right: none; margin-top: 0;
+margin-bottom: 0">
                         IE10PP2       Firefox 7.0a2            Chrome 14 dev            Opera 11.50
 blue                    blue          blue                     #0000ff                  #0000ff
 f                       #f            -                        -                        #f00000
@@ -2795,62 +2972,85 @@ hsl(240, 100%, 50%)     #000150       rgb(0, 0, 255)           #0000ff          
 cornsilk                cornsilk      cornsilk                 #fff8dc                  #fff8dc
 potato quiche           #0000c0       -                        -                        #000a00
 transparent             transparent   -                        rgba(0, 0, 0, 0)         #00a000
-currentColor            #c0e000       currentcolor             rgba(0, 0, 0, 0)         #c000e0
+currentColor            #c0e000       currentcolor             rgba(0, 0, 0, 0)         #c000e0</pre>
+<div style="clear:right"></div>
+<div style="height:1px;background:white;z-index:2;position:absolute;left:0;right:0;margin-top:-1px"></div>
 
-The interpretations given for Firefox are only in styleWithCSS mode.  In
-non-styleWithCSS mode, it just outputs the string literally as the <font color>
-attribute value, which can lead to different results.  The given output for
-Chrome is for <font>; the output in styleWithCSS mode is the same, but rgb() is
-used instead of hex notation, and "transparent" and "currentcolor" are passed
-through under those names.  IE and Opera only support <font> to begin with.
+<p>The interpretations given for Firefox are only in styleWithCSS mode.  In
+non-styleWithCSS mode, it just outputs the string literally as the &lt;font
+color> attribute value, which can lead to different results.  The given output
+for Chrome is for &lt;font>; the output in styleWithCSS mode is the same, but
+rgb() is used instead of hex notation, and "transparent" and "currentcolor" are
+passed through under those names.  IE and Opera only support &lt;font> to begin
+with.
 
-Conclusions:
+<p>Conclusions:
 
-* Everyone accepts simple color keywords and #xxxxxx notation.
-* Opera mangles #xxx, but everyone else handles it fine.
-* The leading # is optional in all browsers but Gecko.
-* rgb() is accepted by everyone but Opera.
-* rgba() and hsl() are accepted by Gecko and WebKit, but rejected by IE and
+<ul>
+  <li>Everyone accepts simple color keywords and #xxxxxx notation.
+
+  <li>Opera mangles #xxx, but everyone else handles it fine.
+
+  <li>The leading # is optional in all browsers but Gecko.
+
+  <li>rgb() is accepted by everyone but Opera.
+
+  <li>rgba() and hsl() are accepted by Gecko and WebKit, but rejected by IE and
   Opera.
-* IE and Opera mangle unrecognized stuff, Gecko and WebKit ignore.
-* Browsers will happily output stuff like "transparent" and "rgba()" into <font
-  color> even though it won't be uniformly accepted there.
-* Opera and WebKit normalize the output color very aggressively, Gecko leaves
-  keywords intact but otherwise normalizes for CSS output (but doesn't
-  normalize at all for <font>), and IE normalizes inconsistently.
 
-What I'm going to say is that it either has to be a valid CSS color, or
-prefixing it with # must result in a valid CSS color.  For <font>, I'll say
+  <li>IE and Opera mangle unrecognized stuff, Gecko and WebKit ignore.
+
+  <li>Browsers will happily output stuff like "transparent" and "rgba()" into
+  &lt;font color> even though it won't be uniformly accepted there.
+
+  <li>Opera and WebKit normalize the output color very aggressively, Gecko
+  leaves keywords intact but otherwise normalizes for CSS output (but doesn't
+  normalize at all for &lt;font>), and IE normalizes inconsistently.
+</ul>
+
+<p>What I'm going to say is that it either has to be a valid CSS color, or
+prefixing it with # must result in a valid CSS color.  For &lt;font>, I'll say
 that the output color should be normalized to #xxxxxx form unless it's an SVG
 color keyword, in which case it's passed through intact.  If the color is not a
 simple color (fully opaque with all channels between 0 and 255), I'll force
 style="" even if styleWithCSS mode is off.  Some of this disagrees with all
 browsers, but it's unlikely to hurt and it makes sense.
--->
-<ol>
-  <li>If <var>value</var> is not a valid CSS color, prepend "#" to it.
+</div>
 
-  <li>If <var>value</var> is still not a valid CSS color, or if it is
+<p><span>Action</span>:
+
+<ol>
+  <li>
+  <p class=comments>TODO: Define "valid CSS color" (here and in other color
+  places).
+
+  <p>If <var>value</var> is not a valid CSS color, prepend "#" to it.
+
+  <li>
+  <p class=comments>currentColor is bad for the same reason as relative font
+  sizes.  It will confuse the algorithm, and doesn't seem very useful anyway.
+
+  <p>If <var>value</var> is still not a valid CSS color, or if it is
   currentColor, abort these steps and do nothing.
-  <!-- currentColor is bad for the same reason as relative font sizes.  It will
-  confuse the algorithm, and doesn't seem very useful anyway. -->
 
   <li><span>Set the selection's value</span> to <var>value</var>.
 </ol>
 
-<!-- Opera 11 seems to return true for the state if there's some color style
-applied, false otherwise, which seems fairly useless; authors want to use value
-here, not state.  So I'll match other browsers and not define any state. -->
+<div class=comments>
+<p>Opera 11 seems to return true for the state if there's some
+color style applied, false otherwise, which seems fairly useless; authors want
+to use value here, not state.  So I'll match other browsers and not define any
+state.
+
+<p>For value, the spec essentially matches Firefox 6.0a2 and Chrome 14 dev, as
+far as how to decide what color the node has.  IE9 seems to always return the
+number 0 for some bizarre reason.  There are some cases where Firefox returns
+the empty string for some reason, and it seems to select the active node a
+little differently.  Opera uses #xxxxxx format for getComputedStyle() but rgb()
+here, and also drops the transparent part of the color if there is any.
+</div>
 
 <p><span>Standard inline value command</span>
-<!--
-The spec essentially matches Firefox 6.0a2 and Chrome 14 dev, as far as how to
-decide what color the node has.  IE9 seems to always return the number 0 for
-some bizarre reason.  There are some cases where Firefox returns the empty
-string for some reason, and it seems to select the active node a little
-differently.  Opera uses #xxxxxx format for getComputedStyle() but rgb() here,
-and also drops the transparent part of the color if there is any.
--->
 
 <p><span>Relevant CSS property</span>: "color"
 
@@ -2861,43 +3061,50 @@ valid CSS color.
 <!-- @} -->
 <h3><dfn>The <code title>hiliteColor</code> command</dfn></h3>
 <!-- @{ -->
-<!-- IE 9 RC doesn't support this.  It uses backColor instead, but Gecko and
+<p class=note>For historical reasons, backColor and hiliteColor behave
+identically.
+
+<div class=comments>
+<p>IE 9 RC doesn't support this.  It uses backColor instead, but Gecko and
 Opera treat that differently, while all non-IE browsers treat hiliteColor the
 same, so I'm standardizing hiliteColor as the way to highlight text.
 
-This is slightly tricky, because background-color does different things on
+<p>This is slightly tricky, because background-color does different things on
 block and inline elements.  Given the name ("hiliteColor"), we really only want
 to apply it to inline elements.  This is how everyone but Gecko behaves, but
 Gecko sometimes applies it to blocks too.  WebKit doesn't set it on non-inline
 elements, but does clear it and push it down from them.
 
-The spec doesn't do any of these: background-color on non-inline elements is
+<p>The spec doesn't do any of these: background-color on non-inline elements is
 not touched by hiliteColor, neither created nor removed.  If users want to
 remove the style, they need to use removeFormat.  Adding it usually makes no
 sense; see the comment for backColor.
 
-For color parsing, see the comment for foreColor. -->
-<p class=note>For historical reasons, backColor and hiliteColor behave
-identically.
+<p>For color parsing, see the comment for foreColor.
+</div>
 
 <p><span>Action</span>:
 
 <ol>
   <li>If <var>value</var> is not a valid CSS color, prepend "#" to it.
 
-  <li>If <var>value</var> is still not a valid CSS color, or if it is
+  <li>
+  <p class=comments>currentColor is bad for the same reason as relative font
+  sizes.  It will confuse the algorithm, and doesn't seem very useful anyway.
+  For hiliteColor you could conceive of it being useful, but it will still
+  confuse the algorithm, so ban it for now anyway.
+
+  <p>If <var>value</var> is still not a valid CSS color, or if it is
   currentColor, abort these steps and do nothing.
-  <!-- currentColor is bad for the same reason as relative font sizes.  It will
-  confuse the algorithm, and doesn't seem very useful anyway.  For hiliteColor
-  you could conceive of it being useful, but it will still confuse the
-  algorithm, so ban it for now anyway. -->
 
   <li><span>Set the selection's value</span> to <var>value</var>.
 </ol>
 
+<p class=comments>For indeterminacy, this follows no one.  Firefox 6.0a2 and
+Chrome 14 dev both always return false.  However, the spec makes sense, since
+it's consistent with other commands.
+
 <p><span>Standard inline value command</span>
-<!-- For indeterminacy, this follows no one.  Firefox 6.0a2 and Chrome 14 dev
-both always return false.  However, it makes sense. -->
 
 <p><span>Relevant CSS property</span>: "background-color"
 
@@ -2920,50 +3127,53 @@ selection's value</span> to "italic".
 <!-- @} -->
 <h3><dfn>The <code title>removeFormat</code> command</dfn></h3>
 <!-- @{ -->
-<!--
-Tested in IE 9, Firefox 4.0, Chrome 12 dev, Opera 11.00.
+<div class=comments>
+<p>Tested in IE 9, Firefox 4.0, Chrome 12 dev, Opera 11.00.
 
-Tags stripped by everyone: b big cite code dfn em font i ins kbd samp s small
-  strike strong sub sup tt u var
-Tags left alone by everyone: br hr img
+<ul>
+<li>Tags stripped by everyone: b big cite code dfn em font i ins kbd samp s
+small strike strong sub sup tt u var
 
-Unrecognized elements: stripped by Firefox and Opera, left alone by IE and
-  Chrome.
+<li>Tags left alone by everyone: br hr img
 
-blink: stripped only by IE
-abbr: stripped only by Firefox
-a, wbr: stripped only by Opera
+<li>Unrecognized elements: stripped by Firefox and Opera, left alone by IE and
+Chrome.
 
-nobr: left alone only by Firefox
-acronym, bdo, q: left alone only by Opera
+<li>blink: stripped only by IE
+<li>abbr: stripped only by Firefox
+<li>a, wbr: stripped only by Opera
 
-bdi, del, mark, span, svg: treated the same as unknown elements
+<li>nobr: left alone only by Firefox
+<li>acronym, bdo, q: left alone only by Opera
 
-All elements whose default rendering is display: block are left untouched by
-all browsers (although IE seems to throw an exception on <marquee> for some
+<li>bdi, del, mark, span, svg: treated the same as unknown elements
+</ul>
+
+<p>All elements whose default rendering is display: block are left untouched by
+all browsers (although IE seems to throw an exception on &lt;marquee> for some
 reason).
 
-It's not clear to me why we should leave <a> alone, but everyone but Opera
+<p>It's not clear to me why we should leave &lt;a> alone, but everyone but Opera
 does.  In OpenOffice.org 3.2.1, doing "Default Formatting (Ctrl+M)" doesn't
 remove links.  In Microsoft Word 2007, doing "Clear Formatting" also doesn't
 remove links.  Verdict: don't remove links.  Apparently they don't logically
 qualify as "formatting".
 
-Conclusion: leave alone a, br, hr, img, wbr.  Strip everything else, including
+<p>Conclusion: leave alone a, br, hr, img, wbr.  Strip everything else, including
 unrecognized elements, although of course not block elements.  Also we should
-probably treat all replaced elements the same as <img>, although I didn't test
-that (somehow I doubt it will come up much).  <video> behaves the same as
-<img>, although Firefox adds tabindex=0 (???), so I'm assuming the rest are
+probably treat all replaced elements the same as &lt;img>, although I didn't test
+that (somehow I doubt it will come up much).  &lt;video> behaves the same as
+&lt;img>, although Firefox adds tabindex=0 (???), so I'm assuming the rest are
 similar.  Also, I'll keep all foreign elements and form elements.
 
-Browsers will split up all these inline elements if the selection is contained
+<p>Browsers will split up all these inline elements if the selection is contained
 within them.  Opera does strip unrecognized elements with display: block if
 they're within the selection, but doesn't split them up if they contain the
 selection.
 
-Chrome 14 dev removes style attributes from every element in the range, but
+<p>Chrome 14 dev removes style attributes from every element in the range, but
 IE10PP2, Firefox 7.0a2, and Opera 11.50 do not, so I go with them.
--->
+</div>
 
 <p><span>Action</span>:
 
@@ -2992,13 +3202,16 @@ IE10PP2, Firefox 7.0a2, and Opera 11.50 do not, so I go with them.
     <li>Remove <var>element</var> from its [[parent]].
   </ol>
 
-  <li>If the <span>active range</span>'s [[startnode]] is an
+  <li>
+  <p class=comments>The last sentence just prettifies the resulting range a
+  bit.
+
+  <p>If the <span>active range</span>'s [[startnode]] is an
   <span>editable</span> [[text]] node, and its [[startoffset]] is neither zero
   nor its [[startnode]]'s [[length]], call [[splittext|]] on the <span>active
   range</span>'s [[startnode]], with argument equal to the <span>active
   range</span>'s [[startoffset]].  Then set the <span>active range</span>'s
   [[startnode]] to the result, and its [[startoffset]] to zero.
-  <!-- This last sentence just prettifies the resulting range a bit. -->
 
   <li>If the <span>active range</span>'s [[endnode]] is an
   <span>editable</span> [[text]] node, and its [[endoffset]] is neither zero
@@ -3009,7 +3222,12 @@ IE10PP2, Firefox 7.0a2, and Opera 11.50 do not, so I go with them.
   <li>Let <var>node list</var> consist of all <span>editable</span> [[nodes]]
   <span>effectively contained</span> in the <span>active range</span>.
 
-  <li>For each <var>node</var> in <var>node list</var>, while <var>node</var>'s
+  <li>
+  <p class=comments> TODO: Splitting the parent is really a block algorithm.
+  It's not clear whether it's desirable to use for inline nodes.  Perhaps it's
+  okay, but it makes me a little uneasy.
+
+  <p>For each <var>node</var> in <var>node list</var>, while <var>node</var>'s
   [[parent]] is an <span>editable</span> <span>HTML element</span> <span>in the
   same editing host</span> as <var>node</var>, and <var>node</var>'s [[parent]]
   is not a <span>prohibited paragraph child</span> and does not have
@@ -3017,21 +3235,19 @@ IE10PP2, Firefox 7.0a2, and Opera 11.50 do not, so I go with them.
   <span>split the parent</span> of the one-[[node]] list consisting of
   <var>node</var>.
 
-  <!--
-  TODO: Splitting the parent is really a block algorithm.  It's not clear
-  whether it's desirable to use for inline nodes.  Perhaps it's okay, but it
-  makes me a little uneasy.
-  -->
+  <li>
+  <p class=comments>This step is for cases like &lt;p
+  style=font-weight:bold>foo[bar]baz&lt;/p>, where splitting/removing tags
+  won't help.  We don't need to run superscript, since subscript does the same
+  thing here.  We run subscript first so &lt;sub>/&lt;sup> won't upset
+  fontSize.
 
-  <li>For each of the entries in the following list, in the given order,
+  <p>For each of the entries in the following list, in the given order,
   <span>set the selection's value</span> to null, with <var>command</var> as
   given.
-  <!-- For cases like <p style=font-weight:bold>foo[bar]baz</p>. -->
 
   <ol>
     <li>subscript
-    <!-- superscript not needed, subscript does the same thing.  We run this
-    first so <sub>/<sup> won't upset fontSize. -->
     <li>bold
     <li>fontName
     <li>fontSize
@@ -3046,12 +3262,12 @@ IE10PP2, Firefox 7.0a2, and Opera 11.50 do not, so I go with them.
 <!-- @} -->
 <h3><dfn>The <code title>strikethrough</code> command</dfn></h3>
 <!-- @{ -->
+<p class=comments>TODO: See underline TODO.
+
 <p><span>Action</span>: If <code
 title=queryCommandState()>queryCommandState("strikethrough")</code> returns
 true, <span>set the selection's value</span> to null.  Otherwise <span>set the
 selection's value</span> to "line-through".
-
-<!-- TODO: See underline TODO. -->
 
 <p><span>Inline command activated values</span>: "line-through"
 
@@ -3079,18 +3295,18 @@ if there is some <span>editable</span> [[text]] node <span>effectively
 contained</span> in the <span>active range</span> with <span>effective command
 value</span> "mixed".  Otherwise false.
 
+<p class=comments> For &lt;sup>&lt;sub>foo&lt;/sub>&lt;/sup>, Firefox 6.0a2 and
+Opera 11.11 say the state is true for both superscript and subscript, and
+indeterminate is false; Chrome 14 dev says it's true for subscript but not
+superscript, and indeterminate is false.  We follow neither of these behaviors:
+we return false for both states, and say indeterminate is true.  The reason is
+because we want to return true for a state if we'll do nothing, false if we'll
+do something; and if we have nesting like this, we'll always do something,
+namely get rid of all those ancestors and replace them with a single tag.  This
+matches what happens in other indeterminate situations, so it's fair to
+consider it indeterminate.
+
 <p><span>Inline command activated values</span>: "sub"
-<!--
-For <sup><sub>foo</sub></sup>, Firefox 6.0a2 and Opera 11.11 say the state is
-true for both superscript and subscript, and indeterminate is false; Chrome 14
-dev says it's true for subscript but not superscript, and indeterminate is
-false.  We follow neither of these behaviors: we return false for both states,
-and say indeterminate is true.  The reason is because we want to return true
-for a state if we'll do nothing, false if we'll do something; and if we have
-nesting like this, we'll always do something, namely get rid of all those
-ancestors and replace them with a single tag.  This matches what happens in
-other indeterminate situations, so it's fair to consider it indeterminate.
--->
 
 <p><span>Relevant CSS property</span>: "vertical-align"
 
@@ -3125,18 +3341,14 @@ value</span> "mixed".  Otherwise false.
 <!-- @} -->
 <h3><dfn>The <code title>underline</code> command</dfn></h3>
 <!-- @{ -->
-<p><span>Action</span>: If <code
-title=queryCommandState()>queryCommandState("underline")</code> returns true,
-<span>set the selection's value</span> to null.  Otherwise <span>set the
-selection's value</span> to "underline".
+<div class=comments>
+<p>TODO: There are a lot of problems with underline color and thickness,
+because text-decoration in CSS is horrible.  These aren't prohibitive for
+normal use and existing browsers don't handle them either, so fixing these
+problems or working around them can be put off for now.
 
-<!--
-TODO: There are a lot of problems with underline color and thickness, because
-text-decoration in CSS is horrible.  These aren't prohibitive for normal use
-and existing browsers don't handle them either, so fixing these problems or
-working around them can be put off for now.
-
-* Pushing down underlines can change their color, since the color of an
+<ul>
+  <li>Pushing down underlines can change their color, since the color of an
   underline follows the color of the element where it's declared instead of the
   text it's drawn under.  This could be fixed by adding a special case for this
   condition and inserting extra color rules, such as by setting a color on the
@@ -3145,51 +3357,58 @@ working around them can be put off for now.
   text-decoration-color property in the CSS 3 Text draft could come in handy
   here, in which case we'd degrade pretty gracefully in legacy UAs.
 
-* Underline thickness depends on font-size in all rendering engines but WebKit,
-  so pushing them down creates thickness problems as well as color problems.
-  Working around this is a similar story to the previous, except we have no
-  text-decoration-width property yet (see
-  http://lists.w3.org/Archives/Public/www-style/2011Mar/0593.html).
+  <li>Underline thickness depends on font-size in all rendering engines but
+  WebKit, so pushing them down creates thickness problems as well as color
+  problems.  Working around this is a similar story to the previous, except we
+  have no text-decoration-width property yet (see <a
+  href=http://lists.w3.org/Archives/Public/www-style/2011Mar/0593.html>www-style
+  post</a>).
 
-* The preceding two points can't be avoided, because the only way to remove
+  <li>The preceding two points can't be avoided, because the only way to remove
   underlines in CSS is to push down styles (unlike most other things where you
   could override it).  Recent (February 2011) CSS 3 Text drafts have added
   support for a "text-decoration-line: cancel-underline" property, but we can
   only use that if there's no other possibility, since it won't work in legacy
   browsers.  (Although we should use it once there's no other possibility.)
 
-* More generally, from a user's perspective, color and thickness of underlines
-  is going to be more or less random if they're applying them to text with
-  varying size or color.  If they underline a bunch of text all at once, it
-  will all get the same color/thickness, probably.  But if they underline
-  letter-by-letter, it probably will vary.  But sometimes when they underline a
-  bunch of text at once it will also vary, if the algorithm decides to create
-  multiple elements for whatever reason (like an intervening unwrappable node).
-  This is unlikely to match user expectations.  There's not much we can do
-  about this without entirely revamping text-decoration, so we'll have to live
-  with it.
+  <li>More generally, from a user's perspective, color and thickness of
+  underlines is going to be more or less random if they're applying them to
+  text with varying size or color.  If they underline a bunch of text all at
+  once, it will all get the same color/thickness, probably.  But if they
+  underline letter-by-letter, it probably will vary.  But sometimes when they
+  underline a bunch of text at once it will also vary, if the algorithm decides
+  to create multiple elements for whatever reason (like an intervening
+  unwrappable node).  This is unlikely to match user expectations.  There's not
+  much we can do about this without entirely revamping text-decoration, so
+  we'll have to live with it.
 
-* Currently we don't treat non-underline text-decorations properly, because we
-  have no way to set (or cancel) underlines independently of other
-  text-decorations from within CSS.  I've sent feedback to www-style:
-  http://lists.w3.org/Archives/Public/www-style/2011Mar/0591.html.
--->
+  <li>Currently we don't treat non-underline text-decorations properly, because
+  we have no way to set (or cancel) underlines independently of other
+  text-decorations from within CSS.  I've sent <a
+  href=http://lists.w3.org/Archives/Public/www-style/2011Mar/0591.html>feedback</a>
+  to www-style.
+</ul>
+</div>
+
+<p><span>Action</span>: If <code
+title=queryCommandState()>queryCommandState("underline")</code> returns true,
+<span>set the selection's value</span> to null.  Otherwise <span>set the
+selection's value</span> to "underline".
 
 <p><span>Inline command activated values</span>: "underline"
 
 <!-- @} -->
 <h3><dfn>The <code title>unlink</code> command</dfn></h3>
 <!-- @{ -->
-<p><span>Action</span>:
-
-<!--
-IE 9 RC unlinks the whole link you're pointing at, while others only
-unlink the current text.  The latter behavior seems less expected, as with
-createLink, although I can't articulate precisely why.  Word 2007 and
+<p class=comments>IE 9 RC unlinks the whole link you're pointing at, while
+others only unlink the current text.  The latter behavior seems less expected,
+as with createLink, although I can't articulate precisely why.  Word 2007 and
 OpenOffice.org 3.2.1 (Ubuntu) seem to give an option to remove the whole link
 or none of it, which backs the spec's requirement.  See also #whatwg logs
 starting at 2011-05-13 at 16:53 EDT (UTC-0400).
--->
+
+<p><span>Action</span>:
+
 <ol>
   <li>Let <var>hyperlinks</var> be a list of every [[a]] element that has an
   [[href]] attribute and is [[contained]] in the <span>active range</span> or
@@ -3198,9 +3417,10 @@ starting at 2011-05-13 at 16:53 EDT (UTC-0400).
   <li><span>Clear the value</span> of each member of <var>hyperlinks</var>.
 </ol>
 
-<!-- IE10PP2, Firefox 7.0a2, Chrome 14 dev, and Opera 11.50 all do not support
-indeterminate, state, or value for createLink or unlink.  I define
-indeterminate and value anyway because they make sense. -->
+<p class=comments>IE10PP2, Firefox 7.0a2, Chrome 14 dev, and Opera 11.50 all do
+not support indeterminate, state, or value for createLink or unlink.  I define
+indeterminate and value anyway because they make sense.
+
 <p><span>Standard inline value command</span>
 
 <!-- @} -->
@@ -7674,5 +7894,23 @@ insertions.
   opinions.
 </ul>
 <!-- @} -->
+<script>
+<!-- @{ -->
+[].forEach.call(document.querySelectorAll(".comments"), function(node) {
+  var button = document.createElement("button");
+  button.textContent = "Comments";
+  button.onclick = function() {
+    node.className = node.className == "comments" ? "comments-expanded" : "comments";
+  };
+
+  var wrapper = document.createElement("div");
+  wrapper.className = "comments-wrapper";
+  node.parentNode.insertBefore(wrapper, node);
+
+  wrapper.appendChild(button);
+  wrapper.appendChild(node);
+});
+<!-- @} -->
+</script>
 <script src=http://www.whatwg.org/specs/web-apps/current-work/dfn.js></script>
 <!-- vim: set expandtab shiftwidth=2 tabstop=2 foldmarker=@{,@} foldmethod=marker indentexpr=: -->

@@ -31,6 +31,7 @@ dd .XXX p { margin: 1em 0 }
 ol li { margin: 1em 0 }
 li li, li li > p { margin: 0 }
 li p + * > li:first-child { margin-top: -1em }
+li li > p + * > li:first-child { margin-top: 0 }
 table { margin: 1em 0 }
 /* Overwrite the underline so it's orange instead of blue, thus looks less
  * silly */
@@ -3731,22 +3732,26 @@ the following algorithm:
     <var title="">start offset</var> minus one is <a href=#invisible>invisible</a>, subtract one
     from <var title="">start offset</var>.
 
-    <li>Otherwise, if <var title="">start node</var> has no <a href=#visible>visible</a>
+    <li>
+    <p class=comments>So if you have a collapsed selection at the end of a
+    block, for instance, it will extend backwards into a block.
+
+    <p>Otherwise, if <var title="">start node</var> has no <a href=#visible>visible</a>
     <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> greater than or equal to <var title="">start
     offset</var> and <var title="">start node</var>'s last <a href=#visible>visible</a>
     <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is an <a href=#inline-node>inline node</a> that's not a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, subtract one
     from <var title="">start offset</var>.
-    <!-- So if you have a collapsed selection at the end of a block, for
-    instance, it will extend backwards into a block. -->
 
-    <li>Otherwise, if <var title="">start node</var> has a <a href=#visible>visible</a>
+    <li>
+    <p>IE also includes &lt;br&gt; (at least for the purposes of the indent
+    command), but this is unlikely to match user expectations.
+
+    <p>Otherwise, if <var title="">start node</var> has a <a href=#visible>visible</a>
     <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> greater than or equal to <var title="">start offset</var>,
     and the first such <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is an <a href=#inline-node>inline node</a>, and <var title="">start
     node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">start offset</var> minus one is
     an <a href=#inline-node>inline node</a> other than a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, subtract one from
     <var title="">start offset</var>.
-    <!-- IE also includes <br> (at least for the purposes of the indent
-    command), but this is unlikely to match user expectations. -->
 
     <li>Otherwise, break from this loop.
   </ol>
@@ -3843,35 +3848,37 @@ algorithm returns true:
   <li>Let <var title="">overrides</var> be a list of (string, string or boolean) ordered
   pairs, initially empty.
 
-  <!--
-  When restoring, some commands can interfere with others.  Specifically, we
+  <li>
+  <div class=comments>
+  <p>When restoring, some commands can interfere with others.  Specifically, we
   want to restore createLink before foreColor and underline, and subscript and
   superscript before fontSize.  TODO: This approach only works for default
   styles (although I'm not sure offhand how we could handle non-default styles
   in principle).
-  -->
-  <li>If there is a <a href=#value-override>value override</a> for "createLink", add
-  ("createLink", <a href=#value-override>value override</a> for "createLink") to
-  <var title="">overrides</var>.
-  <!--
-  Firefox 7.0a2 and Opera 11.50 don't honor createLink with collapsed
+
+  <p>Firefox 7.0a2 and Opera 11.50 don't honor createLink with collapsed
   selections.  If you insert text, it's not linked.  The spec follows Chrome 14
   dev.  IE9 also ignores createLink with collapsed selections, but its behavior
   in other cases for collapsed selections is totally different from all other
   browsers, so it's not a fair comparison.
-  -->
+  </div>
 
-  <li>For each <var title="">command</var> in the list "bold", "italic",
+  <p>If there is a <a href=#value-override>value override</a> for "createLink", add
+  ("createLink", <a href=#value-override>value override</a> for "createLink") to
+  <var title="">overrides</var>.
+
+  <li>
+  <p class=comments> Firefox 7.0a2 and Opera 11.50 will honor repeated
+  subscript/superscript commands on a collapsed selection, allowing you to nest
+  them.  The spec follows the general philosophy that we don't allow users to
+  nest subscript/superscript, so the last one wins.  Chrome 14 dev is similar
+  to the spec.
+
+  <p>For each <var title="">command</var> in the list "bold", "italic",
   "strikethrough", "subscript", "superscript", "underline", in order: if there
   is a <a href=#state-override>state override</a> for <var title="">command</var>, add
   (<var title="">command</var>, <var title="">command</var>'s <a href=#state-override>state override</a>) to
   <var title="">overrides</var>.
-  <!--
-  Firefox 7.0a2 and Opera 11.50 will honor repeated subscript/superscript
-  commands on a collapsed selection, allowing you to nest them.  The spec
-  follows the general philosophy that we don't allow users to nest
-  subscript/superscript, so the last one wins.  Chrome 14 dev is similar.
-  -->
 
   <li>For each <var title="">command</var> in the list "fontName", "fontSize",
   "foreColor", "hiliteColor", in order: if there is a <a href=#value-override>value
@@ -3896,27 +3903,29 @@ algorithm returns true:
   <li>Add ("createLink", <a href=#value>value</a> for "createLink") to
   <var title="">overrides</var>.
 
-  <li>For each <var title="">command</var> in the list "bold", "italic",
+  <li>
+  <p class=comments>Thus we will set state overrides based on the first
+  editable text node, to match values.  This means that if you have
+  &lt;p&gt;foo&lt;b&gt;[bar&lt;/b&gt;baz]&lt;/p&gt; and hit backspace and hit A, you'll get
+  &lt;p&gt;foo&lt;b&gt;a[]&lt;/b&gt;&lt;/p&gt;, although bold was previously indeterminate.
+  This is needed to match the behavior of hitting A straight away, since
+  innerText doesn't strip wrappers when it invokes "delete the contents".
+
+  <p>For each <var title="">command</var> in the list "bold", "italic",
   "strikethrough", "subscript", "superscript", "underline", in order: if
   <var title="">node</var>'s <a href=#effective-command-value>effective command value</a> for <var title="">command</var>
   is one of its <a href=#inline-command-activated-values>inline command activated values</a>, add
   (<var title="">command</var>, true) to <var title="">overrides</var>, and otherwise add
   (<var title="">command</var>, false) to <var title="">overrides</var>.
-  <!--
-  Thus we will set state overrides based on the first editable text node, to
-  match values.  This means that if you have <p>foo<b>[bar</b>baz]</p> and hit
-  backspace and hit A, you'll get <p>foo<b>a[]</b></p>, although bold was
-  previously indeterminate.  This is needed to match the behavior of hitting A
-  straight away, since innerText doesn't strip wrappers when it invokes "delete
-  the contents".
-  -->
 
   <li>For each <var title="">command</var> in the list "fontName", "foreColor",
   "hiliteColor", in order: add (<var title="">command</var>, <var title="">command</var>'s
   <a href=#value>value</a>) to <var title="">overrides</var>.
 
-  <!-- Special case for fontSize, because its values are weird. -->
-  <li>Add ("fontSize", <var title="">node</var>'s <a href=#effective-command-value>effective command value</a>
+  <li>
+  <p class=comments>Special case for fontSize, because its values are weird.
+
+  <p>Add ("fontSize", <var title="">node</var>'s <a href=#effective-command-value>effective command value</a>
   for "fontSize") to <var title="">overrides</var>.
 
   <p class=XXX>This is wrong: it will convert non-pixel sizes to pixel sizes.
@@ -3974,11 +3983,12 @@ algorithm returns true:
 <!--@}-->
 <h3 id=deleting-the-contents-of-a-range><span class=secno>8.5 </span>Deleting the contents of a range</h3>
 
+<p class=comments>TODO: Consider what should happen for block merging in corner
+cases like display: inline-table.
+
 <p>To <dfn id=delete-the-contents>delete the contents</dfn> of a <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> <var title="">range</var>, given a
 <var title="">block merging</var> flag that defaults to true and a <var title="">strip
 wrappers</var> flag that defaults to true:
-<!-- TODO: Consider what should happen for block merging in corner cases like
-display: inline-table. -->
 
 <ol>
   <li>If <var title="">range</var> is null, abort these steps and do nothing.
@@ -3987,68 +3997,78 @@ display: inline-table. -->
   and <var title="">end offset</var> be <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> and
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>nodes</a> and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offsets</a>.
 
-  <!-- Drill the range down to the lowest possible level, so we don't delete
-  more elements than necessary. -->
+  <li>
+  <div class=comments>
+  <p>We drill the range down to the lowest possible level, so we don't delete
+  more elements than necessary.
+
+  <p>We don't want to keep going when we hit an element with no children,
+  because then we'd do something like
+
+<pre>foo{&lt;br /&gt;bar]
+-&gt; foo&lt;br&gt;{&lt;/br&gt;bar]
+-&gt; foo&lt;br /&gt;{bar]
+-&gt; foo&lt;br /&gt;[bar]</pre>
+
+  <p>and we deselected the &lt;br&gt;.
+  </div>
+
   <li>While <var title="">start node</var> has at least one <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>:
-  <!--
-  We don't want to keep going when we hit an element with no children, because
-  then we'd do something like
-
-    foo{<br />bar]
-    -> foo<br>{</br>bar]
-    -> foo<br />{bar]
-    -> foo<br />[bar]
-
-  and we deselected the <br>.
-  -->
 
   <ol>
-    <li>If <var title="">start offset</var> is <var title="">start node</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a>, and
+    <li>
+    <div class=comments>
+    <p>For instance:
+
+<pre>&lt;b&gt;foo[&lt;/b&gt;&lt;i&gt;bar]&lt;/i&gt;
+-&gt; &lt;b&gt;foo{&lt;/b&gt;&lt;i&gt;bar]&lt;/i&gt;
+-&gt; &lt;b&gt;foo&lt;/b&gt;{&lt;i&gt;bar]&lt;/i&gt;</pre>
+
+    <p>Then the next step will make it &lt;b&gt;foo&lt;/b&gt;&lt;i&gt;[bar]&lt;/i&gt;.
+
+    <p>We don't want to do this for block nodes, because that would lead to
+    something like
+
+      <pre>&lt;p&gt;foo[&lt;/p&gt;&lt;p&gt;]bar&lt;p&gt;</pre>
+
+    <p>ultimately collapsing, which is wrong.  Once we do the deletion, it
+    needs to wind up &lt;p&gt;foo[]bar&lt;/p&gt;, whereas an actually collapsed
+    selection should do nothing.
+    </div>
+
+    <p>If <var title="">start offset</var> is <var title="">start node</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a>, and
     <var title="">start node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is <a href=#in-the-same-editing-host>in the same editing
     host</a>, and <var title="">start node</var> is an <a href=#inline-node>inline node</a>, set
     <var title="">start offset</var> to one plus the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of <var title="">start node</var>,
     then set <var title="">start node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> and continue this loop
     from the beginning.
-    <!--
-    For instance:
 
-      <b>foo[</b><i>bar]</i>
-      -> <b>foo{</b><i>bar]</i>
-      -> <b>foo</b>{<i>bar]</i>
+    <li>
+    <p class=comments>This happens if the first step brought us all the way up
+    to the root.  The step immediately after this loop will bring us back down
+    again.
 
-    Then the next step will make it <b>foo</b><i>[bar]</i>.
-
-    We don't want to do this for block nodes, because that would lead to
-    something like
-
-      <p>foo[</p><p>]bar<p>
-
-    ultimately collapsing, which is wrong.  Once we do the deletion, it needs
-    to wind up <p>foo[]bar</p>, whereas an actually collapsed selection should
-    do nothing.
-    -->
-
-    <li>If <var title="">start offset</var> is <var title="">start node</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a>,
+    <p>If <var title="">start offset</var> is <var title="">start node</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a>,
     break from this loop.
-    <!-- This happens if the first step brought us all the way up to the root.
-    The step immediately after this loop will bring us back down again.  -->
 
     <li>Let <var title="">reference node</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">start node</var>
     with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> equal to <var title="">start offset</var>.
 
-    <li>If <var title="">reference node</var> is a <a href=#block-node>block node</a> or an
+    <li>
+    <div class=comments>
+    <p>Don't descend into an element with no children, since then it won't get
+    deleted even if it's selected.  Don't descend into a block node, because
+    then we might wind up not merging blocks when we should, e.g.
+
+<pre>foo{&lt;p&gt;}bar&lt;/p&gt;
+-&gt; foo&lt;p&gt;{}bar&lt;/p&gt;</pre>
+
+    <p>and nothing gets changed.
+    </div>
+
+    <p>If <var title="">reference node</var> is a <a href=#block-node>block node</a> or an
     <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> with no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, or is neither an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> nor a
     <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node, break from this loop.
-    <!--
-    Don't descend into an element with no children, since then it won't get
-    deleted even if it's selected.  Don't descend into a block node, because
-    then we might wind up not mergings blocks when we should, e.g.
-
-      foo{<p>}bar</p>
-      -> foo<p>{}bar</p>
-
-    and nothing gets changed.
-    -->
 
     <li>Set <var title="">start node</var> to <var title="">reference node</var> and <var title="">start
     offset</var> to 0.
@@ -4092,37 +4112,36 @@ display: inline-table. -->
   <var title="">start offset</var>) and its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> to (<var title="">end node</var>,
   <var title="">end offset</var>).
 
-  <!--
-  When we delete a selection that spans multiple blocks, we merge the end
+  <li>
+  <div class=comments>
+  <p>When we delete a selection that spans multiple blocks, we merge the end
   block's contents into the start block, like
 
-    <p>fo[o</p><pre>b]ar</pre>
-    -> <p>fo[]ar</p>.
+<pre>&lt;p&gt;fo[o&lt;/p&gt;&lt;pre&gt;b]ar&lt;/pre&gt;
+-&gt; &lt;p&gt;fo[]ar&lt;/p&gt;.</pre>
 
-  Figure out what the start and end blocks are before we start deleting
+  <p>Figure out what the start and end blocks are before we start deleting
   anything.
-  -->
-  <li>Let <var title="">start block</var> be the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> of
+  </div>
+
+  <p>Let <var title="">start block</var> be the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> of
   <var title="">range</var>.
 
   <li>While <var title="">start block</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is <a href=#in-the-same-editing-host>in the same editing
   host</a> and <var title="">start block</var> is an <a href=#inline-node>inline node</a>, set
   <var title="">start block</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
-  <li>If <var title="">start block</var> is neither a <a href=#block-node>block node</a> nor an
-  <a href=#editing-host>editing host</a>, or "span" is not an <a href=#allowed-child>allowed child</a> of
-  <var title="">start block</var>, or <var title="">start block</var> is a <code class=external data-anolis-spec=html title="the td element"><a href=http://www.whatwg.org/html/#the-td-element>td</a></code> or <code class=external data-anolis-spec=html title="the th element"><a href=http://www.whatwg.org/html/#the-th-element>th</a></code>, set
-  <var title="">start block</var> to null.
-  <!--
-  We only merge to or from block nodes or editing hosts.  (This is just in case
-  someone makes a span into an editing host and sticks paragraphs inside it or
-  something . . . we could probably drop that proviso.)  Firefox 7.0a2 ignores
-  the display property when merging, so it doesn't merge <span
-  style=display:block> but does merge <p style=display:inline>.  This is
+  <li>
+  <div class=comments>
+  <p>We only merge to or from block nodes or editing hosts.  (This is just in
+  case someone makes a span into an editing host and sticks paragraphs inside
+  it or something . . . we could probably drop that proviso.)  Firefox 7.0a2
+  ignores the display property when merging, so it doesn't merge &lt;span
+  style=display:block&gt; but does merge &lt;p style=display:inline&gt;.  This is
   undesirable, because it's visually wrong.  IE10PP2 and Chrome 14 dev behave
   more like the spec, and Opera 11.50 seems to be unable to make up its mind.
 
-  If span isn't an allowed child, it's probably something unpleasant like a
+  <p>If span isn't an allowed child, it's probably something unpleasant like a
   table row or a list or such.  We don't want to merge to or from something
   like that, because we'd most likely wind up with the wrong type of child
   somewhere.  It should be pretty hard for this to happen given the
@@ -4130,12 +4149,17 @@ display: inline-table. -->
   happen at all, actually, unless you start out with a DOM that has non-allowed
   children someplace.  So it's basically a sanity check.
 
-  We don't let either start block or end block be a td or th.  This means we'll
-  never merge to or from a td or th.  This matches Firefox 5.0a2, and
+  <p>We don't let either start block or end block be a td or th.  This means
+  we'll never merge to or from a td or th.  This matches Firefox 5.0a2, and
   reportedly Word as well.  Chrome 13 dev and Opera 11.11 allow merging from a
   non-table cell end block to a table cell start block, but not vice versa.  In
   IE9 the delete key just does nothing.
-  -->
+  </div>
+
+  <p>If <var title="">start block</var> is neither a <a href=#block-node>block node</a> nor an
+  <a href=#editing-host>editing host</a>, or "span" is not an <a href=#allowed-child>allowed child</a> of
+  <var title="">start block</var>, or <var title="">start block</var> is a <code class=external data-anolis-spec=html title="the td element"><a href=http://www.whatwg.org/html/#the-td-element>td</a></code> or <code class=external data-anolis-spec=html title="the th element"><a href=http://www.whatwg.org/html/#the-th-element>th</a></code>, set
+  <var title="">start block</var> to null.
 
   <li>Let <var title="">end block</var> be the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> of
   <var title="">range</var>.
@@ -4149,22 +4173,28 @@ display: inline-table. -->
   <var title="">end block</var>, or <var title="">end block</var> is a <code class=external data-anolis-spec=html title="the td element"><a href=http://www.whatwg.org/html/#the-td-element>td</a></code> or <code class=external data-anolis-spec=html title="the th element"><a href=http://www.whatwg.org/html/#the-th-element>th</a></code>, set
   <var title="">end block</var> to null.
 
-  <li><a href=#record-current-states-and-values>Record current states and values</a>, and let
-  <var title="">overrides</var> be the result.
-  <!--
-  As far as I can tell, IE9 and Opera 11.50 don't do this at all.  If you
+  <li>
+  <div class=comments>
+  <p>As far as I can tell, IE9 and Opera 11.50 don't do this at all.  If you
   delete a selection and then start typing, the new text doesn't take on the
   styles of the old text.
 
-  Firefox 7.0a2 seems to do it for some styles but not others.  Strikethrough,
-  superscript, subscript, and links seem to be lost, at a minimum.
+  <p>Firefox 7.0a2 seems to do it for some styles but not others.
+  Strikethrough, superscript, subscript, and links seem to be lost, at a
+  minimum.
 
-  The spec goes with something like Chrome 14 dev, which tries to preserve lots
+  <p>The spec goes with something like Chrome 14 dev, which tries to preserve lots
   of stuff.
-  -->
+  </div>
 
-  <!-- This is based on deleteContents() in DOM Range. -->
-  <li>If <var title="">start node</var> and <var title="">end node</var> are the same, and
+  <p><a href=#record-current-states-and-values>Record current states and values</a>, and let
+  <var title="">overrides</var> be the result.
+
+  <li>
+  <p class=comments>This whole piece of the algorithm is based on
+  deleteContents() in DOM Range, copy-pasted and then adjusted to fit.
+
+  <p>If <var title="">start node</var> and <var title="">end node</var> are the same, and
   <var title="">start node</var> is an <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node:
 
   <ol>
@@ -4176,10 +4206,12 @@ display: inline-table. -->
 
     <li>Set <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> to its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>.
 
-    <li><a href=#restore-states-and-values>Restore states and values</a> from <var title="">overrides</var>.
-    <!-- This is needed to restore any overrides that would otherwise be lost.
-    TODO: In this and similar cases, we could optimize by saving only
-    overrides, not the full state/value. -->
+    <li>
+    <p class=comments>This is needed to restore any overrides that would
+    otherwise be lost.  TODO: In this and similar cases, we could optimize by
+    saving only overrides, not the full state/value.
+
+    <p><a href=#restore-states-and-values>Restore states and values</a> from <var title="">overrides</var>.
 
     <li>Abort these steps.
   </ol>
@@ -4191,20 +4223,20 @@ display: inline-table. -->
 
   <li>Let <var title="">node list</var> be a list of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>, initially empty.
 
-  <li>For each <var title="">node</var> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in <var title="">range</var>, append
+  <li>
+  <p class=comments> IE9 doesn't seem to let you do any intercell deletions:
+  the delete key does nothing if you select across multiple cells.  Firefox
+  5.0a2 and Opera 11.11 behave as the spec says, not removing any table things.
+  Chrome 13 dev will remove entire rows if selected.  Note that IE, Firefox,
+  Word 2007, and OpenOffice.org 3.2.1 Ubuntu all switch to a magic
+  cell-selection mode when you try to select between cells, at least in some
+  cases, instead of selecting letter-by-letter.
+
+  <p>For each <var title="">node</var> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in <var title="">range</var>, append
   <var title="">node</var> to <var title="">node list</var> if the last member of <var title="">node
   list</var> (if any) is not an <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of <var title="">node</var>;
   <var title="">node</var> is <a href=#editable>editable</a>; and <var title="">node</var> is not a
   <code class=external data-anolis-spec=html title="the thead element"><a href=http://www.whatwg.org/html/#the-thead-element>thead</a></code>, <code class=external data-anolis-spec=html title="the tbody element"><a href=http://www.whatwg.org/html/#the-tbody-element>tbody</a></code>, <code class=external data-anolis-spec=html title="the tfoot element"><a href=http://www.whatwg.org/html/#the-tfoot-element>tfoot</a></code>, <code class=external data-anolis-spec=html title="the tr element"><a href=http://www.whatwg.org/html/#the-tr-element>tr</a></code>, <code class=external data-anolis-spec=html title="the th element"><a href=http://www.whatwg.org/html/#the-th-element>th</a></code>, or <code class=external data-anolis-spec=html title="the td element"><a href=http://www.whatwg.org/html/#the-td-element>td</a></code>.
-  <!--
-  IE9 doesn't seem to let you do any intercell deletions: the delete key does
-  nothing if you select across multiple cells.  Firefox 5.0a2 and Opera 11.11
-  behave as the spec says, not removing any table things.  Chrome 13 dev will
-  remove entire rows if selected.  Note that IE, Firefox, Word 2007, and
-  OpenOffice.org 3.2.1 Ubuntu all switch to a magic cell-selection mode when
-  you try to select between cells, at least in some cases, instead of selecting
-  letter-by-letter.
-  -->
 
   <li>For each <var title="">node</var> in <var title="">node list</var>:
 
@@ -4213,24 +4245,24 @@ display: inline-table. -->
 
     <li>Remove <var title="">node</var> from <var title="">parent</var>.
 
-    <li>If <var title="">strip wrappers</var> is true or <var title="">parent</var> is not an
+    <li>
+    <p class=comments>Taking insertText to test the case where strip wrappers
+    is false, with value a: &lt;p&gt;[foo&lt;b&gt;bar&lt;/b&gt;]baz becomes &lt;p&gt;a[]baz
+    per spec, in IE9, and in Chrome 14 dev.  Firefox 7.0a2 and Opera 11.50 make
+    it &lt;p&gt;a[]&lt;b&gt;&lt;/b&gt;baz, with a useless wrapper.
+    &lt;p&gt;foo&lt;b&gt;[bar&lt;/b&gt;baz] becomes &lt;p&gt;foo&lt;b&gt;a[]&lt;/b&gt; per spec
+    and in IE9 and Firefox 7.0a2 and Opera 11.50; in Chrome 14 dev apparently
+    it initially becomes &lt;p&gt;fooa[], but then the style is recreated.  This
+    is detectable if you do something weird like &lt;span style=color:#aBcDeF&gt;
+    instead of &lt;b&gt;: it comes &lt;font class=Apple-style-span color=#abcdef&gt;
+    or such.  I follow IE9 in all cases, because it makes the most sense.
+
+    <p>If <var title="">strip wrappers</var> is true or <var title="">parent</var> is not an
     <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#ancestor-container title="ancestor container">ancestor container</a> of <var title="">start node</var>, while <var title="">parent</var> is
     an <a href=#editable>editable</a> <a href=#inline-node>inline node</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> 0,
     let <var title="">grandparent</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">parent</var>, then
     remove <var title="">parent</var> from <var title="">grandparent</var>, then set
     <var title="">parent</var> to <var title="">grandparent</var>.
-    <!--
-    Taking insertText to test the case where strip wrappers is false, with
-    value a: <p>[foo<b>bar</b>]baz becomes <p>a[]baz per spec, in IE9, and in
-    Chrome 14 dev.  Firefox 7.0a2 and Opera 11.50 make it <p>a[]<b></b>baz,
-    with a useless wrapper.  <p>foo<b>[bar</b>baz] becomes <p>foo<b>a[]</b> per
-    spec and in IE9 and Firefox 7.0a2 and Opera 11.50; in Chrome 14 dev
-    apparently it initially becomes <p>fooa[], but then the style is recreated.
-    This is detectable if you do something weird like <span
-    style=color:#aBcDeF> instead of <b>: it comes <font class=Apple-style-span
-    color=#abcdef> or such.  I follow IE9 in all cases, because it makes the
-    most sense.
-    -->
 
     <li>If <var title="">parent</var> is <a href=#editable>editable</a> or an <a href=#editing-host>editing
     host</a>, is not an <a href=#inline-node>inline node</a>, and has no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>,
@@ -4246,28 +4278,29 @@ display: inline-table. -->
 
   <li><a href=#canonicalize-whitespace>Canonicalize whitespace</a> at <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a>.
 
-  <!--
-  Now we need to merge blocks.  The simplest case is something like
+  <li>
+  <div class=comments>
+  <p>Now we need to merge blocks.  The simplest case is something like
 
-    <p>fo[o</p><p>bar</p><p>b]az</p>
-    -> <p>fo</p>{}<p>az</p>
-    -> <p>fo{}az</p>
+<pre>&lt;p&gt;fo[o&lt;/p&gt;&lt;p&gt;bar&lt;/p&gt;&lt;p&gt;b]az&lt;/p&gt;
+-&gt; &lt;p&gt;fo&lt;/p&gt;{}&lt;p&gt;az&lt;/p&gt;
+-&gt; &lt;p&gt;fo{}az&lt;/p&gt;</pre>
 
-  where neither block descends from the other.  More complicated is something
-  like
+  <p>where neither block descends from the other.  More complicated is
+  something like
 
-    foo[<p>]bar</p>
-    -> foo[]bar
+<pre>foo[&lt;p&gt;]bar&lt;/p&gt;
+-&gt; foo[]bar</pre>
 
-  or
+  <p>or
 
-    <p>foo[</p>]bar
-    -> <p>foo[]bar</p>
+<pre>&lt;p&gt;foo[&lt;/p&gt;]bar
+-&gt; &lt;p&gt;foo[]bar&lt;/p&gt;</pre>
 
-  where one descends from the other.
-  -->
+  <p>where one descends from the other.
+  </div>
 
-  <li>If <var title="">block merging</var> is false, or <var title="">start block</var> or
+  <p>If <var title="">block merging</var> is false, or <var title="">start block</var> or
   <var title="">end block</var> is null, or <var title="">start block</var> is not <a href=#in-the-same-editing-host>in the
   same editing host</a> as <var title="">end block</var>, or <var title="">start block</var>
   and <var title="">end block</var> are the same:
@@ -4280,21 +4313,23 @@ display: inline-table. -->
     <li>Abort these steps.
   </ol>
 
-  <!--
-  We might have added a br to the start/end block in an earlier step.  Now
-  we're about to merge the blocks, and we don't want the br's to get in the
-  way.  The end block is being destroyed no matter what.  If the start block
-  winds up empty after merging, we'll add a new br child at the end so it
-  doesn't collapse.
-  -->
-  <li>If <var title="">start block</var> has one <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, which is a <a href=#collapsed-block-prop>collapsed
+  <li>
+  <p class=comments>We might have added a br to the start/end block in an
+  earlier step.  Now we're about to merge the blocks, and we don't want the
+  br's to get in the way.  The end block is being destroyed no matter what.  If
+  the start block winds up empty after merging, we'll add a new br child at the
+  end so it doesn't collapse.
+
+  <p>If <var title="">start block</var> has one <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, which is a <a href=#collapsed-block-prop>collapsed
   block prop</a>, remove its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> from it.
 
   <li>If <var title="">end block</var> has one <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, which is a <a href=#collapsed-block-prop>collapsed
   block prop</a>, remove its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> from it.
 
-  <li>If <var title="">start block</var> is an <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of <var title="">end block</var>:
-  <!-- Just repeatedly blow up the end block. -->
+  <li>
+  <p class=comments>Just repeatedly blow up the end block in this case.
+
+  <p>If <var title="">start block</var> is an <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of <var title="">end block</var>:
 
   <ol>
     <li>Let <var title="">reference node</var> be <var title="">end block</var>.
@@ -4352,10 +4387,12 @@ display: inline-table. -->
     <a href=#editable>editable</a> <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, remove that <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code> from its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
   </ol>
 
-  <li>Otherwise, if <var title="">start block</var> is a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendant</a> of <var title="">end
+  <li>
+  <p class=comments>In this case, pull in everything that comes after
+  <var title="">start block</var>, until we hit a br or block node.
+
+  <p>Otherwise, if <var title="">start block</var> is a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendant</a> of <var title="">end
   block</var>:
-  <!-- Pull in everything that comes after <var title>start block</var>, until we hit
-  a br or block node. -->
 
   <ol>
     <li>Set the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> of <var title="">range</var> to
@@ -4391,9 +4428,12 @@ display: inline-table. -->
     it from its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
   </ol>
 
-  <li>Otherwise:
-  <!-- In the last case, just move all the children of the end block to the
-  start block, and then get rid of any elements we emptied that way. -->
+  <li>
+  <p class=comments>In the last case, just move all the children of the end
+  block to the start block, and then get rid of any elements we emptied that
+  way.
+
+  <p>Otherwise:
 
   <ol>
     <li>Set the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> of <var title="">range</var> to
@@ -4451,20 +4491,22 @@ display: inline-table. -->
   break</a>, set <var title="">precedes line break</var> to true.  Otherwise, set
   <var title="">precedes line break</var> to false.
 
-  <li>If the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">original parent</var> is not in <var title="">node
-  list</var>, but its last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is:
-  <!--
-  TODO: We insert things after the parent.  This is bad, because it will cause
+  <li>
+  <div class=comments>
+  <p>TODO: We insert things after the parent.  This is bad, because it will cause
   them to become part of any ranges that immediately follow.  For instance, if
   we're hitting "bar" in
-    <div><p>foo<p>bar</div>{<p>baz}
-  it becomes
-    <div><p>foo</div>{<p>bar<p>baz}
-  instead of
-    <div><p>foo</div><p>bar{<p>baz}
-  because of how range mutation rules work.  This doesn't happen if we insert
+    <pre>&lt;div&gt;&lt;p&gt;foo&lt;p&gt;bar&lt;/div&gt;{&lt;p&gt;baz}</pre>
+  <p>it becomes
+    <pre>&lt;div&gt;&lt;p&gt;foo&lt;/div&gt;{&lt;p&gt;bar&lt;p&gt;baz}</pre>
+  <p>instead of
+    <pre>&lt;div&gt;&lt;p&gt;foo&lt;/div&gt;&lt;p&gt;bar{&lt;p&gt;baz}</pre>
+  <p>because of how range mutation rules work.  This doesn't happen if we insert
   before.  This may or may not be important enough to bother working around.
-  -->
+  </div>
+
+  <p>If the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">original parent</var> is not in <var title="">node
+  list</var>, but its last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is:
 
   <ol>
     <li>For each <var title="">node</var> in <var title="">node list</var>, <em>in reverse
@@ -4502,15 +4544,17 @@ display: inline-table. -->
     <a href=#preserving-ranges>preserving ranges</a>.
   </ol>
 
-  <li>For each <var title="">node</var> in <var title="">node list</var>, insert <var title="">node</var>
+  <li>
+  <p class=comments>Notice that a boundary point that was immediately before
+  the element will now be immediately before its children, just because of the
+  regular range mutation rules, without needing to worry about preserving
+  ranges.  Likewise for boundary points immediately after the element, if we
+  wind up removing the element in the final step.  Preserving ranges is only
+  necessary for the sake of boundary points in the element or its descendants.
+
+  <p>For each <var title="">node</var> in <var title="">node list</var>, insert <var title="">node</var>
   into the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">original parent</var> immediately before
   <var title="">original parent</var>, <a href=#preserving-ranges>preserving ranges</a>.
-  <!-- Notice that a boundary point that was immediately before the element
-  will now be immediately before its children, just because of the regular
-  range mutation rules, without needing to worry about preserving ranges.
-  Likewise for boundary points immediately after the element, if we wind up
-  removing the element in the final step.  Preserving ranges is only necessary
-  for the sake of boundary points in the element or its descendants. -->
 
   <li>If <var title="">follows line break</var> is true, and the first member of
   <var title="">node list</var> does not <a href=#follows-a-line-break title="follows a line break">follow a
@@ -4539,11 +4583,13 @@ display: inline-table. -->
   <li>Otherwise, <a href=#remove-extraneous-line-breaks-before>remove extraneous line breaks before</a>
   <var title="">original parent</var>.
 
-  <li>If <var title="">node list</var>'s last member's <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> is null,
+  <li>
+  <p class=comments>The parent might be null if it's a br that we removed in
+  the last step, in which case this step isn't necessary.
+
+  <p>If <var title="">node list</var>'s last member's <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> is null,
   but its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is not null, <a href=#remove-extraneous-line-breaks-at-the-end-of>remove extraneous line breaks at the
   end of</a> <var title="">node list</var>'s last member's <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
-  <!-- The parent might be null if it's a br that we removed in the last step,
-  in which case this step isn't necessary. -->
 </ol>
 
 <p>To remove a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var> while <dfn id=preserving-its-descendants>preserving its
@@ -4554,10 +4600,11 @@ its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcor
 
 <h3 id=canonical-space-sequences><span class=secno>8.7 </span>Canonical space sequences</h3>
 
+<p class=comments>See long comment before <a href=#the-inserttext-command>insertText</a>.
+
 <p>The <dfn id=canonical-space-sequence>canonical space sequence</dfn> of length <var title="">n</var>, with boolean
 flags <var title="">non-breaking start</var> and <var title="">non-breaking end</var>, is
 returned by the following algorithm:
-<!-- See long comment before insertText. -->
 
 <ol>
   <li>If <var title="">n</var> is zero, return the empty string.
@@ -4621,8 +4668,10 @@ returned by the following algorithm:
   <li>Let <var title="">start node</var> equal <var title="">node</var> and let <var title="">start
   offset</var> equal <var title="">offset</var>.
 
-  <!-- First go to the beginning of the current whitespace run. -->
-  <li>Repeat the following steps:
+  <li>
+  <p class=comments>First we go to the beginning of the current whitespace run.
+
+  <p>Repeat the following steps:
 
   <ol>
     <li>If <var title="">start node</var> has a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> <a href=#in-the-same-editing-host>in the same editing
@@ -4630,13 +4679,15 @@ returned by the following algorithm:
     <var title="">start node</var> to that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, then set <var title="">start offset</var>
     to <var title="">start node</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a>.
 
-    <li>Otherwise, if <var title="">start offset</var> is zero and <var title="">start node</var>
+    <li>
+    <p class=comments>TODO: Following a line break is unlikely to be the right
+    criterion.
+
+    <p>Otherwise, if <var title="">start offset</var> is zero and <var title="">start node</var>
     does not <a href=#follows-a-line-break title="follows a line break">follow a line break</a> and
     <var title="">start node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is <a href=#in-the-same-editing-host>in the same editing
     host</a>, set <var title="">start offset</var> to <var title="">start node</var>'s
     <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>, then set <var title="">start node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
-    <!-- TODO: Following a line break is unlikely to be the right criterion.
-    -->
 
     <li>Otherwise, if <var title="">start node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node and its
     <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>'s <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved value</a> for "white-space" is neither "pre" nor "pre-wrap"
@@ -4648,8 +4699,10 @@ returned by the following algorithm:
     <li>Otherwise, break from this loop.
   </ol>
 
-  <!-- Now collapse any consecutive spaces. -->
-  <li>Let <var title="">end node</var> equal <var title="">start node</var> and <var title="">end
+  <li>
+  <p class=comments>Now we collapse any consecutive spaces.
+
+  <p>Let <var title="">end node</var> equal <var title="">start node</var> and <var title="">end
   offset</var> equal <var title="">start offset</var>.
 
   <li>Let <var title="">length</var> equal zero.
@@ -4663,14 +4716,16 @@ returned by the following algorithm:
     host</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">end offset</var>, set <var title="">end node</var>
     to that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, then set <var title="">end offset</var> to zero.
 
-    <li>Otherwise, if <var title="">end offset</var> is <var title="">end node</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a>
+    <li>
+    <p class=comments>TODO: Preceding a line break is unlikely to be the right
+    criterion.
+
+    <p>Otherwise, if <var title="">end offset</var> is <var title="">end node</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a>
     and <var title="">end node</var> does not <a href=#precedes-a-line-break title="precedes a line
     break">precede a line break</a> and <var title="">end node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is
     <a href=#in-the-same-editing-host>in the same editing host</a>, set <var title="">end offset</var> to one
     plus <var title="">end node</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>, then set <var title="">end node</var> to its
     <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
-    <!-- TODO: Preceding a line break is unlikely to be the right criterion.
-    -->
 
     <li>Otherwise, if <var title="">end node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node and its
     <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>'s <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved value</a> for "white-space" is neither "pre" nor "pre-wrap"
@@ -4696,8 +4751,10 @@ returned by the following algorithm:
     <li>Otherwise, break from this loop.
   </ol>
 
-  <!-- Now replace with the canonical sequence. -->
-  <li>Let <var title="">replacement whitespace</var> be the <a href=#canonical-space-sequence>canonical space
+  <li>
+  <p class=comments>Finally we replace with the canonical sequence.
+
+  <p>Let <var title="">replacement whitespace</var> be the <a href=#canonical-space-sequence>canonical space
   sequence</a> of length <var title="">length</var>.  <var title="">non-breaking start</var>
   is true if <var title="">start offset</var> is zero and <var title="">start node</var>
   <a href=#follows-a-line-break>follows a line break</a>, and false otherwise.  <var title="">non-breaking
@@ -4728,9 +4785,12 @@ returned by the following algorithm:
       offset</var>th <a href=http://es5.github.com/#x8.4>element</a> of <var title="">start node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code>:
 
       <ol>
-        <!-- We need to insert then delete, so that we don't change range
-        boundary points. -->
-        <li>Call <code class=external data-anolis-spec=domcore title=dom-CharacterData-insertData><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-insertdata>insertData(<var title="">start offset</var>, <var title="">element</var>)</a></code> on
+        <li>
+        <p class=comments>We need to insert then delete, so that we don't
+        change range boundary points.  TODO: switch to using "replace data" now
+        that DOM Core has defined that.
+
+        <p>Call <code class=external data-anolis-spec=domcore title=dom-CharacterData-insertData><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-insertdata>insertData(<var title="">start offset</var>, <var title="">element</var>)</a></code> on
         <var title="">start node</var>.
 
         <li>Call <code class=external data-anolis-spec=domcore title=dom-CharacterData-deleteData><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-deletedata>deleteData(<var title="">start offset</var> + 1, 1)</a></code> on
@@ -4745,30 +4805,32 @@ returned by the following algorithm:
 
 <h3 id=indenting-and-outdenting><span class=secno>8.8 </span>Indenting and outdenting</h3>
 
+<div class=comments>
+<p>We have to handle entire lists of siblings at once, or else we'd wind up
+doing something like
+
+<pre>&lt;ol&gt;
+  {&lt;li&gt;foo&lt;/li&gt;
+  &lt;ol&gt;&lt;li&gt;bar&lt;/li&gt;&lt;/ol&gt;}
+&lt;/ol&gt;
+-&gt;
+&lt;ol&gt;&lt;ol&gt;
+  &lt;li&gt;foo&lt;/li&gt;
+  &lt;li&gt;bar&lt;/li&gt;
+&lt;/ol&gt;&lt;/ol&gt;
+-&gt;
+&lt;ol&gt;&lt;ol&gt;&lt;ol&gt;
+  &lt;li&gt;foo&lt;/li&gt;
+  &lt;li&gt;bar&lt;/li&gt;
+&lt;/ol&gt;&lt;/ol&gt;&lt;/ol&gt;</pre>
+
+<p>since by the time we got to doing the &lt;ol&gt; that originally contained
+"bar", we won't remember that we aren't supposed to indent "foo" a second time.
+</div>
+
 <p>To <dfn id=indent>indent</dfn> a list <var title="">node list</var> of consecutive <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-sibling title=concept-tree-sibling>sibling</a>
 <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>:
-<!--
-We have to handle entire lists of siblings at once, or else we'd wind up doing
-something like
 
-  <ol>
-    {<li>foo</li>
-    <ol><li>bar</li></ol>}
-  </ol>
-  ->
-  <ol><ol>
-    <li>foo</li>
-    <li>bar</li>
-  </ol></ol>
-  ->
-  <ol><ol><ol>
-    <li>foo</li>
-    <li>bar</li>
-  </ol></ol></ol>
-
-since by the time we got to doing the <ol> that originally contained "bar", we
-won't remember that we aren't supposed to indent "foo" a second time.
--->
 <ol>
   <li>If <var title="">node list</var> is empty, do nothing and abort these steps.
 
@@ -4780,114 +4842,123 @@ won't remember that we aren't supposed to indent "foo" a second time.
     <li>Let <var title="">tag</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> of the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of
     <var title="">first node</var>.
 
-    <li><a href=#wrap>Wrap</a> <var title="">node list</var>, with <a href=#sibling-criteria>sibling
+    <li>
+    <div class=comments>
+    <p>This matches IE9, Firefox 4.0, and Chrome 12 dev.  If there's a
+    preceding &lt;li&gt;, Opera 11.10 instead adds the new parent to the end of
+    that &lt;li&gt;, so it's not the child of another list, which is invalid.  But
+    the other browsers' way of doing things makes things simpler.  E.g., if we
+    want to indent an &lt;li&gt; and it has &lt;ol&gt;/&lt;ul&gt; children, we have to
+    distinguish between the case where we want to indent the whole &lt;li&gt; or
+    only the first part.  It also allows things like
+
+<pre>&lt;ol&gt;&lt;li&gt;
+  foo
+  &lt;ol&gt;&lt;li&gt;bar&lt;/li&gt;&lt;/ol&gt;
+  baz
+&lt;/li&gt;&lt;/ol&gt;</pre>
+
+    <p>in which case it's unclear what we should do if the user selects "foo" and
+    indents.  I've filed <a href="http://www.w3.org/Bugs/Public/show_bug.cgi?id=12609">a bug</a> on
+    HTML5.
+    </div>
+
+    <p><a href=#wrap>Wrap</a> <var title="">node list</var>, with <a href=#sibling-criteria>sibling
     criteria</a> matching only <a href=#html-element title="HTML element">HTML
     elements</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> <var title="">tag</var> and <a href=#new-parent-instructions>new parent
     instructions</a> returning the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement(<var title="">tag</var>)</a></code> on
     the <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">first node</var>.
-    <!--
-    This matches IE9, Firefox 4.0, and Chrome 12 dev.  If there's a preceding
-    <li>, Opera 11.10 instead adds the new parent to the end of that <li>, so
-    it's not the child of another list, which is invalid.  But the other
-    browsers' way of doing things makes things simpler.  E.g., if we want to
-    indent an <li> and it has <ol>/<ul> children, we have to distinguish
-    between the case where we want to indent the whole <li> or only the first
-    part.  It also allows things like
-
-      <ol><li>
-        foo
-        <ol><li>bar</li></ol>
-        baz
-      </li></ol>
-
-    in which case it's unclear what we should do if the user selects "foo" and
-    indents.  I've filed a bug on HTML5:
-
-    http://www.w3.org/Bugs/Public/show_bug.cgi?id=12609
-    -->
 
     <li>Abort these steps.
   </ol>
 
-  <!--
-  Firefox 4.0 respects the CSS styling flag for indent, but Chrome 12 dev does
-  not.  I always produce blockquotes, even if CSS styling is on, for two
+  <li>
+  <div class=comments>
+  <p>Firefox 4.0 respects the CSS styling flag for indent, but Chrome 12 dev
+  does not.  I always produce blockquotes, even if CSS styling is on, for two
   reasons.  One, IE9 handles inline margin attributes badly: when outdenting,
   it propagates the margin to the parent, which doesn't actually remove it.
-  Two, in CSS mode I'd want to use <div style="margin: 1em 40px"> to match
+  Two, in CSS mode I'd want to use &lt;div style="margin: 1em 40px"&gt; to match
   non-CSS mode, but authors are very likely to want to remove the top/bottom
   margin, which they can't do if it's not a special tag.  Authors who really
   want divs for indentation could always convert the blockquotes to divs
   themselves.  But if people really want it, I could respect CSS styling mode
   here too.
 
-  The top/bottom margins might be undesirable here, but no more so than for
-  <ol>/<ul>/<p>/etc.  Here as there, authors can remove them with CSS if they
-  want.
-  -->
+  <p>The top/bottom margins might be undesirable here, but no more so than for
+  &lt;ol&gt;/&lt;ul&gt;/&lt;p&gt;/etc.  Here as there, authors can remove them with CSS
+  if they want.
 
-  <li><a href=#wrap>Wrap</a> <var title="">node list</var>, with <a href=#sibling-criteria>sibling
+  <p>blockquote indents on both sides, so we don't have to worry about
+  directionality.  In theory it would be better if we indented only on the
+  start side, but that requires care to get right in mixed-direction cases.
+  Even once browsers start to support margin-start and so on, we can't use them
+  because a) we have to work okay in legacy browsers and b) it doesn't help if
+  a descendant block has different direction (so should be indented the other
+  way).  So let's not worry about it: most browsers don't, and the ones that do
+  get it wrong.  Just indent on both sides.
+  </div>
+
+  <p><a href=#wrap>Wrap</a> <var title="">node list</var>, with <a href=#sibling-criteria>sibling
   criteria</a> matching any <a href=#simple-indentation-element>simple indentation element</a>, and
   <a href=#new-parent-instructions>new parent instructions</a> to return the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("blockquote")</a></code> on the
   <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">first node</var>.  Let <var title="">new parent</var> be the
   result.
-  <!--
-  This indents on both sides, so we don't have to worry about directionality.
-  In theory it would be better if we indented only on the start side, but that
-  requires care to get right in mixed-direction cases.  Even once browsers
-  start to support margin-start and so on, we can't use them because a) we have
-  to work okay in legacy browsers and b) it doesn't help if a descendant block
-  has different direction (so should be indented the other way).  So let's not
-  worry about it: most browsers don't, and the ones that do get it wrong.  Just
-  indent on both sides.
-  -->
 
   <li><a href=#fix-disallowed-ancestors>Fix disallowed ancestors</a> of <var title="">new parent</var>.
 </ol>
 
+<div class=comments>
+<p>Things that are produced for indentation that we need to consider removing:
+
+<ul>
+  <li>Plain &lt;blockquote&gt; (produced by spec, Firefox 4.0 non-CSS, Opera
+  11.00)
+
+  <li>&lt;blockquote style="margin-right: 0" dir="ltr"&gt; and &lt;blockquote
+  style="margin-left: 0" dir="rtl"&gt; (IE9)
+
+  <li>&lt;blockquote class="webkit-indent-blockquote" style="margin: 0 0 0
+  40px; border: none; padding: 0px"&gt; (Chrome 12 dev)
+
+  <li>&lt;div style="margin-left: 40px"&gt; and &lt;div style="margin-right:
+  40px"&gt; (Firefox 4.0 CSS if no other element available)
+
+  <li>Other random things with display: block whose left or right margin was
+  increased by 40px (Firefox 4.0 CSS)
+</ul>
+
+<p>For discussion on the list-related stuff, see the comment for
+<a href=#the-insertorderedlist-command>insertOrderedList</a>.
+
+<p>Gecko in CSS mode just adds margin properties to random elements that are
+lying around.  We don't attempt to remove those, because 1) the amount and
+position of the margin can vary (it increases the margin if there's a
+preexisting one), so it's potentially complicated, and 2) no browser removes
+such margins on outdent, including Gecko, except for Gecko in CSS mode.  TODO:
+Consider removing it anyway.
+</div>
+
 <p>To <dfn id=outdent>outdent</dfn> a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var>:
 
-<!--
-Things that are produced for indentation that we need to consider removing:
-
-* Plain <blockquote> (produced by spec, Firefox 4.0 non-CSS, Opera 11.00)
-* <blockquote style="margin-right: 0" dir="ltr"> and <blockquote
-  style="margin-left: 0" dir="rtl"> (IE9)
-* <blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px;
-  border: none; padding: 0px"> (Chrome 12 dev)
-* <div style="margin-left: 40px"> and <div style="margin-right: 40px">
-  (Firefox 4.0 CSS if no other element available)
-* Other random things with display: block whose left or right margin was
-  increased by 40px (Firefox 4.0 CSS)
-
-For discussion on the list-related stuff, see the comment for
-insertOrderedList.
--->
 <ol>
   <li>If <var title="">node</var> is not <a href=#editable>editable</a>, abort these steps.
 
-  <!-- The easy case is when the whole element is indented.  In this case we
-  remove the whole thing indiscriminately.  In the case of blockquotes
-  created by IE, this might change the direction of some children, but then
-  their direction was probably changed incorrectly in the first place, so no
-  harm. -->
-  <li>If <var title="">node</var> is a <a href=#simple-indentation-element>simple indentation element</a>, remove
+  <li>
+  <p>The easy case is when the whole element is indented.  In this case we
+  remove the whole thing indiscriminately.  In the case of blockquotes created
+  by IE, this might change the direction of some children, but then their
+  direction was probably changed incorrectly in the first place, so no harm.
+
+  <p>If <var title="">node</var> is a <a href=#simple-indentation-element>simple indentation element</a>, remove
   <var title="">node</var>, <a href=#preserving-its-descendants>preserving its descendants</a>.  Then abort these
   steps.
 
-  <!--
-  Gecko in CSS mode just adds margin properties to random elements that are
-  lying around.  We don't attempt to remove those, because 1) the amount and
-  position of the margin can vary (it increases the margin if there's a
-  preexisting one), so it's potentially complicated, and 2) no browser removes
-  such margins on outdent, including Gecko, except for Gecko in CSS mode.
+  <li>
+  <p class=comments>This might be a simple indentation element that had style
+  added to it by Firefox in CSS mode, for instance (color, font-family, etc.).
 
-  TODO: Consider removing it anyway.
-  -->
-
-  <li>If <var title="">node</var> is an <a href=#indentation-element>indentation element</a>:
-  <!-- This might be a simple indentation element that had style added to it by
-  Firefox in CSS mode, for instance (color, font-family, etc.). -->
+  <p>If <var title="">node</var> is an <a href=#indentation-element>indentation element</a>:
 
   <ol>
     <li>Unset the <code class=external data-anolis-spec=html title=classes><a href=http://www.whatwg.org/html/#classes>class</a></code> and
@@ -4902,39 +4973,51 @@ insertOrderedList.
     <li>Abort these steps.
   </ol>
 
-  <!-- Approximate algorithms when an ancestor is causing the indentation
-  appear to be:
+  <li>
+  <div class=comments>
+  <p>Approximate algorithms when an ancestor is causing the indentation appear
+  to be:
 
-  IE9: Go to the innermost element causing indentation.  If the stuff to be
-    outdented includes all the contents of that element, get rid of it, but
-    if it has any attributes, change it to a <p> with those same attributes.
-    This is an excellent idea in general, but unfortunately it preserves
+  <dl>
+    <dt>IE9
+    <dd>Go to the innermost element causing indentation.  If the stuff to be
+    outdented includes all the contents of that element, get rid of it, but if
+    it has any attributes, change it to a &lt;p&gt; with those same attributes.  This
+    is an excellent idea in general, but unfortunately it preserves
     explicitly-specified margins in style attributes, which isn't great.  In
     other cases, it moves the stuff to be outdented outside.  Not clear on
     all the details, seems to be pretty confusing.  Also does a bunch of
     seemingly arbitrary normalization like removing divs and some attributes
     from some things . . .
-  Firefox 4.0: Go to the innermost element causing indentation.  If the stuff
-    to be outdented includes all the contents of that element, get rid of it,
-    even if it has arbitrary attributes.  Otherwise, move the stuff to be
-    outdented outside the indenting element.  If there are any intervening
-    elements that include stuff not to be outdented, wrap the outdented stuff
-    in copies (which can duplicate id's, etc.).
-  Chrome 12 dev: Go to the outermost element causing indentation (even if the
-    current element is itself causing indentation).  Move the text to be
-    outdented outside that outermost element, without regard to any
-    intervening elements.  Then recreate the original styles on the moved
-    text, in some fashion.  Something like that; it confuses me and doesn't
-    seem to be reasonable.
-  Opera 11.00: Like Firefox, except it goes to the outermost element, not the
+
+    <dt>Firefox 4.0
+    <dd>Go to the innermost element causing indentation.  If the stuff to be
+    outdented includes all the contents of that element, get rid of it, even if
+    it has arbitrary attributes.  Otherwise, move the stuff to be outdented
+    outside the indenting element.  If there are any intervening elements that
+    include stuff not to be outdented, wrap the outdented stuff in copies
+    (which can duplicate id's, etc.).
+
+    <dt>Chrome 12 dev
+    <dd>Go to the outermost element causing indentation (even if the current
+    element is itself causing indentation).  Move the text to be outdented
+    outside that outermost element, without regard to any intervening elements.
+    Then recreate the original styles on the moved text, in some fashion.
+    Something like that; it confuses me and doesn't seem to be reasonable.
+
+    <dt>Opera 11.00
+    <dd>Like Firefox, except it goes to the outermost element, not the
     innermost.  Also seems to special-case to avoid duplicate id's, and has a
     few other quirks.
+  </dl>
 
-  Overall, all flawed, so I'll make up my own, patterned after pushing down
-  styles.  First we search ancestors for an indentation element, which we stand
-  a chance of completely removing.  Failing that, we look for an indentation
-  element, which we cannot completely remove. -->
-  <li>Let <var title="">current ancestor</var> be <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+  <p>Overall, all flawed, so I'll make up my own, patterned after pushing down
+  styles.  First we search ancestors for a simple indentation element, which we
+  stand a chance of completely removing.  Failing that, we look for an
+  indentation element that's not simple, so we can't completely remove it.
+  </div>
+
+  <p>Let <var title="">current ancestor</var> be <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
   <li>Let <var title="">ancestor list</var> be a list of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>, initially empty.
 
@@ -4957,14 +5040,14 @@ insertOrderedList.
     list</var> and then set <var title="">current ancestor</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
   </ol>
 
-  <li>If <var title="">node</var> is an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code> and <var title="">current ancestor</var>
+  <li>
+  <p class=comments>When asked to outdent a list wrapped in a simple
+  indentation element, Chrome 12 dev removes the list instead of the simple
+  indentation element.  Opera 11.10 seems to remove both.  IE9 and Firefox 4.0
+  remove the simple indentation element, as does the spec.
+
+  <p>If <var title="">node</var> is an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code> and <var title="">current ancestor</var>
   is not an <a href=#editable>editable</a> <a href=#indentation-element>indentation element</a>:
-  <!--
-  When asked to outdent a list wrapped in a simple indentation element, Chrome
-  12 dev removes the list instead of the simple indentation element.  Opera
-  11.10 seems to remove both.  IE9 and Firefox 4.0 remove the simple
-  indentation element, as does the spec.
-  -->
 
   <ol>
     <li>Unset the <code class=external data-anolis-spec=html title=attr-ol-reversed><a href=http://www.whatwg.org/html/#attr-ol-reversed>reversed</a></code>, <code class=external data-anolis-spec=html title=attr-ol-start><a href=http://www.whatwg.org/html/#attr-ol-start>start</a></code>, and <code class=external data-anolis-spec=html title=attr-ol-type><a href=http://www.whatwg.org/html/#attr-ol-type>type</a></code> attributes of <var title="">node</var>, if any are
@@ -4972,14 +5055,14 @@ insertOrderedList.
 
     <li>Let <var title="">children</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> of <var title="">node</var>.
 
-    <li>If <var title="">node</var> has attributes, and its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is not an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code>
+    <li>
+    <p class=comments>We can't turn it into a div if it's the child of an ol or
+    ul, because that's not currently allowed.  TODO: change this if
+    <a href="http://www.w3.org/Bugs/Public/show_bug.cgi?id=13128">bug 13128</a>
+    is fixed and we can make it a div.
+
+    <p>If <var title="">node</var> has attributes, and its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is not an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code>
     or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, <a href=#set-the-tag-name>set the tag name</a> of <var title="">node</var> to "div".
-    <!--
-    We can't turn it into a div if it's the child of an ol or ul, because
-    that's not currently allowed.  TODO: change this if
-    http://www.w3.org/Bugs/Public/show_bug.cgi?id=13128 is fixed and we can
-    make it a div.
-    -->
 
     <li>Otherwise:
 
@@ -5001,12 +5084,16 @@ insertOrderedList.
   <li>If <var title="">current ancestor</var> is not an <a href=#editable>editable</a>
   <a href=#indentation-element>indentation element</a>, abort these steps.
 
-  <!-- At this point, we have an ancestor to split up. -->
-  <li>Append <var title="">current ancestor</var> to <var title="">ancestor list</var>.
+  <li>
+  <p class=comments>If we get to this point, we have an ancestor to split up.
 
-  <li>Let <var title="">original ancestor</var> be <var title="">current ancestor</var>.
-  <!-- We can't outdent it yet, because we need its children to remain intact
-  for the loop. -->
+  <p>Append <var title="">current ancestor</var> to <var title="">ancestor list</var>.
+
+  <li>
+  <p class=comments>We can't outdent it yet, because we need its children to
+  remain intact for the loop.
+
+  <p>Let <var title="">original ancestor</var> be <var title="">current ancestor</var>.
 
   <li>While <var title="">ancestor list</var> is not empty:
 
@@ -5039,8 +5126,8 @@ insertOrderedList.
 
 <h3 id=toggling-lists><span class=secno>8.9 </span>Toggling lists</h3>
 
-<!--
-Research for insertOrderedList/insertUnorderedList: tested the following
+<div class=comments>
+<p>Research for insertOrderedList/insertUnorderedList: tested the following
 command sequences in IE9, Firefox 4.0, Chrome 12 dev, Opera 11.10,
 OpenOffice.org 3.2.1 Ubuntu package, Microsoft Office Word 2007.  The commands
 "ol", "ul", "indent", "outdent" correspond in browsers to "insertOrderedList",
@@ -5048,309 +5135,455 @@ OpenOffice.org 3.2.1 Ubuntu package, Microsoft Office Word 2007.  The commands
 On/Off", "Bullets On/Off", "Increase Indent", "Decrease Indent"; and in Word to
 "Numbering", "Bullets", "Increase Indent", "Decrease Indent".
 
-Note: OO has a bunch of extra options, like "Promote One Level", "Demote One
+<p>Note: OO has a bunch of extra options, like "Promote One Level", "Demote One
 Level", "Promote One Level With Subpoints", "Demote One Level With Subpoints",
 "Insert Unnumbered Entry", "Restart Numbering".  The regular "Increase/Decrease
 Indent" commands work oddly, and I assume they're not really meant to be used
 inside lists.  Thus I also tested with "Promote One Level" and "Demote One
 Level".  These are denoted by OO' instead of OO.
 
-Assume that there are style rules in effect like
+<p>Assume that there are style rules in effect like
 
-ol ol { list-style-type: lower-alpha }
-ol ol ol { list-style-type: lower-roman }
+<pre>ol ol { list-style-type: lower-alpha }
+ol ol ol { list-style-type: lower-roman }</pre>
 
-This is the default appearance in Word, and I set OO to something similar with
-Bullets and Numbering -> Outline in the list editing toolbox.  I'm ignoring
-bullet style throughout, for no particular reason.
+<p>This is the default appearance in Word, and I set OO to something similar
+with Bullets and Numbering &rarr; Outline in the list editing toolbox.  I'm
+ignoring bullet style throughout, for no particular reason.
 
-* In an existing ordered list equivalent to <ol><li>foo<li>bar<li>baz</ol>quz:
-  * Select "bar", do "ol":
-    * Word/OO: Remove indent and number "2", change "3" to "2".
-    * Browsers: Remove indent and number "2", change "3" to "1".
-    * Spec: Same as browsers.
-  * Select "bar", do "ul":
-    * Word: Leave indent the same, change "2" to a bullet, change "3" to "2".
-    * OO: Increase indent, change "2" to a bullet, change "3" to "2".
-    * IE: Change all numbers to bullets.
-    * Firefox/Chrome/Opera: Leave indent the same, change "2" to a bullet, change "3" to "1".
-    * Spec: Same as Firefox/Chrome/Opera.
-  * Select "bar", do "indent":
-    * Word/OO'/Browsers: Increase indent, change "2" to "a", change "3" to "2".
-    * OO: Increase indent, do not change any numbers.
-    * Spec: Same as Word/OO'/Browsers.
-  * Select "bar", do "outdent":
-    * Word: Do nothing.
-    * OO: Leave indent the same, de-indent "2" so it goes past the left margin (?!), do not change any numbers.
-    * OO': Option grayed out.
-    * Browsers: Remove indent and the number "2", change "3" to "1".
-    * Spec: Same as browsers.
-  * Select "quz", do "ol":
-    * Word/OO/IE/Chrome: Add as fourth item to existing list, numbered "4".
-    * Firefox/Opera: Create new list, number the item "1".
-    * Spec: Same as OO/Word/IE/Chrome.
-* In an existing ordered list equivalent to <ol><li>foo<br>bar<li>baz</ol>:
-  * Select "foo", do "ol":
-    * Word/OO/IE/Chrome/Opera: Remove indent from both "foo" and "bar", change "2" -> "1".
-    * Firefox: Increase indent for "foo" only, add additional "a" marker after "1" and before "foo".
-    * Spec: Same as Word/OO/IE/Chrome/Opera.
-  * Select "foo", do "ul":
-    * Word/Opera: Change "1" -> bullet, "2" -> "1".
-    * OO: Increase indent for both "foo" and "bar", change "1" -> bullet, "2" -> "1".
-    * IE: Change all numbers to bullets.
-    * Firefox: Increase indent for "foo" only, add additional bullet marker after "1" and before "foo".
-    * Chrome: Remove indent from "bar", change "1" -> bullet, "2" -> "1".
-    * Spec: Same as Word/Opera.
-  * Select "foo", do "indent":
-    * Word: Increase indent for whole list.
-    * OO: Increase indent for both "foo" and "bar".
-    * OO': Increase indent for "foo", change "1" -> "a".
-    * IE/Firefox non-CSS/Opera: Increase indent for both "foo" and "bar", change "1" -> "a", "2" -> "1".
-    * Firefox CSS: Increase indent for "foo" only (<div style="margin-left: 40px">).
-    * Chrome: Increase indent for "foo" only, add "a" before "foo", move "1" to be before "bar".
-    * Spec: Same as IE/Firefox non-CSS/Opera.
-  * Select "foo", do "outdent":
-    * Word: Decrease indent for whole list, so it goes past the left margin.
-    * OO: Decrease indent for "bar" and "1." (so "1." goes past the left margin), but not "foo".
-    * OO': Option grayed out.
-    * IE/Chrome/Opera: Remove indent from both "foo" and "bar", remove "1", change "2" -> "1".
-    * Firefox: Do nothing.
-    * Spec: Same as IE/Chrome/Opera.
-  * Select "bar", do "ol":
-    * Word/OO/IE/Chrome/Opera: Remove indent from both "foo" and "bar", change "2" -> "1".
-    * Firefox: Increase indent for "bar" only, add "a" marker before it.
-    * Spec: Same as Word/OO/IE/Chrome/Opera.
-  * Select "bar", do "ul":
-    * Word/Opera: Change "1" -> bullet, "2" -> "1".
-    * OO: Increase indent for both "foo" and "bar", change "1" -> bullet, "2" -> "1".
-    * IE: Change all numbers to bullets.
-    * Firefox: Increase indent for "bar" only, add bullet marker before it.
-    * Chrome: Remove indent from "foo", change "1" -> bullet and move it before "bar", change "2" -> "1".
-    * Spec: Same as Word/Opera.
-  * Select "bar", do "indent":
-    * Word: Increase indent for whole list.
-    * OO: Increase indent for both "foo" and "bar".
-    * OO': Increase indent for "foo", change "1" -> "a".
-    * IE/Firefox non-CSS/Opera: Increase indent for both "foo" and "bar", change "1" -> "a", "2" -> "1".
-    * Firefox CSS: Increase indent for "bar" only (<div style="margin-left: 40px">).
-    * Chrome: Increase indent for "bar" only, add "a" before "bar", move "bar" above "foo" (?!).
-    * Spec: Same as IE/Firefox non-CSS/Opera.
-  * Select "bar", do "outdent":
-    * Word: Decrease indent for whole list, so it goes past the left margin.
-    * OO: Decrease indent for "bar" and "1." (so "1." goes past the left margin), but not "foo".
-    * OO': Option grayed out.
-    * IE/Chrome/Opera: Remove indent from both "foo" and "bar", remove "1", change "2" -> "1".
-    * Firefox: Do nothing.
-    * Spec: Same as IE/Chrome/Opera.
-* In an existing nested ordered list equivalent to <ol><li>foo<ol><li>bar<li>baz</ol><li>quz</ol>:
-  * Select "bar", do "ol":
-    * Word/IE/Firefox: Decrease indent, remove "a" ("bar" is aligned with "foo" with no marker of its own), change "b" -> "a".
-    * OO: Remove all indent, change "b" -> "a".
-    * Chrome: Decrease indent, change "a" -> "2", "b" -> "a", "2" -> "3".
-    * Opera: Decrease indent, change "a" -> "2", "b" -> "a", "2" -> "4", insert extra "3" list marker before new "a".
-    * Spec: Same as Chrome.
-  * Select "bar", do "ul":
-    * Word/Firefox/Chrome: Change "a" -> bullet, "b" -> "a".
-    * OO: Increase indent, change "a" -> bullet, "b" -> "a".
-    * IE: Change "a" and "b" to bullets.
-    * Opera: Change "a" -> bullet, "b" -> "a", "2" -> "4", insert extra list markers "2" and "3" before new bullet and "a".
-    * Spec: Same as Word/Firefox/Chrome.
-  * Select "bar", do "indent":
-    * Word/OO'/IE: Increase indent, change "a" -> "i", leave "b" alone.
-    * OO: Increase indent, do not change numbers.
-    * Firefox/Chrome/Opera: Increase indent, change "a" -> "i", "b" -> "a".
-    * Spec: Same as Firefox/Chrome/Opera.
-  * Select "bar", do "outdent":
-    * Word/OO'/IE/Chrome: Decrease indent, change "a" -> "2", "b" -> "a", "2" -> "3".
-    * OO: Leave indent the same, de-indent "a" so it goes past the left margin (?!).
-    * Firefox: Decrease indent, remove "a" ("bar" is aligned with "foo" with no marker of its own), change "b" -> "a".
-    * Opera: Decrease indent, change "a" -> "2", "b" -> "a", "2" -> "4", insert extra list marker "3" before new "a".
-    * Spec: Same as Word/OO'/IE/Chrome.
-* In existing nested lists equivalent to <ol><li>foo<ul><li>bar<li>baz</ul><li>quz</ol>:
-  * Select "bar", do "ol":
-    * Word: Change all bullets to numbers.  (Not letters, even though indented!)
-    * OO: Decrease indent, change first bullet -> "2", "2" -> "3".
-    * IE: Change all bullets to letters.
-    * Firefox/Chrome: Change first bullet to "a".
-    * Opera: Change first bullet -> "a", "2" -> "4", insert extra list markers "2" and "3" before new "a" and bullet.
-    * Spec: Same as Firefox/Chrome.
-  * Select "bar", do "ul":
-    * Word/IE/Firefox: Decrease indent, remove first bullet ("bar" is aligned with "foo" with no marker of its own).
-    * OO: Remove all indent, remove first bullet, leave all else the same.
-    * Chrome: Decrease indent, change first bullet -> "2", "2" -> "3".
-    * Opera: Decrease indent, change first bullet -> "2", "2" -> "4", insert extra list marker "3" before old bullet.
-    * Spec: Same as Chrome.
-  * Select "bar", do "indent":
-    * Word: Increase indent, change first bullet to "i" (?!).
-    * OO/OO'/Firefox/Chrome/Opera: Increase indent.
-    * IE: Increase indent, change "2" -> "3" (?!?!).  (I don't see from the markup why the 2 actually changes to a 3.  The markup seems to be as other browsers.)
-    * Spec: Same as OO/OO'/Firefox/Chrome/Opera.
-  * Select "bar", do "outdent":
-    * Word/IE/Chrome: Decrease indent, change first bullet -> "2", "2" -> "3".
-    * OO: Usual crazy stuff, move bullet left but leave text alone.
-    * OO': Option grayed out.  (Interesting.)
-    * Firefox: Decrease indent, remove first bullet ("bar" is aligned with "foo" with no marker of its own).
-    * Opera: Decrease indent, change first bullet -> "2", "2" -> "4", insert extra list marker "3" before old bullet.
-    * Spec: Same as Word/IE/Chrome.
-* In an existing nested ordered list equivalent to <ol><li>foo<li>bar<ol><li>baz</ol><li>quz</ol>:
-  * Select "bar", do "ol":
-    * Word/OO: Remove indent and "2", change "3" -> "2".
-    * IE/Chrome/Opera: Remove indent and "2", decrease indent of "baz", change "2" and "3" -> "1".
-    * Firefox: Increase indent, add extra "a" marker between "2" and "bar".
-    * Spec: Different from all of them: remove indent and "2", change "3" -> "1".
-  * Select "bar", do "ul":
-    * Word: Change "2" -> bullet.
-    * OO: Increase indent, change "2" -> bullet, "3" -> "2".
-    * IE: Change "1", "2", "3" -> bullets (and "a" to "1").
-    * Firefox: Increase indent, add extra bullet marker between "2" and "bar".
-    * Chrome: Decrease indent of "baz", change "2" -> bullet, "a" and "3" -> "1".
-    * Opera: Change "2" -> bullet, "a" and "3" -> "1".
-    * Spec: Different from all of them: change "2" -> bullet, "3" -> "1".
-  * Select "bar", do "indent":
-    * Word/OO': Increase indent, change "2" -> "a", "a" -> "b", "3" -> "2".
-    * OO: Increase indent (double amount, past "baz").
-    * Firefox non-CSS/Opera: Increase indent of both "bar" and "baz", change "2" -> "a", "a" -> "i", "3" -> "2".
-    * Firefox CSS: Increase indent.
-    * Chrome: Increase indent, add "a" marker before "bar", move "2" marker to before the "a" marker of "baz".
-    * Spec: Same as Word/OO'.
-  * Select "bar", do "outdent":
-    * Word/Firefox: Do nothing.
-    * OO: Decrease indent on "2", leave "bar" alone.
-    * OO': Option grayed out.
-    * IE: Decrease indent of "baz", change "2" and "3" -> "1", "a" -> "2".
-    * Chrome/Opera: Decrease indent of "bar" and "baz", remove "2", change "a" and "3" -> "1".
-    * Spec: Different from all of them: remove indent and "2", change "3" -> "1".
-* In an existing nested ordered list equivalent to <ol><li>foo<li>bar<ol><li>baz</ol>quz<li>qoz</ol>:
-  * Does not appear to be possible in Word or OO.
-  * Also might be impossible to actually make such a list using execCommand() in browsers.
-  * Suffice it to say that there's a lot of variation.
-* In an existing indented region equivalent to foo<blockquote>bar</blockquote>baz:
-  * Select "bar", do "ol":
-    * Word/OO/Firefox/Chrome: Increase indent, add "1".
-    * IE: Increase indent, add "a".
-    * Opera: Add "1" (but do not increase indent).
-  * Select "foobar", do "ol":
-    * Word/IE: Increase indent of both, add "1" before "foo" and "a" before
+<ul>
+  <li>In an existing ordered list equivalent to &lt;ol&gt;&lt;li&gt;foo&lt;li&gt;bar&lt;li&gt;baz&lt;/ol&gt;quz:
+
+  <ul>
+    <li>Select "bar", do "ol":
+    <dl>
+      <dt>Word/OO <dd>Remove indent and number "2", change "3" to "2".
+      <dt>Browsers <dd>Remove indent and number "2", change "3" to "1".
+      <dt>Spec <dd>Same as browsers.
+    </dl>
+
+    <li>Select "bar", do "ul":
+    <dl>
+      <dt>Word <dd>Leave indent the same, change "2" to a bullet, change "3" to "2".
+      <dt>OO <dd>Increase indent, change "2" to a bullet, change "3" to "2".
+      <dt>IE <dd>Change all numbers to bullets.
+      <dt>Firefox/Chrome/Opera <dd>Leave indent the same, change "2" to a bullet, change "3" to "1".
+      <dt>Spec <dd>Same as Firefox/Chrome/Opera.
+    </dl>
+
+    <li>Select "bar", do "indent":
+    <dl>
+      <dt>Word/OO'/Browsers <dd>Increase indent, change "2" to "a", change "3" to "2".
+      <dt>OO <dd>Increase indent, do not change any numbers.
+      <dt>Spec <dd>Same as Word/OO'/Browsers.
+    </dl>
+
+    <li>Select "bar", do "outdent":
+    <dl>
+      <dt>Word <dd>Do nothing.
+      <dt>OO <dd>Leave indent the same, de-indent "2" so it goes past the left margin (?!), do not change any numbers.
+      <dt>OO' <dd>Option grayed out.
+      <dt>Browsers <dd>Remove indent and the number "2", change "3" to "1".
+      <dt>Spec <dd>Same as browsers.
+    </dl>
+
+    <li>Select "quz", do "ol":
+    <dl>
+      <dt>Word/OO/IE/Chrome <dd>Add as fourth item to existing list, numbered "4".
+      <dt>Firefox/Opera <dd>Create new list, number the item "1".
+      <dt>Spec <dd>Same as OO/Word/IE/Chrome.
+    </dl>
+  </ul>
+
+  <li>In an existing ordered list equivalent to &lt;ol&gt;&lt;li&gt;foo&lt;br&gt;bar&lt;li&gt;baz&lt;/ol&gt;:
+  <ul>
+    <li>Select "foo", do "ol":
+    <dl>
+      <dt>Word/OO/IE/Chrome/Opera <dd>Remove indent from both "foo" and "bar", change "2" -&gt; "1".
+      <dt>Firefox <dd>Increase indent for "foo" only, add additional "a" marker after "1" and before "foo".
+      <dt>Spec <dd>Same as Word/OO/IE/Chrome/Opera.
+    </dl>
+
+    <li>Select "foo", do "ul":
+    <dl>
+      <dt>Word/Opera <dd>Change "1" -&gt; bullet, "2" -&gt; "1".
+      <dt>OO <dd>Increase indent for both "foo" and "bar", change "1" -&gt; bullet, "2" -&gt; "1".
+      <dt>IE <dd>Change all numbers to bullets.
+      <dt>Firefox <dd>Increase indent for "foo" only, add additional bullet marker after "1" and before "foo".
+      <dt>Chrome <dd>Remove indent from "bar", change "1" -&gt; bullet, "2" -&gt; "1".
+      <dt>Spec <dd>Same as Word/Opera.
+    </dl>
+
+    <li>Select "foo", do "indent":
+    <dl>
+      <dt>Word <dd>Increase indent for whole list.
+      <dt>OO <dd>Increase indent for both "foo" and "bar".
+      <dt>OO' <dd>Increase indent for "foo", change "1" -&gt; "a".
+      <dt>IE/Firefox non-CSS/Opera <dd>Increase indent for both "foo" and "bar", change "1" -&gt; "a", "2" -&gt; "1".
+      <dt>Firefox CSS <dd>Increase indent for "foo" only (&lt;div style="margin-left: 40px"&gt;).
+      <dt>Chrome <dd>Increase indent for "foo" only, add "a" before "foo", move "1" to be before "bar".
+      <dt>Spec <dd>Same as IE/Firefox non-CSS/Opera.
+    </dl>
+
+    <li>Select "foo", do "outdent":
+    <dl>
+      <dt>Word <dd>Decrease indent for whole list, so it goes past the left margin.
+      <dt>OO <dd>Decrease indent for "bar" and "1." (so "1." goes past the left margin), but not "foo".
+      <dt>OO' <dd>Option grayed out.
+      <dt>IE/Chrome/Opera <dd>Remove indent from both "foo" and "bar", remove "1", change "2" -&gt; "1".
+      <dt>Firefox <dd>Do nothing.
+      <dt>Spec <dd>Same as IE/Chrome/Opera.
+    </dl>
+
+    <li>Select "bar", do "ol":
+    <dl>
+      <dt>Word/OO/IE/Chrome/Opera <dd>Remove indent from both "foo" and "bar", change "2" -&gt; "1".
+      <dt>Firefox <dd>Increase indent for "bar" only, add "a" marker before it.
+      <dt>Spec <dd>Same as Word/OO/IE/Chrome/Opera.
+    </dl>
+
+    <li>Select "bar", do "ul":
+    <dl>
+      <dt>Word/Opera <dd>Change "1" -&gt; bullet, "2" -&gt; "1".
+      <dt>OO <dd>Increase indent for both "foo" and "bar", change "1" -&gt; bullet, "2" -&gt; "1".
+      <dt>IE <dd>Change all numbers to bullets.
+      <dt>Firefox <dd>Increase indent for "bar" only, add bullet marker before it.
+      <dt>Chrome <dd>Remove indent from "foo", change "1" -&gt; bullet and move it before "bar", change "2" -&gt; "1".
+      <dt>Spec <dd>Same as Word/Opera.
+    </dl>
+
+    <li>Select "bar", do "indent":
+    <dl>
+      <dt>Word <dd>Increase indent for whole list.
+      <dt>OO <dd>Increase indent for both "foo" and "bar".
+      <dt>OO' <dd>Increase indent for "foo", change "1" -&gt; "a".
+      <dt>IE/Firefox non-CSS/Opera <dd>Increase indent for both "foo" and "bar", change "1" -&gt; "a", "2" -&gt; "1".
+      <dt>Firefox CSS <dd>Increase indent for "bar" only (&lt;div style="margin-left: 40px"&gt;).
+      <dt>Chrome <dd>Increase indent for "bar" only, add "a" before "bar", move "bar" above "foo" (?!).
+      <dt>Spec <dd>Same as IE/Firefox non-CSS/Opera.
+    </dl>
+
+    <li>Select "bar", do "outdent":
+    <dl>
+      <dt>Word <dd>Decrease indent for whole list, so it goes past the left margin.
+      <dt>OO <dd>Decrease indent for "bar" and "1." (so "1." goes past the left margin), but not "foo".
+      <dt>OO' <dd>Option grayed out.
+      <dt>IE/Chrome/Opera <dd>Remove indent from both "foo" and "bar", remove "1", change "2" -&gt; "1".
+      <dt>Firefox <dd>Do nothing.
+      <dt>Spec <dd>Same as IE/Chrome/Opera.
+    </dl>
+  </ul>
+
+  <li>In an existing nested ordered list equivalent to &lt;ol&gt;&lt;li&gt;foo&lt;ol&gt;&lt;li&gt;bar&lt;li&gt;baz&lt;/ol&gt;&lt;li&gt;quz&lt;/ol&gt;:
+  <ul>
+    <li>Select "bar", do "ol":
+    <dl>
+      <dt>Word/IE/Firefox <dd>Decrease indent, remove "a" ("bar" is aligned with "foo" with no marker of its own), change "b" -&gt; "a".
+      <dt>OO <dd>Remove all indent, change "b" -&gt; "a".
+      <dt>Chrome <dd>Decrease indent, change "a" -&gt; "2", "b" -&gt; "a", "2" -&gt; "3".
+      <dt>Opera <dd>Decrease indent, change "a" -&gt; "2", "b" -&gt; "a", "2" -&gt; "4", insert extra "3" list marker before new "a".
+      <dt>Spec <dd>Same as Chrome.
+    </dl>
+
+    <li>Select "bar", do "ul":
+    <dl>
+      <dt>Word/Firefox/Chrome <dd>Change "a" -&gt; bullet, "b" -&gt; "a".
+      <dt>OO <dd>Increase indent, change "a" -&gt; bullet, "b" -&gt; "a".
+      <dt>IE <dd>Change "a" and "b" to bullets.
+      <dt>Opera <dd>Change "a" -&gt; bullet, "b" -&gt; "a", "2" -&gt; "4", insert extra list markers "2" and "3" before new bullet and "a".
+      <dt>Spec <dd>Same as Word/Firefox/Chrome.
+    </dl>
+
+    <li>Select "bar", do "indent":
+    <dl>
+      <dt>Word/OO'/IE <dd>Increase indent, change "a" -&gt; "i", leave "b" alone.
+      <dt>OO <dd>Increase indent, do not change numbers.
+      <dt>Firefox/Chrome/Opera <dd>Increase indent, change "a" -&gt; "i", "b" -&gt; "a".
+      <dt>Spec <dd>Same as Firefox/Chrome/Opera.
+    </dl>
+
+    <li>Select "bar", do "outdent":
+    <dl>
+      <dt>Word/OO'/IE/Chrome <dd>Decrease indent, change "a" -&gt; "2", "b" -&gt; "a", "2" -&gt; "3".
+      <dt>OO <dd>Leave indent the same, de-indent "a" so it goes past the left margin (?!).
+      <dt>Firefox <dd>Decrease indent, remove "a" ("bar" is aligned with "foo" with no marker of its own), change "b" -&gt; "a".
+      <dt>Opera <dd>Decrease indent, change "a" -&gt; "2", "b" -&gt; "a", "2" -&gt; "4", insert extra list marker "3" before new "a".
+      <dt>Spec <dd>Same as Word/OO'/IE/Chrome.
+    </dl>
+  </ul>
+
+  <li>In existing nested lists equivalent to &lt;ol&gt;&lt;li&gt;foo&lt;ul&gt;&lt;li&gt;bar&lt;li&gt;baz&lt;/ul&gt;&lt;li&gt;quz&lt;/ol&gt;:
+  <ul>
+    <li>Select "bar", do "ol":
+    <dl>
+      <dt>Word <dd>Change all bullets to numbers.  (Not letters, even though indented!)
+      <dt>OO <dd>Decrease indent, change first bullet -&gt; "2", "2" -&gt; "3".
+      <dt>IE <dd>Change all bullets to letters.
+      <dt>Firefox/Chrome <dd>Change first bullet to "a".
+      <dt>Opera <dd>Change first bullet -&gt; "a", "2" -&gt; "4", insert extra list markers "2" and "3" before new "a" and bullet.
+      <dt>Spec <dd>Same as Firefox/Chrome.
+    </dl>
+
+    <li>Select "bar", do "ul":
+    <dl>
+      <dt>Word/IE/Firefox <dd>Decrease indent, remove first bullet ("bar" is aligned with "foo" with no marker of its own).
+      <dt>OO <dd>Remove all indent, remove first bullet, leave all else the same.
+      <dt>Chrome <dd>Decrease indent, change first bullet -&gt; "2", "2" -&gt; "3".
+      <dt>Opera <dd>Decrease indent, change first bullet -&gt; "2", "2" -&gt; "4", insert extra list marker "3" before old bullet.
+      <dt>Spec <dd>Same as Chrome.
+    </dl>
+
+    <li>Select "bar", do "indent":
+    <dl>
+      <dt>Word <dd>Increase indent, change first bullet to "i" (?!).
+      <dt>OO/OO'/Firefox/Chrome/Opera <dd>Increase indent.
+      <dt>IE <dd>Increase indent, change "2" -&gt; "3" (?!?!).  (I don't see from the markup why the 2 actually changes to a 3.  The markup seems to be as other browsers.)
+      <dt>Spec <dd>Same as OO/OO'/Firefox/Chrome/Opera.
+    </dl>
+
+    <li>Select "bar", do "outdent":
+    <dl>
+      <dt>Word/IE/Chrome <dd>Decrease indent, change first bullet -&gt; "2", "2" -&gt; "3".
+      <dt>OO <dd>Usual crazy stuff, move bullet left but leave text alone.
+      <dt>OO' <dd>Option grayed out.  (Interesting.)
+      <dt>Firefox <dd>Decrease indent, remove first bullet ("bar" is aligned with "foo" with no marker of its own).
+      <dt>Opera <dd>Decrease indent, change first bullet -&gt; "2", "2" -&gt; "4", insert extra list marker "3" before old bullet.
+      <dt>Spec <dd>Same as Word/IE/Chrome.
+    </dl>
+  </ul>
+
+  <li>In an existing nested ordered list equivalent to &lt;ol&gt;&lt;li&gt;foo&lt;li&gt;bar&lt;ol&gt;&lt;li&gt;baz&lt;/ol&gt;&lt;li&gt;quz&lt;/ol&gt;:
+  <ul>
+    <li>Select "bar", do "ol":
+    <dl>
+      <dt>Word/OO <dd>Remove indent and "2", change "3" -&gt; "2".
+      <dt>IE/Chrome/Opera <dd>Remove indent and "2", decrease indent of "baz", change "2" and "3" -&gt; "1".
+      <dt>Firefox <dd>Increase indent, add extra "a" marker between "2" and "bar".
+      <dt>Spec <dd>Different from all of them: remove indent and "2", change "3" -&gt; "1".
+    </dl>
+
+    <li>Select "bar", do "ul":
+    <dl>
+      <dt>Word <dd>Change "2" -&gt; bullet.
+      <dt>OO <dd>Increase indent, change "2" -&gt; bullet, "3" -&gt; "2".
+      <dt>IE <dd>Change "1", "2", "3" -&gt; bullets (and "a" to "1").
+      <dt>Firefox <dd>Increase indent, add extra bullet marker between "2" and "bar".
+      <dt>Chrome <dd>Decrease indent of "baz", change "2" -&gt; bullet, "a" and "3" -&gt; "1".
+      <dt>Opera <dd>Change "2" -&gt; bullet, "a" and "3" -&gt; "1".
+      <dt>Spec <dd>Different from all of them: change "2" -&gt; bullet, "3" -&gt; "1".
+    </dl>
+
+    <li>Select "bar", do "indent":
+    <dl>
+      <dt>Word/OO' <dd>Increase indent, change "2" -&gt; "a", "a" -&gt; "b", "3" -&gt; "2".
+      <dt>OO <dd>Increase indent (double amount, past "baz").
+      <dt>Firefox non-CSS/Opera <dd>Increase indent of both "bar" and "baz", change "2" -&gt; "a", "a" -&gt; "i", "3" -&gt; "2".
+      <dt>Firefox CSS <dd>Increase indent.
+      <dt>Chrome <dd>Increase indent, add "a" marker before "bar", move "2" marker to before the "a" marker of "baz".
+      <dt>Spec <dd>Same as Word/OO'.
+    </dl>
+
+    <li>Select "bar", do "outdent":
+    <dl>
+      <dt>Word/Firefox <dd>Do nothing.
+      <dt>OO <dd>Decrease indent on "2", leave "bar" alone.
+      <dt>OO' <dd>Option grayed out.
+      <dt>IE <dd>Decrease indent of "baz", change "2" and "3" -&gt; "1", "a" -&gt; "2".
+      <dt>Chrome/Opera <dd>Decrease indent of "bar" and "baz", remove "2", change "a" and "3" -&gt; "1".
+      <dt>Spec <dd>Different from all of them: remove indent and "2", change "3" -&gt; "1".
+    </dl>
+  </ul>
+
+  <li>In an existing nested ordered list equivalent to &lt;ol&gt;&lt;li&gt;foo&lt;li&gt;bar&lt;ol&gt;&lt;li&gt;baz&lt;/ol&gt;quz&lt;li&gt;qoz&lt;/ol&gt;:
+  <ul>
+    <li>Does not appear to be possible in Word or OO.
+    <li>Also might be impossible to actually make such a list using execCommand() in browsers.
+    <li>Suffice it to say that there's a lot of variation.
+  </ul>
+
+  <li>In an existing indented region equivalent to foo&lt;blockquote&gt;bar&lt;/blockquote&gt;baz:
+  <ul>
+    <li>Select "bar", do "ol":
+    <dl>
+      <dt>Word/OO/Firefox/Chrome <dd>Increase indent, add "1".
+      <dt>IE <dd>Increase indent, add "a".
+      <dt>Opera <dd>Add "1" (but do not increase indent).
+    </dl>
+
+    <li>Select "foobar", do "ol":
+    <dl>
+      <dt>Word/IE <dd>Increase indent of both, add "1" before "foo" and "a" before
       "bar".
-    * OO: Increase indent of "bar" one step, increase indent of "foo" two steps
+      <dt>OO <dd>Increase indent of "bar" one step, increase indent of "foo" two steps
       so it's aligned with "bar", add "1" before "foo" and "2" before "bar".
-    * Firefox: Increase indent of both, add "1" before foo", add "2" before
+      <dt>Firefox <dd>Increase indent of both, add "1" before foo", add "2" before
       "bar" aligned with the "1" of "foo" (so large gap between "2" and "bar").
-    * Chrome: Increase indent of "foo", add "1" before "foo" and "2" before
+      <dt>Chrome <dd>Increase indent of "foo", add "1" before "foo" and "2" before
       "bar".
-    * Opera: Mash everything together on one line.  But if you do
-      <p>foo</p><blockquote>bar</blockquote><p>baz</p> instead, same as Chrome.
-  * Select "foo" and do "ol", then select "bar" and do "ol":
-    * Word/OO/Firefox/Opera: Different than doing both at once (often in
-      exciting ways).
-    * IE/Chrome: Same as doing both at once.
-* <p>foo</p><blockquote><p>bar</p><p>baz</p></blockquote>
-  * Select "foobar" and do "ol":
-    * Word: One-item list with sublist.
-    * OO/Firefox/Chrome/Opera: One two-item list, unindented.
-    * IE9: Two one-item lists.
-  * Select "foo", do "ol", then select "bar" and do "ol":
-    * Word/OO/Chrome: One two-item list, unindented.
-    * IE9/Firefox: Two one-item lists.
-    * Opera: Two one-item lists, both unindented.
-  * Desired behavior: One-item list with sublist in both cases.
-* In an existing multi-line indented region equivalent to <blockquote>foo<br>bar<br>baz</blockquote>:
-  * Select "bar", do "ol":
-    * Word/OO/Firefox/Chrome: Increase indent, add "1".
-    * IE: Increase indent of everything, add "a" before "foo".  If you do
-      <blockquote><p>foo<p>bar<p>baz</blockquote>, same as
-      Word/OO/Firefox/Chrome.
-    * Opera: Don't increase indent of anything, add "1" before "bar".
-* In an existing multi-line indented region equivalent to <blockquote>foo<br>bar</blockquote>baz:
-  * Select "barbaz", do "ol":
-    * Word: Indent both, add "a" before "bar" and "2" before "baz".
-    * OO: Indent "baz", add "1" before "bar" and "2" before "baz".
-    * IE: Indent everything, add "a" before "foo" and "1" before "baz".  If you
-      do <blockquote><p>foo<p>bar</blockquote><p>baz, indent "bar" and "baz"
-      and put "1" before each.
-    * Firefox: Indent "bar" and put "1" before it, put "baz" after "bar" on the
-      same line.  If you do <blockquote><p>foo<p>bar</blockquote><p>baz, same
-      as Chrome.
-    * Chrome: Indent "bar" once and "baz" twice, put "1" before "bar" and "2"
-      before "baz".
-    * Opera: Put a "1" before "bar" and move "baz" to the same line.  If you do
-      <blockquote><p>foo<p>bar</blockquote><p>baz, indent "baz", put a "1"
-      before "bar" and a "2" before "baz".
-  * Select "bar", do "ol", then select "baz" and do "ol":
-    * Word/OO/Opera: Different from if you do both together.
-    * IE: Different with <br>, same with <p>.
-    * Firefox: Three behaviors, depending on whether you do it in one step with
-      <br>, one step with <p>, or two steps with either (same behavior
-      regardless with two steps).
-    * Chrome: Same behavior in all four cases.
-* <blockquote>foo<ol><li>bar</ol></blockquote>baz:
-  * Select "baz", do "ol":
-    * Word/OO/Chrome: Add "baz" as a new item to existing list.
-    * IE/Firefox/Opera: Make "baz" its own new list.
-* <ul><li>foo</li><ol><li>bar</li></ol></ul>baz:
-  * Select "baz", do "ol":
-    * IE/Firefox/Chrome/Opera: Separate list.
+      <dt>Opera <dd>Mash everything together on one line.  But if you do
+      &lt;p&gt;foo&lt;/p&gt;&lt;blockquote&gt;bar&lt;/blockquote&gt;&lt;p&gt;baz&lt;/p&gt; instead, same as Chrome.
+    </dl>
 
-Ignoring the conceptual model of HTML, which users won't understand, here's the
-conceptual model I've developed for lists: text is divided up into blocks.
+    <li>Select "foo" and do "ol", then select "bar" and do "ol":
+    <dl>
+      <dt>Word/OO/Firefox/Opera <dd>Different than doing both at once (often in
+      exciting ways).
+      <dt>IE/Chrome <dd>Same as doing both at once.
+    </dl>
+  </ul>
+
+  <li>&lt;p&gt;foo&lt;/p&gt;&lt;blockquote&gt;&lt;p&gt;bar&lt;/p&gt;&lt;p&gt;baz&lt;/p&gt;&lt;/blockquote&gt;
+  <ul>
+    <li>Select "foobar" and do "ol":
+    <dl>
+      <dt>Word <dd>One-item list with sublist.
+      <dt>OO/Firefox/Chrome/Opera <dd>One two-item list, unindented.
+      <dt>IE9 <dd>Two one-item lists.
+    </dl>
+
+    <li>Select "foo", do "ol", then select "bar" and do "ol":
+    <dl>
+      <dt>Word/OO/Chrome <dd>One two-item list, unindented.
+      <dt>IE9/Firefox <dd>Two one-item lists.
+      <dt>Opera <dd>Two one-item lists, both unindented.
+    </dl>
+
+    <li>Desired behavior: One-item list with sublist in both cases.
+  </ul>
+
+  <li>In an existing multi-line indented region equivalent to &lt;blockquote&gt;foo&lt;br&gt;bar&lt;br&gt;baz&lt;/blockquote&gt;:
+  <ul>
+    <li>Select "bar", do "ol":
+    <dl>
+      <dt>Word/OO/Firefox/Chrome <dd>Increase indent, add "1".
+      <dt>IE <dd>Increase indent of everything, add "a" before "foo".  If you do
+      &lt;blockquote&gt;&lt;p&gt;foo&lt;p&gt;bar&lt;p&gt;baz&lt;/blockquote&gt;, same as
+      Word/OO/Firefox/Chrome.
+      <dt>Opera <dd>Don't increase indent of anything, add "1" before "bar".
+    </dl>
+  </ul>
+
+  <li>In an existing multi-line indented region equivalent to &lt;blockquote&gt;foo&lt;br&gt;bar&lt;/blockquote&gt;baz:
+  <ul>
+    <li>Select "barbaz", do "ol":
+    <dl>
+      <dt>Word <dd>Indent both, add "a" before "bar" and "2" before "baz".
+      <dt>OO <dd>Indent "baz", add "1" before "bar" and "2" before "baz".
+      <dt>IE <dd>Indent everything, add "a" before "foo" and "1" before "baz".  If you
+      do &lt;blockquote&gt;&lt;p&gt;foo&lt;p&gt;bar&lt;/blockquote&gt;&lt;p&gt;baz, indent "bar" and "baz"
+      and put "1" before each.
+      <dt>Firefox <dd>Indent "bar" and put "1" before it, put "baz" after "bar" on the
+      same line.  If you do &lt;blockquote&gt;&lt;p&gt;foo&lt;p&gt;bar&lt;/blockquote&gt;&lt;p&gt;baz, same
+      as Chrome.
+      <dt>Chrome <dd>Indent "bar" once and "baz" twice, put "1" before "bar" and "2"
+      before "baz".
+      <dt>Opera <dd>Put a "1" before "bar" and move "baz" to the same line.  If you do
+      &lt;blockquote&gt;&lt;p&gt;foo&lt;p&gt;bar&lt;/blockquote&gt;&lt;p&gt;baz, indent "baz", put a "1"
+      before "bar" and a "2" before "baz".
+    </dl>
+
+    <li>Select "bar", do "ol", then select "baz" and do "ol":
+    <dl>
+      <dt>Word/OO/Opera <dd>Different from if you do both together.
+      <dt>IE <dd>Different with &lt;br&gt;, same with &lt;p&gt;.
+      <dt>Firefox <dd>Three behaviors, depending on whether you do it in one step with
+      &lt;br&gt;, one step with &lt;p&gt;, or two steps with either (same behavior
+      regardless with two steps).
+      <dt>Chrome <dd>Same behavior in all four cases.
+    </dl>
+  </ul>
+
+  <li>&lt;blockquote&gt;foo&lt;ol&gt;&lt;li&gt;bar&lt;/ol&gt;&lt;/blockquote&gt;baz:
+  <ul>
+    <li>Select "baz", do "ol":
+    <dl>
+      <dt>Word/OO/Chrome <dd>Add "baz" as a new item to existing list.
+      <dt>IE/Firefox/Opera <dd>Make "baz" its own new list.
+    </dl>
+  </ul>
+
+  <li>&lt;ul&gt;&lt;li&gt;foo&lt;/li&gt;&lt;ol&gt;&lt;li&gt;bar&lt;/li&gt;&lt;/ol&gt;&lt;/ul&gt;baz:
+  <ul>
+    <li>Select "baz", do "ol":
+    <dl>
+      <dt>IE/Firefox/Chrome/Opera <dd>Separate list.
+    </dl>
+  </ul>
+</ul>
+
+<p>Ignoring the conceptual model of HTML, which users won't understand, here's
+the conceptual model I've developed for lists: text is divided up into blocks.
 Each block has an indentation level and a list marker type.  The list marker
 type can be either nothing, ordered, or unordered.  A list block cannot have
 indentation level less than one.  Any given piece of text is part of only one
 block.  A block may be visually non-contiguous, such as if a single list block
 is interrupted by a further-indented block.
 
-To find the right number (or letter) for an ordered-list block, look at the
+<p>To find the right number (or letter) for an ordered-list block, look at the
 immediately preceding block, but skip over any blocks of higher indentation
 level.  If there is no immediately preceding block, or it's not an ordered-list
 block, or it has a lower indentation level, the number is 1 (or a, i, etc.).
 Otherwise, it's the number of the preceding block plus one.
 
-ol/ul commands change the selected block to that list marker type, or remove
+<p>ol/ul commands change the selected block to that list marker type, or remove
 the list marker type if it's already the chosen type.  If the block has
 indentation level zero, it increases to one.
 
-indent/outdent commands change the selected block's indentation level.  If a
+<p>indent/outdent commands change the selected block's indentation level.  If a
 list block's indentation level is reduced to zero, it's converted to a regular
 block.
 
-What this means from an HTML perspective, roughly:
+<p>What this means from an HTML perspective, roughly:
 
-* A list block is the entire contents of an <li> element, ignoring any nested
+<ul>
+  <li>A list block is the entire contents of an &lt;li&gt; element, ignoring any nested
   list elements or indentation elements.  A non-list block is a line box.
-* Indentation level is equal to the number of ancestor elements that are either
-  <li>s or indentation elements (blockquotes or indenting divs).
-* To find the list marker type, go to the first ancestor that's either an <li>
+
+  <li>Indentation level is equal to the number of ancestor elements that are either
+  &lt;li&gt;s or indentation elements (blockquotes or indenting divs).
+
+  <li>To find the list marker type, go to the first ancestor that's either an &lt;li&gt;
   or indentation element.
-* Correct numbering should automatically follow from the way <ol> works in HTML
+
+  <li>Correct numbering should automatically follow from the way &lt;ol&gt; works in HTML
   (which is one of the reasons I use this model).
-* An ol command in an ordered-list block removes the surrounding <li>,
-  migrating its contents into the parent of the <ol>.  This splits up the <ol> if
-  it's not the first or last child, and wraps the contents in a new <li> if
-  necessary.  If there's another list or indentation element nested in the <li>
-  we're removing, it will get re-wrapped in a new <ol>, outside the
-  newly-created <li>, so that it maintains its indentation.  This might cause
-  the new <li> to wind up in multiple pieces, if the original block was not
+
+  <li>An ol command in an ordered-list block removes the surrounding &lt;li&gt;,
+  migrating its contents into the parent of the &lt;ol&gt;.  This splits up the &lt;ol&gt; if
+  it's not the first or last child, and wraps the contents in a new &lt;li&gt; if
+  necessary.  If there's another list or indentation element nested in the &lt;li&gt;
+  we're removing, it will get re-wrapped in a new &lt;ol&gt;, outside the
+  newly-created &lt;li&gt;, so that it maintains its indentation.  This might cause
+  the new &lt;li&gt; to wind up in multiple pieces, if the original block was not
   contiguous, which means the non-contiguous block is split into several blocks
   (with different numbers).
-* An ol command in an unordered-list block breaks up the parent <ul> and puts a
-  new <ol> in between the two pieces, moving the parent <li> into it.  If the
-  <li> was the first or last child, we merge with an existing adjacent <ol> if
-  possible.  All children stay as they are.
-* An ol command in a non-list block with indentation zero wraps it in a new
-  <ol><li>, or merges with an adjacent <ol> if possible.
-* An ol command in a non-list block with nonzero indentation converts the
-  parent to an <ol><li>, breaking it up if necessary.
-* The ul command works similarly to ol.
-* indent in a non-list block wraps in an indentation element.  In a list block,
-  it wraps the <li> in an extra <ol> or <ul> as appropriate.  With merging.
-  Whatever.  Let me just write the spec.
-* outdent in a non-list block strips an indentation element, if one is present.
-  In a list block, it breaks apart the parent <ol> or <ul> and makes the
-  affected block a sibling in between the newly-split list elements.  Will
-  create new <li>s, etc. etc.
 
-Sheesh, lists are complicated.
--->
+  <li>An ol command in an unordered-list block breaks up the parent &lt;ul&gt; and puts a
+  new &lt;ol&gt; in between the two pieces, moving the parent &lt;li&gt; into it.  If the
+  &lt;li&gt; was the first or last child, we merge with an existing adjacent &lt;ol&gt; if
+  possible.  All children stay as they are.
+
+  <li>An ol command in a non-list block with indentation zero wraps it in a new
+  &lt;ol&gt;&lt;li&gt;, or merges with an adjacent &lt;ol&gt; if possible.
+
+  <li>An ol command in a non-list block with nonzero indentation converts the
+  parent to an &lt;ol&gt;&lt;li&gt;, breaking it up if necessary.
+
+  <li>The ul command works similarly to ol.
+
+  <li>indent in a non-list block wraps in an indentation element.  In a list block,
+  it wraps the &lt;li&gt; in an extra &lt;ol&gt; or &lt;ul&gt; as appropriate.  With merging.
+  Whatever.  Let me just write the spec.
+
+  <li>outdent in a non-list block strips an indentation element, if one is present.
+  In a list block, it breaks apart the parent &lt;ol&gt; or &lt;ul&gt; and makes the
+  affected block a sibling in between the newly-split list elements.  Will
+  create new &lt;li&gt;s, etc. etc.
+</ul>
+
+<p>Sheesh, lists are complicated.
+</div>
+
 <p>To <dfn id=toggle-lists>toggle lists</dfn>, given a string <var title="">tag name</var> (either "ol"
 or "ul"):
 
@@ -5365,10 +5598,12 @@ or "ul"):
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#ancestor-container title="ancestor container">ancestor containers</a> of the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>
   and/or <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>.
 
-  <li>For each <var title="">item</var> in <var title="">items</var>, <a href=#normalize-sublists>normalize
+  <li>
+  <p class=comments>TODO: This overnormalizes, but it seems like the simplest
+  solution for now.
+
+  <p>For each <var title="">item</var> in <var title="">items</var>, <a href=#normalize-sublists>normalize
   sublists</a> of <var title="">item</var>.
-  <!-- This overnormalizes, but it seems like the simplest solution for now.
-  -->
 
   <li><a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>, and let <var title="">new
   range</var> be the result.
@@ -5379,12 +5614,14 @@ or "ul"):
   range</var>, and for every <var title="">list</var> in <var title="">lists to convert</var>:
 
   <ol>
-    <li>If <var title="">list</var>'s <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> or <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> is an
+    <li>
+    <p class=comments>Convert it to the right name.  If possible, we want to
+    merge with a neighboring list of the correct type.  Failing that, we set
+    the tag name.
+
+    <p>If <var title="">list</var>'s <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> or <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> is an
     <a href=#editable>editable</a> <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> <var title="">tag
     name</var>:
-    <!-- Convert it to the right name.  If possible, we want to merge with a
-    neighboring list of the correct type.  Failing that, we set the tag name.
-    -->
 
     <ol>
       <li>Let <var title="">children</var> be <var title="">list</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.
@@ -5407,41 +5644,48 @@ or "ul"):
 
   <li>Let <var title="">node list</var> be a list of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>, initially empty.
 
-  <li>For each <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in <var title="">new range</var>,
+  <li>
+  <div class=comments>
+  <p>We exclude indentation elements so that selecting some random text and
+  doing indent followed by insertOrderedList will have the same result as the
+  reverse.  Specifically,
+
+<pre>&lt;blockquote&gt;[foo]&lt;/blockquote&gt; -&gt;
+&lt;blockquote&gt;&lt;ol&gt;&lt;li&gt;[foo]&lt;/li&gt;&lt;/ol&gt;&lt;/blockquote&gt;</pre>
+
+  <p>per spec and Firefox 4.0 and (more or less) Chrome 12 dev.  Opera 11.10
+  instead does &lt;ol&gt;&lt;li&gt;foo&lt;/li&gt;&lt;/ol&gt;, so the indentation vanishes.
+  IE9 does &lt;ol&gt;&lt;ol&gt;&lt;li&gt;foo&lt;/li&gt;&lt;/ol&gt;&lt;/ol&gt;, but that doesn't
+  make semantic sense and is different from how it would work if you reversed
+  the commands.  OpenOffice.org 3.2.1 (Ubuntu) and Word 2007 both agree with
+  the spec in this case.
+  </div>
+
+  <p>For each <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in <var title="">new range</var>,
   if <var title="">node</var> is <a href=#editable>editable</a>; the last member of <var title="">node
   list</var> (if any) is not an <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of <var title="">node</var>;
   <var title="">node</var> is not an <a href=#indentation-element>indentation element</a>; and either
   <var title="">node</var> is an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, or its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or
   <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, or it is an <a href=#allowed-child>allowed child</a> of "li"; then append
   <var title="">node</var> to <var title="">node list</var>.
-  <!--
-  We exclude indentation elements so that selecting some random text and doing
-  indent followed by insertOrderedList will have the same result as the
-  reverse.  Specifically,
 
-    <blockquote>[foo]</blockquote> ->
-    <blockquote><ol><li>[foo]</li></ol></blockquote>
+  <li>
+  <div class=comments>
+  <p>We don't want to touch these.  E.g., assuming tag name is "ol",
 
-  per spec and Firefox 4.0 and (more or less) Chrome 12 dev.  Opera 11.10
-  instead does <ol><li>foo</li></ol>, so the indentation vanishes.  IE9 does
-  <ol><ol><li>foo</li></ol></ol>, but that doesn't make semantic sense and is
-  different from how it would work if you reversed the commands.
-  OpenOffice.org 3.2.1 (Ubuntu) and Word 2007 both agree with the spec in this
-  case.
-  -->
+<pre>[foo&lt;ol&gt;&lt;li&gt;bar&lt;/ol&gt;baz]
+-&gt; &lt;ol&gt;&lt;li&gt;[foo&lt;li&gt;bar&lt;li&gt;baz]&lt;/ol&gt;
+not &lt;ol&gt;&lt;li&gt;[foo&lt;/li&gt;&lt;ol&gt;&lt;li&gt;bar&lt;/ol&gt;&lt;li&gt;baz]&lt;/ol&gt;.</pre>
 
-  <li>If <var title="">mode</var> is "enable", remove from <var title="">node list</var> any
+  <p>But
+
+<pre>&lt;ul&gt;&lt;li&gt;foo&lt;li&gt;[bar&lt;/li&gt;&lt;ol&gt;&lt;li&gt;baz&lt;/ol&gt;&lt;li&gt;quz]&lt;/ul&gt;
+-&gt; &lt;ul&gt;&lt;li&gt;foo&lt;/ul&gt;&lt;ol&gt;&lt;li&gt;[bar&lt;/li&gt;&lt;ol&gt;&lt;li&gt;baz&lt;/ol&gt;&lt;li&gt;quz]&lt;/ol&gt;
+not &lt;ul&gt;&lt;li&gt;foo&lt;/ul&gt;&lt;ol&gt;&lt;li&gt;[bar&lt;/ol&gt;&lt;ul&gt;&lt;ol&gt;&lt;li&gt;baz&lt;/ol&gt;&lt;/ul&gt;&lt;ol&gt;&lt;li&gt;quz]&lt;/ol&gt;</pre>
+  </div>
+
+  <p>If <var title="">mode</var> is "enable", remove from <var title="">node list</var> any
   <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code> whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is not also an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>.
-  <!--
-  We don't want to touch these.  E.g., assuming tag name is "ol",
-    [foo<ol><li>bar</ol>baz]
-    -> <ol><li>[foo<li>bar<li>baz]</ol>
-    not <ol><li>[foo</li><ol><li>bar</ol><li>baz]</ol>.
-  But
-    <ul><li>foo<li>[bar</li><ol><li>baz</ol><li>quz]</ul>
-    -> <ul><li>foo</ul><ol><li>[bar</li><ol><li>baz</ol><li>quz]</ol>
-    not <ul><li>foo</ul><ol><li>[bar</ol><ul><ol><li>baz</ol></ul><ol><li>quz]</ol>
-  -->
 
   <li>If <var title="">mode</var> is "disable", then while <var title="">node list</var> is not
   empty:
@@ -5478,20 +5722,24 @@ or "ul"):
   <ol>
     <li>Let <var title="">sublist</var> be an empty list of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>.
 
-    <li>While either <var title="">sublist</var> is empty, or <var title="">node list</var> is
+    <li>
+    <p class=comments>Accumulate consecutive sibling nodes in sublist, first
+    converting them all to li's (except if they're already lists).
+
+    <p>While either <var title="">sublist</var> is empty, or <var title="">node list</var> is
     not empty and its first member is the <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> of
     <var title="">sublist</var>'s last member:
-    <!-- Accumulate consecutive sibling nodes in sublist, first converting them
-    all to li's (except if they're already lists). -->
 
     <ol>
-      <li>If <var title="">node list</var>'s first member is a <code class=external data-anolis-spec=html title="the p element"><a href=http://www.whatwg.org/html/#the-p-element>p</a></code> or <code class=external data-anolis-spec=html title="the div element"><a href=http://www.whatwg.org/html/#the-div-element>div</a></code>,
+      <li>
+      <p class=comments>Thus &lt;p&gt;foo&lt;/p&gt; becomes &lt;ol&gt;&lt;li&gt;foo&lt;/ol&gt;
+      instead of &lt;ol&gt;&lt;li&gt;&lt;p&gt;foo&lt;/ol&gt;, and likewise for div, but
+      other things will be put inside the &lt;li&gt;.
+
+      <p>If <var title="">node list</var>'s first member is a <code class=external data-anolis-spec=html title="the p element"><a href=http://www.whatwg.org/html/#the-p-element>p</a></code> or <code class=external data-anolis-spec=html title="the div element"><a href=http://www.whatwg.org/html/#the-div-element>div</a></code>,
       <a href=#set-the-tag-name>set the tag name</a> of <var title="">node list</var>'s first member to
       "li", and append the result to <var title="">sublist</var>.  Remove the first
       member from <var title="">node list</var>.
-      <!-- Thus <p>foo</p> becomes <ol><li>foo</ol> instead of
-      <ol><li><p>foo</ol>, and likewise for div, but other things will be put
-      inside the <li>. -->
 
       <li>Otherwise, if the first member of <var title="">node list</var> is an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code>
       or <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, remove it from <var title="">node list</var> and append it to
@@ -5518,11 +5766,14 @@ or "ul"):
       </ol>
     </ol>
 
-    <li>If <var title="">sublist</var>'s first member's <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is an <a href=#html-element>HTML
+    <li>
+    <p class=comments>In this case it's already wrapped properly, nothing more
+    to do.
+
+    <p>If <var title="">sublist</var>'s first member's <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is an <a href=#html-element>HTML
     element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> <var title="">tag name</var>, or if every member
     of <var title="">sublist</var> is an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, continue this loop from the
     beginning.
-    <!-- Already wrapped properly, nothing more to do. -->
 
     <li>If <var title="">sublist</var>'s first member's <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is an <a href=#html-element>HTML
     element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> <var title="">other tag name</var>:
@@ -5550,23 +5801,25 @@ or "ul"):
     following:
 
     <ol>
-      <!--
-      Special case: something like
-        <ol><li>foo</ol><blockquote>[bar]</blockquote>
-      becomes
-        <ol><li>foo</li><ol><li>[bar]</ol></ol>
-      instead of
-        <ol><li>foo</ol><blockquote><ol><li>[bar]</ol></blockquote>.
-      We handle the special case in the new parent instructions instead of
+      <li>
+      <div class=comments>
+      <p>Special case: something like
+        <pre>&lt;ol&gt;&lt;li&gt;foo&lt;/ol&gt;&lt;blockquote&gt;[bar]&lt;/blockquote&gt;</pre>
+      <p>becomes
+        <pre>&lt;ol&gt;&lt;li&gt;foo&lt;/li&gt;&lt;ol&gt;&lt;li&gt;[bar]&lt;/ol&gt;&lt;/ol&gt;</pre>
+      <p>instead of
+        <pre>&lt;ol&gt;&lt;li&gt;foo&lt;/ol&gt;&lt;blockquote&gt;&lt;ol&gt;&lt;li&gt;[bar]&lt;/ol&gt;&lt;/blockquote&gt;.</pre>
+      <p>We handle the special case in the new parent instructions instead of
       outside because we'd prefer to wind up in a sibling if there is one.  We
       handle only previousSibling, not nextSibling, because we really mean for
       this to cover something like
-        [foo<blockquote>bar]</blockquote>
-      which we'll handle node-by-node.  TODO: Maybe we should do this
+        <pre>[foo&lt;blockquote&gt;bar]&lt;/blockquote&gt;</pre>
+      <p>which we'll handle node-by-node.  TODO: Maybe we should do this
       differently, like just special-case simple indentation elements in an
       earlier part of the algorithm?  This way's a bit weird.
-      -->
-      <li>If <var title="">sublist</var>'s first member's <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is not an
+      </div>
+
+      <p>If <var title="">sublist</var>'s first member's <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is not an
       <a href=#editable>editable</a> <a href=#simple-indentation-element>simple indentation element</a>, or
       <var title="">sublist</var>'s first member's <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>'s <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> is
       not an <a href=#editable>editable</a> <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a>
@@ -5593,44 +5846,45 @@ or "ul"):
 
 <h3 id=justifying-the-selection><span class=secno>8.10 </span>Justifying the selection</h3>
 
-<!--
-There are two basic ways it works: using the align attribute, and using CSS
-text-align.  IE9 and Opera 11.11 use only the align attribute, Chrome 13 dev
-uses only text-align, and Firefox 5.0a2 varies based on styleWithCSS.  The two
-ways produce entirely different results, which is a real problem, so I don't
-think Firefox's approach is tenable.  text-align is more valid, and for typical
-contenteditable cases it works the same.  But for cases where you have
-fixed-width blocks, like tables or just divs with a width set, it behaves
-differently, and in those cases the align attribute is more useful.
--->
+<div class=comments>
+<p>There are two basic ways this works in browsers: using the align attribute,
+and using CSS text-align.  IE9 and Opera 11.11 use only the align attribute,
+Chrome 13 dev uses only text-align, and Firefox 5.0a2 varies based on
+styleWithCSS.  The two ways produce entirely different results, which is a real
+problem, so I don't think Firefox's approach is tenable.  text-align is more
+valid, and for typical contenteditable cases it works the same.  But for cases
+where you have fixed-width blocks, like tables or just divs with a width set,
+it behaves differently, and in those cases the align attribute is more useful.
 
-<p>To <dfn id=justify-the-selection>justify the selection</dfn> to a string <var title="">alignment</var> (either
-"center", "justify", "left", or "right"):
+<p>TODO: text-align doesn't behave as expected if there are descendant blocks
+with non-100% width, like tables.  The align attribute behaves a lot more
+nicely in such cases, but it's not valid.  Not clear what to do.  For now I've
+stuck with text-align, just because the cases where it misbehaves can't be
+created by any sequence of stock execCommand()s that I know of, but this needs
+more careful consideration.  Gecko in CSS mode seems to special-case tables,
+adding auto margins to the table element to get it to align correctly.
 
-<!--
-TODO: text-align doesn't behave as expected if there are descendant blocks with
-non-100% width, like tables.  The align attribute behaves a lot more nicely in
-such cases, but it's not valid.  Not clear what to do.  For now I've stuck with
-text-align, just because the cases where it misbehaves can't be created by any
-sequence of stock execCommand()s that I know of, but this needs more careful
-consideration.  Gecko in CSS mode seems to special-case tables, adding auto
-margins to the table element to get it to align correctly.
-
-TODO: We could do something along the lines of pushing down values here,
+<p>TODO: We could do something along the lines of pushing down values here,
 although no browser does.  In fact, it's very likely this can be rewritten in
 terms of the inline formatting command primitives, but it's not clear if it
 would be worth the added complexity.
--->
+</div>
+
+<p>To <dfn id=justify-the-selection>justify the selection</dfn> to a string <var title="">alignment</var> (either
+"center", "justify", "left", or "right"):
 
 <ol>
   <li><a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>, and let <var title="">new
   range</var> be the result.
 
-  <li>Let <var title="">element list</var> be a list of all <a href=#editable>editable</a>
+  <li>
+  <p class=comments>No browser actually removes center, but it makes sense to
+  do so.
+
+  <p>Let <var title="">element list</var> be a list of all <a href=#editable>editable</a>
   <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in <var title="">new range</var> that either has an
   attribute in the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#html-namespace>HTML namespace</a> whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-attribute-local-name title=concept-attribute-local-name>local name</a> is "align", or has
   a <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute that sets "text-align", or is a <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#center>center</a></code>.
-  <!-- No browser actually removes center, but it makes sense to do so. -->
 
   <li>For each <var title="">element</var> in <var title="">element list</var>:
 
@@ -5649,23 +5903,27 @@ would be worth the added complexity.
     <var title="">element</var> to "div".
   </ol>
 
-  <li><a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>, and let <var title="">new
+  <li>
+  <p class=comments>This could theoretically be necessary, like if it converted
+  "&lt;div align=right&gt;foo&lt;/div&gt;bar" to "foo&lt;br&gt;bar".  Now we need to
+  select "foo&lt;br&gt;", nor just "foo".
+
+  <p><a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>, and let <var title="">new
   range</var> be the result.
-  <!-- This could theoretically be necessary, like if it converted "<div
-  align=right>foo</div>bar" to "foo<br>bar".  Now we need to select "foo<br>",
-  nor just "foo". -->
 
   <li>Let <var title="">node list</var> be a list of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>, initially empty.
 
-  <li>For each <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in <var title="">new range</var>,
+  <li>
+  <p class=comments>Of tested browsers, only Chrome 13 dev seems to not apply
+  the alignment to nodes that are already aligned.  Even then, it does apply it
+  if the alignment is just inherited from the root.
+
+  <p>For each <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in <var title="">new range</var>,
   append <var title="">node</var> to <var title="">node list</var> if the last member of
   <var title="">node list</var> (if any) is not an <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of <var title="">node</var>;
   <var title="">node</var> is <a href=#editable>editable</a>; <var title="">node</var> is an <a href=#allowed-child>allowed
   child</a> of "div"; and <var title="">node</var>'s <a href=#alignment-value>alignment value</a> is
   not <var title="">alignment</var>.
-  <!-- Of tested browsers, only Chrome 13 dev seems to not apply the alignment
-  to nodes that are already aligned.  Even then, it does apply it if the
-  alignment is just inherited from the root. -->
 
   <li>While <var title="">node list</var> is not empty:
 
@@ -5680,7 +5938,7 @@ would be worth the added complexity.
     <var title="">sublist</var>, remove the first member of <var title="">node list</var> and
     append it to <var title="">sublist</var>.
 
-    <li><a href=#wrap>Wrap</a> <var title="">sublist</var>.  <a href=#sibling-criteria>Sibling criteria</a>
+    <li><p><a href=#wrap>Wrap</a> <var title="">sublist</var>.  <a href=#sibling-criteria>Sibling criteria</a>
     match any <code class=external data-anolis-spec=html title="the div element"><a href=http://www.whatwg.org/html/#the-div-element>div</a></code> that has one or both of the following two attributes, and
     no other attributes:
 
@@ -5694,13 +5952,14 @@ would be worth the added complexity.
       to <var title="">alignment</var>.
     </ul>
 
-    <a href=#new-parent-instructions>New parent instructions</a> are to call <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("div")</a></code> on
-    the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>, then set its CSS property "text-align" to
+    <p class=comments>As with inline formatting, I only ever create new
+    elements, and don't ever modify existing ones.  This doesn't match how any
+    browser behaves in this case, but for inline formatting it matches everyone
+    but Gecko's CSS mode, so I'm just being consistent.
+
+    <p><a href=#new-parent-instructions>New parent instructions</a> are to call <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("div")</a></code>
+    on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>, then set its CSS property "text-align" to
     <var title="">alignment</var>, and return the result.
-    <!-- As for inline formatting, I only ever create new elements, and don't
-    ever modify existing ones.  This doesn't match how any browser behaves
-   in this case, but for inline formatting it matches everyone but Gecko's CSS
-    mode. -->
   </ol>
 </ol>
 

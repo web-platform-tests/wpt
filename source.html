@@ -112,10 +112,10 @@ to in the future.
 
 <p>Where the reasoning behind the specification is of interest, such as when
 major preexisting rendering engines are known not to match it, the reasoning is
-included in HTML comments so as not to distract the reader.  If you have
-questions about why the specification says something, check for comments in the
-source first.  They're sometimes longer than the specification text itself, and
-commonly record what the major browsers do and other essential information.
+available by clicking the "comments" button on the right (requires JavaScript).
+If you have questions about why the specification says something, check the
+comments first.  They're sometimes longer than the specification text itself,
+and commonly record what the major browsers do and other essential information.
 
 <p>The principles I've used for writing this specification so far are:
 
@@ -242,87 +242,97 @@ planning to fix just yet:
 <p class=XXX>A variety of other issues are also noted in the text, formatted
 like this.  Feedback would be appreciated on all of them.
 
-<p>Things that would be useful to address for the future but aren't important
-to fix right now are in comments prefixed with "TODO".
+<div class=comments>
+<p>TODO:
 
-<!--
-TODO:
+<ul>
+  <li>Scour browser bug trackers to try spotting issues I haven't thought of.
 
-* Scour browser bug trackers to try spotting issues I haven't thought of.
-
-* The wording I use for DOM stuff is not maximally precise.  Really I want DOM
-  Core to define nice concepts that I can xref, like "insert a node".  I
+  <li>The wording I use for DOM stuff is not maximally precise.  Really I want
+  DOM Core to define nice concepts that I can xref, like "insert a node".  I
   don't want to have to explicitly refer to DOM methods like insertBefore()
   every time I want to move things.
 
-* JavaScript can modify the DOM synchronously in some cases, such as DOM
+  <li>JavaScript can modify the DOM synchronously in some cases, such as DOM
   mutation events and onunload when moving around iframes and objects.  This
   has to be dealt with somehow.  (Pointed out by Ryosuke Niwa of WebKit:
-  http://lists.whatwg.org/pipermail/whatwg-whatwg.org/2011-March/030730.html
-  http://lists.whatwg.org/pipermail/whatwg-whatwg.org/2011-March/030751.html)
+  <a href=http://lists.whatwg.org/pipermail/whatwg-whatwg.org/2011-March/030730.html>1</a>
+  <a href=http://lists.whatwg.org/pipermail/whatwg-whatwg.org/2011-March/030751.html>2</a>)
 
-* What happens if you do something like delete a selection or insert text or
+  <li>What happens if you do something like delete a selection or insert text or
   whatnot in the middle of a surrogate pair?  This could make the content not
   serialize through a character encoding change.
 
-* Probably need to record and restore overrides in some more places.
+  <li>Probably need to record and restore overrides in some more places.
 
-* Some more thought needs to go into what happens to the selection when you
+  <li>Some more thought needs to go into what happens to the selection when you
   mutate the DOM.  In some cases the results are pretty arbitrary.  It might
   make sense to do some kind of normalization.
 
-* I'm sloppy about handling things like nodes that don't descend from a
+  <li>I'm sloppy about handling things like nodes that don't descend from a
   Document, comments that are children of a Document, that sort of thing.  Not
   essential for prototyping, but needs to be cleaned up eventually.  Mostly we
   should be able to avoid the problems by requiring that everything be
   editable, since that immediately means it has to descend from an element or
   Document (and cannot be parentless itself).
 
-* I need to pay more attention to invisible nodes.  These will have no visual
+  <li>I need to pay more attention to invisible nodes.  These will have no visual
   effect, but they'll make many algorithms behave differently: decomposing a
   range, block-extending, etc.  Also, need to improve the definition to include
   things like whitespace-only nodes.
 
-* Have to make sure that in all the places where we set a selection, it's
+  <li>Have to make sure that in all the places where we set a selection, it's
   valid.
 
-* Redefine things in terms of ranges, not selections.
+  <li>Redefine things in terms of ranges, not selections.
 
-* Allow some type of switch to affect non-editable regions too, perhaps on a
+  <li>Allow some type of switch to affect non-editable regions too, perhaps on a
   per-command basis.
--->
+</ul>
 
-<!--
-TODO: Things that are only implemented by a couple of browsers and may or may
-not be useful to spec:
+<p>Also TODO: Things that are only implemented by a couple of browsers and may
+or may not be useful to spec:
 
-* decreaseFontSize, increaseFontSize: Only implemented in Gecko and Opera.
-* contentReadOnly, enableInlineTableEditing, enableObjectResizing, heading,
+<ul>
+  <li>decreaseFontSize, increaseFontSize: Only implemented in Gecko and Opera.
+
+  <li>contentReadOnly, enableInlineTableEditing, enableObjectResizing, heading,
   insertBrOnReturn: MDC docs say not implemented in IE (didn't test).
-* readOnly: MDC docs say it's a deprecated equivalent of contentReadOnly, so
-  presumably like useCSS but less popular.
-* 2D-Position, absolutePosition, clearAuthenticationCache, createBookmark,
+
+  <li>readOnly: MDC docs say it's a deprecated equivalent of contentReadOnly,
+  so presumably like useCSS but less popular.
+
+  <li>2D-Position, absolutePosition, clearAuthenticationCache, createBookmark,
   insertButton, insertFieldset, insertIframe, insertInput*, insertMarquee,
   insertSelectDropdown, insertSelectListbox, insertTextarea, liveResize,
   multipleSelection, overwrite, print, refresh, saveAs, unbookmark: Mentioned
   in MSDN docs but not MDC, so presumably IE-only.  Some of these seem
   inappropriate or useless, others will bear investigation.
-* findString, fontSizeDelta, insertNewlineInQuotedContent, justifyNone, print,
-  transpose: There's code for these in WebKit,
+
+  <li>findString, fontSizeDelta, insertNewlineInQuotedContent, justifyNone,
+  print, transpose: There's code for these in WebKit,
   Source/WebCore/editing/EditorCommand.cpp, but I didn't see them mentioned
   elsewhere.  Some might be worth adding.
-* unselect: Seems to not be implemented by Gecko or Opera, and IE behaves
+
+  <li>unselect: Seems to not be implemented by Gecko or Opera, and IE behaves
   oddly: it seems to collapse the selection instead of removing it.  Will only
   implement if there seems to be demand; it's redundant to
   Selection.removeAllRanges() anyway.
+</ul>
 
-Things I haven't looked at that multiple browsers implement:
+<p>Things I haven't looked at that multiple browsers implement:
 
-* redo, undo: Needs review of the Google work on this; will probably be
+<ul>
+  <li>redo, undo: Needs review of the Google work on this; will probably be
   quite complicated.
+</ul>
 
-Also need to look at contenteditable=plaintext-only.
--->
+<p>Also need to look at contenteditable=plaintext-only.
+</div>
+
+<p>Things that would be useful to address for the future but aren't important
+to fix right now are in comments prefixed with "TODO".
+
 <!-- @} -->
 
 <h2>Commands</h2>
@@ -7169,50 +7179,57 @@ behavior in splitting up parents to ensure validity . . .
 <p><span>Action</span>:
 
 <ol>
-  <li>If <var>value</var> is the empty string, abort these steps and do
+  <li>
+  <p class=comments>Similar logic to createLink, except even more compelling,
+  since an HTML document linking to itself as an image is just silly.  In fact,
+  the current HTML spec instructs UAs to not even try displaying the image, and
+  just fail immediately if the URL is empty.  Firefox 4b11 silently does
+  nothing on an empty string, but the other three browsers I tested stick in
+  the &lt;img> anyway.
+
+  <p>If <var>value</var> is the empty string, abort these steps and do
   nothing.
-  <!-- Similar logic to createLink, except even more compelling, since an HTML
-  document linking to itself as an image is just silly.  In fact, the current
-  HTML spec instructs UAs to not even try displaying the image, and just fail
-  immediately if the URL is empty.  Firefox 4b11 silently does nothing on an
-  empty string, but the other three browsers I tested stick in the <img>
-  anyway. -->
 
   <li>Let <var>range</var> be the <span>active range</span>.
 
-  <li><span>Delete the contents</span> of <var>range</var>, with <var>strip
+  <li>
+  <p class=comments>Firefox 7.0a2 seems to strip the wrapper or not depending
+  on the exact positioning of the selection: &lt;b>{foo}&lt;/b> yes,
+  &lt;b>[foo]&lt;/b> no.  Chrome 14 dev seems to strip the wrapper regardless.
+  Opera 11.50 seems to keep the wrapper, but place the image outside it.  I
+  didn't get IE to cooperate with my tests.  I chose to leave wrappers across
+  the board because they might be meaningful: e.g., a background-color when the
+  image is small or not fully opaque.
+
+  <p><span>Delete the contents</span> of <var>range</var>, with <var>strip
   wrappers</var> false.
-  <!--
-  Firefox 7.0a2 seems to strip the wrapper or not depending on the exact
-  positioning of the selection: <b>{foo}</b> yes, <b>[foo]</b> no.  Chrome 14
-  dev seems to strip the wrapper regardless.  Opera 11.50 seems to keep the
-  wrapper, but place the image outside it.  I didn't get IE to cooperate with
-  my tests.  I chose to leave wrappers across the board because they might be
-  meaningful: e.g., a background-color when the image is small or not fully
-  opaque.
-  -->
 
   <li>If the <span>active range</span>'s [[startnode]] is neither
   <span>editable</span> nor an <span>editing host</span>, abort these steps.
 
-  <li>If <var>range</var>'s [[startnode]] is a <span>block node</span> whose
+  <li>
+  <p class=comments>Same logic as with insertHTML.
+
+  <p>If <var>range</var>'s [[startnode]] is a <span>block node</span> whose
   sole [[child]] is a [[br]], and its [[startoffset]] is 0, remove its
   [[startnode]]'s [[child]] from it.
-  <!-- Same logic as with insertHTML. -->
 
   <li>Let <var>img</var> be the result of calling [[createelement|"img"]] on
   the [[contextobject]].
 
-  <li>Run [[setattribute|"src", <var>value</var>]] on <var>img</var>.
-  <!-- No alt text, so it's probably invalid.  This matches all browsers. -->
+  <li>
+  <p class=comments>No alt text, so it's probably invalid.  This matches all
+  browsers.
 
-  <li>Run [[insertnode|<var>img</var>]] on <var>range</var>.
-  <!--
-  This winds up putting it at the original start point of the active range, as
-  currently specced.  This matches IE9 and Firefox 5.0a2.  Chrome 13 dev puts
-  it at the end point, and Opera 11.11 puts it in between (where the range
-  would collapse if you called deleteContents()).
-  -->
+  <p>Run [[setattribute|"src", <var>value</var>]] on <var>img</var>.
+
+  <li>
+  <p class=comments>This winds up putting it at the original start point of the
+  active range, as currently specced.  This matches IE9 and Firefox 5.0a2.
+  Chrome 13 dev puts it at the end point, and Opera 11.11 puts it in between
+  (where the range would collapse if you called deleteContents()).
+
+  <p>Run [[insertnode|<var>img</var>]] on <var>range</var>.
 
   <li>Let <var>selection</var> be the result of calling [[getselection]] on the
   [[contextobject]].
@@ -7225,48 +7242,53 @@ behavior in splitting up parents to ensure validity . . .
 <!-- @} -->
 <h3><dfn>The <code title>insertLineBreak</code> command</dfn></h3>
 <!-- @{ -->
-<p><span>Action</span>:
-
-<!--
-Only implemented in WebKit (Chrome 14 dev).  Other tests are entirely manual.
+<div class=comments>
+<p>Only implemented in WebKit (Chrome 14 dev).  Other tests are entirely
+manual (i.e., actually hitting Shift-Enter instead of running a command).
 There's a surprisingly large amount of interop.
 
-IE9 is tripped up by <xmp>, and also often doesn't add an extra <br> when the
-one it just inserted is extraneous.
+<p>IE9 is tripped up by &lt;xmp>, and also often doesn't add an extra &lt;br>
+when the one it just inserted is extraneous.
 
-Firefox 6.0a2 doesn't notice if you're trying to put the <br> in a bad place,
-which can result in unserializable DOMs.
+<p>Firefox 6.0a2 doesn't notice if you're trying to put the &lt;br> in a bad
+place, which can result in unserializable DOMs.
 
-Chrome 14 dev inserts a literal linebreak for pre and xmp and maybe other
+<p>Chrome 14 dev inserts a literal linebreak for pre and xmp and maybe other
 similar elements.  This doesn't seem very useful, so I don't bother.
 
-Opera 11.11 isn't heedful of <xmp>, and treats <pre> somewhat oddly.
--->
+<p>Opera 11.11 isn't heedful of &lt;xmp>, and treats &lt;pre> somewhat oddly.
+</div>
+
+<p><span>Action</span>:
 
 <ol>
-  <li><span>Delete the contents</span> of the <span>active range</span>, with
+  <li>
+  <p class=comments>IE9 doesn't strip wrappers (IE10PP2 didn't work in tests).
+  Firefox 7.0a2 strips wrappers inconsistently depending on the exact selection
+  endpoints.  Chrome 14 dev strips wrappers but recreates any styles using new
+  wrappers.  Opera 11.50 strips all wrappers.
+
+  <p><span>Delete the contents</span> of the <span>active range</span>, with
   <var>strip wrappers</var> false.
-  <!--
-  IE9 doesn't strip wrappers (IE10PP2 didn't work in tests).  Firefox 7.0a2
-  strips wrappers inconsistently depending on the exact selection endpoints.
-  Chrome 14 dev strips wrappers but recreates any styles using new wrappers.
-  Opera 11.50 strips all wrappers.
-  -->
 
   <li>If the <span>active range</span>'s [[startnode]] is neither
   <span>editable</span> nor an <span>editing host</span>, abort these steps.
 
-  <li>If the <span>active range</span>'s [[startnode]] is an [[element]], and
+  <li>
+  <p class=comments>script, xmp, table, . . .
+
+  <p>If the <span>active range</span>'s [[startnode]] is an [[element]], and
   "br" is not an <span>allowed child</span> of it, abort these steps.
-  <!-- script, xmp, table, . . . -->
 
   <li>If the <span>active range</span>'s [[startnode]] is not an [[element]],
   and "br" is not an <span>allowed child</span> of the <span>active
   range</span>'s [[startnode]]'s [[parent]], abort these steps.
 
-  <!-- We don't want to call insertNode at the start or end of a text node,
-  because that will leave an empty text node. -->
-  <li>If the <span>active range</span>'s [[startnode]] is a [[text]] node and
+  <li>
+  <p class=comments>We don't want to call insertNode at the start or end of a
+  text node, because that will leave an empty text node.
+
+  <p>If the <span>active range</span>'s [[startnode]] is a [[text]] node and
   its [[startoffset]] is zero, set the <span>active range</span>'s
   [[rangestart]] and [[rangeend]] to ([[parent]] of [[startnode]], [[index]] of
   [[startnode]]).
@@ -7297,46 +7319,47 @@ Opera 11.11 isn't heedful of <xmp>, and treats <pre> somewhat oddly.
 <p><span>Action</span>: <span>Toggle lists</span> with <var>tag name</var>
 "ol".
 
+<p class=comments>Firefox 6.0a2 sort of supports this, but it throws exceptions
+most of the time.  It has the quirk that even if there are no ol's around, it
+will say it's indeterminate if there are some things that are ul's and some
+that are not lists at all, but this doesn't make sense and I don't duplicate
+it.  No one else supports indeterminate for insert*List, but it makes sense if
+you support state.
+
 <p><span>Indeterminate</span>: True if the <span>selection's list state</span>
 is "mixed" or "mixed ol", false otherwise.
-<!--
-Firefox 6.0a2 sort of supports this, but it throws exceptions most of the
-time.  It has the quirk that even if there are no ol's around, it will say it's
-indeterminate if there are some things that are ul's and some that are not
-lists at all, but this doesn't make sense and I don't duplicate it.  No one
-else supports indeterminate for insert*List, but it makes sense if you support
-state.
--->
+
+<p class=comments>IE9 throws exceptions in most cases, Firefox 6.0a2 in some
+cases as well, for no apparent reason.  Ignoring those, the spec basically
+matches all browsers, except with a few weird random mismatches that looked
+like browser bugs to me.
 
 <p><span>State</span>: True if the <span>selection's list state</span> is "ol",
 false otherwise.
-<!--
-IE9 throws exceptions in most cases, Firefox 6.0a2 in some cases as well, for
-no apparent reason.  Ignoring those, the spec basically matches all browsers,
-except with a few weird random mismatches that looked like browser bugs to me.
--->
 
 <!-- @} -->
 <h3><dfn>The <code title>insertParagraph</code> command</dfn></h3>
 <!-- @{ -->
-<!--
-There are three major behaviors here.  Firefox 5.0a2 behaves identically to
+<div class=comments>
+<p>There are three major behaviors here.  Firefox 5.0a2 behaves identically to
 execCommand("formatBlock", false, "p"), which is not really useful.  IE9
 actually just overwrites the selection with an empty paragraph element, which
 seems not very useful either.  Chrome 13 dev and Opera 11.10 behave basically
 the same as if the user hit the Return key.  This latter behavior seems much
 more useful, even though it's horribly misnamed, so it's what I'll spec.
+Comments about IE/Firefox are based on manual tests, where I hit Enter instead
+of running commands.
 
-(Actually, Opera doesn't behave quite the same for insertParagraph and line
+<p>(Actually, Opera doesn't behave quite the same for insertParagraph and line
 breaks.  But it's pretty close, and I expect the differences are bugs.)
 
-Then, of course, we have several flavors of line-breaking behavior to choose
-from.  Firefox prefers <br>s, unless it's in the middle of a <p> or something.
-Opera and IE like <p>.  Chrome prefers <div>.  And there are lots of subtleties
-besides.  I go with IE/Opera-style behavior, as discussed in this thread:
-
-http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
--->
+<p>Then, of course, we have several flavors of line-breaking behavior to choose
+from.  Firefox prefers &lt;br>s, unless it's in the middle of a &lt;p> or
+something.  Opera and IE like &lt;p>.  Chrome prefers &lt;div>.  And there are
+lots of subtleties besides.  I go with IE/Opera-style behavior, as discussed in
+<a href=http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html>a
+whatwg thread</a>.
+</div>
 
 <p><span>Action</span>:
 
@@ -7373,10 +7396,12 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
   the same editing host</span> as <var>node</var>, set <var>container</var> to
   its [[parent]].
 
-  <li>If <var>container</var> is not <span>editable</span> or not <span>in the
+  <li>
+  <p class=comments>We add the default wrapper in this case.
+
+  <p>If <var>container</var> is not <span>editable</span> or not <span>in the
   same editing host</span> as <var>node</var> or is not a <span>single-line
   container</span>:
-  <!-- Add the default wrapper. -->
 
   <ol>
     <li>Let <var>tag</var> be the <span>default single-line container
@@ -7394,12 +7419,14 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
     <li>If <var>node list</var> is empty:
 
     <ol>
-      <!-- Ideally, we should normalize things so that the cursor is never in a
-      weird place after deletion, but let's be safe and bail out if we do hit
-      this scenario.  It's not clear if we need this line in the long term, but
-      at the time of this writing there's at least one corner case where
-      deleting can leave the cursor inside a <tr>. -->
-      <li>If <var>tag</var> is not an <span>allowed child</span> of
+      <li>
+      <p class=comments>Ideally, we should normalize things so that the cursor
+      is never in a weird place after deletion, but let's be safe and bail out
+      if we do hit this scenario.  It's not clear if we need this line in the
+      long term, but at the time of this writing there's at least one corner
+      case where deleting can leave the cursor inside a &lt;tr>.
+
+      <p>If <var>tag</var> is not an <span>allowed child</span> of
       <var>range</var>'s [[startnode]], abort these steps.
 
       <li>Set <var>container</var> to the result of calling
@@ -7416,14 +7443,14 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
       <li>Abort these steps.
     </ol>
 
-    <li>While the [[nextsibling]] of the last member of <var>node list</var> is
+    <li>
+    <p class=comments>TODO: It is not at all obvious that this is the correct
+    list of nodes in all cases.  It should probably work because of how the
+    block-extend algorithm works, but further thought would be good.
+
+    <p>While the [[nextsibling]] of the last member of <var>node list</var> is
     not null and is an <span>allowed child</span> of "p", append it to
     <var>node list</var>.
-    <!--
-    TODO: It is not at all obvious that this is the correct list of nodes in
-    all cases.  It should probably work because of how the block-extend
-    algorithm works, but further thought would be good.
-    -->
 
     <li><span>Wrap</span> <var>node list</var>, with <span>sibling
     criteria</span> matching nothing and <span>new parent instructions</span>
@@ -7431,28 +7458,30 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
     [[contextobject]].  Set <var>container</var> to the result.
   </ol>
 
-  <li>If <var>container</var>'s [[localname]] is "address", "listing", or
-  "pre":
-  <!--
-  IE9 and Chrome 13 dev just break <pre> up into multiple <pre>s.  Firefox
-  5.0a2 and Opera 11.10 insert a <br> instead, treating it differently from
-  <p>.  The latter makes more sense.  What might make the most sense is to just
-  insert an actual newline character, though, since this is a pre after all
-  . . .
+  <li>
+  <div class=comments>
+  <p>IE9 and Chrome 13 dev just break &lt;pre> up into multiple &lt;pre>s.
+  Firefox 5.0a2 and Opera 11.10 insert a &lt;br> instead, treating it
+  differently from &lt;p>.  The latter makes more sense.  What might make the
+  most sense is to just insert an actual newline character, though, since this
+  is a pre after all . . .
 
-  IE9 and Chrome 13 dev also break <address> up into multiple <address>es.
-  Firefox 5.0a2 inserts <br> instead.  Opera 11.10 nests <p>s inside.  I don't
-  like Opera's behavior, because it means we nest formatBlock candidates inside
-  one another, so I'll go with Firefox.
+  <p>IE9 and Chrome 13 dev also break &lt;address> up into multiple
+  &lt;address>es.  Firefox 5.0a2 inserts &lt;br> instead.  Opera 11.10 nests
+  &lt;p>s inside.  I don't like Opera's behavior, because it means we nest
+  formatBlock candidates inside one another, so I'll go with Firefox.
 
-  listing and xmp work the same as pre in all browsers.  For Firefox and Opera,
-  this results in trying to put a br inside an xmp, so I go with IE/Chrome for
-  xmp.
+  <p>listing and xmp work the same as pre in all browsers.  For Firefox and
+  Opera, this results in trying to put a br inside an xmp, so I go with
+  IE/Chrome for xmp.
 
-  TODO: In cases where hitting enter in a header doesn't break out of the
+  <p>TODO: In cases where hitting enter in a header doesn't break out of the
   header, we should probably follow this code path too, instead of creating an
   adjoining header.  No browser does this, though, so we don't.
-  -->
+  </div>
+
+  <p>If <var>container</var>'s [[localname]] is "address", "listing", or
+  "pre":
 
   <ol>
     <li>Let <var>br</var> be the result of calling [[createelement|"br"]] on
@@ -7463,22 +7492,26 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
     <li>Increment <var>range</var>'s [[rangestart]] and [[rangeend]]
     [[bpoffsets]].
 
-    <li>If <var>br</var> is the last [[descendant]] of <var>container</var>,
+    <li>
+    <p class=comments>Necessary because adding a br to the end of a block
+    element does nothing if there wasn't one there already.  A single newline
+    immediately preceding a block boundary does nothing.
+
+    <p>If <var>br</var> is the last [[descendant]] of <var>container</var>,
     let <var>br</var> be the result of calling [[createelement|"br"]] on the
     [[contextobject]], then call [[insertnode|<var>br</var>]] on
     <var>range</var>.
-    <!-- Necessary because adding a br to the end of a block element does
-    nothing if there wasn't one there already.  A single newline immediately
-    preceding a block boundary does nothing. -->
 
     <li>Abort these steps.
   </ol>
 
-  <li>If <var>container</var>'s [[localname]] is "li", "dt", or "dd"; and
+  <li>
+  <p class=comments>Including dt/dd here follows Firefox 5.0a2, as with the
+  special dt/dd handling below.
+
+  <p>If <var>container</var>'s [[localname]] is "li", "dt", or "dd"; and
   either it has no [[children]] or it has a single [[child]] and that [[child]]
   is a [[br]]:
-  <!-- Including dt/dd here follows Firefox 5.0a2, as with the special dt/dd
-  handling below. -->
 
   <ol>
     <li><span>Split the parent</span> of the one-[[node]] list consisting of
@@ -7488,17 +7521,17 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
     [[createelement|"br"]] on the [[contextobject]] and append the result as
     the last [[child]] of <var>container</var>.
 
-    <li>If <var>container</var> is a [[dd]] or [[dt]], and it is not an
+    <li>
+    <p class=comments>Annoying hack to prevent the dl from being re-added when
+    fixing disallowed ancestors.  In most cases we want a wrapper dl added, but
+    in two cases (delete and insertParagraph) we're actually trying to outdent
+    the list item.  TODO: there might be a better way to do this.
+
+    <p>If <var>container</var> is a [[dd]] or [[dt]], and it is not an
     <span>allowed child</span> of any of its [[ancestors]] <span>in the same
     editing host</span>, <span>set the tag name</span> of <var>container</var>
     to the <span>default single-line container name</span> and let
     <var>container</var> be the result.
-    <!--
-    Annoying hack to prevent the dl from being re-added when fixing disallowed
-    ancestors.  In most cases we want a wrapper dl added, but in two cases
-    (delete and insertParagraph) we're actually trying to outdent the list
-    item.  There might be a better way to do this.
-    -->
 
     <li><span>Fix disallowed ancestors</span> of <var>container</var>.
 
@@ -7509,11 +7542,13 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
   the same as <var>range</var>'s, and whose [[rangeend]] is
   (<var>container</var>, [[nodelength]] of <var>container</var>).
 
-  <!-- We don't want the start to be just inside a node, because if it is,
-  we'll leave behind an empty element either in the new or old container.
-  Clearly we don't want the start point to get any higher than the container
-  itself, though. -->
-  <li>While <var>new line range</var>'s [[startoffset]] is zero and its
+  <li>
+  <p class=comments>We don't want the start to be just inside a node, because
+  if it is, we'll leave behind an empty element either in the new or old
+  container.  Clearly we don't want the start point to get any higher than the
+  container itself, though.
+
+  <p>While <var>new line range</var>'s [[startoffset]] is zero and its
   [[startnode]] is not <var>container</var>, set its [[rangestart]] to
   ([[parent]] of [[startnode]], [[index]] of [[startnode]]).
 
@@ -7526,22 +7561,27 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
   data-anolis-spec=domrange title=contained>contains</span> either nothing or a
   single [[br]], and false otherwise.
 
-  <li>If the [[localname]] of <var>container</var> is "h1", "h2", "h3", "h4",
+  <li>
+  <p class=comments>IE9 makes a new header if there's a trailing &lt;br>.
+  Firefox 5.0a2, Chrome 13 dev, and Opera 11.10 do not, and I follow them,
+  since it makes more sense (such a &lt;br> is invisible).
+
+  <p>If the [[localname]] of <var>container</var> is "h1", "h2", "h3", "h4",
   "h5", or "h6", and <var>end of line</var> is true, let <var>new container
   name</var> be the <span>default single-line container name</span>.
-  <!-- IE9 makes a new header if there's a trailing <br>.  Firefox 5.0a2,
-  Chrome 13 dev, and Opera 11.10 do not, and I follow them, since it makes more
-  sense (such a <br> is invisible). -->
 
-  <li>Otherwise, if the [[localname]] of <var>container</var> is "dt" and
+  <li>
+  <p class=comments>This step and the next follow Firefox 5.0a2.  IE9 and
+  Chrome 13 dev act as though these two lines were not present (they clone the
+  existing element).  Opera 11.10 nests a &lt;p> inside.  Firefox is the most
+  useful, assuming a definition list somehow winds up inside the content (like
+  via formatBlock).
+
+  <p>Otherwise, if the [[localname]] of <var>container</var> is "dt" and
   <var>end of line</var> is true, let <var>new container name</var> be "dd".
 
   <li>Otherwise, if the [[localname]] of <var>container</var> is "dd" and
   <var>end of line</var> is true, let <var>new container name</var> be "dt".
-  <!-- These two follow Firefox 5.0a2.  IE9 and Chrome 13 dev act as though
-  these two lines were not present (they clone the existing element).  Opera
-  11.10 nests a <p> inside.  Firefox is the most useful, assuming a definition
-  list somehow winds up inside the content. -->
 
   <li>Otherwise, let <var>new container name</var> be the [[localname]] of
   <var>container</var>.
@@ -7559,14 +7599,15 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
   <li>Let <var>contained nodes</var> be all [[nodes]] [[contained]] in <var>new
   line range</var>.
 
-  <li>Let <var>frag</var> be the result of calling [[extractcontents]] on
+  <li>
+  <p class=comments>TODO: This blows up any ranges (other than the selection,
+  which we reset), and can alter non-editable nodes, and maybe other bad stuff.
+  May or may not be the best solution.  The intermediate fragment is also
+  possibly black-box detectable by DOM mutation events, but I like to pretend
+  those don't exist.
+
+  <p>Let <var>frag</var> be the result of calling [[extractcontents]] on
   <var>new line range</var>.
-  <!--
-  TODO: This blows up any ranges (other than the selection, which we reset),
-  and can alter non-editable nodes, and maybe other bad stuff.  May or may not
-  be the best solution.  The intermediate fragment is also probably black-box
-  detectable by DOM mutation events, but I like to pretend those don't exist.
-  -->
 
   <li>Unset the [[id]] attribute (if any) of each [[element]] [[descendant]] of
   <var>frag</var> that is not in <var>contained nodes</var>.
@@ -7577,13 +7618,16 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
   [[createelement|"br"]] on the [[contextobject]], and append the result as the
   last [[child]] of <var>container</var>.
 
-  <li>If <var>new container</var> has no <span>visible</span> [[children]],
+  <li>
+  <p class=comments>These two steps follow Firefox 5.0a2, Chrome 13 dev, and
+  Opera 11.10.  IE9 instead inserts an &amp;nbsp; which magically does not
+  appear in innerHTML.  In all cases, the reason is that an empty block box in
+  CSS will have zero height, so the user won't be able to put the selection
+  cursor inside it.
+
+  <p>If <var>new container</var> has no <span>visible</span> [[children]],
   call [[createelement|"br"]] on the [[contextobject]], and append the result
   as the last [[child]] of <var>new container</var>.
-  <!-- These two steps follow Firefox 5.0a2, Chrome 13 dev, and Opera 11.10.
-  IE9 instead inserts an &nbsp; which magically does not appear in innerHTML.
-  In all cases, the reason is that an empty block box in CSS will have zero
-  height, so the user won't be able to put the selection cursor inside it. -->
 
   <li>Set the [[rangestart]] of <var>range</var> to (<var>new container</var>,
   0).
@@ -7592,23 +7636,24 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
 <!-- @} -->
 <h3><dfn>The <code title>insertText</code> command</dfn></h3>
 <!-- @{ -->
-<!--
-Supported only by WebKit.  Tests in other browsers were manual.  In the manual
-tests, where the value was always "a", IE9 and Firefox 5.0a2 match the spec
-exactly as far as I can tell; Chrome 14 dev and Opera 11.11 might match it in
-theory, but normalize the selection first, so they don't match it in practice.
--->
-<p><span>Action</span>:
+<div class=comments>
+<p>Supported only by WebKit.  Tests in other browsers were manual.
 
-<!--
-Non-breaking space fun!  The issue: if the user hits space twice, they expect
-it to create two spaces, not collapse.  Also, if they're at the beginning or
-end of a line and hit space, again, they expect it not to collapse.  Since we
-don't want to require that all contenteditable element contents always be used
-only with white-space: pre-wrap, we need to convert to and from non-breaking
-spaces.
+<p>TODO: This doesn't work well if the input contains things that aren't
+supposed to appear in HTML, like carriage returns or nulls.  Nor is it going to
+work well if the current cursor position is in between two halves of a non-BMP
+character.  This will result in unserializability.  The current spec disregards
+this, as Chrome 14 dev does.  (It's not relevant to other browsers, since they
+don't support this as a command.)
 
-But there's a catch: you can't just make spaces non-breaking willy-nilly,
+<p>Important issue: non-breaking space fun!  The issue: if the user hits space
+twice, they expect it to create two spaces, not collapse.  Also, if they're at
+the beginning or end of a line and hit space, again, they expect it not to
+collapse.  Since we don't want to require that all contenteditable element
+contents always be used only with white-space: pre-wrap, we need to convert to
+and from non-breaking spaces.
+
+<p>But there's a catch: you can't just make spaces non-breaking willy-nilly,
 because that doesn't just stop the space from collapsing, it also prevents
 breaking.  (Chrome 14 dev actually cheats here: in contenteditable, it doesn't
 collapse nbsp, but breaks after it like a regular space.)  The upshot of this
@@ -7618,91 +7663,92 @@ space, or else it might break a line prematurely.  How to achieve both of these
 goals when there are an even number of spaces to display is left as an exercise
 for the reader.
 
-Browsers vary greatly in how they handle all this, of course!
+<p>Browsers vary greatly in how they handle all this, of course!
 
-The basic philosophy of IE9 is that if you're inserting a space, and one or
+<p>The basic philosophy of IE9 is that if you're inserting a space, and one or
 both of the neighboring characters is a space, change the neighboring
 characters to non-breaking spaces.  This breaks if one of the neighboring
 characters is part of a run of collapsed whitespace: "foo  []bar" becomes "foo
-&nbsp; []bar", which converts one visible space to three.
+&amp;nbsp; []bar", which converts one visible space to three.
 
-Firefox 6.0a2 will sometimes convert the space you're inserting to an nbsp,
+<p>Firefox 6.0a2 will sometimes convert the space you're inserting to an nbsp,
 sometimes convert neighboring spaces to nbsps, and sometimes convert
 neighboring nbsps to spaces.  I cannot discern any clear reason to when it
 chooses what, except that it seems to prefer runs of nbsp's followed by a
 single space (although not always).  I didn't find any outright bugs, except
 the inevitable ones like nbsp's sometimes being right after letters.
 
-Chrome 14 dev tries to normalize everything to look like " &nbsp; &nbsp; ...",
-alternating with space then nbsp.  Unfortunately, it does so buggily, because
-it converts collapsed spaces to nbsp's, so inserting a space before " " makes
-it into " &nbsp; &nbsp;", which changes one visible space to four (or
-arbitrarily many).
+<p>Chrome 14 dev tries to normalize everything to look like " &amp;nbsp;
+&amp;nbsp; ...", alternating with space then nbsp.  Unfortunately, it does so
+buggily, because it converts collapsed spaces to nbsp's, so inserting a space
+before " " makes it into " &amp;nbsp; &amp;nbsp;", which changes one visible
+space to four (or arbitrarily many).
 
-Opera 11.11 has varying behavior, like Firefox and Chrome.  Like Firefox, I
+<p>Opera 11.11 has varying behavior, like Firefox and Chrome.  Like Firefox, I
 didn't discern an obvious pattern.
 
-This was discussed: http://lists.whatwg.org/pipermail/whatwg-whatwg.org/2011-June/032187.html
+<p>This was all <a href=http://lists.whatwg.org/pipermail/whatwg-whatwg.org/2011-June/032187.html>discussed</a>.
 
-Unfortunately, we're stuck with this nbsp stuff, because of 1) legacy reasons,
-2) mail clients might not support CSS equivalents, 3) authors might not know to
-apply any CSS to wherever the content is eventually used.  The behavior I
-decided on to minimize the evil is as follows:
+<p>Unfortunately, we're stuck with this nbsp stuff, because of 1) legacy
+reasons, 2) mail clients might not support CSS equivalents, 3) authors might
+not know to apply any CSS to wherever the content is eventually used.  The
+behavior I decided on to minimize the evil is as follows:
 
-* If the first and last spaces are in non-collapsing positions, two spaces is
-  nbsp+space, three is space+nbsp+space, four or more is space+nbsp followed by
-  the pattern for two less.
-* If the first space has to be an nbsp so it doesn't collapse, three is instead
-  nbsp+nbsp+space, four or more is nbsp+space followed by the pattern for two
-  less.
-* If the last space has to be nbsp, two is space+nbsp, three is
+<ul>
+  <li>If the first and last spaces are in non-collapsing positions, two spaces
+  is nbsp+space, three is space+nbsp+space, four or more is space+nbsp followed
+  by the pattern for two less.
+
+  <li>If the first space has to be an nbsp so it doesn't collapse, three is
+  instead nbsp+nbsp+space, four or more is nbsp+space followed by the pattern
+  for two less.
+
+  <li>If the last space has to be nbsp, two is space+nbsp, three is
   space+nbsp+nbsp, four or more is space+nbsp followed by the pattern for two
   less.
-* If the first and last space must both be nbsp, two is nbsp+nbsp, three is
+
+  <li>If the first and last space must both be nbsp, two is nbsp+nbsp, three is
   nbsp+space+nbsp, four or more nbsp+space followed by the pattern for two
   less.
+</ul>
 
-This avoids nbsp at the end of a run except where it's needed, so words won't
-appear indented if they wrap to the next line.  It avoids more than two nbsp's
-in a row, so there won't be huge chunks of space that get wrapped all at once.
-And it avoids nbsp at the beginning of a run except where it's needed or
+<p>This avoids nbsp at the end of a run except where it's needed, so words
+won't appear indented if they wrap to the next line.  It avoids more than two
+nbsp's in a row, so there won't be huge chunks of space that get wrapped all at
+once.  And it avoids nbsp at the beginning of a run except where it's needed or
 if there are only two spaces in the run, so words won't have to wrap
 unnecessarily.
 
-This is still a huge headache, though.
--->
+<p>This is still a huge headache, though.
+</div>
 
-<!--
-TODO: This doesn't work well if the input contains things that aren't supposed
-to appear in HTML, like carriage returns or nulls.  Nor is it going to work
-well if the current cursor position is in between two halves of a non-BMP
-character.  This will result in unserializability.  The current spec disregards
-this, as Chrome 14 dev does.
--->
+<p><span>Action</span>:
 
 <ol>
-  <li><span>Delete the contents</span> of the <span>active range</span>, with
-  <var>strip wrappers</var> false.
-  <!--
-  Chrome 14 dev does the deletion even if the value is empty.  Of course, other
-  browsers don't expose this as an execCommand(), so no one else has any
+  <li>
+  <div class=comments>
+  <p>Chrome 14 dev does the deletion even if the value is empty.  Of course,
+  other browsers don't expose this as an execCommand(), so no one else has any
   defined behavior in this case at all, so I follow Chrome.
 
-  IE9, Firefox 7.0a2, Chrome 14 dev, and Opera 11.50 all don't strip wrappers,
-  except that as usual, Gecko does if you select the whole wrapper, like
-  {<b>foo</b>}.  Also, Chrome 14 dev seems to strip the wrapper and try
-  recreating the style in cases like <b>[foo</b>bar], where it starts in a
-  wrapper but ends after it; this doesn't always work so well, so I don't do
-  it.  Firefox 7.0a2 also has the deletion set overrides for indeterminate
-  state commands, so if you run insertText on [foo<b>bar</b>baz] it will make
-  the result bold.
+  <p>IE9, Firefox 7.0a2, Chrome 14 dev, and Opera 11.50 all don't strip
+  wrappers, except that as usual, Gecko does if you select the whole wrapper,
+  like {&lt;b>foo&lt;/b>}.  Also, Chrome 14 dev seems to strip the wrapper and
+  try recreating the style in cases like &lt;b>[foo&lt;/b>bar], where it starts
+  in a wrapper but ends after it; this doesn't always work so well, so I don't
+  do it.  Firefox 7.0a2 also has the deletion set overrides for indeterminate
+  state commands, so if you run insertText on [foo&lt;b>bar&lt;/b>baz] it will
+  make the result bold.
 
-  These things don't make any sense to me, so I don't do them.  I set overrides
-  based on the first editable text node in the range when deleting; preserve
-  any wrappers at the start of the range; and restore the overrides in case
-  preserving the wrappers isn't enough (like if they weren't set by deletion at
-  all).  This behavior seems to closely match IE9.
-  -->
+  <p>These things don't make any sense to me, so I don't do them.  I set
+  overrides based on the first editable text node in the range when deleting;
+  preserve any wrappers at the start of the range; and restore the overrides in
+  case preserving the wrappers isn't enough (like if they weren't set by
+  deletion at all).  This behavior seems to closely match IE9.
+  </div>
+
+  <p><span>Delete the contents</span> of the <span>active range</span>, with
+  <var>strip wrappers</var> false.
 
   <li>If the <span>active range</span>'s [[startnode]] is neither
   <span>editable</span> nor an <span>editing host</span>, abort these steps.
@@ -7719,25 +7765,27 @@ this, as Chrome 14 dev does.
 
   <li>If <var>value</var> is the empty string, abort these steps.
 
-  <li>If <var>value</var> is a newline (U+00A0), take the <span>action</span>
+  <li>
+  <p class=comments>TODO: WebKit also does magic for tabs, wrapping them in a
+  whitespace-preserving span.  Should we?
+
+  <p>If <var>value</var> is a newline (U+00A0), take the <span>action</span>
   for <span>the <code title>insertParagraph</code> command</span> and abort
   these steps.
-  <!-- TODO: WebKit also does magic for tabs, wrapping them in a
-  whitespace-preserving span.  Should we? -->
 
   <li>Let <var>node</var> and <var>offset</var> be the <span>active
   range</span>'s [[startnode]] and [[bpoffset]].
 
-  <!--
-  Just to be tidy, add to an existing text node if there is one.  Firefox 5.0a2
-  only adds to an existing one if the range is in a text node.  IE9, Chrome 14
-  dev, and Opera 11.11 also add to an existing text node if the range is in an
-  element adjacent to a text node.  If there are two text nodes and it's in
-  between, like foo{}bar, IE and Opera add to the first, Chrome adds to the
-  second, although it probably doesn't matter in practice exactly which we
-  choose.
-  -->
-  <li>If <var>node</var> has a [[child]] whose [[index]] is <var>offset</var>
+  <li>
+  <p class=comments>Just to be tidy, add to an existing text node if there is
+  one.  Firefox 5.0a2 only adds to an existing one if the range is in a text
+  node.  IE9, Chrome 14 dev, and Opera 11.11 also add to an existing text node
+  if the range is in an element adjacent to a text node.  If there are two text
+  nodes and it's in between, like foo{}bar, IE and Opera add to the first,
+  Chrome adds to the second, although it probably doesn't matter in practice
+  exactly which we choose.
+
+  <p>If <var>node</var> has a [[child]] whose [[index]] is <var>offset</var>
   &minus; 1, and that [[child]] is a [[text]] node, set <var>node</var> to that
   [[child]], then set <var>offset</var> to <var>node</var>'s [[length]].
 
@@ -7745,12 +7793,15 @@ this, as Chrome 14 dev does.
   and that [[child]] is a [[text]] node, set <var>node</var> to that [[child]],
   then set <var>offset</var> to zero.
 
-  <li>If <var>value</var> is a space (U+0020), and either <var>node</var> is an
+  <li>
+  <p class=comments><var>value</var> may change back to a space when we
+  canonicalize, even if this step is triggered.
+
+  <p>If <var>value</var> is a space (U+0020), and either <var>node</var> is an
   [[element]] whose [[resval]] for "white-space" is neither "pre" nor
   "pre-wrap" or <var>node</var> is not an [[element]] but its [[parent]] is an
   [[element]] whose [[resval]] for "white-space" is neither "pre" nor
   "pre-wrap", set <var>value</var> to a non-breaking space (U+00A0).
-  <!-- This may change to a space when we canonicalize. -->
 
   <li><span>Record current overrides</span>, and let <var>overrides</var> be
   the result.
@@ -7771,9 +7822,11 @@ this, as Chrome 14 dev does.
   <li>Otherwise:
 
   <ol>
-    <!-- If some text is inserted into <p><br></p> or similar, we no longer need
-    the <br>. -->
-    <li>If <var>node</var> has only one [[child]], which is a <span>collapsed
+    <li>
+    <p class=comments>If some text is inserted into &lt;p>&lt;br>&lt;/p> or
+    similar, we no longer need the &lt;br>.
+
+    <p>If <var>node</var> has only one [[child]], which is a <span>collapsed
     line break</span>, remove its [[child]] from it.
 
     <li>Let <var>text</var> be the result of calling <code
@@ -7804,6 +7857,9 @@ this, as Chrome 14 dev does.
 <!-- @} -->
 <h3><dfn>The <code title>insertUnorderedList</code> command</dfn></h3>
 <!-- @{ -->
+<p class=comments>See comments for <a
+href=#the-insertorderedlist-command>insertOrderedList</a>.
+
 <p><span>Action</span>: <span>Toggle lists</span> with <var>tag name</var>
 "ul".
 
@@ -7819,64 +7875,66 @@ false otherwise.
 <p><span>Action</span>: <span>Justify the selection</span> with
 <var>alignment</var> "center".
 
+<div class=comments>
+<p>This roughly matches Chrome 14 dev, although not exactly.  Firefox 6.0a2
+always returns false.
+
+<p>As a general rule, ignoring nodes with children saves us from treating
+&lt;div align=left>&lt;div align=center>foo&lt;/div>&lt;/div> as though it's
+indeterminate.  Chrome 14 dev seems to only pay attention to text nodes,
+instead, or something like that.  At any rate, it fails on images.  Firefox
+6.0a2 (for state and value) gets tripped up by examples like the one given.
+
+<p>If we ever support centering of tables and similar, we'd want to pay
+attention even to some nodes that do have children.
+</div>
+
 <p><span>Indeterminate</span>: <span>Block-extend</span> the <span>active
 range</span>.  Return true if among <span>visible</span> <span>editable</span>
 [[nodes]] that are [[contained]] in the result and have no [[children]], at
 least one has <span>alignment value</span> "center" and at least one does not.
 Otherwise return false.
-<!--
-This roughly matches Chrome 14 dev, although not exactly.  Firefox 6.0a2 always
-returns false.
 
-As a general rule, ignoring nodes with children saves us from treating <div
-align=left><div align=center>foo</div></div> as though it's indeterminate.
-Chrome 14 dev seems to only pay attention to text nodes, instead, or something
-like that.  At any rate, it fails on images.  Firefox 6.0a2 (for state and
-value) gets tripped up by examples like the one given.
+<div class=comments>
+<p>IE9 throws exceptions in almost every case when querying the state of
+justify*, and Opera 11.11 returns false in every case except some seemingly
+random crazy ones.
 
-If we ever support centering of tables and similar, we'd want to pay attention
-even to some nodes that do have children.
--->
+<p>Firefox 6.0a2 returns true for the state of justify* if anything in the
+range has the right alignment, not if everything does.  This isn't consistent
+with how state works for the inline commands, nor with WebKit.
+
+<p>Chrome 14 dev counts text-align on inline elements, which is wrong, because
+the property has no effect.  It also counts it on non-editable elements, which
+is wrong, because then the state for justify* wouldn't necessarily be true
+after executing it.  (Chrome actually does align the non-editable elements, but
+that's just a bug.)  Chrome further returns false for justify* if the
+justification is just the default inherited justification, e.g., left for LTR.
+This doesn't seem to make sense either.
+
+<p>State is kind of redundant here, because it's true if and only if
+indeterminate is false and the value is equal to the desired value.  However,
+I'll support it anyway, since Gecko/WebKit do.
+</div>
 
 <p><span>State</span>: <span>Block-extend</span> the <span>active range</span>.
 Return true if there is at least one <span>visible</span> <span>editable</span>
 [[node]] that is [[contained]] in the result and has no [[children]], and all
 such [[nodes]] have <span>alignment value</span> "center".  Otherwise return
 false.
-<!--
-IE9 throws exceptions in almost every case when querying the state of justify*,
-and Opera 11.11 returns false in every case except some seemingly random crazy
-ones.
 
-Firefox 6.0a2 returns true for the state of justify* if anything in the range
-has the right alignment, not if everything does.  This isn't consistent with
-how state works for the inline commands, nor with WebKit.
-
-Chrome 14 dev counts text-align on inline elements, which is wrong, because the
-property has no effect.  It also counts it on non-editable elements, which is
-wrong, because then the state for justify* wouldn't necessarily be true after
-executing it.  (Chrome actually does align the non-editable elements, but
-that's just a bug.)  Chrome further returns false for justify* if the
-justification is just the default inherited justification, e.g., left for LTR.
-This doesn't seem to make sense either.
-
-State is kind of redundant here, because it's true if and only if indeterminate
-is false and the value is equal to the desired value.  However, I'll support it
-anyway, since Gecko/WebKit do.
--->
+<p class=comments>Not bidi-safe, but it's a pretty marginal corner case where
+it fails.  Firefox 6.0a2 behaves weirdly here: it keys off the start node of
+the active range, even if that's not contained.  Thus {&lt;div
+align=center>foo&lt;/div>} has value "left" and indeterminate false, which
+would suggest that the whole selection is aligned left, but that's not the
+case.  Chrome 14 dev returns the state cast to a string, as usual.  Opera 11.11
+always returns the empty string.
 
 <p><span>Value</span>: <span>Block-extend</span> the <span>active range</span>,
 and return the <span>alignment value</span> of the first <span>visible</span>
 <span>editable</span> [[node]] that is [[contained]] in the result and has no
 [[children]].  If there is no such [[node]], return "left".
-<!--
-Not bidi-safe, but it's a pretty marginal corner case.  Firefox 6.0a2 behaves
-weirdly here: it keys off the start node of the active range, even if that's
-not contained.  Thus {<div align=center>foo</div>} has value "left" and
-indeterminate false, which would suggest that the whole selection is aligned
-left, but that's not the case.  Chrome 14 dev returns the state cast to a
-string, as usual.  Opera 11.11 always returns the empty string.
--->
 
 <!-- @} -->
 <h3><dfn>The <code title>justifyFull</code> command</dfn></h3>
@@ -7957,43 +8015,47 @@ and return the <span>alignment value</span> of the first <span>visible</span>
   [[ancestorcontainers]] of the <span>active range</span>'s [[rangestart]]
   and/or [[rangeend]] [[bpnode]].
 
-  <li>For each <var>item</var> in <var>items</var>, <span>normalize
+  <li>
+  <p class=comments>TODO: This overnormalizes, but it seems like the simplest
+  solution for now.
+
+  <p>For each <var>item</var> in <var>items</var>, <span>normalize
   sublists</span> of <var>item</var>.
-  <!-- This overnormalizes, but it seems like the simplest solution for now.
-  -->
 
   <li><span>Block-extend</span> the <span>active range</span>, and let <var>new
   range</var> be the result.
 
   <li>Let <var>node list</var> be a list of [[nodes]], initially empty.
 
-  <li>For each [[node]] <var>node</var> [[contained]] in <var>new range</var>,
+  <li>
+  <div class=comments>
+  <p>This step is kind of weird.  For regular outdenting, we start at the
+  inside and outdent going out, so that we remove the innermost indentation, on
+  the theory that that will produce the cleanest markup (remove the most
+  nodes).  For lists, we remove the outermost indentation, because it makes a
+  difference whether we remove inner or outer indentation, and logically we
+  want to remove outer.  E.g.,
+
+    <pre>&lt;ol>&lt;li>foo&lt;/li>&lt;ul>&lt;li>bar&lt;/li>&lt;/ul>&lt;/ol></pre>
+
+  <p>should become
+
+    <pre>foo&lt;ul>&lt;li>bar&lt;/li>&lt;/ul></pre>
+
+  <p>not
+
+    <pre>foo&lt;ol>&lt;li>bar&lt;/li>&lt;/ol>.</pre>
+
+  <p>But this is a bit weird and I'm wondering if it's really correct.  TODO:
+  Reexamine this.
+  </div>
+
+  <p>For each [[node]] <var>node</var> [[contained]] in <var>new range</var>,
   append <var>node</var> to <var>node list</var> if the last member of
   <var>node list</var> (if any) is not an [[ancestor]] of <var>node</var>;
   <var>node</var> is <span>editable</span>; and either <var>node</var> has no
   <span>editable</span> [[descendants]], or is an [[ol]] or [[ul]], or is an
   [[li]] whose [[parent]] is an [[ol]] or [[ul]].
-  <!--
-  This step is kind of weird.  For regular outdenting, we start at the inside
-  and outdent going out, so that we remove the innermost indentation, on the
-  theory that that will produce the cleanest markup (remove the most nodes).
-  For lists, we remove the outermost indentation, because it makes a difference
-  whether we remove inner or outer indentation, and logically we want to remove
-  outer.  E.g.,
-
-    <ol><li>foo</li><ul><li>bar</li></ul></ol>
-
-  should become
-
-    foo<ul><li>bar</li></ul>
-
-  not
-
-    foo<ol><li>bar</li></ol>.
-
-  But this is a bit weird and I'm wondering if it's really correct.  TODO:
-  Reexamine this.
-  -->
 
   <li>While <var>node list</var> is not empty:
 
@@ -8031,17 +8093,13 @@ and return the <span>alignment value</span> of the first <span>visible</span>
 
 <h3><dfn>The <code title>copy</code> command</dfn></h3>
 <!-- @{ -->
-<!--
-IE9 supports copy/cut/paste with a security warning.  Firefox reportedly only
-supports it if you set a pref.  I didn't find info on other browsers, but in my
-tests it didn't do anything.  I'm not going to try speccing it unless
-implementers are interested in working out the security problems and trying to
-get interop.  It seems like as of June 2011, everyone just uses Flash for this:
-
-http://code.google.com/p/zeroclipboard/
-
-So it would be nice if we could work out a more secure standardized substitute.
--->
+<p class=comments>IE9 supports copy/cut/paste with a security warning.  Firefox
+reportedly only supports it if you set a pref.  I didn't find info on other
+browsers, but in my tests it didn't do anything.  I'm not going to try speccing
+it unless implementers are interested in working out the security problems and
+trying to get interop.  It seems like as of June 2011, everyone just <a
+href=http://code.google.com/p/zeroclipboard/>uses Flash for this</a>.  So it
+would be nice if we could work out a more secure standardized substitute.
 
 <p><span>Action</span>: The user agent must either copy the current selection
 to the clipboard as though the user had requested it, or raise a
@@ -8054,23 +8112,22 @@ events</a> specification might be useful.
 because sites could abuse it to confuse and annoy the user by overwriting the
 clipboard with extremely long, obscene, or otherwise objectionable content.
 
+<p class=comments>The idea is sites might catch the SECURITY_ERR and treat it
+differently from NOT_SUPPORTED_ERR, like encouraging users to reconfigure their
+browser.  However, browsers might not want to encourage authors to tell users
+to reconfigure their browser insecurely.
+
 <p>User agents may choose not to <span title=supported>support</span> this
 <span>command</span> at all.  If a user agent will only honor the
 <span>command</span> for some whitelisted sites depending on configuration, it
 may either raise a [[SECURITY_ERR]] for non-whitelisted sites, or it may act as
 though the <span>command</span> is <span title=supported>unsupported</span> on
 those sites.
-<!--
-The idea is sites might catch the SECURITY_ERR and treat it differently from
-NOT_SUPPORTED_ERR, like encouraging users to reconfigure their browser.
-However, browsers might not want to encourage authors to tell users to
-reconfigure their browser insecurely.
--->
 
 <!-- @} -->
 <h3><dfn>The <code title>cut</code> command</dfn></h3>
 <!-- @{ -->
-<!-- See comment for copy -->
+<p class=comments>See comment for <a href=#the-copy-command>copy</a>.
 
 <p><span>Action</span>: The user agent must either copy the current selection
 to the clipboard and then delete it, as though the user had requested it, or
@@ -8093,7 +8150,7 @@ those sites.
 <!-- @} -->
 <h3><dfn>The <code title>paste</code> command</dfn></h3>
 <!-- @{ -->
-<!-- See comment for copy -->
+<p class=comments>See comment for <a href=#the-copy-command>copy</a>.
 
 <p><span>Action</span>: The user agent must either <span>delete the
 contents</span> of the <span>active range</span> and then paste the clipboard's
@@ -8116,46 +8173,53 @@ those sites.
 <!-- @} -->
 <h3><dfn>The <code title>selectAll</code> command</dfn></h3>
 <!-- @{ -->
-<!--
-Tested using roughly this:
+<div class=comments>
+<p>Tested using roughly <a href=http://software.hixie.ch/utilities/js/live-dom-viewer/saved/1018>this</a>.
 
-http://software.hixie.ch/utilities/js/live-dom-viewer/saved/1018
+<dl>
+  <dt>IE9
+  <dd>A bit confusing.  The gist seems to be that it does selectAllChildren()
+  on the body, except sometimes it doesn't.
 
-IE9: A bit confusing.  The gist seems to be that it does selectAllChildren() on
-the body, except sometimes it doesn't.
+  <dt>Firefox 5.0a2
+  <dd>Throws an exception if nothing in the document is editable, which
+  apparently it always does for execCommand().  If there's a body, it does
+  selectAllChildren() on that, and otherwise it does selectAllChildren() on the
+  root element.  If there's no root element, throws an exception.
 
-Firefox 5.0a2: Throws an exception if nothing in the document is editable,
-which apparently it always does for execCommand().  If there's a body, it does
-selectAllChildren() on that, and otherwise it does selectAllChildren() on the
-root element.  If there's no root element, throws an exception.
+  <dt>Chrome 13 dev
+  <dd>If there's no root element, removes the selection.  If there's a root
+  element but no body, collapses the selection at (document, 0).  If there's a
+  body, it selects all the contents of the body, although that doesn't mean the
+  resulting anchor or focus actually are the body node (they're usually text
+  nodes).  But it seems to *avoid* selecting contenteditable stuff: if all the
+  visible things in the body are contenteditable, it removes all ranges from
+  the selection, and if some are, it freaks out and behaves oddly.  But
+  designMode doesn't trouble it.
 
-Chrome 13 dev: If there's no root element, removes the selection.  If there's
-a root element but no body, collapses the selection at (document, 0).  If
-there's a body, it selects all the contents of the body, although that doesn't
-mean the resulting anchor or focus actually are the body node (they're usually
-text nodes).  But it seems to *avoid* selecting contenteditable stuff: if all
-the visible things in the body are contenteditable, it removes all ranges from
-the selection, and if some are, it freaks out and behaves oddly.  But
-designMode doesn't trouble it.
+  <dt>Opera 11.11
+  <dd>Was characteristically uncooperative in my tests, and I didn't try to
+  investigate further.
+</dl>
 
-Opera 11.11: Was characteristically uncooperative in my tests, and I didn't try
-to investigate further.
-
-The behavior here is relatively simple and largely matches implementations.
--->
+<p>The behavior here is relatively simple and largely matches implementations.
+</div>
 
 <p><span>Action</span>:
 
 <ol>
-  <li>Let <var>target</var> be <span data-anolis-spec=html
-  title=the-body-element-0>the body element</span> of the [[contextobject]].
-  <!-- TODO: Is this right even for framesets? -->
+  <li>
+  <p class=comments>TODO: Is this right even for framesets?
 
-  <li>If <var>target</var> is null, let <var>target</var> be the
+  <p>Let <var>target</var> be <span data-anolis-spec=html
+  title=the-body-element-0>the body element</span> of the [[contextobject]].
+
+  <p class=comments>TODO: Is this right even for documents whose root element
+  is not an HTML element?
+
+  <p>If <var>target</var> is null, let <var>target</var> be the
   [[contextobject]]'s <code data-anolis-spec=domcore
   title=dom-Document-documentElement>documentElement</code>.
-  <!-- TODO: Is this right even for documents whose root element is not an HTML
-  element? -->
 
   <li>If <var>target</var> is null, call [[getselection]] on the
   [[contextobject]], and call [[removeallranges]] on the result.
@@ -8167,41 +8231,44 @@ The behavior here is relatively simple and largely matches implementations.
 <!-- @} -->
 <h3><dfn>The <code title>styleWithCSS</code> command</dfn></h3>
 <!-- @{ -->
-<!-- IE9 and Opera 11.00 don't support this command.  By and large, they act
-the way Gecko and WebKit do when styleWithCSS is off.  Gecko invented it, and
-WebKit also supports it:
+<div class=comments>
+<p>IE9 and Opera 11.00 don't support this command.  By and large, they act the
+way Gecko and WebKit do when styleWithCSS is off.  Gecko invented it, and
+WebKit also <a href=https://bugs.webkit.org/show_bug.cgi?id=13490>supports</a>
+it.  The default in Firefox 4.0 is off, while all other browsers behave like
+the default is on (and IE/Opera give no way to turn it off), so I default it to
+on.
 
-https://bugs.webkit.org/show_bug.cgi?id=13490
-
-The default in Firefox 4.0 is off, while all other browsers behave like the
-default is on (and IE/Opera give no way to turn it off), so I default it to on.
--->
+<p>Handling of <var>value</var> matches Firefox 5.0a2.  Chrome 13 dev treats
+the case-sensitive string "true" as true, the case-sensitive string "false" as
+false, and does nothing for any other string.  I went with Gecko because this
+way there are only two possible effects, not three, which makes it easier to
+reason about and debug.  Also, Gecko made up the command, so this is probably
+more web-compatible.  Cursory searches of Google Code and GitHub suggest that
+authors almost always pass a boolean as the third argument when using
+styleWithCSS, in which case the two behaviors work the same.
+</div>
 
 <p><span>Action</span>: If <var>value</var> is an <span
 data-anolis-spec=domcore>ASCII case-insensitive</span> match for the string
 "false", set the <span>CSS styling flag</span> to false.  Otherwise, set the
 <span>CSS styling flag</span> to true.
-<!-- This matches Firefox 5.0a2.  Chrome 13 dev treats the case-sensitive
-string "true" as true, the case-sensitive string "false" as false, and does
-nothing for any other string.  I went with Gecko because this way there are
-only two possible effects, not three, which makes it easier to reason about and
-debug.  Also, Gecko made up the command and has larger market share, so this is
-probably more web-compatible.  Cursory searches of Google Code and GitHub
-suggest that authors almost always pass a boolean as the third argument when
-using styleWithCSS, in which case the two behaviors work the same. -->
+
+<p class=comments>This follows Chrome 13 dev.  Firefox 5.0a2 doesn't support
+queryCommandState() for styleWithCSS.
 
 <p><span>State</span>: True if the <span>CSS styling flag</span> is true,
 otherwise false.
-<!-- This follows Chrome 13 dev.  Firefox 5.0a2 doesn't support
-queryCommandState() for styleWithCSS. -->
 
 <!-- @} -->
 <h3><dfn>The <code title>useCSS</code> command</dfn></h3>
 <!-- @{ -->
-<!-- Supported by Firefox 4.0, but not IE9 or Opera 11.00 (which don't support
-styleWithCSS either), nor by Chrome 12 dev (which does support styleWithCSS.
-useCSS was the original feature in Mozilla 1.3, but the meaning is backward, so
-Gecko added styleWithCSS as a replacement. -->
+<p class=comments>Supported by Firefox 4.0, but not IE9 or Opera 11.00 (which
+don't support styleWithCSS either), nor by Chrome 12 dev (which does support
+styleWithCSS).  useCSS was the original feature in Mozilla 1.3, but the meaning
+is backward, so Gecko added styleWithCSS as a replacement.  No state is
+defined, since only Gecko supports useCss at all, and as of Firefox 6.0a2, it
+doesn't support queryCommandState() for it.
 
 <p><span>Action</span>: If <var>value</var> is an <span
 data-anolis-spec=domcore>ASCII case-insensitive</span> match for the string
@@ -8217,9 +8284,6 @@ console.
 <p class=XXX>The meaning of this command is backwards, and only Gecko supports
 it.  It would be great if Gecko would agree to drop support, so that we could
 get rid of it.
-
-<!-- No state defined, since only Gecko supports useCss at all, and as of
-Firefox 6.0a2, it doesn't support queryCommandState() for it. -->
 <!-- @} -->
 
 <h2>Additional requirements</h2>

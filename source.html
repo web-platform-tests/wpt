@@ -5997,43 +5997,46 @@ would be worth the added complexity.
 <!-- @} -->
 <h3><dfn>The <code title>delete</code> command</dfn></h3>
 <!-- @{ -->
+<p class=comments>For all the deletions here, Firefox 7.0a2 will remove wrapper
+elements like &lt;b> only if they're selected, like {&lt;b>foo&lt;/b>}.  IE9,
+Chrome 14 dev, and Opera 11.50 will all remove them even if only their contents
+are selected, like &lt;b>[foo]&lt;/b>.  Gecko's behavior in the latter case
+leaves things like &lt;b>{}&lt;/b> in the DOM, which is unhelpful, so I don't.
+
 <p><span>Action</span>:
-<!--
-For all the deletions here, Firefox 7.0a2 will remove wrapper elements like <b>
-only if they're selected, like {<b>foo</b>}.  IE9, Chrome 14 dev, and Opera
-11.50 will all remove them even if only their contents are selected, like
-<b>[foo]</b>.  Gecko's behavior in the latter case leaves things like <b>{}</b>
-in the DOM, which is unhelpful, so I don't.
--->
 
 <ol>
   <li>If the <span>active range</span> is not <code data-anolis-spec=domrange
   title=dom-Range-collapsed>collapsed</code>, <span>delete the contents</span>
   of the <span>active range</span> and abort these steps.
 
-  <li><span>Canonicalize whitespace</span> at (<span>active range</span>'s
+  <li>
+  <p class=comments>Needed so that if there are multiple consecutive spaces we
+  backspace over all at once.
+
+  <p><span>Canonicalize whitespace</span> at (<span>active range</span>'s
   [[startnode]], <span>active range</span>'s [[startoffset]]).
-  <!-- Needed so that if there are multiple consecutive spaces we backspace
-  over all at once. -->
 
   <li>Let <var>node</var> and <var>offset</var> be the <span>active
   range</span>'s [[rangestart]] [[bpnode]] and [[bpoffset]].
 
-  <!-- First go up as high as possible within the current block, then drill
-  down to the lowest possible level, in the hopes that we'll wind up at the end
-  of a text node, or maybe in a br or hr. -->
-  <li>Repeat the following steps:
+  <li>
+  <p class=comments>First go up as high as possible within the current block,
+  then drill down to the lowest possible level, in the hopes that we'll wind up
+  at the end of a text node, or maybe in a br or hr.
+
+  <p>Repeat the following steps:
 
   <ol>
-    <!--
-    If there's an invisible node somewhere, Firefox 5.0a2 removes that node and
-    then stops, so each backspace removes one invisible node.  All others
-    remove the invisible node and then continue on looking for something
-    visible to remove.  The spec follows the latter behavior, since it makes
-    more sense to the user.  Of course, the definition of "invisible node" is
-    not necessarily anything like the spec's.
-    -->
-    <li>If <var>offset</var> is zero and <var>node</var>'s [[previoussibling]]
+    <li>
+    <p class=comments> If there's an invisible node somewhere, Firefox 5.0a2
+    removes that node and then stops, so each backspace removes one invisible
+    node.  All others remove the invisible node and then continue on looking
+    for something visible to remove.  The spec follows the latter behavior,
+    since it makes more sense to the user.  Of course, the definition of
+    "invisible node" is not necessarily anything like the spec's.
+
+    <p>If <var>offset</var> is zero and <var>node</var>'s [[previoussibling]]
     is an <span>editable</span> <span>invisible</span> [[node]], remove
     <var>node</var>'s [[previoussibling]] from its [[parent]].
 
@@ -6047,13 +6050,13 @@ in the DOM, which is unhelpful, so I don't.
     <span>invisible</span> [[node]], set <var>offset</var> to the [[index]] of
     <var>node</var>, then set <var>node</var> to its [[parent]].
 
-    <!--
-    When backspacing a link, Firefox 7.0a2, Chrome 14 dev, Opera 11.50, and
-    OpenOffice.org 3.2.1 Ubuntu have no special behavior.  IE9 and Word 2007
-    remove the link instead of deleting its last character.  The latter
-    behavior seems more useful and intuitive.
-    -->
-    <li>Otherwise, if <var>node</var> has a [[child]] with [[index]]
+    <li>
+    <p class=comments> When backspacing a link, Firefox 7.0a2, Chrome 14 dev,
+    Opera 11.50, and OpenOffice.org 3.2.1 Ubuntu have no special behavior.  IE9
+    and Word 2007 remove the link instead of deleting its last character.  The
+    latter behavior seems more useful and intuitive.
+
+    <p>Otherwise, if <var>node</var> has a [[child]] with [[index]]
     <var>offset</var> &minus; 1 and that [[child]] is an <span>editable</span>
     [[a]], remove that [[child]] from <var>node</var>, <span>preserving its
     descendants</span>.  Then abort these steps.
@@ -6067,31 +6070,39 @@ in the DOM, which is unhelpful, so I don't.
     <li>Otherwise, break from this loop.
   </ol>
 
-  <!--
-  At this point, node cannot be an invisible node.  There are three cases:
+  <li>
+  <div class=comments>
+  <p>At this point, node cannot be an invisible node.  There are three cases:
 
-  1) offset is zero and node is a block node.  Then we'll usually merge with
-  the previous block if one exists.
+  <ol>
+    <li><var>offset</var> is zero and node is a block node.  Then we'll usually
+    merge with the previous block if one exists.
 
-  2) offset is not zero, node is not a block node, and node does not have a
-  child with index offset - 1.  The only way this is possible is if node has a
-  length greater than zero but no children, which implies it's a text or
-  comment or PI.  Comments and PIs are invisible nodes, so it must be a text
-  node.  We delete the previous character.
+    <li><var>offset</var> is not zero, <var>node</var> is not a block node, and
+    <var>node</var> does not have a child with index <var>offset</var> &minus;
+    1.  The only way this is possible is if node has a length greater than zero
+    but no children, which implies it's a text or comment or PI.  Comments and
+    PIs are invisible nodes, so it must be a text node.  We delete the previous
+    character.
 
-  3) offset is not zero, and the child of node with index offset - 1 is a
-  block node or a br or an img.  Then we'll usually merge the offsetth child of
-  node with the last descendant of the offset - 1st.
-  -->
+    <li><var>offset</var> is not zero, and the child of <var>node</var> with
+    index <var>offset</var> &minus; 1 is a block node or a br or an img.  Then
+    we'll usually merge the <var>offset</var>th child of <var>node</var> with
+    the last descendant of the <var>offset</var> &minus; 1st.
+  </ol>
+  </div>
 
-  <li>If <var>node</var> is a [[text]] node and <var>offset</var> is not zero,
+  <p>If <var>node</var> is a [[text]] node and <var>offset</var> is not zero,
   call [[selcollapse|<var>node</var>, <var>offset</var>]] on the [[selection]].
   Then <span>delete the contents</span> of the [[range]] with [[rangestart]]
   (<var>node</var>, <var>offset</var> &minus; 1) and [[rangeend]]
   (<var>node</var>, <var>offset</var>) and abort these steps.
 
-  <!-- At the time of this writing, this should be impossible. -->
-  <li>If <var>node</var> is an <span>inline node</span>, abort these steps.
+  <li>
+  <p class=comments>At the time of this writing, this should be impossible.
+  Just being safe.
+
+  <p>If <var>node</var> is an <span>inline node</span>, abort these steps.
 
   <li>If <var>node</var> has a [[child]] with [[index]] <var>offset</var>
   &minus; 1 and that [[child]] is a [[br]] or [[hr]] or [[img]], call
@@ -6100,14 +6111,14 @@ in the DOM, which is unhelpful, so I don't.
   (<var>node</var>, <var>offset</var> &minus; 1) and [[rangeend]]
   (<var>node</var>, <var>offset</var>) and abort these steps.
 
-  <!--
-  If we're at the beginning of a list, we want to outdent the first list item.
-  This doesn't actually match anyone or anything.  Word 2007 and OpenOffice.org
-  3.2.1 Ubuntu just remove the list marker, which is weird and doesn't map well
-  to HTML.  Browsers tend to just merge with the preceding block, which isn't
-  expected.
-  -->
-  <li>If <var>node</var> is an [[li]] or [[dt]] or [[dd]] and is the first
+  <li>
+  <p class=comments> If we're at the beginning of a list, we want to outdent
+  the first list item.  This doesn't actually match anyone or anything.  Word
+  2007 and OpenOffice.org 3.2.1 Ubuntu just remove the list marker, which is
+  weird and doesn't map well to HTML.  Browsers tend to just merge with the
+  preceding block, which isn't expected.
+
+  <p>If <var>node</var> is an [[li]] or [[dt]] or [[dd]] and is the first
   [[child]] of its [[parent]], and <var>offset</var> is zero:
 
   <ol>
@@ -6125,26 +6136,28 @@ in the DOM, which is unhelpful, so I don't.
 
     <li><span>Restore the values</span> from <var>values</var>.
 
-    <li>If <var>node</var> is a [[dd]] or [[dt]], and it is not an
+    <li>
+    <p class=comments> Annoying hack to prevent the dl from being re-added when
+    fixing disallowed ancestors.  In most cases we want a wrapper dl added, but
+    in two cases (delete and insertParagraph) we're actually trying to outdent
+    the list item.  TODO: there might be a better way to do this.
+
+    <p>If <var>node</var> is a [[dd]] or [[dt]], and it is not an
     <span>allowed child</span> of any of its [[ancestors]] <span>in the same
     editing host</span>, <span>set the tag name</span> of <var>node</var> to
     the <span>default single-line container name</span> and let <var>node</var>
     be the result.
-    <!--
-    Annoying hack to prevent the dl from being re-added when fixing disallowed
-    ancestors.  In most cases we want a wrapper dl added, but in two cases
-    (delete and insertParagraph) we're actually trying to outdent the list
-    item.  There might be a better way to do this.
-    -->
 
     <li><span>Fix disallowed ancestors</span> of <var>node</var>.
 
     <li>Abort these steps.
   </ol>
 
-  <!-- By this point, we're almost certainly going to merge something, and the
-  only question is what. -->
-  <li>Let <var>start node</var> equal <var>node</var> and let <var>start
+  <li>
+  <p class=comments>By this point, we're almost certainly going to merge
+  something, and the only question is what.
+
+  <p>Let <var>start node</var> equal <var>node</var> and let <var>start
   offset</var> equal <var>offset</var>.
 
   <li>Repeat the following steps:
@@ -6162,13 +6175,12 @@ in the DOM, which is unhelpful, so I don't.
     <li>Otherwise, break from this loop.
   </ol>
 
-  <!--
-  At the beginning of an indented block, outdent it, similar to a list item.
-  Browsers don't do this, word processors do.
+  <li>
+  <p class=comments>At the beginning of an indented block, outdent it, similar
+  to a list item.  Browsers don't do this, word processors do.  Note: this
+  copy-pastes from the outdent command action.
 
-  Note: this copy-pastes from the outdent command action.
-  -->
-  <li>If <var>offset</var> is zero, and <var>node</var> has an
+  <p>If <var>offset</var> is zero, and <var>node</var> has an
   <span>editable</span> [[ancestorcontainer]] <span>in the same editing
   host</span> that's an <span>indentation element</span>:
 
@@ -6190,23 +6202,25 @@ in the DOM, which is unhelpful, so I don't.
     <li>Abort these steps.
   </ol>
 
-  <!--
-  This is to avoid stripping a line break from
+  <li>
+  <div class=comments>
+  <p>This is to avoid stripping a line break from
 
-    foo<br><br><table><tr><td>[]bar</table>
+    <pre>foo&lt;br>&lt;br>&lt;table>&lt;tr>&lt;td>[]bar&lt;/table></pre>
 
-  and similarly for <hr>.  We should just do nothing here.
-  -->
-  <li>If the [[child]] of <var>start node</var> with [[index]] <var>start
+  <p>and similarly for &lt;hr>.  We should just do nothing here.
+  </div>
+
+  <p>If the [[child]] of <var>start node</var> with [[index]] <var>start
   offset</var> is a [[table]], abort these steps.
 
-  <!--
-  If you try backspacing into a table, select it.  This doesn't match any
-  browser; it matches the recommendation of the "behavior when typing in
-  contentEditable elements" document.  The idea is that then you can delete it
-  with a second backspace.
-  -->
-  <li>If <var>start node</var> has a [[child]] with [[index]] <var>start
+  <li>
+  <p class=comments>If you try backspacing into a table, select it.  This
+  doesn't match any browser; it matches the recommendation of the "behavior
+  when typing in contentEditable elements" document.  The idea is that then you
+  can delete it with a second backspace.
+
+  <p>If <var>start node</var> has a [[child]] with [[index]] <var>start
   offset</var> &minus; 1, and that [[child]] is a [[table]]:
 
   <ol>
@@ -6219,21 +6233,25 @@ in the DOM, which is unhelpful, so I don't.
     <li>Abort these steps.
   </ol>
 
-  <!--
-  Special case:
+  <li>
+  <div class=comments>
+  <p>Special case:
 
-    <p>foo</p><br><p>[]bar</p>
-    -> <p>foo</p><p>[]bar</p>
+<pre>
+&lt;p>foo&lt;/p>&lt;br>&lt;p>[]bar&lt;/p>
+-> &lt;p>foo&lt;/p>&lt;p>[]bar&lt;/p></pre>
 
-  and likewise for <hr>.  But with <img> we merge like in other cases:
+  <p>and likewise for &lt;hr>.  But with &lt;img> we merge like in other cases:
 
-    <p>foo</p><img><p>[]bar</p>
-    -> <p>foo</p><img>[]bar.
+<pre>
+&lt;p>foo&lt;/p>&lt;img>&lt;p>[]bar&lt;/p>
+-> &lt;p>foo&lt;/p>&lt;img>[]bar.</pre>
 
-  Browsers don't do this consistently.  Firefox 5.0a2 doesn't seem to do it at
-  all.
-  -->
-  <li>If <var>offset</var> is zero; and either the [[child]] of <var>start
+  <p>Browsers don't do this consistently.  Firefox 5.0a2 doesn't seem to do it
+  at all.
+  </div>
+
+  <p>If <var>offset</var> is zero; and either the [[child]] of <var>start
   node</var> with [[index]] <var>start offset</var> minus one is an [[hr]], or
   the [[child]] is a [[br]] whose [[previoussibling]] is either a [[br]] or not
   an <span>inline node</span>:
@@ -6249,23 +6267,25 @@ in the DOM, which is unhelpful, so I don't.
     <li>Abort these steps.
   </ol>
 
-  <!--
-  If you try backspacing out of a list item, merge it with the previous item,
-  but add a line break.  Then you have to backspace again if you really want
-  them to be on the same line.  This matches Word 2007 and OpenOffice.org 3.2.1
-  Ubuntu, and also matches "behavior when typing in contentEditable elements",
-  but does not match any browser.
+  <li>
+  <div class=comments>
+  <p>If you try backspacing out of a list item, merge it with the previous
+  item, but add a line break.  Then you have to backspace again if you really
+  want them to be on the same line.  This matches Word 2007 and OpenOffice.org
+  3.2.1 Ubuntu, and also matches "behavior when typing in contentEditable
+  elements", but does not match any browser.
 
-  Note that this behavior is quite different from what happens if you actually
-  select the linebreak in between the two lines.  In that case, the blocks are
-  merged as normal.
+  <p>Note that this behavior is quite different from what happens if you
+  actually select the linebreak in between the two lines.  In that case, the
+  blocks are merged as normal.
 
-  Also note that hitting backspace twice will merge with the previous item.
+  <p>Also note that hitting backspace twice will merge with the previous item.
   This matches OO.org, but Word will outdent the item on subsequent backspaces.
   Word's behavior doesn't fit well with the way lists work in HTML, and we
   probably don't want it.
-  -->
-  <li>If the [[child]] of <var>start node</var> with [[index]] <var>start
+  </div>
+
+  <p>If the [[child]] of <var>start node</var> with [[index]] <var>start
   offset</var> is an [[li]] or [[dt]] or [[dd]], and that [[child]]'s
   [[firstchild]] is an <span>inline node</span>, and <var>start offset</var> is
   not zero:
@@ -6274,9 +6294,12 @@ in the DOM, which is unhelpful, so I don't.
     <li>Let <var>previous item</var> be the [[child]] of <var>start node</var>
     with [[index]] <var>start offset</var> minus one.
 
-    <!-- If the last child is already a br, we only need to append one extra
-    br.  Otherwise we need to append two, since the first will do nothing. -->
-    <li>If <var>previous item</var>'s [[lastchild]] is an <span>inline
+    <li>
+    <p class=comments>If the last child is already a br, we only need to append
+    one extra br.  Otherwise we need to append two, since the first will do
+    nothing.
+
+    <p>If <var>previous item</var>'s [[lastchild]] is an <span>inline
     node</span> other than a [[br]], call [[createelement|"br"]] on the
     [[contextobject]] and append the result as the last [[child]] of
     <var>previous item</var>.
@@ -6286,12 +6309,13 @@ in the DOM, which is unhelpful, so I don't.
     append the result as the last [[child]] of <var>previous item</var>.
   </ol>
 
-  <!--
-  When merging adjacent list items, make sure we only merge the items
-  themselves, not any block children.  We want <li><p>foo<li><p>bar to become
-  <li><p>foo<p>bar, not <li><p>foo<br>bar or <li><p>foobar.
-  -->
-  <li>If the [[child]] of <var>start node</var> with [[index]] <var>start
+  <li>
+  <p class=comments>When merging adjacent list items, make sure we only merge
+  the items themselves, not any block children.  We want
+  &lt;li>&lt;p>foo&lt;li>&lt;p>bar to become &lt;li>&lt;p>foo&lt;p>bar, not
+  &lt;li>&lt;p>foo&lt;br>bar or &lt;li>&lt;p>foobar.
+
+  <p>If the [[child]] of <var>start node</var> with [[index]] <var>start
   offset</var> is an [[li]] or [[dt]] or [[dd]], and its [[previoussibling]] is
   also an [[li]] or [[dt]] or [[dd]], set <var>start node</var> to its
   [[child]] with [[index]] <var>start offset</var> &minus; 1, then set
@@ -6299,8 +6323,10 @@ in the DOM, which is unhelpful, so I don't.
   <var>node</var> to <var>start node</var>'s [[nextsibling]], then set
   <var>offset</var> to 0.
 
-  <!-- General block-merging case. -->
-  <li>Otherwise, while <var>start node</var> has a [[child]] with [[index]]
+  <li>
+  <p class=comments>General block-merging case.
+
+  <p>Otherwise, while <var>start node</var> has a [[child]] with [[index]]
   <var>start offset</var> minus one:
 
   <ol>
@@ -6322,72 +6348,93 @@ in the DOM, which is unhelpful, so I don't.
 <!-- @} -->
 <h3><dfn>The <code title>formatBlock</code> command</dfn></h3>
 <!-- @{ -->
-<!--
-Tested browser versions: IE9, Firefox 4.0, Chrome 13 dev, Opera 11.10.
-
-Firefox and Chrome will replace a <blockquote> by a <p> or other given tag.  IE
-and Opera will nest the <p> inside instead.  The latter makes more sense, given
-that a) we don't support formatBlock with <blockquote> and b) <blockquote>s are
-logically different, since they can contain many lines.
-
-Firefox will not convert other tags like <p> to <div>, it will only wrap
-unwrapped lines in a <div>.  Firefox also won't replace <div> by things like
-<p>, it will nest the <p> inside.  The spec follows other browsers.
-
-If you try to convert a <dt> to a <div> or <p> or such, Firefox breaks out of
-the <dl> entirely, leaving ...<dt><br></dt></dl>.  Chrome will convert a <dt>
-or <dd> to the given element, leaving a <div> or <p> or such as the child of a
-<dl>.  I follow IE/Opera, which only affect the contents of <dt>/<dd> (Firefox
-behaves this way for <dd> as well, just not <dt>).  This means you can get
-invalid DOMs like <dt><p>foo<p></dt>, but they can be serialized as text/html,
-so I'm not too fussy.
-
-When it comes to <li>, IE/Opera behave like with <dt>/<dd>, which is how I
-behave too.  Firefox apparently refuses to do anything.  Chrome tries to wrap
-the parent list element, breaking it up if only some of the children are
-selected; this produces unserializable DOMs if you're wrapping with <p>.
-
-When you're converting multiple blocks at once, Chrome replaces them all by one
-block with <br> stuck in, like <p>foo</p><p>bar</p> -> <div>foo<br>bar</div>.
-It wipes out intervening block containers too in some cases.  This might make
-sense for <address>/<h*>/<pre>, but other browsers don't do it.
--->
-
 <p>A <dfn>formattable block name</dfn> is "address", "dd", "div", "dt", "h1",
 "h2", "h3", "h4", "h5", "h6", "p", or "pre".
+
+<div class=comments>
+<p>Tested browser versions: IE9, Firefox 4.0, Chrome 13 dev, Opera 11.10.
+
+<p>Firefox and Chrome will replace a &lt;blockquote> by a &lt;p> or other given
+tag.  IE and Opera will nest the &lt;p> inside instead.  The latter makes more
+sense, given that a) we don't support formatBlock with &lt;blockquote> and b)
+&lt;blockquote>s are logically different, since they can contain many lines.
+
+<p>Firefox will not convert other tags like &lt;p> to &lt;div>, it will only
+wrap unwrapped lines in a &lt;div>.  Firefox also won't replace &lt;div> by
+things like &lt;p>, it will nest the &lt;p> inside.  The spec follows other
+browsers.
+
+<p>If you try to convert a &lt;dt> to a &lt;div> or &lt;p> or such, Firefox
+breaks out of the &lt;dl> entirely, leaving ...&lt;dt>&lt;br>&lt;/dt>&lt;/dl>.
+Chrome will convert a &lt;dt> or &lt;dd> to the given element, leaving a
+&lt;div> or &lt;p> or such as the child of a &lt;dl>.  I follow IE/Opera, which
+only affect the contents of &lt;dt>/&lt;dd> (Firefox behaves this way for
+&lt;dd> as well, just not &lt;dt>).  This means you can get invalid DOMs like
+&lt;dt>&lt;p>foo&lt;p>&lt;/dt>, but they can be serialized as text/html, so I'm
+not too fussy.
+
+<p>When it comes to &lt;li>, IE/Opera behave like with &lt;dt>/&lt;dd>, which
+is how I behave too.  Firefox apparently refuses to do anything.  Chrome tries
+to wrap the parent list element, breaking it up if only some of the children
+are selected; this produces unserializable DOMs if you're wrapping with &lt;p>.
+
+<p>When you're converting multiple blocks at once, Chrome replaces them all by
+one block with &lt;br> stuck in, like &lt;p>foo&lt;/p>&lt;p>bar&lt;/p> ->
+&lt;div>foo&lt;br>bar&lt;/div>.  It wipes out intervening block containers too
+in some cases.  This might make sense for &lt;address>/&lt;h*>/&lt;pre>, but
+other browsers don't do it.
+</div>
 
 <p><span>Action</span>:
 
 <ol>
-  <li>If <var>value</var> begins with a "&lt;" character and ends with a ">"
+  <li>
+  <p class=comments>IE9 requires the brackets.  If they're not provided, it
+  does nothing.
+
+  <p>If <var>value</var> begins with a "&lt;" character and ends with a ">"
   character, remove the first and last characters from it.
-  <!-- IE9 requires the brackets.  If they're not provided, it does nothing.
-  -->
 
   <li>Let <var>value</var> be <span data-anolis-spec=domcore>converted to
   ASCII lowercase</span>.
 
-  <li>If <var>value</var> is not a <span>formattable block name</span>, abort
-  these steps and do nothing.
-  <!--
-  Opera 11.10 throws NOT_SUPPORTED_ERR for bad elements, all other tested
+  <li>
+  <div class=comments>
+  <p>Opera 11.10 throws NOT_SUPPORTED_ERR for bad elements, all other tested
   browsers ignore the input.  Testing in IE9, Firefox 4.0, Chrome 13 dev, and
   Opera 11.10, supported elements seem to be:
 
-  Everyone: address, div, h*, p, pre
-  Everyone but IE: blockquote
-  Everyone but Opera: dd, dt
-  IE only: dir, menu, ol, ul
-  Firefox and Chrome only: dl
-  Chrome only: article, aside, footer, header, hgroup, nav, section
+  <dl>
+    <dt>Everyone
+    <dd>address, div, h*, p, pre
 
-  HTML5 as of May 2011 supports: address, article, aside, blockquote, div,
+    <dt>Everyone but IE
+    <dd>blockquote
+
+    <dt>Everyone but Opera
+    <dd>dd, dt
+
+    <dt>IE only
+    <dd>dir, menu, ol, ul
+
+    <dt>Firefox and Chrome only
+    <dd>dl
+
+    <dt>Chrome only
+    <dd>article, aside, footer, header, hgroup, nav, section
+  </dl>
+
+  <p>HTML5 as of May 2011 supports: address, article, aside, blockquote, div,
   footer, h*, header, hgroup, nav, p, pre, section, which exactly matches
   Chrome except minus dd/dt/dl.
 
-  See mailing list discussion on the subject:
-  http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031765.html
-  -->
+  <p>See <a
+  href=http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031765.html>mailing
+  list discussion</a> on the subject.
+  </div>
+
+  <p>If <var>value</var> is not a <span>formattable block name</span>, abort
+  these steps and do nothing.
 
   <li><span>Block-extend</span> the <span>active range</span>, and let <var>new
   range</var> be the result.
@@ -6405,85 +6452,89 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
   <li><span>Record the values</span> of <var>node list</var>, and let
   <var>values</var> be the result.
 
-  <li>For each <var>node</var> in <var>node list</var>, while <var>node</var>
+  <li>
+  <p class=comments>This tries to avoid misnesting if only some lines of an
+  element are selected, so &lt;h1>[foo]&lt;br>bar&lt;/h1> becomes
+  &lt;p>[foo]&lt;/p>&lt;h1>bar&lt;/h1> instead of
+  &lt;h1>&lt;p>[foo]&lt;/p>&lt;br>bar&lt;/h1> or such.  It tries to
+  heuristically distinguish between divs used as line-breakers and divs used as
+  actual wrappers by checking if they have prohibited paragraph children as
+  descendants.  It works for address too, in case there are paragraphs nested
+  inside.  Thus &lt;address>[foo]&lt;br>bar&lt;/address> becomes
+  &lt;p>[foo]&lt;/p>&lt;address>bar&lt;/address>, but
+  &lt;address>[foo]&lt;p>bar&lt;/p>&lt;/address> becomes
+  &lt;address>&lt;p>[foo]&lt;/p>&lt;p>bar&lt;/p>&lt;/address>.  Likewise, we
+  don't break things out of lists or tables or such if they happen to be nested
+  in a &lt;div>.
+
+  <p>For each <var>node</var> in <var>node list</var>, while <var>node</var>
   is the [[descendant]] of an <span>editable</span> <span>HTML element</span>
   <span>in the same editing host</span>, whose [[localname]] is a
   <span>formattable block name</span>, and which is not the [[ancestor]] of a
   <span>prohibited paragraph child</span>, <span>split the parent</span> of the
   one-[[node]] list consisting of <var>node</var>.
-  <!--
-  This tries to avoid misnesting if only some lines of an element are selected,
-  so <h1>[foo]<br>bar</h1> becomes <p>[foo]</p><h1>bar</h1> instead of
-  <h1><p>[foo]</p><br>bar</h1> or such.  It tries to heuristically distinguish
-  between divs used as line-breakers and divs used as actual wrappers by
-  checking if they have prohibited paragraph children as descendants.  It works
-  for address too, in case there are paragraphs nested inside.  Thus
-  <address>[foo]<br>bar</address> becomes <p>[foo]</p><address>bar</address>,
-  but <address>[foo]<p>bar</p></address> becomes
-  <address><p>[foo]</p><p>bar</p></address>.  Likewise, we don't break things
-  out of lists or tables or such if they happen to be nested in a <div>.
-  -->
 
   <li><span>Restore the values</span> from <var>values</var>.
 
-  <!--
-  We have two different behaviors, one for div and p and one for everything
+  <li>
+  <div class=comments>
+  <p>We have two different behaviors, one for div and p and one for everything
   else.  The basic difference is that for div and p, we assume that it should
   be one line per element, while for other elements, we put in multiple lines
-  separated by <br>.  So if you do formatBlock to p on
+  separated by &lt;br>.  So if you do formatBlock to p on
+    <pre>&lt;div>foo&lt;/div>&lt;div>bar&lt;/div></pre>
+  <p>or
+    <pre>foo&lt;br>bar</pre>
+  <p>you get
+    <pre>&lt;p>foo&lt;/p>&lt;p>bar&lt;/p></pre>
+  <p>but formatBlock to h1 will get you
+    <pre>&lt;h1>foo&lt;br>bar&lt;/h1>.</pre>
+  <p>IE9 will just change the elements as they are, so it gives
+  &lt;p>foo&lt;/p>&lt;p>bar&lt;/p> and &lt;h1>foo&lt;/h1>&lt;h1>bar&lt;/h1> for
+  &lt;div>foo&lt;/div>&lt;div>bar&lt;/div>, but &lt;p>foo&lt;br>bar&lt;/p> and
+  &lt;h1>foo&lt;br>bar&lt;/h1> for foo&lt;br>bar.  This is unreasonable,
+  because the two possible inputs here look identical to the user and might
+  have been produced by identical user input.
 
-    <div>foo</div><div>bar</div> or
-    foo<br>bar
+  <p>Firefox 5.0a2 will give results like &lt;p>foo&lt;/p>&lt;p>bar&lt;/p> or
+  &lt;h1>foo&lt;/h1>&lt;h1>bar&lt;/h1> no matter what (modulo oddities in its
+  handling of divs).  Opera 11.10 is similar, except it leaves a trailing
+  &lt;br> in the first element.
 
-  you get
+  <p>Chrome 13 dev will give results like &lt;p>foo&lt;br>bar&lt;/p> or
+  &lt;h1>foo&lt;br>bar&lt;/h1> no matter what.
 
-    <p>foo</p><p>bar</p>
+  <p>The specced behavior is a compromise between the existing behaviors,
+  predicated on the fact that &lt;h1>foo&lt;/h1>&lt;h1>bar&lt;/h1> almost never
+  makes sense, and &lt;p>foo&lt;br>bar&lt;/p> isn't usually what's wanted
+  either.
+  </div>
 
-  but formatBlock to h1 will get you
-
-    <h1>foo<br>bar</h1>.
-
-  IE9 will just change the elements as they are, so it gives
-  <p>foo</p><p>bar</p> and <h1>foo</h1><h1>bar</h1> for
-  <div>foo</div><div>bar</div>, but <p>foo<br>bar</p> and <h1>foo<br>bar</h1>
-  for foo<br>bar.  This is unreasonable, because the two possible inputs here
-  look identical to the user and might have been produced by identical user
-  input.
-
-  Firefox 5.0a2 will give results like <p>foo</p><p>bar</p> or
-  <h1>foo</h1><h1>bar</h1> no matter what (modulo oddities in its handling of
-  divs).  Opera 11.10 is similar, except it leaves a trailing <br> in the first
-  element.
-
-  Chrome 13 dev will give results like <p>foo<br>bar</p> or <h1>foo<br>bar</h1>
-  no matter what.
-
-  The specced behavior is a compromise between the existing behaviors,
-  predicated on the fact that <h1>foo</h1><h1>bar</h1> almost never makes
-  sense, and <p>foo<br>bar</p> isn't usually what's wanted either.
-  -->
-  <li>While <var>node list</var> is not empty:
+  <p>While <var>node list</var> is not empty:
 
   <ol>
     <li>If the first member of <var>node list</var> is a <span>single-line
     container</span>:
 
     <ol>
-      <!--
-      If you try to format a single-line container with no children, IE10PP2
-      inserts an nbsp before formatting.  (It uses nbsp instead of <br> to make
-      blocks not collapse, so the equivalent for us would be to insert a <br>.)
-      Firefox 7.0a2 and Opera 11.50 make the element disappear.  Chrome 14 dev
-      leaves it alone and doesn't format it.  I follow Firefox/Opera just
-      because it's the simplest given how I happen to have written the spec,
-      and it's a corner case, so exact behavior isn't important.
+      <li>
+      <div class=comments>
+      <p>If you try to format a single-line container with no children, IE10PP2
+      inserts an nbsp before formatting.  (It uses nbsp instead of &lt;br> to
+      make blocks not collapse, so the equivalent for us would be to insert a
+      &lt;br>.) Firefox 7.0a2 and Opera 11.50 make the element disappear.
+      Chrome 14 dev leaves it alone and doesn't format it.  I follow
+      Firefox/Opera just because it's the simplest given how I happen to have
+      written the spec, and it's a corner case, so exact behavior isn't
+      important.
 
-      For blocks that contain only a collapsed whitespace node, IE10PP2 and
+      <p>For blocks that contain only a collapsed whitespace node, IE10PP2 and
       Firefox 7.0a2 convert them like normal.  Chrome 14 dev and Opera 11.50
       leave it alone and don't format it.  I go with the majority, which is
       again simpler to spec.
-      -->
-      <li>Let <var>sublist</var> be the [[children]] of the first member of
+      </div>
+
+      <p>Let <var>sublist</var> be the [[children]] of the first member of
       <var>node list</var>.
 
       <li><span>Record the values</span> of <var>sublist</var>, and let
@@ -6522,12 +6573,13 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
   </ol>
 </ol>
 
+<p class=comments>Firefox 6.0a2 throws, Chrome 14 dev always returns false,
+Opera 11.11 doesn't support indeterm to start with, IE9 was uncooperative in
+testing so I'm not sure what it does.  I'm speccing it just because it makes
+sense.
+
 <p><span>Indeterminate</span>:
-<!--
-Firefox 6.0a2 throws, Chrome 14 dev always returns false, Opera 11.11 doesn't
-support indeterm to start with, IE9 was uncooperative in testing so I'm not
-sure what it does.  I'm speccing it just because it makes sense.
--->
+
 <ol>
   <li><span>Block-extend</span> the <span>active range</span>, and let <var>new
   range</var> be the result.
@@ -6567,21 +6619,22 @@ sure what it does.  I'm speccing it just because it makes sense.
   <li>Return false.
 </ol>
 
-<p><span>Value</span>:
-<!--
-IE9 returns human-readable strings like "Normal" (p/div/etc.), "Formatted"
+<div class=comments>
+<p>IE9 returns human-readable strings like "Normal" (p/div/etc.), "Formatted"
 (pre), "Heading 1" (h1), etc.  Firefox 6.0a2 and Chrome 14 dev both return the
 appropriate tag name in lowercase, or the empty string if there is no
 appropriate tag.  Opera 11.11 behaves the same, but with uppercase.
 
-IE9 looks like it recognizes address, h*, pre, dd, dt, ol, ul, and dir, with
+<p>IE9 looks like it recognizes address, h*, pre, dd, dt, ol, ul, and dir, with
 everything else registering as "Normal".  Firefox 6.0a2 recognizes only the
 arguments it accepts for formatBlock, namely address, h*, p, and pre.  Chrome
 14 dev recognizes address, div, h*, dd, dl, dt, p, pre plus lots of random
 other stuff like blockquote and section.  I'll go with everything that
 execCommand("formatblock") accepts as an argument, which at the time of this
 writing means what Firefox supports plus div.
--->
+</div>
+
+<p><span>Value</span>:
 <ol>
   <li><span>Block-extend</span> the <span>active range</span>, and let <var>new
   range</var> be the result.
@@ -6591,26 +6644,32 @@ writing means what Firefox supports plus div.
   and has no [[children]].  If there is no such [[node]], return the empty
   string.
 
-  <li>While <var>node</var>'s [[parent]] is <span>editable</span> and <span>in
+  <li>
+  <p class=comments>Opera 11.11 doesn't require it be editable, so it will
+  return "DIV" instead of "" for &lt;div contenteditable>foo&lt;/div>.
+
+  <p>While <var>node</var>'s [[parent]] is <span>editable</span> and <span>in
   the same editing host</span> as <var>node</var>, and <var>node</var> is not
   an <span>HTML element</span> whose [[localname]] is a <span>formattable block
   name</span>, set <var>node</var> to its [[parent]].
-  <!-- Opera 11.11 doesn't require it be editable, so it will return "DIV"
-  instead of "" for <div contenteditable>foo</div>.  -->
 
-  <li>If <var>node</var> is an <span>editable</span> <span>HTML element</span>
+  <li>
+  <div class=comments>
+  <p>Chrome 14 dev will report "div" for
+  &lt;div>&lt;ol>&lt;li>foo&lt;/ol>&lt;/div> or such.  Opera 11.11 reports "".
+  IE and Firefox didn't cooperate with testing.  Opera makes more sense, and
+  matches the fact that formatBlock now doesn't recognize such a div as a
+  formatBlock candidate, so Opera it is.
+
+  <p>We don't really need to specify "editable" here, since it has to be
+  editable if we got to this point.
+  </div>
+
+  <p>If <var>node</var> is an <span>editable</span> <span>HTML element</span>
   whose [[localname]] is a <span>formattable block name</span>, and
   <var>node</var> is not the [[ancestor]] of a <span>prohibited paragraph
   child</span>, return <var>node</var>'s [[localname]], <span
   data-anolis-spec=domcore>converted to ASCII lowercase</span>.
-  <!--
-  Chrome 14 dev will report "div" for <div><ol><li>foo</ol></div> or such.
-  Opera 11.11 reports "".  IE and Firefox didn't cooperate with testing.  Opera
-  makes more sense, and matches the fact that formatBlock now doesn't recognize
-  such a div as a formatBlock candidate, so Opera it is.
-
-  We don't really need to specify "editable", since it has to be editable.
-  -->
 
   <li>Return the empty string.
 </ol>
@@ -6618,8 +6677,9 @@ writing means what Firefox supports plus div.
 <!-- @} -->
 <h3><dfn>The <code title>forwardDelete</code> command</dfn></h3>
 <!-- @{ -->
+<p class=comments>Copy-pasted from delete, see there for comments.
+
 <p><span>Action</span>:
-<!-- Copy-pasted from delete, see there for comments. -->
 
 <ol>
   <li>If the <span>active range</span> is not <code data-anolis-spec=domrange
@@ -6672,15 +6732,17 @@ writing means what Firefox supports plus div.
 
     <li>Let <var>end offset</var> be <var>offset</var> plus one.
 
-    <li>While <var>end offset</var> is not <var>node</var>'s [[length]] and the
+    <li>
+    <p class=comments>TODO: This is probably not right.  We probably want to
+    normalize to grapheme cluster boundaries, using UAX#29 or something.  We
+    also need to handle non-BMP stuff.  The idea is that if the cursor is
+    before a character that precedes a combining mark, you need to delete the
+    combining mark too.
+
+    <p>While <var>end offset</var> is not <var>node</var>'s [[length]] and the
     <var>end offset</var>th [[strel]] of <var>node</var>'s [[cddata]] has
     general category M when interpreted as a Unicode code point, add one to
     <var>end offset</var>.
-    <!-- TODO: This is probably not right.  We probably want to normalize to
-    grapheme cluster boundaries, using UAX#29 or something.  We also need to
-    handle non-BMP stuff.  The idea is that if the cursor is before a character
-    that precedes a combining mark, you need to delete the combining mark too.
-    -->
 
     <li><span>Delete the contents</span> of the [[range]] with [[rangestart]]
     (<var>node</var>, <var>offset</var>) and [[rangeend]] (<var>node</var>,
@@ -6698,9 +6760,11 @@ writing means what Firefox supports plus div.
   (<var>node</var>, <var>offset</var>) and [[rangeend]] (<var>node</var>,
   <var>offset</var> + 1) and abort these steps.
 
-  <!-- No special list-item behavior for forwardDelete. -->
+  <li>
+  <p class=comments>No special list-item behavior for forwardDelete here,
+  unlike delete.
 
-  <li>Let <var>end node</var> equal <var>node</var> and let <var>end
+  <p>Let <var>end node</var> equal <var>node</var> and let <var>end
   offset</var> equal <var>offset</var>.
 
   <li>Repeat the following steps:
@@ -6717,9 +6781,11 @@ writing means what Firefox supports plus div.
     <li>Otherwise, break from this loop.
   </ol>
 
-  <!-- No special indentation element behavior for forwardDelete. -->
+  <li>
+  <p class=comments>No special indentation element behavior for forwardDelete
+  here, unlike delete.
 
-  <li>If the [[child]] of <var>end node</var> with [[index]] <var>end
+  <p>If the [[child]] of <var>end node</var> with [[index]] <var>end
   offset</var> minus one is a [[table]], abort these steps.
 
   <li>If the [[child]] of <var>end node</var> with [[index]] <var>end
@@ -6735,11 +6801,13 @@ writing means what Firefox supports plus div.
     <li>Abort these steps.
   </ol>
 
-  <li>If <var>offset</var> is the [[length]] of <var>node</var>, and the
+  <li>
+  <p class=comments>Note, any br will do here: a br immediately after a block
+  is always significant.
+
+  <p>If <var>offset</var> is the [[length]] of <var>node</var>, and the
   [[child]] of <var>end node</var> with [[index]] <var>end offset</var> is an
   [[hr]] or [[br]]:
-  <!-- Note, any br will do here: a br immediately after a block is always
-  significant. -->
 
   <ol>
     <li>Call [[selcollapse|<var>node</var>, <var>offset</var>]] on the
@@ -6752,9 +6820,11 @@ writing means what Firefox supports plus div.
     <li>Abort these steps.
   </ol>
 
-  <!-- No special list-item behavior for forwardDelete. -->
+  <li>
+  <p class=comments>No special list-item behavior for forwardDelete here,
+  unlike delete.
 
-  <li>While <var>end node</var> has a [[child]] with [[index]] <var>end
+  <p>While <var>end node</var> has a [[child]] with [[index]] <var>end
   offset</var>:
 
   <ol>
@@ -6774,53 +6844,61 @@ writing means what Firefox supports plus div.
 <!-- @} -->
 <h3><dfn>The <code title>indent</code> command</dfn></h3>
 <!-- @{ -->
-<!--
-IE9: Outputs <blockquote style="margin-right: 0px" dir="ltr">, or when
-  surrounding RTL blocks, <blockquote style="margin-left: 0px" dir="rtl">.  The
-  direction seems to go by the end of the selection.  The presence of the dir
-  attribute means that any contents that were inheriting a different dir from
-  an ancestor get their direction changed as a side effect, but if they
+<div class=comments>
+<dl>
+  <dt>IE9
+  <dd>Outputs &lt;blockquote style="margin-right: 0px" dir="ltr">, or when
+  surrounding RTL blocks, &lt;blockquote style="margin-left: 0px" dir="rtl">.
+  The direction seems to go by the end of the selection.  The presence of the
+  dir attribute means that any contents that were inheriting a different dir
+  from an ancestor get their direction changed as a side effect, but if they
   actually have the opposite dir specified, they won't appear to be indented.
   It doesn't reset top or bottom margins on the blockquote, so it adds them.
   If it's not wrapping a block element, like if it's only wrapping up until a
-  <br>, it adds a <p>.
-Firefox 4.0: In styleWithCSS mode, adds style="margin-left: 40px" to the
-  appropriate block container (or margin-right if it's RTL).  If there's no
-  appropriate block container, adds a div.  If multiple blocks are affected, it
-  goes by the direction of the block whose style it's changing, which winds up
-  being wrong for descendants with different direction.  In non-styleWithCSS
-  mode, uses <blockquote>, so it indents on both sides and also adds top/bottom
+  &lt;br>, it adds a &lt;p>.
+
+  <dt>Firefox 4.0
+  <dd>In styleWithCSS mode, adds style="margin-left: 40px" to the appropriate
+  block container (or margin-right if it's RTL).  If there's no appropriate
+  block container, adds a div.  If multiple blocks are affected, it goes by the
+  direction of the block whose style it's changing, which winds up being wrong
+  for descendants with different direction.  In non-styleWithCSS mode, uses
+  &lt;blockquote>, so it indents on both sides and also adds top/bottom
   margins.
-Chrome 12 dev: Outputs <blockquote class="webkit-indent-blockquote"
-  style="margin: 0 0 0 40px; border: none; padding: 0px"> in both modes for
-  both LTR and RTL (which is broken for RTL, since it indents only on the
-  left).
-Opera 11.00: Outputs <blockquote>, so it indents on both sides and on the
+
+  <dt>Chrome 12 dev
+  <dd>Outputs &lt;blockquote class="webkit-indent-blockquote" style="margin: 0
+  0 0 40px; border: none; padding: 0px"> in both modes for both LTR and RTL
+  (which is broken for RTL, since it indents only on the left).
+  
+  <dt>Opera 11.00
+  <dd>Outputs &lt;blockquote>, so it indents on both sides and on the
   top/bottom.
+</dl>
 
-For repeated indentation, everyone except Opera that outputs <blockquote>s just
-puts them at the outermost possible location, which works well.  Opera puts
-them in the innermost position, which is broken, because it will even put them
-inside <p> (which will not round-trip through text/html serialization).
+<p>For repeated indentation, everyone except Opera that outputs
+&lt;blockquote>s just puts them at the outermost possible location, which works
+well.  Opera puts them in the innermost position, which is broken, because it
+will even put them inside &lt;p> (which will not round-trip through text/html
+serialization).
 
-Gecko in CSS mode messes up by adding margins even to things like <blockquote>
-that already have margins from CSS rules, instead of nesting a div, so it
-doesn't actually increase the indentation.  However, if an element has an
-explicit left margin (assuming LTR), it will increase the margin to 80px, so it
-works with WebKit's blockquotes.
+<p>Gecko in CSS mode messes up by adding margins even to things like
+&lt;blockquote> that already have margins from CSS rules, instead of nesting a
+div, so it doesn't actually increase the indentation.  However, if an element
+has an explicit left margin (assuming LTR), it will increase the margin to
+80px, so it works with WebKit's blockquotes.
 
-
-We have two strategies for handling directionality: always indent on both sides
-(Firefox non-CSS, Opera) or try to figure out heuristically which side we want
-(IE, Firefox CSS).  The latter approach is only possible by adding extra markup
-and complexity, so for now we'll take the easy way out and go with just
+<p>We have two strategies for handling directionality: always indent on both
+sides (Firefox non-CSS, Opera) or try to figure out heuristically which side we
+want (IE, Firefox CSS).  The latter approach is only possible by adding extra
+markup and complexity, so for now we'll take the easy way out and go with just
 indenting on both sides.
 
-
-This reasoning doesn't discuss lists.  For research on lists, see the comment
-for insertOrderedList.  List handling is more complicated and I wound up
-differing from all browsers in lots of ways.
--->
+<p>This reasoning doesn't discuss lists.  For research on lists, see the
+comment for <a href=#the-insertorderedlist-command>insertOrderedList</a>.  List
+handling is more complicated and I wound up differing from all browsers in lots
+of ways.
+</div>
 
 <p><span>Action</span>:
 
@@ -6829,10 +6907,12 @@ differing from all browsers in lots of ways.
   [[ancestorcontainers]] of the <span>active range</span>'s [[rangestart]]
   and/or [[rangeend]] [[bpnode]].
 
-  <li>For each <var>item</var> in <var>items</var>, <span>normalize
+  <li>
+  <p class=comments>TODO: This overnormalizes, but it seems like the simplest
+  solution for now.
+
+  <p>For each <var>item</var> in <var>items</var>, <span>normalize
   sublists</span> of <var>item</var>.
-  <!-- This overnormalizes, but it seems like the simplest solution for now.
-  -->
 
   <li><span>Block-extend</span> the <span>active range</span>, and let <var>new
   range</var> be the result.
@@ -6845,11 +6925,13 @@ differing from all browsers in lots of ways.
   (if any) is not an [[ancestor]] of <var>node</var>, append <var>node</var> to
   <var>node list</var>.
 
-  <li>If the first member of <var>node list</var> is an [[li]] whose [[parent]]
+  <li>
+  <p class=comments>Without this step, the last child of the previous sibling
+  might be a list, which the li wouldn't get appended to.
+
+  <p>If the first member of <var>node list</var> is an [[li]] whose [[parent]]
   is an [[ol]] or [[ul]], and its [[previoussibling]] is an [[li]] as well,
   <span>normalize sublists</span> of its [[previoussibling]].
-  <!-- Otherwise the last child of the previous sibling might be a list, which
-  the li wouldn't get appended to. -->
 
   <li>While <var>node list</var> is not empty:
 
@@ -6870,15 +6952,16 @@ differing from all browsers in lots of ways.
 <!-- @} -->
 <h3><dfn>The <code title>insertHorizontalRule</code> command</dfn></h3>
 <!-- @{ -->
+<p class=comments>You'd think interop here would be simple, right?  Nope: we
+have three different behaviors across four browsers.  Opera 11.00 is the only
+one that acts more or less like the spec.  IE9 and Chrome 12 dev treat the
+value as an id, which is weird and probably useless, so I don't do it.  Firefox
+4.0 produces &lt;hr size=2 width=100%> instead of &lt;hr>, which is also weird
+and almost definitely useless, so I don't do it.  Then you have the varying
+behavior in splitting up parents to ensure validity . . .
+
 <p><span>Action</span>:
 
-<!-- You'd think interop here would be simple, right?  Nope: we have three
-different behaviors across four browsers.  Opera 11.00 is the only one that
-acts more or less like the spec.  IE9 and Chrome 12 dev treat the value as an
-id, which is weird and probably useless, so I don't do it.  Firefox 4.0
-produces <hr size=2 width=100%> instead of <hr>, which is also weird and almost
-definitely useless, so I don't do it.  Then you have the varying behavior in
-splitting up parents to ensure validity . . . -->
 <ol>
   <li>Let <var>range</var> be the <span>active range</span>.
 
@@ -6897,9 +6980,11 @@ splitting up parents to ensure validity . . . -->
   <li>If the <span>active range</span>'s [[startnode]] is neither
   <span>editable</span> nor an <span>editing host</span>, abort these steps.
 
-  <!-- We don't want to call insertNode at the start or end of a text node,
-  because that will leave an empty text node. -->
-  <li>If the <span>active range</span>'s [[startnode]] is a [[text]] node and
+  <li>
+  <p class=comments>We don't want to call insertNode at the start or end of a
+  text node, because that will leave an empty text node.
+
+  <p>If the <span>active range</span>'s [[startnode]] is a [[text]] node and
   its [[startoffset]] is zero, set the <span>active range</span>'s
   [[rangestart]] and [[rangeend]] to ([[parent]] of [[startnode]], [[index]] of
   [[startnode]]).
@@ -6914,16 +6999,16 @@ splitting up parents to ensure validity . . . -->
 
   <li>Run [[insertnode|<var>hr</var>]] on <var>range</var>.
 
-  <li><span>Fix disallowed ancestors</span> of <var>hr</var>.
-  <!--
-  IE9 and Chrome 13 dev seem to never break up any ancestors, which can lead to
-  unserializable DOMs like <hr> inside <p>.  Opera 11.11 seems to always break
-  up parents going all the way up to the contenteditable root, even ones like
-  <div> that can contain <hr>.  Firefox 5.0a2 acts the most sensibly: it only
-  breaks up things like <p> or <b> that shouldn't contain <hr>.  The spec goes
-  with Firefox here (although the list of what to break up isn't precisely
-  identical).
-  -->
+  <li>
+  <p class=comments>IE9 and Chrome 13 dev seem to never break up any ancestors,
+  which can lead to unserializable DOMs like &lt;hr> inside &lt;p>.  Opera
+  11.11 seems to always break up parents going all the way up to the
+  contenteditable root, even ones like &lt;div> that can contain &lt;hr>.
+  Firefox 5.0a2 acts the most sensibly: it only breaks up things like &lt;p> or
+  &lt;b> that shouldn't contain &lt;hr>.  The spec goes with Firefox here
+  (although the list of what to break up isn't precisely identical).
+
+  <p><span>Fix disallowed ancestors</span> of <var>hr</var>.
 
   <li>Let <var>selection</var> be the result of running [[getselection]] on the
   [[contextobject]].
@@ -6936,109 +7021,132 @@ splitting up parents to ensure validity . . . -->
 <!-- @} -->
 <h3><dfn>The <code title>insertHTML</code> command</dfn></h3>
 <!-- @{ -->
-<!--
-Not supported by IE9.  Handling of disallowed children is interesting:
+<div class=comments>
+<p>Not supported by IE9.  Handling of disallowed children is interesting:
 
-Firefox 5.0a2: Will allow <dt> inside <dt> (doesn't serialize).  If you try
-inserting dir/ol/ul inside an existing dir/ol/ul, it will strip the list
-element and leave only the li's, so inserting <ul><li>abc</ul> into
-<ol><li>f[o]o</ol> creates <ol><li>f<li>abc<li>o</ol>.  <dt>/<dd>/<li> that
-don't descend from a list will be left alone, not converted to <p>.  Empty
-elements seem not to be inserted.  <li> will get put inside <p>, which breaks
-serialization.  Nothing is allowed inside <xmp>, not even text.
+<dl>
+  <dt>Firefox 5.0a2
+  <dd>Will allow &lt;dt> inside &lt;dt> (doesn't serialize).  If you try
+  inserting dir/ol/ul inside an existing dir/ol/ul, it will strip the list
+  element and leave only the li's, so inserting &lt;ul>&lt;li>abc&lt;/ul> into
+  &lt;ol>&lt;li>f[o]o&lt;/ol> creates
+  &lt;ol>&lt;li>f&lt;li>abc&lt;li>o&lt;/ol>.  &lt;dt>/&lt;dd>/&lt;li> that
+  don't descend from a list will be left alone, not converted to &lt;p>.  Empty
+  elements seem not to be inserted.  &lt;li> will get put inside &lt;p>, which
+  breaks serialization.  Nothing is allowed inside &lt;xmp>, not even text.
 
-Chrome 13 dev: Inserting a <p> into a <p> or <li> or such will remove the child
-<p>, adding its contents to the parent instead.  Adding an <li> or <hr> as the
-child of a <p> works, as does an <a> inside an <a>, <h2> inside <h1>, <li>
-inside <li>, <nobr> inside <nobr>, <b> inside <xmp>, etc. (all unserializable).
-But <dt> and <dd> seem to get converted to their contents like <p>.
-<ol><li>abc</ol> inside <ol><li>f[o]o</ol> becomes
-<ol><li>f<li>abc<li><li>o</ol>, interestingly (note the empty <li>).  I don't
-understand how it works, but it doesn't seem to make much sense.
+  <dt>Chrome 13 dev
+  <dd>Inserting a &lt;p> into a &lt;p> or &lt;li> or such will remove the child
+  &lt;p>, adding its contents to the parent instead.  Adding an &lt;li> or
+  &lt;hr> as the child of a &lt;p> works, as does an &lt;a> inside an &lt;a>,
+  &lt;h2> inside &lt;h1>, &lt;li> inside &lt;li>, &lt;nobr> inside &lt;nobr>,
+  &lt;b> inside &lt;xmp>, etc. (all unserializable).  But &lt;dt> and &lt;dd>
+  seem to get converted to their contents like &lt;p>.
+  &lt;ol>&lt;li>abc&lt;/ol> inside &lt;ol>&lt;li>f[o]o&lt;/ol> becomes
+  &lt;ol>&lt;li>f&lt;li>abc&lt;li>&lt;li>o&lt;/ol>, interestingly (note the
+  empty &lt;li>).  I don't understand how it works, but it doesn't seem to make
+  much sense.
 
-Opera 11.11: Seems to do almost no validity or serialization checks, except
-that it prevents <a> inside <a>, <nobr> inside <nobr>, and block elements
-inside inline elements.  Interestingly, most of the places where it's
-non-serializable per HTML parsing are actually serializable in Opera's own
-parser.
--->
+  <dt>Opera 11.11
+  <dd>Seems to do almost no validity or serialization checks, except that it
+  prevents &lt;a> inside &lt;a>, &lt;nobr> inside &lt;nobr>, and block elements
+  inside inline elements.  Interestingly, most of the places where it's
+  non-serializable per HTML parsing are actually serializable in Opera's own
+  parser.
+</dl>
+</div>
 
 <p><span>Action</span>:
 
 <ol>
-  <li><span>Delete the contents</span> of the <span>active range</span>.
-  <!--
-  Chrome 14 dev and Opera 11.11 do this even if the value is empty.  Firefox
+  <li>
+  <div class=comments>
+  <p>Chrome 14 dev and Opera 11.11 do this even if the value is empty.  Firefox
   5.0a2 throws an exception.
 
-  Firefox 7.0a2 and Chrome 14 dev do strip wrappers here, so inserting HTML in
-  the place of <b>[foo]</b> will remove the <b>.  Opera 11.50 keeps the
-  wrappers.  I follow the majority.
-  -->
+  <p>Firefox 7.0a2 and Chrome 14 dev do strip wrappers here, so inserting HTML
+  in the place of &lt;b>[foo]&lt;/b> will remove the &lt;b>.  Opera 11.50 keeps
+  the wrappers.  I follow the majority and leave the "strip wrappers" flag
+  true.
+  </div>
+
+  <p><span>Delete the contents</span> of the <span>active range</span>.
 
   <li>If the <span>active range</span>'s [[startnode]] is neither
   <span>editable</span> nor an <span>editing host</span>, abort these steps.
 
-  <li>Let <var>frag</var> be the result of calling <code data-anolis-spec=domps
+  <li>
+  <p class=comments>TODO: This has some interesting consequences.  For
+  instance, table cells and similar will just vanish if they're not in an
+  appropriate place; and inside a script or style or xmp or such, the argument
+  will effectively be HTML-escaped before use.  Some of these consequences
+  might be undesirable.
+
+  <p>Let <var>frag</var> be the result of calling <code data-anolis-spec=domps
   title=dom-Range-createContextualFragment>createContextualFragment(<var>value</var>)</code>
   on the <span>active range</span>.
-  <!--
-  TODO: This has some interesting consequences.  For instance, table cells and
-  similar will just vanish if they're not in an appropriate place; and inside a
-  script or style or xmp or such, the argument will effectively be HTML-escaped
-  before use.  Some of these consequences might be undesirable.
-  -->
 
   <li>Let <var>last child</var> be the [[lastchild]] of <var>frag</var>.
 
-  <li>If <var>last child</var> is null, abort these steps.
-  <!-- Firefox 5.0a2 also seems to not add empty elements like <b></b>, but
-  Chrome 13 dev and Opera 11.11 do. -->
+  <li>
+  <p class=comments>Firefox 5.0a2 also seems to not add empty elements like
+  &lt;b>&lt;/b>, but Chrome 13 dev and Opera 11.11 do.
+
+  <p>If <var>last child</var> is null, abort these steps.
 
   <li>Let <var>descendants</var> be all [[descendants]] of <var>frag</var>.
 
-  <li>If the <span>active range</span>'s [[startnode]] is a <span>block
+  <li>
+  <div class=comments>
+  <p>This is so we don't get something like
+<pre>
+&lt;div>[foo]&lt;/div>
+-> &lt;div>{}&lt;br>&lt;/div>
+-> &lt;div>&lt;p>Some HTML{}&lt;/p>&lt;br>&lt;/div></pre>
+  <p>with an extra bogus line break at the end.
+  </div>
+
+  <p>If the <span>active range</span>'s [[startnode]] is a <span>block
   node</span> whose sole [[child]] is a [[br]], and its [[startoffset]] is 0,
   remove its [[startnode]]'s [[child]] from it.
-  <!--
-  This is so we don't get something like
-    <div>[foo]</div>
-    -> <div>{}<br></div>
-    -> <div><p>Some HTML{}</p><br></div>
-  with an extra bogus line break at the end.
-  -->
 
-  <li>Call [[insertnode|<var>frag</var>]] on the <span>active range</span>.
+  <li>
+  <p class=comments>We could canonicalize whitespace after inserting the
+  fragment, but let's not.  If the author wants HTML, give them HTML behavior.
+  When asked to replace a paragraph's contents with a single space, Firefox
+  7.0a2 does so but inserts a &lt;br> before it (not after); Chrome 14 dev does
+  so and doesn't insert a &lt;br>, so the paragraph collapses; Opera 11.50
+  doesn't insert the space at all, and just inserts a &lt;br>.  Correct
+  behavior is to insert a space, then insert a &lt;br> after it in the next
+  step because it's an invisible node.
 
-  <!--
-  We could canonicalize whitespace at this point, but let's not.  If the author
-  wants HTML, give them HTML behavior.  When asked to replace a paragraph's
-  contents with a single space, Firefox 7.0a2 does so but inserts a <br> before
-  it (not after); Chrome 14 dev does so and doesn't insert a <br>, so the
-  paragraph collapses; Opera 11.50 doesn't insert the space at all, and just
-  inserts a <br>.  Correct behavior is to insert a space, then insert a <br>
-  after it in the next step because it's an invisible node.
-  -->
+  <p>Call [[insertnode|<var>frag</var>]] on the <span>active range</span>.
 
-  <li>If the <span>active range</span>'s [[startnode]] is a <span>block
+  <li>
+  <p class=comments>In case we remove all the contents, then remove the extra
+  &lt;br>, then only add a comment or something.  In that case we want to
+  re-add the extra &lt;br>.  We don't try fixing the actual inserted content:
+  that's the author's lookout.
+
+  <p>If the <span>active range</span>'s [[startnode]] is a <span>block
   node</span> with no <span>visible</span> [[children]], call
   [[createelement|"br"]] on the [[contextobject]] and append the result as the
   last child of the <span>active range</span>'s [[startnode]].
-  <!-- In case we remove all the contents, then remove the extra <br>, then
-  only add a comment or something.  In that case we want to re-add the extra
-  <br>.  We don't try fixing the actual inserted content: that's the author's
-  lookout. -->
 
-  <li>Call [[selcollapse|]] on the [[contextobject]]'s [[selection]], with
+  <li>
+  <p class=comments>Need to do this before fixing disallowed ancestors, since
+  otherwise the last child might have been removed (e.g., it's an li).
+
+  <p>Call [[selcollapse|]] on the [[contextobject]]'s [[selection]], with
   <var>last child</var>'s [[parent]] as the first argument and one plus its
   [[index]] as the second.
-  <!-- Need to do this before fixing disallowed ancestors, since otherwise the
-  last child might have been removed (e.g., it's an li). -->
 
-  <li><span>Fix disallowed ancestors</span> of each member of
+  <li>
+  <p class=comments>We want to fix all descendants, not just children.
+  Consider &lt;div>&lt;li>foo&lt;/li>&lt;/div>, for example.
+
+  <p><span>Fix disallowed ancestors</span> of each member of
   <var>descendants</var>.
-  <!-- We want to fix all descendants, not just children.  Consider
-  <div><li>foo</li></div>, for example. -->
 </ol>
 
 <!-- @} -->

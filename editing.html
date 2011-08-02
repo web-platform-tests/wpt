@@ -5966,42 +5966,45 @@ would be worth the added complexity.
 
 <h3 id=the-delete-command><span class=secno>8.11 </span><dfn>The <code title="">delete</code> command</dfn></h3>
 
+<p class=comments>For all the deletions here, Firefox 7.0a2 will remove wrapper
+elements like &lt;b&gt; only if they're selected, like {&lt;b&gt;foo&lt;/b&gt;}.  IE9,
+Chrome 14 dev, and Opera 11.50 will all remove them even if only their contents
+are selected, like &lt;b&gt;[foo]&lt;/b&gt;.  Gecko's behavior in the latter case
+leaves things like &lt;b&gt;{}&lt;/b&gt; in the DOM, which is unhelpful, so I don't.
+
 <p><a href=#action>Action</a>:
-<!--
-For all the deletions here, Firefox 7.0a2 will remove wrapper elements like <b>
-only if they're selected, like {<b>foo</b>}.  IE9, Chrome 14 dev, and Opera
-11.50 will all remove them even if only their contents are selected, like
-<b>[foo]</b>.  Gecko's behavior in the latter case leaves things like <b>{}</b>
-in the DOM, which is unhelpful, so I don't.
--->
 
 <ol>
   <li>If the <a href=#active-range>active range</a> is not <code class=external data-anolis-spec=domrange title=dom-Range-collapsed><a href=http://html5.org/specs/dom-range.html#dom-range-collapsed>collapsed</a></code>, <a href=#delete-the-contents>delete the contents</a>
   of the <a href=#active-range>active range</a> and abort these steps.
 
-  <li><a href=#canonicalize-whitespace>Canonicalize whitespace</a> at (<a href=#active-range>active range</a>'s
+  <li>
+  <p class=comments>Needed so that if there are multiple consecutive spaces we
+  backspace over all at once.
+
+  <p><a href=#canonicalize-whitespace>Canonicalize whitespace</a> at (<a href=#active-range>active range</a>'s
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a>).
-  <!-- Needed so that if there are multiple consecutive spaces we backspace
-  over all at once. -->
 
   <li>Let <var title="">node</var> and <var title="">offset</var> be the <a href=#active-range>active
   range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a>.
 
-  <!-- First go up as high as possible within the current block, then drill
-  down to the lowest possible level, in the hopes that we'll wind up at the end
-  of a text node, or maybe in a br or hr. -->
-  <li>Repeat the following steps:
+  <li>
+  <p class=comments>First go up as high as possible within the current block,
+  then drill down to the lowest possible level, in the hopes that we'll wind up
+  at the end of a text node, or maybe in a br or hr.
+
+  <p>Repeat the following steps:
 
   <ol>
-    <!--
-    If there's an invisible node somewhere, Firefox 5.0a2 removes that node and
-    then stops, so each backspace removes one invisible node.  All others
-    remove the invisible node and then continue on looking for something
-    visible to remove.  The spec follows the latter behavior, since it makes
-    more sense to the user.  Of course, the definition of "invisible node" is
-    not necessarily anything like the spec's.
-    -->
-    <li>If <var title="">offset</var> is zero and <var title="">node</var>'s <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code>
+    <li>
+    <p class=comments> If there's an invisible node somewhere, Firefox 5.0a2
+    removes that node and then stops, so each backspace removes one invisible
+    node.  All others remove the invisible node and then continue on looking
+    for something visible to remove.  The spec follows the latter behavior,
+    since it makes more sense to the user.  Of course, the definition of
+    "invisible node" is not necessarily anything like the spec's.
+
+    <p>If <var title="">offset</var> is zero and <var title="">node</var>'s <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code>
     is an <a href=#editable>editable</a> <a href=#invisible>invisible</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, remove
     <var title="">node</var>'s <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> from its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
@@ -6015,13 +6018,13 @@ in the DOM, which is unhelpful, so I don't.
     <a href=#invisible>invisible</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, set <var title="">offset</var> to the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of
     <var title="">node</var>, then set <var title="">node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
-    <!--
-    When backspacing a link, Firefox 7.0a2, Chrome 14 dev, Opera 11.50, and
-    OpenOffice.org 3.2.1 Ubuntu have no special behavior.  IE9 and Word 2007
-    remove the link instead of deleting its last character.  The latter
-    behavior seems more useful and intuitive.
-    -->
-    <li>Otherwise, if <var title="">node</var> has a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>
+    <li>
+    <p class=comments> When backspacing a link, Firefox 7.0a2, Chrome 14 dev,
+    Opera 11.50, and OpenOffice.org 3.2.1 Ubuntu have no special behavior.  IE9
+    and Word 2007 remove the link instead of deleting its last character.  The
+    latter behavior seems more useful and intuitive.
+
+    <p>Otherwise, if <var title="">node</var> has a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>
     <var title="">offset</var> &minus; 1 and that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is an <a href=#editable>editable</a>
     <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code>, remove that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> from <var title="">node</var>, <a href=#preserving-its-descendants>preserving its
     descendants</a>.  Then abort these steps.
@@ -6035,31 +6038,39 @@ in the DOM, which is unhelpful, so I don't.
     <li>Otherwise, break from this loop.
   </ol>
 
-  <!--
-  At this point, node cannot be an invisible node.  There are three cases:
+  <li>
+  <div class=comments>
+  <p>At this point, node cannot be an invisible node.  There are three cases:
 
-  1) offset is zero and node is a block node.  Then we'll usually merge with
-  the previous block if one exists.
+  <ol>
+    <li><var title="">offset</var> is zero and node is a block node.  Then we'll usually
+    merge with the previous block if one exists.
 
-  2) offset is not zero, node is not a block node, and node does not have a
-  child with index offset - 1.  The only way this is possible is if node has a
-  length greater than zero but no children, which implies it's a text or
-  comment or PI.  Comments and PIs are invisible nodes, so it must be a text
-  node.  We delete the previous character.
+    <li><var title="">offset</var> is not zero, <var title="">node</var> is not a block node, and
+    <var title="">node</var> does not have a child with index <var title="">offset</var> &minus;
+    1.  The only way this is possible is if node has a length greater than zero
+    but no children, which implies it's a text or comment or PI.  Comments and
+    PIs are invisible nodes, so it must be a text node.  We delete the previous
+    character.
 
-  3) offset is not zero, and the child of node with index offset - 1 is a
-  block node or a br or an img.  Then we'll usually merge the offsetth child of
-  node with the last descendant of the offset - 1st.
-  -->
+    <li><var title="">offset</var> is not zero, and the child of <var title="">node</var> with
+    index <var title="">offset</var> &minus; 1 is a block node or a br or an img.  Then
+    we'll usually merge the <var title="">offset</var>th child of <var title="">node</var> with
+    the last descendant of the <var title="">offset</var> &minus; 1st.
+  </ol>
+  </div>
 
-  <li>If <var title="">node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node and <var title="">offset</var> is not zero,
+  <p>If <var title="">node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node and <var title="">offset</var> is not zero,
   call <code class=external data-anolis-spec=domrange title=dom-Selection-collapse><a href=http://html5.org/specs/dom-range.html#dom-selection-collapse>collapse(<var title="">node</var>, <var title="">offset</var>)</a></code> on the <code class=external data-anolis-spec=domrange><a href=http://html5.org/specs/dom-range.html#selection>Selection</a></code>.
   Then <a href=#delete-the-contents>delete the contents</a> of the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>
   (<var title="">node</var>, <var title="">offset</var> &minus; 1) and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a>
   (<var title="">node</var>, <var title="">offset</var>) and abort these steps.
 
-  <!-- At the time of this writing, this should be impossible. -->
-  <li>If <var title="">node</var> is an <a href=#inline-node>inline node</a>, abort these steps.
+  <li>
+  <p class=comments>At the time of this writing, this should be impossible.
+  Just being safe.
+
+  <p>If <var title="">node</var> is an <a href=#inline-node>inline node</a>, abort these steps.
 
   <li>If <var title="">node</var> has a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">offset</var>
   &minus; 1 and that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code> or <code class=external data-anolis-spec=html title="the hr element"><a href=http://www.whatwg.org/html/#the-hr-element>hr</a></code> or <code class=external data-anolis-spec=html title="the img element"><a href=http://www.whatwg.org/html/#the-img-element>img</a></code>, call
@@ -6068,14 +6079,14 @@ in the DOM, which is unhelpful, so I don't.
   (<var title="">node</var>, <var title="">offset</var> &minus; 1) and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a>
   (<var title="">node</var>, <var title="">offset</var>) and abort these steps.
 
-  <!--
-  If we're at the beginning of a list, we want to outdent the first list item.
-  This doesn't actually match anyone or anything.  Word 2007 and OpenOffice.org
-  3.2.1 Ubuntu just remove the list marker, which is weird and doesn't map well
-  to HTML.  Browsers tend to just merge with the preceding block, which isn't
-  expected.
-  -->
-  <li>If <var title="">node</var> is an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code> or <code class=external data-anolis-spec=html title="the dt element"><a href=http://www.whatwg.org/html/#the-dt-element>dt</a></code> or <code class=external data-anolis-spec=html title="the dd element"><a href=http://www.whatwg.org/html/#the-dd-element>dd</a></code> and is the first
+  <li>
+  <p class=comments> If we're at the beginning of a list, we want to outdent
+  the first list item.  This doesn't actually match anyone or anything.  Word
+  2007 and OpenOffice.org 3.2.1 Ubuntu just remove the list marker, which is
+  weird and doesn't map well to HTML.  Browsers tend to just merge with the
+  preceding block, which isn't expected.
+
+  <p>If <var title="">node</var> is an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code> or <code class=external data-anolis-spec=html title="the dt element"><a href=http://www.whatwg.org/html/#the-dt-element>dt</a></code> or <code class=external data-anolis-spec=html title="the dd element"><a href=http://www.whatwg.org/html/#the-dd-element>dd</a></code> and is the first
   <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>, and <var title="">offset</var> is zero:
 
   <ol>
@@ -6093,26 +6104,28 @@ in the DOM, which is unhelpful, so I don't.
 
     <li><a href=#restore-the-values>Restore the values</a> from <var title="">values</var>.
 
-    <li>If <var title="">node</var> is a <code class=external data-anolis-spec=html title="the dd element"><a href=http://www.whatwg.org/html/#the-dd-element>dd</a></code> or <code class=external data-anolis-spec=html title="the dt element"><a href=http://www.whatwg.org/html/#the-dt-element>dt</a></code>, and it is not an
+    <li>
+    <p class=comments> Annoying hack to prevent the dl from being re-added when
+    fixing disallowed ancestors.  In most cases we want a wrapper dl added, but
+    in two cases (delete and insertParagraph) we're actually trying to outdent
+    the list item.  TODO: there might be a better way to do this.
+
+    <p>If <var title="">node</var> is a <code class=external data-anolis-spec=html title="the dd element"><a href=http://www.whatwg.org/html/#the-dd-element>dd</a></code> or <code class=external data-anolis-spec=html title="the dt element"><a href=http://www.whatwg.org/html/#the-dt-element>dt</a></code>, and it is not an
     <a href=#allowed-child>allowed child</a> of any of its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestors</a> <a href=#in-the-same-editing-host>in the same
     editing host</a>, <a href=#set-the-tag-name>set the tag name</a> of <var title="">node</var> to
     the <a href=#default-single-line-container-name>default single-line container name</a> and let <var title="">node</var>
     be the result.
-    <!--
-    Annoying hack to prevent the dl from being re-added when fixing disallowed
-    ancestors.  In most cases we want a wrapper dl added, but in two cases
-    (delete and insertParagraph) we're actually trying to outdent the list
-    item.  There might be a better way to do this.
-    -->
 
     <li><a href=#fix-disallowed-ancestors>Fix disallowed ancestors</a> of <var title="">node</var>.
 
     <li>Abort these steps.
   </ol>
 
-  <!-- By this point, we're almost certainly going to merge something, and the
-  only question is what. -->
-  <li>Let <var title="">start node</var> equal <var title="">node</var> and let <var title="">start
+  <li>
+  <p class=comments>By this point, we're almost certainly going to merge
+  something, and the only question is what.
+
+  <p>Let <var title="">start node</var> equal <var title="">node</var> and let <var title="">start
   offset</var> equal <var title="">offset</var>.
 
   <li>Repeat the following steps:
@@ -6130,13 +6143,12 @@ in the DOM, which is unhelpful, so I don't.
     <li>Otherwise, break from this loop.
   </ol>
 
-  <!--
-  At the beginning of an indented block, outdent it, similar to a list item.
-  Browsers don't do this, word processors do.
+  <li>
+  <p class=comments>At the beginning of an indented block, outdent it, similar
+  to a list item.  Browsers don't do this, word processors do.  Note: this
+  copy-pastes from the outdent command action.
 
-  Note: this copy-pastes from the outdent command action.
-  -->
-  <li>If <var title="">offset</var> is zero, and <var title="">node</var> has an
+  <p>If <var title="">offset</var> is zero, and <var title="">node</var> has an
   <a href=#editable>editable</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#ancestor-container title="ancestor container">ancestor container</a> <a href=#in-the-same-editing-host>in the same editing
   host</a> that's an <a href=#indentation-element>indentation element</a>:
 
@@ -6158,23 +6170,25 @@ in the DOM, which is unhelpful, so I don't.
     <li>Abort these steps.
   </ol>
 
-  <!--
-  This is to avoid stripping a line break from
+  <li>
+  <div class=comments>
+  <p>This is to avoid stripping a line break from
 
-    foo<br><br><table><tr><td>[]bar</table>
+    <pre>foo&lt;br&gt;&lt;br&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;[]bar&lt;/table&gt;</pre>
 
-  and similarly for <hr>.  We should just do nothing here.
-  -->
-  <li>If the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">start node</var> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">start
+  <p>and similarly for &lt;hr&gt;.  We should just do nothing here.
+  </div>
+
+  <p>If the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">start node</var> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">start
   offset</var> is a <code class=external data-anolis-spec=html title="the table element"><a href=http://www.whatwg.org/html/#the-table-element>table</a></code>, abort these steps.
 
-  <!--
-  If you try backspacing into a table, select it.  This doesn't match any
-  browser; it matches the recommendation of the "behavior when typing in
-  contentEditable elements" document.  The idea is that then you can delete it
-  with a second backspace.
-  -->
-  <li>If <var title="">start node</var> has a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">start
+  <li>
+  <p class=comments>If you try backspacing into a table, select it.  This
+  doesn't match any browser; it matches the recommendation of the "behavior
+  when typing in contentEditable elements" document.  The idea is that then you
+  can delete it with a second backspace.
+
+  <p>If <var title="">start node</var> has a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">start
   offset</var> &minus; 1, and that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is a <code class=external data-anolis-spec=html title="the table element"><a href=http://www.whatwg.org/html/#the-table-element>table</a></code>:
 
   <ol>
@@ -6187,21 +6201,23 @@ in the DOM, which is unhelpful, so I don't.
     <li>Abort these steps.
   </ol>
 
-  <!--
-  Special case:
+  <li>
+  <div class=comments>
+  <p>Special case:
 
-    <p>foo</p><br><p>[]bar</p>
-    -> <p>foo</p><p>[]bar</p>
+<pre>&lt;p&gt;foo&lt;/p&gt;&lt;br&gt;&lt;p&gt;[]bar&lt;/p&gt;
+-&gt; &lt;p&gt;foo&lt;/p&gt;&lt;p&gt;[]bar&lt;/p&gt;</pre>
 
-  and likewise for <hr>.  But with <img> we merge like in other cases:
+  <p>and likewise for &lt;hr&gt;.  But with &lt;img&gt; we merge like in other cases:
 
-    <p>foo</p><img><p>[]bar</p>
-    -> <p>foo</p><img>[]bar.
+<pre>&lt;p&gt;foo&lt;/p&gt;&lt;img&gt;&lt;p&gt;[]bar&lt;/p&gt;
+-&gt; &lt;p&gt;foo&lt;/p&gt;&lt;img&gt;[]bar.</pre>
 
-  Browsers don't do this consistently.  Firefox 5.0a2 doesn't seem to do it at
-  all.
-  -->
-  <li>If <var title="">offset</var> is zero; and either the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">start
+  <p>Browsers don't do this consistently.  Firefox 5.0a2 doesn't seem to do it
+  at all.
+  </div>
+
+  <p>If <var title="">offset</var> is zero; and either the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">start
   node</var> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">start offset</var> minus one is an <code class=external data-anolis-spec=html title="the hr element"><a href=http://www.whatwg.org/html/#the-hr-element>hr</a></code>, or
   the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code> whose <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> is either a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code> or not
   an <a href=#inline-node>inline node</a>:
@@ -6217,23 +6233,25 @@ in the DOM, which is unhelpful, so I don't.
     <li>Abort these steps.
   </ol>
 
-  <!--
-  If you try backspacing out of a list item, merge it with the previous item,
-  but add a line break.  Then you have to backspace again if you really want
-  them to be on the same line.  This matches Word 2007 and OpenOffice.org 3.2.1
-  Ubuntu, and also matches "behavior when typing in contentEditable elements",
-  but does not match any browser.
+  <li>
+  <div class=comments>
+  <p>If you try backspacing out of a list item, merge it with the previous
+  item, but add a line break.  Then you have to backspace again if you really
+  want them to be on the same line.  This matches Word 2007 and OpenOffice.org
+  3.2.1 Ubuntu, and also matches "behavior when typing in contentEditable
+  elements", but does not match any browser.
 
-  Note that this behavior is quite different from what happens if you actually
-  select the linebreak in between the two lines.  In that case, the blocks are
-  merged as normal.
+  <p>Note that this behavior is quite different from what happens if you
+  actually select the linebreak in between the two lines.  In that case, the
+  blocks are merged as normal.
 
-  Also note that hitting backspace twice will merge with the previous item.
+  <p>Also note that hitting backspace twice will merge with the previous item.
   This matches OO.org, but Word will outdent the item on subsequent backspaces.
   Word's behavior doesn't fit well with the way lists work in HTML, and we
   probably don't want it.
-  -->
-  <li>If the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">start node</var> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">start
+  </div>
+
+  <p>If the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">start node</var> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">start
   offset</var> is an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code> or <code class=external data-anolis-spec=html title="the dt element"><a href=http://www.whatwg.org/html/#the-dt-element>dt</a></code> or <code class=external data-anolis-spec=html title="the dd element"><a href=http://www.whatwg.org/html/#the-dd-element>dd</a></code>, and that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>'s
   <code class=external data-anolis-spec=domcore title=dom-Node-firstChild><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-firstchild>firstChild</a></code> is an <a href=#inline-node>inline node</a>, and <var title="">start offset</var> is
   not zero:
@@ -6242,9 +6260,12 @@ in the DOM, which is unhelpful, so I don't.
     <li>Let <var title="">previous item</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">start node</var>
     with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">start offset</var> minus one.
 
-    <!-- If the last child is already a br, we only need to append one extra
-    br.  Otherwise we need to append two, since the first will do nothing. -->
-    <li>If <var title="">previous item</var>'s <code class=external data-anolis-spec=domcore title=dom-Node-lastChild><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-lastchild>lastChild</a></code> is an <a href=#inline-node>inline
+    <li>
+    <p class=comments>If the last child is already a br, we only need to append
+    one extra br.  Otherwise we need to append two, since the first will do
+    nothing.
+
+    <p>If <var title="">previous item</var>'s <code class=external data-anolis-spec=domcore title=dom-Node-lastChild><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-lastchild>lastChild</a></code> is an <a href=#inline-node>inline
     node</a> other than a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, call <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("br")</a></code> on the
     <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a> and append the result as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of
     <var title="">previous item</var>.
@@ -6254,12 +6275,13 @@ in the DOM, which is unhelpful, so I don't.
     append the result as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">previous item</var>.
   </ol>
 
-  <!--
-  When merging adjacent list items, make sure we only merge the items
-  themselves, not any block children.  We want <li><p>foo<li><p>bar to become
-  <li><p>foo<p>bar, not <li><p>foo<br>bar or <li><p>foobar.
-  -->
-  <li>If the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">start node</var> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">start
+  <li>
+  <p class=comments>When merging adjacent list items, make sure we only merge
+  the items themselves, not any block children.  We want
+  &lt;li&gt;&lt;p&gt;foo&lt;li&gt;&lt;p&gt;bar to become &lt;li&gt;&lt;p&gt;foo&lt;p&gt;bar, not
+  &lt;li&gt;&lt;p&gt;foo&lt;br&gt;bar or &lt;li&gt;&lt;p&gt;foobar.
+
+  <p>If the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">start node</var> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">start
   offset</var> is an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code> or <code class=external data-anolis-spec=html title="the dt element"><a href=http://www.whatwg.org/html/#the-dt-element>dt</a></code> or <code class=external data-anolis-spec=html title="the dd element"><a href=http://www.whatwg.org/html/#the-dd-element>dd</a></code>, and its <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> is
   also an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code> or <code class=external data-anolis-spec=html title="the dt element"><a href=http://www.whatwg.org/html/#the-dt-element>dt</a></code> or <code class=external data-anolis-spec=html title="the dd element"><a href=http://www.whatwg.org/html/#the-dd-element>dd</a></code>, set <var title="">start node</var> to its
   <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">start offset</var> &minus; 1, then set
@@ -6267,8 +6289,10 @@ in the DOM, which is unhelpful, so I don't.
   <var title="">node</var> to <var title="">start node</var>'s <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code>, then set
   <var title="">offset</var> to 0.
 
-  <!-- General block-merging case. -->
-  <li>Otherwise, while <var title="">start node</var> has a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>
+  <li>
+  <p class=comments>General block-merging case.
+
+  <p>Otherwise, while <var title="">start node</var> has a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>
   <var title="">start offset</var> minus one:
 
   <ol>
@@ -6290,72 +6314,92 @@ in the DOM, which is unhelpful, so I don't.
 
 <h3 id=the-formatblock-command><span class=secno>8.12 </span><dfn>The <code title="">formatBlock</code> command</dfn></h3>
 
-<!--
-Tested browser versions: IE9, Firefox 4.0, Chrome 13 dev, Opera 11.10.
-
-Firefox and Chrome will replace a <blockquote> by a <p> or other given tag.  IE
-and Opera will nest the <p> inside instead.  The latter makes more sense, given
-that a) we don't support formatBlock with <blockquote> and b) <blockquote>s are
-logically different, since they can contain many lines.
-
-Firefox will not convert other tags like <p> to <div>, it will only wrap
-unwrapped lines in a <div>.  Firefox also won't replace <div> by things like
-<p>, it will nest the <p> inside.  The spec follows other browsers.
-
-If you try to convert a <dt> to a <div> or <p> or such, Firefox breaks out of
-the <dl> entirely, leaving ...<dt><br></dt></dl>.  Chrome will convert a <dt>
-or <dd> to the given element, leaving a <div> or <p> or such as the child of a
-<dl>.  I follow IE/Opera, which only affect the contents of <dt>/<dd> (Firefox
-behaves this way for <dd> as well, just not <dt>).  This means you can get
-invalid DOMs like <dt><p>foo<p></dt>, but they can be serialized as text/html,
-so I'm not too fussy.
-
-When it comes to <li>, IE/Opera behave like with <dt>/<dd>, which is how I
-behave too.  Firefox apparently refuses to do anything.  Chrome tries to wrap
-the parent list element, breaking it up if only some of the children are
-selected; this produces unserializable DOMs if you're wrapping with <p>.
-
-When you're converting multiple blocks at once, Chrome replaces them all by one
-block with <br> stuck in, like <p>foo</p><p>bar</p> -> <div>foo<br>bar</div>.
-It wipes out intervening block containers too in some cases.  This might make
-sense for <address>/<h*>/<pre>, but other browsers don't do it.
--->
-
 <p>A <dfn id=formattable-block-name>formattable block name</dfn> is "address", "dd", "div", "dt", "h1",
 "h2", "h3", "h4", "h5", "h6", "p", or "pre".
+
+<div class=comments>
+<p>Tested browser versions: IE9, Firefox 4.0, Chrome 13 dev, Opera 11.10.
+
+<p>Firefox and Chrome will replace a &lt;blockquote&gt; by a &lt;p&gt; or other given
+tag.  IE and Opera will nest the &lt;p&gt; inside instead.  The latter makes more
+sense, given that a) we don't support formatBlock with &lt;blockquote&gt; and b)
+&lt;blockquote&gt;s are logically different, since they can contain many lines.
+
+<p>Firefox will not convert other tags like &lt;p&gt; to &lt;div&gt;, it will only
+wrap unwrapped lines in a &lt;div&gt;.  Firefox also won't replace &lt;div&gt; by
+things like &lt;p&gt;, it will nest the &lt;p&gt; inside.  The spec follows other
+browsers.
+
+<p>If you try to convert a &lt;dt&gt; to a &lt;div&gt; or &lt;p&gt; or such, Firefox
+breaks out of the &lt;dl&gt; entirely, leaving ...&lt;dt&gt;&lt;br&gt;&lt;/dt&gt;&lt;/dl&gt;.
+Chrome will convert a &lt;dt&gt; or &lt;dd&gt; to the given element, leaving a
+&lt;div&gt; or &lt;p&gt; or such as the child of a &lt;dl&gt;.  I follow IE/Opera, which
+only affect the contents of &lt;dt&gt;/&lt;dd&gt; (Firefox behaves this way for
+&lt;dd&gt; as well, just not &lt;dt&gt;).  This means you can get invalid DOMs like
+&lt;dt&gt;&lt;p&gt;foo&lt;p&gt;&lt;/dt&gt;, but they can be serialized as text/html, so I'm
+not too fussy.
+
+<p>When it comes to &lt;li&gt;, IE/Opera behave like with &lt;dt&gt;/&lt;dd&gt;, which
+is how I behave too.  Firefox apparently refuses to do anything.  Chrome tries
+to wrap the parent list element, breaking it up if only some of the children
+are selected; this produces unserializable DOMs if you're wrapping with &lt;p&gt;.
+
+<p>When you're converting multiple blocks at once, Chrome replaces them all by
+one block with &lt;br&gt; stuck in, like &lt;p&gt;foo&lt;/p&gt;&lt;p&gt;bar&lt;/p&gt; -&gt;
+&lt;div&gt;foo&lt;br&gt;bar&lt;/div&gt;.  It wipes out intervening block containers too
+in some cases.  This might make sense for &lt;address&gt;/&lt;h*&gt;/&lt;pre&gt;, but
+other browsers don't do it.
+</div>
 
 <p><a href=#action>Action</a>:
 
 <ol>
-  <li>If <var title="">value</var> begins with a "&lt;" character and ends with a "&gt;"
+  <li>
+  <p class=comments>IE9 requires the brackets.  If they're not provided, it
+  does nothing.
+
+  <p>If <var title="">value</var> begins with a "&lt;" character and ends with a "&gt;"
   character, remove the first and last characters from it.
-  <!-- IE9 requires the brackets.  If they're not provided, it does nothing.
-  -->
 
   <li>Let <var title="">value</var> be <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#converted-to-ascii-lowercase>converted to
   ASCII lowercase</a>.
 
-  <li>If <var title="">value</var> is not a <a href=#formattable-block-name>formattable block name</a>, abort
-  these steps and do nothing.
-  <!--
-  Opera 11.10 throws NOT_SUPPORTED_ERR for bad elements, all other tested
+  <li>
+  <div class=comments>
+  <p>Opera 11.10 throws NOT_SUPPORTED_ERR for bad elements, all other tested
   browsers ignore the input.  Testing in IE9, Firefox 4.0, Chrome 13 dev, and
   Opera 11.10, supported elements seem to be:
 
-  Everyone: address, div, h*, p, pre
-  Everyone but IE: blockquote
-  Everyone but Opera: dd, dt
-  IE only: dir, menu, ol, ul
-  Firefox and Chrome only: dl
-  Chrome only: article, aside, footer, header, hgroup, nav, section
+  <dl>
+    <dt>Everyone
+    <dd>address, div, h*, p, pre
 
-  HTML5 as of May 2011 supports: address, article, aside, blockquote, div,
+    <dt>Everyone but IE
+    <dd>blockquote
+
+    <dt>Everyone but Opera
+    <dd>dd, dt
+
+    <dt>IE only
+    <dd>dir, menu, ol, ul
+
+    <dt>Firefox and Chrome only
+    <dd>dl
+
+    <dt>Chrome only
+    <dd>article, aside, footer, header, hgroup, nav, section
+  </dl>
+
+  <p>HTML5 as of May 2011 supports: address, article, aside, blockquote, div,
   footer, h*, header, hgroup, nav, p, pre, section, which exactly matches
   Chrome except minus dd/dt/dl.
 
-  See mailing list discussion on the subject:
-  http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031765.html
-  -->
+  <p>See <a href=http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031765.html>mailing
+  list discussion</a> on the subject.
+  </div>
+
+  <p>If <var title="">value</var> is not a <a href=#formattable-block-name>formattable block name</a>, abort
+  these steps and do nothing.
 
   <li><a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>, and let <var title="">new
   range</var> be the result.
@@ -6373,85 +6417,89 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
   <li><a href=#record-the-values>Record the values</a> of <var title="">node list</var>, and let
   <var title="">values</var> be the result.
 
-  <li>For each <var title="">node</var> in <var title="">node list</var>, while <var title="">node</var>
+  <li>
+  <p class=comments>This tries to avoid misnesting if only some lines of an
+  element are selected, so &lt;h1&gt;[foo]&lt;br&gt;bar&lt;/h1&gt; becomes
+  &lt;p&gt;[foo]&lt;/p&gt;&lt;h1&gt;bar&lt;/h1&gt; instead of
+  &lt;h1&gt;&lt;p&gt;[foo]&lt;/p&gt;&lt;br&gt;bar&lt;/h1&gt; or such.  It tries to
+  heuristically distinguish between divs used as line-breakers and divs used as
+  actual wrappers by checking if they have prohibited paragraph children as
+  descendants.  It works for address too, in case there are paragraphs nested
+  inside.  Thus &lt;address&gt;[foo]&lt;br&gt;bar&lt;/address&gt; becomes
+  &lt;p&gt;[foo]&lt;/p&gt;&lt;address&gt;bar&lt;/address&gt;, but
+  &lt;address&gt;[foo]&lt;p&gt;bar&lt;/p&gt;&lt;/address&gt; becomes
+  &lt;address&gt;&lt;p&gt;[foo]&lt;/p&gt;&lt;p&gt;bar&lt;/p&gt;&lt;/address&gt;.  Likewise, we
+  don't break things out of lists or tables or such if they happen to be nested
+  in a &lt;div&gt;.
+
+  <p>For each <var title="">node</var> in <var title="">node list</var>, while <var title="">node</var>
   is the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendant</a> of an <a href=#editable>editable</a> <a href=#html-element>HTML element</a>
   <a href=#in-the-same-editing-host>in the same editing host</a>, whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> is a
   <a href=#formattable-block-name>formattable block name</a>, and which is not the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of a
   <a href=#prohibited-paragraph-child>prohibited paragraph child</a>, <a href=#split-the-parent>split the parent</a> of the
   one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> list consisting of <var title="">node</var>.
-  <!--
-  This tries to avoid misnesting if only some lines of an element are selected,
-  so <h1>[foo]<br>bar</h1> becomes <p>[foo]</p><h1>bar</h1> instead of
-  <h1><p>[foo]</p><br>bar</h1> or such.  It tries to heuristically distinguish
-  between divs used as line-breakers and divs used as actual wrappers by
-  checking if they have prohibited paragraph children as descendants.  It works
-  for address too, in case there are paragraphs nested inside.  Thus
-  <address>[foo]<br>bar</address> becomes <p>[foo]</p><address>bar</address>,
-  but <address>[foo]<p>bar</p></address> becomes
-  <address><p>[foo]</p><p>bar</p></address>.  Likewise, we don't break things
-  out of lists or tables or such if they happen to be nested in a <div>.
-  -->
 
   <li><a href=#restore-the-values>Restore the values</a> from <var title="">values</var>.
 
-  <!--
-  We have two different behaviors, one for div and p and one for everything
+  <li>
+  <div class=comments>
+  <p>We have two different behaviors, one for div and p and one for everything
   else.  The basic difference is that for div and p, we assume that it should
   be one line per element, while for other elements, we put in multiple lines
-  separated by <br>.  So if you do formatBlock to p on
+  separated by &lt;br&gt;.  So if you do formatBlock to p on
+    <pre>&lt;div&gt;foo&lt;/div&gt;&lt;div&gt;bar&lt;/div&gt;</pre>
+  <p>or
+    <pre>foo&lt;br&gt;bar</pre>
+  <p>you get
+    <pre>&lt;p&gt;foo&lt;/p&gt;&lt;p&gt;bar&lt;/p&gt;</pre>
+  <p>but formatBlock to h1 will get you
+    <pre>&lt;h1&gt;foo&lt;br&gt;bar&lt;/h1&gt;.</pre>
+  <p>IE9 will just change the elements as they are, so it gives
+  &lt;p&gt;foo&lt;/p&gt;&lt;p&gt;bar&lt;/p&gt; and &lt;h1&gt;foo&lt;/h1&gt;&lt;h1&gt;bar&lt;/h1&gt; for
+  &lt;div&gt;foo&lt;/div&gt;&lt;div&gt;bar&lt;/div&gt;, but &lt;p&gt;foo&lt;br&gt;bar&lt;/p&gt; and
+  &lt;h1&gt;foo&lt;br&gt;bar&lt;/h1&gt; for foo&lt;br&gt;bar.  This is unreasonable,
+  because the two possible inputs here look identical to the user and might
+  have been produced by identical user input.
 
-    <div>foo</div><div>bar</div> or
-    foo<br>bar
+  <p>Firefox 5.0a2 will give results like &lt;p&gt;foo&lt;/p&gt;&lt;p&gt;bar&lt;/p&gt; or
+  &lt;h1&gt;foo&lt;/h1&gt;&lt;h1&gt;bar&lt;/h1&gt; no matter what (modulo oddities in its
+  handling of divs).  Opera 11.10 is similar, except it leaves a trailing
+  &lt;br&gt; in the first element.
 
-  you get
+  <p>Chrome 13 dev will give results like &lt;p&gt;foo&lt;br&gt;bar&lt;/p&gt; or
+  &lt;h1&gt;foo&lt;br&gt;bar&lt;/h1&gt; no matter what.
 
-    <p>foo</p><p>bar</p>
+  <p>The specced behavior is a compromise between the existing behaviors,
+  predicated on the fact that &lt;h1&gt;foo&lt;/h1&gt;&lt;h1&gt;bar&lt;/h1&gt; almost never
+  makes sense, and &lt;p&gt;foo&lt;br&gt;bar&lt;/p&gt; isn't usually what's wanted
+  either.
+  </div>
 
-  but formatBlock to h1 will get you
-
-    <h1>foo<br>bar</h1>.
-
-  IE9 will just change the elements as they are, so it gives
-  <p>foo</p><p>bar</p> and <h1>foo</h1><h1>bar</h1> for
-  <div>foo</div><div>bar</div>, but <p>foo<br>bar</p> and <h1>foo<br>bar</h1>
-  for foo<br>bar.  This is unreasonable, because the two possible inputs here
-  look identical to the user and might have been produced by identical user
-  input.
-
-  Firefox 5.0a2 will give results like <p>foo</p><p>bar</p> or
-  <h1>foo</h1><h1>bar</h1> no matter what (modulo oddities in its handling of
-  divs).  Opera 11.10 is similar, except it leaves a trailing <br> in the first
-  element.
-
-  Chrome 13 dev will give results like <p>foo<br>bar</p> or <h1>foo<br>bar</h1>
-  no matter what.
-
-  The specced behavior is a compromise between the existing behaviors,
-  predicated on the fact that <h1>foo</h1><h1>bar</h1> almost never makes
-  sense, and <p>foo<br>bar</p> isn't usually what's wanted either.
-  -->
-  <li>While <var title="">node list</var> is not empty:
+  <p>While <var title="">node list</var> is not empty:
 
   <ol>
     <li>If the first member of <var title="">node list</var> is a <a href=#single-line-container>single-line
     container</a>:
 
     <ol>
-      <!--
-      If you try to format a single-line container with no children, IE10PP2
-      inserts an nbsp before formatting.  (It uses nbsp instead of <br> to make
-      blocks not collapse, so the equivalent for us would be to insert a <br>.)
-      Firefox 7.0a2 and Opera 11.50 make the element disappear.  Chrome 14 dev
-      leaves it alone and doesn't format it.  I follow Firefox/Opera just
-      because it's the simplest given how I happen to have written the spec,
-      and it's a corner case, so exact behavior isn't important.
+      <li>
+      <div class=comments>
+      <p>If you try to format a single-line container with no children, IE10PP2
+      inserts an nbsp before formatting.  (It uses nbsp instead of &lt;br&gt; to
+      make blocks not collapse, so the equivalent for us would be to insert a
+      &lt;br&gt;.) Firefox 7.0a2 and Opera 11.50 make the element disappear.
+      Chrome 14 dev leaves it alone and doesn't format it.  I follow
+      Firefox/Opera just because it's the simplest given how I happen to have
+      written the spec, and it's a corner case, so exact behavior isn't
+      important.
 
-      For blocks that contain only a collapsed whitespace node, IE10PP2 and
+      <p>For blocks that contain only a collapsed whitespace node, IE10PP2 and
       Firefox 7.0a2 convert them like normal.  Chrome 14 dev and Opera 11.50
       leave it alone and don't format it.  I go with the majority, which is
       again simpler to spec.
-      -->
-      <li>Let <var title="">sublist</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> of the first member of
+      </div>
+
+      <p>Let <var title="">sublist</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> of the first member of
       <var title="">node list</var>.
 
       <li><a href=#record-the-values>Record the values</a> of <var title="">sublist</var>, and let
@@ -6490,12 +6538,13 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
   </ol>
 </ol>
 
+<p class=comments>Firefox 6.0a2 throws, Chrome 14 dev always returns false,
+Opera 11.11 doesn't support indeterm to start with, IE9 was uncooperative in
+testing so I'm not sure what it does.  I'm speccing it just because it makes
+sense.
+
 <p><a href=#indeterminate>Indeterminate</a>:
-<!--
-Firefox 6.0a2 throws, Chrome 14 dev always returns false, Opera 11.11 doesn't
-support indeterm to start with, IE9 was uncooperative in testing so I'm not
-sure what it does.  I'm speccing it just because it makes sense.
--->
+
 <ol>
   <li><a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>, and let <var title="">new
   range</var> be the result.
@@ -6535,21 +6584,22 @@ sure what it does.  I'm speccing it just because it makes sense.
   <li>Return false.
 </ol>
 
-<p><a href=#value>Value</a>:
-<!--
-IE9 returns human-readable strings like "Normal" (p/div/etc.), "Formatted"
+<div class=comments>
+<p>IE9 returns human-readable strings like "Normal" (p/div/etc.), "Formatted"
 (pre), "Heading 1" (h1), etc.  Firefox 6.0a2 and Chrome 14 dev both return the
 appropriate tag name in lowercase, or the empty string if there is no
 appropriate tag.  Opera 11.11 behaves the same, but with uppercase.
 
-IE9 looks like it recognizes address, h*, pre, dd, dt, ol, ul, and dir, with
+<p>IE9 looks like it recognizes address, h*, pre, dd, dt, ol, ul, and dir, with
 everything else registering as "Normal".  Firefox 6.0a2 recognizes only the
 arguments it accepts for formatBlock, namely address, h*, p, and pre.  Chrome
 14 dev recognizes address, div, h*, dd, dl, dt, p, pre plus lots of random
 other stuff like blockquote and section.  I'll go with everything that
 execCommand("formatblock") accepts as an argument, which at the time of this
 writing means what Firefox supports plus div.
--->
+</div>
+
+<p><a href=#value>Value</a>:
 <ol>
   <li><a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>, and let <var title="">new
   range</var> be the result.
@@ -6559,25 +6609,31 @@ writing means what Firefox supports plus div.
   and has no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.  If there is no such <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, return the empty
   string.
 
-  <li>While <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is <a href=#editable>editable</a> and <a href=#in-the-same-editing-host>in
+  <li>
+  <p class=comments>Opera 11.11 doesn't require it be editable, so it will
+  return "DIV" instead of "" for &lt;div contenteditable&gt;foo&lt;/div&gt;.
+
+  <p>While <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is <a href=#editable>editable</a> and <a href=#in-the-same-editing-host>in
   the same editing host</a> as <var title="">node</var>, and <var title="">node</var> is not
   an <a href=#html-element>HTML element</a> whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> is a <a href=#formattable-block-name>formattable block
   name</a>, set <var title="">node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
-  <!-- Opera 11.11 doesn't require it be editable, so it will return "DIV"
-  instead of "" for <div contenteditable>foo</div>.  -->
 
-  <li>If <var title="">node</var> is an <a href=#editable>editable</a> <a href=#html-element>HTML element</a>
+  <li>
+  <div class=comments>
+  <p>Chrome 14 dev will report "div" for
+  &lt;div&gt;&lt;ol&gt;&lt;li&gt;foo&lt;/ol&gt;&lt;/div&gt; or such.  Opera 11.11 reports "".
+  IE and Firefox didn't cooperate with testing.  Opera makes more sense, and
+  matches the fact that formatBlock now doesn't recognize such a div as a
+  formatBlock candidate, so Opera it is.
+
+  <p>We don't really need to specify "editable" here, since it has to be
+  editable if we got to this point.
+  </div>
+
+  <p>If <var title="">node</var> is an <a href=#editable>editable</a> <a href=#html-element>HTML element</a>
   whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> is a <a href=#formattable-block-name>formattable block name</a>, and
   <var title="">node</var> is not the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of a <a href=#prohibited-paragraph-child>prohibited paragraph
   child</a>, return <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a>, <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#converted-to-ascii-lowercase>converted to ASCII lowercase</a>.
-  <!--
-  Chrome 14 dev will report "div" for <div><ol><li>foo</ol></div> or such.
-  Opera 11.11 reports "".  IE and Firefox didn't cooperate with testing.  Opera
-  makes more sense, and matches the fact that formatBlock now doesn't recognize
-  such a div as a formatBlock candidate, so Opera it is.
-
-  We don't really need to specify "editable", since it has to be editable.
-  -->
 
   <li>Return the empty string.
 </ol>
@@ -6585,8 +6641,9 @@ writing means what Firefox supports plus div.
 
 <h3 id=the-forwarddelete-command><span class=secno>8.13 </span><dfn>The <code title="">forwardDelete</code> command</dfn></h3>
 
+<p class=comments>Copy-pasted from delete, see there for comments.
+
 <p><a href=#action>Action</a>:
-<!-- Copy-pasted from delete, see there for comments. -->
 
 <ol>
   <li>If the <a href=#active-range>active range</a> is not <code class=external data-anolis-spec=domrange title=dom-Range-collapsed><a href=http://html5.org/specs/dom-range.html#dom-range-collapsed>collapsed</a></code>, <a href=#delete-the-contents>delete the contents</a>
@@ -6638,15 +6695,17 @@ writing means what Firefox supports plus div.
 
     <li>Let <var title="">end offset</var> be <var title="">offset</var> plus one.
 
-    <li>While <var title="">end offset</var> is not <var title="">node</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> and the
+    <li>
+    <p class=comments>TODO: This is probably not right.  We probably want to
+    normalize to grapheme cluster boundaries, using UAX#29 or something.  We
+    also need to handle non-BMP stuff.  The idea is that if the cursor is
+    before a character that precedes a combining mark, you need to delete the
+    combining mark too.
+
+    <p>While <var title="">end offset</var> is not <var title="">node</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> and the
     <var title="">end offset</var>th <a href=http://es5.github.com/#x8.4>element</a> of <var title="">node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> has
     general category M when interpreted as a Unicode code point, add one to
     <var title="">end offset</var>.
-    <!-- TODO: This is probably not right.  We probably want to normalize to
-    grapheme cluster boundaries, using UAX#29 or something.  We also need to
-    handle non-BMP stuff.  The idea is that if the cursor is before a character
-    that precedes a combining mark, you need to delete the combining mark too.
-    -->
 
     <li><a href=#delete-the-contents>Delete the contents</a> of the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>
     (<var title="">node</var>, <var title="">offset</var>) and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> (<var title="">node</var>,
@@ -6664,9 +6723,11 @@ writing means what Firefox supports plus div.
   (<var title="">node</var>, <var title="">offset</var>) and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> (<var title="">node</var>,
   <var title="">offset</var> + 1) and abort these steps.
 
-  <!-- No special list-item behavior for forwardDelete. -->
+  <li>
+  <p class=comments>No special list-item behavior for forwardDelete here,
+  unlike delete.
 
-  <li>Let <var title="">end node</var> equal <var title="">node</var> and let <var title="">end
+  <p>Let <var title="">end node</var> equal <var title="">node</var> and let <var title="">end
   offset</var> equal <var title="">offset</var>.
 
   <li>Repeat the following steps:
@@ -6683,9 +6744,11 @@ writing means what Firefox supports plus div.
     <li>Otherwise, break from this loop.
   </ol>
 
-  <!-- No special indentation element behavior for forwardDelete. -->
+  <li>
+  <p class=comments>No special indentation element behavior for forwardDelete
+  here, unlike delete.
 
-  <li>If the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">end node</var> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">end
+  <p>If the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">end node</var> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">end
   offset</var> minus one is a <code class=external data-anolis-spec=html title="the table element"><a href=http://www.whatwg.org/html/#the-table-element>table</a></code>, abort these steps.
 
   <li>If the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">end node</var> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">end
@@ -6701,11 +6764,13 @@ writing means what Firefox supports plus div.
     <li>Abort these steps.
   </ol>
 
-  <li>If <var title="">offset</var> is the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">node</var>, and the
+  <li>
+  <p class=comments>Note, any br will do here: a br immediately after a block
+  is always significant.
+
+  <p>If <var title="">offset</var> is the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">node</var>, and the
   <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">end node</var> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">end offset</var> is an
   <code class=external data-anolis-spec=html title="the hr element"><a href=http://www.whatwg.org/html/#the-hr-element>hr</a></code> or <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>:
-  <!-- Note, any br will do here: a br immediately after a block is always
-  significant. -->
 
   <ol>
     <li>Call <code class=external data-anolis-spec=domrange title=dom-Selection-collapse><a href=http://html5.org/specs/dom-range.html#dom-selection-collapse>collapse(<var title="">node</var>, <var title="">offset</var>)</a></code> on the
@@ -6718,9 +6783,11 @@ writing means what Firefox supports plus div.
     <li>Abort these steps.
   </ol>
 
-  <!-- No special list-item behavior for forwardDelete. -->
+  <li>
+  <p class=comments>No special list-item behavior for forwardDelete here,
+  unlike delete.
 
-  <li>While <var title="">end node</var> has a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">end
+  <p>While <var title="">end node</var> has a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">end
   offset</var>:
 
   <ol>
@@ -6740,53 +6807,61 @@ writing means what Firefox supports plus div.
 
 <h3 id=the-indent-command><span class=secno>8.14 </span><dfn>The <code title="">indent</code> command</dfn></h3>
 
-<!--
-IE9: Outputs <blockquote style="margin-right: 0px" dir="ltr">, or when
-  surrounding RTL blocks, <blockquote style="margin-left: 0px" dir="rtl">.  The
-  direction seems to go by the end of the selection.  The presence of the dir
-  attribute means that any contents that were inheriting a different dir from
-  an ancestor get their direction changed as a side effect, but if they
+<div class=comments>
+<dl>
+  <dt>IE9
+  <dd>Outputs &lt;blockquote style="margin-right: 0px" dir="ltr"&gt;, or when
+  surrounding RTL blocks, &lt;blockquote style="margin-left: 0px" dir="rtl"&gt;.
+  The direction seems to go by the end of the selection.  The presence of the
+  dir attribute means that any contents that were inheriting a different dir
+  from an ancestor get their direction changed as a side effect, but if they
   actually have the opposite dir specified, they won't appear to be indented.
   It doesn't reset top or bottom margins on the blockquote, so it adds them.
   If it's not wrapping a block element, like if it's only wrapping up until a
-  <br>, it adds a <p>.
-Firefox 4.0: In styleWithCSS mode, adds style="margin-left: 40px" to the
-  appropriate block container (or margin-right if it's RTL).  If there's no
-  appropriate block container, adds a div.  If multiple blocks are affected, it
-  goes by the direction of the block whose style it's changing, which winds up
-  being wrong for descendants with different direction.  In non-styleWithCSS
-  mode, uses <blockquote>, so it indents on both sides and also adds top/bottom
+  &lt;br&gt;, it adds a &lt;p&gt;.
+
+  <dt>Firefox 4.0
+  <dd>In styleWithCSS mode, adds style="margin-left: 40px" to the appropriate
+  block container (or margin-right if it's RTL).  If there's no appropriate
+  block container, adds a div.  If multiple blocks are affected, it goes by the
+  direction of the block whose style it's changing, which winds up being wrong
+  for descendants with different direction.  In non-styleWithCSS mode, uses
+  &lt;blockquote&gt;, so it indents on both sides and also adds top/bottom
   margins.
-Chrome 12 dev: Outputs <blockquote class="webkit-indent-blockquote"
-  style="margin: 0 0 0 40px; border: none; padding: 0px"> in both modes for
-  both LTR and RTL (which is broken for RTL, since it indents only on the
-  left).
-Opera 11.00: Outputs <blockquote>, so it indents on both sides and on the
+
+  <dt>Chrome 12 dev
+  <dd>Outputs &lt;blockquote class="webkit-indent-blockquote" style="margin: 0
+  0 0 40px; border: none; padding: 0px"&gt; in both modes for both LTR and RTL
+  (which is broken for RTL, since it indents only on the left).
+  
+  <dt>Opera 11.00
+  <dd>Outputs &lt;blockquote&gt;, so it indents on both sides and on the
   top/bottom.
+</dl>
 
-For repeated indentation, everyone except Opera that outputs <blockquote>s just
-puts them at the outermost possible location, which works well.  Opera puts
-them in the innermost position, which is broken, because it will even put them
-inside <p> (which will not round-trip through text/html serialization).
+<p>For repeated indentation, everyone except Opera that outputs
+&lt;blockquote&gt;s just puts them at the outermost possible location, which works
+well.  Opera puts them in the innermost position, which is broken, because it
+will even put them inside &lt;p&gt; (which will not round-trip through text/html
+serialization).
 
-Gecko in CSS mode messes up by adding margins even to things like <blockquote>
-that already have margins from CSS rules, instead of nesting a div, so it
-doesn't actually increase the indentation.  However, if an element has an
-explicit left margin (assuming LTR), it will increase the margin to 80px, so it
-works with WebKit's blockquotes.
+<p>Gecko in CSS mode messes up by adding margins even to things like
+&lt;blockquote&gt; that already have margins from CSS rules, instead of nesting a
+div, so it doesn't actually increase the indentation.  However, if an element
+has an explicit left margin (assuming LTR), it will increase the margin to
+80px, so it works with WebKit's blockquotes.
 
-
-We have two strategies for handling directionality: always indent on both sides
-(Firefox non-CSS, Opera) or try to figure out heuristically which side we want
-(IE, Firefox CSS).  The latter approach is only possible by adding extra markup
-and complexity, so for now we'll take the easy way out and go with just
+<p>We have two strategies for handling directionality: always indent on both
+sides (Firefox non-CSS, Opera) or try to figure out heuristically which side we
+want (IE, Firefox CSS).  The latter approach is only possible by adding extra
+markup and complexity, so for now we'll take the easy way out and go with just
 indenting on both sides.
 
-
-This reasoning doesn't discuss lists.  For research on lists, see the comment
-for insertOrderedList.  List handling is more complicated and I wound up
-differing from all browsers in lots of ways.
--->
+<p>This reasoning doesn't discuss lists.  For research on lists, see the
+comment for <a href=#the-insertorderedlist-command>insertOrderedList</a>.  List
+handling is more complicated and I wound up differing from all browsers in lots
+of ways.
+</div>
 
 <p><a href=#action>Action</a>:
 
@@ -6795,10 +6870,12 @@ differing from all browsers in lots of ways.
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#ancestor-container title="ancestor container">ancestor containers</a> of the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>
   and/or <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>.
 
-  <li>For each <var title="">item</var> in <var title="">items</var>, <a href=#normalize-sublists>normalize
+  <li>
+  <p class=comments>TODO: This overnormalizes, but it seems like the simplest
+  solution for now.
+
+  <p>For each <var title="">item</var> in <var title="">items</var>, <a href=#normalize-sublists>normalize
   sublists</a> of <var title="">item</var>.
-  <!-- This overnormalizes, but it seems like the simplest solution for now.
-  -->
 
   <li><a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>, and let <var title="">new
   range</var> be the result.
@@ -6811,11 +6888,13 @@ differing from all browsers in lots of ways.
   (if any) is not an <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of <var title="">node</var>, append <var title="">node</var> to
   <var title="">node list</var>.
 
-  <li>If the first member of <var title="">node list</var> is an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code> whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>
+  <li>
+  <p class=comments>Without this step, the last child of the previous sibling
+  might be a list, which the li wouldn't get appended to.
+
+  <p>If the first member of <var title="">node list</var> is an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code> whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>
   is an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, and its <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> is an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code> as well,
   <a href=#normalize-sublists>normalize sublists</a> of its <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code>.
-  <!-- Otherwise the last child of the previous sibling might be a list, which
-  the li wouldn't get appended to. -->
 
   <li>While <var title="">node list</var> is not empty:
 
@@ -6836,15 +6915,16 @@ differing from all browsers in lots of ways.
 
 <h3 id=the-inserthorizontalrule-command><span class=secno>8.15 </span><dfn>The <code title="">insertHorizontalRule</code> command</dfn></h3>
 
+<p class=comments>You'd think interop here would be simple, right?  Nope: we
+have three different behaviors across four browsers.  Opera 11.00 is the only
+one that acts more or less like the spec.  IE9 and Chrome 12 dev treat the
+value as an id, which is weird and probably useless, so I don't do it.  Firefox
+4.0 produces &lt;hr size=2 width=100%&gt; instead of &lt;hr&gt;, which is also weird
+and almost definitely useless, so I don't do it.  Then you have the varying
+behavior in splitting up parents to ensure validity . . .
+
 <p><a href=#action>Action</a>:
 
-<!-- You'd think interop here would be simple, right?  Nope: we have three
-different behaviors across four browsers.  Opera 11.00 is the only one that
-acts more or less like the spec.  IE9 and Chrome 12 dev treat the value as an
-id, which is weird and probably useless, so I don't do it.  Firefox 4.0
-produces <hr size=2 width=100%> instead of <hr>, which is also weird and almost
-definitely useless, so I don't do it.  Then you have the varying behavior in
-splitting up parents to ensure validity . . . -->
 <ol>
   <li>Let <var title="">range</var> be the <a href=#active-range>active range</a>.
 
@@ -6863,9 +6943,11 @@ splitting up parents to ensure validity . . . -->
   <li>If the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is neither
   <a href=#editable>editable</a> nor an <a href=#editing-host>editing host</a>, abort these steps.
 
-  <!-- We don't want to call insertNode at the start or end of a text node,
-  because that will leave an empty text node. -->
-  <li>If the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node and
+  <li>
+  <p class=comments>We don't want to call insertNode at the start or end of a
+  text node, because that will leave an empty text node.
+
+  <p>If the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node and
   its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> is zero, set the <a href=#active-range>active range</a>'s
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> to (<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>).
@@ -6880,16 +6962,16 @@ splitting up parents to ensure validity . . . -->
 
   <li>Run <code class=external data-anolis-spec=domrange title=dom-Range-insertNode><a href=http://html5.org/specs/dom-range.html#dom-range-insertnode>insertNode(<var title="">hr</var>)</a></code> on <var title="">range</var>.
 
-  <li><a href=#fix-disallowed-ancestors>Fix disallowed ancestors</a> of <var title="">hr</var>.
-  <!--
-  IE9 and Chrome 13 dev seem to never break up any ancestors, which can lead to
-  unserializable DOMs like <hr> inside <p>.  Opera 11.11 seems to always break
-  up parents going all the way up to the contenteditable root, even ones like
-  <div> that can contain <hr>.  Firefox 5.0a2 acts the most sensibly: it only
-  breaks up things like <p> or <b> that shouldn't contain <hr>.  The spec goes
-  with Firefox here (although the list of what to break up isn't precisely
-  identical).
-  -->
+  <li>
+  <p class=comments>IE9 and Chrome 13 dev seem to never break up any ancestors,
+  which can lead to unserializable DOMs like &lt;hr&gt; inside &lt;p&gt;.  Opera
+  11.11 seems to always break up parents going all the way up to the
+  contenteditable root, even ones like &lt;div&gt; that can contain &lt;hr&gt;.
+  Firefox 5.0a2 acts the most sensibly: it only breaks up things like &lt;p&gt; or
+  &lt;b&gt; that shouldn't contain &lt;hr&gt;.  The spec goes with Firefox here
+  (although the list of what to break up isn't precisely identical).
+
+  <p><a href=#fix-disallowed-ancestors>Fix disallowed ancestors</a> of <var title="">hr</var>.
 
   <li>Let <var title="">selection</var> be the result of running <code class=external data-anolis-spec=domrange title=dom-Document-getSelection><a href=http://html5.org/specs/dom-range.html#dom-document-getselection>getSelection()</a></code> on the
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.
@@ -6902,108 +6984,130 @@ splitting up parents to ensure validity . . . -->
 
 <h3 id=the-inserthtml-command><span class=secno>8.16 </span><dfn>The <code title="">insertHTML</code> command</dfn></h3>
 
-<!--
-Not supported by IE9.  Handling of disallowed children is interesting:
+<div class=comments>
+<p>Not supported by IE9.  Handling of disallowed children is interesting:
 
-Firefox 5.0a2: Will allow <dt> inside <dt> (doesn't serialize).  If you try
-inserting dir/ol/ul inside an existing dir/ol/ul, it will strip the list
-element and leave only the li's, so inserting <ul><li>abc</ul> into
-<ol><li>f[o]o</ol> creates <ol><li>f<li>abc<li>o</ol>.  <dt>/<dd>/<li> that
-don't descend from a list will be left alone, not converted to <p>.  Empty
-elements seem not to be inserted.  <li> will get put inside <p>, which breaks
-serialization.  Nothing is allowed inside <xmp>, not even text.
+<dl>
+  <dt>Firefox 5.0a2
+  <dd>Will allow &lt;dt&gt; inside &lt;dt&gt; (doesn't serialize).  If you try
+  inserting dir/ol/ul inside an existing dir/ol/ul, it will strip the list
+  element and leave only the li's, so inserting &lt;ul&gt;&lt;li&gt;abc&lt;/ul&gt; into
+  &lt;ol&gt;&lt;li&gt;f[o]o&lt;/ol&gt; creates
+  &lt;ol&gt;&lt;li&gt;f&lt;li&gt;abc&lt;li&gt;o&lt;/ol&gt;.  &lt;dt&gt;/&lt;dd&gt;/&lt;li&gt; that
+  don't descend from a list will be left alone, not converted to &lt;p&gt;.  Empty
+  elements seem not to be inserted.  &lt;li&gt; will get put inside &lt;p&gt;, which
+  breaks serialization.  Nothing is allowed inside &lt;xmp&gt;, not even text.
 
-Chrome 13 dev: Inserting a <p> into a <p> or <li> or such will remove the child
-<p>, adding its contents to the parent instead.  Adding an <li> or <hr> as the
-child of a <p> works, as does an <a> inside an <a>, <h2> inside <h1>, <li>
-inside <li>, <nobr> inside <nobr>, <b> inside <xmp>, etc. (all unserializable).
-But <dt> and <dd> seem to get converted to their contents like <p>.
-<ol><li>abc</ol> inside <ol><li>f[o]o</ol> becomes
-<ol><li>f<li>abc<li><li>o</ol>, interestingly (note the empty <li>).  I don't
-understand how it works, but it doesn't seem to make much sense.
+  <dt>Chrome 13 dev
+  <dd>Inserting a &lt;p&gt; into a &lt;p&gt; or &lt;li&gt; or such will remove the child
+  &lt;p&gt;, adding its contents to the parent instead.  Adding an &lt;li&gt; or
+  &lt;hr&gt; as the child of a &lt;p&gt; works, as does an &lt;a&gt; inside an &lt;a&gt;,
+  &lt;h2&gt; inside &lt;h1&gt;, &lt;li&gt; inside &lt;li&gt;, &lt;nobr&gt; inside &lt;nobr&gt;,
+  &lt;b&gt; inside &lt;xmp&gt;, etc. (all unserializable).  But &lt;dt&gt; and &lt;dd&gt;
+  seem to get converted to their contents like &lt;p&gt;.
+  &lt;ol&gt;&lt;li&gt;abc&lt;/ol&gt; inside &lt;ol&gt;&lt;li&gt;f[o]o&lt;/ol&gt; becomes
+  &lt;ol&gt;&lt;li&gt;f&lt;li&gt;abc&lt;li&gt;&lt;li&gt;o&lt;/ol&gt;, interestingly (note the
+  empty &lt;li&gt;).  I don't understand how it works, but it doesn't seem to make
+  much sense.
 
-Opera 11.11: Seems to do almost no validity or serialization checks, except
-that it prevents <a> inside <a>, <nobr> inside <nobr>, and block elements
-inside inline elements.  Interestingly, most of the places where it's
-non-serializable per HTML parsing are actually serializable in Opera's own
-parser.
--->
+  <dt>Opera 11.11
+  <dd>Seems to do almost no validity or serialization checks, except that it
+  prevents &lt;a&gt; inside &lt;a&gt;, &lt;nobr&gt; inside &lt;nobr&gt;, and block elements
+  inside inline elements.  Interestingly, most of the places where it's
+  non-serializable per HTML parsing are actually serializable in Opera's own
+  parser.
+</dl>
+</div>
 
 <p><a href=#action>Action</a>:
 
 <ol>
-  <li><a href=#delete-the-contents>Delete the contents</a> of the <a href=#active-range>active range</a>.
-  <!--
-  Chrome 14 dev and Opera 11.11 do this even if the value is empty.  Firefox
+  <li>
+  <div class=comments>
+  <p>Chrome 14 dev and Opera 11.11 do this even if the value is empty.  Firefox
   5.0a2 throws an exception.
 
-  Firefox 7.0a2 and Chrome 14 dev do strip wrappers here, so inserting HTML in
-  the place of <b>[foo]</b> will remove the <b>.  Opera 11.50 keeps the
-  wrappers.  I follow the majority.
-  -->
+  <p>Firefox 7.0a2 and Chrome 14 dev do strip wrappers here, so inserting HTML
+  in the place of &lt;b&gt;[foo]&lt;/b&gt; will remove the &lt;b&gt;.  Opera 11.50 keeps
+  the wrappers.  I follow the majority and leave the "strip wrappers" flag
+  true.
+  </div>
+
+  <p><a href=#delete-the-contents>Delete the contents</a> of the <a href=#active-range>active range</a>.
 
   <li>If the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is neither
   <a href=#editable>editable</a> nor an <a href=#editing-host>editing host</a>, abort these steps.
 
-  <li>Let <var title="">frag</var> be the result of calling <code class=external data-anolis-spec=domps title=dom-Range-createContextualFragment><a href=http://html5.org/specs/dom-parsing.html#dom-range-createcontextualfragment>createContextualFragment(<var title="">value</var>)</a></code>
+  <li>
+  <p class=comments>TODO: This has some interesting consequences.  For
+  instance, table cells and similar will just vanish if they're not in an
+  appropriate place; and inside a script or style or xmp or such, the argument
+  will effectively be HTML-escaped before use.  Some of these consequences
+  might be undesirable.
+
+  <p>Let <var title="">frag</var> be the result of calling <code class=external data-anolis-spec=domps title=dom-Range-createContextualFragment><a href=http://html5.org/specs/dom-parsing.html#dom-range-createcontextualfragment>createContextualFragment(<var title="">value</var>)</a></code>
   on the <a href=#active-range>active range</a>.
-  <!--
-  TODO: This has some interesting consequences.  For instance, table cells and
-  similar will just vanish if they're not in an appropriate place; and inside a
-  script or style or xmp or such, the argument will effectively be HTML-escaped
-  before use.  Some of these consequences might be undesirable.
-  -->
 
   <li>Let <var title="">last child</var> be the <code class=external data-anolis-spec=domcore title=dom-Node-lastChild><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-lastchild>lastChild</a></code> of <var title="">frag</var>.
 
-  <li>If <var title="">last child</var> is null, abort these steps.
-  <!-- Firefox 5.0a2 also seems to not add empty elements like <b></b>, but
-  Chrome 13 dev and Opera 11.11 do. -->
+  <li>
+  <p class=comments>Firefox 5.0a2 also seems to not add empty elements like
+  &lt;b&gt;&lt;/b&gt;, but Chrome 13 dev and Opera 11.11 do.
+
+  <p>If <var title="">last child</var> is null, abort these steps.
 
   <li>Let <var title="">descendants</var> be all <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendants</a> of <var title="">frag</var>.
 
-  <li>If the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is a <a href=#block-node>block
+  <li>
+  <div class=comments>
+  <p>This is so we don't get something like
+<pre>&lt;div&gt;[foo]&lt;/div&gt;
+-&gt; &lt;div&gt;{}&lt;br&gt;&lt;/div&gt;
+-&gt; &lt;div&gt;&lt;p&gt;Some HTML{}&lt;/p&gt;&lt;br&gt;&lt;/div&gt;</pre>
+  <p>with an extra bogus line break at the end.
+  </div>
+
+  <p>If the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is a <a href=#block-node>block
   node</a> whose sole <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, and its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> is 0,
   remove its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> from it.
-  <!--
-  This is so we don't get something like
-    <div>[foo]</div>
-    -> <div>{}<br></div>
-    -> <div><p>Some HTML{}</p><br></div>
-  with an extra bogus line break at the end.
-  -->
 
-  <li>Call <code class=external data-anolis-spec=domrange title=dom-Range-insertNode><a href=http://html5.org/specs/dom-range.html#dom-range-insertnode>insertNode(<var title="">frag</var>)</a></code> on the <a href=#active-range>active range</a>.
+  <li>
+  <p class=comments>We could canonicalize whitespace after inserting the
+  fragment, but let's not.  If the author wants HTML, give them HTML behavior.
+  When asked to replace a paragraph's contents with a single space, Firefox
+  7.0a2 does so but inserts a &lt;br&gt; before it (not after); Chrome 14 dev does
+  so and doesn't insert a &lt;br&gt;, so the paragraph collapses; Opera 11.50
+  doesn't insert the space at all, and just inserts a &lt;br&gt;.  Correct
+  behavior is to insert a space, then insert a &lt;br&gt; after it in the next
+  step because it's an invisible node.
 
-  <!--
-  We could canonicalize whitespace at this point, but let's not.  If the author
-  wants HTML, give them HTML behavior.  When asked to replace a paragraph's
-  contents with a single space, Firefox 7.0a2 does so but inserts a <br> before
-  it (not after); Chrome 14 dev does so and doesn't insert a <br>, so the
-  paragraph collapses; Opera 11.50 doesn't insert the space at all, and just
-  inserts a <br>.  Correct behavior is to insert a space, then insert a <br>
-  after it in the next step because it's an invisible node.
-  -->
+  <p>Call <code class=external data-anolis-spec=domrange title=dom-Range-insertNode><a href=http://html5.org/specs/dom-range.html#dom-range-insertnode>insertNode(<var title="">frag</var>)</a></code> on the <a href=#active-range>active range</a>.
 
-  <li>If the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is a <a href=#block-node>block
+  <li>
+  <p class=comments>In case we remove all the contents, then remove the extra
+  &lt;br&gt;, then only add a comment or something.  In that case we want to
+  re-add the extra &lt;br&gt;.  We don't try fixing the actual inserted content:
+  that's the author's lookout.
+
+  <p>If the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is a <a href=#block-node>block
   node</a> with no <a href=#visible>visible</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, call
   <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("br")</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a> and append the result as the
   last child of the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>.
-  <!-- In case we remove all the contents, then remove the extra <br>, then
-  only add a comment or something.  In that case we want to re-add the extra
-  <br>.  We don't try fixing the actual inserted content: that's the author's
-  lookout. -->
 
-  <li>Call <code class=external data-anolis-spec=domrange title=dom-Selection-collapse><a href=http://html5.org/specs/dom-range.html#dom-selection-collapse>collapse()</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>'s <code class=external data-anolis-spec=domrange><a href=http://html5.org/specs/dom-range.html#selection>Selection</a></code>, with
+  <li>
+  <p class=comments>Need to do this before fixing disallowed ancestors, since
+  otherwise the last child might have been removed (e.g., it's an li).
+
+  <p>Call <code class=external data-anolis-spec=domrange title=dom-Selection-collapse><a href=http://html5.org/specs/dom-range.html#dom-selection-collapse>collapse()</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>'s <code class=external data-anolis-spec=domrange><a href=http://html5.org/specs/dom-range.html#selection>Selection</a></code>, with
   <var title="">last child</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> as the first argument and one plus its
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> as the second.
-  <!-- Need to do this before fixing disallowed ancestors, since otherwise the
-  last child might have been removed (e.g., it's an li). -->
 
-  <li><a href=#fix-disallowed-ancestors>Fix disallowed ancestors</a> of each member of
+  <li>
+  <p class=comments>We want to fix all descendants, not just children.
+  Consider &lt;div&gt;&lt;li&gt;foo&lt;/li&gt;&lt;/div&gt;, for example.
+
+  <p><a href=#fix-disallowed-ancestors>Fix disallowed ancestors</a> of each member of
   <var title="">descendants</var>.
-  <!-- We want to fix all descendants, not just children.  Consider
-  <div><li>foo</li></div>, for example. -->
 </ol>
 
 

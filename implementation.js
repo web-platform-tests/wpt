@@ -6588,14 +6588,21 @@ commands.inserthtml = {
 		// "Let descendants be all descendants of frag."
 		var descendants = getDescendants(frag);
 
-		// "If the active range's start node is a block node whose sole child
-		// is a br, and its start offset is 0, remove its start node's child
-		// from it."
-		if (isBlockNode(getActiveRange().startContainer)
-		&& getActiveRange().startContainer.childNodes.length == 1
-		&& isHtmlElement(getActiveRange().startContainer.firstChild, "br")
-		&& getActiveRange().startOffset == 0) {
-			getActiveRange().startContainer.removeChild(getActiveRange().startContainer.firstChild);
+		// "If the active range's start node is a block node:"
+		if (isBlockNode(getActiveRange().startContainer)) {
+			// "Let collapsed block props be all editable collapsed block prop
+			// children of the active range's start node that have index
+			// greater than or equal to the active range's start offset."
+			//
+			// "For each node in collapsed block props, remove node from its
+			// parent."
+			[].filter.call(getActiveRange().startContainer.childNodes, function(node) {
+				return isEditable(node)
+					&& isCollapsedBlockProp(node)
+					&& getNodeIndex(node) >= getActiveRange().startOffset;
+			}).forEach(function(node) {
+				node.parentNode.removeChild(node);
+			});
 		}
 
 		// "Call insertNode(frag) on the active range."

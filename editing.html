@@ -842,6 +842,11 @@ any <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcor
 the way we want to do things.  If they are, they need some adjustment, like to
 handle collapsed whitespace nodes.
 
+<p class=comments>TODO: Reconsider whether we want to lump invisible nodes in
+here.  If we don't and change the definition, make sure to audit all callers,
+since then a block could have collapsed block prop descendants that aren't
+children.
+
 <p>A <dfn id=collapsed-block-prop>collapsed block prop</dfn> is either a <a href=#collapsed-line-break>collapsed line
 break</a> that is not an <a href=#extraneous-line-break>extraneous line break</a>, or an
 <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> that is an <a href=#inline-node>inline node</a> and whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> are all
@@ -6833,7 +6838,7 @@ writing means what Firefox supports plus div.
   <dd>Outputs &lt;blockquote class="webkit-indent-blockquote" style="margin: 0
   0 0 40px; border: none; padding: 0px"&gt; in both modes for both LTR and RTL
   (which is broken for RTL, since it indents only on the left).
-  
+
   <dt>Opera 11.00
   <dd>Outputs &lt;blockquote&gt;, so it indents on both sides and on the
   top/bottom.
@@ -7068,8 +7073,17 @@ behavior in splitting up parents to ensure validity . . .
   </div>
 
   <p>If the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is a <a href=#block-node>block
-  node</a> whose sole <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, and its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> is 0,
-  remove its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> from it.
+  node</a>:
+
+  <ol>
+    <li>Let <var title="">collapsed block props</var> be all <a href=#editable>editable</a>
+    <a href=#collapsed-block-prop>collapsed block prop</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> of the <a href=#active-range>active
+    range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> that have <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> greater than or equal to
+    the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a>.
+
+    <li>For each <var title="">node</var> in <var title="">collapsed block props</var>, remove
+    <var title="">node</var> from its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+  </ol>
 
   <li>
   <p class=comments>We could canonicalize whitespace after inserting the

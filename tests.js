@@ -1766,6 +1766,20 @@ var tests = {
 		[' ', '<p>[foo]</p>'],
 		['<span style=display:none></span>', '<p>[foo]</p>'],
 		['<!--abc-->', '<p>[foo]</p>'],
+
+		['abc', '<p>{}<br></p>'],
+		['<!--abc-->', '<p>{}<br></p>'],
+		['abc', '<p><!--foo-->{}<span><br></span><!--bar--></p>'],
+		['<!--abc-->', '<p><!--foo-->{}<span><br></span><!--bar--></p>'],
+		['abc', '<p>{}<span><!--foo--><br><!--bar--></span></p>'],
+		['<!--abc-->', '<p>{}<span><!--foo--><br><!--bar--></span></p>'],
+
+		['abc', '<p><br>{}</p>'],
+		['<!--abc-->', '<p><br>{}</p>'],
+		['abc', '<p><!--foo--><span><br></span>{}<!--bar--></p>'],
+		['<!--abc-->', '<p><!--foo--><span><br></span>{}<!--bar--></p>'],
+		['abc', '<p><span><!--foo--><br><!--bar--></span>{}</p>'],
+		['<!--abc-->', '<p><span><!--foo--><br><!--bar--></span>{}</p>'],
 	],
 	//@}
 	insertimage: [
@@ -4323,14 +4337,14 @@ function addBrackets(range) {
 //@{
 	// Handle the collapsed case specially, to avoid confusingly getting the
 	// markers backwards in some cases
-	if (range.startContainer.nodeType == Node.TEXT_NODE) {
+	if (range.startContainer.nodeType == Node.TEXT_NODE
+	|| range.startContainer.nodeType == Node.COMMENT_NODE) {
 		if (range.collapsed) {
 			range.startContainer.insertData(range.startOffset, "[]");
 		} else {
 			range.startContainer.insertData(range.startOffset, "[");
 		}
 	} else {
-		// As everyone knows, the only node types are Text and Element.
 		var marker = range.collapsed ? "{}" : "{";
 		if (range.startOffset != range.startContainer.childNodes.length
 		&& range.startContainer.childNodes[range.startOffset].nodeType == Node.TEXT_NODE) {
@@ -4352,7 +4366,8 @@ function addBrackets(range) {
 	if (range.collapsed) {
 		return;
 	}
-	if (range.endContainer.nodeType == Node.TEXT_NODE) {
+	if (range.endContainer.nodeType == Node.TEXT_NODE
+	|| range.endContainer.nodeType == Node.COMMENT_NODE) {
 		range.endContainer.insertData(range.endOffset, "]");
 	} else {
 		if (range.endOffset != range.endContainer.childNodes.length

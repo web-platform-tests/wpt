@@ -791,6 +791,11 @@ any [[node]] with a <span>visible</span> [[descendant]].
 the way we want to do things.  If they are, they need some adjustment, like to
 handle collapsed whitespace nodes.
 
+<p class=comments>TODO: Reconsider whether we want to lump invisible nodes in
+here.  If we don't and change the definition, make sure to audit all callers,
+since then a block could have collapsed block prop descendants that aren't
+children.
+
 <p>A <dfn>collapsed block prop</dfn> is either a <span>collapsed line
 break</span> that is not an <span>extraneous line break</span>, or an
 [[element]] that is an <span>inline node</span> and whose [[children]] are all
@@ -6870,7 +6875,7 @@ writing means what Firefox supports plus div.
   <dd>Outputs &lt;blockquote class="webkit-indent-blockquote" style="margin: 0
   0 0 40px; border: none; padding: 0px"> in both modes for both LTR and RTL
   (which is broken for RTL, since it indents only on the left).
-  
+
   <dt>Opera 11.00
   <dd>Outputs &lt;blockquote>, so it indents on both sides and on the
   top/bottom.
@@ -7107,8 +7112,17 @@ behavior in splitting up parents to ensure validity . . .
   </div>
 
   <p>If the <span>active range</span>'s [[startnode]] is a <span>block
-  node</span> whose sole [[child]] is a [[br]], and its [[startoffset]] is 0,
-  remove its [[startnode]]'s [[child]] from it.
+  node</span>:
+
+  <ol>
+    <li>Let <var>collapsed block props</var> be all <span>editable</span>
+    <span>collapsed block prop</span> [[children]] of the <span>active
+    range</span>'s [[startnode]] that have [[index]] greater than or equal to
+    the <span>active range</span>'s [[startoffset]].
+
+    <li>For each <var>node</var> in <var>collapsed block props</var>, remove
+    <var>node</var> from its [[parent]].
+  </ol>
 
   <li>
   <p class=comments>We could canonicalize whitespace after inserting the

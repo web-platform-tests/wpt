@@ -904,6 +904,14 @@ of the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/d
 different, the <a href=#state-override>state override</a> and <a href=#value-override>value override</a> must
 be unset for every <a href=#command>command</a>.
 
+<p class=note>The primary purpose of state and value overrides is that if the
+user runs a command like <a href=#the-bold-command><code title="">bold</code></a>
+with a collapsed selection, then types something without moving the cursor,
+they expect it to have the given style (bold or such).  Thus the commands like
+<a href=#the-bold-command><code title="">bold</code></a> set state and value
+overrides, and <a href=#the-inserttext-command><code title="">insertText</code></a> checks for them and applies them to the
+newly-inserted text.  Other commands like <a href=#the-delete-command><code title="">delete</code></a> also interact with overrides.
+
 <p class=XXX>Figure out exactly what commands need to preserve state/value
 overrides.
 

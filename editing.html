@@ -62,7 +62,7 @@ a code { text-decoration: underline }
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing APIs</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-2-august-2011>Work in Progress &mdash; Last Update 2 August 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-3-august-2011>Work in Progress &mdash; Last Update 3 August 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;<a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a>&gt;
@@ -71,8 +71,12 @@ a code { text-decoration: underline }
  <dd><a href=http://aryeh.name/spec/editing/editing.html>http://aryeh.name/spec/editing/editing.html</a>
 
  <dt>Version history
- <dd><a href="http://aryeh.name/gitweb.cgi?p=editing">http://aryeh.name/gitweb.cgi?p=editing</a>
- <dd><a href=https://github.com/ayg/editing>https://github.com/ayg/editing</a>
+ <dd><a href="http://aryeh.name/gitweb.cgi?p=editing">Primary copy</a>
+ <dd><a href=https://github.com/ayg/editing>github mirror</a>
+
+ <dt>Issue tracker
+ <dd><a href="http://www.w3.org/Bugs/Public/buglist.cgi?component=HTML+Editing+APIs&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED">All open issues</a>
+ <dd><a href="http://www.w3.org/Bugs/Public/enter_bug.cgi?product=WebAppsWG&amp;component=HTML+Editing+APIs">File an issue</a>
 </dl>
 </div>
 
@@ -83,9 +87,13 @@ a code { text-decoration: underline }
 APIs, mainly defining <code><a href=#execcommand()>execCommand()</a></code> and related functions.  It
 largely replaces the <a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/dnd.html#editing-apis>Editing
 APIs</a> section of the <a href=http://www.whatwg.org/html>HTML</a>
-specification.  Feedback should preferably be sent to <a href=http://lists.whatwg.org/listinfo.cgi/whatwg-whatwg.org>the WHATWG
-list</a>.  Include the string "[editing]" somewhere in the subject, and CC <a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a> (or any of my other e-mail
-addresses) to make sure I see it.
+specification.  Issues that don't necessarily need discussion should preferably be
+<a href="http://www.w3.org/Bugs/Public/enter_bug.cgi?product=WebAppsWG&amp;component=HTML+Editing+APIs">filed in the issue tracker</a>,
+which is generously provided by the W3C.  Feedback that needs discussion should
+preferably be sent to <a href=http://lists.whatwg.org/listinfo.cgi/whatwg-whatwg.org>the WHATWG list</a>,
+with the string "[editing]" somewhere in the subject, CC'd to <a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a> to make sure I see it.  I will
+handle all feedback I'm aware of, either addressing it immediately or filing a
+bug if it needs longer-term consideration and is not already filed.
 
 <p>This specification, along with the accompanying JavaScript implementation
 and tests, are copyright Google, 2011.  They may be used under the terms of the

@@ -744,7 +744,7 @@ function isEditingHost(node) {
 		&& (node.contentEditable == "true"
 		|| (node.parentNode
 		&& node.parentNode.nodeType == Node.DOCUMENT_NODE
-		&& node.parentNodedesignMode == "on"));
+		&& node.parentNode.designMode == "on"));
 }
 
 // "Something is editable if it is a node which is not an editing host, does

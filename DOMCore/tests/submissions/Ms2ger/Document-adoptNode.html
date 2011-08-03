@@ -21,10 +21,10 @@ test(function() {
   var doc = document.implementation.createDocument(null, null, null)
   doc.adoptNode(y)
   doc.adoptNode(x)
+  document.adoptNode(document.doctype)
 
   // these should
   assert_throws("NOT_SUPPORTED_ERR", function() { document.adoptNode(doc) })
-  assert_throws("NOT_SUPPORTED_ERR", function() { document.adoptNode(document.doctype) })
 })
 </script>
 </body>

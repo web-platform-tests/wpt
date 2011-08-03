@@ -1283,8 +1283,9 @@ policies and contribution forms [3].
                                         if (status_number.hasOwnProperty(status_text[i])) {
                                             var status = status_text[i];
                                             rv[0].push(["div", {"class":status_class(status)},
-                                                        ["input", {type:"checkbox", checked:"checked"}],
-                                                       status_number[status] + " " + status]);
+                                                        ["label", {},
+                                                         ["input", {type:"checkbox", checked:"checked"}],
+                                                         status_number[status] + " " + status]]);
                                         }
                                         i++;
                                     }

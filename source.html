@@ -1027,7 +1027,13 @@ or null.  If not provided, <var>sibling criteria</var> returns false and
 
   <p>If <var>new parent</var> is null, abort these steps and return null.
 
-  <li>If <var>new parent</var>'s [[parent]] is null:
+  <li><p class=comments>Most callers will create a new element to return in
+  <var>new parent instructions</var>, whose parent will therefore be null.  But
+  they can also return an existing node if that makes sense, so the nodes will
+  be moved to an uncle or something.  The toggle lists algorithm makes use of
+  this.
+
+  <p>If <var>new parent</var>'s [[parent]] is null:
 
   <ol>
     <li>Insert <var>new parent</var> into the [[parent]] of the first member of

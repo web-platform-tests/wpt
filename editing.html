@@ -1073,7 +1073,13 @@ or null.  If not provided, <var title="">sibling criteria</var> returns false an
 
   <p>If <var title="">new parent</var> is null, abort these steps and return null.
 
-  <li>If <var title="">new parent</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is null:
+  <li><p class=comments>Most callers will create a new element to return in
+  <var title="">new parent instructions</var>, whose parent will therefore be null.  But
+  they can also return an existing node if that makes sense, so the nodes will
+  be moved to an uncle or something.  The toggle lists algorithm makes use of
+  this.
+
+  <p>If <var title="">new parent</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is null:
 
   <ol>
     <li>Insert <var title="">new parent</var> into the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of the first member of

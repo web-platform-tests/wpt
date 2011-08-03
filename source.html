@@ -806,7 +806,8 @@ any [[node]] with a <span>visible</span> [[descendant]].
 
 <p class=XXX>I don't know if the visible/invisible node definitions are really
 the way we want to do things.  If they are, they need some adjustment, like to
-handle collapsed whitespace nodes.
+handle collapsed whitespace nodes.  See <a
+href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=13631>bug</a>.
 
 <p class=comments>TODO: Reconsider whether we want to lump invisible nodes in
 here.  If we don't and change the definition, make sure to audit all callers,
@@ -3234,7 +3235,8 @@ IE10PP2, Firefox 7.0a2, and Opera 11.50 do not, so I go with them.
   way, what exact list should we use?  I specced it this way because it's
   easiest given the definitions I'm using, since I have a mostly complete list
   of things to exclude (prohibited paragraph children) but no list of things to
-  include (inline elements).
+  include (inline elements).  See <a
+  href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=13632>bug</a>.
 
   <li>For each <var>element</var> in <var>elements to remove</var>:
 

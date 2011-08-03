@@ -1033,10 +1033,12 @@ extraneous line breaks at the end of</a> it.
 <h3 id=wrapping-a-list-of-nodes><span class=secno>6.2 </span>Wrapping a list of nodes</h3>
 
 <p>To <dfn id=wrap>wrap</dfn> a list <var title="">node list</var> of consecutive <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-sibling title=concept-tree-sibling>sibling</a>
-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>, given <dfn id=sibling-criteria>sibling criteria</dfn> and <dfn id=new-parent-instructions>new parent
-instructions</dfn>, run the following algorithm.  If not provided,
-<a href=#sibling-criteria>sibling criteria</a> match nothing and <a href=#new-parent-instructions>new parent
-instructions</a> return null.
+<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>, run the following algorithm.  In addition to <var title="">node list</var>,
+the algorithm accepts two inputs: an algorithm <var title="">sibling criteria</var> that
+accepts a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> as input and outputs a boolean, and an algorithm <var title="">new
+parent instructions</var> that accepts nothing as input and outputs a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>
+or null.  If not provided, <var title="">sibling criteria</var> returns false and
+<var title="">new parent instructions</var> returns null.
 
 <ol>
   <li>If <var title="">node list</var> is empty, or the first member of <var title="">node
@@ -1052,22 +1054,22 @@ instructions</a> return null.
   is a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, append that <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code> to <var title="">node list</var>.
 
   <li>If the <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> of the first member of <var title="">node list</var>
-  is <a href=#editable>editable</a> and meets the <a href=#sibling-criteria>sibling criteria</a>, let
-  <var title="">new parent</var> be the <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> of the first member of
-  <var title="">node list</var>.
+  is <a href=#editable>editable</a> and running <var title="">sibling criteria</var> on it
+  returns true, let <var title="">new parent</var> be the <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> of the
+  first member of <var title="">node list</var>.
 
   <li>Otherwise, if the <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> of the last member of <var title="">node
-  list</var> is <a href=#editable>editable</a> and meets the <a href=#sibling-criteria>sibling
-  criteria</a>, let <var title="">new parent</var> be the <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> of the last
-  member of <var title="">node list</var>.
+  list</var> is <a href=#editable>editable</a> and running <var title="">sibling criteria</var>
+  on it returns true, let <var title="">new parent</var> be the <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> of the
+  last member of <var title="">node list</var>.
 
-  <li>Otherwise, run the <a href=#new-parent-instructions>new parent instructions</a>, and let <var title="">new
+  <li>Otherwise, run <var title="">new parent instructions</var>, and let <var title="">new
   parent</var> be the result.
 
   <li>
-  <p class=comments>This can only happen if the new parent instructions are run
-  and they return null.  This can be used to only merge with adjacent siblings,
-  in case you don't want to create a new parent if that fails.
+  <p class=comments>This can only happen if <var title="">new parent instructions</var>
+  is run and it returns null.  This can be used to only merge with adjacent
+  siblings, in case you don't want to create a new parent if that fails.
 
   <p>If <var title="">new parent</var> is null, abort these steps and return null.
 
@@ -1170,8 +1172,8 @@ instructions</a> return null.
   </ol>
 
   <li>
-  <p class=comments>This could happen if the new parent instructions returned a
-  node whose parent wasn't null.
+  <p class=comments>This could happen if <var title="">new parent instructions</var>
+  returned a node whose parent wasn't null.
 
   <p>If <var title="">original parent</var> is <a href=#editable>editable</a> and has no
   <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, remove it from its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
@@ -1181,7 +1183,7 @@ instructions</a> return null.
   them.  We want to merge them in this case.
 
   <p>If <var title="">new parent</var>'s <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> is <a href=#editable>editable</a> and
-  meets the <a href=#sibling-criteria>sibling criteria</a>:
+  running <var title="">sibling criteria</var> on it returns true:
 
   <ol>
     <li>If <var title="">new parent</var> is not an <a href=#inline-node>inline node</a>, but
@@ -1241,7 +1243,7 @@ few reasons:
   requirements but should be treated properly.  In particular, they can
   interfere with serialization (e.g., center cannot descend from p).
 
-  <li> Sometimes users give instructions that have to produce invalid DOMs to
+  <li>Sometimes users give instructions that have to produce invalid DOMs to
   get the expected effect, like indenting the first item of a list.
 
   <li>The HTML validity requirements are sometimes quite complicated.
@@ -2123,15 +2125,17 @@ different value.
     <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code>.
 
     <li>
-    <p class=comments>The new parent instructions are too complicated to
-    reasonably feed into the wrap algorithm.
+    <p class=comments>The <var title="">new parent instructions</var> we'd want are too
+    complicated to reasonably feed into the wrap algorithm, so we just let them
+    return null and do the wrapping ourselves if <var title="">sibling criteria</var>
+    didn't return true.
 
     <p><a href=#wrap>Wrap</a> the one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> list consisting of <var title="">node</var>,
-    with <a href=#sibling-criteria>sibling criteria</a> matching a <a href=#simple-modifiable-element>simple modifiable
-    element</a> whose <a href=#specified-command-value>specified command value</a> is <a href=#equivalent-values title="equivalent values">equivalent</a>
-    to <var title="">new value</var> and whose <a href=#effective-command-value>effective command value</a> is
-    <a href=#loosely-equivalent-values title="loosely equivalent values">loosely equivalent</a> to <var title="">new value</var>, and with <a href=#new-parent-instructions>new parent
-    instructions</a> returning null.
+    with <var title="">sibling criteria</var> returning true for a <a href=#simple-modifiable-element>simple
+    modifiable element</a> whose <a href=#specified-command-value>specified command value</a> is
+    <a href=#equivalent-values title="equivalent values">equivalent</a> to <var title="">new value</var> and whose <a href=#effective-command-value>effective command
+    value</a> is <a href=#loosely-equivalent-values title="loosely equivalent values">loosely equivalent</a> to <var title="">new value</var> and false
+    otherwise, and with <var title="">new parent instructions</var> returning null.
   </ol>
 
   <li>If the <a href=#effective-command-value>effective command value</a> of <var title="">command</var> is
@@ -3507,10 +3511,11 @@ in the inline tag.
 
   <ol>
     <li>If <var title="">node</var> is a <code class=external data-anolis-spec=html title="the dd element"><a href=http://www.whatwg.org/html/#the-dd-element>dd</a></code> or <code class=external data-anolis-spec=html title="the dt element"><a href=http://www.whatwg.org/html/#the-dt-element>dt</a></code>, <a href=#wrap>wrap</a> the
-    one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> list consisting of <var title="">node</var>, with <a href=#sibling-criteria>sibling
-    criteria</a> matching any <code class=external data-anolis-spec=html title="the dl element"><a href=http://www.whatwg.org/html/#the-dl-element>dl</a></code> with no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-attribute title=concept-attribute>attributes</a>, and <a href=#new-parent-instructions>new
-    parent instructions</a> returning the result of calling
-    <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("dl")</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.  Then abort these steps.
+    one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> list consisting of <var title="">node</var>, with <var title="">sibling
+    criteria</var> returning true for any <code class=external data-anolis-spec=html title="the dl element"><a href=http://www.whatwg.org/html/#the-dl-element>dl</a></code> with no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-attribute title=concept-attribute>attributes</a> and
+    false otherwise, and <var title="">new parent instructions</var> returning the
+    result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("dl")</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.  Then
+    abort these steps.
 
     <li>If <var title="">node</var> is not a <a href=#prohibited-paragraph-child>prohibited paragraph child</a>,
     abort these steps.
@@ -4886,11 +4891,12 @@ doing something like
     HTML5.
     </div>
 
-    <p><a href=#wrap>Wrap</a> <var title="">node list</var>, with <a href=#sibling-criteria>sibling
-    criteria</a> matching only <a href=#html-element title="HTML element">HTML
-    elements</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> <var title="">tag</var> and <a href=#new-parent-instructions>new parent
-    instructions</a> returning the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement(<var title="">tag</var>)</a></code> on
-    the <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">first node</var>.
+    <p><a href=#wrap>Wrap</a> <var title="">node list</var>, with <var title="">sibling criteria</var>
+    returning true for an <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a>
+    <var title="">tag</var> and false otherwise, and <var title="">new parent
+    instructions</var> returning the result of calling
+    <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement(<var title="">tag</var>)</a></code> on the <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">first
+    node</var>.
 
     <li>Abort these steps.
   </ol>
@@ -4922,11 +4928,11 @@ doing something like
   get it wrong.  Just indent on both sides.
   </div>
 
-  <p><a href=#wrap>Wrap</a> <var title="">node list</var>, with <a href=#sibling-criteria>sibling
-  criteria</a> matching any <a href=#simple-indentation-element>simple indentation element</a>, and
-  <a href=#new-parent-instructions>new parent instructions</a> to return the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("blockquote")</a></code> on the
-  <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">first node</var>.  Let <var title="">new parent</var> be the
-  result.
+  <p><a href=#wrap>Wrap</a> <var title="">node list</var>, with <var title="">sibling criteria</var>
+  returning true for a <a href=#simple-indentation-element>simple indentation element</a> and false
+  otherwise, and <var title="">new parent instructions</var> returning the result of
+  calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("blockquote")</a></code> on the <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">first
+  node</var>.  Let <var title="">new parent</var> be the result.
 
   <li><a href=#fix-disallowed-ancestors>Fix disallowed ancestors</a> of <var title="">new parent</var>.
 </ol>
@@ -5654,9 +5660,9 @@ or "ul"):
 
       <li><a href=#split-the-parent>Split the parent</a> of <var title="">children</var>.
 
-      <li><a href=#wrap>Wrap</a> <var title="">children</var>, with <a href=#sibling-criteria>sibling
-      criteria</a> matching any <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a>
-      <var title="">tag name</var>.
+      <li><a href=#wrap>Wrap</a> <var title="">children</var>, with <var title="">sibling
+      criteria</var> returning true for an <a href=#html-element>HTML element</a> with
+      <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> <var title="">tag name</var> and false otherwise.
 
       <li><a href=#restore-the-values>Restore the values</a> from <var title="">values</var>.
     </ol>
@@ -5782,8 +5788,8 @@ not &lt;ul&gt;&lt;li&gt;foo&lt;/ul&gt;&lt;ol&gt;&lt;li&gt;[bar&lt;/ol&gt;&lt;ul&
         <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, remove the first member from <var title="">node list</var> and append it
         to <var title="">nodes to wrap</var>.
 
-        <li><a href=#wrap>Wrap</a> <var title="">nodes to wrap</var>, with <a href=#new-parent-instructions>new parent
-        instructions</a> returning the result of calling
+        <li><a href=#wrap>Wrap</a> <var title="">nodes to wrap</var>, with <var title="">new parent
+        instructions</var> returning the result of calling
         <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("li")</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.  Append the result to
         <var title="">sublist</var>.
       </ol>
@@ -5807,21 +5813,21 @@ not &lt;ul&gt;&lt;li&gt;foo&lt;/ul&gt;&lt;ol&gt;&lt;li&gt;[bar&lt;/ol&gt;&lt;ul&
 
       <li><a href=#split-the-parent>Split the parent</a> of <var title="">sublist</var>.
 
-      <li><a href=#wrap>Wrap</a> <var title="">sublist</var>, with <a href=#sibling-criteria>sibling
-      criteria</a> matching any <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a>
-      <var title="">tag name</var>, and <a href=#new-parent-instructions>new parent instructions</a> returning
-      the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement(<var title="">tag name</var>)</a></code> on the
-      <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.
+      <li><a href=#wrap>Wrap</a> <var title="">sublist</var>, with <var title="">sibling
+      criteria</var> returning true for an <a href=#html-element>HTML element</a> with
+      <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> <var title="">tag name</var> and false otherwise, and <var title="">new
+      parent instructions</var> returning the result of calling
+      <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement(<var title="">tag name</var>)</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.
 
       <li><a href=#restore-the-values>Restore the values</a> from <var title="">values</var>.
 
       <li>Continue this loop from the beginning.
     </ol>
 
-    <li><a href=#wrap>Wrap</a> <var title="">sublist</var>, with the <a href=#sibling-criteria>sibling
-    criteria</a> matching any <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a>
-    <var title="">tag name</var>, and the <a href=#new-parent-instructions>new parent instructions</a> being the
-    following:
+    <li><a href=#wrap>Wrap</a> <var title="">sublist</var>, with <var title="">sibling criteria</var>
+    returning true for an <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> <var title="">tag
+    name</var> and false otherwise, and <var title="">new parent instructions</var>
+    being the following:
 
     <ol>
       <li>
@@ -5832,10 +5838,10 @@ not &lt;ul&gt;&lt;li&gt;foo&lt;/ul&gt;&lt;ol&gt;&lt;li&gt;[bar&lt;/ol&gt;&lt;ul&
         <pre>&lt;ol&gt;&lt;li&gt;foo&lt;/li&gt;&lt;ol&gt;&lt;li&gt;[bar]&lt;/ol&gt;&lt;/ol&gt;</pre>
       <p>instead of
         <pre>&lt;ol&gt;&lt;li&gt;foo&lt;/ol&gt;&lt;blockquote&gt;&lt;ol&gt;&lt;li&gt;[bar]&lt;/ol&gt;&lt;/blockquote&gt;.</pre>
-      <p>We handle the special case in the new parent instructions instead of
-      outside because we'd prefer to wind up in a sibling if there is one.  We
-      handle only previousSibling, not nextSibling, because we really mean for
-      this to cover something like
+      <p>We handle the special case in <var title="">new parent instructions</var>
+      instead of outside because we'd prefer to wind up in a sibling if there
+      is one.  We handle only previousSibling, not nextSibling, because we
+      really mean for this to cover something like
         <pre>[foo&lt;blockquote&gt;bar]&lt;/blockquote&gt;</pre>
       <p>which we'll handle node-by-node.  TODO: Maybe we should do this
       differently, like just special-case simple indentation elements in an
@@ -5961,9 +5967,9 @@ would be worth the added complexity.
     <var title="">sublist</var>, remove the first member of <var title="">node list</var> and
     append it to <var title="">sublist</var>.
 
-    <li><p><a href=#wrap>Wrap</a> <var title="">sublist</var>.  <a href=#sibling-criteria>Sibling criteria</a>
-    match any <code class=external data-anolis-spec=html title="the div element"><a href=http://www.whatwg.org/html/#the-div-element>div</a></code> that has one or both of the following two attributes, and
-    no other attributes:
+    <li><p><a href=#wrap>Wrap</a> <var title="">sublist</var>.  <var title="">Sibling criteria</var>
+    returns true for any <code class=external data-anolis-spec=html title="the div element"><a href=http://www.whatwg.org/html/#the-div-element>div</a></code> that has one or both of the following two
+    attributes and no other attributes, and false otherwise:
 
     <ul>
       <li>An <code class=external data-anolis-spec=html title=attr-div-align><a href=http://www.whatwg.org/html/#attr-div-align>align</a></code>
@@ -5980,9 +5986,9 @@ would be worth the added complexity.
     browser behaves in this case, but for inline formatting it matches everyone
     but Gecko's CSS mode, so I'm just being consistent.
 
-    <p><a href=#new-parent-instructions>New parent instructions</a> are to call <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("div")</a></code>
+    <p><var title="">New parent instructions</var> are to call <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("div")</a></code>
     on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>, then set its CSS property "text-align" to
-    <var title="">alignment</var>, and return the result.
+    <var title="">alignment</var> and return the result.
   </ol>
 </ol>
 
@@ -6553,11 +6559,12 @@ other browsers don't do it.
     </ol>
 
     <li><a href=#wrap>Wrap</a> <var title="">sublist</var>.  If <var title="">value</var> is "div" or
-    "p", <a href=#sibling-criteria>sibling criteria</a> match nothing; otherwise they match any
-    <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> <var title="">value</var> and no
-    attributes.  <a href=#new-parent-instructions>New parent instructions</a> return the result of
-    running <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement(<var title="">value</var>)</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.  Then
-    <a href=#fix-disallowed-ancestors>fix disallowed ancestors</a> of the result.
+    "p", <var title="">sibling criteria</var> returns false; otherwise it returns true
+    for an <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> <var title="">value</var> and no
+    attributes, and false otherwise.  <var title="">New parent instructions</var>
+    return the result of running <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement(<var title="">value</var>)</a></code> on the
+    <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.  Then <a href=#fix-disallowed-ancestors>fix disallowed ancestors</a> of the
+    result.
   </ol>
 </ol>
 
@@ -7421,8 +7428,8 @@ whatwg thread</a>.
     not null and is an <a href=#allowed-child>allowed child</a> of "p", append it to
     <var title="">node list</var>.
 
-    <li><a href=#wrap>Wrap</a> <var title="">node list</var>, with <a href=#sibling-criteria>sibling
-    criteria</a> matching nothing and <a href=#new-parent-instructions>new parent instructions</a>
+    <li><a href=#wrap>Wrap</a> <var title="">node list</var>, with <var title="">sibling
+    criteria</var> returning false and <var title="">new parent instructions</var>
     returning the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement(<var title="">tag</var>)</a></code> on the
     <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.  Set <var title="">container</var> to the result.
   </ol>

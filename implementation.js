@@ -1193,8 +1193,8 @@ function removeExtraneousLineBreaksFrom(node) {
 //@{
 
 function wrap(nodeList, siblingCriteria, newParentInstructions) {
-	// "If not provided, sibling criteria match nothing and new parent
-	// instructions return null."
+	// "If not provided, sibling criteria returns false and new parent
+	// instructions returns null."
 	if (typeof siblingCriteria == "undefined") {
 		siblingCriteria = function() { return false };
 	}
@@ -1218,21 +1218,21 @@ function wrap(nodeList, siblingCriteria, newParentInstructions) {
 	}
 
 	// "If the previousSibling of the first member of node list is editable and
-	// meets the sibling criteria, let new parent be the previousSibling of the
-	// first member of node list."
+	// running sibling criteria on it returns true, let new parent be the
+	// previousSibling of the first member of node list."
 	var newParent;
 	if (isEditable(nodeList[0].previousSibling)
 	&& siblingCriteria(nodeList[0].previousSibling)) {
 		newParent = nodeList[0].previousSibling;
 
 	// "Otherwise, if the nextSibling of the last member of node list is
-	// editable and meets the sibling criteria, let new parent be the
-	// nextSibling of the last member of node list."
+	// editable and running sibling criteria on it returns true, let new parent
+	// be the nextSibling of the last member of node list."
 	} else if (isEditable(nodeList[nodeList.length - 1].nextSibling)
 	&& siblingCriteria(nodeList[nodeList.length - 1].nextSibling)) {
 		newParent = nodeList[nodeList.length - 1].nextSibling;
 
-	// "Otherwise, run the new parent instructions, and let new parent be the
+	// "Otherwise, run new parent instructions, and let new parent be the
 	// result."
 	} else {
 		newParent = newParentInstructions();
@@ -1314,8 +1314,8 @@ function wrap(nodeList, siblingCriteria, newParentInstructions) {
 		originalParent.parentNode.removeChild(originalParent);
 	}
 
-	// "If new parent's nextSibling is editable and meets the sibling
-	// criteria:"
+	// "If new parent's nextSibling is editable and running sibling criteria on
+	// it returns true:"
 	if (isEditable(newParent.nextSibling)
 	&& siblingCriteria(newParent.nextSibling)) {
 		// "If new parent is not an inline node, but new parent's last child
@@ -2527,10 +2527,10 @@ function forceValue(node, command, newValue) {
 		reorderModifiableDescendants(node.nextSibling, command, newValue);
 
 		// "Wrap the one-node list consisting of node, with sibling criteria
-		// matching a simple modifiable element whose specified command value
-		// is equivalent to new value and whose effective command value is
-		// loosely equivalent to new value, and with new parent instructions
-		// returning null."
+		// returning true for a simple modifiable element whose specified
+		// command value is equivalent to new value and whose effective command
+		// value is loosely equivalent to new value and false otherwise, and
+		// with new parent instructions returning null."
 		wrap([node],
 			function(node) {
 				return isSimpleModifiableElement(node)
@@ -3603,9 +3603,10 @@ function fixDisallowedAncestors(node) {
 	})
 	&& !isHtmlElement(node, defaultSingleLineContainerName)) {
 		// "If node is a dd or dt, wrap the one-node list consisting of node,
-		// with sibling criteria matching any dl with no attributes, and new
-		// parent instructions returning the result of calling
-		// createElement("dl") on the context object. Then abort these steps."
+		// with sibling criteria returning true for any dl with no attributes
+		// and false otherwise, and new parent instructions returning the
+		// result of calling createElement("dl") on the context object. Then
+		// abort these steps."
 		if (isHtmlElement(node, ["dd", "dt"])) {
 			wrap([node],
 				function(sibling) { return isHtmlElement(sibling, "dl") && !sibling.attributes.length },
@@ -5069,9 +5070,10 @@ function indentNodes(nodeList) {
 		// "Let tag be the local name of the parent of first node."
 		var tag = firstNode.parentNode.tagName;
 
-		// "Wrap node list, with sibling criteria matching only HTML elements
-		// with local name tag and new parent instructions returning the result
-		// of calling createElement(tag) on the ownerDocument of first node."
+		// "Wrap node list, with sibling criteria returning true for an HTML
+		// element with local name tag and false otherwise, and new parent
+		// instructions returning the result of calling createElement(tag) on
+		// the ownerDocument of first node."
 		wrap(nodeList,
 			function(node) { return isHtmlElement(node, tag) },
 			function() { return firstNode.ownerDocument.createElement(tag) });
@@ -5080,10 +5082,10 @@ function indentNodes(nodeList) {
 		return;
 	}
 
-	// "Wrap node list, with sibling criteria matching any simple indentation
-	// element, and new parent instructions to return the result of calling
-	// createElement("blockquote") on the ownerDocument of first node. Let new
-	// parent be the result."
+	// "Wrap node list, with sibling criteria returning true for a simple
+	// indentation element and false otherwise, and new parent instructions
+	// returning the result of calling createElement("blockquote") on the
+	// ownerDocument of first node. Let new parent be the result."
 	var newParent = wrap(nodeList,
 		function(node) { return isSimpleIndentationElement(node) },
 		function() { return firstNode.ownerDocument.createElement("blockquote") });
@@ -5328,8 +5330,8 @@ function toggleLists(tagName) {
 				// "Split the parent of children."
 				splitParent(children);
 
-				// "Wrap children, with sibling criteria matching any HTML
-				// element with local name tag name."
+				// "Wrap children, with sibling criteria returning true for an
+				// HTML element with local name tag name and false otherwise."
 				wrap(children, function(node) { return isHtmlElement(node, tagName) });
 
 				// "Restore the values from values."
@@ -5454,7 +5456,7 @@ function toggleLists(tagName) {
 
 					// "Wrap nodes to wrap, with new parent instructions
 					// returning the result of calling createElement("li") on
-					// the context object.  Append the result to sublist."
+					// the context object. Append the result to sublist."
 					sublist.push(wrap(nodesToWrap,
 						undefined,
 						function() { return document.createElement("li") }));
@@ -5479,9 +5481,9 @@ function toggleLists(tagName) {
 				// "Split the parent of sublist."
 				splitParent(sublist);
 
-				// "Wrap sublist, with sibling criteria matching any HTML
-				// element with local name tag name, and new parent
-				// instructions returning the result of calling
+				// "Wrap sublist, with sibling criteria returning true for an
+				// HTML element with local name tag name and false otherwise,
+				// and new parent instructions returning the result of calling
 				// createElement(tag name) on the context object."
 				wrap(sublist,
 					function(node) { return isHtmlElement(node, tagName) },
@@ -5494,9 +5496,9 @@ function toggleLists(tagName) {
 				continue;
 			}
 
-			// "Wrap sublist, with the sibling criteria matching any HTML
-			// element with local name tag name, and the new parent
-			// instructions being the following:"
+			// "Wrap sublist, with sibling criteria returning true for an HTML
+			// element with local name tag name and false otherwise, and new
+			// parent instructions being the following:"
 			// . . .
 			// "Fix disallowed ancestors of the previous step's result."
 			fixDisallowedAncestors(wrap(sublist,
@@ -5624,8 +5626,9 @@ function justifySelection(alignment) {
 			sublist.push(nodeList.shift());
 		}
 
-		// "Wrap sublist. Sibling criteria match any div that has one or both
-		// of the following two attributes, and no other attributes:
+		// "Wrap sublist. Sibling criteria returns true for any div that has
+		// one or both of the following two attributes and no other attributes,
+		// and false otherwise:"
 		//
 		//   * "An align attribute whose value is an ASCII case-insensitive
 		//     match for alignment.
@@ -5634,7 +5637,7 @@ function justifySelection(alignment) {
 		//     "text-align", which is set to alignment.
 		//
 		// "New parent instructions are to call createElement("div") on the
-		// context object, then set its CSS property "text-align" to alignment,
+		// context object, then set its CSS property "text-align" to alignment
 		// and return the result."
 		wrap(sublist,
 			function(node) {
@@ -6098,11 +6101,12 @@ commands.formatblock = {
 				}
 			}
 
-			// "Wrap sublist. If value is "div" or "p", sibling criteria match
-			// nothing; otherwise they match any HTML element with local name
-			// value and no attributes. New parent instructions return the
-			// result of running createElement(value) on the context object.
-			// Then fix disallowed ancestors of the result."
+			// "Wrap sublist. If value is "div" or "p", sibling criteria
+			// returns false; otherwise it returns true for an HTML element
+			// with local name value and no attributes, and false otherwise.
+			// New parent instructions return the result of running
+			// createElement(value) on the context object. Then fix disallowed
+			// ancestors of the result."
 			fixDisallowedAncestors(wrap(sublist,
 				["div", "p"].indexOf(value) == - 1
 					? function(node) { return isHtmlElement(node, value) && !node.attributes.length }
@@ -6891,9 +6895,9 @@ commands.insertparagraph = {
 				nodeList.push(nodeList[nodeList.length - 1].nextSibling);
 			}
 
-			// "Wrap node list, with sibling criteria matching nothing and new
+			// "Wrap node list, with sibling criteria returning false and new
 			// parent instructions returning the result of calling
-			// createElement(tag) on the context object.  Set container to the
+			// createElement(tag) on the context object. Set container to the
 			// result."
 			container = wrap(nodeList,
 				function() { return false },

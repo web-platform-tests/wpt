@@ -987,10 +987,12 @@ extraneous line breaks at the end of</span> it.
 <h3>Wrapping a list of nodes</h3>
 <!-- @{ -->
 <p>To <dfn>wrap</dfn> a list <var>node list</var> of consecutive [[sibling]]
-[[nodes]], given <dfn>sibling criteria</dfn> and <dfn>new parent
-instructions</dfn>, run the following algorithm.  If not provided,
-<span>sibling criteria</span> match nothing and <span>new parent
-instructions</span> return null.
+[[nodes]], run the following algorithm.  In addition to <var>node list</var>,
+the algorithm accepts two inputs: an algorithm <var>sibling criteria</var> that
+accepts a [[node]] as input and outputs a boolean, and an algorithm <var>new
+parent instructions</var> that accepts nothing as input and outputs a [[node]]
+or null.  If not provided, <var>sibling criteria</var> returns false and
+<var>new parent instructions</var> returns null.
 
 <ol>
   <li>If <var>node list</var> is empty, or the first member of <var>node
@@ -1006,22 +1008,22 @@ instructions</span> return null.
   is a [[br]], append that [[br]] to <var>node list</var>.
 
   <li>If the [[previoussibling]] of the first member of <var>node list</var>
-  is <span>editable</span> and meets the <span>sibling criteria</span>, let
-  <var>new parent</var> be the [[previoussibling]] of the first member of
-  <var>node list</var>.
+  is <span>editable</span> and running <var>sibling criteria</var> on it
+  returns true, let <var>new parent</var> be the [[previoussibling]] of the
+  first member of <var>node list</var>.
 
   <li>Otherwise, if the [[nextsibling]] of the last member of <var>node
-  list</var> is <span>editable</span> and meets the <span>sibling
-  criteria</span>, let <var>new parent</var> be the [[nextsibling]] of the last
-  member of <var>node list</var>.
+  list</var> is <span>editable</span> and running <var>sibling criteria</var>
+  on it returns true, let <var>new parent</var> be the [[nextsibling]] of the
+  last member of <var>node list</var>.
 
-  <li>Otherwise, run the <span>new parent instructions</span>, and let <var>new
+  <li>Otherwise, run <var>new parent instructions</var>, and let <var>new
   parent</var> be the result.
 
   <li>
-  <p class=comments>This can only happen if the new parent instructions are run
-  and they return null.  This can be used to only merge with adjacent siblings,
-  in case you don't want to create a new parent if that fails.
+  <p class=comments>This can only happen if <var>new parent instructions</var>
+  is run and it returns null.  This can be used to only merge with adjacent
+  siblings, in case you don't want to create a new parent if that fails.
 
   <p>If <var>new parent</var> is null, abort these steps and return null.
 
@@ -1132,8 +1134,8 @@ instructions</span> return null.
   </ol>
 
   <li>
-  <p class=comments>This could happen if the new parent instructions returned a
-  node whose parent wasn't null.
+  <p class=comments>This could happen if <var>new parent instructions</var>
+  returned a node whose parent wasn't null.
 
   <p>If <var>original parent</var> is <span>editable</span> and has no
   [[children]], remove it from its [[parent]].
@@ -1143,7 +1145,7 @@ instructions</span> return null.
   them.  We want to merge them in this case.
 
   <p>If <var>new parent</var>'s [[nextsibling]] is <span>editable</span> and
-  meets the <span>sibling criteria</span>:
+  running <var>sibling criteria</var> on it returns true:
 
   <ol>
     <li>If <var>new parent</var> is not an <span>inline node</span>, but
@@ -1205,7 +1207,7 @@ few reasons:
   requirements but should be treated properly.  In particular, they can
   interfere with serialization (e.g., center cannot descend from p).
 
-  <li> Sometimes users give instructions that have to produce invalid DOMs to
+  <li>Sometimes users give instructions that have to produce invalid DOMs to
   get the expected effect, like indenting the first item of a list.
 
   <li>The HTML validity requirements are sometimes quite complicated.
@@ -2095,15 +2097,17 @@ different value.
     [[nextsibling]].
 
     <li>
-    <p class=comments>The new parent instructions are too complicated to
-    reasonably feed into the wrap algorithm.
+    <p class=comments>The <var>new parent instructions</var> we'd want are too
+    complicated to reasonably feed into the wrap algorithm, so we just let them
+    return null and do the wrapping ourselves if <var>sibling criteria</var>
+    didn't return true.
 
     <p><span>Wrap</span> the one-[[node]] list consisting of <var>node</var>,
-    with <span>sibling criteria</span> matching a <span>simple modifiable
-    element</span> whose <span>specified command value</span> is [[equivalent]]
-    to <var>new value</var> and whose <span>effective command value</span> is
-    [[looselyequivalent]] to <var>new value</var>, and with <span>new parent
-    instructions</span> returning null.
+    with <var>sibling criteria</var> returning true for a <span>simple
+    modifiable element</span> whose <span>specified command value</span> is
+    [[equivalent]] to <var>new value</var> and whose <span>effective command
+    value</span> is [[looselyequivalent]] to <var>new value</var> and false
+    otherwise, and with <var>new parent instructions</var> returning null.
   </ol>
 
   <li>If the <span>effective command value</span> of <var>command</var> is
@@ -3510,10 +3514,11 @@ in the inline tag.
 
   <ol>
     <li>If <var>node</var> is a [[dd]] or [[dt]], <span>wrap</span> the
-    one-[[node]] list consisting of <var>node</var>, with <span>sibling
-    criteria</span> matching any [[dl]] with no [[attributes]], and <span>new
-    parent instructions</span> returning the result of calling
-    [[createelement|"dl"]] on the [[contextobject]].  Then abort these steps.
+    one-[[node]] list consisting of <var>node</var>, with <var>sibling
+    criteria</var> returning true for any [[dl]] with no [[attributes]] and
+    false otherwise, and <var>new parent instructions</var> returning the
+    result of calling [[createelement|"dl"]] on the [[contextobject]].  Then
+    abort these steps.
 
     <li>If <var>node</var> is not a <span>prohibited paragraph child</span>,
     abort these steps.
@@ -4903,13 +4908,12 @@ doing something like
     HTML5.
     </div>
 
-    <p><span>Wrap</span> <var>node list</var>, with <span>sibling
-    criteria</span> matching only <span title="HTML element">HTML
-    elements</span> with [[localname]] <var>tag</var> and <span>new parent
-    instructions</span> returning the result of calling <code
-    data-anolis-spec=domcore
-    title=dom-Document-createElement>createElement(<var>tag</var>)</code> on
-    the [[ownerdocument]] of <var>first node</var>.
+    <p><span>Wrap</span> <var>node list</var>, with <var>sibling criteria</var>
+    returning true for an <span>HTML element</span> with [[localname]]
+    <var>tag</var> and false otherwise, and <var>new parent
+    instructions</var> returning the result of calling
+    [[createelement|<var>tag</var>]] on the [[ownerdocument]] of <var>first
+    node</var>.
 
     <li>Abort these steps.
   </ol>
@@ -4941,13 +4945,11 @@ doing something like
   get it wrong.  Just indent on both sides.
   </div>
 
-  <p><span>Wrap</span> <var>node list</var>, with <span>sibling
-  criteria</span> matching any <span>simple indentation element</span>, and
-  <span>new parent instructions</span> to return the result of calling <code
-  data-anolis-spec=domcore
-  title=dom-Document-createElement>createElement("blockquote")</code> on the
-  [[ownerdocument]] of <var>first node</var>.  Let <var>new parent</var> be the
-  result.
+  <p><span>Wrap</span> <var>node list</var>, with <var>sibling criteria</var>
+  returning true for a <span>simple indentation element</span> and false
+  otherwise, and <var>new parent instructions</var> returning the result of
+  calling [[createelement|"blockquote"]] on the [[ownerdocument]] of <var>first
+  node</var>.  Let <var>new parent</var> be the result.
 
   <li><span>Fix disallowed ancestors</span> of <var>new parent</var>.
 </ol>
@@ -5679,9 +5681,9 @@ or "ul"):
 
       <li><span>Split the parent</span> of <var>children</var>.
 
-      <li><span>Wrap</span> <var>children</var>, with <span>sibling
-      criteria</span> matching any <span>HTML element</span> with [[localname]]
-      <var>tag name</var>.
+      <li><span>Wrap</span> <var>children</var>, with <var>sibling
+      criteria</var> returning true for an <span>HTML element</span> with
+      [[localname]] <var>tag name</var> and false otherwise.
 
       <li><span>Restore the values</span> from <var>values</var>.
     </ol>
@@ -5810,8 +5812,8 @@ not &lt;ul>&lt;li>foo&lt;/ul>&lt;ol>&lt;li>[bar&lt;/ol>&lt;ul>&lt;ol>&lt;li>baz&
         [[br]], remove the first member from <var>node list</var> and append it
         to <var>nodes to wrap</var>.
 
-        <li><span>Wrap</span> <var>nodes to wrap</var>, with <span>new parent
-        instructions</span> returning the result of calling
+        <li><span>Wrap</span> <var>nodes to wrap</var>, with <var>new parent
+        instructions</var> returning the result of calling
         [[createelement|"li"]] on the [[contextobject]].  Append the result to
         <var>sublist</var>.
       </ol>
@@ -5835,21 +5837,21 @@ not &lt;ul>&lt;li>foo&lt;/ul>&lt;ol>&lt;li>[bar&lt;/ol>&lt;ul>&lt;ol>&lt;li>baz&
 
       <li><span>Split the parent</span> of <var>sublist</var>.
 
-      <li><span>Wrap</span> <var>sublist</var>, with <span>sibling
-      criteria</span> matching any <span>HTML element</span> with [[localname]]
-      <var>tag name</var>, and <span>new parent instructions</span> returning
-      the result of calling [[createelement|<var>tag name</var>]] on the
-      [[contextobject]].
+      <li><span>Wrap</span> <var>sublist</var>, with <var>sibling
+      criteria</var> returning true for an <span>HTML element</span> with
+      [[localname]] <var>tag name</var> and false otherwise, and <var>new
+      parent instructions</var> returning the result of calling
+      [[createelement|<var>tag name</var>]] on the [[contextobject]].
 
       <li><span>Restore the values</span> from <var>values</var>.
 
       <li>Continue this loop from the beginning.
     </ol>
 
-    <li><span>Wrap</span> <var>sublist</var>, with the <span>sibling
-    criteria</span> matching any <span>HTML element</span> with [[localname]]
-    <var>tag name</var>, and the <span>new parent instructions</span> being the
-    following:
+    <li><span>Wrap</span> <var>sublist</var>, with <var>sibling criteria</var>
+    returning true for an <span>HTML element</span> with [[localname]] <var>tag
+    name</var> and false otherwise, and <var>new parent instructions</var>
+    being the following:
 
     <ol>
       <li>
@@ -5860,10 +5862,10 @@ not &lt;ul>&lt;li>foo&lt;/ul>&lt;ol>&lt;li>[bar&lt;/ol>&lt;ul>&lt;ol>&lt;li>baz&
         <pre>&lt;ol>&lt;li>foo&lt;/li>&lt;ol>&lt;li>[bar]&lt;/ol>&lt;/ol></pre>
       <p>instead of
         <pre>&lt;ol>&lt;li>foo&lt;/ol>&lt;blockquote>&lt;ol>&lt;li>[bar]&lt;/ol>&lt;/blockquote>.</pre>
-      <p>We handle the special case in the new parent instructions instead of
-      outside because we'd prefer to wind up in a sibling if there is one.  We
-      handle only previousSibling, not nextSibling, because we really mean for
-      this to cover something like
+      <p>We handle the special case in <var>new parent instructions</var>
+      instead of outside because we'd prefer to wind up in a sibling if there
+      is one.  We handle only previousSibling, not nextSibling, because we
+      really mean for this to cover something like
         <pre>[foo&lt;blockquote>bar]&lt;/blockquote></pre>
       <p>which we'll handle node-by-node.  TODO: Maybe we should do this
       differently, like just special-case simple indentation elements in an
@@ -5991,9 +5993,9 @@ would be worth the added complexity.
     <var>sublist</var>, remove the first member of <var>node list</var> and
     append it to <var>sublist</var>.
 
-    <li><p><span>Wrap</span> <var>sublist</var>.  <span>Sibling criteria</span>
-    match any [[div]] that has one or both of the following two attributes, and
-    no other attributes:
+    <li><p><span>Wrap</span> <var>sublist</var>.  <var>Sibling criteria</var>
+    returns true for any [[div]] that has one or both of the following two
+    attributes and no other attributes, and false otherwise:
 
     <ul>
       <li>An <code data-anolis-spec=html title=attr-div-align>align</code>
@@ -6010,9 +6012,9 @@ would be worth the added complexity.
     browser behaves in this case, but for inline formatting it matches everyone
     but Gecko's CSS mode, so I'm just being consistent.
 
-    <p><span>New parent instructions</span> are to call [[createelement|"div"]]
+    <p><var>New parent instructions</var> are to call [[createelement|"div"]]
     on the [[contextobject]], then set its CSS property "text-align" to
-    <var>alignment</var>, and return the result.
+    <var>alignment</var> and return the result.
   </ol>
 </ol>
 
@@ -6587,11 +6589,12 @@ other browsers don't do it.
     </ol>
 
     <li><span>Wrap</span> <var>sublist</var>.  If <var>value</var> is "div" or
-    "p", <span>sibling criteria</span> match nothing; otherwise they match any
-    <span>HTML element</span> with [[localname]] <var>value</var> and no
-    attributes.  <span>New parent instructions</span> return the result of
-    running [[createelement|<var>value</var>]] on the [[contextobject]].  Then
-    <span>fix disallowed ancestors</span> of the result.
+    "p", <var>sibling criteria</var> returns false; otherwise it returns true
+    for an <span>HTML element</span> with [[localname]] <var>value</var> and no
+    attributes, and false otherwise.  <var>New parent instructions</var>
+    return the result of running [[createelement|<var>value</var>]] on the
+    [[contextobject]].  Then <span>fix disallowed ancestors</span> of the
+    result.
   </ol>
 </ol>
 
@@ -7459,8 +7462,8 @@ whatwg thread</a>.
     not null and is an <span>allowed child</span> of "p", append it to
     <var>node list</var>.
 
-    <li><span>Wrap</span> <var>node list</var>, with <span>sibling
-    criteria</span> matching nothing and <span>new parent instructions</span>
+    <li><span>Wrap</span> <var>node list</var>, with <var>sibling
+    criteria</var> returning false and <var>new parent instructions</var>
     returning the result of calling [[createelement|<var>tag</var>]] on the
     [[contextobject]].  Set <var>container</var> to the result.
   </ol>

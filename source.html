@@ -1364,7 +1364,8 @@ contained" is basically that 1) in &lt;b>[foo]&lt;/b>, the text node and the
 and the &lt;b> is neither effectively contained nor contained.
 
 <p>A [[node]] <var>node</var> is <dfn>effectively contained</dfn> in a
-[[range]] <var>range</var> if at least one of the following holds:
+[[range]] <var>range</var> if <var>range</var> is not [[rangecollapsed]], and
+at least one of the following holds:
 
 <ul>
   <li><var>node</var> is [[contained]] in <var>range</var>.
@@ -1374,12 +1375,11 @@ and the &lt;b> is neither effectively contained nor contained.
   &lt;b>f[oo&lt;/b>}, but not &lt;b>foo[&lt;/b>} or &lt;b>f[]oo&lt;/b>.
 
   <p><var>node</var> is <var>range</var>'s [[startnode]], it is a [[text]]
-  node, its [[nodelength]] is different from <var>range</var>'s
-  [[startoffset]], and <var>range</var> is not [[rangecollapsed]].
+  node, and its [[nodelength]] is different from <var>range</var>'s
+  [[startoffset]].
 
   <li><var>node</var> is <var>range</var>'s [[endnode]], it is a [[text]] node,
-  <var>range</var>'s [[endoffset]] is not 0, and <var>range</var> is not
-  [[rangecollapsed]].
+  and <var>range</var>'s [[endoffset]] is not 0.
 
   <li>
   <p class=comments>Basically, anything whose children are all effectively
@@ -1391,11 +1391,10 @@ and the &lt;b> is neither effectively contained nor contained.
   <p><var>node</var> has at least one [[child]]; and all its [[children]] are
   <span>effectively contained</span> in <var>range</var>; and either
   <var>range</var>'s [[startnode]] is not a [[descendant]] of <var>node</var>
-  or is not a [[text]] node or <var>range</var>'s [[startoffset]] is zero or
-  <var>range</var> is [[rangecollapsed]]; and either <var>range</var>'s [[endnode]]
-  is not a [[descendant]] of <var>node</var> or is not a [[text]] node or
-  <var>range</var>'s [[endoffset]] is its [[endnode]]'s [[length]] or
-  <var>range</var> is [[rangecollapsed]].
+  or is not a [[text]] node or <var>range</var>'s [[startoffset]] is zero; and
+  either <var>range</var>'s [[endnode]] is not a [[descendant]] of
+  <var>node</var> or is not a [[text]] node or <var>range</var>'s [[endoffset]]
+  is its [[endnode]]'s [[length]].
 </ul>
 
 <p>A <dfn>modifiable element</dfn> is a [[b]], [[em]], [[i]], [[s]], [[span]],

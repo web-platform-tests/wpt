@@ -1532,48 +1532,47 @@ function isAllowedChild(child, parent_) {
 ///// Inline formatting command definitions /////
 //@{
 
-// "A node node is effectively contained in a range range if at least one of
-// the following holds:"
+// "A node node is effectively contained in a range range if range is not
+// collapsed, and at least one of the following holds:"
 function isEffectivelyContained(node, range) {
+	if (range.collapsed) {
+		return false;
+	}
+
 	// "node is contained in range."
 	if (isContained(node, range)) {
 		return true;
 	}
 
-	// "node is range's start node, it is a Text node, its length is different
-	// from range's start offset, and range is not collapsed."
+	// "node is range's start node, it is a Text node, and its length is
+	// different from range's start offset."
 	if (node == range.startContainer
 	&& node.nodeType == Node.TEXT_NODE
-	&& getNodeLength(node) != range.startOffset
-	&& !range.collapsed) {
+	&& getNodeLength(node) != range.startOffset) {
 		return true;
 	}
 
-	// "node is range's end node, it is a Text node, range's end offset is not
-	// 0, and range is not collapsed."
+	// "node is range's end node, it is a Text node, and range's end offset is
+	// not 0."
 	if (node == range.endContainer
 	&& node.nodeType == Node.TEXT_NODE
-	&& range.endOffset != 0
-	&& !range.collapsed) {
+	&& range.endOffset != 0) {
 		return true;
 	}
 
 	// "node has at least one child; and all its children are effectively
 	// contained in range; and either range's start node is not a descendant of
-	// node or is not a Text node or range's start offset is zero or range is
-	// collapsed; and either range's end node is not a descendant of node or is
-	// not a Text node or range's end offset is its end node's length or range
-	// is collapsed."
+	// node or is not a Text node or range's start offset is zero; and either
+	// range's end node is not a descendant of node or is not a Text node or
+	// range's end offset is its end node's length."
 	if (node.hasChildNodes()
 	&& [].every.call(node.childNodes, function(child) { return isEffectivelyContained(child, range) })
 	&& (!isDescendant(range.startContainer, node)
 	|| range.startContainer.nodeType != Node.TEXT_NODE
-	|| range.startOffset == 0
-	|| range.collapsed)
+	|| range.startOffset == 0)
 	&& (!isDescendant(range.endContainer, node)
 	|| range.endContainer.nodeType != Node.TEXT_NODE
-	|| range.endOffset == getNodeLength(range.endContainer
-	|| range.collapsed))) {
+	|| range.endOffset == getNodeLength(range.endContainer))) {
 		return true;
 	}
 

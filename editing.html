@@ -22,6 +22,7 @@ xmp {
   white-space: pre-wrap;
 }
 div.note > p:first-child::before { content: 'Note: '; }
+.note var { font-style: normal }
 .XXX > :last-child { margin-bottom: 0 }
 .XXX li {
   margin-top: 0;
@@ -62,7 +63,7 @@ a code { text-decoration: underline }
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing APIs</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-4-august-2011>Work in Progress &mdash; Last Update 4 August 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-5-august-2011>Work in Progress &mdash; Last Update 5 August 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;<a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a>&gt;
@@ -938,6 +939,14 @@ the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcor
 location.  In doing so, however, ignore the regular <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#range-mutation-rules>range mutation rules</a>, and
 instead follow these rules:
 
+<p class=note>Many of the algorithms in this specification move nodes around in
+the DOM.  The normal rules for range mutation require that any range endpoints
+inside those nodes are moved to the node's parent as soon as the node is moved,
+which would corrupt the selection.  For instance, if the user selects the text
+"foo" and then bolds it, first we produce <code title="">&lt;b&gt;&lt;/b&gt;foo</code>, then <code title="">&lt;b&gt;foo&lt;/b&gt;</code>.  When
+we move the "foo" text node into its new parent, we have to do so "preserving
+ranges", so that the text "foo" is still selected.
+
 <ol>
   <li>Let <var title="">node</var> be the moved <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, <var title="">old parent</var> and
   <var title="">old index</var> be the old <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> (which may be null) and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>,
@@ -971,6 +980,12 @@ allowed here?
 <p>To <dfn id=set-the-tag-name>set the tag name</dfn> of an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> <var title="">element</var> to
 <var title="">new name</var>:
 
+<p class=note>This is needed because the DOM doesn't allow any way of changing
+an existing element's name.  Sometimes we want to, e.g., convert a markup
+element to a span.  In that case we invoke this algorithm to create a new
+element, move it to the right place, copy attributes from the old element, move
+the old element's children, and remove the old element.
+
 <ol>
   <li>If <var title="">element</var> is an <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a>
   equal to <var title="">new name</var>, return <var title="">element</var>.
@@ -997,6 +1012,10 @@ allowed here?
 
 <p>To <dfn id=remove-extraneous-line-breaks-before>remove extraneous line breaks before</dfn> a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>
 <var title="">node</var>:
+
+<p class=note><code title="">&lt;br&gt;</code> sometimes has no effect in CSS, such
+as in the markup <code title="">foo&lt;br&gt;&lt;p&gt;bar&lt;/p&gt;</code>.  In such cases
+we like to remove the extra markup to keep things tidy.
 
 <ol>
   <li>Let <var title="">ref</var> be the <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> of <var title="">node</var>.
@@ -1047,6 +1066,15 @@ accepts a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/
 parent instructions</var> that accepts nothing as input and outputs a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>
 or null.  If not provided, <var title="">sibling criteria</var> returns false and
 <var title="">new parent instructions</var> returns null.
+
+<p class=note>This algorithm basically does two things.  First, it looks at the
+previous and next siblings of the nodes in <var title="">node list</var>.  If running
+<var title="">sibling criteria</var> on one or both of the siblings returns true, the
+nodes in <var title="">node list</var> are moved into the sibling(s).  Otherwise,
+<var title="">new parent instructions</var> is run, and the result is used to wrap
+<var title="">node list</var>.  For instance, to wrap <var title="">node list</var> in a <code title="">&lt;b&gt;</code>, one might invoke this algorithm with <var title="">sibling
+criteria</var> returning true only for <code title="">&lt;b&gt;</code> elements and
+<var title="">new parent instructions</var> creating and returning a new <code title="">&lt;b&gt;</code> element.
 
 <ol>
   <li>If <var title="">node list</var> is empty, or the first member of <var title="">node
@@ -1270,6 +1298,13 @@ few reasons:
 <p>A <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> or string <var title="">child</var> is an <dfn id=allowed-child>allowed child</dfn> of a
 <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> or string <var title="">parent</var> if the following algorithm returns true:
 
+<p class=note>Often we move around nodes, and sometimes this can result in
+unreasonable things like two <code title="">&lt;p&gt;</code>'s nested inside one
+another.  This algorithm checks for DOMs we never want to have, so that other
+algorithms can avoid creating them or fix them if they do happen.  The
+<a href=#fix-disallowed-ancestors>fix disallowed ancestors</a> algorithm is one frequently-invoked
+caller of this algorithm.
+
 <ol>
   <li>If <var title="">parent</var> is "colgroup", "table", "tbody", "tfoot", "thead",
   "tr", or an <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> equal to one of
@@ -1479,7 +1514,12 @@ which at least one of the following holds:
 </ul>
 
 <p class=note>Conceptually, a simple modifiable element is a modifiable element
-which specifies a value for at most one command.
+which specifies a value for at most one command.  As the names imply, inline
+formatting commands will try not to modify anything other than modifiable
+elements.  For instance, <code title="">&lt;dfn&gt;</code> normally creates italics,
+but it's not modifiable, so running <a href=#the-italic-command>the <code title="">italic</code>
+command</a> will not remove it: it will nest <code title="">&lt;span
+style="font-style: normal"&gt;</code> inside.
 
 <p>Two quantities are <dfn id=equivalent-values>equivalent values</dfn> for a <a href=#command>command</a>
 if either both are null, or both are strings and they're equal and the
@@ -1511,7 +1551,7 @@ at least one whose <a href=#effective-command-value>effective command value</a> 
 values and at least one whose <a href=#effective-command-value>effective command value</a> is not one
 of the given values.
 
-<p class=comments> For bold and similar commands, IE 9 RC seems to consider the
+<p class=comments>For bold and similar commands, IE 9 RC seems to consider the
 state true or false depending on the first element.  All other browsers follow
 the same general idea as the spec, considering a range bold only if all text in
 it is bold, and this seems to match at least OpenOffice.org's bold feature.
@@ -1559,6 +1599,9 @@ there is no such node, the <a href=#effective-command-value>effective command va
 cannot be null, since the boundary point node of a selection must always be
 either an element or a text node that's the child of an element.
 
+<p class=note>The notions of inline command activated values and standard
+inline value commands are mostly just shorthand to avoid repeating the same
+boilerplate half a dozen times.
 
 
 <h3 id=assorted-inline-formatting-command-algorithms><span class=secno>7.2 </span>Assorted inline formatting command algorithms</h3>

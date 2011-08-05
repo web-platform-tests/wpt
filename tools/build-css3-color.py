@@ -11,9 +11,8 @@ rawDirs = {'other-formats':'other'}
 
 import sys
 from os.path import join, exists, basename
-from w3ctestlib.Suite import CSSTestSuite
+from w3ctestlib.Suite import TestSuite
 from w3ctestlib.Indexer import Indexer
-from w3ctestlib.Groups import SelftestGroup
 from w3ctestlib.Utils import listdirs, listfiles, basepath
 
 # run from css test suite repo root
@@ -25,7 +24,7 @@ unreviewed = sys.argv[1:]
 print "Requested unreviewed source directories."
 
 # Set up
-suite = CSSTestSuite('css3-color', 'CSS Color Module Level 3 Test Suite', 'http://www.w3.org/TR/css3-color/')
+suite = TestSuite('css3-color', 'CSS Color Module Level 3 Test Suite', 'http://www.w3.org/TR/css3-color/')
 
 # Add approved tests
 root = join('approved', 'css3-color', 'src')
@@ -33,10 +32,10 @@ dirs = listdirs(root)
 for dir in dirs:
   if dir in skipDirs or rawDirs.has_key(dir): continue
   testroot = join(root, dir)
-  suite.addSelftestsByExt(testroot, '.xht')
+  suite.addTestsByExt(testroot, '.xht')
   if exists(join(testroot, reftestPath)):
     suite.addReftests(testroot, reftestPath)
-suite.addSelftestsByExt(root, '.xht')
+suite.addTestsByExt(root, '.xht')
 if exists(join(root, reftestPath)):
   suite.addReftests(root, reftestPath)
 for src, dst in rawDirs.items():
@@ -59,7 +58,7 @@ for path in unreviewed:
     files = listfiles(path)
     files = filter(grep, files)
     print "Adding %d unreviewed selftests from %s" % (len(files), path)
-    suite.addSelftestsByList(path, files)
+    suite.addTestsByList(path, files)
 
 # Build
 data = join('approved', 'css3-color', 'data')

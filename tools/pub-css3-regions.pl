@@ -15,8 +15,7 @@ rmtree('dist/css3-regions');
 
 ###############################################################################
 # Adobe
-#push @dirs, 'contributors/adobe/submitted/regions';
-push @dirs, 'contributors/adobe/submitted/regions/reftest.list';
+push @dirs, 'contributors/adobe/submitted/regions';
 
 ###############################################################################
 # Apple - No CSS2.1 tests

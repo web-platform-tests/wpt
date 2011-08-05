@@ -26,14 +26,14 @@ rmtree('dist/css2.1');
 
 #push @dirs, 'contributors/bzbarsky/submitted/css2.1/visuren';
 push @dirs, 'contributors/bzbarsky/submitted/css2.1/tables';
-push @dirs, 'contributors/bzbarsky/submitted/css2.1/box/reftest.list';
-#push @dirs, 'contributors/bzbarsky/submitted/css2.1/run-in/reftest.list';
+push @dirs, 'contributors/bzbarsky/submitted/css2.1/box';
+#push @dirs, 'contributors/bzbarsky/submitted/css2.1/run-in';
 
 ###############################################################################
 # John Daggett
 # submitted/fontreftests/
 
-push @dirs, 'contributors/mozilla/submitted/fontreftests/reftest.list';
+push @dirs, 'contributors/mozilla/submitted/fontreftests';
 
 ###############################################################################
 # David Baron
@@ -45,7 +45,7 @@ push @dirs, 'contributors/mozilla/submitted/first-letter-characters';
 # Mozilla
 # Managed auto-import from mozilla.org repos
 
-push @dirs, 'contributors/mozilla/submitted/css2.1/*/*.list';
+push @dirs, 'contributors/mozilla/submitted/css2.1/*';
 
 ###############################################################################
 # Eira Monstad
@@ -63,7 +63,6 @@ push @dirs, 'contributors/gabriele/submitted/basic/sec5';
 # Gérard Talbot
 # all selftests
 
-push @dirs, 'contributors/gtalbot/submitted/reftest.list';
 push @dirs, 'contributors/gtalbot/submitted';
 
 ###############################################################################
@@ -75,7 +74,7 @@ push @dirs, 'contributors/gtalbot/submitted';
 #push @dirs, 'contributors/hixie/submitted/css2.1/[bcfgmptuvz]*';
 #push @dirs, 'contributors/hixie/submitted/css2.1/selector';
 #push @dirs, 'contributors/hixie/submitted/css2.1/syndata';
-push @dirs, 'contributors/hixie/submitted/css2.1-reftests/*/reftest.list';
+push @dirs, 'contributors/hixie/submitted/css2.1-reftests/*';
 
 ###############################################################################
 # i18n WG (Richard Ishida)
@@ -97,12 +96,12 @@ push @dirs, 'contributors/jameshopkins/submitted/css2.1/*';
 # fantasai
 
 # push @dirs, 'contributors/fantasai/submitted/css2.1';
-push @dirs, 'contributors/fantasai/submitted/css2.1/backgrounds/reftest.list';
+push @dirs, 'contributors/fantasai/submitted/css2.1/backgrounds';
 
 ###############################################################################
 # CSSWG Issues
 
-push @dirs, 'contributors/csswg-issues/submitted/css2.1/reftest.list';
+push @dirs, 'contributors/csswg-issues/submitted/css2.1';
 
 
 ###############################################################################

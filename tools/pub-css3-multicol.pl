@@ -63,8 +63,7 @@ rmtree('dist/css3-multicol');
 
 ###############################################################################
 # Opera
-#push @dirs, 'contributors/howcome/submitted';
-push @dirs, 'contributors/howcome/submitted/reftest.list';
+push @dirs, 'contributors/howcome/submitted';
 
 ###############################################################################
 

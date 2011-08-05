@@ -1749,16 +1749,6 @@ function isSimpleModifiableElement(node) {
 		return true;
 	}
 
-	// "It is a sub or sub element with exactly one attribute, which is style,
-	// and the style attribute sets exactly one CSS property (including invalid
-	// or unrecognized properties), which is "vertical-align"."
-	if ((node.tagName == "SUB" || node.tagName == "SUP")
-	&& node.hasAttribute("style")
-	&& node.style.length == 1
-	&& node.style.verticalAlign != "") {
-		return true;
-	}
-
 	// "It is an a, font, or span element with exactly one attribute, which is
 	// style, and the style attribute sets exactly one CSS property (including
 	// invalid or unrecognized properties), and that property is not
@@ -1926,18 +1916,13 @@ function getEffectiveCommandValue(node, command) {
 		while (isInlineNode(node)) {
 			var verticalAlign = getComputedStyle(node).verticalAlign;
 
-			// "If node's "vertical-align" property has resolved value "sub",
-			// set affected by subscript to true."
-			if (verticalAlign == "sub") {
+			// "If node is a sub, set affected by subscript to true."
+			if (isHtmlElement(node, "sub")) {
 				affectedBySubscript = true;
-			// "Otherwise, if node's "vertical-align" property has resolved
-			// value "super", set affected by superscript to true."
-			} else if (verticalAlign == "super") {
+			// "Otherwise, if node is a sup, set affected by superscript to
+			// true."
+			} else if (isHtmlElement(node, "sup")) {
 				affectedBySuperscript = true;
-			// "Otherwise, if node's "vertical-align" property has resolved
-			// value other than "baseline", return the string "other"."
-			} else if (verticalAlign != "baseline") {
-				return "other";
 			}
 
 			// "Set node to its parent."
@@ -1950,18 +1935,18 @@ function getEffectiveCommandValue(node, command) {
 			return "mixed";
 		}
 
-		// "If affected by subscript is true, return "sub"."
+		// "If affected by subscript is true, return "subscript"."
 		if (affectedBySubscript) {
-			return "sub";
+			return "subscript";
 		}
 
-		// "If affected by superscript is true, return "super"."
+		// "If affected by superscript is true, return "superscript"."
 		if (affectedBySuperscript) {
-			return "super";
+			return "superscript";
 		}
 
-		// "Return "baseline"."
-		return "baseline";
+		// "Return null."
+		return null;
 	}
 
 	// "If command is "strikethrough", and the "text-decoration" property of
@@ -2028,21 +2013,14 @@ function getSpecifiedCommandValue(element, command) {
 			return null;
 		}
 
-		// "If element has a style attribute set, and that attribute has
-		// the effect of setting "vertical-align", return the value that it
-		// sets "vertical-align" to."
-		if (element.style.verticalAlign != "") {
-			return element.style.verticalAlign;
+		// "If element is a sup, return "superscript"."
+		if (isHtmlElement(element, "sup")) {
+			return "superscript";
 		}
 
-		// "If element is a sup, return "super"."
-		if (isHtmlElement(element, "SUP")) {
-			return "super";
-		}
-
-		// "If element is a sub, return "sub"."
-		if (isHtmlElement(element, "SUB")) {
-			return "sub";
+		// "If element is a sub, return "subscript"."
+		if (isHtmlElement(element, "sub")) {
+			return "subscript";
 		}
 
 		// "Return null."
@@ -2675,19 +2653,19 @@ function forceValue(node, command, newValue) {
 		newParent.size = cssSizeToLegacy(newValue);
 	}
 
-	// "If command is "subscript" or "superscript" and new value is "sub", let
-	// new parent be the result of calling createElement("sub") on the
-	// ownerDocument of node."
+	// "If command is "subscript" or "superscript" and new value is
+	// "subscript", let new parent be the result of calling
+	// createElement("sub") on the ownerDocument of node."
 	if ((command == "subscript" || command == "superscript")
-	&& newValue == "sub") {
+	&& newValue == "subscript") {
 		newParent = node.ownerDocument.createElement("sub");
 	}
 
-	// "If command is "subscript" or "superscript" and new value is "super",
-	// let new parent be the result of calling createElement("sup") on the
-	// ownerDocument of node."
+	// "If command is "subscript" or "superscript" and new value is
+	// "superscript", let new parent be the result of calling
+	// createElement("sup") on the ownerDocument of node."
 	if ((command == "subscript" || command == "superscript")
-	&& newValue == "super") {
+	&& newValue == "superscript") {
 		newParent = node.ownerDocument.createElement("sup");
 	}
 
@@ -3380,28 +3358,27 @@ commands.subscript = {
 		// "Call queryCommandState("subscript"), and let state be the result."
 		var state = myQueryCommandState("subscript");
 
-		// "Set the selection's value to "baseline"."
-		setSelectionValue("subscript", "baseline");
+		// "Set the selection's value to null."
+		setSelectionValue("subscript", null);
 
-		// "If state is false, set the selection's value to "sub"."
+		// "If state is false, set the selection's value to "subscript"."
 		if (!state) {
-			setSelectionValue("subscript", "sub");
+			setSelectionValue("subscript", "subscript");
 		}
 	}, indeterm: function() {
 		// "True if either among editable Text nodes that are effectively
 		// contained in the active range, there is at least one with effective
-		// command value "sub" and at least one with some other effective
+		// command value "subscript" and at least one with some other effective
 		// command value; or if there is some editable Text node effectively
 		// contained in the active range with effective command value "mixed".
 		// Otherwise false."
 		var nodes = getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
 			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
 		});
-		return (nodes.some(function(node) { return getEffectiveCommandValue(node, "subscript") == "sub" })
-			&& nodes.some(function(node) { return getEffectiveCommandValue(node, "subscript") != "sub" }))
+		return (nodes.some(function(node) { return getEffectiveCommandValue(node, "subscript") == "subscript" })
+			&& nodes.some(function(node) { return getEffectiveCommandValue(node, "subscript") != "subscript" }))
 			|| nodes.some(function(node) { return getEffectiveCommandValue(node, "subscript") == "mixed" });
-	}, inlineCommandActivatedValues: ["sub"],
-	relevantCssProperty: "verticalAlign"
+	}, inlineCommandActivatedValues: ["subscript"],
 };
 
 //@}
@@ -3413,29 +3390,28 @@ commands.superscript = {
 		// result."
 		var state = myQueryCommandState("superscript");
 
-		// "Set the selection's value to "baseline"."
-		setSelectionValue("superscript", "baseline");
+		// "Set the selection's value to null."
+		setSelectionValue("superscript", null);
 
-		// "If state is false, set the selection's value to "super"."
+		// "If state is false, set the selection's value to "superscript"."
 		if (!state) {
-			setSelectionValue("superscript", "super");
+			setSelectionValue("superscript", "superscript");
 		}
 	}, indeterm: function() {
 		// "True if either among editable Text nodes that are effectively
 		// contained in the active range, there is at least one with effective
-		// command value "super" and at least one with some other effective
-		// command value; or if there is some editable Text node effectively
-		// contained in the active range with effective command value "mixed".
-		// Otherwise false."
+		// command value "superscript" and at least one with some other
+		// effective command value; or if there is some editable Text node
+		// effectively contained in the active range with effective command
+		// value "mixed".  Otherwise false."
 		var nodes = getAllEffectivelyContainedNodes(getActiveRange(),
 				function(node) {
 			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
 		});
-		return (nodes.some(function(node) { return getEffectiveCommandValue(node, "superscript") == "super" })
-			&& nodes.some(function(node) { return getEffectiveCommandValue(node, "superscript") != "super" }))
+		return (nodes.some(function(node) { return getEffectiveCommandValue(node, "superscript") == "superscript" })
+			&& nodes.some(function(node) { return getEffectiveCommandValue(node, "superscript") != "superscript" }))
 			|| nodes.some(function(node) { return getEffectiveCommandValue(node, "superscript") == "mixed" });
-	}, inlineCommandActivatedValues: ["super"],
-	relevantCssProperty: "verticalAlign"
+	}, inlineCommandActivatedValues: ["superscript"],
 };
 
 //@}

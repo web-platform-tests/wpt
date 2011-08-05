@@ -1497,10 +1497,6 @@ which at least one of the following holds:
   <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code>, and the <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute sets exactly one CSS property
   (including invalid or unrecognized properties), which is "font-style".
 
-  <li>It is a <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sub</a></code> or <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sup</a></code> element with exactly one attribute, which is
-  <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code>, and the <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute sets exactly one CSS property
-  (including invalid or unrecognized properties), which is "vertical-align".
-
   <li>It is an <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code>, <code class=external data-anolis-spec=html title=font><a href=http://www.whatwg.org/html/#font>font</a></code>, or <code class=external data-anolis-spec=html title="the span element"><a href=http://www.whatwg.org/html/#the-span-element>span</a></code> element with exactly one attribute,
   which is <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code>, and the <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute sets exactly one CSS property
   (including invalid or unrecognized properties), and that property is not
@@ -1655,18 +1651,17 @@ return either a string or null:
       <p class=comments>Firefox 6.0a2 ignores vertical-align for this purpose,
       and only cares about &lt;sub&gt; and &lt;sup&gt; tags themselves.  Opera 11.11
       is similar, and in fact behaves like that even for commands like bold.
-      The spec follows Chrome 14 dev, mainly because WebKit itself will produce
-      spans with vertical-align sub or super, and we want to handle them
-      correctly.
+      The spec originally followed Chrome 14 dev, mainly because WebKit itself
+      will produce spans with vertical-align sub or super, and we want to
+      handle them correctly.  However, Ryosuke <a href=http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-August/032809.html>informs</a>
+      me that WebKit's behavior here is viewed as <a href="https://bugs.webkit.org/show_bug.cgi?id=11089">a bug</a>, so I
+      changed it to match Gecko/Opera.
 
-      <p>If <var title="">node</var>'s "vertical-align" property has <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved value</a> "sub",
-      set <var title="">affected by subscript</var> to true.
+      <p>If <var title="">node</var> is a <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sub</a></code>, set <var title="">affected by subscript</var>
+      to true.
 
-      <li>Otherwise, if <var title="">node</var>'s "vertical-align" property has
-      <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved value</a> "super", set <var title="">affected by superscript</var> to true.
-
-      <li>Otherwise, if <var title="">node</var>'s "vertical-align" property has
-      <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved value</a> other than "baseline", return the string "other".
+      <li>Otherwise, if <var title="">node</var> is a <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sup</a></code>, set <var title="">affected by
+      superscript</var> to true.
 
       <li>Set <var title="">node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
     </ol>
@@ -1674,11 +1669,11 @@ return either a string or null:
     <li>If <var title="">affected by subscript</var> and <var title="">affected by
     superscript</var> are both true, return the string "mixed".
 
-    <li>If <var title="">affected by subscript</var> is true, return "sub".
+    <li>If <var title="">affected by subscript</var> is true, return "subscript".
 
-    <li>If <var title="">affected by superscript</var> is true, return "super".
+    <li>If <var title="">affected by superscript</var> is true, return "superscript".
 
-    <li>Return "baseline".
+    <li>Return null.
   </ol>
 
   <li>If <var title="">command</var> is "strikethrough", and the "text-decoration"
@@ -1716,13 +1711,9 @@ will return either a string or null:
   <ol>
     <li>If <var title="">element</var> is not an <a href=#inline-node>inline node</a>, return null.
 
-    <li>If <var title="">element</var> has a <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute set, and that attribute
-    has the effect of setting "vertical-align", return the value that it sets
-    "vertical-align" to.
+    <li>If <var title="">element</var> is a <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sup</a></code>, return "superscript".
 
-    <li>If <var title="">element</var> is a <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sup</a></code>, return "super".
-
-    <li>If <var title="">element</var> is a <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sub</a></code>, return "sub".
+    <li>If <var title="">element</var> is a <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sub</a></code>, return "subscript".
 
     <li>Return null.
   </ol>
@@ -2339,20 +2330,20 @@ different value.
   Gecko and contradicting WebKit.  This is because &lt;span
   value="vertical-align: sub/super"&gt;, the obvious equivalent (and what WebKit
   uses), behaves quite differently: it doesn't reduce font-size, which is ugly.
+  WebKit's behavior is <a href="https://bugs.webkit.org/show_bug.cgi?id=11089">a
+  bug</a> anyway.
 
   <p>If <var title="">command</var> is "subscript" or "superscript" and <var title="">new
-  value</var> is "sub", let <var title="">new parent</var> be the result of calling
-  <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("sub")</a></code> on the
-  <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>.
+  value</var> is "subscript", let <var title="">new parent</var> be the result of
+  calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("sub")</a></code> on the <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>.
 
   <li>If <var title="">command</var> is "subscript" or "superscript" and <var title="">new
-  value</var> is "super", let <var title="">new parent</var> be the result of calling
-  <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("sup")</a></code> on the
-  <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>.
+  value</var> is "superscript", let <var title="">new parent</var> be the result of
+  calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("sup")</a></code> on the <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>.
 
   <li>If <var title="">new parent</var> is null, let <var title="">new parent</var> be the result
-  of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("span")</a></code> on the
-  <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>.
+  of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("span")</a></code> on the <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of
+  <var title="">node</var>.
 
   <li>
   <p class=comments>This preserves boundary points correctly, as usual.
@@ -3366,19 +3357,19 @@ selection's value</a> to "line-through".
   <li>Call <code title=queryCommandState()><a href=#querycommandstate()>queryCommandState("subscript")</a></code>, and let
   <var title="">state</var> be the result.
 
-  <li><a href="#set-the-selection's-value">Set the selection's value</a> to "baseline".
+  <li><a href="#set-the-selection's-value">Set the selection's value</a> to null.
 
   <li>If <var title="">state</var> is false, <a href="#set-the-selection's-value">set the selection's value</a> to
-  "sub".
+  "subscript".
 </ol>
 
 <p><a href=#indeterminate>Indeterminate</a>: True if either among <a href=#editable>editable</a>
 <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
 range</a>, there is at least one with <a href=#effective-command-value>effective command value</a>
-"sub" and at least one with some other <a href=#effective-command-value>effective command value</a>; or
-if there is some <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node <a href=#effectively-contained>effectively
-contained</a> in the <a href=#active-range>active range</a> with <a href=#effective-command-value>effective command
-value</a> "mixed".  Otherwise false.
+"subscript" and at least one with some other <a href=#effective-command-value>effective command
+value</a>; or if there is some <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node
+<a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a> with
+<a href=#effective-command-value>effective command value</a> "mixed".  Otherwise false.
 
 <p class=comments> For &lt;sup&gt;&lt;sub&gt;foo&lt;/sub&gt;&lt;/sup&gt;, Firefox 6.0a2 and
 Opera 11.11 say the state is true for both superscript and subscript, and
@@ -3391,9 +3382,7 @@ namely get rid of all those ancestors and replace them with a single tag.  This
 matches what happens in other indeterminate situations, so it's fair to
 consider it indeterminate.
 
-<p><a href=#inline-command-activated-values>Inline command activated values</a>: "sub"
-
-<p><a href=#relevant-css-property>Relevant CSS property</a>: "vertical-align"
+<p><a href=#inline-command-activated-values>Inline command activated values</a>: "subscript"
 
 
 <h3 id=the-superscript-command><span class=secno>7.18 </span><dfn>The <code title="">superscript</code> command</dfn></h3>
@@ -3404,23 +3393,21 @@ consider it indeterminate.
   <li>Call <code title=queryCommandState()><a href=#querycommandstate()>queryCommandState("superscript")</a></code>, and let
   <var title="">state</var> be the result.
 
-  <li><a href="#set-the-selection's-value">Set the selection's value</a> to "baseline".
+  <li><a href="#set-the-selection's-value">Set the selection's value</a> to null.
 
   <li>If <var title="">state</var> is false, <a href="#set-the-selection's-value">set the selection's value</a> to
-  "super".
+  "superscript".
 </ol>
 
 <p><a href=#indeterminate>Indeterminate</a>: True if either among <a href=#editable>editable</a>
 <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
 range</a>, there is at least one with <a href=#effective-command-value>effective command value</a>
-"super" and at least one with some other <a href=#effective-command-value>effective command value</a>;
-or if there is some <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node <a href=#effectively-contained>effectively
-contained</a> in the <a href=#active-range>active range</a> with <a href=#effective-command-value>effective command
-value</a> "mixed".  Otherwise false.
+"superscript" and at least one with some other <a href=#effective-command-value>effective command
+value</a>; or if there is some <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node
+<a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a> with
+<a href=#effective-command-value>effective command value</a> "mixed".  Otherwise false.
 
-<p><a href=#inline-command-activated-values>Inline command activated values</a>: "super"
-
-<p><a href=#relevant-css-property>Relevant CSS property</a>: "vertical-align"
+<p><a href=#inline-command-activated-values>Inline command activated values</a>: "superscript"
 
 
 <h3 id=the-underline-command><span class=secno>7.19 </span><dfn>The <code title="">underline</code> command</dfn></h3>

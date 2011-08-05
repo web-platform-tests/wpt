@@ -1468,10 +1468,6 @@ which at least one of the following holds:
   [[style]], and the [[style]] attribute sets exactly one CSS property
   (including invalid or unrecognized properties), which is "font-style".
 
-  <li>It is a [[sub]] or [[sup]] element with exactly one attribute, which is
-  [[style]], and the [[style]] attribute sets exactly one CSS property
-  (including invalid or unrecognized properties), which is "vertical-align".
-
   <li>It is an [[a]], [[font]], or [[span]] element with exactly one attribute,
   which is [[style]], and the [[style]] attribute sets exactly one CSS property
   (including invalid or unrecognized properties), and that property is not
@@ -1627,18 +1623,19 @@ return either a string or null:
       <p class=comments>Firefox 6.0a2 ignores vertical-align for this purpose,
       and only cares about &lt;sub> and &lt;sup> tags themselves.  Opera 11.11
       is similar, and in fact behaves like that even for commands like bold.
-      The spec follows Chrome 14 dev, mainly because WebKit itself will produce
-      spans with vertical-align sub or super, and we want to handle them
-      correctly.
+      The spec originally followed Chrome 14 dev, mainly because WebKit itself
+      will produce spans with vertical-align sub or super, and we want to
+      handle them correctly.  However, Ryosuke <a
+      href=http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-August/032809.html>informs</a>
+      me that WebKit's behavior here is viewed as <a
+      href=https://bugs.webkit.org/show_bug.cgi?id=11089>a bug</a>, so I
+      changed it to match Gecko/Opera.
 
-      <p>If <var>node</var>'s "vertical-align" property has [[resval]] "sub",
-      set <var>affected by subscript</var> to true.
+      <p>If <var>node</var> is a [[sub]], set <var>affected by subscript</var>
+      to true.
 
-      <li>Otherwise, if <var>node</var>'s "vertical-align" property has
-      [[resval]] "super", set <var>affected by superscript</var> to true.
-
-      <li>Otherwise, if <var>node</var>'s "vertical-align" property has
-      [[resval]] other than "baseline", return the string "other".
+      <li>Otherwise, if <var>node</var> is a [[sup]], set <var>affected by
+      superscript</var> to true.
 
       <li>Set <var>node</var> to its [[parent]].
     </ol>
@@ -1646,11 +1643,11 @@ return either a string or null:
     <li>If <var>affected by subscript</var> and <var>affected by
     superscript</var> are both true, return the string "mixed".
 
-    <li>If <var>affected by subscript</var> is true, return "sub".
+    <li>If <var>affected by subscript</var> is true, return "subscript".
 
-    <li>If <var>affected by superscript</var> is true, return "super".
+    <li>If <var>affected by superscript</var> is true, return "superscript".
 
-    <li>Return "baseline".
+    <li>Return null.
   </ol>
 
   <li>If <var>command</var> is "strikethrough", and the "text-decoration"
@@ -1688,13 +1685,9 @@ will return either a string or null:
   <ol>
     <li>If <var>element</var> is not an <span>inline node</span>, return null.
 
-    <li>If <var>element</var> has a [[style]] attribute set, and that attribute
-    has the effect of setting "vertical-align", return the value that it sets
-    "vertical-align" to.
+    <li>If <var>element</var> is a [[sup]], return "superscript".
 
-    <li>If <var>element</var> is a [[sup]], return "super".
-
-    <li>If <var>element</var> is a [[sub]], return "sub".
+    <li>If <var>element</var> is a [[sub]], return "subscript".
 
     <li>Return null.
   </ol>
@@ -2334,23 +2327,20 @@ different value.
   Gecko and contradicting WebKit.  This is because &lt;span
   value="vertical-align: sub/super">, the obvious equivalent (and what WebKit
   uses), behaves quite differently: it doesn't reduce font-size, which is ugly.
+  WebKit's behavior is <a href=https://bugs.webkit.org/show_bug.cgi?id=11089>a
+  bug</a> anyway.
 
   <p>If <var>command</var> is "subscript" or "superscript" and <var>new
-  value</var> is "sub", let <var>new parent</var> be the result of calling
-  <code data-anolis-spec=domcore
-  title=dom-Document-createElement>createElement("sub")</code> on the
-  [[ownerdocument]] of <var>node</var>.
+  value</var> is "subscript", let <var>new parent</var> be the result of
+  calling [[createelement|"sub"]] on the [[ownerdocument]] of <var>node</var>.
 
   <li>If <var>command</var> is "subscript" or "superscript" and <var>new
-  value</var> is "super", let <var>new parent</var> be the result of calling
-  <code data-anolis-spec=domcore
-  title=dom-Document-createElement>createElement("sup")</code> on the
-  [[ownerdocument]] of <var>node</var>.
+  value</var> is "superscript", let <var>new parent</var> be the result of
+  calling [[createelement|"sup"]] on the [[ownerdocument]] of <var>node</var>.
 
   <li>If <var>new parent</var> is null, let <var>new parent</var> be the result
-  of calling <code data-anolis-spec=domcore
-  title=dom-Document-createElement>createElement("span")</code> on the
-  [[ownerdocument]] of <var>node</var>.
+  of calling [[createelement|"span"]] on the [[ownerdocument]] of
+  <var>node</var>.
 
   <li>
   <p class=comments>This preserves boundary points correctly, as usual.
@@ -3373,19 +3363,19 @@ selection's value</span> to "line-through".
   title=queryCommandState()>queryCommandState("subscript")</code>, and let
   <var>state</var> be the result.
 
-  <li><span>Set the selection's value</span> to "baseline".
+  <li><span>Set the selection's value</span> to null.
 
   <li>If <var>state</var> is false, <span>set the selection's value</span> to
-  "sub".
+  "subscript".
 </ol>
 
 <p><span>Indeterminate</span>: True if either among <span>editable</span>
 [[text]] nodes that are <span>effectively contained</span> in the <span>active
 range</span>, there is at least one with <span>effective command value</span>
-"sub" and at least one with some other <span>effective command value</span>; or
-if there is some <span>editable</span> [[text]] node <span>effectively
-contained</span> in the <span>active range</span> with <span>effective command
-value</span> "mixed".  Otherwise false.
+"subscript" and at least one with some other <span>effective command
+value</span>; or if there is some <span>editable</span> [[text]] node
+<span>effectively contained</span> in the <span>active range</span> with
+<span>effective command value</span> "mixed".  Otherwise false.
 
 <p class=comments> For &lt;sup>&lt;sub>foo&lt;/sub>&lt;/sup>, Firefox 6.0a2 and
 Opera 11.11 say the state is true for both superscript and subscript, and
@@ -3398,9 +3388,7 @@ namely get rid of all those ancestors and replace them with a single tag.  This
 matches what happens in other indeterminate situations, so it's fair to
 consider it indeterminate.
 
-<p><span>Inline command activated values</span>: "sub"
-
-<p><span>Relevant CSS property</span>: "vertical-align"
+<p><span>Inline command activated values</span>: "subscript"
 
 <!-- @} -->
 <h3><dfn>The <code title>superscript</code> command</dfn></h3>
@@ -3412,23 +3400,21 @@ consider it indeterminate.
   title=queryCommandState()>queryCommandState("superscript")</code>, and let
   <var>state</var> be the result.
 
-  <li><span>Set the selection's value</span> to "baseline".
+  <li><span>Set the selection's value</span> to null.
 
   <li>If <var>state</var> is false, <span>set the selection's value</span> to
-  "super".
+  "superscript".
 </ol>
 
 <p><span>Indeterminate</span>: True if either among <span>editable</span>
 [[text]] nodes that are <span>effectively contained</span> in the <span>active
 range</span>, there is at least one with <span>effective command value</span>
-"super" and at least one with some other <span>effective command value</span>;
-or if there is some <span>editable</span> [[text]] node <span>effectively
-contained</span> in the <span>active range</span> with <span>effective command
-value</span> "mixed".  Otherwise false.
+"superscript" and at least one with some other <span>effective command
+value</span>; or if there is some <span>editable</span> [[text]] node
+<span>effectively contained</span> in the <span>active range</span> with
+<span>effective command value</span> "mixed".  Otherwise false.
 
-<p><span>Inline command activated values</span>: "super"
-
-<p><span>Relevant CSS property</span>: "vertical-align"
+<p><span>Inline command activated values</span>: "superscript"
 
 <!-- @} -->
 <h3><dfn>The <code title>underline</code> command</dfn></h3>

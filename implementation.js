@@ -2008,11 +2008,6 @@ function getSpecifiedCommandValue(element, command) {
 
 	// "If command is "subscript" or "superscript":"
 	if (command == "subscript" || command == "superscript") {
-		// "If element is not an inline node, return null."
-		if (!isInlineNode(element)) {
-			return null;
-		}
-
 		// "If element is a sup, return "superscript"."
 		if (isHtmlElement(element, "sup")) {
 			return "superscript";

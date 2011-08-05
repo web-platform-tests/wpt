@@ -6661,6 +6661,10 @@ leaves things like &lt;b&gt;{}&lt;/b&gt; in the DOM, which is unhelpful, so I do
 
 <h3 id=the-formatblock-command><span class=secno>8.12 </span><dfn>The <code title="">formatBlock</code> command</dfn></h3>
 
+<p class=note>This command lets you change what block element particular lines
+are wrapped in.  It will convert an existing wrapper if one exists, and
+otherwise will create a new one.
+
 <p>A <dfn id=formattable-block-name>formattable block name</dfn> is "address", "dd", "div", "dt", "h1",
 "h2", "h3", "h4", "h5", "h6", "p", or "pre".
 
@@ -6989,6 +6993,15 @@ writing means what Firefox supports plus div.
 
 <h3 id=the-forwarddelete-command><span class=secno>8.13 </span><dfn>The <code title="">forwardDelete</code> command</dfn></h3>
 
+<p class=note>This is the same as hitting the delete key (see <a href=#additional-requirements>Additional requirements</a>).  It behaves much
+the same as <a href=#the-delete-command>the <code title="">delete</code> command</a>, except of
+course backwards.  Also, some of the special cases for backspacing don't apply,
+as noted in the comments.  The one special case you get when deleting forward
+but not backward is that if the cursor is before a grapheme cluster that
+consists of multiple characters, like a base character with combining
+diacritics, we delete the diacritics too.  (Backspacing just deletes the last
+diacritic, so you have to backspace several times to remove the whole cluster.)
+
 <p class=comments>Copy-pasted from delete, see there for comments.
 
 <p><a href=#action>Action</a>:
@@ -7026,7 +7039,11 @@ writing means what Firefox supports plus div.
     plus the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of <var title="">node</var>, then set <var title="">node</var> to its
     <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
-    <li>Otherwise, if <var title="">node</var> has a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>
+    <li>
+    <p class=comments>No special link behavior for forwardDelete here, unlike
+    delete.
+
+    <p>Otherwise, if <var title="">node</var> has a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>
     <var title="">offset</var> and that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is not a <a href=#block-node>block node</a> or a
     <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code> or an <code class=external data-anolis-spec=html title="the img element"><a href=http://www.whatwg.org/html/#the-img-element>img</a></code>, set <var title="">node</var> to that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, then set
     <var title="">offset</var> to zero.
@@ -7536,6 +7553,10 @@ behavior in splitting up parents to ensure validity . . .
 
 <h3 id=the-insertlinebreak-command><span class=secno>8.18 </span><dfn>The <code title="">insertLineBreak</code> command</dfn></h3>
 
+<p class=note>This is the same as hitting Shift-Enter or such (see <a href=#additional-requirements>Additional requirements</a>).  It deletes the
+selection, and replaces it with a <code title="">&lt;br&gt;</code>.  No real
+complications.
+
 <div class=comments>
 <p>Only implemented in WebKit (Chrome 14 dev).  Other tests are entirely
 manual (i.e., actually hitting Shift-Enter instead of running a command).
@@ -7633,6 +7654,36 @@ false otherwise.
 
 
 <h3 id=the-insertparagraph-command><span class=secno>8.20 </span><dfn>The <code title="">insertParagraph</code> command</dfn></h3>
+
+<div class=note>
+<p>This is the same as hitting enter (see <a href=#additional-requirements>Additional requirements</a>).  The general rule
+is that we find the nearest <a href=#single-line-container>single-line container</a> ancestor, clone
+it and insert the clone after it, and then move all the contents after the
+cursor (along with the cursor itself) to the clone.  But there are a few
+special cases:
+
+<ul>
+  <li>If we can't find a single-line container to use, first we wrap the
+  current line in a new container with the <a href=#default-single-line-container-name>default single-line container
+  name</a>.
+
+  <li>For <code title="">&lt;address&gt;</code>, <code title="">&lt;listing&gt;</code>, and
+  <code title="">&lt;pre&gt;</code>, we add a <code title="">&lt;br&gt;</code> instead of
+  cloning it.  These are all elements that are meant to contain multiple lines,
+  not have one line per element.
+
+  <li>If the cursor is in a list item with no contents, hitting enter breaks
+  out of the list entirely, outdenting the current item.  This means that if
+  you're in a list, you can hit enter twice to break out.
+
+  <li>If the cursor is at the end of a heading, hitting enter doesn't make a
+  new heading, it switches to the <a href=#default-single-line-container-name>default single-line container
+  name</a>.
+
+  <li>If the cursor is at the end of a <code title="">&lt;dt&gt;</code> or <code title="">&lt;dd&gt;</code>, the new element is the opposite type, so you naturally
+  switch between entering terms and definitions.
+</ul>
+</div>
 
 <div class=comments>
 <p>There are three major behaviors here.  Firefox 5.0a2 behaves identically to
@@ -7928,6 +7979,30 @@ whatwg thread</a>.
 
 
 <h3 id=the-inserttext-command><span class=secno>8.21 </span><dfn>The <code title="">insertText</code> command</dfn></h3>
+
+<div class=note>
+<p>This is the same as typing text (see <a href=#additional-requirements>Additional requirements</a>).  If the input
+string is more than one character, first we split it up into one execution per
+character, for simplicity.  The general rule is then that we record each
+command's <a href=#state-override>state override</a> or <a href=#value-override>value override</a>, insert
+the new character and select it, restore any overrides that we saved, and
+collapse the selection to its end.
+
+<p>The idea of the override business is that the user might run a command like
+bold when the selection is collapsed.  There's nothing to bold in that case,
+but if the user runs bold and then types a character, they expect it to be
+bold.  Thus we save the requested state in an override and restore it when the
+user types.  Deleting things can also set overrides, if the deleted text was
+styled.
+
+<p>Whitespace is a special case.  The note for <a href=#canonical-space-sequences>canonical space sequences</a> gives some of the
+background.  If the user tries typing a space, we make it non-breaking so it
+doesn't collapse with anything, then canonicalize whitespace around the
+insertion point so line breaking isn't adversely affected.
+
+<p>One last special case is a newline.  For that we just pass off to <a href=#the-insertparagraph-command>the
+<code title="">insertParagraph</code> command</a>.
+</div>
 
 <div class=comments>
 <p>Supported only by WebKit.  Tests in other browsers were manual.

@@ -6711,6 +6711,10 @@ leaves things like &lt;b>{}&lt;/b> in the DOM, which is unhelpful, so I don't.
 <!-- @} -->
 <h3><dfn>The <code title>formatBlock</code> command</dfn></h3>
 <!-- @{ -->
+<p class=note>This command lets you change what block element particular lines
+are wrapped in.  It will convert an existing wrapper if one exists, and
+otherwise will create a new one.
+
 <p>A <dfn>formattable block name</dfn> is "address", "dd", "div", "dt", "h1",
 "h2", "h3", "h4", "h5", "h6", "p", or "pre".
 
@@ -7041,6 +7045,16 @@ writing means what Firefox supports plus div.
 <!-- @} -->
 <h3><dfn>The <code title>forwardDelete</code> command</dfn></h3>
 <!-- @{ -->
+<p class=note>This is the same as hitting the delete key (see <a
+href=#additional-requirements>Additional requirements</a>).  It behaves much
+the same as <span>the <code title>delete</code> command</span>, except of
+course backwards.  Also, some of the special cases for backspacing don't apply,
+as noted in the comments.  The one special case you get when deleting forward
+but not backward is that if the cursor is before a grapheme cluster that
+consists of multiple characters, like a base character with combining
+diacritics, we delete the diacritics too.  (Backspacing just deletes the last
+diacritic, so you have to backspace several times to remove the whole cluster.)
+
 <p class=comments>Copy-pasted from delete, see there for comments.
 
 <p><span>Action</span>:
@@ -7079,7 +7093,11 @@ writing means what Firefox supports plus div.
     plus the [[index]] of <var>node</var>, then set <var>node</var> to its
     [[parent]].
 
-    <li>Otherwise, if <var>node</var> has a [[child]] with [[index]]
+    <li>
+    <p class=comments>No special link behavior for forwardDelete here, unlike
+    delete.
+
+    <p>Otherwise, if <var>node</var> has a [[child]] with [[index]]
     <var>offset</var> and that [[child]] is not a <span>block node</span> or a
     [[br]] or an [[img]], set <var>node</var> to that [[child]], then set
     <var>offset</var> to zero.
@@ -7591,6 +7609,11 @@ behavior in splitting up parents to ensure validity . . .
 <!-- @} -->
 <h3><dfn>The <code title>insertLineBreak</code> command</dfn></h3>
 <!-- @{ -->
+<p class=note>This is the same as hitting Shift-Enter or such (see <a
+href=#additional-requirements>Additional requirements</a>).  It deletes the
+selection, and replaces it with a <code title>&lt;br></code>.  No real
+complications.
+
 <div class=comments>
 <p>Only implemented in WebKit (Chrome 14 dev).  Other tests are entirely
 manual (i.e., actually hitting Shift-Enter instead of running a command).
@@ -7689,6 +7712,38 @@ false otherwise.
 <!-- @} -->
 <h3><dfn>The <code title>insertParagraph</code> command</dfn></h3>
 <!-- @{ -->
+<div class=note>
+<p>This is the same as hitting enter (see <a
+href=#additional-requirements>Additional requirements</a>).  The general rule
+is that we find the nearest <span>single-line container</span> ancestor, clone
+it and insert the clone after it, and then move all the contents after the
+cursor (along with the cursor itself) to the clone.  But there are a few
+special cases:
+
+<ul>
+  <li>If we can't find a single-line container to use, first we wrap the
+  current line in a new container with the <span>default single-line container
+  name</span>.
+
+  <li>For <code title>&lt;address></code>, <code title>&lt;listing></code>, and
+  <code title>&lt;pre></code>, we add a <code title>&lt;br></code> instead of
+  cloning it.  These are all elements that are meant to contain multiple lines,
+  not have one line per element.
+
+  <li>If the cursor is in a list item with no contents, hitting enter breaks
+  out of the list entirely, outdenting the current item.  This means that if
+  you're in a list, you can hit enter twice to break out.
+
+  <li>If the cursor is at the end of a heading, hitting enter doesn't make a
+  new heading, it switches to the <span>default single-line container
+  name</span>.
+
+  <li>If the cursor is at the end of a <code title>&lt;dt></code> or <code
+  title>&lt;dd></code>, the new element is the opposite type, so you naturally
+  switch between entering terms and definitions.
+</ul>
+</div>
+
 <div class=comments>
 <p>There are three major behaviors here.  Firefox 5.0a2 behaves identically to
 execCommand("formatBlock", false, "p"), which is not really useful.  IE9
@@ -7985,6 +8040,32 @@ whatwg thread</a>.
 <!-- @} -->
 <h3><dfn>The <code title>insertText</code> command</dfn></h3>
 <!-- @{ -->
+<div class=note>
+<p>This is the same as typing text (see <a
+href=#additional-requirements>Additional requirements</a>).  If the input
+string is more than one character, first we split it up into one execution per
+character, for simplicity.  The general rule is then that we record each
+command's <span>state override</span> or <span>value override</span>, insert
+the new character and select it, restore any overrides that we saved, and
+collapse the selection to its end.
+
+<p>The idea of the override business is that the user might run a command like
+bold when the selection is collapsed.  There's nothing to bold in that case,
+but if the user runs bold and then types a character, they expect it to be
+bold.  Thus we save the requested state in an override and restore it when the
+user types.  Deleting things can also set overrides, if the deleted text was
+styled.
+
+<p>Whitespace is a special case.  The note for <a
+href=#canonical-space-sequences>canonical space sequences</a> gives some of the
+background.  If the user tries typing a space, we make it non-breaking so it
+doesn't collapse with anything, then canonicalize whitespace around the
+insertion point so line breaking isn't adversely affected.
+
+<p>One last special case is a newline.  For that we just pass off to <span>the
+<code title>insertParagraph</code> command</span>.
+</div>
+
 <div class=comments>
 <p>Supported only by WebKit.  Tests in other browsers were manual.
 

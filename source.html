@@ -1578,6 +1578,16 @@ boilerplate half a dozen times.
 given <var>command</var> is returned by the following algorithm, which will
 return either a string or null:
 
+<p class=note>This is logically somewhat like CSS computed or resolved values,
+and in fact for most commands it's identical to CSS resolved values (see the
+end of the algorithm).  We need a separate concept for some commands where we
+can't rely on CSS for some reason: createLink and unlink aren't CSS-related at
+all, backColor and hiliteColor need special treatment because background-color
+isn't an inherited property, subscript and superscript rely on <code
+title>&lt;sub></code>/<code title>&lt;sup></code> instead of CSS
+vertical-align, and strikethrough and underline don't map to unique CSS
+properties.
+
 <ol>
   <li>If neither <var>node</var> nor its [[parent]] is an [[element]], return
   null.
@@ -1666,6 +1676,13 @@ return either a string or null:
 for a given <var>command</var> is returned by the following algorithm, which
 will return either a string or null:
 
+<p class=note>This is logically somewhat like CSS inline style.  In addition to
+the caveats for effective command value, we also treat elements like <code
+title>&lt;b></code> and <code title>&lt;font></code> as having the same meaning
+as <code title>&lt;span></code>s with inline style set, because they're
+logically pretty much the same and can in fact be produced by the same command
+depending on the <span>CSS styling flag</span>.
+
 <ol>
   <li>If <var>command</var> is "backColor" or "hiliteColor" and the
   [[element]]'s display property does not have [[resval]] "inline", return
@@ -1743,64 +1760,16 @@ will return either a string or null:
   <li>Return null.
 </ol>
 
-<p>To <dfn>reorder modifiable descendants</dfn> of a [[node]] <var>node</var>,
-given a <span>command</span> <var>command</var> and a value <var>new
-value</var>:
-
-<ol>
-  <li>Let <var>candidate</var> equal <var>node</var>.
-
-  <li>While <var>candidate</var> is a <span>modifiable element</span>, and
-  <var>candidate</var> has exactly one [[child]], and that [[child]] is also a
-  <span>modifiable element</span>, and <var>candidate</var> is not a
-  <span>simple modifiable element</span> or <var>candidate</var>'s
-  <span>specified command value</span> for <var>command</var> is not <span
-  title="equivalent values">equivalent</span> to <var>new value</var>, set
-  <var>candidate</var> to its [[child]].
-
-  <li>If <var>candidate</var> is <var>node</var>, or is not a <span>simple
-  modifiable element</span>, or its <span>specified command value</span> is not
-  <span title="equivalent values">equivalent</span> to <var>new value</var>, or
-  its <span>effective command value</span> is not <span title="loosely
-  equivalent values">loosely equivalent</span> to <var>new value</var>, abort
-  these steps.
-
-  <li>While <var>candidate</var> has [[children]], insert the first [[child]]
-  of <var>candidate</var> into <var>candidate</var>'s [[parent]] immediately
-  before <var>candidate</var>, <span>preserving ranges</span>.
-
-  <li>
-  <div class=comments>
-  <p>If candidate had no children, any boundary point inside it will get moved to
-  its parent here, which is okay.  We don't want to preserve ranges, because
-  that would move boundary points that originally were in candidate but were
-  moved to its parent by the last step to move to node's parent.
-
-  <p>We move to after node so that boundary points before and after node wind up
-  consistently inside candidate when we move preserving ranges.  If we had
-    <pre>{&lt;node>foo&lt;candidate>&lt;/candidate>&lt;/node>}</pre>
-  <p>it thus becomes
-    <pre>{&lt;node>foo&lt;/node>}&lt;candidate>&lt;/candidate></pre>
-  <p>by the range mutation rules, and then when we move preserving ranges, it
-  becomes
-    <pre>&lt;candidate>{&lt;node>foo&lt;/node>}&lt;/candidate></pre>
-  <p>which is reasonable.
-
-  <p>If we had inserted candidate before node, instead it would go
-<pre>{&lt;candidate>&lt;/candidate>&lt;node>foo&lt;/node>}
-{&lt;candidate>&lt;node>foo&lt;/node>}&lt;/candidate></pre>
-  <p>because of the interaction of regular range mutation rules with
-  preserving-ranges rules.
-  </div>
-
-  <p>Insert <var>candidate</var> into <var>node</var>'s [[parent]] immediately
-  after <var>node</var>.
-
-  <li>Append the <var>node</var> as the last [[child]] of <var>candidate</var>,
-  <span>preserving ranges</span>.
-</ol>
-
 <p>To <dfn>record the values</dfn> of a list of [[nodes]] <var>node list</var>:
+
+<p class=note>When we move nodes around, we often change their parents.  If
+their parents had any styles applied, this will make the nodes' styles change
+too, which often isn't what we want.  For instance, if something is wrapped in
+<code title>&lt;blockquote style="color: red"></code>, and a script runs
+<span>the <code title>outdent</code> command</span> on it, the blockquote will
+be removed and the style will go along with it.  Recording the values of its
+children first, then restoring them afterward, will ensure the nodes don't
+change color when outdented.
 
 <ol>
   <li>Let <var>values</var> be a list of ([[node]], <span>command</span>,
@@ -1867,17 +1836,14 @@ returned by the <span>record the values</span> algorithm:
 <!-- @} -->
 <h3>Clearing an element's value</h3>
 <!-- @{ -->
-<p class=comments> If we wanted to be extra-pedantic, we could convert, e.g.,
-&lt;font color=red id=foo> into &lt;span id=foo> instead of &lt;font id=foo>,
-but probably not worth it.
-
 <p>To <dfn>clear the value</dfn> of an [[element]] <var>element</var>:
 
-<p class=note>Clearing the value of an element can remove it from its parent
-and put other nodes in its place.  When implementations do something like clear
-the value of all children of an element, they should take care not to assume
-that the set of children won't change as they're cleared.  If the element is
-removed, the algorithm will return the list of nodes inserted in its place.
+<p class=note>The idea is to remove any <span>specified command value</span>
+that the element might have for the command.  This might involve changing its
+attributes, <span title="set the tag name">setting its tag name</span>, or
+removing it entirely while leaving its children in place.  The key caller is
+<span>set the selection's value</span>, which clears the values of everything
+in the selection before doing anything else to keep the markup tidy.
 
 <ol>
   <li>Let <var>command</var> be the current <span>command</span>.
@@ -1983,6 +1949,11 @@ attribute).
 
 <p>To <dfn>push down values</dfn> to a [[node]] <var>node</var>, given a new
 value <var>new value</var>:
+
+<p class=note>The idea here is that if an undesired value is being propagated
+from an ancestor, we remove that style from the ancestor and re-apply it to all
+the descendants other than <var>node</var>.  This way we don't have to have
+nested styles, which is usually more cluttered (although not always).
 
 <ol>
   <li>Let <var>command</var> be the current <span>command</span>.
@@ -2113,11 +2084,8 @@ value</var>:
 
 <p class=note>This algorithm checks if the node has the desired value, and if
 not, it wraps the node (or, if that's not possible, its descendants) in a
-<span>simple modifiable element</span>.  This is only used as a last resort
-after <span title="clear the value">clearing the value</span> and <span
-title="push down values">pushing down values</span> don't work to achieve the
-desired value.  After forcing the value, descendants might still have a
-different value.
+<span>simple modifiable element</span>.  After forcing the value, descendants
+might still have a different value.
 
 <ol>
   <li>Let <var>command</var> be the current <span>command</span>.
@@ -2389,35 +2357,91 @@ different value.
   </ol>
 </ol>
 
+<p>To <dfn>reorder modifiable descendants</dfn> of a [[node]] <var>node</var>,
+given a <span>command</span> <var>command</var> and a value <var>new
+value</var>:
+
+<ol>
+  <li>Let <var>candidate</var> equal <var>node</var>.
+
+  <li>While <var>candidate</var> is a <span>modifiable element</span>, and
+  <var>candidate</var> has exactly one [[child]], and that [[child]] is also a
+  <span>modifiable element</span>, and <var>candidate</var> is not a
+  <span>simple modifiable element</span> or <var>candidate</var>'s
+  <span>specified command value</span> for <var>command</var> is not <span
+  title="equivalent values">equivalent</span> to <var>new value</var>, set
+  <var>candidate</var> to its [[child]].
+
+  <li>If <var>candidate</var> is <var>node</var>, or is not a <span>simple
+  modifiable element</span>, or its <span>specified command value</span> is not
+  <span title="equivalent values">equivalent</span> to <var>new value</var>, or
+  its <span>effective command value</span> is not <span title="loosely
+  equivalent values">loosely equivalent</span> to <var>new value</var>, abort
+  these steps.
+
+  <li>While <var>candidate</var> has [[children]], insert the first [[child]]
+  of <var>candidate</var> into <var>candidate</var>'s [[parent]] immediately
+  before <var>candidate</var>, <span>preserving ranges</span>.
+
+  <li>
+  <div class=comments>
+  <p>If candidate had no children, any boundary point inside it will get moved to
+  its parent here, which is okay.  We don't want to preserve ranges, because
+  that would move boundary points that originally were in candidate but were
+  moved to its parent by the last step to move to node's parent.
+
+  <p>We move to after node so that boundary points before and after node wind up
+  consistently inside candidate when we move preserving ranges.  If we had
+    <pre>{&lt;node>foo&lt;candidate>&lt;/candidate>&lt;/node>}</pre>
+  <p>it thus becomes
+    <pre>{&lt;node>foo&lt;/node>}&lt;candidate>&lt;/candidate></pre>
+  <p>by the range mutation rules, and then when we move preserving ranges, it
+  becomes
+    <pre>&lt;candidate>{&lt;node>foo&lt;/node>}&lt;/candidate></pre>
+  <p>which is reasonable.
+
+  <p>If we had inserted candidate before node, instead it would go
+<pre>{&lt;candidate>&lt;/candidate>&lt;node>foo&lt;/node>}
+{&lt;candidate>&lt;node>foo&lt;/node>}&lt;/candidate></pre>
+  <p>because of the interaction of regular range mutation rules with
+  preserving-ranges rules.
+  </div>
+
+  <p>Insert <var>candidate</var> into <var>node</var>'s [[parent]] immediately
+  after <var>node</var>.
+
+  <li>Append the <var>node</var> as the last [[child]] of <var>candidate</var>,
+  <span>preserving ranges</span>.
+</ol>
+
 <!-- @} -->
 <h3>Setting the selection's value</h3>
 <!-- @{ -->
 <p>To <dfn>set the selection's value</dfn> to <var>new value</var>:
 
 <div class=note>
-<p>The effect of this algorithm is to ensure that all nodes effectively
-contained in the selection have the style requested, no matter what, producing
-the simplest markup possible to achieve that effect.  It's inspired by the
-approach WebKit takes.  The only places where the algorithm should fail are
-when there's an !important CSS rule that conflicts with the requested style
-(which we don't try to override because we assume it's !important for a
-reason), or when it's literally impossible to succeed (such as when a
-text-decoration is propagated from an ancestor we can't reach).  Any other
-failures are bugs.
+<p>The effect of this algorithm is to ensure that all nodes <span>effectively
+contained</span> in the selection have the value requested, producing the
+simplest markup possible to achieve that effect.  It's inspired by the approach
+WebKit takes.  The only places where the algorithm should fail are when there's
+an !important CSS rule that conflicts with the requested style (which we don't
+try to override because we assume it's !important for a reason), or when it's
+literally impossible to succeed (such as when a text-decoration or link URL is
+propagated from a non-editable ancestor).  Any other failures are bugs.
 
-<p>First, if a node is an element with an inline style rule for this
-property, we unset it ("clearing styles").  This step also removes <span
-title="simple modifiable element">simple modifiable elements</span> entirely, and
-replaces elements like [[b]] or [[font]] with [[span]]s if they aren't simple
-styling elements.  This will be sufficient if the desired style is inherited
-from an ancestor, or if it's the default (like font-style: normal) and no
-conflicting style is inherited from an ancestor.  Even if clearing styles
-doesn't actually fix the style of the node we're dealing with, we do it anyway
-to simplify the generated markup.
+<p>First, if a node has a <span>specified command value</span> for the command,
+we unset it (<span title="clear the value">clear its value</span>).  This step
+also removes <span title="simple modifiable element">simple modifiable
+elements</span> entirely, and replaces elements like [[b]] or [[font]] with
+[[span]]s if they aren't simple modifiable elements.  This will be sufficient
+if the desired value is inherited from an ancestor, or if it's the default
+(like font-style: normal) and no conflicting value is inherited from an
+ancestor.  Even if clearing values doesn't actually fix the style of the node
+we're dealing with, we do it anyway to simplify the generated markup.
 
-<p>If clearing styles didn't work, and it looks like an ancestor has inline
-style that we're inheriting, we push the style down from that ancestor.  Thus
-if we're unbolding the letter "r" in
+<p>If clearing values didn't work, and it looks like an ancestor has a
+<span>specified command value</span> that we're inheriting, we push the value
+down from that ancestor.  Thus if we're unbolding the letter "r" in
 
 <xmp><b>foo <i>bar</i> baz</b>,</xmp>
 
@@ -2425,7 +2449,7 @@ if we're unbolding the letter "r" in
 
 <xmp><b>foo </b><i><b>ba</b>r</i><b> baz</b>.</xmp>
 
-<p>If we didn't push down styles, the final step (forcing styles) would instead
+<p>If we didn't push down values, the final step (forcing values) would instead
 give us
 
 <xmp><b>foo <i>ba<span style="font-weight: normal">r</span></i> baz</b>,</xmp>
@@ -2433,33 +2457,37 @@ give us
 <p>which is much longer and uglier.  We take care not to disturb the style or
 semantics of anything but the node we're dealing with.
 
-<p>We'll only push down styles if some ancestor actually has the style we want,
+<p>We'll only push down values if some ancestor actually has the value we want,
 so we can inherit it.  Otherwise, it will just create useless markup.
 
 <p>Finally, if neither of the above strategies worked, we have to add new
-markup to get the desired style ("forcing styles").  First we try just sticking
-it into its previous or next sibling, if that's a <span>simple modifiable
-element</span> (so it won't add any styles or semantics we don't want).
-Otherwise, we create a new simple styling element and wrap it in that.  It's
-common that a previous sibling is the simple styling element we want, because
-often we'll style several consecutive siblings in succession.  In that case,
-the element created for the first can be reused for the later ones.
+markup to get the desired value (<span title="force the value">forcing the
+value</span>).  First we try just sticking it into its previous or next
+sibling, if that's a <span>simple modifiable element</span> (so it won't add
+any styles or semantics we don't want).  Otherwise, we create a new simple
+modifiable element and wrap it in that.  It's common that a previous sibling is
+the simple modifiable element we want, because often we'll set the value of
+several consecutive siblings in succession.  In that case, the element created
+for the first can be reused for the later ones.
 
 <p>This last step works a bit differently if the node isn't an <span>allowed
-child</span> of "span".  In that case, wrapping it in a simple styling element
-would make the document less conforming than it already was.  Instead, we
-recursively force style on its children.  The recursion will terminate when we
-hit a node that's wrappable, or when there are no further descendants.
+child</span> of "span".  In that case, wrapping it in a simple modifiable element
+would make the document less conforming than it already was, or would cause
+other problems.  Instead, we recursively force the value of its children.  The
+recursion will terminate when we hit a node that's an allowed child of "span",
+or when there are no further descendants.  (In the latter case, there are no
+descendants that are text nodes or such, so we don't really need to style
+anything.)
 
-<p>After all this, the node is guaranteed to have the style we want, barring
+<p>After all this, the node is guaranteed to have the value we want, barring
 bugs in the algorithm or the two exceptions noted earlier (!important style
 rules, and impossible cases).  We then re-run the algorithm on each child
-recursively.  Typically this means just clearing the style of each descendant,
-because it should then inherit the style we just set on its ancestor.  In the
-unusual case that a descendant's style is wrong even after we clear style on
-it, such as because of a non-inline style rule (like trying to unbold a
-heading), we'll repeat the above steps to ensure that the style really gets set
-as desired.
+recursively.  Typically this means just clearing the value of each descendant,
+because it should then inherit the value we just set on its ancestor.  In the
+unusual case that a descendant's value is wrong even after we clear its value,
+such as because of a non-inline style rule (like trying to unbold a heading),
+we'll repeat the above steps to ensure that the value really gets set as
+desired.
 </div>
 
 <ol>

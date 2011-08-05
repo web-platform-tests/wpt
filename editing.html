@@ -4809,6 +4809,40 @@ its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcor
 
 <h3 id=canonical-space-sequences><span class=secno>8.7 </span>Canonical space sequences</h3>
 
+<div class=note>
+<p>Whitespace in HTML normally collapses.  However, if the user hits the space
+bar twice in an HTML editor, they expect to see two spaces, not one.  Even if
+they hit the space bar once at the beginning or end of a line, it would
+collapse without special handling.  The only good solution here is for the
+author to set white-space: pre-wrap on the editable area, and on everywhere the
+content is reproduced.  But if they don't, we have to painfully hack around the
+problem.
+
+<p>This is a basically intractable problem because of the unfortunate
+confluence of three factors.  One, our characters are Unicode, and Unicode
+doesn't know about whitespace collapsing, so it provides no special characters
+to control it.  Two, HTML itself provides no features that control whitespace
+collapsing without undesired side effects (like inhibiting line breaks or not
+being allowed inside <code title="">&lt;p&gt;</code>).  Three, we need to support
+user agents that don't reliably support CSS, since that includes many popular
+mail clients.
+
+<p>The upshot is we have no good way to control whitespace collapse, so we rely
+on the least bad way available: <code title="">&amp;nbsp;</code>.  This doesn't
+collapse with adjacent whitespace in browsers, which is good.  But it also
+doesn't allow a line break opportunity, which is bad.  In any run of whitespace
+that we don't want to collapse, any two regular spaces must be separated by an
+<code title="">&amp;nbsp;</code> so they don't collapse together, but we need to
+carefully limit runs of consecutive <code title="">&amp;nbsp;</code>s to minimize
+the damage to line-breaking behavior.
+
+<p>The result is an elaborate and meticulously-crafted hodgepodge of bad
+compromises that frankly isn't worth the effort to explain here.  The saving
+grace is that it all gets disabled if white-space is set to pre-wrap as it
+should be, so authors can opt out of the insanity.  Interested readers will
+find detailed rationale for the exact sequences required in the comments.
+</div>
+
 <p class=comments>See long comment before <a href=#the-inserttext-command>insertText</a>.
 
 <p>The <dfn id=canonical-space-sequence>canonical space sequence</dfn> of length <var title="">n</var>, with boolean
@@ -5013,6 +5047,43 @@ returned by the following algorithm:
 
 
 <h3 id=indenting-and-outdenting><span class=secno>8.8 </span>Indenting and outdenting</h3>
+
+<div class=note>
+<p>There are two basically different types of indent/outdent: lists, and
+everything else.  For lists we'll wrap the item in a nested list to indent, and
+<a href=#split-the-parent title="split the parent">split its parent</a> to outdent.  For
+everything else we'll wrap in a <code title="">&lt;blockquote&gt;</code> to indent,
+and try breaking it out of an ancestor <a href=#indentation-element>indentation element</a> to
+outdent.
+
+<p>Indenting winds up being pretty simple: just add an appropriate wrapper.
+There's not really anything to think about here except which wrapper we want
+(<code title="">&lt;ol&gt;</code> or <code title="">&lt;ul&gt;</code> or <code title="">&lt;blockquote&gt;</code>), and establishing that is not rocket science.
+
+<p>Outdenting is considerably more complicated.  The basic idea we follow is to
+first find the nearest editable ancestor that's a list or <a href=#indentation-element>indentation
+element</a>.  If we succeed, and the node we're trying to outdent is the
+only descendant of the ancestor, of course we can just remove the ancestor and
+that's that.  Otherwise, what we do is remove the ancestor and then indent all
+its other descendants, much like <a href=#push-down-values title="push down values">pushing down
+values</a>.
+
+<p>But of course, there are complications.  We don't always actually want to
+remove the <em>closest</em> ancestor that's causing indentation.  For one
+thing, we prefer ancestors that we can remove completely, i.e., <a href=#simple-indentation-element title="simple indentation element">simple indentation elements</a>.  When
+outdenting <code title="">&lt;blockquote&gt;&lt;blockquote
+id="abc"&gt;foo&lt;/blockquote&gt;&lt;/blockquote&gt;</code>, removing the inner tag
+would result in <code title="">&lt;blockquote&gt;&lt;div
+id="abc"&gt;foo&lt;/div&gt;&lt;/blockquote&gt;</code>, since we don't want to lose the
+id.  Thus we prefer to remove the outer tag and wind up with <code title="">&lt;blockquote id="abc"&gt;foo&lt;/blockquote&gt;</code>.
+
+<p>Also, if the node we're outdenting is itself a list, we prefer to remove an
+ancestor <a href=#indentation-element>indentation element</a> rather than the list.  Otherwise, if
+the user selected some text, indented it, then added a list, there would be no
+way to remove the indentation without removing the list first.  This way, the
+user could remove the list with the appropriate list-toggling command or remove
+the indentation with the outdent command.
+</div>
 
 <div class=comments>
 <p>We have to handle entire lists of siblings at once, or else we'd wind up
@@ -5336,6 +5407,30 @@ Consider removing it anyway.
 
 
 <h3 id=toggling-lists><span class=secno>8.9 </span>Toggling lists</h3>
+
+<div class=note>
+<p>This is the action for <a href=#the-insertorderedlist-command>the <code title="">insertOrderedList</code>
+command</a> and <a href=#the-insertunorderedlist-command>the <code title="">insertUnorderedList</code>
+command</a>, which behave identically except for which list type they
+target.  It does several things that vary contextually.
+
+<p>If everything in the selection is contained in the target list type already,
+this more or less just outdents everything one step.  This is relatively
+simple.
+
+<p>Otherwise, it's slightly more complicated:
+
+<p>First, any lists of the opposite list type (<var title="">other tag name</var>) get
+converted to the target list type (<var title="">tag name</var>).  They get merged into
+a sibling if appropriate, otherwise we <a href=#set-the-tag-name>set the tag name</a>.
+
+<p>Then we go through all the affected nodes, handling each run of consecutive
+siblings separately.  Any line that's not already wrapped in an <code title="">&lt;li&gt;</code> gets wrapped.  If the parent at this point isn't a list at
+all, the run gets wrapped in a list.  If it's the wrong type of list, we
+<a href=#split-the-parent>split the parent</a> and rewrap it in the right type of list.  That's
+basically it, except that we have to exercise the usual care to try merging
+with siblings and so forth.
+</div>
 
 <div class=comments>
 <p>Research for insertOrderedList/insertUnorderedList: tested the following
@@ -6057,6 +6152,12 @@ not &lt;ul&gt;&lt;li&gt;foo&lt;/ul&gt;&lt;ol&gt;&lt;li&gt;[bar&lt;/ol&gt;&lt;ul&
 
 <h3 id=justifying-the-selection><span class=secno>8.10 </span>Justifying the selection</h3>
 
+<p class=note>This is the <a href=#action>action</a> for the four <code title="">justify*</code> commands.  It's pretty straightforward, with no notable
+gotchas or special cases.  It works more or less like a stripped-down version
+of <a href="#set-the-selection's-value">set the selection's value</a>, except it gets to be much simpler
+because it's much less general.  (It's not similar enough to just invoke that
+algorithm: too many things differ between block and inline elements.)
+
 <div class=comments>
 <p>There are two basic ways this works in browsers: using the align attribute,
 and using CSS text-align.  IE9 and Opera 11.11 use only the align attribute,
@@ -6176,6 +6277,41 @@ would be worth the added complexity.
 
 
 <h3 id=the-delete-command><span class=secno>8.11 </span><dfn>The <code title="">delete</code> command</dfn></h3>
+
+<div class=note>
+<p>This is the same as hitting backspace (see <a href=#additional-requirements>Additional requirements</a>).  The easy part is
+if the selection isn't collapsed: just <a href=#delete-the-contents>delete the contents</a>.  But
+it turns out rich-text editors have a lot of special behaviors for hitting
+backspace with a collapsed selection.  Most obviously, if there's a text node
+right before the cursor (maybe wrapped in some inline elements), we delete its
+last character.  But some of the special cases we run into are:
+
+<ul>
+  <li><a href=#invisible>Invisible</a> nodes are removed before anything else happens.
+
+  <li>An <code title="">&lt;a&gt;</code> gets removed if you backspace while the
+  cursor is right after it, so the link disappears.
+
+  <li>A <code title="">&lt;br&gt;</code> or <code title="">&lt;hr&gt;</code> or <code title="">&lt;img</code> gets deleted.
+
+  <li>Backspacing at the start of most blocks merges with the previous block.
+  (Visually, this is a matter of deleting a line break.)
+
+  <li>Backspacing at the start of an <a href=#indentation-element>indentation element</a>, or an
+  <code title="">&lt;li&gt;</code> or <code title="">&lt;dt&gt;</code> or <code title="">&lt;dd&gt;</code> that's at the beginning of a list, outdents the current
+  block (rather than merging with the previous block).
+
+  <li>Backspacing at the start of a table cell does nothing.
+
+  <li>Backspacing immediately after a table selects the table, so a second
+  backspace deletes it.
+
+  <li>Backspacing at the start of a list item that's not at the beginning of a
+  list merges with the previous list item, but keeps the contents on a separate
+  line, so you have to hit backspace a second time to get them on the same
+  line.
+</ul>
+</div>
 
 <p class=comments>For all the deletions here, Firefox 7.0a2 will remove wrapper
 elements like &lt;b&gt; only if they're selected, like {&lt;b&gt;foo&lt;/b&gt;}.  IE9,

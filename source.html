@@ -5185,10 +5185,11 @@ Consider removing it anyway.
   <li>If <var>node</var> is not <span>editable</span>, abort these steps.
 
   <li>
-  <p>The easy case is when the whole element is indented.  In this case we
-  remove the whole thing indiscriminately.  In the case of blockquotes created
-  by IE, this might change the direction of some children, but then their
-  direction was probably changed incorrectly in the first place, so no harm.
+  <p class=comments>The easy case is when the whole element is indented.  In
+  this case we remove the whole thing indiscriminately.  In the case of
+  blockquotes created by IE, this might change the direction of some children,
+  but then their direction was probably changed incorrectly in the first place,
+  so no harm.
 
   <p>If <var>node</var> is a <span>simple indentation element</span>, remove
   <var>node</var>, <span>preserving its descendants</span>.  Then abort these

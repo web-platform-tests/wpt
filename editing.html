@@ -3526,6 +3526,13 @@ indeterminate and value anyway because they make sense.
 <p>An <dfn id=indentation-element>indentation element</dfn> is either a <code class=external data-anolis-spec=html title="the blockquote element"><a href=http://www.whatwg.org/html/#the-blockquote-element>blockquote</a></code>, or a <code class=external data-anolis-spec=html title="the div element"><a href=http://www.whatwg.org/html/#the-div-element>div</a></code>
 that has a <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute that sets "margin" or some subproperty of it.
 
+<p class=comments>We need to allow stuff that sets border/padding because
+WebKit (Chrome 12 dev) sets "border: none; padding: 0px" when indenting.  We
+need to allow stuff that sets classes because WebKit sets
+class="webkit-indent-blockquote".  We need to allow stuff that sets dir because
+IE9 does.  The criteria could probably be tightened up a bit to reduce false
+positives, but it'll do for now.
+
 <p>A <dfn id=simple-indentation-element>simple indentation element</dfn> is an <a href=#indentation-element>indentation
 element</a> that has no attributes other than one or more of
 
@@ -3538,6 +3545,10 @@ element</a> that has no attributes other than one or more of
   <li>a <code class=external data-anolis-spec=html title="the dir attribute"><a href=http://www.whatwg.org/html/#the-dir-attribute>dir</a></code>
   attribute.
 </ul>
+
+<p class=note>The notions of indentation element and simple indentation element
+parallel those of <a href=#modifiable-element>modifiable element</a> and <a href=#simple-modifiable-element>simple modifiable
+element</a>.
 
 <p class=comments>listing and xmp are included because otherwise
 insertParagraph inside them won't work, since paragraphs aren't an allowed
@@ -3564,6 +3575,9 @@ in the inline tag.
 
 <p>To <dfn id=fix-disallowed-ancestors>fix disallowed ancestors</dfn> of <var title="">node</var>:
 
+<p class=note>We often run this algorithm after we move a node someplace, just
+in case it wound up somewhere it's not supposed to be.  This avoids things like
+unserializable DOMs, blocks nested inside inlines, etc.
 
 <ol>
   <li>If <var title="">node</var> is not <a href=#editable>editable</a>, abort these steps.
@@ -3690,6 +3704,22 @@ have works okay, so I'll stick with it for now.
 <p>The <dfn id="selection's-list-state">selection's list state</dfn> is returned by the following
 algorithm:
 
+<div class=note>
+<p>This is just a helper to tell the state and indeterminacy of
+<a href=#the-insertorderedlist-command>the <code title="">insertOrderedList</code> command</a> and <a href=#the-insertunorderedlist-command>the
+<code title="">insertUnorderedList</code> command</a>:
+
+<table>
+<tr><th>         <th>ol indeterm <th>ol state <th>ul indeterm <th>ul state
+<tr><th>ol       <td>false       <td>true     <td>false       <td>false
+<tr><th>ul       <td>false       <td>false    <td>false       <td>true
+<tr><th>mixed    <td>true        <td>false    <td>true        <td>false
+<tr><th>mixed ol <td>true        <td>false    <td>false       <td>false
+<tr><th>mixed ul <td>false       <td>false    <td>true        <td>false
+<tr><th>none     <td>false       <td>false    <td>false       <td>false
+</table>
+</div>
+
 <ol>
   <li><a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>, and let <var title="">new
   range</var> be the result.
@@ -3774,6 +3804,13 @@ work well given the design of the API.
 <p>The <dfn id=alignment-value>alignment value</dfn> of a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var> is returned by
 the following algorithm:
 
+<p class=note>This is basically like the resolved value of text-align, but with
+two key differences.  First, it only ever evaluates to
+center/justify/left/right, since that's the model that the justify commands
+work with.  Second, it ignores inline elements, because text-align has no
+effect on them and their alignment is actually governed by their nearest block
+ancestor (if any).
+
 <ol>
   <li>While <var title="">node</var> is neither null nor an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, or it is an
   <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> but its "display" property has <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved value</a> "inline" or "none",
@@ -3807,6 +3844,23 @@ the following algorithm:
 
 <p>When a user agent is to <dfn id=block-extend>block-extend</dfn> a <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>
 <var title="">range</var>, it must run the following steps:
+
+<div class=note>
+<p>Generally, block commands work on any block that contains part of the
+selection, even if the selection doesn't include the whole block.  This
+algorithm takes an input range, copies it, stretches out the copy to contain
+entire blocks, and returns the result.  Then the caller will normally use it
+instead of the range it started with.  For instance, if the cursor is collapsed
+in a text node inside a paragraph, this will generally return a range that
+includes the whole paragraph.
+
+<p>Two bits of magic worth noting.  First, <code title="">&lt;br&gt;</code> counts as
+a block delimiter here, since it looks the same as a block boundary (assuming
+no margin etc.) and this is a visual API.  We include the <code title="">&lt;br&gt;</code> as part of the line that precedes it.  Second, if the
+selection is inside an <code title="">&lt;li&gt;</code>, this will extend it to
+include the whole <code title="">&lt;li&gt;</code>.  This latter point is weird, and
+I should re-examine it sometime, but it seems to work.
+</div>
 
 <ol>
   <li>Let <var title="">start node</var>, <var title="">start offset</var>, <var title="">end node</var>,
@@ -4086,6 +4140,42 @@ cases like display: inline-table.
 <p>To <dfn id=delete-the-contents>delete the contents</dfn> of a <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> <var title="">range</var>, given a
 <var title="">block merging</var> flag that defaults to true and a <var title="">strip
 wrappers</var> flag that defaults to true:
+
+<div class=note>
+<p>The idea behind this algorithm is self-explanatory, but the details wind up
+being remarkably complicated.
+
+<p>First, any editable nodes inside the range will be deleted, and the range
+will be collapsed.  By way of contrast, <a href=#effectively-contained>effectively contained</a>
+tries to expand the range to include as much as possible, so <code title="">&lt;p&gt;[foo]&lt;/p&gt;</code> contains the <code title="">&lt;p&gt;</code>.  What
+we do here is contract the range to include as little as possible, so <code title="">{&lt;p&gt;foo&lt;/p&gt;}</code> contains only <code title="">foo</code> and
+doesn't delete the paragraph.
+
+<p>After that, if the range originally started and ended in different blocks,
+and the <var title="">block merging</var> flag is true, the end block will get merged
+into the start block.  This is needed so if the user selects text on several
+lines and deletes it, the text immediately that was before the selection winds
+up on the same line as the text immediately after it.  For example, <code title="">&lt;p&gt;fo[o&lt;/p&gt;&lt;div&gt;b]ar&lt;/div&gt;</code> becomes <code title="">&lt;p&gt;fo[]ar&lt;/p&gt;</code>.  This procedure winds up being tricky, and
+takes up a large chunk of the logic.
+
+<p>Tables are a notable special case.  If an entire table is contained in the
+range, it will be deleted.  If it's anything less, only the contents of the
+cells will be deleted and the table structure will be left intact.
+
+<p>The <var title="">strip wrappers</var> flag controls what happens if the deletion
+removes all the contents of an inline element.  If wrappers are being stripped,
+the empty inline element will be removed: this is usually what you want,
+because the user can't position the selection inside it.  But callers like
+<a href=#the-inserttext-command>the <code title="">insertText</code> command</a> that intend to
+immediately insert new contents want to leave the wrappers, so the new contents
+are wrapped by the same thing as the old.
+
+<p>Even if <var title="">strip wrappers</var> is true, the algorithm will set a
+<a href=#state-override>state override</a> and <a href=#value-override>value override</a> for any styles it
+winds up removing.  This way, if the user deletes a wrapper that adds a style
+(or link for that matter), then types something, the new text will get the
+style from the old text.
+</div>
 
 <ol>
   <li>If <var title="">range</var> is null, abort these steps and do nothing.
@@ -4566,6 +4656,28 @@ wrappers</var> flag that defaults to true:
 
 <p>To <dfn id=split-the-parent>split the parent</dfn> of a list <var title="">node list</var> of consecutive
 <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-sibling title=concept-tree-sibling>sibling</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>:
+
+<div class=note>
+<p>This algorithm breaks up the parent of <var title="">node list</var>.  If they're the
+only children of their parent, the parent is removed entirely.  If there are
+preceding or following siblings, the original parent is left intact as the
+parent of those siblings.  If there are both preceding and following siblings,
+the original parent is left as the parent of the following siblings and a clone
+is used for the parent of the preceding siblings.
+
+<p>We make sure not to disrupt the appearance any more than necessary.
+Obviously margins or such on the parent will be lost, but the children will not
+wind up on the same line as anything they weren't already on the same line as.
+E.g., if we split the parent of "bar" in <code title="">foo&lt;p&gt;bar&lt;/p&gt;</code>, we get <code title="">foo&lt;br&gt;bar</code>, not
+<code title="">foobar</code>.  (This is amazingly complicated and error-prone.)
+We don't preserve inline styles: callers that want to do that should call
+<a href=#record-the-values>record the values</a> and <a href=#restore-the-values>restore the values</a> themselves.
+
+<p>All this is useful in a lot of situations, like for outdenting.  For inline
+formatting commands, we almost always rely on <a href=#push-down-values title="push down
+values">pushing down values</a> instead, since that often leads to tidier
+markup.
+</div>
 
 <ol>
   <li>Let <var title="">original parent</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of the first member of

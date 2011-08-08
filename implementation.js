@@ -6188,7 +6188,7 @@ commands.formatblock = {
 //@}
 ///// The forwardDelete command /////
 //@{
-commands["forwarddelete"] = {
+commands.forwarddelete = {
 	action: function() {
 		// "If the active range is not collapsed, delete the contents of the
 		// active range and abort these steps."
@@ -6267,9 +6267,11 @@ commands["forwarddelete"] = {
 			// as a Unicode code point, add one to end offset."
 			//
 			// TODO: Not even going to try handling anything beyond the most
-			// basic combining marks.
+			// basic combining marks, since I couldn't find a good list.  I
+			// special-case a few Hebrew diacritics too to test basic coverage
+			// of non-Latin stuff.
 			while (endOffset != node.length
-			&& /^[\u0300-\u036f]$/.test(node.data[endOffset])) {
+			&& /^[\u0300-\u036f\u0591-\u05bd\u05c1\u05c2]$/.test(node.data[endOffset])) {
 				endOffset++;
 			}
 

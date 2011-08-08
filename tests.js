@@ -286,8 +286,16 @@ var tests = {
 		'<span>foo[</span><span>]bar</span>',
 		'foo<span style=display:none>bar</span>[]baz',
 		'foo<script>bar</script>[]baz',
+
 		'fo&ouml;[]bar',
 		'foo&#x308;[]bar',
+		'foo&#x308;&#x327;[]bar',
+		'&ouml;[]bar',
+		'o&#x308;[]bar',
+		'o&#x308;&#x327;[]bar',
+
+		'&#x5e9;&#x5c1;&#x5b8;[]&#x5dc;&#x5d5;&#x5b9;&#x5dd;',
+		'&#x5e9;&#x5c1;&#x5b8;&#x5dc;&#x5d5;&#x5b9;[]&#x5dd;',
 
 		'<p>foo</p><p>[]bar</p>',
 		'<p>foo</p>[]bar',
@@ -1116,6 +1124,12 @@ var tests = {
 		'fo[]&ouml;bar',
 		'fo[]o&#x308;bar',
 		'fo[]o&#x308;&#x327;bar',
+		'[]&ouml;bar',
+		'[]o&#x308;bar',
+		'[]o&#x308;&#x327;bar',
+
+		'[]&#x5e9;&#x5c1;&#x5b8;&#x5dc;&#x5d5;&#x5b9;&#x5dd;',
+		'&#x5e9;&#x5c1;&#x5b8;&#x5dc;[]&#x5d5;&#x5b9;&#x5dd;',
 
 		'<p>foo[]</p><p>bar</p>',
 		'<p>foo[]</p>bar',

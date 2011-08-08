@@ -296,6 +296,9 @@ like this.  Feedback would be appreciated on all of them.
 
   <li>Allow some type of switch to affect non-editable regions too, perhaps on a
   per-command basis.
+
+  <li>Things like delete, forwardDelete, insertText need to handle non-BMP
+  characters.
 </ul>
 
 <p>Also TODO: Things that are only implemented by a couple of browsers and may
@@ -6453,6 +6456,11 @@ leaves things like &lt;b>{}&lt;/b> in the DOM, which is unhelpful, so I don't.
     we'll usually merge the <var>offset</var>th child of <var>node</var> with
     the last descendant of the <var>offset</var> &minus; 1st.
   </ol>
+
+  <p>Unlike forwardDelete, there's no special case for diacritics.  This means
+  backspacing will just delete the last combining diacritic typed, or the whole
+  character if it's precomposed.  This matches everything I tested (IE9,
+  Firefox 7.0a2, Chrome 14 dev, etc.).
   </div>
 
   <p>If <var>node</var> is a [[text]] node and <var>offset</var> is not zero,
@@ -7115,11 +7123,27 @@ diacritic, so you have to backspace several times to remove the whole cluster.)
     <li>Let <var>end offset</var> be <var>offset</var> plus one.
 
     <li>
-    <p class=comments>TODO: This is probably not right.  We probably want to
-    normalize to grapheme cluster boundaries, using UAX#29 or something.  We
-    also need to handle non-BMP stuff.  The idea is that if the cursor is
-    before a character that precedes a combining mark, you need to delete the
-    combining mark too.
+    <div class=comments>
+    <p>Firefox 7.0a2, Chrome 14 dev, Word 2007, and OpenOffice.org 3.2.1 Ubuntu
+    act as the spec says, getting rid of all diacritics on forward delete.  IE9
+    and Opera 11.50 have no special case and just delete the next character.  I
+    go with Firefox/Chrome/Word/OO.
+
+    <p>However, when I actually type in the text box as opposed to running
+    semi-automated tests, IE9 has magical behavior: it replaces the base
+    character with something that looks like &#x25cc; U+25CC DOTTED CIRCLE.
+    Further strikes of the delete key remove the diacritics, and the circle
+    vanishes along with the last of them.  I wasn't able to get it to actually
+    replace the base character, so I'm not sure what the point is.  The circle
+    doesn't seem to appear in the DOM, and apparently it disappears in some
+    circumstances.  This might be worth standardizing somehow, I don't know.
+
+    <p>TODO: The way we remove diacritics is probably not right.  We probably
+    want to normalize to grapheme cluster boundaries, using UAX#29 or
+    something.  We also need to handle non-BMP stuff.  The idea is that if the
+    cursor is before a character that precedes a combining mark, you need to
+    delete the combining mark too.
+    </div>
 
     <p>While <var>end offset</var> is not <var>node</var>'s [[length]] and the
     <var>end offset</var>th [[strel]] of <var>node</var>'s [[cddata]] has
@@ -8774,6 +8798,7 @@ insertions.
   Ehsan Akhgari,
   Tim Down,
   Markus Ernst,
+  Tali Fuss,
   Daniel Glazman,
   Cameron Heavon-Jones,
   Ryosuke Niwa,
@@ -8790,8 +8815,7 @@ insertions.
   Brett Zamir,
   and
   Boris Zbarsky
-  for their feedback on drafts of this document and participation in related
-  mailing list and Bugzilla discussions
+  for their feedback, participation, or other helpful contributions
   <li>Tab Atkins, Ian Hickson, Glenn Maynard, Ms2ger, Simon Pieters, and most
   of the rest of the <a href=irc://irc.freenode.net/whatwg>#whatwg</a> crowd
   for giving quick online feedback when I have questions or need to solicit

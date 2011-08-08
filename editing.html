@@ -63,7 +63,7 @@ a code { text-decoration: underline }
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing APIs</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-5-august-2011>Work in Progress &mdash; Last Update 5 August 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-8-august-2011>Work in Progress &mdash; Last Update 8 August 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;<a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a>&gt;
@@ -367,6 +367,9 @@ like this.  Feedback would be appreciated on all of them.
 
   <li>Allow some type of switch to affect non-editable regions too, perhaps on a
   per-command basis.
+
+  <li>Things like delete, forwardDelete, insertText need to handle non-BMP
+  characters.
 </ul>
 
 <p>Also TODO: Things that are only implemented by a couple of browsers and may
@@ -6405,6 +6408,11 @@ leaves things like &lt;b&gt;{}&lt;/b&gt; in the DOM, which is unhelpful, so I do
     we'll usually merge the <var title="">offset</var>th child of <var title="">node</var> with
     the last descendant of the <var title="">offset</var> &minus; 1st.
   </ol>
+
+  <p>Unlike forwardDelete, there's no special case for diacritics.  This means
+  backspacing will just delete the last combining diacritic typed, or the whole
+  character if it's precomposed.  This matches everything I tested (IE9,
+  Firefox 7.0a2, Chrome 14 dev, etc.).
   </div>
 
   <p>If <var title="">node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node and <var title="">offset</var> is not zero,
@@ -7061,11 +7069,27 @@ diacritic, so you have to backspace several times to remove the whole cluster.)
     <li>Let <var title="">end offset</var> be <var title="">offset</var> plus one.
 
     <li>
-    <p class=comments>TODO: This is probably not right.  We probably want to
-    normalize to grapheme cluster boundaries, using UAX#29 or something.  We
-    also need to handle non-BMP stuff.  The idea is that if the cursor is
-    before a character that precedes a combining mark, you need to delete the
-    combining mark too.
+    <div class=comments>
+    <p>Firefox 7.0a2, Chrome 14 dev, Word 2007, and OpenOffice.org 3.2.1 Ubuntu
+    act as the spec says, getting rid of all diacritics on forward delete.  IE9
+    and Opera 11.50 have no special case and just delete the next character.  I
+    go with Firefox/Chrome/Word/OO.
+
+    <p>However, when I actually type in the text box as opposed to running
+    semi-automated tests, IE9 has magical behavior: it replaces the base
+    character with something that looks like &#9676; U+25CC DOTTED CIRCLE.
+    Further strikes of the delete key remove the diacritics, and the circle
+    vanishes along with the last of them.  I wasn't able to get it to actually
+    replace the base character, so I'm not sure what the point is.  The circle
+    doesn't seem to appear in the DOM, and apparently it disappears in some
+    circumstances.  This might be worth standardizing somehow, I don't know.
+
+    <p>TODO: The way we remove diacritics is probably not right.  We probably
+    want to normalize to grapheme cluster boundaries, using UAX#29 or
+    something.  We also need to handle non-BMP stuff.  The idea is that if the
+    cursor is before a character that precedes a combining mark, you need to
+    delete the combining mark too.
+    </div>
 
     <p>While <var title="">end offset</var> is not <var title="">node</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> and the
     <var title="">end offset</var>th <a href=http://es5.github.com/#x8.4>element</a> of <var title="">node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> has
@@ -8699,6 +8723,7 @@ insertions.
   Ehsan Akhgari,
   Tim Down,
   Markus Ernst,
+  Tali Fuss,
   Daniel Glazman,
   Cameron Heavon-Jones,
   Ryosuke Niwa,
@@ -8715,8 +8740,7 @@ insertions.
   Brett Zamir,
   and
   Boris Zbarsky
-  for their feedback on drafts of this document and participation in related
-  mailing list and Bugzilla discussions
+  for their feedback, participation, or other helpful contributions
   <li>Tab Atkins, Ian Hickson, Glenn Maynard, Ms2ger, Simon Pieters, and most
   of the rest of the <a href=irc://irc.freenode.net/whatwg>#whatwg</a> crowd
   for giving quick online feedback when I have questions or need to solicit

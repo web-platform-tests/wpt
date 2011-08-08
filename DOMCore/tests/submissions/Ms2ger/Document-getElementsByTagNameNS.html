@@ -8,6 +8,9 @@
 test(function() {
   assert_true(document.getElementsByTagNameNS("http://www.w3.org/1999/xhtml", "html") instanceof NodeList, "NodeList")
   assert_false(document.getElementsByTagNameNS("http://www.w3.org/1999/xhtml", "html") instanceof HTMLCollection, "HTMLCollection")
-  assert_true(document.getElementsByTagNameNS("http://www.w3.org/1999/xhtml", "html") !== document.getElementsByTagNameNS("http://www.w3.org/1999/xhtml", "html"), "no caching")
+  assert_true(document.getElementsByTagNameNS("http://www.w3.org/1999/xhtml", "html") !==
+              document.getElementsByTagNameNS("http://www.w3.org/1999/xhtml", "html") ||
+              document.getElementsByTagNameNS("http://www.w3.org/1999/xhtml", "html") ===
+              document.getElementsByTagNameNS("http://www.w3.org/1999/xhtml", "html"), "Caching is allowed.")
 })
 </script>

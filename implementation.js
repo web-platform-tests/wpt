@@ -826,6 +826,9 @@ function isCollapsedLineBreak(br) {
 // "An extraneous line break is a br that has no visual effect, in that
 // removing it from the DOM would not change layout, except that a br that is
 // the sole child of an li is not extraneous."
+//
+// FIXME: This doesn't work in IE, since IE ignores display: none in
+// contenteditable.
 function isExtraneousLineBreak(br) {
 	if (!isHtmlElement(br, "br")) {
 		return false;

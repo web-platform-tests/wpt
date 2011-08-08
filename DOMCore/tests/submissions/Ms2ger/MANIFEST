@@ -62,7 +62,6 @@ Element-tagName.html
 EventTarget-dispatchEvent.html
 Node-appendChild.html
 Node-cloneNode.html
-Node-hasAttributes.html
 Node-insertBefore.html
 Node-isEqualNode.xhtml
 Node-lookupPrefix.xhtml

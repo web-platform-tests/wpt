@@ -9514,8 +9514,8 @@
     imgdata.data[0] = " +130e0 ";
     @assert imgdata.data[0] === 130; @moz-todo
 
-- name: 2d.imageData.object.wrap
-  desc: ImageData.data wraps numbers modulo 256
+- name: 2d.imageData.object.clamp
+  desc: ImageData.data clamps numbers to [0, 255]
   testing:
     - 2d.pixelarray.modify
   webidl:
@@ -9523,22 +9523,33 @@
   code: |
     var imgdata = ctx.getImageData(0, 0, 10, 10);
 
-    imgdata.data[0] = 0;
-    @assert imgdata.data[0] === 0;
+    imgdata.data[0] = 100;
     imgdata.data[0] = 300;
-    @assert imgdata.data[0] === 44;
+    @assert imgdata.data[0] === 255;
+    imgdata.data[0] = 100;
     imgdata.data[0] = -100;
-    @assert imgdata.data[0] === 156;
+    @assert imgdata.data[0] === 0;
 
+    imgdata.data[0] = 100;
     imgdata.data[0] = 200+Math.pow(2, 32);
-    @assert imgdata.data[0] === 200; @moz-todo
+    @assert imgdata.data[0] === 255;
+    imgdata.data[0] = 100;
     imgdata.data[0] = -200-Math.pow(2, 32);
-    @assert imgdata.data[0] === 56; @moz-todo
+    @assert imgdata.data[0] === 0;
 
+    imgdata.data[0] = 100;
+    imgdata.data[0] = Math.pow(10, 39);
+    @assert imgdata.data[0] === 255;
+    imgdata.data[0] = 100;
+    imgdata.data[0] = -Math.pow(10, 39);
+    @assert imgdata.data[0] === 0;
+
+    imgdata.data[0] = 100;
     imgdata.data[0] = -Infinity;
-    @assert imgdata.data[0] === 0; @moz-todo
+    @assert imgdata.data[0] === 0;
+    imgdata.data[0] = 100;
     imgdata.data[0] = Infinity;
-    @assert imgdata.data[0] === 0; @moz-todo
+    @assert imgdata.data[0] === 255;
 
 - name: 2d.imageData.object.round
   desc: ImageData.data rounds numbers with round-to-zero

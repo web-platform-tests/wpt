@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en-US-x-hixie" xml:lang="en-US-x-hixie"><head><meta charset="UTF-8"><title>HTML5 (including next generation additions still in development)</title><link href="http://www.whatwg.org/style/specification" rel="stylesheet"><link href="http://www.whatwg.org/images/icon" rel="icon"><style>
+<html lang="en-US-x-hixie" xml:lang="en-US-x-hixie"><head><meta charset="UTF-8"><title>HTML Standard</title><link href="http://www.whatwg.org/style/specification" rel="stylesheet"><link href="http://www.whatwg.org/images/icon" rel="icon"><style>
    .proposal { border: blue solid; padding: 1em; }
    .bad, .bad *:not(.XXX) { color: gray; border-color: gray; background: transparent; }
    #updatesStatus { display: none; }
@@ -76,6 +76,24 @@
 
    .details-example img { vertical-align: top; }
 
+   #base64-table {
+     white-space: nowrap;
+     font-size: 0.6em;
+     column-width: 6em;
+     column-count: 5;
+     column-gap: 1em;
+     -moz-column-width: 6em;
+     -moz-column-count: 5;
+     -moz-column-gap: 1em;
+     -webkit-column-width: 6em;
+     -webkit-column-count: 5;
+     -webkit-column-gap: 1em;
+   }
+   #base64-table thead { display: none; }
+   #base64-table * { border: none; }
+   #base64-table tbody td:first-child:after { content: ':'; }
+   #base64-table tbody td:last-child { text-align: right; }
+
    #named-character-references-table {
      white-space: nowrap;
      font-size: 0.6em;
@@ -116,13 +134,14 @@
 
   </style><style>
    .domintro:before { display: table; margin: -1em -0.5em -0.5em auto; width: auto; content: 'This box is non-normative. Implementation requirements are given below this box.'; color: black; font-style: italic; border: solid 2px; background: white; padding: 0 0.25em; }
-  </style><link href="data:text/css," id="complete" rel="stylesheet" title="Complete specification"><link href="data:text/css,.impl%20{%20display:%20none;%20}%0Ahtml%20{%20border:%20solid%20yellow;%20}%20.domintro:before%20{%20display:%20none;%20}" id="author" rel="alternate stylesheet" title="Author documentation only"><link href="data:text/css,.impl%20{%20background:%20%23FFEEEE;%20}%20.domintro:before%20{%20background:%20%23FFEEEE;%20}" id="highlight" rel="alternate stylesheet" title="Highlight implementation requirements"><link href="http://www.whatwg.org/specs/web-apps/current-work/status.css" rel="stylesheet"><link href="../common/canvas-spec.css" type="text/css" rel="stylesheet"></head><body onload="init()" class="draft"><header class="head" id="head"><p><a href="http://www.whatwg.org/" class="logo" rel="home"><img src="http://www.whatwg.org/images/logo" alt="WHATWG" width="101" height="101"></a></p>
-   <hgroup><h1>HTML5 (including next generation additions still in development)</h1>
-    <h2 class="no-num no-toc">Draft Standard — 5 January 2011</h2>
-   </hgroup><p class="copyright">© Copyright 2004-2010 Apple Computer, Inc.,
+  </style><link href="data:text/css," id="complete" rel="stylesheet" title="Complete specification"><link href="data:text/css,.impl%20{%20display:%20none;%20}%0Ahtml%20{%20border:%20solid%20yellow;%20}%20.domintro:before%20{%20display:%20none;%20}" id="author" rel="alternate stylesheet" title="Author documentation only"><link href="data:text/css,.impl%20{%20background:%20%23FFEEEE;%20}%20.domintro:before%20{%20background:%20%23FFEEEE;%20}" id="highlight" rel="alternate stylesheet" title="Highlight implementation requirements"><link href="http://www.whatwg.org/specs/web-apps/current-work/status.css" rel="stylesheet"><link href="../common/canvas-spec.css" type="text/css" rel="stylesheet"></head><body onload="init()" class="draft"><header class="head" id="head"><p><a href="http://www.whatwg.org/" class="logo"><img src="http://www.whatwg.org/images/logo" alt="WHATWG" width="101" height="101"></a></p>
+   <hgroup><h1 class="allcaps">HTML</h1>
+    <h2 class="no-num no-toc">Living Standard — Last Updated 8 August 2011</h2>
+   </hgroup><p class="copyright">© Copyright 2004-2011 Apple Computer, Inc.,
    Mozilla Foundation, and Opera Software ASA.</p>
    <p class="copyright">You are granted a license to use, reproduce
    and create derivative works of this document.</p>
+
   </header><h4 id="the-canvas-element"><span class="secno">4.8.11 </span>The <dfn id="canvas"><code>canvas</code></dfn> element</h4>
 
   <dl class="element"><dt>Categories</dt>
@@ -133,6 +152,11 @@
    <dd>Where <a href="#embedded-content">embedded content</a> is expected.</dd>
    <dt>Content model:</dt>
    <dd><a href="#transparent">Transparent</a>.</dd>
+   <dd><a href="#transparent">Transparent</a><!--
+--><!--FORK--><!--
+-->, but with no <a href="#interactive-content">interactive content</a> descendants except for <code><a href="#the-a-element">a</a></code> elements, <code><a href="#the-button-element">button</a></code> elements, <code><a href="#the-input-element">input</a></code> elements whose <code title="attr-input-type"><a href="#attr-input-type">type</a></code> attribute are in the <a href="#checkbox-state" title="attr-input-type-checkbox">Checkbox</a> or <a href="#radio-button-state" title="attr-input-type-radio">Radio Button</a> states, and <code><a href="#the-input-element">input</a></code> elements that are <a href="#concept-button" title="concept-button">buttons</a><!--
+--><!--FORK--><!--
+-->.</dd> <!-- and maybe <select>, I guess? I've left it in for now, since I guess authors might make accessible selects if they're simple enough, and it's not obvious how to distinguish the simple ones from the complex ones... -->
    <dt>Content attributes:</dt>
    <dd><a href="#global-attributes">Global attributes</a></dd>
    <dd><code title="attr-canvas-width"><a href="#attr-canvas-width">width</a></code></dd>
@@ -144,8 +168,9 @@
            attribute unsigned long <a href="#dom-canvas-height" title="dom-canvas-height">height</a>;<span class="testrefs kw-none" id="testrefs.size.height"> <a href="#testrefs.size.height" title="size.height">#</a> <a href="../canvas/size.attributes.get.html">size.attributes.get</a> <a href="../canvas/size.attributes.set.html">size.attributes.set</a> <a href="../canvas/size.attributes.idl.set.zero.html">size.attributes.idl.set.zero</a> <a href="../canvas/size.attributes.idl.html">size.attributes.idl</a> </span>
 
   DOMString <a href="#dom-canvas-todataurl" title="dom-canvas-toDataURL">toDataURL</a>(in optional DOMString type, in any... args);
+  void <a href="#dom-canvas-toblob" title="dom-canvas-toBlob">toBlob</a>(in <span>FileCallback</span>? callback, in optional DOMString type, in any... args);
 
-  object <a href="#dom-canvas-getcontext" title="dom-canvas-getContext">getContext</a>(in DOMString contextId, in any... args);
+  object? <a href="#dom-canvas-getcontext" title="dom-canvas-getContext">getContext</a>(in DOMString contextId, in any... args);
 };</pre>
    </dd>
   </dl><p>The <code><a href="#the-canvas-element">canvas</a></code> element provides scripts with a
@@ -192,10 +217,13 @@
   <p>When a <code><a href="#the-canvas-element">canvas</a></code> element <a href="#represents">represents</a>
   <a href="#embedded-content">embedded content</a>, the user can still focus descendants
   of the <code><a href="#the-canvas-element">canvas</a></code> element (in the <a href="#fallback-content">fallback
-  content</a>). This allows authors to make an interactive canvas
-  keyboard-focusable: authors should have a one-to-one mapping of
+  content</a>). When an element is focused, it is the target of
+  keyboard interaction events (even though the element itself is not
+  visible). This allows authors to make an interactive canvas
+  keyboard-accessible: authors should have a one-to-one mapping of
   interactive regions to focusable elements in the <a href="#fallback-content">fallback
-  content</a>.</p>
+  content</a>. (Focus has no effect on mouse interaction
+  events.) <a href="#DOMEVENTS">[DOMEVENTS]</a></p>
 
   <p>The <code><a href="#the-canvas-element">canvas</a></code> element has two attributes to control the
   size of the coordinate space: <dfn id="attr-canvas-width" title="attr-canvas-width"><code>width</code></dfn> and <dfn id="attr-canvas-height" title="attr-canvas-height"><code>height</code></dfn>. These
@@ -270,7 +298,7 @@
     CanvasContexts page</a>. <a href="#refsWHATWGWIKI">[WHATWGWIKI]</a>
 
     </p><p>Returns null if the given context ID is not supported or if the
-    canvas has already been initialised with some other (incompatible)
+    canvas has already been initialized with some other (incompatible)
     context type (e.g. trying to get a &quot;<code title="canvas-context-2d"><a href="#canvas-context-2d">2d</a></code>&quot; context after getting a
     &quot;<code title="canvas-context-webgl">webgl</code>&quot; context).</p>
 
@@ -283,6 +311,7 @@
   that element. When created, a <code><a href="#the-canvas-element">canvas</a></code> element must not
   have a <a href="#primary-context">primary context</a>.</p>
 
+
   <p>The <dfn id="dom-canvas-getcontext" title="dom-canvas-getContext"><code>getContext(<var title="">contextId</var>, <var title="">args...</var>)</code></dfn>
   method of the <code><a href="#the-canvas-element">canvas</a></code> element, when invoked, must run
   the following steps:</p>
@@ -290,9 +319,21 @@
   <ol><li><p>Let <var title="">contextId</var> be the first argument to
    the method.</p></li>
 
-   <li><p>If <var title="">contextId</var> is not the name of a
-   context supported by the user agent, return null and abort these
-   steps<span class="testrefs kw-none" id="testrefs.context.unrecognised"> <a href="#testrefs.context.unrecognised" title="context.unrecognised">#</a> <a href="../canvas/context.emptystring.html">context.emptystring</a> <a href="../canvas/context.unrecognised.badname.html">context.unrecognised.badname</a> <a href="../canvas/context.unrecognised.badsuffix.html">context.unrecognised.badsuffix</a> <a href="../canvas/context.unrecognised.nullsuffix.html">context.unrecognised.nullsuffix</a> <a href="../canvas/context.unrecognised.unicode.html">context.unrecognised.unicode</a> <a href="../canvas/context.casesensitive.html">context.casesensitive</a> </span>.</p></li>
+   <li>
+
+    <p>If <var title="">contextId</var> is not the name of a context
+    supported by the user agent, return null and abort these
+    steps<span class="testrefs kw-none" id="testrefs.context.unrecognised"> <a href="#testrefs.context.unrecognised" title="context.unrecognised">#</a> <a href="../canvas/context.emptystring.html">context.emptystring</a> <a href="../canvas/context.unrecognised.badname.html">context.unrecognised.badname</a> <a href="../canvas/context.unrecognised.badsuffix.html">context.unrecognised.badsuffix</a> <a href="../canvas/context.unrecognised.nullsuffix.html">context.unrecognised.nullsuffix</a> <a href="../canvas/context.unrecognised.unicode.html">context.unrecognised.unicode</a> <a href="../canvas/context.casesensitive.html">context.casesensitive</a> </span>.</p>
+
+    <p class="note">An example of this would be a user agent that
+    theoretically supports the &quot;<code title="canvas-context-webgl">webgl</code>&quot; 3D context, in the case
+    where the platform does not have hardware support for OpenGL and
+    the user agent does not have a software OpenGL implementation.
+    Despite the user agent recognising the &quot;<code title="canvas-context-webgl">webgl</code>&quot; name, it would return
+    null at this step because that context is not, in practice,
+    supported at the time of the call.</p>
+
+   </li>
 
    <li><p>If the element has a <a href="#primary-context">primary context</a> and that
    context's entry in the <a href="http://wiki.whatwg.org/wiki/CanvasContexts">WHATWG Wiki
@@ -361,69 +402,121 @@
     type, and control the way that the image is generated, as given in
     the table below.</p>
 
+    <p>When trying to use types other than &quot;<code>image/png</code>&quot;,
+    authors can check if the image was really returned in the
+    requested format by checking to see if the returned string starts
+    with one of the exact strings &quot;<code title="">data:image/png,</code>&quot; or &quot;<code title="">data:image/png;</code>&quot;. If it does, the image is PNG,
+    and thus the requested type was not supported. (The one exception
+    to this is if the canvas has either no height or no width, in
+    which case the result might simply be &quot;<code title="">data:,</code>&quot;.)</p>
+
+   </dd>
+
+   <dt><var title="">canvas</var> . <code title="dom-canvas-toBlob"><a href="#dom-canvas-toblob">toBlob</a></code>(<var title="">callback</var> [, <var title="">type</var>, ... ])</dt>
+
+   <dd>
+
+    <p>Creates a <code><a href="#blob">Blob</a></code> object representing a file
+    containing the image in the canvas, and invokes a callback with a
+    handle to that object.</p>
+
+    <p>The second argument, if provided, controls the type of the
+    image to be returned (e.g. PNG or JPEG). The default is <code title="">image/png</code>; that type is also used if the given
+    type isn't supported. The other arguments are specific to the
+    type, and control the way that the image is generated, as given in
+    the table below.</p>
+
    </dd>
 
   </dl><div class="impl">
 
   <p>The <dfn id="dom-canvas-todataurl" title="dom-canvas-toDataURL"><code>toDataURL()</code></dfn> method
-  must, when called with no arguments, return a <a href="#data-protocol" title="data   protocol"><code title="">data:</code> URL</a> containing a
-  representation of the image as a PNG file<span class="testrefs kw-must" id="testrefs.toDataURL.noarguments"> <a href="#testrefs.toDataURL.noarguments" title="toDataURL.noarguments">#</a> <a href="../canvas/toDataURL.default.html">toDataURL.default</a> <a href="../canvas/toDataURL.nocontext.html">toDataURL.nocontext</a> </span>. <a href="#refsPNG">[PNG]</a> <a href="#refsRFC2397">[RFC2397]</a></p>
+  must run the following steps:</p>
 
-  <p>If the canvas has no pixels (i.e. either its horizontal dimension
-  or its vertical dimension is zero) then the method must return the
-  string &quot;<code title="">data:,</code>&quot;<span class="testrefs kw-must" id="testrefs.toDataURL.zerosize"> <a href="#testrefs.toDataURL.zerosize" title="toDataURL.zerosize">#</a> <a href="../canvas/toDataURL.zerosize.html">toDataURL.zerosize</a> </span>. (This is the shortest <a href="#data-protocol" title="data protocol"><code title="">data:</code> URL</a>; it
-  represents the empty string in a <code title="">text/plain</code>
-  resource.)</p>
+  <ol><li><p>If the canvas has no pixels (i.e. either its horizontal
+   dimension or its vertical dimension is zero) then return the string
+   &quot;<code title="">data:,</code>&quot; and abort these steps. (This is the
+   shortest <a href="#data-protocol" title="data protocol"><code title="">data:</code>
+   URL</a>; it represents the empty string in a <code title="">text/plain</code> resource.)</p></li>
 
-  <p>When the <code title="dom-canvas-toDataURL"><a href="#dom-canvas-todataurl">toDataURL(<var title="">type</var>)</a></code> method is called with one <em>or
-  more</em> arguments, it must return a <a href="#data-protocol" title="data   protocol"><code title="">data:</code> URL</a> containing a
-  representation of the image in the format given by <var title="">type</var><span class="testrefs kw-must" id="testrefs.toDataURL.witharguments"> <a href="#testrefs.toDataURL.witharguments" title="toDataURL.witharguments">#</a> <a href="../canvas/toDataURL.png.html">toDataURL.png</a> </span>. The possible values are <a href="#mime-type" title="MIME   type">MIME types</a> with no parameters, for example
-  <code>image/png</code>, <code>image/jpeg</code>, or even maybe
-  <code>image/svg+xml</code> if the implementation actually keeps
-  enough information to reliably render an SVG image from the
-  canvas.</p>
+   <li><p>Let <var title="">file</var> be <a href="#a-serialization-of-the-image-as-a-file">a serialization of the
+   image as a file</a>, using the method's arguments (if any) as
+   the <var title="">arguments</var>.</p></li>
 
-  <p>For image types that do not support an alpha channel, the image
-  must be composited onto a solid black background using the
-  source-over operator, and the resulting image must be the one used
-  to create the <a href="#data-protocol" title="data protocol"><code title="">data:</code> URL</a><span class="testrefs kw-must" id="testrefs.toDataURL.noalpha"> <a href="#testrefs.toDataURL.noalpha" title="toDataURL.noalpha">#</a> <a href="../canvas/toDataURL.jpeg.alpha.html">toDataURL.jpeg.alpha</a> </span>.</p>
+   <li><p>Return a <a href="#data-protocol" title="data protocol"><code title="">data:</code> URL</a> representing <var title="">file</var>. <a href="#refsRFC2397">[RFC2397]</a></p>
 
-  <p>Only support for <code>image/png</code> is required<span class="testrefs kw-required" id="testrefs.toDataURL.png"> <a href="#testrefs.toDataURL.png" title="toDataURL.png">#</a> <a href="../canvas/toDataURL.png.html">toDataURL.png</a> <a href="../canvas/toDataURL.png.primarycolours.html">toDataURL.png.primarycolours</a> <a href="../canvas/toDataURL.png.complexcolours.html">toDataURL.png.complexcolours</a> </span>. User agents
-  may support other types. If the user agent does not support the
-  requested type, it must return the image using the PNG format<span class="testrefs kw-must" id="testrefs.toDataURL.unrecognised"> <a href="#testrefs.toDataURL.unrecognised" title="toDataURL.unrecognised">#</a> <a href="../canvas/toDataURL.bogustype.html">toDataURL.bogustype</a> <a href="../canvas/toDataURL.unrecognised.html">toDataURL.unrecognised</a> </span>.</p>
+   <!-- should we explicitly require the URL to be base64-encoded and
+   not have any parameters, to ensure the same exact URL is generated
+   in each browser? -->
+
+  </li></ol><p>The <dfn id="dom-canvas-toblob" title="dom-canvas-toBlob"><code>toBlob()</code></dfn> method
+  must run the following steps:</p>
+
+  <ol><li><p>Let <var title="">callback</var> be the first
+   argument.</p></li>
+
+   <li><p>Let <var title="">arguments</var> be the second and
+   subsequent arguments to the method, if any.</p></li>
+
+   <li><p>Let <var title="">file</var> be <a href="#a-serialization-of-the-image-as-a-file">a serialization of the
+   image as a file</a>, using <var title="">arguments</var>.</p></li>
+
+   <li><p>Return, but continue running these steps
+   asynchronously.</p></li>
+
+   <li><p>If <var title="">callback</var> is null, abort these
+   steps.</p></li>
+
+   <li><p><a href="#queue-a-task">Queue a task</a> to invoke the
+   <code>FileCallback</code> <var title="">callback</var> with a
+   <code><a href="#blob">Blob</a></code> object representing <var title="">file</var> as
+   its argument. The <a href="#task-source">task source</a> for this task is the
+   <dfn id="canvas-blob-serialization-task-source">canvas blob serialization task source</dfn>. <a href="#refsFILESYSTEMAPI">[FILESYSTEMAPI]</a> <a href="#refsFILEAPI">[FILEAPI]</a> </p></li>
+
+  </ol><p>When a user agent is to create <dfn id="a-serialization-of-the-image-as-a-file">a serialization of the image
+  as a file</dfn>, optionally with some given <var title="">arguments</var>, it must create an image file in the format
+  given by the first value of <var title="">arguments</var>, or, if
+  there are no <var title="">arguments</var>, in the PNG format. <a href="#refsPNG">[PNG]</a></p>
+
+  <p>If <var title="">arguments</var> is not empty, the first value
+  must be interpreted as a <a href="#mime-type" title="MIME type">MIME type</a>
+  giving the format to use. If the type has any parameters, it must be
+  treated as not supported.</p>
+
+  <p class="example">For example, the value &quot;<code>image/png</code>&quot; would
+  mean to generate a PNG image, the value &quot;<code>image/jpeg</code>&quot;
+  would mean to generate a JPEG image, and the value
+  &quot;<code>image/svg+xml</code>&quot; would mean to generate an SVG image
+  (which would probably require that the implementation actually keep
+  enough information to reliably render an SVG image from the canvas).</p>
+
+  <p>User agents must support PNG (&quot;<code>image/png</code>&quot;). User
+  agents may support other types. If the user agent does not support
+  the requested type, it must create the file using the PNG format. <a href="#refsPNG">[PNG]</a></p>
 
   <p>User agents must <a href="#converted-to-ascii-lowercase" title="converted to ASCII   lowercase">convert the provided type to ASCII lowercase</a>
-  before establishing if they support that type and before creating
-  the <a href="#data-protocol" title="data protocol"><code title="">data:</code>
-  URL</a><span class="testrefs kw-must" id="testrefs.toDataURL.lowercase"> <a href="#testrefs.toDataURL.lowercase" title="toDataURL.lowercase">#</a> <a href="../canvas/toDataURL.lowercase.ascii.html">toDataURL.lowercase.ascii</a> <a href="../canvas/toDataURL.lowercase.unicode.html">toDataURL.lowercase.unicode</a> </span>.</p>
+  before establishing if they support that type.</p>
 
-  </div>
+  <p>For image types that do not support an alpha channel, the
+  serialized image must be the canvas image composited onto a solid
+  black background using the source-over operator.</p>
 
-  <p class="note">When trying to use types other than
-  <code>image/png</code>, authors can check if the image was really
-  returned in the requested format by checking to see if the returned
-  string starts with one of the exact strings &quot;<code title="">data:image/png,</code>&quot; or &quot;<code title="">data:image/png;</code>&quot;. If it does, the image is PNG, and
-  thus the requested type was not supported. (The one exception to
-  this is if the canvas has either no height or no width, in which
-  case the result might simply be &quot;<code title="">data:,</code>&quot;.)</p>
-
-  <div class="impl">
-
-  <p>If the method is invoked with the first argument giving a type
-  corresponding to one of the types given in the first column of the
-  following table, and the user agent supports that type, then the
+  <p>If the first argument in <var title="">arguments</var> gives a
+  type corresponding to one of the types given in the first column of
+  the following table, and the user agent supports that type, then the
   subsequent arguments, if any, must be treated as described in the
   second cell of that row.</p>
 
   </div>
 
-  <table><thead><tr><th> Type </th><th> Other arguments
-   </th></tr></thead><tbody><tr><td> image/jpeg<span class="testrefs kw-none" id="testrefs.toDataURL.jpeg"> <a href="#testrefs.toDataURL.jpeg" title="toDataURL.jpeg">#</a> <a href="../canvas/toDataURL.jpeg.primarycolours.html">toDataURL.jpeg.primarycolours</a> <a href="../canvas/toDataURL.jpeg.alpha.html">toDataURL.jpeg.alpha</a> </span>
+  <table><thead><tr><th> Type </th><th> Other arguments </th><th> Reference
+   </th></tr></thead><tbody><tr><td> <code>image/jpeg</code><span class="testrefs kw-none" id="testrefs.toDataURL.jpeg"> <a href="#testrefs.toDataURL.jpeg" title="toDataURL.jpeg">#</a> <a href="../canvas/toDataURL.jpeg.primarycolours.html">toDataURL.jpeg.primarycolours</a> <a href="../canvas/toDataURL.jpeg.alpha.html">toDataURL.jpeg.alpha</a> </span>
      </td><td> The second argument<span class="impl">, if it</span> is a
      number in the range 0.0 to 1.0 inclusive<span class="impl">, must
      be</span> treated as the desired quality level<span class="testrefs kw-must" id="testrefs.toDataURL.jpeg.quality"> <a href="#testrefs.toDataURL.jpeg.quality" title="toDataURL.jpeg.quality">#</a> <a href="../canvas/toDataURL.jpeg.quality.basic.html">toDataURL.jpeg.quality.basic</a> </span>. <span class="impl">If it is not a number<span class="testrefs kw-must" id="testrefs.toDataURL.jpeg.nan"> <a href="#testrefs.toDataURL.jpeg.nan" title="toDataURL.jpeg.nan">#</a> <a href="../canvas/toDataURL.jpeg.quality.notnumber.html">toDataURL.jpeg.quality.notnumber</a> </span> or is outside that range<span class="testrefs kw-must" id="testrefs.toDataURL.jpeg.range"> <a href="#testrefs.toDataURL.jpeg.range" title="toDataURL.jpeg.range">#</a> <a href="../canvas/toDataURL.jpeg.quality.outsiderange.html">toDataURL.jpeg.quality.outsiderange</a> </span>, the
      user agent must use its default value, as if the argument had
      been omitted.</span>
+     </td><td> <a href="#refsJPEG">[JPEG]</a>
   </td></tr></tbody></table><div class="impl">
 
   <p>For the purposes of these rules, an argument is considered to be
@@ -433,13 +526,9 @@
 
   <p>Other arguments must be ignored and must not cause the user agent
   to raise an exception<span class="testrefs kw-must" id="testrefs.toDataURL.arguments"> <a href="#testrefs.toDataURL.arguments" title="toDataURL.arguments">#</a> <a href="../canvas/toDataURL.arguments.1.html">toDataURL.arguments.1</a> <a href="../canvas/toDataURL.arguments.2.html">toDataURL.arguments.2</a> <a href="../canvas/toDataURL.arguments.3.html">toDataURL.arguments.3</a> </span>. A future version of this specification will
-  probably define other parameters to be passed to <code title="dom-canvas-toDataURL"><a href="#dom-canvas-todataurl">toDataURL()</a></code> to allow authors to
-  more carefully control compression settings, image metadata,
-  etc.</p>
-
-  <!-- should we explicitly require the URL to be base64-encoded and
-  not have any parameters, to ensure the same exact URL is generated
-  in each browser? -->
+  probably define other parameters to be passed to these methods to
+  allow authors to more carefully control compression settings, image
+  metadata, etc.</p>
 
   </div>
 
@@ -449,7 +538,7 @@
 
   <h5 id="2dcontext"><span class="secno">4.8.11.1 </span>The 2D context</h5>
 
-  <!-- v2: we're on v4. suggestions for next version are marked v5. -->
+  <!-- v2: we're on v4.1. suggestions for next version are marked v5, v6. -->
 
   
 
@@ -479,7 +568,7 @@
   void <a href="#dom-context-2d-save" title="dom-context-2d-save">save</a>(); // push state on state stack
   void <a href="#dom-context-2d-restore" title="dom-context-2d-restore">restore</a>(); // pop state stack and restore state
 <!--
-  // v5 we've also received requests for:
+  // v6 we've also received requests for:
           attribute boolean <span title="dom-context-2d-forceHighQuality">forceHighQuality</span> // (default false)
   // when enabled, it would prevent the UA from falling back on lower-quality but faster rendering routines
   // useful e.g. for when an image manipulation app uses <canvas> both for UI previews and the actual work
@@ -491,7 +580,7 @@
   void <a href="#dom-context-2d-transform" title="dom-context-2d-transform">transform</a>(in double a, in double b, in double c, in double d, in double e, in double f);
   void <a href="#dom-context-2d-settransform" title="dom-context-2d-setTransform">setTransform</a>(in double a, in double b, in double c, in double d, in double e, in double f);
 <!--
-  // v5 we've also received requests for:
+  // v6 we've also received requests for:
   void skew(...);
   void reflect(...); // or mirror(...)
 -->
@@ -499,7 +588,7 @@
            attribute double <a href="#dom-context-2d-globalalpha" title="dom-context-2d-globalAlpha">globalAlpha</a>; // (default 1.0)
            attribute DOMString <a href="#dom-context-2d-globalcompositeoperation" title="dom-context-2d-globalCompositeOperation">globalCompositeOperation</a>; // (default source-over)
 <!--
-  // v5 we've also received requests for:
+  // v6 we've also received requests for:
   - turning off antialiasing to avoid seams when patterns are painted next to each other
     - might be better to overdraw?
     - might be better to just draw at a higher res then downsample, like for 3d?
@@ -545,35 +634,39 @@
   void <a href="#dom-context-2d-arc" title="dom-context-2d-arc">arc</a>(in double x, in double y, in double radius, in double startAngle, in double endAngle, in optional boolean anticlockwise);
   void <a href="#dom-context-2d-fill" title="dom-context-2d-fill">fill</a>();
   void <a href="#dom-context-2d-stroke" title="dom-context-2d-stroke">stroke</a>();
+  void <a href="#dom-context-2d-drawsystemfocusring" title="dom-context-2d-drawSystemFocusRing">drawSystemFocusRing</a>(in <a href="#element">Element</a> element);
+  boolean <a href="#dom-context-2d-drawcustomfocusring" title="dom-context-2d-drawCustomFocusRing">drawCustomFocusRing</a>(in <a href="#element">Element</a> element);
+  void <a href="#dom-context-2d-scrollpathintoview" title="dom-context-2d-scrollPathIntoView">scrollPathIntoView</a>();
   void <a href="#dom-context-2d-clip" title="dom-context-2d-clip">clip</a>();
   boolean <a href="#dom-context-2d-ispointinpath" title="dom-context-2d-isPointInPath">isPointInPath</a>(in double x, in double y);
-
-  // focus management
-  boolean <a href="#dom-context-2d-drawfocusring" title="dom-context-2d-drawFocusRing">drawFocusRing</a>(in <a href="#element">Element</a> element, in double xCaret, in double yCaret, in optional boolean canDrawCustom);
 
   // text
            attribute DOMString <a href="#dom-context-2d-font" title="dom-context-2d-font">font</a>; // (default 10px sans-serif)
            attribute DOMString <a href="#dom-context-2d-textalign" title="dom-context-2d-textAlign">textAlign</a>; // &quot;start&quot;, &quot;end&quot;, &quot;left&quot;, &quot;right&quot;, &quot;center&quot; (default: &quot;start&quot;)
            attribute DOMString <a href="#dom-context-2d-textbaseline" title="dom-context-2d-textBaseline">textBaseline</a>; // &quot;top&quot;, &quot;hanging&quot;, &quot;middle&quot;, &quot;alphabetic&quot;, &quot;ideographic&quot;, &quot;bottom&quot; (default: &quot;alphabetic&quot;)
   void <a href="#dom-context-2d-filltext" title="dom-context-2d-fillText">fillText</a>(in DOMString text, in double x, in double y, in optional double maxWidth);
-  void <a href="#dom-context-2d-stroketext" title="dom-context-2d-strokeText">strokeText</a>(in DOMString text, in double x, in double y, in optional double maxWidth);<!-- v5DVT
+  void <a href="#dom-context-2d-stroketext" title="dom-context-2d-strokeText">strokeText</a>(in DOMString text, in double x, in double y, in optional double maxWidth);<!-- v6DVT
   void <span title="dom-context-2d-fillVerticalText">fillVerticalText</span>(in DOMString text, in double x, in double y, in optional double maxHeight);
   void <span title="dom-context-2d-strokeVerticalText">strokeVerticalText</span>(in DOMString text, in double x, in double y, in optional double maxHeight); -->
   <a href="#textmetrics">TextMetrics</a> <a href="#dom-context-2d-measuretext" title="dom-context-2d-measureText">measureText</a>(in DOMString text);
 
   // drawing images
-  void <a href="#dom-context-2d-drawimage" title="dom-context-2d-drawImage">drawImage</a>(in <a href="#htmlimageelement">HTMLImageElement</a> image, in double dx, in double dy, in optional double dw, in double dh);
+  void <a href="#dom-context-2d-drawimage" title="dom-context-2d-drawImage">drawImage</a>(in <a href="#htmlimageelement">HTMLImageElement</a> image, in double dx, in double dy);
+  void <a href="#dom-context-2d-drawimage" title="dom-context-2d-drawImage">drawImage</a>(in <a href="#htmlimageelement">HTMLImageElement</a> image, in double dx, in double dy, in double dw, in double dh);
   void <a href="#dom-context-2d-drawimage" title="dom-context-2d-drawImage">drawImage</a>(in <a href="#htmlimageelement">HTMLImageElement</a> image, in double sx, in double sy, in double sw, in double sh, in double dx, in double dy, in double dw, in double dh);
-  void <a href="#dom-context-2d-drawimage" title="dom-context-2d-drawImage">drawImage</a>(in <a href="#htmlcanvaselement">HTMLCanvasElement</a> image, in double dx, in double dy, in optional double dw, in double dh);
+  void <a href="#dom-context-2d-drawimage" title="dom-context-2d-drawImage">drawImage</a>(in <a href="#htmlcanvaselement">HTMLCanvasElement</a> image, in double dx, in double dy);
+  void <a href="#dom-context-2d-drawimage" title="dom-context-2d-drawImage">drawImage</a>(in <a href="#htmlcanvaselement">HTMLCanvasElement</a> image, in double dx, in double dy, in double dw, in double dh);
   void <a href="#dom-context-2d-drawimage" title="dom-context-2d-drawImage">drawImage</a>(in <a href="#htmlcanvaselement">HTMLCanvasElement</a> image, in double sx, in double sy, in double sw, in double sh, in double dx, in double dy, in double dw, in double dh);
-  void <a href="#dom-context-2d-drawimage" title="dom-context-2d-drawImage">drawImage</a>(in <a href="#htmlvideoelement">HTMLVideoElement</a> image, in double dx, in double dy, in optional double dw, in double dh);
+  void <a href="#dom-context-2d-drawimage" title="dom-context-2d-drawImage">drawImage</a>(in <a href="#htmlvideoelement">HTMLVideoElement</a> image, in double dx, in double dy);
+  void <a href="#dom-context-2d-drawimage" title="dom-context-2d-drawImage">drawImage</a>(in <a href="#htmlvideoelement">HTMLVideoElement</a> image, in double dx, in double dy, in double dw, in double dh);
   void <a href="#dom-context-2d-drawimage" title="dom-context-2d-drawImage">drawImage</a>(in <a href="#htmlvideoelement">HTMLVideoElement</a> image, in double sx, in double sy, in double sw, in double sh, in double dx, in double dy, in double dw, in double dh);
 
   // pixel manipulation
   <a href="#imagedata">ImageData</a> <a href="#dom-context-2d-createimagedata" title="dom-context-2d-createImageData">createImageData</a>(in double sw, in double sh);
   <a href="#imagedata">ImageData</a> <a href="#dom-context-2d-createimagedata" title="dom-context-2d-createImageData">createImageData</a>(in <a href="#imagedata">ImageData</a> imagedata);
   <a href="#imagedata">ImageData</a> <a href="#dom-context-2d-getimagedata" title="dom-context-2d-getImageData">getImageData</a>(in double sx, in double sy, in double sw, in double sh);
-  void <a href="#dom-context-2d-putimagedata" title="dom-context-2d-putImageData">putImageData</a>(in <a href="#imagedata">ImageData</a> imagedata, in double dx, in double dy, in optional double dirtyX, in double dirtyY, in double dirtyWidth, in double dirtyHeight);
+  void <a href="#dom-context-2d-putimagedata" title="dom-context-2d-putImageData">putImageData</a>(in <a href="#imagedata">ImageData</a> imagedata, in double dx, in double dy);
+  void <a href="#dom-context-2d-putimagedata" title="dom-context-2d-putImageData">putImageData</a>(in <a href="#imagedata">ImageData</a> imagedata, in double dx, in double dy, in double dirtyX, in double dirtyY, in double dirtyWidth, in double dirtyHeight);
 };
 
 interface <dfn id="canvasgradient">CanvasGradient</dfn> {
@@ -598,7 +691,7 @@ interface <dfn id="imagedata">ImageData</dfn><span class="testrefs kw-none" id="
 interface <dfn id="canvaspixelarray">CanvasPixelArray</dfn> {
   readonly attribute unsigned long <a href="#dom-canvaspixelarray-length" title="dom-canvaspixelarray-length">length</a>;
   <a href="#dom-canvaspixelarray-get" title="dom-CanvasPixelArray-get">getter</a> octet (in unsigned long index);
-  <a href="#dom-canvaspixelarray-set" title="dom-CanvasPixelArray-set">setter</a> void (in unsigned long index, in octet value);
+  <a href="#dom-canvaspixelarray-set" title="dom-CanvasPixelArray-set">setter</a> void (in unsigned long index, [Clamp] in octet value);
 };</pre>
 
   <dl class="domintro"><dt><var title="">context</var> . <code title="dom-context-2d-canvas"><a href="#dom-context-2d-canvas">canvas</a></code></dt>
@@ -700,7 +793,7 @@ interface <dfn id="canvaspixelarray">CanvasPixelArray</dfn> {
   drawing state it describes<span class="testrefs kw-must" id="testrefs.2d.state.restore"> <a href="#testrefs.2d.state.restore" title="2d.state.restore">#</a> <a href="../canvas/2d.state.saverestore.stack.html">2d.state.saverestore.stack</a> <a href="../canvas/2d.state.saverestore.stackdepth.html">2d.state.saverestore.stackdepth</a> </span>. If there is no saved state, the method
   must do nothing<span class="testrefs kw-must" id="testrefs.2d.state.restore.underflow"> <a href="#testrefs.2d.state.restore.underflow" title="2d.state.restore.underflow">#</a> <a href="../canvas/2d.state.saverestore.underflow.html">2d.state.saverestore.underflow</a> </span>.</p>
 
-  <!-- v5
+  <!-- v6
 idea from Mihai:
 > 5. Drawing states should be saveable with IDs, and for easier restoring.
 >
@@ -1024,7 +1117,7 @@ idea from Mihai:
 
   </dl><div class="impl">
 
-  <!-- v5 feature requests:
+  <!-- v6 feature requests:
 
    * Getting and setting colours by component to bypass the CSS value parsing.
 
@@ -1093,10 +1186,13 @@ idea from Mihai:
   to U+0039, in the shortest form possible), a literal U+002C COMMA
   and U+0020 SPACE, an integer for the green component, a comma and a
   space, an integer for the blue component, another comma and space, a
-  U+0030 DIGIT ZERO, a U+002E FULL STOP (representing the decimal
-  point), one or more digits in the range 0-9 (U+0030 to U+0039)
-  representing the fractional part of the alpha value, and finally a
-  U+0029 RIGHT PARENTHESIS.</p>
+  U+0030 DIGIT ZERO, if the alpha value is greater than zero then a
+  U+002E FULL STOP (representing the decimal point), if the alpha
+  value is greater than zero then one or more digits in the range 0-9
+  (U+0030 to U+0039) representing the fractional part of the alpha
+  value, and finally a U+0029 RIGHT PARENTHESIS.</p> <!-- if people
+  complain this is unreadable, expand it into a <dl> with two nested
+  <ol>s -->
 
   <p>When the context is created, the <code title="dom-context-2d-strokeStyle"><a href="#dom-context-2d-strokestyle">strokeStyle</a></code> and <code title="dom-context-2d-fillStyle"><a href="#dom-context-2d-fillstyle">fillStyle</a></code> attributes must
   initially have the string value <code title="">#000000</code><span class="testrefs kw-must" id="testrefs.2d.colours.default"> <a href="#testrefs.2d.colours.default" title="2d.colours.default">#</a> <a href="../canvas/2d.fillStyle.default.html">2d.fillStyle.default</a> <a href="../canvas/2d.strokeStyle.default.html">2d.strokeStyle.default</a> </span>.</p>
@@ -1270,16 +1366,13 @@ idea from Mihai:
     <p>Returns a <code><a href="#canvaspattern">CanvasPattern</a></code> object that uses the given image
     and repeats in the direction(s) given by the <var title="">repetition</var> argument.</p>
 
-    <p>The allowed values for <var title="">repetition</var> are <code title="">repeat</code> (both directions), <code title="">repeat-x</code> (horizontal only), <code title="">repeat-y</code> (vertical only), and <code title="">no-repeat</code> (neither). If the <var title="">repetition</var> argument is empty or null, the value
-    <code title="">repeat</code> is used.</p>
+    <p>The allowed values for <var title="">repetition</var> are <code title="">repeat</code> (both directions), <code title="">repeat-x</code> (horizontal only), <code title="">repeat-y</code> (vertical only), and <code title="">no-repeat</code> (neither). If the <var title="">repetition</var> argument is empty, the value <code title="">repeat</code> is used.</p>
 
-    <p>If the first argument isn't an <code><a href="#the-img-element">img</a></code>,
-    <code><a href="#the-canvas-element">canvas</a></code>, or <code><a href="#video">video</a></code> element, throws a
-    <code><a href="#type_mismatch_err">TYPE_MISMATCH_ERR</a></code> exception. If the image has no
-    image data, throws an <code><a href="#invalid_state_err">INVALID_STATE_ERR</a></code> exception. If
-    the second argument isn't one of the allowed values, throws a
-    <code><a href="#syntax_err">SYNTAX_ERR</a></code> exception. If the image isn't yet fully
-    decoded, then the method returns null.</p>
+    <p>If the image has no image data, throws an
+    <code><a href="#invalid_state_err">INVALID_STATE_ERR</a></code> exception. If the second argument
+    isn't one of the allowed values, throws a <code><a href="#syntax_err">SYNTAX_ERR</a></code>
+    exception. If the image isn't yet fully decoded, then the method
+    returns null.</p>
 
    </dd>
 
@@ -1293,19 +1386,18 @@ idea from Mihai:
   must not affect the pattern<span class="testrefs kw-must" id="testrefs.2d.pattern.modify"> <a href="#testrefs.2d.pattern.modify" title="2d.pattern.modify">#</a> <a href="../canvas/2d.pattern.modify.image1.html">2d.pattern.modify.image1</a> <a href="../canvas/2d.pattern.modify.image2.html">2d.pattern.modify.image2</a> <a href="../canvas/2d.pattern.modify.canvas1.html">2d.pattern.modify.canvas1</a> <a href="../canvas/2d.pattern.modify.canvas2.html">2d.pattern.modify.canvas2</a> </span>. The second argument must be a string
   with one of the following values: <code title="">repeat</code>,
   <code title="">repeat-x</code>, <code title="">repeat-y</code>,
-  <code title="">no-repeat</code>. If the empty string or null is
-  specified, <code title="">repeat</code> must be assumed<span class="testrefs kw-must" id="testrefs.2d.pattern.missing"> <a href="#testrefs.2d.pattern.missing" title="2d.pattern.missing">#</a> <a href="../canvas/2d.pattern.repeat.empty.html">2d.pattern.repeat.empty</a> <a href="../canvas/2d.pattern.repeat.null.html">2d.pattern.repeat.null</a> </span>. If an
-  unrecognized value is given, then the user agent must raise a
-  <code><a href="#syntax_err">SYNTAX_ERR</a></code> exception<span class="testrefs kw-must" id="testrefs.2d.pattern.unrecognised"> <a href="#testrefs.2d.pattern.unrecognised" title="2d.pattern.unrecognised">#</a> <a href="../canvas/2d.pattern.repeat.undefined.html">2d.pattern.repeat.undefined</a> <a href="../canvas/2d.pattern.repeat.unrecognised.html">2d.pattern.repeat.unrecognised</a> </span>. User agents must recognize the
-  four values described above exactly (e.g. they must not do case
-  folding)<span class="testrefs kw-must" id="testrefs.2d.pattern.exact"> <a href="#testrefs.2d.pattern.exact" title="2d.pattern.exact">#</a> <a href="../canvas/2d.pattern.repeat.case.html">2d.pattern.repeat.case</a> <a href="../canvas/2d.pattern.repeat.nullsuffix.html">2d.pattern.repeat.nullsuffix</a> </span>. Except as specified below, the method must return a
-  <code><a href="#canvaspattern">CanvasPattern</a></code> object suitably initialized<span class="testrefs kw-must" id="testrefs.2d.pattern.return"> <a href="#testrefs.2d.pattern.return" title="2d.pattern.return">#</a> <a href="../canvas/2d.pattern.basic.type.html">2d.pattern.basic.type</a> </span>.</p>
+  <code title="">no-repeat</code>. If the empty string is specified,
+  <code title="">repeat</code> must be assumed. If an unrecognized value
+  is given, then the user agent must raise a <code><a href="#syntax_err">SYNTAX_ERR</a></code>
+  exception<span class="testrefs kw-must" id="testrefs.2d.pattern.unrecognised"> <a href="#testrefs.2d.pattern.unrecognised" title="2d.pattern.unrecognised">#</a> <a href="../canvas/2d.pattern.repeat.undefined.html">2d.pattern.repeat.undefined</a> <a href="../canvas/2d.pattern.repeat.unrecognised.html">2d.pattern.repeat.unrecognised</a> </span>. User agents must recognize the four values described above
+  exactly (e.g. they must not do case folding)<span class="testrefs kw-must" id="testrefs.2d.pattern.exact"> <a href="#testrefs.2d.pattern.exact" title="2d.pattern.exact">#</a> <a href="../canvas/2d.pattern.repeat.case.html">2d.pattern.repeat.case</a> <a href="../canvas/2d.pattern.repeat.nullsuffix.html">2d.pattern.repeat.nullsuffix</a> </span>. Except as specified
+  below, the method must return a <code><a href="#canvaspattern">CanvasPattern</a></code> object
+  suitably initialized<span class="testrefs kw-must" id="testrefs.2d.pattern.return"> <a href="#testrefs.2d.pattern.return" title="2d.pattern.return">#</a> <a href="../canvas/2d.pattern.basic.type.html">2d.pattern.basic.type</a> </span>.</p>
 
   <p>The <var title="">image</var> argument is an instance of either
   <code><a href="#htmlimageelement">HTMLImageElement</a></code>, <code><a href="#htmlcanvaselement">HTMLCanvasElement</a></code>, or
-  <code><a href="#htmlvideoelement">HTMLVideoElement</a></code>. If the <var title="">image</var> is
-  null, the implementation must raise a <code><a href="#type_mismatch_err">TYPE_MISMATCH_ERR</a></code>
-  exception.</p> <!-- drawImage() has an equivalent paragraph -->
+  <code><a href="#htmlvideoelement">HTMLVideoElement</a></code>.</p> <!-- drawImage() has an equivalent
+  paragraph -->
 
   <p>If the <var title="">image</var> argument is an
   <code><a href="#htmlimageelement">HTMLImageElement</a></code> object that is not <a href="#img-good" title="img-good">fully decodable</a><span class="testrefs kw-must" id="testrefs.2d.pattern.incomplete.image"> <a href="#testrefs.2d.pattern.incomplete.image" title="2d.pattern.incomplete.image">#</a> <a href="../canvas/2d.pattern.image.incomplete.nosrc.html">2d.pattern.image.incomplete.nosrc</a> <a href="../canvas/2d.pattern.image.incomplete.immediate.html">2d.pattern.image.incomplete.immediate</a> <a href="../canvas/2d.pattern.image.incomplete.reload.html">2d.pattern.image.incomplete.reload</a> <a href="../canvas/2d.pattern.image.incomplete.emptysrc.html">2d.pattern.image.incomplete.emptysrc</a> <a href="../canvas/2d.pattern.image.incomplete.removedsrc.html">2d.pattern.image.incomplete.removedsrc</a> <a href="../canvas/2d.pattern.image.broken.html">2d.pattern.image.broken</a> </span>, or if the <var title="">image</var> argument is an <code><a href="#htmlvideoelement">HTMLVideoElement</a></code>
@@ -1361,7 +1453,7 @@ idea from Mihai:
   <!-- drawImage() has an equivalent paragraph -->
 
   <!--
-   Requests for v5 features:
+   Requests for v6 features:
     * apply transforms to patterns, so you don't have to create
       transformed patterns manually by rendering them to an off-screen
       canvas then using that canvas as the pattern.
@@ -1521,7 +1613,7 @@ idea from Mihai:
   initially have the value <code>10.0</code><span class="testrefs kw-must" id="testrefs.2d.miterLimit.default"> <a href="#testrefs.2d.miterLimit.default" title="2d.miterLimit.default">#</a> <a href="../canvas/2d.line.defaults.html">2d.line.defaults</a> </span>.</p>
 
   <!--
-v5: dashed lines have been requested. Philip Taylor provides these
+v6: dashed lines have been requested. Philip Taylor provides these
 notes on what would need to be defined for dashed lines:
 > I don't think it's entirely trivial to add, to the detail that's
 > necessary in a specification. The common graphics APIs (at least
@@ -1632,6 +1724,12 @@ hairline width with transform. ack Shaun Morris.
   the <code title="dom-context-2d-shadowOffsetX"><a href="#dom-context-2d-shadowoffsetx">shadowOffsetX</a></code>
   is non-zero, or the <code title="dom-context-2d-shadowOffsetY"><a href="#dom-context-2d-shadowoffsety">shadowOffsetY</a></code> is
   non-zero<span class="testrefs kw-none" id="testrefs.2d.shadow.enable"> <a href="#testrefs.2d.shadow.enable" title="2d.shadow.enable">#</a> <a href="../canvas/2d.shadow.enable.off.1.html">2d.shadow.enable.off.1</a> <a href="../canvas/2d.shadow.enable.off.2.html">2d.shadow.enable.off.2</a> <a href="../canvas/2d.shadow.enable.blur.html">2d.shadow.enable.blur</a> <a href="../canvas/2d.shadow.enable.x.html">2d.shadow.enable.x</a> <a href="../canvas/2d.shadow.enable.y.html">2d.shadow.enable.y</a> </span>.</p>
+
+  <p class="critical">It is likely that this will change: browser
+  vendors have indicated an interest in changing the processing model
+  for shadows such that they only draw when the composition operator
+  is &quot;source-over&quot; (the default). <a href="http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/thread.html#31457">Read
+  more...</a></p>
 
   <p><a href="#when-shadows-are-drawn">When shadows are drawn</a>, they must be rendered as follows<span class="testrefs kw-must" id="testrefs.2d.shadow.render"> <a href="#testrefs.2d.shadow.render" title="2d.shadow.render">#</a> <a href="../canvas/2d.shadow.enable.off.1.html">2d.shadow.enable.off.1</a> <a href="../canvas/2d.shadow.enable.off.2.html">2d.shadow.enable.off.2</a> <a href="../canvas/2d.shadow.enable.blur.html">2d.shadow.enable.blur</a> <a href="../canvas/2d.shadow.enable.x.html">2d.shadow.enable.x</a> <a href="../canvas/2d.shadow.enable.y.html">2d.shadow.enable.y</a> <a href="../canvas/2d.shadow.offset.positiveX.html">2d.shadow.offset.positiveX</a> <a href="../canvas/2d.shadow.offset.negativeX.html">2d.shadow.offset.negativeX</a> <a href="../canvas/2d.shadow.offset.positiveY.html">2d.shadow.offset.positiveY</a> <a href="../canvas/2d.shadow.offset.negativeY.html">2d.shadow.offset.negativeY</a> <a href="../canvas/2d.shadow.outside.html">2d.shadow.outside</a> <a href="../canvas/2d.shadow.clip.1.html">2d.shadow.clip.1</a> <a href="../canvas/2d.shadow.clip.2.html">2d.shadow.clip.2</a> <a href="../canvas/2d.shadow.clip.3.html">2d.shadow.clip.3</a> <a href="../canvas/2d.shadow.stroke.basic.html">2d.shadow.stroke.basic</a> <a href="../canvas/2d.shadow.stroke.cap.1.html">2d.shadow.stroke.cap.1</a> <a href="../canvas/2d.shadow.stroke.cap.2.html">2d.shadow.stroke.cap.2</a> <a href="../canvas/2d.shadow.stroke.join.1.html">2d.shadow.stroke.join.1</a> <a href="../canvas/2d.shadow.stroke.join.2.html">2d.shadow.stroke.join.2</a> <a href="../canvas/2d.shadow.stroke.join.3.html">2d.shadow.stroke.join.3</a> <a href="../canvas/2d.shadow.image.basic.html">2d.shadow.image.basic</a> <a href="../canvas/2d.shadow.image.transparent.1.html">2d.shadow.image.transparent.1</a> <a href="../canvas/2d.shadow.image.transparent.2.html">2d.shadow.image.transparent.2</a> <a href="../canvas/2d.shadow.image.alpha.html">2d.shadow.image.alpha</a> <a href="../canvas/2d.shadow.image.section.html">2d.shadow.image.section</a> <a href="../canvas/2d.shadow.image.scale.html">2d.shadow.image.scale</a> <a href="../canvas/2d.shadow.canvas.basic.html">2d.shadow.canvas.basic</a> <a href="../canvas/2d.shadow.canvas.transparent.1.html">2d.shadow.canvas.transparent.1</a> <a href="../canvas/2d.shadow.canvas.transparent.2.html">2d.shadow.canvas.transparent.2</a> <a href="../canvas/2d.shadow.canvas.alpha.html">2d.shadow.canvas.alpha</a> <a href="../canvas/2d.shadow.pattern.basic.html">2d.shadow.pattern.basic</a> <a href="../canvas/2d.shadow.pattern.transparent.1.html">2d.shadow.pattern.transparent.1</a> <a href="../canvas/2d.shadow.pattern.transparent.2.html">2d.shadow.pattern.transparent.2</a> <a href="../canvas/2d.shadow.pattern.alpha.html">2d.shadow.pattern.alpha</a> <a href="../canvas/2d.shadow.gradient.basic.html">2d.shadow.gradient.basic</a> <a href="../canvas/2d.shadow.gradient.transparent.1.html">2d.shadow.gradient.transparent.1</a> <a href="../canvas/2d.shadow.gradient.transparent.2.html">2d.shadow.gradient.transparent.2</a> <a href="../canvas/2d.shadow.gradient.alpha.html">2d.shadow.gradient.alpha</a> <a href="../canvas/2d.shadow.transform.1.html">2d.shadow.transform.1</a> <a href="../canvas/2d.shadow.transform.2.html">2d.shadow.transform.2</a> <a href="../canvas/2d.shadow.blur.low.html">2d.shadow.blur.low</a> <a href="../canvas/2d.shadow.blur.high.html">2d.shadow.blur.high</a> <a href="../canvas/2d.shadow.alpha.1.html">2d.shadow.alpha.1</a> <a href="../canvas/2d.shadow.alpha.2.html">2d.shadow.alpha.2</a> <a href="../canvas/2d.shadow.alpha.3.html">2d.shadow.alpha.3</a> <a href="../canvas/2d.shadow.alpha.4.html">2d.shadow.alpha.4</a> <a href="../canvas/2d.shadow.alpha.5.html">2d.shadow.alpha.5</a> <a href="../canvas/2d.shadow.composite.1.html">2d.shadow.composite.1</a> <a href="../canvas/2d.shadow.composite.2.html">2d.shadow.composite.2</a> <a href="../canvas/2d.shadow.composite.3.html">2d.shadow.composite.3</a> </span>:</p>
 
@@ -1860,6 +1958,42 @@ hairline width with transform. ack Shaun Morris.
 
    </dd>
 
+   <dt><var title="">context</var> . <code title="dom-context-2d-drawSystemFocusRing"><a href="#dom-context-2d-drawsystemfocusring">drawSystemFocusRing</a></code>(<var title="">element</var>)</dt>
+
+   <dd>
+
+    <p>If the given element is focused, draws a focus ring around the
+    current path, following the platform conventions for focus
+    rings.</p>
+
+   </dd>
+
+   <dt><var title="">shouldDraw</var> = <var title="">context</var> . <code title="dom-context-2d-drawCustomFocusRing"><a href="#dom-context-2d-drawcustomfocusring">drawCustomFocusRing</a></code>(<var title="">element</var>)</dt>
+
+   <dd>
+
+    <p>If the given element is focused, and the user has configured
+    his system to draw focus rings in a particular manner (for
+    example, high contrast focus rings), draws a focus ring around the
+    current path and returns false.</p>
+
+    <p>Otherwise, returns true if the given element is focused, and
+    false otherwise. This can thus be used to determine when to draw a
+    focus ring (see <a href="#drawCustomFocusRingExample">the
+    example</a> below).</p>
+
+   </dd>
+
+   <dt><var title="">context</var> . <code title="dom-context-2d-scrollPathIntoView"><a href="#dom-context-2d-scrollpathintoview">scrollPathIntoView</a></code>()</dt>
+
+   <dd>
+
+    <p>Scrolls the current path into view. This is especially useful
+    on devices with small screens, where the whole canvas might not be
+    visible at once.</p>
+
+   </dd>
+
    <dt><var title="">context</var> . <code title="dom-context-2d-clip"><a href="#dom-context-2d-clip">clip</a></code>()</dt>
 
    <dd>
@@ -2023,7 +2157,7 @@ hairline width with transform. ack Shaun Morris.
   a new subpath with the point (<var title="">x</var>, <var title="">y</var>) as the only point in the subpath<span class="testrefs kw-must" id="testrefs.2d.path.rect.newsubpath"> <a href="#testrefs.2d.path.rect.newsubpath" title="2d.path.rect.newsubpath">#</a> <a href="../canvas/2d.path.rect.end.1.html">2d.path.rect.end.1</a> <a href="../canvas/2d.path.rect.end.2.html">2d.path.rect.end.2</a> </span>.</p>
 
 
-  <!-- v5 feature request:
+  <!-- v6 feature request:
         * points as a primitive shape
           http://home.comcast.net/~urbanjost/canvas/vogle4.html
   -->
@@ -2062,8 +2196,104 @@ hairline width with transform. ack Shaun Morris.
   <p>Zero-length line segments must be pruned before stroking a
   path<span class="testrefs kw-must" id="testrefs.2d.path.stroke.prune"> <a href="#testrefs.2d.path.stroke.prune" title="2d.path.stroke.prune">#</a> <a href="../canvas/2d.path.stroke.prune.line.html">2d.path.stroke.prune.line</a> <a href="../canvas/2d.path.stroke.prune.closed.html">2d.path.stroke.prune.closed</a> <a href="../canvas/2d.path.stroke.prune.curve.html">2d.path.stroke.prune.curve</a> <a href="../canvas/2d.path.stroke.prune.arc.html">2d.path.stroke.prune.arc</a> <a href="../canvas/2d.path.stroke.prune.rect.html">2d.path.stroke.prune.rect</a> <a href="../canvas/2d.path.stroke.prune.corner.html">2d.path.stroke.prune.corner</a> </span>. Empty subpaths must be ignored<span class="testrefs kw-must" id="testrefs.2d.path.stroke.empty"> <a href="#testrefs.2d.path.stroke.empty" title="2d.path.stroke.empty">#</a> <a href="../canvas/2d.path.stroke.empty.html">2d.path.stroke.empty</a> </span>.</p>
 
+  <hr><p id="dom-context-2d-drawosfocusring">The <dfn id="dom-context-2d-drawsystemfocusring" title="dom-context-2d-drawSystemFocusRing"><code>drawSystemFocusRing(<var title="">element</var>)</code></dfn> method, when invoked, must run
+  the following steps:</p>
 
-  <p>The <dfn id="dom-context-2d-clip" title="dom-context-2d-clip"><code>clip()</code></dfn>
+  <ol><li><p>If <var title="">element</var> is not focused or is not a
+   descendant of the element with whose context the method is
+   associated, then abort these steps.</p></li>
+
+   <li>
+
+    <p>If the user has requested the use of particular focus rings
+    (e.g. high-contrast focus rings), or if the <var title="">element</var> would have a focus ring drawn around it,
+    then draw a focus ring of the appropriate style along the path,
+    following platform conventions, and abort these steps.</p>
+
+    <p class="note">Some platforms only draw focus rings around
+    elements that have been focused from the keyboard, and not those
+    focused from the mouse. Other platforms simply don't draw focus
+    rings around some elements at all unless relevant accessibility
+    features are enabled. This API is intended to follow these
+    conventions. User agents that implement distinctions based on the
+    manner in which the element was focused are encouraged to classify
+    focus driven by the <code title="dom-focus"><a href="#dom-focus">focus()</a></code> method
+    based on the kind of user interaction event from which the call
+    was triggered (if any).</p>
+
+    <p>The focus ring should not be subject to the <a href="#shadows" title="shadows">shadow effects</a>, the <a href="#dom-context-2d-globalalpha" title="dom-context-2d-globalAlpha">global alpha</a>, or the <a href="#dom-context-2d-globalcompositeoperation" title="dom-context-2d-globalCompositeOperation">global composition
+    operators</a>, but <em>should</em> be subject to the <a href="#clipping-region" title="clipping region">clipping region</a>.</p>
+
+   </li>
+
+   <li>
+
+    <p>Optionally, <a href="#inform">inform the user</a> that the
+    focus is at the location given by the path. User agents may wait
+    until the next time the <a href="#event-loop">event loop</a> reaches its
+    &quot;update the rendering&quot; step to optionally inform the user.</p>
+
+   </li>
+
+  </ol><p>The <dfn id="dom-context-2d-drawcustomfocusring" title="dom-context-2d-drawCustomFocusRing"><code>drawCustomFocusRing(<var title="">element</var>)</code></dfn> method, when invoked, must run
+  the following steps:</p>
+
+  <ol><li><p>If <var title="">element</var> is not focused or is not a
+   descendant of the element with whose context the method is
+   associated, then return false and abort these steps.</p></li>
+
+   <li>
+
+    <p>If the user has requested the use of particular focus rings
+    (e.g. high-contrast focus rings), then draw a focus ring of the
+    appropriate style along the path, return false, and abort these
+    steps.</p>
+
+    <p>The focus ring should not be subject to the <a href="#shadows" title="shadows">shadow effects</a>, the <a href="#dom-context-2d-globalalpha" title="dom-context-2d-globalAlpha">global alpha</a>, or the <a href="#dom-context-2d-globalcompositeoperation" title="dom-context-2d-globalCompositeOperation">global composition
+    operators</a>, but <em>should</em> be subject to the <a href="#clipping-region" title="clipping region">clipping region</a>.</p>
+
+   </li>
+
+   <li>
+
+    <p>Optionally, <a href="#inform">inform the user</a> that the
+    focus is at the location given by the path. User agents may wait
+    until the next time the <a href="#event-loop">event loop</a> reaches its
+    &quot;update the rendering&quot; step to optionally inform the user.</p>
+
+   </li>
+
+   <li><p>Return true.</p></li>
+
+  </ol><p>The <dfn id="dom-context-2d-scrollpathintoview" title="dom-context-2d-scrollPathIntoView"><code>scrollPathIntoView()</code></dfn>
+  method, when invoked, must run the following steps:</p>
+
+  <ol><li><p>Let <var title="">notional child</var> be a hypothetical
+   element that is a rendered child of the <code><a href="#the-canvas-element">canvas</a></code> element
+   whose dimensions are exactly the rectangle of the bounding box of
+   the current path.</p></li>
+
+   <li><p><span title="scroll an element into view">Scroll <var title="">notional child</var> into view</span> with the <var title="">align to top flag</var> set.</p>
+
+   </li><li><p>Optionally, <a href="#inform">inform the user</a> that the
+   caret and/or selection cover <var title="">the specified
+   rectangle</var> of the canvas. User agents may wait until the next
+   time the <a href="#event-loop">event loop</a> reaches its &quot;update the rendering&quot;
+   step to optionally inform the user.</p></li>
+
+  </ol><p class="note" id="inform">&quot;Inform the user&quot;, as used in this
+  section, could mean calling a system accessibility API, which would
+  notify assistive technologies such as magnification tools. To
+  properly drive magnification based on a focus change, a system
+  accessibility API driving a screen magnifier needs the bounds for
+  the newly focused object. The methods above are intended to enable
+  this by allowing the user agent to report the bounding box of the
+  path used to render the focus ring as the bounds of the <var title="">element</var> element passed as an argument, if that
+  element is focused, and the bounding box of the area to which the
+  user agent is scrolling as the bounding box of the current
+  selection.</p>
+
+  <hr><p>The <dfn id="dom-context-2d-clip" title="dom-context-2d-clip"><code>clip()</code></dfn>
   method must create a new <dfn id="clipping-region">clipping region</dfn> by calculating
   the intersection of the current clipping region and the area
   described by the current path, using the non-zero winding number
@@ -2075,15 +2305,14 @@ hairline width with transform. ack Shaun Morris.
   to the rectangle with the top left corner at (0,0) and the width and
   height of the coordinate space<span class="testrefs kw-must" id="testrefs.2d.path.clip.initial"> <a href="#testrefs.2d.path.clip.initial" title="2d.path.clip.initial">#</a> </span>.</p>
 
-  <!-- v5
+  <!-- v6
    Jordan OSETE suggests:
     * support ways of extending the clipping region (union instead of intersection)
        - also "add", "subtract", "replace", "intersect" and "xor"
     * support ways of resetting the clipping region without save/restore
   -->
 
-
-  <p>The <dfn id="dom-context-2d-ispointinpath" title="dom-context-2d-isPointInPath"><code>isPointInPath(<var title="">x</var>, <var title="">y</var>)</code></dfn> method must
+  <hr><p>The <dfn id="dom-context-2d-ispointinpath" title="dom-context-2d-isPointInPath"><code>isPointInPath(<var title="">x</var>, <var title="">y</var>)</code></dfn> method must
   return true if the point given by the <var title="">x</var> and <var title="">y</var> coordinates passed to the method, when treated as
   coordinates in the canvas coordinate space unaffected by the current
   transformation, is inside the current path as determined by the
@@ -2095,81 +2324,10 @@ hairline width with transform. ack Shaun Morris.
   </div>
 
 
-  <h6 id="focus-management-0"><span class="secno">4.8.11.1.9 </span>Focus management</h6> <!-- a v4 feature -->
+  <div class="example" id="drawCustomFocusRingExample">
 
-  <p>When a canvas is interactive, authors should include focusable
-  elements in the element's fallback content corresponding to each
-  focusable part of the canvas.</p>
-
-  <p>To indicate which focusable part of the canvas is currently
-  focused, authors should use the <code title="dom-context-2d-drawFocusRing"><a href="#dom-context-2d-drawfocusring">drawFocusRing()</a></code> method,
-  passing it the element for which a ring is being drawn. This method
-  only draws the focus ring if the element is focused, so that it can
-  simply be called whenever drawing the element, without checking
-  whether the element is focused or not first. The position of the
-  center of the control, or of the editing caret if the control has
-  one, should be given in the <var title="">x</var> and <var title="">y</var> arguments.</p>
-
-  <dl class="domintro"><dt><var title="">shouldDraw</var> = <var title="">context</var> . <code title="dom-context-2d-drawFocusRing"><a href="#dom-context-2d-drawfocusring">drawFocusRing</a></code>(<var title="">element</var>, <var title="">x</var>, <var title="">y</var>, [ <var title="">canDrawCustom</var> ])</dt>
-
-   <dd>
-
-    <p>If the given element is focused, draws a focus ring around the
-    current path, following the platform conventions for focus
-    rings. The given coordinate is used if the user's attention needs
-    to be brought to a particular position (e.g. if a magnifier is
-    following the editing caret in a text field).</p>
-
-    <p>If the <var title="">canDrawCustom</var> argument is true, then
-    the focus ring is only drawn if the user has configured his system
-    to draw focus rings in a particular manner. (For example, high
-    contrast focus rings.)</p>
-
-    <p>Returns true if the given element is focused, the <var title="">canDrawCustom</var> argument is true, and the user has
-    not configured his system to draw focus rings in a particular
-    manner. Otherwise, returns false.</p>
-
-    <p>When the method returns true, the author is expected to
-    manually draw a focus ring.</p>
-
-   </dd>
-
-  </dl><div class="impl">
-
-  <p>The <dfn id="dom-context-2d-drawfocusring" title="dom-context-2d-drawFocusRing"><code>drawFocusRing(<var title="">element</var>, <var title="">x</var>, <var title="">y</var>, [<var title="">canDrawCustom</var>])</code></dfn>
-  method, when invoked, must run the following steps:</p>
-
-  <ol><li><p>If <var title="">element</var> is not focused or is not a
-   descendant of the element with whose context the method is
-   associated, then return false and abort these steps.</p></li>
-
-   <li><p>Transform the given point (<var title="">x</var>, <var title="">y</var>) according to the <a href="#transformations" title="dom-context-2d-transformation">current transformation
-   matrix</a>.</p></li>
-
-   <li><p>Optionally, inform the user that the focus is at the given
-   (transformed) coordinate on the canvas. (For example, this could
-   involve moving the user's magnification tool.)</p></li>
-
-   <li>
-
-    <p>If the user has requested the use of particular focus rings
-    (e.g. high-contrast focus rings), or if the <var title="">canDrawCustom</var> argument is absent or false, then
-    draw a focus ring of the appropriate style along the path,
-    following platform conventions, return false, and abort these
-    steps.</p>
-
-    <p>The focus ring should not be subject to the <a href="#shadows" title="shadows">shadow effects</a>, the <a href="#dom-context-2d-globalalpha" title="dom-context-2d-globalAlpha">global alpha</a>, or the <a href="#dom-context-2d-globalcompositeoperation" title="dom-context-2d-globalCompositeOperation">global composition
-    operators</a>, but <em>should</em> be subject to the <a href="#clipping-region" title="clipping region">clipping region</a>.</p>
-
-   </li>
-
-   <li><p>Return true.</p></li>
-
-  </ol></div>
-
-  <div class="example">
-
-   <p>This <code><a href="#the-canvas-element">canvas</a></code> element has a couple of checkboxes:</p>
+   <p>This <code><a href="#the-canvas-element">canvas</a></code> element has a couple of checkboxes. The
+   path-related commands are highlighted:</p>
 
    <pre>&lt;canvas height=400 width=750&gt;
  &lt;label&gt;&lt;input type=checkbox id=showA&gt; Show As&lt;/label&gt;
@@ -2177,28 +2335,30 @@ hairline width with transform. ack Shaun Morris.
  &lt;!-- ... --&gt;
 &lt;/canvas&gt;
 &lt;script&gt;
- function drawCheckbox(context, element, x, y) {
+ function drawCheckbox(context, element, x, y, paint) {
    context.save();
    context.font = '10px sans-serif';
    context.textAlign = 'left';
    context.textBaseline = 'middle';
    var metrics = context.measureText(element.labels[0].textContent);
-   context.beginPath();
-   context.strokeStyle = 'black';
-   context.rect(x-5, y-5, 10, 10);
-   context.stroke();
-   if (element.checked) {
-     context.fillStyle = 'black';
-     context.fill();
+   if (paint) {
+<strong>     context.beginPath();
+     context.strokeStyle = 'black';
+     context.rect(x-5, y-5, 10, 10);
+     context.stroke();
+</strong>     if (element.checked) {
+<strong>       context.fillStyle = 'black';
+       context.fill();
+</strong>     }
+     context.fillText(element.labels[0].textContent, x+5, y);
    }
-   context.fillText(element.labels[0].textContent, x+5, y);
-   context.beginPath();
+<strong>   context.beginPath();
    context.rect(x-7, y-7, 12 + metrics.width+2, 14);
-   if (context.drawFocusRing(element, x, y, true)) {
+   if (paint &amp;&amp; context.drawCustomFocusRing(element)) {
      context.strokeStyle = 'silver';
      context.stroke();
    }
-   context.restore();
+</strong>   context.restore();
  }
  function drawBase() { /* ... */ }
  function drawAs() { /* ... */ }
@@ -2207,8 +2367,8 @@ hairline width with transform. ack Shaun Morris.
    var canvas = document.getElementsByTagName('canvas')[0];
    var context = canvas.getContext('2d');
    context.clearRect(0, 0, canvas.width, canvas.height);
-   drawCheckbox(context, document.getElementById('showA'), 20, 40);
-   drawCheckbox(context, document.getElementById('showB'), 20, 60);
+   drawCheckbox(context, document.getElementById('showA'), 20, 40, true);
+   drawCheckbox(context, document.getElementById('showB'), 20, 60, true);
    drawBase();
    if (document.getElementById('showA').checked)
      drawAs();
@@ -2218,13 +2378,18 @@ hairline width with transform. ack Shaun Morris.
  function processClick(event) {
    var canvas = document.getElementsByTagName('canvas')[0];
    var context = canvas.getContext('2d');
-   var x = event.clientX - canvas.offsetLeft;
-   var y = event.clientY - canvas.offsetTop;
-   drawCheckbox(context, document.getElementById('showA'), 20, 40);
-   if (context.isPointInPath(x, y))
+   var x = event.clientX;
+   var y = event.clientY;
+   while (node) {
+     x -= node.offsetLeft - node.scrollLeft;
+     y -= node.offsetTop - node.scrollTop;
+     node = node.offsetParent;
+   }
+   drawCheckbox(context, document.getElementById('showA'), 20, 40, false);
+   if (<strong>context.isPointInPath(x, y)</strong>)
      document.getElementById('showA').checked = !(document.getElementById('showA').checked);
-   drawCheckbox(context, document.getElementById('showB'), 20, 60);
-   if (context.isPointInPath(x, y))
+   drawCheckbox(context, document.getElementById('showB'), 20, 60, false);
+   if (<strong>context.isPointInPath(x, y)</strong>)
      document.getElementById('showB').checked = !(document.getElementById('showB').checked);
    redraw();
  }
@@ -2239,7 +2404,9 @@ hairline width with transform. ack Shaun Morris.
   </div>
 
 
-  <h6 id="text-0"><span class="secno">4.8.11.1.10 </span>Text</h6> <!-- a v3 feature -->
+
+
+  <h6 id="text-0"><span class="secno">4.8.11.1.9 </span>Text</h6> <!-- a v3 feature -->
 
   <dl class="domintro"><dt><var title="">context</var> . <code title="dom-context-2d-font"><a href="#dom-context-2d-font">font</a></code> [ = <var title="">value</var> ]</dt>
 
@@ -2436,9 +2603,10 @@ hairline width with transform. ack Shaun Morris.
    <li><p>Form a hypothetical infinitely wide CSS line box containing
    a single inline box containing the text <var title="">text</var>,
    with all the properties at their initial values except the 'font'
-   property of the inline box set to <var title="">font</var> and the
+   property of the inline box set to <var title="">font</var>, the
    'direction' property of the inline box set to <a href="#the-directionality">the
-   directionality</a> of the <code><a href="#the-canvas-element">canvas</a></code> element<span class="testrefs kw-none" id="testrefs.2d.text.draw.direction"> <a href="#testrefs.2d.text.draw.direction" title="2d.text.draw.direction">#</a> <a href="../canvas/2d.text.draw.align.start.rtl.html">2d.text.draw.align.start.rtl</a> <a href="../canvas/2d.text.draw.align.end.rtl.html">2d.text.draw.align.end.rtl</a> </span>. <a href="#refsCSS">[CSS]</a></p></li>
+   directionality</a> of the <code><a href="#the-canvas-element">canvas</a></code> element, and the
+   'white-space' property set to 'pre'. <a href="#refsCSS">[CSS]</a></p></li>
 
    <!-- if you insert a step here, make sure to adjust the next step's
    final words -->
@@ -2553,7 +2721,7 @@ hairline width with transform. ack Shaun Morris.
 
    </li>
 
-  </ol><!--v5DVT - this is commented out until CSS can get its act together
+  </ol><!--v6DVT - this is commented out until CSS can get its act together
 enough to actual specify vertical text rendering (how long have we
 been waiting now?)
 
@@ -2703,18 +2871,19 @@ WHEN EDITING THIS, FIX THE PARTS MARKED "&#x0058;&#x0058;&#x0058;" BELOW
 
   </ol>
 
-v5DVT (also check for '- -' bits in the part above) --><p>The <dfn id="dom-context-2d-measuretext" title="dom-context-2d-measureText"><code>measureText()</code></dfn>
+v6DVT (also check for '- -' bits in the part above) --><p>The <dfn id="dom-context-2d-measuretext" title="dom-context-2d-measureText"><code>measureText()</code></dfn>
   method takes one argument, <var title="">text</var>. When the method
   is invoked, the user agent must replace all the <a href="#space-character" title="space   character">space characters</a> in <var title="">text</var> with
   U+0020 SPACE characters<span class="testrefs kw-must" id="testrefs.2d.text.measure.spaces"> <a href="#testrefs.2d.text.measure.spaces" title="2d.text.measure.spaces">#</a> <a href="../canvas/2d.text.measure.width.space.html">2d.text.measure.width.space</a> </span>, and then must form a hypothetical
   infinitely wide CSS line box containing a single inline box
   containing the text <var title="">text</var>, with all the
-  properties at their initial values except the 'font' property of the
-  inline element set to the current font of the context, as given by
+  properties at their initial values except the 'white-space' property
+  of the inline element set to 'pre' and the 'font' property of the
+  inline element set to the current font of the context as given by
   the <code title="dom-context-2d-font"><a href="#dom-context-2d-font">font</a></code> attribute, and
   must then return a new <code><a href="#textmetrics">TextMetrics</a></code> object with its
   <code title="dom-textmetrics-width"><a href="#dom-textmetrics-width">width</a></code> attribute set to
-  the width of that inline box, in CSS pixels<span class="testrefs kw-must" id="testrefs.2d.text.measure"> <a href="#testrefs.2d.text.measure" title="2d.text.measure">#</a> <a href="../canvas/2d.text.measure.width.basic.html">2d.text.measure.width.basic</a> <a href="../canvas/2d.text.measure.width.empty.html">2d.text.measure.width.empty</a> </span>. <a href="#refsCSS">[CSS]</a></p>
+  the width of that inline box, in CSS pixels. <a href="#refsCSS">[CSS]</a></p>
 
   <p>The <code><a href="#textmetrics">TextMetrics</a></code> interface is used for the objects
   returned from <code title="dom-context-2d-measureText"><a href="#dom-context-2d-measuretext">measureText()</a></code>. It has one
@@ -2731,8 +2900,8 @@ v5DVT (also check for '- -' bits in the part above) --><p>The <dfn id="dom-conte
   area of the canvas that the clipping region covers, not just the box
   given by the em square height and measured text width.</p>
 
-  <!-- v5: Drawing text along a given path -->
-  <!-- v5: Adding text to a path -->
+  <!-- v6: Drawing text along a given path -->
+  <!-- v6: Adding text to a path -->
   <!-- see also: http://www.w3.org/TR/SVG11/text.html#TextpathLayoutRules -->
   <!-- see also: http://developer.mozilla.org/en/docs/Drawing_text_using_a_canvas -->
 
@@ -2745,7 +2914,7 @@ v5DVT (also check for '- -' bits in the part above) --><p>The <dfn id="dom-conte
 
 
 
-  <h6 id="images"><span class="secno">4.8.11.1.11 </span>Images</h6>
+  <h6 id="images"><span class="secno">4.8.11.1.10 </span>Images</h6>
 
   <p>To draw images onto the canvas, the <dfn id="dom-context-2d-drawimage" title="dom-context-2d-drawImage"><code>drawImage</code></dfn> method
   can be used.</p>
@@ -2772,13 +2941,12 @@ v5DVT (also check for '- -' bits in the part above) --><p>The <dfn id="dom-conte
     <p><img src="http://www.whatwg.org/specs/web-apps/current-work/http://images.whatwg.org/drawImage.png" alt="The sx and sy parameters give the x and y coordinates of the source rectangle; the sw and sh arguments give the width and height of the source rectangle; the dx and dy give the x and y coordinates of the destination rectangle; and the dw and dh arguments give the width and height of the destination rectangle." width="356" height="356"></p>
 
     <p>If the first argument isn't an <code><a href="#the-img-element">img</a></code>,
-    <code><a href="#the-canvas-element">canvas</a></code>, or <code><a href="#video">video</a></code> element, throws a
+    <code><a href="#the-canvas-element">canvas</a></code>, or <code><a href="#the-video-element">video</a></code> element, throws a
     <code><a href="#type_mismatch_err">TYPE_MISMATCH_ERR</a></code> exception. If the image has no
     image data, throws an <code><a href="#invalid_state_err">INVALID_STATE_ERR</a></code> exception. If
-    the numeric arguments don't make sense (e.g. the destination is a
-    0×0 rectangle), throws an <code><a href="#index_size_err">INDEX_SIZE_ERR</a></code>
-    exception. If the image isn't yet fully decoded, then nothing is
-    drawn.</p>
+    the one of the source rectangle dimensions is zero, throws an
+    <code><a href="#index_size_err">INDEX_SIZE_ERR</a></code> exception. If the image isn't yet
+    fully decoded, then nothing is drawn.</p>
 
    </dd>
 
@@ -2788,13 +2956,19 @@ v5DVT (also check for '- -' bits in the part above) --><p>The <dfn id="dom-conte
   one CSS pixel in the image is treated as one unit in the canvas
   coordinate space<span class="testrefs kw-must" id="testrefs.2d.drawImage.defaultdest"> <a href="#testrefs.2d.drawImage.defaultdest" title="2d.drawImage.defaultdest">#</a> <a href="../canvas/2d.drawImage.3arg.html">2d.drawImage.3arg</a> </span>. If the <var title="">sx</var>, <var title="">sy</var>, <var title="">sw</var>, and <var title="">sh</var> arguments are omitted, they must default to 0, 0,
   the image's intrinsic width in image pixels, and the image's
-  intrinsic height in image pixels, respectively<span class="testrefs kw-must" id="testrefs.2d.drawImage.defaultsource"> <a href="#testrefs.2d.drawImage.defaultsource" title="2d.drawImage.defaultsource">#</a> <a href="../canvas/2d.drawImage.3arg.html">2d.drawImage.3arg</a> <a href="../canvas/2d.drawImage.5arg.html">2d.drawImage.5arg</a> </span>.</p>
+  intrinsic height in image pixels, respectively<span class="testrefs kw-must" id="testrefs.2d.drawImage.defaultsource"> <a href="#testrefs.2d.drawImage.defaultsource" title="2d.drawImage.defaultsource">#</a> <a href="../canvas/2d.drawImage.3arg.html">2d.drawImage.3arg</a> <a href="../canvas/2d.drawImage.5arg.html">2d.drawImage.5arg</a> </span>. If the image has no
+  intrinsic dimensions, the <i>concrete object size</i> must be used
+  instead, as determined using the CSS &quot;<a href="http://dev.w3.org/csswg/css3-images/#default-sizing">Concrete
+  Object Size Resolution</a>&quot; algorithm, with the <i>specified
+  size</i> having neither a definite width nor height, nor any
+  additional contraints, the object's intrinsic properties being those
+  of the <var title="">image</var> argument, and the <i>default object
+  size</i> being the size of the <code><a href="#the-canvas-element">canvas</a></code> element. <a href="#refsCSSIMAGES">[CSSIMAGES]</a></p>
 
   <p>The <var title="">image</var> argument is an instance of either
   <code><a href="#htmlimageelement">HTMLImageElement</a></code>, <code><a href="#htmlcanvaselement">HTMLCanvasElement</a></code>, or
-  <code><a href="#htmlvideoelement">HTMLVideoElement</a></code>. If the <var title="">image</var> is
-  null, the implementation must raise a <code><a href="#type_mismatch_err">TYPE_MISMATCH_ERR</a></code>
-  exception.</p> <!-- createPattern() has an equivalent paragraph -->
+  <code><a href="#htmlvideoelement">HTMLVideoElement</a></code>.</p> <!-- createPattern() has an
+  equivalent paragraph -->
 
   <p>If the <var title="">image</var> argument is an
   <code><a href="#htmlimageelement">HTMLImageElement</a></code> object that is not <a href="#img-good" title="img-good">fully decodable</a><span class="testrefs kw-must" id="testrefs.2d.drawImage.incomplete.image"> <a href="#testrefs.2d.drawImage.incomplete.image" title="2d.drawImage.incomplete.image">#</a> <a href="../canvas/2d.drawImage.incomplete.nosrc.html">2d.drawImage.incomplete.nosrc</a> <a href="../canvas/2d.drawImage.incomplete.immediate.html">2d.drawImage.incomplete.immediate</a> <a href="../canvas/2d.drawImage.incomplete.reload.html">2d.drawImage.incomplete.reload</a> <a href="../canvas/2d.drawImage.incomplete.emptysrc.html">2d.drawImage.incomplete.emptysrc</a> <a href="../canvas/2d.drawImage.incomplete.removedsrc.html">2d.drawImage.incomplete.removedsrc</a> <a href="../canvas/2d.drawImage.broken.html">2d.drawImage.broken</a> </span>, or if the <var title="">image</var> argument is an <code><a href="#htmlvideoelement">HTMLVideoElement</a></code>
@@ -2880,7 +3054,7 @@ v5DVT (also check for '- -' bits in the part above) --><p>The <dfn id="dom-conte
 
 
 
-  <h6 id="pixel-manipulation"><span class="secno">4.8.11.1.12 </span><dfn>Pixel manipulation</dfn></h6>
+  <h6 id="pixel-manipulation"><span class="secno">4.8.11.1.11 </span><dfn>Pixel manipulation</dfn></h6>
 
   <dl class="domintro"><dt><var title="">imagedata</var> = <var title="">context</var> . <code title="dom-context-2d-createImageData"><a href="#dom-context-2d-createimagedata">createImageData</a></code>(<var title="">sw</var>, <var title="">sh</var>)</dt>
 
@@ -2900,9 +3074,6 @@ v5DVT (also check for '- -' bits in the part above) --><p>The <dfn id="dom-conte
     <p>Returns an <code><a href="#imagedata">ImageData</a></code> object with the same
     dimensions as the argument. All the pixels in the returned object
     are transparent black.</p>
-
-    <p>Throws a <code><a href="#not_supported_err">NOT_SUPPORTED_ERR</a></code> exception if the
-    argument is null.</p>
 
    </dd>
 
@@ -2969,8 +3140,8 @@ v5DVT (also check for '- -' bits in the part above) --><p>The <dfn id="dom-conte
   magnitude of <var title="">sh</var><span class="testrefs kw-must" id="testrefs.2d.imageData.create2.size"> <a href="#testrefs.2d.imageData.create2.size" title="2d.imageData.create2.size">#</a> <a href="../canvas/2d.imageData.create2.initial.html">2d.imageData.create2.initial</a> <a href="../canvas/2d.imageData.create2.large.html">2d.imageData.create2.large</a> <a href="../canvas/2d.imageData.create2.tiny.html">2d.imageData.create2.tiny</a> <a href="../canvas/2d.imageData.create2.negative.html">2d.imageData.create2.negative</a> </span>. When invoked with a single <var title="">imagedata</var> argument, it must return an
   <code><a href="#imagedata">ImageData</a></code> object<span class="testrefs kw-must" id="testrefs.2d.imageData.create1.object"> <a href="#testrefs.2d.imageData.create1.object" title="2d.imageData.create1.object">#</a> <a href="../canvas/2d.imageData.create1.basic.html">2d.imageData.create1.basic</a> <a href="../canvas/2d.imageData.create1.type.html">2d.imageData.create1.type</a> </span> representing a rectangle with the same
   dimensions as the <code><a href="#imagedata">ImageData</a></code> object passed as the
-  argument<span class="testrefs kw-must" id="testrefs.2d.imageData.create1.size"> <a href="#testrefs.2d.imageData.create1.size" title="2d.imageData.create1.size">#</a> <a href="../canvas/2d.imageData.create1.initial.html">2d.imageData.create1.initial</a> </span>. The <code><a href="#imagedata">ImageData</a></code> object return must be filled
-  with transparent black<span class="testrefs kw-none" id="testrefs.2d.imageData.create.initial"> <a href="#testrefs.2d.imageData.create.initial" title="2d.imageData.create.initial">#</a> <a href="../canvas/2d.imageData.create2.initial.html">2d.imageData.create2.initial</a> <a href="../canvas/2d.imageData.create1.initial.html">2d.imageData.create1.initial</a> </span>.</p>
+  argument<span class="testrefs kw-must" id="testrefs.2d.imageData.create1.size"> <a href="#testrefs.2d.imageData.create1.size" title="2d.imageData.create1.size">#</a> <a href="../canvas/2d.imageData.create1.initial.html">2d.imageData.create1.initial</a> </span>. The <code><a href="#imagedata">ImageData</a></code> object returned must be filled
+  with transparent black.</p>
 
   <p>The <dfn id="dom-context-2d-getimagedata" title="dom-context-2d-getImageData"><code>getImageData(<var title="">sx</var>, <var title="">sy</var>, <var title="">sw</var>,
   <var title="">sh</var>)</code></dfn> method must return an
@@ -2983,12 +3154,11 @@ v5DVT (also check for '- -' bits in the part above) --><p>The <dfn id="dom-conte
   alpha values<span class="testrefs kw-must" id="testrefs.2d.imageData.get.premul"> <a href="#testrefs.2d.imageData.get.premul" title="2d.imageData.get.premul">#</a> <a href="../canvas/2d.imageData.get.nonpremul.html">2d.imageData.get.nonpremul</a> </span>.</p>
 
   <p>If any of the arguments to <code title="dom-context-2d-createImageData"><a href="#dom-context-2d-createimagedata">createImageData()</a></code> or
-  <code title="dom-context-2d-getImageData"><a href="#dom-context-2d-getimagedata">getImageData()</a></code> are
-  infinite or NaN<span class="testrefs kw-must" id="testrefs.2d.imageData.getcreate.nonfinite"> <a href="#testrefs.2d.imageData.getcreate.nonfinite" title="2d.imageData.getcreate.nonfinite">#</a> <a href="../canvas/2d.imageData.create2.nonfinite.html">2d.imageData.create2.nonfinite</a> <a href="../canvas/2d.imageData.get.nonfinite.html">2d.imageData.get.nonfinite</a> </span>, or if the <code title="dom-context-2d-createImageData"><a href="#dom-context-2d-createimagedata">createImageData()</a></code>
-  method is invoked with only one argument but that argument is null<span class="testrefs kw-must" id="testrefs.2d.imageData.create.null"> <a href="#testrefs.2d.imageData.create.null" title="2d.imageData.create.null">#</a> <a href="../canvas/2d.imageData.create1.zero.html">2d.imageData.create1.zero</a> </span>,
-  the method must instead raise a <code><a href="#not_supported_err">NOT_SUPPORTED_ERR</a></code>
-  exception. If either the <var title="">sw</var> or <var title="">sh</var> arguments are zero, the method must instead raise
-  an <code><a href="#index_size_err">INDEX_SIZE_ERR</a></code> exception<span class="testrefs kw-must" id="testrefs.2d.imageData.getcreate.zero"> <a href="#testrefs.2d.imageData.getcreate.zero" title="2d.imageData.getcreate.zero">#</a> <a href="../canvas/2d.imageData.create2.zero.html">2d.imageData.create2.zero</a> <a href="../canvas/2d.imageData.get.zero.html">2d.imageData.get.zero</a> </span>.</p>
+  <code title="dom-context-2d-getImageData"><a href="#dom-context-2d-getimagedata">getImageData()</a></code>
+  are infinite or NaN, the method must instead raise a
+  <code><a href="#not_supported_err">NOT_SUPPORTED_ERR</a></code> exception. If either the <var title="">sw</var> or <var title="">sh</var> arguments are zero,
+  the method must instead raise an <code><a href="#index_size_err">INDEX_SIZE_ERR</a></code>
+  exception<span class="testrefs kw-must" id="testrefs.2d.imageData.getcreate.zero"> <a href="#testrefs.2d.imageData.getcreate.zero" title="2d.imageData.getcreate.zero">#</a> <a href="../canvas/2d.imageData.create2.zero.html">2d.imageData.create2.zero</a> <a href="../canvas/2d.imageData.get.zero.html">2d.imageData.get.zero</a> </span>.</p>
 
   <p><code><a href="#imagedata">ImageData</a></code> objects must be initialized so that their
   <dfn id="dom-imagedata-width" title="dom-imagedata-width"><code>width</code></dfn> attribute
@@ -3037,9 +3207,6 @@ v5DVT (also check for '- -' bits in the part above) --><p>The <dfn id="dom-conte
 
   <p>If any of the arguments to the method are infinite or NaN, the
   method must raise a <code><a href="#not_supported_err">NOT_SUPPORTED_ERR</a></code> exception<span class="testrefs kw-must" id="testrefs.2d.imageData.put.nonfinite"> <a href="#testrefs.2d.imageData.put.nonfinite" title="2d.imageData.put.nonfinite">#</a> <a href="../canvas/2d.imageData.put.nonfinite.html">2d.imageData.put.nonfinite</a> </span>.</p>
-
-  <p>If the first argument to the method is null, then the <code title="dom-context-2d-putImageData"><a href="#dom-context-2d-putimagedata">putImageData()</a></code> method
-  must raise a <code><a href="#type_mismatch_err">TYPE_MISMATCH_ERR</a></code> exception.</p>
 
   <p>When the last four arguments are omitted, they must be assumed to
   have the values 0, 0, the <code title="dom-imagedata-width"><a href="#dom-imagedata-width">width</a></code> member of the <var title="">imagedata</var> structure, and the <code title="dom-imagedata-height"><a href="#dom-imagedata-height">height</a></code> member of the <var title="">imagedata</var> structure, respectively<span class="testrefs kw-must" id="testrefs.2d.imageData.put.3arg"> <a href="#testrefs.2d.imageData.put.3arg" title="2d.imageData.put.3arg">#</a> <a href="../canvas/2d.imageData.put.basic.html">2d.imageData.put.basic</a> </span>.</p>
@@ -3239,7 +3406,7 @@ function AddCloud(data, x, y) { ... }</pre>
 
   <div class="impl">
 
-  <h6 id="drawing-model"><span class="secno">4.8.11.1.13 </span><dfn>Drawing model</dfn></h6>
+  <h6 id="drawing-model"><span class="secno">4.8.11.1.12 </span><dfn>Drawing model</dfn></h6>
 
   <p>When a shape or image is painted, user agents must follow these
   steps, in the order given (or act as if they do)<span class="testrefs kw-must" id="testrefs.2d.drawingmodel"> <a href="#testrefs.2d.drawingmodel" title="2d.drawingmodel">#</a> </span>:</p>
@@ -3270,14 +3437,75 @@ function AddCloud(data, x, y) { ... }</pre>
   </ol></div>
 
 
+  <h6 id="best-practices"><span class="secno">4.8.11.1.13 </span>Best practices</h6>
+
+  <p><i>This section is non-normative.</i></p>
+
+  <p>When a canvas is interactive, authors should include focusable
+  elements in the element's fallback content corresponding to each
+  focusable part of the canvas, as in the <a href="#drawCustomFocusRingExample">example above</a>.</p>
+
+  <p>To indicate which focusable part of the canvas is currently
+  focused, authors should use the <code title="dom-context-2d-drawSystemFocusRing"><a href="#dom-context-2d-drawsystemfocusring">drawSystemFocusRing()</a></code>
+  method, passing it the element for which a ring is being drawn. This
+  method only draws the focus ring if the element is focused, so that
+  it can simply be called whenever drawing the element, without
+  checking whether the element is focused or not first.</p>
+
+  <p>Authors should avoid implementing text editing controls using the
+  <code><a href="#the-canvas-element">canvas</a></code> element. Doing so has a large number of
+  disadvantages:</p>
+
+  <ul><li>Mouse placement of the caret has to be reimplemented.</li>
+
+   <li>Keyboard movement of the caret has to be reimplemented (possibly across lines, for multiline text input).</li>
+
+   <li>Scrolling of the text field has to be implemented (horizontally for long lines, vertically for multiline input).</li>
+
+   <li>Native features such as copy-and-paste have to be reimplemented.</li>
+
+   <li>Native features such as spell-checking have to be reimplemented.</li>
+
+   <li>Native features such as drag-and-drop have to be reimplemented.</li>
+
+   <li>Native features such as page-wide text search have to be reimplemented.</li>
+
+   <li>Native features specific to the user, for example custom text
+   services, have to be reimplemented. This is close to impossible
+   since each user might have different services installed, and there
+   is an unbounded set of possible such services.</li>
+
+   <li>Bidirectional text editing has to be reimplemented.</li>
+
+   <li>For multiline text editing, line wrapping has to be implemented for all relevant languages.</li>
+
+   <li>Text selection has to be reimplemented.</li>
+
+   <li>Dragging of bidirectional text selections has to be reimplemented.</li>
+
+   <li>Platform-native keyboard shortcuts have to be reimplemented.</li>
+
+   <li>Platform-native input method editors (IMEs) have to be reimplemented.</li>
+
+   <li>Undo and redo functionality has to be reimplemented.</li>
+
+   <li>Accessibility features such as magnification following the
+   caret or selection have to be reimplemented.</li>
+
+  </ul><p>This is a huge amount of work, and authors are most strongly
+  encouraged to avoid doing any of it by instead using the
+  <code><a href="#the-input-element">input</a></code> element, the <code><a href="#the-textarea-element">textarea</a></code> element, or
+  the <code title="attr-contenteditable"><a href="#attr-contenteditable">contenteditable</a></code>
+  attribute.</p>
+
+
   <h6 id="examples"><span class="secno">4.8.11.1.14 </span>Examples</h6>
 
   <p><i>This section is non-normative.</i></p>
 
   <div class="example">
 
-  <p>Here is an example of a script that uses canvas to draw pretty
-  glowing lines.</p>
+  <p>Here is an example of a script that uses canvas to draw <a href="data:text/html;charset=utf-8;base64,PCFET0NUWVBFIEhUTUw%2BDQo8aHRtbCBsYW5nPSJlbiI%2BDQogPGhlYWQ%2BDQogIDx0aXRsZT5QcmV0dHkgR2xvd2luZyBMaW5lczwvdGl0bGU%2BDQogPC9oZWFkPg0KIDxib2R5Pg0KPGNhbnZhcyB3aWR0aD0iODAwIiBoZWlnaHQ9IjQ1MCI%2BPC9jYW52YXM%2BDQo8c2NyaXB0Pg0KDQogdmFyIGNvbnRleHQgPSBkb2N1bWVudC5nZXRFbGVtZW50c0J5VGFnTmFtZSgnY2FudmFzJylbMF0uZ2V0Q29udGV4dCgnMmQnKTsNCg0KIHZhciBsYXN0WCA9IGNvbnRleHQuY2FudmFzLndpZHRoICogTWF0aC5yYW5kb20oKTsNCiB2YXIgbGFzdFkgPSBjb250ZXh0LmNhbnZhcy5oZWlnaHQgKiBNYXRoLnJhbmRvbSgpOw0KIHZhciBodWUgPSAwOw0KIGZ1bmN0aW9uIGxpbmUoKSB7DQogICBjb250ZXh0LnNhdmUoKTsNCiAgIGNvbnRleHQudHJhbnNsYXRlKGNvbnRleHQuY2FudmFzLndpZHRoLzIsIGNvbnRleHQuY2FudmFzLmhlaWdodC8yKTsNCiAgIGNvbnRleHQuc2NhbGUoMC45LCAwLjkpOw0KICAgY29udGV4dC50cmFuc2xhdGUoLWNvbnRleHQuY2FudmFzLndpZHRoLzIsIC1jb250ZXh0LmNhbnZhcy5oZWlnaHQvMik7DQogICBjb250ZXh0LmJlZ2luUGF0aCgpOw0KICAgY29udGV4dC5saW5lV2lkdGggPSA1ICsgTWF0aC5yYW5kb20oKSAqIDEwOw0KICAgY29udGV4dC5tb3ZlVG8obGFzdFgsIGxhc3RZKTsNCiAgIGxhc3RYID0gY29udGV4dC5jYW52YXMud2lkdGggKiBNYXRoLnJhbmRvbSgpOw0KICAgbGFzdFkgPSBjb250ZXh0LmNhbnZhcy5oZWlnaHQgKiBNYXRoLnJhbmRvbSgpOw0KICAgY29udGV4dC5iZXppZXJDdXJ2ZVRvKGNvbnRleHQuY2FudmFzLndpZHRoICogTWF0aC5yYW5kb20oKSwNCiAgICAgICAgICAgICAgICAgICAgICAgICBjb250ZXh0LmNhbnZhcy5oZWlnaHQgKiBNYXRoLnJhbmRvbSgpLA0KICAgICAgICAgICAgICAgICAgICAgICAgIGNvbnRleHQuY2FudmFzLndpZHRoICogTWF0aC5yYW5kb20oKSwNCiAgICAgICAgICAgICAgICAgICAgICAgICBjb250ZXh0LmNhbnZhcy5oZWlnaHQgKiBNYXRoLnJhbmRvbSgpLA0KICAgICAgICAgICAgICAgICAgICAgICAgIGxhc3RYLCBsYXN0WSk7DQoNCiAgIGh1ZSA9IGh1ZSArIDEwICogTWF0aC5yYW5kb20oKTsNCiAgIGNvbnRleHQuc3Ryb2tlU3R5bGUgPSAnaHNsKCcgKyBodWUgKyAnLCA1MCUsIDUwJSknOw0KICAgY29udGV4dC5zaGFkb3dDb2xvciA9ICd3aGl0ZSc7DQogICBjb250ZXh0LnNoYWRvd0JsdXIgPSAxMDsNCiAgIGNvbnRleHQuc3Ryb2tlKCk7DQogICBjb250ZXh0LnJlc3RvcmUoKTsNCiB9DQogc2V0SW50ZXJ2YWwobGluZSwgNTApOw0KDQogZnVuY3Rpb24gYmxhbmsoKSB7DQogICBjb250ZXh0LmZpbGxTdHlsZSA9ICdyZ2JhKDAsMCwwLDAuMSknOw0KICAgY29udGV4dC5maWxsUmVjdCgwLCAwLCBjb250ZXh0LmNhbnZhcy53aWR0aCwgY29udGV4dC5jYW52YXMuaGVpZ2h0KTsNCiB9DQogc2V0SW50ZXJ2YWwoYmxhbmssIDQwKTsNCg0KPC9zY3JpcHQ%2BDQogPC9ib2R5Pg0KPC9odG1sPg0K">pretty glowing lines</a>.</p>
 
   <pre>&lt;canvas width=&quot;800&quot; height=&quot;450&quot;&gt;&lt;/canvas&gt;
 &lt;script&gt;
@@ -3419,6 +3647,17 @@ function AddCloud(data, x, y) { ... }</pre>
    <code><a href="#htmlcanvaselement">HTMLCanvasElement</a></code> whose <i>origin-clean</i> flag was
    false when the pattern was created<span class="testrefs kw-must" id="testrefs.security.strokeStyle.canvas"> <a href="#testrefs.security.strokeStyle.canvas" title="security.strokeStyle.canvas">#</a> <a href="../canvas/security.pattern.canvas.strokeStyle.html">security.pattern.canvas.strokeStyle</a> </span>.</p></li>
 
+   <li><p>The element's 2D context's <code title="dom-context-2d-fillText"><a href="#dom-context-2d-filltext">fillText()</a></code> or <code title="dom-context-2d-fillText"><a href="#dom-context-2d-filltext">strokeText()</a></code> methods are
+   invoked and consider using a font that has an <a href="#origin">origin</a>
+   that is not the <a href="#same-origin" title="same origin">same</a> as that of
+   the <code><a href="#document">Document</a></code> object that owns the <code><a href="#the-canvas-element">canvas</a></code>
+   element. (The font doesn't even have to be used; all that matters
+   is whether the font was considered for any of the glyphs
+   drawn.)</p></li> <!-- because fonts could consider sensitive
+   material, I guess; and because that sensitivity could extend to
+   whether or not a particular glyph is in the font in the first
+   place. -->
+
   </ul><p>Whenever the <code title="dom-canvas-toDataURL"><a href="#dom-canvas-todataurl">toDataURL()</a></code> method of a
   <code><a href="#the-canvas-element">canvas</a></code> element whose <i>origin-clean</i> flag is set to
   false is called, the method must raise a <code><a href="#security_err">SECURITY_ERR</a></code>
@@ -3429,6 +3668,12 @@ function AddCloud(data, x, y) { ... }</pre>
   <i>origin-clean</i> flag is set to false is called with otherwise
   correct arguments, the method must raise a <code><a href="#security_err">SECURITY_ERR</a></code>
   exception<span class="testrefs kw-must" id="testrefs.security.getImageData"> <a href="#testrefs.security.getImageData" title="security.getImageData">#</a> <a href="../canvas/security.drawImage.image.html">security.drawImage.image</a> </span>.</p>
+
+  <p>Whenever the <code title="dom-context-2d-measureText"><a href="#dom-context-2d-measuretext">measureText()</a></code> method of
+  the 2D context of a <code><a href="#the-canvas-element">canvas</a></code> element ends up using a font
+  that has an <a href="#origin">origin</a> that is not the <a href="#same-origin" title="same   origin">same</a> as that of the <code><a href="#document">Document</a></code> object that
+  owns the <code><a href="#the-canvas-element">canvas</a></code> element, the method must raise a
+  <code><a href="#security_err">SECURITY_ERR</a></code> exception.</p>
 
   <p class="note">Even resetting the canvas state by changing its
   <code title="attr-canvas-width"><a href="#attr-canvas-width">width</a></code> or <code title="attr-canvas-height"><a href="#attr-canvas-height">height</a></code> attributes doesn't reset

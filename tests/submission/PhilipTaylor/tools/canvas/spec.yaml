@@ -275,9 +275,8 @@ assertions:
     text: "User agents *must* recognize the four values described above exactly (e.g. they must not do case folding)<^>."
   - id: 2d.pattern.return
     text: "the method *must* return a CanvasPattern object suitably initialized<^>."
-  - id: 2d.pattern.wrongtype
-    previously: [ 2, "createPattern" ]
-    text: "The image argument is an instance of either HTMLImageElement, HTMLCanvasElement, or HTMLVideoElement. If the image is of the wrong type or null, the implementation *must* raise a TYPE_MISMATCH_ERR exception<^>."
+  - id: 2d.pattern.IDL
+    text: "CanvasPattern createPattern(in HTMLImageElement image, in DOMString repetition);<...>CanvasPattern createPattern(in HTMLCanvasElement image, in DOMString repetition);<...>CanvasPattern createPattern(in HTMLVideoElement image, in DOMString repetition);<^>"
   - id: 2d.pattern.incomplete.image
     text: "If the image argument is an HTMLImageElement object that is not fully decodable<^><...> then the implementation *must* return null."
   - id: 2d.pattern.incomplete.video
@@ -576,9 +575,8 @@ assertions:
     text: "If not specified, the dw and dh arguments *must* default to the values of sw and sh, interpreted such that one CSS pixel in the image is treated as one unit in the canvas coordinate space<^>."
   - id: 2d.drawImage.defaultsource
     text: "If the sx, sy, sw, and sh arguments are omitted, they *must* default to 0, 0, the image's intrinsic width in image pixels, and the image's intrinsic height in image pixels, respectively<^>."
-  - id: 2d.drawImage.type
-    previously: [ 2, "dw and dh" ]
-    text: "The image argument is an instance of either HTMLImageElement, HTMLCanvasElement, or HTMLVideoElement. If the image is of the wrong type or null, the implementation *must* raise a TYPE_MISMATCH_ERR exception<^>."
+  - id: 2d.drawImage.IDL
+    text: "void drawImage(in HTMLVideoElement image, in double sx, in double sy, in double sw, in double sh, in double dx, in double dy, in double dw, in double dh);<^>"
   - id: 2d.drawImage.incomplete.image
     text: "If the image argument is an HTMLImageElement object that is not fully decodable<^><...> then the implementation *must* return without drawing anything."
   - id: 2d.drawImage.incomplete.video
@@ -636,7 +634,7 @@ assertions:
   - id: 2d.imageData.getcreate.nonfinite
     text: "If any of the arguments to createImageData() or getImageData() are infinite or NaN<^>, <...> the method *must* instead raise a NOT_SUPPORTED_ERR exception."
   - id: 2d.imageData.create.null
-    text: "if the createImageData() method is invoked with only one argument but that argument is null<^>, the method *must* instead raise a NOT_SUPPORTED_ERR exception."
+    text: "ImageData createImageData(in ImageData imagedata);<^>"
   - id: 2d.imageData.getcreate.zero
     text: "If either the sw or sh arguments are zero, the method *must* instead raise an INDEX_SIZE_ERR exception<^>."
 
@@ -659,10 +657,8 @@ assertions:
 
   - id: 2d.imageData.put.nonfinite
     text: "If any of the arguments to the method are infinite or NaN, the method *must* raise a NOT_SUPPORTED_ERR exception<^>."
-  - id: 2d.imageData.put.null
-    text: "If the first argument to the method is null<^> or not an ImageData object then the putImageData() method *must* raise a TYPE_MISMATCH_ERR exception."
   - id: 2d.imageData.put.wrongtype
-    text: "If the first argument to the method is null or not an ImageData object<^> then the putImageData() method *must* raise a TYPE_MISMATCH_ERR exception."
+    text: "void putImageData(in ImageData imagedata, in double dx, in double dy);<...>void putImageData(in ImageData imagedata, in double dx, in double dy, in double dirtyX, in double dirtyY, in double dirtyWidth, in double dirtyHeight);<^>"
   - id: 2d.imageData.put.3arg
     text: "When the last four arguments are omitted, they *must* be assumed to have the values 0, 0, the width member of the imagedata structure, and the height member of the imagedata structure, respectively<^>."
   - id: 2d.imageData.put.normal

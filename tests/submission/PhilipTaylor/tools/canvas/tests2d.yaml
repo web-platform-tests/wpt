@@ -2657,21 +2657,24 @@
 
 - name: 2d.pattern.image.undefined
   testing:
-    - 2d.pattern.wrongtype
+    - 2d.pattern.IDL
+  notes: *bindings
   #mozilla: { bug: TODO }
   code: |
-    @assert throws TYPE_MISMATCH_ERR ctx.createPattern(undefined, 'repeat'); @moz-todo
+    @assert throws TypeError ctx.createPattern(undefined, 'repeat'); @moz-todo
 
 - name: 2d.pattern.image.null
   testing:
-    - 2d.pattern.wrongtype
+    - 2d.pattern.IDL
+  notes: *bindings
   #mozilla: { bug: TODO }
   code: |
-    @assert throws TYPE_MISMATCH_ERR ctx.createPattern(null, 'repeat'); @moz-todo
+    @assert throws TypeError ctx.createPattern(null, 'repeat'); @moz-todo
 
 - name: 2d.pattern.image.string
   testing:
-    - 2d.pattern.wrongtype
+    - 2d.pattern.IDL
+  notes: *bindings
   #mozilla: { bug: TODO }
   code: |
     @assert throws TypeError ctx.createPattern('../images/red.png', 'repeat'); @moz-todo
@@ -8610,16 +8613,16 @@
 - name: 2d.drawImage.null
   #mozilla: { bug: TODO }
   testing:
-    - 2d.drawImage.type
+    - 2d.drawImage.IDL
   code: |
-    @assert throws TYPE_MISMATCH_ERR ctx.drawImage(null, 0, 0); @moz-todo
+    @assert throws TypeError ctx.drawImage(null, 0, 0); @moz-todo
 
 - name: 2d.drawImage.wrongtype
   #mozilla: { bug: TODO }
   desc: Incorrect image types in drawImage do not match any defined overloads, so WebIDL throws a TypeError
   notes: *bindings
   testing:
-    - 2d.drawImage.type
+    - 2d.drawImage.IDL
   code: |
     @assert throws TypeError ctx.drawImage(undefined, 0, 0);
     @assert throws TypeError ctx.drawImage(0, 0, 0);
@@ -9151,7 +9154,7 @@
   testing:
     - 2d.imageData.create.null
   code: |
-    @assert throws NOT_SUPPORTED_ERR ctx.createImageData(null);
+    @assert throws TypeError ctx.createImageData(null);
 
 - name: 2d.imageData.create2.round
   desc: createImageData(w, h) is rounded the same as getImageData(0, 0, w, h)
@@ -9626,10 +9629,10 @@
 - name: 2d.imageData.put.null
   desc: putImageData() with null imagedata throws TYPE_MISMATCH_ERR
   testing:
-    - 2d.imageData.put.null
+    - 2d.imageData.put.wrongtype
   mozilla: { bug: 421715 }
   code: |
-    @assert throws TYPE_MISMATCH_ERR ctx.putImageData(null, 0, 0); @moz-todo
+    @assert throws TypeError ctx.putImageData(null, 0, 0); @moz-todo
 
 - name: 2d.imageData.put.nonfinite
   desc: putImageData() throws NOT_SUPPORTED_ERR if arguments are not finite

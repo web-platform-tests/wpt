@@ -47,8 +47,10 @@ from xml.dom.minidom import Node
 
 import cairo
 
-#import yaml
-import syck as yaml # compatible and lots faster
+try:
+    import syck as yaml # compatible and lots faster
+except ImportError:
+    import yaml
 
 # Default mode is for the W3C test suite; the --standalone option
 # generates various extra files that aren't needed there

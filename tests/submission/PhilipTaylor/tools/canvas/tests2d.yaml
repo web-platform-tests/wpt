@@ -9206,7 +9206,6 @@
   testing:
     - 2d.imageData.get.basic
     - 2d.imageData.get.outside
-  mozilla: { throws }
   code: |
     ctx.fillStyle = '#08f';
     ctx.fillRect(0, 0, 100, 50);
@@ -9234,6 +9233,40 @@
     @assert imgdata4.data[1] === 0;
     @assert imgdata4.data[2] === 0;
     @assert imgdata4.data[3] === 0;
+
+    var imgdata5 = ctx.getImageData(100, 10, 1, 1);
+    @assert imgdata5.data[0] === 0;
+    @assert imgdata5.data[1] === 0;
+    @assert imgdata5.data[2] === 0;
+    @assert imgdata5.data[3] === 0;
+
+    var imgdata6 = ctx.getImageData(0, 10, 1, 1);
+    @assert imgdata6.data[0] === 0;
+    @assert imgdata6.data[1] === 136;
+    @assert imgdata6.data[2] === 255;
+    @assert imgdata6.data[3] === 255;
+
+    var imgdata7 = ctx.getImageData(-10, 10, 20, 20);
+    @assert imgdata7.data[ 0*4+0] === 0;
+    @assert imgdata7.data[ 0*4+1] === 0;
+    @assert imgdata7.data[ 0*4+2] === 0;
+    @assert imgdata7.data[ 0*4+3] === 0;
+    @assert imgdata7.data[ 9*4+0] === 0;
+    @assert imgdata7.data[ 9*4+1] === 0;
+    @assert imgdata7.data[ 9*4+2] === 0;
+    @assert imgdata7.data[ 9*4+3] === 0;
+    @assert imgdata7.data[10*4+0] === 0;
+    @assert imgdata7.data[10*4+1] === 136;
+    @assert imgdata7.data[10*4+2] === 255;
+    @assert imgdata7.data[10*4+3] === 255;
+    @assert imgdata7.data[19*4+0] === 0;
+    @assert imgdata7.data[19*4+1] === 136;
+    @assert imgdata7.data[19*4+2] === 255;
+    @assert imgdata7.data[19*4+3] === 255;
+    @assert imgdata7.data[20*4+0] === 0;
+    @assert imgdata7.data[20*4+1] === 0;
+    @assert imgdata7.data[20*4+2] === 0;
+    @assert imgdata7.data[20*4+3] === 0;
 
 - name: 2d.imageData.get.source.negative
   desc: getImageData() works with negative width and height, and returns top-to-bottom left-to-right

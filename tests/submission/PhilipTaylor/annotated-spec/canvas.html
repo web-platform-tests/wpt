@@ -435,7 +435,7 @@
 
   <ol><li><p>If the canvas has no pixels (i.e. either its horizontal
    dimension or its vertical dimension is zero) then return the string
-   &quot;<code title="">data:,</code>&quot; and abort these steps. (This is the
+   &quot;<code title="">data:,</code>&quot;<span class="testrefs kw-none" id="testrefs.toDataURL.zerosize"> <a href="#testrefs.toDataURL.zerosize" title="toDataURL.zerosize">#</a> <a href="../canvas/toDataURL.zerosize.html">toDataURL.zerosize</a> </span> and abort these steps. (This is the
    shortest <a href="#data-protocol" title="data protocol"><code title="">data:</code>
    URL</a>; it represents the empty string in a <code title="">text/plain</code> resource.)</p></li>
 
@@ -476,11 +476,11 @@
   </ol><p>When a user agent is to create <dfn id="a-serialization-of-the-image-as-a-file">a serialization of the image
   as a file</dfn>, optionally with some given <var title="">arguments</var>, it must create an image file in the format
   given by the first value of <var title="">arguments</var>, or, if
-  there are no <var title="">arguments</var>, in the PNG format. <a href="#refsPNG">[PNG]</a></p>
+  there are no <var title="">arguments</var>, in the PNG format<span class="testrefs kw-none" id="testrefs.toDataURL.noarguments"> <a href="#testrefs.toDataURL.noarguments" title="toDataURL.noarguments">#</a> <a href="../canvas/toDataURL.default.html">toDataURL.default</a> <a href="../canvas/toDataURL.nocontext.html">toDataURL.nocontext</a> </span>. <a href="#refsPNG">[PNG]</a></p>
 
   <p>If <var title="">arguments</var> is not empty, the first value
   must be interpreted as a <a href="#mime-type" title="MIME type">MIME type</a>
-  giving the format to use. If the type has any parameters, it must be
+  giving the format to use<span class="testrefs kw-none" id="testrefs.toDataURL.witharguments"> <a href="#testrefs.toDataURL.witharguments" title="toDataURL.witharguments">#</a> <a href="../canvas/toDataURL.png.html">toDataURL.png</a> </span>. If the type has any parameters, it must be
   treated as not supported.</p>
 
   <p class="example">For example, the value &quot;<code>image/png</code>&quot; would
@@ -490,16 +490,16 @@
   (which would probably require that the implementation actually keep
   enough information to reliably render an SVG image from the canvas).</p>
 
-  <p>User agents must support PNG (&quot;<code>image/png</code>&quot;). User
+  <p>User agents must support PNG (&quot;<code>image/png</code>&quot;)<span class="testrefs kw-must" id="testrefs.toDataURL.png"> <a href="#testrefs.toDataURL.png" title="toDataURL.png">#</a> <a href="../canvas/toDataURL.png.html">toDataURL.png</a> <a href="../canvas/toDataURL.png.primarycolours.html">toDataURL.png.primarycolours</a> <a href="../canvas/toDataURL.png.complexcolours.html">toDataURL.png.complexcolours</a> </span>. User
   agents may support other types. If the user agent does not support
-  the requested type, it must create the file using the PNG format. <a href="#refsPNG">[PNG]</a></p>
+  the requested type, it must create the file using the PNG format<span class="testrefs kw-must" id="testrefs.toDataURL.unrecognised"> <a href="#testrefs.toDataURL.unrecognised" title="toDataURL.unrecognised">#</a> <a href="../canvas/toDataURL.bogustype.html">toDataURL.bogustype</a> <a href="../canvas/toDataURL.unrecognised.html">toDataURL.unrecognised</a> </span>. <a href="#refsPNG">[PNG]</a></p>
 
   <p>User agents must <a href="#converted-to-ascii-lowercase" title="converted to ASCII   lowercase">convert the provided type to ASCII lowercase</a>
-  before establishing if they support that type.</p>
+  before establishing if they support that type<span class="testrefs kw-must" id="testrefs.toDataURL.lowercase"> <a href="#testrefs.toDataURL.lowercase" title="toDataURL.lowercase">#</a> <a href="../canvas/toDataURL.lowercase.ascii.html">toDataURL.lowercase.ascii</a> <a href="../canvas/toDataURL.lowercase.unicode.html">toDataURL.lowercase.unicode</a> </span>.</p>
 
   <p>For image types that do not support an alpha channel, the
   serialized image must be the canvas image composited onto a solid
-  black background using the source-over operator.</p>
+  black background using the source-over operator<span class="testrefs kw-must" id="testrefs.toDataURL.noalpha"> <a href="#testrefs.toDataURL.noalpha" title="toDataURL.noalpha">#</a> <a href="../canvas/toDataURL.jpeg.alpha.html">toDataURL.jpeg.alpha</a> </span>.</p>
 
   <p>If the first argument in <var title="">arguments</var> gives a
   type corresponding to one of the types given in the first column of
@@ -1387,7 +1387,7 @@ idea from Mihai:
   with one of the following values: <code title="">repeat</code>,
   <code title="">repeat-x</code>, <code title="">repeat-y</code>,
   <code title="">no-repeat</code>. If the empty string is specified,
-  <code title="">repeat</code> must be assumed. If an unrecognized value
+  <code title="">repeat</code> must be assumed<span class="testrefs kw-must" id="testrefs.2d.pattern.missing"> <a href="#testrefs.2d.pattern.missing" title="2d.pattern.missing">#</a> <a href="../canvas/2d.pattern.repeat.empty.html">2d.pattern.repeat.empty</a> <a href="../canvas/2d.pattern.repeat.null.html">2d.pattern.repeat.null</a> </span>. If an unrecognized value
   is given, then the user agent must raise a <code><a href="#syntax_err">SYNTAX_ERR</a></code>
   exception<span class="testrefs kw-must" id="testrefs.2d.pattern.unrecognised"> <a href="#testrefs.2d.pattern.unrecognised" title="2d.pattern.unrecognised">#</a> <a href="../canvas/2d.pattern.repeat.undefined.html">2d.pattern.repeat.undefined</a> <a href="../canvas/2d.pattern.repeat.unrecognised.html">2d.pattern.repeat.unrecognised</a> </span>. User agents must recognize the four values described above
   exactly (e.g. they must not do case folding)<span class="testrefs kw-must" id="testrefs.2d.pattern.exact"> <a href="#testrefs.2d.pattern.exact" title="2d.pattern.exact">#</a> <a href="../canvas/2d.pattern.repeat.case.html">2d.pattern.repeat.case</a> <a href="../canvas/2d.pattern.repeat.nullsuffix.html">2d.pattern.repeat.nullsuffix</a> </span>. Except as specified
@@ -2605,7 +2605,7 @@ hairline width with transform. ack Shaun Morris.
    with all the properties at their initial values except the 'font'
    property of the inline box set to <var title="">font</var>, the
    'direction' property of the inline box set to <a href="#the-directionality">the
-   directionality</a> of the <code><a href="#the-canvas-element">canvas</a></code> element, and the
+   directionality</a> of the <code><a href="#the-canvas-element">canvas</a></code> element<span class="testrefs kw-none" id="testrefs.2d.text.draw.direction"> <a href="#testrefs.2d.text.draw.direction" title="2d.text.draw.direction">#</a> <a href="../canvas/2d.text.draw.align.start.rtl.html">2d.text.draw.align.start.rtl</a> <a href="../canvas/2d.text.draw.align.end.rtl.html">2d.text.draw.align.end.rtl</a> </span>, and the
    'white-space' property set to 'pre'. <a href="#refsCSS">[CSS]</a></p></li>
 
    <!-- if you insert a step here, make sure to adjust the next step's
@@ -2883,7 +2883,7 @@ v6DVT (also check for '- -' bits in the part above) --><p>The <dfn id="dom-conte
   the <code title="dom-context-2d-font"><a href="#dom-context-2d-font">font</a></code> attribute, and
   must then return a new <code><a href="#textmetrics">TextMetrics</a></code> object with its
   <code title="dom-textmetrics-width"><a href="#dom-textmetrics-width">width</a></code> attribute set to
-  the width of that inline box, in CSS pixels. <a href="#refsCSS">[CSS]</a></p>
+  the width of that inline box, in CSS pixels<span class="testrefs kw-must" id="testrefs.2d.text.measure"> <a href="#testrefs.2d.text.measure" title="2d.text.measure">#</a> <a href="../canvas/2d.text.measure.width.basic.html">2d.text.measure.width.basic</a> <a href="../canvas/2d.text.measure.width.empty.html">2d.text.measure.width.empty</a> </span>. <a href="#refsCSS">[CSS]</a></p>
 
   <p>The <code><a href="#textmetrics">TextMetrics</a></code> interface is used for the objects
   returned from <code title="dom-context-2d-measureText"><a href="#dom-context-2d-measuretext">measureText()</a></code>. It has one
@@ -2988,7 +2988,7 @@ v6DVT (also check for '- -' bits in the part above) --><p>The <dfn id="dom-conte
   points (<var title="">sx</var>, <var title="">sy</var>), (<span title=""><var title="">sx</var>+<var title="">sw</var></span>, <var title="">sy</var>), (<span title=""><var title="">sx</var>+<var title="">sw</var></span>, <span title=""><var title="">sy</var>+<var title="">sh</var></span>), (<var title="">sx</var>, <span title=""><var title="">sy</var>+<var title="">sh</var></span>).</p>
 
   <p>If one of the <var title="">sw</var> or <var title="">sh</var>
-  arguments is zero, the implementation must raise an
+  arguments is zero<span class="testrefs kw-must" id="testrefs.2d.drawImage.zerosource"> <a href="#testrefs.2d.drawImage.zerosource" title="2d.drawImage.zerosource">#</a> <a href="../canvas/2d.drawImage.zerosource.html">2d.drawImage.zerosource</a> </span>, the implementation must raise an
   <code><a href="#index_size_err">INDEX_SIZE_ERR</a></code> exception.</p>
 
   <p>The destination rectangle is the rectangle whose corners are the
@@ -3141,7 +3141,7 @@ v6DVT (also check for '- -' bits in the part above) --><p>The <dfn id="dom-conte
   <code><a href="#imagedata">ImageData</a></code> object<span class="testrefs kw-must" id="testrefs.2d.imageData.create1.object"> <a href="#testrefs.2d.imageData.create1.object" title="2d.imageData.create1.object">#</a> <a href="../canvas/2d.imageData.create1.basic.html">2d.imageData.create1.basic</a> <a href="../canvas/2d.imageData.create1.type.html">2d.imageData.create1.type</a> </span> representing a rectangle with the same
   dimensions as the <code><a href="#imagedata">ImageData</a></code> object passed as the
   argument<span class="testrefs kw-must" id="testrefs.2d.imageData.create1.size"> <a href="#testrefs.2d.imageData.create1.size" title="2d.imageData.create1.size">#</a> <a href="../canvas/2d.imageData.create1.initial.html">2d.imageData.create1.initial</a> </span>. The <code><a href="#imagedata">ImageData</a></code> object returned must be filled
-  with transparent black.</p>
+  with transparent black<span class="testrefs kw-none" id="testrefs.2d.imageData.create.initial"> <a href="#testrefs.2d.imageData.create.initial" title="2d.imageData.create.initial">#</a> <a href="../canvas/2d.imageData.create2.initial.html">2d.imageData.create2.initial</a> <a href="../canvas/2d.imageData.create1.initial.html">2d.imageData.create1.initial</a> </span>.</p>
 
   <p>The <dfn id="dom-context-2d-getimagedata" title="dom-context-2d-getImageData"><code>getImageData(<var title="">sx</var>, <var title="">sy</var>, <var title="">sw</var>,
   <var title="">sh</var>)</code></dfn> method must return an
@@ -3155,7 +3155,7 @@ v6DVT (also check for '- -' bits in the part above) --><p>The <dfn id="dom-conte
 
   <p>If any of the arguments to <code title="dom-context-2d-createImageData"><a href="#dom-context-2d-createimagedata">createImageData()</a></code> or
   <code title="dom-context-2d-getImageData"><a href="#dom-context-2d-getimagedata">getImageData()</a></code>
-  are infinite or NaN, the method must instead raise a
+  are infinite or NaN<span class="testrefs kw-must" id="testrefs.2d.imageData.getcreate.nonfinite"> <a href="#testrefs.2d.imageData.getcreate.nonfinite" title="2d.imageData.getcreate.nonfinite">#</a> <a href="../canvas/2d.imageData.create2.nonfinite.html">2d.imageData.create2.nonfinite</a> <a href="../canvas/2d.imageData.get.nonfinite.html">2d.imageData.get.nonfinite</a> </span>, the method must instead raise a
   <code><a href="#not_supported_err">NOT_SUPPORTED_ERR</a></code> exception. If either the <var title="">sw</var> or <var title="">sh</var> arguments are zero,
   the method must instead raise an <code><a href="#index_size_err">INDEX_SIZE_ERR</a></code>
   exception<span class="testrefs kw-must" id="testrefs.2d.imageData.getcreate.zero"> <a href="#testrefs.2d.imageData.getcreate.zero" title="2d.imageData.getcreate.zero">#</a> <a href="../canvas/2d.imageData.create2.zero.html">2d.imageData.create2.zero</a> <a href="../canvas/2d.imageData.get.zero.html">2d.imageData.get.zero</a> </span>.</p>

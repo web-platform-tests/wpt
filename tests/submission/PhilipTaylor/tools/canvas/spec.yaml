@@ -41,19 +41,19 @@ assertions:
     text: "When the getContext() method of a canvas element is to return a new object for the contextId 2d, the user agent *must* return a new CanvasRenderingContext2D object. Any additional arguments are ignored<^>."
 
   - id: toDataURL.noarguments
-    text: "The toDataURL() method *must*, when called with no arguments, return a data: URL containing a representation of the image as a PNG file<^>."
+    text: "When a user agent is to create a serialization of the image as a file, <...> if there are no arguments, in the PNG format<^>."
   - id: toDataURL.zerosize
-    text: "If the canvas has no pixels (i.e. either its horizontal dimension or its vertical dimension is zero) then the method *must* return the string \"data:,\"<^>."
+    text: "If the canvas has no pixels (i.e. either its horizontal dimension or its vertical dimension is zero) then return the string \"data:,\"<^> and abort these steps."
   - id: toDataURL.witharguments
-    text: "When the toDataURL(type) method is called with one or more arguments, it *must* return a data: URL containing a representation of the image in the format given by type<^>."
+    text: "If arguments is not empty, the first value must be interpreted as a MIME type giving the format to use<^>."
   - id: toDataURL.noalpha
-    text: "For image types that do not support an alpha channel, the image *must* be composited onto a solid black background using the source-over operator, and the resulting image must be the one used to create the data: URL<^>."
+    text: "For image types that do not support an alpha channel, the serialized image *must* be the canvas image composited onto a solid black background using the source-over operator<^>."
   - id: toDataURL.png
-    text: "support for image/png is *required*<^>."
+    text: "User agents *must* support PNG (\"image/png\")<^>."
   - id: toDataURL.unrecognised
-    text: "If the user agent does not support the requested type, it *must* return the image using the PNG format<^>."
+    text: "If the user agent does not support the requested type, it *must* create the file using the PNG format<^>."
   - id: toDataURL.lowercase
-    text: "User agents *must* convert the provided type to ASCII lowercase before establishing if they support that type and before creating the data: URL<^>."
+    text: "User agents *must* convert the provided type to ASCII lowercase before establishing if they support that type<^>."
   - id: toDataURL.jpeg
     previously: [ 0, "image/png", false ] 
     text: "image/jpeg<^>"
@@ -268,7 +268,7 @@ assertions:
   - id: 2d.pattern.modify
     text: "Modifying this image after calling the createPattern() method *must* not affect the pattern<^>."
   - id: 2d.pattern.missing
-    text: "If the empty string or null is specified, repeat *must* be assumed<^>."
+    text: "If the empty string is specified, repeat *must* be assumed<^>."
   - id: 2d.pattern.unrecognised
     text: "If an unrecognized value is given, then the user agent *must* raise a SYNTAX_ERR exception<^>."
   - id: 2d.pattern.exact
@@ -539,7 +539,7 @@ assertions:
   - id: 2d.text.draw.spaces
     text: "Replace all the space characters in text with U+0020 SPACE characters<^>."
   - id: 2d.text.draw.direction
-    text: "the 'direction' property of the inline box set to the directionality of the canvas element<^>."
+    text: "the 'direction' property of the inline box set to the directionality of the canvas element<^>,"
   - id: 2d.text.draw.maxwidth
     text: "If the maxWidth argument was specified and the hypothetical width of the inline box in the hypothetical line box is greater than maxWidth CSS pixels, then change font to have a more condensed font (if one is available or if a reasonably readable one can be synthesized by applying a horizontal scale factor to the font) or a smaller font, and return to the previous step<^>."
   - id: 2d.text.align.left
@@ -569,7 +569,7 @@ assertions:
   - id: 2d.text.measure.spaces
     text: "When the method is invoked, the user agent *must* replace all the space characters in text with U+0020 SPACE characters<^>,"
   - id: 2d.text.measure
-    text: "When the method is invoked, the user agent <...> *must* form a hypothetical infinitely wide CSS line box containing a single inline box containing the text text, with all the properties at their initial values except the 'font' property of the inline element set to the current font of the context, as given by the font attribute, and must then return a new TextMetrics object with its width attribute set to the width of that inline box, in CSS pixels<^>."
+    text: "When the method is invoked, the user agent <...> *must* form a hypothetical infinitely wide CSS line box containing a single inline box containing the text text, with all the properties at their initial values except the 'white-space' property of the inline element set to 'pre' and the 'font' property of the inline element set to the current font of the context as given by the font attribute, and must then return a new TextMetrics object with its width attribute set to the width of that inline box, in CSS pixels<^>."
 
   - id: 2d.drawImage.defaultdest
     text: "If not specified, the dw and dh arguments *must* default to the values of sw and sh, interpreted such that one CSS pixel in the image is treated as one unit in the canvas coordinate space<^>."
@@ -585,10 +585,8 @@ assertions:
   - id: 2d.drawImage.zerocanvas
     previously: [ 10, "dw and dh" ]
     text: "If the image argument is an HTMLCanvasElement object with either a horizontal dimension or a vertical dimension equal to zero, then the implementation *must* raise an INVALID_STATE_ERR exception<^>."
-  - id: 2d.drawImage.outsidesource
-    text: "If the source rectangle is not entirely within the source image<^><...> the implementation *must* raise an INDEX_SIZE_ERR exception."
   - id: 2d.drawImage.zerosource
-    text: "if one of the sw or sh arguments is zero<^>, the implementation *must* raise an INDEX_SIZE_ERR exception."
+    text: "If one of the sw or sh arguments is zero<^>, the implementation *must* raise an INDEX_SIZE_ERR exception."
   - id: 2d.drawImage.paint
     text: "When drawImage() is invoked, the region of the image specified by the source rectangle *must* be painted on the region of the canvas specified by the destination rectangle<^>, after applying the current transformation matrix to the points of the destination rectangle."
   - id: 2d.drawImage.original
@@ -620,7 +618,7 @@ assertions:
   - id: 2d.imageData.create1.size
     text: "When invoked with a single imagedata argument, it *must* return an ImageData object representing a rectangle with the same dimensions as the ImageData object passed as the argument<^>."
   - id: 2d.imageData.create.initial
-    text: "The ImageData object return must be filled with transparent black<^>."
+    text: "The ImageData object returned must be filled with transparent black<^>."
 
   - id: 2d.imageData.get.object
     text: "The getImageData(sx, sy, sw, sh) method *must* return an ImageData object<^>"
@@ -632,7 +630,7 @@ assertions:
     text: "Pixels *must* be returned as non-premultiplied alpha values<^>."
 
   - id: 2d.imageData.getcreate.nonfinite
-    text: "If any of the arguments to createImageData() or getImageData() are infinite or NaN<^>, <...> the method *must* instead raise a NOT_SUPPORTED_ERR exception."
+    text: "If any of the arguments to createImageData() or getImageData() are infinite or NaN<^>, the method *must* instead raise a NOT_SUPPORTED_ERR exception."
   - id: 2d.imageData.create.null
     text: "ImageData createImageData(in ImageData imagedata);<^>"
   - id: 2d.imageData.getcreate.zero

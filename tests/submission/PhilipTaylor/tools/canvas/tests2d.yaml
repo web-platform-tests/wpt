@@ -8727,7 +8727,7 @@
   expected: green
 
 - name: 2d.drawImage.outsidesource
-  TODO: fix this to match the current spec (transparent black outside source)
+  DISABLED: fix this to match the current spec (transparent black outside source)
   testing:
     - 2d.drawImage.outsidesource
   mozilla: { throws }

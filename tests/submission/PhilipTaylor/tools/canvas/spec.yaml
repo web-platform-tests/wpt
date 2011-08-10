@@ -70,6 +70,8 @@ assertions:
     text: "flat Cartesian surface whose origin (0,0) is at the top left corner, with the coordinate space having x values increasing when going right, and y values increasing when going down<^>."
   - id: context.2d.type
     text: "interface CanvasRenderingContext2D<^> {"
+  - id: 2d.canvasGradient.type
+    text: "interface CanvasGradient<^> {"
   - id: 2d.imageData.type
     text: "interface ImageData<^> {"
   - id: 2d.canvas.attribute

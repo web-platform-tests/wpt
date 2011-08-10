@@ -16,7 +16,6 @@
     @assert canvas.getContext('2d', false, {}, [], 1, "2") !== null;
 
 - name: 2d.type.exists
-  DISABLED: need to check with WebIDL
   desc: The 2D context interface is a property of 'window'
   notes: &bindings Defined in "Web IDL" (draft)
   testing:
@@ -72,7 +71,6 @@
   expected: green
 
 - name: 2d.type.extend
-  DISABLED: need to check with WebIDL
   desc: Interface methods can be added
   notes: *bindings
   testing:
@@ -109,6 +107,7 @@
 
 - name: 2d.voidreturn
   desc: void methods return undefined
+  notes: *bindings
   images:
     - yellow.png
   code: |
@@ -1595,8 +1594,9 @@
 
 
 - name: 2d.gradient.object.type
-  DISABLED: need to check WebIDL
   desc: window.CanvasGradient exists and has the right properties
+  testing:
+    - 2d.canvasGradient.type
   notes: *bindings
   code: |
     @assert window.CanvasGradient !== undefined;

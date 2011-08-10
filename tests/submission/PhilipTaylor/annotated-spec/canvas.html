@@ -559,7 +559,7 @@
   (0,0) is at the top left corner, with the coordinate space having
   <var title="">x</var> values increasing when going right, and <var title="">y</var> values increasing when going down<span class="testrefs kw-none" id="testrefs.2d.coordinatespace"> <a href="#testrefs.2d.coordinatespace" title="2d.coordinatespace">#</a> <a href="../canvas/2d.coordinatespace.html">2d.coordinatespace</a> </span>.</p>
 
-  <pre class="idl">interface <dfn id="canvasrenderingcontext2d">CanvasRenderingContext2D</dfn><span class="testrefs kw-none" id="testrefs.context.2d.type"> <a href="#testrefs.context.2d.type" title="context.2d.type">#</a> </span> {
+  <pre class="idl">interface <dfn id="canvasrenderingcontext2d">CanvasRenderingContext2D</dfn><span class="testrefs kw-none" id="testrefs.context.2d.type"> <a href="#testrefs.context.2d.type" title="context.2d.type">#</a> <a href="../canvas/2d.type.exists.html">2d.type.exists</a> <a href="../canvas/2d.type.extend.html">2d.type.extend</a> </span> {
 
   // back-reference to the canvas
   readonly<span class="testrefs kw-none" id="testrefs.2d.canvas.attribute"> <a href="#testrefs.2d.canvas.attribute" title="2d.canvas.attribute">#</a> <a href="../canvas/2d.canvas.readonly.html">2d.canvas.readonly</a> </span> attribute <a href="#htmlcanvaselement">HTMLCanvasElement</a> <a href="#dom-context-2d-canvas" title="dom-context-2d-canvas">canvas</a>;
@@ -669,7 +669,7 @@
   void <a href="#dom-context-2d-putimagedata" title="dom-context-2d-putImageData">putImageData</a>(in <a href="#imagedata">ImageData</a> imagedata, in double dx, in double dy, in double dirtyX, in double dirtyY, in double dirtyWidth, in double dirtyHeight);
 };
 
-interface <dfn id="canvasgradient">CanvasGradient</dfn> {
+interface <dfn id="canvasgradient">CanvasGradient</dfn><span class="testrefs kw-none" id="testrefs.2d.canvasGradient.type"> <a href="#testrefs.2d.canvasGradient.type" title="2d.canvasGradient.type">#</a> <a href="../canvas/2d.gradient.object.type.html">2d.gradient.object.type</a> </span> {
   // opaque object
   void <a href="#dom-canvasgradient-addcolorstop" title="dom-canvasgradient-addColorStop">addColorStop</a>(in double offset, in DOMString color);
 };

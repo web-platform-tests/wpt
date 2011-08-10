@@ -307,6 +307,8 @@ def expand_mochitest_code(code):
 
     assert '@' not in code, '@ not in code:\n%s' % code
 
+    return code
+
 used_tests = {}
 for i in range(len(tests)):
     test = tests[i]

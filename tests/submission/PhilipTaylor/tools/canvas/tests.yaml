@@ -468,17 +468,11 @@
     @assert canvas.getContext('2D') === null;
 
 - name: context.arguments.missing
-  DISABLED: depends on WebIDL and new definition of getContext
-  # testing "common conformance requirements for APIs exposed to JavaScript"
-  code: |
-    @assert throws NOT_SUPPORTED_ERR canvas.getContext(); @moz-todo
-
-- name: context.arguments.extra
-  DISABLED: depends on WebIDL and new definition of getContext
+  notes: *bindings
   testing:
-    - context.extraarguments
+    - canvas.getContext
   code: |
-    @assert canvas.getContext('2d', 'foo') !== null;
+    @assert throws TypeError canvas.getContext(); @moz-todo
 
 
 

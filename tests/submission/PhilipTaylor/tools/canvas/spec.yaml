@@ -10,6 +10,8 @@ assertions:
     text: "interface HTMLCanvasElement<...>attribute unsigned long width;<^>"
   - id: size.height
     text: "interface HTMLCanvasElement<...>attribute unsigned long height;<^>"
+  - id: canvas.getContext
+    text: "interface HTMLCanvasElement<...>object\\? getContext(in DOMString contextId, in any... args);<^>"
   - id: fallback
     text: "The contents of the canvas element, if any, are the element's fallback content<^>."
   - id: size.nonnegativeinteger

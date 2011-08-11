@@ -6699,21 +6699,30 @@ commands.insertlinebreak = {
 		}
 
 		// "If the active range's start node is a Text node and its start
-		// offset is zero, set the active range's start and end to (parent of
-		// start node, index of start node)."
+		// offset is zero, call collapse() on the context object's Selection,
+		// with first argument equal to the active range's start node's parent
+		// and second argument equal to the active range's start node's index."
 		if (getActiveRange().startContainer.nodeType == Node.TEXT_NODE
 		&& getActiveRange().startOffset == 0) {
-			getActiveRange().setStart(getActiveRange().startContainer.parentNode, getNodeIndex(getActiveRange().startContainer));
-			getActiveRange().collapse(true);
+			var newNode = getActiveRange().startContainer.parentNode;
+			var newOffset = getNodeIndex(getActiveRange().startContainer);
+			getSelection().collapse(newNode, newOffset);
+			getActiveRange().setStart(newNode, newOffset);
+			getActiveRange().setEnd(newNode, newOffset);
 		}
 
 		// "If the active range's start node is a Text node and its start
-		// offset is the length of its start node, set the active range's start
-		// and end to (parent of start node, 1 + index of start node)."
+		// offset is the length of its start node, call collapse() on the
+		// context object's Selection, with first argument equal to the active
+		// range's start node's parent and second argument equal to one plus
+		// the active range's start node's index."
 		if (getActiveRange().startContainer.nodeType == Node.TEXT_NODE
 		&& getActiveRange().startOffset == getNodeLength(getActiveRange().startContainer)) {
-			getActiveRange().setStart(getActiveRange().startContainer.parentNode, 1 + getNodeIndex(getActiveRange().startContainer));
-			getActiveRange().collapse(true);
+			var newNode = getActiveRange().startContainer.parentNode;
+			var newOffset = 1 + getNodeIndex(getActiveRange().startContainer);
+			getSelection().collapse(newNode, newOffset);
+			getActiveRange().setStart(newNode, newOffset);
+			getActiveRange().setEnd(newNode, newOffset);
 		}
 
 		// "Let br be the result of calling createElement("br") on the context
@@ -6726,6 +6735,7 @@ commands.insertlinebreak = {
 		// "Call collapse() on the context object's Selection, with br's parent
 		// as the first argument and one plus br's index as the second
 		// argument."
+		getSelection().collapse(br.parentNode, 1 + getNodeIndex(br));
 		getActiveRange().setStart(br.parentNode, 1 + getNodeIndex(br));
 		getActiveRange().setEnd(br.parentNode, 1 + getNodeIndex(br));
 
@@ -6736,6 +6746,7 @@ commands.insertlinebreak = {
 			getActiveRange().insertNode(document.createElement("br"));
 
 			// Compensate for nonstandard implementations of insertNode
+			getSelection().collapse(br.parentNode, 1 + getNodeIndex(br));
 			getActiveRange().setStart(br.parentNode, 1 + getNodeIndex(br));
 			getActiveRange().setEnd(br.parentNode, 1 + getNodeIndex(br));
 		}

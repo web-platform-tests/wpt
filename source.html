@@ -7838,14 +7838,17 @@ similar elements.  This doesn't seem very useful, so I don't bother.
   text node, because that will leave an empty text node.
 
   <p>If the <span>active range</span>'s [[startnode]] is a [[text]] node and
-  its [[startoffset]] is zero, set the <span>active range</span>'s
-  [[rangestart]] and [[rangeend]] to ([[parent]] of [[startnode]], [[index]] of
-  [[startnode]]).
+  its [[startoffset]] is zero, call [[selcollapse|]] on the [[contextobject]]'s
+  [[selection]], with first argument equal to the <span>active range</span>'s
+  [[startnode]]'s [[parent]] and second argument equal to the <span>active
+  range</span>'s [[startnode]]'s [[index]].
 
   <li>If the <span>active range</span>'s [[startnode]] is a [[text]] node and
-  its [[startoffset]] is the [[length]] of its [[startnode]], set the
-  <span>active range</span>'s [[rangestart]] and [[rangeend]] to ([[parent]] of
-  [[startnode]], 1 + [[index]] of [[startnode]]).
+  its [[startoffset]] is the [[length]] of its [[startnode]], call
+  [[selcollapse|]] on the [[contextobject]]'s [[selection]], with first
+  argument equal to the <span>active range</span>'s [[startnode]]'s [[parent]]
+  and second argument equal to one plus the <span>active range</span>'s
+  [[startnode]]'s [[index]].
 
   <li>Let <var>br</var> be the result of calling [[createelement|"br"]] on the
   [[contextobject]].

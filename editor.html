@@ -5,6 +5,7 @@ p, ol, ul, blockquote {
 	margin-top: 0;
 	margin-bottom: 0;
 }
+[contenteditable] { white-space: pre-wrap }
 </style>
 <title>Specification-based rich text editor</title>
 
@@ -19,16 +20,38 @@ p, ol, ul, blockquote {
 <div
 contenteditable
 style="border: inset 2px #ccc;min-height:20em"
-onkeypress="handleKeyPress(event); return false"
 >Hello</div>
 
 <script>
-function handleKeyPress(e) {
-	var code = String.fromCharCode(e.charCode);
-	if (e.keyCode == 13) {
-		// Gecko has charCode == 0 in this case
-		code = "\n";
+document.querySelector("[contenteditable]").onkeypress = function(e) {
+	if (e.altKey || e.ctrlKey) {
+		return true;
 	}
-	myExecCommand("insertText", false, code);
+	if (e.keyCode == 13 && !e.shiftKey) {
+		myExecCommand("insertparagraph");
+	} else if (e.keyCode == 13) {
+		myExecCommand("insertlinebreak");
+	} else {
+		myExecCommand("inserttext", false, String.fromCharCode(e.charCode));
+	}
+	return false;
+}
+document.onkeydown = function(e) {
+	// FIXME: Does not work in Gecko, why not?
+	if (e.ctrlKey
+	&& ["b", "u", "i"].indexOf(String.fromCharCode(e.keyCode)) != -1) {
+		return false;
+	}
+}
+document.onkeyup = function(e) {
+	if (e.ctrlKey && String.fromCharCode(e.keyCode) == "b") {
+		myExecCommand("bold");
+	}
+	if (e.ctrlKey && String.fromCharCode(e.keyCode) == "i") {
+		myExecCommand("italic");
+	}
+	if (e.ctrlKey && String.fromCharCode(e.keyCode) == "u") {
+		myExecCommand("underline");
+	}
 }
 </script>

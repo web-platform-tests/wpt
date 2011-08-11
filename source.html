@@ -183,6 +183,156 @@ and commonly record what the major browsers do and other essential information.
 </ul>
 <!-- @} -->
 
+<h2>Tests</h2>
+<!-- @{ -->
+
+<p>This specification is developed in tandem with a more or less complete <a
+href=implementation.js>JavaScript implementation</a>, which is used for a suite
+of fully automated tests plus a few separate suites of manual tests.  The tests
+are:
+
+<ul>
+  <li><a href=autoimplementation.html>autoimplementation.html</a>: Fully
+  automated tests for pretty much all commands.
+
+  <li><a href=deletetest.html>deletetest.html</a>: Manual tests for <span>the
+  <code title>delete</code> command</span>.
+
+  <li><a href=forwarddeletetest.html>forwarddeletetest.html</a>: Manual tests
+  for <span>the <code title>forwardDelete</code> command</span>.
+
+  <li><a href=insertlinebreaktest.html>insertlinebreaktest.html</a>: Manual
+  tests for <span>the <code title>insertLineBreak</code> command</span>.
+
+  <li><a href=insertparagraphtest.html>insertparagraphtest.html</a>: Manual
+  tests for <span>the <code title>insertParagraph</code> command</span>.
+
+  <li><a href=inserttexttest.html>inserttexttest.html</a>: Manual tests for
+  <span>the <code title>insertText</code> command</span>, with <var>value</var>
+  "a".
+
+  <li><a href=inserttext2test.html>inserttext2test.html</a>: Manual tests for
+  <span>the <code title>insertText</code> command</span>, with <var>value</var>
+  " ".
+</ul>
+
+<p>The automated tests run the JavaScript implementation of the specification
+on a particular input, then run the browser's implementation on the same input
+for comparison.  The results of running automated tests are placed in a table,
+with rows marked as passing or failing based on whether the browser output is
+"close enough" to the spec output.  Since the tests are designed for debugging
+the spec rather than actually testing conformance, minor variations are allowed
+to avoid having browsers fail many tests for uninteresting reasons.  Passes and
+fails are based only on <code>execCommand()</code> output, not <code
+title>queryCommand*()</code>: the latter is sanity-checked, and colored green
+or red if it's known to be right or wrong on general principle, but spec and
+browser output are not compared.
+
+<p>The tests will optionally store the specification's result for each test in
+<code title>localStorage</code>, and will raise an alert for any new test (no
+stored output), any test whose spec output is different from the last run, and
+any test whose spec output is otherwise clearly bad (e.g., producing a
+non-serializable DOM).  This is mostly useful for debugging and
+regression-testing the spec itself, and is probably not interesting to anyone
+other than me.
+
+<p>There's a suite of tests for each command (~30&ndash;300 at the time of this
+writing) that can be run by clicking the "Run tests" button.  This can take a
+while for some commands.  You can also enter your own tests manually in the box
+provided.  The test input is a snippet of HTML, which must have a selection
+marked in it.  There are three ways to mark a selection's start or end:
+
+<ol>
+  <li>Square brackets mark a selection inside a text node, like <code
+  title>&lt;b>foo[bar]baz&lt;/b></code> for a selection whose start and end
+  nodes are in the text node <code title>foobarbaz</code>, with start offset 3
+  and end offset 6.  Do not use square brackets where there's no text node:
+  <code title>&lt;b>[]&lt;/b></code> is bad, <code title>&lt;b>{}&lt;/b></code>
+  is correct.
+
+  <li>Curly braces mark a selection inside an element, like <code
+  title>&lt;b>{foobarbaz&lt;/b>}</code> for a selection whose start node is the
+  element <code title>&lt;b></code>, whose start offset is 0, whose end node is
+  the root of the editable region, and whose end offset is 1.  Do not use curly
+  braces in the middle of a text node: <code title>foo{bar}baz</code> is bad,
+  <code title>foo[bar]baz</code> is correct.
+
+  <li>The <code title>data-start</code> and <code title>data-end</code>
+  attributes mark a selection inside an element if a curly brace can't be put
+  there in text/html.  For instance, <code
+  title>&lt;table>&lt;tr>{&lt;td>foo&lt;/td>}&lt;/tr>&lt;/table></code> doesn't
+  work because when the fragment is parsed, the curly braces end up outside the
+  table.  Instead, you have to do <code title>&lt;table>&lt;tr data-start=0
+  data-end=1>&lt;td>foo&lt;/table></code>.
+</ol>
+
+<p>Every input must have exactly one start marker and one end marker, which
+will be removed from the DOM before the test is run.  You can mix and match
+marker types, e.g., <code title>[foo}</code>.
+
+<p>When a test runs, first the code sets up a contenteditable div with the
+given contents and sets the selection as requested.  Then it runs
+<code>queryCommandIndeterm()</code>, <code>queryCommandState()</code>, and
+<code>queryCommandValue()</code>, and their values are noted.  Then it runs
+<code>execCommand()</code>.  Finally, it runs
+<code>queryCommandIndeterm()</code>, <code>queryCommandState()</code>, and
+<code>queryCommandValue()</code> again.  Then it adds the output to the table.
+
+<p>There is one special test type that behaves differently, "multitest".  This
+allows running several tests in succession, which is needed at least for
+testing the effect of commands' <span>state override</span> or <span>value
+override</span>.  The syntax is JSON, and looks like
+
+<pre>
+[<var>HTML input</var>,
+  [<var>command name 1</var>, <var>command value 1</var>],
+  [<var>command name 2</var>, <var>command value 2</var>],
+  . . .]</pre>
+
+<p>where all the variables are properly-quoted JSON strings.  <code
+title>queryCommand*()</code> are not run for multitests.
+
+<p>Commands that are expected to vary significantly based on the value of the
+<span>CSS styling flag</span> have two tables of results.  The first table runs
+<code title>execCommand("styleWithCSS", false, "false")</code> before every
+command, and the second runs <code title>execCommand("styleWithCSS", false,
+"true")</code> before every command.  All other commands other than multitests
+run <code title>execCommand("styleWithCSS", false, "false")</code> before every
+command.  The extra tests are not run in IE or Opera, because they don't
+implement <span>the <code title>styleWithCSS</code> command</span>.
+
+<p>The manual tests are much like the automated tests, with some key
+differences.  They only test one command each, with one input value (if
+applicable).  When a test is run, everything proceeds as in the automated case,
+but instead of running <code>execCommand()</code> for the browser tests, the
+user is asked to hit the appropriate key (backspace, delete, enter, etc.).
+Thus when running the tests for the first time, the user has to hit a key
+repeatedly, perhaps a few hundred times.  The browser's result is then cached
+in <code title>localStorage</code> so no manual intervention is required on
+subsequent runs except for newly-added tests, but the cached entries can be
+cleared if necessary.
+
+<p>The tests have been tested and largely work in the latest versions (at the
+time of this writing) of IE, Firefox, Chrome, and Opera.  Since the
+implementation of the spec is in JavaScript, it's vulnerable to bugs in
+browsers' JavaScript implementations.  I work around or warn about some of
+these, but not all.  The most correct results will probably be in Firefox or
+Chrome: both IE and Opera have serious known bugs that corrupt spec output for
+many tests.  The tests are still useful for reviewing the browser output, but
+spec output in those browsers should be sanity-checked and compared against
+another browser's spec output in case of doubt.
+
+<p>These tests are really meant to aid spec development by seeing how browsers
+behave, not to aid browser development by seeing where the browser doesn't
+match the spec.  Proper conformance tests would a) record all expected results
+statically to avoid browser JS bugs, and b) compare expected and actual results
+much more strictly.  They would also test a <em>lot</em> more corner cases,
+like nested <code title>contenteditable=false</code> regions.  It should be
+relatively easy to transform the existing tests into proper conformance tests,
+but there's not much point until the spec is more stable.
+
+<!-- @} -->
+
 <h2>Issues</h2>
 <!-- @{ -->
 <p>This specification is mostly feature-complete.  It's more or less fully

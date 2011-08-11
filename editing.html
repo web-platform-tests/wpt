@@ -110,79 +110,80 @@ restriction.
  <li><a class=no-num href=#status-of-this-document>Status of this Document</a></li>
  <li><a class=no-num href=#table-of-contents>Table of contents</a></li>
  <li><a href=#introduction><span class=secno>1 </span>Introduction</a></li>
- <li><a href=#issues><span class=secno>2 </span>Issues</a></li>
- <li><a href=#commands><span class=secno>3 </span>Commands</a>
+ <li><a href=#tests><span class=secno>2 </span>Tests</a></li>
+ <li><a href=#issues><span class=secno>3 </span>Issues</a></li>
+ <li><a href=#commands><span class=secno>4 </span>Commands</a>
   <ol>
-   <li><a href=#properties-of-commands><span class=secno>3.1 </span>Properties of commands</a></li>
-   <li><a href=#supported-commands><span class=secno>3.2 </span>Supported commands</a></li>
-   <li><a href=#enabled-commands><span class=secno>3.3 </span>Enabled commands</a></ol></li>
- <li><a href=#methods-of-the-htmldocument-interface><span class=secno>4 </span>Methods of the <code class=external data-anolis-spec=html>HTMLDocument</code> interface</a></li>
- <li><a href=#common-definitions><span class=secno>5 </span>Common definitions</a></li>
- <li><a href=#common-algorithms><span class=secno>6 </span>Common algorithms</a>
+   <li><a href=#properties-of-commands><span class=secno>4.1 </span>Properties of commands</a></li>
+   <li><a href=#supported-commands><span class=secno>4.2 </span>Supported commands</a></li>
+   <li><a href=#enabled-commands><span class=secno>4.3 </span>Enabled commands</a></ol></li>
+ <li><a href=#methods-of-the-htmldocument-interface><span class=secno>5 </span>Methods of the <code class=external data-anolis-spec=html>HTMLDocument</code> interface</a></li>
+ <li><a href=#common-definitions><span class=secno>6 </span>Common definitions</a></li>
+ <li><a href=#common-algorithms><span class=secno>7 </span>Common algorithms</a>
   <ol>
-   <li><a href=#assorted-common-algorithms><span class=secno>6.1 </span>Assorted common algorithms</a></li>
-   <li><a href=#wrapping-a-list-of-nodes><span class=secno>6.2 </span>Wrapping a list of nodes</a></li>
-   <li><a href=#allowed-children><span class=secno>6.3 </span>Allowed children</a></ol></li>
- <li><a href=#inline-formatting-commands><span class=secno>7 </span>Inline formatting commands</a>
+   <li><a href=#assorted-common-algorithms><span class=secno>7.1 </span>Assorted common algorithms</a></li>
+   <li><a href=#wrapping-a-list-of-nodes><span class=secno>7.2 </span>Wrapping a list of nodes</a></li>
+   <li><a href=#allowed-children><span class=secno>7.3 </span>Allowed children</a></ol></li>
+ <li><a href=#inline-formatting-commands><span class=secno>8 </span>Inline formatting commands</a>
   <ol>
-   <li><a href=#inline-formatting-command-definitions><span class=secno>7.1 </span>Inline formatting command definitions</a></li>
-   <li><a href=#assorted-inline-formatting-command-algorithms><span class=secno>7.2 </span>Assorted inline formatting command algorithms</a></li>
-   <li><a href="#clearing-an-element's-value"><span class=secno>7.3 </span>Clearing an element's value</a></li>
-   <li><a href=#pushing-down-values><span class=secno>7.4 </span>Pushing down values</a></li>
-   <li><a href=#forcing-the-value-of-a-node><span class=secno>7.5 </span>Forcing the value of a node</a></li>
-   <li><a href="#setting-the-selection's-value"><span class=secno>7.6 </span>Setting the selection's value</a></li>
-   <li><a href=#the-backcolor-command><span class=secno>7.7 </span>The <code title="">backColor</code> command</a></li>
-   <li><a href=#the-bold-command><span class=secno>7.8 </span>The <code title="">bold</code> command</a></li>
-   <li><a href=#the-createlink-command><span class=secno>7.9 </span>The <code title="">createLink</code> command</a></li>
-   <li><a href=#the-fontname-command><span class=secno>7.10 </span>The <code title="">fontName</code> command</a></li>
-   <li><a href=#the-fontsize-command><span class=secno>7.11 </span>The <code title="">fontSize</code> command</a></li>
-   <li><a href=#the-forecolor-command><span class=secno>7.12 </span>The <code title="">foreColor</code> command</a></li>
-   <li><a href=#the-hilitecolor-command><span class=secno>7.13 </span>The <code title="">hiliteColor</code> command</a></li>
-   <li><a href=#the-italic-command><span class=secno>7.14 </span>The <code title="">italic</code> command</a></li>
-   <li><a href=#the-removeformat-command><span class=secno>7.15 </span>The <code title="">removeFormat</code> command</a></li>
-   <li><a href=#the-strikethrough-command><span class=secno>7.16 </span>The <code title="">strikethrough</code> command</a></li>
-   <li><a href=#the-subscript-command><span class=secno>7.17 </span>The <code title="">subscript</code> command</a></li>
-   <li><a href=#the-superscript-command><span class=secno>7.18 </span>The <code title="">superscript</code> command</a></li>
-   <li><a href=#the-underline-command><span class=secno>7.19 </span>The <code title="">underline</code> command</a></li>
-   <li><a href=#the-unlink-command><span class=secno>7.20 </span>The <code title="">unlink</code> command</a></ol></li>
- <li><a href=#block-formatting-commands><span class=secno>8 </span>Block formatting commands</a>
+   <li><a href=#inline-formatting-command-definitions><span class=secno>8.1 </span>Inline formatting command definitions</a></li>
+   <li><a href=#assorted-inline-formatting-command-algorithms><span class=secno>8.2 </span>Assorted inline formatting command algorithms</a></li>
+   <li><a href="#clearing-an-element's-value"><span class=secno>8.3 </span>Clearing an element's value</a></li>
+   <li><a href=#pushing-down-values><span class=secno>8.4 </span>Pushing down values</a></li>
+   <li><a href=#forcing-the-value-of-a-node><span class=secno>8.5 </span>Forcing the value of a node</a></li>
+   <li><a href="#setting-the-selection's-value"><span class=secno>8.6 </span>Setting the selection's value</a></li>
+   <li><a href=#the-backcolor-command><span class=secno>8.7 </span>The <code title="">backColor</code> command</a></li>
+   <li><a href=#the-bold-command><span class=secno>8.8 </span>The <code title="">bold</code> command</a></li>
+   <li><a href=#the-createlink-command><span class=secno>8.9 </span>The <code title="">createLink</code> command</a></li>
+   <li><a href=#the-fontname-command><span class=secno>8.10 </span>The <code title="">fontName</code> command</a></li>
+   <li><a href=#the-fontsize-command><span class=secno>8.11 </span>The <code title="">fontSize</code> command</a></li>
+   <li><a href=#the-forecolor-command><span class=secno>8.12 </span>The <code title="">foreColor</code> command</a></li>
+   <li><a href=#the-hilitecolor-command><span class=secno>8.13 </span>The <code title="">hiliteColor</code> command</a></li>
+   <li><a href=#the-italic-command><span class=secno>8.14 </span>The <code title="">italic</code> command</a></li>
+   <li><a href=#the-removeformat-command><span class=secno>8.15 </span>The <code title="">removeFormat</code> command</a></li>
+   <li><a href=#the-strikethrough-command><span class=secno>8.16 </span>The <code title="">strikethrough</code> command</a></li>
+   <li><a href=#the-subscript-command><span class=secno>8.17 </span>The <code title="">subscript</code> command</a></li>
+   <li><a href=#the-superscript-command><span class=secno>8.18 </span>The <code title="">superscript</code> command</a></li>
+   <li><a href=#the-underline-command><span class=secno>8.19 </span>The <code title="">underline</code> command</a></li>
+   <li><a href=#the-unlink-command><span class=secno>8.20 </span>The <code title="">unlink</code> command</a></ol></li>
+ <li><a href=#block-formatting-commands><span class=secno>9 </span>Block formatting commands</a>
   <ol>
-   <li><a href=#block-formatting-command-definitions><span class=secno>8.1 </span>Block formatting command definitions</a></li>
-   <li><a href=#assorted-block-formatting-command-algorithms><span class=secno>8.2 </span>Assorted block formatting command algorithms</a></li>
-   <li><a href=#block-extending-a-range><span class=secno>8.3 </span>Block-extending a range</a></li>
-   <li><a href=#recording-and-restoring-overrides><span class=secno>8.4 </span>Recording and restoring overrides</a></li>
-   <li><a href=#deleting-the-contents-of-a-range><span class=secno>8.5 </span>Deleting the contents of a range</a></li>
-   <li><a href="#splitting-a-node-list's-parent"><span class=secno>8.6 </span>Splitting a node list's parent</a></li>
-   <li><a href=#canonical-space-sequences><span class=secno>8.7 </span>Canonical space sequences</a></li>
-   <li><a href=#indenting-and-outdenting><span class=secno>8.8 </span>Indenting and outdenting</a></li>
-   <li><a href=#toggling-lists><span class=secno>8.9 </span>Toggling lists</a></li>
-   <li><a href=#justifying-the-selection><span class=secno>8.10 </span>Justifying the selection</a></li>
-   <li><a href=#the-delete-command><span class=secno>8.11 </span>The <code title="">delete</code> command</a></li>
-   <li><a href=#the-formatblock-command><span class=secno>8.12 </span>The <code title="">formatBlock</code> command</a></li>
-   <li><a href=#the-forwarddelete-command><span class=secno>8.13 </span>The <code title="">forwardDelete</code> command</a></li>
-   <li><a href=#the-indent-command><span class=secno>8.14 </span>The <code title="">indent</code> command</a></li>
-   <li><a href=#the-inserthorizontalrule-command><span class=secno>8.15 </span>The <code title="">insertHorizontalRule</code> command</a></li>
-   <li><a href=#the-inserthtml-command><span class=secno>8.16 </span>The <code title="">insertHTML</code> command</a></li>
-   <li><a href=#the-insertimage-command><span class=secno>8.17 </span>The <code title="">insertImage</code> command</a></li>
-   <li><a href=#the-insertlinebreak-command><span class=secno>8.18 </span>The <code title="">insertLineBreak</code> command</a></li>
-   <li><a href=#the-insertorderedlist-command><span class=secno>8.19 </span>The <code title="">insertOrderedList</code> command</a></li>
-   <li><a href=#the-insertparagraph-command><span class=secno>8.20 </span>The <code title="">insertParagraph</code> command</a></li>
-   <li><a href=#the-inserttext-command><span class=secno>8.21 </span>The <code title="">insertText</code> command</a></li>
-   <li><a href=#the-insertunorderedlist-command><span class=secno>8.22 </span>The <code title="">insertUnorderedList</code> command</a></li>
-   <li><a href=#the-justifycenter-command><span class=secno>8.23 </span>The <code title="">justifyCenter</code> command</a></li>
-   <li><a href=#the-justifyfull-command><span class=secno>8.24 </span>The <code title="">justifyFull</code> command</a></li>
-   <li><a href=#the-justifyleft-command><span class=secno>8.25 </span>The <code title="">justifyLeft</code> command</a></li>
-   <li><a href=#the-justifyright-command><span class=secno>8.26 </span>The <code title="">justifyRight</code> command</a></li>
-   <li><a href=#the-outdent-command><span class=secno>8.27 </span>The <code title="">outdent</code> command</a></ol></li>
- <li><a href=#miscellaneous-commands><span class=secno>9 </span>Miscellaneous commands</a>
+   <li><a href=#block-formatting-command-definitions><span class=secno>9.1 </span>Block formatting command definitions</a></li>
+   <li><a href=#assorted-block-formatting-command-algorithms><span class=secno>9.2 </span>Assorted block formatting command algorithms</a></li>
+   <li><a href=#block-extending-a-range><span class=secno>9.3 </span>Block-extending a range</a></li>
+   <li><a href=#recording-and-restoring-overrides><span class=secno>9.4 </span>Recording and restoring overrides</a></li>
+   <li><a href=#deleting-the-contents-of-a-range><span class=secno>9.5 </span>Deleting the contents of a range</a></li>
+   <li><a href="#splitting-a-node-list's-parent"><span class=secno>9.6 </span>Splitting a node list's parent</a></li>
+   <li><a href=#canonical-space-sequences><span class=secno>9.7 </span>Canonical space sequences</a></li>
+   <li><a href=#indenting-and-outdenting><span class=secno>9.8 </span>Indenting and outdenting</a></li>
+   <li><a href=#toggling-lists><span class=secno>9.9 </span>Toggling lists</a></li>
+   <li><a href=#justifying-the-selection><span class=secno>9.10 </span>Justifying the selection</a></li>
+   <li><a href=#the-delete-command><span class=secno>9.11 </span>The <code title="">delete</code> command</a></li>
+   <li><a href=#the-formatblock-command><span class=secno>9.12 </span>The <code title="">formatBlock</code> command</a></li>
+   <li><a href=#the-forwarddelete-command><span class=secno>9.13 </span>The <code title="">forwardDelete</code> command</a></li>
+   <li><a href=#the-indent-command><span class=secno>9.14 </span>The <code title="">indent</code> command</a></li>
+   <li><a href=#the-inserthorizontalrule-command><span class=secno>9.15 </span>The <code title="">insertHorizontalRule</code> command</a></li>
+   <li><a href=#the-inserthtml-command><span class=secno>9.16 </span>The <code title="">insertHTML</code> command</a></li>
+   <li><a href=#the-insertimage-command><span class=secno>9.17 </span>The <code title="">insertImage</code> command</a></li>
+   <li><a href=#the-insertlinebreak-command><span class=secno>9.18 </span>The <code title="">insertLineBreak</code> command</a></li>
+   <li><a href=#the-insertorderedlist-command><span class=secno>9.19 </span>The <code title="">insertOrderedList</code> command</a></li>
+   <li><a href=#the-insertparagraph-command><span class=secno>9.20 </span>The <code title="">insertParagraph</code> command</a></li>
+   <li><a href=#the-inserttext-command><span class=secno>9.21 </span>The <code title="">insertText</code> command</a></li>
+   <li><a href=#the-insertunorderedlist-command><span class=secno>9.22 </span>The <code title="">insertUnorderedList</code> command</a></li>
+   <li><a href=#the-justifycenter-command><span class=secno>9.23 </span>The <code title="">justifyCenter</code> command</a></li>
+   <li><a href=#the-justifyfull-command><span class=secno>9.24 </span>The <code title="">justifyFull</code> command</a></li>
+   <li><a href=#the-justifyleft-command><span class=secno>9.25 </span>The <code title="">justifyLeft</code> command</a></li>
+   <li><a href=#the-justifyright-command><span class=secno>9.26 </span>The <code title="">justifyRight</code> command</a></li>
+   <li><a href=#the-outdent-command><span class=secno>9.27 </span>The <code title="">outdent</code> command</a></ol></li>
+ <li><a href=#miscellaneous-commands><span class=secno>10 </span>Miscellaneous commands</a>
   <ol>
-   <li><a href=#the-copy-command><span class=secno>9.1 </span>The <code title="">copy</code> command</a></li>
-   <li><a href=#the-cut-command><span class=secno>9.2 </span>The <code title="">cut</code> command</a></li>
-   <li><a href=#the-paste-command><span class=secno>9.3 </span>The <code title="">paste</code> command</a></li>
-   <li><a href=#the-selectall-command><span class=secno>9.4 </span>The <code title="">selectAll</code> command</a></li>
-   <li><a href=#the-stylewithcss-command><span class=secno>9.5 </span>The <code title="">styleWithCSS</code> command</a></li>
-   <li><a href=#the-usecss-command><span class=secno>9.6 </span>The <code title="">useCSS</code> command</a></ol></li>
- <li><a href=#additional-requirements><span class=secno>10 </span>Additional requirements</a></li>
+   <li><a href=#the-copy-command><span class=secno>10.1 </span>The <code title="">copy</code> command</a></li>
+   <li><a href=#the-cut-command><span class=secno>10.2 </span>The <code title="">cut</code> command</a></li>
+   <li><a href=#the-paste-command><span class=secno>10.3 </span>The <code title="">paste</code> command</a></li>
+   <li><a href=#the-selectall-command><span class=secno>10.4 </span>The <code title="">selectAll</code> command</a></li>
+   <li><a href=#the-stylewithcss-command><span class=secno>10.5 </span>The <code title="">styleWithCSS</code> command</a></li>
+   <li><a href=#the-usecss-command><span class=secno>10.6 </span>The <code title="">useCSS</code> command</a></ol></li>
+ <li><a href=#additional-requirements><span class=secno>11 </span>Additional requirements</a></li>
  <li><a class=no-num href=#acknowledgements>Acknowledgements</a></ol>
 <!--end-toc-->
 
@@ -258,7 +259,150 @@ and commonly record what the major browsers do and other essential information.
 </ul>
 
 
-<h2 id=issues><span class=secno>2 </span>Issues</h2>
+<h2 id=tests><span class=secno>2 </span>Tests</h2>
+
+
+<p>This specification is developed in tandem with a more or less complete <a href=implementation.js>JavaScript implementation</a>, which is used for a suite
+of fully automated tests plus a few separate suites of manual tests.  The tests
+are:
+
+<ul>
+  <li><a href=autoimplementation.html>autoimplementation.html</a>: Fully
+  automated tests for pretty much all commands.
+
+  <li><a href=deletetest.html>deletetest.html</a>: Manual tests for <a href=#the-delete-command>the
+  <code title="">delete</code> command</a>.
+
+  <li><a href=forwarddeletetest.html>forwarddeletetest.html</a>: Manual tests
+  for <a href=#the-forwarddelete-command>the <code title="">forwardDelete</code> command</a>.
+
+  <li><a href=insertlinebreaktest.html>insertlinebreaktest.html</a>: Manual
+  tests for <a href=#the-insertlinebreak-command>the <code title="">insertLineBreak</code> command</a>.
+
+  <li><a href=insertparagraphtest.html>insertparagraphtest.html</a>: Manual
+  tests for <a href=#the-insertparagraph-command>the <code title="">insertParagraph</code> command</a>.
+
+  <li><a href=inserttexttest.html>inserttexttest.html</a>: Manual tests for
+  <a href=#the-inserttext-command>the <code title="">insertText</code> command</a>, with <var title="">value</var>
+  "a".
+
+  <li><a href=inserttext2test.html>inserttext2test.html</a>: Manual tests for
+  <a href=#the-inserttext-command>the <code title="">insertText</code> command</a>, with <var title="">value</var>
+  " ".
+</ul>
+
+<p>The automated tests run the JavaScript implementation of the specification
+on a particular input, then run the browser's implementation on the same input
+for comparison.  The results of running automated tests are placed in a table,
+with rows marked as passing or failing based on whether the browser output is
+"close enough" to the spec output.  Since the tests are designed for debugging
+the spec rather than actually testing conformance, minor variations are allowed
+to avoid having browsers fail many tests for uninteresting reasons.  Passes and
+fails are based only on <code><a href=#execcommand()>execCommand()</a></code> output, not <code title="">queryCommand*()</code>: the latter is sanity-checked, and colored green
+or red if it's known to be right or wrong on general principle, but spec and
+browser output are not compared.
+
+<p>The tests will optionally store the specification's result for each test in
+<code title="">localStorage</code>, and will raise an alert for any new test (no
+stored output), any test whose spec output is different from the last run, and
+any test whose spec output is otherwise clearly bad (e.g., producing a
+non-serializable DOM).  This is mostly useful for debugging and
+regression-testing the spec itself, and is probably not interesting to anyone
+other than me.
+
+<p>There's a suite of tests for each command (~30&ndash;300 at the time of this
+writing) that can be run by clicking the "Run tests" button.  This can take a
+while for some commands.  You can also enter your own tests manually in the box
+provided.  The test input is a snippet of HTML, which must have a selection
+marked in it.  There are three ways to mark a selection's start or end:
+
+<ol>
+  <li>Square brackets mark a selection inside a text node, like <code title="">&lt;b&gt;foo[bar]baz&lt;/b&gt;</code> for a selection whose start and end
+  nodes are in the text node <code title="">foobarbaz</code>, with start offset 3
+  and end offset 6.  Do not use square brackets where there's no text node:
+  <code title="">&lt;b&gt;[]&lt;/b&gt;</code> is bad, <code title="">&lt;b&gt;{}&lt;/b&gt;</code>
+  is correct.
+
+  <li>Curly braces mark a selection inside an element, like <code title="">&lt;b&gt;{foobarbaz&lt;/b&gt;}</code> for a selection whose start node is the
+  element <code title="">&lt;b&gt;</code>, whose start offset is 0, whose end node is
+  the root of the editable region, and whose end offset is 1.  Do not use curly
+  braces in the middle of a text node: <code title="">foo{bar}baz</code> is bad,
+  <code title="">foo[bar]baz</code> is correct.
+
+  <li>The <code title="">data-start</code> and <code title="">data-end</code>
+  attributes mark a selection inside an element if a curly brace can't be put
+  there in text/html.  For instance, <code title="">&lt;table&gt;&lt;tr&gt;{&lt;td&gt;foo&lt;/td&gt;}&lt;/tr&gt;&lt;/table&gt;</code> doesn't
+  work because when the fragment is parsed, the curly braces end up outside the
+  table.  Instead, you have to do <code title="">&lt;table&gt;&lt;tr data-start=0
+  data-end=1&gt;&lt;td&gt;foo&lt;/table&gt;</code>.
+</ol>
+
+<p>Every input must have exactly one start marker and one end marker, which
+will be removed from the DOM before the test is run.  You can mix and match
+marker types, e.g., <code title="">[foo}</code>.
+
+<p>When a test runs, first the code sets up a contenteditable div with the
+given contents and sets the selection as requested.  Then it runs
+<code><a href=#querycommandindeterm()>queryCommandIndeterm()</a></code>, <code><a href=#querycommandstate()>queryCommandState()</a></code>, and
+<code><a href=#querycommandvalue()>queryCommandValue()</a></code>, and their values are noted.  Then it runs
+<code><a href=#execcommand()>execCommand()</a></code>.  Finally, it runs
+<code><a href=#querycommandindeterm()>queryCommandIndeterm()</a></code>, <code><a href=#querycommandstate()>queryCommandState()</a></code>, and
+<code><a href=#querycommandvalue()>queryCommandValue()</a></code> again.  Then it adds the output to the table.
+
+<p>There is one special test type that behaves differently, "multitest".  This
+allows running several tests in succession, which is needed at least for
+testing the effect of commands' <a href=#state-override>state override</a> or <a href=#value-override>value
+override</a>.  The syntax is JSON, and looks like
+
+<pre>[<var title="">HTML input</var>,
+  [<var title="">command name 1</var>, <var title="">command value 1</var>],
+  [<var title="">command name 2</var>, <var title="">command value 2</var>],
+  . . .]</pre>
+
+<p>where all the variables are properly-quoted JSON strings.  <code title="">queryCommand*()</code> are not run for multitests.
+
+<p>Commands that are expected to vary significantly based on the value of the
+<a href=#css-styling-flag>CSS styling flag</a> have two tables of results.  The first table runs
+<code title="">execCommand("styleWithCSS", false, "false")</code> before every
+command, and the second runs <code title="">execCommand("styleWithCSS", false,
+"true")</code> before every command.  All other commands other than multitests
+run <code title="">execCommand("styleWithCSS", false, "false")</code> before every
+command.  The extra tests are not run in IE or Opera, because they don't
+implement <a href=#the-stylewithcss-command>the <code title="">styleWithCSS</code> command</a>.
+
+<p>The manual tests are much like the automated tests, with some key
+differences.  They only test one command each, with one input value (if
+applicable).  When a test is run, everything proceeds as in the automated case,
+but instead of running <code><a href=#execcommand()>execCommand()</a></code> for the browser tests, the
+user is asked to hit the appropriate key (backspace, delete, enter, etc.).
+Thus when running the tests for the first time, the user has to hit a key
+repeatedly, perhaps a few hundred times.  The browser's result is then cached
+in <code title="">localStorage</code> so no manual intervention is required on
+subsequent runs except for newly-added tests, but the cached entries can be
+cleared if necessary.
+
+<p>The tests have been tested and largely work in the latest versions (at the
+time of this writing) of IE, Firefox, Chrome, and Opera.  Since the
+implementation of the spec is in JavaScript, it's vulnerable to bugs in
+browsers' JavaScript implementations.  I work around or warn about some of
+these, but not all.  The most correct results will probably be in Firefox or
+Chrome: both IE and Opera have serious known bugs that corrupt spec output for
+many tests.  The tests are still useful for reviewing the browser output, but
+spec output in those browsers should be sanity-checked and compared against
+another browser's spec output in case of doubt.
+
+<p>These tests are really meant to aid spec development by seeing how browsers
+behave, not to aid browser development by seeing where the browser doesn't
+match the spec.  Proper conformance tests would a) record all expected results
+statically to avoid browser JS bugs, and b) compare expected and actual results
+much more strictly.  They would also test a <em>lot</em> more corner cases,
+like nested <code title="">contenteditable=false</code> regions.  It should be
+relatively easy to transform the existing tests into proper conformance tests,
+but there's not much point until the spec is more stable.
+
+
+
+<h2 id=issues><span class=secno>3 </span>Issues</h2>
 
 <p>This specification is mostly feature-complete.  It's more or less fully
 implemented in JavaScript, and has been tested on a fairly significant amount
@@ -418,9 +562,9 @@ to fix right now are in comments prefixed with "TODO".
 
 
 
-<h2 id=commands><span class=secno>3 </span>Commands</h2>
+<h2 id=commands><span class=secno>4 </span>Commands</h2>
 
-<h3 id=properties-of-commands><span class=secno>3.1 </span>Properties of commands</h3>
+<h3 id=properties-of-commands><span class=secno>4.1 </span>Properties of commands</h3>
 
 <p>This specification defines a number of <dfn id=command title=command>commands</dfn>,
 identified by <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#ascii-case-insensitive>ASCII case-insensitive</a>
@@ -485,7 +629,7 @@ with it:
 </ul>
 
 
-<h3 id=supported-commands><span class=secno>3.2 </span>Supported commands</h3>
+<h3 id=supported-commands><span class=secno>4.2 </span>Supported commands</h3>
 
 <p class=comments>If you try doing anything with an unrecognized command, IE9
 throws an "Invalid argument" exception, and Firefox 6.0a2 throws
@@ -526,7 +670,7 @@ reasons.
 using <code><a href=#querycommandsupported()>queryCommandSupported()</a></code>.
 
 
-<h3 id=enabled-commands><span class=secno>3.3 </span>Enabled commands</h3>
+<h3 id=enabled-commands><span class=secno>4.3 </span>Enabled commands</h3>
 
 <p>At any given time, a <a href=#supported>supported</a> command can be either
 <dfn id=enabled>enabled</dfn> or not.  Authors can tell whether a <a href=#command>command</a> is
@@ -570,7 +714,7 @@ null, and disabled otherwise.
 
 
 
-<h2 id=methods-of-the-htmldocument-interface><span class=secno>4 </span>Methods of the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface</h2>
+<h2 id=methods-of-the-htmldocument-interface><span class=secno>5 </span>Methods of the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface</h2>
 
 <p class=comments>TODO: Define behavior for <var title="">show UI</var>.
 
@@ -765,7 +909,7 @@ these invariants are bugs in the specification.
 </div>
 
 
-<h2 id=common-definitions><span class=secno>5 </span>Common definitions</h2>
+<h2 id=common-definitions><span class=secno>6 </span>Common definitions</h2>
 
 <p>An <dfn id=html-element>HTML element</dfn> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-namespace title=concept-element-namespace>namespace</a> is the
 <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#html-namespace>HTML namespace</a>.
@@ -934,9 +1078,9 @@ is instructed to run particular steps for each member of a list, it must do so
 sequentially in the list's order.
 
 
-<h2 id=common-algorithms><span class=secno>6 </span>Common algorithms</h2>
+<h2 id=common-algorithms><span class=secno>7 </span>Common algorithms</h2>
 
-<h3 id=assorted-common-algorithms><span class=secno>6.1 </span>Assorted common algorithms</h3>
+<h3 id=assorted-common-algorithms><span class=secno>7.1 </span>Assorted common algorithms</h3>
 
 <p>To move a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> to a new location, <dfn id=preserving-ranges>preserving ranges</dfn>, remove
 the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> from its original <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> (if any), then insert it in the new
@@ -1061,7 +1205,7 @@ we like to remove the extra markup to keep things tidy.
 extraneous line breaks at the end of</a> it.
 
 
-<h3 id=wrapping-a-list-of-nodes><span class=secno>6.2 </span>Wrapping a list of nodes</h3>
+<h3 id=wrapping-a-list-of-nodes><span class=secno>7.2 </span>Wrapping a list of nodes</h3>
 
 <p>To <dfn id=wrap>wrap</dfn> a list <var title="">node list</var> of consecutive <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-sibling title=concept-tree-sibling>sibling</a>
 <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>, run the following algorithm.  In addition to <var title="">node list</var>,
@@ -1253,7 +1397,7 @@ criteria</var> returning true only for <code title="">&lt;b&gt;</code> elements 
 </ol>
 
 
-<h3 id=allowed-children><span class=secno>6.3 </span>Allowed children</h3>
+<h3 id=allowed-children><span class=secno>7.3 </span>Allowed children</h3>
 
 <div class=comments>
 <p>List is mostly based on current HTML5, together with obsolete
@@ -1425,9 +1569,9 @@ caller of this algorithm.
 </ol>
 
 
-<h2 id=inline-formatting-commands><span class=secno>7 </span>Inline formatting commands</h2>
+<h2 id=inline-formatting-commands><span class=secno>8 </span>Inline formatting commands</h2>
 
-<h3 id=inline-formatting-command-definitions><span class=secno>7.1 </span>Inline formatting command definitions</h3>
+<h3 id=inline-formatting-command-definitions><span class=secno>8.1 </span>Inline formatting command definitions</h3>
 
 <p class=comments>The difference between "contained" and "effectively
 contained" is basically that 1) in &lt;b&gt;[foo]&lt;/b&gt;, the text node and the
@@ -1604,7 +1748,7 @@ inline value commands are mostly just shorthand to avoid repeating the same
 boilerplate half a dozen times.
 
 
-<h3 id=assorted-inline-formatting-command-algorithms><span class=secno>7.2 </span>Assorted inline formatting command algorithms</h3>
+<h3 id=assorted-inline-formatting-command-algorithms><span class=secno>8.2 </span>Assorted inline formatting command algorithms</h3>
 
 <p>The <dfn id=effective-command-value>effective command value</dfn> of a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var> for a
 given <var title="">command</var> is returned by the following algorithm, which will
@@ -1861,7 +2005,7 @@ returned by the <a href=#record-the-values>record the values</a> algorithm:
 
 
 
-<h3 id="clearing-an-element's-value"><span class=secno>7.3 </span>Clearing an element's value</h3>
+<h3 id="clearing-an-element's-value"><span class=secno>8.3 </span>Clearing an element's value</h3>
 
 <p>To <dfn id=clear-the-value>clear the value</dfn> of an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> <var title="">element</var>:
 
@@ -1939,7 +2083,7 @@ in the selection before doing anything else to keep the markup tidy.
 </ol>
 
 
-<h3 id=pushing-down-values><span class=secno>7.4 </span>Pushing down values</h3>
+<h3 id=pushing-down-values><span class=secno>8.4 </span>Pushing down values</h3>
 
 <div class=comments>
 <p>This algorithm goes up to just below the nearest ancestor with the right
@@ -2100,7 +2244,7 @@ nested styles, which is usually more cluttered (although not always).
 </ol>
 
 
-<h3 id=forcing-the-value-of-a-node><span class=secno>7.5 </span>Forcing the value of a node</h3>
+<h3 id=forcing-the-value-of-a-node><span class=secno>8.5 </span>Forcing the value of a node</h3>
 
 <p>To <dfn id=force-the-value>force the value</dfn> of a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var> to <var title="">new
 value</var>:
@@ -2420,7 +2564,7 @@ value</var>:
 </ol>
 
 
-<h3 id="setting-the-selection's-value"><span class=secno>7.6 </span>Setting the selection's value</h3>
+<h3 id="setting-the-selection's-value"><span class=secno>8.6 </span>Setting the selection's value</h3>
 
 <p>To <dfn id="set-the-selection's-value">set the selection's value</dfn> to <var title="">new value</var>:
 
@@ -2614,7 +2758,7 @@ desired.
 </ol>
 
 
-<h3 id=the-backcolor-command><span class=secno>7.7 </span><dfn>The <code title="">backColor</code> command</dfn></h3>
+<h3 id=the-backcolor-command><span class=secno>8.7 </span><dfn>The <code title="">backColor</code> command</dfn></h3>
 
 <p class=note>For historical reasons, backColor and hiliteColor behave
 identically.
@@ -2676,7 +2820,7 @@ have the same red, green, blue, and alpha components, or neither string is a
 valid CSS color.
 
 
-<h3 id=the-bold-command><span class=secno>7.8 </span><dfn>The <code title="">bold</code> command</dfn></h3>
+<h3 id=the-bold-command><span class=secno>8.8 </span><dfn>The <code title="">bold</code> command</dfn></h3>
 
 <p class=comments>If the selection is collapsed (but not if it contains nothing
 but is not collapsed), IE9 wraps the whole line in a &lt;strong&gt;.  This seems
@@ -2715,7 +2859,7 @@ or "900"
 "bold" and the other is "700", or one is "normal" and the other is "400".
 
 
-<h3 id=the-createlink-command><span class=secno>7.9 </span><dfn>The <code title="">createLink</code> command</dfn></h3>
+<h3 id=the-createlink-command><span class=secno>8.9 </span><dfn>The <code title="">createLink</code> command</dfn></h3>
 
 <p class=comments> If the selection doesn't contain anything (meaning, e.g.,
 deleteContents() doesn't change anything), then Chrome 12 dev inserts a link at
@@ -2776,7 +2920,7 @@ indeterminate and value anyway because they make sense.
 <p><a href=#standard-inline-value-command>Standard inline value command</a>
 
 
-<h3 id=the-fontname-command><span class=secno>7.10 </span><dfn>The <code title="">fontName</code> command</dfn></h3>
+<h3 id=the-fontname-command><span class=secno>8.10 </span><dfn>The <code title="">fontName</code> command</dfn></h3>
 
 <div class=comments>
 <p>UAs differ a bit in the details here:
@@ -2846,7 +2990,7 @@ applicable style rules.
 <p><a href=#relevant-css-property>Relevant CSS property</a>: "font-family"
 
 
-<h3 id=the-fontsize-command><span class=secno>7.11 </span><dfn>The <code title="">fontSize</code> command</dfn></h3>
+<h3 id=the-fontsize-command><span class=secno>8.11 </span><dfn>The <code title="">fontSize</code> command</dfn></h3>
 
 <div class=comments>
 <dl>
@@ -3049,7 +3193,7 @@ returned by the following algorithm:
   <li>Return "7".
 </ol>
 
-<h3 id=the-forecolor-command><span class=secno>7.12 </span><dfn>The <code title="">foreColor</code> command</dfn></h3>
+<h3 id=the-forecolor-command><span class=secno>8.12 </span><dfn>The <code title="">foreColor</code> command</dfn></h3>
 
 <div class=comments>
 <p>Color interpretations:
@@ -3168,7 +3312,7 @@ have the same red, green, blue, and alpha components, or neither string is a
 valid CSS color.
 
 
-<h3 id=the-hilitecolor-command><span class=secno>7.13 </span><dfn>The <code title="">hiliteColor</code> command</dfn></h3>
+<h3 id=the-hilitecolor-command><span class=secno>8.13 </span><dfn>The <code title="">hiliteColor</code> command</dfn></h3>
 
 <p class=note>For historical reasons, backColor and hiliteColor behave
 identically.
@@ -3222,7 +3366,7 @@ have the same red, green, blue, and alpha components, or neither string is a
 valid CSS color.
 
 
-<h3 id=the-italic-command><span class=secno>7.14 </span><dfn>The <code title="">italic</code> command</dfn></h3>
+<h3 id=the-italic-command><span class=secno>8.14 </span><dfn>The <code title="">italic</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: If <code title=queryCommandState()><a href=#querycommandstate()>queryCommandState("italic")</a></code> returns true,
 <a href="#set-the-selection's-value">set the selection's value</a> to "normal".  Otherwise <a href="#set-the-selection's-value">set the
@@ -3233,7 +3377,7 @@ selection's value</a> to "italic".
 <p><a href=#relevant-css-property>Relevant CSS property</a>: "font-style"
 
 
-<h3 id=the-removeformat-command><span class=secno>7.15 </span><dfn>The <code title="">removeFormat</code> command</dfn></h3>
+<h3 id=the-removeformat-command><span class=secno>8.15 </span><dfn>The <code title="">removeFormat</code> command</dfn></h3>
 
 <div class=comments>
 <p>Tested in IE 9, Firefox 4.0, Chrome 12 dev, Opera 11.00.
@@ -3368,7 +3512,7 @@ IE10PP2, Firefox 7.0a2, and Opera 11.50 do not, so I go with them.
 </ol>
 
 
-<h3 id=the-strikethrough-command><span class=secno>7.16 </span><dfn>The <code title="">strikethrough</code> command</dfn></h3>
+<h3 id=the-strikethrough-command><span class=secno>8.16 </span><dfn>The <code title="">strikethrough</code> command</dfn></h3>
 
 <p class=comments>TODO: See underline TODO.
 
@@ -3379,7 +3523,7 @@ selection's value</a> to "line-through".
 <p><a href=#inline-command-activated-values>Inline command activated values</a>: "line-through"
 
 
-<h3 id=the-subscript-command><span class=secno>7.17 </span><dfn>The <code title="">subscript</code> command</dfn></h3>
+<h3 id=the-subscript-command><span class=secno>8.17 </span><dfn>The <code title="">subscript</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>:
 
@@ -3415,7 +3559,7 @@ consider it indeterminate.
 <p><a href=#inline-command-activated-values>Inline command activated values</a>: "subscript"
 
 
-<h3 id=the-superscript-command><span class=secno>7.18 </span><dfn>The <code title="">superscript</code> command</dfn></h3>
+<h3 id=the-superscript-command><span class=secno>8.18 </span><dfn>The <code title="">superscript</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>:
 
@@ -3440,7 +3584,7 @@ value</a>; or if there is some <a href=#editable>editable</a> <code class=extern
 <p><a href=#inline-command-activated-values>Inline command activated values</a>: "superscript"
 
 
-<h3 id=the-underline-command><span class=secno>7.19 </span><dfn>The <code title="">underline</code> command</dfn></h3>
+<h3 id=the-underline-command><span class=secno>8.19 </span><dfn>The <code title="">underline</code> command</dfn></h3>
 
 <div class=comments>
 <p>TODO: There are a lot of problems with underline color and thickness,
@@ -3496,7 +3640,7 @@ selection's value</a> to "underline".
 <p><a href=#inline-command-activated-values>Inline command activated values</a>: "underline"
 
 
-<h3 id=the-unlink-command><span class=secno>7.20 </span><dfn>The <code title="">unlink</code> command</dfn></h3>
+<h3 id=the-unlink-command><span class=secno>8.20 </span><dfn>The <code title="">unlink</code> command</dfn></h3>
 
 <p class=comments>IE 9 RC unlinks the whole link you're pointing at, while
 others only unlink the current text.  The latter behavior seems less expected,
@@ -3523,9 +3667,9 @@ indeterminate and value anyway because they make sense.
 
 
 
-<h2 id=block-formatting-commands><span class=secno>8 </span>Block formatting commands</h2>
+<h2 id=block-formatting-commands><span class=secno>9 </span>Block formatting commands</h2>
 
-<h3 id=block-formatting-command-definitions><span class=secno>8.1 </span>Block formatting command definitions</h3>
+<h3 id=block-formatting-command-definitions><span class=secno>9.1 </span>Block formatting command definitions</h3>
 
 <p>An <dfn id=indentation-element>indentation element</dfn> is either a <code class=external data-anolis-spec=html title="the blockquote element"><a href=http://www.whatwg.org/html/#the-blockquote-element>blockquote</a></code>, or a <code class=external data-anolis-spec=html title="the div element"><a href=http://www.whatwg.org/html/#the-div-element>div</a></code>
 that has a <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute that sets "margin" or some subproperty of it.
@@ -3571,7 +3715,7 @@ container</a>, or an <a href=#html-element>HTML element</a> with <a class=extern
 <p>The <dfn id=default-single-line-container-name>default single-line container name</dfn> is "p".
 
 
-<h3 id=assorted-block-formatting-command-algorithms><span class=secno>8.2 </span>Assorted block formatting command algorithms</h3>
+<h3 id=assorted-block-formatting-command-algorithms><span class=secno>9.2 </span>Assorted block formatting command algorithms</h3>
 
 <p class=comments>TODO: When breaking a non-inline element out of an inline
 element, like p in b or whatever, it would make sense to re-wrap the contents
@@ -3844,7 +3988,7 @@ ancestor (if any).
 </ol>
 
 
-<h3 id=block-extending-a-range><span class=secno>8.3 </span>Block-extending a range</h3>
+<h3 id=block-extending-a-range><span class=secno>9.3 </span>Block-extending a range</h3>
 
 <p>When a user agent is to <dfn id=block-extend>block-extend</dfn> a <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>
 <var title="">range</var>, it must run the following steps:
@@ -3994,7 +4138,7 @@ algorithm returns true:
 </ol>
 
 
-<h3 id=recording-and-restoring-overrides><span class=secno>8.4 </span>Recording and restoring overrides</h3>
+<h3 id=recording-and-restoring-overrides><span class=secno>9.4 </span>Recording and restoring overrides</h3>
 <!--@{-->
 
 <p>To <dfn id=record-current-overrides>record current overrides</dfn>:
@@ -4136,7 +4280,7 @@ algorithm returns true:
 </ol>
 
 <!--@}-->
-<h3 id=deleting-the-contents-of-a-range><span class=secno>8.5 </span>Deleting the contents of a range</h3>
+<h3 id=deleting-the-contents-of-a-range><span class=secno>9.5 </span>Deleting the contents of a range</h3>
 
 <p class=comments>TODO: Consider what should happen for block merging in corner
 cases like display: inline-table.
@@ -4656,7 +4800,7 @@ style from the old text.
 </ol>
 
 
-<h3 id="splitting-a-node-list's-parent"><span class=secno>8.6 </span>Splitting a node list's parent</h3>
+<h3 id="splitting-a-node-list's-parent"><span class=secno>9.6 </span>Splitting a node list's parent</h3>
 
 <p>To <dfn id=split-the-parent>split the parent</dfn> of a list <var title="">node list</var> of consecutive
 <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-sibling title=concept-tree-sibling>sibling</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>:
@@ -4811,7 +4955,7 @@ descendants</dfn>, <a href=#split-the-parent>split the parent</a> of <var title=
 its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
 
-<h3 id=canonical-space-sequences><span class=secno>8.7 </span>Canonical space sequences</h3>
+<h3 id=canonical-space-sequences><span class=secno>9.7 </span>Canonical space sequences</h3>
 
 <div class=note>
 <p>Whitespace in HTML normally collapses.  However, if the user hits the space
@@ -5050,7 +5194,7 @@ returned by the following algorithm:
 </ol>
 
 
-<h3 id=indenting-and-outdenting><span class=secno>8.8 </span>Indenting and outdenting</h3>
+<h3 id=indenting-and-outdenting><span class=secno>9.8 </span>Indenting and outdenting</h3>
 
 <div class=note>
 <p>There are two basically different types of indent/outdent: lists, and
@@ -5410,7 +5554,7 @@ Consider removing it anyway.
 </ol>
 
 
-<h3 id=toggling-lists><span class=secno>8.9 </span>Toggling lists</h3>
+<h3 id=toggling-lists><span class=secno>9.9 </span>Toggling lists</h3>
 
 <div class=note>
 <p>This is the action for <a href=#the-insertorderedlist-command>the <code title="">insertOrderedList</code>
@@ -6154,7 +6298,7 @@ not &lt;ul&gt;&lt;li&gt;foo&lt;/ul&gt;&lt;ol&gt;&lt;li&gt;[bar&lt;/ol&gt;&lt;ul&
 </ol>
 
 
-<h3 id=justifying-the-selection><span class=secno>8.10 </span>Justifying the selection</h3>
+<h3 id=justifying-the-selection><span class=secno>9.10 </span>Justifying the selection</h3>
 
 <p class=note>This is the <a href=#action>action</a> for the four <code title="">justify*</code> commands.  It's pretty straightforward, with no notable
 gotchas or special cases.  It works more or less like a stripped-down version
@@ -6280,7 +6424,7 @@ would be worth the added complexity.
 </ol>
 
 
-<h3 id=the-delete-command><span class=secno>8.11 </span><dfn>The <code title="">delete</code> command</dfn></h3>
+<h3 id=the-delete-command><span class=secno>9.11 </span><dfn>The <code title="">delete</code> command</dfn></h3>
 
 <div class=note>
 <p>This is the same as hitting backspace (see <a href=#additional-requirements>Additional requirements</a>).  The easy part is
@@ -6668,7 +6812,7 @@ leaves things like &lt;b&gt;{}&lt;/b&gt; in the DOM, which is unhelpful, so I do
 </ol>
 
 
-<h3 id=the-formatblock-command><span class=secno>8.12 </span><dfn>The <code title="">formatBlock</code> command</dfn></h3>
+<h3 id=the-formatblock-command><span class=secno>9.12 </span><dfn>The <code title="">formatBlock</code> command</dfn></h3>
 
 <p class=note>This command lets you change what block element particular lines
 are wrapped in.  It will convert an existing wrapper if one exists, and
@@ -7000,7 +7144,7 @@ writing means what Firefox supports plus div.
 </ol>
 
 
-<h3 id=the-forwarddelete-command><span class=secno>8.13 </span><dfn>The <code title="">forwardDelete</code> command</dfn></h3>
+<h3 id=the-forwarddelete-command><span class=secno>9.13 </span><dfn>The <code title="">forwardDelete</code> command</dfn></h3>
 
 <p class=note>This is the same as hitting the delete key (see <a href=#additional-requirements>Additional requirements</a>).  It behaves much
 the same as <a href=#the-delete-command>the <code title="">delete</code> command</a>, except of
@@ -7195,7 +7339,7 @@ diacritic, so you have to backspace several times to remove the whole cluster.)
 </ol>
 
 
-<h3 id=the-indent-command><span class=secno>8.14 </span><dfn>The <code title="">indent</code> command</dfn></h3>
+<h3 id=the-indent-command><span class=secno>9.14 </span><dfn>The <code title="">indent</code> command</dfn></h3>
 
 <div class=comments>
 <dl>
@@ -7303,7 +7447,7 @@ of ways.
 </ol>
 
 
-<h3 id=the-inserthorizontalrule-command><span class=secno>8.15 </span><dfn>The <code title="">insertHorizontalRule</code> command</dfn></h3>
+<h3 id=the-inserthorizontalrule-command><span class=secno>9.15 </span><dfn>The <code title="">insertHorizontalRule</code> command</dfn></h3>
 
 <p class=comments>You'd think interop here would be simple, right?  Nope: we
 have three different behaviors across four browsers.  Opera 11.00 is the only
@@ -7372,7 +7516,7 @@ behavior in splitting up parents to ensure validity . . .
 </ol>
 
 
-<h3 id=the-inserthtml-command><span class=secno>8.16 </span><dfn>The <code title="">insertHTML</code> command</dfn></h3>
+<h3 id=the-inserthtml-command><span class=secno>9.16 </span><dfn>The <code title="">insertHTML</code> command</dfn></h3>
 
 <div class=comments>
 <p>Not supported by IE9.  Handling of disallowed children is interesting:
@@ -7510,7 +7654,7 @@ behavior in splitting up parents to ensure validity . . .
 </ol>
 
 
-<h3 id=the-insertimage-command><span class=secno>8.17 </span><dfn>The <code title="">insertImage</code> command</dfn></h3>
+<h3 id=the-insertimage-command><span class=secno>9.17 </span><dfn>The <code title="">insertImage</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>:
 
@@ -7576,7 +7720,7 @@ behavior in splitting up parents to ensure validity . . .
 </ol>
 
 
-<h3 id=the-insertlinebreak-command><span class=secno>8.18 </span><dfn>The <code title="">insertLineBreak</code> command</dfn></h3>
+<h3 id=the-insertlinebreak-command><span class=secno>9.18 </span><dfn>The <code title="">insertLineBreak</code> command</dfn></h3>
 
 <p class=note>This is the same as hitting Shift-Enter or such (see <a href=#additional-requirements>Additional requirements</a>).  It deletes the
 selection, and replaces it with a <code title="">&lt;br&gt;</code>.  No real
@@ -7654,7 +7798,7 @@ similar elements.  This doesn't seem very useful, so I don't bother.
 </ol>
 
 
-<h3 id=the-insertorderedlist-command><span class=secno>8.19 </span><dfn>The <code title="">insertOrderedList</code> command</dfn></h3>
+<h3 id=the-insertorderedlist-command><span class=secno>9.19 </span><dfn>The <code title="">insertOrderedList</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: <a href=#toggle-lists>Toggle lists</a> with <var title="">tag name</var>
 "ol".
@@ -7678,7 +7822,7 @@ like browser bugs to me.
 false otherwise.
 
 
-<h3 id=the-insertparagraph-command><span class=secno>8.20 </span><dfn>The <code title="">insertParagraph</code> command</dfn></h3>
+<h3 id=the-insertparagraph-command><span class=secno>9.20 </span><dfn>The <code title="">insertParagraph</code> command</dfn></h3>
 
 <div class=note>
 <p>This is the same as hitting enter (see <a href=#additional-requirements>Additional requirements</a>).  The general rule
@@ -8003,7 +8147,7 @@ whatwg thread</a>.
 </ol>
 
 
-<h3 id=the-inserttext-command><span class=secno>8.21 </span><dfn>The <code title="">insertText</code> command</dfn></h3>
+<h3 id=the-inserttext-command><span class=secno>9.21 </span><dfn>The <code title="">insertText</code> command</dfn></h3>
 
 <div class=note>
 <p>This is the same as typing text (see <a href=#additional-requirements>Additional requirements</a>).  If the input
@@ -8246,7 +8390,7 @@ unnecessarily.
 </ol>
 
 
-<h3 id=the-insertunorderedlist-command><span class=secno>8.22 </span><dfn>The <code title="">insertUnorderedList</code> command</dfn></h3>
+<h3 id=the-insertunorderedlist-command><span class=secno>9.22 </span><dfn>The <code title="">insertUnorderedList</code> command</dfn></h3>
 
 <p class=comments>See comments for <a href=#the-insertorderedlist-command>insertOrderedList</a>.
 
@@ -8260,7 +8404,7 @@ is "mixed" or "mixed ul", false otherwise.
 false otherwise.
 
 
-<h3 id=the-justifycenter-command><span class=secno>8.23 </span><dfn>The <code title="">justifyCenter</code> command</dfn></h3>
+<h3 id=the-justifycenter-command><span class=secno>9.23 </span><dfn>The <code title="">justifyCenter</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: <a href=#justify-the-selection>Justify the selection</a> with
 <var title="">alignment</var> "center".
@@ -8327,7 +8471,7 @@ and return the <a href=#alignment-value>alignment value</a> of the first <a href
 <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.  If there is no such <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, return "left".
 
 
-<h3 id=the-justifyfull-command><span class=secno>8.24 </span><dfn>The <code title="">justifyFull</code> command</dfn></h3>
+<h3 id=the-justifyfull-command><span class=secno>9.24 </span><dfn>The <code title="">justifyFull</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: <a href=#justify-the-selection>Justify the selection</a> with
 <var title="">alignment</var> "justify".
@@ -8350,7 +8494,7 @@ and return the <a href=#alignment-value>alignment value</a> of the first <a href
 <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.  If there is no such <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, return "left".
 
 
-<h3 id=the-justifyleft-command><span class=secno>8.25 </span><dfn>The <code title="">justifyLeft</code> command</dfn></h3>
+<h3 id=the-justifyleft-command><span class=secno>9.25 </span><dfn>The <code title="">justifyLeft</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: <a href=#justify-the-selection>Justify the selection</a> with
 <var title="">alignment</var> "left".
@@ -8373,7 +8517,7 @@ and return the <a href=#alignment-value>alignment value</a> of the first <a href
 <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.  If there is no such <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, return "left".
 
 
-<h3 id=the-justifyright-command><span class=secno>8.26 </span><dfn>The <code title="">justifyRight</code> command</dfn></h3>
+<h3 id=the-justifyright-command><span class=secno>9.26 </span><dfn>The <code title="">justifyRight</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: <a href=#justify-the-selection>Justify the selection</a> with
 <var title="">alignment</var> "right".
@@ -8396,7 +8540,7 @@ and return the <a href=#alignment-value>alignment value</a> of the first <a href
 <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.  If there is no such <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, return "left".
 
 
-<h3 id=the-outdent-command><span class=secno>8.27 </span><dfn>The <code title="">outdent</code> command</dfn></h3>
+<h3 id=the-outdent-command><span class=secno>9.27 </span><dfn>The <code title="">outdent</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>:
 
@@ -8479,9 +8623,9 @@ and return the <a href=#alignment-value>alignment value</a> of the first <a href
 </ol>
 
 
-<h2 id=miscellaneous-commands><span class=secno>9 </span>Miscellaneous commands</h2>
+<h2 id=miscellaneous-commands><span class=secno>10 </span>Miscellaneous commands</h2>
 
-<h3 id=the-copy-command><span class=secno>9.1 </span><dfn>The <code title="">copy</code> command</dfn></h3>
+<h3 id=the-copy-command><span class=secno>10.1 </span><dfn>The <code title="">copy</code> command</dfn></h3>
 
 <p class=comments>IE9 supports copy/cut/paste with a security warning.  Firefox
 reportedly only supports it if you set a pref.  I didn't find info on other
@@ -8513,7 +8657,7 @@ though the <a href=#command>command</a> is <a href=#supported title=supported>un
 those sites.
 
 
-<h3 id=the-cut-command><span class=secno>9.2 </span><dfn>The <code title="">cut</code> command</dfn></h3>
+<h3 id=the-cut-command><span class=secno>10.2 </span><dfn>The <code title="">cut</code> command</dfn></h3>
 
 <p class=comments>See comment for <a href=#the-copy-command>copy</a>.
 
@@ -8535,7 +8679,7 @@ though the <a href=#command>command</a> is <a href=#supported title=supported>un
 those sites.
 
 
-<h3 id=the-paste-command><span class=secno>9.3 </span><dfn>The <code title="">paste</code> command</dfn></h3>
+<h3 id=the-paste-command><span class=secno>10.3 </span><dfn>The <code title="">paste</code> command</dfn></h3>
 
 <p class=comments>See comment for <a href=#the-copy-command>copy</a>.
 
@@ -8557,7 +8701,7 @@ though the <a href=#command>command</a> is <a href=#supported title=supported>un
 those sites.
 
 
-<h3 id=the-selectall-command><span class=secno>9.4 </span><dfn>The <code title="">selectAll</code> command</dfn></h3>
+<h3 id=the-selectall-command><span class=secno>10.4 </span><dfn>The <code title="">selectAll</code> command</dfn></h3>
 
 <div class=comments>
 <p>Tested using roughly <a href=http://software.hixie.ch/utilities/js/live-dom-viewer/saved/1018>this</a>.
@@ -8613,7 +8757,7 @@ those sites.
 </ol>
 
 
-<h3 id=the-stylewithcss-command><span class=secno>9.5 </span><dfn>The <code title="">styleWithCSS</code> command</dfn></h3>
+<h3 id=the-stylewithcss-command><span class=secno>10.5 </span><dfn>The <code title="">styleWithCSS</code> command</dfn></h3>
 
 <div class=comments>
 <p>IE9 and Opera 11.00 don't support this command.  By and large, they act the
@@ -8644,7 +8788,7 @@ queryCommandState() for styleWithCSS.
 otherwise false.
 
 
-<h3 id=the-usecss-command><span class=secno>9.6 </span><dfn>The <code title="">useCSS</code> command</dfn></h3>
+<h3 id=the-usecss-command><span class=secno>10.6 </span><dfn>The <code title="">useCSS</code> command</dfn></h3>
 
 <p class=comments>Supported by Firefox 4.0, but not IE9 or Opera 11.00 (which
 don't support styleWithCSS either), nor by Chrome 12 dev (which does support
@@ -8668,7 +8812,7 @@ it.  It would be great if Gecko would agree to drop support, so that we could
 get rid of it.
 
 
-<h2 id=additional-requirements><span class=secno>10 </span>Additional requirements</h2>
+<h2 id=additional-requirements><span class=secno>11 </span>Additional requirements</h2>
 
 <p class=XXX>It has been <a href=http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2009-December/024628.html>suggested</a>
 that some things here need to be platform-dependent, not fully standardized.

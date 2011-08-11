@@ -7950,10 +7950,8 @@ whatwg thread</a>.
   <li>If the <span>active range</span>'s [[startnode]] is neither
   <span>editable</span> nor an <span>editing host</span>, abort these steps.
 
-  <li>Let <var>range</var> be the <span>active range</span>.
-
-  <li>Let <var>node</var> and <var>offset</var> be <var>range</var>'s
-  [[rangestart]] [[bpnode]] and [[bpoffset]].
+  <li>Let <var>node</var> and <var>offset</var> be the <span>active
+  range</span>'s [[rangestart]] [[bpnode]] and [[bpoffset]].
 
   <li>If <var>node</var> is a [[text]] node, and <var>offset</var> is neither 0
   nor the [[nodelength]] of <var>node</var>, call
@@ -7967,8 +7965,8 @@ whatwg thread</a>.
   <var>offset</var> to the [[index]] of <var>node</var>, then set
   <var>node</var> to its [[parent]].
 
-  <li>Set <var>range</var>'s [[rangestart]] and [[rangeend]] to
-  (<var>node</var>, <var>offset</var>).
+  <li>Call [[selcollapse|<var>node</var>, <var>offset</var>]] on the
+  [[contextobject]]'s [[selection]].
 
   <li>Let <var>container</var> equal <var>node</var>.
 
@@ -7988,8 +7986,8 @@ whatwg thread</a>.
     <li>Let <var>tag</var> be the <span>default single-line container
     name</span>.
 
-    <li><span>Block-extend</span> <var>range</var>, and let <var>new
-    range</var> be the result.
+    <li><span>Block-extend</span> the <span>active range</span>, and let
+    <var>new range</var> be the result.
 
     <li>Let <var>node list</var> be a list of [[nodes]], initially empty.
 
@@ -8008,18 +8006,19 @@ whatwg thread</a>.
       case where deleting can leave the cursor inside a &lt;tr>.
 
       <p>If <var>tag</var> is not an <span>allowed child</span> of
-      <var>range</var>'s [[startnode]], abort these steps.
+      the <span>active range</span>'s [[startnode]], abort these steps.
 
       <li>Set <var>container</var> to the result of calling
       [[createelement|<var>tag</var>]] on the [[contextobject]].
 
-      <li>Call [[insertnode|<var>container</var>]] on <var>range</var>.
+      <li>Call [[insertnode|<var>container</var>]] on the <span>active
+      range</span>.
 
       <li>Call [[createelement|"br"]] on the [[contextobject]], and append the
       result as the last [[child]] of <var>container</var>.
 
-      <li>Set <var>range</var>'s [[rangestart]] and [[rangeend]] to
-      (<var>container</var>, 0).
+      <li>Call [[selcollapse|<var>container</var>, 0]] on the
+      [[contextobject]]'s [[selection]].
 
       <li>Abort these steps.
     </ol>
@@ -8068,10 +8067,10 @@ whatwg thread</a>.
     <li>Let <var>br</var> be the result of calling [[createelement|"br"]] on
     the [[contextobject]].
 
-    <li>Call [[insertnode|<var>br</var>]] on <var>range</var>.
+    <li>Call [[insertnode|<var>br</var>]] on the <span>active range</span>.
 
-    <li>Increment <var>range</var>'s [[rangestart]] and [[rangeend]]
-    [[bpoffsets]].
+    <li>Call [[selcollapse|<var>node</var>, <var>offset</var> + 1]] on the
+    [[contextobject]]'s [[selection]].
 
     <li>
     <p class=comments>Necessary because adding a br to the end of a block
@@ -8081,7 +8080,7 @@ whatwg thread</a>.
     <p>If <var>br</var> is the last [[descendant]] of <var>container</var>,
     let <var>br</var> be the result of calling [[createelement|"br"]] on the
     [[contextobject]], then call [[insertnode|<var>br</var>]] on
-    <var>range</var>.
+    the <span>active range</span>.
 
     <li>Abort these steps.
   </ol>
@@ -8120,7 +8119,7 @@ whatwg thread</a>.
   </ol>
 
   <li>Let <var>new line range</var> be a new [[range]] whose [[rangestart]] is
-  the same as <var>range</var>'s, and whose [[rangeend]] is
+  the same as the <span>active range</span>'s, and whose [[rangeend]] is
   (<var>container</var>, [[nodelength]] of <var>container</var>).
 
   <li>
@@ -8210,8 +8209,8 @@ whatwg thread</a>.
   call [[createelement|"br"]] on the [[contextobject]], and append the result
   as the last [[child]] of <var>new container</var>.
 
-  <li>Set the [[rangestart]] of <var>range</var> to (<var>new container</var>,
-  0).
+  <li>Call [[selcollapse|<var>new container</var>, 0]] on the
+  [[contextobject]]'s [[selection]].
 </ol>
 
 <!-- @} -->

@@ -189,7 +189,6 @@ function getDirectionality(element) {
 	return getDirectionality(element.parentNode);
 }
 
-
 //@}
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -6771,12 +6770,9 @@ commands.insertparagraph = {
 			return;
 		}
 
-		// "Let range be the active range."
-		var range = getActiveRange();
-
-		// "Let node and offset be range's start node and offset."
-		var node = range.startContainer;
-		var offset = range.startOffset;
+		// "Let node and offset be the active range's start node and offset."
+		var node = getActiveRange().startContainer;
+		var offset = getActiveRange().startOffset;
 
 		// "If node is a Text node, and offset is neither 0 nor the length of
 		// node, call splitText(offset) on node."
@@ -6802,9 +6798,10 @@ commands.insertparagraph = {
 			node = node.parentNode;
 		}
 
-		// "Set range's start and end to (node, offset)."
-		range.setStart(node, offset);
-		range.setEnd(node, offset);
+		// "Call collapse(node, offset) on the context object's Selection."
+		getSelection().collapse(node, offset);
+		getActiveRange().setStart(node, offset);
+		getActiveRange().setEnd(node, offset);
 
 		// "Let container equal node."
 		var container = node;
@@ -6826,8 +6823,9 @@ commands.insertparagraph = {
 			// "Let tag be the default single-line container name."
 			var tag = defaultSingleLineContainerName;
 
-			// "Block-extend range, and let new range be the result."
-			var newRange = blockExtend(range);
+			// "Block-extend the active range, and let new range be the
+			// result."
+			var newRange = blockExtend(getActiveRange());
 
 			// "Let node list be a list of nodes, initially empty."
 			//
@@ -6838,9 +6836,9 @@ commands.insertparagraph = {
 
 			// "If node list is empty:"
 			if (!nodeList.length) {
-				// "If tag is not an allowed child of range's start node, abort
-				// these steps."
-				if (!isAllowedChild(tag, range.startContainer)) {
+				// "If tag is not an allowed child of the active range's start
+				// node, abort these steps."
+				if (!isAllowedChild(tag, getActiveRange().startContainer)) {
 					return;
 				}
 
@@ -6848,16 +6846,18 @@ commands.insertparagraph = {
 				// on the context object."
 				container = document.createElement(tag);
 
-				// "Call insertNode(container) on range."
-				range.insertNode(container);
+				// "Call insertNode(container) on the active range."
+				getActiveRange().insertNode(container);
 
 				// "Call createElement("br") on the context object, and append
 				// the result as the last child of container."
 				container.appendChild(document.createElement("br"));
 
-				// "Set range's start and end to (container, 0)."
-				range.setStart(container, 0);
-				range.setEnd(container, 0);
+				// "Call collapse(container, 0) on the context object's
+				// Selection."
+				getSelection().collapse(container, 0);
+				getActiveRange().setStart(container, 0);
+				getActiveRange().setEnd(container, 0);
 
 				// "Abort these steps."
 				return;
@@ -6888,27 +6888,25 @@ commands.insertparagraph = {
 			// context object."
 			var br = document.createElement("br");
 
-			// "Call insertNode(br) on range."
-			//
-			// Work around browser bugs: some browsers select the inserted
-			// node, not per spec.
-			range.insertNode(br);
-			range.setEnd(range.startContainer, range.startOffset);
+			// "Call insertNode(br) on the active range."
+			getActiveRange().insertNode(br);
 
-			// "Increment range's start and end offsets."
-			//
-			// Incrementing the start will increment the end as well, because
-			// the range is collapsed.
-			range.setStart(range.startContainer, range.startOffset + 1);
+			// "Call collapse(node, offset + 1) on the context object's
+			// Selection."
+			getSelection().collapse(node, offset + 1);
+			getActiveRange().setStart(node, offset + 1);
+			getActiveRange().setEnd(node, offset + 1);
 
 			// "If br is the last descendant of container, let br be the result
 			// of calling createElement("br") on the context object, then call
-			// insertNode(br) on range."
+			// insertNode(br) on the active range."
 			//
-			// Work around browser bugs again.
+			// Work around browser bugs: some browsers select the
+			// newly-inserted node, not per spec.
 			if (!isDescendant(nextNode(br), container)) {
-				range.insertNode(document.createElement("br"));
-				range.setEnd(range.startContainer, range.startOffset);
+				getActiveRange().insertNode(document.createElement("br"));
+				getSelection().collapse(node, offset + 1);
+				getActiveRange().setEnd(node, offset + 1);
 			}
 
 			// "Abort these steps."
@@ -6951,9 +6949,10 @@ commands.insertparagraph = {
 		}
 
 		// "Let new line range be a new range whose start is the same as
-		// range's, and whose end is (container, length of container)."
+		// the active range's, and whose end is (container, length of
+		// container)."
 		var newLineRange = document.createRange();
-		newLineRange.setStart(range.startContainer, range.startOffset);
+		newLineRange.setStart(getActiveRange().startContainer, getActiveRange().startOffset);
 		newLineRange.setEnd(container, getNodeLength(container));
 
 		// "While new line range's start offset is zero and its start node is
@@ -7054,8 +7053,10 @@ commands.insertparagraph = {
 			newContainer.appendChild(document.createElement("br"));
 		}
 
-		// "Set the start of range to (new container, 0)."
-		range.setStart(newContainer, 0);
+		// "Call collapse(new container, 0) on the context object's Selection."
+		getSelection().collapse(newContainer, 0);
+		getActiveRange().setStart(newContainer, 0);
+		getActiveRange().setEnd(newContainer, 0);
 	}
 };
 
@@ -7143,10 +7144,12 @@ commands.inserttext = {
 			node.insertData(offset, value);
 
 			// "Call collapse(node, offset) on the context object's Selection."
-			//
+			getSelection().collapse(node, offset);
+			getActiveRange().setStart(node, offset);
+
 			// "Call extend(node, offset + 1) on the context object's
 			// Selection."
-			getActiveRange().setStart(node, offset);
+			getSelection().extend(node, offset + 1);
 			getActiveRange().setEnd(node, offset + 1);
 
 		// "Otherwise:"
@@ -7169,9 +7172,11 @@ commands.inserttext = {
 			getActiveRange().insertNode(text);
 
 			// "Call collapse(text, 0) on the context object's Selection."
-			//
-			// "Call extend(text, 1) on the context object's Selection."
+			getSelection().collapse(text, 0);
 			getActiveRange().setStart(text, 0);
+
+			// "Call extend(text, 1) on the context object's Selection."
+			getSelection().extend(text, 1);
 			getActiveRange().setEnd(text, 1);
 		}
 
@@ -7185,6 +7190,7 @@ commands.inserttext = {
 		canonicalizeWhitespace(getActiveRange().endContainer, getActiveRange().endOffset);
 
 		// "Call collapseToEnd() on the context object's Selection."
+		getSelection().collapseToEnd();
 		getActiveRange().collapse(false);
 	}
 };

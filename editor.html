@@ -1,0 +1,34 @@
+<!doctype html>
+<script src=implementation.js></script>
+<style>
+p, ol, ul, blockquote {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+</style>
+<title>Specification-based rich text editor</title>
+
+<button onclick='myExecCommand("bold")'><b>B</b></button>
+<button onclick='myExecCommand("italic")'><i>I</i></button>
+<button onclick='myExecCommand("underline")'><u>U</u></button>
+<button onclick='myExecCommand("strikethrough")'><s>S</s></button>
+
+<button onclick='myExecCommand("subscript")'>X<sub>S</sub></button>
+<button onclick='myExecCommand("superscript")'>X<sup>S</sup></button>
+
+<div
+contenteditable
+style="border: inset 2px #ccc;min-height:20em"
+onkeypress="handleKeyPress(event); return false"
+>Hello</div>
+
+<script>
+function handleKeyPress(e) {
+	var code = String.fromCharCode(e.charCode);
+	if (e.keyCode == 13) {
+		// Gecko has charCode == 0 in this case
+		code = "\n";
+	}
+	myExecCommand("insertText", false, code);
+}
+</script>

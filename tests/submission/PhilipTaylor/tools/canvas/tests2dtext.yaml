@@ -218,6 +218,7 @@
     ctx.strokeStyle = '#f00';
     ctx.font = '35px Arial, sans-serif';
     ctx.fillText('PASS', 5, 35);
+    @manual;
   expected: &passfill |
     size 100 50
     cr.set_source_rgb(0, 0, 0)
@@ -264,6 +265,7 @@
     ctx.strokeStyle = '#f00';
     ctx.font = '35px Arial, sans-serif';
     ctx.fillText('\u202eFAIL \xa0 \xa0 SSAP', 5, 35);
+    @manual;
   expected: *passfill
 
 - name: 2d.text.draw.fill.maxWidth.large
@@ -276,6 +278,7 @@
     ctx.fillStyle = '#0f0';
     ctx.font = '35px Arial, sans-serif';
     ctx.fillText('PASS', 5, 35, 200);
+    @manual;
   expected: *passfill
 
 - name: 2d.text.draw.fill.maxWidth.small
@@ -288,6 +291,7 @@
     ctx.fillStyle = '#f00';
     ctx.font = '35px Arial, sans-serif';
     ctx.fillText('fail fail fail fail fail', -100, 35, 90);
+    @manual;
   expected: green
 
 - name: 2d.text.draw.fill.maxWidth.zero
@@ -315,6 +319,7 @@
     ctx.lineWidth = 1;
     ctx.font = '35px Arial, sans-serif';
     ctx.strokeText('PASS', 5, 35);
+    @manual;
   expected: |
     size 100 50
     cr.set_source_rgb(0, 0, 0)
@@ -367,6 +372,7 @@
     ctx.fillText('ToToToToToToTo', -50, 45);
     ctx.strokeText('VAVAVAVAVAVAVA', -50, 25);
     ctx.strokeText('ToToToToToToTo', -50, 45);
+    @manual;
   expected: green
 
 # CanvasTest is:

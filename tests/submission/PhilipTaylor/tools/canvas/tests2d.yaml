@@ -300,6 +300,7 @@
     ctx.fillRect(0, 0, 50, 25);
     ctx.fillStyle = '#0ff';
     ctx.fillRect(0, 0, 25, 10);
+    @manual;
   expected: |
     size 100 50
     cr.set_source_rgb(0, 0, 1)
@@ -926,11 +927,11 @@
     ctx.globalAlpha = 0.5;
     var a = ctx.globalAlpha; // might not be exactly 0.5, if it is rounded/quantised, so remember for future comparisons
     ctx.globalAlpha = Infinity;
-    @assert ctx.globalAlpha == a;
+    @assert ctx.globalAlpha === a;
     ctx.globalAlpha = -Infinity;
-    @assert ctx.globalAlpha == a;
+    @assert ctx.globalAlpha === a;
     ctx.globalAlpha = NaN;
-    @assert ctx.globalAlpha == a;
+    @assert ctx.globalAlpha === a;
 
 - name: 2d.composite.globalAlpha.default
   testing:
@@ -5274,6 +5275,7 @@
         ctx.fillRect(-200, -200, 500, 200);
         ctx.restore();
     }
+    @manual;
   expected: |
     size 100 50
     import math
@@ -5305,6 +5307,7 @@
     ctx.shadowOffsetY = 0;
     ctx.shadowBlur = 100;
     ctx.fillRect(-200, -200, 200, 400);
+    @manual;
   expected: |
     size 100 50
     import math

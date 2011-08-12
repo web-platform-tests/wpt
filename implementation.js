@@ -1060,62 +1060,67 @@ function movePreservingRanges(node, newParent, newIndex) {
 	var oldParent = node.parentNode;
 	var oldIndex = getNodeIndex(node);
 
-	// We only even attempt to preserve the global range object, not every
-	// range out there (the latter is probably impossible).
-	var start = [globalRange.startContainer, globalRange.startOffset];
-	var end = [globalRange.endContainer, globalRange.endOffset];
+	// We only even attempt to preserve the global range object and the ranges
+	// in the selection, not every range out there (the latter is probably
+	// impossible).
+	var ranges = [globalRange];
+	for (var i = 0; i < getSelection().rangeCount; i++) {
+		ranges.push(getSelection().getRangeAt(i));
+	}
+	var boundaryPoints = [];
+	ranges.forEach(function(range) {
+		boundaryPoints.push([range.startContainer, range.startOffset]);
+		boundaryPoints.push([range.endContainer, range.endOffset]);
+	});
 
-	// "If a boundary point's node is the same as or a descendant of node,
-	// leave it unchanged, so it moves to the new location."
-	//
-	// No modifications necessary.
+	boundaryPoints.forEach(function(boundaryPoint) {
+		// "If a boundary point's node is the same as or a descendant of node,
+		// leave it unchanged, so it moves to the new location."
+		//
+		// No modifications necessary.
 
-	// "If a boundary point's node is new parent and its offset is greater than
-	// new index, add one to its offset."
-	if (globalRange.startContainer == newParent
-	&& globalRange.startOffset > newIndex) {
-		start[1]++;
-	}
-	if (globalRange.endContainer == newParent
-	&& globalRange.endOffset > newIndex) {
-		end[1]++;
-	}
+		// "If a boundary point's node is new parent and its offset is greater
+		// than new index, add one to its offset."
+		if (boundaryPoint[0] == newParent
+		&& boundaryPoint[1] > newIndex) {
+			boundaryPoint[1]++;
+		}
 
-	// "If a boundary point's node is old parent and its offset is old index or
-	// old index + 1, set its node to new parent and add new index − old index
-	// to its offset."
-	if (globalRange.startContainer == oldParent
-	&& (globalRange.startOffset == oldIndex
-	|| globalRange.startOffset == oldIndex + 1)) {
-		start[0] = newParent;
-		start[1] += newIndex - oldIndex;
-	}
-	if (globalRange.endContainer == oldParent
-	&& (globalRange.endOffset == oldIndex
-	|| globalRange.endOffset == oldIndex + 1)) {
-		end[0] = newParent;
-		end[1] += newIndex - oldIndex;
-	}
+		// "If a boundary point's node is old parent and its offset is old index or
+		// old index + 1, set its node to new parent and add new index − old index
+		// to its offset."
+		if (boundaryPoint[0] == oldParent
+		&& (boundaryPoint[1] == oldIndex
+		|| boundaryPoint[1] == oldIndex + 1)) {
+			boundaryPoint[0] = newParent;
+			boundaryPoint[1] += newIndex - oldIndex;
+		}
 
-	// "If a boundary point's node is old parent and its offset is greater than
-	// old index + 1, subtract one from its offset."
-	if (globalRange.startContainer == oldParent
-	&& globalRange.startOffset > oldIndex + 1) {
-		start[1]--;
-	}
-	if (globalRange.endContainer == oldParent
-	&& globalRange.endOffset > oldIndex + 1) {
-		end[1]--;
-	}
+		// "If a boundary point's node is old parent and its offset is greater than
+		// old index + 1, subtract one from its offset."
+		if (boundaryPoint[0] == oldParent
+		&& boundaryPoint[1] > oldIndex + 1) {
+			boundaryPoint[1]--;
+		}
+	});
 
-	// Now actually move it and preserve the range.
+	// Now actually move it and preserve the ranges.
 	if (newParent.childNodes.length == newIndex) {
 		newParent.appendChild(node);
 	} else {
 		newParent.insertBefore(node, newParent.childNodes[newIndex]);
 	}
-	globalRange.setStart(start[0], start[1]);
-	globalRange.setEnd(end[0], end[1]);
+
+	globalRange.setStart(boundaryPoints[0][0], boundaryPoints[0][1]);
+	globalRange.setEnd(boundaryPoints[1][0], boundaryPoints[1][1]);
+
+	getSelection().removeAllRanges();
+	for (var i = 1; i < ranges.length; i++) {
+		var newRange = document.createRange();
+		newRange.setStart(boundaryPoints[2*i][0], boundaryPoints[2*i][1]);
+		newRange.setEnd(boundaryPoints[2*i + 1][0], boundaryPoints[2*i + 1][1]);
+		getSelection().addRange(newRange);
+	}
 }
 
 function setTagName(element, newName) {
@@ -2825,14 +2830,18 @@ function setSelectionValue(command, newValue) {
 	&& getActiveRange().startOffset != 0
 	&& getActiveRange().startOffset != getNodeLength(getActiveRange().startContainer)) {
 		// Account for browsers not following range mutation rules
+		var newNode = getActiveRange().startContainer.splitText(getActiveRange().startOffset);
+		var newActiveRange = document.createRange();
 		if (getActiveRange().startContainer == getActiveRange().endContainer) {
-			var newEnd = getActiveRange().endOffset - getActiveRange().startOffset;
-			var newNode = getActiveRange().startContainer.splitText(getActiveRange().startOffset);
-			getActiveRange().setStart(newNode, 0);
-			getActiveRange().setEnd(newNode, newEnd);
-		} else {
-			getActiveRange().setStart(getActiveRange().startContainer.splitText(getActiveRange().startOffset), 0);
+			var newEndOffset = getActiveRange().endOffset - getActiveRange().startOffset;
+			newActiveRange.setEnd(newNode, newEndOffset);
+			getActiveRange().setEnd(newNode, newEndOffset);
 		}
+		newActiveRange.setStart(newNode, 0);
+		getSelection().removeAllRanges();
+		getSelection().addRange(newActiveRange);
+
+		getActiveRange().setStart(newNode, 0);
 	}
 
 	// "If the active range's end node is an editable Text node, and its end
@@ -2853,6 +2862,9 @@ function setSelectionValue(command, newValue) {
 		activeRange.endContainer.splitText(activeRange.endOffset);
 		activeRange.setStart(newStart[0], newStart[1]);
 		activeRange.setEnd(newEnd[0], newEnd[1]);
+
+		getSelection().removeAllRanges();
+		getSelection().addRange(activeRange);
 	}
 
 	// "Let element list be all editable Elements effectively contained in the

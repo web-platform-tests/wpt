@@ -37,20 +37,26 @@ document.querySelector("[contenteditable]").onkeypress = function(e) {
 	return false;
 }
 document.onkeydown = function(e) {
-	// FIXME: Does not work in Gecko, why not?
+	if (e.keyCode == 8 || e.keyCode == 46) {
+		// Delete, backspace
+		return false;
+	}
+	// Bold/italic/underline.
 	if (e.ctrlKey
-	&& ["b", "u", "i"].indexOf(String.fromCharCode(e.keyCode)) != -1) {
+	&& ["b", "u", "i"].indexOf(String.fromCharCode(e.keyCode).toLowerCase()) != -1) {
 		return false;
 	}
 }
 document.onkeyup = function(e) {
-	if (e.ctrlKey && String.fromCharCode(e.keyCode) == "b") {
+	if (e.keyCode == 8) {
+		myExecCommand("delete");
+	} else if (e.keyCode == 46) {
+		myExecCommand("forwarddelete");
+	} else if (e.ctrlKey && String.fromCharCode(e.keyCode).toLowerCase() == "b") {
 		myExecCommand("bold");
-	}
-	if (e.ctrlKey && String.fromCharCode(e.keyCode) == "i") {
+	} else if (e.ctrlKey && String.fromCharCode(e.keyCode).toLowerCase() == "i") {
 		myExecCommand("italic");
-	}
-	if (e.ctrlKey && String.fromCharCode(e.keyCode) == "u") {
+	} else if (e.ctrlKey && String.fromCharCode(e.keyCode).toLowerCase() == "u") {
 		myExecCommand("underline");
 	}
 }

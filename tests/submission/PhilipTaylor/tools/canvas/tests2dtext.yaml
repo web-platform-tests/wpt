@@ -10,7 +10,7 @@
     @assert ctx.font === '20px serif';
 
     ctx.font = '20PX   SERIF';
-    @assert ctx.font === '20px serif';
+    @assert ctx.font === '20px serif'; @moz-todo
 
 - name: 2d.text.font.parse.complex
   testing:
@@ -19,7 +19,7 @@
     - 2d.text.font.lineheight
   code: |
     ctx.font = 'small-caps italic 400 12px/2 Unknown Font, sans-serif';
-    @assert ctx.font === 'italic small-caps 12px "Unknown Font", sans-serif';
+    @assert ctx.font === 'italic small-caps 12px "Unknown Font", sans-serif'; @moz-todo
 
   # TODO:
   #   2d.text.font.parse.size.absolute
@@ -40,9 +40,9 @@
   canvas: 'style="font-size: 144px" width="100" height="50"'
   code: |
     ctx.font = '50% serif';
-    @assert ctx.font === '72px serif';
+    @assert ctx.font === '72px serif'; @moz-todo
     canvas.setAttribute('style', 'font-size: 100px');
-    @assert ctx.font === '72px serif';
+    @assert ctx.font === '72px serif'; @moz-todo
 
 - name: 2d.text.font.parse.size.percentage.default
   testing:
@@ -51,7 +51,7 @@
     var canvas2 = document.createElement('canvas');
     var ctx2 = canvas2.getContext('2d');
     ctx.font = '1000% serif';
-    @assert ctx.font === '100px serif';
+    @assert ctx.font === '100px serif'; @moz-todo
 
 - name: 2d.text.font.parse.system
   desc: System fonts must be computed to explicit values
@@ -84,11 +84,11 @@
 
     ctx.font = '20px serif';
     ctx.font = '10px initial';
-    @assert ctx.font === '20px serif';
+    @assert ctx.font === '20px serif'; @moz-todo
 
     ctx.font = '20px serif';
     ctx.font = '10px default';
-    @assert ctx.font === '20px serif';
+    @assert ctx.font === '20px serif'; @moz-todo
 
     ctx.font = '20px serif';
     ctx.font = '10px inherit';
@@ -129,6 +129,7 @@
 - name: 2d.text.align.invalid
   testing:
     - 2d.text.align.invalid
+  mozilla: { throws }
   code: |
     ctx.textAlign = 'start';
     ctx.textAlign = 'bogus';

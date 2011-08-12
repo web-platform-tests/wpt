@@ -486,7 +486,6 @@
   desc: restore() with an empty stack has no effect
   testing:
     - 2d.state.restore.underflow
-  mozilla: { bug: 296821 }
   code: |
     for (var i = 0; i < 16; ++i)
         ctx.restore();
@@ -529,6 +528,7 @@
   desc: scale() with a scale factor of zero works
   testing:
     - 2d.transformation.scale
+  mozilla: { throws }
   code: |
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 0, 100, 50);
@@ -595,7 +595,6 @@
   desc: scale() with Infinity/NaN is ignored
   testing:
     - 2d.nonfinite
-  mozilla: { throws } # TODO: report bug?
   code: |
     ctx.fillStyle = '#f00';
     ctx.fillRect(0, 0, 100, 50);
@@ -706,7 +705,6 @@
   desc: rotate() with Infinity/NaN is ignored
   testing:
     - 2d.nonfinite
-  mozilla: { throws } # TODO: report bug?
   code: |
     ctx.fillStyle = '#f00';
     ctx.fillRect(0, 0, 100, 50);
@@ -738,7 +736,6 @@
   desc: translate() with Infinity/NaN is ignored
   testing:
     - 2d.nonfinite
-  mozilla: { throws } # TODO: report bug?
   code: |
     ctx.fillStyle = '#f00';
     ctx.fillRect(0, 0, 100, 50);
@@ -822,7 +819,6 @@
   desc: transform() with Infinity/NaN is ignored
   testing:
     - 2d.nonfinite
-  mozilla: { throws } # TODO: report bug?
   code: |
     ctx.fillStyle = '#f00';
     ctx.fillRect(0, 0, 100, 50);
@@ -890,7 +886,6 @@
   desc: setTransform() with Infinity/NaN is ignored
   testing:
     - 2d.nonfinite
-  mozilla: { throws } # TODO: report bug?
   code: |
     ctx.fillStyle = '#f00';
     ctx.fillRect(0, 0, 100, 50);
@@ -983,7 +978,6 @@
   expected: green
 
 - name: 2d.composite.globalAlpha.imagepattern
-  mozilla: { bug: 401790 }
   testing:
     - 2d.composite.globalAlpha.image
   images:
@@ -994,11 +988,10 @@
     ctx.fillStyle = ctx.createPattern(document.getElementById('red.png'), 'no-repeat');
     ctx.globalAlpha = 0.01; // avoid any potential alpha=0 optimisations
     ctx.fillRect(0, 0, 100, 50);
-    @assert pixel 50,25 ==~ 2,253,0,255; @moz-todo
+    @assert pixel 50,25 ==~ 2,253,0,255;
   expected: green
 
 - name: 2d.composite.globalAlpha.canvaspattern
-  mozilla: { bug: 401790 }
   testing:
     - 2d.composite.globalAlpha.image
   code: |
@@ -1014,7 +1007,7 @@
     ctx.fillStyle = ctx.createPattern(canvas2, 'no-repeat');
     ctx.globalAlpha = 0.01; // avoid any potential alpha=0 optimisations
     ctx.fillRect(0, 0, 100, 50);
-    @assert pixel 50,25 ==~ 2,253,0,255; @moz-todo
+    @assert pixel 50,25 ==~ 2,253,0,255;
   expected: green
 
 
@@ -1157,7 +1150,7 @@
     ctx.fillStyle = 'rgba%s';
     ctx.translate(0, 25);
     ctx.fillRect(0, 50, 100, 50);
-    @assert pixel 50,25 ==~ %s +/- 5; @moz-todo
+    @assert pixel 50,25 ==~ %s +/- 5;
     """ % (dest, op, src, to_test(expected0)),
                 'expected': """size 100 50
     cr.set_source_rgba(%s)
@@ -1180,8 +1173,8 @@
     ctx.fillRect(0, 0, 100, 50);
     ctx.globalCompositeOperation = '%s';
     ctx.drawImage(document.getElementById('yellow.png'), 40, 40, 10, 10, 40, 50, 10, 10);
-    @assert pixel 15,15 ==~ %s +/- 5; @moz-todo
-    @assert pixel 50,25 ==~ %s +/- 5; @moz-todo
+    @assert pixel 15,15 ==~ %s +/- 5;
+    @assert pixel 50,25 ==~ %s +/- 5;
     """ % (dest, op, to_test(expected0), to_test(expected0)),
                 'expected': """size 100 50
     cr.set_source_rgba(%s)
@@ -1228,7 +1221,7 @@
     ctx.globalCompositeOperation = '%s';
     ctx.fillStyle = ctx.createPattern(document.getElementById('yellow.png'), 'no-repeat');
     ctx.fillRect(0, 50, 100, 50);
-    @assert pixel 50,25 ==~ %s +/- 5; @moz-todo
+    @assert pixel 50,25 ==~ %s +/- 5;
     """ % (dest, op, to_test(expected0)),
                 'expected': """size 100 50
     cr.set_source_rgba(%s)
@@ -1270,7 +1263,6 @@
     }
 
 - name: 2d.composite.operation.unrecognised
-  mozilla: { throws, bug: 401788 }
   testing:
     - 2d.composite.operation.unrecognised
   code: |
@@ -1279,34 +1271,30 @@
     @assert ctx.globalCompositeOperation == 'xor';
 
 - name: 2d.composite.operation.darker
-  #mozilla: { bug: TODO }
   testing:
     - 2d.composite.operation.unrecognised
   code: |
     ctx.globalCompositeOperation = 'xor';
     ctx.globalCompositeOperation = 'darker';
-    @assert ctx.globalCompositeOperation == 'xor'; @moz-todo
+    @assert ctx.globalCompositeOperation == 'xor';
 
 - name: 2d.composite.operation.over
-  #mozilla: { bug: TODO }
   testing:
     - 2d.composite.operation.unrecognised
   code: |
     ctx.globalCompositeOperation = 'xor';
     ctx.globalCompositeOperation = 'over';
-    @assert ctx.globalCompositeOperation == 'xor'; @moz-todo
+    @assert ctx.globalCompositeOperation == 'xor';
 
 - name: 2d.composite.operation.clear
-  #mozilla: { bug: TODO }
   testing:
     - 2d.composite.operation.unrecognised
   code: |
     ctx.globalCompositeOperation = 'xor';
     ctx.globalCompositeOperation = 'clear';
-    @assert ctx.globalCompositeOperation == 'xor'; @moz-todo
+    @assert ctx.globalCompositeOperation == 'xor';
 
 - name: 2d.composite.operation.highlight
-  mozilla: { throws, bug: 401788 }
   testing:
     - 2d.composite.operation.unrecognised
   code: |
@@ -1315,7 +1303,6 @@
     @assert ctx.globalCompositeOperation == 'xor';
 
 - name: 2d.composite.operation.nullsuffix
-  mozilla: { throws, bug: 401788 }
   testing:
     - 2d.composite.operation.exact
   code: |
@@ -1324,7 +1311,6 @@
     @assert ctx.globalCompositeOperation == 'xor';
 
 - name: 2d.composite.operation.casesensitive
-  mozilla: { throws, bug: 401788 }
   testing:
     - 2d.composite.operation.casesensitive
   code: |
@@ -1718,7 +1704,6 @@
 - name: 2d.gradient.interpolate.zerosize
   testing:
     - 2d.gradient.linear.zerosize
-  #mozilla: { bug: TODO }
   code: |
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 0, 100, 50);
@@ -1728,7 +1713,7 @@
     g.addColorStop(1, '#f00');
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, 100, 50);
-    @assert pixel 40,20 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 40,20 ==~ 0,255,0,255;
   expected: green
 
 
@@ -1910,6 +1895,7 @@
 - name: 2d.gradient.object.current
   testing:
     - 2d.currentColor.gradient
+  mozilla: { throws }
   code: |
     canvas.setAttribute('style', 'color: #f00');
 
@@ -1931,14 +1917,13 @@
 - name: 2d.gradient.object.invalidoffset
   testing:
     - 2d.gradient.invalidoffset
-  #mozilla: { bug: TODO }
   code: |
     var g = ctx.createLinearGradient(0, 0, 100, 0);
     @assert throws INDEX_SIZE_ERR g.addColorStop(-1, '#000');
     @assert throws INDEX_SIZE_ERR g.addColorStop(2, '#000');
-    @assert throws INDEX_SIZE_ERR g.addColorStop(Infinity, '#000'); @moz-todo
-    @assert throws INDEX_SIZE_ERR g.addColorStop(-Infinity, '#000'); @moz-todo
-    @assert throws INDEX_SIZE_ERR g.addColorStop(NaN, '#000'); @moz-todo
+    @assert throws INDEX_SIZE_ERR g.addColorStop(Infinity, '#000');
+    @assert throws INDEX_SIZE_ERR g.addColorStop(-Infinity, '#000');
+    @assert throws INDEX_SIZE_ERR g.addColorStop(NaN, '#000');
 
 - name: 2d.gradient.object.invalidcolour
   testing:
@@ -1951,11 +1936,10 @@
 
 - name: 2d.gradient.linear.nonfinite
   desc: createLinearGradient() throws NOT_SUPPORTED_ERR if arguments are not finite
-  #mozilla: { bug: TODO }
   testing:
     - 2d.gradient.linear.nonfinite
   code: |
-    @nonfinite @assert throws NOT_SUPPORTED_ERR ctx.createLinearGradient(<0 Infinity -Infinity NaN>, <0 Infinity -Infinity NaN>, <1 Infinity -Infinity NaN>, <0 Infinity -Infinity NaN>); @moz-todo
+    @nonfinite @assert throws NOT_SUPPORTED_ERR ctx.createLinearGradient(<0 Infinity -Infinity NaN>, <0 Infinity -Infinity NaN>, <1 Infinity -Infinity NaN>, <0 Infinity -Infinity NaN>);
 
 - name: 2d.gradient.linear.transform.1
   desc: Linear gradient coordinates are relative to the coordinate space at the time of filling
@@ -2017,19 +2001,17 @@
   desc: createRadialGradient() throws INDEX_SIZE_ERR if either radius is negative
   testing:
     - 2d.gradient.radial.negative
-  #mozilla: { bug: TODO }
   code: |
-    @assert throws INDEX_SIZE_ERR ctx.createRadialGradient(0, 0, -0.1, 0, 0, 1); @moz-todo
-    @assert throws INDEX_SIZE_ERR ctx.createRadialGradient(0, 0, 1, 0, 0, -0.1); @moz-todo
-    @assert throws INDEX_SIZE_ERR ctx.createRadialGradient(0, 0, -0.1, 0, 0, -0.1); @moz-todo
+    @assert throws INDEX_SIZE_ERR ctx.createRadialGradient(0, 0, -0.1, 0, 0, 1);
+    @assert throws INDEX_SIZE_ERR ctx.createRadialGradient(0, 0, 1, 0, 0, -0.1);
+    @assert throws INDEX_SIZE_ERR ctx.createRadialGradient(0, 0, -0.1, 0, 0, -0.1);
 
 - name: 2d.gradient.radial.nonfinite
   desc: createRadialGradient() throws NOT_SUPPORTED_ERR if arguments are not finite
   testing:
     - 2d.gradient.radial.nonfinite
-  #mozilla: { bug: TODO }
   code: |
-    @nonfinite @assert throws NOT_SUPPORTED_ERR ctx.createRadialGradient(<0 Infinity -Infinity NaN>, <0 Infinity -Infinity NaN>, <1 Infinity -Infinity NaN>, <0 Infinity -Infinity NaN>, <0 Infinity -Infinity NaN>, <1 Infinity -Infinity NaN>); @moz-todo
+    @nonfinite @assert throws NOT_SUPPORTED_ERR ctx.createRadialGradient(<0 Infinity -Infinity NaN>, <0 Infinity -Infinity NaN>, <1 Infinity -Infinity NaN>, <0 Infinity -Infinity NaN>, <0 Infinity -Infinity NaN>, <1 Infinity -Infinity NaN>);
 
 - name: 2d.gradient.radial.inside1
   testing:
@@ -2141,15 +2123,15 @@
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, 100, 50);
 
-    @assert pixel 1,1 == 0,255,0,255; @moz-todo
-    @assert pixel 50,1 == 0,255,0,255; @moz-todo
-    @assert pixel 98,1 == 0,255,0,255; @moz-todo
-    @assert pixel 1,25 == 0,255,0,255; @moz-todo
-    @assert pixel 50,25 == 0,255,0,255; @moz-todo
-    @assert pixel 98,25 == 0,255,0,255; @moz-todo
-    @assert pixel 1,48 == 0,255,0,255; @moz-todo
-    @assert pixel 50,48 == 0,255,0,255; @moz-todo
-    @assert pixel 98,48 == 0,255,0,255; @moz-todo
+    @assert pixel 1,1 == 0,255,0,255;
+    @assert pixel 50,1 == 0,255,0,255;
+    @assert pixel 98,1 == 0,255,0,255;
+    @assert pixel 1,25 == 0,255,0,255;
+    @assert pixel 50,25 == 0,255,0,255;
+    @assert pixel 98,25 == 0,255,0,255;
+    @assert pixel 1,48 == 0,255,0,255;
+    @assert pixel 50,48 == 0,255,0,255;
+    @assert pixel 98,48 == 0,255,0,255;
   expected: green
 
 - name: 2d.gradient.radial.outside3
@@ -2166,15 +2148,15 @@
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, 100, 50);
 
-    @assert pixel 1,1 == 0,255,0,255; @moz-todo
-    @assert pixel 50,1 == 0,255,0,255; @moz-todo
-    @assert pixel 98,1 == 0,255,0,255; @moz-todo
-    @assert pixel 1,25 == 0,255,0,255; @moz-todo
-    @assert pixel 50,25 == 0,255,0,255; @moz-todo
-    @assert pixel 98,25 == 0,255,0,255; @moz-todo
-    @assert pixel 1,48 == 0,255,0,255; @moz-todo
-    @assert pixel 50,48 == 0,255,0,255; @moz-todo
-    @assert pixel 98,48 == 0,255,0,255; @moz-todo
+    @assert pixel 1,1 == 0,255,0,255;
+    @assert pixel 50,1 == 0,255,0,255;
+    @assert pixel 98,1 == 0,255,0,255;
+    @assert pixel 1,25 == 0,255,0,255;
+    @assert pixel 50,25 == 0,255,0,255;
+    @assert pixel 98,25 == 0,255,0,255;
+    @assert pixel 1,48 == 0,255,0,255;
+    @assert pixel 50,48 == 0,255,0,255;
+    @assert pixel 98,48 == 0,255,0,255;
   expected: green
 
 - name: 2d.gradient.radial.touch1
@@ -2216,15 +2198,15 @@
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, 100, 50);
 
-    @assert pixel 1,1 == 0,255,0,255; @moz-todo
-    @assert pixel 50,1 == 0,255,0,255; @moz-todo
-    @assert pixel 98,1 == 0,255,0,255; @moz-todo
-    @assert pixel 1,25 == 0,255,0,255; @moz-todo
-    @assert pixel 50,25 == 0,255,0,255; @moz-todo
-    @assert pixel 98,25 == 0,255,0,255; @moz-todo
-    @assert pixel 1,48 == 0,255,0,255; @moz-todo
-    @assert pixel 50,48 == 0,255,0,255; @moz-todo
-    @assert pixel 98,48 == 0,255,0,255; @moz-todo
+    @assert pixel 1,1 == 0,255,0,255;
+    @assert pixel 50,1 == 0,255,0,255;
+    @assert pixel 98,1 == 0,255,0,255;
+    @assert pixel 1,25 == 0,255,0,255;
+    @assert pixel 50,25 == 0,255,0,255;
+    @assert pixel 98,25 == 0,255,0,255;
+    @assert pixel 1,48 == 0,255,0,255;
+    @assert pixel 50,48 == 0,255,0,255;
+    @assert pixel 98,48 == 0,255,0,255;
   expected: green
 
 - name: 2d.gradient.radial.touch3
@@ -2278,7 +2260,6 @@
 - name: 2d.gradient.radial.cone.behind
   testing:
     - 2d.gradient.radial.rendering
-  #mozilla: { bug: TODO }
   code: |
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 0, 100, 50);
@@ -2375,7 +2356,6 @@
 - name: 2d.gradient.radial.cone.beside
   testing:
     - 2d.gradient.radial.rendering
-  #mozilla: { bug: TODO }
   code: |
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 0, 100, 50);
@@ -2621,19 +2601,19 @@
     canvas.height = 10;
     @assert canvas.width === 0;
     @assert canvas.height === 10;
-    @assert throws INVALID_STATE_ERR ctx.createPattern(canvas, 'repeat');
+    @assert throws INVALID_STATE_ERR ctx.createPattern(canvas, 'repeat'); @moz-todo
 
     canvas.width = 10;
     canvas.height = 0;
     @assert canvas.width === 10;
     @assert canvas.height === 0;
-    @assert throws INVALID_STATE_ERR ctx.createPattern(canvas, 'repeat');
+    @assert throws INVALID_STATE_ERR ctx.createPattern(canvas, 'repeat'); @moz-todo
 
     canvas.width = 0;
     canvas.height = 0;
     @assert canvas.width === 0;
     @assert canvas.height === 0;
-    @assert throws INVALID_STATE_ERR ctx.createPattern(canvas, 'repeat');
+    @assert throws INVALID_STATE_ERR ctx.createPattern(canvas, 'repeat'); @moz-todo
 
 - name: 2d.pattern.basic.nocontext
   testing:
@@ -2683,6 +2663,7 @@
 - name: 2d.pattern.image.incomplete.nosrc
   testing:
     - 2d.pattern.incomplete.image
+  mozilla: { throws }
   code: |
     var img = new Image();
     @assert ctx.createPattern(img, 'repeat') === null;
@@ -2699,7 +2680,7 @@
     // The image will not go to the "completely available" state
     // until a fetch task in the networking task source is processed,
     // so the image must not be fully decodable yet:
-    @assert ctx.createPattern(img, 'repeat') === null;
+    @assert ctx.createPattern(img, 'repeat') === null; @moz-todo
 
 - name: 2d.pattern.image.incomplete.reload
   testing:
@@ -2722,6 +2703,7 @@
     - 2d.pattern.incomplete.image
   images:
     - red.png
+  mozilla: { throws }
   code: |
     var img = document.getElementById('red.png');
     img.src = "";
@@ -2732,6 +2714,7 @@
     - 2d.pattern.incomplete.image
   images:
     - red.png
+  mozilla: { throws }
   code: |
     var img = document.getElementById('red.png');
     img.removeAttribute('src');
@@ -2744,7 +2727,7 @@
     - broken.png
   code: |
     var img = document.getElementById('broken.png');
-    @assert ctx.createPattern(img, 'repeat') === null;
+    @assert ctx.createPattern(img, 'repeat') === null; @moz-todo
 
 - name: 2d.pattern.repeat.empty
   testing:
@@ -3351,6 +3334,7 @@
     - 2d.pattern.animated.image
   images:
     - anim-gr.gif
+  mozilla: { throws }
   code: |
     deferTest();
     setTimeout(function () {
@@ -3359,8 +3343,8 @@
         ctx.fillRect(0, 0, 50, 50);
         setTimeout(wrapFunction(function () {
             ctx.fillRect(50, 0, 50, 50);
-            @assert pixel 25,25 ==~ 0,255,0,255; @moz-todo
-            @assert pixel 75,25 ==~ 0,255,0,255; @moz-todo
+            @assert pixel 25,25 ==~ 0,255,0,255;
+            @assert pixel 75,25 ==~ 0,255,0,255;
         }), 250);
     }, 250);
   expected: green
@@ -3517,30 +3501,29 @@
   desc: Setting lineWidth to invalid values is ignored
   testing:
     - 2d.lineWidth.invalid
-  mozilla: { throws }
   code: |
     ctx.lineWidth = 1.5;
     @assert ctx.lineWidth === 1.5;
 
     ctx.lineWidth = 1.5;
     ctx.lineWidth = 0;
-    @assert ctx.lineWidth === 1.5; @moz-todo
+    @assert ctx.lineWidth === 1.5;
 
     ctx.lineWidth = 1.5;
     ctx.lineWidth = -1;
-    @assert ctx.lineWidth === 1.5; @moz-todo
+    @assert ctx.lineWidth === 1.5;
 
     ctx.lineWidth = 1.5;
     ctx.lineWidth = Infinity;
-    @assert ctx.lineWidth === 1.5; @moz-todo
+    @assert ctx.lineWidth === 1.5;
 
     ctx.lineWidth = 1.5;
     ctx.lineWidth = -Infinity;
-    @assert ctx.lineWidth === 1.5; @moz-todo
+    @assert ctx.lineWidth === 1.5;
 
     ctx.lineWidth = 1.5;
     ctx.lineWidth = NaN;
-    @assert ctx.lineWidth === 1.5; @moz-todo
+    @assert ctx.lineWidth === 1.5;
 
 - name: 2d.line.cap.butt
   desc: lineCap 'butt' is rendered correctly
@@ -3757,7 +3740,6 @@
   desc: Setting lineCap to invalid values is ignored
   testing:
     - 2d.lineCap.invalid
-  mozilla: { throws, bug: 401788 }
   code: |
     ctx.lineCap = 'butt'
     @assert ctx.lineCap === 'butt';
@@ -4051,7 +4033,6 @@
 
 - name: 2d.line.join.invalid
   desc: Setting lineJoin to invalid values is ignored
-  mozilla: { throws, bug: 401788 }
   testing:
     - 2d.lineJoin.invalid
   code: |
@@ -4180,7 +4161,6 @@
   desc: Miter joins are not drawn when the miter limit is exceeded, on exact right angles
   testing:
     - 2d.lineJoin.miter
-  mozilla: { bug: 401791 }
   code: |
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 0, 100, 50);
@@ -4206,7 +4186,6 @@
   desc: Miter joins are not drawn when the miter limit is exceeded at the corners of a zero-height rectangle
   testing:
     - 2d.lineJoin.miter
-  mozilla: { bug: 401791 }
   code: |
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 0, 100, 50);
@@ -4272,30 +4251,29 @@
   desc: Setting miterLimit to invalid values is ignored
   testing:
     - 2d.miterLimit.invalid
-  mozilla: { throws }
   code: |
     ctx.miterLimit = 1.5;
     @assert ctx.miterLimit === 1.5;
 
     ctx.miterLimit = 1.5;
     ctx.miterLimit = 0;
-    @assert ctx.miterLimit === 1.5; @moz-todo
+    @assert ctx.miterLimit === 1.5;
 
     ctx.miterLimit = 1.5;
     ctx.miterLimit = -1;
-    @assert ctx.miterLimit === 1.5; @moz-todo
+    @assert ctx.miterLimit === 1.5;
 
     ctx.miterLimit = 1.5;
     ctx.miterLimit = Infinity;
-    @assert ctx.miterLimit === 1.5; @moz-todo
+    @assert ctx.miterLimit === 1.5;
 
     ctx.miterLimit = 1.5;
     ctx.miterLimit = -Infinity;
-    @assert ctx.miterLimit === 1.5; @moz-todo
+    @assert ctx.miterLimit === 1.5;
 
     ctx.miterLimit = 1.5;
     ctx.miterLimit = NaN;
-    @assert ctx.miterLimit === 1.5; @moz-todo
+    @assert ctx.miterLimit === 1.5;
 
 - name: 2d.line.cross
   code: |
@@ -4527,7 +4505,7 @@
     ctx.shadowBlur = 0.1;
     ctx.fillStyle = '#f00';
     ctx.fillRect(0, 0, 100, 50);
-    @assert pixel 50,25 == 0,255,0,255;
+    @assert pixel 50,25 == 0,255,0,255; @moz-todo
   expected: green
 
 - name: 2d.shadow.enable.x
@@ -4541,7 +4519,7 @@
     ctx.shadowOffsetX = 0.1;
     ctx.fillStyle = '#f00';
     ctx.fillRect(0, 0, 100, 50);
-    @assert pixel 50,25 == 0,255,0,255;
+    @assert pixel 50,25 == 0,255,0,255; @moz-todo
   expected: green
 
 - name: 2d.shadow.enable.y
@@ -4555,7 +4533,7 @@
     ctx.shadowOffsetY = 0.1;
     ctx.fillStyle = '#f00';
     ctx.fillRect(0, 0, 100, 50);
-    @assert pixel 50,25 == 0,255,0,255;
+    @assert pixel 50,25 == 0,255,0,255; @moz-todo
   expected: green
 
 - name: 2d.shadow.offset.positiveX
@@ -5157,7 +5135,7 @@
     ctx.fillStyle = gradient;
     ctx.fillRect(0, -50, 100, 50);
 
-    @assert pixel 50,25 == 0,255,0,255; @moz-todo
+    @assert pixel 50,25 == 0,255,0,255;
   expected: green
 
 - name: 2d.shadow.gradient.transparent.1
@@ -5425,7 +5403,7 @@
     ctx.fillStyle = '#0f0';
     ctx.fillRect(-100, 0, 200, 50);
 
-    @assert pixel 50,25 ==~ 0,255,0,255;
+    @assert pixel 50,25 ==~ 0,255,0,255; @moz-todo
   expected: green
 
 - name: 2d.shadow.composite.2
@@ -5441,7 +5419,7 @@
     ctx.fillStyle = '#0f0';
     ctx.fillRect(-10, -10, 120, 70);
 
-    @assert pixel 50,25 ==~ 0,255,0,255;
+    @assert pixel 50,25 ==~ 0,255,0,255; @moz-todo
   expected: green
 
 - name: 2d.shadow.composite.3
@@ -5596,7 +5574,6 @@
   desc: clearRect() with Infinity/NaN is ignored
   testing:
     - 2d.nonfinite
-  mozilla: { throws } # TODO: report bug?
   code: |
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 0, 100, 50);
@@ -5717,7 +5694,6 @@
   desc: fillRect() with Infinity/NaN is ignored
   testing:
     - 2d.nonfinite
-  mozilla: { throws } # TODO: report bug?
   code: |
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 0, 100, 50);
@@ -5770,14 +5746,13 @@
   desc: strokeRect of 0x0 pixels draws nothing, including caps and joins
   testing:
     - 2d.strokeRect
-  #mozilla: { bug: TODO }
   code: |
     ctx.strokeStyle = '#f00';
     ctx.lineWidth = 250;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctx.strokeRect(50, 25, 0, 0);
-    @assert pixel 50,25 == 0,0,0,0; @moz-todo
+    @assert pixel 50,25 == 0,0,0,0;
   expected: clear
 
 - name: 2d.strokeRect.zero.3
@@ -5915,7 +5890,6 @@
   desc: strokeRect() with Infinity/NaN is ignored
   testing:
     - 2d.nonfinite
-  mozilla: { throws } # TODO: report bug?
   code: |
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 0, 100, 50);
@@ -6006,7 +5980,6 @@
   desc: moveTo() with Infinity/NaN is ignored
   testing:
     - 2d.nonfinite
-  mozilla: { throws }
   code: |
     ctx.moveTo(0, 0);
     ctx.lineTo(100, 0);
@@ -6131,7 +6104,6 @@
   desc: lineTo() with Infinity/NaN is ignored
   testing:
     - 2d.nonfinite
-  mozilla: { throws }
   code: |
     ctx.moveTo(0, 0);
     ctx.lineTo(100, 0);
@@ -6158,7 +6130,7 @@
     ctx.quadraticCurveTo(100, 50, 200, 50);
     ctx.stroke();
     @assert pixel 50,25 == 0,255,0,255;
-    @assert pixel 95,45 == 0,255,0,255;
+    @assert pixel 95,45 == 0,255,0,255; @moz-todo
   expected: green
 
 - name: 2d.path.quadraticCurveTo.ensuresubpath.2
@@ -6175,7 +6147,7 @@
     ctx.quadraticCurveTo(0, 25, 100, 25);
     ctx.stroke();
     @assert pixel 50,25 == 0,255,0,255;
-    @assert pixel 5,45 == 0,255,0,255;
+    @assert pixel 5,45 == 0,255,0,255; @moz-todo
   expected: green
 
 - name: 2d.path.quadraticCurveTo.basic
@@ -6236,7 +6208,6 @@
   desc: quadraticCurveTo() with Infinity/NaN is ignored
   testing:
     - 2d.nonfinite
-  mozilla: { throws }
   code: |
     ctx.moveTo(0, 0);
     ctx.lineTo(100, 0);
@@ -6341,7 +6312,6 @@
   desc: bezierCurveTo() with Infinity/NaN is ignored
   testing:
     - 2d.nonfinite
-  mozilla: { throws }
   code: |
     ctx.moveTo(0, 0);
     ctx.lineTo(100, 0);
@@ -6409,9 +6379,9 @@
     ctx.arcTo(50, 25, 100, 25, 1);
     ctx.stroke();
 
-    @assert pixel 50,1 == 0,255,0,255; @moz-todo
-    @assert pixel 50,25 == 0,255,0,255; @moz-todo
-    @assert pixel 50,48 == 0,255,0,255; @moz-todo
+    @assert pixel 50,1 == 0,255,0,255;
+    @assert pixel 50,25 == 0,255,0,255;
+    @assert pixel 50,48 == 0,255,0,255;
   expected: green
 
 - name: 2d.path.arcTo.coincide.2
@@ -6452,7 +6422,7 @@
     ctx.arcTo(0, 25, 100, 25, 1);
     ctx.stroke();
 
-    @assert pixel 50,25 == 0,255,0,255; @moz-todo
+    @assert pixel 50,25 == 0,255,0,255;
   expected: green
 
 - name: 2d.path.arcTo.collinear.2
@@ -6476,7 +6446,7 @@
     ctx.arcTo(200, 25, 110, 25, 1);
     ctx.stroke();
 
-    @assert pixel 50,25 == 0,255,0,255; @moz-todo
+    @assert pixel 50,25 == 0,255,0,255;
   expected: green
 
 - name: 2d.path.arcTo.collinear.3
@@ -6505,7 +6475,7 @@
     ctx.arcTo(0, 25, -200, 25, 1);
     ctx.stroke();
 
-    @assert pixel 50,25 == 0,255,0,255; @moz-todo
+    @assert pixel 50,25 == 0,255,0,255;
   expected: green
 
 - name: 2d.path.arcTo.shape.curve1
@@ -6544,8 +6514,8 @@
     @assert pixel 78,36 == 0,255,0,255;
     @assert pixel 79,35 == 0,255,0,255;
     @assert pixel 80,44 == 0,255,0,255;
-    @assert pixel 80,45 == 0,255,0,255; @moz-todo
-    @assert pixel 80,46 == 0,255,0,255; @moz-todo
+    @assert pixel 80,45 == 0,255,0,255;
+    @assert pixel 80,46 == 0,255,0,255;
     @assert pixel 65,45 == 0,255,0,255;
   expected: green
 
@@ -6574,13 +6544,13 @@
     ctx.arcTo(75, 25, 75, 60, 20);
     ctx.stroke();
 
-    @assert pixel 50,25 == 0,255,0,255; @moz-todo
+    @assert pixel 50,25 == 0,255,0,255;
     @assert pixel 55,19 == 0,255,0,255;
     @assert pixel 55,20 == 0,255,0,255;
-    @assert pixel 55,21 == 0,255,0,255; @moz-todo
+    @assert pixel 55,21 == 0,255,0,255;
     @assert pixel 64,22 == 0,255,0,255;
     @assert pixel 65,21 == 0,255,0,255;
-    @assert pixel 72,28 == 0,255,0,255; @moz-todo
+    @assert pixel 72,28 == 0,255,0,255;
     @assert pixel 73,27 == 0,255,0,255;
     @assert pixel 78,36 == 0,255,0,255;
     @assert pixel 79,35 == 0,255,0,255;
@@ -6604,10 +6574,10 @@
     ctx.stroke();
 
     @assert pixel 1,1 == 0,255,0,255;
-    @assert pixel 1,48 == 0,255,0,255; @moz-todo
+    @assert pixel 1,48 == 0,255,0,255;
     @assert pixel 50,25 == 0,255,0,255;
     @assert pixel 98,1 == 0,255,0,255;
-    @assert pixel 98,48 == 0,255,0,255; @moz-todo
+    @assert pixel 98,48 == 0,255,0,255;
   expected: green
 
 - name: 2d.path.arcTo.shape.end
@@ -6625,10 +6595,10 @@
     ctx.stroke();
 
     @assert pixel 1,1 == 0,255,0,255;
-    @assert pixel 1,48 == 0,255,0,255; @moz-todo
-    @assert pixel 50,25 == 0,255,0,255; @moz-todo
+    @assert pixel 1,48 == 0,255,0,255;
+    @assert pixel 50,25 == 0,255,0,255;
     @assert pixel 98,1 == 0,255,0,255;
-    @assert pixel 98,48 == 0,255,0,255; @moz-todo
+    @assert pixel 98,48 == 0,255,0,255;
   expected: green
 
 - name: 2d.path.arcTo.negative
@@ -6642,7 +6612,6 @@
   desc: arcTo() with zero radius draws a straight line from P0 to P1
   testing:
     - 2d.path.arcTo.zeroradius
-  mozilla: { throws }
   code: |
     ctx.fillStyle = '#f00';
     ctx.fillRect(0, 0, 100, 50);
@@ -6667,7 +6636,6 @@
   desc: arcTo() with zero radius draws a straight line from P0 to P1, even when all points are collinear
   testing:
     - 2d.path.arcTo.zeroradius
-  mozilla: { throws }
   code: |
     ctx.fillStyle = '#f00';
     ctx.fillRect(0, 0, 100, 50);
@@ -6743,7 +6711,6 @@
   desc: arcTo() with Infinity/NaN is ignored
   testing:
     - 2d.nonfinite
-  mozilla: { throws }
   code: |
     ctx.moveTo(0, 0);
     ctx.lineTo(100, 0);
@@ -7118,7 +7085,7 @@
     ctx.beginPath();
     ctx.arc(0, 0, 25, 0, -Math.PI/2, true);
     ctx.stroke();
-    @assert pixel 1,1 == 0,255,0,255;
+    @assert pixel 1,1 == 0,255,0,255; @moz-todo
     @assert pixel 50,25 == 0,255,0,255;
   expected: green
 
@@ -7149,9 +7116,8 @@
   desc: arc() with negative radius throws INDEX_SIZE_ERR
   testing:
     - 2d.path.arc.negative
-  #mozilla: { bug: TODO }
   code: |
-    @assert throws INDEX_SIZE_ERR ctx.arc(0, 0, -1, 0, 0, true); @moz-todo
+    @assert throws INDEX_SIZE_ERR ctx.arc(0, 0, -1, 0, 0, true);
 
 - name: 2d.path.arc.zeroradius
   desc: arc() with zero radius draws a line to the start point
@@ -7233,7 +7199,6 @@
   desc: arc() with Infinity/NaN is ignored
   testing:
     - 2d.nonfinite
-  mozilla: { throws }
   code: |
     ctx.fillStyle = '#f00';
     ctx.fillRect(0, 0, 100, 50);
@@ -7464,7 +7429,6 @@
   desc: rect() with Infinity/NaN is ignored
   testing:
     - 2d.nonfinite
-  mozilla: { throws }
   code: |
     ctx.moveTo(0, 0);
     ctx.lineTo(100, 0);
@@ -8218,7 +8182,7 @@
     - 2d.path.isPointInPath.edge
   code: |
     ctx.rect(0, 0, 20, 20);
-    @assert ctx.isPointInPath(0, 0) === true; @moz-todo
+    @assert ctx.isPointInPath(0, 0) === true;
     @assert ctx.isPointInPath(10, 0) === true;
     @assert ctx.isPointInPath(20, 0) === true;
     @assert ctx.isPointInPath(20, 10) === true;
@@ -8413,7 +8377,6 @@
   desc: isPointInPath() returns false for non-finite arguments
   testing:
     - 2d.path.isPointInPath.nonfinite
-  mozilla: { throws }
   code: |
     ctx.rect(-100, -50, 200, 100);
     @assert ctx.isPointInPath(Infinity, 0) === false;
@@ -8580,7 +8543,6 @@
 - name: 2d.drawImage.self.1
   testing:
     - 2d.drawImage.self
-  mozilla: { bug: 433235 }
   code: |
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 0, 50, 50);
@@ -8597,7 +8559,6 @@
 - name: 2d.drawImage.self.2
   testing:
     - 2d.drawImage.self
-  mozilla: { bug: 433235 }
   code: |
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 1, 100, 49);
@@ -8627,9 +8588,9 @@
   testing:
     - 2d.drawImage.IDL
   code: |
-    @assert throws TypeError ctx.drawImage(undefined, 0, 0);
-    @assert throws TypeError ctx.drawImage(0, 0, 0);
-    @assert throws TypeError ctx.drawImage("", 0, 0);
+    @assert throws TypeError ctx.drawImage(undefined, 0, 0); @moz-todo
+    @assert throws TypeError ctx.drawImage(0, 0, 0); @moz-todo
+    @assert throws TypeError ctx.drawImage("", 0, 0); @moz-todo
     @assert throws TypeError ctx.drawImage(document.createElement('p'), 0, 0); @moz-todo
 
 - name: 2d.drawImage.floatsource
@@ -8651,9 +8612,9 @@
   code: |
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 0, 100, 50);
-    @assert throws INDEX_SIZE_ERR ctx.drawImage(document.getElementById('red.png'), 10, 10, 0, 1, 0, 0, 100, 50); @moz-todo
-    @assert throws INDEX_SIZE_ERR ctx.drawImage(document.getElementById('red.png'), 10, 10, 1, 0, 0, 0, 100, 50); @moz-todo
-    @assert throws INDEX_SIZE_ERR ctx.drawImage(document.getElementById('red.png'), 10, 10, 0, 0, 0, 0, 100, 50); @moz-todo
+    @assert throws INDEX_SIZE_ERR ctx.drawImage(document.getElementById('red.png'), 10, 10, 0, 1, 0, 0, 100, 50);
+    @assert throws INDEX_SIZE_ERR ctx.drawImage(document.getElementById('red.png'), 10, 10, 1, 0, 0, 0, 100, 50);
+    @assert throws INDEX_SIZE_ERR ctx.drawImage(document.getElementById('red.png'), 10, 10, 0, 0, 0, 0, 100, 50);
     @assert pixel 50,25 ==~ 0,255,0,255;
   expected: green
 
@@ -8663,7 +8624,6 @@
     - 2d.drawImage.direction
   images:
     - ggrr-256x256.png
-  mozilla: { throws }
   code: |
     ctx.fillStyle = '#f00';
     ctx.fillRect(0, 0, 100, 50);
@@ -8687,7 +8647,6 @@
     - 2d.drawImage.direction
   images:
     - ggrr-256x256.png
-  mozilla: { throws }
   code: |
     ctx.fillStyle = '#f00';
     ctx.fillRect(0, 0, 100, 50);
@@ -8711,7 +8670,6 @@
     - 2d.drawImage.direction
   images:
     - ggrr-256x256.png
-  mozilla: { throws }
   code: |
     ctx.fillStyle = '#f00';
     ctx.fillRect(0, 0, 100, 50);
@@ -8755,6 +8713,7 @@
 - name: 2d.drawImage.incomplete.nosrc
   testing:
     - 2d.drawImage.incomplete.image
+  mozilla: { throws }
   code: |
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 0, 100, 50);
@@ -8778,7 +8737,7 @@
     // until a fetch task in the networking task source is processed,
     // so the image must not be fully decodable yet:
     ctx.drawImage(img, 0, 0);
-    @assert pixel 50,25 ==~ 0,255,0,255;
+    @assert pixel 50,25 ==~ 0,255,0,255; @moz-todo
   expected: green
 
 - name: 2d.drawImage.incomplete.reload
@@ -8806,6 +8765,7 @@
     - 2d.drawImage.incomplete.image
   images:
     - red.png
+  mozilla: { throws }
   code: |
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 0, 100, 50);
@@ -8820,6 +8780,7 @@
     - 2d.drawImage.incomplete.image
   images:
     - red.png
+  mozilla: { throws }
   code: |
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 0, 100, 50);
@@ -8839,7 +8800,7 @@
     ctx.fillRect(0, 0, 100, 50);
     var img = document.getElementById('broken.png');
     ctx.drawImage(img, 0, 0);
-    @assert pixel 50,25 ==~ 0,255,0,255;
+    @assert pixel 50,25 ==~ 0,255,0,255; @moz-todo
   expected: green
 
 - name: 2d.drawImage.zerocanvas
@@ -8889,7 +8850,7 @@
     deferTest();
     setTimeout(wrapFunction(function () {
         ctx.drawImage(document.getElementById('anim-gr.png'), 0, 0);
-        @assert pixel 50,25 ==~ 0,255,0,255; @moz-todo
+        @assert pixel 50,25 ==~ 0,255,0,255;
     }), 500);
   expected: green
 
@@ -8989,7 +8950,6 @@
   desc: drawImage() with Infinity/NaN is ignored
   testing:
     - 2d.nonfinite
-  mozilla: { throws }
   images:
     - red.png
   code: |
@@ -9008,7 +8968,6 @@
   desc: createImageData(sw, sh) exists and returns something
   testing:
     - 2d.imageData.create2.object
-  mozilla: { throws, bug: 433004 }
   code: |
     @assert ctx.createImageData(1, 1) !== null;
 
@@ -9016,7 +8975,6 @@
   desc: createImageData(imgdata) exists and returns something
   testing:
     - 2d.imageData.create1.object
-  mozilla: { throws, bug: 433004 }
   code: |
     @assert ctx.createImageData(ctx.createImageData(1, 1)) !== null;
 
@@ -9024,7 +8982,7 @@
   desc: createImageData(sw, sh) returns an ImageData object containing a CanvasPixelArray object
   testing:
     - 2d.imageData.create2.object
-  mozilla: { throws, bug: 433004 }
+  mozilla: { throws }
   code: |
     @assert window.ImageData !== undefined; @moz-todo
     @assert window.CanvasPixelArray !== undefined; @moz-todo
@@ -9038,7 +8996,7 @@
   desc: createImageData(imgdata) returns an ImageData object containing a CanvasPixelArray object
   testing:
     - 2d.imageData.create1.object
-  mozilla: { throws, bug: 433004 }
+  mozilla: { throws }
   code: |
     @assert window.ImageData !== undefined; @moz-todo
     @assert window.CanvasPixelArray !== undefined; @moz-todo
@@ -9054,7 +9012,6 @@
     - 2d.imageData.create2.size
     - 2d.imageData.create.initial
     - 2d.imageData.initial
-  mozilla: { throws, bug: 433004 }
   code: |
     var imgdata = ctx.createImageData(10, 20);
     @assert imgdata.data.length == imgdata.width*imgdata.height*4;
@@ -9072,7 +9029,6 @@
     - 2d.imageData.create1.size
     - 2d.imageData.create.initial
     - 2d.imageData.initial
-  mozilla: { throws, bug: 433004 }
   code: |
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 0, 100, 50);
@@ -9091,7 +9047,6 @@
   desc: createImageData(sw, sh) works for sizes much larger than the canvas
   testing:
     - 2d.imageData.create2.size
-  mozilla: { throws, bug: 433004 }
   code: |
     var imgdata = ctx.createImageData(1000, 2000);
     @assert imgdata.data.length == imgdata.width*imgdata.height*4;
@@ -9108,7 +9063,6 @@
   testing:
     - 2d.imageData.create2.size
     - 2d.imageData.one
-  mozilla: { throws, bug: 433004 }
   code: |
     var imgdata = ctx.createImageData(0.0001, 0.0001);
     @assert imgdata.data.length == imgdata.width*imgdata.height*4;
@@ -9124,7 +9078,6 @@
   desc: createImageData(sw, sh) takes the absolute magnitude of the size arguments
   testing:
     - 2d.imageData.create2.size
-  mozilla: { throws, bug: 433004 }
   code: |
     var imgdata1 = ctx.createImageData(10, 20);
     var imgdata2 = ctx.createImageData(-10, 20);
@@ -9138,19 +9091,17 @@
   desc: createImageData(sw, sh) throws INDEX_SIZE_ERR if size is zero
   testing:
     - 2d.imageData.getcreate.zero
-  mozilla: { bug: 433004 }
   code: |
-    @assert throws INDEX_SIZE_ERR ctx.createImageData(10, 0); @moz-todo
-    @assert throws INDEX_SIZE_ERR ctx.createImageData(0, 10); @moz-todo
-    @assert throws INDEX_SIZE_ERR ctx.createImageData(0, 0); @moz-todo
+    @assert throws INDEX_SIZE_ERR ctx.createImageData(10, 0);
+    @assert throws INDEX_SIZE_ERR ctx.createImageData(0, 10);
+    @assert throws INDEX_SIZE_ERR ctx.createImageData(0, 0);
 
 - name: 2d.imageData.create2.nonfinite
   desc: createImageData() throws NOT_SUPPORTED_ERR if arguments are not finite
   testing:
     - 2d.imageData.getcreate.nonfinite
-  mozilla: { bug: 433004 }
   code: |
-    @nonfinite @assert throws NOT_SUPPORTED_ERR ctx.createImageData(<10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>); @moz-todo
+    @nonfinite @assert throws NOT_SUPPORTED_ERR ctx.createImageData(<10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>);
 
 - name: 2d.imageData.create1.zero
   desc: createImageData(null) throws NOT_SUPPORTED_ERR
@@ -9163,7 +9114,6 @@
   desc: createImageData(w, h) is rounded the same as getImageData(0, 0, w, h)
   testing:
     - 2d.imageData.createround
-  mozilla: { throws, bug: 433004 }
   code: |
     var imgdata1 = ctx.createImageData(10.01, 10.99);
     var imgdata2 = ctx.getImageData(0, 0, 10.01, 10.99);
@@ -9196,16 +9146,16 @@
   testing:
     - 2d.imageData.getcreate.zero
   code: |
-    @assert throws INDEX_SIZE_ERR ctx.getImageData(1, 1, 10, 0); @moz-todo
-    @assert throws INDEX_SIZE_ERR ctx.getImageData(1, 1, 0, 10); @moz-todo
-    @assert throws INDEX_SIZE_ERR ctx.getImageData(1, 1, 0, 0); @moz-todo
+    @assert throws INDEX_SIZE_ERR ctx.getImageData(1, 1, 10, 0);
+    @assert throws INDEX_SIZE_ERR ctx.getImageData(1, 1, 0, 10);
+    @assert throws INDEX_SIZE_ERR ctx.getImageData(1, 1, 0, 0);
 
 - name: 2d.imageData.get.nonfinite
   desc: getImageData() throws NOT_SUPPORTED_ERR if arguments are not finite
   testing:
     - 2d.imageData.getcreate.nonfinite
   code: |
-    @nonfinite @assert throws NOT_SUPPORTED_ERR ctx.getImageData(<10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>); @moz-todo
+    @nonfinite @assert throws NOT_SUPPORTED_ERR ctx.getImageData(<10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>);
 
 - name: 2d.imageData.get.source.outside
   desc: getImageData() returns transparent black outside the canvas
@@ -9279,7 +9229,6 @@
   testing:
     - 2d.imageData.get.basic
     - 2d.pixelarray.order
-  mozilla: { throws }
   code: |
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, 100, 50);
@@ -9316,7 +9265,6 @@
   desc: getImageData() works for sizes smaller than one pixel
   testing:
     - 2d.imageData.one
-  mozilla: { throws }
   code: |
     var imgdata = ctx.getImageData(0, 0, 0.0001, 0.0001);
     @assert imgdata.data.length == imgdata.width*imgdata.height*4;
@@ -9481,13 +9429,13 @@
     imgdata.width = 123;
     imgdata.height = 123;
     imgdata.data = [100,100,100,100];
-    @assert imgdata.width === w; @moz-todo
-    @assert imgdata.height === h; @moz-todo
-    @assert imgdata.data === d; @moz-todo
-    @assert imgdata.data[0] === 0; @moz-todo
-    @assert imgdata.data[1] === 0; @moz-todo
-    @assert imgdata.data[2] === 0; @moz-todo
-    @assert imgdata.data[3] === 0; @moz-todo
+    @assert imgdata.width === w;
+    @assert imgdata.height === h;
+    @assert imgdata.data === d;
+    @assert imgdata.data[0] === 0;
+    @assert imgdata.data[1] === 0;
+    @assert imgdata.data[2] === 0;
+    @assert imgdata.data[3] === 0;
 
 - name: 2d.imageData.object.ctor
   desc: ImageData does not have a usable constructor
@@ -9518,7 +9466,7 @@
     var imgdata = ctx.getImageData(0, 0, 10, 10);
     imgdata.data[0] = 100;
     imgdata.data[0] = undefined;
-    @assert imgdata.data[0] === 0; @moz-todo
+    @assert imgdata.data[0] === 0;
 
 - name: 2d.imageData.object.nan
   desc: ImageData.data converts NaN to 0
@@ -9530,10 +9478,10 @@
     var imgdata = ctx.getImageData(0, 0, 10, 10);
     imgdata.data[0] = 100;
     imgdata.data[0] = NaN;
-    @assert imgdata.data[0] === 0; @moz-todo
+    @assert imgdata.data[0] === 0;
     imgdata.data[0] = 100;
     imgdata.data[0] = "cheese";
-    @assert imgdata.data[0] === 0; @moz-todo
+    @assert imgdata.data[0] === 0;
 
 - name: 2d.imageData.object.string
   desc: ImageData.data converts strings to numbers with ToNumber
@@ -9545,13 +9493,13 @@
     var imgdata = ctx.getImageData(0, 0, 10, 10);
     imgdata.data[0] = 100;
     imgdata.data[0] = "110";
-    @assert imgdata.data[0] === 110; @moz-todo
+    @assert imgdata.data[0] === 110;
     imgdata.data[0] = 100;
     imgdata.data[0] = "0x78";
-    @assert imgdata.data[0] === 120; @moz-todo
+    @assert imgdata.data[0] === 120;
     imgdata.data[0] = 100;
     imgdata.data[0] = " +130e0 ";
-    @assert imgdata.data[0] === 130; @moz-todo
+    @assert imgdata.data[0] === 130;
 
 - name: 2d.imageData.object.clamp
   desc: ImageData.data clamps numbers to [0, 255]
@@ -9665,7 +9613,6 @@
   desc: putImageData() puts image data from createImageData() onto the canvas
   testing:
     - 2d.imageData.put.normal
-  mozilla: { throws, bug: 433004 }
   code: |
     var imgdata = ctx.createImageData(100, 50);
     for (var i = 0; i < imgdata.data.length; i += 4) {
@@ -9755,14 +9702,13 @@
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 0, 100, 50)
     ctx.putImageData(imgdata, 0, 0, 0, 0, 0, 0);
-    @assert pixel 50,25 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 50,25 ==~ 0,255,0,255;
   expected: green
 
 - name: 2d.imageData.put.dirty.rect1
   desc: putImageData() only modifies areas inside the dirty rectangle, using width and height
   testing:
     - 2d.imageData.put.normal
-  mozilla: { throws }
   code: |
     ctx.fillStyle = '#f00';
     ctx.fillRect(0, 0, 100, 50)
@@ -9788,7 +9734,6 @@
   desc: putImageData() only modifies areas inside the dirty rectangle, using x and y
   testing:
     - 2d.imageData.put.normal
-  mozilla: { throws }
   code: |
     ctx.fillStyle = '#f00';
     ctx.fillRect(0, 0, 100, 50)
@@ -9814,7 +9759,6 @@
   desc: putImageData() handles negative-sized dirty rectangles correctly
   testing:
     - 2d.imageData.put.normal
-  mozilla: { throws }
   code: |
     ctx.fillStyle = '#f00';
     ctx.fillRect(0, 0, 100, 50)
@@ -9840,7 +9784,6 @@
   desc: putImageData() handles dirty rectangles outside the canvas correctly
   testing:
     - 2d.imageData.put.normal
-  mozilla: { throws }
   code: |
     ctx.fillStyle = '#f00';
     ctx.fillRect(0, 0, 100, 50)
@@ -9912,7 +9855,6 @@
   desc: putImageData() is not affected by clipping regions
   testing:
     - 2d.imageData.unaffected
-  mozilla: { bug: 433397 }
   code: |
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 0, 100, 50)
@@ -9924,7 +9866,7 @@
     ctx.clip();
     ctx.putImageData(imgdata, 0, 0);
     @assert pixel 25,25 ==~ 0,255,0,255;
-    @assert pixel 75,25 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 75,25 ==~ 0,255,0,255;
   expected: green
 
 - name: 2d.imageData.put.path

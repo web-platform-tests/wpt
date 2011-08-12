@@ -236,18 +236,44 @@
         ("trailingjunk", "100#!?", 100),
     ]
     def gen(name, exp, code):
+        status = {
+            "zero": { "attr": True, "css": False },
+            "empty": { "attr": True },
+            "onlyspace": { "attr": True },
+            "space": { "attr": True, "css": False },
+            "whitespace": { "attr": True, "css": False },
+            "plus": { "attr": True, "css": False },
+            "minus": { "attr": True },
+            "octal": { "attr": True, "css": False },
+            "hex": { "attr": False, "css": False },
+            "exp": { "attr": False, "css": False },
+            "decimal": { "attr": True, "css": False },
+            "percent": { "attr": True, "css": False },
+            "em": { "attr": False, "css": False },
+            "junk": { "attr": True },
+            "trailingjunk": { "attr": True, "css": False }
+        }
         testing = ["size.nonnegativeinteger"]
         if exp is None:
             testing.append("size.error")
-            code += "@assert canvas.width === 300;\n@assert canvas.height === 150;\n"
+            postfix = ""
+            if not status[name]["attr"]:
+                postfix = " @moz-todo"
+            code += "@assert canvas.width === 300;%s\n@assert canvas.height === 150;%s\n" % (postfix, postfix)
             expected = "size 300 150"
         else:
-            code += "@assert canvas.width === %s;\n@assert canvas.height === %s;\n" % (exp, exp)
+            postfix = ""
+            if not status[name]["attr"]:
+                postfix = " @moz-todo"
+            code += "@assert canvas.width === %s;%s\n@assert canvas.height === %s;%s\n" % (exp, postfix, exp, postfix)
             expected = "size %s %s" % (exp, exp)
 
             # With "100%", Opera gets canvas.width = 100 but renders at 100% of the frame width,
             # so check the CSS display width
-            code += '@assert window.getComputedStyle(canvas, null).getPropertyValue("width") == "%spx";\n' % exp
+            postfix = ""
+            if not status[name]["css"]:
+                postfix = " @moz-todo"
+            code += '@assert window.getComputedStyle(canvas, null).getPropertyValue("width") == "%spx";%s\n' % (exp, postfix)
 
         if exp == 0:
             expected = None # can't generate zero-sized PNGs for the expected image
@@ -423,7 +449,6 @@
   desc: getContext with empty string returns null
   testing:
     - context.unrecognised
-  mozilla: { throws, bug: 401788 }
   code: |
     @assert canvas.getContext("") === null;
 
@@ -431,7 +456,6 @@
   desc: getContext with unrecognised context name returns null
   testing:
     - context.unrecognised
-  mozilla: { throws, bug: 401788 }
   code: |
     @assert canvas.getContext('This is not an implemented context in any real browser') === null;
 
@@ -439,7 +463,6 @@
   desc: Context name "2d" plus a suffix is unrecognised
   testing:
     - context.unrecognised
-  mozilla: { throws, bug: 401788 }
   code: |
     @assert canvas.getContext("2d#") === null;
 
@@ -447,7 +470,6 @@
   desc: Context name "2d" plus a "\0" suffix is unrecognised
   testing:
     - context.unrecognised
-  mozilla: { throws, bug: 401788 }
   code: |
     @assert canvas.getContext("2d\0") === null;
 
@@ -455,7 +477,6 @@
   desc: Context name which kind of looks like "2d" is unrecognised
   testing:
     - context.unrecognised
-  mozilla: { throws, bug: 401788 }
   code: |
     @assert canvas.getContext("2\uFF44") === null; // Fullwidth Latin Small Letter D
 
@@ -463,7 +484,6 @@
   desc: Context name "2D" is unrecognised; matching is case sensitive
   testing:
     - context.unrecognised
-  mozilla: { throws, bug: 401788 }
   code: |
     @assert canvas.getContext('2D') === null;
 
@@ -496,7 +516,6 @@
 
 - name: toDataURL.bogustype
   desc: toDataURL with a syntactically invalid type returns a PNG
-  mozilla: { throws, bug: 489304 }
   testing:
     - toDataURL.unrecognised
   code: |
@@ -505,7 +524,6 @@
 
 - name: toDataURL.unrecognised
   desc: toDataURL with an unhandled type returns a PNG
-  mozilla: { throws, bug: 489304 }
   testing:
     - toDataURL.unrecognised
   code: |
@@ -514,7 +532,6 @@
 
 - name: toDataURL.lowercase.ascii
   desc: toDataURL type is case-insensitive
-  mozilla: { throws }
   testing:
     - toDataURL.lowercase
   code: |
@@ -530,7 +547,6 @@
 
 - name: toDataURL.lowercase.unicode
   desc: toDataURL type is ASCII-case-insensitive
-  mozilla: { throws }
   testing:
     - toDataURL.lowercase
   code: |
@@ -543,7 +559,6 @@
 
 - name: toDataURL.arguments.1
   desc: toDataURL ignores extra arguments
-  mozilla: { throws, bug: 401795 }
   testing:
     - toDataURL.arguments
   code: |
@@ -552,7 +567,6 @@
 
 - name: toDataURL.arguments.2
   desc: toDataURL ignores extra arguments
-  mozilla: { throws, bug: 401795 }
   testing:
     - toDataURL.arguments
   code: |
@@ -561,7 +575,6 @@
 
 - name: toDataURL.arguments.3
   desc: toDataURL ignores extra arguments
-  mozilla: { throws, bug: 401795 }
   testing:
     - toDataURL.arguments
   code: |
@@ -585,7 +598,7 @@
   canvas: width="0" height="0"
   code: |
     var data = canvas.toDataURL();
-    @assert data === 'data:,'; @moz-todo
+    @assert data === 'data:,';
 
 - name: toDataURL.large1
   DISABLED: just testing implementation limits, and tends to crash
@@ -612,6 +625,7 @@
   desc: toDataURL with PNG handles simple colours correctly
   testing:
     - toDataURL.png
+  mozilla: { throws }
   code: |
     ctx.fillStyle = '#ff0';
     ctx.fillRect(0, 0, 25, 40);
@@ -655,6 +669,7 @@
   desc: toDataURL with PNG handles non-primary and non-solid colours correctly
   testing:
     - toDataURL.png
+  mozilla: { throws }
   code: |
     // (These values are chosen to survive relatively alright through being premultiplied)
     ctx.fillStyle = 'rgba(1, 3, 254, 1)';
@@ -698,6 +713,7 @@
   desc: toDataURL with JPEG handles simple colours correctly
   testing:
     - toDataURL.jpeg
+  mozilla: { throws }
   code: |
     ctx.fillStyle = '#ff0';
     ctx.fillRect(0, 0, 25, 40);
@@ -742,6 +758,7 @@
   testing:
     - toDataURL.jpeg
     - toDataURL.noalpha
+  mozilla: { throws }
   code: |
     ctx.fillStyle = 'rgba(128, 255, 128, 0.5)';
     ctx.fillRect(0, 0, 100, 50);
@@ -773,6 +790,7 @@
   desc: toDataURL with JPEG uses the quality parameter
   testing:
     - toDataURL.jpeg.quality
+  mozilla: { throws }
   code: |
     ctx.fillStyle = '#00f';
     ctx.fillRect(0, 0, 100, 50);

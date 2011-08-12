@@ -113,23 +113,24 @@ w3c: |
 
 mochitest: |
     <!DOCTYPE HTML>
-    <title>Canvas test: %(mochi_name)s</title>
+    <title>%(mochi_name_fn)s</title>
     %(mochi_desc)s<script src="/MochiKit/MochiKit.js"></script>
     <script src="/tests/SimpleTest/SimpleTest.js"></script>
     <link rel="stylesheet" href="/tests/SimpleTest/test.css">
-    %(fonts)s<body>
-    %(fonthack)s<canvas id="c" %(canvas)s>%(fallback)s</canvas>
+    %(fonts)s<body><!-- [[[ test_%(mochi_name)s.html ]]] -->
+
+    <p>Canvas test: %(mochi_name)s</p>
+    %(mochi_desc)s%(fonthack)s<canvas id="c" %(canvas)s>%(fallback)s</canvas>
     <script>
-    %(mochi_setup)s
-    SimpleTest.waitForExplicitFinish();
-    MochiKit.DOM.addLoadEvent(function () {
+
+    function %(mochi_name_fn)s() {
 
     var canvas = document.getElementById('c');
     var ctx = canvas.getContext('2d');
 
     %(mochi_code)s
-    %(mochi_footer)s
-    });
+
+    }
     </script>
     %(mochi_images)s
 

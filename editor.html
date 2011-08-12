@@ -24,7 +24,7 @@ style="border: inset 2px #ccc;min-height:20em"
 
 <script>
 document.querySelector("[contenteditable]").onkeypress = function(e) {
-	if (e.altKey || e.ctrlKey || (e.which == 0 && e.charCode == 0)) {
+	if (e.altKey || e.ctrlKey || e.charCode == 0) {
 		return true;
 	}
 	if (e.keyCode == 13 && !e.shiftKey) {

@@ -1433,6 +1433,7 @@
         ('name-2', 'firebrick1'),
         ('name-3', 'red blue'),
         ('name-4', '"red"'),
+        ('name-5', '"red'),
     ]:
         test = {
             'name': '2d.fillStyle.parse.invalid.%s' % name,

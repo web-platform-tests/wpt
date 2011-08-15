@@ -5531,9 +5531,8 @@ Consider removing it anyway.
 
     <li>
     <p class=comments>We can't turn it into a div if it's the child of an ol or
-    ul, because that's not currently allowed.  TODO: change this if
-    <a href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=13128>bug 13128</a>
-    is fixed and we can make it a div.
+    ul, because that's not allowed: there's no way to group li's (see
+    <a href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=13128>HTML bug 13128</a>).
 
     <p>If <var>node</var> has attributes, and its [[parent]] is not an [[ol]]
     or [[ul]], <span>set the tag name</span> of <var>node</var> to "div".

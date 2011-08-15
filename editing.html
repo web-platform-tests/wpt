@@ -65,7 +65,7 @@ a code { text-decoration: underline }
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing APIs</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-12-august-2011>Work in Progress &mdash; Last Update 12 August 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-15-august-2011>Work in Progress &mdash; Last Update 15 August 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;<a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a>&gt;
@@ -5489,9 +5489,8 @@ Consider removing it anyway.
 
     <li>
     <p class=comments>We can't turn it into a div if it's the child of an ol or
-    ul, because that's not currently allowed.  TODO: change this if
-    <a href="http://www.w3.org/Bugs/Public/show_bug.cgi?id=13128">bug 13128</a>
-    is fixed and we can make it a div.
+    ul, because that's not allowed: there's no way to group li's (see
+    <a href="http://www.w3.org/Bugs/Public/show_bug.cgi?id=13128">HTML bug 13128</a>).
 
     <p>If <var title="">node</var> has attributes, and its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is not an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code>
     or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, <a href=#set-the-tag-name>set the tag name</a> of <var title="">node</var> to "div".

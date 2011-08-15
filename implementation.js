@@ -3328,10 +3328,14 @@ commands.removeformat = {
 		&& getActiveRange().endOffset != 0
 		&& getActiveRange().endOffset != getNodeLength(getActiveRange().endContainer)) {
 			// IE seems to mutate the range incorrectly here, so we need
-			// correction here as well.
+			// correction here as well.  Have to be careful to set the range to
+			// something not including the text node so that getActiveRange()
+			// doesn't throw an exception due to a temporarily detached
+			// endpoint.
 			var newStart = [getActiveRange().startContainer, getActiveRange().startOffset];
 			var newEnd = [getActiveRange().endContainer, getActiveRange().endOffset];
-			getActiveRange().endContainer.splitText(getActiveRange().endOffset);
+			getActiveRange().setEnd(document.documentElement, 0);
+			newEnd[0].splitText(newEnd[1]);
 			getActiveRange().setStart(newStart[0], newStart[1]);
 			getActiveRange().setEnd(newEnd[0], newEnd[1]);
 		}

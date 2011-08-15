@@ -3398,10 +3398,14 @@ selection's value</span> to "italic".
 <h3><dfn>The <code title>removeFormat</code> command</dfn></h3>
 <!-- @{ -->
 <div class=comments>
+<p>See <a href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=13632>bug</a>, and
+also <a href=https://bugs.webkit.org/show_bug.cgi?id=43017>research by Ryosuke
+for WebKit</a>.
+
 <p>Tested in IE 9, Firefox 4.0, Chrome 12 dev, Opera 11.00.
 
 <ul>
-<li>Tags stripped by everyone: b big cite code dfn em font i ins kbd samp s
+<li>Tags stripped by everyone: b big cite code dfn em font i ins kbd s samp
 small strike strong sub sup tt u var
 
 <li>Tags left alone by everyone: br hr img
@@ -3429,12 +3433,20 @@ remove links.  In Microsoft Word 2007, doing "Clear Formatting" also doesn't
 remove links.  Verdict: don't remove links.  Apparently they don't logically
 qualify as "formatting".
 
-<p>Conclusion: leave alone a, br, hr, img, wbr.  Strip everything else, including
-unrecognized elements, although of course not block elements.  Also we should
-probably treat all replaced elements the same as &lt;img>, although I didn't test
-that (somehow I doubt it will come up much).  &lt;video> behaves the same as
-&lt;img>, although Firefox adds tabindex=0 (???), so I'm assuming the rest are
-similar.  Also, I'll keep all foreign elements and form elements.
+<p>Conclusion: IE/WebKit is a solid majority by market share and they're
+closely interoperable, since WebKit copied IE here.  Also, it makes more sense
+to assume that unrecognized elements don't represent any kind of inline
+formatting, i.e., have a blacklist of elements to remove instead of a whitelist
+to keep.  Thus I remove more or less the same things as IE/WebKit.
+
+<p>I remove blink because IE does it and it makes sense, although Chrome
+doesn't; I remove abbr although only Firefox does, for consistency with
+acronym; and I remove bdi and mark because they're evidently left alone only
+because they're unrecognized.  Finally, I remove span because otherwise,
+something like <code title>&lt;span style="font-variant: small-caps"></code>
+will be left intact, which isn't expected and matches no browser except IE.
+(Chrome doesn't remove spans in general, but it does remove spans with style
+attributes, or something like that.)
 
 <p>Browsers will split up all these inline elements if the selection is contained
 within them.  Opera does strip unrecognized elements with display: block if
@@ -3442,26 +3454,27 @@ they're within the selection, but doesn't split them up if they contain the
 selection.
 
 <p>Chrome 14 dev removes style attributes from every element in the range, but
-IE10PP2, Firefox 7.0a2, and Opera 11.50 do not, so I go with them.
+IE10PP2, Firefox 7.0a2, and Opera 11.50 do not, so I go with them.  As noted
+above, this means I need to remove spans.  I could conceivably change to remove
+only spans with style attributes, but it doesn't seem worth it: I'll just match
+Gecko.
+
+<p>TODO: This has to be kept in sync when new HTML elements are added.  I need
+to figure out some way of coordinating this.
 </div>
+
+<p>A <dfn>removeFormat candidate</dfn> is an <span>editable</span> <span>HTML
+element</span> with [[localname]] "abbr", "acronym", "b", "bdi", "bdo", "big",
+"blink", "cite", "code", "dfn", "em", "font", "i", "ins", "kbd", "mark",
+"nobr", "q", "s", "samp", "small", "span", "strike", "strong", "sub", "sup",
+"tt", "u", or "var".
 
 <p><span>Action</span>:
 
 <ol>
-  <li>Let <var>elements to remove</var> be a list of all <span>editable</span>
-  <span title="HTML element">HTML elements</span> <span>effectively
-  contained</span> in the <span>active range</span>, excluding those with
-  [[localname]] "a", "audio", "br", "img", "video", or "wbr", and excluding
-  <span title="prohibited paragraph child">prohibited paragraph
-  children</span>.
-
-  <p class=XXX>Do we want to go with this whitelist approach, or a blacklist?
-  If a whitelist, should we also whitelist display: block elements?  Either
-  way, what exact list should we use?  I specced it this way because it's
-  easiest given the definitions I'm using, since I have a mostly complete list
-  of things to exclude (prohibited paragraph children) but no list of things to
-  include (inline elements).  See <a
-  href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=13632>bug</a>.
+  <li>Let <var>elements to remove</var> be a list of every <span>removeFormat
+  candidate</span> <span>effectively contained</span> in the <span>active
+  range</span>.
 
   <li>For each <var>element</var> in <var>elements to remove</var>:
 
@@ -3494,17 +3507,14 @@ IE10PP2, Firefox 7.0a2, and Opera 11.50 do not, so I go with them.
   <span>effectively contained</span> in the <span>active range</span>.
 
   <li>
-  <p class=comments> TODO: Splitting the parent is really a block algorithm.
+  <p class=comments>TODO: Splitting the parent is really a block algorithm.
   It's not clear whether it's desirable to use for inline nodes.  Perhaps it's
   okay, but it makes me a little uneasy.
 
   <p>For each <var>node</var> in <var>node list</var>, while <var>node</var>'s
-  [[parent]] is an <span>editable</span> <span>HTML element</span> <span>in the
-  same editing host</span> as <var>node</var>, and <var>node</var>'s [[parent]]
-  is not a <span>prohibited paragraph child</span> and does not have
-  [[localname]] "a" or "audio" or "br" or "img" or "video" or "wbr",
-  <span>split the parent</span> of the one-[[node]] list consisting of
-  <var>node</var>.
+  [[parent]] is a <span>removeFormat candidate</span> <span>in the same editing
+  host</span> as <var>node</var>, <span>split the parent</span> of the
+  one-[[node]] list consisting of <var>node</var>.
 
   <li>
   <p class=comments>This step is for cases like &lt;p

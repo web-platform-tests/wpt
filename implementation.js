@@ -3275,16 +3275,22 @@ commands.italic = {
 //@{
 commands.removeformat = {
 	action: function() {
-		// "Let elements to remove be a list of all editable HTML elements
-		// effectively contained in the active range, excluding those with
-		// local name "a", "audio", "br", "img", "video", or "wbr", and
-		// excluding prohibited paragraph children."
-		var elementsToRemove = getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
+		// "A removeFormat candidate is an editable HTML element with local
+		// name "abbr", "acronym", "b", "bdi", "bdo", "big", "blink", "cite",
+		// "code", "dfn", "em", "font", "i", "ins", "kbd", "mark", "nobr", "q",
+		// "s", "samp", "small", "span", "strike", "strong", "sub", "sup",
+		// "tt", "u", or "var"."
+		function isRemoveFormatCandidate(node) {
 			return isEditable(node)
-				&& isHtmlElement(node)
-				&& ["A", "AUDIO", "BR", "IMG", "VIDEO", "WBR"].indexOf(node.tagName) == -1
-				&& !isProhibitedParagraphChild(node);
-		});
+				&& isHtmlElement(node, ["abbr", "acronym", "b", "bdi", "bdo",
+				"big", "blink", "cite", "code", "dfn", "em", "font", "i",
+				"ins", "kbd", "mark", "nobr", "q", "s", "samp", "small",
+				"span", "strike", "strong", "sub", "sup", "tt", "u", "var"]);
+		}
+
+		// "Let elements to remove be a list of every removeFormat candidate
+		// effectively contained in the active range."
+		var elementsToRemove = getAllEffectivelyContainedNodes(getActiveRange(), isRemoveFormatCandidate);
 
 		// "For each element in elements to remove:"
 		elementsToRemove.forEach(function(element) {
@@ -3343,16 +3349,12 @@ commands.removeformat = {
 		// "Let node list consist of all editable nodes effectively contained
 		// in the active range."
 		//
-		// "For each node in node list, while node's parent is an editable HTML
-		// element in the same editing host as node, and node's parent is not a
-		// prohibited paragraph child and does not have local name "a" or
-		// "audio" or "br" or "img" or "video" or "wbr", split the parent of
-		// the one-node list consisting of node."
+		// "For each node in node list, while node's parent is a removeFormat
+		// candidate in the same editing host as node, split the parent of the
+		// one-node list consisting of node."
 		getAllEffectivelyContainedNodes(getActiveRange(), isEditable).forEach(function(node) {
-			while (isEditable(node.parentNode)
-			&& isHtmlElement(node.parentNode)
-			&& !isProhibitedParagraphChild(node.parentNode)
-			&& ["A", "AUDIO", "BR", "IMG", "VIDEO", "WBR"].indexOf(node.parentNode.tagName) == -1) {
+			while (isRemoveFormatCandidate(node.parentNode)
+			&& inSameEditingHost(node.parentNode, node)) {
 				splitParent([node]);
 			}
 		});

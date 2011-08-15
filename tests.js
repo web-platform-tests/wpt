@@ -3050,6 +3050,8 @@ var tests = {
 		'[foo<strong>bar</strong>baz]',
 		'[foo<span style="font-weight: bold">bar</span>baz]',
 		'foo<span style="font-weight: bold">b[a]r</span>baz',
+		'[foo<span style="font-variant: small-caps">bar</span>baz]',
+		'foo<span style="font-variant: small-caps">b[a]r</span>baz',
 		'[foo<b id=foo>bar</b>baz]',
 		'foo<b id=foo>b[a]r</b>baz',
 

@@ -24,7 +24,7 @@ var formElements = {
 	],
 	// TODO: formAction is special
 	"button": [["string", "value"], [{type: "enum", keywords: ["submit", "reset", "button"], defaultVal: "submit"}, "type"], /*"formAction",*/ "formEnctype", "formMethod", "formNoValidate", "formTarget", "autofocus", "name", "disabled"],
-	"select": ["multiple", [{type: "limited unsigned long", defaultVal: 0}, "size"], "autofocus", "name", "disabled"],
+	"select": ["multiple", [{type: "unsigned long", defaultVal: 0}, "size"], "autofocus", "name", "disabled"],
 	"datalist": [],
 	"optgroup": ["disabled", "label"],
 	"option": ["disabled", "label", "defaultSelected"],

@@ -402,6 +402,13 @@ like nested <code title="">contenteditable=false</code> regions.  It should be
 relatively easy to transform the existing tests into proper conformance tests,
 but there's not much point until the spec is more stable.
 
+<p>The implementation is also used for an actual <a href=editor.html>rich-text
+editor</a>, but it's currently more of a toy than anything.  Significant
+functionality is probably broken, especially outside of Gecko/WebKit.  I might
+spend some more time getting it to work right, but it's certainly not going to
+be very useful on real-world sites, since there's no way any of this stuff will
+work in IE8.
+
 
 
 <h2 id=issues>Issues</h2>

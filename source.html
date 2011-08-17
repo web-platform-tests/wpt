@@ -895,7 +895,9 @@ whose [[localname]] is a <span>prohibited paragraph child name</span>.
 paragraph child" is conceptually similar to "block node", but based on the
 element name.  Generally we want to use block/inline node when we're interested
 in the visual effect, and prohibited paragraph children when we're concerned
-about parsing or semantics.
+about parsing or semantics.  TODO: Audit all "block node" usages to see if they
+need to become "visible block node", now that block nodes can be invisible (if
+they descend from display: none).
 
 <p>A <dfn>block node</dfn> is either an [[element]] whose "display" property
 does not have [[resval]] "inline" or "inline-block" or "inline-table" or
@@ -961,10 +963,107 @@ that is the sole child of an [[li]] is not extraneous.
 and seeing what happens.  (Actually, setting display: none, so that it doesn't
 mess up ranges.)
 
+<p>A <dfn>whitespace node</dfn> is either a [[text]] node whose [[cddata]] is
+the empty string; or a [[text]] node whose [[cddata]] consists only of one or
+more tabs (0x0009), line feeds (0x000A), carriage returns (0x000D), and/or
+spaces (0x0020), and whose [[parent]] is an [[element]] whose [[resval]] for
+"white-space" is "normal" or "nowrap"; or a [[text]] node whose [[cddata]]
+consists only of one or more tabs (0x0009), carriage returns (0x000D), and/or
+spaces (0x0020), and whose [[parent]] is an [[element]] whose [[resval]] for
+"white-space" is "pre-line".
+
+<p><var>node</var> is a <dfn>collapsed whitespace node</dfn> if the following
+algorithm returns true:
+
+<p class=XXX>This definition is also bad.  It's a crude attempt to emulate
+CSS2.1 16.6.1, but leaving out a ton of the subtleties.  I actually don't want
+the exact CSS definitions, because those depend on things like where lines are
+broken, but I'm not sure this definition is right anyway.  E.g., what about a
+pre-line text node consisting of a single line break that's at the end of a
+block?  That collapses, same idea as an extraneous line break.  We could also
+worry about nodes containing only zwsp or such if we wanted, or display: none,
+or . . .
+
+<ol>
+  <li>If <var>node</var> is not a <span>whitespace node</span>, return false.
+
+  <li>If <var>node</var>'s [[cddata]] is the empty string, return true.
+
+  <li>Let <var>ancestor</var> be <var>node</var>'s [[parent]].
+
+  <li>If <var>ancestor</var> is null, return true.
+
+  <li>If the "display" property of some [[ancestor]] of <var>node</var> has
+  [[resval]] "none", return true.
+
+  <li>While <var>ancestor</var> is not a <span>block node</span> and its
+  [[parent]] is not null, set <var>ancestor</var> to its [[parent]].
+
+  <li>
+  <div class=comments>
+  <p>At this point we know <var>node</var> consists of some whitespace, of a
+  sort that will collapse if it's at the start or end of a line.  We go
+  backwards until we find the first block boundary, and if everything until
+  there is invisible or whitespace, we conclude that <var>node</var> is
+  collapsed.  We assume a block boundary is either when we hit a line break or
+  block node, or we hit the end of <var>ancestor</var> (which is the nearest
+  ancestor block node).  All this is very imprecise, of course, but it's fairly
+  simple and will work in common cases.
+
+  <p>We have to avoid invoking the definition of "visible" here to avoid
+  infinite recursion: that depends on the concept of collapsed whitespace
+  nodes.  Instead, we repeat the parts we need, which turns out to be "not
+  much of it".
+  </div>
+
+  <p>Let <var>reference</var> be <var>node</var>.
+
+  <li>While <var>reference</var> is a [[descendant]] of <var>ancestor</var>:
+
+  <ol>
+    <li>Let <var>reference</var> be the [[node]] before it in [[treeorder]].
+
+    <li>If <var>reference</var> is a <span>block node</span> or a [[br]],
+    return true.
+
+    <li>If <var>reference</var> is a [[text]] node that is not a
+    <span>whitespace node</span>, or is an [[img]], break from this loop.
+  </ol>
+
+  <li><p class=comments>We found something before our text node on (probably)
+  the same line, so presumably it's not at the line's start.  Now we need to
+  look forward and see if we're at the line's end.  If we aren't there either,
+  then we assume we're not collapsed, so return false.
+
+  <p>Let <var>reference</var> be <var>node</var>.
+
+  <li>While <var>reference</var> is a [[descendant]] of <var>ancestor</var>:
+
+  <ol>
+    <li>Let <var>reference</var> be the [[node]] after it in [[treeorder]], or
+    null if there is no such [[node]].
+
+    <li>If <var>reference</var> is a <span>block node</span> or a [[br]],
+    return true.
+
+    <li>If <var>reference</var> is a [[text]] node that is not a
+    <span>whitespace node</span>, or is an [[img]], break from this loop.
+  </ol>
+
+  <li>Return false.
+</ol>
+
+<p class=comments>TODO: Consider whether we really want to depend on img
+specifically here.  It seems more likely that we want something like "any
+replaced content that has nonzero height and width" or such.  When fixing this,
+make sure to audit for other occurrences of this assumption.
+
 <p>Something is <dfn>visible</dfn> if it is a [[node]] that either is a
-<span>block node</span>, or a [[text]] node whose [[cddata]] is not empty, or
-an [[img]], or a [[br]] that is not an <span>extraneous line break</span>, or
-any [[node]] with a <span>visible</span> [[descendant]].
+<span>block node</span>, or a [[text]] node that is not a <span>collapsed
+whitespace node</span>, or an [[img]], or a [[br]] that is not an
+<span>extraneous line break</span>, or any [[node]] with a <span>visible</span>
+[[descendant]]; excluding any [[node]] with an [[ancestorcontainer]]
+[[element]] whose "display" property has [[resval]] "none".
 
 <p>Something is <dfn>invisible</dfn> if it is a [[node]] that is not
 <span>visible</span>.
@@ -4027,6 +4126,21 @@ ancestor (if any).
 <!-- @} -->
 <h3>Block-extending a range</h3>
 <!-- @{ -->
+<p>A [[boundarypoint]] (<var>node</var>, <var>offset</var>) is a <dfn>block
+start point</dfn> if either <var>node</var>'s [[parent]] is null and
+<var>offset</var> is zero; or <var>node</var> has a [[child]] with [[index]]
+<var>offset</var> &minus; 1, and that [[child]] is either a
+<span>visible</span> <span>block node</span> or a <span>visible</span> [[br]].
+
+<p>A [[boundarypoint]] (<var>node</var>, <var>offset</var>) is a <dfn>block end
+point</dfn> if either <var>node</var>'s [[parent]] is null and
+<var>offset</var> is <var>node</var>'s [[length]]; or <var>node</var> has a
+[[child]] with [[index]] <var>offset</var>, and that [[child]] is a
+<span>visible</span> <span>block node</span>.
+
+<p>A [[boundarypoint]] is a <dfn>block boundary point</dfn> if it is either a
+<span>block start point</span> or a <span>block end point</span>.
+
 <p>When a user agent is to <dfn>block-extend</dfn> a [[range]]
 <var>range</var>, it must run the following steps:
 
@@ -4057,77 +4171,49 @@ I should re-examine it sometime, but it seems to work.
   <var>start offset</var> to the [[index]] of the last such [[li]] in
   [[treeorder]], and set <var>start node</var> to that [[li]]'s [[parent]].
 
-  <li>Repeat the following steps:
+  <li>If (<var>start node</var>, <var>start offset</var>) is not a <span>block
+  start point</span>, repeat the following steps:
 
   <ol>
-    <li>If <var>start node</var> is a [[text]] or [[comment]] node or
-    <var>start offset</var> is 0, set <var>start offset</var> to the [[index]]
-    of <var>start node</var> and then set <var>start node</var> to its
-    [[parent]].
+    <li>If <var>start offset</var> is zero, set it to <var>start node</var>'s
+    [[index]], then set <var>start node</var> to its [[parent]].
 
-    <li>Otherwise, if <var>start node</var>'s [[child]] with [[index]]
-    <var>start offset</var> minus one is <span>invisible</span>, subtract one
-    from <var>start offset</var>.
+    <li>Otherwise, subtract one from <var>start offset</var>.
 
-    <li>
-    <p class=comments>So if you have a collapsed selection at the end of a
-    block, for instance, it will extend backwards into a block.
-
-    <p>Otherwise, if <var>start node</var> has no <span>visible</span>
-    [[children]] with [[index]] greater than or equal to <var>start
-    offset</var> and <var>start node</var>'s last <span>visible</span>
-    [[child]] is an <span>inline node</span> that's not a [[br]], subtract one
-    from <var>start offset</var>.
-
-    <li>
-    <p class=comments>IE also includes &lt;br> (at least for the purposes of
-    the indent command), but this is unlikely to match user expectations.
-
-    <p>Otherwise, if <var>start node</var> has a <span>visible</span>
-    [[child]] with [[index]] greater than or equal to <var>start offset</var>,
-    and the first such [[child]] is an <span>inline node</span>, and <var>start
-    node</var>'s [[child]] with [[index]] <var>start offset</var> minus one is
-    an <span>inline node</span> other than a [[br]], subtract one from
-    <var>start offset</var>.
-
-    <li>Otherwise, break from this loop.
+    <li>If (<var>start node</var>, <var>start offset</var>) is a <span>block
+    boundary point</span>, break from this loop.
   </ol>
+
+  <li><p class=comments>This just changes something like <code
+  title>&lt;div>{&lt;p>foo]&lt;/p>&lt;/div></code> to <code
+  title>{&lt;div>&lt;p>foo]&lt;/p>&lt;/div></code>.
+
+  <p>While <var>start offset</var> is zero and <var>start node</var>'s
+  [[parent]] is not null, set <var>start offset</var> to <var>start
+  node</var>'s [[index]], then set <var>start node</var> to its [[parent]].
 
   <li>If some [[ancestorcontainer]] of <var>end node</var> is an [[li]], set
   <var>end offset</var> to one plus the [[index]] of the last such [[li]] in
   [[treeorder]], and set <var>end node</var> to that [[li]]'s [[parent]].
 
-  <li>Repeat the following steps:
+  <li>If (<var>end node</var>, <var>end offset</var>) is not a <span>block end
+  point</span>, repeat the following steps:
 
   <ol>
-    <li>If <var>end node</var> is a [[text]] or [[comment]] node or <var>end
-    offset</var> is equal to the [[nodelength]] of <var>end node</var>, set
-    <var>end offset</var> to one plus the [[index]] of <var>end node</var> and
-    then set <var>end node</var> to its [[parent]].
+    <li>If <var>end offset</var> is <var>end node</var>'s [[length]], set it to
+    one plus <var>end node</var>'s [[index]], then set <var>end node</var> to
+    its [[parent]].
 
-    <li>Otherwise, if <var>end node</var>'s [[child]] with [[index]] <var>end
-    offset</var> is <span>invisible</span>, add one to <var>end offset</var>.
+    <li>Otherwise, add one to <var>end offset</var>.
 
-    <li>Otherwise, if <var>end node</var> has no <span>visible</span>
-    [[children]] with [[index]] less than <var>end offset</var> and <var>end
-    node</var>'s first <span>visible</span> [[child]] is an <span>inline
-    node</span> that's not a [[br]], add one to <var>end offset</var>.
-
-    <li>Otherwise, if <var>end node</var> has a <span>visible</span> [[child]]
-    with [[index]] less than <var>end offset</var>, and the last such [[child]]
-    is an <span>inline node</span>, and <var>end node</var>'s [[child]] with
-    [[index]] <var>end offset</var> is an <span>inline node</span> other than a
-    [[br]], add one to <var>end offset</var>.
-
-    <li>Otherwise, break from this loop.
+    <li>If (<var>end node</var>, <var>end offset</var>) is a <span>block
+    boundary point</span>, break from this loop.
   </ol>
 
-  <li>If the [[child]] of <var>end node</var> with [[index]] <var>end
-  offset</var> is a [[br]], add one to <var>end offset</var>.
-
-  <li>While <var>end offset</var> is equal to the [[nodelength]] of <var>end
-  node</var>, set <var>end offset</var> to one plus the [[index]] of <var>end
-  node</var> and then set <var>end node</var> to its [[parent]].
+  <li>While <var>end offset</var> is <var>end node</var>'s [[length]] and
+  <var>end node</var>'s [[parent]] is not null, set <var>end offset</var> to
+  one plus <var>end node</var>'s [[index]], then set <var>end node</var> to its
+  [[parent]].
 
   <li>Let <var>new range</var> be a new [[range]] whose [[rangestart]] and
   [[rangeend]] [[bpnodes]] and [[bpoffsets]] are <var>start node</var>,
@@ -4142,37 +4228,47 @@ algorithm returns true:
 <ol>
   <li>Let <var>offset</var> be zero.
 
-  <li>While <var>offset</var> is zero, set <var>offset</var> to the [[index]]
-  of <var>node</var> and then set <var>node</var> to its [[parent]].
+  <li>While (<var>node</var>, <var>offset</var>) is not a <span>block boundary
+  point</span>:
 
-  <li>Let <var>range</var> be a [[range]] with [[rangestart]] and [[rangeend]]
-  (<var>node</var>, <var>offset</var>).
+  <ol>
+    <li>If <var>node</var> has a <span>visible</span> [[child]] with [[index]]
+    <var>offset</var> minus one, return false.
 
-  <li><span>Block-extend</span> <var>range</var>, and let <var>new range</var>
-  be the result.
+    <li>If <var>offset</var> is zero or <var>node</var> has no [[children]],
+    set <var>offset</var> to <var>node</var>'s [[index]], then set
+    <var>node</var> to its [[parent]].
 
-  <li>Return false if <var>new range</var>'s [[rangestart]] is [[bpbefore]]
-  (<var>node</var>, <var>offset</var>), true otherwise.
+    <li>Otherwise, set <var>node</var> to its [[child]] with [[index]]
+    <var>offset</var> minus one, then set <var>offset</var> to
+    <var>node</var>'s [[length]].
+  </ol>
+
+  <li>Return true.
 </ol>
 
 <p>A [[node]] <var>node</var> <dfn>precedes a line break</dfn> if the following
 algorithm returns true:
 
 <ol>
-  <li>Let <var>offset</var> be the [[length]] of <var>node</var>.
+  <li>Let <var>offset</var> be <var>node</var>'s [[length]].
 
-  <li>While <var>offset</var> is the [[length]] of <var>node</var>, set
-  <var>offset</var> to one plus the [[index]] of <var>node</var> and then set
-  <var>node</var> to its [[parent]].
+  <li>While (<var>node</var>, <var>offset</var>) is not a <span>block boundary
+  point</span>:
 
-  <li>Let <var>range</var> be a [[range]] with [[rangestart]] and [[rangeend]]
-  (<var>node</var>, <var>offset</var>).
+  <ol>
+    <li>If <var>node</var> has a <span>visible</span> [[child]] with [[index]]
+    <var>offset</var>, return false.
 
-  <li><span>Block-extend</span> <var>range</var>, and let <var>new range</var>
-  be the result.
+    <li>If <var>offset</var> is <var>node</var>'s [[length]] or <var>node</var>
+    has no [[children]], set <var>offset</var> to one plus <var>node</var>'s
+    [[index]], then set <var>node</var> to its [[parent]].
 
-  <li>Return false if <var>new range</var>'s [[rangeend]] is [[bpafter]]
-  (<var>node</var>, <var>offset</var>), true otherwise.
+    <li>Otherwise, set <var>node</var> to its [[child]] with [[index]]
+    <var>offset</var> and set <var>offset</var> to zero.
+  </ol>
+
+  <li>Return true.
 </ol>
 
 <!-- @} -->

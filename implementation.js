@@ -51,20 +51,27 @@ function nextNodeDescendants(node) {
  * Returns true if ancestor is an ancestor of descendant, false otherwise.
  */
 function isAncestor(ancestor, descendant) {
-	if (!ancestor || !descendant) {
-		return false;
-	}
-	while (descendant && descendant != ancestor) {
-		descendant = descendant.parentNode;
-	}
-	return descendant == ancestor;
+	return ancestor
+		&& descendant
+		&& Boolean(ancestor.compareDocumentPosition(descendant) & Node.DOCUMENT_POSITION_CONTAINED_BY);
+}
+
+/**
+ * Returns true if ancestor is an ancestor of or equal to descendant, false
+ * otherwise.
+ */
+function isAncestorContainer(ancestor, descendant) {
+	return (ancestor || descendant)
+		&& (ancestor == descendant || isAncestor(ancestor, descendant));
 }
 
 /**
  * Returns true if descendant is a descendant of ancestor, false otherwise.
  */
 function isDescendant(descendant, ancestor) {
-	return isAncestor(ancestor, descendant);
+	return ancestor
+		&& descendant
+		&& Boolean(ancestor.compareDocumentPosition(descendant) & Node.DOCUMENT_POSITION_CONTAINED_BY);
 }
 
 /**
@@ -886,24 +893,146 @@ function isExtraneousLineBreak(br) {
 	return origHeight == finalHeight;
 }
 
+// "A whitespace node is either a Text node whose data is the empty string; or
+// a Text node whose data consists only of one or more tabs (0x0009), line
+// feeds (0x000A), carriage returns (0x000D), and/or spaces (0x0020), and whose
+// parent is an Element whose resolved value for "white-space" is "normal" or
+// "nowrap"; or a Text node whose data consists only of one or more tabs
+// (0x0009), carriage returns (0x000D), and/or spaces (0x0020), and whose
+// parent is an Element whose resolved value for "white-space" is "pre-line"."
+function isWhitespaceNode(node) {
+	return node
+		&& node.nodeType == Node.TEXT_NODE
+		&& (node.data == ""
+		|| (
+			/^[\t\n\r ]+$/.test(node.data)
+			&& node.parentNode
+			&& node.parentNode.nodeType == Node.ELEMENT_NODE
+			&& ["normal", "nowrap"].indexOf(getComputedStyle(node.parentNode).whiteSpace) != -1
+		) || (
+			/^[\t\r ]+$/.test(node.data)
+			&& node.parentNode
+			&& node.parentNode.nodeType == Node.ELEMENT_NODE
+			&& getComputedStyle(node.parentNode).whiteSpace == "pre-line"
+		));
+}
+
+// "node is a collapsed whitespace node if the following algorithm returns
+// true:"
+function isCollapsedWhitespaceNode(node) {
+	// "If node is not a whitespace node, return false."
+	if (!isWhitespaceNode(node)) {
+		return false;
+	}
+
+	// "If node's data is the empty string, return true."
+	if (node.data == "") {
+		return true;
+	}
+
+	// "Let ancestor be node's parent."
+	var ancestor = node.parentNode;
+
+	// "If ancestor is null, return true."
+	if (!ancestor) {
+		return true;
+	}
+
+	// "If the "display" property of some ancestor of node has resolved value
+	// "none", return true."
+	if (getAncestors(node).some(function(ancestor) {
+		return ancestor.nodeType == Node.ELEMENT_NODE
+			&& getComputedStyle(ancestor).display == "none";
+	})) {
+		return true;
+	}
+
+	// "While ancestor is not a block node and its parent is not null, set
+	// ancestor to its parent."
+	while (!isBlockNode(ancestor)
+	&& ancestor.parentNode) {
+		ancestor = ancestor.parentNode;
+	}
+
+	// "Let reference be node."
+	var reference = node;
+
+	// "While reference is a descendant of ancestor:"
+	while (reference != ancestor) {
+		// "Let reference be the node before it in tree order."
+		reference = previousNode(reference);
+
+		// "If reference is a block node or a br, return true."
+		if (isBlockNode(reference)
+		|| isHtmlElement(reference, "br")) {
+			return true;
+		}
+
+		// "If reference is a Text node that is not a whitespace node, or is an
+		// img, break from this loop."
+		if ((reference.nodeType == Node.TEXT_NODE && !isWhitespaceNode(reference))
+		|| isHtmlElement(reference, "img")) {
+			break;
+		}
+	}
+
+	// "Let reference be node."
+	reference = node;
+
+	// "While reference is a descendant of ancestor:"
+	var stop = nextNodeDescendants(ancestor);
+	while (reference != stop) {
+		// "Let reference be the node after it in tree order, or null if there
+		// is no such node."
+		reference = nextNode(reference);
+
+		// "If reference is a block node or a br, return true."
+		if (isBlockNode(reference)
+		|| isHtmlElement(reference, "br")) {
+			return true;
+		}
+
+		// "If reference is a Text node that is not a whitespace node, or is an
+		// img, break from this loop."
+		if ((reference && reference.nodeType == Node.TEXT_NODE && !isWhitespaceNode(reference))
+		|| isHtmlElement(reference, "img")) {
+			break;
+		}
+	}
+
+	// "Return false."
+	return false;
+}
+
 // "Something is visible if it is a node that either is a block node, or a Text
-// node whose data is not empty, or an img, or a br that is not an extraneous
-// line break, or any node with a visible descendant."
+// node that is not a collapsed whitespace node, or an img, or a br that is not
+// an extraneous line break, or any node with a visible descendant; excluding
+// any node with an ancestor container Element whose "display" property has
+// resolved value "none"."
 function isVisible(node) {
 	if (!node) {
 		return false;
 	}
+
+	if (getAncestors(node).concat(node)
+	.filter(function(node) { return node.nodeType == Node.ELEMENT_NODE })
+	.some(function(node) { return getComputedStyle(node).display == "none" })) {
+		return false;
+	}
+
 	if (isBlockNode(node)
-	|| (node.nodeType == Node.TEXT_NODE && node.length)
+	|| (node.nodeType == Node.TEXT_NODE && !isCollapsedWhitespaceNode(node))
 	|| isHtmlElement(node, "img")
 	|| (isHtmlElement(node, "br") && !isExtraneousLineBreak(node))) {
 		return true;
 	}
+
 	for (var i = 0; i < node.childNodes.length; i++) {
 		if (isVisible(node.childNodes[i])) {
 			return true;
 		}
 	}
+
 	return false;
 }
 
@@ -3844,6 +3973,35 @@ function getAlignmentValue(node) {
 ///// Block-extending a range /////
 //@{
 
+// "A boundary point (node, offset) is a block start point if either node's
+// parent is null and offset is zero; or node has a child with index offset −
+// 1, and that child is either a visible block node or a visible br."
+function isBlockStartPoint(node, offset) {
+	return (!node.parentNode && offset == 0)
+		|| (0 <= offset - 1
+		&& offset - 1 < node.childNodes.length
+		&& isVisible(node.childNodes[offset - 1])
+		&& (isBlockNode(node.childNodes[offset - 1])
+		|| isHtmlElement(node.childNodes[offset - 1], "br")));
+}
+
+// "A boundary point (node, offset) is a block end point if either node's
+// parent is null and offset is node's length; or node has a child with index
+// offset, and that child is a visible block node."
+function isBlockEndPoint(node, offset) {
+	return (!node.parentNode && offset == getNodeLength(node))
+		|| (offset < node.childNodes.length
+		&& isVisible(node.childNodes[offset])
+		&& isBlockNode(node.childNodes[offset]));
+}
+
+// "A boundary point is a block boundary point if it is either a block start
+// point or a block end point."
+function isBlockBoundaryPoint(node, offset) {
+	return isBlockStartPoint(node, offset)
+		|| isBlockEndPoint(node, offset);
+}
+
 function blockExtend(range) {
 	// "Let start node, start offset, end node, and end offset be the start
 	// and end nodes and offsets of the range."
@@ -3863,48 +4021,30 @@ function blockExtend(range) {
 		startNode = liAncestors[0].parentNode;
 	}
 
-	// "Repeat the following steps:"
-	while (true) {
-		// "If start node is a Text or Comment node or start offset is 0,
-		// set start offset to the index of start node and then set start
-		// node to its parent."
-		if (startNode.nodeType == Node.TEXT_NODE
-		|| startNode.nodeType == Node.COMMENT_NODE
-		|| startOffset == 0) {
+	// "If (start node, start offset) is not a block start point, repeat the
+	// following steps:"
+	if (!isBlockStartPoint(startNode, startOffset)) do {
+		// "If start offset is zero, set it to start node's index, then set
+		// start node to its parent."
+		if (startOffset == 0) {
 			startOffset = getNodeIndex(startNode);
 			startNode = startNode.parentNode;
 
-		// "Otherwise, if start node's child with index start offset minus one
-		// is invisible, subtract one from start offset."
-		} else if (isInvisible(startNode.childNodes[startOffset - 1])) {
-			startOffset--;
-
-		// "Otherwise, if start node has no visible children with index greater
-		// than or equal to start offset and start node's last visible child is
-		// an inline node that's not a br, subtract one from start offset."
-		} else if (![].slice.call(startNode.childNodes, startOffset).some(isVisible)
-		&& isInlineNode([].filter.call(startNode.childNodes, isVisible).slice(-1)[0])
-		&& !isHtmlElement([].filter.call(startNode.childNodes, isVisible).slice(-1)[0], "br")) {
-			startOffset--;
-
-		// "Otherwise, if start node has a visible child with index greater
-		// than or equal to start offset, and the first such child is an inline
-		// node, and start node's child with index start offset minus one is an
-		// inline node other than a br, subtract one from start offset."
-		//
-		// The functional programming here might be a bit heavy, but it would
-		// be a pain to write it differently.
-		} else if (isInlineNode([].filter.call(startNode.childNodes, function(child, i) {
-			return isVisible(child) && i >= startOffset;
-		})[0])
-		&& isInlineNode(startNode.childNodes[startOffset - 1])
-		&& !isHtmlElement(startNode.childNodes[startOffset - 1], "br")) {
-			startOffset--;
-
-		// "Otherwise, break from this loop."
+		// "Otherwise, subtract one from start offset."
 		} else {
-			break;
+			startOffset--;
 		}
+
+		// "If (start node, start offset) is a block boundary point, break from
+		// this loop."
+	} while (!isBlockBoundaryPoint(startNode, startOffset));
+
+	// "While start offset is zero and start node's parent is not null, set
+	// start offset to start node's index, then set start node to its parent."
+	while (startOffset == 0
+	&& startNode.parentNode) {
+		startOffset = getNodeIndex(startNode);
+		startNode = startNode.parentNode;
 	}
 
 	// "If some ancestor container of end node is an li, set end offset to one
@@ -3918,56 +4058,29 @@ function blockExtend(range) {
 		endNode = liAncestors[0].parentNode;
 	}
 
-	// "Repeat the following steps:"
-	while (true) {
-		// "If end node is a Text or Comment node or end offset is equal to the
-		// length of end node, set end offset to one plus the index of end node
-		// and then set end node to its parent."
-		if (endNode.nodeType == Node.TEXT_NODE
-		|| endNode.nodeType == Node.COMMENT_NODE
-		|| endOffset == getNodeLength(endNode)) {
+	// "If (end node, end offset) is not a block end point, repeat the
+	// following steps:"
+	if (!isBlockEndPoint(endNode, endOffset)) do {
+		// "If end offset is end node's length, set it to one plus end node's
+		// index, then set end node to its parent."
+		if (endOffset == getNodeLength(endNode)) {
 			endOffset = 1 + getNodeIndex(endNode);
 			endNode = endNode.parentNode;
 
-		// "Otherwise, if end node's child with index end offset is invisible,
-		// add one to end offset."
-		} else if (isInvisible(endNode.childNodes[endOffset])) {
-			endOffset++;
-
-		// "Otherwise, if end node has no visible children with index less than
-		// end offset and end node's first visible child is an inline node
-		// that's not a br, add one to end offset."
-		} else if (![].slice.call(endNode.childNodes, 0, endOffset).some(isVisible)
-		&& isInlineNode([].filter.call(endNode.childNodes, isVisible)[0])
-		&& !isHtmlElement([].filter.call(endNode.childNodes, isVisible)[0], "br")) {
-			endOffset++;
-
-		// "Otherwise, if end node has a visible child with index less than end
-		// offset, and the last such child is an inline node, and end node's
-		// child with index end offset is an inline node other than a br, add
-		// one to end offset."
-		} else if (isInlineNode([].filter.call(endNode.childNodes, function(child, i) {
-			return isVisible(child) && i < endOffset;
-		}).slice(-1)[0])
-		&& isInlineNode(endNode.childNodes[endOffset])
-		&& !isHtmlElement(endNode.childNodes[endOffset], "br")) {
-			endOffset++;
-
-		// "Otherwise, break from this loop."
+		// "Otherwise, add one to end offset.
 		} else {
-			break;
+			endOffset++;
 		}
-	}
 
-	// "If the child of end node with index end offset is a br, add one to end
-	// offset."
-	if (isHtmlElement(endNode.childNodes[endOffset], "BR")) {
-		endOffset++;
-	}
+		// "If (end node, end offset) is a block boundary point, break from
+		// this loop."
+	} while (!isBlockBoundaryPoint(endNode, endOffset));
 
-	// "While end offset is equal to the length of end node, set end offset to
-	// one plus the index of end node and then set end node to its parent."
-	while (endOffset == getNodeLength(endNode)) {
+	// "While end offset is end node's length and end node's parent is not
+	// null, set end offset to one plus end node's index, then set end node to
+	// its parent."
+	while (endOffset == getNodeLength(endNode)
+	&& endNode.parentNode) {
 		endOffset = 1 + getNodeIndex(endNode);
 		endNode = endNode.parentNode;
 	}
@@ -3986,46 +4099,64 @@ function followsLineBreak(node) {
 	// "Let offset be zero."
 	var offset = 0;
 
-	// "While offset is zero, set offset to the index of node and then set node
-	// to its parent."
-	while (offset == 0) {
-		offset = getNodeIndex(node);
-		node = node.parentNode;
+	// "While (node, offset) is not a block boundary point:"
+	while (!isBlockBoundaryPoint(node, offset)) {
+		// "If node has a visible child with index offset minus one, return
+		// false."
+		if (0 <= offset - 1
+		&& offset - 1 < node.childNodes.length
+		&& isVisible(node.childNodes[offset - 1])) {
+			return false;
+		}
+
+		// "If offset is zero or node has no children, set offset to node's
+		// index, then set node to its parent."
+		if (offset == 0
+		|| !node.hasChildNodes()) {
+			offset = getNodeIndex(node);
+			node = node.parentNode;
+
+		// "Otherwise, set node to its child with index offset minus one, then
+		// set offset to node's length."
+		} else {
+			node = node.childNodes[offset - 1];
+			offset = getNodeLength(node);
+		}
 	}
 
-	// "Let range be a range with start and end (node, offset)."
-	var range = document.createRange();
-	range.setStart(node, offset);
-
-	// "Block-extend range, and let new range be the result."
-	var newRange = blockExtend(range);
-
-	// "Return false if new range's start is before (node, offset), true
-	// otherwise."
-	return getPosition(newRange.startContainer, newRange.startOffset, node, offset) != "before";
+	// "Return true."
+	return true;
 }
 
 function precedesLineBreak(node) {
-	// "Let offset be the length of node."
+	// "Let offset be node's length."
 	var offset = getNodeLength(node);
 
-	// "While offset is the length of node, set offset to one plus the index of
-	// node and then set node to its parent."
-	while (offset == getNodeLength(node)) {
-		offset = 1 + getNodeIndex(node);
-		node = node.parentNode;
+	// "While (node, offset) is not a block boundary point:"
+	while (!isBlockBoundaryPoint(node, offset)) {
+		// "If node has a visible child with index offset, return false."
+		if (offset < node.childNodes.length
+		&& isVisible(node.childNodes[offset])) {
+			return false;
+		}
+
+		// "If offset is node's length or node has no children, set offset to
+		// one plus node's index, then set node to its parent."
+		if (offset == getNodeLength(node)
+		|| !node.hasChildNodes()) {
+			offset = 1 + getNodeIndex(node);
+			node = node.parentNode;
+
+		// "Otherwise, set node to its child with index offset and set offset
+		// to zero."
+		} else {
+			node = node.childNodes[offset];
+			offset = 0;
+		}
 	}
 
-	// "Let range be a range with start and end (node, offset)."
-	var range = document.createRange();
-	range.setStart(node, offset);
-
-	// "Block-extend range, and let new range be the result."
-	var newRange = blockExtend(range);
-
-	// "Return false if new range's end is after (node, offset), true
-	// otherwise."
-	return getPosition(newRange.endContainer, newRange.endOffset, node, offset) != "after";
+	// "Return true."
+	return true;
 }
 
 //@}

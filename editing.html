@@ -239,9 +239,10 @@ and commonly record what the major browsers do and other essential information.
   was actually modified.
 
   <li>But if we are already changing around something's style, convert existing
-  styles to the preferred format.  For instance, we use <code title="">&lt;b&gt;</code> for bold (if the CSS styling flag is false), and convert
-  <code title="">&lt;strong&gt;</code> and <code title="">&lt;span style="font-weight:
-  bold"&gt;</code> if we happen to be modifying that node anyway.
+  styles to the preferred format.  For instance, we use <code title="">&lt;b&gt;</code> for bold
+  (if the CSS styling flag is false), and convert <code title="">&lt;strong&gt;</code> and
+  <code title="">&lt;span style="font-weight: bold"&gt;</code> if we happen to be modifying
+  that node anyway.
 
   <li>Try not to make the document less conforming than it originally was.  If
   we happen to make it more conforming, good, although we don't have to go out

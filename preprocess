@@ -152,6 +152,17 @@ for key in fnreplace:
 if "[[" in s:
     raise Exception("Unrecognized macro: " + s[s.find("[["):s.find("]]") + 2])
 
+# {{code|<foo>}} -> <code title>&lt;foo></code>.  Also, to avoid things like
+# {{code|<b>}} messing up syntax highlighting, {{code<|b>}} is also supported
+# with the same effect as {{code|<b>}}.
+def codesub(matchobj):
+    return "<code title>" \
+        + matchobj.group(1).replace("<", "&lt;") \
+        + matchobj.group(2).replace("&", "&amp;").replace("<", "&lt;") \
+        + "</code>"
+
+s = re.sub(r"\{\{code(<?)\|(.*?)\}\}", codesub, s)
+
 s = s.replace("<var>", "<var title>")
 
 s = s.replace("<!-- @{ -->", "")

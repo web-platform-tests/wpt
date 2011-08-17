@@ -4388,21 +4388,33 @@ algorithm returns true:
     returns something different from <var>override</var>, call <code
     title=execCommand()>execCommand(<var>command</var>)</code>.
 
-    <li>If <var>override</var> is a string, and <var>command</var> is not
-    "fontSize", and <code
+    <li>Otherwise, if <var>override</var> is a string, and <var>command</var>
+    is not "fontSize", and <code
     title=queryCommandValue()>queryCommandValue(<var>command</var>)</code>
     returns something not <span title="equivalent values">equivalent</span> to
     <var>override</var>, call <code
     title=execCommand()>execCommand(<var>command</var>, false,
     <var>override</var>)</code>.
 
-    <li>If <var>override</var> is a string; and <var>command</var> is
-    "fontSize"; and either there is a <span>value override</span> for
+    <li>Otherwise, if <var>override</var> is a string; and <var>command</var>
+    is "fontSize"; and either there is a <span>value override</span> for
     "fontSize" that is not equal to <var>override</var>, or there is no
     <span>value override</span> for "fontSize" and <var>node</var>'s
     <span>effective command value</span> for "fontSize" is not
     [[looselyequivalent]] to <var>override</var>: call
     [[execcommand|"fontSize", false, <var>override</var>]].
+
+    <li>Otherwise, continue this loop from the beginning.
+
+    <li>
+    <p class=comments>If we called {{code|execCommand()}}, we need to reset
+    <var>node</var>, because it might have changed.  For instance, if the
+    selection was {{code|foo[bar]baz}}, the text node could have been split so
+    that the first part is now outside the active range.
+
+    <p>Set <var>node</var> to the first <span>editable</span> [[text]] node
+    <span>effectively contained</span> in the <span>active range</span>, if
+    there is one.
   </ol>
 
   <li>Otherwise, for each (<var>command</var>, <var>override</var>) pair in

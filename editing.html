@@ -4367,19 +4367,31 @@ algorithm returns true:
     <li>If <var title="">override</var> is a boolean, and <code title=queryCommandState()><a href=#querycommandstate()>queryCommandState(<var title="">command</var>)</a></code>
     returns something different from <var title="">override</var>, call <code title=execCommand()><a href=#execcommand()>execCommand(<var title="">command</var>)</a></code>.
 
-    <li>If <var title="">override</var> is a string, and <var title="">command</var> is not
-    "fontSize", and <code title=queryCommandValue()><a href=#querycommandvalue()>queryCommandValue(<var title="">command</var>)</a></code>
+    <li>Otherwise, if <var title="">override</var> is a string, and <var title="">command</var>
+    is not "fontSize", and <code title=queryCommandValue()><a href=#querycommandvalue()>queryCommandValue(<var title="">command</var>)</a></code>
     returns something not <a href=#equivalent-values title="equivalent values">equivalent</a> to
     <var title="">override</var>, call <code title=execCommand()><a href=#execcommand()>execCommand(<var title="">command</var>, false,
     <var title="">override</var>)</a></code>.
 
-    <li>If <var title="">override</var> is a string; and <var title="">command</var> is
-    "fontSize"; and either there is a <a href=#value-override>value override</a> for
+    <li>Otherwise, if <var title="">override</var> is a string; and <var title="">command</var>
+    is "fontSize"; and either there is a <a href=#value-override>value override</a> for
     "fontSize" that is not equal to <var title="">override</var>, or there is no
     <a href=#value-override>value override</a> for "fontSize" and <var title="">node</var>'s
     <a href=#effective-command-value>effective command value</a> for "fontSize" is not
     <a href=#loosely-equivalent-values title="loosely equivalent values">loosely equivalent</a> to <var title="">override</var>: call
     <code title=execCommand()><a href=#execcommand()>execCommand("fontSize", false, <var title="">override</var>)</a></code>.
+
+    <li>Otherwise, continue this loop from the beginning.
+
+    <li>
+    <p class=comments>If we called <code title="">execCommand()</code>, we need to reset
+    <var title="">node</var>, because it might have changed.  For instance, if the
+    selection was <code title="">foo[bar]baz</code>, the text node could have been split so
+    that the first part is now outside the active range.
+
+    <p>Set <var title="">node</var> to the first <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node
+    <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a>, if
+    there is one.
   </ol>
 
   <li>Otherwise, for each (<var title="">command</var>, <var title="">override</var>) pair in

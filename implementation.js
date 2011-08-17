@@ -4185,10 +4185,11 @@ function recordCurrentOverrides() {
 		}
 	});
 
-	// "For each command in the list "fontName", "foreColor", "hiliteColor", in
-	// order: if there is a value override for command, add (command, command's
-	// value override) to overrides."
-	["fontname", "forecolor", "hilitecolor"].forEach(function(command) {
+	// "For each command in the list "fontName", "fontSize", "foreColor",
+	// "hiliteColor", in order: if there is a value override for command, add
+	// (command, command's value override) to overrides."
+	["fontname", "fontsize", "forecolor",
+	"hilitecolor"].forEach(function(command) {
 		if (getValueOverride(command) !== undefined) {
 			overrides.push([command, getValueOverride(command)]);
 		}
@@ -4264,24 +4265,23 @@ function restoreStatesAndValues(overrides) {
 			if (typeof override == "boolean"
 			&& myQueryCommandState(command) != override) {
 				myExecCommand(command);
-			}
 
-			// "If override is a string, and command is not "fontSize", and
-			// queryCommandValue(command) returns something not equivalent to
-			// override, call execCommand(command, false, override)."
-			if (typeof override == "string"
+			// "Otherwise, if override is a string, and command is not
+			// "fontSize", and queryCommandValue(command) returns something not
+			// equivalent to override, call execCommand(command, false,
+			// override)."
+			} else if (typeof override == "string"
 			&& command != "fontsize"
 			&& !areEquivalentValues(command, myQueryCommandValue(command), override)) {
 				myExecCommand(command, false, override);
-			}
 
-			// "If override is a string; and command is "fontSize"; and either
-			// there is a value override for "fontSize" that is not equal to
-			// override, or there is no value override for "fontSize" and
-			// node's effective command value for "fontSize" is not loosely
+			// "Otherwise, if override is a string; and command is "fontSize";
+			// and either there is a value override for "fontSize" that is not
+			// equal to override, or there is no value override for "fontSize"
+			// and node's effective command value for "fontSize" is not loosely
 			// equivalent to override: call execCommand("fontSize", false,
 			// override)."
-			if (typeof override == "string"
+			} else if (typeof override == "string"
 			&& command == "fontsize"
 			&& (
 				(
@@ -4293,7 +4293,17 @@ function restoreStatesAndValues(overrides) {
 				)
 			)) {
 				myExecCommand("fontsize", false, override);
+
+			// "Otherwise, continue this loop from the beginning."
+			} else {
+				continue;
 			}
+
+			// "Set node to the first editable Text node effectively contained
+			// in the active range, if there is one."
+			node = getAllEffectivelyContainedNodes(getActiveRange())
+				.filter(function(node) { return isEditable(node) && node.nodeType == Node.TEXT_NODE })[0]
+				|| node;
 		}
 
 	// "Otherwise, for each (command, override) pair in overrides, in order:"

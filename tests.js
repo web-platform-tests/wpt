@@ -4194,7 +4194,6 @@ function doSameCell(tr) {
 		}).forEach(function(node) {
 			var span = document.createElement("span");
 			span.style.position = "absolute";
-			span.style.outline = "1px solid invert";
 			span.textContent = node.data;
 			node.parentNode.insertBefore(span, node);
 			node.parentNode.removeChild(node);

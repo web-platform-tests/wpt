@@ -3934,6 +3934,7 @@ function doInputCell(tr, test, command) {
 	if (msg !== null) {
 		inputCell.lastChild.textContent += " (" + msg + ")";
 	}
+
 	tr.appendChild(inputCell);
 }
 //@}
@@ -4165,10 +4166,10 @@ function doSameCell(tr) {
 	}
 	tr.appendChild(sameCell);
 
-	// Insert <wbr> so IE doesn't stretch the screen.  This is considerably
-	// more complicated than it has to be, thanks to Firefox's lack of support
-	// for outerHTML.
 	for (var i = 0; i <= 2; i++) {
+		// Insert <wbr> so IE doesn't stretch the screen.  This is considerably
+		// more complicated than it has to be, thanks to Firefox's lack of
+		// support for outerHTML.
 		try {
 			var div = tr.childNodes[i].lastChild;
 			var text = div.firstChild.textContent;
@@ -4184,6 +4185,20 @@ function doSameCell(tr) {
 			}
 			div.removeChild(div.firstChild);
 		} catch (e) {};
+
+		// Add position: absolute span to not affect vertical layout
+		getDescendants(tr.childNodes[i].firstChild)
+		.filter(function(node) {
+			return node.nodeType == Node.TEXT_NODE
+				&& /^(\{\}?|\})$/.test(node.data);
+		}).forEach(function(node) {
+			var span = document.createElement("span");
+			span.style.position = "absolute";
+			span.style.outline = "1px solid invert";
+			span.textContent = node.data;
+			node.parentNode.insertBefore(span, node);
+			node.parentNode.removeChild(node);
+		});
 	}
 }
 //@}

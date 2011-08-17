@@ -65,7 +65,7 @@ a code { text-decoration: underline }
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing APIs</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-15-august-2011>Work in Progress &mdash; Last Update 15 August 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-17-august-2011>Work in Progress &mdash; Last Update 17 August 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;<a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a>&gt;
@@ -8894,6 +8894,7 @@ insertions.
   Daniel Glazman,
   Ian Hickson,
   Cameron Heavon-Jones,
+  Alfonso Mart&iacute;nez de Lizarrondo,
   Glenn Maynard,
   Ms2ger,
   Ryosuke Niwa,
@@ -8917,7 +8918,7 @@ insertions.
 
 [].forEach.call(document.querySelectorAll(".comments"), function(node) {
   var button = document.createElement("button");
-  button.textContent = "Comments";
+  button.textContent = "View comments";
   button.onclick = function() {
     node.className = node.className == "comments" ? "comments-expanded" : "comments";
   };

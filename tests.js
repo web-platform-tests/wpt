@@ -403,9 +403,26 @@ var tests = {
 		'<ol><li>foo</ol>[]bar',
 		'<ol><li>foo<br></ol>[]bar',
 		'<ol><li>foo<br><br></ol>[]bar',
-
 		'<ol><li><br></ol>[]bar',
 		'<ol><li>foo<li><br></ol>[]bar',
+
+		'<ol><li>foo</ol><p>[]bar',
+		'<ol><li>foo<br></ol><p>[]bar',
+		'<ol><li>foo<br><br></ol><p>[]bar',
+		'<ol><li><br></ol><p>[]bar',
+		'<ol><li>foo<li><br></ol><p>[]bar',
+
+		'<ol><li>foo</ol>{}<br>',
+		'<ol><li>foo<br></ol>{}<br>',
+		'<ol><li>foo<br><br></ol>{}<br>',
+		'<ol><li><br></ol>{}<br>',
+		'<ol><li>foo<li><br></ol>{}<br>',
+
+		'<ol><li>foo</ol><p>{}<br>',
+		'<ol><li>foo<br></ol><p>{}<br>',
+		'<ol><li>foo<br><br></ol><p>{}<br>',
+		'<ol><li><br></ol><p>{}<br>',
+		'<ol><li>foo<li><br></ol><p>{}<br>',
 
 		// Indented stuff with collapsed selection
 		'foo<blockquote>[]bar</blockquote>',
@@ -1239,9 +1256,23 @@ var tests = {
 
 		'<ol><li>foo[]</ol>bar',
 		'<ol><li>foo[]<br></ol>bar',
-
 		'<ol><li>{}<br></ol>bar',
 		'<ol><li>foo<li>{}<br></ol>bar',
+
+		'<ol><li>foo[]</ol><p>bar',
+		'<ol><li>foo[]<br></ol><p>bar',
+		'<ol><li>{}<br></ol><p>bar',
+		'<ol><li>foo<li>{}<br></ol><p>bar',
+
+		'<ol><li>foo[]</ol><br>',
+		'<ol><li>foo[]<br></ol><br>',
+		'<ol><li>{}<br></ol><br>',
+		'<ol><li>foo<li>{}<br></ol><br>',
+
+		'<ol><li>foo[]</ol><p><br>',
+		'<ol><li>foo[]<br></ol><p><br>',
+		'<ol><li>{}<br></ol><p><br>',
+		'<ol><li>foo<li>{}<br></ol><p><br>',
 
 		// Indented stuff with collapsed selection
 		'foo[]<blockquote>bar</blockquote>',

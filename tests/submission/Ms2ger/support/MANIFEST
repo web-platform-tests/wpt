@@ -1,6 +1,2 @@
 dir css
-support test-css.js
-support test.js
-support testReflect.js
-support test-utils.js
 dir text

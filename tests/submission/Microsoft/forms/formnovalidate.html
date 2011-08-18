@@ -1,0 +1,60 @@
+﻿<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>formnovalidate on button element</title>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+        <meta name="description" content="formnovalidate" />
+    </head>
+    <body>
+        <script src="/resources/testharness.js" ></script>
+        <script src="/resources/testharnessreport.js" ></script>
+
+        <div id=log></div>
+    
+        <form style="display : none">
+          <label for="input1">Required<input type="text" name="input1" id="input1" required></input></label>
+          <br/>
+          <button type="submit" formnovalidate>Submit No Validate</button>
+          <br/>
+          <button type="submit">Submit Validate</button>
+          <br/>
+          <input type="submit" value="Submit No Validate" formnovalidate></input>
+          <br/>
+          <input type="submit" value="Submit Validate"></input>
+        </form>
+
+        <script type="text/javascript">
+            test(function() {assert_true(document.getElementsByTagName("button")[0].formNoValidate)}, "formNoValidate returns true when specified as an attribute on a button element");
+            test(function() {assert_false(document.getElementsByTagName("button")[1].formNoValidate)}, "formNoValidate returns false when not specified as an attribute on a button element");
+            test(function() {assert_true(document.getElementsByTagName("input")[1].formNoValidate)}, "formNoValidate returns true when specified as an attribute on a input element");
+            test(function() {assert_false(document.getElementsByTagName("input")[2].formNoValidate)}, "formNoValidate returns false when not specified as an attribute on a input element");
+
+            var nSubmitEventCalled = 0;
+            var nInvalidEventCalled = 0;
+            
+            function handleSubmit(e){nSubmitEventCalled++;e.preventDefault();}
+            function handleInvalid(e){nInvalidEventCalled++;e.preventDefault();}
+            
+            var testElem = document.getElementsByTagName("input")[1];
+            var formElem = document.getElementsByTagName("form")[0];
+
+            formElem.addEventListener("submit", handleSubmit, false);
+            testElem.click();
+
+            test(function() {assert_equals(nSubmitEventCalled, 1)}, "click input element with formnovalidate attribute");
+
+            nSubmitEventCalled = 0;
+            
+            testElem = document.getElementsByTagName("input")[2];
+            requiredElem = document.getElementsByTagName("input")[0];
+
+            requiredElem.addEventListener("invalid", handleInvalid, false);
+
+            testElem.click();
+            
+            test(function() {assert_equals(nSubmitEventCalled, 0)}, "click input element without formnovalidate attribute");
+            test(function() {assert_equals(nInvalidEventCalled, 1)}, "click input element without formnovalidate attribute");
+            
+        </script>
+    </body>
+</html>

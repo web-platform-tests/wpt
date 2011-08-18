@@ -1112,6 +1112,7 @@ var tests = {
 		'<h1>[foo</h1><h2>bar]</h2>',
 		'<div>[foo</div>bar]',
 
+		// https://bugs.webkit.org/show_bug.cgi?id=47054
 		['<p>', '<div style=color:blue>[foo]</div>'],
 	],
 	//@}
@@ -1625,6 +1626,9 @@ var tests = {
 		'[foo]<!--bar-->baz<p>extra',
 		'<p>foo<!--bar-->{}<p>extra',
 		'<p>{}<!--foo-->bar<p>extra',
+
+		// https://bugs.webkit.org/show_bug.cgi?id=32003
+		'<ul><li>a<br>{<br>}</li><li>b</li></ul>',
 	],
 	//@}
 	inserthorizontalrule: [
@@ -3048,6 +3052,9 @@ var tests = {
 		'<ol><li><h1>[foo]</h1></ol>',
 		'<ol><li><xmp>[foo]</xmp></li></ol>',
 		'<blockquote><ol><li>foo<div><ol><li>[bar]</ol></div><li>baz</ol></blockquote>',
+
+		// https://bugs.webkit.org/show_bug.cgi?id=24249
+		'<ol><li>[]a<table><tr><td><br></table></ol>',
 	],
 	//@}
 	removeformat: [

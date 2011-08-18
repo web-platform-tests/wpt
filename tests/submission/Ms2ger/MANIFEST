@@ -9,6 +9,7 @@ dir obsolete-features
 dir parsing
 dir rendering
 dir resource-metadata-management
+dir timers
 dir support
 dir the-elements-of-html
 dir the-hidden-attribute

@@ -1119,7 +1119,11 @@ unset for every <span>command</span>.  Whenever the number of [[ranges]] in the
 [[selection]] changes to something different, and whenever a [[boundarypoint]]
 of the [[range]] at a given index in the [[selection]] changes to something
 different, the <span>state override</span> and <span>value override</span> must
-be unset for every <span>command</span>.
+be unset for every <span>command</span>.  The <span>value override</span> for
+<span>the <code title>backColor</code> command</span> must be the same as the
+<span>value override</span> for <span>the <code title>hiliteColor</code>
+command</span>, such that setting one sets the other to the same thing and
+unsetting one unsets the other.
 
 <p class=note>The primary purpose of state and value overrides is that if the
 user runs a command like <a href=#the-bold-command><code title>bold</code></a>

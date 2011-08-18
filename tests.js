@@ -3511,6 +3511,7 @@ var tests = {
 		['foo[]bar', 'underline', ['inserttext', 'a']],
 
 		// Insertion-affecting value
+		['foo[]bar', 'backcolor', ['inserttext', 'a']],
 		['foo[]bar', 'createlink', ['inserttext', 'a']],
 		['foo[]bar', 'fontname', ['inserttext', 'a']],
 		['foo[]bar', 'fontsize', ['inserttext', 'a']],
@@ -3538,6 +3539,9 @@ var tests = {
 		['foo[]bar', ['fontsize', '2'], 'subscript', ['inserttext', 'a']],
 		['foo[]bar', 'subscript', ['fontsize', '3'], ['inserttext', 'a']],
 		['foo[]bar', ['fontsize', '3'], 'subscript', ['inserttext', 'a']],
+
+		['foo[]bar', ['hilitecolor', 'aqua'], ['backcolor', 'tan'], ['inserttext', 'a']],
+		['foo[]bar', ['backcolor', 'tan'], ['hilitecolor', 'aqua'], ['inserttext', 'a']],
 
 
 		// The following are all just inserttext tests that we took from there,

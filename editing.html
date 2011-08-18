@@ -1160,7 +1160,11 @@ unset for every <a href=#command>command</a>.  Whenever the number of <a class=e
 <code class=external data-anolis-spec=domrange><a href=http://html5.org/specs/dom-range.html#selection>Selection</a></code> changes to something different, and whenever a <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point title=concept-boundary-point>boundary point</a>
 of the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> at a given index in the <code class=external data-anolis-spec=domrange><a href=http://html5.org/specs/dom-range.html#selection>Selection</a></code> changes to something
 different, the <a href=#state-override>state override</a> and <a href=#value-override>value override</a> must
-be unset for every <a href=#command>command</a>.
+be unset for every <a href=#command>command</a>.  The <a href=#value-override>value override</a> for
+<a href=#the-backcolor-command>the <code title="">backColor</code> command</a> must be the same as the
+<a href=#value-override>value override</a> for <a href=#the-hilitecolor-command>the <code title="">hiliteColor</code>
+command</a>, such that setting one sets the other to the same thing and
+unsetting one unsets the other.
 
 <p class=note>The primary purpose of state and value overrides is that if the
 user runs a command like <a href=#the-bold-command><code title="">bold</code></a>

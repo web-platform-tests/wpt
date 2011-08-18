@@ -1152,14 +1152,27 @@ var getStateOverride, setStateOverride, unsetStateOverride,
 		return valueOverrides[command];
 	}
 
+	// "The value override for the backColor command must be the same as the
+	// value override for the hiliteColor command, such that setting one sets
+	// the other to the same thing and unsetting one unsets the other."
 	setValueOverride = function(command, newValue) {
 		resetOverrides();
 		valueOverrides[command] = newValue;
+		if (command == "backcolor") {
+			valueOverrides.hilitecolor = newValue;
+		} else if (command == "hilitecolor") {
+			valueOverrides.backcolor = newValue;
+		}
 	}
 
 	unsetValueOverride = function(command) {
 		resetOverrides();
 		delete valueOverrides[command];
+		if (command == "backcolor") {
+			delete valueOverrides.hilitecolor;
+		} else if (command == "hilitecolor") {
+			delete valueOverrides.backcolor;
+		}
 	}
 })();
 

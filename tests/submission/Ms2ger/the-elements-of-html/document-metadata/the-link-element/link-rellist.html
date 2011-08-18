@@ -5,22 +5,19 @@
 <link rel="help" href="http://www.whatwg.org/html5/#domtokenlist">
 <link rel="help" href="http://dev.w3.org/2006/webapi/WebIDL/#ecmascript-binding">
 <link rel="help" href="http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-262.pdf#page=57">
+<script src="resources/testharness.js"></script>
+<script src="resources/testharnessreport.js"></script>
 <link id="link" rel="undefined null 0 NaN Infinity">
-<body>
-<script src="../../../support/test.js"></script>
+<div id="log"></div>
 <script>
-try {
+test(function() {
   var list = document.getElementById("link").relList;
-  Test.ok(list, "No relList");
-  Test.is(list.contains(undefined), true); //"undefined"
-  Test.is(list.contains(null), true); //"null"
-  Test.is(list.contains(-0), true); //"0"
-  Test.is(list.contains(+0), true); //"0"
-  Test.is(list.contains(NaN), true); //"NaN"
-  Test.is(list.contains(+Infinity), true); //"Infinity"
-  Test.is(list.contains(-Infinity), false); //"-Infinity"
-} catch (e) {
-  Test.fail("Exception was thrown.");
-}
-Test.finish();
+  assert_equals(list.contains(undefined), true); //"undefined"
+  assert_equals(list.contains(null), true); //"null"
+  assert_equals(list.contains(-0), true); //"0"
+  assert_equals(list.contains(+0), true); //"0"
+  assert_equals(list.contains(NaN), true); //"NaN"
+  assert_equals(list.contains(+Infinity), true); //"Infinity"
+  assert_equals(list.contains(-Infinity), false); //"-Infinity"
+});
 </script>

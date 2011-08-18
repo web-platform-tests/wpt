@@ -767,6 +767,11 @@ var tests = {
 		'<font size=4>fo[o</font><span style=font-size:large>b]ar</span>',
 		'<font size=5>fo[o</font><span style=font-size:x-large>b]ar</span>',
 		'<font size=6>fo[o</font><span style=font-size:xx-large>b]ar</span>',
+
+		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=13829
+		["6", '<span style=background-color:aqua>[foo]</span>'],
+		["6", '<span style=background-color:aqua>foo[bar]baz</span>'],
+		["6", '[foo<span style=background-color:aqua>bar</span>baz]'],
 	],
 	//@}
 	forecolor: [
@@ -1451,6 +1456,14 @@ var tests = {
 		'<span style=background-color:tan>fo[o</span><span style=background-color:yellow>b]ar</span>',
 		'<span style=background-color:tan>fo[o</span><span style=background-color:tan>b]ar</span>',
 		'<span style=background-color:tan>fo[o<span style=background-color:transparent>b]ar</span></span>',
+
+		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=13829
+		'<font size=6>[foo]</font>',
+		'<span style=font-size:xx-large>[foo]</span>',
+		'<font size=6>foo[bar]baz</font>',
+		'<span style=font-size:xx-large>foo[bar]baz</span>',
+		'[foo<font size=6>bar</font>baz]',
+		'[foo<span style=font-size:xx-large>bar</span>baz]',
 	],
 	//@}
 	indent: [

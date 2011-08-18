@@ -3980,12 +3980,14 @@ function doSpecCell(tr, test, command) {
 		specCell.firstChild.contentEditable = "inherit";
 		specCell.firstChild.removeAttribute("spellcheck");
 		var compareDiv1 = specCell.firstChild.cloneNode(true);
-		addBrackets(range);
 
+		// Now do various sanity checks, and throw if they're violated.  First
+		// just count children:
 		if (specCell.childNodes.length != 2) {
 			throw "The cell didn't have two children.  Did something spill outside the test div?";
 		}
 
+		// Now verify that the DOM serializes.
 		compareDiv1.normalize();
 		var compareDiv2 = compareDiv1.cloneNode(false);
 		compareDiv2.innerHTML = compareDiv1.innerHTML;
@@ -4002,10 +4004,21 @@ function doSpecCell(tr, test, command) {
 				+ compareDiv1.innerHTML;
 		}
 
+		// Check for attributes
 		if (specCell.firstChild.attributes.length) {
 			throw "Wrapper div has attributes!  " +
 				specCell.innerHTML.replace(/<div><\/div>$/, "");
 		}
+
+		// Final sanity check: make sure everything isAllowedChild() of its
+		// parent.
+		getDescendants(specCell.firstChild).forEach(function(descendant) {
+			if (!isAllowedChild(descendant, descendant.parentNode)) {
+				throw "Something here is not an allowed child of its parent: " + descendant;
+			}
+		});
+
+		addBrackets(range);
 
 		specCell.lastChild.textContent = specCell.firstChild.innerHTML;
 		if (command != "multitest") {

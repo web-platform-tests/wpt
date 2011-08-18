@@ -2311,6 +2311,9 @@ var tests = {
 		'foo<font size=2><sub>[bar</sub></font>baz]',
 		'foo<sub><font size=3>[bar</font></sub>baz]',
 		'foo<font size=3><sub>[bar</sub></font>baz]',
+
+		// https://bugs.webkit.org/show_bug.cgi?id=19702
+		'<blockquote><font color=blue>[foo]</font></blockquote>',
 	],
 	//@}
 	insertunorderedlist: [
@@ -3055,6 +3058,8 @@ var tests = {
 
 		// https://bugs.webkit.org/show_bug.cgi?id=24249
 		'<ol><li>[]a<table><tr><td><br></table></ol>',
+		// https://bugs.webkit.org/show_bug.cgi?id=43447
+		'<blockquote><span>foo<br>[bar]</span></blockquote>',
 	],
 	//@}
 	removeformat: [
@@ -3617,6 +3622,9 @@ var tests = {
 		['foo<font size=2><sub>[bar</sub></font>baz]', 'delete', 'inserttext'],
 		['foo<sub><font size=3>[bar</font></sub>baz]', 'delete', 'inserttext'],
 		['foo<font size=3><sub>[bar</sub></font>baz]', 'delete', 'inserttext'],
+
+		// https://bugs.webkit.org/show_bug.cgi?id=19702
+		['<blockquote><font color=blue>[foo]</font></blockquote>', 'delete', 'inserttext'],
 	],
 	//@}
 };

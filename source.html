@@ -6621,19 +6621,18 @@ last character.  But some of the special cases we run into are:
 <ul>
   <li><span>Invisible</span> nodes are removed before anything else happens.
 
-  <li>An <code title>&lt;a></code> gets removed if you backspace while the
-  cursor is right after it, so the link disappears.
+  <li>An {{code|<a>}} gets removed if you backspace while the cursor is right
+  after it, so the link disappears.
 
-  <li>A <code title>&lt;br></code> or <code title>&lt;hr></code> or <code
-  title>&lt;img</code> gets deleted.
+  <li>A {{code|<br>}} or {{code|<hr>}} or {{code|<img>}} gets deleted.
 
   <li>Backspacing at the start of most blocks merges with the previous block.
   (Visually, this is a matter of deleting a line break.)
 
   <li>Backspacing at the start of an <span>indentation element</span>, or an
-  <code title>&lt;li></code> or <code title>&lt;dt></code> or <code
-  title>&lt;dd></code> that's at the beginning of a list, outdents the current
-  block (rather than merging with the previous block).
+  {{code|<li>}} or {{code|<dt>}} or {{code|<dd>}} that's at the beginning of a
+  list, outdents the current block (rather than merging with the previous
+  block).
 
   <li>Backspacing at the start of a table cell does nothing.
 

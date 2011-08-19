@@ -16,7 +16,6 @@ test(function() {
     doc.writeln(null);
     doc.close();
     assert_equals(doc.documentElement.textContent, "null\n");
-    // XXX This should be "\n".
   }, "document.writeln(null)");
   test(function() {
     doc.open();

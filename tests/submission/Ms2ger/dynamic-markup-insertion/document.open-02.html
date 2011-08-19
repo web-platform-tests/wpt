@@ -11,7 +11,7 @@ function open() {
 }
 test(function() {
   var w = document.open("/resources/testharness.js", "", "");
-  assert_true(w instanceof Window, "Expected a window");
+  assert_true(w instanceof w.Window, "Expected a window");
 }, "document.open should redirect to window.open when called with three arguments");
 </script>
 

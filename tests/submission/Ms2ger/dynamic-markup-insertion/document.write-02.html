@@ -16,7 +16,6 @@ test(function() {
     doc.write(null);
     doc.close();
     assert_equals(doc.documentElement.textContent, "null");
-    // XXX This should be "".
   }, "document.write(null)");
   test(function() {
     doc.open();

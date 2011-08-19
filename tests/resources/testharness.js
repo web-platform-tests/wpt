@@ -448,9 +448,9 @@ policies and contribution forms [3].
                 case 30: replace += "x1e"; break;
                 case 31: replace += "x1f"; break;
                 }
-                val = val.replace(String.fromCharCode(i), replace);
+                val = val.replace(RegExp(String.fromCharCode(i), "g"), replace);
             }
-            return '"' + val.replace('"', '\\"') + '"';
+            return '"' + val.replace(/"/g, '\\"') + '"';
         case "boolean":
         case "undefined":
         case "number":

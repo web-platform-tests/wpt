@@ -2475,6 +2475,9 @@ var tests = {
 		'<ul id=abc><li>foo<li>bar<li>[baz]</ul>',
 		'<ul style=color:blue><li>foo<li>bar<li>[baz]</ul>',
 		'<ul style=text-indent:1em><li>foo<li>bar<li>[baz]</ul>',
+
+		// https://bugs.webkit.org/show_bug.cgi?id=24167
+		'{<div style="font-size: 1.3em">1</div><div style="font-size: 1.1em">2</div>}',
 	],
 	//@}
 	italic: [

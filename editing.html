@@ -65,7 +65,7 @@ a code { text-decoration: underline }
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing APIs</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-18-august-2011>Work in Progress &mdash; Last Update 18 August 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-19-august-2011>Work in Progress &mdash; Last Update 19 August 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;<a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a>&gt;
@@ -8838,6 +8838,9 @@ those sites.
 
 
 <h3 id=the-selectall-command><dfn>The <code title="">selectAll</code> command</dfn></h3>
+
+<p class=XXX>This is totally broken: if executed inside an editing host, it has
+to select the editing host contents, not the whole document.  See <a href="http://www.w3.org/Bugs/Public/show_bug.cgi?id=13840">bug</a>.
 
 <div class=comments>
 <p>Tested using roughly <a href=http://software.hixie.ch/utilities/js/live-dom-viewer/saved/1018>this</a>.

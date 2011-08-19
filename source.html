@@ -3304,7 +3304,7 @@ returned by the following algorithm:
     <var>lower bound</var>.
 
     <li>If <var>pixel size</var> is less than <var>average</var>, return the
-    one-[[strel]] string consisting of the digit <var>returned size</var>.
+    one-[[codeunit]] string consisting of the digit <var>returned size</var>.
 
     <li>Add one to <var>returned size</var>.
   </ol>
@@ -5181,7 +5181,7 @@ returned by the following algorithm:
   <li>While <var>n</var> is greater than three, append <var>repeated pair</var>
   to <var>buffer</var> and subtract two from <var>n</var>.
 
-  <li>If <var>n</var> is three, append a three-[[strel]] string to
+  <li>If <var>n</var> is three, append a three-[[codeunit]] string to
   <var>buffer</var> depending on <var>non-breaking start</var> and
   <var>non-breaking end</var>:
 
@@ -5199,7 +5199,7 @@ returned by the following algorithm:
     <dd>U+00A0 U+0020 U+00A0
   </dl>
 
-  <li>Otherwise, append a two-[[strel]] string to <var>buffer</var> depending
+  <li>Otherwise, append a two-[[codeunit]] string to <var>buffer</var> depending
   on <var>non-breaking start</var> and <var>non-breaking end</var>:
 
   <dl class=switch>
@@ -5251,7 +5251,7 @@ returned by the following algorithm:
     <li>Otherwise, if <var>start node</var> is a [[text]] node and its
     [[parent]]'s [[resval]] for "white-space" is neither "pre" nor "pre-wrap"
     and <var>start offset</var> is not zero and the (<var>start offset</var>
-    &minus; 1)st [[strel]] of <var>start node</var>'s [[cddata]] is a space
+    &minus; 1)st [[codeunit]] of <var>start node</var>'s [[cddata]] is a space
     (0x0020) or non-breaking space (0x00A0), subtract one from <var>start
     offset</var>.
 
@@ -5289,17 +5289,17 @@ returned by the following algorithm:
     <li>Otherwise, if <var>end node</var> is a [[text]] node and its
     [[parent]]'s [[resval]] for "white-space" is neither "pre" nor "pre-wrap"
     and <var>end offset</var> is not <var>end node</var>'s [[length]] and the
-    <var>end offset</var>th [[strel]] of <var>end node</var>'s [[cddata]] is a
+    <var>end offset</var>th [[codeunit]] of <var>end node</var>'s [[cddata]] is a
     space (0x0020) or non-breaking space (0x00A0):
 
     <ol>
       <li>If <var>follows space</var> is true and the <var>end offset</var>th
-      [[strel]] of <var>end node</var>'s [[cddata]] is a space (0x0020), call
+      [[codeunit]] of <var>end node</var>'s [[cddata]] is a space (0x0020), call
       [[deletedata|<var>end offset</var>, 1]] on <var>end node</var>, then
       continue this loop from the beginning.
 
       <li>Set <var>follows space</var> to true if the <var>end offset</var>th
-      [[strel]] of <var>end node</var>'s [[cddata]] is a space (0x0020), false
+      [[codeunit]] of <var>end node</var>'s [[cddata]] is a space (0x0020), false
       otherwise.
 
       <li>Add one to <var>end offset</var>.
@@ -5337,11 +5337,11 @@ returned by the following algorithm:
     <li>Otherwise:
 
     <ol>
-      <li>Remove the first [[strel]] from <var>replacement whitespace</var>,
-      and let <var>element</var> be that [[strel]].
+      <li>Remove the first [[codeunit]] from <var>replacement whitespace</var>,
+      and let <var>element</var> be that [[codeunit]].
 
       <li>If <var>element</var> is not the same as the <var>start
-      offset</var>th [[strel]] of <var>start node</var>'s [[cddata]]:
+      offset</var>th [[codeunit]] of <var>start node</var>'s [[cddata]]:
 
       <ol>
         <li>
@@ -7429,7 +7429,7 @@ diacritic, so you have to backspace several times to remove the whole cluster.)
     </div>
 
     <p>While <var>end offset</var> is not <var>node</var>'s [[length]] and the
-    <var>end offset</var>th [[strel]] of <var>node</var>'s [[cddata]] has
+    <var>end offset</var>th [[codeunit]] of <var>node</var>'s [[cddata]] has
     general category M when interpreted as a Unicode code point, add one to
     <var>end offset</var>.
 
@@ -8495,7 +8495,7 @@ unnecessarily.
   <li>If <var>value</var>'s [[strlen]] is greater than one:
 
   <ol>
-    <li>For each [[strel]] <var>el</var> in <var>value</var>, take the
+    <li>For each [[codeunit]] <var>el</var> in <var>value</var>, take the
     <span>action</span> for <span>the <code title>insertText</code>
     command</span>, with <var>value</var> equal to <var>el</var>.
 

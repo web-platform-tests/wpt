@@ -3298,7 +3298,7 @@ returned by the following algorithm:
     <var title="">lower bound</var>.
 
     <li>If <var title="">pixel size</var> is less than <var title="">average</var>, return the
-    one-<a href=http://es5.github.com/#x8.4>element</a> string consisting of the digit <var title="">returned size</var>.
+    one-<a href=http://dev.w3.org/2006/webapi/WebIDL/#dfn-code-unit>code unit</a> string consisting of the digit <var title="">returned size</var>.
 
     <li>Add one to <var title="">returned size</var>.
   </ol>
@@ -5147,7 +5147,7 @@ returned by the following algorithm:
   <li>While <var title="">n</var> is greater than three, append <var title="">repeated pair</var>
   to <var title="">buffer</var> and subtract two from <var title="">n</var>.
 
-  <li>If <var title="">n</var> is three, append a three-<a href=http://es5.github.com/#x8.4>element</a> string to
+  <li>If <var title="">n</var> is three, append a three-<a href=http://dev.w3.org/2006/webapi/WebIDL/#dfn-code-unit>code unit</a> string to
   <var title="">buffer</var> depending on <var title="">non-breaking start</var> and
   <var title="">non-breaking end</var>:
 
@@ -5165,7 +5165,7 @@ returned by the following algorithm:
     <dd>U+00A0 U+0020 U+00A0
   </dl>
 
-  <li>Otherwise, append a two-<a href=http://es5.github.com/#x8.4>element</a> string to <var title="">buffer</var> depending
+  <li>Otherwise, append a two-<a href=http://dev.w3.org/2006/webapi/WebIDL/#dfn-code-unit>code unit</a> string to <var title="">buffer</var> depending
   on <var title="">non-breaking start</var> and <var title="">non-breaking end</var>:
 
   <dl class=switch>
@@ -5217,7 +5217,7 @@ returned by the following algorithm:
     <li>Otherwise, if <var title="">start node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node and its
     <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>'s <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved value</a> for "white-space" is neither "pre" nor "pre-wrap"
     and <var title="">start offset</var> is not zero and the (<var title="">start offset</var>
-    &minus; 1)st <a href=http://es5.github.com/#x8.4>element</a> of <var title="">start node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> is a space
+    &minus; 1)st <a href=http://dev.w3.org/2006/webapi/WebIDL/#dfn-code-unit>code unit</a> of <var title="">start node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> is a space
     (0x0020) or non-breaking space (0x00A0), subtract one from <var title="">start
     offset</var>.
 
@@ -5255,17 +5255,17 @@ returned by the following algorithm:
     <li>Otherwise, if <var title="">end node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node and its
     <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>'s <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved value</a> for "white-space" is neither "pre" nor "pre-wrap"
     and <var title="">end offset</var> is not <var title="">end node</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> and the
-    <var title="">end offset</var>th <a href=http://es5.github.com/#x8.4>element</a> of <var title="">end node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> is a
+    <var title="">end offset</var>th <a href=http://dev.w3.org/2006/webapi/WebIDL/#dfn-code-unit>code unit</a> of <var title="">end node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> is a
     space (0x0020) or non-breaking space (0x00A0):
 
     <ol>
       <li>If <var title="">follows space</var> is true and the <var title="">end offset</var>th
-      <a href=http://es5.github.com/#x8.4>element</a> of <var title="">end node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> is a space (0x0020), call
+      <a href=http://dev.w3.org/2006/webapi/WebIDL/#dfn-code-unit>code unit</a> of <var title="">end node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> is a space (0x0020), call
       <code class=external data-anolis-spec=domcore title=dom-CharacterData-deleteData><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-deletedata>deleteData(<var title="">end offset</var>, 1)</a></code> on <var title="">end node</var>, then
       continue this loop from the beginning.
 
       <li>Set <var title="">follows space</var> to true if the <var title="">end offset</var>th
-      <a href=http://es5.github.com/#x8.4>element</a> of <var title="">end node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> is a space (0x0020), false
+      <a href=http://dev.w3.org/2006/webapi/WebIDL/#dfn-code-unit>code unit</a> of <var title="">end node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> is a space (0x0020), false
       otherwise.
 
       <li>Add one to <var title="">end offset</var>.
@@ -5303,11 +5303,11 @@ returned by the following algorithm:
     <li>Otherwise:
 
     <ol>
-      <li>Remove the first <a href=http://es5.github.com/#x8.4>element</a> from <var title="">replacement whitespace</var>,
-      and let <var title="">element</var> be that <a href=http://es5.github.com/#x8.4>element</a>.
+      <li>Remove the first <a href=http://dev.w3.org/2006/webapi/WebIDL/#dfn-code-unit>code unit</a> from <var title="">replacement whitespace</var>,
+      and let <var title="">element</var> be that <a href=http://dev.w3.org/2006/webapi/WebIDL/#dfn-code-unit>code unit</a>.
 
       <li>If <var title="">element</var> is not the same as the <var title="">start
-      offset</var>th <a href=http://es5.github.com/#x8.4>element</a> of <var title="">start node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code>:
+      offset</var>th <a href=http://dev.w3.org/2006/webapi/WebIDL/#dfn-code-unit>code unit</a> of <var title="">start node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code>:
 
       <ol>
         <li>
@@ -7371,7 +7371,7 @@ diacritic, so you have to backspace several times to remove the whole cluster.)
     </div>
 
     <p>While <var title="">end offset</var> is not <var title="">node</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> and the
-    <var title="">end offset</var>th <a href=http://es5.github.com/#x8.4>element</a> of <var title="">node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> has
+    <var title="">end offset</var>th <a href=http://dev.w3.org/2006/webapi/WebIDL/#dfn-code-unit>code unit</a> of <var title="">node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> has
     general category M when interpreted as a Unicode code point, add one to
     <var title="">end offset</var>.
 
@@ -8429,7 +8429,7 @@ unnecessarily.
   <li>If <var title="">value</var>'s <a href=http://es5.github.com/#x15.5.5.1>length</a> is greater than one:
 
   <ol>
-    <li>For each <a href=http://es5.github.com/#x8.4>element</a> <var title="">el</var> in <var title="">value</var>, take the
+    <li>For each <a href=http://dev.w3.org/2006/webapi/WebIDL/#dfn-code-unit>code unit</a> <var title="">el</var> in <var title="">value</var>, take the
     <a href=#action>action</a> for <a href=#the-inserttext-command>the <code title="">insertText</code>
     command</a>, with <var title="">value</var> equal to <var title="">el</var>.
 

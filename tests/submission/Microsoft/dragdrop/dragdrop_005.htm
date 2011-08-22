@@ -13,7 +13,7 @@
         <div id=log></div>
         <div style="border:2px red solid; width:200px; height:50px; display:none;"  id="target">SampleText</div>
         <script type="text/javascript">
-            test(function() {assert_true(document.getElementById("target").draggable)}, "Auto state of draggable attribute for div element");
+            test(function() {assert_false(document.getElementById("target").draggable)}, "Auto state of draggable attribute for div element");
         </script>
     </body>
 </html>

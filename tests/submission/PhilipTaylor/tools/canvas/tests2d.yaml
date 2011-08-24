@@ -7888,7 +7888,7 @@
     ctx.stroke();
 
     ctx.beginPath();
-    ctx.moveTo(50, 25);
+    ctx.moveTo(60, 25);
     ctx.arc(50, 25, 10, 0, 0, false);
     ctx.stroke();
 

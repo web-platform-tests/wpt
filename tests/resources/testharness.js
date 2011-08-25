@@ -618,7 +618,7 @@ policies and contribution forms [3].
 
         assert(Math.abs(actual - expected) < epsilon, message);
     };
-    expose(assert_equals, "assert_equals");
+    expose(assert_approx_equals, "assert_approx_equals");
 
     function assert_regexp_match(actual, expected, description) {
         /*

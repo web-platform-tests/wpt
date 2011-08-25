@@ -1294,7 +1294,7 @@ policies and contribution forms [3].
 
         log.appendChild(render(summary_template, {num_tests:tests.length}, output_document));
 
-        forEach(output_document.querySelectorAll("section#summary input"),
+        forEach(output_document.querySelectorAll("section#summary label"),
                 function(element)
                 {
                     on_event(element, "click",

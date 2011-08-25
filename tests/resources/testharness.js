@@ -219,6 +219,9 @@ policies and contribution forms [3].
  *   each indexed property in /actual/ is the strictly equal to the corresponding
  *   property value in /expected/
  *
+ * assert_approx_equals(actual, expected, epsilon, description)
+ *   asserts that /actual/ is a number within +/- /epsilon/ of /expected/
+ *
  * assert_regexp_match(actual, expected, description)
  *   asserts that /actual/ matches the regexp /expected/
  *
@@ -598,6 +601,24 @@ policies and contribution forms [3].
         }
     }
     expose(assert_array_equals, "assert_array_equals");
+
+    function assert_approx_equals(actual, expected, epsilon, description)
+    {
+        /*
+         * Test if two primitive numbers are equal withing +/- epsilon
+         */
+        var message = make_message("assert_approx_equals", description,
+                                   "expected a number but got a ${type_actual}",
+                                   {type_actual:typeof actual});
+        assert(typeof actual === "number");
+
+        message = make_message("assert_approx_equals", description,
+                               "expected ${expected} +/- ${epsilon} but got ${actual}",
+                               {expected:expected, actual:actual, epsilon:epsilon});
+
+        assert(Math.abs(actual - expected) < epsilon, message);
+    };
+    expose(assert_equals, "assert_equals");
 
     function assert_regexp_match(actual, expected, description) {
         /*

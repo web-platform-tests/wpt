@@ -1328,12 +1328,13 @@ policies and contribution forms [3].
                                  }
                                  var result_class = element.parentNode.getAttribute("class");
                                  var style_element = output_document.querySelector("style#hide-" + result_class);
-                                 if (!style_element && !element.checked) {
+                                 var input_element = element.querySelector("input");
+                                 if (!style_element && !input_element.checked) {
                                      style_element = output_document.createElementNS(xhtml_ns, "style");
                                      style_element.id = "hide-" + result_class;
                                      style_element.innerHTML = "table#results > tbody > tr."+result_class+"{display:none}";
                                      output_document.body.appendChild(style_element);
-                                 } else if (style_element && element.checked) {
+                                 } else if (style_element && input_element.checked) {
                                      style_element.parentNode.removeChild(style_element);
                                  }
                              });

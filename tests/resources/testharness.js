@@ -610,7 +610,7 @@ policies and contribution forms [3].
         var message = make_message("assert_approx_equals", description,
                                    "expected a number but got a ${type_actual}",
                                    {type_actual:typeof actual});
-        assert(typeof actual === "number");
+        assert(typeof actual === "number", message);
 
         message = make_message("assert_approx_equals", description,
                                "expected ${expected} +/- ${epsilon} but got ${actual}",

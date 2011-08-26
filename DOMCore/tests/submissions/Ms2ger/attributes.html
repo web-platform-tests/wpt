@@ -58,7 +58,7 @@ test(function() {
                   function() { el.setAttribute(tests[i], "fail") },
                   "Expected exception for " + tests[i] + ".")
   }
-}, "")
+}, "setAttribute should throw a NAMESPACE_ERR when qualifiedName starts with 'xmlns'")
 
 // Step 4
 test(function() {
@@ -88,6 +88,16 @@ test(function() {
   attributes_are(el, [["attr", "pass", "ab"],
                       ["attr", "pass", "kl"]])
 }, "setAttribute should set the first attribute with the given name")
+test(function() {
+  // Based on a test by David Flanagan.
+  var el = document.createElement("baz")
+  el.setAttributeNS("foo", "foo:bar", "1");
+  assert_equals(el.getAttribute("foo:bar"), "1")
+  attr_is(el.attributes[0], "1", "bar", "foo", "foo", "foo:bar")
+  el.setAttribute("foo:bar", "2");
+  assert_equals(el.getAttribute("foo:bar"), "2")
+  attr_is(el.attributes[0], "2", "bar", "foo", "foo", "foo:bar")
+}, "setAttribute should set the attribute with the given qualified name")
 
 // setAttributeNS exhaustive tests
 // Step 1

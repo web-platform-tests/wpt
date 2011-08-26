@@ -24,14 +24,14 @@
     @assert window.CanvasRenderingContext2D;
 
 - name: 2d.type.delete
-  DISABLED: need to check with WebIDL
-  desc: window.CanvasRenderingContext2D is DontDelete
+  desc: window.CanvasRenderingContext2D is Configurable
   notes: *bindings
   testing:
     - context.2d.type
   code: |
-    delete window.CanvasRenderingContext2D;
     @assert window.CanvasRenderingContext2D !== undefined;
+    @assert delete window.CanvasRenderingContext2D === true;
+    @assert window.CanvasRenderingContext2D === undefined;
 
 - name: 2d.type.prototype
   DISABLED: need to check with WebIDL

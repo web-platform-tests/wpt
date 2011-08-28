@@ -60,6 +60,7 @@ Element-siblingElement-null.html
 Element-siblingElement-null.svg
 Element-siblingElement-null.xhtml
 Element-tagName.html
+Event-constants.html
 EventTarget-dispatchEvent.html
 interfaces.html
 Node-appendChild.html
@@ -72,4 +73,5 @@ Node-nodeName.html
 Node-parentElement.html
 Node-parentNode.html
 Node-removeChild.html
+NodeFilter-constants.html
 support productions.js

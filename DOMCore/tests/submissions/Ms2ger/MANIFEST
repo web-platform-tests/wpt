@@ -2,6 +2,7 @@ attributes.html
 support attributes.js
 case.html
 support case.js
+support constants.js
 CharacterData-appendData.html
 CharacterData-deleteData.html
 CharacterData-insertData.html
@@ -63,6 +64,7 @@ EventTarget-dispatchEvent.html
 interfaces.html
 Node-appendChild.html
 Node-cloneNode.html
+Node-constants.html
 Node-insertBefore.html
 Node-isEqualNode.xhtml
 Node-lookupPrefix.xhtml

@@ -11,7 +11,7 @@ function testInterfaceDeletable(iface) {
     assert_equals(window[iface], undefined, "Interface should be gone.")
   }, "Should be able to delete " + iface + ".")
 }
-[
+var interfaces = [
   "Event",
   "CustomEvent",
   "EventTarget",
@@ -34,5 +34,13 @@ function testInterfaceDeletable(iface) {
   "DOMStringList",
   "DOMTokenList",
   "DOMSettableTokenList"
-].forEach(testInterfaceDeletable);
+];
+test(function() {
+  for (var p in window) {
+    interfaces.forEach(function(i) {
+      assert_not_equals(p, i)
+    })
+  }
+}, "Interface objects properties should not be Enumerable")
+interfaces.forEach(testInterfaceDeletable);
 </script>

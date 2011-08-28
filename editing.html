@@ -65,7 +65,7 @@ a code { text-decoration: underline }
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing APIs</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-19-august-2011>Work in Progress &mdash; Last Update 19 August 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-28-august-2011>Work in Progress &mdash; Last Update 28 August 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;<a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a>&gt;
@@ -1113,10 +1113,6 @@ whitespace node</a>, or an <code class=external data-anolis-spec=html title="the
 
 <p>Something is <dfn id=invisible>invisible</dfn> if it is a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is not
 <a href=#visible>visible</a>.
-
-<p class=XXX>I don't know if the visible/invisible node definitions are really
-the way we want to do things.  If they are, they need some adjustment, like to
-handle collapsed whitespace nodes.  See <a href="http://www.w3.org/Bugs/Public/show_bug.cgi?id=13631">bug</a>.
 
 <p class=comments>TODO: Reconsider whether we want to lump invisible nodes in
 here.  If we don't and change the definition, make sure to audit all callers,

@@ -1068,11 +1068,6 @@ whitespace node</span>, or an [[img]], or a [[br]] that is not an
 <p>Something is <dfn>invisible</dfn> if it is a [[node]] that is not
 <span>visible</span>.
 
-<p class=XXX>I don't know if the visible/invisible node definitions are really
-the way we want to do things.  If they are, they need some adjustment, like to
-handle collapsed whitespace nodes.  See <a
-href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=13631>bug</a>.
-
 <p class=comments>TODO: Reconsider whether we want to lump invisible nodes in
 here.  If we don't and change the definition, make sure to audit all callers,
 since then a block could have collapsed block prop descendants that aren't

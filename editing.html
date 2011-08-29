@@ -65,7 +65,7 @@ a code { text-decoration: underline }
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing APIs</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-28-august-2011>Work in Progress &mdash; Last Update 28 August 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-29-august-2011>Work in Progress &mdash; Last Update 29 August 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;<a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a>&gt;
@@ -9044,6 +9044,14 @@ insertions.
   wrapper.appendChild(button);
   wrapper.appendChild(node);
 });
+document.body.onclick = function(e) {
+  [].forEach.call(document.querySelectorAll(".comments-expanded"), function(node) {
+    if (e.target != node.parentNode
+    && !(e.target.compareDocumentPosition(node.parentNode) & Node.DOCUMENT_POSITION_CONTAINS)) {
+      node.className = "comments";
+    }
+  });
+};
 
 </script>
 <script src=http://www.whatwg.org/specs/web-apps/current-work/dfn.js></script>

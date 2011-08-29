@@ -9123,6 +9123,14 @@ insertions.
   wrapper.appendChild(button);
   wrapper.appendChild(node);
 });
+document.body.onclick = function(e) {
+  [].forEach.call(document.querySelectorAll(".comments-expanded"), function(node) {
+    if (e.target != node.parentNode
+    && !(e.target.compareDocumentPosition(node.parentNode) & Node.DOCUMENT_POSITION_CONTAINS)) {
+      node.className = "comments";
+    }
+  });
+};
 <!-- @} -->
 </script>
 <script src=http://www.whatwg.org/specs/web-apps/current-work/dfn.js></script>

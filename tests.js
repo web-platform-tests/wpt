@@ -4132,7 +4132,9 @@ function doSpecCell(tr, test, command) {
 	var oldValue = localStorage.getItem(key);
 	var newValue = specCell.lastChild.firstChild.textContent;
 
-	if (oldValue === null || oldValue !== newValue) {
+	// Ignore differences between {} and [].
+	if (oldValue === null
+	|| oldValue.replace("{}", "[]") !== newValue.replace("{}", "[]")) {
 		specCell.parentNode.className = "alert";
 		var alertDiv = document.createElement("div");
 		specCell.lastChild.appendChild(alertDiv);

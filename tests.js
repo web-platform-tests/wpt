@@ -4204,7 +4204,7 @@ function doSameCell(tr) {
 		// now this includes ignoring where the selection goes.
 		var normalizedSpecCell = tr.childNodes[1].lastChild.firstChild.textContent
 			.replace(/[[\]{}]/g, "")
-			.replace(/ class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px;"/g, '')
+			.replace(/ style="margin: 0 0 0 40px; border: none; padding: 0px;"/g, '')
 			.replace(/ style="margin-right: 0px;" dir="ltr"/g, '')
 			.replace(/ style="margin-left: 0px;" dir="rtl"/g, '')
 			.replace(/ style="margin-(left|right): 40px;"/g, '')
@@ -4216,7 +4216,7 @@ function doSameCell(tr) {
 			.replace(/#[0-9a-fA-F]{6}/g, function(match) { return match.toUpperCase(); });
 		var normalizedBrowserCell = tr.childNodes[2].lastChild.firstChild.textContent
 			.replace(/[[\]{}]/g, "")
-			.replace(/ class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px;"/g, '')
+			.replace(/ style="margin: 0 0 0 40px; border: none; padding: 0px;"/g, '')
 			.replace(/ style="margin-right: 0px;" dir="ltr"/g, '')
 			.replace(/ style="margin-left: 0px;" dir="rtl"/g, '')
 			.replace(/ style="margin-(left|right): 40px;"/g, '')
@@ -4226,8 +4226,7 @@ function doSameCell(tr) {
 			.replace(/<(\/?)strike/g, '<$1s')
 			.replace(/<(\/?)em/g, '<$1i')
 			.replace(/#[0-9a-fA-F]{6}/g, function(match) { return match.toUpperCase(); })
-			.replace(/ size="2" width="100%"/g, '')
-			.replace(/ class="Apple-style-span"/g, "");
+			.replace(/ size="2" width="100%"/g, '');
 		if (navigator.userAgent.indexOf("MSIE") != -1) {
 			// IE produces <font style> instead of <span style>, so let's
 			// translate all <span>s to <font>s.

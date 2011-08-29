@@ -1131,6 +1131,9 @@ var tests = {
 
 		// https://bugs.webkit.org/show_bug.cgi?id=47054
 		['<p>', '<div style=color:blue>[foo]</div>'],
+		// https://bugs.webkit.org/show_bug.cgi?id=47574
+		['<h1>', '{<p>foo</p>ba]r'],
+		['<pre>', '&#10;[foo<p>bar]</p>'],
 	],
 	//@}
 	forwarddelete: [
@@ -3406,6 +3409,9 @@ var tests = {
 		'<sup>fo[o</sup><span style=vertical-align:super>b]ar</span>',
 		'foo<span style=vertical-align:bottom>[bar]</span>baz',
 		'<sup>fo[o</sup><span style=vertical-align:bottom>b]ar</span>',
+
+		// https://bugs.webkit.org/show_bug.cgi?id=28472
+		'foo<sup>[bar]<br></sup>',
 	],
 	//@}
 	underline: [

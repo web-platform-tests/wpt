@@ -606,6 +606,17 @@ var tests = {
 		'<span style=display:inline-table>fo[o</span><span style=display:inline-table>b]ar</span>',
 		'<span style=display:none>fo[o</span><span style=display:none>b]ar</span>',
 		'<quasit style=display:block>fo[o</quasit><quasit style=display:block>b]ar</quasit>',
+
+		// https://bugs.webkit.org/show_bug.cgi?id=35281
+		// Results here are wrong, see:
+		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=13976
+		'<ol><li>foo</li></ol>{}<br><ol><li>bar</li></ol>',
+		'<ol id=a><li>foo</li></ol>{}<br><ol><li>bar</li></ol>',
+		'<ol><li>foo</li></ol>{}<br><ol id=b><li>bar</li></ol>',
+		'<ol id=a><li>foo</li></ol>{}<br><ol id=b><li>bar</li></ol>',
+		'<ol class=a><li>foo</li></ol>{}<br><ol class=b><li>bar</li></ol>',
+		'<ol><ol><li>foo</ol><li>{}<br><ol><li>bar</ol></ol>',
+		'<ol><ol><li>foo</ol><li>{}<br></li><ol><li>bar</ol></ol>',
 	],
 	//@}
 	fontname: [

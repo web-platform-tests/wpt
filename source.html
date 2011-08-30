@@ -1269,7 +1269,18 @@ we like to remove the extra markup to keep things tidy.
   [[treeorder]].
 
   <li>If <var>ref</var> is an <span>editable</span> <span>extraneous line
-  break</span>, remove it from its [[parent]].
+  break</span>:
+
+  <ol>
+    <li>
+    <p class=comments>If the block ends with {{code|<span><br></span>}}, for
+    instance, we want to remove the span too.
+
+    <p>While <var>ref</var>'s [[parent]] is <span>editable</span> and
+    <span>invisible</span>, set <var>ref</var> to its [[parent]].
+
+    <li>Remove <var>ref</var> from its [[parent]].
+  </ol>
 </ol>
 
 <p>To <dfn>remove extraneous line breaks from</dfn> a [[node]], first
@@ -4432,35 +4443,33 @@ algorithm returns true:
 </ol>
 
 <!--@}-->
-<h3>Deleting the contents of a range</h3>
+<h3>Deleting the selection</h3>
 <!-- @{ -->
 <p class=comments>TODO: Consider what should happen for block merging in corner
 cases like display: inline-table.
 
-<p>To <dfn>delete the contents</dfn> of a [[range]] <var>range</var>, given a
-<var>block merging</var> flag that defaults to true and a <var>strip
-wrappers</var> flag that defaults to true:
+<p>To <dfn>delete the selection</dfn>, given a <var>block merging</var> flag
+that defaults to true, a <var>strip wrappers</var> flag that defaults to
+true, and a string <var>direction</var> that defaults to "forward":
 
 <div class=note>
 <p>The idea behind this algorithm is self-explanatory, but the details wind up
 being remarkably complicated.
 
-<p>First, any editable nodes inside the range will be deleted, and the range
-will be collapsed.  By way of contrast, <span>effectively contained</span>
-tries to expand the range to include as much as possible, so <code
-title>&lt;p>[foo]&lt;/p></code> contains the <code title>&lt;p></code>.  What
-we do here is contract the range to include as little as possible, so <code
-title>{&lt;p>foo&lt;/p>}</code> contains only <code title>foo</code> and
-doesn't delete the paragraph.
+<p>First, any editable nodes inside the selection will be deleted, and the
+selection will be collapsed.  By way of contrast, <span>effectively
+contained</span> tries to expand the range to include as much as possible, so
+{{code|<p>[foo]</p>}} contains the {{code|<p>}}.  What we do here is contract
+the range to include as little as possible, so {{code|{<p>foo</p>} }} contains
+only {{code|foo}} and doesn't delete the paragraph.
 
-<p>After that, if the range originally started and ended in different blocks,
-and the <var>block merging</var> flag is true, the end block will get merged
-into the start block.  This is needed so if the user selects text on several
-lines and deletes it, the text immediately that was before the selection winds
-up on the same line as the text immediately after it.  For example, <code
-title>&lt;p>fo[o&lt;/p>&lt;div>b]ar&lt;/div></code> becomes <code
-title>&lt;p>fo[]ar&lt;/p></code>.  This procedure winds up being tricky, and
-takes up a large chunk of the logic.
+<p>After that, if the selection originally started and ended in different
+blocks, and the <var>block merging</var> flag is true, the end block will get
+merged into the start block.  This is needed so if the user selects text on
+several lines and deletes it, the text immediately that was before the
+selection winds up on the same line as the text immediately after it.  For
+example, {{code|<p>fo[o</p><div>b]ar</div>}} becomes {{code|<p>fo[]ar</p>}}.
+This procedure winds up being tricky, and takes up a large chunk of the logic.
 
 <p>Tables are a notable special case.  If an entire table is contained in the
 range, it will be deleted.  If it's anything less, only the contents of the
@@ -4482,11 +4491,12 @@ style from the old text.
 </div>
 
 <ol>
-  <li>If <var>range</var> is null, abort these steps and do nothing.
+  <li>If the <span>active range</span> is null, abort these steps and do
+  nothing.
 
   <li>Let <var>start node</var>, <var>start offset</var>, <var>end node</var>,
-  and <var>end offset</var> be <var>range</var>'s [[rangestart]] and
-  [[rangeend]] [[bpnodes]] and [[bpoffsets]].
+  and <var>end offset</var> be the <span>active range</span>'s [[rangestart]]
+  and [[rangeend]] [[bpnodes]] and [[bpoffsets]].
 
   <li>
   <div class=comments>
@@ -4502,7 +4512,7 @@ foo{&lt;br />bar]
 -> foo&lt;br />{bar]
 -> foo&lt;br />[bar]</pre>
 
-  <p>and we deselected the &lt;br>.
+  <p>and we deselected the {{code|<br>}}.
   </div>
 
   <p>While <var>start node</var> has at least one [[child]]:
@@ -4516,7 +4526,7 @@ foo{&lt;br />bar]
 -> &lt;b>foo{&lt;/b>&lt;i>bar]&lt;/i>
 -> &lt;b>foo&lt;/b>{&lt;i>bar]&lt;/i></pre>
 
-    <p>Then the next step will make it &lt;b>foo&lt;/b>&lt;i>[bar]&lt;/i>.
+    <p>Then the next step will make it {{code|<b>foo</b><i>[bar]</i>}}.
 
     <p>We don't want to do this for block nodes, because that would lead to
     something like
@@ -4524,7 +4534,7 @@ foo{&lt;br />bar]
       <pre>&lt;p>foo[&lt;/p>&lt;p>]bar&lt;p></pre>
 
     <p>ultimately collapsing, which is wrong.  Once we do the deletion, it
-    needs to wind up &lt;p>foo[]bar&lt;/p>, whereas an actually collapsed
+    needs to wind up {{code|<p>foo[]bar</p>}}, whereas an actually collapsed
     selection should do nothing.
     </div>
 
@@ -4589,8 +4599,17 @@ foo{&lt;br />bar]
   </ol>
 
   <li>If (<var>end node</var>, <var>end offset</var>) is not [[bpafter]]
-  (<var>start node</var>, <var>start offset</var>), set <var>range</var>'s
-  [[rangeend]] to its [[rangestart]] and abort these steps.
+  (<var>start node</var>, <var>start offset</var>):
+
+  <ol>
+    <li>If <var>direction</var> is "forward", call [[collapsetostart]] on the
+    [[contextobject]]'s [[selection]].
+
+    <li>Otherwise, call [[collapsetoend]] on the [[contextobject]]'s
+    [[selection]].
+
+    <li>Abort these steps.
+  </ol>
 
   <li>If <var>start node</var> is a [[text]] node and <var>start offset</var>
   is 0, set <var>start offset</var> to the [[index]] of <var>start node</var>,
@@ -4600,9 +4619,11 @@ foo{&lt;br />bar]
   its [[nodelength]], set <var>end offset</var> to one plus the [[index]] of
   <var>end node</var>, then set <var>end node</var> to its [[parent]].
 
-  <li>Set <var>range</var>'s [[rangestart]] to (<var>start node</var>,
-  <var>start offset</var>) and its [[rangeend]] to (<var>end node</var>,
-  <var>end offset</var>).
+  <li>Call [[selcollapse|<var>start node</var>, <var>start offset</var>]] on
+  the [[contextobject]]'s [[selection]].
+
+  <li>Call [[extend|<var>end node</var>, <var>end offset</var>]] on the
+  [[contextobject]]'s [[selection]].
 
   <li>
   <div class=comments>
@@ -4616,8 +4637,8 @@ foo{&lt;br />bar]
   anything.
   </div>
 
-  <p>Let <var>start block</var> be the [[rangestart]] [[bpnode]] of
-  <var>range</var>.
+  <p>Let <var>start block</var> be the <span>active range</span>'s
+  [[startnode]].
 
   <li>While <var>start block</var>'s [[parent]] is <span>in the same editing
   host</span> and <var>start block</var> is an <span>inline node</span>, set
@@ -4653,8 +4674,7 @@ foo{&lt;br />bar]
   <var>start block</var>, or <var>start block</var> is a [[td]] or [[th]], set
   <var>start block</var> to null.
 
-  <li>Let <var>end block</var> be the [[rangeend]] [[bpnode]] of
-  <var>range</var>.
+  <li>Let <var>end block</var> be the <span>active range</span>'s [[endnode]].
 
   <li>While <var>end block</var>'s [[parent]] is <span>in the same editing
   host</span> and <var>end block</var> is an <span>inline node</span>, set
@@ -4696,7 +4716,11 @@ foo{&lt;br />bar]
     <li><span>Canonicalize whitespace</span> at (<var>start node</var>,
     <var>start offset</var>).
 
-    <li>Set <var>range</var>'s [[rangeend]] to its [[rangestart]].
+    <li>If <var>direction</var> is "forward", call [[collapsetostart]] on the
+    [[contextobject]]'s [[selection]].
+
+    <li>Otherwise, call [[collapsetoend]] on the [[contextobject]]'s
+    [[selection]].
 
     <li>
     <p class=comments>This is needed to restore any overrides that would
@@ -4724,9 +4748,9 @@ foo{&lt;br />bar]
   cell-selection mode when you try to select between cells, at least in some
   cases, instead of selecting letter-by-letter.
 
-  <p>For each <var>node</var> [[contained]] in <var>range</var>, append
-  <var>node</var> to <var>node list</var> if the last member of <var>node
-  list</var> (if any) is not an [[ancestor]] of <var>node</var>;
+  <p>For each <var>node</var> [[contained]] in the <span>active range</span>,
+  append <var>node</var> to <var>node list</var> if the last member of
+  <var>node list</var> (if any) is not an [[ancestor]] of <var>node</var>;
   <var>node</var> is <span>editable</span>; and <var>node</var> is not a
   [[thead]], [[tbody]], [[tfoot]], [[tr]], [[th]], or [[td]].
 
@@ -4765,10 +4789,11 @@ foo{&lt;br />bar]
   <li>If <var>end node</var> is an <span>editable</span> [[text]] node, call
   [[deletedata|0, <var>end offset</var>]] on it.
 
-  <li><span>Canonicalize whitespace</span> at <var>range</var>'s
+  <li><span>Canonicalize whitespace</span> at the <span>active range</span>'s
   [[rangestart]].
 
-  <li><span>Canonicalize whitespace</span> at <var>range</var>'s [[rangeend]].
+  <li><span>Canonicalize whitespace</span> at the <span>active range</span>'s
+  [[rangeend]].
 
   <li>
   <div class=comments>
@@ -4801,7 +4826,11 @@ foo[&lt;p>]bar&lt;/p>
   and <var>end block</var> are the same:
 
   <ol>
-    <li>Set <var>range</var>'s [[rangeend]] to its [[rangestart]].
+    <li>If <var>direction</var> is "forward", call [[collapsetostart]] on the
+    [[contextobject]]'s [[selection]].
+
+    <li>Otherwise, call [[collapsetoend]] on the [[contextobject]]'s
+    [[selection]].
 
     <li><span>Restore states and values</span> from <var>overrides</var>.
 
@@ -4818,9 +4847,6 @@ foo[&lt;p>]bar&lt;/p>
   <p>If <var>start block</var> has one [[child]], which is a <span>collapsed
   block prop</span>, remove its [[child]] from it.
 
-  <li>If <var>end block</var> has one [[child]], which is a <span>collapsed
-  block prop</span>, remove its [[child]] from it.
-
   <li>
   <p class=comments>Just repeatedly blow up the end block in this case.
 
@@ -4832,8 +4858,9 @@ foo[&lt;p>]bar&lt;/p>
     <li>While <var>reference node</var> is not a [[child]] of <var>start
     block</var>, set <var>reference node</var> to its [[parent]].
 
-    <li>Set the [[rangestart]] and [[rangeend]] of <var>range</var> to
-    (<var>start block</var>, [[index]] of <var>reference node</var>).
+    <li>Call [[selcollapse|]] on the [[contextobject]]'s [[selection]], with
+    first argument <var>start block</var> and second argument the [[index]] of
+    <var>reference node</var>.
 
     <li>If <var>end block</var> has no [[children]]:
 
@@ -4890,8 +4917,9 @@ foo[&lt;p>]bar&lt;/p>
   block</var>:
 
   <ol>
-    <li>Set the [[rangestart]] and [[rangeend]] of <var>range</var> to
-    (<var>start block</var>, [[nodelength]] of <var>start block</var>).
+    <li>Call [[selcollapse|]] on the [[contextobject]]'s [[selection]], with
+    first argument <var>start block</var> and second argument <var>start
+    block</var>'s [[nodelength]].
 
     <li>Let <var>reference node</var> be <var>start block</var>.
 
@@ -4905,12 +4933,12 @@ foo[&lt;p>]bar&lt;/p>
     <li>Let <var>nodes to move</var> be a list of [[nodes]], initially empty.
 
     <li>If <var>reference node</var>'s [[nextsibling]] is neither null nor a
-    [[br]] nor a <span>block node</span>, append it to <var>nodes to
-    move</var>.
+    <span>block node</span>, append it to <var>nodes to move</var>.
 
-    <li>While <var>nodes to move</var> is nonempty and its last member's
-    [[nextsibling]] is neither null nor a [[br]] nor a <span>block node</span>,
-    append it to <var>nodes to move</var>.
+    <li>While <var>nodes to move</var> is nonempty and its last member isn't a
+    [[br]] and its last member's [[nextsibling]] is neither null nor a
+    <span>block node</span>, append its last member's [[nextsibling]] to
+    <var>nodes to move</var>.
 
     <li><span>Record the values</span> of <var>nodes to move</var>, and let
     <var>values</var> be the result.
@@ -4918,9 +4946,6 @@ foo[&lt;p>]bar&lt;/p>
     <li>For each <var>node</var> in <var>nodes to move</var>, append
     <var>node</var> as the last [[child]] of <var>start block</var>,
     <span>preserving ranges</span>.
-
-    <li>If the [[nextsibling]] of <var>reference node</var> is a [[br]], remove
-    it from its [[parent]].
   </ol>
 
   <li>
@@ -4931,8 +4956,9 @@ foo[&lt;p>]bar&lt;/p>
   <p>Otherwise:
 
   <ol>
-    <li>Set the [[rangestart]] and [[rangeend]] of <var>range</var> to
-    (<var>start block</var>, [[nodelength]] of <var>start block</var>).
+    <li>Call [[selcollapse|]] on the [[contextobject]]'s [[selection]], with
+    first argument <var>start block</var> and second argument <var>start
+    block</var>'s [[nodelength]].
 
     <li>If <var>end block</var>'s [[firstchild]] is an <span>inline node</span>
     and <var>start block</var>'s [[lastchild]] is a [[br]], remove <var>start
@@ -4955,6 +4981,9 @@ foo[&lt;p>]bar&lt;/p>
   <li>If <var>start block</var> has no [[children]], call
   [[createelement|"br"]] on the [[contextobject]] and append the result as the
   last [[child]] of <var>start block</var>.
+
+  <li><span>Remove extraneous line breaks at the end of</span> <var>start
+  block</var>.
 
   <li><span>Restore states and values</span> from <var>overrides</var>.
 </ol>
@@ -6607,7 +6636,7 @@ would be worth the added complexity.
 <div class=note>
 <p>This is the same as hitting backspace (see <a
 href=#additional-requirements>Additional requirements</a>).  The easy part is
-if the selection isn't collapsed: just <span>delete the contents</span>.  But
+if the selection isn't collapsed: just <span>delete the selection</span>.  But
 it turns out rich-text editors have a lot of special behaviors for hitting
 backspace with a collapsed selection.  Most obviously, if there's a text node
 right before the cursor (maybe wrapped in some inline elements), we delete its
@@ -6651,8 +6680,8 @@ leaves things like &lt;b>{}&lt;/b> in the DOM, which is unhelpful, so I don't.
 
 <ol>
   <li>If the <span>active range</span> is not <code data-anolis-spec=domrange
-  title=dom-Range-collapsed>collapsed</code>, <span>delete the contents</span>
-  of the <span>active range</span> and abort these steps.
+  title=dom-Range-collapsed>collapsed</code>, <span>delete the selection</span>
+  and abort these steps.
 
   <li>
   <p class=comments>Needed so that if there are multiple consecutive spaces we
@@ -6742,23 +6771,27 @@ leaves things like &lt;b>{}&lt;/b> in the DOM, which is unhelpful, so I don't.
   </div>
 
   <p>If <var>node</var> is a [[text]] node and <var>offset</var> is not zero,
-  call [[selcollapse|<var>node</var>, <var>offset</var>]] on the [[selection]].
-  Then <span>delete the contents</span> of the [[range]] with [[rangestart]]
-  (<var>node</var>, <var>offset</var> &minus; 1) and [[rangeend]]
-  (<var>node</var>, <var>offset</var>) and abort these steps.
+  or if <var>node</var> is a <span>block node</span> that has a [[child]] with
+  [[index]] <var>offset</var> &minus; 1 and that [[child]] is a [[br]] or
+  [[hr]] or [[img]]:
+
+  <ol>
+    <li>Call [[selcollapse|<var>node</var>, <var>offset</var>]] on the
+    [[contextobject]]'s [[selection]].
+
+    <li>Call [[extend|<var>node</var>, <var>offset</var> &minus; 1]] on the
+    [[contextobject]]'s [[selection]].
+
+    <li><span>Delete the selection</span>.
+
+    <li>Abort these steps.
+  </ol>
 
   <li>
   <p class=comments>At the time of this writing, this should be impossible.
   Just being safe.
 
   <p>If <var>node</var> is an <span>inline node</span>, abort these steps.
-
-  <li>If <var>node</var> has a [[child]] with [[index]] <var>offset</var>
-  &minus; 1 and that [[child]] is a [[br]] or [[hr]] or [[img]], call
-  [[selcollapse|<var>node</var>, <var>offset</var>]] on the [[selection]].
-  Then <span>delete the contents</span> of the [[range]] with [[rangestart]]
-  (<var>node</var>, <var>offset</var> &minus; 1) and [[rangeend]]
-  (<var>node</var>, <var>offset</var>) and abort these steps.
 
   <li>
   <p class=comments> If we're at the beginning of a list, we want to outdent
@@ -6906,12 +6939,16 @@ leaves things like &lt;b>{}&lt;/b> in the DOM, which is unhelpful, so I don't.
   an <span>inline node</span>:
 
   <ol>
+    <li>Call [[selcollapse|<var>start node</var>, <var>start offset</var>
+    &minus; 1]] on the [[contextobject]]'s [[selection]].
+
+    <li>Call [[extend|<var>start node</var>, <var>start offset</var>]] on the
+    [[contextobject]]'s [[selection]].
+
+    <li><span>Delete the selection</span>.
+
     <li>Call [[selcollapse|<var>node</var>, <var>offset</var>]] on the
     [[selection]].
-
-    <li><span>Delete the contents</span> of the [[range]] with [[rangestart]]
-    (<var>start node</var>, <var>start offset</var> &minus; 1) and [[rangeend]]
-    (<var>start node</var>, <var>start offset</var>).
 
     <li>Abort these steps.
   </ol>
@@ -6961,22 +6998,49 @@ leaves things like &lt;b>{}&lt;/b> in the DOM, which is unhelpful, so I don't.
   <li>
   <p class=comments>When merging adjacent list items, make sure we only merge
   the items themselves, not any block children.  We want
-  &lt;li>&lt;p>foo&lt;li>&lt;p>bar to become &lt;li>&lt;p>foo&lt;p>bar, not
-  &lt;li>&lt;p>foo&lt;br>bar or &lt;li>&lt;p>foobar.
+  {{code|<li><p>foo<li><p>[]bar}} to become {{code|<li><p>foo<p>[]bar}}, not
+  {{code|<li><p>foo<br>[]bar}} or {{code|<li><p>foo[]bar}}.  To do the
+  deletion, we need to wipe out the current selection, so we save it as a
+  range.  Saving it as a node/offset pair isn't enough, because it might be
+  invalid after we do the deletion.  A range will update according to the range
+  mutation rules.
 
-  <p>If the [[child]] of <var>start node</var> with [[index]] <var>start
-  offset</var> is an [[li]] or [[dt]] or [[dd]], and its [[previoussibling]] is
-  also an [[li]] or [[dt]] or [[dd]], set <var>start node</var> to its
-  [[child]] with [[index]] <var>start offset</var> &minus; 1, then set
-  <var>start offset</var> to <var>start node</var>'s [[nodelength]], then set
-  <var>node</var> to <var>start node</var>'s [[nextsibling]], then set
-  <var>offset</var> to 0.
+  <p>If <var>start node</var>'s [[child]] with [[index]] <var>start
+  offset</var> is an [[li]] or [[dt]] or [[dd]], and that [[child]]'s
+  [[previoussibling]] is also an [[li]] or [[dt]] or [[dd]]:
+
+  <ol>
+    <li>Call [[clonerange]] on the <span>active range</span>, and let
+    <var>original range</var> be the result.
+
+    <li>Set <var>start node</var> to its [[child]] with [[index]] <var>start
+    offset</var> &minus; 1.
+
+    <li>Set <var>start offset</var> to <var>start node</var>'s [[nodelength]].
+
+    <li>Set <var>node</var> to <var>start node</var>'s [[nextsibling]].
+
+    <li>Call [[selcollapse|<var>start node</var>, <var>start offset</var>]] on
+    the [[contextobject]]'s [[selection]].
+
+    <li>Call [[extend|<var>node</var>, 0]] on the [[contextobject]]'s
+    [[selection]].
+
+    <li><span>Delete the selection</span>.
+
+    <li>Call [[removeallranges]] on the [[contextobject]]'s [[selection]].
+
+    <li>Call [[addrange|<var>original range</var>]] on the [[contextobject]]'s
+    [[selection]].
+
+    <li>Abort these steps.
+  </ol>
 
   <li>
   <p class=comments>General block-merging case.
 
-  <p>Otherwise, while <var>start node</var> has a [[child]] with [[index]]
-  <var>start offset</var> minus one:
+  <p>While <var>start node</var> has a [[child]] with [[index]] <var>start
+  offset</var> minus one:
 
   <ol>
     <li>If <var>start node</var>'s [[child]] with [[index]] <var>start
@@ -6989,9 +7053,13 @@ leaves things like &lt;b>{}&lt;/b> in the DOM, which is unhelpful, so I don't.
     [[nodelength]] of <var>start node</var>.
   </ol>
 
-  <li><span>Delete the contents</span> of the [[range]] with [[rangestart]]
-  (<var>start node</var>, <var>start offset</var>) and [[rangeend]]
-  (<var>node</var>, <var>offset</var>).
+  <li>Call [[selcollapse|<var>start node</var>, <var>start offset</var>]] on
+  the [[contextobject]]'s [[selection]].
+
+  <li>Call [[extend|<var>node</var>, <var>offset</var>]] on the
+  [[contextobject]]'s [[selection]].
+
+  <li><span>Delete the selection</span>, with <var>direction</var> "backward".
 </ol>
 
 <!-- @} -->
@@ -7347,8 +7415,8 @@ diacritic, so you have to backspace several times to remove the whole cluster.)
 
 <ol>
   <li>If the <span>active range</span> is not <code data-anolis-spec=domrange
-  title=dom-Range-collapsed>collapsed</code>, <span>delete the contents</span>
-  of the <span>active range</span> and abort these steps.
+  title=dom-Range-collapsed>collapsed</code>, <span>delete the selection</span>
+  and abort these steps.
 
   <li><span>Canonicalize whitespace</span> at (<span>active range</span>'s
   [[startnode]], <span>active range</span>'s [[startoffset]]).
@@ -7369,10 +7437,6 @@ diacritic, so you have to backspace several times to remove the whole cluster.)
     <span>invisible</span> [[node]], remove that [[child]] from
     <var>node</var>.
 
-    <li>Otherwise, if <var>node</var> has a [[child]] with [[index]]
-    <var>offset</var> and that [[child]] is a <span>collapsed block
-    prop</span>, add one to <var>offset</var>.
-
     <li>Otherwise, if <var>offset</var> is the [[nodelength]] of
     <var>node</var> and <var>node</var> is an <span>inline node</span>, or if
     <var>node</var> is <span>invisible</span>, set <var>offset</var> to one
@@ -7384,9 +7448,9 @@ diacritic, so you have to backspace several times to remove the whole cluster.)
     delete.
 
     <p>Otherwise, if <var>node</var> has a [[child]] with [[index]]
-    <var>offset</var> and that [[child]] is not a <span>block node</span> or a
-    [[br]] or an [[img]], set <var>node</var> to that [[child]], then set
-    <var>offset</var> to zero.
+    <var>offset</var> and that [[child]] is neither a <span>block node</span>
+    nor a [[br]] nor an [[img]] nor a <span>collapsed block prop</span>, set
+    <var>node</var> to that [[child]], then set <var>offset</var> to zero.
 
     <li>Otherwise, break from this loop.
   </ol>
@@ -7395,9 +7459,6 @@ diacritic, so you have to backspace several times to remove the whole cluster.)
   <var>node</var>'s [[nodelength]]:
 
   <ol>
-    <li>Call [[selcollapse|<var>node</var>, <var>offset</var>]] on the
-    [[selection]].
-
     <li>Let <var>end offset</var> be <var>offset</var> plus one.
 
     <li>
@@ -7428,9 +7489,13 @@ diacritic, so you have to backspace several times to remove the whole cluster.)
     general category M when interpreted as a Unicode code point, add one to
     <var>end offset</var>.
 
-    <li><span>Delete the contents</span> of the [[range]] with [[rangestart]]
-    (<var>node</var>, <var>offset</var>) and [[rangeend]] (<var>node</var>,
-    <var>end offset</var>).
+    <li>Call [[selcollapse|<var>node</var>, <var>offset</var>]] on the
+    [[contextobject]]'s [[selection]].
+
+    <li>Call [[extend|<var>node</var>, <var>end offset</var>]] on the
+    [[contextobject]]'s [[selection]].
+
+    <li><span>Delete the selection</span>.
 
     <li>Abort these steps.
   </ol>
@@ -7438,11 +7503,20 @@ diacritic, so you have to backspace several times to remove the whole cluster.)
   <li>If <var>node</var> is an <span>inline node</span>, abort these steps.
 
   <li>If <var>node</var> has a [[child]] with [[index]] <var>offset</var> and
-  that [[child]] is a [[br]] or [[hr]] or [[img]], call
-  [[selcollapse|<var>node</var>, <var>offset</var>]] on the [[selection]].
-  Then <span>delete the contents</span> of the [[range]] with [[rangestart]]
-  (<var>node</var>, <var>offset</var>) and [[rangeend]] (<var>node</var>,
-  <var>offset</var> + 1) and abort these steps.
+  that [[child]] is a [[br]] or [[hr]] or [[img]], but is not a
+  <span>collapsed block prop</span>:
+
+  <ol>
+    <li>Call [[selcollapse|<var>node</var>, <var>offset</var>]] on the
+    [[contextobject]]'s [[selection]].
+
+    <li>Call [[extend|<var>node</var>, <var>offset</var> + 1]] on the
+    [[contextobject]]'s [[selection]].
+
+    <li><span>Delete the selection</span>.
+
+    <li>Abort these steps.
+  </ol>
 
   <li>
   <p class=comments>No special list-item behavior for forwardDelete here,
@@ -7451,6 +7525,10 @@ diacritic, so you have to backspace several times to remove the whole cluster.)
   <p>Let <var>end node</var> equal <var>node</var> and let <var>end
   offset</var> equal <var>offset</var>.
 
+  <li>If <var>end node</var> has a [[child]] with [[index]] <var>end
+  offset</var>, and that [[child]] is a <span>collapsed block prop</span>, add
+  one to <var>end offset</var>.
+
   <li>Repeat the following steps:
 
   <ol>
@@ -7458,7 +7536,7 @@ diacritic, so you have to backspace several times to remove the whole cluster.)
     <var>end offset</var> to one plus the [[index]] of <var>end node</var> and
     then set <var>end node</var> to its [[parent]].
 
-    <li>Otherwise, if <var>end node</var> has a an <span>editable</span>
+    <li>Otherwise, if <var>end node</var> has an <span>editable</span>
     <span>invisible</span> [[child]] with [[index]] <var>end offset</var>,
     remove it from <var>end node</var>.
 
@@ -7494,12 +7572,16 @@ diacritic, so you have to backspace several times to remove the whole cluster.)
   [[hr]] or [[br]]:
 
   <ol>
+    <li>Call [[selcollapse|<var>end node</var>, <var>end offset</var>]] on the
+    [[contextobject]]'s [[selection]].
+
+    <li>Call [[extend|<var>end node</var>, <var>end offset</var> + 1]] on the
+    [[contextobject]]'s [[selection]].
+
+    <li><span>Delete the selection</span>.
+
     <li>Call [[selcollapse|<var>node</var>, <var>offset</var>]] on the
     [[selection]].
-
-    <li><span>Delete the contents</span> of the [[range]] with [[rangeend]]
-    (<var>end node</var>, <var>end offset</var>) and [[rangeend]] (<var>end
-    node</var>, <var>end offset</var> + 1).
 
     <li>Abort these steps.
   </ol>
@@ -7520,9 +7602,13 @@ diacritic, so you have to backspace several times to remove the whole cluster.)
     <var>end offset</var> and set <var>end offset</var> to zero.
   </ol>
 
-  <li><span>Delete the contents</span> of the [[range]] with [[rangestart]]
-  (<var>node</var>, <var>offset</var>) and [[rangeend]] (<var>end node</var>,
-  <var>end offset</var>).
+  <li>Call [[selcollapse|<var>node</var>, <var>offset</var>]] on the
+  [[contextobject]]'s [[selection]].
+
+  <li>Call [[extend|<var>end node</var>, <var>end offset</var>]] on the
+  [[contextobject]]'s [[selection]].
+
+  <li><span>Delete the selection</span>.
 </ol>
 
 <!-- @} -->
@@ -7647,19 +7733,26 @@ behavior in splitting up parents to ensure validity . . .
 <p><span>Action</span>:
 
 <ol>
-  <li>Let <var>range</var> be the <span>active range</span>.
+  <li>Let <var>start node</var>, <var>start offset</var>, <var>end node</var>,
+  and <var>end offset</var> be the <span>active range</span>'s [[rangestart]]
+  and [[rangeend]] [[bpnodes]] and [[bpoffsets]].
 
-  <li>While <var>range</var>'s [[startoffset]] is 0 and its [[startnode]]'s
-  [[parent]] is not null, set <var>range</var>'s [[rangestart]] to ([[parent]]
-  of [[startnode]], [[index]] of [[startnode]]).
+  <li>While <var>start offset</var> is 0 and <var>start node</var>'s
+  [[parent]] is not null, set <var>start offset</var> to <var>start
+  node</var>'s [[index]], then set <var>start node</var> to its [[parent]].
 
-  <li>While <var>range</var>'s [[endoffset]] is the [[nodelength]] of its
-  [[endnode]], and its [[endnode]]'s [[parent]] is not null, set
-  <var>range</var>'s [[rangeend]] to ([[parent]] of [[endnode]], 1 + [[index]]
-  of [[startnode]]).
+  <li>While <var>end offset</var> is <var>end node</var>'s [[nodelength]], and
+  <var>end node</var>'s [[parent]] is not null, set <var>end offset</var> to
+  one plus <var>end node</var>'s [[index]], then set <var>end node</var> to its
+  [[parent]].
 
-  <li><span>Delete the contents</span> of <var>range</var>, with <var>block
-  merging</var> false.
+  <li>Call [[selcollapse|<var>start node</var>, <var>start offset</var>]] on
+  the [[contextobject]]'s [[selection]].
+
+  <li>Call [[extend|<var>end node</var>, <var>end offset</var>]] on the
+  [[contextobject]]'s [[selection]].
+
+  <li><span>Delete the selection</span>, with <var>block merging</var> false.
 
   <li>If the <span>active range</span>'s [[startnode]] is neither
   <span>editable</span> nor an <span>editing host</span>, abort these steps.
@@ -7669,19 +7762,22 @@ behavior in splitting up parents to ensure validity . . .
   text node, because that will leave an empty text node.
 
   <p>If the <span>active range</span>'s [[startnode]] is a [[text]] node and
-  its [[startoffset]] is zero, set the <span>active range</span>'s
-  [[rangestart]] and [[rangeend]] to ([[parent]] of [[startnode]], [[index]] of
-  [[startnode]]).
+  its [[startoffset]] is zero, call [[selcollapse|]] on the [[contextobject]]'s
+  [[selection]], with first argument the <span>active range</span>'s
+  [[startnode]]'s [[parent]] and second argument the <span>active
+  range</span>'s [[startnode]]'s [[index]].
 
   <li>If the <span>active range</span>'s [[startnode]] is a [[text]] node and
-  its [[startoffset]] is the [[length]] of its [[startnode]], set the
-  <span>active range</span>'s [[rangestart]] and [[rangeend]] to ([[parent]] of
-  [[startnode]], 1 + [[index]] of [[startnode]]).
+  its [[startoffset]] is the [[length]] of its [[startnode]], call
+  [[selcollapse|]] on the [[contextobject]]'s [[selection]], with first
+  argument the <span>active range</span>'s [[startnode]]'s [[parent]], and the
+  second argument one plus the <span>active range</span>'s [[startnode]]'s
+  [[index]].
 
   <li>Let <var>hr</var> be the result of calling [[createelement|"hr"]] on the
   [[contextobject]].
 
-  <li>Run [[insertnode|<var>hr</var>]] on <var>range</var>.
+  <li>Run [[insertnode|<var>hr</var>]] on the <span>active range</span>.
 
   <li>
   <p class=comments>IE9 and Chrome 13 dev seem to never break up any ancestors,
@@ -7694,12 +7790,9 @@ behavior in splitting up parents to ensure validity . . .
 
   <p><span>Fix disallowed ancestors</span> of <var>hr</var>.
 
-  <li>Let <var>selection</var> be the result of running [[getselection]] on the
-  [[contextobject]].
-
-  <li>Run [[selcollapse|]] on <var>selection</var>, with first argument equal
-  to the [[parent]] of <var>hr</var> and the second argument equal to one plus
-  the [[index]] of <var>hr</var>.
+  <li>Run [[selcollapse|]] on the [[contextobject]]'s [[selection]], with first
+  argument <var>hr</var>'s [[parent]] and the second argument equal to one plus
+  <var>hr</var>'s [[index]].
 </ol>
 
 <!-- @} -->
@@ -7754,7 +7847,7 @@ behavior in splitting up parents to ensure validity . . .
   true.
   </div>
 
-  <p><span>Delete the contents</span> of the <span>active range</span>.
+  <p><span>Delete the selection</span>.
 
   <li>If the <span>active range</span>'s [[startnode]] is neither
   <span>editable</span> nor an <span>editing host</span>, abort these steps.
@@ -7859,8 +7952,6 @@ behavior in splitting up parents to ensure validity . . .
   <p>If <var>value</var> is the empty string, abort these steps and do
   nothing.
 
-  <li>Let <var>range</var> be the <span>active range</span>.
-
   <li>
   <p class=comments>Firefox 7.0a2 seems to strip the wrapper or not depending
   on the exact positioning of the selection: &lt;b>{foo}&lt;/b> yes,
@@ -7870,8 +7961,9 @@ behavior in splitting up parents to ensure validity . . .
   the board because they might be meaningful: e.g., a background-color when the
   image is small or not fully opaque.
 
-  <p><span>Delete the contents</span> of <var>range</var>, with <var>strip
-  wrappers</var> false.
+  <p><span>Delete the selection</span>, with <var>strip wrappers</var> false.
+
+  <li>Let <var>range</var> be the <span>active range</span>.
 
   <li>If the <span>active range</span>'s [[startnode]] is neither
   <span>editable</span> nor an <span>editing host</span>, abort these steps.
@@ -7942,8 +8034,7 @@ similar elements.  This doesn't seem very useful, so I don't bother.
   endpoints.  Chrome 14 dev strips wrappers but recreates any styles using new
   wrappers.  Opera 11.50 strips all wrappers.
 
-  <p><span>Delete the contents</span> of the <span>active range</span>, with
-  <var>strip wrappers</var> false.
+  <p><span>Delete the selection</span>, with <var>strip wrappers</var> false.
 
   <li>If the <span>active range</span>'s [[startnode]] is neither
   <span>editable</span> nor an <span>editing host</span>, abort these steps.
@@ -8073,7 +8164,7 @@ whatwg thread</a>.
 <p><span>Action</span>:
 
 <ol>
-  <li><span>Delete the contents</span> of the <span>active range</span>.
+  <li><span>Delete the selection</span>.
 
   <li>If the <span>active range</span>'s [[startnode]] is neither
   <span>editable</span> nor an <span>editing host</span>, abort these steps.
@@ -8481,8 +8572,7 @@ unnecessarily.
   deletion at all).  This behavior seems to closely match IE9.
   </div>
 
-  <p><span>Delete the contents</span> of the <span>active range</span>, with
-  <var>strip wrappers</var> false.
+  <p><span>Delete the selection</span>, with <var>strip wrappers</var> false.
 
   <li>If the <span>active range</span>'s [[startnode]] is neither
   <span>editable</span> nor an <span>editing host</span>, abort these steps.
@@ -8887,10 +8977,10 @@ those sites.
 <p class=comments>See comment for <a href=#the-copy-command>copy</a>.
 
 <p><span>Action</span>: The user agent must either <span>delete the
-contents</span> of the <span>active range</span> and then paste the clipboard's
-contents to the current cursor position, as though the user had requested it,
-or raise a [[SECURITY_ERR]] exception.  This specification does not define
-exactly how the clipboard is to be converted to HTML for pasting, but the <a
+selection</span> and then paste the clipboard's contents to the current cursor
+position, as though the user had requested it, or raise a [[SECURITY_ERR]]
+exception.  This specification does not define exactly how the clipboard is to
+be converted to HTML for pasting, but the <a
 href=http://dev.w3.org/2006/webapi/clipops/clipops.html>Clipboard API and
 events</a> specification might be useful.
 

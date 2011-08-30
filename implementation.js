@@ -1185,6 +1185,9 @@ var getStateOverride, setStateOverride, unsetStateOverride,
 ///// Assorted common algorithms /////
 //@{
 
+// Magic array of extra ranges whose endpoints we want to preserve.
+var extraRanges = [];
+
 function movePreservingRanges(node, newParent, newIndex) {
 	// For convenience, I allow newIndex to be -1 to mean "insert at the end".
 	if (newIndex == -1) {
@@ -1202,10 +1205,10 @@ function movePreservingRanges(node, newParent, newIndex) {
 	var oldParent = node.parentNode;
 	var oldIndex = getNodeIndex(node);
 
-	// We only even attempt to preserve the global range object and the ranges
-	// in the selection, not every range out there (the latter is probably
-	// impossible).
-	var ranges = [globalRange];
+	// We preserve the global range object, the ranges in the selection, and
+	// any range that's in the extraRanges array.  Any other ranges won't get
+	// updated, because we have no references to them.
+	var ranges = [globalRange].concat(extraRanges);
 	for (var i = 0; i < getSelection().rangeCount; i++) {
 		ranges.push(getSelection().getRangeAt(i));
 	}
@@ -1256,8 +1259,13 @@ function movePreservingRanges(node, newParent, newIndex) {
 	globalRange.setStart(boundaryPoints[0][0], boundaryPoints[0][1]);
 	globalRange.setEnd(boundaryPoints[1][0], boundaryPoints[1][1]);
 
+	for (var i = 0; i < extraRanges.length; i++) {
+		extraRanges[i].setStart(boundaryPoints[2*i + 2][0], boundaryPoints[2*i + 2][1]);
+		extraRanges[i].setEnd(boundaryPoints[2*i + 3][0], boundaryPoints[2*i + 3][1]);
+	}
+
 	getSelection().removeAllRanges();
-	for (var i = 1; i < ranges.length; i++) {
+	for (var i = 1 + extraRanges.length; i < ranges.length; i++) {
 		var newRange = document.createRange();
 		newRange.setStart(boundaryPoints[2*i][0], boundaryPoints[2*i][1]);
 		newRange.setEnd(boundaryPoints[2*i + 1][0], boundaryPoints[2*i + 1][1]);
@@ -1350,10 +1358,17 @@ function removeExtraneousLineBreaksAtTheEndOf(node) {
 		ref = previousNode(ref);
 	}
 
-	// "If ref is an editable extraneous line break, remove it from its
-	// parent."
+	// "If ref is an editable extraneous line break:"
 	if (isEditable(ref)
 	&& isExtraneousLineBreak(ref)) {
+		// "While ref's parent is editable and invisible, set ref to its
+		// parent."
+		while (isEditable(ref.parentNode)
+		&& isInvisible(ref.parentNode)) {
+			ref = ref.parentNode;
+		}
+
+		// "Remove ref from its parent."
 		ref.parentNode.removeChild(ref);
 	}
 }
@@ -4341,54 +4356,31 @@ function restoreStatesAndValues(overrides) {
 }
 
 //@}
-///// Deleting the contents of a range /////
+///// Deleting the selection /////
 //@{
 
-function deleteContents() {
-	// We accept several different calling conventions:
-	//
-	// 1) A single argument, which is a range.
-	//
-	// 2) Two arguments, the first being a range and the second flags.
-	//
-	// 3) Four arguments, the start and end of a range.
-	//
-	// 4) Five arguments, the start and end of a range plus flags.
-	//
-	// The flags argument is a dictionary that can have up to two keys,
-	// blockMerging and stripWrappers, whose corresponding values are
-	// interpreted as boolean.  E.g., {stripWrappers: false}.
-	var range;
-	var flags = {};
-
-	if (arguments.length < 3) {
-		range = arguments[0];
-	} else {
-		range = document.createRange();
-		range.setStart(arguments[0], arguments[1]);
-		range.setEnd(arguments[2], arguments[3]);
-	}
-	if (arguments.length == 2) {
-		flags = arguments[1];
-	}
-	if (arguments.length == 5) {
-		flags = arguments[4];
+// The flags argument is a dictionary that can have blockMerging,
+// stripWrappers, and/or direction as keys.
+function deleteSelection(flags) {
+	if (flags === undefined) {
+		flags = {};
 	}
 
-	var blockMerging = "blockMerging" in flags ? !!flags.blockMerging : true;
-	var stripWrappers = "stripWrappers" in flags ? !!flags.stripWrappers : true;
+	var blockMerging = "blockMerging" in flags ? Boolean(flags.blockMerging) : true;
+	var stripWrappers = "stripWrappers" in flags ? Boolean(flags.stripWrappers) : true;
+	var direction = "direction" in flags ? flags.direction : "forward";
 
-	// "If range is null, abort these steps and do nothing."
-	if (!range) {
+	// "If the active range is null, abort these steps and do nothing."
+	if (!getActiveRange()) {
 		return;
 	}
 
-	// "Let start node, start offset, end node, and end offset be range's start
-	// and end nodes and offsets."
-	var startNode = range.startContainer;
-	var startOffset = range.startOffset;
-	var endNode = range.endContainer;
-	var endOffset = range.endOffset;
+	// "Let start node, start offset, end node, and end offset be the active
+	// range's start and end nodes and offsets."
+	var startNode = getActiveRange().startContainer;
+	var startOffset = getActiveRange().startOffset;
+	var endNode = getActiveRange().endContainer;
+	var endOffset = getActiveRange().endOffset;
 
 	// "While start node has at least one child:"
 	while (startNode.hasChildNodes()) {
@@ -4467,10 +4459,21 @@ function deleteContents() {
 		endOffset = getNodeLength(referenceNode);
 	}
 
-	// "If (end node, end offset) is not after (start node, start offset), set
-	// range's end to its start and abort these steps."
+	// "If (end node, end offset) is not after (start node, start offset):"
 	if (getPosition(endNode, endOffset, startNode, startOffset) !== "after") {
-		range.setEnd(range.startContainer, range.startOffset);
+		// "If direction is "forward", call collapseToStart() on the context
+		// object's Selection."
+		if (direction == "forward") {
+			getSelection().collapseToStart();
+			getActiveRange().collapse(true);
+
+		// "Otherwise, call collapseToEnd() on the context object's Selection."
+		} else {
+			getSelection().collapseToEnd();
+			getActiveRange().collapse(false);
+		}
+
+		// "Abort these steps."
 		return;
 	}
 
@@ -4490,13 +4493,17 @@ function deleteContents() {
 		endNode = endNode.parentNode;
 	}
 
-	// "Set range's start to (start node, start offset) and its end to (end
-	// node, end offset)."
-	range.setStart(startNode, startOffset);
-	range.setEnd(endNode, endOffset);
+	// "Call collapse(start node, start offset) on the context object's
+	// Selection."
+	getSelection().collapse(startNode, startOffset);
+	getActiveRange().setStart(startNode, startOffset);
 
-	// "Let start block be the start node of range."
-	var startBlock = range.startContainer;
+	// "Call extend(end node, end offset) on the context object's Selection."
+	getSelection().extend(endNode, endOffset);
+	getActiveRange().setEnd(endNode, endOffset);
+
+	// "Let start block be the active range's start node."
+	var startBlock = getActiveRange().startContainer;
 
 	// "While start block's parent is in the same editing host and start block
 	// is an inline node, set start block to its parent."
@@ -4514,8 +4521,8 @@ function deleteContents() {
 		startBlock = null;
 	}
 
-	// "Let end block be the end node of range."
-	var endBlock = range.endContainer;
+	// "Let end block be the active range's end node."
+	var endBlock = getActiveRange().endContainer;
 
 	// "While end block's parent is in the same editing host and end block is
 	// an inline node, set end block to its parent."
@@ -4548,8 +4555,22 @@ function deleteContents() {
 		// "Canonicalize whitespace at (start node, start offset)."
 		canonicalizeWhitespace(startNode, startOffset);
 
-		// "Set range's end to its start."
-		range.setEnd(range.startContainer, range.startOffset);
+		// "If direction is "forward", call collapseToStart() on the context
+		// object's Selection."
+		//
+		// Work around WebKit bug where the selection might have no ranges, by
+		// checking rangeCount.
+		if (direction == "forward") {
+			if (getSelection().rangeCount) {
+				getSelection().collapseToStart();
+			}
+			getActiveRange().collapse(true);
+
+		// "Otherwise, call collapseToEnd() on the context object's Selection."
+		} else {
+			getSelection().collapseToEnd();
+			getActiveRange().collapse(false);
+		}
 
 		// "Restore states and values from overrides."
 		restoreStatesAndValues(overrides);
@@ -4568,10 +4589,10 @@ function deleteContents() {
 
 	// "Let node list be a list of nodes, initially empty."
 	//
-	// "For each node contained in range, append node to node list if the last
-	// member of node list (if any) is not an ancestor of node; node is
-	// editable; and node is not a thead, tbody, tfoot, tr, th, or td."
-	var nodeList = getContainedNodes(range,
+	// "For each node contained in the active range, append node to node list
+	// if the last member of node list (if any) is not an ancestor of node;
+	// node is editable; and node is not a thead, tbody, tfoot, tr, th, or td."
+	var nodeList = getContainedNodes(getActiveRange(),
 		function(node) {
 			return isEditable(node)
 				&& !isHtmlElement(node, ["thead", "tbody", "tfoot", "tr", "th", "td"]);
@@ -4620,11 +4641,11 @@ function deleteContents() {
 		endNode.deleteData(0, endOffset);
 	}
 
-	// "Canonicalize whitespace at range's start."
-	canonicalizeWhitespace(range.startContainer, range.startOffset);
+	// "Canonicalize whitespace at the active range's start."
+	canonicalizeWhitespace(getActiveRange().startContainer, getActiveRange().startOffset);
 
-	// "Canonicalize whitespace at range's end."
-	canonicalizeWhitespace(range.endContainer, range.endOffset);
+	// "Canonicalize whitespace at the active range's end."
+	canonicalizeWhitespace(getActiveRange().endContainer, getActiveRange().endOffset);
 
 	// "If block merging is false, or start block or end block is null, or
 	// start block is not in the same editing host as end block, or start block
@@ -4634,8 +4655,23 @@ function deleteContents() {
 	|| !endBlock
 	|| !inSameEditingHost(startBlock, endBlock)
 	|| startBlock == endBlock) {
-		// "Set range's end to its start."
-		range.setEnd(range.startContainer, range.startOffset);
+		// "If direction is "forward", call collapseToStart() on the context
+		// object's Selection."
+		if (direction == "forward") {
+			// Work around WebKit bug: sometimes it will remove the selection's
+			// range.
+			if (getSelection().rangeCount) {
+				getSelection().collapseToStart();
+			}
+			getActiveRange().collapse(true);
+
+		// "Otherwise, call collapseToEnd() on the context object's Selection."
+		} else {
+			if (getSelection().rangeCount) {
+				getSelection().collapseToEnd();
+			}
+			getActiveRange().collapse(false);
+		}
 
 		// "Restore states and values from overrides."
 		restoreStatesAndValues(overrides);
@@ -4651,13 +4687,6 @@ function deleteContents() {
 		startBlock.removeChild(startBlock.firstChild);
 	}
 
-	// "If end block has one child, which is a collapsed block prop, remove its
-	// child from it."
-	if (endBlock.children.length == 1
-	&& isCollapsedBlockProp(endBlock.firstChild)) {
-		endBlock.removeChild(endBlock.firstChild);
-	}
-
 	// "If start block is an ancestor of end block:"
 	if (isAncestor(startBlock, endBlock)) {
 		// "Let reference node be end block."
@@ -4669,10 +4698,12 @@ function deleteContents() {
 			referenceNode = referenceNode.parentNode;
 		}
 
-		// "Set the start and end of range to (start block, index of reference
-		// node)."
-		range.setStart(startBlock, getNodeIndex(referenceNode));
-		range.setEnd(startBlock, getNodeIndex(referenceNode));
+		// "Call collapse() on the context object's Selection, with first
+		// argument start block and second argument the index of reference
+		// node."
+		getSelection().collapse(startBlock, getNodeIndex(referenceNode));
+		getActiveRange().setStart(startBlock, getNodeIndex(referenceNode));
+		getActiveRange().collapse(true);
 
 		// "If end block has no children:"
 		if (!endBlock.hasChildNodes()) {
@@ -4750,10 +4781,11 @@ function deleteContents() {
 
 	// "Otherwise, if start block is a descendant of end block:"
 	} else if (isDescendant(startBlock, endBlock)) {
-		// "Set the start and end of range to (start block, length of start
-		// block)."
-		range.setStart(startBlock, getNodeLength(startBlock));
-		range.setEnd(startBlock, getNodeLength(startBlock));
+		// "Call collapse() on the context object's Selection, with first
+		// argument start block and second argument start block's length."
+		getSelection().collapse(startBlock, getNodeLength(startBlock));
+		getActiveRange().setStart(startBlock, getNodeLength(startBlock));
+		getActiveRange().collapse(true);
 
 		// "Let reference node be start block."
 		var referenceNode = startBlock;
@@ -4774,20 +4806,19 @@ function deleteContents() {
 		// "Let nodes to move be a list of nodes, initially empty."
 		var nodesToMove = [];
 
-		// "If reference node's nextSibling is neither null nor a br nor a
-		// block node, append it to nodes to move."
+		// "If reference node's nextSibling is neither null nor a block node,
+		// append it to nodes to move."
 		if (referenceNode.nextSibling
-		&& !isHtmlElement(referenceNode.nextSibling, "br")
 		&& !isBlockNode(referenceNode.nextSibling)) {
 			nodesToMove.push(referenceNode.nextSibling);
 		}
 
-		// "While nodes to move is nonempty and its last member's nextSibling
-		// is neither null nor a br nor a block node, append it to nodes to
-		// move."
+		// "While nodes to move is nonempty and its last member isn't a br and
+		// its last member's nextSibling is neither null nor a block node,
+		// append its last member's nextSibling to nodes to move."
 		if (nodesToMove.length
+		&& !isHtmlElement(nodesToMove[nodesToMove.length - 1], "br")
 		&& nodesToMove[nodesToMove.length - 1].nextSibling
-		&& !isHtmlElement(nodesToMove[nodesToMove.length - 1].nextSibling, "br")
 		&& !isBlockNode(nodesToMove[nodesToMove.length - 1].nextSibling)) {
 			nodesToMove.push(nodesToMove[nodesToMove.length - 1].nextSibling);
 		}
@@ -4801,18 +4832,13 @@ function deleteContents() {
 			movePreservingRanges(node, startBlock, -1);
 		});
 
-		// "If the nextSibling of reference node is a br, remove it from its
-		// parent."
-		if (isHtmlElement(referenceNode.nextSibling, "br")) {
-			referenceNode.parentNode.removeChild(referenceNode.nextSibling);
-		}
-
 	// "Otherwise:"
 	} else {
-		// "Set the start and end of range to (start block, length of start
-		// block)."
-		range.setStart(startBlock, getNodeLength(startBlock));
-		range.setEnd(startBlock, getNodeLength(startBlock));
+		// "Call collapse() on the context object's Selection, with first
+		// argument start block and second argument start block's length."
+		getSelection().collapse(startBlock, getNodeLength(startBlock));
+		getActiveRange().setStart(startBlock, getNodeLength(startBlock));
+		getActiveRange().collapse(true);
 
 		// "If end block's firstChild is an inline node and start block's
 		// lastChild is a br, remove start block's lastChild from it."
@@ -4849,6 +4875,9 @@ function deleteContents() {
 	if (!startBlock.hasChildNodes()) {
 		startBlock.appendChild(document.createElement("br"));
 	}
+
+	// "Remove extraneous line breaks at the end of start block."
+	removeExtraneousLineBreaksAtTheEndOf(startBlock);
 
 	// "Restore states and values from overrides."
 	restoreStatesAndValues(overrides);
@@ -5834,10 +5863,10 @@ function justifySelection(alignment) {
 //@{
 commands["delete"] = {
 	action: function() {
-		// "If the active range is not collapsed, delete the contents of the
-		// active range and abort these steps."
+		// "If the active range is not collapsed, delete the selection and
+		// abort these steps."
 		if (!getActiveRange().collapsed) {
-			deleteContents(getActiveRange());
+			deleteSelection();
 			return;
 		}
 
@@ -5903,33 +5932,33 @@ commands["delete"] = {
 			}
 		}
 
-		// "If node is a Text node and offset is not zero, call collapse(node,
-		// offset) on the Selection. Then delete the contents of the range with
-		// start (node, offset − 1) and end (node, offset) and abort these
-		// steps."
-		if (node.nodeType == Node.TEXT_NODE
-		&& offset != 0) {
-			getActiveRange().setStart(node, offset);
+		// "If node is a Text node and offset is not zero, or if node is a
+		// block node that has a child with index offset − 1 and that child is
+		// a br or hr or img:"
+		if ((node.nodeType == Node.TEXT_NODE
+		&& offset != 0)
+		|| (isBlockNode(node)
+		&& 0 <= offset - 1
+		&& offset - 1 < node.childNodes.length
+		&& isHtmlElement(node.childNodes[offset - 1], ["br", "hr", "img"]))) {
+			// "Call collapse(node, offset) on the context object's Selection."
+			getSelection().collapse(node, offset);
 			getActiveRange().setEnd(node, offset);
-			deleteContents(node, offset - 1, node, offset);
+
+			// "Call extend(node, offset − 1) on the context object's
+			// Selection."
+			getSelection().extend(node, offset - 1);
+			getActiveRange().setStart(node, offset - 1);
+
+			// "Delete the selection."
+			deleteSelection();
+
+			// "Abort these steps."
 			return;
 		}
 
 		// "If node is an inline node, abort these steps."
 		if (isInlineNode(node)) {
-			return;
-		}
-
-		// "If node has a child with index offset − 1 and that child is a br or
-		// hr or img, call collapse(node, offset) on the Selection. Then delete
-		// the contents of the range with start (node, offset − 1) and end
-		// (node, offset) and abort these steps."
-		if (0 <= offset - 1
-		&& offset - 1 < node.childNodes.length
-		&& isHtmlElement(node.childNodes[offset - 1], ["br", "hr", "img"])) {
-			getActiveRange().setStart(node, offset);
-			getActiveRange().setEnd(node, offset);
-			deleteContents(node, offset - 1, node, offset);
 			return;
 		}
 
@@ -6057,10 +6086,12 @@ commands["delete"] = {
 		&& isHtmlElement(startNode.childNodes[startOffset - 1], "table")) {
 			// "Call collapse(start node, start offset − 1) on the context
 			// object's Selection."
+			getSelection().collapse(startNode, startOffset - 1);
 			getActiveRange().setStart(startNode, startOffset - 1);
 
 			// "Call extend(start node, start offset) on the context object's
 			// Selection."
+			getSelection().extend(startNode, startOffset);
 			getActiveRange().setEnd(startNode, startOffset);
 
 			// "Abort these steps."
@@ -6080,13 +6111,23 @@ commands["delete"] = {
 				)
 			)
 		)) {
-			// "Call collapse(node, offset) on the Selection."
-			getActiveRange().setStart(node, offset);
-			getActiveRange().setEnd(node, offset);
+			// "Call collapse(start node, start offset − 1) on the context
+			// object's Selection."
+			getSelection().collapse(startNode, startOffset - 1);
+			getActiveRange().setStart(startNode, startOffset - 1);
 
-			// "Delete the contents of the range with start (start node, start
-			// offset − 1) and end (start node, start offset)."
-			deleteContents(startNode, startOffset - 1, startNode, startOffset);
+			// "Call extend(start node, start offset) on the context object's
+			// Selection."
+			getSelection().extend(startNode, startOffset);
+			getActiveRange().setEnd(startNode, startOffset);
+
+			// "Delete the selection."
+			deleteSelection();
+
+			// "Call collapse(node, offset) on the Selection."
+			getSelection().collapse(node, offset);
+			getActiveRange().setStart(node, offset);
+			getActiveRange().collapse(true);
 
 			// "Abort these steps."
 			return;
@@ -6118,44 +6159,83 @@ commands["delete"] = {
 			}
 		}
 
-		// "If the child of start node with index start offset is an li or dt
-		// or dd, and its previousSibling is also an li or dt or dd, set start
-		// node to its child with index start offset − 1, then set start offset
-		// to start node's length, then set node to start node's nextSibling,
-		// then set offset to 0."
+		// "If start node's child with index start offset is an li or dt or dd,
+		// and that child's previousSibling is also an li or dt or dd:"
 		if (isHtmlElement(startNode.childNodes[startOffset], ["li", "dt", "dd"])
-		&& isHtmlElement(startNode.childNodes[startOffset - 1], ["li", "dt", "dd"])) {
+		&& isHtmlElement(startNode.childNodes[startOffset].previousSibling, ["li", "dt", "dd"])) {
+			// "Call cloneRange() on the active range, and let original range
+			// be the result."
+			//
+			// We need to add it to extraRanges so it will actually get updated
+			// when moving preserving ranges.
+			var originalRange = getActiveRange().cloneRange();
+			extraRanges.push(originalRange);
+
+			// "Set start node to its child with index start offset − 1."
 			startNode = startNode.childNodes[startOffset - 1];
+
+			// "Set start offset to start node's length."
 			startOffset = getNodeLength(startNode);
+
+			// "Set node to start node's nextSibling."
 			node = startNode.nextSibling;
-			offset = 0;
 
-		// "Otherwise, while start node has a child with index start offset
-		// minus one:"
-		} else {
-			while (0 <= startOffset - 1
-			&& startOffset - 1 < startNode.childNodes.length) {
-				// "If start node's child with index start offset minus one is
-				// editable and invisible, remove it from start node, then
-				// subtract one from start offset."
-				if (isEditable(startNode.childNodes[startOffset - 1])
-				&& isInvisible(startNode.childNodes[startOffset - 1])) {
-					startNode.removeChild(startNode.childNodes[startOffset - 1]);
-					startOffset--;
+			// "Call collapse(start node, start offset) on the context object's
+			// Selection."
+			getSelection().collapse(startNode, startOffset);
+			getActiveRange().setStart(startNode, startOffset);
 
-				// "Otherwise, set start node to its child with index start
-				// offset minus one, then set start offset to the length of
-				// start node."
-				} else {
-					startNode = startNode.childNodes[startOffset - 1];
-					startOffset = getNodeLength(startNode);
-				}
+			// "Call extend(node, 0) on the context object's Selection."
+			getSelection().extend(node, 0);
+			getActiveRange().setEnd(node, 0);
+
+			// "Delete the selection."
+			deleteSelection();
+
+			// "Call removeAllRanges() on the context object's Selection."
+			getSelection().removeAllRanges();
+
+			// "Call addRange(original range) on the context object's
+			// Selection."
+			getSelection().addRange(originalRange);
+			getActiveRange().setStart(originalRange.startContainer, originalRange.startOffset);
+			getActiveRange().setEnd(originalRange.endContainer, originalRange.endOffset);
+
+			// "Abort these steps."
+			extraRanges.pop();
+			return;
+		}
+
+		// "While start node has a child with index start offset minus one:"
+		while (0 <= startOffset - 1
+		&& startOffset - 1 < startNode.childNodes.length) {
+			// "If start node's child with index start offset minus one is
+			// editable and invisible, remove it from start node, then subtract
+			// one from start offset."
+			if (isEditable(startNode.childNodes[startOffset - 1])
+			&& isInvisible(startNode.childNodes[startOffset - 1])) {
+				startNode.removeChild(startNode.childNodes[startOffset - 1]);
+				startOffset--;
+
+			// "Otherwise, set start node to its child with index start offset
+			// minus one, then set start offset to the length of start node."
+			} else {
+				startNode = startNode.childNodes[startOffset - 1];
+				startOffset = getNodeLength(startNode);
 			}
 		}
 
-		// "Delete the contents of the range with start (start node, start
-		// offset) and end (node, offset)."
-		deleteContents(startNode, startOffset, node, offset);
+		// "Call collapse(start node, start offset) on the context object's
+		// Selection."
+		getSelection().collapse(startNode, startOffset);
+		getActiveRange().setStart(startNode, startOffset);
+
+		// "Call extend(node, offset) on the context object's Selection."
+		getSelection().extend(node, offset);
+		getActiveRange().setEnd(node, offset);
+
+		// "Delete the selection, with direction "backward"."
+		deleteSelection({direction: "backward"});
 	}
 };
 
@@ -6389,10 +6469,10 @@ commands.formatblock = {
 //@{
 commands.forwarddelete = {
 	action: function() {
-		// "If the active range is not collapsed, delete the contents of the
-		// active range and abort these steps."
+		// "If the active range is not collapsed, delete the selection and
+		// abort these steps."
 		if (!getActiveRange().collapsed) {
-			deleteContents(getActiveRange());
+			deleteSelection();
 			return;
 		}
 
@@ -6421,12 +6501,6 @@ commands.forwarddelete = {
 			&& isInvisible(node.childNodes[offset])) {
 				node.removeChild(node.childNodes[offset]);
 
-			// "Otherwise, if node has a child with index offset and that child
-			// is a collapsed block prop, add one to offset."
-			} else if (offset < node.childNodes.length
-			&& isCollapsedBlockProp(node.childNodes[offset])) {
-				offset++;
-
 			// "Otherwise, if offset is the length of node and node is an
 			// inline node, or if node is invisible, set offset to one plus the
 			// index of node, then set node to its parent."
@@ -6437,11 +6511,12 @@ commands.forwarddelete = {
 				node = node.parentNode;
 
 			// "Otherwise, if node has a child with index offset and that child
-			// is not a block node or a br or an img, set node to that child,
-			// then set offset to zero."
+			// is neither a block node nor a br nor an img nor a collapsed
+			// block prop, set node to that child, then set offset to zero."
 			} else if (offset < node.childNodes.length
 			&& !isBlockNode(node.childNodes[offset])
-			&& !isHtmlElement(node.childNodes[offset], ["br", "img"])) {
+			&& !isHtmlElement(node.childNodes[offset], ["br", "img"])
+			&& !isCollapsedBlockProp(node.childNodes[offset])) {
 				node = node.childNodes[offset];
 				offset = 0;
 
@@ -6454,10 +6529,6 @@ commands.forwarddelete = {
 		// "If node is a Text node and offset is not node's length:"
 		if (node.nodeType == Node.TEXT_NODE
 		&& offset != getNodeLength(node)) {
-			// "Call collapse(node, offset) on the Selection."
-			getActiveRange().setStart(node, offset);
-			getActiveRange().setEnd(node, offset);
-
 			// "Let end offset be offset plus one."
 			var endOffset = offset + 1;
 
@@ -6474,9 +6545,17 @@ commands.forwarddelete = {
 				endOffset++;
 			}
 
-			// "Delete the contents of the range with start (node, offset) and
-			// end (node, end offset)."
-			deleteContents(node, offset, node, endOffset);
+			// "Call collapse(node, offset) on the context object's Selection."
+			getSelection().collapse(node, offset);
+			getActiveRange().setStart(node, offset);
+
+			// "Call extend(node, end offset) on the context object's
+			// Selection."
+			getSelection().extend(node, endOffset);
+			getActiveRange().setEnd(node, endOffset);
+
+			// "Delete the selection."
+			deleteSelection();
 
 			// "Abort these steps."
 			return;
@@ -6488,20 +6567,36 @@ commands.forwarddelete = {
 		}
 
 		// "If node has a child with index offset and that child is a br or hr
-		// or img, call collapse(node, offset) on the Selection. Then delete
-		// the contents of the range with start (node, offset) and end (node,
-		// offset + 1) and abort these steps."
+		// or img, but is not a collapsed block prop:"
 		if (offset < node.childNodes.length
-		&& isHtmlElement(node.childNodes[offset], ["br", "hr", "img"])) {
+		&& isHtmlElement(node.childNodes[offset], ["br", "hr", "img"])
+		&& !isCollapsedBlockProp(node.childNodes[offset])) {
+			// "Call collapse(node, offset) on the context object's Selection."
+			getSelection().collapse(node, offset);
 			getActiveRange().setStart(node, offset);
-			getActiveRange().setEnd(node, offset);
-			deleteContents(node, offset, node, offset + 1);
+
+			// "Call extend(node, offset + 1) on the context object's
+			// Selection."
+			getSelection().extend(node, offset + 1);
+			getActiveRange().setEnd(node, offset + 1);
+
+			// "Delete the selection."
+			deleteSelection();
+
+			// "Abort these steps."
 			return;
 		}
 
 		// "Let end node equal node and let end offset equal offset."
 		var endNode = node;
 		var endOffset = offset;
+
+		// "If end node has a child with index end offset, and that child is a
+		// collapsed block prop, add one to end offset."
+		if (endOffset < endNode.childNodes.length
+		&& isCollapsedBlockProp(endNode.childNodes[endOffset])) {
+			endOffset++;
+		}
 
 		// "Repeat the following steps:"
 		while (true) {
@@ -6534,10 +6629,12 @@ commands.forwarddelete = {
 		if (isHtmlElement(endNode.childNodes[endOffset], "table")) {
 			// "Call collapse(end node, end offset) on the context object's
 			// Selection."
+			getSelection().collapse(endNode, endOffset);
 			getActiveRange().setStart(endNode, endOffset);
 
 			// "Call extend(end node, end offset + 1) on the context object's
 			// Selection."
+			getSelection().extend(endNode, endOffset + 1);
 			getActiveRange().setEnd(endNode, endOffset + 1);
 
 			// "Abort these steps."
@@ -6548,13 +6645,23 @@ commands.forwarddelete = {
 		// index end offset is an hr or br:"
 		if (offset == getNodeLength(node)
 		&& isHtmlElement(endNode.childNodes[endOffset], ["br", "hr"])) {
-			// "Call collapse(node, offset) on the Selection."
-			getActiveRange().setStart(node, offset);
-			getActiveRange().setEnd(node, offset);
+			// "Call collapse(end node, end offset) on the context object's
+			// Selection."
+			getSelection().collapse(endNode, endOffset);
+			getActiveRange().setStart(endNode, endOffset);
 
-			// "Delete the contents of the range with end (end node, end
-			// offset) and end (end node, end offset + 1)."
-			deleteContents(endNode, endOffset, endNode, endOffset + 1);
+			// "Call extend(end node, end offset + 1) on the context object's
+			// Selection."
+			getSelection().extend(endNode, endOffset + 1);
+			getActiveRange().setEnd(endNode, endOffset + 1);
+
+			// "Delete the selection."
+			deleteSelection();
+
+			// "Call collapse(node, offset) on the Selection."
+			getSelection().collapse(node, offset);
+			getActiveRange().setStart(node, offset);
+			getActiveRange().collapse(true);
 
 			// "Abort these steps."
 			return;
@@ -6576,9 +6683,17 @@ commands.forwarddelete = {
 			}
 		}
 
-		// "Delete the contents of the range with start (node, offset) and end
-		// (end node, end offset)."
-		deleteContents(node, offset, endNode, endOffset);
+		// "Call collapse(node, offset) on the context object's Selection."
+		getSelection().collapse(node, offset);
+		getActiveRange().setStart(node, offset);
+
+		// "Call extend(end node, end offset) on the context object's
+		// Selection."
+		getSelection().extend(endNode, endOffset);
+		getActiveRange().setEnd(endNode, endOffset);
+
+		// "Delete the selection."
+		deleteSelection();
 	}
 };
 
@@ -6665,27 +6780,43 @@ commands.indent = {
 //@{
 commands.inserthorizontalrule = {
 	action: function() {
-		// "Let range be the active range."
-		var range = getActiveRange();
+		// "Let start node, start offset, end node, and end offset be the
+		// active range's start and end nodes and offsets."
+		var startNode = getActiveRange().startContainer;
+		var startOffset = getActiveRange().startOffset;
+		var endNode = getActiveRange().endContainer;
+		var endOffset = getActiveRange().endOffset;
 
-		// "While range's start offset is 0 and its start node's parent is not
-		// null, set range's start to (parent of start node, index of start
-		// node)."
-		while (range.startOffset == 0
-		&& range.startContainer.parentNode) {
-			range.setStart(range.startContainer.parentNode, getNodeIndex(range.startContainer));
+		// "While start offset is 0 and start node's parent is not null, set
+		// start offset to start node's index, then set start node to its
+		// parent."
+		while (startOffset == 0
+		&& startNode.parentNode) {
+			startOffset = getNodeIndex(startNode);
+			startNode = startNode.parentNode;
 		}
 
-		// "While range's end offset is the length of its end node, and its end
-		// node's parent is not null, set range's end to (parent of end node, 1
-		// + index of start node)."
-		while (range.endOffset == getNodeLength(range.endContainer)
-		&& range.endContainer.parentNode) {
-			range.setEnd(range.endContainer.parentNode, 1 + getNodeIndex(range.endContainer));
+		// "While end offset is end node's length, and end node's parent is not
+		// null, set end offset to one plus end node's index, then set end node
+		// to its parent."
+		while (endOffset == getNodeLength(endNode)
+		&& endNode.parentNode) {
+			endOffset = 1 + getNodeIndex(endNode);
+			endNode = endNode.parentNode;
 		}
 
-		// "Delete the contents of range, with block merging false."
-		deleteContents(range, {blockMerging: false});
+		// "Call collapse(start node, start offset) on the context object's
+		// Selection."
+		getSelection().collapse(startNode, startOffset);
+		getActiveRange().setStart(startNode, startOffset);
+
+		// "Call extend(end node, end offset) on the context object's
+		// Selection."
+		getSelection().extend(endNode, endOffset);
+		getActiveRange().setEnd(endNode, endOffset);
+
+		// "Delete the selection, with block merging false."
+		deleteSelection({blockMerging: false});
 
 		// "If the active range's start node is neither editable nor an editing
 		// host, abort these steps."
@@ -6695,20 +6826,29 @@ commands.inserthorizontalrule = {
 		}
 
 		// "If the active range's start node is a Text node and its start
-		// offset is zero, set the active range's start and end to (parent of
-		// start node, index of start node)."
+		// offset is zero, call collapse() on the context object's Selection,
+		// with first argument the active range's start node's parent and
+		// second argument the active range's start node's index."
 		if (getActiveRange().startContainer.nodeType == Node.TEXT_NODE
 		&& getActiveRange().startOffset == 0) {
-			getActiveRange().setStart(getActiveRange().startContainer.parentNode, getNodeIndex(getActiveRange().startContainer));
+			var newNode = getActiveRange().startContainer.parentNode;
+			var newOffset = getNodeIndex(getActiveRange().startContainer);
+			getSelection().collapse(newNode, newOffset);
+			getActiveRange().setStart(newNode, newOffset);
 			getActiveRange().collapse(true);
 		}
 
 		// "If the active range's start node is a Text node and its start
-		// offset is the length of its start node, set the active range's start
-		// and end to (parent of start node, 1 + index of start node)."
+		// offset is the length of its start node, call collapse() on the
+		// context object's Selection, with first argument the active range's
+		// start node's parent, and the second argument one plus the active
+		// range's start node's index."
 		if (getActiveRange().startContainer.nodeType == Node.TEXT_NODE
 		&& getActiveRange().startOffset == getNodeLength(getActiveRange().startContainer)) {
-			getActiveRange().setStart(getActiveRange().startContainer.parentNode, 1 + getNodeIndex(getActiveRange().startContainer));
+			var newNode = getActiveRange().startContainer.parentNode;
+			var newOffset = 1 + getNodeIndex(getActiveRange().startContainer);
+			getSelection().collapse(newNode, newOffset);
+			getActiveRange().setStart(newNode, newOffset);
 			getActiveRange().collapse(true);
 		}
 
@@ -6716,23 +6856,18 @@ commands.inserthorizontalrule = {
 		// context object."
 		var hr = document.createElement("hr");
 
-		// "Run insertNode(hr) on the range."
-		range.insertNode(hr);
+		// "Run insertNode(hr) on the active range."
+		getActiveRange().insertNode(hr);
 
 		// "Fix disallowed ancestors of hr."
 		fixDisallowedAncestors(hr);
 
-		// "Run collapse() on the Selection, with first argument equal to the
-		// parent of hr and the second argument equal to one plus the index of
-		// hr."
-		//
-		// Not everyone actually supports collapse(), so we do it manually
-		// instead.  Also, we need to modify the actual range we're given as
-		// well, for the sake of autoimplementation.html's range-filling-in.
-		range.setStart(hr.parentNode, 1 + getNodeIndex(hr));
-		range.setEnd(hr.parentNode, 1 + getNodeIndex(hr));
-		getSelection().removeAllRanges();
-		getSelection().addRange(range);
+		// "Run collapse() on the context object's Selection, with first
+		// argument hr's parent and the second argument equal to one plus hr's
+		// index."
+		getSelection().collapse(hr.parentNode, 1 + getNodeIndex(hr));
+		getActiveRange().setStart(hr.parentNode, 1 + getNodeIndex(hr));
+		getActiveRange().collapse(true);
 	}
 };
 
@@ -6741,8 +6876,8 @@ commands.inserthorizontalrule = {
 //@{
 commands.inserthtml = {
 	action: function(value) {
-		// "Delete the contents of the active range."
-		deleteContents(getActiveRange());
+		// "Delete the selection."
+		deleteSelection();
 
 		// "If the active range's start node is neither editable nor an editing
 		// host, abort these steps."
@@ -6817,11 +6952,11 @@ commands.insertimage = {
 			return;
 		}
 
+		// "Delete the selection, with strip wrappers false."
+		deleteSelection({stripWrappers: false});
+
 		// "Let range be the active range."
 		var range = getActiveRange();
-
-		// "Delete the contents of range, with strip wrappers false."
-		deleteContents(range, {stripWrappers: false});
 
 		// "If the active range's start node is neither editable nor an editing
 		// host, abort these steps."
@@ -6873,8 +7008,8 @@ commands.insertimage = {
 //@{
 commands.insertlinebreak = {
 	action: function(value) {
-		// "Delete the contents of the active range, with strip wrappers false."
-		deleteContents(getActiveRange(), {stripWrappers: false});
+		// "Delete the selection, with strip wrappers false."
+		deleteSelection({stripWrappers: false});
 
 		// "If the active range's start node is neither editable nor an editing
 		// host, abort these steps."
@@ -6971,8 +7106,8 @@ commands.insertorderedlist = {
 //@{
 commands.insertparagraph = {
 	action: function() {
-		// "Delete the contents of the active range."
-		deleteContents(getActiveRange());
+		// "Delete the selection."
+		deleteSelection();
 
 		// "If the active range's start node is neither editable nor an editing
 		// host, abort these steps."
@@ -7276,9 +7411,8 @@ commands.insertparagraph = {
 //@{
 commands.inserttext = {
 	action: function(value) {
-		// "Delete the contents of the active range, with strip wrappers
-		// false."
-		deleteContents(getActiveRange(), {stripWrappers: false});
+		// "Delete the selection, with strip wrappers false."
+		deleteSelection({stripWrappers: false});
 
 		// "If the active range's start node is neither editable nor an editing
 		// host, abort these steps."

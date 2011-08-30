@@ -26,8 +26,10 @@ replace = {
     'cdlength': '<code data-anolis-spec=domcore title=dom-CharacterData-length>length</code>',
     'child': '<span data-anolis-spec=domcore title=concept-tree-child>child</span>',
     'children': '<span data-anolis-spec=domcore title=concept-tree-child>children</span>',
+    'clonerange': '<code data-anolis-spec=domrange title=dom-Range-cloneRange>cloneRange()</code>',
     'codeunit': '<a href=http://dev.w3.org/2006/webapi/WebIDL/#dfn-code-unit>code unit</a>',
     'collapsetoend': '<code data-anolis-spec=domrange title=dom-Selection-collapseToEnd>collapseToEnd()</code>',
+    'collapsetostart': '<code data-anolis-spec=domrange title=dom-Selection-collapseToStart>collapseToStart()</code>',
     'collection': '<span data-anolis-spec=domcore title=concept-collection>collection</span>',
     'contained': '<span data-anolis-spec=domrange>contained</span>',
     'comment': '<code data-anolis-spec=domcore>Comment</code>',
@@ -132,6 +134,7 @@ for key in replace:
     s = s.replace("[[" + key.capitalize() + "]]", capreplace)
 
 fnreplace = {
+    'addrange': '<code data-anolis-spec=domrange title=dom-Selection-addRange>addRange(\\1)</code>',
     'appendchild': '<code data-anolis-spec=domcore title=dom-Node-appendChild>appendChild(\\1)</code>',
     'createelement': '<code data-anolis-spec=domcore title=dom-Document-createElement>createElement(\\1)</code>',
     'deletedata': '<code data-anolis-spec=domcore title=dom-CharacterData-deleteData>deleteData(\\1)</code>',

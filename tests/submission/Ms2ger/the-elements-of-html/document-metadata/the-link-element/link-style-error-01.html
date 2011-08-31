@@ -17,7 +17,7 @@ t404.step(function() {
   elt.rel = "stylesheet";
   elt.href = "../../../support/css/404-textcss.cgi";
   document.getElementsByTagName("head")[0].appendChild(elt);
-}
+})
 var tText = async_test("Should get an error event for a text/plain response.")
 tText.step(function() {
   var elt = document.createElement("link");
@@ -28,5 +28,5 @@ tText.step(function() {
   elt.rel = "stylesheet";
   elt.href = "../../../support/css/200-textplain.cgi";
   document.getElementsByTagName("head")[0].appendChild(elt);
-}
+})
 </script>

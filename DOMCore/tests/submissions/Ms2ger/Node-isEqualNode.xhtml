@@ -22,6 +22,16 @@ function testNullHandling(node) {
   document.implementation.createDocumentType("html", "", ""),
   document.createDocumentFragment()
 ].forEach(testNullHandling)
+
+test(function() {
+  var a = document.createElement("foo")
+  a.setAttribute("a", "bar")
+  a.setAttribute("b", "baz")
+  var b = document.createElement("foo")
+  b.setAttribute("b", "baz")
+  b.setAttribute("a", "bar")
+  assert_true(a.isEqualNode(b))
+}, "isEqualNode should return true when the attributes are in a different order")
 </script>
 </body>
 </html>

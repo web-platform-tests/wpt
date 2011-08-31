@@ -1244,7 +1244,7 @@ policies and contribution forms [3].
 
         var prefix = null;
         var scripts = document.getElementsByTagName("script");
-        for (var i=0; i<scripts.length; i++)
+        for (var i = 0; i < scripts.length; i++)
         {
             if (scripts[i].src)
             {
@@ -1255,7 +1255,7 @@ policies and contribution forms [3].
                 //SVG case
                 var src = scripts[i].href.baseVal;
             }
-            if (src.slice(src.length - "testharness.js".length) === "testharness.js")
+            if (src && src.slice(src.length - "testharness.js".length) === "testharness.js")
             {
                 prefix = src.slice(0, src.length - "testharness.js".length);
                 break;

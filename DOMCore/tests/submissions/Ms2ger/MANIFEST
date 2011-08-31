@@ -70,6 +70,7 @@ Node-insertBefore.html
 Node-isEqualNode.xhtml
 Node-lookupPrefix.xhtml
 Node-nodeName.html
+Node-nodeName.xhtml
 Node-parentElement.html
 Node-parentNode.html
 Node-removeChild.html

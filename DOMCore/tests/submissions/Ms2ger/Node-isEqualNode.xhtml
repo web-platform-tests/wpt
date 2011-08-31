@@ -7,20 +7,21 @@
 <body>
 <div id="log"/>
 <script>
-function isEqualNode(node) {
+function testNullHandling(node) {
   test(function() {
     assert_false(node.isEqualNode(null))
+    assert_false(node.isEqualNode(undefined))
   })
 }
-isEqualNode(document.createElement("foo"))
-isEqualNode(document.createAttribute("foo"))
-isEqualNode(document.createTextNode("foo"))
-// XXX isEqualNode(document.createCDATASection("foo"))
-isEqualNode(document.createProcessingInstruction("foo", "bar"))
-isEqualNode(document.createComment("foo"))
-isEqualNode(document)
-isEqualNode(document.implementation.createDocumentType("html", "", ""))
-isEqualNode(document.createDocumentFragment())
+[
+  document.createElement("foo"),
+  document.createTextNode("foo"),
+  document.createProcessingInstruction("foo", "bar"),
+  document.createComment("foo"),
+  document,
+  document.implementation.createDocumentType("html", "", ""),
+  document.createDocumentFragment()
+].forEach(testNullHandling)
 </script>
 </body>
 </html>

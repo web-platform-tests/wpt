@@ -32,6 +32,14 @@ test(function() {
   b.setAttribute("a", "bar")
   assert_true(a.isEqualNode(b))
 }, "isEqualNode should return true when the attributes are in a different order")
+
+test(function() {
+  var a = document.createElement("foo")
+  a.setAttributeNS("ns", "x:a", "bar")
+  var b = document.createElement("foo")
+  b.setAttributeNS("ns", "y:a", "bar")
+  assert_true(a.isEqualNode(b))
+}, "isEqualNode should return true when the attributes have different prefixes")
 </script>
 </body>
 </html>

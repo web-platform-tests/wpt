@@ -1957,9 +1957,18 @@ function isSimpleModifiableElement(node) {
 	// property (including invalid or unrecognized properties), which is
 	// "text-decoration", which is set to "line-through" or "underline" or
 	// "overline" or "none"."
+	//
+	// The weird extra node.style.length check is for Firefox, which as of
+	// 8.0a2 has annoying and weird behavior here.
 	if (["A", "FONT", "S", "SPAN", "STRIKE", "U"].indexOf(node.tagName) != -1
 	&& node.hasAttribute("style")
-	&& node.style.length == 1
+	&& (node.style.length == 1
+	|| (node.style.length == 4
+		&& "MozTextBlink" in node.style
+		&& "MozTextDecorationColor" in node.style
+		&& "MozTextDecorationLine" in node.style
+		&& "MozTextDecorationStyle" in node.style)
+	)
 	&& (node.style.textDecoration == "line-through"
 	|| node.style.textDecoration == "underline"
 	|| node.style.textDecoration == "overline"
@@ -4463,8 +4472,18 @@ function deleteSelection(flags) {
 	if (getPosition(endNode, endOffset, startNode, startOffset) !== "after") {
 		// "If direction is "forward", call collapseToStart() on the context
 		// object's Selection."
+		//
+		// Here and in a few other places, we check rangeCount to work around a
+		// WebKit bug: it will sometimes incorrectly remove ranges from the
+		// selection if nodes are removed, so collapseToStart() will throw.
+		// This will break everything if we're using an actual selection, but
+		// if getActiveRange() is really just returning globalRange and that's
+		// all we care about, it will work fine.  I only add the extra check
+		// for errors I actually hit in testing.
 		if (direction == "forward") {
-			getSelection().collapseToStart();
+			if (getSelection().rangeCount) {
+				getSelection().collapseToStart();
+			}
 			getActiveRange().collapse(true);
 
 		// "Otherwise, call collapseToEnd() on the context object's Selection."
@@ -4557,9 +4576,6 @@ function deleteSelection(flags) {
 
 		// "If direction is "forward", call collapseToStart() on the context
 		// object's Selection."
-		//
-		// Work around WebKit bug where the selection might have no ranges, by
-		// checking rangeCount.
 		if (direction == "forward") {
 			if (getSelection().rangeCount) {
 				getSelection().collapseToStart();
@@ -4658,8 +4674,6 @@ function deleteSelection(flags) {
 		// "If direction is "forward", call collapseToStart() on the context
 		// object's Selection."
 		if (direction == "forward") {
-			// Work around WebKit bug: sometimes it will remove the selection's
-			// range.
 			if (getSelection().rangeCount) {
 				getSelection().collapseToStart();
 			}

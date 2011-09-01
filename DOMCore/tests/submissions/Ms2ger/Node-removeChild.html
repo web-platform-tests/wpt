@@ -18,6 +18,12 @@ test(function() {
   assert_throws("NOT_FOUND_ERR", function() { document.body.removeChild(s) })
   assert_equals(s.ownerDocument, frameDoc)
 
+  s = frameDoc.createTextNode("test")
+  frameDoc.body.appendChild(s)
+  assert_equals(s.ownerDocument, frameDoc)
+  assert_throws("NOT_FOUND_ERR", function() { s.removeChild(frameDoc) })
+  assert_throws("NOT_FOUND_ERR", function() { s.removeChild(document) })
+
   assert_throws(new TypeError(), function() { document.body.removeChild(null) })
 
   assert_throws(new TypeError(), function() { document.body.removeChild({'a':'b'}) })

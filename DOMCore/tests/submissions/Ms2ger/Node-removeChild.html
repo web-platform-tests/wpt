@@ -21,17 +21,5 @@ test(function() {
   assert_throws(new TypeError(), function() { document.body.removeChild(null) })
 
   assert_throws(new TypeError(), function() { document.body.removeChild({'a':'b'}) })
-
-  document.body.setAttribute("abc", "test")
-  var attr = document.body.attributes[0]
-  assert_throws("NOT_SUPPORTED_ERR", function() { attr.removeChild(null) })
-  assert_equals(attr.value, "test")
-  assert_equals(attr.childNodes.length, 1)
-  assert_equals(attr.childNodes[0].nodeValue, "test")
-  attr.removeChild(attr.firstChild)
-  assert_equals(document.body.getAttribute("abc"), "")
-  assert_true(document.body.hasAttribute("abc"))
-  assert_equals(attr.value, "")
-  assert_equals(attr.childNodes.length, 0)
 })
 </script>

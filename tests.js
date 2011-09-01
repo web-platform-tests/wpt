@@ -2190,6 +2190,12 @@ var tests = {
 		'<p>foo<span style=color:#aBcDeF>[bar</span>baz]',
 		'<p>foo<span style=color:#aBcDeF>{bar</span>baz}',
 		'<p>foo<span style=color:#aBcDeF>[bar</span><span style=color:#fEdCbA>baz]</span>quz',
+
+		// https://bugs.webkit.org/show_bug.cgi?id=5036
+		'<ul contenteditable><li>{}<br></ul>',
+		'<ul contenteditable><li>foo[]</ul>',
+		'<div contenteditable=false><ul contenteditable><li>{}<br></ul></div>',
+		'<div contenteditable=false><ul contenteditable><li>foo[]</ul></div>',
 	],
 	//@}
 	inserttext: [

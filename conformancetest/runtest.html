@@ -1,0 +1,93 @@
+<!doctype html>
+<meta charset=utf-8>
+<link rel=stylesheet href=../tests.css>
+<style>
+body { margin-top: 0 }
+#toolbar { display: none !important }
+</style>
+<title>HTML editing conformance tests</title>
+<p>See the <a href=editing.html#tests>Tests</a> section of the specification
+for documentation.
+
+<p id=timing></p>
+
+<div id=log></div>
+
+<div id=test-container></div>
+
+<script src=../implementation.js></script>
+<script src=../tests.js></script>
+<script>
+document.getElementById("toolbar").parentNode.removeChild(
+	document.getElementById("toolbar"));
+</script>
+<script src=data.js></script>
+<script src=http://dvcs.w3.org/hg/html/raw-file/tip/tests/resources/testharness.js></script>
+<script src=http://dvcs.w3.org/hg/html/raw-file/tip/tests/resources/testharnessreport.js></script>
+<script>
+"use strict";
+
+runTests();
+
+function runTests() {
+	var startTime = Date.now();
+	browserTests.forEach(runTest);
+
+	document.getElementById("test-container").parentNode
+		.removeChild(document.getElementById("test-container"));
+
+	var elapsed = Math.round(Date.now() - startTime)/1000;
+	document.getElementById("timing").textContent =
+		"Time elapsed: " + Math.floor(elapsed/60) + ":" + (elapsed % 60) + " min.";
+}
+
+/**
+ * Input is the same format as output of generateTest in gentest.html.
+ */
+function runTest(browserTest) {
+	document.getElementById("test-container").innerHTML = "<div contenteditable></div><p>test";
+	var testName = JSON.stringify(browserTest[1]) + " " + format_value(browserTest[0]);
+	var testDiv = document.querySelector("div[contenteditable]");
+	var setupDone = false;
+
+	test(function() {
+		var points = setupDiv(testDiv, browserTest[0]);
+
+		var range = document.createRange();
+		range.setStart(points[0], points[1]);
+		range.setEnd(points[2], points[3]);
+		// The points might be backwards
+		if (range.collapsed) {
+			range.setEnd(points[0], points[1]);
+		}
+		getSelection().removeAllRanges();
+		getSelection().addRange(range);
+
+		for (var i = 0; i < browserTest[1].length; i++) {
+			document.execCommand(browserTest[1][i][0], false, browserTest[1][i][1]);
+		}
+
+		// Now do various sanity checks, and throw if they're violated.  First
+		// just count children:
+		assert_equals(testDiv.parentNode.childNodes.length, 2,
+			"The parent div didn't have two children.  Did something spill outside the test div?");
+
+		// Check for attributes
+		assert_equals(testDiv.attributes.length, 1,
+			"Wrapper div has extra attributes!  " +
+			format_value(testDiv.parentNode.innerHTML));
+
+		normalizeSerializedStyle(testDiv);
+
+		setupDone = true;
+	}, testName + " setup and sanity checks");
+
+	test(function() {
+		assert_true(setupDone, "Setup failed, cannot proceed");
+
+		assert_equals(testDiv.innerHTML,
+			browserTest[2].replace(/[\[\]{}]/g, ""),
+			"Unexpected innerHTML");
+	}, testName + " compare innerHTML");
+}
+</script>

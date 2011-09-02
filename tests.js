@@ -222,7 +222,8 @@ var tests = {
 		'<span>foo[</span><span>]bar</span>',
 		'foo[bar]baz',
 		'foo]bar[baz',
-		'{<p><p> <p>foo</p>}',
+		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=13996
+		'!{<p><p> <p>foo</p>}',
 
 		'<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
 		'<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table>',
@@ -610,13 +611,13 @@ var tests = {
 		// https://bugs.webkit.org/show_bug.cgi?id=35281
 		// Results here are wrong, see:
 		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=13976
-		'<ol><li>foo</li></ol>{}<br><ol><li>bar</li></ol>',
-		'<ol id=a><li>foo</li></ol>{}<br><ol><li>bar</li></ol>',
-		'<ol><li>foo</li></ol>{}<br><ol id=b><li>bar</li></ol>',
-		'<ol id=a><li>foo</li></ol>{}<br><ol id=b><li>bar</li></ol>',
-		'<ol class=a><li>foo</li></ol>{}<br><ol class=b><li>bar</li></ol>',
-		'<ol><ol><li>foo</ol><li>{}<br><ol><li>bar</ol></ol>',
-		'<ol><ol><li>foo</ol><li>{}<br></li><ol><li>bar</ol></ol>',
+		'!<ol><li>foo</li></ol>{}<br><ol><li>bar</li></ol>',
+		'!<ol id=a><li>foo</li></ol>{}<br><ol><li>bar</li></ol>',
+		'!<ol><li>foo</li></ol>{}<br><ol id=b><li>bar</li></ol>',
+		'!<ol id=a><li>foo</li></ol>{}<br><ol id=b><li>bar</li></ol>',
+		'!<ol class=a><li>foo</li></ol>{}<br><ol class=b><li>bar</li></ol>',
+		'!<ol><ol><li>foo</ol><li>{}<br><ol><li>bar</ol></ol>',
+		'!<ol><ol><li>foo</ol><li>{}<br></li><ol><li>bar</ol></ol>',
 	],
 	//@}
 	fontname: [
@@ -626,7 +627,8 @@ var tests = {
 		'<span>foo[</span><span>]bar</span>',
 		'foo[bar]baz',
 		'foo]bar[baz',
-		'{<p><p> <p>foo</p>}',
+		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=13996
+		'!{<p><p> <p>foo</p>}',
 
 		'<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
 		'<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table>',
@@ -730,7 +732,8 @@ var tests = {
 		["-9", 'foo[bar]baz'],
 		["", 'foo[bar]baz'],
 
-		'{<p><p> <p>foo</p>}',
+		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=13996
+		'!{<p><p> <p>foo</p>}',
 		'foo[bar<i>baz]qoz</i>quz',
 
 		'<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
@@ -797,9 +800,9 @@ var tests = {
 		'<font size=6>fo[o</font><span style=font-size:xx-large>b]ar</span>',
 
 		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=13829
-		["6", '<span style=background-color:aqua>[foo]</span>'],
-		["6", '<span style=background-color:aqua>foo[bar]baz</span>'],
-		["6", '[foo<span style=background-color:aqua>bar</span>baz]'],
+		["!6", '<span style=background-color:aqua>[foo]</span>'],
+		["!6", '<span style=background-color:aqua>foo[bar]baz</span>'],
+		["!6", '[foo<span style=background-color:aqua>bar</span>baz]'],
 	],
 	//@}
 	forecolor: [
@@ -809,7 +812,8 @@ var tests = {
 		'<span>foo[</span><span>]bar</span>',
 		'foo[bar]baz',
 		'foo]bar[baz',
-		'{<p><p> <p>foo</p>}',
+		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=13996
+		'!{<p><p> <p>foo</p>}',
 		'foo[bar<i>baz]qoz</i>quz',
 
 		['blue', 'foo[bar]baz'],
@@ -1147,7 +1151,7 @@ var tests = {
 		['<pre>', '&#10;[foo<p>bar]</p>'],
 		// From https://bugs.webkit.org/show_bug.cgi?id=47300
 		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=14009
-		['<p>', '{<pre>&#10;foo&#10;&#10;bar&#10;</pre>}'],
+		['!<p>', '{<pre>&#10;foo&#10;&#10;bar&#10;</pre>}'],
 	],
 	//@}
 	forwarddelete: [
@@ -1470,7 +1474,8 @@ var tests = {
 		'<span>foo[</span><span>]bar</span>',
 		'foo[bar]baz',
 		'foo]bar[baz',
-		'{<p><p> <p>foo</p>}',
+		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=13996
+		'!{<p><p> <p>foo</p>}',
 		'foo[bar<i>baz]qoz</i>quz',
 
 		'<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
@@ -1507,12 +1512,12 @@ var tests = {
 		'<span style=background-color:tan>fo[o<span style=background-color:transparent>b]ar</span></span>',
 
 		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=13829
-		'<font size=6>[foo]</font>',
-		'<span style=font-size:xx-large>[foo]</span>',
-		'<font size=6>foo[bar]baz</font>',
-		'<span style=font-size:xx-large>foo[bar]baz</span>',
-		'[foo<font size=6>bar</font>baz]',
-		'[foo<span style=font-size:xx-large>bar</span>baz]',
+		'!<font size=6>[foo]</font>',
+		'!<span style=font-size:xx-large>[foo]</span>',
+		'!<font size=6>foo[bar]baz</font>',
+		'!<span style=font-size:xx-large>foo[bar]baz</span>',
+		'![foo<font size=6>bar</font>baz]',
+		'![foo<span style=font-size:xx-large>bar</span>baz]',
 	],
 	//@}
 	indent: [
@@ -2510,7 +2515,8 @@ var tests = {
 		'<span>foo[</span><span>]bar</span>',
 		'foo[bar]baz',
 		'foo]bar[baz',
-		'{<p><p> <p>foo</p>}',
+		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=13996
+		'!{<p><p> <p>foo</p>}',
 		'foo[bar<b>baz]qoz</b>quz',
 
 		'<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
@@ -3245,7 +3251,8 @@ var tests = {
 		'<span>foo[</span><span>]bar</span>',
 		'foo[bar]baz',
 		'foo]bar[baz',
-		'{<p><p> <p>foo</p>}',
+		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=13996
+		'!{<p><p> <p>foo</p>}',
 		'foo[bar<b>baz]qoz</b>quz',
 
 		'<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
@@ -3441,7 +3448,8 @@ var tests = {
 		'<span>foo[</span><span>]bar</span>',
 		'foo[bar]baz',
 		'foo]bar[baz',
-		'{<p><p> <p>foo</p>}',
+		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=13996
+		'!{<p><p> <p>foo</p>}',
 		'foo[bar<b>baz]qoz</b>quz',
 
 		'<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
@@ -3690,6 +3698,28 @@ var tests = {
 };
 tests.backcolor = tests.hilitecolor;
 tests.insertlinebreak = tests.insertparagraph;
+
+// Tests that start with "!" are believed to have bogus results and should be
+// skipped until the relevant bugs are fixed.
+var badTests = {};
+(function(){
+	for (var command in tests) {
+		badTests[command] = [];
+		for (var i = 0; i < tests[command].length; i++) {
+			var test = tests[command][i];
+			if (typeof test == "string" && test[0] == "!") {
+				test = test.slice(1);
+				tests[command][i] = test;
+				badTests[command].push(test);
+			}
+			if (typeof test == "object" && test[0][0] == "!") {
+				test = [test[0].slice(1)].concat(test.slice(1));
+				tests[command][i] = test;
+				badTests[command].push(test);
+			}
+		}
+	}
+})();
 
 var defaultValues = {
 //@{
@@ -4125,13 +4155,10 @@ function doSpecCell(tr, test, command) {
 	} catch (e) {
 		specCell.firstChild.contentEditable = "inherit";
 		specCell.firstChild.removeAttribute("spellcheck");
-		specCell.lastChild.textContent = "Exception: " + e;
+		specCell.lastChild.textContent = "Exception: " + formatException(e);
 
 		specCell.parentNode.className = "alert";
 		specCell.lastChild.className = "alert";
-		if (typeof e == "object" && "stack" in e) {
-			specCell.lastChild.textContent += " (stack: " + e.stack + ")";
-		}
 
 		// Don't bother comparing to localStorage, this is always wrong no
 		// matter what.
@@ -4205,13 +4232,19 @@ function browserCellException(e, testDiv, browserCell) {
 		testDiv.removeAttribute("spellcheck");
 	}
 	browserCell.lastChild.className = "alert";
-	browserCell.lastChild.textContent = "Exception: " + e;
-	if (typeof e == "object" && "stack" in e) {
-		specCell.lastChild.textContent += " (stack: " + e.stack + ")";
-	}
+	browserCell.lastChild.textContent = "Exception: " + formatException(e);
 	if (testDiv && testDiv.parentNode != browserCell) {
 		browserCell.insertBefore(testDiv, browserCell.firstChild);
 	}
+}
+//@}
+
+function formatException(e) {
+//@{
+	if (typeof e == "object" && "stack" in e) {
+		return e + " (stack: " + e.stack + ")";
+	}
+	return String(e);
 }
 //@}
 
@@ -4318,6 +4351,12 @@ function setupCell(cell, html) {
 //@{
 	cell.innerHTML = "<div></div><div></div>";
 
+	return setupDiv(cell.firstChild, html);
+}
+//@}
+
+function setupDiv(node, html) {
+//@{
 	// A variety of checks to avoid simple errors.  Not foolproof, of course.
 	var re = /\{|\[|data-start/g;
 	var markers = [];
@@ -4339,7 +4378,6 @@ function setupCell(cell, html) {
 		throw "Need exactly one end marker (] or } or data-end), found " + markers.length;
 	}
 
-	var node = cell.firstChild;
 	node.innerHTML = html;
 
 	var startNode, startOffset, endNode, endOffset;
@@ -4532,4 +4570,40 @@ function addBrackets(range) {
 	}
 }
 //@}
+
+function normalizeSerializedStyle(wrapper) {
+//@{
+	// Inline CSS attribute serialization has terrible interop, so we fix
+	// things up a bit to avoid spurious mismatches.  This needs to be removed
+	// once CSSOM defines this stuff properly, but for now there's just no
+	// standard for any of it.  This only normalizes descendants of wrapper,
+	// not wrapper itself.
+	[].forEach.call(wrapper.querySelectorAll("[style]"), function(node) {
+		if (node.style.color != "") {
+			var newColor = normalizeColor(node.style.color);
+			node.style.color = "";
+			node.style.color = newColor;
+		}
+		if (node.style.backgroundColor != "") {
+			var newBackgroundColor = normalizeColor(node.style.backgroundColor);
+			node.style.backgroundColor = "";
+			node.style.backgroundColor = newBackgroundColor;
+		}
+		node.setAttribute("style", node.getAttribute("style")
+			// Random spacing differences
+			.replace(/; ?$/, "")
+			.replace(/: /g, ":")
+			// Gecko likes "transparent"
+			.replace(/transparent/g, "rgba(0, 0, 0, 0)")
+			// WebKit likes to look overly precise
+			.replace(/, 0.496094\)/g, ", 0.5)")
+			// Gecko converts anything with full alpha to "transparent" which
+			// then becomes "rgba(0, 0, 0, 0)", so we have to make other
+			// browsers match
+			.replace(/rgba\([0-9]+, [0-9]+, [0-9]+, 0\)/g, "rgba(0, 0, 0, 0)")
+		);
+	});
+}
+//@}
+
 // vim: foldmarker=@{,@} foldmethod=marker

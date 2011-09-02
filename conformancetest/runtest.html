@@ -1,10 +1,6 @@
 <!doctype html>
 <meta charset=utf-8>
-<link rel=stylesheet href=../tests.css>
-<style>
-body { margin-top: 0 }
-#toolbar { display: none !important }
-</style>
+<link rel=stylesheet href=../css/reset.css>
 <title>HTML editing conformance tests</title>
 <p>See the <a href=editing.html#tests>Tests</a> section of the specification
 for documentation.
@@ -16,11 +12,8 @@ for documentation.
 <div id=test-container></div>
 
 <script src=../implementation.js></script>
+<script>var testsJsLibraryOnly = true</script>
 <script src=../tests.js></script>
-<script>
-document.getElementById("toolbar").parentNode.removeChild(
-	document.getElementById("toolbar"));
-</script>
 <script src=data.js></script>
 <script src=http://dvcs.w3.org/hg/html/raw-file/tip/tests/resources/testharness.js></script>
 <script src=http://dvcs.w3.org/hg/html/raw-file/tip/tests/resources/testharnessreport.js></script>

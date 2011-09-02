@@ -1,76 +1,81 @@
-// Alert the reader of egregious Opera bug that will make the specced
-// implementation horribly buggy
-//@{
-(function() {
-	var div = document.createElement("div");
-	div.appendChild(document.createElement("br"));
-	document.body.insertBefore(div, document.body.firstChild);
-	var range = document.createRange();
-	range.setStart(div, 1);
-	div.insertBefore(document.createElement("p"), div.firstChild);
-	if (range.startOffset > range.startContainer.childNodes.length) {
-		var warningDiv = document.createElement("p");
-		document.body.insertBefore(warningDiv, document.body.firstChild);
-		warningDiv.style.fontWeight = "bold";
-		warningDiv.style.fontSize = "2em";
-		warningDiv.style.color = "red";
-		warningDiv.innerHTML = 'Your browser suffers from an <a href="http://software.hixie.ch/utilities/js/live-dom-viewer/saved/1028">egregious bug</a> in range mutation that will give incorrect results for the spec columns in many cases.  To ensure that the spec column contains the output actually required by the spec, use a different browser.';
+// For the original (development) tests, we want to make a bunch of changes to
+// the page as it loads.  We don't want this for the conformance tests, so let
+// them opt out.
+if (typeof testsJsLibraryOnly == "undefined" || !testsJsLibraryOnly) {
+	// Alert the reader of egregious Opera bug that will make the specced
+	// implementation horribly buggy
+	//@{
+	(function() {
+		var div = document.createElement("div");
+		div.appendChild(document.createElement("br"));
+		document.body.insertBefore(div, document.body.firstChild);
+		var range = document.createRange();
+		range.setStart(div, 1);
+		div.insertBefore(document.createElement("p"), div.firstChild);
+		if (range.startOffset > range.startContainer.childNodes.length) {
+			var warningDiv = document.createElement("p");
+			document.body.insertBefore(warningDiv, document.body.firstChild);
+			warningDiv.style.fontWeight = "bold";
+			warningDiv.style.fontSize = "2em";
+			warningDiv.style.color = "red";
+			warningDiv.innerHTML = 'Your browser suffers from an <a href="http://software.hixie.ch/utilities/js/live-dom-viewer/saved/1028">egregious bug</a> in range mutation that will give incorrect results for the spec columns in many cases.  To ensure that the spec column contains the output actually required by the spec, use a different browser.';
+		}
+		div.parentNode.removeChild(div);
+	})();
+	//@}
+
+	// Insert the toolbar thingie as soon as the script file is loaded
+	//@{
+	(function() {
+		var toolbarDiv = document.createElement("div");
+		toolbarDiv.id = "toolbar";
+		// Note: this is completely not a hack at all.
+		toolbarDiv.innerHTML = "<style id=alerts>/* body > div > table > tbody > tr:not(.alert):not(:first-child):not(.active) { display: none } */</style>"
+			+ "<label><input id=alert-checkbox type=checkbox accesskey=a checked onclick='updateAlertRowStyle()'> Display rows without spec <u>a</u>lerts</label>"
+			+ "<label><input id=browser-checkbox type=checkbox accesskey=b checked onclick='localStorage[\"display-browser-tests\"] = event.target.checked'> Run <u>b</u>rowser tests as well as spec tests</label>";
+
+		document.body.appendChild(toolbarDiv);
+	})();
+	//@}
+
+	// Confusingly, we're storing a string here, not a boolean.
+	document.querySelector("#alert-checkbox").checked = localStorage["display-alerts"] != "false";
+	document.querySelector("#browser-checkbox").checked = localStorage["display-browser-tests"] != "false";
+
+	function updateAlertRowStyle() {
+	//@{
+		var checked = document.querySelector("#alert-checkbox").checked;
+		var style = document.querySelector("#alerts");
+		if (checked && !/^\/\*/.test(style.textContent)) {
+			style.textContent = "/* " + style.textContent + " */";
+		} else if (!checked) {
+			style.textContent = style.textContent.replace(/(\/\* | \*\/)/g, "");
+		}
+		localStorage["display-alerts"] = checked;
 	}
-	div.parentNode.removeChild(div);
-})();
-//@}
+	//@}
+	updateAlertRowStyle();
 
-// Insert the toolbar thingie as soon as the script file is loaded
-//@{
-(function() {
-	var toolbarDiv = document.createElement("div");
-	toolbarDiv.id = "toolbar";
-	// Note: this is completely not a hack at all.
-	toolbarDiv.innerHTML = "<style id=alerts>/* body > div > table > tbody > tr:not(.alert):not(:first-child):not(.active) { display: none } */</style>"
-		+ "<label><input id=alert-checkbox type=checkbox accesskey=a checked onclick='updateAlertRowStyle()'> Display rows without spec <u>a</u>lerts</label>"
-		+ "<label><input id=browser-checkbox type=checkbox accesskey=b checked onclick='localStorage[\"display-browser-tests\"] = event.target.checked'> Run <u>b</u>rowser tests as well as spec tests</label>";
-
-	document.body.appendChild(toolbarDiv);
-})();
-//@}
-
-// Confusingly, we're storing a string here, not a boolean.
-document.querySelector("#alert-checkbox").checked = localStorage["display-alerts"] != "false";
-document.querySelector("#browser-checkbox").checked = localStorage["display-browser-tests"] != "false";
-
-function updateAlertRowStyle() {
-//@{
-	var checked = document.querySelector("#alert-checkbox").checked;
-	var style = document.querySelector("#alerts");
-	if (checked && !/^\/\*/.test(style.textContent)) {
-		style.textContent = "/* " + style.textContent + " */";
-	} else if (!checked) {
-		style.textContent = style.textContent.replace(/(\/\* | \*\/)/g, "");
-	}
-	localStorage["display-alerts"] = checked;
+	// Feature-test whether the browser wraps at <wbr> or not, and set word-wrap:
+	// break-word where necessary if not.  (IE and Opera don't wrap, Gecko and
+	// WebKit do.)  word-wrap: break-word will break anywhere at all, so it looks
+	// significantly uglier.
+	//@{
+	(function() {
+		var wordWrapTestDiv = document.createElement("div");
+		wordWrapTestDiv.style.width = "5em";
+		document.body.appendChild(wordWrapTestDiv);
+		wordWrapTestDiv.innerHTML = "abc";
+		var height1 = getComputedStyle(wordWrapTestDiv).height;
+		wordWrapTestDiv.innerHTML = "abc<wbr>abc<wbr>abc<wbr>abc<wbr>abc<wbr>abc";
+		var height2 = getComputedStyle(wordWrapTestDiv).height;
+		document.body.removeChild(wordWrapTestDiv);
+		if (height1 == height2) {
+			document.body.className = (document.body.className + " wbr-workaround").trim();
+		}
+	})();
+	//@}
 }
-//@}
-updateAlertRowStyle();
-
-// Feature-test whether the browser wraps at <wbr> or not, and set word-wrap:
-// break-word where necessary if not.  (IE and Opera don't wrap, Gecko and
-// WebKit do.)  word-wrap: break-word will break anywhere at all, so it looks
-// significantly uglier.
-//@{
-(function() {
-	var wordWrapTestDiv = document.createElement("div");
-	wordWrapTestDiv.style.width = "5em";
-	document.body.appendChild(wordWrapTestDiv);
-	wordWrapTestDiv.innerHTML = "abc";
-	var height1 = getComputedStyle(wordWrapTestDiv).height;
-	wordWrapTestDiv.innerHTML = "abc<wbr>abc<wbr>abc<wbr>abc<wbr>abc<wbr>abc";
-	var height2 = getComputedStyle(wordWrapTestDiv).height;
-	document.body.removeChild(wordWrapTestDiv);
-	if (height1 == height2) {
-		document.body.className = (document.body.className + " wbr-workaround").trim();
-	}
-})();
-//@}
 
 // Now for the meat of the file.
 var tests = {

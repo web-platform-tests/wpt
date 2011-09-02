@@ -1,10 +1,6 @@
 <!doctype html>
 <meta charset=utf-8>
-<link rel=stylesheet href=../tests.css>
-<style>
-body { margin-top: 0 }
-#toolbar { display: none !important }
-</style>
+<link rel=stylesheet href=../css/reset.css>
 <title>Generator for editing conformance tests</title>
 <p>See the <a href=editing.html#tests>Tests</a> section of the specification
 for documentation.
@@ -20,11 +16,10 @@ for documentation.
 <div id=test-container></div>
 
 <script src=../implementation.js></script>
+<script>var testsJsLibraryOnly = true</script>
 <script src=../tests.js></script>
 <script>
 "use strict";
-
-document.getElementById("toolbar").parentNode.removeChild(document.getElementById("toolbar"));
 
 function generateTests() {
 	var startTime = Date.now();

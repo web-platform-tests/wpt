@@ -1,4 +1,4 @@
-body { font-family: serif }
+@import "css/reset.css";
 .yes { color: green }
 .no { color: red }
 .maybe { color: orange }
@@ -18,16 +18,6 @@ div.alert {
 .extra-results { font-size: small }
 .good-result { color: green }
 .bad-result { color: red }
-/* http://www.w3.org/Bugs/Public/show_bug.cgi?id=12154
- * https://bugzilla.mozilla.org/show_bug.cgi?id=589124
- * https://bugs.webkit.org/show_bug.cgi?id=56400 */
-b, strong { font-weight: bold }
-.bold { font-weight: bold }
-.notbold { font-weight: normal }
-.underline { text-decoration: underline }
-.line-through { text-decoration: line-through }
-.underline-and-line-through { text-decoration: underline line-through }
-#purple { color: purple }
 body > div > table > tbody > tr > td > div:first-child {
 	padding-bottom: 0.2em;
 }
@@ -43,10 +33,6 @@ body.wbr-workaround > div > table > tbody > tr > td > div:last-child {
 body > div > table > tbody > tr > td > div:last-child {
 	white-space: pre-wrap;
 }
-/* https://bugs.webkit.org/show_bug.cgi?id=56670 */
-dfn { font-style: italic }
-/* Opera has weird default blockquote style */
-blockquote { margin: 1em 40px }
 /* Let the rendered HTML line up so it's easier to compare whitespace */
 body > div > table > tbody > tr > td { vertical-align: top }
 /* We don't want test cells to not wrap */
@@ -96,7 +82,3 @@ ol ol ol { list-style-type: lower-roman }
 	text-align: center;
 	padding: 2em;
 }
-/* Some tests assume links are blue, for the sake of argument, but they aren't
- * blue in any browser.  And :visited definitely isn't blue, except in engines
- * like Gecko that lie. */
-:link, :visited { color: blue }

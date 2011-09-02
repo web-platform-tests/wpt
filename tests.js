@@ -1145,6 +1145,9 @@ var tests = {
 		// https://bugs.webkit.org/show_bug.cgi?id=47574
 		['<h1>', '{<p>foo</p>ba]r'],
 		['<pre>', '&#10;[foo<p>bar]</p>'],
+		// From https://bugs.webkit.org/show_bug.cgi?id=47300
+		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=14009
+		['<p>', '{<pre>&#10;foo&#10;&#10;bar&#10;</pre>}'],
 	],
 	//@}
 	forwarddelete: [

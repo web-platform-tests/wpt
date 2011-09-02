@@ -61,8 +61,6 @@ function generateTests() {
 	outputEl.firstChild.deleteData(outputEl.textContent.lastIndexOf(","), 1);
 	outputEl.firstChild.appendData("]");
 
-	document.getElementById("output").firstChild.appendData("]");
-
 	document.getElementById("test-container").parentNode
 		.removeChild(document.getElementById("test-container"));
 	var elapsed = Math.round(Date.now() - startTime)/1000;

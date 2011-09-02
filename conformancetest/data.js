@@ -16491,4 +16491,4 @@ var browserTests = [
 	[["delete",""],["inserttext","a"]],
 	"<blockquote><font color=\"#0000ff\">a[]</font></blockquote>",
 	[]]
-]]
+]

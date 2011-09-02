@@ -2482,15 +2482,10 @@ might still have a different value.
       title=dom-Document-createElement>createElement("font")</code> on the
       [[ownerdocument]] of <var>node</var>.
 
-      <li>If <var>new value</var> is an <a
-      href=http://www.w3.org/TR/css3-color/#svg-color>extended color
-      keyword</a>, set the [[fontcolor]] attribute of <var>new parent</var> to
-      <var>new value</var>.
-
-      <li>Otherwise, set the [[fontcolor]] attribute of <var>new parent</var>
-      to the result of applying the <span data-anolis-spec=html>rules for
-      serializing simple color values</span> to <var>new value</var>
-      (interpreted as a <span data-anolis-spec=html>simple color</span>).
+      <li>Set the [[fontcolor]] attribute of <var>new parent</var> to the
+      result of applying the <span data-anolis-spec=html>rules for serializing
+      simple color values</span> to <var>new value</var> (interpreted as a
+      <span data-anolis-spec=html>simple color</span>).
     </ol>
 
     <li>If <var>command</var> is "fontName", let <var>new parent</var> be
@@ -3388,12 +3383,11 @@ with.
 </ul>
 
 <p>What I'm going to say is that it either has to be a valid CSS color, or
-prefixing it with # must result in a valid CSS color.  For &lt;font>, I'll say
-that the output color should be normalized to #xxxxxx form unless it's an SVG
-color keyword, in which case it's passed through intact.  If the color is not a
-simple color (fully opaque with all channels between 0 and 255), I'll force
-style="" even if styleWithCSS mode is off.  Some of this disagrees with all
-browsers, but it's unlikely to hurt and it makes sense.
+prefixing it with # must result in a valid CSS color.  For {{code|<font>}},
+I'll say that the output color should be normalized to #xxxxxx form.  If the
+color is not a simple color (fully opaque with all channels between 0 and 255),
+I'll force {{code|style=""}} even if styleWithCSS mode is off.  Some of this
+disagrees with all browsers, but it's unlikely to hurt and it makes sense.
 </div>
 
 <p><span>Action</span>:

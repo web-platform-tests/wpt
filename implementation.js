@@ -442,41 +442,8 @@ function normalizeColor(color) {
 	return color;
 }
 
-// Returns either null, or something of the form #xxxxxx, or the color itself
-// if it's a valid keyword.
+// Returns either null, or something of the form #xxxxxx.
 function parseSimpleColor(color) {
-	color = color.toLowerCase();
-	if (["aliceblue", "antiquewhite", "aqua", "aquamarine", "azure", "beige",
-	"bisque", "black", "blanchedalmond", "blue", "blueviolet", "brown",
-	"burlywood", "cadetblue", "chartreuse", "chocolate", "coral",
-	"cornflowerblue", "cornsilk", "crimson", "cyan", "darkblue", "darkcyan",
-	"darkgoldenrod", "darkgray", "darkgreen", "darkgrey", "darkkhaki",
-	"darkmagenta", "darkolivegreen", "darkorange", "darkorchid", "darkred",
-	"darksalmon", "darkseagreen", "darkslateblue", "darkslategray",
-	"darkslategrey", "darkturquoise", "darkviolet", "deeppink", "deepskyblue",
-	"dimgray", "dimgrey", "dodgerblue", "firebrick", "floralwhite",
-	"forestgreen", "fuchsia", "gainsboro", "ghostwhite", "gold", "goldenrod",
-	"gray", "green", "greenyellow", "grey", "honeydew", "hotpink", "indianred",
-	"indigo", "ivory", "khaki", "lavender", "lavenderblush", "lawngreen",
-	"lemonchiffon", "lightblue", "lightcoral", "lightcyan",
-	"lightgoldenrodyellow", "lightgray", "lightgreen", "lightgrey",
-	"lightpink", "lightsalmon", "lightseagreen", "lightskyblue",
-	"lightslategray", "lightslategrey", "lightsteelblue", "lightyellow",
-	"lime", "limegreen", "linen", "magenta", "maroon", "mediumaquamarine",
-	"mediumblue", "mediumorchid", "mediumpurple", "mediumseagreen",
-	"mediumslateblue", "mediumspringgreen", "mediumturquoise",
-	"mediumvioletred", "midnightblue", "mintcream", "mistyrose", "moccasin",
-	"navajowhite", "navy", "oldlace", "olive", "olivedrab", "orange",
-	"orangered", "orchid", "palegoldenrod", "palegreen", "paleturquoise",
-	"palevioletred", "papayawhip", "peachpuff", "peru", "pink", "plum",
-	"powderblue", "purple", "red", "rosybrown", "royalblue", "saddlebrown",
-	"salmon", "sandybrown", "seagreen", "seashell", "sienna", "silver",
-	"skyblue", "slateblue", "slategray", "slategrey", "snow", "springgreen",
-	"steelblue", "tan", "teal", "thistle", "tomato", "turquoise", "violet",
-	"wheat", "white", "whitesmoke", "yellow", "yellowgreen"].indexOf(color) != -1) {
-		return color;
-	}
-
 	color = normalizeColor(color);
 	var matches = /^rgb\(([0-9]+), ([0-9]+), ([0-9]+)\)$/.exec(color);
 	if (matches) {
@@ -2793,12 +2760,9 @@ function forceValue(node, command, newValue) {
 			// on the ownerDocument of node."
 			newParent = node.ownerDocument.createElement("font");
 
-			// "If new value is an extended color keyword, set the color
-			// attribute of new parent to new value."
-			//
-			// "Otherwise, set the color attribute of new parent to the result
-			// of applying the rules for serializing simple color values to new
-			// value (interpreted as a simple color)."
+			// "Set the color attribute of new parent to the result of applying
+			// the rules for serializing simple color values to new value
+			// (interpreted as a simple color)."
 			newParent.setAttribute("color", parseSimpleColor(newValue));
 		}
 

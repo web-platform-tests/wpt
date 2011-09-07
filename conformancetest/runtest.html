@@ -51,9 +51,10 @@ function runTest(browserTest) {
 	document.getElementById("test-container").innerHTML = "<div contenteditable></div><p>test";
 	var testName = JSON.stringify(browserTest[1]) + " " + format_value(browserTest[0]);
 	var testDiv = document.querySelector("div[contenteditable]");
-	var setupDone = false;
+	var originalRootElement, newRootElement;
+	var exception = null;
 
-	test(function() {
+	try {
 		var points = setupDiv(testDiv, browserTest[0]);
 
 		var range = document.createRange();
@@ -67,42 +68,48 @@ function runTest(browserTest) {
 		getSelection().addRange(range);
 
 		var originalRootElement = document.documentElement.cloneNode(true);
+		originalRootElement.querySelector("[contenteditable]").parentNode
+			.removeChild(originalRootElement.querySelector("[contenteditable]"));
+
 		for (var i = 0; i < browserTest[1].length; i++) {
 			document.execCommand(browserTest[1][i][0], false, browserTest[1][i][1]);
 		}
-		var newRootElement = document.documentElement.cloneNode(true);
 
-		// Now do various sanity checks, and throw if they're violated.  First
-		// just count children:
+		var newRootElement = document.documentElement.cloneNode(true);
+		newRootElement.querySelector("[contenteditable]").parentNode
+			.removeChild(newRootElement.querySelector("[contenteditable]"));
+
+		normalizeSerializedStyle(testDiv);
+	} catch(e) {
+		exception = e;
+	}
+
+	test(function() {
+		assert_equals(exception, null, "Setup and execCommand() must not throw an exception");
+
+		// Now test for modifications to non-editable content.  First just
+		// count children:
 		assert_equals(testDiv.parentNode.childNodes.length, 2,
 			"The parent div must have two children.  Did something spill outside the test div?");
 
 		// Check for attributes
 		assert_equals(testDiv.attributes.length, 1,
-			'Wrapper div must have only one attribute (<div contenteditable="">), but has more: ' +
-			formatStartTag(testDiv));
+			'Wrapper div must have only one attribute (<div contenteditable="">), but has more (' +
+			formatStartTag(testDiv) + ")");
 
 		assert_equals(document.body.attributes.length, 0,
-			"Body element must have no attributes (<body>), but has more: " +
-			formatStartTag(document.body));
+			"Body element must have no attributes (<body>), but has more (" +
+			formatStartTag(document.body) + ")");
 
 		// Check that in general, nothing outside the test div was modified.
 		// TODO: Less verbose error reporting, the way some of the range tests
 		// do?
-		originalRootElement.querySelector("[contenteditable]").parentNode
-			.removeChild(originalRootElement.querySelector("[contenteditable]"));
-		newRootElement.querySelector("[contenteditable]").parentNode
-			.removeChild(newRootElement.querySelector("[contenteditable]"));
 		assert_equals(newRootElement.innerHTML, originalRootElement.innerHTML,
 			"Everything outside the editable div must be unchanged, but some change did occur");
-
-		normalizeSerializedStyle(testDiv);
-
-		setupDone = true;
-	}, testName + " setup and sanity checks");
+	}, testName + " checks for modifications to non-editable content");
 
 	test(function() {
-		assert_true(setupDone, "Setup and sanity checks must pass for further tests to be executed on this input");
+		assert_equals(exception, null, "Setup and execCommand() must not throw an exception");
 
 		assert_equals(testDiv.innerHTML,
 			browserTest[2].replace(/[\[\]{}]/g, ""),

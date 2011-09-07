@@ -63,16 +63,16 @@ function runTest(browserTest) {
 		// Now do various sanity checks, and throw if they're violated.  First
 		// just count children:
 		assert_equals(testDiv.parentNode.childNodes.length, 2,
-			"The parent div didn't have two children.  Did something spill outside the test div?");
+			"The parent div must have two children.  Did something spill outside the test div?");
 
 		// Check for attributes
 		assert_equals(testDiv.attributes.length, 1,
-			"Wrapper div has extra attributes!  " +
-			format_value(testDiv.parentNode.innerHTML));
+			'Wrapper div must have only one attribute (contenteditable=""), but has more: ' +
+			formatStartTag(testDiv));
 
 		assert_equals(document.body.attributes.length, 0,
-			"Body has extra attributes!  " +
-			format_value(document.body));
+			"Body element must have no attributes, but doesn't: " +
+			formatStartTag(document.body));
 
 		normalizeSerializedStyle(testDiv);
 
@@ -89,5 +89,19 @@ function runTest(browserTest) {
 
 	// Silly Firefox
 	document.body.removeAttribute("bgcolor");
+}
+
+/**
+ * Return a string like '<body bgcolor="#FFFFFF">'.
+ */
+function formatStartTag(el) {
+	var ret = "<" + el.tagName.toLowerCase();
+	for (var i = 0; i < el.attributes.length; i++) {
+		ret += " " + el.attributes[i].name + '="';
+		ret += el.attributes[i].value.replace(/\&/g, "&amp;")
+			.replace(/"/g, "&quot;");
+		ret += '"';
+	}
+	return ret + ">";
 }
 </script>

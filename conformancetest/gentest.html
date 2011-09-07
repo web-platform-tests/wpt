@@ -105,8 +105,27 @@ function generateTest(test) {
 		range.setEnd(points[0], points[1]);
 	}
 
+	// Verify that we aren't touching any non-editable nodes
+	var nonEditable = getDescendants(testDiv).filter(function(node) {
+		return !isEditable(node);
+	});
+	var nonEditableClones = nonEditable.map(function(node) {
+		return node.cloneNode(false);
+	});
+
 	for (var i = 1; i < test.length; i++) {
 		myExecCommand(test[i][0], false, test[i][1], range);
+	}
+
+	for (var i = 0; i < nonEditable.length; i++) {
+		if (!isDescendant(nonEditable[i], testDiv)) {
+			throw "Non-editable node " + i + " is no longer descendant of test div: "
+				+ nonEditable[i];
+		}
+		if (!nonEditableClones[i].isEqualNode(nonEditable[i].cloneNode(false))) {
+			throw "Non-editable node " + i + " has changed: "
+				+ nonEditable[i];
+		}
 	}
 
 	var compareDiv1 = testDiv.cloneNode(true);

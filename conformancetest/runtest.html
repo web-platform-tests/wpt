@@ -80,7 +80,7 @@ function runTest(browserTest) {
 	}, testName + " setup and sanity checks");
 
 	test(function() {
-		assert_true(setupDone, "Setup failed, cannot proceed");
+		assert_true(setupDone, "Setup and sanity checks must pass for further tests to be executed on this input");
 
 		assert_equals(testDiv.innerHTML,
 			browserTest[2].replace(/[\[\]{}]/g, ""),

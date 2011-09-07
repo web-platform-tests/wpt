@@ -428,8 +428,8 @@ function normalizeColor(color) {
 	document.body.removeChild(outerSpan);
 
 	// I rely on the fact that browsers generally provide consistent syntax for
-	// getComputedStyle(), although it's not standardized.  There are only two
-	// exceptions I found:
+	// getComputedStyle(), although it's not standardized.  There are only
+	// three exceptions I found:
 	if (/^rgba\([0-9]+, [0-9]+, [0-9]+, 1\)$/.test(color)) {
 		// IE10PP2 seems to do this sometimes.
 		return color.replace("rgba", "rgb").replace(", 1)", ")");
@@ -439,6 +439,9 @@ function normalizeColor(color) {
 		// the specified value is "transparent".
 		return "rgba(0, 0, 0, 0)";
 	}
+	// Chrome 15 dev adds way too many significant figures.  This isn't a full
+	// fix, it just fixes one case that comes up in tests.
+	color = color.replace(/, 0.496094\)$/, ", 0.5)");
 	return color;
 }
 

@@ -80,7 +80,7 @@ function runTest(browserTest) {
 
 		assert_equals(testDiv.innerHTML,
 			browserTest[2].replace(/[\[\]{}]/g, ""),
-			"Unexpected innerHTML");
+			"Unexpected innerHTML (after normalizing inline style)");
 	}, testName + " compare innerHTML");
 }
 </script>

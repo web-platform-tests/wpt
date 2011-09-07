@@ -67,11 +67,11 @@ function runTest(browserTest) {
 
 		// Check for attributes
 		assert_equals(testDiv.attributes.length, 1,
-			'Wrapper div must have only one attribute (contenteditable=""), but has more: ' +
+			'Wrapper div must have only one attribute (<div contenteditable="">), but has more: ' +
 			formatStartTag(testDiv));
 
 		assert_equals(document.body.attributes.length, 0,
-			"Body element must have no attributes, but doesn't: " +
+			"Body element must have no attributes (<body>), but has more: " +
 			formatStartTag(document.body));
 
 		normalizeSerializedStyle(testDiv);

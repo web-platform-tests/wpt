@@ -70,6 +70,10 @@ function runTest(browserTest) {
 			"Wrapper div has extra attributes!  " +
 			format_value(testDiv.parentNode.innerHTML));
 
+		assert_equals(document.body.attributes.length, 0,
+			"Body has extra attributes!  " +
+			format_value(document.body));
+
 		normalizeSerializedStyle(testDiv);
 
 		setupDone = true;
@@ -82,5 +86,8 @@ function runTest(browserTest) {
 			browserTest[2].replace(/[\[\]{}]/g, ""),
 			"Unexpected innerHTML (after normalizing inline style)");
 	}, testName + " compare innerHTML");
+
+	// Silly Firefox
+	document.body.removeAttribute("bgcolor");
 }
 </script>

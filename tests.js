@@ -3251,6 +3251,10 @@ var tests = {
 		'{<p style="font-variant: small-caps">foobarbaz</p>}',
 		'<p style="text-indent: 2em">foo[bar]baz</p>',
 		'{<p style="text-indent: 2em">foobarbaz</p>}',
+
+		// https://bugzilla.mozilla.org/show_bug.cgi?id=649138
+		// Chrome 15 dev fails this for some unclear reason.
+		'<table data-start=0 data-end=1><tr><td><b>foo</b></table>',
 	],
 	//@}
 	strikethrough: [

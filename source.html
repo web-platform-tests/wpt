@@ -9175,12 +9175,18 @@ otherwise false.
 <!-- @} -->
 <h3><dfn>The <code title>useCSS</code> command</dfn></h3>
 <!-- @{ -->
-<p class=comments>Supported by Firefox 4.0, but not IE9 or Opera 11.00 (which
-don't support styleWithCSS either), nor by Chrome 12 dev (which does support
-styleWithCSS).  useCSS was the original feature in Mozilla 1.3, but the meaning
-is backward, so Gecko added styleWithCSS as a replacement.  No state is
-defined, since only Gecko supports useCss at all, and as of Firefox 6.0a2, it
-doesn't support queryCommandState() for it.
+<div class=comments>
+<p>Supported by Firefox 4.0, but not IE9 or Opera 11.00 (which don't support
+styleWithCSS either), nor by Chrome 12 dev (which does support styleWithCSS).
+useCSS was the original feature in Mozilla 1.3, but the meaning is backward, so
+Gecko added styleWithCSS as a replacement.  No state is defined, since only
+Gecko supports useCSS at all, and as of Firefox 6.0a2, it doesn't support
+queryCommandState() for it.
+
+<p>As of September 2011, WebKit is <a
+href=https://bugs.webkit.org/show_bug.cgi?id=36683>adding support</a> for this
+command, so it can no longer be considered deprecated.
+</div>
 
 <p><span>Action</span>: If <var>value</var> is an <span
 data-anolis-spec=domcore>ASCII case-insensitive</span> match for the string
@@ -9193,9 +9199,11 @@ command">styleWithCSS</code> when <code title="the usecss
 command">useCSS</code> is used, such as by logging a warning to an error
 console.
 
-<p class=XXX>The meaning of this command is backwards, and only Gecko supports
-it.  It would be great if Gecko would agree to drop support, so that we could
-get rid of it.
+<p class=note>No <span>state</span> is defined for this command, so <code
+title=queryCommandState()>queryCommandState("useCSS")</code> must raise an
+[[INVALID_ACCESS_ERR]] exception.  To query the <span>CSS styling flag</span>'s
+current value, authors have to use <span>the <code title>styleWithCSS</code>
+command</span>.
 <!-- @} -->
 
 <h2>Additional requirements</h2>

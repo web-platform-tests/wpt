@@ -1,0 +1,138 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title id='desc'>IDBCursor.delete() - object store - remove a record from the object store </title>
+    <script type="text/javascript" src="support.js"></script>
+    <script src="http://w3c-test.org/resources/testharness.js"></script>
+    <script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+    <script type="text/javascript">
+        var objectStoreName = "objectstore";
+        var records = [ { pKey: "primaryKey_0" },
+                        { pKey: "primaryKey_1" }];
+        var count = records.length;
+        var db = null;
+        
+        var t = async_test(document.title); 
+        Initialize();
+        function RunTest()
+        {
+            try
+            {
+                var rqOpen = window.indexedDB.open(databaseName);
+                rqOpen.onsuccess = function(event)
+                {
+                    try
+                    {
+                        db = event.target.result;
+                        db.onerror = FailTest;
+                        var rqVersionChange = db.setVersion("1");
+                        rqVersionChange.onsuccess = function(event)
+                        {
+                            try
+                            {
+                                var objStore = db.createObjectStore(objectStoreName, {keyPath:"pKey"});
+                                for(var i = 0; i < records.length; i++)
+                                {
+                                    objStore.add(records[i]);
+                                }
+                                event.target.transaction.oncomplete = CursorDeleteRecord;
+                            }
+                            catch (ex)
+                            {
+                                FailTest();
+                            }
+                        };
+                    }
+                    catch (ex)
+                    {
+                        FailTest();
+                    }
+                };
+                rqOpen.onerror = FailTest;
+            }
+            catch (ex)
+            {
+                FailTest();
+            }
+        }
+        
+        function CursorDeleteRecord(event)
+        {
+            try
+            {
+                var txn = db.transaction(objectStoreName, IDBTransaction.READ_WRITE);
+                var objStore = txn.objectStore(objectStoreName);
+                var rqCursor = objStore.openCursor();
+                rqCursor.onsuccess = function(event)
+                {
+                    var cursor = event.target.result;
+                    if(cursor)
+                    {
+                        try
+                        {
+                            cursor.delete();
+                        }
+                        catch(ex)
+                        {
+                            FailTest();
+                        }
+                    }
+                    else
+                    {
+                        FailTest();
+                    }
+                };
+                txn.oncomplete = VerifyRecordWasDeleted;
+            }
+            catch (ex)
+            {
+                FailTest();
+            }
+        }
+        
+        function VerifyRecordWasDeleted()
+        {
+            try
+            {
+                var txn = db.transaction(objectStoreName, IDBTransaction.READ_ONLY);
+                var objStore = txn.objectStore(objectStoreName);
+                var rqCursor = objStore.openCursor();
+                rqCursor.onsuccess = function(event)
+                {
+                    var cursor = event.target.result;
+                    if(cursor)
+                    {
+                        try
+                        {
+                            var record = cursor.value;
+                            if(record.pKey == records[1].pKey)
+                            {
+                                PassTest();
+                            }
+                            else
+                            {
+                                FailTest();
+                            }
+                        }
+                        catch(ex)
+                        {
+                            FailTest();
+                        }
+                    }
+                    else
+                    {
+                        PassTest();
+                    }
+                };
+            }
+            catch (ex)
+            {
+                FailTest();
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="log"></div>  
+</body>
+</html>

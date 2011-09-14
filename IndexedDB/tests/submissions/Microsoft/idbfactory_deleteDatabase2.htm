@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title id='desc'>IDBFactory.deleteDatabase() - result of the request is set to null</title>
+    <script type="text/javascript" src="support.js"></script>
+    <script src="http://w3c-test.org/resources/testharness.js"></script>
+    <script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+    <script type="text/javascript">
+        var objectStoreName = "objectstore";
+        var db = null;
+
+        var t = async_test(document.title); 
+        Initialize();
+        function RunTest() {
+            try {
+                var req = window.indexedDB.deleteDatabase(objectStoreName);
+                req.onerror = FailTest;
+                req.onsuccess = function (event) {
+                    if (null == event.target.result) {
+                        PassTest();
+                    }
+                    else {
+                        FailTest();
+                    }
+                }
+            }
+            catch (ex) {
+                FailTest();
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="log"></div>
+</body>
+</html>

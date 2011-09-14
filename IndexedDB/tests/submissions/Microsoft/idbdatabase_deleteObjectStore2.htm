@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title id='desc'>IDBDatabase.deleteObjectStore() - attempt to remove an object store outside of a version change transaction </title>
+    <script type="text/javascript" src="support.js"></script>
+    <script src="http://w3c-test.org/resources/testharness.js"></script>
+    <script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+    <script type="text/javascript">
+        var objectStoreName = "objectstore";
+        var db = null;
+
+        var t = async_test(document.title); 
+        Initialize(); 
+        function RunTest() 
+        {
+            try 
+            {
+                var rqOpen = window.indexedDB.open(databaseName);
+                rqOpen.onsuccess = function (event) 
+                {
+                    try 
+                    {
+                        db = event.target.result;
+                        db.onerror = FailTest;
+                        var rqVersionChange = db.setVersion("1");
+                        rqVersionChange.onsuccess = function (event) 
+                        {
+                            try 
+                            {
+                                var objStore = db.createObjectStore(objectStoreName);
+                            }
+                            catch (ex) 
+                            {
+                                FailTest();
+                            }
+
+                            event.target.transaction.oncomplete = function (event) 
+                            {
+                                try 
+                                {
+                                    event.target.db.deleteObjectStore(objectStoreName);
+                                    FailTest();
+                                }
+                                catch (ex) {
+                                    if (ex.code == IDBDatabaseException.NOT_ALLOWED_ERR) 
+                                    {
+                                        PassTest();
+                                    }
+                                    else 
+                                    {
+                                        FailTest();
+                                    }
+                                }
+                            }
+
+                        };
+                    }
+                    catch (ex) 
+                    {
+                        FailTest();
+                    }
+                };
+                rqOpen.onerror = FailTest;
+            }
+            catch (ex) {
+                FailTest();
+            }
+        }
+            
+    </script>
+</head>
+<body>
+    <div id="log"></div>
+</body>
+</html>

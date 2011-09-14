@@ -1,0 +1,144 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>  
+        <title id='desc'> IDBCursor.update() - index - modify a record in the object store </title>
+        <script type="text/javascript" src="support.js"></script>
+        <script src="http://w3c-test.org/resources/testharness.js"></script>
+        <script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+        <script type="text/javascript">
+            var objectStoreName = "objectstore";
+            var indexName = "index";
+            var records = [ { pKey: "primaryKey_0", iKey: "indexKey_0" },
+                            { pKey: "primaryKey_1", iKey: "indexKey_1" }];
+            var count = records.length;
+            var db = null;
+            
+            var t = async_test(document.title); 
+            Initialize();
+            function RunTest()
+            {
+                try
+                {
+                    var rqOpen = window.indexedDB.open(databaseName);
+                    rqOpen.onsuccess = t.step_func(function(event)
+                    {
+                        try
+                        {
+                            db = event.target.result;
+                            db.onerror = FailTest;
+                            var rqVersionChange = db.setVersion("1");
+                            rqVersionChange.onsuccess = t.step_func(function(event)
+                            {
+                                try
+                                {
+                                    var objStore = db.createObjectStore(objectStoreName, {keyPath:"pKey"});
+                                    objStore.createIndex(indexName, "iKey");
+                                    for(var i = 0; i < records.length; i++)
+                                    {
+                                        objStore.add(records[i]);
+                                    }
+                                    event.target.transaction.oncomplete = t.step_func(CursorUpdateRecord);
+                                }
+                                catch (ex)
+                                {
+                                    FailTest();
+                                }
+                            });
+                        }
+                        catch (ex)
+                        {
+                            FailTest();
+                        }
+                    });
+                    rqOpen.onerror = t.step_func(FailTest);
+                }
+                catch (ex)
+                {
+                    FailTest();
+                }
+            }
+            
+            function CursorUpdateRecord(event)
+            {
+                try
+                {
+                    var txn = db.transaction(objectStoreName, IDBTransaction.READ_WRITE);
+                    var objStore = txn.objectStore(objectStoreName);
+                    var index = objStore.index(indexName);
+                    var rqCursor = index.openCursor();
+                    rqCursor.onsuccess = t.step_func(function(event)
+                    {
+                        var cursor = event.target.result;
+                        if(cursor)
+                        {
+                            try
+                            {
+                                var record = cursor.value;
+                                record.iKey += "_updated";
+                                cursor.update(record);
+                            }
+                            catch(ex)
+                            {
+                                FailTest();
+                            }
+                        }
+                        else
+                        {
+                            FailTest();
+                        }
+                    });
+                    
+                    txn.oncomplete = t.step_func(VerifyRecordWasUpdated);
+                }
+                catch (ex)
+                {
+                    FailTest();
+                }
+            }
+            
+            function VerifyRecordWasUpdated()
+            {
+                try
+                {
+                    var txn = db.transaction(objectStoreName, IDBTransaction.READ_ONLY);
+                    var objStore = txn.objectStore(objectStoreName);
+                    var rqCursor = objStore.openCursor();
+                    rqCursor.onsuccess = t.step_func(function(event)
+                    {
+                        var cursor = event.target.result;
+                        if(cursor)
+                        {
+                            try
+                            {
+                                var record = cursor.value;
+                                if(record.iKey == (records[0].iKey + "_updated"))
+                                {
+                                    PassTest();
+                                }
+                                else
+                                {
+                                    FailTest();
+                                }
+                            }
+                            catch(ex)
+                            {
+                                FailTest();
+                            }
+                        }
+                        else
+                        {
+                            FailTest();
+                        }
+                    });
+                }
+                catch (ex)
+                {
+                    FailTest();
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <div id="log"></div>
+    </body>
+</html>

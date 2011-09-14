@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title id='desc'>IDBDatabase.createObjectStore() - attempt to create an object store with an invalid key path </title>
+    <script type="text/javascript" src="support.js"></script>
+    <script src="http://w3c-test.org/resources/testharness.js"></script>
+    <script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+    <script type="text/javascript">
+        var objectStoreName = "objectstore";
+        var invalidKeyPath = "IETestCenter Invalid KeyPath";
+        var db = null;
+
+        var t = async_test(document.title); 
+        Initialize();
+        function RunTest() 
+        {
+            try 
+            {
+                var rqOpen = window.indexedDB.open(databaseName);
+                rqOpen.onsuccess = function (event) 
+                {
+                    try 
+                    {
+                        db = event.target.result;
+                        db.onerror = FailTest;
+                        var rqVersionChange = db.setVersion("1");
+                        rqVersionChange.onsuccess = function (event) 
+                        {
+                            try 
+                            {
+                                db.createObjectStore(objectStoreName, { keyPath: invalidKeyPath });
+                                FailTest();
+                            }
+                            catch (ex) {
+                                if (ex.code == IDBDatabaseException.NON_TRANSIENT_ERR) 
+                                {
+                                    PassTest();
+                                }
+                                else 
+                                {
+                                    FailTest();
+                                }
+                            }
+                        };
+                    }
+                    catch (ex) 
+                    {
+                        FailTest();
+                    }
+                };
+                rqOpen.onerror = FailTest;
+            }
+            catch (ex) 
+            {
+                FailTest();
+            }
+        }
+            
+    </script>
+</head>
+<body>
+    <div id="log"></div>    
+</body>
+</html>

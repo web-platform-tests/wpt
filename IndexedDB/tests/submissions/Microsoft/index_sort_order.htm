@@ -1,0 +1,113 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>  
+        <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+        <title id='desc'> Verify key sort order in an index is 'number < Date < DOMString' </title>
+        <script type="text/javascript" src="support.js"></script>
+        <script src="http://w3c-test.org/resources/testharness.js"></script>
+        <script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+        <script type="text/javascript">
+            var objectStoreName = "objectstore";
+            var indexName = "index";
+            var d = new Date();
+            var records = [{foo:d},
+                        {foo:"test"},
+                        {foo:1},
+                        {foo:2.55}];
+            var expectedKeyOrder = [1, 2.55, d, "test"];
+            var db = null;
+            
+            var t = async_test(document.title);
+            Initialize();
+            function RunTest()
+            {
+                try
+                {
+                    var rqOpen = window.indexedDB.open(databaseName);
+                    rqOpen.onsuccess = function(event)
+                    {
+                        try
+                        {
+                            db = event.target.result;
+                            db.onerror = FailTest;
+                            var rqVersionChange = db.setVersion("1");
+                            rqVersionChange.onsuccess = function(event)
+                            {
+                                try
+                                {
+                                    var objStore = db.createObjectStore(objectStoreName, {autoIncrement:true});
+                                    var index = objStore.createIndex(indexName, "foo");
+                                    for (var i = 0; i < records.length; i++)
+                                    {
+                                        objStore.add(records[i]);
+                                    }
+                                    event.target.transaction.oncomplete = VerifyKeyOrderIsCorrect;
+                                }
+                                catch (ex)
+                                {
+                                    FailTest();
+                                }
+                            };
+                        }
+                        catch (ex)
+                        {
+                            FailTest();
+                        }
+                    };
+                    rqOpen.onerror = FailTest;
+                }
+                catch (ex)
+                {
+                    FailTest();
+                }
+            }
+            
+            function VerifyKeyOrderIsCorrect(event)
+            {
+                try
+                {
+                    var txn = db.transaction(objectStoreName, IDBTransaction.READ_ONLY);
+                    var objStore = txn.objectStore(objectStoreName);
+                    var index = objStore.index(indexName);
+                    
+                    var count = 0;
+                    var rqCursor = index.openCursor();
+                    rqCursor.onsuccess = function(event)
+                    {
+                        try
+                        {
+                            var cursor = event.target.result;
+                            if (cursor)
+                            {
+                                if (expectedKeyOrder[count].valueOf() != cursor.key.valueOf())
+                                {
+                                    FailTest();
+                                }
+                                else
+                                {
+                                    count++;
+                                    cursor.continue();
+                                }
+                            }
+                            else
+                            {
+                                PassTest();
+                            }
+                        }
+                        catch (ex)
+                        {
+                            FailTest();
+                        }
+                    }
+                }
+                catch (ex)
+                {
+                    FailTest();
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <div id="log"></div>
+    </body>
+</html>

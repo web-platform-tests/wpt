@@ -1,0 +1,25 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>W3C WebSocket API - Send unpaired surrogates data - Secure WebSocket</title>
+    <script type="text/javascript" src="http://w3c-test.org/resources/testharness.js"></script>
+    <script type="text/javascript" src="http://w3c-test.org/resources/testharnessreport.js"></script>
+    <script type="text/javascript" src="websocket.js"></script>
+</head>
+<body>
+    <div id="log"></div>
+    <script type="text/javascript">
+
+        var test = async_test("W3C WebSocket API - Secure Send unpaired surrogates - SYNTAX_ERR is returned");
+
+        var wsocket = CreateWebSocket(true, false, false);
+       
+        wsocket.addEventListener('open', test.step_func(function (evt) {
+            assert_throws("SYNTAX_ERR", function () { wsocket.send("\uD807") })
+            clearTimeout(timeOut);
+            test.done();
+        }), true);
+
+    </script>
+</body>
+</html>

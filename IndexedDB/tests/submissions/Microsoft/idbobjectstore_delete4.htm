@@ -1,0 +1,86 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>  
+        <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+        <title id='desc'> IDBObjectStore.delete() - delete removes record (out-of-line keys) </title>
+        <script type="text/javascript" src="support.js"></script>
+        <script src="http://w3c-test.org/resources/testharness.js"></script>
+        <script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+        <script type="text/javascript">
+            var objectStoreName = "objectstore";
+            var record = {property:"data"};
+            var key = 1;
+            var db = null;
+            
+            var t = async_test(document.title);
+            Initialize();
+            function RunTest()
+            {
+                try
+                {
+                    var rqOpen = window.indexedDB.open(databaseName);
+                    rqOpen.onsuccess = function(event)
+                    {
+                        try
+                        {
+                            db = event.target.result;
+                            db.onerror = FailTest;
+                            var rqVersionChange = db.setVersion("1");
+                            rqVersionChange.onsuccess = function(event)
+                            {
+                                try
+                                {
+                                    var objStore = db.createObjectStore(objectStoreName);
+                                    objStore.add(record, key);
+                                    event.target.transaction.oncomplete = DeleteRecord;
+                                }
+                                catch (ex)
+                                {
+                                    FailTest();
+                                }
+                            };
+                        }
+                        catch (ex)
+                        {
+                            FailTest();
+                        }
+                    };
+                    rqOpen.onerror = FailTest;
+                }
+                catch (ex)
+                {
+                    FailTest();
+                }
+            }
+            
+            function DeleteRecord(event)
+            {
+                try
+                {
+                    var txn = db.transaction(objectStoreName, IDBTransaction.READ_WRITE);
+                    var objStore = txn.objectStore(objectStoreName);
+                    var rqDelete = objStore.delete(key);
+                    rqDelete.onsuccess = function(event)
+                    {
+                        if (true === event.target.result)
+                        {
+                            PassTest();
+                        }
+                        else
+                        {
+                            FailTest();
+                        }
+                    };
+                    
+                }
+                catch (ex)
+                {
+                    FailTest();
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <div id="log"></div>
+    </body>
+</html>

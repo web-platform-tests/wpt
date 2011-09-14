@@ -1,0 +1,105 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title id='desc'>IDBCursor.update() - object store - attempt to modify a record in a read-only transaction </title>
+    <script type="text/javascript" src="support.js"></script>
+    <script src="http://w3c-test.org/resources/testharness.js"></script>
+    <script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+    <script type="text/javascript">
+        var objectStoreName = "objectstore";
+        var records = [{ pKey: "primaryKey_0" },
+                            { pKey: "primaryKey_1"}];
+        var count = records.length;
+        var db = null;
+
+        var t = async_test(document.title); 
+        Initialize();
+        function RunTest() 
+        {
+            try 
+            {
+                var rqOpen = window.indexedDB.open(databaseName);
+                rqOpen.onsuccess = function (event) 
+                {
+                    try 
+                    {
+                        db = event.target.result;
+                        db.onerror = FailTest;
+                        var rqVersionChange = db.setVersion("1");
+                        rqVersionChange.onsuccess = function (event) 
+                        {
+                            try 
+                            {
+                                var objStore = db.createObjectStore(objectStoreName, { keyPath: "pKey" });
+                                for (var i = 0; i < records.length; i++) 
+                                {
+                                    objStore.add(records[i]);
+                                }
+                                event.target.transaction.oncomplete = CursorUpdateRecord;
+                            }
+                            catch (ex) 
+                            {
+                                FailTest();
+                            }
+                        };
+                    }
+                    catch (ex) 
+                    {
+                        FailTest();
+                    }
+                };
+                rqOpen.onerror = FailTest;
+            }
+            catch (ex) 
+            {
+                FailTest();
+            }
+        }
+
+        function CursorUpdateRecord(event) 
+        {
+            try 
+            {
+                var txn = db.transaction(objectStoreName, IDBTransaction.READ_ONLY);
+                var objStore = txn.objectStore(objectStoreName);
+                var rqCursor = objStore.openCursor();
+                rqCursor.onsuccess = function (event) 
+                {
+                    var cursor = event.target.result;
+                    if (cursor) 
+                    {
+                        try 
+                        {
+                            var record = cursor.value;
+                            cursor.update(record);
+                            FailTest();
+                        }
+                        catch (ex) 
+                        {
+                            if (ex.code == IDBDatabaseException.READ_ONLY_ERR) 
+                            {
+                                PassTest();
+                            }
+                            else 
+                            {
+                                FailTest();
+                            }
+                        }
+                    }
+                    else 
+                    {
+                        FailTest();
+                    }
+                };
+            }
+            catch (ex) 
+            {
+                FailTest();
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="log"></div>
+</body>
+</html>

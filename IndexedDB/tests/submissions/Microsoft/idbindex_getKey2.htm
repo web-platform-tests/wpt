@@ -1,0 +1,92 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>  
+        <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+        <title id='desc'> IDBIndex.getKey() - returns the record's primary key where the index contains duplicate values </title>
+        <script type="text/javascript" src="support.js"></script>
+        <script src="http://w3c-test.org/resources/testharness.js"></script>
+        <script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+        <script type="text/javascript">
+            var objectStoreName = "objectstore";
+            var indexName = "index";
+            var records = [{key:1, indexedProperty:"data"},
+                           {key:2, indexedProperty:"data"},
+                           {key:3, indexedProperty:"data"}];
+            var db = null;
+            
+            var t = async_test(document.title);
+            Initialize();
+            function RunTest()
+            {
+                try
+                {
+                    var rqOpen = window.indexedDB.open(databaseName);
+                    rqOpen.onsuccess = function(event)
+                    {
+                        try
+                        {
+                            db = event.target.result;
+                            db.onerror = FailTest;
+                            var rqVersionChange = db.setVersion("1");
+                            rqVersionChange.onsuccess = function(event)
+                            {
+                                try
+                                {
+                                    var objStore = db.createObjectStore(objectStoreName, {keyPath:"key"});
+                                    var index = objStore.createIndex(indexName, "indexedProperty");
+                                    for (var i = 0; i < records.length; i++)
+                                    {
+                                        objStore.add(records[i]);
+                                    }
+                                    event.target.transaction.oncomplete = GetRecordFromIndex;
+                                }
+                                catch (ex)
+                                {
+                                    FailTest();
+                                }
+                            };
+                        }
+                        catch (ex)
+                        {
+                            FailTest();
+                        }
+                    };
+                    rqOpen.onerror = FailTest;
+                }
+                catch (ex)
+                {
+                    FailTest();
+                }
+            }
+            
+            function GetRecordFromIndex(event)
+            {
+                try
+                {
+                    var txn = db.transaction(objectStoreName, IDBTransaction.READ_ONLY);
+                    var objStore = txn.objectStore(objectStoreName);
+                    var index = objStore.index(indexName);
+                    var rqGet = index.getKey(records[0].indexedProperty);
+                    rqGet.onsuccess = function(event)
+                    {
+                        if (records[0].key == event.target.result)
+                        {
+                            PassTest();
+                        }
+                        else
+                        {
+                            FailTest();
+                        }
+                    };
+                }
+                catch (ex)
+                {
+                    FailTest();
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <div id="log"></div>
+    </body>
+</html>

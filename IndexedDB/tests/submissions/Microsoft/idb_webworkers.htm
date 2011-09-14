@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title id='desc'>IndexedDB inside of a WebWorker </title>
+    <script type="text/javascript" src="support.js"></script>
+    <script src="http://w3c-test.org/resources/testharness.js"></script>
+    <script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+    <script type="text/javascript">
+    var db = null;
+        var t = async_test(document.title); 
+        RunTest();
+        function RunTest() {
+            try {
+                var worker = new Worker("idbworker.js");
+                worker.onmessage = t.step_func(function (event) 
+                {
+                    if (event.data) {
+                        PassTest();
+                    }
+                    else {
+                        FailTest();
+                    }
+                });
+
+                worker.postMessage(1);
+            }
+            catch (ex) {
+                FailTest();
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="log"></div>
+</body>
+</html>

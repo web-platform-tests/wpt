@@ -1,0 +1,113 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>  
+        <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+        <title id='desc'> IDBObjectStore.put() - autoIncrement and out-of-line keys </title>
+        <script type="text/javascript" src="support.js"></script>
+        <script src="http://w3c-test.org/resources/testharness.js"></script>
+        <script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+        <script type="text/javascript">
+            var objectStoreName = "objectstore";
+            var record = {property:"data"};
+            var db = null;
+            
+            var t = async_test(document.title);
+            Initialize();
+            function RunTest()
+            {
+                try
+                {
+                    var rqOpen = window.indexedDB.open(databaseName);
+                    rqOpen.onsuccess = function(event)
+                    {
+                        try
+                        {
+                            db = event.target.result;
+                            db.onerror = FailTest;
+                            var rqVersionChange = db.setVersion("1");
+                            rqVersionChange.onsuccess = function(event)
+                            {
+                                try
+                                {
+                                    var objStore = db.createObjectStore(objectStoreName, {autoIncrement:true});
+                                    objStore.put(record);
+                                    objStore.put(record);
+                                    objStore.put(record);
+                                    objStore.put(record);
+                                    event.target.transaction.oncomplete = VerifyKeysAreCorrect;
+                                }
+                                catch (ex)
+                                {
+                                    FailTest();
+                                }
+                            };
+                        }
+                        catch (ex)
+                        {
+                            FailTest();
+                        }
+                    };
+                    rqOpen.onerror = FailTest;
+                }
+                catch (ex)
+                {
+                    FailTest();
+                }
+            }
+            
+            function VerifyKeysAreCorrect(event)
+            {
+                try
+                {
+                    var txn = db.transaction(objectStoreName, IDBTransaction.READ_ONLY);
+                    var objStore = txn.objectStore(objectStoreName);
+                    
+                    var previousValue = null;
+                    var rqCursor = objStore.openCursor();
+                    rqCursor.onsuccess = function(event)
+                    {
+                        try
+                        {
+                            var cursor = this.result;
+                            if (cursor)
+                            {
+                                if (null == previousValue)
+                                {
+                                    previousValue = cursor.key;
+                                    cursor.continue();
+                                }
+                                else
+                                {
+                                    if (cursor.key != previousValue+1)
+                                    {
+                                        FailTest();
+                                    }
+                                    else
+                                    {
+                                        previousValue++;
+                                        cursor.continue();
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                PassTest();
+                            }
+                        }
+                        catch (ex)
+                        {
+                            FailTest();
+                        }
+                    };
+                }
+                catch (ex)
+                {
+                    FailTest();
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <div id="log"></div>
+    </body>
+</html>

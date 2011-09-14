@@ -1,0 +1,91 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>  
+        <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+        <title id='desc'> IDBObjectStore.add() - object store's key path is an object attribute </title>
+        <script type="text/javascript" src="support.js"></script>
+        <script src="http://w3c-test.org/resources/testharness.js"></script>
+        <script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+        <script type="text/javascript">
+            var objectStoreName = "objectstore";
+            var record = {test:{obj:{key:1}}, property:"data"};
+            var db = null;
+            
+            var t = async_test(document.title);
+            Initialize();
+            function RunTest()
+            {
+                try
+                {
+                    var rqOpen = window.indexedDB.open(databaseName);
+                    rqOpen.onsuccess = function(event)
+                    {
+                        try
+                        {
+                            db = event.target.result;
+                            db.onerror = FailTest;
+                            var rqVersionChange = db.setVersion("1");
+                            rqVersionChange.onsuccess = function(event)
+                            {
+                                try
+                                {
+                                    var objStore = db.createObjectStore(objectStoreName, {keyPath:"test.obj.key"});
+                                    objStore.add(record);
+                                    event.target.transaction.oncomplete = VerifyRecordWasAdded;
+                                }
+                                catch (ex)
+                                {
+                                    FailTest();
+                                }
+                            };
+                        }
+                        catch (ex)
+                        {
+                            FailTest();
+                        }
+                    };
+                    rqOpen.onerror = FailTest;
+                }
+                catch (ex)
+                {
+                    FailTest();
+                }
+            }
+            
+            function VerifyRecordWasAdded(event)
+            {
+                try
+                {
+                    var txn = db.transaction(objectStoreName, IDBTransaction.READ_ONLY);
+                    var objStore = txn.objectStore(objectStoreName);
+                    var rqGet = objStore.get(record.test.obj.key);
+                    rqGet.onsuccess = function(event)
+                    {
+                        try
+                        {
+                            if (record.property == event.target.result.property)
+                            {
+                                PassTest();
+                            }
+                            else
+                            {
+                                FailTest();
+                            }
+                        }
+                        catch (ex)
+                        {
+                            FailTest();
+                        }
+                    };
+                }
+                catch (ex)
+                {
+                    FailTest();
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <div id="log"></div>
+    </body>
+</html>

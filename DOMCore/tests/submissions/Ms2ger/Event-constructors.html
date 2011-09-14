@@ -5,8 +5,8 @@
 <div id=log></div>
 <script>
 test(function() {
-  var ev = new Event("")
-  assert_equals(ev.type, "")
+  var ev = new Event("test")
+  assert_equals(ev.type, "test")
   assert_equals(ev.target, null)
   assert_equals(ev.currentTarget, null)
   assert_equals(ev.eventPhase, Event.AT_TARGET)

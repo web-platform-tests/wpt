@@ -39,7 +39,7 @@ test(function() {
   assert_equals(ev.type, "Xx")
   assert_equals(ev.bubbles, true)
   assert_equals(ev.cancelable, false)
-  asswert_equals(ev.sweet, undefined)
+  assert_equals(ev.sweet, undefined)
 })
 test(function() {
   var ev = new CustomEvent("$", {detail: 54, sweet: "x", sweet2: "x", cancelable:true})

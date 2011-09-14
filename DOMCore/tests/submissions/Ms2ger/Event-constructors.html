@@ -7,8 +7,15 @@
 test(function() {
   var ev = new Event("")
   assert_equals(ev.type, "")
+  assert_equals(ev.target, null)
+  assert_equals(ev.currentTarget, null)
+  assert_equals(ev.eventPhase, Event.AT_TARGET)
   assert_equals(ev.bubbles, false)
   assert_equals(ev.cancelable, false)
+  assert_equals(ev.defaultPrevented, false)
+  assert_equals(ev.isTrusted, false)
+  assert_true(ev.timeStamp)
+  assert_true("initEvent" in ev)
 })
 test(function() {
   var ev = new Event("I am an event", { bubbles: true, cancelable: false})

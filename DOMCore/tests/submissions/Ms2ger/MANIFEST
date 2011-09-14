@@ -2,6 +2,7 @@ attributes.html
 support attributes.js
 case.html
 support case.js
+support common.js
 support constants.js
 CharacterData-appendData.html
 CharacterData-deleteData.html
@@ -76,3 +77,19 @@ Node-parentNode.html
 Node-removeChild.html
 NodeFilter-constants.html
 support productions.js
+Range-attributes.html
+Range-cloneContents.html
+Range-cloneRange.html
+Range-collapse.html
+Range-commonAncestorContainer.html
+Range-comparePoint.html
+Range-deleteContents.html
+Range-detach.html
+Range-extractContents.html
+Range-insertNode.html
+Range-intersectsNode.html
+Range-mutations.html
+Range-selectNode.html
+Range-set.html
+Range-surroundContents.html
+support Range-test-iframe.html

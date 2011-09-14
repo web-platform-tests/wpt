@@ -37,7 +37,7 @@ test(function() {
 test(function() {
   var ev = new Event("Xx", {bubbles: true, cancelable: false, sweet: "x"})
   assert_equals(ev.type, "Xx")
-  assert_equals(ev.bubbles, false)
+  assert_equals(ev.bubbles, true)
   assert_equals(ev.cancelable, false)
   asswert_equals(ev.sweet, undefined)
 })

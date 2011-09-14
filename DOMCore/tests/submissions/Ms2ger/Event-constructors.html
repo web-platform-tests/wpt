@@ -14,7 +14,7 @@ test(function() {
   assert_equals(ev.cancelable, false)
   assert_equals(ev.defaultPrevented, false)
   assert_equals(ev.isTrusted, false)
-  assert_true(ev.timeStamp)
+  assert_true(ev.timeStamp > 0)
   assert_true("initEvent" in ev)
 })
 test(function() {

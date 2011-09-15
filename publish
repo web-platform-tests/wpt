@@ -5,8 +5,10 @@ set -e
 cd ~/webroot/spec/editing
 git pull
 git push github
-cd ~/webroot/spec/hg-editing
-hg pull ~/webroot/tmp/editing
-hg push https://dvcs.w3.org/hg/editing
 cd ~/webroot/tmp/editing
 git fetch --all
+cd ~/webroot/spec
+rm -rf hg-editing || true
+hg clone ~/webroot/tmp/editing hg-editing
+cd hg-editing
+hg push https://dvcs.w3.org/hg/editing

@@ -2963,12 +2963,15 @@ function setSelectionValue(command, newValue) {
 	&& getActiveRange().startOffset != 0
 	&& getActiveRange().startOffset != getNodeLength(getActiveRange().startContainer)) {
 		// Account for browsers not following range mutation rules
-		var newNode = getActiveRange().startContainer.splitText(getActiveRange().startOffset);
 		var newActiveRange = document.createRange();
+		var newNode;
 		if (getActiveRange().startContainer == getActiveRange().endContainer) {
 			var newEndOffset = getActiveRange().endOffset - getActiveRange().startOffset;
+			newNode = getActiveRange().startContainer.splitText(getActiveRange().startOffset);
 			newActiveRange.setEnd(newNode, newEndOffset);
 			getActiveRange().setEnd(newNode, newEndOffset);
+		} else {
+			newNode = getActiveRange().startContainer.splitText(getActiveRange().startOffset);
 		}
 		newActiveRange.setStart(newNode, 0);
 		getSelection().removeAllRanges();

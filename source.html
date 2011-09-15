@@ -3078,10 +3078,21 @@ or "900"
 <!-- @} -->
 <h3><dfn>The <code title>createLink</code> command</dfn></h3>
 <!-- @{ -->
-<p class=comments> If the selection doesn't contain anything (meaning, e.g.,
-deleteContents() doesn't change anything), then Chrome 12 dev inserts a link at
-the selection start, with the text equal to the link URL.  Other browsers don't
-do it, so I don't either.
+<div class=comments>
+<p>If the selection doesn't contain anything (meaning, e.g., deleteContents()
+doesn't change anything), then Chrome 12 dev inserts a link at the selection
+start, with the text equal to the link URL.  Other browsers don't do it, so I
+don't either.
+
+<p>IE10PP2, Firefox 7.0a2, Chrome 14 dev, and Opera 11.50 all do not support
+indeterminate, state, or value for createLink or unlink.  I previously defined
+indeterminate and value anyway because they make sense, but then <a
+href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=14067>undefined them</a>.
+The nontrivial thing is what value to return if there's no link, since any
+string can occur as a link href, in principle.
+
+<p>What are the use-cases for indeterm, state, or value for createLink/unlink?
+</div>
 
 <p><span>Action</span>:
 
@@ -3129,12 +3140,6 @@ do it, so I don't either.
 
   <li><span>Set the selection's value</span> to <var>value</var>.
 </ol>
-
-<p class=comments>IE10PP2, Firefox 7.0a2, Chrome 14 dev, and Opera 11.50 all do
-not support indeterminate, state, or value for createLink or unlink.  I define
-indeterminate and value anyway because they make sense.
-
-<p><span>Standard inline value command</span>
 
 <!-- @} -->
 <h3><dfn>The <code title>fontName</code> command</dfn></h3>
@@ -3880,12 +3885,17 @@ selection's value</span> to "underline".
 <!-- @} -->
 <h3><dfn>The <code title>unlink</code> command</dfn></h3>
 <!-- @{ -->
-<p class=comments>IE 9 RC unlinks the whole link you're pointing at, while
-others only unlink the current text.  The latter behavior seems less expected,
-as with createLink, although I can't articulate precisely why.  Word 2007 and
-OpenOffice.org 3.2.1 (Ubuntu) seem to give an option to remove the whole link
-or none of it, which backs the spec's requirement.  See also #whatwg logs
-starting at 2011-05-13 at 16:53 EDT (UTC-0400).
+<div class=comments>
+<p>IE 9 RC unlinks the whole link you're pointing at, while others only unlink
+the current text.  The latter behavior seems less expected, as with createLink,
+although I can't articulate precisely why.  Word 2007 and OpenOffice.org 3.2.1
+(Ubuntu) seem to give an option to remove the whole link or none of it, which
+backs the spec's requirement.  See also #whatwg logs starting at 2011-05-13 at
+16:53 EDT (UTC-0400).
+
+<p>See comment for <span>the <code title>createLink</code> command</span> about
+indeterm/state/value.
+</div>
 
 <p><span>Action</span>:
 
@@ -3896,12 +3906,6 @@ starting at 2011-05-13 at 16:53 EDT (UTC-0400).
 
   <li><span>Clear the value</span> of each member of <var>hyperlinks</var>.
 </ol>
-
-<p class=comments>IE10PP2, Firefox 7.0a2, Chrome 14 dev, and Opera 11.50 all do
-not support indeterminate, state, or value for createLink or unlink.  I define
-indeterminate and value anyway because they make sense.
-
-<p><span>Standard inline value command</span>
 
 <!-- @} -->
 

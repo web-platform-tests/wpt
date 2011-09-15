@@ -3114,7 +3114,7 @@ commands.createlink = {
 
 		// "Set the selection's value to value."
 		setSelectionValue("createlink", value);
-	}, standardInlineValueCommand: true
+	}
 };
 
 //@}
@@ -3649,7 +3649,7 @@ commands.unlink = {
 		for (var i = 0; i < hyperlinks.length; i++) {
 			clearValue(hyperlinks[i], "unlink");
 		}
-	}, standardInlineValueCommand: true
+	}
 };
 
 //@}

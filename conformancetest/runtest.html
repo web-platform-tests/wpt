@@ -143,10 +143,6 @@ function runTest(browserTest) {
 			"Unexpected innerHTML (after normalizing inline style)");
 	}, testName + " compare innerHTML");
 
-	// Temporary hack for http://www.w3.org/Bugs/Public/show_bug.cgi?id=14067
-	delete expectedQueryResults.createlink;
-	delete expectedQueryResults.unlink;
-
 	for (var command in expectedQueryResults) {
 		var descriptions = [
 			'queryCommandIndeterm("' + command + '") before',

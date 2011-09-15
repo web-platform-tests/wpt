@@ -2943,9 +2943,9 @@ function setSelectionValue(command, newValue) {
 		if (newValue === null) {
 			unsetValueOverride(command);
 
-		// "Otherwise, if command has a value specified, set the value override
-		// to new value."
-		} else if ("value" in commands[command]) {
+		// "Otherwise, if command is "createLink" or it has a value specified,
+		// set the value override to new value."
+		} else if (command == "createlink" || "value" in commands[command]) {
 			setValueOverride(command, newValue);
 		}
 
@@ -3114,7 +3114,7 @@ commands.createlink = {
 
 		// "Set the selection's value to value."
 		setSelectionValue("createlink", value);
-	}, standardInlineValueCommand: true
+	}
 };
 
 //@}
@@ -3649,7 +3649,7 @@ commands.unlink = {
 		for (var i = 0; i < hyperlinks.length; i++) {
 			clearValue(hyperlinks[i], "unlink");
 		}
-	}, standardInlineValueCommand: true
+	}
 };
 
 //@}
@@ -4221,8 +4221,9 @@ function recordCurrentStatesAndValues() {
 		return overrides;
 	}
 
-	// "Add ("createLink", value for "createLink") to overrides."
-	overrides.push(["createlink", commands.createlink.value()]);
+	// "Add ("createLink", node's effective command value for "createLink") to
+	// overrides."
+	overrides.push(["createlink", getEffectiveCommandValue(node, "createlink")]);
 
 	// "For each command in the list "bold", "italic", "strikethrough",
 	// "subscript", "superscript", "underline", in order: if node's effective
@@ -4273,14 +4274,34 @@ function restoreStatesAndValues(overrides) {
 			&& myQueryCommandState(command) != override) {
 				myExecCommand(command);
 
-			// "Otherwise, if override is a string, and command is not
-			// "fontSize", and queryCommandValue(command) returns something not
-			// equivalent to override, call execCommand(command, false,
-			// override)."
+			// "Otherwise, if override is a string, and command is neither
+			// "createLink" nor "fontSize", and queryCommandValue(command)
+			// returns something not equivalent to override, call
+			// execCommand(command, false, override)."
 			} else if (typeof override == "string"
+			&& command != "createlink"
 			&& command != "fontsize"
 			&& !areEquivalentValues(command, myQueryCommandValue(command), override)) {
 				myExecCommand(command, false, override);
+
+			// "Otherwise, if override is a string; and command is
+			// "createLink"; and either there is a value override for
+			// "createLink" that is not equal to override, or there is no value
+			// override for "createLink" and node's effective command value for
+			// "createLink" is not equal to override: call
+			// execCommand("createLink", false, override)."
+			} else if (typeof override == "string"
+			&& command == "createlink"
+			&& (
+				(
+					getValueOverride("createlink") !== undefined
+					&& getValueOverride("createlink") !== override
+				) || (
+					getValueOverride("createlink") === undefined
+					&& getEffectiveCommandValue(node, "createlink") !== override
+				)
+			)) {
+				myExecCommand("createlink", false, override);
 
 			// "Otherwise, if override is a string; and command is "fontSize";
 			// and either there is a value override for "fontSize" that is not

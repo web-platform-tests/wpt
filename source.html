@@ -2880,8 +2880,9 @@ desired.
     <li>If <var>new value</var> is null, unset the <span>value override</span>
     (if any).
 
-    <li>Otherwise, if <var>command</var> has a <span>value</span> specified,
-    set the <span>value override</span> to <var>new value</var>.
+    <li>Otherwise, if <var>command</var> is "createLink" or it has a
+    <span>value</span> specified, set the <span>value override</span> to
+    <var>new value</var>.
 
     <li>Abort these steps.
   </ol>
@@ -3078,10 +3079,21 @@ or "900"
 <!-- @} -->
 <h3><dfn>The <code title>createLink</code> command</dfn></h3>
 <!-- @{ -->
-<p class=comments> If the selection doesn't contain anything (meaning, e.g.,
-deleteContents() doesn't change anything), then Chrome 12 dev inserts a link at
-the selection start, with the text equal to the link URL.  Other browsers don't
-do it, so I don't either.
+<div class=comments>
+<p>If the selection doesn't contain anything (meaning, e.g., deleteContents()
+doesn't change anything), then Chrome 12 dev inserts a link at the selection
+start, with the text equal to the link URL.  Other browsers don't do it, so I
+don't either.
+
+<p>IE10PP2, Firefox 7.0a2, Chrome 14 dev, and Opera 11.50 all do not support
+indeterminate, state, or value for createLink or unlink.  I previously defined
+indeterminate and value anyway because they make sense, but then <a
+href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=14067>undefined them</a>.
+The nontrivial thing is what value to return if there's no link, since any
+string can occur as a link href, in principle.
+
+<p>What are the use-cases for indeterm, state, or value for createLink/unlink?
+</div>
 
 <p><span>Action</span>:
 
@@ -3129,12 +3141,6 @@ do it, so I don't either.
 
   <li><span>Set the selection's value</span> to <var>value</var>.
 </ol>
-
-<p class=comments>IE10PP2, Firefox 7.0a2, Chrome 14 dev, and Opera 11.50 all do
-not support indeterminate, state, or value for createLink or unlink.  I define
-indeterminate and value anyway because they make sense.
-
-<p><span>Standard inline value command</span>
 
 <!-- @} -->
 <h3><dfn>The <code title>fontName</code> command</dfn></h3>
@@ -3880,12 +3886,17 @@ selection's value</span> to "underline".
 <!-- @} -->
 <h3><dfn>The <code title>unlink</code> command</dfn></h3>
 <!-- @{ -->
-<p class=comments>IE 9 RC unlinks the whole link you're pointing at, while
-others only unlink the current text.  The latter behavior seems less expected,
-as with createLink, although I can't articulate precisely why.  Word 2007 and
-OpenOffice.org 3.2.1 (Ubuntu) seem to give an option to remove the whole link
-or none of it, which backs the spec's requirement.  See also #whatwg logs
-starting at 2011-05-13 at 16:53 EDT (UTC-0400).
+<div class=comments>
+<p>IE 9 RC unlinks the whole link you're pointing at, while others only unlink
+the current text.  The latter behavior seems less expected, as with createLink,
+although I can't articulate precisely why.  Word 2007 and OpenOffice.org 3.2.1
+(Ubuntu) seem to give an option to remove the whole link or none of it, which
+backs the spec's requirement.  See also #whatwg logs starting at 2011-05-13 at
+16:53 EDT (UTC-0400).
+
+<p>See comment for <span>the <code title>createLink</code> command</span> about
+indeterm/state/value.
+</div>
 
 <p><span>Action</span>:
 
@@ -3896,12 +3907,6 @@ starting at 2011-05-13 at 16:53 EDT (UTC-0400).
 
   <li><span>Clear the value</span> of each member of <var>hyperlinks</var>.
 </ol>
-
-<p class=comments>IE10PP2, Firefox 7.0a2, Chrome 14 dev, and Opera 11.50 all do
-not support indeterminate, state, or value for createLink or unlink.  I define
-indeterminate and value anyway because they make sense.
-
-<p><span>Standard inline value command</span>
 
 <!-- @} -->
 
@@ -4437,8 +4442,8 @@ algorithm returns true:
 
   <li>If <var>node</var> is null, return <var>overrides</var>.
 
-  <li>Add ("createLink", <span>value</span> for "createLink") to
-  <var>overrides</var>.
+  <li>Add ("createLink", <var>node</var>'s <span>effective command value</span>
+  for "createLink") to <var>overrides</var>.
 
   <li>
   <p class=comments>Thus we will set state overrides based on the first
@@ -4493,12 +4498,25 @@ algorithm returns true:
     title=execCommand()>execCommand(<var>command</var>)</code>.
 
     <li>Otherwise, if <var>override</var> is a string, and <var>command</var>
-    is not "fontSize", and <code
+    is neither "createLink" nor "fontSize", and <code
     title=queryCommandValue()>queryCommandValue(<var>command</var>)</code>
     returns something not <span title="equivalent values">equivalent</span> to
     <var>override</var>, call <code
     title=execCommand()>execCommand(<var>command</var>, false,
     <var>override</var>)</code>.
+
+    <li>
+    <p class=comments>This special case is needed because <a
+    href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=14067>createLink has no
+    value</a>.
+    
+    <p>Otherwise, if <var>override</var> is a string; and <var>command</var>
+    is "createLink"; and either there is a <span>value override</span> for
+    "createLink" that is not equal to <var>override</var>, or there is no
+    <span>value override</span> for "createLink" and <var>node</var>'s
+    <span>effective command value</span> for "createLink" is not equal to
+    <var>override</var>: call [[execcommand|"createLink", false,
+    <var>override</var>]].
 
     <li>Otherwise, if <var>override</var> is a string; and <var>command</var>
     is "fontSize"; and either there is a <span>value override</span> for

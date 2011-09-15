@@ -6,7 +6,7 @@ cd ~/webroot/spec/editing
 git pull
 git push github
 cd ~/webroot/spec/hg-editing
-hg pull
+hg pull ~/webroot/tmp/editing
 hg push https://dvcs.w3.org/hg/editing
 cd ~/webroot/tmp/editing
 git fetch --all

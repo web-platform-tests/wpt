@@ -2063,16 +2063,7 @@ function getEffectiveCommandValue(node, command) {
 			node = node.parentNode;
 		}
 
-		// "If the resolved value of "background-color" on node is a fully
-		// transparent value, return "rgb(255, 255, 255)"."
-		if (getComputedStyle(node).backgroundColor == "rgba(0, 0, 0, 0)"
-        || getComputedStyle(node).backgroundColor === ""
-        || getComputedStyle(node).backgroundColor == "transparent") {
-			return "rgb(255, 255, 255)";
-		}
-
-		// "Otherwise, return the resolved value of "background-color" for
-		// node."
+		// "Return the resolved value of "background-color" for node."
 		return getComputedStyle(node).backgroundColor;
 	}
 

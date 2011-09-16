@@ -2002,11 +2002,28 @@ properties.
     any fully transparent value, and <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is an
     <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, set <var title="">node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
-    <li>If the <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved value</a> of "background-color" on <var title="">node</var> is
-    a fully transparent value, return "rgb(255, 255, 255)".
+    <li>
+    <div class=comments>
+    <p>What happens if everything's background is fully transparent?  See <a href="http://www.w3.org/Bugs/Public/show_bug.cgi?id=14068">bug</a>.  If you
+    do queryCommandValue() for backColor/hiliteColor when no backgrounds are
+    set anywhere, so it goes up to the root element, no two engines agree.
+    IE10PP2 just returns a random-looking number (16777215).  Firefox 8.0a2
+    returns "transparent", Chrome 15 dev returns "rgba(0, 0, 0, 0)", and Opera
+    11.50 returns "rgb(255, 255, 255)".
 
-    <li>Otherwise, return the <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved value</a> of "background-color" for
-    <var title="">node</var>.
+    <p>Opera's behavior is incorrect.  The current page might be an iframe, in
+    which case the background really will be transparent and the (inaccessible)
+    background color of the parent page will show through.  Also, the user
+    might have changed their preferences, but I'm not too worried about that.
+
+    <p>So instead we just return the value as-is.  This means that it will be
+    fully transparent, which is perhaps somewhat useless information, but it's
+    the best we can do.  More generally, any non-opaque value is not going to
+    tell you what you actually want, namely "what color is the user actually
+    seeing?"  We have no realistic way to work around this in the general case.
+    </div>
+
+    <p>Return the <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved value</a> of "background-color" for <var title="">node</var>.
   </ol>
 
   <li>If <var title="">command</var> is "subscript" or "superscript":

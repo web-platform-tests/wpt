@@ -4509,7 +4509,7 @@ algorithm returns true:
     <p class=comments>This special case is needed because <a
     href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=14067>createLink has no
     value</a>.
-    
+
     <p>Otherwise, if <var>override</var> is a string; and <var>command</var>
     is "createLink"; and either there is a <span>value override</span> for
     "createLink" that is not equal to <var>override</var>, or there is no
@@ -4518,13 +4518,23 @@ algorithm returns true:
     <var>override</var>: call [[execcommand|"createLink", false,
     <var>override</var>]].
 
-    <li>Otherwise, if <var>override</var> is a string; and <var>command</var>
-    is "fontSize"; and either there is a <span>value override</span> for
+    <li>
+    <p class=comments>The override will be some CSS value, so we have to
+    convert it to a legacy font size.
+
+    <p>Otherwise, if <var>override</var> is a string; and <var>command</var> is
+    "fontSize"; and either there is a <span>value override</span> for
     "fontSize" that is not equal to <var>override</var>, or there is no
     <span>value override</span> for "fontSize" and <var>node</var>'s
     <span>effective command value</span> for "fontSize" is not
-    [[looselyequivalent]] to <var>override</var>: call
-    [[execcommand|"fontSize", false, <var>override</var>]].
+    [[looselyequivalent]] to <var>override</var>:
+
+    <ol>
+      <li>Convert <var>override</var> to an integer number of pixels, and set
+      <var>override</var> to the <span>legacy font size for</span> the result.
+
+      <li>Call [[execcommand|"fontSize", false, <var>override</var>]].
+    </ol>
 
     <li>Otherwise, continue this loop from the beginning.
 

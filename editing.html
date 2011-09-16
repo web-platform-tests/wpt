@@ -65,7 +65,7 @@ a code { text-decoration: underline }
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing APIs</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-15-september-2011>Work in Progress &mdash; Last Update 15 September 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-16-september-2011>Work in Progress &mdash; Last Update 16 September 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;<a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a>&gt;
@@ -4483,7 +4483,7 @@ algorithm returns true:
     <li>
     <p class=comments>This special case is needed because <a href="http://www.w3.org/Bugs/Public/show_bug.cgi?id=14067">createLink has no
     value</a>.
-    
+
     <p>Otherwise, if <var title="">override</var> is a string; and <var title="">command</var>
     is "createLink"; and either there is a <a href=#value-override>value override</a> for
     "createLink" that is not equal to <var title="">override</var>, or there is no
@@ -4492,13 +4492,23 @@ algorithm returns true:
     <var title="">override</var>: call <code title=execCommand()><a href=#execcommand()>execCommand("createLink", false,
     <var title="">override</var>)</a></code>.
 
-    <li>Otherwise, if <var title="">override</var> is a string; and <var title="">command</var>
-    is "fontSize"; and either there is a <a href=#value-override>value override</a> for
+    <li>
+    <p class=comments>The override will be some CSS value, so we have to
+    convert it to a legacy font size.
+
+    <p>Otherwise, if <var title="">override</var> is a string; and <var title="">command</var> is
+    "fontSize"; and either there is a <a href=#value-override>value override</a> for
     "fontSize" that is not equal to <var title="">override</var>, or there is no
     <a href=#value-override>value override</a> for "fontSize" and <var title="">node</var>'s
     <a href=#effective-command-value>effective command value</a> for "fontSize" is not
-    <a href=#loosely-equivalent-values title="loosely equivalent values">loosely equivalent</a> to <var title="">override</var>: call
-    <code title=execCommand()><a href=#execcommand()>execCommand("fontSize", false, <var title="">override</var>)</a></code>.
+    <a href=#loosely-equivalent-values title="loosely equivalent values">loosely equivalent</a> to <var title="">override</var>:
+
+    <ol>
+      <li>Convert <var title="">override</var> to an integer number of pixels, and set
+      <var title="">override</var> to the <a href=#legacy-font-size-for>legacy font size for</a> the result.
+
+      <li>Call <code title=execCommand()><a href=#execcommand()>execCommand("fontSize", false, <var title="">override</var>)</a></code>.
+    </ol>
 
     <li>Otherwise, continue this loop from the beginning.
 

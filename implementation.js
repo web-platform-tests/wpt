@@ -4248,7 +4248,7 @@ function recordCurrentStatesAndValues() {
 
 	// "Add ("fontSize", node's effective command value for "fontSize") to
 	// overrides."
-	overrides.push("fontsize", getEffectiveCommandValue(node, "fontsize"));
+	overrides.push(["fontsize", getEffectiveCommandValue(node, "fontsize")]);
 
 	// "Return overrides."
 	return overrides;
@@ -4307,8 +4307,7 @@ function restoreStatesAndValues(overrides) {
 			// and either there is a value override for "fontSize" that is not
 			// equal to override, or there is no value override for "fontSize"
 			// and node's effective command value for "fontSize" is not loosely
-			// equivalent to override: call execCommand("fontSize", false,
-			// override)."
+			// equivalent to override:"
 			} else if (typeof override == "string"
 			&& command == "fontsize"
 			&& (
@@ -4320,6 +4319,11 @@ function restoreStatesAndValues(overrides) {
 					&& !areLooselyEquivalentValues(command, getEffectiveCommandValue(node, "fontsize"), override)
 				)
 			)) {
+				// "Convert override to an integer number of pixels, and set
+				// override to the legacy font size for the result."
+				override = getLegacyFontSize(override);
+
+				// "Call execCommand("fontSize", false, override)."
 				myExecCommand("fontsize", false, override);
 
 			// "Otherwise, continue this loop from the beginning."

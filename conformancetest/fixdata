@@ -1,0 +1,5 @@
+#!/bin/sh
+# Currently I cross-check data generation in Gecko and WebKit, then populate
+# using the WebKit copy because it has fewer bugs to fix.  This fixes the bugs
+# for me.  Must be run from the root of the spec repo.
+sed -i 's!"fo<i>\[o</i><span style=\\"font-style:oblique\\">b]ar</span>baz"!"fo<i>[o</i><span style=\\"font-style:oblique\\"><i>b]</i>ar</span>baz"!;s!"fo<span style=\\"font-style:italic\\">\[o</span><span style=\\"font-style:oblique\\">b]ar</span>baz"!"fo<span style=\\"font-style:italic\\">[o</span><span style=\\"font-style:oblique\\"><span style=\\"font-style:italic\\">b]</span>ar</span>baz"!' conformancetest/data.js

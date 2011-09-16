@@ -11,4 +11,4 @@ cd ~/webroot/spec
 rm -rf hg-editing || true
 hg clone ~/webroot/tmp/editing hg-editing
 cd hg-editing
-hg push https://dvcs.w3.org/hg/editing
+hg push -r master https://dvcs.w3.org/hg/editing

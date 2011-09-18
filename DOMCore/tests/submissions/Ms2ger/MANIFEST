@@ -13,6 +13,7 @@ Document-createComment.html
 Document-createElement.html
 Document-createElementNS.html
 Document-createProcessingInstruction.html
+support Document-createProcessingInstruction.js
 Document-createProcessingInstruction-literal-1.xhtml
 Document-createProcessingInstruction-literal-2.xhtml
 Document-createProcessingInstruction.xhtml

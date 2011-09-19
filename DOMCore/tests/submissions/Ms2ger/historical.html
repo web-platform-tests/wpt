@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<title>Historical DOM features must be removed</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script>
+function isNukedFromDocument(name) {
+  test(function() { assert_false(name in document) })
+}
+var documentNuked = [
+  "createCDATASection",
+  "createAttribute",
+  "createAttributeNS",
+  "inputEncoding",
+  "xmlEncoding",
+  "xmlStandalone",
+  "xmlVersion",
+  "strictErrorChecking",
+  "domConfig",
+  "normalizeDocument",
+  "renameNode"
+]
+documentNuked.foreach(isNukedFromDocument)
+
+function isNukedFromElement(name) {
+  test(function() {
+    var ele = document.createElementNS("test", "test")
+    assert_equals(document.body[name], undefined) })
+    assert_equals(ele[name], undefined)
+  })
+}
+var elementNuked = [
+  "getAttributeNode",
+  "getAttributeNodeNS",
+  "setAttributeNode",
+  "removeAttributeNode",
+  "schemaTypeInfo",
+  "setIdAttribute",
+  "setIdAttributeNS",
+  "setIdAttributeNode"
+]
+elementNuked.foreach(isNukedFromElement)
+
+</script>

@@ -6405,6 +6405,13 @@ block.
 or "ul"):
 
 <ol>
+  <li>
+  <p class=comments><a
+  href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=14062>Bug 14062</a>.
+
+  <p><span>Record current overrides</span>, and let <var>overrides</var> be the
+  result.
+
   <li>Let <var>mode</var> be "disable" if the <span>selection's list
   state</span> is <var>tag name</var>, and "enable" otherwise.
 
@@ -6661,6 +6668,8 @@ not &lt;ul>&lt;li>foo&lt;/ul>&lt;ol>&lt;li>[bar&lt;/ol>&lt;ul>&lt;ol>&lt;li>baz&
 
     <li><span>Fix disallowed ancestors</span> of the previous step's result.
   </ol>
+
+  <li><span>Restore states and values</span> from <var>overrides</var>.
 </ol>
 
 <!-- @} -->
@@ -6701,6 +6710,13 @@ would be worth the added complexity.
 "center", "justify", "left", or "right"):
 
 <ol>
+  <li>
+  <p class=comments><a
+  href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=14062>Bug 14062</a>.
+
+  <p><span>Record current overrides</span>, and let <var>overrides</var> be the
+  result.
+
   <li><span>Block-extend</span> the <span>active range</span>, and let <var>new
   range</var> be the result.
 
@@ -6790,6 +6806,8 @@ would be worth the added complexity.
     on the [[contextobject]], then set its CSS property "text-align" to
     <var>alignment</var> and return the result.
   </ol>
+
+  <li><span>Restore states and values</span> from <var>overrides</var>.
 </ol>
 
 <!-- @} -->
@@ -7319,6 +7337,13 @@ other browsers don't do it.
   <p>If <var>value</var> is not a <span>formattable block name</span>, abort
   these steps and do nothing.
 
+  <li>
+  <p class=comments><a
+  href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=14062>Bug 14062</a>.
+
+  <p><span>Record current overrides</span>, and let <var>overrides</var> be the
+  result.
+
   <li><span>Block-extend</span> the <span>active range</span>, and let <var>new
   range</var> be the result.
 
@@ -7455,6 +7480,8 @@ other browsers don't do it.
     [[contextobject]].  Then <span>fix disallowed ancestors</span> of the
     result.
   </ol>
+
+  <li><span>Restore states and values</span> from <var>overrides</var>.
 </ol>
 
 <p class=comments>Firefox 6.0a2 throws, Chrome 14 dev always returns false,
@@ -7835,6 +7862,13 @@ of ways.
 <p><span>Action</span>:
 
 <ol>
+  <li>
+  <p class=comments><a
+  href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=14062>Bug 14062</a>.
+
+  <p><span>Record current overrides</span>, and let <var>overrides</var> be the
+  result.
+
   <li>Let <var>items</var> be a list of all [[li]]s that are
   [[ancestorcontainers]] of the <span>active range</span>'s [[rangestart]]
   and/or [[rangeend]] [[bpnode]].
@@ -7879,6 +7913,8 @@ of ways.
 
     <li><span>Indent</span> <var>sublist</var>.
   </ol>
+
+  <li><span>Restore states and values</span> from <var>overrides</var>.
 </ol>
 
 <!-- @} -->
@@ -8997,6 +9033,13 @@ and return the <span>alignment value</span> of the first <span>visible</span>
 <p><span>Action</span>:
 
 <ol>
+  <li>
+  <p class=comments><a
+  href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=14062>Bug 14062</a>.
+
+  <p><span>Record current overrides</span>, and let <var>overrides</var> be the
+  result.
+
   <li>Let <var>items</var> be a list of all [[li]]s that are
   [[ancestorcontainers]] of the <span>active range</span>'s [[rangestart]]
   and/or [[rangeend]] [[bpnode]].
@@ -9072,6 +9115,8 @@ and return the <span>alignment value</span> of the first <span>visible</span>
 
     <li><span>Restore the values</span> from <var>values</var>.
   </ol>
+
+  <li><span>Restore states and values</span> from <var>overrides</var>.
 </ol>
 <!-- @} -->
 

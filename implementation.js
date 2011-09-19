@@ -5450,6 +5450,9 @@ function outdentNode(node) {
 //@{
 
 function toggleLists(tagName) {
+	// "Record current overrides, and let overrides be the result."
+	var overrides = recordCurrentOverrides();
+
 	// "Let mode be "disable" if the selection's list state is tag name, and
 	// "enable" otherwise."
 	var mode = getSelectionListState() == tagName ? "disable" : "enable";
@@ -5724,6 +5727,9 @@ function toggleLists(tagName) {
 			));
 		}
 	}
+
+	// "Restore states and values from overrides."
+	restoreStatesAndValues(overrides);
 }
 
 
@@ -5732,6 +5738,9 @@ function toggleLists(tagName) {
 //@{
 
 function justifySelection(alignment) {
+	// "Record current overrides, and let overrides be the result."
+	var overrides = recordCurrentOverrides();
+
 	// "Block-extend the active range, and let new range be the result."
 	var newRange = blockExtend(globalRange);
 
@@ -5840,6 +5849,9 @@ function justifySelection(alignment) {
 			}
 		);
 	}
+
+	// "Restore states and values from overrides."
+	restoreStatesAndValues(overrides);
 }
 
 
@@ -6249,6 +6261,9 @@ commands.formatblock = {
 			return;
 		}
 
+		// "Record current overrides, and let overrides be the result."
+		var overrides = recordCurrentOverrides();
+
 		// "Block-extend the active range, and let new range be the result."
 		var newRange = blockExtend(getActiveRange());
 
@@ -6350,6 +6365,9 @@ commands.formatblock = {
 					: function() { return false },
 				function() { return document.createElement(value) }));
 		}
+
+		// "Restore states and values from overrides."
+		restoreStatesAndValues(overrides);
 	}, indeterm: function() {
 		// "Block-extend the active range, and let new range be the result."
 		var newRange = blockExtend(getActiveRange());
@@ -6687,6 +6705,9 @@ commands.forwarddelete = {
 //@{
 commands.indent = {
 	action: function() {
+		// "Record current overrides, and let overrides be the result."
+		var overrides = recordCurrentOverrides();
+
 		// "Let items be a list of all lis that are ancestor containers of the
 		// active range's start and/or end node."
 		//
@@ -6757,6 +6778,9 @@ commands.indent = {
 			// "Indent sublist."
 			indentNodes(sublist);
 		}
+
+		// "Restore states and values from overrides."
+		restoreStatesAndValues(overrides);
 	}
 };
 
@@ -7707,6 +7731,9 @@ commands.justifyright = {
 //@{
 commands.outdent = {
 	action: function() {
+		// "Record current overrides, and let overrides be the result."
+		var overrides = recordCurrentOverrides();
+
 		// "Let items be a list of all lis that are ancestor containers of the
 		// range's start and/or end node."
 		//
@@ -7798,6 +7825,9 @@ commands.outdent = {
 			// "Restore the values from values."
 			restoreValues(values);
 		}
+
+		// "Restore states and values from overrides."
+		restoreStatesAndValues(overrides);
 	}
 };
 

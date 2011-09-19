@@ -6359,6 +6359,12 @@ block.
 or "ul"):
 
 <ol>
+  <li>
+  <p class=comments><a href="http://www.w3.org/Bugs/Public/show_bug.cgi?id=14062">Bug 14062</a>.
+
+  <p><a href=#record-current-overrides>Record current overrides</a>, and let <var title="">overrides</var> be the
+  result.
+
   <li>Let <var title="">mode</var> be "disable" if the <a href="#selection's-list-state">selection's list
   state</a> is <var title="">tag name</var>, and "enable" otherwise.
 
@@ -6612,6 +6618,8 @@ not &lt;ul&gt;&lt;li&gt;foo&lt;/ul&gt;&lt;ol&gt;&lt;li&gt;[bar&lt;/ol&gt;&lt;ul&
 
     <li><a href=#fix-disallowed-ancestors>Fix disallowed ancestors</a> of the previous step's result.
   </ol>
+
+  <li><a href=#restore-states-and-values>Restore states and values</a> from <var title="">overrides</var>.
 </ol>
 
 
@@ -6651,6 +6659,12 @@ would be worth the added complexity.
 "center", "justify", "left", or "right"):
 
 <ol>
+  <li>
+  <p class=comments><a href="http://www.w3.org/Bugs/Public/show_bug.cgi?id=14062">Bug 14062</a>.
+
+  <p><a href=#record-current-overrides>Record current overrides</a>, and let <var title="">overrides</var> be the
+  result.
+
   <li><a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>, and let <var title="">new
   range</var> be the result.
 
@@ -6738,6 +6752,8 @@ would be worth the added complexity.
     on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>, then set its CSS property "text-align" to
     <var title="">alignment</var> and return the result.
   </ol>
+
+  <li><a href=#restore-states-and-values>Restore states and values</a> from <var title="">overrides</var>.
 </ol>
 
 
@@ -7262,6 +7278,12 @@ other browsers don't do it.
   <p>If <var title="">value</var> is not a <a href=#formattable-block-name>formattable block name</a>, abort
   these steps and do nothing.
 
+  <li>
+  <p class=comments><a href="http://www.w3.org/Bugs/Public/show_bug.cgi?id=14062">Bug 14062</a>.
+
+  <p><a href=#record-current-overrides>Record current overrides</a>, and let <var title="">overrides</var> be the
+  result.
+
   <li><a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>, and let <var title="">new
   range</var> be the result.
 
@@ -7398,6 +7420,8 @@ other browsers don't do it.
     <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.  Then <a href=#fix-disallowed-ancestors>fix disallowed ancestors</a> of the
     result.
   </ol>
+
+  <li><a href=#restore-states-and-values>Restore states and values</a> from <var title="">overrides</var>.
 </ol>
 
 <p class=comments>Firefox 6.0a2 throws, Chrome 14 dev always returns false,
@@ -7775,6 +7799,12 @@ of ways.
 <p><a href=#action>Action</a>:
 
 <ol>
+  <li>
+  <p class=comments><a href="http://www.w3.org/Bugs/Public/show_bug.cgi?id=14062">Bug 14062</a>.
+
+  <p><a href=#record-current-overrides>Record current overrides</a>, and let <var title="">overrides</var> be the
+  result.
+
   <li>Let <var title="">items</var> be a list of all <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code>s that are
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#ancestor-container title="ancestor container">ancestor containers</a> of the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>
   and/or <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>.
@@ -7819,6 +7849,8 @@ of ways.
 
     <li><a href=#indent>Indent</a> <var title="">sublist</var>.
   </ol>
+
+  <li><a href=#restore-states-and-values>Restore states and values</a> from <var title="">overrides</var>.
 </ol>
 
 
@@ -8926,6 +8958,12 @@ and return the <a href=#alignment-value>alignment value</a> of the first <a href
 <p><a href=#action>Action</a>:
 
 <ol>
+  <li>
+  <p class=comments><a href="http://www.w3.org/Bugs/Public/show_bug.cgi?id=14062">Bug 14062</a>.
+
+  <p><a href=#record-current-overrides>Record current overrides</a>, and let <var title="">overrides</var> be the
+  result.
+
   <li>Let <var title="">items</var> be a list of all <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code>s that are
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#ancestor-container title="ancestor container">ancestor containers</a> of the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>
   and/or <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>.
@@ -9001,6 +9039,8 @@ and return the <a href=#alignment-value>alignment value</a> of the first <a href
 
     <li><a href=#restore-the-values>Restore the values</a> from <var title="">values</var>.
   </ol>
+
+  <li><a href=#restore-states-and-values>Restore states and values</a> from <var title="">overrides</var>.
 </ol>
 
 

@@ -21,12 +21,13 @@ var nukedInterfaces = [
   "DOMUserData",
   "Entity",
   "EntityReference",
+  "EventException", // DOM Events
   "NamedNodeMap",
   "NameList",
   "Notation",
   "TypeInfo",
   "UserDataHandler",
-  "RangeException"
+  "RangeException" // DOM Range
 ]
 nukedInterfaces.forEach(isInterfaceNuked)
 
@@ -49,6 +50,10 @@ var documentNuked = [
   "renameNode"
 ]
 documentNuked.forEach(isNukedFromDocument)
+
+test(function() {
+  assert_equals(document.implementation["getFeature"], undefined)
+}, "DOMImplementation.getFeature() must be nuked.")
 
 function isNukedFromElement(name) {
   test(function() {

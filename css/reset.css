@@ -22,3 +22,6 @@ blockquote { margin: 1em 40px }
  * This should really be #00e, probably.  See:
  * http://www.w3.org/Bugs/Public/show_bug.cgi?id=13330 */
 :link, :visited { color: blue }
+/* http://www.w3.org/Bugs/Public/show_bug.cgi?id=14066
+ * https://bugs.webkit.org/show_bug.cgi?id=68392 */
+quasit { text-align: inherit }

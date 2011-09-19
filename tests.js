@@ -2696,8 +2696,7 @@ var tests = {
 
 		'<div align=nonsense><p>[foo]</div><p>extra',
 		'<div style=text-align:inherit><p>[foo]</div><p>extra',
-		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=14066
-		'!<quasit align=right><p>[foo]</p></quasit><p>extra',
+		'<quasit align=right><p>[foo]</p></quasit><p>extra',
 
 		'<div align=center>{<div align=left>foo</div>}</div>',
 		'<div align=left>{<div align=center>foo</div>}</div>',
@@ -2804,8 +2803,7 @@ var tests = {
 
 		'<div align=nonsense><p>[foo]</div><p>extra',
 		'<div style=text-align:inherit><p>[foo]</div><p>extra',
-		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=14066
-		'!<quasit align=center><p>[foo]</p></quasit><p>extra',
+		'<quasit align=center><p>[foo]</p></quasit><p>extra',
 
 		'<div style=text-align:start>[foo]</div><p>extra',
 		'<div style=text-align:end>[foo]</div><p>extra',
@@ -2903,8 +2901,7 @@ var tests = {
 
 		'<div align=nonsense><p>[foo]</div><p>extra',
 		'<div style=text-align:inherit><p>[foo]</div><p>extra',
-		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=14066
-		'!<quasit align=center><p>[foo]</p></quasit><p>extra',
+		'<quasit align=center><p>[foo]</p></quasit><p>extra',
 
 		'<div style=text-align:start>[foo]</div><p>extra',
 		'<div style=text-align:end>[foo]</div><p>extra',
@@ -3002,8 +2999,7 @@ var tests = {
 
 		'<div align=nonsense><p>[foo]</div><p>extra',
 		'<div style=text-align:inherit><p>[foo]</div><p>extra',
-		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=14066
-		'!<quasit align=center><p>[foo]</p></quasit><p>extra',
+		'<quasit align=center><p>[foo]</p></quasit><p>extra',
 
 		'<div style=text-align:start>[foo]</div><p>extra',
 		'<div style=text-align:end>[foo]</div><p>extra',

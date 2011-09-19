@@ -1902,6 +1902,9 @@ but it's not modifiable, so running <a href=#the-italic-command>the <code title=
 command</a> will not remove it: it will nest <code title="">&lt;span
 style="font-style: normal"&gt;</code> inside.
 
+<p>A <dfn id=formattable-node>formattable node</dfn> is an <a href=#editable>editable</a>
+<a href=#visible>visible</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node.
+
 <p>Two quantities are <dfn id=equivalent-values>equivalent values</dfn> for a <a href=#command>command</a>
 if either both are null, or both are strings and they're equal and the
 <a href=#command>command</a> does not define any <a href=#equivalent-values>equivalent values</a>, or
@@ -1926,11 +1929,11 @@ mapping from such keywords to pixels.
 
 <p>If a <a href=#command>command</a> has <dfn id=inline-command-activated-values>inline command activated values</dfn>
 defined but nothing else defines when it is <a href=#indeterminate>indeterminate</a>, it is
-<a href=#indeterminate>indeterminate</a> if among <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> nodes
-<a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a>, there is
-at least one whose <a href=#effective-command-value>effective command value</a> is one of the given
-values and at least one whose <a href=#effective-command-value>effective command value</a> is not one
-of the given values.
+<a href=#indeterminate>indeterminate</a> if among <a href=#formattable-node title="formattable node">formattable
+nodes</a> <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
+range</a>, there is at least one whose <a href=#effective-command-value>effective command value</a>
+is one of the given values and at least one whose <a href=#effective-command-value>effective command
+value</a> is not one of the given values.
 
 <p class=comments>For bold and similar commands, IE 9 RC seems to consider the
 state true or false depending on the first element.  All other browsers follow
@@ -1943,13 +1946,13 @@ what I have here seems to match Firefox 6.0a2 in every case, and Chrome 14 dev
 in all cases with a few exceptions.
 
 <p>If a <a href=#command>command</a> has <a href=#inline-command-activated-values>inline command activated values</a>
-defined, its <a href=#state>state</a> is true if either no <a href=#editable>editable</a>
-<code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node is <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
+defined, its <a href=#state>state</a> is true if either no <a href=#formattable-node>formattable
+node</a> is <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
 range</a>, and the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>'s
 <a href=#effective-command-value>effective command value</a> is one of the given values; or if there is
-at least one <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node <a href=#effectively-contained>effectively
-contained</a> in the <a href=#active-range>active range</a>, and all of them have an
-<a href=#effective-command-value>effective command value</a> equal to one of the given values.
+at least one <a href=#formattable-node>formattable node</a> <a href=#effectively-contained>effectively contained</a>
+in the <a href=#active-range>active range</a>, and all of them have an <a href=#effective-command-value>effective
+command value</a> equal to one of the given values.
 
 <div class=comments>
 <p>Testing with hiliteColor: Opera 11.11 seems to always return the effective
@@ -1967,13 +1970,13 @@ queryCommandValue() will always return something equivalent to what you set.
 </div>
 
 <p>If a command is a <dfn id=standard-inline-value-command>standard inline value command</dfn>, it is
-<a href=#indeterminate>indeterminate</a> if among <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> nodes that
-are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a>, there
-are two that have distinct <a href=#effective-command-value title="effective command value">effective
-command values</a>.  Its <a href=#value>value</a> is the <a href=#effective-command-value>effective command
-value</a> of the first <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that is
-<a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a>, or if
-there is no such node, the <a href=#effective-command-value>effective command value</a> of the
+<a href=#indeterminate>indeterminate</a> if among <a href=#formattable-node title="formattable node">formattable
+nodes</a> that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
+range</a>, there are two that have distinct <a href=#effective-command-value title="effective command
+value">effective command values</a>.  Its <a href=#value>value</a> is the
+<a href=#effective-command-value>effective command value</a> of the first <a href=#formattable-node>formattable node</a>
+that is <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a>, or
+if there is no such node, the <a href=#effective-command-value>effective command value</a> of the
 <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>.
 
 <p class=note>The effective command value of the active range's start node
@@ -2553,6 +2556,11 @@ might still have a different value.
     otherwise, and with <var title="">new parent instructions</var> returning null.
   </ol>
 
+  <li>
+  <p class=comments><a href="http://www.w3.org/Bugs/Public/show_bug.cgi?id=13996">Bug 13996</a>.
+
+  <p>If <var title="">node</var> is <a href=#invisible>invisible</a>, abort this algorithm.
+
   <li>If the <a href=#effective-command-value>effective command value</a> of <var title="">command</var> is
   <a href=#loosely-equivalent-values title="loosely equivalent values">loosely equivalent</a> to <var title="">new value</var> on <var title="">node</var>, abort this
   algorithm.
@@ -2898,7 +2906,7 @@ desired.
   general behavior: change the state/value, and then make sure that takes
   effect if the user types something before changing the cursor position.
 
-  <p>If there is no <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node <a href=#effectively-contained>effectively
+  <p>If there is no <a href=#formattable-node>formattable node</a> <a href=#effectively-contained>effectively
   contained</a> in the <a href=#active-range>active range</a>:
 
   <ol>
@@ -3371,10 +3379,10 @@ Thus it's possible for every subrange of the selection to have the same value,
 but for the selection to still be indeterminate.  Setting the fontSize to the
 value will make it determinate without changing anything's value.
 
-<p><a href=#indeterminate>Indeterminate</a>: True if among <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>
-nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
-range</a>, there are two that have distinct <a href=#effective-command-value title="effective command
-value">effective command values</a>.  Otherwise false.
+<p><a href=#indeterminate>Indeterminate</a>: True if among <a href=#formattable-node title="formattable
+node">formattable nodes</a> that are <a href=#effectively-contained>effectively contained</a> in
+the <a href=#active-range>active range</a>, there are two that have distinct <a href=#effective-command-value title="effective command value">effective command values</a>.  Otherwise
+false.
 
 <div class=comments>
 <dl>
@@ -3413,7 +3421,7 @@ other browsers behave differently.  I see no reason to behave differently.
   decided on this choice of node.
 
   <p>Let <var title="">pixel size</var> be the <a href=#effective-command-value>effective command value</a> of
-  the first <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that is <a href=#effectively-contained>effectively
+  the first <a href=#formattable-node>formattable node</a> that is <a href=#effectively-contained>effectively
   contained</a> in the <a href=#active-range>active range</a>, or if there is no such
   node, the <a href=#effective-command-value>effective command value</a> of the <a href=#active-range>active
   range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, in either case interpreted as a number of
@@ -3810,13 +3818,13 @@ selection's value</a> to "line-through".
   "subscript".
 </ol>
 
-<p><a href=#indeterminate>Indeterminate</a>: True if either among <a href=#editable>editable</a>
-<code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
-range</a>, there is at least one with <a href=#effective-command-value>effective command value</a>
-"subscript" and at least one with some other <a href=#effective-command-value>effective command
-value</a>; or if there is some <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node
-<a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a> with
-<a href=#effective-command-value>effective command value</a> "mixed".  Otherwise false.
+<p><a href=#indeterminate>Indeterminate</a>: True if either among <a href=#formattable-node title="formattable
+node">formattable nodes</a> that are <a href=#effectively-contained>effectively contained</a> in
+the <a href=#active-range>active range</a>, there is at least one with <a href=#effective-command-value>effective
+command value</a> "subscript" and at least one with some other
+<a href=#effective-command-value>effective command value</a>; or if there is some <a href=#formattable-node>formattable
+node</a> <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a>
+with <a href=#effective-command-value>effective command value</a> "mixed".  Otherwise false.
 
 <p class=comments> For &lt;sup&gt;&lt;sub&gt;foo&lt;/sub&gt;&lt;/sup&gt;, Firefox 6.0a2 and
 Opera 11.11 say the state is true for both superscript and subscript, and
@@ -3846,13 +3854,13 @@ consider it indeterminate.
   "superscript".
 </ol>
 
-<p><a href=#indeterminate>Indeterminate</a>: True if either among <a href=#editable>editable</a>
-<code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
-range</a>, there is at least one with <a href=#effective-command-value>effective command value</a>
-"superscript" and at least one with some other <a href=#effective-command-value>effective command
-value</a>; or if there is some <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node
-<a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a> with
-<a href=#effective-command-value>effective command value</a> "mixed".  Otherwise false.
+<p><a href=#indeterminate>Indeterminate</a>: True if either among <a href=#formattable-node title="formattable
+node">formattable nodes</a> that are <a href=#effectively-contained>effectively contained</a> in
+the <a href=#active-range>active range</a>, there is at least one with <a href=#effective-command-value>effective
+command value</a> "superscript" and at least one with some other
+<a href=#effective-command-value>effective command value</a>; or if there is some <a href=#formattable-node>formattable
+node</a> <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a>
+with <a href=#effective-command-value>effective command value</a> "mixed".  Otherwise false.
 
 <p><a href=#inline-command-activated-values>Inline command activated values</a>: "superscript"
 
@@ -4460,7 +4468,7 @@ algorithm returns true:
   <li>Let <var title="">overrides</var> be a list of (string, string or boolean) ordered
   pairs, initially empty.
 
-  <li>Let <var title="">node</var> be the first <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node
+  <li>Let <var title="">node</var> be the first <a href=#formattable-node>formattable node</a>
   <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a>, or null
   if there is none.
 
@@ -4471,9 +4479,9 @@ algorithm returns true:
 
   <li>
   <p class=comments>Thus we will set state overrides based on the first
-  editable text node, to match values.  This means that if you have
-  &lt;p&gt;foo&lt;b&gt;[bar&lt;/b&gt;baz]&lt;/p&gt; and hit backspace and hit A, you'll get
-  &lt;p&gt;foo&lt;b&gt;a[]&lt;/b&gt;&lt;/p&gt;, although bold was previously indeterminate.
+  formattable node, to match values.  This means that if you have
+  <code title="">&lt;p&gt;foo&lt;b&gt;[bar&lt;/b&gt;baz]&lt;/p&gt;</code> and hit backspace and hit A, you'll get
+  <code title="">&lt;p&gt;foo&lt;b&gt;a[]&lt;/b&gt;&lt;/p&gt;</code>, although bold was previously indeterminate.
   This is needed to match the behavior of hitting A straight away, since
   innerText doesn't strip wrappers when it invokes "delete the contents".
 
@@ -4508,7 +4516,7 @@ algorithm returns true:
 <a href=#record-current-states-and-values>record current states and values</a> algorithm:
 
 <ol>
-  <li>Let <var title="">node</var> be the first <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node
+  <li>Let <var title="">node</var> be the first <a href=#formattable-node>formattable node</a>
   <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a>, or null
   if there is none.
 
@@ -4563,7 +4571,7 @@ algorithm returns true:
     selection was <code title="">foo[bar]baz</code>, the text node could have been split so
     that the first part is now outside the active range.
 
-    <p>Set <var title="">node</var> to the first <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node
+    <p>Set <var title="">node</var> to the first <a href=#formattable-node>formattable node</a>
     <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a>, if
     there is one.
   </ol>

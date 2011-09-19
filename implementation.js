@@ -1934,6 +1934,13 @@ function isSimpleModifiableElement(node) {
 	return false;
 }
 
+// "A formattable node is an editable visible Text node."
+function isFormattableNode(node) {
+	return isEditable(node)
+		&& isVisible(node)
+		&& node.nodeType == Node.TEXT_NODE;
+}
+
 // "Two quantities are equivalent values for a command if either both are null,
 // or both are strings and they're equal and the command does not define any
 // equivalent values, or both are strings and the command defines equivalent
@@ -2660,6 +2667,11 @@ function forceValue(node, command, newValue) {
 		);
 	}
 
+	// "If node is invisible, abort this algorithm."
+	if (isInvisible(node)) {
+		return;
+	}
+
 	// "If the effective command value of command is loosely equivalent to new
 	// value on node, abort this algorithm."
 	if (areLooselyEquivalentValues(command, getEffectiveCommandValue(node, command), newValue)) {
@@ -2891,11 +2903,10 @@ function forceValue(node, command, newValue) {
 //@{
 
 function setSelectionValue(command, newValue) {
-	// "If there is no editable text node effectively contained in the active
+	// "If there is no formattable node effectively contained in the active
 	// range:"
 	if (!getAllEffectivelyContainedNodes(getActiveRange())
-	.filter(function(node) { return node.nodeType == Node.TEXT_NODE})
-	.some(isEditable)) {
+	.some(isFormattableNode)) {
 		// "If command has inline command activated values, set the state
 		// override to true if new value is among them and false if it's not."
 		if ("inlineCommandActivatedValues" in commands[command]) {
@@ -3203,25 +3214,22 @@ commands.fontsize = {
 		// "Set the selection's value to value."
 		setSelectionValue("fontsize", value);
 	}, indeterm: function() {
-		// "True if among editable Text nodes that are effectively contained in
+		// "True if among formattable nodes that are effectively contained in
 		// the active range, there are two that have distinct effective command
 		// values.  Otherwise false."
-		return getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
-			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
-		}).map(function(node) {
+		return getAllEffectivelyContainedNodes(getActiveRange(), isFormattableNode)
+		.map(function(node) {
 			return getEffectiveCommandValue(node, "fontsize");
 		}).filter(function(value, i, arr) {
 			return arr.slice(0, i).indexOf(value) == -1;
 		}).length >= 2;
 	}, value: function() {
-		// "Let pixel size be the effective command value of the first editable
-		// Text node that is effectively contained in the active range, or if
-		// there is no such node, the effective command value of the active
-		// range's start node, in either case interpreted as a number of
+		// "Let pixel size be the effective command value of the first
+		// formattable node that is effectively contained in the active range,
+		// or if there is no such node, the effective command value of the
+		// active range's start node, in either case interpreted as a number of
 		// pixels."
-		var node = getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
-			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
-		})[0];
+		var node = getAllEffectivelyContainedNodes(getActiveRange(), isFormattableNode)[0];
 		if (node === undefined) {
 			node = getActiveRange().startContainer;
 		}
@@ -3523,15 +3531,13 @@ commands.subscript = {
 			setSelectionValue("subscript", "subscript");
 		}
 	}, indeterm: function() {
-		// "True if either among editable Text nodes that are effectively
+		// "True if either among formattable nodes that are effectively
 		// contained in the active range, there is at least one with effective
 		// command value "subscript" and at least one with some other effective
-		// command value; or if there is some editable Text node effectively
+		// command value; or if there is some formattable node effectively
 		// contained in the active range with effective command value "mixed".
 		// Otherwise false."
-		var nodes = getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
-			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
-		});
+		var nodes = getAllEffectivelyContainedNodes(getActiveRange(), isFormattableNode);
 		return (nodes.some(function(node) { return getEffectiveCommandValue(node, "subscript") == "subscript" })
 			&& nodes.some(function(node) { return getEffectiveCommandValue(node, "subscript") != "subscript" }))
 			|| nodes.some(function(node) { return getEffectiveCommandValue(node, "subscript") == "mixed" });
@@ -3555,16 +3561,13 @@ commands.superscript = {
 			setSelectionValue("superscript", "superscript");
 		}
 	}, indeterm: function() {
-		// "True if either among editable Text nodes that are effectively
+		// "True if either among formattable nodes that are effectively
 		// contained in the active range, there is at least one with effective
 		// command value "superscript" and at least one with some other
-		// effective command value; or if there is some editable Text node
+		// effective command value; or if there is some formattable node
 		// effectively contained in the active range with effective command
 		// value "mixed".  Otherwise false."
-		var nodes = getAllEffectivelyContainedNodes(getActiveRange(),
-				function(node) {
-			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
-		});
+		var nodes = getAllEffectivelyContainedNodes(getActiveRange(), isFormattableNode);
 		return (nodes.some(function(node) { return getEffectiveCommandValue(node, "superscript") == "superscript" })
 			&& nodes.some(function(node) { return getEffectiveCommandValue(node, "superscript") != "superscript" }))
 			|| nodes.some(function(node) { return getEffectiveCommandValue(node, "superscript") == "mixed" });
@@ -4189,10 +4192,10 @@ function recordCurrentStatesAndValues() {
 	// initially empty."
 	var overrides = [];
 
-	// "Let node be the first editable Text node effectively contained in the
+	// "Let node be the first formattable node effectively contained in the
 	// active range, or null if there is none."
 	var node = getAllEffectivelyContainedNodes(getActiveRange())
-		.filter(function(node) { return isEditable(node) && node.nodeType == Node.TEXT_NODE })[0];
+		.filter(isFormattableNode)[0];
 
 	// "If node is null, return overrides."
 	if (!node) {
@@ -4233,10 +4236,10 @@ function recordCurrentStatesAndValues() {
 }
 
 function restoreStatesAndValues(overrides) {
-	// "Let node be the first editable Text node effectively contained in the
+	// "Let node be the first formattable node effectively contained in the
 	// active range, or null if there is none."
 	var node = getAllEffectivelyContainedNodes(getActiveRange())
-		.filter(function(node) { return isEditable(node) && node.nodeType == Node.TEXT_NODE })[0];
+		.filter(isFormattableNode)[0];
 
 	// "If node is not null, then for each (command, override) pair in
 	// overrides, in order:"
@@ -4309,10 +4312,10 @@ function restoreStatesAndValues(overrides) {
 				continue;
 			}
 
-			// "Set node to the first editable Text node effectively contained
-			// in the active range, if there is one."
+			// "Set node to the first formattable node effectively contained in
+			// the active range, if there is one."
 			node = getAllEffectivelyContainedNodes(getActiveRange())
-				.filter(function(node) { return isEditable(node) && node.nodeType == Node.TEXT_NODE })[0]
+				.filter(isFormattableNode)[0]
 				|| node;
 		}
 
@@ -7909,19 +7912,17 @@ commandNames.forEach(function(command) {
 		commands[command].relevantCssProperty = null;
 	}
 
-	// "If a command has inline command activated values defined but
-	// nothing else defines when it is indeterminate, it is indeterminate
-	// if among editable Text nodes effectively contained in the active
-	// range, there is at least one whose effective command value is one of
-	// the given values and at least one whose effective command value is
-	// not one of the given values."
+	// "If a command has inline command activated values defined but nothing
+	// else defines when it is indeterminate, it is indeterminate if among
+	// formattable nodes effectively contained in the active range, there is at
+	// least one whose effective command value is one of the given values and
+	// at least one whose effective command value is not one of the given
+	// values."
 	if ("inlineCommandActivatedValues" in commands[command]
 	&& !("indeterm" in commands[command])) {
 		commands[command].indeterm = function() {
-			var values = getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
-				return isEditable(node)
-					&& node.nodeType == Node.TEXT_NODE;
-			}).map(function(node) { return getEffectiveCommandValue(node, command) });
+			var values = getAllEffectivelyContainedNodes(getActiveRange(), isFormattableNode)
+				.map(function(node) { return getEffectiveCommandValue(node, command) });
 
 			var matchingValues = values.filter(function(value) {
 				return commands[command].inlineCommandActivatedValues.indexOf(value) != -1;
@@ -7932,19 +7933,15 @@ commandNames.forEach(function(command) {
 		};
 	}
 
-	// "If a command has inline command activated values defined, its state
-	// is true if either no editable Text node is effectively contained in
-	// the active range, and the active range's start node's effective
-	// command value is one of the given values; or if there is at least
-	// one editable Text node effectively contained in the active range,
-	// and all of them have an effective command value equal to one of the
-	// given values."
+	// "If a command has inline command activated values defined, its state is
+	// true if either no formattable node is effectively contained in the
+	// active range, and the active range's start node's effective command
+	// value is one of the given values; or if there is at least one
+	// formattable node effectively contained in the active range, and all of
+	// them have an effective command value equal to one of the given values."
 	if ("inlineCommandActivatedValues" in commands[command]) {
 		commands[command].state = function() {
-			var nodes = getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
-				return isEditable(node)
-					&& node.nodeType == Node.TEXT_NODE;
-			});
+			var nodes = getAllEffectivelyContainedNodes(getActiveRange(), isFormattableNode);
 
 			if (nodes.length == 0) {
 				return commands[command].inlineCommandActivatedValues
@@ -7958,17 +7955,16 @@ commandNames.forEach(function(command) {
 		};
 	}
 
-	// "If a command is a standard inline value command, it is
-	// indeterminate if among editable Text nodes that are effectively
-	// contained in the active range, there are two that have distinct
-	// effective command values. Its value is the effective command value
-	// of the first editable Text node that is effectively contained in the
-	// active range, or if there is no such node, the effective command
-	// value of the active range's start node."
+	// "If a command is a standard inline value command, it is indeterminate if
+	// among formattable nodes that are effectively contained in the active
+	// range, there are two that have distinct effective command values. Its
+	// value is the effective command value of the first formattable node that
+	// is effectively contained in the active range, or if there is no such
+	// node, the effective command value of the active range's start node."
 	if ("standardInlineValueCommand" in commands[command]) {
 		commands[command].indeterm = function() {
 			var values = getAllEffectivelyContainedNodes(getActiveRange())
-				.filter(function(node) { return isEditable(node) && node.nodeType == Node.TEXT_NODE })
+				.filter(isFormattableNode)
 				.map(function(node) { return getEffectiveCommandValue(node, command) });
 			for (var i = 1; i < values.length; i++) {
 				if (values[i] != values[i - 1]) {

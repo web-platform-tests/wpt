@@ -86,11 +86,16 @@ var tests = {
 	bold: [
 	//@{
 		'foo[]bar',
+		'<p>[foo</p> <p>bar]</p>',
+		'<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>',
 		'<b>foo[]bar</b>',
+		'<i>foo[]bar</i>',
 		'<span>foo</span>{}<span>bar</span>',
 		'<span>foo[</span><span>]bar</span>',
 		'foo[bar]baz',
+		'foo[bar<b>baz]qoz</b>quz',
 		'foo[bar<i>baz]qoz</i>quz',
+		'{<p><p> <p>foo</p>}',
 
 		'foo<span contenteditable=false>[bar]</span>baz',
 		'fo[o<span contenteditable=false>bar</span>b]az',
@@ -223,12 +228,16 @@ var tests = {
 	createlink: [
 	//@{
 		'foo[]bar',
+		'<p>[foo</p> <p>bar]</p>',
+		'<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>',
+		'<b>foo[]bar</b>',
+		'<i>foo[]bar</i>',
 		'<span>foo</span>{}<span>bar</span>',
 		'<span>foo[</span><span>]bar</span>',
 		'foo[bar]baz',
-		'foo]bar[baz',
-		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=13996
-		'!{<p><p> <p>foo</p>}',
+		'foo[bar<b>baz]qoz</b>quz',
+		'foo[bar<i>baz]qoz</i>quz',
+		'{<p><p> <p>foo</p>}',
 
 		'<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
 		'<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table>',
@@ -628,12 +637,16 @@ var tests = {
 	fontname: [
 	//@{
 		'foo[]bar',
+		'<p>[foo</p> <p>bar]</p>',
+		'<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>',
+		'<b>foo[]bar</b>',
+		'<i>foo[]bar</i>',
 		'<span>foo</span>{}<span>bar</span>',
 		'<span>foo[</span><span>]bar</span>',
 		'foo[bar]baz',
-		'foo]bar[baz',
-		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=13996
-		'!{<p><p> <p>foo</p>}',
+		'foo[bar<b>baz]qoz</b>quz',
+		'foo[bar<i>baz]qoz</i>quz',
+		'{<p><p> <p>foo</p>}',
 
 		'<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
 		'<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table>',
@@ -711,8 +724,17 @@ var tests = {
 	fontsize: [
 	//@{
 		'foo[]bar',
+		'<p>[foo</p> <p>bar]</p>',
+		'<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>',
+		'<b>foo[]bar</b>',
+		'<i>foo[]bar</i>',
 		'<span>foo</span>{}<span>bar</span>',
 		'<span>foo[</span><span>]bar</span>',
+		'foo[bar]baz',
+		'foo[bar<b>baz]qoz</b>quz',
+		'foo[bar<i>baz]qoz</i>quz',
+		'{<p><p> <p>foo</p>}',
+
 		["1", 'foo[bar]baz'],
 		["0", 'foo[bar]baz'],
 		["-5", 'foo[bar]baz'],
@@ -736,10 +758,6 @@ var tests = {
 		["-1", 'foo[bar]baz'],
 		["-9", 'foo[bar]baz'],
 		["", 'foo[bar]baz'],
-
-		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=13996
-		'!{<p><p> <p>foo</p>}',
-		'foo[bar<i>baz]qoz</i>quz',
 
 		'<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
 		'<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table>',
@@ -813,13 +831,16 @@ var tests = {
 	forecolor: [
 	//@{
 		'foo[]bar',
+		'<p>[foo</p> <p>bar]</p>',
+		'<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>',
+		'<b>foo[]bar</b>',
+		'<i>foo[]bar</i>',
 		'<span>foo</span>{}<span>bar</span>',
 		'<span>foo[</span><span>]bar</span>',
 		'foo[bar]baz',
-		'foo]bar[baz',
-		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=13996
-		'!{<p><p> <p>foo</p>}',
+		'foo[bar<b>baz]qoz</b>quz',
 		'foo[bar<i>baz]qoz</i>quz',
+		'{<p><p> <p>foo</p>}',
 
 		['blue', 'foo[bar]baz'],
 		['f', 'foo[bar]baz'],
@@ -1475,13 +1496,16 @@ var tests = {
 	hilitecolor: [
 	//@{
 		'foo[]bar',
+		'<p>[foo</p> <p>bar]</p>',
+		'<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>',
+		'<b>foo[]bar</b>',
+		'<i>foo[]bar</i>',
 		'<span>foo</span>{}<span>bar</span>',
 		'<span>foo[</span><span>]bar</span>',
 		'foo[bar]baz',
-		'foo]bar[baz',
-		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=13996
-		'!{<p><p> <p>foo</p>}',
+		'foo[bar<b>baz]qoz</b>quz',
 		'foo[bar<i>baz]qoz</i>quz',
+		'{<p><p> <p>foo</p>}',
 
 		'<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
 		'<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table>',
@@ -2516,13 +2540,16 @@ var tests = {
 	italic: [
 	//@{
 		'foo[]bar',
+		'<p>[foo</p> <p>bar]</p>',
+		'<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>',
+		'<b>foo[]bar</b>',
+		'<i>foo[]bar</i>',
 		'<span>foo</span>{}<span>bar</span>',
 		'<span>foo[</span><span>]bar</span>',
 		'foo[bar]baz',
-		'foo]bar[baz',
-		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=13996
-		'!{<p><p> <p>foo</p>}',
 		'foo[bar<b>baz]qoz</b>quz',
+		'foo[bar<i>baz]qoz</i>quz',
+		'{<p><p> <p>foo</p>}',
 
 		'<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
 		'<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table>',
@@ -3256,13 +3283,16 @@ var tests = {
 	strikethrough: [
 	//@{
 		'foo[]bar',
+		'<p>[foo</p> <p>bar]</p>',
+		'<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>',
+		'<b>foo[]bar</b>',
+		'<i>foo[]bar</i>',
 		'<span>foo</span>{}<span>bar</span>',
 		'<span>foo[</span><span>]bar</span>',
 		'foo[bar]baz',
-		'foo]bar[baz',
-		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=13996
-		'!{<p><p> <p>foo</p>}',
 		'foo[bar<b>baz]qoz</b>quz',
+		'foo[bar<i>baz]qoz</i>quz',
+		'{<p><p> <p>foo</p>}',
 
 		'<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
 		'<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table>',
@@ -3348,10 +3378,16 @@ var tests = {
 	subscript: [
 	//@{
 		'foo[]bar',
+		'<p>[foo</p> <p>bar]</p>',
+		'<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>',
+		'<b>foo[]bar</b>',
+		'<i>foo[]bar</i>',
 		'<span>foo</span>{}<span>bar</span>',
 		'<span>foo[</span><span>]bar</span>',
 		'foo[bar]baz',
 		'foo[bar<b>baz]qoz</b>quz',
+		'foo[bar<i>baz]qoz</i>quz',
+		'{<p><p> <p>foo</p>}',
 
 		'<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
 		'<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table>',
@@ -3399,10 +3435,16 @@ var tests = {
 	superscript: [
 	//@{
 		'foo[]bar',
+		'<p>[foo</p> <p>bar]</p>',
+		'<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>',
+		'<b>foo[]bar</b>',
+		'<i>foo[]bar</i>',
 		'<span>foo</span>{}<span>bar</span>',
 		'<span>foo[</span><span>]bar</span>',
 		'foo[bar]baz',
 		'foo[bar<b>baz]qoz</b>quz',
+		'foo[bar<i>baz]qoz</i>quz',
+		'{<p><p> <p>foo</p>}',
 
 		'<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
 		'<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table>',
@@ -3453,13 +3495,16 @@ var tests = {
 	underline: [
 	//@{
 		'foo[]bar',
+		'<p>[foo</p> <p>bar]</p>',
+		'<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>',
+		'<b>foo[]bar</b>',
+		'<i>foo[]bar</i>',
 		'<span>foo</span>{}<span>bar</span>',
 		'<span>foo[</span><span>]bar</span>',
 		'foo[bar]baz',
-		'foo]bar[baz',
-		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=13996
-		'!{<p><p> <p>foo</p>}',
 		'foo[bar<b>baz]qoz</b>quz',
+		'foo[bar<i>baz]qoz</i>quz',
+		'{<p><p> <p>foo</p>}',
 
 		'<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
 		'<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table>',
@@ -3545,8 +3590,17 @@ var tests = {
 	unlink: [
 	//@{
 		'foo[]bar',
+		'<p>[foo</p> <p>bar]</p>',
+		'<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>',
+		'<b>foo[]bar</b>',
+		'<i>foo[]bar</i>',
 		'<span>foo</span>{}<span>bar</span>',
 		'<span>foo[</span><span>]bar</span>',
+		'foo[bar]baz',
+		'foo[bar<b>baz]qoz</b>quz',
+		'foo[bar<i>baz]qoz</i>quz',
+		'{<p><p> <p>foo</p>}',
+
 		'<a href=http://www.google.com/>foo[bar]baz</a>',
 		'<a href=http://www.google.com/>foo[barbaz</a>}',
 		'{<a href=http://www.google.com/>foobar]baz</a>',

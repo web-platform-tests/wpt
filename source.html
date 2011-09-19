@@ -1882,6 +1882,9 @@ but it's not modifiable, so running <span>the <code title>italic</code>
 command</span> will not remove it: it will nest <code title>&lt;span
 style="font-style: normal"></code> inside.
 
+<p>A <dfn>formattable node</dfn> is an <span>editable</span>
+<span>visible</span> [[text]] node.
+
 <p>Two quantities are <dfn>equivalent values</dfn> for a <span>command</span>
 if either both are null, or both are strings and they're equal and the
 <span>command</span> does not define any <span>equivalent values</span>, or
@@ -1907,11 +1910,11 @@ mapping from such keywords to pixels.
 
 <p>If a <span>command</span> has <dfn>inline command activated values</dfn>
 defined but nothing else defines when it is <span>indeterminate</span>, it is
-<span>indeterminate</span> if among <span>editable</span> [[text]] nodes
-<span>effectively contained</span> in the <span>active range</span>, there is
-at least one whose <span>effective command value</span> is one of the given
-values and at least one whose <span>effective command value</span> is not one
-of the given values.
+<span>indeterminate</span> if among <span title="formattable node">formattable
+nodes</span> <span>effectively contained</span> in the <span>active
+range</span>, there is at least one whose <span>effective command value</span>
+is one of the given values and at least one whose <span>effective command
+value</span> is not one of the given values.
 
 <p class=comments>For bold and similar commands, IE 9 RC seems to consider the
 state true or false depending on the first element.  All other browsers follow
@@ -1924,13 +1927,13 @@ what I have here seems to match Firefox 6.0a2 in every case, and Chrome 14 dev
 in all cases with a few exceptions.
 
 <p>If a <span>command</span> has <span>inline command activated values</span>
-defined, its <span>state</span> is true if either no <span>editable</span>
-[[text]] node is <span>effectively contained</span> in the <span>active
+defined, its <span>state</span> is true if either no <span>formattable
+node</span> is <span>effectively contained</span> in the <span>active
 range</span>, and the <span>active range</span>'s [[startnode]]'s
 <span>effective command value</span> is one of the given values; or if there is
-at least one <span>editable</span> [[text]] node <span>effectively
-contained</span> in the <span>active range</span>, and all of them have an
-<span>effective command value</span> equal to one of the given values.
+at least one <span>formattable node</span> <span>effectively contained</span>
+in the <span>active range</span>, and all of them have an <span>effective
+command value</span> equal to one of the given values.
 
 <div class=comments>
 <p>Testing with hiliteColor: Opera 11.11 seems to always return the effective
@@ -1948,13 +1951,13 @@ queryCommandValue() will always return something equivalent to what you set.
 </div>
 
 <p>If a command is a <dfn>standard inline value command</dfn>, it is
-<span>indeterminate</span> if among <span>editable</span> [[text]] nodes that
-are <span>effectively contained</span> in the <span>active range</span>, there
-are two that have distinct <span title="effective command value">effective
-command values</span>.  Its <span>value</span> is the <span>effective command
-value</span> of the first <span>editable</span> [[text]] node that is
-<span>effectively contained</span> in the <span>active range</span>, or if
-there is no such node, the <span>effective command value</span> of the
+<span>indeterminate</span> if among <span title="formattable node">formattable
+nodes</span> that are <span>effectively contained</span> in the <span>active
+range</span>, there are two that have distinct <span title="effective command
+value">effective command values</span>.  Its <span>value</span> is the
+<span>effective command value</span> of the first <span>formattable node</span>
+that is <span>effectively contained</span> in the <span>active range</span>, or
+if there is no such node, the <span>effective command value</span> of the
 <span>active range</span>'s [[startnode]].
 
 <p class=note>The effective command value of the active range's start node
@@ -2544,6 +2547,12 @@ might still have a different value.
     otherwise, and with <var>new parent instructions</var> returning null.
   </ol>
 
+  <li>
+  <p class=comments><a
+  href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=13996>Bug 13996</a>.
+
+  <p>If <var>node</var> is <span>invisible</span>, abort this algorithm.
+
   <li>If the <span>effective command value</span> of <var>command</var> is
   [[looselyequivalent]] to <var>new value</var> on <var>node</var>, abort this
   algorithm.
@@ -2906,7 +2915,7 @@ desired.
   general behavior: change the state/value, and then make sure that takes
   effect if the user types something before changing the cursor position.
 
-  <p>If there is no <span>editable</span> [[text]] node <span>effectively
+  <p>If there is no <span>formattable node</span> <span>effectively
   contained</span> in the <span>active range</span>:
 
   <ol>
@@ -3382,10 +3391,11 @@ Thus it's possible for every subrange of the selection to have the same value,
 but for the selection to still be indeterminate.  Setting the fontSize to the
 value will make it determinate without changing anything's value.
 
-<p><span>Indeterminate</span>: True if among <span>editable</span> [[text]]
-nodes that are <span>effectively contained</span> in the <span>active
-range</span>, there are two that have distinct <span title="effective command
-value">effective command values</span>.  Otherwise false.
+<p><span>Indeterminate</span>: True if among <span title="formattable
+node">formattable nodes</span> that are <span>effectively contained</span> in
+the <span>active range</span>, there are two that have distinct <span
+title="effective command value">effective command values</span>.  Otherwise
+false.
 
 <div class=comments>
 <dl>
@@ -3424,7 +3434,7 @@ other browsers behave differently.  I see no reason to behave differently.
   decided on this choice of node.
 
   <p>Let <var>pixel size</var> be the <span>effective command value</span> of
-  the first <span>editable</span> [[text]] node that is <span>effectively
+  the first <span>formattable node</span> that is <span>effectively
   contained</span> in the <span>active range</span>, or if there is no such
   node, the <span>effective command value</span> of the <span>active
   range</span>'s [[startnode]], in either case interpreted as a number of
@@ -3825,13 +3835,13 @@ selection's value</span> to "line-through".
   "subscript".
 </ol>
 
-<p><span>Indeterminate</span>: True if either among <span>editable</span>
-[[text]] nodes that are <span>effectively contained</span> in the <span>active
-range</span>, there is at least one with <span>effective command value</span>
-"subscript" and at least one with some other <span>effective command
-value</span>; or if there is some <span>editable</span> [[text]] node
-<span>effectively contained</span> in the <span>active range</span> with
-<span>effective command value</span> "mixed".  Otherwise false.
+<p><span>Indeterminate</span>: True if either among <span title="formattable
+node">formattable nodes</span> that are <span>effectively contained</span> in
+the <span>active range</span>, there is at least one with <span>effective
+command value</span> "subscript" and at least one with some other
+<span>effective command value</span>; or if there is some <span>formattable
+node</span> <span>effectively contained</span> in the <span>active range</span>
+with <span>effective command value</span> "mixed".  Otherwise false.
 
 <p class=comments> For &lt;sup>&lt;sub>foo&lt;/sub>&lt;/sup>, Firefox 6.0a2 and
 Opera 11.11 say the state is true for both superscript and subscript, and
@@ -3862,13 +3872,13 @@ consider it indeterminate.
   "superscript".
 </ol>
 
-<p><span>Indeterminate</span>: True if either among <span>editable</span>
-[[text]] nodes that are <span>effectively contained</span> in the <span>active
-range</span>, there is at least one with <span>effective command value</span>
-"superscript" and at least one with some other <span>effective command
-value</span>; or if there is some <span>editable</span> [[text]] node
-<span>effectively contained</span> in the <span>active range</span> with
-<span>effective command value</span> "mixed".  Otherwise false.
+<p><span>Indeterminate</span>: True if either among <span title="formattable
+node">formattable nodes</span> that are <span>effectively contained</span> in
+the <span>active range</span>, there is at least one with <span>effective
+command value</span> "superscript" and at least one with some other
+<span>effective command value</span>; or if there is some <span>formattable
+node</span> <span>effectively contained</span> in the <span>active range</span>
+with <span>effective command value</span> "mixed".  Otherwise false.
 
 <p><span>Inline command activated values</span>: "superscript"
 
@@ -4484,7 +4494,7 @@ algorithm returns true:
   <li>Let <var>overrides</var> be a list of (string, string or boolean) ordered
   pairs, initially empty.
 
-  <li>Let <var>node</var> be the first <span>editable</span> [[text]] node
+  <li>Let <var>node</var> be the first <span>formattable node</span>
   <span>effectively contained</span> in the <span>active range</span>, or null
   if there is none.
 
@@ -4495,9 +4505,9 @@ algorithm returns true:
 
   <li>
   <p class=comments>Thus we will set state overrides based on the first
-  editable text node, to match values.  This means that if you have
-  &lt;p>foo&lt;b>[bar&lt;/b>baz]&lt;/p> and hit backspace and hit A, you'll get
-  &lt;p>foo&lt;b>a[]&lt;/b>&lt;/p>, although bold was previously indeterminate.
+  formattable node, to match values.  This means that if you have
+  {{code|<p>foo<b>[bar</b>baz]</p>}} and hit backspace and hit A, you'll get
+  {{code|<p>foo<b>a[]</b></p>}}, although bold was previously indeterminate.
   This is needed to match the behavior of hitting A straight away, since
   innerText doesn't strip wrappers when it invokes "delete the contents".
 
@@ -4532,7 +4542,7 @@ algorithm returns true:
 <span>record current states and values</span> algorithm:
 
 <ol>
-  <li>Let <var>node</var> be the first <span>editable</span> [[text]] node
+  <li>Let <var>node</var> be the first <span>formattable node</span>
   <span>effectively contained</span> in the <span>active range</span>, or null
   if there is none.
 
@@ -4592,7 +4602,7 @@ algorithm returns true:
     selection was {{code|foo[bar]baz}}, the text node could have been split so
     that the first part is now outside the active range.
 
-    <p>Set <var>node</var> to the first <span>editable</span> [[text]] node
+    <p>Set <var>node</var> to the first <span>formattable node</span>
     <span>effectively contained</span> in the <span>active range</span>, if
     there is one.
   </ol>

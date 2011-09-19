@@ -271,6 +271,32 @@ policies and contribution forms [3].
 
     var xhtml_ns = "http://www.w3.org/1999/xhtml";
 
+    // script_prefix is used by Output.prototype.show_results() to figure out
+    // where to get testharness.css from.  It's enclosed in an extra closure to
+    // not pollute the library's namespace with variables like "src".
+    var script_prefix = null;
+    (function ()
+    {
+        var scripts = document.getElementsByTagName("script");
+        for (var i = 0; i < scripts.length; i++)
+        {
+            if (scripts[i].src)
+            {
+                var src = scripts[i].src;
+            }
+            else if (scripts[i].href)
+            {
+                //SVG case
+                var src = scripts[i].href.baseVal;
+            }
+            if (src && src.slice(src.length - "testharness.js".length) === "testharness.js")
+            {
+                script_prefix = src.slice(0, src.length - "testharness.js".length);
+                break;
+            }
+        }
+    })();
+
     /*
      * API functions
      */
@@ -1242,30 +1268,10 @@ policies and contribution forms [3].
             log.removeChild(log.lastChild);
         }
 
-        var prefix = null;
-        var scripts = document.getElementsByTagName("script");
-        for (var i = 0; i < scripts.length; i++)
-        {
-            if (scripts[i].src)
-            {
-                var src = scripts[i].src;
-            }
-            else if (scripts[i].href)
-            {
-                //SVG case
-                var src = scripts[i].href.baseVal;
-            }
-            if (src && src.slice(src.length - "testharness.js".length) === "testharness.js")
-            {
-                prefix = src.slice(0, src.length - "testharness.js".length);
-                break;
-            }
-        }
-
-        if (prefix != null) {
+        if (script_prefix != null) {
             var stylesheet = output_document.createElementNS(xhtml_ns, "link");
             stylesheet.setAttribute("rel", "stylesheet");
-            stylesheet.setAttribute("href", prefix + "testharness.css");
+            stylesheet.setAttribute("href", script_prefix + "testharness.css");
             var heads = output_document.getElementsByTagName("head");
             if (heads.length) {
                 heads[0].appendChild(stylesheet);

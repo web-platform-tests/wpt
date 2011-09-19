@@ -57,10 +57,10 @@ for documentation.
 		}
 		pickerContents += " <a href=?" + group + ">" + group + "</a>";
 	}
-	document.querySelector("#picker").innerHTML = pickerContents;
 
 	var command = location.search.replace(/^\?/, "");
 	if (!(command in groupedBrowserTests)) {
+		document.querySelector("#picker").innerHTML = pickerContents;
 		return;
 	}
 	if (command !== firstGroup) {
@@ -79,6 +79,8 @@ for documentation.
 
 	document.getElementById("test-container").parentNode
 		.removeChild(document.getElementById("test-container"));
+
+	document.querySelector("#picker").innerHTML = pickerContents;
 
 	var elapsed = Math.round(Date.now() - startTime)/1000;
 	document.getElementById("timing").textContent =

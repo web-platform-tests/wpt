@@ -683,7 +683,7 @@ with it:
 </ul>
 
 <!-- @} -->
-<h3>Supported commands</h3>
+<h3 id=supported-commands>Supported commands</h3>
 <!-- @{ -->
 <p class=comments>If you try doing anything with an unrecognized command, IE9
 throws an "Invalid argument" exception, and Firefox 6.0a2 throws
@@ -787,18 +787,12 @@ must run the following steps:
   <li>If only one or two arguments were provided, let <var>value</var> be the
   empty string.
 
-  <li>If <var>command</var> is not <span>supported</span>, raise a
-  [[NOT_SUPPORTED_ERR]] exception.
-
   <li>
-  <p class=comments>I'm just speccing INVALID_ACCESS_ERR for consistency.  I
-  don't expect real-world commands are likely to not have an action defined,
-  but you never know.
+  <p class=comments>See comment before <a href=#supported-commands>Supported
+  commands</a>.
 
-  <p>If <var>command</var> has no <span>action</span>, raise an
-  [[INVALID_ACCESS_ERR]] exception.
-
-  <p class=note>No such <span>command</span> is defined in this specification.
+  <p>If <var>command</var> is not <span>supported</span>, raise a
+  [[NOT_SUPPORTED_ERR]] exception.
 
   <li>
   <p class=comments>I didn't research this closely, but at a first glance, this
@@ -821,51 +815,65 @@ method on the <code data-anolis-spec=html>HTMLDocument</code> interface is
 invoked, the user agent must run the following steps:
 
 <ol>
-  <li>If <var>command</var> is not <span>supported</span>, raise a
+  <li>
+  <p class=comments>See comment before <a href=#supported-commands>Supported
+  commands</a>.
+
+  <p>If <var>command</var> is not <span>supported</span>, raise a
   [[NOT_SUPPORTED_ERR]] exception.
 
   <li>Return true if <var>command</var> is <span>enabled</span>, false
   otherwise.
 </ol>
 
-<div class=comments>
-<p>What happens if you call queryCommand(Indeterm|State|Value)() on a command
-where it makes no sense?
-
-<p>IE9 consistently returns false for all three.
-
-<p>Firefox 6.0a2 consistently throws NS_ERROR_FAILURE for indeterm/state if not
-supported, and returns an empty string for value.  Exceptions include unlink
-(seems to always return indeterm/state false), and styleWithCss/useCss (throw
-NS_ERROR_FAILURE even for value).
-
-<p>Chrome 14 dev returns false for all three, and even does this for unrecognized
-commands.  It also always defines value if state is defined: it returns the
-state cast to a string, either "true" or "false".
-
-<p>Opera 11.11 returns false for state and "" for value (it doesn't support
-indeterm).  Like Chrome, this is even for unrecognized commands.
-
-<p>Gecko's behavior is the most useful.  If the author tries querying some aspect
-of a command that makes no sense, they shouldn't receive a value that looks
-like it might make sense but is actually just a constant.  However, I go even
-further than Gecko: I require exceptions even for value, since doing otherwise
-makes no sense.
-</div>
 <p>When the <dfn
 title=queryCommandIndeterm()><code>queryCommandIndeterm(<var>command</var>)</code></dfn>
 method on the <code data-anolis-spec=html>HTMLDocument</code> interface is
 invoked, the user agent must run the following steps:
 
 <ol>
-  <li>If <var>command</var> is not <span>supported</span>, raise a
+  <li>
+  <p class=comments>See comment before <a href=#supported-commands>Supported
+  commands</a>.
+
+  <p>If <var>command</var> is not <span>supported</span>, raise a
   [[NOT_SUPPORTED_ERR]] exception.
 
-  <li>If <var>command</var> has no <span
-  title=indeterminate>indeterminacy</span>, raise an [[INVALID_ACCESS_ERR]]
-  exception.
+  <li>
+  <div class=comments>
+  <p>What happens if you call queryCommand(Indeterm|State|Value)() on a command
+  where it makes no sense?
 
-  <li>If <var>command</var> is not <span>enabled</span>, return false.
+  <p>IE9 consistently returns false for all three.  However, any command that
+  has a state defined also has a value defined, which is equal to the state: it
+  returns boolean true or false.
+
+  <p>Firefox 6.0a2 consistently throws NS_ERROR_FAILURE for indeterm/state if
+  not supported, and returns an empty string for value.  Exceptions include
+  unlink (seems to always return indeterm/state false), and styleWithCss/useCss
+  (throw NS_ERROR_FAILURE even for value).
+
+  <p>Chrome 14 dev returns false for all three, and even does this for
+  unrecognized commands.  It also always defines value if state is defined: it
+  returns the state cast to a string, either "true" or "false".
+
+  <p>Opera 11.11 returns false for state and "" for value (it doesn't support
+  indeterm).  Like Chrome, this is even for unrecognized commands.
+
+  <p>Gecko's behavior is the most useful.  If the author tries querying some
+  aspect of a command that makes no sense, they shouldn't receive a value that
+  looks like it might make sense but is actually just a constant.  Originally,
+  I went even further than Gecko: I required exceptions even for value, since
+  doing otherwise makes no sense.  But throwing more exceptions is less
+  compatible on the whole than throwing more exceptions, so based on <a
+  href=http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-September/033235.html>discussion</a>,
+  I switched to a behavior more like Opera, which is more or less IE/WebKit
+  behavior but made slightly more sane.
+  </div>
+
+  <p>If <var>command</var> has no <span
+  title=indeterminate>indeterminacy</span> or is not <span>enabled</span>,
+  return false.
 
   <li>Return true if <var>command</var> is <span>indeterminate</span>,
   otherwise false.
@@ -877,13 +885,19 @@ method on the <code data-anolis-spec=html>HTMLDocument</code> interface is
 invoked, the user agent must run the following steps:
 
 <ol>
-  <li>If <var>command</var> is not <span>supported</span>, raise a
+  <li>
+  <p class=comments>See comment before <a href=#supported-commands>Supported
+  commands</a>.
+
+  <p>If <var>command</var> is not <span>supported</span>, raise a
   [[NOT_SUPPORTED_ERR]] exception.
 
-  <li>If <var>command</var> has no <span>state</span>, raise an
-  [[INVALID_ACCESS_ERR]] exception.
+  <li>
+  <p class=comments>See comment on the comparable line for
+  <span>queryCommandIndeterm()</span>.
 
-  <li>If <var>command</var> is not <span>enabled</span>, return false.
+  <p>If <var>command</var> has no <span>state</span> or is not
+  <span>enabled</span>, return false.
 
   <li>If the <span>state override</span> for <var>command</var> is set, return
   it.
@@ -913,18 +927,22 @@ method on the <code data-anolis-spec=html>HTMLDocument</code> interface is
 invoked, the user agent must run the following steps:
 
 <ol>
-  <li>If <var>command</var> is not <span>supported</span>, raise a
+  <li>
+  <p class=comments>See comment before <a href=#supported-commands>Supported
+  commands</a>.
+
+  <p>If <var>command</var> is not <span>supported</span>, raise a
   [[NOT_SUPPORTED_ERR]] exception.
 
-  <li>If <var>command</var> has no <span>value</span>, raise an
-  [[INVALID_ACCESS_ERR]] exception.
-
   <li>
-  <p class=comments>This is what Firefox 6.0a2 and Opera 11.11 seem to do.  Chrome 14 dev
-  seems to return the string "false", and IE9 seems to return boolean false.
+  <p class=comments>This is what Firefox 6.0a2 and Opera 11.11 seem to do when
+  the command isn't enabled.  Chrome 14 dev seems to return the string "false",
+  and IE9 seems to return boolean false.  For the case where there's no value,
+  see the comment on the comparable line for
+  <span>queryCommandIndeterm()</span>.
 
-  <p>If <var>command</var> is not <span>enabled</span>, return the empty
-  string.
+  <p>If <var>command</var> has no <span>value</span> or is not
+  <span>enabled</span>, return the empty string.
 
   <li>
   <p class=comments>Yuck.  This is incredibly messy, as are lots of other
@@ -9260,10 +9278,9 @@ command">useCSS</code> is used, such as by logging a warning to an error
 console.
 
 <p class=note>No <span>state</span> is defined for this command, so <code
-title=queryCommandState()>queryCommandState("useCSS")</code> must raise an
-[[INVALID_ACCESS_ERR]] exception.  To query the <span>CSS styling flag</span>'s
-current value, authors have to use <span>the <code title>styleWithCSS</code>
-command</span>.
+title=queryCommandState()>queryCommandState("useCSS")</code> must always return
+false.  To query the <span>CSS styling flag</span>'s current value, authors
+have to use <span>the <code title>styleWithCSS</code> command</span>.
 <!-- @} -->
 
 <h2>Additional requirements</h2>

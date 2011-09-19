@@ -488,16 +488,6 @@ function editCommandMethod(command, prop, range, callback) {
 		throw "NOT_SUPPORTED_ERR";
 	}
 
-	// "If command has no action, raise an INVALID_ACCESS_ERR exception."
-	// "If command has no indeterminacy, raise an INVALID_ACCESS_ERR
-	// exception."
-	// "If command has no state, raise an INVALID_ACCESS_ERR exception."
-	// "If command has no value, raise an INVALID_ACCESS_ERR exception."
-	if (prop != "enabled"
-	&& !(prop in commands[command])) {
-		throw "INVALID_ACCESS_ERR";
-	}
-
 	executionStackDepth++;
 	try {
 		var ret = callback();
@@ -531,8 +521,6 @@ function myExecCommand(command, showUi, value, range) {
 	}
 
 	// "If command is not supported, raise a NOT_SUPPORTED_ERR exception."
-	//
-	// "If command has no action, raise an INVALID_ACCESS_ERR exception."
 	return editCommandMethod(command, "action", range, (function(command, showUi, value) { return function() {
 		// "If command is not enabled, return false."
 		if (!myQueryCommandEnabled(command)) {
@@ -570,12 +558,10 @@ function myQueryCommandIndeterm(command, range) {
 	command = command.toLowerCase();
 
 	// "If command is not supported, raise a NOT_SUPPORTED_ERR exception."
-	//
-	// "If command has no indeterminacy, raise an INVALID_ACCESS_ERR
-	// exception."
 	return editCommandMethod(command, "indeterm", range, (function(command) { return function() {
-		// "If command is not enabled, return false."
-		if (!myQueryCommandEnabled(command)) {
+		// "If command has no indeterminacy or is not enabled, return false."
+		if (!("indeterm" in commands[command])
+		|| !myQueryCommandEnabled(command)) {
 			return false;
 		}
 
@@ -590,11 +576,10 @@ function myQueryCommandState(command, range) {
 	command = command.toLowerCase();
 
 	// "If command is not supported, raise a NOT_SUPPORTED_ERR exception."
-	//
-	// "If command has no state, raise an INVALID_ACCESS_ERR exception."
 	return editCommandMethod(command, "state", range, (function(command) { return function() {
-		// "If command is not enabled, return false."
-		if (!myQueryCommandEnabled(command)) {
+		// "If command has no state or is not enabled, return false."
+		if (!("state" in commands[command])
+		|| !myQueryCommandEnabled(command)) {
 			return false;
 		}
 
@@ -625,11 +610,11 @@ function myQueryCommandValue(command, range) {
 	command = command.toLowerCase();
 
 	// "If command is not supported, raise a NOT_SUPPORTED_ERR exception."
-	//
-	// "If command has no value, raise an INVALID_ACCESS_ERR exception."
 	return editCommandMethod(command, "value", range, function() {
-		// "If command is not enabled, return the empty string."
-		if (!myQueryCommandEnabled(command)) {
+		// "If command has no value or is not enabled, return the empty
+		// string."
+		if (!("value" in commands[command])
+		|| !myQueryCommandEnabled(command)) {
 			return "";
 		}
 

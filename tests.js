@@ -4619,4 +4619,175 @@ function normalizeSerializedStyle(wrapper) {
 }
 //@}
 
+/**
+ * Input is the same format as output of generateTest in gentest.html.
+ */
+function runConformanceTest(browserTest) {
+//@{
+	document.getElementById("test-container").innerHTML = "<div contenteditable></div><p>test";
+	var testName = JSON.stringify(browserTest[1]) + " " + format_value(browserTest[0]);
+	var testDiv = document.querySelector("div[contenteditable]");
+	var originalRootElement, newRootElement;
+	var exception = null;
+	var expectedQueryResults = browserTest[3];
+	var actualQueryResults = {};
+	var actualQueryExceptions = {};
+
+	try {
+		var points = setupDiv(testDiv, browserTest[0]);
+
+		var range = document.createRange();
+		range.setStart(points[0], points[1]);
+		range.setEnd(points[2], points[3]);
+		// The points might be backwards
+		if (range.collapsed) {
+			range.setEnd(points[0], points[1]);
+		}
+		getSelection().removeAllRanges();
+		getSelection().addRange(range);
+
+		var originalRootElement = document.documentElement.cloneNode(true);
+		originalRootElement.querySelector("[contenteditable]").parentNode
+			.removeChild(originalRootElement.querySelector("[contenteditable]"));
+
+		for (var command in expectedQueryResults) {
+			var results = [];
+			var exceptions = {};
+			try { results[0] = document.queryCommandIndeterm(command) }
+			catch(e) { exceptions[0] = e }
+			try { results[1] = document.queryCommandState(command) }
+			catch(e) { exceptions[1] = e }
+			try { results[2] = document.queryCommandValue(command) }
+			catch(e) { exceptions[2] = e }
+			actualQueryResults[command] = results;
+			actualQueryExceptions[command] = exceptions;
+		}
+
+		for (var i = 0; i < browserTest[1].length; i++) {
+			document.execCommand(browserTest[1][i][0], false, browserTest[1][i][1]);
+		}
+
+		for (var command in expectedQueryResults) {
+			var results = actualQueryResults[command];
+			var exceptions = actualQueryExceptions[command];
+			try { results[3] = document.queryCommandIndeterm(command) }
+			catch(e) { exceptions[3] = e }
+			try { results[4] = document.queryCommandState(command) }
+			catch(e) { exceptions[4] = e }
+			try { results[5] = document.queryCommandValue(command) }
+			catch(e) { exceptions[5] = e }
+		}
+
+		var newRootElement = document.documentElement.cloneNode(true);
+		newRootElement.querySelector("[contenteditable]").parentNode
+			.removeChild(newRootElement.querySelector("[contenteditable]"));
+
+		normalizeSerializedStyle(testDiv);
+	} catch(e) {
+		exception = e;
+	}
+
+	test(function() {
+		assert_equals(exception, null, "Setup and execCommand() must not throw an exception");
+
+		// Now test for modifications to non-editable content.  First just
+		// count children:
+		assert_equals(testDiv.parentNode.childNodes.length, 2,
+			"The parent div must have two children.  Did something spill outside the test div?");
+
+		// Check for attributes
+		assert_equals(testDiv.attributes.length, 1,
+			'Wrapper div must have only one attribute (<div contenteditable="">), but has more (' +
+			formatStartTag(testDiv) + ")");
+
+		assert_equals(document.body.attributes.length, 0,
+			"Body element must have no attributes (<body>), but has more (" +
+			formatStartTag(document.body) + ")");
+
+		// Check that in general, nothing outside the test div was modified.
+		// TODO: Less verbose error reporting, the way some of the range tests
+		// do?
+		assert_equals(newRootElement.innerHTML, originalRootElement.innerHTML,
+			"Everything outside the editable div must be unchanged, but some change did occur");
+	}, testName + " checks for modifications to non-editable content");
+
+	test(function() {
+		assert_equals(exception, null, "Setup and execCommand() must not throw an exception");
+
+		assert_equals(testDiv.innerHTML,
+			browserTest[2].replace(/[\[\]{}]/g, ""),
+			"Unexpected innerHTML (after normalizing inline style)");
+	}, testName + " compare innerHTML");
+
+	for (var command in expectedQueryResults) {
+		var descriptions = [
+			'queryCommandIndeterm("' + command + '") before',
+			'queryCommandState("' + command + '") before',
+			'queryCommandValue("' + command + '") before',
+			'queryCommandIndeterm("' + command + '") after',
+			'queryCommandState("' + command + '") after',
+			'queryCommandValue("' + command + '") after',
+		];
+		for (var i = 0; i < 6; i++) {
+			test(function() {
+				assert_equals(exception, null, "Setup and execCommand() must not throw an exception");
+
+				if (expectedQueryResults[command][i] === null) {
+					// Some ad hoc tests to verify that we have a real
+					// DOMException.  FIXME: This should be made more rigorous,
+					// with clear steps specified for checking that something
+					// is really a DOMException.
+					assert_true(i in actualQueryExceptions[command],
+						"An exception must be thrown in this case");
+					var e = actualQueryExceptions[command][i];
+					assert_equals(typeof e, "object",
+						"typeof thrown object");
+					assert_idl_attribute(e, "code",
+						"Thrown object must be a DOMException");
+					assert_idl_attribute(e, "INVALID_ACCESS_ERR",
+						"Thrown object must be a DOMException");
+					assert_equals(e.code, e.INVALID_ACCESS_ERR,
+						"Thrown object must be an INVALID_ACCESS_ERR, so its .code and .INVALID_ACCESS_ERR attributes must be equal");
+				} else if ((i == 2 || i == 5)
+				&& (command == "backcolor" || command == "forecolor" || command == "hilitecolor")
+				&& typeof actualQueryResults[command][i] == "string") {
+					assert_false(i in actualQueryExceptions[command],
+						"An exception must not be thrown in this case");
+					// We don't return the format that the color should be in:
+					// that's up to CSSOM.  Thus we normalize before comparing.
+					assert_equals(normalizeColor(actualQueryResults[command][i]),
+						expectedQueryResults[command][i],
+						"Wrong result returned (after color normalization)");
+				} else {
+					assert_false(i in actualQueryExceptions[command],
+						"An exception must not be thrown in this case");
+					assert_equals(actualQueryResults[command][i],
+						expectedQueryResults[command][i],
+						"Wrong result returned");
+				}
+			}, testName + " " + descriptions[i]);
+		}
+	}
+
+	// Silly Firefox
+	document.body.removeAttribute("bgcolor");
+}
+//@}
+
+/**
+ * Return a string like '<body bgcolor="#FFFFFF">'.
+ */
+function formatStartTag(el) {
+//@{
+	var ret = "<" + el.tagName.toLowerCase();
+	for (var i = 0; i < el.attributes.length; i++) {
+		ret += " " + el.attributes[i].name + '="';
+		ret += el.attributes[i].value.replace(/\&/g, "&amp;")
+			.replace(/"/g, "&quot;");
+		ret += '"';
+	}
+	return ret + ">";
+}
+//@}
+
 // vim: foldmarker=@{,@} foldmethod=marker

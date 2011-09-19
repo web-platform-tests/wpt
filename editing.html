@@ -65,7 +65,7 @@ a code { text-decoration: underline }
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing APIs</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-16-september-2011>Work in Progress &mdash; Last Update 16 September 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-19-september-2011>Work in Progress &mdash; Last Update 19 September 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;<a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a>&gt;
@@ -461,6 +461,12 @@ all the tests and prints out a table of passes and fails.  Like many other
 recent web standards suites, they use the <a href=http://dvcs.w3.org/hg/html/file/tip/tests/resources/testharness.js>testharness.js</a>
 framework, and browser implementers should be able to make them part of their
 automated regression test frameworks.
+
+<p>For manual inspection, a version of the conformance tests is also available
+that runs only some of the tests at once: <a href=conformancetest/splitruntest.html>conformancetest/splitruntest.html</a>.
+This runs only one group of tests at a time, which takes only a few seconds
+instead of a minute or more.  This makes debugging particular tests much
+faster.  In all other respects, it should behave identically to runtest.html.
 
 <p>Unlike the development tests, the conformance tests don't run the JavaScript
 implementation as part of the test.  Instead, the tests' expected values are

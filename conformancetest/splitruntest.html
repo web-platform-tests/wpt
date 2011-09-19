@@ -1,9 +1,11 @@
 <!doctype html>
 <meta charset=utf-8>
 <link rel=stylesheet href=../css/reset.css>
-<title>HTML editing conformance tests</title>
+<title>HTML editing conformance tests (split version)</title>
 <p>See the <a href=editing.html#tests>Tests</a> section of the specification
 for documentation.
+
+<p id=picker>
 
 <p id=timing></p>
 
@@ -20,9 +22,7 @@ for documentation.
 <script>
 "use strict";
 
-runTests();
-
-function runTests() {
+(function() {
 	var startTime = Date.now();
 
 	// Make document.body.innerHTML more tidy by removing unnecessary things.
@@ -34,6 +34,37 @@ function runTests() {
 		}
 	});
 
+	var groupedBrowserTests = {};
+	for (var i = 0; i < browserTests.length; i++) {
+		var commands = browserTests[i][1];
+		if (commands.length == 2
+		&& commands[0][0] == "stylewithcss") {
+			// Regular test, not a multitest
+			if (!(commands[1][0] in groupedBrowserTests)) {
+				groupedBrowserTests[commands[1][0]] = [];
+			}
+			groupedBrowserTests[commands[1][0]].push(browserTests[i]);
+		} else {
+			// Multitest
+			if (!("multitest" in groupedBrowserTests)) {
+				groupedBrowserTests.multitest = [];
+			}
+			groupedBrowserTests.multitest.push(browserTests[i]);
+		}
+	}
+
+	var pickerContents = "Select a group of tests to run:";
+	for (var group in groupedBrowserTests) {
+		pickerContents += " <a href=?" + group + ">" + group + "</a>";
+	}
+	document.querySelector("#picker").innerHTML = pickerContents;
+
+	var command = location.search.replace(/^\?/, "");
+	if (!(command in groupedBrowserTests)) {
+		return;
+	}
+	browserTests = groupedBrowserTests[command];
+
 	browserTests.forEach(runConformanceTest);
 
 	document.getElementById("test-container").parentNode
@@ -42,5 +73,5 @@ function runTests() {
 	var elapsed = Math.round(Date.now() - startTime)/1000;
 	document.getElementById("timing").textContent =
 		"Time elapsed: " + Math.floor(elapsed/60) + ":" + (elapsed % 60).toFixed(3) + " min.";
-}
+})();
 </script>

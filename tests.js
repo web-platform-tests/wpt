@@ -3583,8 +3583,48 @@ var tests = {
 	cut: ['foo[bar]baz'],
 	paste: ['foo[bar]baz'],
 	selectall: ['foo[bar]baz'],
-	stylewithcss: ['foo[bar]baz'],
-	usecss: ['foo[bar]baz'],
+	stylewithcss: [
+	//@{
+		['true', 'foo[bar]baz'],
+		['TRUE', 'foo[bar]baz'],
+		['TrUe', 'foo[bar]baz'],
+		['true ', 'foo[bar]baz'],
+		[' true', 'foo[bar]baz'],
+		['truer', 'foo[bar]baz'],
+		[' true ', 'foo[bar]baz'],
+		[' TrUe', 'foo[bar]baz'],
+		['', 'foo[bar]baz'],
+		[' ', 'foo[bar]baz'],
+		['false', 'foo[bar]baz'],
+		['FALSE', 'foo[bar]baz'],
+		['FaLsE', 'foo[bar]baz'],
+		[' false', 'foo[bar]baz'],
+		['false ', 'foo[bar]baz'],
+		['falser', 'foo[bar]baz'],
+		['falsé', 'foo[bar]baz'],
+	],
+	//@}
+	usecss: [
+	//@{
+		['true', 'foo[bar]baz'],
+		['TRUE', 'foo[bar]baz'],
+		['TrUe', 'foo[bar]baz'],
+		['true ', 'foo[bar]baz'],
+		[' true', 'foo[bar]baz'],
+		['truer', 'foo[bar]baz'],
+		[' true ', 'foo[bar]baz'],
+		[' TrUe', 'foo[bar]baz'],
+		['', 'foo[bar]baz'],
+		[' ', 'foo[bar]baz'],
+		['false', 'foo[bar]baz'],
+		['FALSE', 'foo[bar]baz'],
+		['FaLsE', 'foo[bar]baz'],
+		[' false', 'foo[bar]baz'],
+		['false ', 'foo[bar]baz'],
+		['falser', 'foo[bar]baz'],
+		['falsé', 'foo[bar]baz'],
+	],
+	//@}
 	quasit: ['foo[bar]baz'],
 	multitest: [
 	//@{
@@ -3747,6 +3787,8 @@ var defaultValues = {
 	inserthtml: "ab<b>c</b>d",
 	insertimage: "/img/lion.svg",
 	inserttext: "a",
+	stylewithcss: "true",
+	usecss: "true",
 };
 //@}
 
@@ -3769,9 +3811,11 @@ var doubleTestingCommands = [
 	"justifyleft",
 	"justifyright",
 	"strikethrough",
+	"stylewithcss",
 	"subscript",
 	"superscript",
 	"underline",
+	"usecss",
 ];
 //@}
 

@@ -25,7 +25,7 @@ documentNuked.foreach(isNukedFromDocument)
 function isNukedFromElement(name) {
   test(function() {
     var ele = document.createElementNS("test", "test")
-    assert_equals(document.body[name], undefined) })
+    assert_equals(document.body[name], undefined)
     assert_equals(ele[name], undefined)
   })
 }

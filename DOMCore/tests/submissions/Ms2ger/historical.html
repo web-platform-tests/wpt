@@ -20,7 +20,7 @@ var documentNuked = [
   "normalizeDocument",
   "renameNode"
 ]
-documentNuked.foreach(isNukedFromDocument)
+documentNuked.forEach(isNukedFromDocument)
 
 function isNukedFromElement(name) {
   test(function() {
@@ -39,6 +39,6 @@ var elementNuked = [
   "setIdAttributeNS",
   "setIdAttributeNode"
 ]
-elementNuked.foreach(isNukedFromElement)
+elementNuked.forEach(isNukedFromElement)
 
 </script>

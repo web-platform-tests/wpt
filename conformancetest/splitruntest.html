@@ -53,8 +53,12 @@ for documentation.
 		}
 	}
 
+	var firstGroup = null;
 	var pickerContents = "Select a group of tests to run:";
 	for (var group in groupedBrowserTests) {
+		if (firstGroup === null) {
+			firstGroup = group;
+		}
 		pickerContents += " <a href=?" + group + ">" + group + "</a>";
 	}
 	document.querySelector("#picker").innerHTML = pickerContents;
@@ -62,6 +66,16 @@ for documentation.
 	var command = location.search.replace(/^\?/, "");
 	if (!(command in groupedBrowserTests)) {
 		return;
+	}
+	if (command !== firstGroup) {
+		// Silly hack: the CSS styling flag should be true, not false, to match
+		// expected results.  This is because every group of tests except the
+		// last (multitest) sets styleWithCSS automatically, and it sets it
+		// first to false and then to true.  Thus it's left at true at the end
+		// of each group of tests, so in gentest.html it will be true when
+		// starting each group of tests other than the first.  But browsers are
+		// supposed to default it to false when the page loads, so flip it.
+		try { document.execCommand("styleWithCSS", false, "true") } catch(e) {}
 	}
 	browserTests = groupedBrowserTests[command];
 

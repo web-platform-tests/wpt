@@ -100,4 +100,28 @@ var textNuked = [
   "replaceWholeText"
 ]
 textNuked.forEach(isNukedFromText)
+
+function isNukedFromNode(name) {
+  test(function() {
+    var doc = document.implementation.createDocument(null,null,null)
+    var doctype = document.implementation.createDocumentType("test", "", "")
+    var text = document.createTextNode("test")
+    assert_equals(doc[name], undefined)
+    assert_equals(doctype[name], undefined)
+    assert_equals(text[name], undefined)
+  }, "Node member must be nuked: " + name)
+}
+var nodeNuked = [
+  "hasAttributes",
+  //"attributes",
+  //"namespaceURI",
+  //"prefix",
+  //"localName",
+  //"normalize",
+  "isSupported",
+  "getFeature",
+  "getUserData",
+  "setUserData"
+]
+nodeNuked.forEach(isNukedFromNode)
 </script>

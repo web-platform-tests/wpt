@@ -4,8 +4,31 @@
 <script src="/resources/testharnessreport.js"></script>
 <div id=log></div>
 <script>
+function isInterfaceNuked(name) {
+  test(function() { assert_equals(window[name], undefined) })
+}
+var nukedInterfaces = [
+  "CDATASection",
+  "DOMConfiguration",
+  "DOMError",
+  "DOMErrorHandler",
+  "DOMImplementationList",
+  "DOMImplementationSource",
+  "DOMLocator",
+  "DOMObject",
+  "DOMUserData",
+  "Entity",
+  "EntityReference",
+  "NamedNodeMap",
+  "NameList",
+  "Notation",
+  "TypeInfo",
+  "UserDataHandler"
+]
+nukedInterfaces.forEach(isInterfaceNuked)
+
 function isNukedFromDocument(name) {
-  test(function() { assert_false(name in document) })
+  test(function() { assert_equals(document[name], undefined) })
 }
 var documentNuked = [
   "createCDATASection",

@@ -26,12 +26,8 @@ for documentation.
 	var startTime = Date.now();
 
 	// Make document.body.innerHTML more tidy by removing unnecessary things.
-	// We can't remove the testharness.js script, because at the time of this
-	// writing, for some reason that stops it from adding appropriate CSS.
 	[].forEach.call(document.querySelectorAll("script"), function(node) {
-		if (!/testharness\.js$/.test(node.src)) {
-			node.parentNode.removeChild(node);
-		}
+		node.parentNode.removeChild(node);
 	});
 
 	var groupedBrowserTests = {};

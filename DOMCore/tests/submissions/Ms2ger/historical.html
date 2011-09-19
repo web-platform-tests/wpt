@@ -33,7 +33,9 @@ nukedInterfaces.forEach(isInterfaceNuked)
 
 function isNukedFromDocument(name) {
   test(function() {
+    var doc = document.implementation.createDocument(null,null,null)
     assert_equals(document[name], undefined)
+    assert_equals(doc[name], undefined)
   }, "Historical DOM features must be removed: " + name)
 }
 var documentNuked = [
@@ -74,4 +76,28 @@ var elementNuked = [
 ]
 elementNuked.forEach(isNukedFromElement)
 
+function isNukedFromDoctype(name) {
+  test(function() {
+    var doctype = document.implementation.createDocumentType("test", "", "")
+    assert_equals(doctype[name], undefined)
+  }, "DocumentType member must be nuked: " + name)
+}
+var doctypeNuked = [
+  "entities",
+  "notations",
+  "internalSubset"
+]
+doctypeNuked.forEach(isNukedFromDoctype)
+
+function isNukedFromText(name) {
+  test(function() {
+    var text = document.createTextNode("test")
+    assert_equals(text[name], undefined)
+  }, "Text member must be nuked: " + name)
+}
+var textNuked = [
+  "isElementContentWhitespace",
+  "replaceWholeText"
+]
+textNuked.forEach(isNukedFromText)
 </script>

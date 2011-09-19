@@ -4693,6 +4693,8 @@ function runConformanceTest(browserTest) {
 		var originalRootElement = document.documentElement.cloneNode(true);
 		originalRootElement.querySelector("[contenteditable]").parentNode
 			.removeChild(originalRootElement.querySelector("[contenteditable]"));
+		originalRootElement.querySelector("#log").parentNode
+			.removeChild(originalRootElement.querySelector("#log"));
 
 		for (var command in expectedQueryResults) {
 			var results = [];
@@ -4706,33 +4708,45 @@ function runConformanceTest(browserTest) {
 			actualQueryResults[command] = results;
 			actualQueryExceptions[command] = exceptions;
 		}
-
-		for (var i = 0; i < browserTest[1].length; i++) {
-			document.execCommand(browserTest[1][i][0], false, browserTest[1][i][1]);
-		}
-
-		for (var command in expectedQueryResults) {
-			var results = actualQueryResults[command];
-			var exceptions = actualQueryExceptions[command];
-			try { results[3] = document.queryCommandIndeterm(command) }
-			catch(e) { exceptions[3] = e }
-			try { results[4] = document.queryCommandState(command) }
-			catch(e) { exceptions[4] = e }
-			try { results[5] = document.queryCommandValue(command) }
-			catch(e) { exceptions[5] = e }
-		}
-
-		var newRootElement = document.documentElement.cloneNode(true);
-		newRootElement.querySelector("[contenteditable]").parentNode
-			.removeChild(newRootElement.querySelector("[contenteditable]"));
-
-		normalizeSerializedStyle(testDiv);
 	} catch(e) {
 		exception = e;
 	}
 
+	for (var i = 0; i < browserTest[1].length; i++) {
+		test(function() {
+			assert_equals(exception, null, "Setup must not throw an exception");
+
+			document.execCommand(browserTest[1][i][0], false, browserTest[1][i][1]);
+		}, testName + ": execCommand(" + format_value(browserTest[1][i][0]) + ", false, " + format_value(browserTest[1][i][1]) + ") must not throw an exception");
+	}
+
+	if (exception === null) {
+		try {
+			for (var command in expectedQueryResults) {
+				var results = actualQueryResults[command];
+				var exceptions = actualQueryExceptions[command];
+				try { results[3] = document.queryCommandIndeterm(command) }
+				catch(e) { exceptions[3] = e }
+				try { results[4] = document.queryCommandState(command) }
+				catch(e) { exceptions[4] = e }
+				try { results[5] = document.queryCommandValue(command) }
+				catch(e) { exceptions[5] = e }
+			}
+
+			var newRootElement = document.documentElement.cloneNode(true);
+			newRootElement.querySelector("[contenteditable]").parentNode
+				.removeChild(newRootElement.querySelector("[contenteditable]"));
+			newRootElement.querySelector("#log").parentNode
+				.removeChild(newRootElement.querySelector("#log"));
+
+			normalizeSerializedStyle(testDiv);
+		} catch(e) {
+			exception = e;
+		}
+	}
+
 	test(function() {
-		assert_equals(exception, null, "Setup and execCommand() must not throw an exception");
+		assert_equals(exception, null, "Setup must not throw an exception");
 
 		// Now test for modifications to non-editable content.  First just
 		// count children:
@@ -4756,7 +4770,7 @@ function runConformanceTest(browserTest) {
 	}, testName + " checks for modifications to non-editable content");
 
 	test(function() {
-		assert_equals(exception, null, "Setup and execCommand() must not throw an exception");
+		assert_equals(exception, null, "Setup must not throw an exception");
 
 		assert_equals(testDiv.innerHTML,
 			browserTest[2].replace(/[\[\]{}]/g, ""),
@@ -4774,7 +4788,7 @@ function runConformanceTest(browserTest) {
 		];
 		for (var i = 0; i < 6; i++) {
 			test(function() {
-				assert_equals(exception, null, "Setup and execCommand() must not throw an exception");
+				assert_equals(exception, null, "Setup must not throw an exception");
 
 				if (expectedQueryResults[command][i] === null) {
 					// Some ad hoc tests to verify that we have a real

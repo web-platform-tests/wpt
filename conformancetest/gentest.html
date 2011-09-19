@@ -35,11 +35,9 @@ function generateTests() {
 			try {
 				if (command == "multitest") {
 					generateTest(normalizeTest(command, test));
-				} else if (doubleTestingCommands.indexOf(command) != -1) {
-					generateTest(normalizeTest(command, test, false));
-					generateTest(normalizeTest(command, test, true));
 				} else {
 					generateTest(normalizeTest(command, test, false));
+					generateTest(normalizeTest(command, test, true));
 				}
 			} catch(e) {
 				var errorP = document.createElement("p");

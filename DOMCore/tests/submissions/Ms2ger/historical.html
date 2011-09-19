@@ -5,7 +5,9 @@
 <div id=log></div>
 <script>
 function isInterfaceNuked(name) {
-  test(function() { assert_equals(window[name], undefined) })
+  test(function() {
+    assert_equals(window[name], undefined)
+  }, "Historical DOM features must be removed: " + name)
 }
 var nukedInterfaces = [
   "CDATASection",
@@ -23,12 +25,15 @@ var nukedInterfaces = [
   "NameList",
   "Notation",
   "TypeInfo",
-  "UserDataHandler"
+  "UserDataHandler",
+  "RangeException"
 ]
 nukedInterfaces.forEach(isInterfaceNuked)
 
 function isNukedFromDocument(name) {
-  test(function() { assert_equals(document[name], undefined) })
+  test(function() {
+    assert_equals(document[name], undefined)
+  }, "Historical DOM features must be removed: " + name)
 }
 var documentNuked = [
   "createCDATASection",
@@ -50,7 +55,7 @@ function isNukedFromElement(name) {
     var ele = document.createElementNS("test", "test")
     assert_equals(document.body[name], undefined)
     assert_equals(ele[name], undefined)
-  })
+  }, "Historical DOM features must be removed: " + name)
 }
 var elementNuked = [
   "getAttributeNode",

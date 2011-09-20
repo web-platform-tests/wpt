@@ -3902,8 +3902,8 @@ function queryOutputHelper(beforeIndeterm, beforeState, beforeValue, afterIndete
 			beforeDiv.lastChild.className = "bad-result";
 		}
 	} else {
-		// It always has to be an exception.
-		beforeDiv.lastChild.className = beforeIndeterm === "Exception"
+		// It always has to be false.
+		beforeDiv.lastChild.className = beforeIndeterm === false
 			? "good-result"
 			: "bad-result";
 	}
@@ -3918,8 +3918,7 @@ function queryOutputHelper(beforeIndeterm, beforeState, beforeValue, afterIndete
 		}
 	} else {
 		afterDiv.lastChild.className =
-			("indeterm" in commands[command] && afterIndeterm === false)
-			|| (!("indeterm" in commands[command]) && afterIndeterm === "Exception")
+			afterIndeterm === false
 				? "good-result"
 				: "bad-result";
 	}
@@ -3964,12 +3963,12 @@ function queryOutputHelper(beforeIndeterm, beforeState, beforeValue, afterIndete
 			afterDiv.lastChild.className = "bad-result";
 		}
 	} else {
-		// The general rule is it must either throw an exception or flip the
-		// state.
+		// The general rule is it must flip the state, unless there's no state
+		// defined, in which case it should always be false.
 		beforeDiv.lastChild.className =
 		afterDiv.lastChild.className =
 			("state" in commands[command] && typeof beforeState == "boolean" && typeof afterState == "boolean" && beforeState === !afterState)
-			|| (!("state" in commands[command]) && beforeState === "Exception" && afterState === "Exception")
+			|| (!("state" in commands[command]) && beforeState === false && afterState === false)
 				? "good-result"
 				: "bad-result";
 	}
@@ -3993,12 +3992,9 @@ function queryOutputHelper(beforeIndeterm, beforeState, beforeValue, afterIndete
 		value = legacySizeToCss(getLegacyFontSize(value));
 	} else if (command == "formatblock") {
 		value = value.replace(/^<(.*)>$/, "$1").toLowerCase();
-	} else if (command == "unlink") {
-		value = null;
 	}
 
 	if (((command == "backcolor" || command == "forecolor" || command == "hilitecolor") && value.toLowerCase() == "currentcolor")
-	|| (command == "createlink" && value === "")
 	|| (command == "fontsize" && value === undefined)
 	|| (command == "formatblock" && formattableBlockNames.indexOf(value.replace(/^<(.*)>$/, "$1").trim()) == -1)) {
 		afterDiv.lastChild.className = beforeValue === afterValue
@@ -4017,11 +4013,11 @@ function queryOutputHelper(beforeIndeterm, beforeState, beforeValue, afterIndete
 			? "good-result"
 			: "bad-result";
 	} else if (!("value" in commands[command])) {
-		// As usual, if it's not defined we want an exception.
-		beforeDiv.lastChild.className = beforeValue === "Exception"
+		// If it's not defined we want "".
+		beforeDiv.lastChild.className = beforeValue === ""
 			? "good-result"
 			: "bad-result";
-		afterDiv.lastChild.className = afterValue === "Exception"
+		afterDiv.lastChild.className = afterValue === ""
 			? "good-result"
 			: "bad-result";
 	} else {

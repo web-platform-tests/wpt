@@ -2,4 +2,13 @@
 # Currently I cross-check data generation in Gecko and WebKit, then populate
 # using the WebKit copy because it has fewer bugs to fix.  This fixes the bugs
 # for me.  Must be run from the root of the spec repo.
-sed -i 's!"fo<i>\[o</i><span style=\\"font-style:oblique\\">b]ar</span>baz"!"fo<i>[o</i><span style=\\"font-style:oblique\\"><i>b]</i>ar</span>baz"!;s!"fo<span style=\\"font-style:italic\\">\[o</span><span style=\\"font-style:oblique\\">b]ar</span>baz"!"fo<span style=\\"font-style:italic\\">[o</span><span style=\\"font-style:oblique\\"><span style=\\"font-style:italic\\">b]</span>ar</span>baz"!' conformancetest/data.js
+set -e
+cd conformancetest
+fromdos webkit-data
+fromdos gecko-data
+diff -u webkit-data gecko-data | tail -n +3 > tmp-diff
+diff -u tmp-diff diff
+rm tmp-diff
+cp webkit-data data.js
+patch data.js patch
+echo >> data.js

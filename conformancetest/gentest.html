@@ -11,7 +11,14 @@ for documentation.
 
 <div id=errors></div>
 
-<pre id=output></pre>
+<form action=submit.php method=post>
+<p><input type=submit disabled>
+<p><label>Label: <input name=label></label>
+<p><label><input type=radio name=ua value=gecko> Gecko</label>
+   <label><input type=radio name=ua value=webkit> WebKit</label>
+<p><label>Password: <input type=password name=password></label>
+<p><textarea name=data id=output readonly style=width:100%;height:20em></textarea>
+</form>
 
 <div id=test-container></div>
 
@@ -21,12 +28,19 @@ for documentation.
 <script>
 "use strict";
 
+if (/WebKit/.test(navigator.userAgent)) {
+	document.querySelector("[type=radio][value=webkit]").checked = true;
+} else if (/Gecko\//.test(navigator.userAgent)) {
+	document.querySelector("[type=radio][value=gecko]").checked = true;
+}
+
+var testOutput = '';
+
 function generateTests() {
 	var startTime = Date.now();
 	document.getElementById("test-container").innerHTML = "<div contenteditable></div><p>test";
 
-	var outputEl = document.getElementById("output");
-	outputEl.textContent = "var browserTests = [\n";
+	testOutput = "var browserTests = [\n";
 	for (var command in tests) {
 		tests[command].forEach(function(test) {
 			if (badTests[command].indexOf(test) != -1) {
@@ -51,15 +65,18 @@ function generateTests() {
 
 	// Finish up our JSON.  First remove the last comma, since JSON doesn't
 	// like that, then add a closing bracket.
-	outputEl.firstChild.deleteData(outputEl.textContent.lastIndexOf(","), 1);
-	outputEl.firstChild.appendData("]");
+	testOutput = testOutput.substr(0, testOutput.lastIndexOf(","))
+		+ testOutput.substr(1 + testOutput.lastIndexOf(","))
+		+ "]";
+	document.getElementById("output").value = testOutput;
+	document.getElementById("output").select();
 
 	document.getElementById("test-container").parentNode
 		.removeChild(document.getElementById("test-container"));
 	var elapsed = Math.round(Date.now() - startTime)/1000;
 	document.getElementById("timing").textContent =
 		"Time elapsed: " + Math.floor(elapsed/60) + ":" + (elapsed % 60).toFixed(3) + " min.";
-	getSelection().selectAllChildren(document.getElementById("output"));
+	document.querySelector("[type=submit]").disabled = false;
 }
 
 // Helper function for generateTest()
@@ -116,8 +133,6 @@ function setQueryResult(arr, idx, callback, command, range) {
  * The converted test value is then added to the pre with id=output.
  */
 function generateTest(test) {
-	var output = document.getElementById("output").firstChild;
-
 	var testDiv = document.querySelector("div[contenteditable]");
 	var points = setupDiv(testDiv, test[0]);
 
@@ -223,9 +238,9 @@ function generateTest(test) {
 
 	addBrackets(range);
 
-	output.appendData("[" + JSON.stringify(test[0]) + ",\n"
+	testOutput += "[" + JSON.stringify(test[0]) + ",\n"
 		+ "\t" + JSON.stringify(test.slice(1)) + ",\n"
 		+ "\t" + JSON.stringify(testDiv.innerHTML) + ",\n"
-		+ "\t" + JSON.stringify(expectedQueryResults) + "],\n");
+		+ "\t" + JSON.stringify(expectedQueryResults) + "],\n";
 }
 </script>

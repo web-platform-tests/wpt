@@ -3668,7 +3668,7 @@ function isIndentationElement(node) {
 }
 
 // "A simple indentation element is an indentation element that has no
-// attributes other than one or more of
+// attributes other than zero or more of
 //
 //   * "a style attribute that sets no properties other than "margin", "border",
 //     "padding", or subproperties of those;

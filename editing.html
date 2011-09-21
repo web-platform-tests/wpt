@@ -3962,13 +3962,11 @@ IE9 does.  The criteria could probably be tightened up a bit to reduce false
 positives, but it'll do for now.
 
 <p>A <dfn id=simple-indentation-element>simple indentation element</dfn> is an <a href=#indentation-element>indentation
-element</a> that has no attributes other than zero or more of
+element</a> that has no attributes except possibly
 
 <ul>
   <li>a <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute that sets no properties other than "margin",
-  "border", "padding", or subproperties of those;
-
-  <li>a <code class=external data-anolis-spec=html title=classes><a href=http://www.whatwg.org/html/#classes>class</a></code> attribute;
+  "border", "padding", or subproperties of those; and/or
 
   <li>a <code class=external data-anolis-spec=html title="the dir attribute"><a href=http://www.whatwg.org/html/#the-dir-attribute>dir</a></code>
   attribute.
@@ -5722,9 +5720,8 @@ Consider removing it anyway.
   <p>If <var title="">node</var> is an <a href=#indentation-element>indentation element</a>:
 
   <ol>
-    <li>Unset the <code class=external data-anolis-spec=html title=classes><a href=http://www.whatwg.org/html/#classes>class</a></code> and
-    <code class=external data-anolis-spec=html title="the dir attribute"><a href=http://www.whatwg.org/html/#the-dir-attribute>dir</a></code>
-    attributes of <var title="">node</var>, if any.
+    <li>Unset the <code class=external data-anolis-spec=html title="the dir
+    attribute"><a href=http://www.whatwg.org/html/#the-dir-attribute>dir</a></code> attribute of <var title="">node</var>, if any.
 
     <li>Unset the margin, padding, and border CSS properties of
     <var title="">node</var>.

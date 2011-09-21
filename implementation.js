@@ -3668,24 +3668,19 @@ function isIndentationElement(node) {
 }
 
 // "A simple indentation element is an indentation element that has no
-// attributes other than zero or more of
+// attributes except possibly
 //
-//   * "a style attribute that sets no properties other than "margin", "border",
-//     "padding", or subproperties of those;
-//   * "a class attribute;
+//   * "a style attribute that sets no properties other than "margin",
+//     "border", "padding", or subproperties of those; and/or
 //   * "a dir attribute."
 function isSimpleIndentationElement(node) {
 	if (!isIndentationElement(node)) {
 		return false;
 	}
 
-	if (node.tagName != "BLOCKQUOTE" && node.tagName != "DIV") {
-		return false;
-	}
-
 	for (var i = 0; i < node.attributes.length; i++) {
 		if (!isHtmlNamespace(node.attributes[i].namespaceURI)
-		|| ["style", "class", "dir"].indexOf(node.attributes[i].name) == -1) {
+		|| ["style", "dir"].indexOf(node.attributes[i].name) == -1) {
 			return false;
 		}
 	}
@@ -5300,15 +5295,16 @@ function outdentNode(node) {
 
 	// "If node is an indentation element:"
 	if (isIndentationElement(node)) {
-		// "Unset the class and dir attributes of node, if any."
-		node.removeAttribute("class");
+		// "Unset the dir attribute of node, if any."
 		node.removeAttribute("dir");
 
 		// "Unset the margin, padding, and border CSS properties of node."
 		node.style.margin = "";
 		node.style.padding = "";
 		node.style.border = "";
-		if (node.getAttribute("style") == "") {
+		if (node.getAttribute("style") == ""
+		// Crazy WebKit bug: https://bugs.webkit.org/show_bug.cgi?id=68551
+		|| node.getAttribute("style") == "border-width: initial; border-color: initial; ") {
 			node.removeAttribute("style");
 		}
 

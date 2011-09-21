@@ -3983,13 +3983,11 @@ IE9 does.  The criteria could probably be tightened up a bit to reduce false
 positives, but it'll do for now.
 
 <p>A <dfn>simple indentation element</dfn> is an <span>indentation
-element</span> that has no attributes other than zero or more of
+element</span> that has no attributes except possibly
 
 <ul>
   <li>a [[style]] attribute that sets no properties other than "margin",
-  "border", "padding", or subproperties of those;
-
-  <li>a <code data-anolis-spec=html title=classes>class</code> attribute;
+  "border", "padding", or subproperties of those; and/or
 
   <li>a <code data-anolis-spec=html title="the dir attribute">dir</code>
   attribute.
@@ -5765,9 +5763,8 @@ Consider removing it anyway.
   <p>If <var>node</var> is an <span>indentation element</span>:
 
   <ol>
-    <li>Unset the <code data-anolis-spec=html title=classes>class</code> and
-    <code data-anolis-spec=html title="the dir attribute">dir</code>
-    attributes of <var>node</var>, if any.
+    <li>Unset the <code data-anolis-spec=html title="the dir
+    attribute">dir</code> attribute of <var>node</var>, if any.
 
     <li>Unset the margin, padding, and border CSS properties of
     <var>node</var>.

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Currently I cross-check data generation in Gecko and WebKit, then populate
 # using the WebKit copy because it has fewer bugs to fix.  This fixes the bugs
 # for me.  Must be run from the root of the spec repo.

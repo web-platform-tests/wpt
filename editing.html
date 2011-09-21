@@ -1462,8 +1462,16 @@ criteria</var> returning true only for <code title="">&lt;b&gt;</code> elements 
 <var title="">new parent instructions</var> creating and returning a new <code title="">&lt;b&gt;</code> element.
 
 <ol>
-  <li>If <var title="">node list</var> is empty, or the first member of <var title="">node
-  list</var> is not <a href=#editable>editable</a>, return null and abort these steps.
+  <li>
+  <p class=comments>We need to treat <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>s as visible here even if they're
+  not, because wrapping them might be significant even if they're invisible: it
+  can turn an extraneous line break into a non-extraneous one.
+
+  <p>If every member of <var title="">node list</var> is <a href=#invisible>invisible</a>, and
+  none is a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, return null and abort these steps.
+
+  <li>If <var title="">node list</var>'s first member's <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is null, return null
+  and abort these steps.
 
   <li>
   <p class=comments>Trailing br's like this always need to go along with their
@@ -1473,6 +1481,22 @@ criteria</var> returning true only for <code title="">&lt;b&gt;</code> elements 
   <p>If <var title="">node list</var>'s last member is an <a href=#inline-node>inline node</a>
   that's not a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, and <var title="">node list</var>'s last member's <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code>
   is a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, append that <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code> to <var title="">node list</var>.
+
+  <li>
+  <p class=comments>See <a href="http://www.w3.org/Bugs/Public/show_bug.cgi?id=13811">bug 13811</a>, <a href="http://www.w3.org/Bugs/Public/show_bug.cgi?id=14231">bug 14231</a>.  If
+  there's a non-adjacent sibling that matches the sibling criteria and only
+  invisible nodes intervene, we want to skip over the invisible nodes.  For
+  instance, bolding <code title="">&lt;b&gt;foo&lt;/b&gt;&lt;!--bar--&gt;[baz]</code> should produce
+  <code title="">&lt;b&gt;foo&lt;!--bar--&gt;baz&lt;/b&gt;</code>.  Similarly, and more usefully, creating an
+  ordered list with <code title="">&lt;ol&gt;&lt;li&gt;foo&lt;/ol&gt; &lt;p&gt;[bar]&lt;/p&gt;</code> should produce
+  <code title="">&lt;ol&gt;&lt;li&gt;foo&lt;/li&gt; &lt;li&gt;[bar]&lt;/ol&gt;</code>, not
+  <code title="">&lt;ol&gt;&lt;li&gt;foo&lt;/ol&gt; &lt;ol&gt;&lt;li&gt;[bar]&lt;/ol&gt;</code>.
+
+  <p>While <var title="">node list</var>'s first member's <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> is
+  <a href=#invisible>invisible</a>, prepend it to <var title="">node list</var>.
+
+  <li>While <var title="">node list</var>'s last member's <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> is
+  <a href=#invisible>invisible</a>, append it to <var title="">node list</var>.
 
   <li>If the <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> of the first member of <var title="">node list</var>
   is <a href=#editable>editable</a> and running <var title="">sibling criteria</var> on it
@@ -1572,9 +1596,9 @@ criteria</var> returning true only for <code title="">&lt;b&gt;</code> elements 
 
   <ol>
     <li>If <var title="">new parent</var> is not an <a href=#inline-node>inline node</a>, but the
-    last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">new parent</var> and the first member of <var title="">node
-    list</var> are both <a href=#inline-node title="inline node">inline nodes</a>, and the
-    last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">new parent</var> is not a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, call <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("br")</a></code> on the
+    last <a href=#visible>visible</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">new parent</var> and the first
+    <a href=#visible>visible</a> member of <var title="">node list</var> are both <a href=#inline-node title="inline node">inline nodes</a>, and the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">new
+    parent</var> is not a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, call <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("br")</a></code> on the
     <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">new parent</var> and append the result as the
     last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">new parent</var>.
 
@@ -1587,9 +1611,9 @@ criteria</var> returning true only for <code title="">&lt;b&gt;</code> elements 
 
   <ol>
     <li>If <var title="">new parent</var> is not an <a href=#inline-node>inline node</a>, but the
-    first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">new parent</var> and the last member of <var title="">node
-    list</var> are both <a href=#inline-node title="inline node">inline nodes</a>, and the
-    last member of <var title="">node list</var> is not a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, call <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("br")</a></code> on the
+    first <a href=#visible>visible</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">new parent</var> and the last
+    <a href=#visible>visible</a> member of <var title="">node list</var> are both <a href=#inline-node title="inline node">inline nodes</a>, and the last member of <var title="">node
+    list</var> is not a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, call <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("br")</a></code> on the
     <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">new parent</var> and insert the result as the
     first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">new parent</var>.
 
@@ -7841,9 +7865,19 @@ of ways.
   <p class=comments>Without this step, the last child of the previous sibling
   might be a list, which the li wouldn't get appended to.
 
-  <p>If the first member of <var title="">node list</var> is an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code> whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>
-  is an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, and its <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> is an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code> as well,
-  <a href=#normalize-sublists>normalize sublists</a> of its <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code>.
+  <p>If the first <a href=#visible>visible</a> member of <var title="">node list</var> is an
+  <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code> whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>:
+
+  <ol>
+    <li>Let <var title="">sibling</var> be <var title="">node list</var>'s first
+    <a href=#visible>visible</a> member's <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code>.
+
+    <li>While <var title="">sibling</var> is <a href=#invisible>invisible</a>, set
+    <var title="">sibling</var> to its <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code>.
+
+    <li>If <var title="">sibling</var> is an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code>, <a href=#normalize-sublists>normalize sublists</a> of
+    <var title="">sibling</var>.
+  </ol>
 
   <li>While <var title="">node list</var> is not empty:
 

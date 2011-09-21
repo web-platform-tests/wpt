@@ -1349,10 +1349,16 @@ function wrap(nodeList, siblingCriteria, newParentInstructions) {
 		newParentInstructions = function() { return null };
 	}
 
-	// "If node list is empty, or the first member of node list is not
-	// editable, return null and abort these steps."
-	if (!nodeList.length
-	|| !isEditable(nodeList[0])) {
+	// "If every member of node list is invisible, and none is a br, return
+	// null and abort these steps."
+	if (nodeList.every(isInvisible)
+	&& !nodeList.some(function(node) { return isHtmlElement(node, "br") })) {
+		return null;
+	}
+
+	// "If node list's first member's parent is null, return null and abort
+	// these steps."
+	if (!nodeList[0].parentNode) {
 		return null;
 	}
 
@@ -1361,6 +1367,18 @@ function wrap(nodeList, siblingCriteria, newParentInstructions) {
 	if (isInlineNode(nodeList[nodeList.length - 1])
 	&& !isHtmlElement(nodeList[nodeList.length - 1], "br")
 	&& isHtmlElement(nodeList[nodeList.length - 1].nextSibling, "br")) {
+		nodeList.push(nodeList[nodeList.length - 1].nextSibling);
+	}
+
+	// "While node list's first member's previousSibling is invisible, prepend
+	// it to node list."
+	while (isInvisible(nodeList[0].previousSibling)) {
+		nodeList.unshift(nodeList[0].previousSibling);
+	}
+
+	// "While node list's last member's nextSibling is invisible, append it to
+	// node list."
+	while (isInvisible(nodeList[nodeList.length - 1].nextSibling)) {
 		nodeList.push(nodeList[nodeList.length - 1].nextSibling);
 	}
 
@@ -1416,14 +1434,14 @@ function wrap(nodeList, siblingCriteria, newParentInstructions) {
 
 	// "If new parent is before the first member of node list in tree order:"
 	if (isBefore(newParent, nodeList[0])) {
-		// "If new parent is not an inline node, but the last child of new
-		// parent and the first member of node list are both inline nodes, and
-		// the last child of new parent is not a br, call createElement("br")
-		// on the ownerDocument of new parent and append the result as the last
-		// child of new parent."
+		// "If new parent is not an inline node, but the last visible child of
+		// new parent and the first visible member of node list are both inline
+		// nodes, and the last child of new parent is not a br, call
+		// createElement("br") on the ownerDocument of new parent and append
+		// the result as the last child of new parent."
 		if (!isInlineNode(newParent)
-		&& isInlineNode(newParent.lastChild)
-		&& isInlineNode(nodeList[0])
+		&& isInlineNode([].filter.call(newParent.childNodes, isVisible).slice(-1)[0])
+		&& isInlineNode(nodeList.filter(isVisible)[0])
 		&& !isHtmlElement(newParent.lastChild, "BR")) {
 			newParent.appendChild(newParent.ownerDocument.createElement("br"));
 		}
@@ -1436,14 +1454,14 @@ function wrap(nodeList, siblingCriteria, newParentInstructions) {
 
 	// "Otherwise:"
 	} else {
-		// "If new parent is not an inline node, but the first child of new
-		// parent and the last member of node list are both inline nodes, and
-		// the last member of node list is not a br, call createElement("br")
-		// on the ownerDocument of new parent and insert the result as the
-		// first child of new parent."
+		// "If new parent is not an inline node, but the first visible child of
+		// new parent and the last visible member of node list are both inline
+		// nodes, and the last member of node list is not a br, call
+		// createElement("br") on the ownerDocument of new parent and insert
+		// the result as the first child of new parent."
 		if (!isInlineNode(newParent)
-		&& isInlineNode(newParent.firstChild)
-		&& isInlineNode(nodeList[nodeList.length - 1])
+		&& isInlineNode([].filter.call(newParent.childNodes, isVisible)[0])
+		&& isInlineNode(nodeList.filter(isVisible).slice(-1)[0])
 		&& !isHtmlElement(nodeList[nodeList.length - 1], "BR")) {
 			newParent.insertBefore(newParent.ownerDocument.createElement("br"), newParent.firstChild);
 		}
@@ -6750,14 +6768,24 @@ commands.indent = {
 				|| isAllowedChild(node, "ol"));
 		});
 
-		// "If the first member of node list is an li whose parent is an ol or
-		// ul, and its previousSibling is an li as well, normalize sublists of
-		// its previousSibling."
-		if (nodeList.length
-		&& isHtmlElement(nodeList[0], "LI")
-		&& isHtmlElement(nodeList[0].parentNode, ["OL", "UL"])
-		&& isHtmlElement(nodeList[0].previousSibling, "LI")) {
-			normalizeSublists(nodeList[0].previousSibling);
+		// "If the first visible member of node list is an li whose parent is
+		// an ol or ul:"
+		if (isHtmlElement(nodeList.filter(isVisible)[0], "li")
+		&& isHtmlElement(nodeList.filter(isVisible)[0].parentNode, ["ol", "ul"])) {
+			// "Let sibling be node list's first visible member's
+			// previousSibling."
+			var sibling = nodeList.filter(isVisible)[0].previousSibling;
+
+			// "While sibling is invisible, set sibling to its
+			// previousSibling."
+			while (isInvisible(sibling)) {
+				sibling = sibling.previousSibling;
+			}
+
+			// "If sibling is an li, normalize sublists of sibling."
+			if (isHtmlElement(sibling, "li")) {
+				normalizeSublists(sibling);
+			}
 		}
 
 		// "While node list is not empty:"

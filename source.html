@@ -1432,8 +1432,16 @@ criteria</var> returning true only for <code title>&lt;b></code> elements and
 title>&lt;b></code> element.
 
 <ol>
-  <li>If <var>node list</var> is empty, or the first member of <var>node
-  list</var> is not <span>editable</span>, return null and abort these steps.
+  <li>
+  <p class=comments>We need to treat [[br]]s as visible here even if they're
+  not, because wrapping them might be significant even if they're invisible: it
+  can turn an extraneous line break into a non-extraneous one.
+
+  <p>If every member of <var>node list</var> is <span>invisible</span>, and
+  none is a [[br]], return null and abort these steps.
+
+  <li>If <var>node list</var>'s first member's [[parent]] is null, return null
+  and abort these steps.
 
   <li>
   <p class=comments>Trailing br's like this always need to go along with their
@@ -1443,6 +1451,24 @@ title>&lt;b></code> element.
   <p>If <var>node list</var>'s last member is an <span>inline node</span>
   that's not a [[br]], and <var>node list</var>'s last member's [[nextsibling]]
   is a [[br]], append that [[br]] to <var>node list</var>.
+
+  <li>
+  <p class=comments>See <a
+  href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=13811>bug 13811</a>, <a
+  href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=14231>bug 14231</a>.  If
+  there's a non-adjacent sibling that matches the sibling criteria and only
+  invisible nodes intervene, we want to skip over the invisible nodes.  For
+  instance, bolding {{code|<b>foo</b><!--bar-->[baz]}} should produce
+  {{code|<b>foo<!--bar-->baz</b>}}.  Similarly, and more usefully, creating an
+  ordered list with {{code|<ol><li>foo</ol> <p>[bar]</p>}} should produce
+  {{code|<ol><li>foo</li> <li>[bar]</ol>}}, not
+  {{code|<ol><li>foo</ol> <ol><li>[bar]</ol>}}.
+
+  <p>While <var>node list</var>'s first member's [[previoussibling]] is
+  <span>invisible</span>, prepend it to <var>node list</var>.
+
+  <li>While <var>node list</var>'s last member's [[nextsibling]] is
+  <span>invisible</span>, append it to <var>node list</var>.
 
   <li>If the [[previoussibling]] of the first member of <var>node list</var>
   is <span>editable</span> and running <var>sibling criteria</var> on it
@@ -1546,11 +1572,10 @@ title>&lt;b></code> element.
 
   <ol>
     <li>If <var>new parent</var> is not an <span>inline node</span>, but the
-    last [[child]] of <var>new parent</var> and the first member of <var>node
-    list</var> are both <span title="inline node">inline nodes</span>, and the
-    last [[child]] of <var>new parent</var> is not a [[br]], call <code
-    data-anolis-spec=domcore
-    title=dom-Document-createElement>createElement("br")</code> on the
+    last <span>visible</span> [[child]] of <var>new parent</var> and the first
+    <span>visible</span> member of <var>node list</var> are both <span
+    title="inline node">inline nodes</span>, and the last [[child]] of <var>new
+    parent</var> is not a [[br]], call [[createelement|"br"]] on the
     [[ownerdocument]] of <var>new parent</var> and append the result as the
     last [[child]] of <var>new parent</var>.
 
@@ -1563,11 +1588,10 @@ title>&lt;b></code> element.
 
   <ol>
     <li>If <var>new parent</var> is not an <span>inline node</span>, but the
-    first [[child]] of <var>new parent</var> and the last member of <var>node
-    list</var> are both <span title="inline node">inline nodes</span>, and the
-    last member of <var>node list</var> is not a [[br]], call <code
-    data-anolis-spec=domcore
-    title=dom-Document-createElement>createElement("br")</code> on the
+    first <span>visible</span> [[child]] of <var>new parent</var> and the last
+    <span>visible</span> member of <var>node list</var> are both <span
+    title="inline node">inline nodes</span>, and the last member of <var>node
+    list</var> is not a [[br]], call [[createelement|"br"]] on the
     [[ownerdocument]] of <var>new parent</var> and insert the result as the
     first [[child]] of <var>new parent</var>.
 
@@ -7907,9 +7931,19 @@ of ways.
   <p class=comments>Without this step, the last child of the previous sibling
   might be a list, which the li wouldn't get appended to.
 
-  <p>If the first member of <var>node list</var> is an [[li]] whose [[parent]]
-  is an [[ol]] or [[ul]], and its [[previoussibling]] is an [[li]] as well,
-  <span>normalize sublists</span> of its [[previoussibling]].
+  <p>If the first <span>visible</span> member of <var>node list</var> is an
+  [[li]] whose [[parent]] is an [[ol]] or [[ul]]:
+
+  <ol>
+    <li>Let <var>sibling</var> be <var>node list</var>'s first
+    <span>visible</span> member's [[previoussibling]].
+
+    <li>While <var>sibling</var> is <span>invisible</span>, set
+    <var>sibling</var> to its [[previoussibling]].
+
+    <li>If <var>sibling</var> is an [[li]], <span>normalize sublists</span> of
+    <var>sibling</var>.
+  </ol>
 
   <li>While <var>node list</var> is not empty:
 

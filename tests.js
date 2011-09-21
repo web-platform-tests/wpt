@@ -1715,6 +1715,23 @@ var tests = {
 		'<p>foo<!--bar-->{}<p>extra',
 		'<p>{}<!--foo-->bar<p>extra',
 
+		// Whitespace nodes
+		'<blockquote><p>foo</blockquote> <p>[bar]',
+		'<p>[foo]</p> <blockquote><p>bar</blockquote>',
+		'<blockquote><p>foo</blockquote> <p>[bar]</p> <blockquote><p>baz</blockquote>',
+		'<ol><li>foo</li><ol><li>bar</li> </ol><li>[baz]</ol>',
+		'<ol><li>foo</li><ol><li>bar</li></ol> <li>[baz]</ol>',
+		'<ol><li>foo</li><ol><li>bar</li> </ol> <li>[baz]</ol>',
+		'<ol><li>foo<ol><li>bar</li> </ol></li><li>[baz]</ol>',
+		'<ol><li>foo<ol><li>bar</li></ol></li> <li>[baz]</ol>',
+		'<ol><li>foo<ol><li>bar</li> </ol></li> <li>[baz]</ol>',
+		'<ol><li>foo<li>[bar]</li> <ol><li>baz</ol></ol>',
+		'<ol><li>foo<li>[bar]</li><ol> <li>baz</ol></ol>',
+		'<ol><li>foo<li>[bar]</li> <ol> <li>baz</ol></ol>',
+		'<ol><li>foo<li>[bar] <ol><li>baz</ol></ol>',
+		'<ol><li>foo<li>[bar]<ol> <li>baz</ol></ol>',
+		'<ol><li>foo<li>[bar] <ol> <li>baz</ol></ol>',
+
 		// https://bugs.webkit.org/show_bug.cgi?id=32003
 		'<ul><li>a<br>{<br>}</li><li>b</li></ul>',
 	],
@@ -2102,6 +2119,11 @@ var tests = {
 		'<ul id=abc><li>foo<li>bar<li>[baz]</ul>',
 		'<ul style=color:blue><li>foo<li>bar<li>[baz]</ul>',
 		'<ul style=text-indent:1em><li>foo<li>bar<li>[baz]</ul>',
+
+		// Whitespace nodes
+		'<ol><li>foo</ol> <p>[bar]',
+		'<p>[foo]</p> <ol><li>bar</ol>',
+		'<ol><li>foo</ol> <p>[bar]</p> <ol><li>baz</ol>',
 	],
 	//@}
 	insertparagraph: [
@@ -2539,6 +2561,11 @@ var tests = {
 		'<ul style=color:blue><li>foo<li>bar<li>[baz]</ul>',
 		'<ul style=text-indent:1em><li>foo<li>bar<li>[baz]</ul>',
 
+		// Whitespace nodes
+		'<ul><li>foo</ul> <p>[bar]',
+		'<p>[foo]</p> <ul><li>bar</ul>',
+		'<ul><li>foo</ul> <p>[bar]</p> <ul><li>baz</ul>',
+
 		// https://bugs.webkit.org/show_bug.cgi?id=24167
 		'{<div style="font-size: 1.3em">1</div><div style="font-size: 1.1em">2</div>}',
 	],
@@ -2745,6 +2772,17 @@ var tests = {
 		'<div style=text-align:end>[foo]</div><p>extra',
 		'<div dir=rtl style=text-align:start>[foo]</div><p>extra',
 		'<div dir=rtl style=text-align:end>[foo]</div><p>extra',
+
+		// Whitespace nodes
+		'<div style=text-align:center><p>foo</div> <p>[bar]',
+		'<div align=center><p>foo</div> <p>[bar]',
+		'<center><p>foo</center> <p>[bar]',
+		'<p>[foo]</p> <div style=text-align:center><p>bar</div>',
+		'<p>[foo]</p> <div align=center><p>bar</div>',
+		'<p>[foo]</p> <center><p>bar</center>',
+		'<div style=text-align:center><p>foo</div> <p>[bar]</p> <div style=text-align:center><p>baz</div>',
+		'<div align=center><p>foo</div> <p>[bar]</p> <div align=center><p>baz</div>',
+		'<center><p>foo</center> <p>[bar]</p> <center><p>baz</center>',
 	],
 	//@}
 	justifyfull: [
@@ -2843,6 +2881,14 @@ var tests = {
 		'<div style=text-align:end>[foo]</div><p>extra',
 		'<div dir=rtl style=text-align:start>[foo]</div><p>extra',
 		'<div dir=rtl style=text-align:end>[foo]</div><p>extra',
+
+		// Whitespace nodes
+		'<div style=text-align:justify><p>foo</div> <p>[bar]',
+		'<div align=justify><p>foo</div> <p>[bar]',
+		'<p>[foo]</p> <div style=text-align:justify><p>bar</div>',
+		'<p>[foo]</p> <div align=justify><p>bar</div>',
+		'<div style=text-align:justify><p>foo</div> <p>[bar]</p> <div style=text-align:justify><p>baz</div>',
+		'<div align=justify><p>foo</div> <p>[bar]</p> <div align=justify><p>baz</div>',
 	],
 	//@}
 	justifyleft: [
@@ -2941,6 +2987,14 @@ var tests = {
 		'<div style=text-align:end>[foo]</div><p>extra',
 		'<div dir=rtl style=text-align:start>[foo]</div><p>extra',
 		'<div dir=rtl style=text-align:end>[foo]</div><p>extra',
+
+		// Whitespace nodes
+		'<div style=text-align:left><p>foo</div> <p>[bar]',
+		'<div align=left><p>foo</div> <p>[bar]',
+		'<p>[foo]</p> <div style=text-align:left><p>bar</div>',
+		'<p>[foo]</p> <div align=left><p>bar</div>',
+		'<div style=text-align:left><p>foo</div> <p>[bar]</p> <div style=text-align:left><p>baz</div>',
+		'<div align=left><p>foo</div> <p>[bar]</p> <div align=left><p>baz</div>',
 	],
 	//@}
 	justifyright: [
@@ -3039,6 +3093,14 @@ var tests = {
 		'<div style=text-align:end>[foo]</div><p>extra',
 		'<div dir=rtl style=text-align:start>[foo]</div><p>extra',
 		'<div dir=rtl style=text-align:end>[foo]</div><p>extra',
+
+		// Whitespace nodes
+		'<div style=text-align:right><p>foo</div> <p>[bar]',
+		'<div align=right><p>foo</div> <p>[bar]',
+		'<p>[foo]</p> <div style=text-align:right><p>bar</div>',
+		'<p>[foo]</p> <div align=right><p>bar</div>',
+		'<div style=text-align:right><p>foo</div> <p>[bar]</p> <div style=text-align:right><p>baz</div>',
+		'<div align=right><p>foo</div> <p>[bar]</p> <div align=right><p>baz</div>',
 	],
 	//@}
 	outdent: [
@@ -3157,6 +3219,26 @@ var tests = {
 		'<ol><li><h1>[foo]</h1></ol>',
 		'<ol><li><xmp>[foo]</xmp></li></ol>',
 		'<blockquote><ol><li>foo<div><ol><li>[bar]</ol></div><li>baz</ol></blockquote>',
+
+		// Whitespace nodes
+		'<blockquote> <p>[foo]</p></blockquote>',
+		'<blockquote><p>[foo]</p> </blockquote>',
+		'<blockquote> <p>[foo]</p> </blockquote>',
+		'<ol> <li>[foo]</li></ol>',
+		'<ol><li>[foo]</li> </ol>',
+		'<ol> <li>[foo]</li> </ol>',
+		'<ul> <li>[foo]</li></ul>',
+		'<ul><li>[foo]</li> </ul>',
+		'<ul> <li>[foo]</li> </ul>',
+		'<blockquote> <p>[foo]</p> <p>bar</p> <p>baz</p></blockquote>',
+		'<blockquote> <p>foo</p> <p>[bar]</p> <p>baz</p></blockquote>',
+		'<blockquote> <p>foo</p> <p>bar</p> <p>[baz]</p></blockquote>',
+		'<ol> <li>[foo]</li> <li>bar</li> <li>baz</li></ol>',
+		'<ol> <li>foo</li> <li>[bar]</li> <li>baz</li></ol>',
+		'<ol> <li>foo</li> <li>bar</li> <li>[baz]</li></ol>',
+		'<ul> <li>[foo]</li> <li>bar</li> <li>baz</li></ul>',
+		'<ul> <li>foo</li> <li>[bar]</li> <li>baz</li></ul>',
+		'<ul> <li>foo</li> <li>bar</li> <li>[baz]</li></ul>',
 
 		// https://bugs.webkit.org/show_bug.cgi?id=24249
 		'<ol><li>[]a<table><tr><td><br></table></ol>',

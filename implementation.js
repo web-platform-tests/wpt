@@ -2997,8 +2997,10 @@ function setSelectionValue(command, newValue) {
 		// "Push down values on node."
 		pushDownValues(node, command, newValue);
 
-		// "Force the value of node."
-		forceValue(node, command, newValue);
+		// "If node is an allowed child of span, force the value of node."
+		if (isAllowedChild(node, "span")) {
+			forceValue(node, command, newValue);
+		}
 	});
 }
 

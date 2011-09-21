@@ -65,7 +65,7 @@ a code { text-decoration: underline }
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing APIs</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-19-september-2011>Work in Progress &mdash; Last Update 19 September 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-21-september-2011>Work in Progress &mdash; Last Update 21 September 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;<a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a>&gt;
@@ -3004,7 +3004,12 @@ desired.
   <ol>
     <li><a href=#push-down-values>Push down values</a> on <var title="">node</var>.
 
-    <li><a href=#force-the-value>Force the value</a> of <var title="">node</var>.
+    <li>
+    <p class=comments>If the node isn't an allowed child of "span", forcing its
+    value will just force its children's value, which is redundant.  So don't.
+
+    <p>If <var title="">node</var> is an <a href=#allowed-child>allowed child</a> of "span",
+    <a href=#force-the-value>force the value</a> of <var title="">node</var>.
   </ol>
 </ol>
 

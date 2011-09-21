@@ -3013,7 +3013,12 @@ desired.
   <ol>
     <li><span>Push down values</span> on <var>node</var>.
 
-    <li><span>Force the value</span> of <var>node</var>.
+    <li>
+    <p class=comments>If the node isn't an allowed child of "span", forcing its
+    value will just force its children's value, which is redundant.  So don't.
+
+    <p>If <var>node</var> is an <span>allowed child</span> of "span",
+    <span>force the value</span> of <var>node</var>.
   </ol>
 </ol>
 

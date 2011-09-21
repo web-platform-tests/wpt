@@ -2,5 +2,4 @@ anolis
 data
 conformancetest/gecko-data
 conformancetest/webkit-data
-conformancetest/patch
-conformancetest/diff
+conformancetest/tmp-diff

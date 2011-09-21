@@ -87,6 +87,7 @@ var tests = {
 	//@{
 		'foo[]bar',
 		'<p>[foo</p> <p>bar]</p>',
+		'<span>[foo</span> <span>bar]</span>',
 		'<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>',
 		'<b>foo[]bar</b>',
 		'<i>foo[]bar</i>',
@@ -229,6 +230,7 @@ var tests = {
 	//@{
 		'foo[]bar',
 		'<p>[foo</p> <p>bar]</p>',
+		'<span>[foo</span> <span>bar]</span>',
 		'<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>',
 		'<b>foo[]bar</b>',
 		'<i>foo[]bar</i>',
@@ -638,6 +640,7 @@ var tests = {
 	//@{
 		'foo[]bar',
 		'<p>[foo</p> <p>bar]</p>',
+		'<span>[foo</span> <span>bar]</span>',
 		'<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>',
 		'<b>foo[]bar</b>',
 		'<i>foo[]bar</i>',
@@ -725,6 +728,7 @@ var tests = {
 	//@{
 		'foo[]bar',
 		'<p>[foo</p> <p>bar]</p>',
+		'<span>[foo</span> <span>bar]</span>',
 		'<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>',
 		'<b>foo[]bar</b>',
 		'<i>foo[]bar</i>',
@@ -832,6 +836,7 @@ var tests = {
 	//@{
 		'foo[]bar',
 		'<p>[foo</p> <p>bar]</p>',
+		'<span>[foo</span> <span>bar]</span>',
 		'<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>',
 		'<b>foo[]bar</b>',
 		'<i>foo[]bar</i>',
@@ -1497,6 +1502,7 @@ var tests = {
 	//@{
 		'foo[]bar',
 		'<p>[foo</p> <p>bar]</p>',
+		'<span>[foo</span> <span>bar]</span>',
 		'<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>',
 		'<b>foo[]bar</b>',
 		'<i>foo[]bar</i>',
@@ -2541,6 +2547,7 @@ var tests = {
 	//@{
 		'foo[]bar',
 		'<p>[foo</p> <p>bar]</p>',
+		'<span>[foo</span> <span>bar]</span>',
 		'<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>',
 		'<b>foo[]bar</b>',
 		'<i>foo[]bar</i>',
@@ -3284,6 +3291,7 @@ var tests = {
 	//@{
 		'foo[]bar',
 		'<p>[foo</p> <p>bar]</p>',
+		'<span>[foo</span> <span>bar]</span>',
 		'<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>',
 		'<b>foo[]bar</b>',
 		'<i>foo[]bar</i>',
@@ -3379,6 +3387,7 @@ var tests = {
 	//@{
 		'foo[]bar',
 		'<p>[foo</p> <p>bar]</p>',
+		'<span>[foo</span> <span>bar]</span>',
 		'<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>',
 		'<b>foo[]bar</b>',
 		'<i>foo[]bar</i>',
@@ -3436,6 +3445,7 @@ var tests = {
 	//@{
 		'foo[]bar',
 		'<p>[foo</p> <p>bar]</p>',
+		'<span>[foo</span> <span>bar]</span>',
 		'<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>',
 		'<b>foo[]bar</b>',
 		'<i>foo[]bar</i>',
@@ -3496,6 +3506,7 @@ var tests = {
 	//@{
 		'foo[]bar',
 		'<p>[foo</p> <p>bar]</p>',
+		'<span>[foo</span> <span>bar]</span>',
 		'<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>',
 		'<b>foo[]bar</b>',
 		'<i>foo[]bar</i>',
@@ -3591,6 +3602,7 @@ var tests = {
 	//@{
 		'foo[]bar',
 		'<p>[foo</p> <p>bar]</p>',
+		'<span>[foo</span> <span>bar]</span>',
 		'<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>',
 		'<b>foo[]bar</b>',
 		'<i>foo[]bar</i>',

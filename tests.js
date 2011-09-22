@@ -4390,15 +4390,16 @@ function queryOutputHelper(beforeIndeterm, beforeState, beforeValue, afterIndete
 			value = "#" + value;
 		}
 	} else if (command == "fontsize") {
-		beforeValue = legacySizeToCss(beforeValue);
-		afterValue = legacySizeToCss(afterValue);
-		value = legacySizeToCss(getLegacyFontSize(value));
+		value = normalizeFontSize(value);
+		if (value !== null) {
+			value = String(cssSizeToLegacy(value));
+		}
 	} else if (command == "formatblock") {
 		value = value.replace(/^<(.*)>$/, "$1").toLowerCase();
 	}
 
 	if (((command == "backcolor" || command == "forecolor" || command == "hilitecolor") && value.toLowerCase() == "currentcolor")
-	|| (command == "fontsize" && value === undefined)
+	|| (command == "fontsize" && value === null)
 	|| (command == "formatblock" && formattableBlockNames.indexOf(value.replace(/^<(.*)>$/, "$1").trim()) == -1)) {
 		afterDiv.lastChild.className = beforeValue === afterValue
 			? "good-result"

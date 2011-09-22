@@ -3316,82 +3316,64 @@ applicable style rules.
 </dl>
 
 <p>What all of these have in common is that they force the author to deal with
-legacy font values and don't let them use CSS.  This is undesirable, so I
-ignore how implementations behave.  Practically any value that did the same
-thing in IE and Firefox should still do the same thing here, so I'm only
-respecifying non-interoperable behavior anyway.
+legacy font values and don't let them use CSS.  This is undesirable, but to
+avoid it we'd really have to create a new command.  If nothing else, the value
+returned by <code title="">queryCommandValue()</code> has to be numeric, so authors can't
+really use the command sanely no matter what we do.  See <a href="http://www.w3.org/Bugs/Public/show_bug.cgi?id=14251">bug 14251</a>.
 </div>
 
 <p><a href=#action>Action</a>:
 
 <ol>
-  <li>If <var title="">value</var> is the empty string, abort these steps and do
-  nothing.
-
   <li><a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#strip-leading-and-trailing-whitespace>Strip leading and trailing whitespace</a>
   from <var title="">value</var>.
 
-  <li>If <var title="">value</var> is a <a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#valid-floating-point-number>valid floating point
-  number</a>, or would be a <a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#valid-floating-point-number>valid floating point
-  number</a> if a single leading "+" character were stripped:
+  <li>If <var title="">value</var> is not a <a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#valid-floating-point-number>valid floating
+  point number</a>, and would not be a <a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#valid-floating-point-number>valid
+  floating point number</a> if a single leading "+" character were stripped,
+  abort these steps and do nothing.
 
-  <ol>
-    <li>If the first character of <var title="">value</var> is "+", delete the character
-    and let <var title="">mode</var> be "relative-plus".
+  <li>If the first character of <var title="">value</var> is "+", delete the character
+  and let <var title="">mode</var> be "relative-plus".
 
-    <li>Otherwise, if the first character of <var title="">value</var> is "-", delete
-    the character and let <var title="">mode</var> be "relative-minus".
+  <li>Otherwise, if the first character of <var title="">value</var> is "-", delete the
+  character and let <var title="">mode</var> be "relative-minus".
 
-    <li>Otherwise, let <var title="">mode</var> be "absolute".
+  <li>Otherwise, let <var title="">mode</var> be "absolute".
 
-    <li>Apply the <a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#rules-for-parsing-non-negative-integers>rules for parsing non-negative
-    integers</a> to <var title="">value</var>, and let <var title="">number</var> be the
-    result.
+  <li>Apply the <a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#rules-for-parsing-non-negative-integers>rules for parsing non-negative
+  integers</a> to <var title="">value</var>, and let <var title="">number</var> be the result.
 
-    <li>If <var title="">mode</var> is "relative-plus", add three to <var title="">number</var>.
+  <li>If <var title="">mode</var> is "relative-plus", add three to <var title="">number</var>.
 
-    <li>If <var title="">mode</var> is "relative-minus", negate <var title="">number</var>, then
-    add three to it.
+  <li>If <var title="">mode</var> is "relative-minus", negate <var title="">number</var>, then
+  add three to it.
 
-    <li>If <var title="">number</var> is less than one, let <var title="">number</var> equal 1.
+  <li>If <var title="">number</var> is less than one, let <var title="">number</var> equal 1.
 
-    <li>If <var title="">number</var> is greater than seven, let <var title="">number</var> equal
-    7.
+  <li>If <var title="">number</var> is greater than seven, let <var title="">number</var> equal
+  7.
 
-    <li>Set <var title="">value</var> to the string here corresponding to
-    <var title="">number</var>:
+  <li>Set <var title="">value</var> to the string here corresponding to
+  <var title="">number</var>:
 
-    <p class=comments> The entry for 7 here is an issue: there's no CSS value
-    that corresponds to it.  Even if we got one added to the drafts, it
-    wouldn't be backward-compatible to use it.  WebKit is the only engine that
-    supports CSS output for fontSize, and it uses -webkit-xxx-large in this
-    case, which is unworkable.  Instead, we just always output a font tag for
-    size 7.  If authors want conforming markup, they'll need to give CSS sizes
-    above size 7, not legacy sizes.
+  <p class=comments>The entry for 7 here is an issue: there's no CSS value that
+  corresponds to it.  Even if we got one added to the drafts, it wouldn't be
+  backward-compatible to use it.  WebKit is the only engine that supports CSS
+  output for fontSize, and it uses -webkit-xxx-large in this case, which is
+  unworkable.  Instead, we just always output a font tag for size 7.  If
+  authors want conforming markup, they'll need to give CSS sizes above size 7,
+  not legacy sizes.
 
-    <ul>
-      <li>1: xx-small
-      <li>2: small
-      <li>3: medium
-      <li>4: large
-      <li>5: x-large
-      <li>6: xx-large
-      <li>7: xxx-large
-    </ul>
-  </ol>
-
-  <li>
-  <p class=comments> Not sure this is the best way to do it.  We don't want to
-  allow relative lengths, because those can have very weird user-visible
-  behavior.  For instance, a size of 2em would sometimes double the text size,
-  but if you applied it a second time it would do nothing, but if you
-  deselected one character it would suddenly double the size again.  Current
-  UAs just only allow numeric values.  There's no harm in allowing "x-small"
-  and absolute sizes, I don't think.
-
-  <p>If <var title="">value</var> is not one of the strings "xx-small", "x-small",
-  "small", "medium", "large", "x-large", "xx-large", "xxx-large", and is not a
-  valid CSS absolute length, then abort these steps and do nothing.
+  <ul>
+    <li>1: xx-small
+    <li>2: small
+    <li>3: medium
+    <li>4: large
+    <li>5: x-large
+    <li>6: xx-large
+    <li>7: xxx-large
+  </ul>
 
   <li><a href="#set-the-selection's-value">Set the selection's value</a> to <var title="">value</var>.
 </ol>

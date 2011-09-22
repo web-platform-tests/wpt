@@ -3139,93 +3139,82 @@ commands.fontname = {
 //@{
 
 // Helper function for fontSize's action plus queryOutputHelper.  It's just the
-// middle of fontSize's action, ripped out into its own function.
+// middle of fontSize's action, ripped out into its own function.  Returns null
+// if the size is invalid.
 function normalizeFontSize(value) {
 	// "Strip leading and trailing whitespace from value."
 	//
 	// Cheap hack, not following the actual algorithm.
 	value = value.trim();
 
-	// "If value is a valid floating point number, or would be a valid
-	// floating point number if a single leading "+" character were
-	// stripped:"
-	if (/^[-+]?[0-9]+(\.[0-9]+)?([eE][-+]?[0-9]+)?$/.test(value)) {
-		var mode;
-
-		// "If the first character of value is "+", delete the character
-		// and let mode be "relative-plus"."
-		if (value[0] == "+") {
-			value = value.slice(1);
-			mode = "relative-plus";
-		// "Otherwise, if the first character of value is "-", delete the
-		// character and let mode be "relative-minus"."
-		} else if (value[0] == "-") {
-			value = value.slice(1);
-			mode = "relative-minus";
-		// "Otherwise, let mode be "absolute"."
-		} else {
-			mode = "absolute";
-		}
-
-		// "Apply the rules for parsing non-negative integers to value, and
-		// let number be the result."
-		//
-		// Another cheap hack.
-		var num = parseInt(value);
-
-		// "If mode is "relative-plus", add three to number."
-		if (mode == "relative-plus") {
-			num += 3;
-		}
-
-		// "If mode is "relative-minus", negate number, then add three to
-		// it."
-		if (mode == "relative-minus") {
-			num = 3 - num;
-		}
-
-		// "If number is less than one, let number equal 1."
-		if (num < 1) {
-			num = 1;
-		}
-
-		// "If number is greater than seven, let number equal 7."
-		if (num > 7) {
-			num = 7;
-		}
-
-		// "Set value to the string here corresponding to number:" [table
-		// omitted]
-		value = {
-			1: "xx-small",
-			2: "small",
-			3: "medium",
-			4: "large",
-			5: "x-large",
-			6: "xx-large",
-			7: "xxx-large"
-		}[num];
+	// "If value is not a valid floating point number, and would not be a valid
+	// floating point number if a single leading "+" character were stripped,
+	// abort these steps and do nothing."
+	if (!/^[-+]?[0-9]+(\.[0-9]+)?([eE][-+]?[0-9]+)?$/.test(value)) {
+		return null;
 	}
+
+	var mode;
+
+	// "If the first character of value is "+", delete the character and let
+	// mode be "relative-plus"."
+	if (value[0] == "+") {
+		value = value.slice(1);
+		mode = "relative-plus";
+	// "Otherwise, if the first character of value is "-", delete the character
+	// and let mode be "relative-minus"."
+	} else if (value[0] == "-") {
+		value = value.slice(1);
+		mode = "relative-minus";
+	// "Otherwise, let mode be "absolute"."
+	} else {
+		mode = "absolute";
+	}
+
+	// "Apply the rules for parsing non-negative integers to value, and let
+	// number be the result."
+	//
+	// Another cheap hack.
+	var num = parseInt(value);
+
+	// "If mode is "relative-plus", add three to number."
+	if (mode == "relative-plus") {
+		num += 3;
+	}
+
+	// "If mode is "relative-minus", negate number, then add three to it."
+	if (mode == "relative-minus") {
+		num = 3 - num;
+	}
+
+	// "If number is less than one, let number equal 1."
+	if (num < 1) {
+		num = 1;
+	}
+
+	// "If number is greater than seven, let number equal 7."
+	if (num > 7) {
+		num = 7;
+	}
+
+	// "Set value to the string here corresponding to number:" [table omitted]
+	value = {
+		1: "xx-small",
+		2: "small",
+		3: "medium",
+		4: "large",
+		5: "x-large",
+		6: "xx-large",
+		7: "xxx-large"
+	}[num];
 
 	return value;
 }
 
 commands.fontsize = {
 	action: function(value) {
-		// "If value is the empty string, abort these steps and do nothing."
-		if (value === "") {
-			return;
-		}
-
 		value = normalizeFontSize(value);
-
-		// "If value is not one of the strings "xx-small", "x-small", "small",
-		// "medium", "large", "x-large", "xx-large", "xxx-large", and is not a
-		// valid CSS absolute length, then abort these steps and do nothing."
-		//
-		// More cheap hacks to skip valid CSS absolute length checks.
-		if (["xx-small", "x-small", "small", "medium", "large", "x-large", "xx-large", "xxx-large"].indexOf(value) == -1
-		&& !/^[0-9]+(\.[0-9]+)?(cm|mm|in|pt|pc)$/.test(value)) {
+		if (value === null) {
 			return;
 		}
 
@@ -3262,7 +3251,9 @@ function getLegacyFontSize(size) {
 	// For convenience in other places in my code, I handle all sizes, not just
 	// pixel sizes as the spec says.  This means pixel sizes have to be passed
 	// in suffixed with "px", not as plain numbers.
-	size = normalizeFontSize(size);
+	if (normalizeFontSize(size) !== null) {
+		return cssSizeToLegacy(normalizeFontSize(size));
+	}
 
 	if (["xx-small", "x-small", "small", "medium", "large", "x-large", "xx-large", "xxx-large"].indexOf(size) == -1
 	&& !/^[0-9]+(\.[0-9]+)?(cm|mm|in|pt|pc|px)$/.test(size)) {

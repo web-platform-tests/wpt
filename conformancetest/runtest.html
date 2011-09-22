@@ -41,6 +41,8 @@ function runTests() {
 
 	var elapsed = Math.round(Date.now() - startTime)/1000;
 	document.getElementById("timing").textContent =
-		"Time elapsed: " + Math.floor(elapsed/60) + ":" + (elapsed % 60).toFixed(3) + " min.";
+		"Time elapsed: " + Math.floor(elapsed/60) + ":"
+		+ ((elapsed % 60) < 10 ? "0" : "")
+		+ (elapsed % 60).toFixed(3) + " min.";
 }
 </script>

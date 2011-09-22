@@ -7631,7 +7631,10 @@ commands.inserttext = {
 		canonicalizeWhitespace(getActiveRange().endContainer, getActiveRange().endOffset, false);
 
 		// "Call collapseToEnd() on the context object's Selection."
-		getSelection().collapseToEnd();
+		//
+		// Work around WebKit bug: sometimes it blows up the selection and
+		// throws, which we don't want.
+		try { getSelection().collapseToEnd(); } catch(e) {}
 		getActiveRange().collapse(false);
 	}
 };

@@ -355,14 +355,23 @@ var tests = {
 		'foo<a name=abc>[]bar</a>',
 		'foo<a href=/ name=abc>[]bar</a>',
 
+		'foo &nbsp;[]',
+		'&nbsp;[] foo',
 		'foo &nbsp;[]bar',
 		'foo&nbsp; []bar',
 		'foo&nbsp;&nbsp;[]bar',
 		'foo  []bar',
+		'foo []&nbsp; bar',
+		'foo &nbsp;[] bar',
+		'foo &nbsp; []bar',
+		'foo []<span>&nbsp;</span> bar',
+		'foo <span>&nbsp;</span>[] bar',
+		'foo <span>&nbsp;</span> []bar',
 		'<b>foo </b>&nbsp;[]bar',
 		'<b>foo&nbsp;</b> []bar',
 		'<b>foo&nbsp;</b>&nbsp;[]bar',
 		'<b>foo </b> []bar',
+		'<p>foo </p><p>[] bar</p>',
 
 		// Tables with collapsed selection
 		'foo<table><tr><td>[]bar</table>baz',
@@ -615,6 +624,9 @@ var tests = {
 		'<dl><dt>foo<dd>bar[<dd>]baz</dl>',
 
 		'<b>foo [&nbsp;</b>bar]',
+		'foo<b> [&nbsp;bar]</b>',
+		'<b>[foo&nbsp;] </b>bar',
+		'[foo<b>&nbsp;] bar</b>',
 
 		// Do we merge based on element names or the display property?
 		'<p style=display:inline>fo[o<p style=display:inline>b]ar',
@@ -1257,10 +1269,18 @@ var tests = {
 		'<a name=abc>foo[]</a>bar',
 		'<a href=/ name=abc>foo[]</a>bar',
 
+		'foo []&nbsp;',
+		'[]&nbsp; foo',
 		'foo[] &nbsp;bar',
 		'foo[]&nbsp; bar',
 		'foo[]&nbsp;&nbsp;bar',
 		'foo[]  bar',
+		'foo[] &nbsp; bar',
+		'foo []&nbsp; bar',
+		'foo &nbsp;[] bar',
+		'foo[] <span>&nbsp;</span> bar',
+		'foo []<span>&nbsp;</span> bar',
+		'foo <span>&nbsp;</span>[] bar',
 		'<b>foo[] </b>&nbsp;bar',
 		'<b>foo[]&nbsp;</b> bar',
 		'<b>foo[]&nbsp;</b>&nbsp;bar',
@@ -2430,6 +2450,17 @@ var tests = {
 
 		// https://bugs.webkit.org/show_bug.cgi?id=19702
 		'<blockquote><font color=blue>[foo]</font></blockquote>',
+
+		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=14119
+		// https://bugzilla.mozilla.org/show_bug.cgi?id=681626
+		[' ', 'foo[] '],
+		[' ', ' foo   []   '],
+		[' ', 'foo[]<span> </span>'],
+		[' ', 'foo[]<span> </span> '],
+		[' ', ' []foo'],
+		[' ', '   []   foo '],
+		[' ', '<span> </span>[]foo'],
+		[' ', ' <span> </span>[]foo'],
 	],
 	//@}
 	insertunorderedlist: [

@@ -373,6 +373,36 @@ var tests = {
 		'<b>foo </b> []bar',
 		'<p>foo </p><p>[] bar</p>',
 
+		'<pre>foo &nbsp;[]</pre>',
+		'<pre>&nbsp;[] foo</pre>',
+		'<pre>foo &nbsp;[]bar</pre>',
+		'<pre>foo&nbsp; []bar</pre>',
+		'<pre>foo  []bar</pre>',
+
+		'<div style=white-space:pre>foo &nbsp;[]</div>',
+		'<div style=white-space:pre>&nbsp;[] foo</div>',
+		'<div style=white-space:pre>foo &nbsp;[]bar</div>',
+		'<div style=white-space:pre>foo&nbsp; []bar</div>',
+		'<div style=white-space:pre>foo  []bar</div>',
+
+		'<div style=white-space:pre-wrap>foo &nbsp;[]</div>',
+		'<div style=white-space:pre-wrap>&nbsp;[] foo</div>',
+		'<div style=white-space:pre-wrap>foo &nbsp;[]bar</div>',
+		'<div style=white-space:pre-wrap>foo&nbsp; []bar</div>',
+		'<div style=white-space:pre-wrap>foo  []bar</div>',
+
+		'<div style=white-space:pre-line>foo &nbsp;[]</div>',
+		'<div style=white-space:pre-line>&nbsp;[] foo</div>',
+		'<div style=white-space:pre-line>foo &nbsp;[]bar</div>',
+		'<div style=white-space:pre-line>foo&nbsp; []bar</div>',
+		'<div style=white-space:pre-line>foo  []bar</div>',
+
+		'<div style=white-space:nowrap>foo &nbsp;[]</div>',
+		'<div style=white-space:nowrap>&nbsp;[] foo</div>',
+		'<div style=white-space:nowrap>foo &nbsp;[]bar</div>',
+		'<div style=white-space:nowrap>foo&nbsp; []bar</div>',
+		'<div style=white-space:nowrap>foo  []bar</div>',
+
 		// Tables with collapsed selection
 		'foo<table><tr><td>[]bar</table>baz',
 		'foo<table><tr><td>bar</table>[]baz',
@@ -1285,6 +1315,36 @@ var tests = {
 		'<b>foo[]&nbsp;</b> bar',
 		'<b>foo[]&nbsp;</b>&nbsp;bar',
 		'<b>foo[] </b> bar',
+
+		'<pre>foo []&nbsp;</pre>',
+		'<pre>[]&nbsp; foo</pre>',
+		'<pre>foo[] &nbsp;bar</pre>',
+		'<pre>foo[]&nbsp; bar</pre>',
+		'<pre>foo[]  bar</pre>',
+
+		'<div style=white-space:pre>foo []&nbsp;</div>',
+		'<div style=white-space:pre>[]&nbsp; foo</div>',
+		'<div style=white-space:pre>foo[] &nbsp;bar</div>',
+		'<div style=white-space:pre>foo[]&nbsp; bar</div>',
+		'<div style=white-space:pre>foo[]  bar</div>',
+
+		'<div style=white-space:pre-wrap>foo []&nbsp;</div>',
+		'<div style=white-space:pre-wrap>[]&nbsp; foo</div>',
+		'<div style=white-space:pre-wrap>foo[] &nbsp;bar</div>',
+		'<div style=white-space:pre-wrap>foo[]&nbsp; bar</div>',
+		'<div style=white-space:pre-wrap>foo[]  bar</div>',
+
+		'<div style=white-space:pre-line>foo []&nbsp;</div>',
+		'<div style=white-space:pre-line>[]&nbsp; foo</div>',
+		'<div style=white-space:pre-line>foo[] &nbsp;bar</div>',
+		'<div style=white-space:pre-line>foo[]&nbsp; bar</div>',
+		'<div style=white-space:pre-line>foo[]  bar</div>',
+
+		'<div style=white-space:nowrap>foo []&nbsp;</div>',
+		'<div style=white-space:nowrap>[]&nbsp; foo</div>',
+		'<div style=white-space:nowrap>foo[] &nbsp;bar</div>',
+		'<div style=white-space:nowrap>foo[]&nbsp; bar</div>',
+		'<div style=white-space:nowrap>foo[]  bar</div>',
 
 		// Tables with collapsed selection
 		'foo[]<table><tr><td>bar</table>baz',
@@ -2298,6 +2358,10 @@ var tests = {
 		['\ud800', 'foo[]bar'],
 		['\x07', 'foo[]bar'],
 
+		// Whitespace tests!  The following two bugs are relevant to some of
+		// these:
+		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=14119
+		// https://bugzilla.mozilla.org/show_bug.cgi?id=681626
 		[' ', 'foo[]bar'],
 		[' ', 'foo []bar'],
 		[' ', 'foo[] bar'],
@@ -2325,15 +2389,14 @@ var tests = {
 		[' ', '<b>foo[]</b>bar'],
 		[' ', 'foo[]<b>bar</b>'],
 
-		[' ', '<pre>foo[]</pre>'],
-		[' ', '<pre>[]foo</pre>'],
-		[' ', '<pre>foo []bar</pre>'],
-		[' ', '<span style=white-space:pre>foo[]</span>'],
-		[' ', '<span style=white-space:pre>[]foo</span>'],
-		[' ', '<span style=white-space:pre>foo []bar</span>'],
-		[' ', '<span style=white-space:pre-wrap>foo[]</span>'],
-		[' ', '<span style=white-space:pre-wrap>[]foo</span>'],
-		[' ', '<span style=white-space:pre-wrap>foo []bar</span>'],
+		[' ', 'foo[] '],
+		[' ', ' foo   []   '],
+		[' ', 'foo[]<span> </span>'],
+		[' ', 'foo[]<span> </span> '],
+		[' ', ' []foo'],
+		[' ', '   []   foo '],
+		[' ', '<span> </span>[]foo'],
+		[' ', ' <span> </span>[]foo'],
 
 		[' ', '{}<br>'],
 		[' ', '<p>{}<br>'],
@@ -2341,6 +2404,55 @@ var tests = {
 		[' ', '<p>foo[]<p>bar'],
 		[' ', '<p>foo&nbsp;[]<p>bar'],
 		[' ', '<p>foo[]<p>&nbsp;bar'],
+
+		// Some of the same tests as above, repeated with various values of
+		// white-space.
+		[' ', '<pre>foo[]bar</pre>'],
+		[' ', '<pre>foo []bar</pre>'],
+		[' ', '<pre>foo[] bar</pre>'],
+		[' ', '<pre>foo &nbsp;[]bar</pre>'],
+		[' ', '<pre>[]foo</pre>'],
+		[' ', '<pre>foo[]</pre>'],
+		[' ', '<pre>foo&nbsp;[]</pre>'],
+		[' ', '<pre> foo   []   </pre>'],
+
+		[' ', '<div style=white-space:pre>foo[]bar</div>'],
+		[' ', '<div style=white-space:pre>foo []bar</div>'],
+		[' ', '<div style=white-space:pre>foo[] bar</div>'],
+		[' ', '<div style=white-space:pre>foo &nbsp;[]bar</div>'],
+		[' ', '<div style=white-space:pre>[]foo</div>'],
+		[' ', '<div style=white-space:pre>foo[]</div>'],
+		[' ', '<div style=white-space:pre>foo&nbsp;[]</div>'],
+		[' ', '<div style=white-space:pre> foo   []   </div>'],
+
+		[' ', '<div style=white-space:pre-wrap>foo[]bar</div>'],
+		[' ', '<div style=white-space:pre-wrap>foo []bar</div>'],
+		[' ', '<div style=white-space:pre-wrap>foo[] bar</div>'],
+		[' ', '<div style=white-space:pre-wrap>foo &nbsp;[]bar</div>'],
+		[' ', '<div style=white-space:pre-wrap>[]foo</div>'],
+		[' ', '<div style=white-space:pre-wrap>foo[]</div>'],
+		[' ', '<div style=white-space:pre-wrap>foo&nbsp;[]</div>'],
+		[' ', '<div style=white-space:pre-wrap> foo   []   </div>'],
+
+		[' ', '<div style=white-space:pre-line>foo[]bar</div>'],
+		[' ', '<div style=white-space:pre-line>foo []bar</div>'],
+		[' ', '<div style=white-space:pre-line>foo[] bar</div>'],
+		[' ', '<div style=white-space:pre-line>foo &nbsp;[]bar</div>'],
+		[' ', '<div style=white-space:pre-line>[]foo</div>'],
+		[' ', '<div style=white-space:pre-line>foo[]</div>'],
+		[' ', '<div style=white-space:pre-line>foo&nbsp;[]</div>'],
+		[' ', '<div style=white-space:pre-line> foo   []   </div>'],
+
+		[' ', '<div style=white-space:nowrap>foo[]bar</div>'],
+		[' ', '<div style=white-space:nowrap>foo []bar</div>'],
+		[' ', '<div style=white-space:nowrap>foo[] bar</div>'],
+		[' ', '<div style=white-space:nowrap>foo &nbsp;[]bar</div>'],
+		[' ', '<div style=white-space:nowrap>[]foo</div>'],
+		[' ', '<div style=white-space:nowrap>foo[]</div>'],
+		[' ', '<div style=white-space:nowrap>foo&nbsp;[]</div>'],
+		[' ', '<div style=white-space:nowrap> foo   []   </div>'],
+
+		// End whitespace tests
 
 		['   ', 'foo[]'],
 
@@ -2450,17 +2562,6 @@ var tests = {
 
 		// https://bugs.webkit.org/show_bug.cgi?id=19702
 		'<blockquote><font color=blue>[foo]</font></blockquote>',
-
-		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=14119
-		// https://bugzilla.mozilla.org/show_bug.cgi?id=681626
-		[' ', 'foo[] '],
-		[' ', ' foo   []   '],
-		[' ', 'foo[]<span> </span>'],
-		[' ', 'foo[]<span> </span> '],
-		[' ', ' []foo'],
-		[' ', '   []   foo '],
-		[' ', '<span> </span>[]foo'],
-		[' ', ' <span> </span>[]foo'],
 	],
 	//@}
 	insertunorderedlist: [

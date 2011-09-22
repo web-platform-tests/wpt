@@ -2351,12 +2351,14 @@ var tests = {
 		['\t', 'foo[]bar'],
 		['&', 'foo[]bar'],
 		['\n', 'foo[]bar'],
-		['\r', 'foo[]bar'],
-		['\r\n', 'foo[]bar'],
 		['abc\ndef', 'foo[]bar'],
-		['\0', 'foo[]bar'],
-		['\ud800', 'foo[]bar'],
 		['\x07', 'foo[]bar'],
+
+		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=14254
+		['!\r', 'foo[]bar'],
+		['!\r\n', 'foo[]bar'],
+		['!\0', 'foo[]bar'],
+		['!\ud800', 'foo[]bar'],
 
 		// Whitespace tests!  The following two bugs are relevant to some of
 		// these:
@@ -3855,9 +3857,9 @@ var tests = {
 		'[foo<a name=foo>bar</a>baz]',
 	],
 	//@}
-	copy: ['foo[bar]baz'],
-	cut: ['foo[bar]baz'],
-	paste: ['foo[bar]baz'],
+	copy: ['!foo[bar]baz'],
+	cut: ['!foo[bar]baz'],
+	paste: ['!foo[bar]baz'],
 	selectall: ['foo[bar]baz'],
 	stylewithcss: [
 	//@{
@@ -3901,7 +3903,7 @@ var tests = {
 		['falsé', 'foo[bar]baz'],
 	],
 	//@}
-	quasit: ['foo[bar]baz'],
+	quasit: ['!foo[bar]baz'],
 	multitest: [
 	//@{
 		// Insertion-affecting state.  Test that insertText works right, and

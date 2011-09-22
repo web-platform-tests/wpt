@@ -96,9 +96,7 @@ function btoaLookup(idx) {
  */
 function myatob(input) {
 	// WebIDL requires DOMStrings to just be converted using ECMAScript
-	// ToString, which amounts to calling String(), except possibly for null,
-	// which we don't test because it's unclear.  (There are also exceptions
-	// for undefined, but they aren't relevant to us.)
+	// ToString, which in our case amounts to calling String().
 	input = String(input);
 
 	// "If the length of input divides by 4 leaving no remainder, then: if

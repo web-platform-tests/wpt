@@ -4373,6 +4373,12 @@ function deleteSelection(flags) {
 		return;
 	}
 
+	// "Canonicalize whitespace at the active range's start."
+	canonicalizeWhitespace(getActiveRange().startContainer, getActiveRange().startOffset);
+
+	// "Canonicalize whitespace at the active range's end."
+	canonicalizeWhitespace(getActiveRange().endContainer, getActiveRange().endOffset);
+
 	// "Let start node, start offset, end node, and end offset be the active
 	// range's start and end nodes and offsets."
 	var startNode = getActiveRange().startContainer;
@@ -4560,8 +4566,9 @@ function deleteSelection(flags) {
 		// node."
 		startNode.deleteData(startOffset, endOffset - startOffset);
 
-		// "Canonicalize whitespace at (start node, start offset)."
-		canonicalizeWhitespace(startNode, startOffset);
+		// "Canonicalize whitespace at (start node, start offset), with fix
+		// collapsed space false."
+		canonicalizeWhitespace(startNode, startOffset, false);
 
 		// "If direction is "forward", call collapseToStart() on the context
 		// object's Selection."
@@ -4646,11 +4653,13 @@ function deleteSelection(flags) {
 		endNode.deleteData(0, endOffset);
 	}
 
-	// "Canonicalize whitespace at the active range's start."
-	canonicalizeWhitespace(getActiveRange().startContainer, getActiveRange().startOffset);
+	// "Canonicalize whitespace at the active range's start, with fix collapsed
+	// space false."
+	canonicalizeWhitespace(getActiveRange().startContainer, getActiveRange().startOffset, false);
 
-	// "Canonicalize whitespace at the active range's end."
-	canonicalizeWhitespace(getActiveRange().endContainer, getActiveRange().endOffset);
+	// "Canonicalize whitespace at the active range's end, with fix collapsed
+	// space false."
+	canonicalizeWhitespace(getActiveRange().endContainer, getActiveRange().endOffset, false);
 
 	// "If block merging is false, or start block or end block is null, or
 	// start block is not in the same editing host as end block, or start block
@@ -5098,7 +5107,13 @@ function canonicalSpaceSequence(n, nonBreakingStart, nonBreakingEnd) {
 	return buffer;
 }
 
-function canonicalizeWhitespace(node, offset) {
+function canonicalizeWhitespace(node, offset, fixCollapsedSpace) {
+	if (fixCollapsedSpace === undefined) {
+		// "an optional boolean argument fix collapsed space that defaults to
+		// true"
+		fixCollapsedSpace = true;
+	}
+
 	// "If node is neither editable nor an editing host, abort these steps."
 	if (!isEditable(node) && !isEditingHost(node)) {
 		return;
@@ -5152,8 +5167,9 @@ function canonicalizeWhitespace(node, offset) {
 	// "Let length equal zero."
 	var length = 0;
 
-	// "Let follows space be false."
-	var followsSpace = false;
+	// "Let collapse spaces be true if start offset is zero and start node
+	// follows a line break, otherwise false."
+	var collapseSpaces = startOffset == 0 && followsLineBreak(startNode);
 
 	// "Repeat the following steps:"
 	while (true) {
@@ -5182,18 +5198,20 @@ function canonicalizeWhitespace(node, offset) {
 		&& ["pre", "pre-wrap"].indexOf(getComputedStyle(endNode.parentNode).whiteSpace) == -1
 		&& endOffset != getNodeLength(endNode)
 		&& /[ \xa0]/.test(endNode.data[endOffset])) {
-			// "If follows space is true and the end offsetth element of end
-			// node's data is a space (0x0020), call deleteData(end offset, 1)
-			// on end node, then continue this loop from the beginning."
-			if (followsSpace
+			// "If fix collapsed space is true, and collapse spaces is true,
+			// and the end offsetth code unit of end node's data is a space
+			// (0x0020): call deleteData(end offset, 1) on end node, then
+			// continue this loop from the beginning."
+			if (fixCollapsedSpace
+			&& collapseSpaces
 			&& " " == endNode.data[endOffset]) {
 				endNode.deleteData(endOffset, 1);
 				continue;
 			}
 
-			// "Set follows space to true if the end offsetth element of end
+			// "Set collapse spaces to true if the end offsetth element of end
 			// node's data is a space (0x0020), false otherwise."
-			followsSpace = " " == endNode.data[endOffset];
+			collapseSpaces = " " == endNode.data[endOffset];
 
 			// "Add one to end offset."
 			endOffset++;
@@ -5204,6 +5222,52 @@ function canonicalizeWhitespace(node, offset) {
 		// "Otherwise, break from this loop."
 		} else {
 			break;
+		}
+	}
+
+	// "If fix collapsed space is true, then while (start node, start offset)
+	// is before (end node, end offset):"
+	if (fixCollapsedSpace) {
+		while (getPosition(startNode, startOffset, endNode, endOffset) == "before") {
+			// "If end node has a child in the same editing host with index end
+			// offset − 1, set end node to that child, then set end offset to end
+			// node's length."
+			if (0 <= endOffset - 1
+			&& endOffset - 1 < endNode.childNodes.length
+			&& inSameEditingHost(endNode, endNode.childNodes[endOffset - 1])) {
+				endNode = endNode.childNodes[endOffset - 1];
+				endOffset = getNodeLength(endNode);
+
+			// "Otherwise, if end offset is zero and end node's parent is in the
+			// same editing host, set end offset to end node's index, then set end
+			// node to its parent."
+			} else if (endOffset == 0
+			&& inSameEditingHost(endNode, endNode.parentNode)) {
+				endOffset = getNodeIndex(endNode);
+				endNode = endNode.parentNode;
+
+			// "Otherwise, if end node is a Text node and its parent's resolved
+			// value for "white-space" is neither "pre" nor "pre-wrap" and end
+			// offset is end node's length and the last code unit of end node's
+			// data is a space (0x0020) and end node precedes a line break:"
+			} else if (endNode.nodeType == Node.TEXT_NODE
+			&& ["pre", "pre-wrap"].indexOf(getComputedStyle(endNode.parentNode).whiteSpace) == -1
+			&& endOffset == getNodeLength(endNode)
+			&& endNode.data[endNode.data.length - 1] == " "
+			&& precedesLineBreak(endNode)) {
+				// "Subtract one from end offset."
+				endOffset--;
+
+				// "Subtract one from length."
+				length--;
+
+				// "Call deleteData(end offset, 1) on end node."
+				endNode.deleteData(endOffset, 1);
+
+			// "Otherwise, break from this loop."
+			} else {
+				break;
+			}
 		}
 	}
 
@@ -5886,8 +5950,7 @@ commands["delete"] = {
 			return;
 		}
 
-		// "Canonicalize whitespace at (active range's start node, active
-		// range's start offset)."
+		// "Canonicalize whitespace at the active range's start."
 		canonicalizeWhitespace(getActiveRange().startContainer, getActiveRange().startOffset);
 
 		// "Let node and offset be the active range's start node and offset."
@@ -6498,8 +6561,7 @@ commands.forwarddelete = {
 			return;
 		}
 
-		// "Canonicalize whitespace at (active range's start node, active
-		// range's start offset)."
+		// "Canonicalize whitespace at the active range's start."
 		canonicalizeWhitespace(getActiveRange().startContainer, getActiveRange().startOffset);
 
 		// "Let node and offset be the active range's start node and offset."
@@ -7506,20 +7568,20 @@ commands.inserttext = {
 			offset = 0;
 		}
 
-		// "If value is a space (U+0020), and either node is an Element whose
-		// resolved value for "white-space" is neither "pre" nor "pre-wrap" or
-		// node is not an Element but its parent is an Element whose resolved
-		// value for "white-space" is neither "pre" nor "pre-wrap", set value
-		// to a non-breaking space (U+00A0)."
-		var refElement = node.nodeType == Node.ELEMENT_NODE ? node : node.parentNode;
-		if (value == " "
-		&& refElement.nodeType == Node.ELEMENT_NODE
-		&& ["pre", "pre-wrap"].indexOf(getComputedStyle(refElement).whiteSpace) == -1) {
-			value = "\xa0";
-		}
-
 		// "Record current overrides, and let overrides be the result."
 		var overrides = recordCurrentOverrides();
+
+		// "Call collapse(node, offset) on the context object's Selection."
+		getSelection().collapse(node, offset);
+		getActiveRange().setStart(node, offset);
+		getActiveRange().setEnd(node, offset);
+
+		// "Canonicalize whitespace at (node, offset)."
+		canonicalizeWhitespace(node, offset);
+
+		// "Let (node, offset) be the active range's start."
+		node = getActiveRange().startContainer;
+		offset = getActiveRange().startOffset;
 
 		// "If node is a Text node:"
 		if (node.nodeType == Node.TEXT_NODE) {
@@ -7532,7 +7594,10 @@ commands.inserttext = {
 
 			// "Call extend(node, offset + 1) on the context object's
 			// Selection."
-			getSelection().extend(node, offset + 1);
+			//
+			// Work around WebKit bug: the extend() can throw if the text we're
+			// adding is trailing whitespace.
+			try { getSelection().extend(node, offset + 1); } catch(e) {}
 			getActiveRange().setEnd(node, offset + 1);
 
 		// "Otherwise:"
@@ -7566,11 +7631,13 @@ commands.inserttext = {
 		// "Restore states and values from overrides."
 		restoreStatesAndValues(overrides);
 
-		// "Canonicalize whitespace at the active range's start."
-		canonicalizeWhitespace(getActiveRange().startContainer, getActiveRange().startOffset);
+		// "Canonicalize whitespace at the active range's start, with fix
+		// collapsed space false."
+		canonicalizeWhitespace(getActiveRange().startContainer, getActiveRange().startOffset, false);
 
-		// "Canonicalize whitespace at the active range's end."
-		canonicalizeWhitespace(getActiveRange().endContainer, getActiveRange().endOffset);
+		// "Canonicalize whitespace at the active range's end, with fix
+		// collapsed space false."
+		canonicalizeWhitespace(getActiveRange().endContainer, getActiveRange().endOffset, false);
 
 		// "Call collapseToEnd() on the context object's Selection."
 		getSelection().collapseToEnd();

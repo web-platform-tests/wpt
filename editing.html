@@ -4662,6 +4662,12 @@ style from the old text.
   <li>If the <a href=#active-range>active range</a> is null, abort these steps and do
   nothing.
 
+  <li><a href=#canonicalize-whitespace>Canonicalize whitespace</a> at the <a href=#active-range>active range</a>'s
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>.
+
+  <li><a href=#canonicalize-whitespace>Canonicalize whitespace</a> at the <a href=#active-range>active range</a>'s
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a>.
+
   <li>Let <var title="">start node</var>, <var title="">start offset</var>, <var title="">end node</var>,
   and <var title="">end offset</var> be the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>
   and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>nodes</a> and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offsets</a>.
@@ -4881,7 +4887,7 @@ style from the old text.
     &minus; <var title="">start offset</var>)</a></code> on <var title="">start node</var>.
 
     <li><a href=#canonicalize-whitespace>Canonicalize whitespace</a> at (<var title="">start node</var>,
-    <var title="">start offset</var>).
+    <var title="">start offset</var>), with <var title="">fix collapsed space</var> false.
 
     <li>If <var title="">direction</var> is "forward", call <code class=external data-anolis-spec=domrange title=dom-Selection-collapseToStart><a href=http://html5.org/specs/dom-range.html#dom-selection-collapsetostart>collapseToStart()</a></code> on the
     <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>'s <code class=external data-anolis-spec=domrange><a href=http://html5.org/specs/dom-range.html#selection>Selection</a></code>.
@@ -4957,10 +4963,10 @@ style from the old text.
   <code class=external data-anolis-spec=domcore title=dom-CharacterData-deleteData><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-deletedata>deleteData(0, <var title="">end offset</var>)</a></code> on it.
 
   <li><a href=#canonicalize-whitespace>Canonicalize whitespace</a> at the <a href=#active-range>active range</a>'s
-  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>.
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>, with <var title="">fix collapsed space</var> false.
 
   <li><a href=#canonicalize-whitespace>Canonicalize whitespace</a> at the <a href=#active-range>active range</a>'s
-  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a>.
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a>, with <var title="">fix collapsed space</var> false.
 
   <li>
   <div class=comments>
@@ -5403,7 +5409,8 @@ returned by the following algorithm:
 </ol>
 
 <p>To <dfn id=canonicalize-whitespace>canonicalize whitespace</dfn> at (<var title="">node</var>,
-<var title="">offset</var>):
+<var title="">offset</var>), given an optional boolean argument <var title="">fix collapsed
+space</var> that defaults to true:
 
 <ol>
   <li>If <var title="">node</var> is neither <a href=#editable>editable</a> nor an <a href=#editing-host>editing
@@ -5444,14 +5451,19 @@ returned by the following algorithm:
   </ol>
 
   <li>
-  <p class=comments>Now we collapse any consecutive spaces.
+  <p class=comments>Now we collapse any consecutive spaces, if <var title="">fix
+  collapsed space</var> is true.
 
   <p>Let <var title="">end node</var> equal <var title="">start node</var> and <var title="">end
   offset</var> equal <var title="">start offset</var>.
 
   <li>Let <var title="">length</var> equal zero.
 
-  <li>Let <var title="">follows space</var> be false.
+  <li>
+  <p class=comments>This tries to delete spaces at the beginning of a line (<a href="http://www.w3.org/Bugs/Public/show_bug.cgi?id=14119">bug 14119</a>).
+
+  <p>Let <var title="">collapse spaces</var> be true if <var title="">start offset</var> is zero
+  and <var title="">start node</var> <a href=#follows-a-line-break>follows a line break</a>, otherwise false.
 
   <li>Repeat the following steps:
 
@@ -5478,18 +5490,57 @@ returned by the following algorithm:
     space (0x0020) or non-breaking space (0x00A0):
 
     <ol>
-      <li>If <var title="">follows space</var> is true and the <var title="">end offset</var>th
-      <a href=http://dev.w3.org/2006/webapi/WebIDL/#dfn-code-unit>code unit</a> of <var title="">end node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> is a space (0x0020), call
+      <li>If <var title="">fix collapsed space</var> is true, and <var title="">collapse
+      spaces</var> is true, and the <var title="">end offset</var>th <a href=http://dev.w3.org/2006/webapi/WebIDL/#dfn-code-unit>code unit</a> of
+      <var title="">end node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> is a space (0x0020): call
       <code class=external data-anolis-spec=domcore title=dom-CharacterData-deleteData><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-deletedata>deleteData(<var title="">end offset</var>, 1)</a></code> on <var title="">end node</var>, then
       continue this loop from the beginning.
 
-      <li>Set <var title="">follows space</var> to true if the <var title="">end offset</var>th
-      <a href=http://dev.w3.org/2006/webapi/WebIDL/#dfn-code-unit>code unit</a> of <var title="">end node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> is a space (0x0020), false
-      otherwise.
+      <li>Set <var title="">collapse spaces</var> to true if the <var title="">end offset</var>th
+      <a href=http://dev.w3.org/2006/webapi/WebIDL/#dfn-code-unit>code unit</a> of <var title="">end node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> is a space (0x0020),
+      false otherwise.
 
       <li>Add one to <var title="">end offset</var>.
 
       <li>Add one to <var title="">length</var>.
+    </ol>
+
+    <li>Otherwise, break from this loop.
+  </ol>
+
+  <li>
+  <p class=comments>We've already stripped leading whitespace, and collapsed
+  consecutive spaces.  Now we try to strip any collapsed trailing whitespace
+  (<a href="http://www.w3.org/Bugs/Public/show_bug.cgi?id=14119">bug 14119</a>
+  again).
+
+  <p>If <var title="">fix collapsed space</var> is true, then while (<var title="">start
+  node</var>, <var title="">start offset</var>) is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-bp-before title=concept-bp-before>before</a> (<var title="">end node</var>,
+  <var title="">end offset</var>):
+
+  <ol>
+    <li>If <var title="">end node</var> has a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> <a href=#in-the-same-editing-host>in the same editing
+    host</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">end offset</var> &minus; 1, set <var title="">end
+    node</var> to that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, then set <var title="">end offset</var> to <var title="">end
+    node</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a>.
+
+    <li>Otherwise, if <var title="">end offset</var> is zero and <var title="">end node</var>'s
+    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is <a href=#in-the-same-editing-host>in the same editing host</a>, set <var title="">end
+    offset</var> to <var title="">end node</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>, then set <var title="">end
+    node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+
+    <li>Otherwise, if <var title="">end node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node and its
+    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>'s <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved value</a> for "white-space" is neither "pre" nor "pre-wrap"
+    and <var title="">end offset</var> is <var title="">end node</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> and the last
+    <a href=http://dev.w3.org/2006/webapi/WebIDL/#dfn-code-unit>code unit</a> of <var title="">end node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> is a space (0x0020) and
+    <var title="">end node</var> <a href=#precedes-a-line-break>precedes a line break</a>:
+
+    <ol>
+      <li>Subtract one from <var title="">end offset</var>.
+
+      <li>Subtract one from <var title="">length</var>.
+
+      <li>Call <code class=external data-anolis-spec=domcore title=dom-CharacterData-deleteData><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-deletedata>deleteData(<var title="">end offset</var>, 1)</a></code> on <var title="">end node</var>.
     </ol>
 
     <li>Otherwise, break from this loop.
@@ -6845,8 +6896,8 @@ leaves things like &lt;b&gt;{}&lt;/b&gt; in the DOM, which is unhelpful, so I do
   <p class=comments>Needed so that if there are multiple consecutive spaces we
   backspace over all at once.
 
-  <p><a href=#canonicalize-whitespace>Canonicalize whitespace</a> at (<a href=#active-range>active range</a>'s
-  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a>).
+  <p><a href=#canonicalize-whitespace>Canonicalize whitespace</a> at the <a href=#active-range>active range</a>'s
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>.
 
   <li>Let <var title="">node</var> and <var title="">offset</var> be the <a href=#active-range>active
   range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a>.
@@ -7578,8 +7629,8 @@ diacritic, so you have to backspace several times to remove the whole cluster.)
   <li>If the <a href=#active-range>active range</a> is not <code class=external data-anolis-spec=domrange title=dom-Range-collapsed><a href=http://html5.org/specs/dom-range.html#dom-range-collapsed>collapsed</a></code>, <a href=#delete-the-selection>delete the selection</a>
   and abort these steps.
 
-  <li><a href=#canonicalize-whitespace>Canonicalize whitespace</a> at (<a href=#active-range>active range</a>'s
-  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a>).
+  <li><a href=#canonicalize-whitespace>Canonicalize whitespace</a> at the <a href=#active-range>active range</a>'s
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>.
 
   <li>Let <var title="">node</var> and <var title="">offset</var> be the <a href=#active-range>active
   range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a>.
@@ -8787,18 +8838,17 @@ unnecessarily.
   and that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node, set <var title="">node</var> to that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>,
   then set <var title="">offset</var> to zero.
 
-  <li>
-  <p class=comments><var title="">value</var> may change back to a space when we
-  canonicalize, even if this step is triggered.
-
-  <p>If <var title="">value</var> is a space (U+0020), and either <var title="">node</var> is an
-  <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> whose <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved value</a> for "white-space" is neither "pre" nor
-  "pre-wrap" or <var title="">node</var> is not an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> but its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is an
-  <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> whose <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved value</a> for "white-space" is neither "pre" nor
-  "pre-wrap", set <var title="">value</var> to a non-breaking space (U+00A0).
-
   <li><a href=#record-current-overrides>Record current overrides</a>, and let <var title="">overrides</var> be
   the result.
+
+  <li>Call <code class=external data-anolis-spec=domrange title=dom-Selection-collapse><a href=http://html5.org/specs/dom-range.html#dom-selection-collapse>collapse(<var title="">node</var>, <var title="">offset</var>)</a></code> on the
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>'s <code class=external data-anolis-spec=domrange><a href=http://html5.org/specs/dom-range.html#selection>Selection</a></code>.
+
+  <li><a href=#canonicalize-whitespace>Canonicalize whitespace</a> at (<var title="">node</var>,
+  <var title="">offset</var>).
+
+  <li>Let (<var title="">node</var>, <var title="">offset</var>) be the <a href=#active-range>active
+  range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>.
 
   <li>If <var title="">node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node:
 
@@ -8838,10 +8888,10 @@ unnecessarily.
   <li><a href=#restore-states-and-values>Restore states and values</a> from <var title="">overrides</var>.
 
   <li><a href=#canonicalize-whitespace>Canonicalize whitespace</a> at the <a href=#active-range>active range</a>'s
-  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>.
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>, with <var title="">fix collapsed space</var> false.
 
   <li><a href=#canonicalize-whitespace>Canonicalize whitespace</a> at the <a href=#active-range>active range</a>'s
-  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a>.
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a>, with <var title="">fix collapsed space</var> false.
 
   <li>Call <code class=external data-anolis-spec=domrange title=dom-Selection-collapseToEnd><a href=http://html5.org/specs/dom-range.html#dom-selection-collapsetoend>collapseToEnd()</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>'s <code class=external data-anolis-spec=domrange><a href=http://html5.org/specs/dom-range.html#selection>Selection</a></code>.
 </ol>

@@ -4693,6 +4693,12 @@ style from the old text.
   <li>If the <span>active range</span> is null, abort these steps and do
   nothing.
 
+  <li><span>Canonicalize whitespace</span> at the <span>active range</span>'s
+  [[rangestart]].
+
+  <li><span>Canonicalize whitespace</span> at the <span>active range</span>'s
+  [[rangeend]].
+
   <li>Let <var>start node</var>, <var>start offset</var>, <var>end node</var>,
   and <var>end offset</var> be the <span>active range</span>'s [[rangestart]]
   and [[rangeend]] [[bpnodes]] and [[bpoffsets]].
@@ -4913,7 +4919,7 @@ foo{&lt;br />bar]
     &minus; <var>start offset</var>]] on <var>start node</var>.
 
     <li><span>Canonicalize whitespace</span> at (<var>start node</var>,
-    <var>start offset</var>).
+    <var>start offset</var>), with <var>fix collapsed space</var> false.
 
     <li>If <var>direction</var> is "forward", call [[collapsetostart]] on the
     [[contextobject]]'s [[selection]].
@@ -4989,10 +4995,10 @@ foo{&lt;br />bar]
   [[deletedata|0, <var>end offset</var>]] on it.
 
   <li><span>Canonicalize whitespace</span> at the <span>active range</span>'s
-  [[rangestart]].
+  [[rangestart]], with <var>fix collapsed space</var> false.
 
   <li><span>Canonicalize whitespace</span> at the <span>active range</span>'s
-  [[rangeend]].
+  [[rangeend]], with <var>fix collapsed space</var> false.
 
   <li>
   <div class=comments>
@@ -5441,7 +5447,8 @@ returned by the following algorithm:
 </ol>
 
 <p>To <dfn>canonicalize whitespace</dfn> at (<var>node</var>,
-<var>offset</var>):
+<var>offset</var>), given an optional boolean argument <var>fix collapsed
+space</var> that defaults to true:
 
 <ol>
   <li>If <var>node</var> is neither <span>editable</span> nor an <span>editing
@@ -5482,14 +5489,20 @@ returned by the following algorithm:
   </ol>
 
   <li>
-  <p class=comments>Now we collapse any consecutive spaces.
+  <p class=comments>Now we collapse any consecutive spaces, if <var>fix
+  collapsed space</var> is true.
 
   <p>Let <var>end node</var> equal <var>start node</var> and <var>end
   offset</var> equal <var>start offset</var>.
 
   <li>Let <var>length</var> equal zero.
 
-  <li>Let <var>follows space</var> be false.
+  <li>
+  <p class=comments>This tries to delete spaces at the beginning of a line (<a
+  href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=14119>bug 14119</a>).
+
+  <p>Let <var>collapse spaces</var> be true if <var>start offset</var> is zero
+  and <var>start node</var> <span>follows a line break</span>, otherwise false.
 
   <li>Repeat the following steps:
 
@@ -5516,18 +5529,57 @@ returned by the following algorithm:
     space (0x0020) or non-breaking space (0x00A0):
 
     <ol>
-      <li>If <var>follows space</var> is true and the <var>end offset</var>th
-      [[codeunit]] of <var>end node</var>'s [[cddata]] is a space (0x0020), call
+      <li>If <var>fix collapsed space</var> is true, and <var>collapse
+      spaces</var> is true, and the <var>end offset</var>th [[codeunit]] of
+      <var>end node</var>'s [[cddata]] is a space (0x0020): call
       [[deletedata|<var>end offset</var>, 1]] on <var>end node</var>, then
       continue this loop from the beginning.
 
-      <li>Set <var>follows space</var> to true if the <var>end offset</var>th
-      [[codeunit]] of <var>end node</var>'s [[cddata]] is a space (0x0020), false
-      otherwise.
+      <li>Set <var>collapse spaces</var> to true if the <var>end offset</var>th
+      [[codeunit]] of <var>end node</var>'s [[cddata]] is a space (0x0020),
+      false otherwise.
 
       <li>Add one to <var>end offset</var>.
 
       <li>Add one to <var>length</var>.
+    </ol>
+
+    <li>Otherwise, break from this loop.
+  </ol>
+
+  <li>
+  <p class=comments>We've already stripped leading whitespace, and collapsed
+  consecutive spaces.  Now we try to strip any collapsed trailing whitespace
+  (<a href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=14119>bug 14119</a>
+  again).
+
+  <p>If <var>fix collapsed space</var> is true, then while (<var>start
+  node</var>, <var>start offset</var>) is [[bpbefore]] (<var>end node</var>,
+  <var>end offset</var>):
+
+  <ol>
+    <li>If <var>end node</var> has a [[child]] <span>in the same editing
+    host</span> with [[index]] <var>end offset</var> &minus; 1, set <var>end
+    node</var> to that [[child]], then set <var>end offset</var> to <var>end
+    node</var>'s [[length]].
+
+    <li>Otherwise, if <var>end offset</var> is zero and <var>end node</var>'s
+    [[parent]] is <span>in the same editing host</span>, set <var>end
+    offset</var> to <var>end node</var>'s [[index]], then set <var>end
+    node</var> to its [[parent]].
+
+    <li>Otherwise, if <var>end node</var> is a [[text]] node and its
+    [[parent]]'s [[resval]] for "white-space" is neither "pre" nor "pre-wrap"
+    and <var>end offset</var> is <var>end node</var>'s [[length]] and the last
+    [[codeunit]] of <var>end node</var>'s [[cddata]] is a space (0x0020) and
+    <var>end node</var> <span>precedes a line break</span>:
+
+    <ol>
+      <li>Subtract one from <var>end offset</var>.
+
+      <li>Subtract one from <var>length</var>.
+
+      <li>Call [[deletedata|<var>end offset</var>, 1]] on <var>end node</var>.
     </ol>
 
     <li>Otherwise, break from this loop.
@@ -6903,8 +6955,8 @@ leaves things like &lt;b>{}&lt;/b> in the DOM, which is unhelpful, so I don't.
   <p class=comments>Needed so that if there are multiple consecutive spaces we
   backspace over all at once.
 
-  <p><span>Canonicalize whitespace</span> at (<span>active range</span>'s
-  [[startnode]], <span>active range</span>'s [[startoffset]]).
+  <p><span>Canonicalize whitespace</span> at the <span>active range</span>'s
+  [[rangestart]].
 
   <li>Let <var>node</var> and <var>offset</var> be the <span>active
   range</span>'s [[rangestart]] [[bpnode]] and [[bpoffset]].
@@ -7643,8 +7695,8 @@ diacritic, so you have to backspace several times to remove the whole cluster.)
   title=dom-Range-collapsed>collapsed</code>, <span>delete the selection</span>
   and abort these steps.
 
-  <li><span>Canonicalize whitespace</span> at (<span>active range</span>'s
-  [[startnode]], <span>active range</span>'s [[startoffset]]).
+  <li><span>Canonicalize whitespace</span> at the <span>active range</span>'s
+  [[rangestart]].
 
   <li>Let <var>node</var> and <var>offset</var> be the <span>active
   range</span>'s [[rangestart]] [[bpnode]] and [[bpoffset]].
@@ -8861,18 +8913,17 @@ unnecessarily.
   and that [[child]] is a [[text]] node, set <var>node</var> to that [[child]],
   then set <var>offset</var> to zero.
 
-  <li>
-  <p class=comments><var>value</var> may change back to a space when we
-  canonicalize, even if this step is triggered.
-
-  <p>If <var>value</var> is a space (U+0020), and either <var>node</var> is an
-  [[element]] whose [[resval]] for "white-space" is neither "pre" nor
-  "pre-wrap" or <var>node</var> is not an [[element]] but its [[parent]] is an
-  [[element]] whose [[resval]] for "white-space" is neither "pre" nor
-  "pre-wrap", set <var>value</var> to a non-breaking space (U+00A0).
-
   <li><span>Record current overrides</span>, and let <var>overrides</var> be
   the result.
+
+  <li>Call [[selcollapse|<var>node</var>, <var>offset</var>]] on the
+  [[contextobject]]'s [[selection]].
+
+  <li><span>Canonicalize whitespace</span> at (<var>node</var>,
+  <var>offset</var>).
+
+  <li>Let (<var>node</var>, <var>offset</var>) be the <span>active
+  range</span>'s [[rangestart]].
 
   <li>If <var>node</var> is a [[text]] node:
 
@@ -8914,10 +8965,10 @@ unnecessarily.
   <li><span>Restore states and values</span> from <var>overrides</var>.
 
   <li><span>Canonicalize whitespace</span> at the <span>active range</span>'s
-  [[rangestart]].
+  [[rangestart]], with <var>fix collapsed space</var> false.
 
   <li><span>Canonicalize whitespace</span> at the <span>active range</span>'s
-  [[rangeend]].
+  [[rangeend]], with <var>fix collapsed space</var> false.
 
   <li>Call [[collapsetoend]] on the [[contextobject]]'s [[selection]].
 </ol>

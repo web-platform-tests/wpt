@@ -96,9 +96,7 @@ function btoaLookup(idx) {
  */
 function myatob(input) {
 	// WebIDL requires DOMStrings to just be converted using ECMAScript
-	// ToString, which amounts to calling String(), except possibly for null,
-	// which we don't test because it's unclear.  (There are also exceptions
-	// for undefined, but they aren't relevant to us.)
+	// ToString, which in our case amounts to calling String().
 	input = String(input);
 
 	// "If the length of input divides by 4 leaving no remainder, then: if
@@ -238,8 +236,11 @@ var tests = ["עברית", "", "a", "ab", "abc", "abcd", "abcde",
 	// possibly to fail btoa().  I actually can't tell what's happening here,
 	// but it doesn't hurt.
 	"\xff\xff\xc0",
-	// WebIDL tests.  TODO: Add null once the spec on that is clear.
-	undefined, 7, 1.5, true, false, NaN, +Infinity, -Infinity
+	// Is your DOM implementation binary-safe?
+	"\0", "\0a", "a\0b",
+	// WebIDL tests.
+	undefined, null, 7, 12, 1.5, true, false, NaN, +Infinity, -Infinity, 0, -0,
+	{toString: function() { return "foo" }},
 ];
 for (var i = 0; i < 258; i++) {
 	tests.push(String.fromCharCode(i));
@@ -324,8 +325,12 @@ var tests = ["", "abcd", " abcd", "abcd ", "abcd===", " abcd===", "abcd=== ",
 	"/", "A/", "AA/", "AAAA/",
 	// But this one is possible:
 	"AAA/",
-	// Doesn't hurt to throw in some random garbage:
-	"\0", undefined, 7, 1.5, true, false, NaN, +Infinity, -Infinity
+	// Binary-safety tests
+	"\0", "\0nonsense", "abcd\0nonsense",
+	// WebIDL tests
+	undefined, null, 7, 12, 1.5, true, false, NaN, +Infinity, -Infinity, 0, -0,
+	{toString: function() { return "foo" }},
+	{toString: function() { return "abcd" }},
 ];
 tests = tests.map(
 	function(elem) {

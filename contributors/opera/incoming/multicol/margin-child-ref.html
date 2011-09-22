@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>multicolumn | margin nth-child</title>
+<style>
+body {
+	margin: 0;
+}
+body>div {
+	font-family: ahem;
+	font-size: 1em;
+	line-height: 1em;
+	color: blue;
+	background: blue;
+	margin: 1em;
+	border: 1em solid gray;
+	width: 10em;
+	height: 8em;
+	position: relative;
+}
+div div {
+	position: absolute;
+	top: 3em;
+	left: 0;
+	width: 5em;
+	height: 1em;
+	background: yellow;
+}
+#s2 {
+	top: 5em;
+}
+#s3 {
+	top: 7em;
+}
+</style>
+</head>
+
+<body>
+
+<div>
+	<div></div>
+	<div id="s2"></div>
+	<div id="s3"></div>
+</div>
+
+</body>
+</html>

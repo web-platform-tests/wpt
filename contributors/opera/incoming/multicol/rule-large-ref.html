@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>multicolumn | column-rule</title>
+<style>
+body {
+	margin: 0;
+}
+body>div {
+	font-family: ahem;
+	font-size: 1em;
+	line-height: 1em;
+	color: lime;
+	background: blue;
+	margin: 1em;
+	border: 1em solid gray;
+	width: 15em;
+	height: 2em;
+	position: relative;
+}
+span {
+	width: 2em;
+	height: 2em;
+	display: inline-block;
+}
+span+span {
+	margin-left: 1em;
+}
+div div {
+	background: blue;
+	position: absolute;
+	height: 2em;
+	width: 2em;
+	top: 0;
+	left: -2em;
+}
+div div+div {
+	left: 15em;
+	width: 10.5em;
+}
+</style>
+</head>
+
+<body>
+
+<div>
+	<span>xx xx</span>
+	<span>xx xx</span>
+	<span>xx xx</span>
+	<span>xx xx</span>
+	<div></div>
+	<div></div>
+</div>
+
+</body>
+</html>

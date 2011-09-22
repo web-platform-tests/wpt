@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>multicolumn | column-span | float</title>
+<style>
+div {
+	font-family: ahem;
+	font-size: 1em;
+	line-height: 1em;
+	color: navy;
+	background: yellow;
+	margin: 1em 5em;
+	border: 1em solid gray;
+	width: 11em;
+}
+span {
+	font-size: 1em;
+	font-weight: normal;
+	line-height: 1em;
+	color: red;
+	margin: 0;
+	width: 11em;
+	display: block;
+}
+span:first-child {
+	float: right;
+	color: pink;
+	background: pink;
+	position: relative;
+	left: -6em;
+}
+span+span {
+	color: black;
+}
+</style>
+</head>
+
+<body>
+
+<div>
+	<span>damer</span>
+	<span>damer</span>
+	ddddd ddddd
+</div>
+
+</body>
+</html>

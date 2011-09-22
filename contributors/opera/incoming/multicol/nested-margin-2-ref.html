@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>multicolumn | nesting, margin</title>
+<style>
+body {
+	margin: 0;
+}
+body>div {
+	background: yellow;
+	width: 74em;
+	height: 2em;
+}
+div {
+	font-family: ahem;
+	font-size: 1em;
+	line-height: 1em;
+	color: yellow;
+}
+div div {
+	margin: 0 1em;
+	float: left;
+}
+div div:last-child {
+	color: blue;
+	margin: 0 1em 1em 11.4em;
+}
+div+div {
+	margin-left: 11.4em;
+}
+span {
+	width: 2em;
+	height: 2em;
+	display: inline-block;
+}
+.a {
+	margin-left: 1.6em;
+}
+</style>
+</head>
+
+<body>
+
+<div>
+	<div>
+		<span>xx xx</span>
+		<span>xx xx</span>
+		<span class="a">xx xx</span>
+		<span>xx xx</span>
+	</div>
+	<div>
+		<span>xx xx</span>
+		<span>xx xx</span>
+		<span class="a">xx xx</span>
+		<span>xx xx</span>
+	</div>
+	<div>
+		<span>xx xx</span>
+		<span>xx xx</span>
+		<span class="a">xx xx</span>
+		<span>xx xx</span>
+	</div>
+</div>
+
+</body>
+</html>

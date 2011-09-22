@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>multicolumn | column-rule</title>
+<style>
+body {
+	margin: 0;
+}
+body>div {
+	font-family: ahem;
+	font-size: 1em;
+	line-height: 1em;
+	color: black;
+	background: yellow;
+	margin: 1em;
+	border: 1em solid gray;
+	width: 14em;
+	height: 2em;
+}
+div div {
+	width: 2em;
+	height: 2em;
+	float: left;
+}
+div div+div {
+	margin-left: 1.75em;
+}
+</style>
+</head>
+
+<body>
+
+<div> 
+	<div>xx xx</div>
+	<div>xx xx</div>
+	<div>xx xx</div>
+	<div>xx xx</div>
+</div>
+
+</body>
+</html>

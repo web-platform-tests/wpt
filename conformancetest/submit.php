@@ -14,4 +14,4 @@ if (file_put_contents($_POST['ua'] . '-data', $_POST['data']) === false) {
 	die('Write failed!');
 }
 
-echo 'Successfully wrote ' . $_POST['ua'] . '-data for ' . $_POST['label'];
+echo 'Successfully wrote ' . $_POST['ua'] . '-data';

@@ -45,12 +45,7 @@ if (typeof testsJsLibraryOnly == "undefined" || !testsJsLibraryOnly) {
 	function updateAlertRowStyle() {
 	//@{
 		var checked = document.querySelector("#alert-checkbox").checked;
-		var style = document.querySelector("#alerts");
-		if (checked && !/^\/\*/.test(style.textContent)) {
-			style.textContent = "/* " + style.textContent + " */";
-		} else if (!checked) {
-			style.textContent = style.textContent.replace(/(\/\* | \*\/)/g, "");
-		}
+		document.querySelector("#alerts").disabled = checked;
 		localStorage["display-alerts"] = checked;
 	}
 	//@}

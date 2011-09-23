@@ -5,21 +5,22 @@
 <p>See the <a href=editing.html#tests>Tests</a> section of the specification
 for documentation.
 
-<p><button onclick="generateTests(); this.parentNode.removeChild(this)">Generate all tests</button>
+<p><button onclick="generateTests(); this.parentNode.removeChild(this)">Generate and submit tests</button>
 
 <p id=timing></p>
 
-<div id=errors></div>
+<ul id=errors></ul>
 
 <form action=submit.php method=post>
-<p><input type=submit disabled>
+<input type=hidden name=elapsed>
+<input type=hidden name=output>
+<input type=hidden name=errors>
 <p><label><input type=radio name=ua value=gecko> Gecko</label>
    <label><input type=radio name=ua value=webkit> WebKit</label>
 <!-- Username is ignored, it's just so browsers offer to remember the password.
 -->
 <p><label>Username: <input value=dummyuser name=username></label>
 <p><label>Password: <input type=password name=password></label>
-<p><textarea name=data id=output readonly style=width:100%;height:20em></textarea>
 </form>
 
 <div id=test-container></div>
@@ -56,11 +57,11 @@ function generateTests() {
 					generateTest(normalizeTest(command, test, true));
 				}
 			} catch(e) {
-				var errorP = document.createElement("p");
-				errorP.textContent = "Exception, "
+				var errorItem = document.createElement("li");
+				errorItem.textContent = "Exception, "
 					+ command + " " + JSON.stringify(test) + ": "
 					+ formatException(e);
-				document.getElementById("errors").appendChild(errorP);
+				document.getElementById("errors").appendChild(errorItem);
 			}
 		});
 	}
@@ -69,17 +70,16 @@ function generateTests() {
 	// like that, then add a closing bracket.
 	testOutput = testOutput.substr(0, testOutput.lastIndexOf(","))
 		+ testOutput.substr(1 + testOutput.lastIndexOf(","))
-		+ "]";
-	document.getElementById("output").value = testOutput;
+		+ "]\n";
+	document.querySelector("input[name=output]").value = testOutput;
+	document.querySelector("input[name=elapsed]").value =
+		Math.round(Date.now() - startTime);
+	document.querySelector("input[name=errors]").value =
+		document.querySelector("#errors").innerHTML;
 
 	document.getElementById("test-container").parentNode
 		.removeChild(document.getElementById("test-container"));
-	var elapsed = Math.round(Date.now() - startTime)/1000;
-	document.getElementById("timing").textContent =
-		"Time elapsed: " + Math.floor(elapsed/60) + ":"
-		+ ((elapsed % 60) < 10 ? "0" : "")
-		+ (elapsed % 60).toFixed(3) + " min.";
-	document.querySelector("[type=submit]").disabled = false;
+	document.querySelector("form").submit();
 }
 
 // Helper function for generateTest()
@@ -133,7 +133,7 @@ function setQueryResult(arr, idx, callback, command, range) {
  * null for any of the last six entries means an INVALID_ACCESS_ERR must be
  * raised.
  *
- * The converted test value is then added to the pre with id=output.
+ * The converted test value is then added to the testOutput variable.
  */
 function generateTest(test) {
 	var testDiv = document.querySelector("div[contenteditable]");

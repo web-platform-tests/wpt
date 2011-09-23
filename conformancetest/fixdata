@@ -23,4 +23,3 @@ rm tmp-diff
 # of WebKit's.
 cp webkit-data data.js
 patch data.js patch
-echo >> data.js

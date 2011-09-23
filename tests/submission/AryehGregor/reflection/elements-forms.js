@@ -27,7 +27,7 @@ var formElements = {
 	"select": ["multiple", [{type: "unsigned long", defaultVal: 0}, "size"], "autofocus", "name", "disabled"],
 	"datalist": [],
 	"optgroup": ["disabled", "label"],
-	"option": ["disabled", "label", "defaultSelected"],
+	"option": ["disabled", "defaultSelected"],
 	"textarea": ["cols", "placeholder", "required", "rows", "wrap",
 		"maxLength", "readOnly", "autofocus", "name", "disabled", "dirname"],
 	"keygen": ["challenge", "keytype", "autofocus", "name", "disabled"],

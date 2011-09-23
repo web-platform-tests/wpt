@@ -908,4 +908,8 @@ if (time) {
 	time.innerHTML = (new Date().getTime() - ReflectionTests.start)/1000;
 }
 
-document.body.innerHTML += "(Note: missing tests for types " + unimplemented.join(", ") + ".)";
+if (unimplemented.length) {
+	var p = document.createElement("p");
+	p.textContent = "(Note: missing tests for types " + unimplemented.join(", ") + ".)";
+	document.body.appendChild(p);
+}

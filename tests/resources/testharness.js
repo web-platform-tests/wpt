@@ -841,6 +841,11 @@ policies and contribution forms [3].
 
         this.steps.push(func);
 
+        if (arguments.length == 1)
+        {
+            this_obj = this;
+        }
+
         try
         {
             func.apply(this_obj, Array.prototype.slice.call(arguments, 2));
@@ -872,10 +877,16 @@ policies and contribution forms [3].
     Test.prototype.step_func = function(func, this_obj)
     {
         var test_this = this;
+
+        if (arguments.length == 1) 
+        {
+            this_obj = test_this;
+        }
+
         return function()
         {
             test_this.step.apply(test_this, [func, this_obj].concat(
-                                     Array.prototype.slice.call(arguments)));
+                Array.prototype.slice.call(arguments)));
         };
     };
 

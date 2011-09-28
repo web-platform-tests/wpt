@@ -2,13 +2,14 @@
 # This is the script I use on my server to publish the spec.  It's not really
 # useful for anyone else, I just want it in version control somewhere.
 set -e
-cd ~/webroot/spec/editing
-git pull
+cd ~/git/editing
+git fetch
 git push github
 cd ~/webroot/tmp/editing
 git fetch --all
-cd ~/webroot/spec
-rm -rf hg-editing || true
-hg clone ~/webroot/tmp/editing hg-editing
-cd hg-editing
+cd /tmp
+hg clone ~/webroot/tmp/editing hg-editing.$$
+cd hg-editing.$$
 hg push -r master https://dvcs.w3.org/hg/editing
+cd ..
+rm -rf hg-editing.$$

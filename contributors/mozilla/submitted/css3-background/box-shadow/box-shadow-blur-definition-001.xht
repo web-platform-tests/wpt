@@ -32,12 +32,13 @@
   </style>
  </head>
  <body>
-  <p>The following test contains three stripes, each 10 pixels tall,
-  with no space between them, but all enclosed within a blue border.  At
-  all points, the middle stripe must be <strong>at least as
-  dark</strong> as the top stripe, and <strong>at least as
-  light</strong> as the bottom stripe.  (This tests that the blurring
-  algorithm produces results within 5% of a Gaussian blur.)</p>
+  <p>The following test should contain three grayscale stripes, each 10
+  pixels tall, with no space between them, but all enclosed within a
+  blue border.  At all points, the middle stripe must be <strong>the
+  same color as or darker than</strong> the top stripe, and <strong>the
+  same color as or lighter than</strong> the bottom stripe.  (This tests
+  that the blurring algorithm produces results within 5% of a Gaussian
+  blur.)</p>
   <div class="stripecontainer">
    <div class="refimage"><img height="10" width="600" src="box-shadow-blur-definition-001-light-bound.png" alt="[reference stripe image]" /></div>
    <div class="blurcontainer"><div class="blur"></div></div>

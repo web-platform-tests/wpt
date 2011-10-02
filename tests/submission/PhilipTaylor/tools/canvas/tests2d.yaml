@@ -9103,6 +9103,10 @@
     - 2d.imageData.getcreate.nonfinite
   code: |
     @nonfinite @assert throws NOT_SUPPORTED_ERR ctx.createImageData(<10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>);
+    var posinfobj = { valueOf: function() { return Infinity; } },
+        neginfobj = { valueOf: function() { return -Infinity; } },
+        nanobj = { valueOf: function() { return -Infinity; } };
+    @nonfinite @assert throws NOT_SUPPORTED_ERR ctx.createImageData(<10 posinfobj neginfobj nanobj>, <10 posinfobj neginfobj nanobj>);
 
 - name: 2d.imageData.create1.zero
   desc: createImageData(null) throws NOT_SUPPORTED_ERR
@@ -9157,6 +9161,10 @@
     - 2d.imageData.getcreate.nonfinite
   code: |
     @nonfinite @assert throws NOT_SUPPORTED_ERR ctx.getImageData(<10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>);
+    var posinfobj = { valueOf: function() { return Infinity; } },
+        neginfobj = { valueOf: function() { return -Infinity; } },
+        nanobj = { valueOf: function() { return -Infinity; } };
+    @nonfinite @assert throws NOT_SUPPORTED_ERR ctx.getImageData(<10 posinfobj neginfobj nanobj>, <10 posinfobj neginfobj nanobj>);
 
 - name: 2d.imageData.get.source.outside
   desc: getImageData() returns transparent black outside the canvas

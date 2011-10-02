@@ -42,6 +42,30 @@ try { var _thrown = false;
 try { var _thrown = false;
   ctx.createImageData(Infinity, Infinity);
 } catch (e) { if (e.code != DOMException.NOT_SUPPORTED_ERR) _fail("Failed assertion: expected exception of type NOT_SUPPORTED_ERR, got: "+e.message); _thrown = true; } finally { _assert(_thrown, "should throw exception of type NOT_SUPPORTED_ERR: ctx.createImageData(Infinity, Infinity)"); }
+var posinfobj = { valueOf: function() { return Infinity; } },
+    neginfobj = { valueOf: function() { return -Infinity; } },
+    nanobj = { valueOf: function() { return -Infinity; } };
+try { var _thrown = false;
+  ctx.createImageData(posinfobj, 10);
+} catch (e) { if (e.code != DOMException.NOT_SUPPORTED_ERR) _fail("Failed assertion: expected exception of type NOT_SUPPORTED_ERR, got: "+e.message); _thrown = true; } finally { _assert(_thrown, "should throw exception of type NOT_SUPPORTED_ERR: ctx.createImageData(posinfobj, 10)"); }
+try { var _thrown = false;
+  ctx.createImageData(neginfobj, 10);
+} catch (e) { if (e.code != DOMException.NOT_SUPPORTED_ERR) _fail("Failed assertion: expected exception of type NOT_SUPPORTED_ERR, got: "+e.message); _thrown = true; } finally { _assert(_thrown, "should throw exception of type NOT_SUPPORTED_ERR: ctx.createImageData(neginfobj, 10)"); }
+try { var _thrown = false;
+  ctx.createImageData(nanobj, 10);
+} catch (e) { if (e.code != DOMException.NOT_SUPPORTED_ERR) _fail("Failed assertion: expected exception of type NOT_SUPPORTED_ERR, got: "+e.message); _thrown = true; } finally { _assert(_thrown, "should throw exception of type NOT_SUPPORTED_ERR: ctx.createImageData(nanobj, 10)"); }
+try { var _thrown = false;
+  ctx.createImageData(10, posinfobj);
+} catch (e) { if (e.code != DOMException.NOT_SUPPORTED_ERR) _fail("Failed assertion: expected exception of type NOT_SUPPORTED_ERR, got: "+e.message); _thrown = true; } finally { _assert(_thrown, "should throw exception of type NOT_SUPPORTED_ERR: ctx.createImageData(10, posinfobj)"); }
+try { var _thrown = false;
+  ctx.createImageData(10, neginfobj);
+} catch (e) { if (e.code != DOMException.NOT_SUPPORTED_ERR) _fail("Failed assertion: expected exception of type NOT_SUPPORTED_ERR, got: "+e.message); _thrown = true; } finally { _assert(_thrown, "should throw exception of type NOT_SUPPORTED_ERR: ctx.createImageData(10, neginfobj)"); }
+try { var _thrown = false;
+  ctx.createImageData(10, nanobj);
+} catch (e) { if (e.code != DOMException.NOT_SUPPORTED_ERR) _fail("Failed assertion: expected exception of type NOT_SUPPORTED_ERR, got: "+e.message); _thrown = true; } finally { _assert(_thrown, "should throw exception of type NOT_SUPPORTED_ERR: ctx.createImageData(10, nanobj)"); }
+try { var _thrown = false;
+  ctx.createImageData(posinfobj, posinfobj);
+} catch (e) { if (e.code != DOMException.NOT_SUPPORTED_ERR) _fail("Failed assertion: expected exception of type NOT_SUPPORTED_ERR, got: "+e.message); _thrown = true; } finally { _assert(_thrown, "should throw exception of type NOT_SUPPORTED_ERR: ctx.createImageData(posinfobj, posinfobj)"); }
 
 
 });

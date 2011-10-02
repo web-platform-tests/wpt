@@ -9560,21 +9560,21 @@
     imgdata.data[0] = 0.5;
     @assert imgdata.data[0] === 0;
     imgdata.data[0] = 0.501;
-    @assert imgdata.data[0] === 0;
+    @assert imgdata.data[0] === 1;
     imgdata.data[0] = 1.499;
     @assert imgdata.data[0] === 1;
     imgdata.data[0] = 1.5;
-    @assert imgdata.data[0] === 1;
+    @assert imgdata.data[0] === 2;
     imgdata.data[0] = 1.501;
-    @assert imgdata.data[0] === 1;
+    @assert imgdata.data[0] === 2;
     imgdata.data[0] = 2.5;
     @assert imgdata.data[0] === 2;
     imgdata.data[0] = 3.5;
-    @assert imgdata.data[0] === 3;
+    @assert imgdata.data[0] === 4;
     imgdata.data[0] = 252.5;
     @assert imgdata.data[0] === 252;
     imgdata.data[0] = 253.5;
-    @assert imgdata.data[0] === 253;
+    @assert imgdata.data[0] === 254;
     imgdata.data[0] = 254.5;
     @assert imgdata.data[0] === 254;
     imgdata.data[0] = 256.5;
@@ -9587,10 +9587,9 @@
 
 
 - name: 2d.imageData.put.null
-  desc: putImageData() with null imagedata throws TYPE_MISMATCH_ERR
+  desc: putImageData() with null imagedata throws TypeError
   testing:
     - 2d.imageData.put.wrongtype
-  mozilla: { bug: 421715 }
   code: |
     @assert throws TypeError ctx.putImageData(null, 0, 0); @moz-todo
 

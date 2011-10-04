@@ -2,7 +2,9 @@
 // Note: must be included last so that it hits all elements.
 
 for (var element in elements) {
-	elements[element].push("itemScope", "itemType", "itemId");
+	elements[element].itemScope = "boolean";
+	elements[element].itemType = "string";
+	elements[element].itemId = "string";
 }
 extraTests.push(function() {
 	// itemValue only reflects in certain circumstances.  The syntax for our big

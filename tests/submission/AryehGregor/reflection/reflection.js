@@ -546,7 +546,7 @@ for (var type in ReflectionTests.typeMap) {
 ReflectionTests.reflects = function(data, idlName, idlObj, domName, domObj) {
 	// Do some setup first so that getTypeDescription() works in testWrapper()
 	if (typeof data == "string") {
-		data = {"type": data};
+		data = {type: data};
 	}
 	if (domName === undefined) {
 		domName = idlName;
@@ -749,101 +749,13 @@ ReflectionTests.enumExpected = function(keywords, nonCanon, invalidVal, contentV
  * attributes.
  *
  * The elements object (which must have been defined in earlier files) is a map
- * from element name to a list of attributes (omitting the global attributes).
- * Each attribute can either be a list of the form ["type", "attrname",
- * "data"], or just a string "attrname".  In the latter case, the type is
- * looked up from the attribs object.  Types are just strings, most of which
- * have fairly guessable meanings.  "data" is optional -- it's used for default
- * values for longs, permitted values for enums, and such.
+ * from element name to an object whose keys are IDL attribute names and whose
+ * values are types.  A type is of the same format as
+ * ReflectionTests.reflects() accepts, except that there's an extra optional
+ * domAttrName key that gets passed as the fourth argument to reflects() if
+ * it's provided.  (TODO: drop the fourth and fifth reflects() arguments and
+ * make it take them from the dictionary instead?)
  */
-
-/**
- * Maps an IDL attribute name to its type.  If the IDL attribute name differs
- * from the content attribute name, a two-element array of ["type", "content
- * attribute name"] is used.  This format is also necessary for enums limited
- * to only known values, since otherwise the array value would be ambiguous.
- * If the type is "string", the entry can just be omitted from the array.
- */
-var attribs = {
-	"acceptCharset": ["string", "accept-charset"],
-	"action": "url",
-	"formAction": "url",
-	"audio": "settable tokenlist",
-	"autocomplete": {type: "enum", keywords: ["on", "off"], defaultVal: "on"},
-	"autofocus": "boolean",
-	"autoplay": "boolean",
-	"cite": "url",
-	"cols": {type: "limited unsigned long", defaultVal: 20},
-	"colSpan": "unsigned long",
-	"controls": "boolean",
-	"data": "url",
-	"defaultChecked": ["boolean", "checked"],
-	"defaultValue": ["string", "value"],
-	"defaultSelected": ["boolean", "selected"],
-	"defer": "boolean",
-	"disabled": "boolean",
-	"encoding": [{type: "enum", keywords: ["application/x-www-form-urlencoded", "multipart/form-data", "text/plain"], defaultVal: "application/x-www-form-urlencoded"}, "enctype"],
-	"enctype": {type: "enum", keywords: ["application/x-www-form-urlencoded", "multipart/form-data", "text/plain"], defaultVal: "application/x-www-form-urlencoded"},
-	"formEnctype": {type: "enum", keywords: ["application/x-www-form-urlencoded", "multipart/form-data", "text/plain"], defaultVal: "application/x-www-form-urlencoded"},
-	"headers": "settable tokenlist",
-	"htmlFor": ["string", "for"],
-	"httpEquiv": ["string", "http-equiv"],
-	"href": "url",
-	"isMap": "boolean",
-	"itemScope": "boolean",
-	// The invalid value default is the "unknown" state, which for our purposes
-	// seems to be the same as having no invalid value default.  The missing
-	// value default depends on whether "rsa" is implemented, so we use null,
-	// which is magically reserved for "don't try testing this", since no one
-	// default is required.  (TODO: we could test that it's either the RSA
-	// state or the unknown state.)
-	"keytype": {type: "enum", keywords: ["rsa"], defaultVal: null},
-	"kind": {type: "enum", keywords: ["subtitles", "captions", "descriptions", "chapters", "metadata"], defaultVal: "captions"},
-	"loop": "boolean",
-	"maxLength": "limited long",
-	"method": {type: "enum", keywords: ["get", "post"], defaultVal: "get"},
-	"formMethod": {type: "enum", keywords: ["get", "post"], defaultVal: "get"},
-	"multiple": "boolean",
-	"noValidate": "boolean",
-	"formNoValidate": "boolean",
-	"open": "boolean",
-	"ping": "urls",
-	"poster": "url",
-	// As with "keytype", we have no missing value default defined here.
-	"preload": {type: "enum", keywords: ["none", "metadata", "auto"], nonCanon: {"": "auto"}, defaultVal: null},
-	"pubDate": "boolean",
-	"readOnly": "boolean",
-	"relList": ["tokenlist", "rel"],
-	"required": "boolean",
-	"reversed": "boolean",
-	"rows": {type: "limited unsigned long", defaultVal: 2},
-	"rowSpan": "unsigned long",
-	"scoped": "boolean",
-	"seamless": "boolean",
-	"size": "unsigned long",
-	"sizes": "settable tokenlist",
-	"span": "limited unsigned long",
-	"src": "url",
-	// TODO: The default value should be the number of elements if the
-	// reversed attribute is set.
-	"start": {type: "long", defaultVal: 1},
-
-	// Obsolete attributes
-	"ch": ["string", "char"],
-	"chOff": ["string", "charoff"],
-	"codeBase": "url",
-	"compact": "boolean",
-	"declare": "boolean",
-	"hspace": "unsigned long",
-	"longDesc": "url",
-	"noHref": "boolean",
-	"noResize": "boolean",
-	"noShade": "boolean",
-	"noWrap": "boolean",
-	"object": "url",
-	"trueSpeed": "boolean",
-	"vspace": "unsigned long",
-};
 
 // Now we actually run all the tests.
 var unimplemented = [];
@@ -852,50 +764,19 @@ for (var element in elements) {
 	ReflectionTests.reflects("string", "title", element);
 	ReflectionTests.reflects("string", "lang", element);
 	ReflectionTests.reflects("string", "className", element, "class");
-	ReflectionTests.reflects({"type": "enum", "keywords": ["ltr", "rtl", "auto"]}, "dir", element);
+	ReflectionTests.reflects({type: "enum", keywords: ["ltr", "rtl", "auto"]}, "dir", element);
 	ReflectionTests.reflects("boolean", "hidden", element);
 	ReflectionTests.reflects("string", "accessKey", element);
 	// Don't try to test the defaultVal -- it should be either 0 or -1, but the
 	// rules are complicated, and a lot of them are SHOULDs.
-	ReflectionTests.reflects({"type": "long", "defaultVal": null}, "tabIndex", element);
+	ReflectionTests.reflects({type: "long", defaultVal: null}, "tabIndex", element);
 	// TODO: classList, contextMenu, itemProp, itemRef, dropzone (require
 	// tokenlist support)
 
-	for (var i = 0; i < elements[element].length; i++) {
-		var type, idlAttrName, domAttrName;
-		if (typeof elements[element][i] == "string") {
-			// An attribute that has only one type, so retrieve it from the
-			// attribs array.
-			idlAttrName = elements[element][i];
-			if (typeof attribs[idlAttrName] == "undefined") {
-				// This is the same as if attribs[idlAttrName] == "string"
-				// (a shortcut syntax).
-				type = "string";
-				domAttrName = idlAttrName;
-			} else if (typeof attribs[idlAttrName] == "string"
-			|| "type" in attribs[idlAttrName]) {
-				// attribs[idlAttrName] is just the type (either a string, or
-				// an array if it has options).  DOM and IDL names are the
-				// same.
-				type = attribs[idlAttrName];
-				domAttrName = idlAttrName;
-			} else {
-				// attribs[idlAttrName] is [type, DOM name]
-				type = attribs[idlAttrName][0];
-				domAttrName = attribs[idlAttrName][1];
-			}
-		} else {
-			// Something like value, that has different types on different
-			// elements, so idlAttrName is [type, IDL name, optional DOM name].
-			type = elements[element][i][0];
-			idlAttrName = elements[element][i][1];
-			if (elements[element][i].length > 2) {
-				domAttrName = elements[element][i][2];
-			} else {
-				domAttrName = idlAttrName;
-			}
-		}
-		ReflectionTests.reflects(type, idlAttrName, element, domAttrName);
+	for (var idlAttrName in elements[element]) {
+		var type = elements[element][idlAttrName];
+		ReflectionTests.reflects(type, idlAttrName, element,
+			typeof type == "object" && "domAttrName" in type ? type.domAttrName : idlAttrName);
 	}
 }
 

@@ -1,20 +1,38 @@
 var metadataElements = {
-	"head": [],
-	"title": [],
-	"base": ["target"],
-	"link": [
+	head: {},
+	title: {},
+	base: {
+		target: "string",
+	},
+	link: {
 		// Conforming
-		"rel", "media", "type", "href", "hreflang", "sizes", "relList",
+		rel: "string",
+		media: "string",
+		type: "string",
+		href: "url",
+		hreflang: "string",
+		sizes: "settable tokenlist",
+		relList: {type: "tokenlist", domAttrName: "rel"},
+
 		// Obsolete
-		"charset", "rev", "target",
-	],
-	"meta": [
+		charset: "string",
+		rev: "string",
+		target: "string",
+	},
+	meta: {
 		// Conforming
-		"name", "content", "httpEquiv",
+		name: "string",
+		content: "string",
+		httpEquiv: {type: "string", domAttrName: "http-equiv"},
+
 		// Obsolete
-		"scheme",
-	],
-	"style": ["media", "type", "scoped"],
+		scheme: "string",
+	},
+	style: {
+		media: "string",
+		type: "string",
+		scoped: "boolean",
+	},
 };
 
 mergeElements(metadataElements);

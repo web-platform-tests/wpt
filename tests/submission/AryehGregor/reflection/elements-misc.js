@@ -1,24 +1,44 @@
 var miscElements = {
-	"command": [
-		[{type: "enum", keywords: ["command", "checkbox", "radio"],
-		defaultVal: "command"}, "type"],
-		"label", "icon", "disabled", "checked", "radiogroup"],
-	"del": [],
-	"details": ["open"],
-	"html": [/* Obsolete */ "version"],
-	"ins": ["cite", "dateTime"],
-	"menu": [
-		// Conforming
-		"type", "label",
+	command: {
+		type: {type: "enum", keywords: ["command", "checkbox", "radio"],
+			defaultVal: "command"},
+		label: "string",
+		icon: "string",
+		disabled: "boolean",
+		checked: "string",
+		radiogroup: "string",
+	},
+	del: {},
+	details: {
+		open: "boolean",
+	},
+	html: {
 		// Obsolete
-		"compact",
-	],
-	"noscript": [],
-	"script": ["src", "type", "charset", "defer"],
-	"summary": [],
+		version: "string",
+	},
+	ins: {
+		cite: "url",
+		dateTime: "string",
+	},
+	menu: {
+		// Conforming
+		type: "string",
+		label: "string",
+
+		// Obsolete
+		compact: "boolean",
+	},
+	noscript: {},
+	script: {
+		src: "url",
+		type: "string",
+		charset: "string",
+		defer: "boolean",
+	},
+	summary: {},
 
 	// Global attributes should exist even on unknown elements
-	"undefinedelement": [],
+	undefinedelement: {},
 };
 
 mergeElements(miscElements);

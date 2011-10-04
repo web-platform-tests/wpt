@@ -1,45 +1,127 @@
 var embeddedElements = {
-	"img": [
+	img: {
 		// Conforming
-		"alt", "src", "useMap", "isMap",
+		alt: "string",
+		src: "url",
+		useMap: "string",
+		isMap: "boolean",
+
 		// Obsolete
-		"name", "align", "border", "hspace", "longDesc", "vspace",
-	],
-	"iframe": [
+		name: "string",
+		align: "string",
+		border: "string",
+		hspace: "unsigned long",
+		longDesc: "url",
+		vspace: "unsigned long",
+
+	},
+	iframe: {
 		// Conforming
-		"src", "srcdoc", "name", "seamless", "height", "width",
+		src: "url",
+		srcdoc: "string",
+		name: "string",
+		seamless: "boolean",
+		height: "string",
+		width: "string",
+
 		// Obsolete
-		"align", "frameBorder", "longDesc", "marginHeight", "marginWidth", "scrolling",
-	],
-	"embed": [
+		align: "string",
+		frameBorder: "string",
+		longDesc: "url",
+		marginHeight: "string",
+		marginWidth: "string",
+		scrolling: "string",
+	},
+	embed: {
 		// Conforming
-		"src", "type", "height", "width",
+		src: "url",
+		type: "string",
+		height: "string",
+		width: "string",
+
 		// Obsolete
-		"name", "align",
-	],
-	"object": [
+		name: "string",
+		align: "string",
+	},
+	object: {
 		// Conforming
-		"data", "type", "name", "useMap", "height", "width",
+		data: "url",
+		type: "string",
+		name: "string",
+		useMap: "string",
+		height: "string",
+		width: "string",
+
 		// Obsolete
-		"align", "archive", "border", "code", "codeBase", "codeType", "declare", "hspace", "standby", "vspace",
-	],
-	"param": [
+		align: "string",
+		archive: "string",
+		border: "string",
+		code: "string",
+		codeBase: "url",
+		codeType: "string",
+		declare: "boolean",
+		hspace: "unsigned long",
+		standby: "string",
+		vspace: "unsigned long",
+	},
+	param: {
 		// Conforming
-		"name", ["string", "value"],
+		name: "string",
+		value: "string",
+
 		// Obsolete
-		"type", "valueType",
-	],
-	"video": ["audio", "poster", "src", "preload", "loop", "autoplay", "controls", ["unsigned long", "height"], ["unsigned long", "width"]],
-	"audio": ["src", "preload", "loop", "autoplay", "controls"],
-	"source": ["src", "type", "media"],
-	"canvas": [[{type: "unsigned long", defaultVal: 300}, "width"], [{type: "unsigned long", defaultVal: 150}, "height"]],
-	"map": ["name"],
-	"area": [
+		type: "string",
+		valueType: "string",
+	},
+	video: {
+		audio: "settable tokenlist",
+		poster: "url",
+		src: "url",
+		// As with "keytype", we have no missing value default defined here.
+		preload: {type: "enum", keywords: ["none", "metadata", "auto"], nonCanon: {"": "auto"}, defaultVal: null},
+		loop: "boolean",
+		autoplay: "boolean",
+		controls: "boolean",
+		height: "unsigned long",
+		width: "unsigned long",
+	},
+	audio: {
+		src: "url",
+		// As with "keytype", we have no missing value default defined here.
+		preload: {type: "enum", keywords: ["none", "metadata", "auto"], nonCanon: {"": "auto"}, defaultVal: null},
+		loop: "boolean",
+		autoplay: "boolean",
+		controls: "boolean",
+	},
+	source: {
+		src: "url",
+		type: "string",
+		media: "string",
+	},
+	canvas: {
+		width: {type: "unsigned long", defaultVal: 300},
+		height: {type: "unsigned long", defaultVal: 150},
+	},
+	map: {
+		name: "string",
+	},
+	area: {
 		// Conforming
-		"alt", "coords", "href", "target", "ping", "rel", "media", "hreflang", "type", "shape", "relList",
+		alt: "string",
+		coords: "string",
+		href: "url",
+		target: "string",
+		ping: "urls",
+		rel: "string",
+		media: "string",
+		hreflang: "string",
+		type: "string",
+		shape: "string",
+		relList: {type: "tokenlist", domAttrName: "rel"},
+
 		// Obsolete
-		"noHref",
-	],
+		noHref: "boolean",
+	},
 };
 
 mergeElements(embeddedElements);

@@ -1,22 +1,45 @@
 var sectionElements = {
-	"body": [
+	body: {
 		// Obsolete
-		"text", "bgColor", "background", "link", "vLink", "aLink",
-	],
-	"section": [],
-	"nav": [],
-	"article": [],
-	"aside": [],
-	"h1": [/* Obsolete */ "align"],
-	"h2": [/* Obsolete */ "align"],
-	"h3": [/* Obsolete */ "align"],
-	"h4": [/* Obsolete */ "align"],
-	"h5": [/* Obsolete */ "align"],
-	"h6": [/* Obsolete */ "align"],
-	"hgroup": [],
-	"header": [],
-	"footer": [],
-	"address": [],
+		text: "string",
+		bgColor: "string",
+		background: "string",
+		link: "string",
+		vLink: "string",
+		aLink: "string",
+	},
+	section: {},
+	nav: {},
+	article: {},
+	aside: {},
+	h1: {
+		// Obsolete
+		align: "string",
+	},
+	h2: {
+		// Obsolete
+		align: "string",
+	},
+	h3: {
+		// Obsolete
+		align: "string",
+	},
+	h4: {
+		// Obsolete
+		align: "string",
+	},
+	h5: {
+		// Obsolete
+		align: "string",
+	},
+	h6: {
+		// Obsolete
+		align: "string",
+	},
+	hgroup: {},
+	header: {},
+	footer: {},
+	address: {},
 };
 
 mergeElements(sectionElements);

@@ -1,36 +1,56 @@
 var groupingElements = {
-	"p": [/* Obsolete */ "align"],
-	"hr": [
+	p: {
 		// Obsolete
-		"align", "color", ["string", "size"], ["string", "width"], "noShade"
-	],
-	"pre": [/* Obsolete */ ["unsigned long", "width"]],
-	"blockquote": ["cite"],
-	"ol": [
+		align: "string",
+	},
+	hr: {
+		// Obsolete
+		align: "string",
+		color: "string",
+		size: "string",
+		width: "string",
+		noShade: "boolean",
+	},
+	pre: {
+		// Obsolete
+		width: "unsigned long",
+	},
+	blockquote: {
+		cite: "url",
+	},
+	ol: {
 		// Conforming
-		"reversed", "start", "type",
+		reversed: "boolean",
+		start: {type: "long", defaultVal: 1},
+		type: "string",
+
 		// Obsolete
-		"compact",
-	],
-	"ul": [/* Obsolete */ "compact", "type"],
-	"li": [
+		compact: "boolean",
+	},
+	ul: {
+		// Obsolete
+		compact: "boolean",
+		type: "string",
+	},
+	li: {
 		// Conforming
-		["long", "value"],
+		value: "long",
+
 		// Obsolete
-		"type",
-	],
-	"dl": [
+		type: "string",
+	},
+	dl: {
 		// Obsolete
-		"compact",
-	],
-	"dt": [],
-	"dd": [],
-	"figure": [],
-	"figcaption": [],
-	"div": [
+		compact: "boolean",
+	},
+	dt: {},
+	dd: {},
+	figure: {},
+	figcaption: {},
+	div: {
 		// Obsolete
-		"align",
-	],
+		align: "string",
+	},
 };
 
 mergeElements(groupingElements);

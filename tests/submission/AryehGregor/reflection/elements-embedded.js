@@ -9,11 +9,10 @@ var embeddedElements = {
 		// Obsolete
 		name: "string",
 		align: "string",
-		border: "string",
 		hspace: "unsigned long",
-		longDesc: "url",
 		vspace: "unsigned long",
-
+		longDesc: "url",
+		border: {type: "string", treatNullAsEmptyString: true},
 	},
 	iframe: {
 		// Conforming
@@ -26,11 +25,11 @@ var embeddedElements = {
 
 		// Obsolete
 		align: "string",
+		scrolling: "string",
 		frameBorder: "string",
 		longDesc: "url",
-		marginHeight: "string",
-		marginWidth: "string",
-		scrolling: "string",
+		marginHeight: {type: "string", treatNullAsEmptyString: true},
+		marginWidth: {type: "string", treatNullAsEmptyString: true},
 	},
 	embed: {
 		// Conforming
@@ -55,14 +54,14 @@ var embeddedElements = {
 		// Obsolete
 		align: "string",
 		archive: "string",
-		border: "string",
 		code: "string",
-		codeBase: "url",
-		codeType: "string",
 		declare: "boolean",
 		hspace: "unsigned long",
 		standby: "string",
 		vspace: "unsigned long",
+		codeBase: "url",
+		codeType: "string",
+		border: {type: "string", treatNullAsEmptyString: true},
 	},
 	param: {
 		// Conforming

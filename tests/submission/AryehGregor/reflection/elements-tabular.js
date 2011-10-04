@@ -5,13 +5,13 @@ var tabularElements = {
 
 		// Obsolete
 		align: "string",
-		bgColor: "string",
 		border: "string",
-		cellPadding: "string",
-		cellSpacing: "string",
 		frame: "string",
 		rules: "string",
 		width: "string",
+		bgColor: {type: "string", treatNullAsEmptyString: true},
+		cellPadding: {type: "string", treatNullAsEmptyString: true},
+		cellSpacing: {type: "string", treatNullAsEmptyString: true},
 	},
 	caption: {
 		// Obsolete
@@ -55,10 +55,10 @@ var tabularElements = {
 	tr: {
 		// Obsolete
 		align: "string",
-		bgColor: "string",
 		ch: {type: "string", domAttrName: "char"},
 		chOff: {type: "string", domAttrName: "charoff"},
 		vAlign: "string",
+		bgColor: {type: "string", treatNullAsEmptyString: true},
 	},
 	td: {
 		// Conforming
@@ -70,13 +70,13 @@ var tabularElements = {
 		abbr: "string",
 		align: "string",
 		axis: "string",
-		bgColor: "string",
+		height: "string",
+		width: "string",
 		ch: {type: "string", domAttrName: "char"},
 		chOff: {type: "string", domAttrName: "charoff"},
-		height: "string",
 		noWrap: "boolean",
 		vAlign: "string",
-		width: "string",
+		bgColor: {type: "string", treatNullAsEmptyString: true},
 	},
 	th: {
 		// Conforming

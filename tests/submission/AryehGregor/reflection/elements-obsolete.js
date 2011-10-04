@@ -34,9 +34,9 @@ var obsoleteElements = {
 		src: "url",
 		frameBorder: "string",
 		longDesc: "url",
-		marginHeight: "string",
-		marginWidth: "string",
 		noResize: "boolean",
+		marginHeight: {type: "string", treatNullAsEmptyString: true},
+		marginWidth: {type: "string", treatNullAsEmptyString: true},
 	},
 	basefont: {
 		color: "string",
@@ -47,9 +47,9 @@ var obsoleteElements = {
 		compact: "boolean",
 	},
 	font: {
-		color: "string",
-		face: "string",
-		size: "string",
+		color: {type: "string", treatNullAsEmptyString: true},
+		face: {type: "string", treatNullAsEmptyString: true},
+		size: {type: "string", treatNullAsEmptyString: true},
 	},
 };
 

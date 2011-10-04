@@ -174,14 +174,19 @@ var maxUnsigned = 4294967295;
  * TODO: tokenlist, settable tokenlist
  */
 ReflectionTests.typeMap = {
+	/**
+	 * "If a reflecting IDL attribute is a DOMString but doesn't fall into any
+	 * of the above categories, then the getting and setting must be done in a
+	 * transparent, case-preserving manner."
+	 *
+	 * The data object passed to reflects() can contain an optional key
+	 * treatNullAsEmptyString, whose value is ignored.  If it does contain the
+	 * key, null will be cast to "" instead of "null", per WebIDL
+	 * [TreatNullAs=EmptyString].
+	 */
 	"string": {
 		"jsType": "string",
 		"defaultVal": "",
-		/**
-		 * "If a reflecting IDL attribute is a DOMString but doesn't fall into
-		 * any of the above categories, then the getting and setting must be
-		 * done in a transparent, case-preserving manner."
-		 */
 		"domTests": ["", " " + binaryString + " foo ", undefined, 7, 1.5, true,
 			false, {"test": 6}, NaN, +Infinity, -Infinity, "\0", null],
 	},
@@ -561,7 +566,7 @@ ReflectionTests.reflects = function(data, idlName, idlObj, domName, domObj) {
 	// Note: probably a hack?  This kind of assumes that the variables here
 	// won't change over the course of the tests, which is wrong, but it's
 	// probably safe enough.  Just don't read stuff that will change.
-	ReflectionHarness.currentTestInfo = {"data": data, "idlName": idlName, "idlObj": idlObj, "domName": domName, "domObj": domObj};
+	ReflectionHarness.currentTestInfo = {data: data, idlName: idlName, idlObj: idlObj, domName: domName, domObj: domObj};
 
 	ReflectionHarness.testWrapper(function() {
 		ReflectionTests.doReflects(data, idlName, idlObj, domName, domObj);
@@ -648,6 +653,16 @@ ReflectionTests.doReflects = function(data, idlName, idlObj, domName, domObj) {
 		}
 		for (var i = 0; i < idlTests.length; i++) {
 			idlIdlExpected.push(this.enumExpected(data.keywords, data.nonCanon, data.invalidVal, idlTests[i]));
+		}
+		break;
+
+		case "string":
+		if ("treatNullAsEmptyString" in data) {
+			for (var i = 0; i < idlTests.length; i++) {
+				if (idlTests[i] === null) {
+					idlDomExpected[i] = idlIdlExpected[i] = "";
+				}
+			}
 		}
 		break;
 	}

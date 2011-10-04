@@ -96,22 +96,22 @@ a code { text-decoration: underline }
 <h2 class=no-num>Status of this Document</h2>
 <!-- @{ -->
 <p>This document is a preliminary draft of a specification for HTML editing
-APIs, mainly defining <code>execCommand()</code> and related functions.  It
-largely replaces the <a
-href=http://www.whatwg.org/specs/web-apps/current-work/multipage/dnd.html#editing-apis>Editing
-APIs</a> section of the <a href=http://www.whatwg.org/html>HTML</a>
-specification.  Issues that don't necessarily need discussion should preferably be
-<a href=http://www.w3.org/Bugs/Public/enter_bug.cgi?product=WebAppsWG&component=HTML+Editing+APIs>filed in the issue tracker</a>,
-which is generously provided by the W3C.  Feedback that needs discussion should
-preferably be sent to <a href=http://lists.whatwg.org/listinfo.cgi/whatwg-whatwg.org>the WHATWG list</a>,
-with the string "[editing]" somewhere in the subject, CC'd to <a
-href=mailto:ayg@aryeh.name>ayg@aryeh.name</a> to make sure I see it.  I will
-handle all feedback I'm aware of, either addressing it immediately or filing a
-bug if it needs longer-term consideration and is not already filed.
+APIs, mainly defining [[selections]], <code>execCommand()</code> and related
+functionality.  It replaces a couple of old sections of the <a
+href=http://www.whatwg.org/html>HTML</a> specification, and the [[selection]]
+part of the old DOM Range specification.  Issues that don't necessarily need
+discussion should preferably be <a
+href=http://www.w3.org/Bugs/Public/enter_bug.cgi?product=WebAppsWG&component=HTML+Editing+APIs>filed
+in the issue tracker</a>.  Feedback that needs discussion should preferably be
+sent to <a href=http://lists.w3.org/Archives/Public/public-webapps/>the
+public-webapps list</a>, with the string "[editing]" somewhere in the subject,
+CC'd to <a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a> to make sure I see it.
+I will handle all feedback I'm aware of, either addressing it immediately or
+filing a bug if it needs longer-term consideration and is not already filed.
 
 <p>This specification, along with the accompanying JavaScript implementation
-and tests, may be used under the terms of the
-<a href=http://creativecommons.org/publicdomain/zero/1.0/>CC0 1.0 Universal
+and tests, may be used under the terms of the <a
+href=http://creativecommons.org/publicdomain/zero/1.0/>CC0 1.0 Universal
 License</a>.  Thus anyone may reuse, modify, and redistribute them without
 restriction.
 <!-- @} -->
@@ -610,6 +610,574 @@ to fix right now are in comments prefixed with "TODO".
 
 <!-- @} -->
 
+<h2>Selections</h2>
+<!-- @{ -->
+<p>Every [[browsingcontext]] has a <dfn
+title=concept-selection>selection</dfn>. The [[selection]] can be empty, and
+the [[selection]] can have more than one [[range]] (a disjointed
+[[selection]]). The user agent should allow the user to change the
+[[selection]]. User agents are not required to let the user select more than
+one [[range]], and may collapse multiple [[ranges]] in the [[selection]] to a
+single [[range]] when the user interacts with the [[selection]].  (But, of
+course, the user agent may let the user create [[selections]] with multiple
+[[ranges]].)
+
+<p>This one [[selection]] must be shared by all the content of the
+[[browsingcontext]] (though not by nested [[browsingcontexts]]), including any
+editing hosts in the document. (Editing hosts that are not inside a document
+cannot have a [[selection]].)
+
+<p>If the [[selection]] is empty (collapsed, so that it has only one segment
+and that segment's start and end points are the same) then the [[selection]]'s
+position must equal the caret position. When the [[selection]] is not empty,
+this specification does not define the caret position; user agents should
+follow platform conventions in deciding whether the caret is at the start of
+the [[selection]], the end of the [[selection]], or somewhere else.
+
+<p>Each [[selection]] has a <dfn title=concept-selection-dir>direction</dfn>,
+either <i title>forwards</i> or <i title>backwards</i>. If the user creates a
+[[selection]] by indicating first one [[boundarypoint]] of the [[range]] and
+then the other (such as by clicking on one point and dragging to another), and
+the first indicated [[boundarypoint]] is [[bpafter]] the second, then the
+corresponding [[selection]] must initially be backwards. Otherwise, it must be
+forwards (including if the user didn't create the [[selection]], created it by
+selecting an entire part of the page using a keyboard shortcut, etc.).
+
+<p>[[Selections]] also have an <dfn>anchor</dfn> and a <dfn>focus</dfn>.  If
+the [[selection]]'s [[seldir]] is forwards, its <span>anchor</span> is the
+[[rangestart]] of the last [[range]] in the list, and its <span>focus</span> is
+the [[rangeend]].  Otherwise, its <span>focus</span> is the [[rangestart]] and
+its <span>anchor</span> is the [[rangeend]].
+
+<p class=XXX>Gecko is the only engine that supports multiple ranges per
+selection, and this isn't how it behaves.  It keys off the range that was last
+added to the list, not the last range in the list; but if you remove the range
+that was last added to the list, the anchor and focus go to the last range in
+the list (as Gecko sorts them), not the last range added.  This doesn't make
+much sense.
+
+<div class=comments>
+<p>IE9 and Firefox 6.0a2 allow arbitrary ranges in the selection, which follows
+what this spec used to say.  However, this leads to unpleasant corner cases
+that authors, implementers, and spec writers all have to deal with, and they
+don't make any real sense.  Chrome 14 dev and Opera 11.11 aggressively
+normalize selections, like not letting them lie inside empty elements and
+things like that, but this is also viewed as a bad idea, because it takes
+flexibility away from authors.  The current spec here is a made-up compromise
+that allows some simplification but doesn't constrain authors much.  See
+<a href=http://lists.whatwg.org/pipermail/whatwg-whatwg.org/2011-June/032072.html>discussion</a>.
+
+<p>The various places where we throw exceptions if these conditions aren't met
+are all novel.  Mostly browsers only throw if the boundary point is a
+DocumentType, or maybe a ProcessingInstruction.
+</div>
+
+<p>The [[boundarypoint]] of every [[range]] that is part of a [[selection]]
+must be either a [[text]] or [[element]] node, and must have a [[document]]
+[[ancestor]].
+
+<p class=XXX>What happens if a range within the selection gets mutated?  Should
+we make the ranges returned by getRangeAt() not live?
+
+<pre class=idl>interface <dfn>Selection</dfn> {
+  readonly attribute <span data-anolis-spec=dom>Node</span>? <span title=dom-Selection-anchorNode>anchorNode</span>;
+  readonly attribute unsigned long <span title=dom-Selection-anchorOffset>anchorOffset</span>;
+  readonly attribute <span data-anolis-spec=dom>Node</span>? <span title=dom-Selection-focusNode>focusNode</span>;
+  readonly attribute unsigned long <span title=dom-Selection-focusOffset>focusOffset</span>;
+
+  readonly attribute boolean <span title=dom-Selection-isCollapsed>isCollapsed</span>;
+  void               <span title=dom-Selection-collapse>collapse</span>(<span data-anolis-spec=dom>Node</span> parentNode, unsigned long offset);
+  void               <span title=dom-Selection-collapseToStart>collapseToStart</span>();
+  void               <span title=dom-Selection-collapseToEnd>collapseToEnd</span>();
+
+  void               <span title=dom-Selection-extend>extend</span>(<span data-anolis-spec=dom>Node</span> parentNode, unsigned long offset);
+  void               <span title=dom-Selection-modify>modify</span>(DOMString alter, DOMString direction, DOMString granularity);
+
+  void               <span title=dom-Selection-selectAllChildren>selectAllChildren</span>(<span data-anolis-spec=dom>Node</span> parentNode);
+  void               <span title=dom-Selection-deleteFromDocument>deleteFromDocument</span>();
+
+  readonly attribute unsigned long <span title=dom-Selection-rangeCount>rangeCount</span>;
+  <span data-anolis-spec=dom>Range</span>              <span title=dom-Selection-getRangeAt>getRangeAt</span>(unsigned long index);
+  void               <span title=dom-Selection-addRange>addRange</span>(<span data-anolis-spec=dom>Range</span> range);
+  void               <span title=dom-Selection-removeRange>removeRange</span>(<span data-anolis-spec=dom>Range</span> range);
+  void               <span title=dom-Selection-removeAllRanges>removeAllRanges</span>();
+
+  <span title=dom-Selection-stringifier>stringifier</span>;
+};</pre>
+
+<p class=comments>See also <a
+href=http://lxr.mozilla.org/mozilla/source/content/base/public/nsISelection.idl>nsISelection.idl</a>
+from Gecko.  This spec doesn't have everything from there yet, in particular
+selectionLanguageChange() and containsNode() are missing. They are missing
+because I couldn't work out how to define them in terms of Ranges.
+
+<p>The <code>Selection</code> interface represents a list of [[range]] objects.
+The first item in the list has index 0, and the last item has index
+<var>count</var>&minus;1, where <var>count</var> is the number of [[range]]s in
+the list.
+
+<p>All of the members of the <code>Selection</code> interface are defined in
+terms of operations on the [[range]] objects represented by this object. These
+operations can raise exceptions, as defined for the [[range]] interface; this
+can therefore result in the members of the <code>Selection</code> interface
+raising exceptions as well, in addition to any explicitly called out below.
+
+<dl class=domintro>
+  <dt><var>selection</var> . <code title=dom-Selection-anchorNode>anchorNode</code>
+  <dd>
+    <p>Returns the element that contains the start of the selection.
+    <p>Returns null if there's no selection.
+
+  <dt><var>selection</var> . <code title=dom-Selection-anchorOffset>anchorOffset</code>
+  <dd>
+    <p>Returns the offset of the start of the selection relative to the element
+    that contains the start of the selection.
+    <p>Returns 0 if there's no selection.
+
+  <dt><var>selection</var> . <code title=dom-Selection-focusNode>focusNode</code>
+  <dd>
+    <p>Returns the element that contains the end of the selection.
+    <p>Returns null if there's no selection.
+
+  <dt><var>selection</var> . <code title=dom-Selection-focusOffset>focusOffset</code>
+  <dd>
+    <p>Returns the offset of the end of the selection relative to the element
+    that contains the end of the selection.
+    <p>Returns 0 if there's no selection.
+</dl>
+
+<p>The <dfn title=dom-Selection-anchorNode><code>anchorNode</code></dfn>
+attribute must return null if the list is empty.  Otherwise, it must return the
+[[node]] of the [[contextobject]]'s <span>anchor</span>.
+
+<p>The <dfn title=dom-Selection-anchorOffset><code>anchorOffset</code></dfn>
+attribute must return 0 if the list is empty.  Otherwise, it must return the
+[[bpoffset]] of the [[contextobject]]'s <span>anchor</span>.
+
+<p>The <dfn title=dom-Selection-focusNode><code>focusNode</code></dfn>
+attribute must return null if the list is empty.  Otherwise, it must return the
+[[node]] of the [[contextobject]]'s <span>focus</span>.
+
+<p>The <dfn title=dom-Selection-focusOffset><code>focusOffset</code></dfn>
+attribute must return 0 if the list is empty.  Otherwise, it must return the
+[[bpoffset]] of the [[contextobject]]'s <span>focus</span>.
+
+<hr>
+
+<dl class=domintro>
+  <dt><var>collapsed</var> = <var>selection</var> . <code title=dom-Selection-isCollapsed>isCollapsed</code>()
+  <dd>
+    <p>Returns true if there's no selection or if the selection is empty.
+    Otherwise, returns false.
+
+  <dt><var>selection</var> . <code title=dom-Selection-collapse>collapse</code>(<var>parentNode</var>, <var>offset</var>)
+  <dd>
+    <p>Replaces the selection with a collapsed one at the given position.
+
+    <p>Throws an "InvalidNodeTypeError" exception if <var>parentNode</var> is
+    not a [[text]] or [[element]] node, an "InvalidModificationError" exception
+    if <var>parentNode</var> doesn't descend from a [[document]], and an
+    "IndexSizeError" exception if <var>offset</var> is negative or longer than
+    <var>parentNode</var>'s [[length]].
+
+  <dt><var>selection</var> . <code title=dom-Selection-collapseToStart>collapseToStart</code>()
+  <dd>
+    <p>Replaces the selection with an empty one at the position of the start of
+    the current selection.
+
+    <p>Throws an "InvalidStateError" exception if there is no selection.
+
+  <dt><var>selection</var> . <code title=dom-Selection-collapseToEnd>collapseToEnd</code>()
+  <dd>
+    <p>Replaces the selection with an empty one at the position of the end of
+    the current selection.
+
+    <p>Throws an "InvalidStateError" exception if there is no selection.
+
+  <dt><var>selection</var> . <code title=dom-Selection-extend>extend</code>(<var>parentNode</var>, <var>offset</var>)
+  <dd>
+    <p>Changes the <span>focus</span> while leaving the <span>anchor</span> in
+    place.
+
+    <p>Throws an "InvalidStateError" if there's no selection, an
+    "InvalidNodeTypeError" exception if <var>parentNode</var> is not a [[text]]
+    or [[element]] node, an "InvalidModificationError" exception if
+    <var>parentNode</var> doesn't descend from a [[document]], and an
+    "IndexSizeError" exception if <var>offset</var> is negative or longer than
+    <var>parentNode</var>'s [[length]].
+
+  <dt><var>selection</var> . <code title=dom-Selection-modify>modify</code>(<var>alter</var>, <var>direction</var>, <var>granularity</var>)
+  <dd>
+    <p>If <var>alter</var> is "extend", changes the selection's focus in the
+    indicated <var>direction</var> by <var>granularity</var>.
+    <var>direction</var> can be "forward" or "backward", which move logically,
+    or "left" or "right", which move visually (the difference matters for
+    right-to-left text).  <var>granularity</var> can be "character", "word",
+    "sentence", "line", "paragraph", "lineboundary", "sentenceboundary",
+    "paragraphboundary", or "documentboundary".
+
+    <p>If <var>alter</var> is "move", then the anchor is also moved to the same
+    position, so that the selection is empty.
+
+    <p>Throws "SyntaxError" if one of the arguments is invalid.
+</dl>
+
+<p>The <dfn title=dom-Selection-isCollapsed><code>isCollapsed</code></dfn>
+attribute must return true if there are zero [[range]]s, or if there is exactly
+one [[range]] and its [[rangecollapsed]] attribute is itself true.  Otherwise
+it must return false.
+
+<p>The <dfn title=dom-Selection-collapse><code>collapse(<var>parentNode</var>,
+<var>offset</var>)</code></dfn> method must run the following steps:
+
+<ol>
+  <li>If <var>parentNode</var> is not a [[text]] or [[element]] node, [[throw]]
+  an "InvalidNodeTypeError" exception and abort these steps.
+
+  <li>If <var>parentNode</var> does not have a [[document]] [[ancestor]],
+  [[throw]] an "InvalidModificationError" and abort these steps.
+
+  <li>If <var>offset</var> is greater than the [[length]] of
+  <var>parentNode</var>, [[throw]] an "IndexSizeError" exception and abort
+  these steps.
+
+  <li>Remove all the [[range]]s in the [[contextobject]]'s list.
+
+  <li>Create a new [[range]] object with [[rangestart]] and [[rangeend]] both
+  equal to (<var>parentNode</var>, <var>offset</var>), and add it to the
+  [[contextobject]]'s list.
+</ol>
+
+<p>The <dfn
+title=dom-Selection-collapseToStart><code>collapseToStart()</code></dfn> method
+must [[throw]] an "InvalidStateError" exception if there are no [[range]]s in
+the list. Otherwise, it must invoke the [[selcollapse|]] method with the
+[[startnode]] and [[startoffset]] of the first [[range]] object in the list as
+the arguments.
+
+<p>The <dfn
+title=dom-Selection-collapseToEnd><code>collapseToEnd()</code></dfn> method
+must [[throw]] an "InvalidStateError" exception if there are no [[range]]s in
+the list. Otherwise, it must invoke the [[selcollapse|]] method with the
+[[endnode]] and [[endoffset]] values of the last [[range]] object in the list
+as the arguments.
+</div>
+
+<p class=comments>Reverse-engineered circa January 2011.  IE doesn't support it, so I'm
+relying on Firefox (implemented extend() sometime before 2000) and WebKit
+(implemented extend() in 2007).  I'm mostly ignoring Opera, because gsnedders
+tells me its implementation isn't compatible.
+
+<p>The <dfn title=dom-Selection-extend><code>extend(<var>parentNode</var>,
+<var>offset</var>)</code></dfn> method must run these steps:
+
+<ol>
+  <li>
+  <p class=comments>Gecko raises a nonstandard exception, WebKit initializes to
+  a zero-length selection at the given point, Opera silently ignores it.
+  Gecko's behavior of throwing wins, but with a standardized exception type.
+
+  <p>If there are no [[range]]s in the list, [[throw]] an "InvalidStateError"
+  exception and abort these steps.
+
+  <li>If <var>parentNode</var> is not a [[text]] or [[element]] node, [[throw]]
+  an "InvalidNodeTypeError" exception and abort these steps.
+
+  <li>If <var>parentNode</var> does not have a [[document]] [[ancestor]],
+  [[throw]] an "InvalidModificationError" and abort these steps.
+
+  <li>
+  <p class=comments>Gecko and WebKit agree on this, Opera ignores the call.
+
+  <p>If <var>offset</var> is greater than <var>parentNode</var>'s [[length]],
+  [[throw]] an "IndexSizeError" exception and abort these steps.
+
+  <li>
+  <p class=comments>This is what Firefox does.  For WebKit and Opera it's
+  irrelevant, since they support only one Range per Selection.
+
+  <p>Let <var>range</var> be the last [[range]] in the list.
+
+  <li>
+  <p class=comments>Gecko does this.  I can't work out what WebKit does, but it
+  seems weird.  Why backwards?  I don't know, it's what Gecko seems to do.
+  (Direction in WebKit does not appear to be black-box detectable in this
+  case.)
+
+  <p>If <var>parentNode</var>'s [[root]] is not the same as <var>range</var>'s
+  [[rangeroot]], set <var>range</var>'s [[rangestart]] and [[rangeend]] to
+  (<var>parentNode</var>, <var>offset</var>), set the [[contextobject]]'s
+  [[seldir]] to backwards, and abort these steps.
+
+  <li>Let <var>anchor</var> and <var>focus</var> be the [[contextobject]]'s
+  <span>anchor</span> and <span>focus</span>, and let <var>newFocus</var> be
+  the [[boundarypoint]] given by <var>parentNode</var> and <var>offset</var>.
+
+  <li>
+  <p class=comments>Gecko actually seems to set the direction to forwards if
+  the selection was collapsed.  But this doesn't make any sense, since it
+  doesn't appear to change the direction otherwise, so I'm just going to call
+  it a bug.  (WebKit's direction here does not seem to be black-box
+  detectable.)
+
+  <p>If <var>focus</var> and <var>newFocus</var> are the same, abort these
+  steps.
+
+  <li>Set <var>range</var>'s [[rangestart]] to <var>anchor</var> and its
+  [[rangeend]] to <var>newFocus</var>, if <var>anchor</var> is [[bpbefore]] or
+  equal to <var>newFocus</var>; or vice versa, if it's [[bpafter]].
+
+  <li>If <var>newFocus</var> is [[bpbefore]] <var>anchor</var>, set the
+  [[contextobject]]'s [[seldir]] to backwards.  Otherwise, set it to forwards.
+</ol>
+
+<p class=comments>Reverse-engineered from WebKit circa January-February 2011.
+They were the ones who introduced it, and so far only Gecko has copied them in
+Firefox 4, which isn't even a final release yet, so presumably WebKit is the
+one to track.  Still, it probably isn't so widely used yet, so I follow Gecko
+when it makes more sense.
+
+<p>The <dfn title=dom-Selection-modify><code>modify(<var>alter</var>,
+<var>direction</var>, <var>granularity</var>)</code></dfn> method must run
+these steps:
+
+<p class=XXX>Does not match reality at all.  Needs precise definition and
+tests.
+
+<ol>
+  <li>If there are no [[range]]s in the list, abort these steps.
+
+  <li>Convert <var>alter</var>, <var>direction</var>, and
+  <var>granularity</var> <span title="converted to ASCII lowercase"
+  data-anolis-spec=html>to ASCII lowercase</span>.
+
+  <li>
+  <p class=comments>WebKit silently aborts if the arguments aren't recognized,
+  but Gecko throws.  Following Gecko for consistency for the other APIs here.
+
+  <p>If <var>alter</var> does not equal either "extend" or "move", [[throw]] a
+  "SyntaxError" exception and abort these steps.
+
+  <li>If <var>direction</var> does not equal one of "forward", "backward",
+  "left", or "right", [[throw]] a "SyntaxError" exception and abort these
+  steps.
+
+  <li>If <var>granularity</var> does not equal one of "character", "word",
+  "sentence", "line", "paragraph", "lineboundary", "sentenceboundary",
+  "paragraphboundary", or "documentboundary", [[throw]] a "SyntaxError"
+  exception and abort these steps.
+
+  <li>Let <var>anchor</var> and <var>focus</var> be the [[contextobject]]'s
+  <span>anchor</span> and <span>focus</span>.
+
+  <li>If <var>direction</var> is "forward", or if it's "right" and the
+  [[directionality]] of <var>focus</var>' [[node]] is "ltr", or if it's "left"
+  and the [[directionality]] of <var>focus</var>' [[node]] is "rtl", let
+  <var>logical direction</var> be "forward".  Otherwise, let it be "backward".
+
+  <li>Let <var>target</var> be the [[boundarypoint]] obtained by the following
+  subalgorithm:
+
+  <p class=XXX>?
+
+  <!--
+    <ol>
+    <li>If <var>granularity</var> is "character", "word", "sentence",
+    "sentenceboundary", or "lineboundary", and <var>logical
+    direction</var> is "forward" (respectively "backward"), set <var
+    title>target</var> to the <span>first boundary point after</span>
+    (respectively <span>last boundary point before</span>) <var
+    title>focus</var> that has the relevant property:
+
+      <dl class=switch>
+      <dt>character: <dd><span>grapheme cluster boundary</span>
+      <dt>word: <dd><span>word boundary</span>
+      <dt>sentence:
+      <dt>sentenceboundary: <dd><span>sentence boundary</span>
+      <dt>lineboundary: <dd><span>line boundary</span>
+      </dl>
+
+    <li>If <var>granularity</var> is "line", set <var>target</var>
+    to the position that is visually one line above or below <var
+    title>focus</var>, depending on <var>logical direction</var>.  This
+    might be the place the cursor would go if it started at <var
+    title>focus</var> and the user pressed the up or down key.  The exact
+    position is not defined by this specification, and should match platform
+    conventions.
+    </ol>
+  -->
+
+  <li>If <var>alter</var> is "move", replace the last [[range]] in the list by
+  a [[range]] whose [[rangestart]] and [[rangeend]] are both equal to
+  <var>target</var>, and abort these steps.
+
+  <li>Set the [[rangestart]] of the last [[range]] in the list to
+  <var>anchor</var> and its [[rangeend]] to <var>target</var>, if
+  <var>anchor</var> is [[bpbefore]] or equal to <var>target</var>; or vice
+  versa, if it's [[bpafter]].
+
+  <li>If <var>target</var> is [[bpbefore]] <var>anchor</var>, set the
+  [[contextobject]]'s [[seldir]] to backwards.  Otherwise, set it to forwards.
+</ol>
+
+<hr>
+
+<dl class=domintro>
+  <dt><var>selection</var> . <code title=dom-Selection-selectAllChildren>selectAllChildren</code>(<var>parentNode</var>)
+  <dd>
+    <p>Replaces the selection with one that contains all the contents of the
+    given element.
+
+    <p>Throws an "InvalidNodeTypeError" exception if <var>parentNode</var> is
+    not a [[text]] or [[element]] node, and an "InvalidModificationError"
+    exception if <var>parentNode</var> doesn't descend from a [[document]].
+
+  <dt><var>selection</var> . <code title=dom-Selection-deleteFromDocument>deleteFromDocument</code>()
+  <dd>
+    <p>Deletes the selection.
+</dl>
+
+<p>The <dfn
+title=dom-Selection-selectAllChildren><code>selectAllChildren(<var>parentNode</var>)</code></dfn>
+method must invoke the [[selcollapse|]] method with the <var>parentNode</var>
+value as the first argument and 0 as the second argument, and must then invoke
+the <code data-anolis-spec=dom
+title=dom-Range-selectNodeContents>selectNodeContents()</code> method on the
+first (and only) [[range]] in the list with the <var>parentNode</var> value as
+the argument.
+
+<p>The <dfn
+title=dom-Selection-deleteFromDocument><code>deleteFromDocument()</code></dfn>
+method must invoke the <code data-anolis-spec=dom
+title=dom-Range-deleteContents>deleteContents()</code> method on each [[range]]
+in the list, if any, from first to last.
+
+<dl class=domintro>
+  <dt><var>selection</var> . <code title=dom-Selection-rangeCount>rangeCount</code>
+  <dd>
+    <p>Returns the number of [[range]]s in the selection.
+
+  <dt><var>selection</var> . <code title=dom-Selection-getRangeAt>getRangeAt</code>(<var>index</var>)
+  <dd>
+    <p>Returns the given [[range]].
+
+    <p>Throws an "IndexSizeError" exception if the value is out of range.
+
+  <dt><var>selection</var> . <code title=dom-Selection-addRange>addRange</code>(<var>range</var>)
+  <dd>
+    <p>Adds the given [[range]] to the selection.
+
+    <p>Throws an "InvalidNodeTypeError" exception if the given [[range]] has a
+    boundary point node that's not a [[text]] or [[element]] node, and an
+    "InvalidModificationError" exception if it has a boundary point node that
+    doesn't descend from a [[document]].
+
+  <dt><var>selection</var> . <code title=dom-Selection-removeRange>removeRange</code>(<var>range</var>)
+  <dd>
+    <p>Removes the given [[range]] from the selection, if the [[range]] was one
+    of the ones in the selection.
+
+  <dt><var>selection</var> . <code title=dom-Selection-removeAllRanges>removeAllRanges</code>()
+  <dd>
+    <p>Removes all the [[range]]s in the selection.
+</dl>
+
+<p>The <dfn title=dom-Selection-rangeCount><code>rangeCount</code></dfn>
+attribute must return the number of [[range]]s in the list.
+
+<p class=comments>IE9 and Firefox 4.0 return the same object every time, as the
+spec says.  Chrome 12 dev and Opera 11.10 return a different object every time.
+
+<p>The <dfn
+title=dom-Selection-getRangeAt><code>getRangeAt(<var>index</var>)</code></dfn>
+method must return a reference to (not a copy of) the <var>index</var>th
+[[range]] in the list. (Thus, for instance, subsequent calls with the same
+<var>index</var> must return the same object if nothing has changed the list in
+the meantime.) If <var>index</var> is greater than or equal to the value
+returned by the <code title=dom-Selection-rangeCount>rangeCount</code>
+attribute, then the method must raise an "IndexSizeError" exception.
+
+<p class=comments>IE9 and Firefox 4.0 act as described here.  Chrome 12 dev and
+Opera 11.10 appear to store a copy, so changes don't affect the selection.
+
+<p>The <dfn
+title=dom-Selection-addRange><code>addRange(<var>range</var>)</code></dfn>
+method must raise an "InvalidNodeTypeError" exception if <var>range</var>'s
+[[startnode]] or [[endnode]] is not a [[text]] or [[element]] node.  Otherwise,
+if <var>range</var>'s [[startnode]] or [[endnode]] does not have a [[document]]
+[[ancestor]], it must raise an "InvalidModificationError".  Otherwise, it must
+add a reference to (not a copy of) the given <var>range</var> to the list of
+selections, at the end (so the newly added [[range]] is the new last
+[[range]]). Since the given <var>range</var> is added by reference, subsequent
+calls to <code title=dom-Selection-getRangeAt>getRangeAt()</code> with a
+suitable argument must return the same object, and any changes that a script
+makes to the given <var>range</var> after it is added must be reflected in the
+[[selection]], until the given <var>range</var> is removed from the list.
+
+<p class=XXX>Everything here about multiple ranges is wrong.  First of all, no
+one but Gecko even allows multiple ranges per selection.  Second of all, Gecko
+stores the ranges sorted by their starts in tree order, not related to the
+order they were added.  Third of all, Gecko doesn't allow overlapping ranges,
+so if you add a range that overlaps an existing range, it removes or alters
+existing ranges in the list to avoid overlap, sometimes even splitting an
+existing range in two.  We need to specify this, or else specify saner behavior
+if we expect anyone to actually follow it.  We also need to account for the
+fact that non-Gecko browsers might not be interested in supporting multiple
+ranges per selection, maybe by explicitly allowing that: see <a
+href=http://lists.whatwg.org/pipermail/whatwg-whatwg.org/2011-January/030100.html>discussion</a>.
+
+<p>The <dfn
+title=dom-Selection-removeRange><code>removeRange(<var>range</var>)</code></dfn>
+method must remove the first occurrence of <var>range</var> in the list of
+[[range]]s, if it appears at all.
+
+<p>The <dfn
+title=dom-Selection-removeAllRanges><code>removeAllRanges()</code></dfn> method
+must remove all the [[range]]s from the list of [[range]]s, such that the <code
+title=dom-Selection-rangeCount>rangeCount</code> attribute returns 0 after the
+<code title=dom-Selection-removeAllRanges>removeAllRanges()</code> method is
+invoked (and until a new [[range]] is added to the list, either through this
+interface or via user interaction).  The [[seldir]] must be set to forwards.
+
+<p>The <dfn title=dom-Selection-stringifier>stringifier</dfn> must . . .
+
+<p class=XXX>Complicated.  The Selection stringifier is magical like innerText.
+See <a href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=10583>W3C bug
+10583</a>.
+
+<p>This specification extends several interfaces to provide entry points to the
+interfaces defined in this specification.
+
+<dl class=domintro>
+  <dt><var>window</var> . <code title=dom-Window-getSelection>getSelection</code>()
+  <dt><var>document</var> . <code title=dom-Document-getSelection>getSelection</code>()
+  <dd>
+    <p>Returns the <code>Selection</code> object for the window, which
+    stringifies to the text of the current selection.
+</dl>
+
+<pre class=idl>partial interface <span data-anolis-spec=dom>Document</span> {
+  <span>Selection</span> <span title=dom-Document-getSelection>getSelection</span>();
+};</pre>
+
+<p>For historical reasons, the <dfn
+title=dom-Document-getSelection><code>getSelection()</code></dfn> method on the
+[[document]] interface must return the same <code>Selection</code> object as
+its <code data-anolis-spec=html
+title=dom-Document-defaultView>defaultView</code>'s <code
+title=dom-Window-getSelection>getSelection()</code> method.
+
+<pre class=idl>partial interface <span data-anolis-spec=html>Window</span> {
+  <span>Selection</span> <span title=dom-Window-getSelection>getSelection</span>();
+};</pre>
+
+<p>The <dfn title=dom-Window-getSelection><code>getSelection()</code></dfn>
+method on the <code data-anolis-spec=html>Window</code> interface must return
+the <code>Selection</code> object representing the [[selection]] of that <code
+data-anolis-spec=html>Window</code> object's <span
+data-anolis-spec=html>browsing context</span>.
+<!-- @} -->
+
 <h2>Commands</h2>
 
 <h3>Properties of commands</h3>
@@ -772,7 +1340,7 @@ null, and disabled otherwise.
 
 <!-- @} -->
 
-<h2>Methods of the <code data-anolis-spec=html>HTMLDocument</code> interface</h2>
+<h2>Methods to query and execute commands</h2>
 <!-- @{ -->
 <p class=comments>TODO: Define behavior for <var>show UI</var>.
 
@@ -1184,7 +1752,7 @@ make sure to audit for other occurrences of this assumption.
 <span>block node</span>, or a [[text]] node that is not a <span>collapsed
 whitespace node</span>, or an [[img]], or a [[br]] that is not an
 <span>extraneous line break</span>, or any [[node]] with a <span>visible</span>
-[[descendant]]; excluding any [[node]] with an [[ancestorcontainer]]
+[[descendant]]; excluding any [[node]] with an [[inclusiveancestor]]
 [[element]] whose "display" property has [[resval]] "none".
 
 <p>Something is <dfn>invisible</dfn> if it is a [[node]] that is not
@@ -1275,8 +1843,8 @@ sequentially in the list's order.
 <!-- @{ -->
 <p>To move a [[node]] to a new location, <dfn>preserving ranges</dfn>, remove
 the [[node]] from its original [[parent]] (if any), then insert it in the new
-location.  In doing so, however, ignore the regular [[rangemutationrules]], and
-instead follow these rules:
+location.  In doing so, follow these rules instead of those defined by the
+[[insert]] and [[remove]] algorithms:
 
 <p class=note>Many of the algorithms in this specification move nodes around in
 the DOM.  The normal rules for range mutation require that any range endpoints
@@ -1297,19 +1865,19 @@ ranges", so that the text "foo" is still selected.
   <p class=comments>This is actually implicit, but I state it anyway for
   completeness.
 
-  <p>If a [[boundarypoint]]'s [[bpnode]] is the same as or a [[descendant]] of
+  <p>If a [[boundarypoint]]'s [[node]] is the same as or a [[descendant]] of
   <var>node</var>, leave it unchanged, so it moves to the new location.
 
-  <li>If a [[boundarypoint]]'s [[bpnode]] is <var>new parent</var> and its
+  <li>If a [[boundarypoint]]'s [[node]] is <var>new parent</var> and its
   [[bpoffset]] is greater than <var>new index</var>, add one to its
   [[bpoffset]].
 
-  <li>If a [[boundarypoint]]'s [[bpnode]] is <var>old parent</var> and its
+  <li>If a [[boundarypoint]]'s [[node]] is <var>old parent</var> and its
   [[bpoffset]] is <var>old index</var> or <var>old index</var> + 1, set its
-  [[bpnode]] to <var>new parent</var> and add <var>new index</var> &minus;
+  [[node]] to <var>new parent</var> and add <var>new index</var> &minus;
   <var>old index</var> to its [[bpoffset]].
 
-  <li>If a [[boundarypoint]]'s [[bpnode]] is <var>old parent</var> and its
+  <li>If a [[boundarypoint]]'s [[node]] is <var>old parent</var> and its
   [[bpoffset]] is greater than <var>old index</var> + 1, subtract one from its
   [[bpoffset]].
 </ol>
@@ -1559,7 +2127,7 @@ title>&lt;b></code> element.
     <p>TODO: Think about this some more.  Maybe there's a better way.
     </div>
 
-    <p>If any [[range]] has a [[boundarypoint]] with [[bpnode]] equal to the
+    <p>If any [[range]] has a [[boundarypoint]] with [[node]] equal to the
     [[parent]] of <var>new parent</var> and [[bpoffset]] equal to the [[index]]
     of <var>new parent</var>, add one to that [[boundarypoint]]'s [[bpoffset]].
   </ol>
@@ -1832,7 +2400,7 @@ at least one of the following holds:
   &lt;b>f[oo&lt;/b>}, but not &lt;b>foo[&lt;/b>} or &lt;b>f[]oo&lt;/b>.
 
   <p><var>node</var> is <var>range</var>'s [[startnode]], it is a [[text]]
-  node, and its [[nodelength]] is different from <var>range</var>'s
+  node, and its [[length]] is different from <var>range</var>'s
   [[startoffset]].
 
   <li><var>node</var> is <var>range</var>'s [[endnode]], it is a [[text]] node,
@@ -4336,10 +4904,10 @@ I should re-examine it sometime, but it seems to work.
 
 <ol>
   <li>Let <var>start node</var>, <var>start offset</var>, <var>end node</var>,
-  and <var>end offset</var> be the [[rangestart]] and [[rangeend]] [[bpnodes]]
+  and <var>end offset</var> be the [[rangestart]] and [[rangeend]] [[nodes]]
   and [[bpoffsets]] of <var>range</var>.
 
-  <li>If some [[ancestorcontainer]] of <var>start node</var> is an [[li]], set
+  <li>If some [[inclusiveancestor]] of <var>start node</var> is an [[li]], set
   <var>start offset</var> to the [[index]] of the last such [[li]] in
   [[treeorder]], and set <var>start node</var> to that [[li]]'s [[parent]].
 
@@ -4364,7 +4932,7 @@ I should re-examine it sometime, but it seems to work.
   [[parent]] is not null, set <var>start offset</var> to <var>start
   node</var>'s [[index]], then set <var>start node</var> to its [[parent]].
 
-  <li>If some [[ancestorcontainer]] of <var>end node</var> is an [[li]], set
+  <li>If some [[inclusiveancestor]] of <var>end node</var> is an [[li]], set
   <var>end offset</var> to one plus the [[index]] of the last such [[li]] in
   [[treeorder]], and set <var>end node</var> to that [[li]]'s [[parent]].
 
@@ -4388,7 +4956,7 @@ I should re-examine it sometime, but it seems to work.
   [[parent]].
 
   <li>Let <var>new range</var> be a new [[range]] whose [[rangestart]] and
-  [[rangeend]] [[bpnodes]] and [[bpoffsets]] are <var>start node</var>,
+  [[rangeend]] [[nodes]] and [[bpoffsets]] are <var>start node</var>,
   <var>start offset</var>, <var>end node</var>, and <var>end offset</var>.
 
   <li>Return <var>new range</var>.
@@ -4684,7 +5252,7 @@ style from the old text.
 
   <li>Let <var>start node</var>, <var>start offset</var>, <var>end node</var>,
   and <var>end offset</var> be the <span>active range</span>'s [[rangestart]]
-  and [[rangeend]] [[bpnodes]] and [[bpoffsets]].
+  and [[rangeend]] [[nodes]] and [[bpoffsets]].
 
   <li>
   <div class=comments>
@@ -4738,7 +5306,7 @@ foo{&lt;br />bar]
     to the root.  The step immediately after this loop will bring us back down
     again.
 
-    <p>If <var>start offset</var> is <var>start node</var>'s [[nodelength]],
+    <p>If <var>start offset</var> is <var>start node</var>'s [[length]],
     break from this loop.
 
     <li>Let <var>reference node</var> be the [[child]] of <var>start node</var>
@@ -4783,7 +5351,7 @@ foo{&lt;br />bar]
     [[text]] node, break from this loop.
 
     <li>Set <var>end node</var> to <var>reference node</var> and <var>end
-    offset</var> to the [[nodelength]] of <var>reference node</var>.
+    offset</var> to the [[length]] of <var>reference node</var>.
   </ol>
 
   <li>If (<var>end node</var>, <var>end offset</var>) is not [[bpafter]]
@@ -4804,7 +5372,7 @@ foo{&lt;br />bar]
   then set <var>start node</var> to its [[parent]].
 
   <li>If <var>end node</var> is a [[text]] node and <var>end offset</var> is
-  its [[nodelength]], set <var>end offset</var> to one plus the [[index]] of
+  its [[length]], set <var>end offset</var> to one plus the [[index]] of
   <var>end node</var>, then set <var>end node</var> to its [[parent]].
 
   <li>Call [[selcollapse|<var>start node</var>, <var>start offset</var>]] on
@@ -4922,7 +5490,7 @@ foo{&lt;br />bar]
 
   <li>If <var>start node</var> is an <span>editable</span> [[text]] node, call
   [[deletedata|]] on it, with <var>start offset</var> as the first argument and
-  ([[nodelength]] of <var>start node</var> &minus; <var>start offset</var>) as
+  ([[length]] of <var>start node</var> &minus; <var>start offset</var>) as
   the second argument.
 
   <li>Let <var>node list</var> be a list of [[nodes]], initially empty.
@@ -4962,8 +5530,8 @@ foo{&lt;br />bar]
     or such.  I follow IE9 in all cases, because it makes the most sense.
 
     <p>If <var>strip wrappers</var> is true or <var>parent</var> is not an
-    [[ancestorcontainer]] of <var>start node</var>, while <var>parent</var> is
-    an <span>editable</span> <span>inline node</span> with [[nodelength]] 0,
+    [[inclusiveancestor]] of <var>start node</var>, while <var>parent</var> is
+    an <span>editable</span> <span>inline node</span> with [[length]] 0,
     let <var>grandparent</var> be the [[parent]] of <var>parent</var>, then
     remove <var>parent</var> from <var>grandparent</var>, then set
     <var>parent</var> to <var>grandparent</var>.
@@ -5107,7 +5675,7 @@ foo[&lt;p>]bar&lt;/p>
   <ol>
     <li>Call [[selcollapse|]] on the [[contextobject]]'s [[selection]], with
     first argument <var>start block</var> and second argument <var>start
-    block</var>'s [[nodelength]].
+    block</var>'s [[length]].
 
     <li>Let <var>reference node</var> be <var>start block</var>.
 
@@ -5146,7 +5714,7 @@ foo[&lt;p>]bar&lt;/p>
   <ol>
     <li>Call [[selcollapse|]] on the [[contextobject]]'s [[selection]], with
     first argument <var>start block</var> and second argument <var>start
-    block</var>'s [[nodelength]].
+    block</var>'s [[length]].
 
     <li>If <var>end block</var>'s [[firstchild]] is an <span>inline node</span>
     and <var>start block</var>'s [[lastchild]] is a [[br]], remove <var>start
@@ -6490,8 +7058,8 @@ or "ul"):
   "ul" if <var>tag name</var> is "ol".
 
   <li>Let <var>items</var> be a list of all [[li]]s that are
-  [[ancestorcontainers]] of the <span>active range</span>'s [[rangestart]]
-  and/or [[rangeend]] [[bpnode]].
+  [[inclusiveancestors]] of the <span>active range</span>'s [[rangestart]]
+  and/or [[rangeend]] [[node]].
 
   <li>
   <p class=comments>TODO: This overnormalizes, but it seems like the simplest
@@ -6930,9 +7498,8 @@ leaves things like &lt;b>{}&lt;/b> in the DOM, which is unhelpful, so I don't.
 <p><span>Action</span>:
 
 <ol>
-  <li>If the <span>active range</span> is not <code data-anolis-spec=domrange
-  title=dom-Range-collapsed>collapsed</code>, <span>delete the selection</span>
-  and abort these steps.
+  <li>If the <span>active range</span> is not [[rangecollapsed]], <span>delete
+  the selection</span> and abort these steps.
 
   <li>
   <p class=comments>Needed so that if there are multiple consecutive spaces we
@@ -6942,7 +7509,7 @@ leaves things like &lt;b>{}&lt;/b> in the DOM, which is unhelpful, so I don't.
   [[rangestart]].
 
   <li>Let <var>node</var> and <var>offset</var> be the <span>active
-  range</span>'s [[rangestart]] [[bpnode]] and [[bpoffset]].
+  range</span>'s [[rangestart]] [[node]] and [[bpoffset]].
 
   <li>
   <p class=comments>First go up as high as possible within the current block,
@@ -6988,7 +7555,7 @@ leaves things like &lt;b>{}&lt;/b> in the DOM, which is unhelpful, so I don't.
     <li>Otherwise, if <var>node</var> has a [[child]] with [[index]]
     <var>offset</var> &minus; 1 and that [[child]] is not a <span>block
     node</span> or a [[br]] or an [[img]], set <var>node</var> to that
-    [[child]], then set <var>offset</var> to the [[nodelength]] of
+    [[child]], then set <var>offset</var> to the [[length]] of
     <var>node</var>.
 
     <li>Otherwise, break from this loop.
@@ -7114,7 +7681,7 @@ leaves things like &lt;b>{}&lt;/b> in the DOM, which is unhelpful, so I don't.
   copy-pastes from the outdent command action.
 
   <p>If <var>offset</var> is zero, and <var>node</var> has an
-  <span>editable</span> [[ancestorcontainer]] <span>in the same editing
+  <span>editable</span> [[inclusiveancestor]] <span>in the same editing
   host</span> that's an <span>indentation element</span>:
 
   <ol>
@@ -7267,7 +7834,7 @@ leaves things like &lt;b>{}&lt;/b> in the DOM, which is unhelpful, so I don't.
     <li>Set <var>start node</var> to its [[child]] with [[index]] <var>start
     offset</var> &minus; 1.
 
-    <li>Set <var>start offset</var> to <var>start node</var>'s [[nodelength]].
+    <li>Set <var>start offset</var> to <var>start node</var>'s [[length]].
 
     <li>Set <var>node</var> to <var>start node</var>'s [[nextsibling]].
 
@@ -7301,7 +7868,7 @@ leaves things like &lt;b>{}&lt;/b> in the DOM, which is unhelpful, so I don't.
 
     <li>Otherwise, set <var>start node</var> to its [[child]] with [[index]]
     <var>start offset</var> minus one, then set <var>start offset</var> to the
-    [[nodelength]] of <var>start node</var>.
+    [[length]] of <var>start node</var>.
   </ol>
 
   <li>Call [[selcollapse|<var>start node</var>, <var>start offset</var>]] on
@@ -7674,20 +8241,19 @@ diacritic, so you have to backspace several times to remove the whole cluster.)
 <p><span>Action</span>:
 
 <ol>
-  <li>If the <span>active range</span> is not <code data-anolis-spec=domrange
-  title=dom-Range-collapsed>collapsed</code>, <span>delete the selection</span>
-  and abort these steps.
+  <li>If the <span>active range</span> is not [[rangecollapsed]], <span>delete
+  the selection</span> and abort these steps.
 
   <li><span>Canonicalize whitespace</span> at the <span>active range</span>'s
   [[rangestart]].
 
   <li>Let <var>node</var> and <var>offset</var> be the <span>active
-  range</span>'s [[rangestart]] [[bpnode]] and [[bpoffset]].
+  range</span>'s [[rangestart]] [[node]] and [[bpoffset]].
 
   <li>Repeat the following steps:
 
   <ol>
-    <li>If <var>offset</var> is the [[nodelength]] of <var>node</var> and
+    <li>If <var>offset</var> is the [[length]] of <var>node</var> and
     <var>node</var>'s [[nextsibling]] is an <span>editable</span>
     <span>invisible</span> [[node]], remove <var>node</var>'s [[nextsibling]]
     from its [[parent]].
@@ -7697,7 +8263,7 @@ diacritic, so you have to backspace several times to remove the whole cluster.)
     <span>invisible</span> [[node]], remove that [[child]] from
     <var>node</var>.
 
-    <li>Otherwise, if <var>offset</var> is the [[nodelength]] of
+    <li>Otherwise, if <var>offset</var> is the [[length]] of
     <var>node</var> and <var>node</var> is an <span>inline node</span>, or if
     <var>node</var> is <span>invisible</span>, set <var>offset</var> to one
     plus the [[index]] of <var>node</var>, then set <var>node</var> to its
@@ -7716,7 +8282,7 @@ diacritic, so you have to backspace several times to remove the whole cluster.)
   </ol>
 
   <li>If <var>node</var> is a [[text]] node and <var>offset</var> is not
-  <var>node</var>'s [[nodelength]]:
+  <var>node</var>'s [[length]]:
 
   <ol>
     <li>Let <var>end offset</var> be <var>offset</var> plus one.
@@ -7941,8 +8507,8 @@ of ways.
   result.
 
   <li>Let <var>items</var> be a list of all [[li]]s that are
-  [[ancestorcontainers]] of the <span>active range</span>'s [[rangestart]]
-  and/or [[rangeend]] [[bpnode]].
+  [[inclusiveancestors]] of the <span>active range</span>'s [[rangestart]]
+  and/or [[rangeend]] [[node]].
 
   <li>
   <p class=comments>TODO: This overnormalizes, but it seems like the simplest
@@ -8014,13 +8580,13 @@ behavior in splitting up parents to ensure validity . . .
 <ol>
   <li>Let <var>start node</var>, <var>start offset</var>, <var>end node</var>,
   and <var>end offset</var> be the <span>active range</span>'s [[rangestart]]
-  and [[rangeend]] [[bpnodes]] and [[bpoffsets]].
+  and [[rangeend]] [[nodes]] and [[bpoffsets]].
 
   <li>While <var>start offset</var> is 0 and <var>start node</var>'s
   [[parent]] is not null, set <var>start offset</var> to <var>start
   node</var>'s [[index]], then set <var>start node</var> to its [[parent]].
 
-  <li>While <var>end offset</var> is <var>end node</var>'s [[nodelength]], and
+  <li>While <var>end offset</var> is <var>end node</var>'s [[length]], and
   <var>end node</var>'s [[parent]] is not null, set <var>end offset</var> to
   one plus <var>end node</var>'s [[index]], then set <var>end node</var> to its
   [[parent]].
@@ -8449,14 +9015,14 @@ whatwg thread</a>.
   <span>editable</span> nor an <span>editing host</span>, abort these steps.
 
   <li>Let <var>node</var> and <var>offset</var> be the <span>active
-  range</span>'s [[rangestart]] [[bpnode]] and [[bpoffset]].
+  range</span>'s [[rangestart]] [[node]] and [[bpoffset]].
 
   <li>If <var>node</var> is a [[text]] node, and <var>offset</var> is neither 0
-  nor the [[nodelength]] of <var>node</var>, call
+  nor the [[length]] of <var>node</var>, call
   [[splittext|<var>offset</var>]] on <var>node</var>.
 
   <li>If <var>node</var> is a [[text]] node and <var>offset</var> is its
-  [[nodelength]], set <var>offset</var> to one plus the [[index]] of
+  [[length]], set <var>offset</var> to one plus the [[index]] of
   <var>node</var>, then set <var>node</var> to its [[parent]].
 
   <li>If <var>node</var> is a [[text]] or [[comment]] node, set
@@ -8618,7 +9184,7 @@ whatwg thread</a>.
 
   <li>Let <var>new line range</var> be a new [[range]] whose [[rangestart]] is
   the same as the <span>active range</span>'s, and whose [[rangeend]] is
-  (<var>container</var>, [[nodelength]] of <var>container</var>).
+  (<var>container</var>, [[length]] of <var>container</var>).
 
   <li>
   <p class=comments>We don't want the start to be just inside a node, because
@@ -8630,14 +9196,13 @@ whatwg thread</a>.
   [[startnode]] is not <var>container</var>, set its [[rangestart]] to
   ([[parent]] of [[startnode]], [[index]] of [[startnode]]).
 
-  <li>While <var>new line range</var>'s [[startoffset]] is the [[nodelength]]
+  <li>While <var>new line range</var>'s [[startoffset]] is the [[length]]
   of its [[startnode]] and its [[startnode]] is not <var>container</var>, set
   its [[rangestart]] to ([[parent]] of [[startnode]], 1 + [[index]] of
   [[startnode]]).
 
-  <li>Let <var>end of line</var> be true if <var>new line range</var> <span
-  data-anolis-spec=domrange title=contained>contains</span> either nothing or a
-  single [[br]], and false otherwise.
+  <li>Let <var>end of line</var> be true if <var>new line range</var>
+  [[contains]] either nothing or a single [[br]], and false otherwise.
 
   <li>
   <p class=comments>IE9 makes a new header if there's a trailing &lt;br>.
@@ -9121,8 +9686,8 @@ and return the <span>alignment value</span> of the first <span>visible</span>
   result.
 
   <li>Let <var>items</var> be a list of all [[li]]s that are
-  [[ancestorcontainers]] of the <span>active range</span>'s [[rangestart]]
-  and/or [[rangeend]] [[bpnode]].
+  [[inclusiveancestors]] of the <span>active range</span>'s [[rangestart]]
+  and/or [[rangeend]] [[node]].
 
   <li>
   <p class=comments>TODO: This overnormalizes, but it seems like the simplest
@@ -9467,6 +10032,7 @@ command</span>.  Any such change should take the <span>action</span> for some
 <ul>
   <li>Google, for funding this work
   <li>Ian Hickson, for overseeing it
+  <li>Ian Hickson and Ms2ger, for starting the selection work
   <li>Julie Parent, Ojan Vafai, Alex Russel, and Eric Seidel for their <a
   href=http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2009-December/024627.html>research</a>
   on how browsers and other rich text editors behave in many common scenarios

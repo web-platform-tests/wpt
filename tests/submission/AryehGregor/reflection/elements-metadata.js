@@ -6,11 +6,11 @@ var metadataElements = {
 	},
 	link: {
 		// Conforming
+		href: "url",
 		rel: "string",
 		media: "string",
-		type: "string",
-		href: "url",
 		hreflang: "string",
+		type: "string",
 		sizes: "settable tokenlist",
 		relList: {type: "tokenlist", domAttrName: "rel"},
 

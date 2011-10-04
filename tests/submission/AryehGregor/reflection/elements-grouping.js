@@ -21,6 +21,8 @@ var groupingElements = {
 	ol: {
 		// Conforming
 		reversed: "boolean",
+		// TODO: This should have a default value of the list's length if the
+		// reversed attribute is set.
 		start: {type: "long", defaultVal: 1},
 		type: "string",
 

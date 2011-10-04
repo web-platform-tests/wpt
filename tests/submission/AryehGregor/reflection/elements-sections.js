@@ -45,6 +45,7 @@ var sectionElements = {
 mergeElements(sectionElements);
 
 extraTests.push(function() {
+	ReflectionTests.reflects({type: "enum", keywords: ["ltr", "rtl", "auto"]}, "dir", document, "dir", document.documentElement);
 	// TODO: these behave differently if the body element is a frameset.  Also
 	// should probably test with multiple bodies.
 	ReflectionTests.reflects({type: "string", treatNullAsEmptyString: true}, "fgColor", document, "text", document.body);
@@ -53,6 +54,7 @@ extraTests.push(function() {
 	ReflectionTests.reflects({type: "string", treatNullAsEmptyString: true}, "alinkColor", document, "alink", document.body);
 	ReflectionTests.reflects({type: "string", treatNullAsEmptyString: true}, "bgColor", document, "bgcolor", document.body);
 	// Don't mess up the colors :)
+	document.documentElement.removeAttribute("dir");
 	var attrs = ["text", "bgcolor", "link", "alink", "vlink"];
 	for (var i = 0; i < attrs.length; i++) {
 		document.body.removeAttribute(attrs[i]);

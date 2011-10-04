@@ -1,11 +1,14 @@
 var textElements = {
 	a: {
 		// Conforming
+		href: "url",
+		download: "string",
+		ping: "urls",
 		target: "string",
+		rel: "string",
 		media: "string",
 		hreflang: "string",
 		type: "string",
-		rel: "string",
 		relList: {type: "tokenlist", domAttrName: "rel"},
 
 		// Obsolete

@@ -3,8 +3,10 @@ var embeddedElements = {
 		// Conforming
 		alt: "string",
 		src: "url",
+		crossOrigin: {type: "enum", keywords: ["", "anonymous", "use-credentials"]},
 		useMap: "string",
 		isMap: "boolean",
+		// TODO: width/height reflect for setting, but not for getting.
 
 		// Obsolete
 		name: "string",
@@ -19,6 +21,7 @@ var embeddedElements = {
 		src: "url",
 		srcdoc: "string",
 		name: "string",
+		sandbox: "settable tokenlist",
 		seamless: "boolean",
 		height: "string",
 		width: "string",
@@ -48,6 +51,7 @@ var embeddedElements = {
 		type: "string",
 		name: "string",
 		useMap: "string",
+		typeMustMatch: "boolean",
 		height: "string",
 		width: "string",
 
@@ -73,7 +77,6 @@ var embeddedElements = {
 		valueType: "string",
 	},
 	video: {
-		audio: "settable tokenlist",
 		poster: "url",
 		src: "url",
 		// As with "keytype", we have no missing value default defined here.

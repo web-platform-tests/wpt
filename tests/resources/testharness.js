@@ -1362,12 +1362,15 @@ policies and contribution forms [3].
             + "<tr><th>Result<th>Test Name<th>Message</tr>"
             + "</table>";
         var tbody = document.createElement("tbody");
+        var rows = "";
+        for (var i = 0; i < tests.length; i++) {
+            rows += "<tr><td><td><td>";
+        }
+        tbody.innerHTML = rows;
         for (var i = 0; i < tests.length; i++)
         {
-            var tr = document.createElement("tr");
+            var tr = tbody.childNodes[i];
             tr.className = status_class(status_text[tests[i].status]);
-            tbody.appendChild(tr);
-            tr.innerHTML = "<td><td><td>";
             tr.childNodes[0].textContent = status_text[tests[i].status];
             tr.childNodes[1].textContent = tests[i].name;
             tr.childNodes[2].textContent = tests[i].message ? tests[i].message : " ";

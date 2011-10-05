@@ -65,7 +65,7 @@ a code { text-decoration: underline }
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing APIs</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-4-october-2011>Work in Progress &mdash; Last Update 4 October 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-5-october-2011>Work in Progress &mdash; Last Update 5 October 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;<a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a>&gt;
@@ -121,8 +121,8 @@ restriction.
  <li><a href=#tests>Tests</a>
   <ol>
    <li><a href=#general-remarks>General remarks</a></li>
-   <li><a href=#development-tests>Development tests</a></li>
-   <li><a href=#conformance-tests>Conformance tests</a></ol></li>
+   <li><a href=#development-tests>Command development tests</a></li>
+   <li><a href=#conformance-tests>Command conformance tests</a></ol></li>
  <li><a href=#issues>Issues</a></li>
  <li><a href=#selections>Selections</a></li>
  <li><a href=#commands>Commands</a>
@@ -278,7 +278,23 @@ and commonly record what the major browsers do and other essential information.
 <h3 id=general-remarks>General remarks</h3>
 
 
-<p>This specification is developed in tandem with a more or less complete <a href=implementation.js>JavaScript implementation</a>.  The implementation is
+<p>There are two groups of tests currently associated with this specification:
+selection tests, and command tests.  The command tests are available in two
+formats, development tests and conformance tests.  This has a lot to do with
+the history of how the specification was developed: selection was originally
+part of the defunct <a href=http://html5.org/specs/dom-range.html>DOM Range</a>
+spec, while the command parts were developed on their own.  The selection
+things have been merged into the command spec, but neither the spec text nor
+the tests have been fully unified at the time of this writing.
+
+<p>Thus the selection tests live in their own directory, <a href=selecttest/>selecttest/</a>.  They use the standard <a href=http://dvcs.w3.org/hg/html/file/tip/tests/resources/testharness.js>testharness.js</a>
+framework developed by James Graham.  They're entirely self-contained, sharing
+nothing with the command tests (except invoking the testharness.js library).
+At the time of this writing, they're not nearly as comprehensive as the command
+tests, although they do test some functionality comprehensively.
+
+<p>On the other hand, the command-related part of this specification is
+developed in tandem with a more or less complete <a href=implementation.js>JavaScript implementation</a>.  The implementation is
 used for creating tests, of two different types: development tests and
 conformance tests.  The two types of test share most of the same code, starting
 with the multi-thousand-line implementation itself.  The actual tests run are
@@ -295,7 +311,7 @@ anyone other than the spec's editor.
 
 <p>Conformance tests were added later.  They run the same tests as the
 development tests, but in an entirely non-interactive format, using the <a href=http://dvcs.w3.org/hg/html/file/tip/tests/resources/testharness.js>testharness.js</a>
-framework developed by James Graham.  They always run the same set of tests,
+framework like the selection tests.  They always run the same set of tests,
 don't vary behavior between browsers (hopefully), and are unforgiving of any
 deviation.  However, they're significantly more cumbersome to set up and use,
 so they're less useful for developing the specification itself.
@@ -371,7 +387,7 @@ be very useful on real-world sites, since there's no way any of this stuff will
 work in IE8.
 
 
-<h3 id=development-tests>Development tests</h3>
+<h3 id=development-tests>Command development tests</h3>
 
 
 <p>The development tests are mostly useful for developing the spec itself, not
@@ -452,7 +468,7 @@ spec output in those browsers should be sanity-checked and compared against
 another browser's spec output in case of doubt.
 
 
-<h3 id=conformance-tests>Conformance tests</h3>
+<h3 id=conformance-tests>Command conformance tests</h3>
 
 
 <p>The conformance tests operate more like one would expect from tests.  Once

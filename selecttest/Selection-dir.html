@@ -12,9 +12,10 @@
 	<p>efghi
 </div>
 <div id=log></div>
-<script src=support/testharness.js></script>
-<script src=support/testharnessreport.js></script>
+<script src=http://w3c-test.org/resources/testharness.js></script>
 <script>
+setup({explicit_done: true});
+
 function testDirection() {
 	var testDiv = document.getElementById("test");
 	var p = testDiv.getElementsByTagName("p")[1].firstChild;
@@ -29,7 +30,7 @@ function testDirection() {
 		assert_equals(selection.focusNode, p);
 	}, "Expected node is initially selected");
 	test(function() {
-		assert_array_equals_unsorted([selection.anchorOffset, selection.focusOffset], [1, 3]);
+		assert_array_equals([selection.anchorOffset, selection.focusOffset].sort(), [1, 3]);
 	}, "Expected offsets are initially selected (maybe not in order)");
 	test(function() {
 		assert_equals(selection.anchorOffset, 3);
@@ -58,7 +59,7 @@ function testDirection() {
 		assert_equals(selection.focusNode, p);
 	}, "Expected node is selected after remove/addRange()");
 	test(function() {
-		assert_array_equals_unsorted([selection.anchorOffset, selection.focusOffset], [0, 4]);
+		assert_array_equals([selection.anchorOffset, selection.focusOffset].sort(), [0, 4]);
 	}, "Expected offsets are selected after remove/addRange() (maybe not in order)");
 	test(function() {
 		assert_equals(selection.anchorOffset, 4);
@@ -87,7 +88,7 @@ function testDirection() {
 		assert_equals(selection.focusNode, p);
 	}, "Expected node is selected after removeAllRanges()");
 	test(function() {
-		assert_array_equals_unsorted([selection.anchorOffset, selection.focusOffset], [2, 5]);
+		assert_array_equals([selection.anchorOffset, selection.focusOffset].sort(), [2, 5]);
 	}, "Expected offsets are selected after removeAllRanges() (maybe not in order)");
 	test(function() {
 		assert_equals(selection.anchorOffset, 2);
@@ -99,5 +100,7 @@ function testDirection() {
 		assert_equals(selection.focusNode, range.endContainer);
 		assert_equals(selection.focusOffset, range.endOffset);
 	}, "Offsets match the range after removeAllRanges()");
+
+	done();
 }
 </script>

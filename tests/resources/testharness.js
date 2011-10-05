@@ -1243,17 +1243,9 @@ policies and contribution forms [3].
         this.done_count++;
         if (this.output_node)
         {
-            var log = this.output_node;
-            if (log.lastChild) {
-                log.removeChild(log.lastChild);
-            }
-            var nodes = render([["{text}", "Running, ${done} complete, ${pending} remain"]],
-                               {done:this.done_count,
-                                pending:tests.num_pending}, this.output_document);
-            forEach(nodes, function(node) {
-                        log.appendChild(node);
-                    });
-            log.normalize();
+            this.output_node.textContent = "Running, "
+                + this.done_count + " complete, "
+                + tests.num_pending + " remain";
         }
     };
 

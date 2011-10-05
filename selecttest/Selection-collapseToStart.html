@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<title>The collapseToStart method</title>
+<div id=log></div>
+<script src=support/testharness.js></script>
+<script src=support/testharnessreport.js></script>
+<script>
+test(function() {
+  var sel = getSelection();
+  sel.removeAllRanges();
+  assert_throws("INVALID_STATE_ERR", function() { sel.collapseToStart(); })
+});
+</script>

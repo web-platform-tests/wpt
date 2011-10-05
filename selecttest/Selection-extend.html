@@ -1,0 +1,246 @@
+<!doctype html>
+<title>Selection extend() tests</title>
+<meta charset=utf-8>
+<body>
+<script src=support/testharness.js></script>
+<script src=support/testharnessreport.js></script>
+<script src=common.js></script>
+<div id=log></div>
+<script>
+/**
+ * Returns "forwards" if the selection direction is forwards, "backwards" if
+ * it's backwards.  This appears not to work in WebKit at all, because there
+ * seems to be no way of adding a range or replacing the current range without
+ * calling removeAllRanges(), which resets the direction.  So we're nice and
+ * look at the current range if possible; otherwise we do some stuff that
+ * involves calling removeRange(), which doesn't exist in WebKit, so it will
+ * fail the test.
+ */
+function getSelectionDirection() {
+	if (selection.anchorNode != selection.focusNode
+	|| selection.anchorOffset != selection.focusOffset) {
+		var range = selection.getRangeAt(selection.rangeCount - 1);
+		// We can determine the direction without mangling anything.
+		if (selection.anchorNode == range.startContainer
+		&& selection.anchorOffset == range.startOffset) {
+			return "forwards";
+		}
+		if (selection.anchorNode == range.endContainer
+		&& selection.anchorOffset == range.endOffset) {
+			return "backwards";
+		}
+		throw "Something buggy with directions";
+	}
+
+	var range = document.createRange();
+	range.setStart(paras[0].firstChild, 0);
+	range.setEnd(paras[0].firstChild, 1);
+	selection.addRange(range);
+	if (selection.anchorOffset == range.startOffset) {
+		selection.removeRange(range);
+		return "forwards";
+	}
+	if (selection.anchorOffset == range.endOffset) {
+		selection.removeRange(range);
+		return "backwards";
+	}
+}
+
+/**
+ * We test Selections that go both forwards and backwards here.  In the latter
+ * case we need to use extend() to force it to go backwards, which is fair
+ * enough, since that's what we're testing.
+ */
+
+var originalSelectionDirection;
+
+function testExtendForwards(initialRanges, extendTarget) {
+	originalSelectionDirection = "forwards";
+	selection.removeAllRanges();
+
+	for (var i = 0; i < initialRanges.length; i += 4) {
+		var range = ownerDocument(initialRanges[i]).createRange();
+		range.setStart(initialRanges[i], initialRanges[i + 1]);
+		range.setEnd(initialRanges[i + 2], initialRanges[i + 3]);
+		selection.addRange(range);
+	}
+
+	testExtend(extendTarget, initialRanges.length/4);
+}
+
+function testExtendBackwards(initialRanges, extendTarget) {
+	originalSelectionDirection = "backwards";
+	selection.removeAllRanges();
+
+	for (var i = 0; i < initialRanges.length; i += 4) {
+		// To get a backwards selection, we add ranges by appending a
+		// zero-length range at the end, then extend()ing backwards to the
+		// start.  This fails in Opera, since Opera ignores addRange() on a
+		// collapsed range.  FIXME: This doesn't actually make the initial
+		// selection backwards, if the range we're given is collapsed.
+		var range = ownerDocument(initialRanges[i]).createRange();
+		range.setStart(initialRanges[i + 2], initialRanges[i + 3]);
+		range.setEnd(initialRanges[i + 2], initialRanges[i + 3]);
+		selection.addRange(range);
+		selection.extend(initialRanges[i], initialRanges[i + 1]);
+	}
+
+	testExtend(extendTarget, initialRanges.length/4);
+}
+
+function testExtend(extendTarget, numRanges) {
+	assert_equals(selection.rangeCount, numRanges,
+		"Failed sanity check: selection.rangeCount is wrong.  Perhaps addRange() failed.");
+
+	var node = extendTarget[0];
+	var offset = extendTarget[1];
+
+	if (node === null) {
+		assert_throws("TYPE_MISMATCH_ERR", function() {
+			selection.extend(node, offset);
+		}, "extend(null, foo) must throw TYPE_MISMATCH_ERR");
+		return;
+	}
+
+	if (selection.rangeCount == 0) {
+		assert_throws("INVALID_STATE_ERR", function() {
+			selection.extend(node, offset);
+		}, "extend() when rangeCount is 0 must throw INVALID_STATE_ERR");
+		return;
+	}
+
+	if (node.nodeType == Node.DOCUMENT_TYPE_NODE
+	|| node.nodeType == Node.PROCESSING_INSTRUCTION_NODE) {
+		assert_throws("INVALID_NODE_TYPE_ERR", function() {
+			selection.extend(node, offset);
+		}, "extend() to a doctype or PI must throw INVALID_NODE_TYPE_ERR");
+		return;
+	}
+
+	if (offset < 0 || offset > nodeLength(node)) {
+		assert_throws("INDEX_SIZE_ERR", function() {
+			selection.extend(node, offset);
+		}, "extend() to an offset that's negative or greater than node length (" + nodeLength(node) + ") must throw INDEX_SIZE_ERR");
+		return;
+	}
+
+	var range = selection.getRangeAt(selection.rangeCount - 1);
+	var rangeRoot = furthestAncestor(range.startContainer);
+	var nodeRoot = furthestAncestor(node);
+
+	assert_equals(rangeRoot, furthestAncestor(range.endContainer),
+		"The furthest ancestor of a Range's start and end must always be the same (I think)");
+
+	if (rangeRoot != nodeRoot) {
+		selection.extend(node, offset);
+		assert_equals(selection.anchorNode, node,
+			"If the furthest ancestors of the range and extend() target differ, anchorNode must be set to the target node");
+		assert_equals(selection.anchorOffset, offset,
+			"If the furthest ancestors of the range and extend() target differ, anchorOffset must be set to the target offset");
+		assert_equals(selection.focusNode, node,
+			"If the furthest ancestors of the range and extend() target differ, focusNode must be set to the target node");
+		assert_equals(selection.focusOffset, offset,
+			"If the furthest ancestors of the range and extend() target differ, focusOffset must be set to the target offset");
+		assert_equals(getSelectionDirection(), "backwards",
+			"If the furthest ancestors of the range and extent() target differ, the new selection must be backwards");
+		return;
+	}
+
+	if (selection.focusNode == node && selection.focusOffset == offset) {
+		// extend() must do nothing.
+		var oldFocusNode = selection.focusNode;
+		var oldFocusOffset = selection.focusOffset;
+		var oldAnchorNode = selection.anchorNode;
+		var oldAnchorOffset = selection.anchorOffset;
+		var oldRanges = [];
+		for (var i = 0; i < selection.rangeCount; i++) {
+			oldRanges.push(selection.getRangeAt(i));
+		}
+		selection.extend(node, offset);
+		assert_equals(selection.focusNode, oldFocusNode,
+			"extend() to the current focus must not change focusNode");
+		assert_equals(selection.focusOffset, oldFocusOffset,
+			"extend() to the current focus must not change focusOffset");
+		assert_equals(selection.anchorNode, oldAnchorNode,
+			"extend() to the current focus must not change anchorNode");
+		assert_equals(selection.anchorOffset, oldAnchorOffset,
+			"extend() to the current focus must not change anchorOffset");
+		assert_equals(selection.rangeCount, oldRanges.length,
+			"extend() to the current focus must not change rangeCount");
+		for (var i = 0; i < oldRanges.length; i++) {
+			assert_equals(selection.getRangeAt(i), oldRanges[i],
+				"extend() to the current focus must not change any Ranges");
+		}
+		assert_equals(getSelectionDirection(), originalSelectionDirection,
+			"extend() of a selection to the current focus must not change direction");
+		return;
+	}
+
+	var oldAnchorNode = selection.anchorNode;
+	var oldAnchorOffset = selection.anchorOffset;
+	var oldFocusNode = selection.focusNode;
+	var oldFocusOffset = selection.focusOffset;
+	var oldRanges = [];
+	for (var i = 0; i < selection.rangeCount; i++) {
+		oldRanges.push(selection.getRangeAt(i));
+	}
+	selection.extend(node, offset);
+	assert_equals(selection.anchorNode, oldAnchorNode,
+		"extend() must not change anchorNode in the usual case");
+	assert_equals(selection.anchorOffset, oldAnchorOffset,
+		"extend() must not change anchorOffset in the usual case");
+	assert_equals(selection.rangeCount, oldRanges.length,
+		"extend() must not change rangeCount in the usual case");
+	for (var i = 0; i < oldRanges.length - 1; i++) {
+		assert_equals(selection.getRangeAt(i), oldRanges[i],
+			"extend() must not change any Range but the last in the usual case");
+	}
+	assert_equals(selection.focusNode, node,
+		"extend() must update focusNode to the target node in the usual case");
+	assert_equals(selection.focusOffset, offset,
+		"extend() must update focusOffset to the target offset in the usual case");
+
+	var expectedDirection;
+	var range = document.createRange();
+	range.setStart(oldAnchorNode, oldAnchorOffset);
+	range.setEnd(oldAnchorNode, oldAnchorOffset);
+	if (range.comparePoint(node, offset) >= 0) {
+		expectedDirection = "forwards";
+	} else {
+		expectedDirection = "backwards";
+	}
+	assert_equals(getSelectionDirection(), expectedDirection,
+		"extend() must set direction appropriately in the usual case");
+}
+
+// Also test a selection with no ranges
+testRanges.unshift("[]");
+
+var tests = [];
+for (var i = 0; i < testRanges.length; i++) {
+	for (var j = 0; j < testPoints.length; j++) {
+		tests.push([
+			"extend() forwards with range " + i + " " + testRanges[i] + " and point " + j + " " + testPoints[j],
+			eval(testRanges[i]),
+			eval(testPoints[j])
+		]);
+	}
+}
+generate_tests(testExtendForwards, tests);
+
+// Copy-pasted with "forwards" changed to "backwards" :/
+var tests = [];
+for (var i = 0; i < testRanges.length; i++) {
+	for (var j = 0; j < testPoints.length; j++) {
+		tests.push([
+			"extend() backwards with range " + i + " " + testRanges[i] + " and point " + j + " " + testPoints[j],
+			eval(testRanges[i]),
+			eval(testPoints[j])
+		]);
+	}
+}
+generate_tests(testExtendBackwards, tests);
+
+// Let's be tidy.
+testDiv.style.display = "none";
+</script>

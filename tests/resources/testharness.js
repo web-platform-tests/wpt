@@ -1357,29 +1357,22 @@ policies and contribution forms [3].
                              });
                 });
 
-        var template = ["section", {},
-                        ["h2", {}, "Details"],
-                        ["table", {"id":"results"},
-                        ["tr", {},
-                         ["th", {}, "Result"],
-                         ["th", {}, "Test Name"],
-                         ["th", {}, "Message"]
-                        ],
-                        ["tbody", {},
-                        function(vars) {
-                            var rv = map(vars.tests, function(test) {
-                                             var status = status_text[test.status];
-                                             return  ["tr", {"class":status_class(status)},
-                                                      ["td", {}, status],
-                                                      ["td", {}, test.name],
-                                                      ["td", {}, test.message ? test.message : " "]
-                                                     ];
-                                         });
-                            return rv;
-                        }]
-                       ]];
-
-        log.appendChild(render(template, {tests:tests}, output_document));
+        log.appendChild(document.createElement("section"));
+        log.lastChild.innerHTML = "<h2>Details</h2><table id=results>"
+            + "<tr><th>Result<th>Test Name<th>Message</tr>"
+            + "</table>";
+        var tbody = document.createElement("tbody");
+        for (var i = 0; i < tests.length; i++)
+        {
+            var tr = document.createElement("tr");
+            tr.className = status_class(status_text[tests[i].status]);
+            tbody.appendChild(tr);
+            tr.innerHTML = "<td><td><td>";
+            tr.childNodes[0].textContent = status_text[tests[i].status];
+            tr.childNodes[1].textContent = tests[i].name;
+            tr.childNodes[2].textContent = tests[i].message ? tests[i].message : " ";
+        }
+        log.querySelector("#results").appendChild(tbody);
     };
 
     var output = new Output();

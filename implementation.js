@@ -1025,8 +1025,8 @@ function isCollapsedBlockProp(node) {
 	return hasCollapsedBlockPropChild;
 }
 
-// "The active range is the first range in the Selection given by calling
-// getSelection() on the context object, or null if there is no such range."
+// "The active range is the range of the selection given by calling
+// getSelection() on the context object. (Thus the active range may be null.)"
 //
 // We cheat and return globalRange if that's defined.  We also ensure that the
 // active range meets the requirements that selection boundary points are

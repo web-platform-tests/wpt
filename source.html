@@ -631,26 +631,26 @@ to fix right now are in comments prefixed with "TODO".
 <h2>Selections</h2>
 <!-- @{ -->
 <p>Every [[browsingcontext]] has a <dfn
-title=concept-selection>selection</dfn>. The [[selection]] can be empty, and
-the [[selection]] can have more than one [[range]] (a disjointed
-[[selection]]). The user agent should allow the user to change the
-[[selection]]. User agents are not required to let the user select more than
-one [[range]], and may collapse multiple [[ranges]] in the [[selection]] to a
-single [[range]] when the user interacts with the [[selection]].  (But, of
-course, the user agent may let the user create [[selections]] with multiple
-[[ranges]].)
+title=concept-selection>selection</dfn>.  Each [[selection]] is associated with
+a single [[range]], which may be null and is initially null. The user agent
+should allow the user to change the [[selection]].  This one [[selection]] must
+be shared by all the content of the [[browsingcontext]] (though not by nested
+[[browsingcontexts]]), including any editing hosts in the document. Editing
+hosts that are not inside a document cannot have a [[selection]].
 
-<p>This one [[selection]] must be shared by all the content of the
-[[browsingcontext]] (though not by nested [[browsingcontexts]]), including any
-editing hosts in the document. (Editing hosts that are not inside a document
-cannot have a [[selection]].)
+<p class=comments>This paragraph is vague.  It needs to be replaced by detailed
+conformance requirements saying exactly what to do for particular keystrokes,
+like we have for backspace/delete/etc.
 
-<p>If the [[selection]] is empty (collapsed, so that it has only one segment
-and that segment's start and end points are the same) then the [[selection]]'s
-position must equal the caret position. When the [[selection]] is not empty,
-this specification does not define the caret position; user agents should
-follow platform conventions in deciding whether the caret is at the start of
-the [[selection]], the end of the [[selection]], or somewhere else.
+<p>If the [[selection]]'s [[range]] is not null and is [[rangecollapsed]], then
+the caret position must be at that [[range]]'s [[boundarypoint]].  When the
+[[selection]] is not empty, this specification does not define the caret
+position; user agents should follow platform conventions in deciding whether
+the caret is at the start of the [[selection]], the end of the [[selection]],
+or somewhere else.
+
+<p class=comments>This short-changes Mac users.  See <a
+href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=13909>bug 13909</a>.
 
 <p>Each [[selection]] has a <dfn title=concept-selection-dir>direction</dfn>,
 either <i title>forwards</i> or <i title>backwards</i>. If the user creates a
@@ -662,17 +662,12 @@ forwards (including if the user didn't create the [[selection]], created it by
 selecting an entire part of the page using a keyboard shortcut, etc.).
 
 <p>[[Selections]] also have an <dfn>anchor</dfn> and a <dfn>focus</dfn>.  If
-the [[selection]]'s [[seldir]] is forwards, its <span>anchor</span> is the
-[[rangestart]] of the last [[range]] in the list, and its <span>focus</span> is
-the [[rangeend]].  Otherwise, its <span>focus</span> is the [[rangestart]] and
-its <span>anchor</span> is the [[rangeend]].
-
-<p class=XXX>Gecko is the only engine that supports multiple ranges per
-selection, and this isn't how it behaves.  It keys off the range that was last
-added to the list, not the last range in the list; but if you remove the range
-that was last added to the list, the anchor and focus go to the last range in
-the list (as Gecko sorts them), not the last range added.  This doesn't make
-much sense.
+the [[selection]]'s [[range]] is null, its <span>anchor</span> and
+<span>focus</span> are both null.  If the [[selection]]'s [[range]] is not null
+and its [[seldir]] is forwards, its <span>anchor</span> is the [[range]]'s
+[[rangestart]], and its <span>focus</span> is the [[rangeend]].  Otherwise, its
+<span>focus</span> is the [[rangestart]] and its <span>anchor</span> is the
+[[rangeend]].
 
 <div class=comments>
 <p>IE9 and Firefox 6.0a2 allow arbitrary ranges in the selection, which follows
@@ -729,58 +724,77 @@ from Gecko.  This spec doesn't have everything from there yet, in particular
 selectionLanguageChange() and containsNode() are missing. They are missing
 because I couldn't work out how to define them in terms of Ranges.
 
-<p>The <code>Selection</code> interface represents a list of [[range]] objects.
-The first item in the list has index 0, and the last item has index
-<var>count</var>&minus;1, where <var>count</var> is the number of [[range]]s in
-the list.
+<p>The <code>Selection</code> interface represents a [[selection]].
+
+<div class=note>
+<p>Originally, the Selection interface was a Netscape feature.  The
+original implementation was carried on into Gecko (Firefox), and the feature
+was later implemented independently by other browser engines.  The Netscape
+implementation always allowed multiple ranges in a single selection, for
+instance so the user could select a column of a table.  However, multi-range
+selections proved to be an unpleasant corner case that web developers didn't
+know about and even Gecko developers rarely handled correctly.  Other browser
+engines never implemented the feature, and clamped selections to a single range
+in various incompatible fashions.
+
+<p>This specification follows non-Gecko engines in restricting selections to at
+most one range, but the API was still originally designed for selections with
+arbitrary numbers of ranges.  This explains oddities like the coexistence of
+{{code|removeRange()}} and {{code|removeAllRanges()}}, and a
+{{code|getRangeAt()}} method that takes an integer argument that must always be
+zero.
+</div>
 
 <p>All of the members of the <code>Selection</code> interface are defined in
-terms of operations on the [[range]] objects represented by this object. These
-operations can raise exceptions, as defined for the [[range]] interface; this
-can therefore result in the members of the <code>Selection</code> interface
-raising exceptions as well, in addition to any explicitly called out below.
+terms of operations on the [[range]] object (if any) represented by the object.
+These operations can raise exceptions, as defined for the [[range]] interface;
+this can therefore result in the members of the <code>Selection</code>
+interface raising exceptions as well, in addition to any explicitly called out
+below.
 
 <dl class=domintro>
   <dt><var>selection</var> . <code title=dom-Selection-anchorNode>anchorNode</code>
   <dd>
     <p>Returns the element that contains the start of the selection.
+
     <p>Returns null if there's no selection.
 
   <dt><var>selection</var> . <code title=dom-Selection-anchorOffset>anchorOffset</code>
   <dd>
     <p>Returns the offset of the start of the selection relative to the element
     that contains the start of the selection.
+
     <p>Returns 0 if there's no selection.
 
   <dt><var>selection</var> . <code title=dom-Selection-focusNode>focusNode</code>
   <dd>
     <p>Returns the element that contains the end of the selection.
+
     <p>Returns null if there's no selection.
 
   <dt><var>selection</var> . <code title=dom-Selection-focusOffset>focusOffset</code>
   <dd>
     <p>Returns the offset of the end of the selection relative to the element
     that contains the end of the selection.
+
     <p>Returns 0 if there's no selection.
 </dl>
 
 <p>The <dfn title=dom-Selection-anchorNode><code>anchorNode</code></dfn>
-attribute must return null if the list is empty.  Otherwise, it must return the
-[[node]] of the [[contextobject]]'s <span>anchor</span>.
+attribute must return the [[contextobject]]'s <span>anchor</span>'s [[node]],
+or null if the <span>anchor</span> is null.
 
 <p>The <dfn title=dom-Selection-anchorOffset><code>anchorOffset</code></dfn>
-attribute must return 0 if the list is empty.  Otherwise, it must return the
-[[bpoffset]] of the [[contextobject]]'s <span>anchor</span>.
+attribute must return the [[contextobject]]'s <span>anchor</span>'s
+[[bpoffset]], or 0 if the <span>anchor</span> is null.
 
 <p>The <dfn title=dom-Selection-focusNode><code>focusNode</code></dfn>
-attribute must return null if the list is empty.  Otherwise, it must return the
-[[node]] of the [[contextobject]]'s <span>focus</span>.
+attribute must return the [[contextobject]]'s <span>focus</span>'s [[node]], or
+null if the <span>focus</span> is null.
 
 <p>The <dfn title=dom-Selection-focusOffset><code>focusOffset</code></dfn>
-attribute must return 0 if the list is empty.  Otherwise, it must return the
-[[bpoffset]] of the [[contextobject]]'s <span>focus</span>.
-
-<hr>
+attribute must return the [[contextobject]]'s <span>focus</span>'s
+[[bpoffset]], or 0 if the <span>focus</span> is null.
 
 <dl class=domintro>
   <dt><var>collapsed</var> = <var>selection</var> . <code title=dom-Selection-isCollapsed>isCollapsed</code>()
@@ -841,9 +855,8 @@ attribute must return 0 if the list is empty.  Otherwise, it must return the
 </dl>
 
 <p>The <dfn title=dom-Selection-isCollapsed><code>isCollapsed</code></dfn>
-attribute must return true if there are zero [[range]]s, or if there is exactly
-one [[range]] and its [[rangecollapsed]] attribute is itself true.  Otherwise
-it must return false.
+attribute must return true if the <span>anchor</span> and <span>focus</span>
+are the same (including if both are null).  Otherwise it must return false.
 
 <p>The <dfn title=dom-Selection-collapse><code>collapse(<var>parentNode</var>,
 <var>offset</var>)</code></dfn> method must run the following steps:
@@ -859,27 +872,27 @@ it must return false.
   <var>parentNode</var>, [[throw]] an "IndexSizeError" exception and abort
   these steps.
 
-  <li>Remove all the [[range]]s in the [[contextobject]]'s list.
-
-  <li>Create a new [[range]] object with [[rangestart]] and [[rangeend]] both
-  equal to (<var>parentNode</var>, <var>offset</var>), and add it to the
-  [[contextobject]]'s list.
+  <li>Set the [[contextobject]]'s [[range]] to a new [[range]] object with
+  [[rangestart]] and [[rangeend]] both equal to (<var>parentNode</var>,
+  <var>offset</var>).
 </ol>
 
 <p>The <dfn
 title=dom-Selection-collapseToStart><code>collapseToStart()</code></dfn> method
-must [[throw]] an "InvalidStateError" exception if there are no [[range]]s in
-the list. Otherwise, it must invoke the [[selcollapse|]] method with the
-[[startnode]] and [[startoffset]] of the first [[range]] object in the list as
+must [[throw]] an "InvalidStateError" exception if the [[contextobject]]'s
+[[range]] is null. Otherwise, it must invoke the [[selcollapse|]] method with
+the [[startnode]] and [[startoffset]] of the [[contextobject]]'s [[range]] as
 the arguments.
 
 <p>The <dfn
 title=dom-Selection-collapseToEnd><code>collapseToEnd()</code></dfn> method
-must [[throw]] an "InvalidStateError" exception if there are no [[range]]s in
-the list. Otherwise, it must invoke the [[selcollapse|]] method with the
-[[endnode]] and [[endoffset]] values of the last [[range]] object in the list
-as the arguments.
-</div>
+must [[throw]] an "InvalidStateError" exception if the [[contextobject]]'s
+[[range]] is null. Otherwise, it must invoke the [[selcollapse|]] method with
+the [[endnode]] and [[endoffset]] values of the last [[range]] object in the
+list as the arguments.
+
+<p class=XXX>This implies that they'll replace the range object instead of
+changing it.  Will they?  Needs testing.  It seems like they shouldn't.
 
 <p class=comments>Reverse-engineered circa January 2011.  IE doesn't support it, so I'm
 relying on Firefox (implemented extend() sometime before 2000) and WebKit
@@ -895,8 +908,8 @@ tells me its implementation isn't compatible.
   a zero-length selection at the given point, Opera silently ignores it.
   Gecko's behavior of throwing wins, but with a standardized exception type.
 
-  <p>If there are no [[range]]s in the list, [[throw]] an "InvalidStateError"
-  exception and abort these steps.
+  <p>If the [[contextobject]]'s [[range]] is null, [[throw]] an
+  "InvalidStateError" exception and abort these steps.
 
   <li>If <var>parentNode</var> is not a [[text]] or [[element]] node, [[throw]]
   an "InvalidNodeTypeError" exception and abort these steps.
@@ -910,11 +923,7 @@ tells me its implementation isn't compatible.
   <p>If <var>offset</var> is greater than <var>parentNode</var>'s [[length]],
   [[throw]] an "IndexSizeError" exception and abort these steps.
 
-  <li>
-  <p class=comments>This is what Firefox does.  For WebKit and Opera it's
-  irrelevant, since they support only one Range per Selection.
-
-  <p>Let <var>range</var> be the last [[range]] in the list.
+  <li>Let <var>range</var> be the [[contextobject]]'s [[range]].
 
   <li>
   <p class=comments>Gecko does this.  I can't work out what WebKit does, but it
@@ -963,7 +972,7 @@ these steps:
 tests.
 
 <ol>
-  <li>If there are no [[range]]s in the list, abort these steps.
+  <li>If the [[contextobject]]'s [[range]] is null, abort these steps.
 
   <li>Convert <var>alter</var>, <var>direction</var>, and
   <var>granularity</var> <span title="converted to ASCII lowercase"
@@ -1025,11 +1034,10 @@ tests.
     </ol>
   -->
 
-  <li>If <var>alter</var> is "move", replace the last [[range]] in the list by
-  a [[range]] whose [[rangestart]] and [[rangeend]] are both equal to
-  <var>target</var>, and abort these steps.
+  <li>If <var>alter</var> is "move", set the [[contextobject]]'s [[range]]'s
+  [[rangestart]] and [[rangeend]] to <var>target</var>, and abort these steps.
 
-  <li>Set the [[rangestart]] of the last [[range]] in the list to
+  <li>Set the [[rangestart]] of the [[contextobject]]'s [[range]] to
   <var>anchor</var> and its [[rangeend]] to <var>target</var>, if
   <var>anchor</var> is [[bpbefore]] or equal to <var>target</var>; or vice
   versa, if it's [[bpafter]].
@@ -1057,29 +1065,29 @@ tests.
 
 <p>The <dfn
 title=dom-Selection-selectAllChildren><code>selectAllChildren(<var>parentNode</var>)</code></dfn>
-method must invoke the [[selcollapse|]] method with the <var>parentNode</var>
-value as the first argument and 0 as the second argument, and must then invoke
-the <code data-anolis-spec=dom
-title=dom-Range-selectNodeContents>selectNodeContents()</code> method on the
-first (and only) [[range]] in the list with the <var>parentNode</var> value as
-the argument.
+method must set the [[contextobject]]'s [[range]] to one whose [[rangestart]]
+is (<var>parentNode</var>, 0) and whose [[rangeend]] is (<var>parentNode</var>,
+<var>parentNode</var>'s [[length]]), then set the [[contextobject]]'s
+[[seldir]] to "forwards".
 
 <p>The <dfn
 title=dom-Selection-deleteFromDocument><code>deleteFromDocument()</code></dfn>
-method must invoke the <code data-anolis-spec=dom
-title=dom-Range-deleteContents>deleteContents()</code> method on each [[range]]
-in the list, if any, from first to last.
+method must do nothing if the [[contextobject]]'s [[range]] is null, and
+otherwise must invoke the <code data-anolis-spec=dom
+title=dom-Range-deleteContents>deleteContents()</code> method on the
+[[contextobject]]'s [[range]].
 
 <dl class=domintro>
   <dt><var>selection</var> . <code title=dom-Selection-rangeCount>rangeCount</code>
   <dd>
-    <p>Returns the number of [[range]]s in the selection.
+    <p>Returns the number of [[range]]s in the selection (either 0 or 1).
 
   <dt><var>selection</var> . <code title=dom-Selection-getRangeAt>getRangeAt</code>(<var>index</var>)
   <dd>
-    <p>Returns the given [[range]].
+    <p>Returns the selection's [[range]], if <var>index</var> is 0.
 
-    <p>Throws an "IndexSizeError" exception if the value is out of range.
+    <p>Throws an "IndexSizeError" exception if <var>index</var> is not 0, or if
+    there is no [[range]] in the selection.
 
   <dt><var>selection</var> . <code title=dom-Selection-addRange>addRange</code>(<var>range</var>)
   <dd>
@@ -1092,70 +1100,57 @@ in the list, if any, from first to last.
 
   <dt><var>selection</var> . <code title=dom-Selection-removeRange>removeRange</code>(<var>range</var>)
   <dd>
-    <p>Removes the given [[range]] from the selection, if the [[range]] was one
-    of the ones in the selection.
+    <p>Unselects everyting, if <var>range</var> is in the selection.  (Use
+    [[removeallranges]] instead.)
 
   <dt><var>selection</var> . <code title=dom-Selection-removeAllRanges>removeAllRanges</code>()
   <dd>
-    <p>Removes all the [[range]]s in the selection.
+    <p>Unselects everything.
 </dl>
 
 <p>The <dfn title=dom-Selection-rangeCount><code>rangeCount</code></dfn>
-attribute must return the number of [[range]]s in the list.
+attribute must return 0 if the [[contextobject]]'s [[range]] is null, otherwise
+1.
 
 <p class=comments>IE9 and Firefox 4.0 return the same object every time, as the
 spec says.  Chrome 12 dev and Opera 11.10 return a different object every time.
 
 <p>The <dfn
 title=dom-Selection-getRangeAt><code>getRangeAt(<var>index</var>)</code></dfn>
-method must return a reference to (not a copy of) the <var>index</var>th
-[[range]] in the list. (Thus, for instance, subsequent calls with the same
-<var>index</var> must return the same object if nothing has changed the list in
-the meantime.) If <var>index</var> is greater than or equal to the value
-returned by the <code title=dom-Selection-rangeCount>rangeCount</code>
-attribute, then the method must raise an "IndexSizeError" exception.
+method must [[throw]] an "IndexSizeError" exception if <var>index</var> is not
+0, or if the [[contextobject]]'s [[range]] is null.  Otherwise, it must return
+a reference to (not a copy of) the [[contextobject]]'s [[range]]. (Thus
+subsequent calls must return the same object if nothing has removed the
+[[contextobject]]'s [[range]] in the meantime.)
 
 <p class=comments>IE9 and Firefox 4.0 act as described here.  Chrome 12 dev and
 Opera 11.10 appear to store a copy, so changes don't affect the selection.
 
 <p>The <dfn
 title=dom-Selection-addRange><code>addRange(<var>range</var>)</code></dfn>
-method must raise an "InvalidNodeTypeError" exception if <var>range</var>'s
+method must [[throw]] an "InvalidNodeTypeError" exception if <var>range</var>'s
 [[startnode]] or [[endnode]] is not a [[text]] or [[element]] node.  Otherwise,
 if <var>range</var>'s [[startnode]] or [[endnode]] does not have a [[document]]
-[[ancestor]], it must raise an "InvalidModificationError".  Otherwise, it must
-add a reference to (not a copy of) the given <var>range</var> to the list of
-selections, at the end (so the newly added [[range]] is the new last
-[[range]]). Since the given <var>range</var> is added by reference, subsequent
+[[ancestor]], it must [[throw]] an "InvalidModificationError".  Otherwise, it must
+set the [[contextobject]]'s [[range]] to a reference to (not a copy of)
+<var>range</var>. Since <var>range</var> is added by reference, subsequent
 calls to <code title=dom-Selection-getRangeAt>getRangeAt()</code> with a
 suitable argument must return the same object, and any changes that a script
-makes to the given <var>range</var> after it is added must be reflected in the
-[[selection]], until the given <var>range</var> is removed from the list.
-
-<p class=XXX>Everything here about multiple ranges is wrong.  First of all, no
-one but Gecko even allows multiple ranges per selection.  Second of all, Gecko
-stores the ranges sorted by their starts in tree order, not related to the
-order they were added.  Third of all, Gecko doesn't allow overlapping ranges,
-so if you add a range that overlaps an existing range, it removes or alters
-existing ranges in the list to avoid overlap, sometimes even splitting an
-existing range in two.  We need to specify this, or else specify saner behavior
-if we expect anyone to actually follow it.  We also need to account for the
-fact that non-Gecko browsers might not be interested in supporting multiple
-ranges per selection, maybe by explicitly allowing that: see <a
-href=http://lists.whatwg.org/pipermail/whatwg-whatwg.org/2011-January/030100.html>discussion</a>.
+makes to <var>range</var> after it is added must be reflected in the
+[[selection]], until <var>range</var> is removed from the list.
 
 <p>The <dfn
 title=dom-Selection-removeRange><code>removeRange(<var>range</var>)</code></dfn>
-method must remove the first occurrence of <var>range</var> in the list of
-[[range]]s, if it appears at all.
+method must set the [[contextobject]]'s [[range]] to null if its [[range]] is
+currently <var>range</var>, otherwise do nothing.
+
+<p class=XXX>Do we check for object equality here or just equality of boundary
+points?
 
 <p>The <dfn
 title=dom-Selection-removeAllRanges><code>removeAllRanges()</code></dfn> method
-must remove all the [[range]]s from the list of [[range]]s, such that the <code
-title=dom-Selection-rangeCount>rangeCount</code> attribute returns 0 after the
-<code title=dom-Selection-removeAllRanges>removeAllRanges()</code> method is
-invoked (and until a new [[range]] is added to the list, either through this
-interface or via user interaction).  The [[seldir]] must be set to forwards.
+must set the [[contextobject]]'s [[range]] to null and its [[seldir]] to
+forwards.
 
 <p>The <dfn title=dom-Selection-stringifier>stringifier</dfn> must . . .
 
@@ -1803,9 +1798,9 @@ by the order the user added them, and silently removes or shortens existing
 ranges to avoid overlap.  It probably makes the most sense in the long term to
 have the command affect all ranges.  But I'll leave this for later.
 
-<p>The <dfn>active range</dfn> is the first [[range]] in the [[selection]]
-given by calling [[getselection]] on the [[contextobject]], or null if there is
-no such [[range]].
+<p>The <dfn>active range</dfn> is the [[range]] of the [[selection]] given by
+calling [[getselection]] on the [[contextobject]].  (Thus the <span>active
+range</span> may be null.)
 
 <p>Each [[htmldocument]] has a boolean <dfn>CSS styling flag</dfn> associated
 with it, which must initially be false.  (<span>The <code

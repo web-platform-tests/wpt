@@ -20,8 +20,7 @@ function testDirection() {
 	var testDiv = document.getElementById("test");
 	var p = testDiv.getElementsByTagName("p")[1].firstChild;
 	var selection = getSelection();
-	// Spec says the last Range is the one that counts
-	var range = selection.getRangeAt(selection.rangeCount - 1);
+	var range = selection.getRangeAt(0);
 	test(function() {
 		assert_equals(range.toString(), "bc");
 	}, "The expected range is selected");

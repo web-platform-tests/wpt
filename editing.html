@@ -690,26 +690,25 @@ to fix right now are in comments prefixed with "TODO".
 
 <h2 id=selections>Selections</h2>
 
-<p>Every <a class=external data-anolis-spec=html href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#browsing-context title="browsing context">browsing context</a> has a <dfn id=concept-selection title=concept-selection>selection</dfn>. The <a href=#concept-selection title=concept-selection>selection</a> can be empty, and
-the <a href=#concept-selection title=concept-selection>selection</a> can have more than one <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> (a disjointed
-<a href=#concept-selection title=concept-selection>selection</a>). The user agent should allow the user to change the
-<a href=#concept-selection title=concept-selection>selection</a>. User agents are not required to let the user select more than
-one <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>, and may collapse multiple <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>ranges</a> in the <a href=#concept-selection title=concept-selection>selection</a> to a
-single <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> when the user interacts with the <a href=#concept-selection title=concept-selection>selection</a>.  (But, of
-course, the user agent may let the user create <a href=#concept-selection title=concept-selection>selections</a> with multiple
-<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>ranges</a>.)
+<p>Every <a class=external data-anolis-spec=html href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#browsing-context title="browsing context">browsing context</a> has a <dfn id=concept-selection title=concept-selection>selection</dfn>.  Each <a href=#concept-selection title=concept-selection>selection</a> is associated with
+a single <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>, which may be null and is initially null. The user agent
+should allow the user to change the <a href=#concept-selection title=concept-selection>selection</a>.  This one <a href=#concept-selection title=concept-selection>selection</a> must
+be shared by all the content of the <a class=external data-anolis-spec=html href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#browsing-context title="browsing context">browsing context</a> (though not by nested
+<a class=external data-anolis-spec=html href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#browsing-context title="browsing context">browsing contexts</a>), including any editing hosts in the document. Editing
+hosts that are not inside a document cannot have a <a href=#concept-selection title=concept-selection>selection</a>.
 
-<p>This one <a href=#concept-selection title=concept-selection>selection</a> must be shared by all the content of the
-<a class=external data-anolis-spec=html href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#browsing-context title="browsing context">browsing context</a> (though not by nested <a class=external data-anolis-spec=html href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#browsing-context title="browsing context">browsing contexts</a>), including any
-editing hosts in the document. (Editing hosts that are not inside a document
-cannot have a <a href=#concept-selection title=concept-selection>selection</a>.)
+<p class=comments>This paragraph is vague.  It needs to be replaced by detailed
+conformance requirements saying exactly what to do for particular keystrokes,
+like we have for backspace/delete/etc.
 
-<p>If the <a href=#concept-selection title=concept-selection>selection</a> is empty (collapsed, so that it has only one segment
-and that segment's start and end points are the same) then the <a href=#concept-selection title=concept-selection>selection</a>'s
-position must equal the caret position. When the <a href=#concept-selection title=concept-selection>selection</a> is not empty,
-this specification does not define the caret position; user agents should
-follow platform conventions in deciding whether the caret is at the start of
-the <a href=#concept-selection title=concept-selection>selection</a>, the end of the <a href=#concept-selection title=concept-selection>selection</a>, or somewhere else.
+<p>If the <a href=#concept-selection title=concept-selection>selection</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> is not null and is <code class=external data-anolis-spec=dom title=dom-Range-collapsed><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-range-collapsed>collapsed</a></code>, then
+the caret position must be at that <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp title=concept-range-bp>boundary point</a>.  When the
+<a href=#concept-selection title=concept-selection>selection</a> is not empty, this specification does not define the caret
+position; user agents should follow platform conventions in deciding whether
+the caret is at the start of the <a href=#concept-selection title=concept-selection>selection</a>, the end of the <a href=#concept-selection title=concept-selection>selection</a>,
+or somewhere else.
+
+<p class=comments>This short-changes Mac users.  See <a href="http://www.w3.org/Bugs/Public/show_bug.cgi?id=13909">bug 13909</a>.
 
 <p>Each <a href=#concept-selection title=concept-selection>selection</a> has a <dfn id=concept-selection-dir title=concept-selection-dir>direction</dfn>,
 either <i title="">forwards</i> or <i title="">backwards</i>. If the user creates a
@@ -721,17 +720,12 @@ forwards (including if the user didn't create the <a href=#concept-selection tit
 selecting an entire part of the page using a keyboard shortcut, etc.).
 
 <p><a href=#concept-selection title=concept-selection>Selections</a> also have an <dfn id=anchor>anchor</dfn> and a <dfn id=focus>focus</dfn>.  If
-the <a href=#concept-selection title=concept-selection>selection</a>'s <a href=#concept-selection-dir title=concept-selection-dir>direction</a> is forwards, its <a href=#anchor>anchor</a> is the
-<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a> of the last <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> in the list, and its <a href=#focus>focus</a> is
-the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end title=concept-range-end>end</a>.  Otherwise, its <a href=#focus>focus</a> is the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a> and
-its <a href=#anchor>anchor</a> is the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end title=concept-range-end>end</a>.
-
-<p class=XXX>Gecko is the only engine that supports multiple ranges per
-selection, and this isn't how it behaves.  It keys off the range that was last
-added to the list, not the last range in the list; but if you remove the range
-that was last added to the list, the anchor and focus go to the last range in
-the list (as Gecko sorts them), not the last range added.  This doesn't make
-much sense.
+the <a href=#concept-selection title=concept-selection>selection</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> is null, its <a href=#anchor>anchor</a> and
+<a href=#focus>focus</a> are both null.  If the <a href=#concept-selection title=concept-selection>selection</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> is not null
+and its <a href=#concept-selection-dir title=concept-selection-dir>direction</a> is forwards, its <a href=#anchor>anchor</a> is the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>'s
+<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a>, and its <a href=#focus>focus</a> is the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end title=concept-range-end>end</a>.  Otherwise, its
+<a href=#focus>focus</a> is the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a> and its <a href=#anchor>anchor</a> is the
+<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end title=concept-range-end>end</a>.
 
 <div class=comments>
 <p>IE9 and Firefox 6.0a2 allow arbitrary ranges in the selection, which follows
@@ -787,58 +781,77 @@ from Gecko.  This spec doesn't have everything from there yet, in particular
 selectionLanguageChange() and containsNode() are missing. They are missing
 because I couldn't work out how to define them in terms of Ranges.
 
-<p>The <code><a href=#selection>Selection</a></code> interface represents a list of <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> objects.
-The first item in the list has index 0, and the last item has index
-<var title="">count</var>&minus;1, where <var title="">count</var> is the number of <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>s in
-the list.
+<p>The <code><a href=#selection>Selection</a></code> interface represents a <a href=#concept-selection title=concept-selection>selection</a>.
+
+<div class=note>
+<p>Originally, the Selection interface was a Netscape feature.  The
+original implementation was carried on into Gecko (Firefox), and the feature
+was later implemented independently by other browser engines.  The Netscape
+implementation always allowed multiple ranges in a single selection, for
+instance so the user could select a column of a table.  However, multi-range
+selections proved to be an unpleasant corner case that web developers didn't
+know about and even Gecko developers rarely handled correctly.  Other browser
+engines never implemented the feature, and clamped selections to a single range
+in various incompatible fashions.
+
+<p>This specification follows non-Gecko engines in restricting selections to at
+most one range, but the API was still originally designed for selections with
+arbitrary numbers of ranges.  This explains oddities like the coexistence of
+<code title="">removeRange()</code> and <code title="">removeAllRanges()</code>, and a
+<code title="">getRangeAt()</code> method that takes an integer argument that must always be
+zero.
+</div>
 
 <p>All of the members of the <code><a href=#selection>Selection</a></code> interface are defined in
-terms of operations on the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> objects represented by this object. These
-operations can raise exceptions, as defined for the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> interface; this
-can therefore result in the members of the <code><a href=#selection>Selection</a></code> interface
-raising exceptions as well, in addition to any explicitly called out below.
+terms of operations on the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> object (if any) represented by the object.
+These operations can raise exceptions, as defined for the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> interface;
+this can therefore result in the members of the <code><a href=#selection>Selection</a></code>
+interface raising exceptions as well, in addition to any explicitly called out
+below.
 
 <dl class=domintro>
   <dt><var title="">selection</var> . <code title=dom-Selection-anchorNode><a href=#dom-selection-anchornode>anchorNode</a></code>
   <dd>
     <p>Returns the element that contains the start of the selection.
+
     <p>Returns null if there's no selection.
 
   <dt><var title="">selection</var> . <code title=dom-Selection-anchorOffset><a href=#dom-selection-anchoroffset>anchorOffset</a></code>
   <dd>
     <p>Returns the offset of the start of the selection relative to the element
     that contains the start of the selection.
+
     <p>Returns 0 if there's no selection.
 
   <dt><var title="">selection</var> . <code title=dom-Selection-focusNode><a href=#dom-selection-focusnode>focusNode</a></code>
   <dd>
     <p>Returns the element that contains the end of the selection.
+
     <p>Returns null if there's no selection.
 
   <dt><var title="">selection</var> . <code title=dom-Selection-focusOffset><a href=#dom-selection-focusoffset>focusOffset</a></code>
   <dd>
     <p>Returns the offset of the end of the selection relative to the element
     that contains the end of the selection.
+
     <p>Returns 0 if there's no selection.
 </dl>
 
 <p>The <dfn id=dom-selection-anchornode title=dom-Selection-anchorNode><code>anchorNode</code></dfn>
-attribute must return null if the list is empty.  Otherwise, it must return the
-<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> of the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a href=#anchor>anchor</a>.
+attribute must return the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a href=#anchor>anchor</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>,
+or null if the <a href=#anchor>anchor</a> is null.
 
 <p>The <dfn id=dom-selection-anchoroffset title=dom-Selection-anchorOffset><code>anchorOffset</code></dfn>
-attribute must return 0 if the list is empty.  Otherwise, it must return the
-<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp-offset title=concept-range-bp-offset>offset</a> of the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a href=#anchor>anchor</a>.
+attribute must return the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a href=#anchor>anchor</a>'s
+<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp-offset title=concept-range-bp-offset>offset</a>, or 0 if the <a href=#anchor>anchor</a> is null.
 
 <p>The <dfn id=dom-selection-focusnode title=dom-Selection-focusNode><code>focusNode</code></dfn>
-attribute must return null if the list is empty.  Otherwise, it must return the
-<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> of the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a href=#focus>focus</a>.
+attribute must return the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a href=#focus>focus</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, or
+null if the <a href=#focus>focus</a> is null.
 
 <p>The <dfn id=dom-selection-focusoffset title=dom-Selection-focusOffset><code>focusOffset</code></dfn>
-attribute must return 0 if the list is empty.  Otherwise, it must return the
-<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp-offset title=concept-range-bp-offset>offset</a> of the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a href=#focus>focus</a>.
-
-<hr>
+attribute must return the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a href=#focus>focus</a>'s
+<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp-offset title=concept-range-bp-offset>offset</a>, or 0 if the <a href=#focus>focus</a> is null.
 
 <dl class=domintro>
   <dt><var title="">collapsed</var> = <var title="">selection</var> . <code title=dom-Selection-isCollapsed><a href=#dom-selection-iscollapsed>isCollapsed</a></code>()
@@ -899,9 +912,8 @@ attribute must return 0 if the list is empty.  Otherwise, it must return the
 </dl>
 
 <p>The <dfn id=dom-selection-iscollapsed title=dom-Selection-isCollapsed><code>isCollapsed</code></dfn>
-attribute must return true if there are zero <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>s, or if there is exactly
-one <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> and its <code class=external data-anolis-spec=dom title=dom-Range-collapsed><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-range-collapsed>collapsed</a></code> attribute is itself true.  Otherwise
-it must return false.
+attribute must return true if the <a href=#anchor>anchor</a> and <a href=#focus>focus</a>
+are the same (including if both are null).  Otherwise it must return false.
 
 <p>The <dfn id=dom-selection-collapse title=dom-Selection-collapse><code>collapse(<var title="">parentNode</var>,
 <var title="">offset</var>)</code></dfn> method must run the following steps:
@@ -917,25 +929,25 @@ it must return false.
   <var title="">parentNode</var>, <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> an "IndexSizeError" exception and abort
   these steps.
 
-  <li>Remove all the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>s in the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s list.
-
-  <li>Create a new <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> object with <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a> and <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end title=concept-range-end>end</a> both
-  equal to (<var title="">parentNode</var>, <var title="">offset</var>), and add it to the
-  <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s list.
+  <li>Set the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> to a new <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> object with
+  <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a> and <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end title=concept-range-end>end</a> both equal to (<var title="">parentNode</var>,
+  <var title="">offset</var>).
 </ol>
 
 <p>The <dfn id=dom-selection-collapsetostart title=dom-Selection-collapseToStart><code>collapseToStart()</code></dfn> method
-must <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> an "InvalidStateError" exception if there are no <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>s in
-the list. Otherwise, it must invoke the <code title=dom-Selection-collapse><a href=#dom-selection-collapse>collapse()</a></code> method with the
-<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-node title=concept-range-start-node>start node</a> and <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-offset title=concept-range-start-offset>start offset</a> of the first <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> object in the list as
+must <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> an "InvalidStateError" exception if the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s
+<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> is null. Otherwise, it must invoke the <code title=dom-Selection-collapse><a href=#dom-selection-collapse>collapse()</a></code> method with
+the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-node title=concept-range-start-node>start node</a> and <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-offset title=concept-range-start-offset>start offset</a> of the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> as
 the arguments.
 
 <p>The <dfn id=dom-selection-collapsetoend title=dom-Selection-collapseToEnd><code>collapseToEnd()</code></dfn> method
-must <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> an "InvalidStateError" exception if there are no <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>s in
-the list. Otherwise, it must invoke the <code title=dom-Selection-collapse><a href=#dom-selection-collapse>collapse()</a></code> method with the
-<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end-node title=concept-range-end-node>end node</a> and <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end-offset title=concept-range-end-offset>end offset</a> values of the last <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> object in the list
-as the arguments.
+must <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> an "InvalidStateError" exception if the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s
+<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> is null. Otherwise, it must invoke the <code title=dom-Selection-collapse><a href=#dom-selection-collapse>collapse()</a></code> method with
+the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end-node title=concept-range-end-node>end node</a> and <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end-offset title=concept-range-end-offset>end offset</a> values of the last <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> object in the
+list as the arguments.
 
+<p class=XXX>This implies that they'll replace the range object instead of
+changing it.  Will they?  Needs testing.  It seems like they shouldn't.
 
 <p class=comments>Reverse-engineered circa January 2011.  IE doesn't support it, so I'm
 relying on Firefox (implemented extend() sometime before 2000) and WebKit
@@ -951,8 +963,8 @@ tells me its implementation isn't compatible.
   a zero-length selection at the given point, Opera silently ignores it.
   Gecko's behavior of throwing wins, but with a standardized exception type.
 
-  <p>If there are no <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>s in the list, <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> an "InvalidStateError"
-  exception and abort these steps.
+  <p>If the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> is null, <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> an
+  "InvalidStateError" exception and abort these steps.
 
   <li>If <var title="">parentNode</var> is not a <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> or <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> node, <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a>
   an "InvalidNodeTypeError" exception and abort these steps.
@@ -966,11 +978,7 @@ tells me its implementation isn't compatible.
   <p>If <var title="">offset</var> is greater than <var title="">parentNode</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node-length title=concept-node-length>length</a>,
   <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> an "IndexSizeError" exception and abort these steps.
 
-  <li>
-  <p class=comments>This is what Firefox does.  For WebKit and Opera it's
-  irrelevant, since they support only one Range per Selection.
-
-  <p>Let <var title="">range</var> be the last <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> in the list.
+  <li>Let <var title="">range</var> be the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>.
 
   <li>
   <p class=comments>Gecko does this.  I can't work out what WebKit does, but it
@@ -1019,7 +1027,7 @@ these steps:
 tests.
 
 <ol>
-  <li>If there are no <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>s in the list, abort these steps.
+  <li>If the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> is null, abort these steps.
 
   <li>Convert <var title="">alter</var>, <var title="">direction</var>, and
   <var title="">granularity</var> <a class=external data-anolis-spec=html href=http://www.whatwg.org/specs/web-apps/current-work/multipage/infrastructure.html#converted-to-ascii-lowercase title="converted to ASCII lowercase">to ASCII lowercase</a>.
@@ -1080,11 +1088,10 @@ tests.
     </ol>
   -->
 
-  <li>If <var title="">alter</var> is "move", replace the last <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> in the list by
-  a <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> whose <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a> and <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end title=concept-range-end>end</a> are both equal to
-  <var title="">target</var>, and abort these steps.
+  <li>If <var title="">alter</var> is "move", set the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>'s
+  <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a> and <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end title=concept-range-end>end</a> to <var title="">target</var>, and abort these steps.
 
-  <li>Set the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a> of the last <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> in the list to
+  <li>Set the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a> of the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> to
   <var title="">anchor</var> and its <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end title=concept-range-end>end</a> to <var title="">target</var>, if
   <var title="">anchor</var> is <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp-before title=concept-range-bp-before>before</a> or equal to <var title="">target</var>; or vice
   versa, if it's <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp-after title=concept-range-bp-after>after</a>.
@@ -1111,26 +1118,27 @@ tests.
 </dl>
 
 <p>The <dfn id=dom-selection-selectallchildren title=dom-Selection-selectAllChildren><code>selectAllChildren(<var title="">parentNode</var>)</code></dfn>
-method must invoke the <code title=dom-Selection-collapse><a href=#dom-selection-collapse>collapse()</a></code> method with the <var title="">parentNode</var>
-value as the first argument and 0 as the second argument, and must then invoke
-the <code class=external data-anolis-spec=dom title=dom-Range-selectNodeContents><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-range-selectnodecontents>selectNodeContents()</a></code> method on the
-first (and only) <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> in the list with the <var title="">parentNode</var> value as
-the argument.
+method must set the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> to one whose <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a>
+is (<var title="">parentNode</var>, 0) and whose <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end title=concept-range-end>end</a> is (<var title="">parentNode</var>,
+<var title="">parentNode</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node-length title=concept-node-length>length</a>), then set the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s
+<a href=#concept-selection-dir title=concept-selection-dir>direction</a> to "forwards".
 
 <p>The <dfn id=dom-selection-deletefromdocument title=dom-Selection-deleteFromDocument><code>deleteFromDocument()</code></dfn>
-method must invoke the <code class=external data-anolis-spec=dom title=dom-Range-deleteContents><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-range-deletecontents>deleteContents()</a></code> method on each <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>
-in the list, if any, from first to last.
+method must do nothing if the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> is null, and
+otherwise must invoke the <code class=external data-anolis-spec=dom title=dom-Range-deleteContents><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-range-deletecontents>deleteContents()</a></code> method on the
+<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>.
 
 <dl class=domintro>
   <dt><var title="">selection</var> . <code title=dom-Selection-rangeCount><a href=#dom-selection-rangecount>rangeCount</a></code>
   <dd>
-    <p>Returns the number of <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>s in the selection.
+    <p>Returns the number of <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>s in the selection (either 0 or 1).
 
   <dt><var title="">selection</var> . <code title=dom-Selection-getRangeAt><a href=#dom-selection-getrangeat>getRangeAt</a></code>(<var title="">index</var>)
   <dd>
-    <p>Returns the given <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>.
+    <p>Returns the selection's <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>, if <var title="">index</var> is 0.
 
-    <p>Throws an "IndexSizeError" exception if the value is out of range.
+    <p>Throws an "IndexSizeError" exception if <var title="">index</var> is not 0, or if
+    there is no <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> in the selection.
 
   <dt><var title="">selection</var> . <code title=dom-Selection-addRange><a href=#dom-selection-addrange>addRange</a></code>(<var title="">range</var>)
   <dd>
@@ -1143,64 +1151,53 @@ in the list, if any, from first to last.
 
   <dt><var title="">selection</var> . <code title=dom-Selection-removeRange><a href=#dom-selection-removerange>removeRange</a></code>(<var title="">range</var>)
   <dd>
-    <p>Removes the given <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> from the selection, if the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> was one
-    of the ones in the selection.
+    <p>Unselects everyting, if <var title="">range</var> is in the selection.  (Use
+    <code title=dom-Selection-removeAllRanges><a href=#dom-selection-removeallranges>removeAllRanges()</a></code> instead.)
 
   <dt><var title="">selection</var> . <code title=dom-Selection-removeAllRanges><a href=#dom-selection-removeallranges>removeAllRanges</a></code>()
   <dd>
-    <p>Removes all the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>s in the selection.
+    <p>Unselects everything.
 </dl>
 
 <p>The <dfn id=dom-selection-rangecount title=dom-Selection-rangeCount><code>rangeCount</code></dfn>
-attribute must return the number of <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>s in the list.
+attribute must return 0 if the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> is null, otherwise
+1.
 
 <p class=comments>IE9 and Firefox 4.0 return the same object every time, as the
 spec says.  Chrome 12 dev and Opera 11.10 return a different object every time.
 
 <p>The <dfn id=dom-selection-getrangeat title=dom-Selection-getRangeAt><code>getRangeAt(<var title="">index</var>)</code></dfn>
-method must return a reference to (not a copy of) the <var title="">index</var>th
-<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> in the list. (Thus, for instance, subsequent calls with the same
-<var title="">index</var> must return the same object if nothing has changed the list in
-the meantime.) If <var title="">index</var> is greater than or equal to the value
-returned by the <code title=dom-Selection-rangeCount><a href=#dom-selection-rangecount>rangeCount</a></code>
-attribute, then the method must raise an "IndexSizeError" exception.
+method must <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> an "IndexSizeError" exception if <var title="">index</var> is not
+0, or if the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> is null.  Otherwise, it must return
+a reference to (not a copy of) the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>. (Thus
+subsequent calls must return the same object if nothing has removed the
+<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> in the meantime.)
 
 <p class=comments>IE9 and Firefox 4.0 act as described here.  Chrome 12 dev and
 Opera 11.10 appear to store a copy, so changes don't affect the selection.
 
 <p>The <dfn id=dom-selection-addrange title=dom-Selection-addRange><code>addRange(<var title="">range</var>)</code></dfn>
-method must raise an "InvalidNodeTypeError" exception if <var title="">range</var>'s
+method must <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> an "InvalidNodeTypeError" exception if <var title="">range</var>'s
 <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-node title=concept-range-start-node>start node</a> or <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end-node title=concept-range-end-node>end node</a> is not a <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> or <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> node.  Otherwise,
 if <var title="">range</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-node title=concept-range-start-node>start node</a> or <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end-node title=concept-range-end-node>end node</a> does not have a <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document>Document</a></code>
-<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a>, it must raise an "InvalidModificationError".  Otherwise, it must
-add a reference to (not a copy of) the given <var title="">range</var> to the list of
-selections, at the end (so the newly added <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> is the new last
-<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>). Since the given <var title="">range</var> is added by reference, subsequent
+<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a>, it must <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> an "InvalidModificationError".  Otherwise, it must
+set the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> to a reference to (not a copy of)
+<var title="">range</var>. Since <var title="">range</var> is added by reference, subsequent
 calls to <code title=dom-Selection-getRangeAt><a href=#dom-selection-getrangeat>getRangeAt()</a></code> with a
 suitable argument must return the same object, and any changes that a script
-makes to the given <var title="">range</var> after it is added must be reflected in the
-<a href=#concept-selection title=concept-selection>selection</a>, until the given <var title="">range</var> is removed from the list.
-
-<p class=XXX>Everything here about multiple ranges is wrong.  First of all, no
-one but Gecko even allows multiple ranges per selection.  Second of all, Gecko
-stores the ranges sorted by their starts in tree order, not related to the
-order they were added.  Third of all, Gecko doesn't allow overlapping ranges,
-so if you add a range that overlaps an existing range, it removes or alters
-existing ranges in the list to avoid overlap, sometimes even splitting an
-existing range in two.  We need to specify this, or else specify saner behavior
-if we expect anyone to actually follow it.  We also need to account for the
-fact that non-Gecko browsers might not be interested in supporting multiple
-ranges per selection, maybe by explicitly allowing that: see <a href=http://lists.whatwg.org/pipermail/whatwg-whatwg.org/2011-January/030100.html>discussion</a>.
+makes to <var title="">range</var> after it is added must be reflected in the
+<a href=#concept-selection title=concept-selection>selection</a>, until <var title="">range</var> is removed from the list.
 
 <p>The <dfn id=dom-selection-removerange title=dom-Selection-removeRange><code>removeRange(<var title="">range</var>)</code></dfn>
-method must remove the first occurrence of <var title="">range</var> in the list of
-<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>s, if it appears at all.
+method must set the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> to null if its <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> is
+currently <var title="">range</var>, otherwise do nothing.
+
+<p class=XXX>Do we check for object equality here or just equality of boundary
+points?
 
 <p>The <dfn id=dom-selection-removeallranges title=dom-Selection-removeAllRanges><code>removeAllRanges()</code></dfn> method
-must remove all the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>s from the list of <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>s, such that the <code title=dom-Selection-rangeCount><a href=#dom-selection-rangecount>rangeCount</a></code> attribute returns 0 after the
-<code title=dom-Selection-removeAllRanges><a href=#dom-selection-removeallranges>removeAllRanges()</a></code> method is
-invoked (and until a new <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> is added to the list, either through this
-interface or via user interaction).  The <a href=#concept-selection-dir title=concept-selection-dir>direction</a> must be set to forwards.
+must set the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> to null and its <a href=#concept-selection-dir title=concept-selection-dir>direction</a> to
+forwards.
 
 <p>The <dfn id=dom-selection-stringifier title=dom-Selection-stringifier>stringifier</dfn> must . . .
 
@@ -1819,9 +1816,9 @@ by the order the user added them, and silently removes or shortens existing
 ranges to avoid overlap.  It probably makes the most sense in the long term to
 have the command affect all ranges.  But I'll leave this for later.
 
-<p>The <dfn id=active-range>active range</dfn> is the first <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> in the <a href=#concept-selection title=concept-selection>selection</a>
-given by calling <code title=dom-Document-getSelection><a href=#dom-document-getselection>getSelection()</a></code> on the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>, or null if there is
-no such <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>.
+<p>The <dfn id=active-range>active range</dfn> is the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> of the <a href=#concept-selection title=concept-selection>selection</a> given by
+calling <code title=dom-Document-getSelection><a href=#dom-document-getselection>getSelection()</a></code> on the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>.  (Thus the <a href=#active-range>active
+range</a> may be null.)
 
 <p>Each <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/dom.html#htmldocument>HTMLDocument</a></code> has a boolean <dfn id=css-styling-flag>CSS styling flag</dfn> associated
 with it, which must initially be false.  (<a href=#the-stylewithcss-command>The <code title="">styleWithCSS</code> command</a> can be used to modify or query it, by

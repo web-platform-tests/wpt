@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xml:lang="en" xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+	<title id='title'>previousElementSibling</title>
+	<meta charset="utf-8" />
+	<script src="/resources/testharness.js"></script>
+	<script src="/resources/testharnessreport.js"></script>	
+</head>
+
+<body>
+
+  <h1 id='h1'>Test of previousElementSibling</h1>
+  <p id="parentEl">This <span id="first_element_child"><span>is</span> a <span>test</span></span> for the 
+  <span id="middle_element_child">ElementTraversal specification</span>  
+  <span id="last_element_child" style="display:none;">display: none &#160;</span>.</p>
+
+  <div id="log">Running test...</div>
+
+	<script>
+	  test(function() {
+                assert_true(!!document.getElementById("parentEl").previousElementSibling);
+               }, "previousElementSibling must exist");
+	  test(function() {
+                assert_readonly(document.getElementById("parentEl"), "previousElementSibling");
+               }, "previousElementSibling must be readonly");
+	  test(function() {
+                assert_equals( document.getElementById("h1").previousElementSibling, null);
+                assert_equals( document.getElementById("title").previousElementSibling, null);
+               }, "previousElementSibling must return null if no previous element");
+	  test(function() {
+	        var middle = document.getElementById("middle_element_child");	        
+                assert_not_equals( middle.previousElementSibling, null);
+                assert_equals( middle.previousElementSibling.getAttribute("id"), "first_element_child");
+               }, "previousElementSibling must return the previous element child");
+	  test(function() {
+	        var parentEl = document.getElementById("parentEl");	        
+	        var first = document.getElementById("first_element_child");	        
+                assert_equals( first.previousElementSibling, null);
+	        var span = document.createElement("span");
+	        span.setAttribute("id", "dummy");
+	        parentEl.insertBefore(span, first);
+                assert_not_equals(first.previousElementSibling, null);
+                assert_equals( first.previousElementSibling.getAttribute("id"), "dummy");
+	        parentEl.removeChild(span);
+                assert_equals(first.previousElementSibling, null);
+               }, "previousElementSibling must be dynamically updated");
+	</script>
+</body>
+</html>

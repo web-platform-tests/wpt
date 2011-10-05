@@ -1,7 +1,7 @@
 #!/bin/sh
 # This is the script I use on my server to publish the spec.  It's not really
 # useful for anyone else, I just want it in version control somewhere.
-set -e
+set -ex
 cd ~/git/editing
 git fetch
 git push github

@@ -1350,15 +1350,14 @@ policies and contribution forms [3].
                 });
 
         log.appendChild(document.createElement("section"));
-        log.lastChild.innerHTML = "<h2>Details</h2><table id=results>"
-            + "<tr><th>Result<th>Test Name<th>Message</tr>"
-            + "</table>";
-        var tbody = document.createElement("tbody");
-        var rows = "";
+        var html = "<h2>Details</h2><table id=results>"
+            + "<thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead>"
+            + "<tbody>";
         for (var i = 0; i < tests.length; i++) {
-            rows += "<tr><td><td><td>";
+            html += "<tr><td></td><td></td><td></td></tr>";
         }
-        tbody.innerHTML = rows;
+        log.lastChild.innerHTML = html + "</tbody></table>";
+        var tbody = log.querySelector("tbody");
         for (var i = 0; i < tests.length; i++)
         {
             var tr = tbody.childNodes[i];
@@ -1367,7 +1366,6 @@ policies and contribution forms [3].
             tr.childNodes[1].textContent = tests[i].name;
             tr.childNodes[2].textContent = tests[i].message ? tests[i].message : " ";
         }
-        log.querySelector("#results").appendChild(tbody);
     };
 
     var output = new Output();

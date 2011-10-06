@@ -1,38 +1,30 @@
 <!DOCTYPE HTML>
 <html>
 <!--
-https://bugzilla.mozilla.org/show_bug.cgi?id=677495
-
 As mandated by the spec, the body of a media document must only contain one child.
-
-Not actually mandated:
-http://www.w3.org/Bugs/Public/show_bug.cgi?id=13759
 -->
 <head>
-  <title>Test for Bug 571981</title>
-  <script type="application/javascript" src="/MochiKit/packed.js"></script>
-  <script type="application/javascript" src="/tests/SimpleTest/SimpleTest.js"></script>
-  <link rel="stylesheet" type="text/css" href="/tests/SimpleTest/test.css"/>
+  <title>Media documents: video</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
 
-<script type="application/javascript">
-  SimpleTest.waitForExplicitFinish();
+<script>
+  var t = async_test("The document for a standalone media file should have one child in the body.");
 
   function frameLoaded() {
     var testframe = document.getElementById('testframe');
     var testframeChildren = testframe.contentDocument.body.childNodes;
-    is(testframeChildren.length, 1, "Body of video document has 1 child");
-    is(testframeChildren[0].nodeName, "VIDEO", "Only child of body must be a <video> element");
-
-    SimpleTest.finish();
+    assert_equals(testframeChildren.length, 1, "Body of image document has 1 child");
+    assert_equals(testframeChildren[0].nodeName, "VIDEO", "Only child of body must be an <video> element");
+    assert_equals(testframeChildren[0].namespaceURI, "http://www.w3.org/1999/xhtml",
+                  "Only child of body must be an HTML element");
+    t.done();
   }
 </script>
-
 </head>
 <body>
-  <p id="display"></p>
-
-  <iframe id="testframe" name="testframe" onload="frameLoaded()"
+  <div id="log"></div>
+  <iframe id="testframe" onload="t.step(frameLoaded)"
    src="data:video/webm,"></iframe>
-
 </body>
 </html>

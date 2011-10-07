@@ -9164,7 +9164,7 @@
     var posinfobj = { valueOf: function() { return Infinity; } },
         neginfobj = { valueOf: function() { return -Infinity; } },
         nanobj = { valueOf: function() { return -Infinity; } };
-    @nonfinite @assert throws NOT_SUPPORTED_ERR ctx.getImageData(<10 posinfobj neginfobj nanobj>, <10 posinfobj neginfobj nanobj>);
+    @nonfinite @assert throws NOT_SUPPORTED_ERR ctx.getImageData(<10 posinfobj neginfobj nanobj>, <10 posinfobj neginfobj nanobj>, <10 posinfobj neginfobj nanobj>, <10 posinfobj neginfobj nanobj>);
 
 - name: 2d.imageData.get.source.outside
   desc: getImageData() returns transparent black outside the canvas

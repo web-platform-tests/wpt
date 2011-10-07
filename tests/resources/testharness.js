@@ -1243,9 +1243,13 @@ policies and contribution forms [3].
         this.done_count++;
         if (this.output_node)
         {
-            this.output_node.textContent = "Running, "
-                + this.done_count + " complete, "
-                + tests.num_pending + " remain";
+            if (this.done_count < 100
+            || (this.done_count < 1000 && this.done_count % 100 == 0)
+            || this.done_count % 1000 == 0) {
+                this.output_node.textContent = "Running, "
+                    + this.done_count + " complete, "
+                    + tests.num_pending + " remain";
+            }
         }
     };
 

@@ -2694,7 +2694,7 @@
     // The image will not go to the "completely available" state
     // until a fetch task in the networking task source is processed,
     // so the image must not be fully decodable yet:
-    @assert ctx.createPattern(img, 'repeat') === null;
+    @assert ctx.createPattern(img, 'repeat') === null; @moz-todo
 
 - name: 2d.pattern.image.incomplete.emptysrc
   testing:
@@ -8755,7 +8755,7 @@
     // until a fetch task in the networking task source is processed,
     // so the image must not be fully decodable yet:
     ctx.drawImage(img, 0, 0);
-    @assert pixel 50,25 ==~ 0,255,0,255;
+    @assert pixel 50,25 ==~ 0,255,0,255; @moz-todo
   expected: green
 
 - name: 2d.drawImage.incomplete.emptysrc

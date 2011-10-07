@@ -9106,7 +9106,7 @@
     @nonfinite @assert throws NOT_SUPPORTED_ERR ctx.createImageData(<10 posinfobj neginfobj nanobj>, <10 posinfobj neginfobj nanobj>);
 
 - name: 2d.imageData.create1.zero
-  desc: createImageData(null) throws NOT_SUPPORTED_ERR
+  desc: createImageData(null) throws TypeError
   testing:
     - 2d.imageData.create.null
   code: |

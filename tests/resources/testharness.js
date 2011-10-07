@@ -496,17 +496,15 @@ policies and contribution forms [3].
 
     function assert_true(actual, description)
     {
-        var message = make_message("assert_true", description,
-                                   "expected true got ${actual}", {actual:actual});
-        assert(actual === true, message);
+        assert(actual === true, "assert_true", description,
+                                "expected true got ${actual}", {actual:actual});
     };
     expose(assert_true, "assert_true");
 
     function assert_false(actual, description)
     {
-        var message = make_message("assert_false", description,
-                                   "expected false got ${actual}", {actual:actual});
-        assert(actual === false, message);
+        assert(actual === false, "assert_false", description,
+                                 "expected false got ${actual}", {actual:actual});
     };
     expose(assert_false, "assert_false");
 
@@ -533,11 +531,9 @@ policies and contribution forms [3].
           * Test if two primitives are equal or two objects
           * are the same object
           */
-        var message = make_message("assert_equals", description,
-                                    "expected ${expected} but got ${actual}",
-                                    {expected:expected, actual:actual});
-
-        assert(same_value(actual, expected), message);
+        assert(same_value(actual, expected), "assert_equals", description,
+                                             "expected ${expected} but got ${actual}",
+                                             {expected:expected, actual:actual});
     };
     expose(assert_equals, "assert_equals");
 
@@ -547,11 +543,9 @@ policies and contribution forms [3].
           * Test if two primitives are unequal or two objects
           * are different objects
           */
-         var message = make_message("assert_not_equals", description,
-                                    "got disallowed value ${actual}",
-                                    {actual:actual});
-
-        assert(!same_value(actual, expected), message);
+        assert(!same_value(actual, expected), "assert_not_equals", description,
+                                              "got disallowed value ${actual}",
+                                              {actual:actual});
     };
     expose(assert_not_equals, "assert_not_equals");
 
@@ -565,11 +559,8 @@ policies and contribution forms [3].
              var p;
              for (p in actual)
              {
-                 var message = make_message(
-                     "assert_object_equals", description,
-                     "unexpected property ${p}", {p:p});
-
-                 assert(expected.hasOwnProperty(p), message);
+                 assert(expected.hasOwnProperty(p), "assert_object_equals", description,
+                                                    "unexpected property ${p}", {p:p});
 
                  if (typeof actual[p] === "object" && actual[p] !== null)
                  {
@@ -580,21 +571,16 @@ policies and contribution forms [3].
                  }
                  else
                  {
-                     message = make_message(
-                         "assert_object_equals", description,
-                         "property ${p} expected ${expected} got ${actual}",
-                         {p:p, expected:expected, actual:actual});
-
-                     assert(actual[p] === expected[p], message);
+                     assert(actual[p] === expected[p], "assert_object_equals", description,
+                                                       "property ${p} expected ${expected} got ${actual}",
+                                                       {p:p, expected:expected, actual:actual});
                  }
              }
              for (p in expected)
              {
-                 var message = make_message(
-                     "assert_object_equals", description,
-                     "expected property ${p} missing", {p:p});
-
-                 assert(actual.hasOwnProperty(p), message);
+                 assert(actual.hasOwnProperty(p),
+                        "assert_object_equals", description,
+                        "expected property ${p} missing", {p:p});
              }
              stack.pop();
          }
@@ -604,26 +590,22 @@ policies and contribution forms [3].
 
     function assert_array_equals(actual, expected, description)
     {
-        var message = make_message(
-            "assert_array_equals", description,
-            "lengths differ, expected ${expected} got ${actual}",
-            {expected:expected.length, actual:actual.length});
-
-        assert(actual.length === expected.length, message);
+        assert(actual.length === expected.length,
+               "assert_array_equals", description,
+               "lengths differ, expected ${expected} got ${actual}",
+               {expected:expected.length, actual:actual.length});
 
         for (var i=0; i < actual.length; i++)
         {
-            message = make_message(
-                "assert_array_equals", description,
-                "property ${i}, property expected to be $expected but was $actual",
-                {i:i, expected:expected.hasOwnProperty(i) ? "present" : "missing",
-                 actual:actual.hasOwnProperty(i) ? "present" : "missing"});
-            assert(actual.hasOwnProperty(i) === expected.hasOwnProperty(i), message);
-            message = make_message(
-                          "assert_array_equals", description,
-                          "property ${i}, expected ${expected} but got ${actual}",
-                          {i:i, expected:expected[i], actual:actual[i]});
-            assert(expected[i] === actual[i], message);
+            assert(actual.hasOwnProperty(i) === expected.hasOwnProperty(i),
+                   "assert_array_equals", description,
+                   "property ${i}, property expected to be $expected but was $actual",
+                   {i:i, expected:expected.hasOwnProperty(i) ? "present" : "missing",
+                   actual:actual.hasOwnProperty(i) ? "present" : "missing"});
+            assert(expected[i] === actual[i],
+                   "assert_array_equals", description,
+                   "property ${i}, expected ${expected} but got ${actual}",
+                   {i:i, expected:expected[i], actual:actual[i]});
         }
     }
     expose(assert_array_equals, "assert_array_equals");
@@ -633,16 +615,15 @@ policies and contribution forms [3].
         /*
          * Test if two primitive numbers are equal withing +/- epsilon
          */
-        var message = make_message("assert_approx_equals", description,
-                                   "expected a number but got a ${type_actual}",
-                                   {type_actual:typeof actual});
-        assert(typeof actual === "number", message);
+        assert(typeof actual === "number",
+               "assert_approx_equals", description,
+               "expected a number but got a ${type_actual}",
+               {type_actual:typeof actual});
 
-        message = make_message("assert_approx_equals", description,
-                               "expected ${expected} +/- ${epsilon} but got ${actual}",
-                               {expected:expected, actual:actual, epsilon:epsilon});
-
-        assert(Math.abs(actual - expected) < epsilon, message);
+        assert(Math.abs(actual - expected) < epsilon,
+               "assert_approx_equals", description,
+               "expected ${expected} +/- ${epsilon} but got ${actual}",
+               {expected:expected, actual:actual, epsilon:epsilon});
     };
     expose(assert_approx_equals, "assert_approx_equals");
 
@@ -650,10 +631,10 @@ policies and contribution forms [3].
         /*
          * Test if a string (actual) matches a regexp (expected)
          */
-        var message = make_message("assert_regexp_match", description,
-                                   "expected ${expected} but got ${actual}",
-                                   {expected:expected, actual:actual});
-        assert(expected.test(actual), message);
+        assert(expected.test(actual),
+               "assert_regexp_match", description,
+               "expected ${expected} but got ${actual}",
+               {expected:expected, actual:actual});
     }
     expose(assert_regexp_match, "assert_regexp_match");
 
@@ -661,11 +642,9 @@ policies and contribution forms [3].
     function _assert_own_property(name) {
         return function(object, property_name, description)
         {
-            var message = make_message(
-                name, description,
-                "expected property ${p} missing", {p:property_name});
-
-            assert(object.hasOwnProperty(property_name), message);
+            assert(object.hasOwnProperty(property_name),
+                   name, description,
+                   "expected property ${p} missing", {p:property_name});
         };
     }
     expose(_assert_own_property("assert_exists"), "assert_exists");
@@ -673,28 +652,24 @@ policies and contribution forms [3].
 
     function assert_not_exists(object, property_name, description)
     {
-        var message = make_message(
-            "assert_not_exists", description,
-            "unexpected property ${p} found", {p:property_name});
-
-        assert(!object.hasOwnProperty(property_name), message);
+        assert(!object.hasOwnProperty(property_name),
+               "assert_not_exists", description,
+               "unexpected property ${p} found", {p:property_name});
     };
     expose(assert_not_exists, "assert_not_exists");
 
     function _assert_inherits(name) {
         return function (object, property_name, description)
         {
-            var message = make_message(
-                name, description,
-                "property ${p} found on object expected in prototype chain",
-                {p:property_name});
-            assert(!object.hasOwnProperty(property_name), message);
+            assert(!object.hasOwnProperty(property_name),
+                   name, description,
+                   "property ${p} found on object expected in prototype chain",
+                   {p:property_name});
 
-            message = make_message(
-                name, description,
-                "property ${p} not found in prototype chain",
-                {p:property_name});
-            assert(property_name in object, message);
+            assert(property_name in object,
+                   name, description,
+                   "property ${p} not found in prototype chain",
+                   {p:property_name});
         };
     }
     expose(_assert_inherits("assert_inherits"), "assert_inherits");
@@ -704,18 +679,19 @@ policies and contribution forms [3].
     {
          var initial_value = object[property_name];
          try {
-             var message = make_message(
-                 "assert_readonly", description,
-                 "deleting property ${p} succeeded", {p:property_name});
-             assert(delete object[property_name] === false, message);
-             assert(object[property_name] === initial_value, message);
+             assert(delete object[property_name] === false,
+                    "assert_readonly", description,
+                    "deleting property ${p} succeeded", {p:property_name});
+             assert(object[property_name] === initial_value,
+                    "assert_readonly", description,
+                    "deleting property ${p} succeeded", {p:property_name});
              //Note that this can have side effects in the case where
              //the property has PutForwards
              object[property_name] = initial_value + "a"; //XXX use some other value here?
-             message = make_message("assert_readonly", description,
-                                    "changing property ${p} succeeded",
-                                    {p:property_name});
-             assert(object[property_name] === initial_value, message);
+             assert(object[property_name] === initial_value,
+                    "assert_readonly", description,
+                    "changing property ${p} succeeded",
+                    {p:property_name});
          }
          finally
          {
@@ -729,8 +705,8 @@ policies and contribution forms [3].
         try
         {
             func.call(this);
-            assert(false, make_message("assert_throws", description,
-                                      "${func} did not throw", {func:func}));
+            assert(false, "assert_throws", description,
+                   "${func} did not throw", {func:func});
         }
         catch(e)
         {
@@ -740,11 +716,11 @@ policies and contribution forms [3].
             if (typeof code === "object")
             {
                 assert(typeof e == "object" && "name" in e && e.name == code.name,
-                       make_message("assert_throws", description,
-                           "${func} threw ${actual} (${actual_name}) expected ${expected} (${expected_name})",
+                       "assert_throws", description,
+                       "${func} threw ${actual} (${actual_name}) expected ${expected} (${expected_name})",
                                     {func:func, actual:e, actual_name:e.name,
                                      expected:code,
-                                     expected_name:code.name}));
+                                     expected_name:code.name});
                 return;
             }
             var required_props = {};
@@ -777,26 +753,24 @@ policies and contribution forms [3].
             //unknown other window.  TODO: Work around this somehow?
 
             assert(typeof e == "object",
-                    make_message("assert_throws", description,
-                        "${func} threw ${e} with type ${type}, not an object",
-                                {func:func, e:e, type:typeof e}));
+                   "assert_throws", description,
+                   "${func} threw ${e} with type ${type}, not an object",
+                   {func:func, e:e, type:typeof e});
 
             for (var prop in required_props)
             {
                 assert(typeof e == "object" && prop in e && e[prop] == required_props[prop],
-                        make_message("assert_throws", description,
-                            "${func} threw ${e} that is not a " + expected_type + " " + code + ": property ${prop} is equal to ${actual}, expected ${expected}",
-                                {func:func, e:e, prop:prop, actual:e[prop], expected:required_props[prop]}));
+                       "assert_throws", description,
+                       "${func} threw ${e} that is not a " + expected_type + " " + code + ": property ${prop} is equal to ${actual}, expected ${expected}",
+                       {func:func, e:e, prop:prop, actual:e[prop], expected:required_props[prop]});
             }
         }
     }
     expose(assert_throws, "assert_throws");
 
     function assert_unreached(description) {
-         var message = make_message("assert_unreached", description,
-                                    "Reached unreachable code");
-
-         assert(false, message);
+         assert(false, "assert_unreached", description,
+                "Reached unreachable code");
     }
     expose(assert_unreached, "assert_unreached");
 
@@ -1574,11 +1548,12 @@ policies and contribution forms [3].
     /*
      * Utility funcions
      */
-    function assert(expected_true, message)
+    function assert(expected_true, function_name, description, error, substitutions)
     {
         if (expected_true !== true)
         {
-            throw new AssertionError(message);
+            throw new AssertionError(make_message(function_name, description,
+                                                  error, substitutions));
         }
     }
 

@@ -38,7 +38,6 @@ ctx.fillStyle = '#f00';
 ctx.fillRect(0, 0, 100, 50);
 ctx.restore();
 
-// Firefox has a bug where it renders the canvas as empty and toDataURL throws an exception
 canvas.toDataURL();
 
 _assertPixel(canvas, 50,25, 0,255,0,255, "50,25", "0,255,0,255");

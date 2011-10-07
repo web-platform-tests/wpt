@@ -528,7 +528,6 @@
   desc: scale() with a scale factor of zero works
   testing:
     - 2d.transformation.scale
-  mozilla: { throws }
   code: |
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 0, 100, 50);
@@ -547,7 +546,6 @@
     ctx.fillRect(0, 0, 100, 50);
     ctx.restore();
 
-    // Firefox has a bug where it renders the canvas as empty and toDataURL throws an exception
     canvas.toDataURL();
 
     @assert pixel 50,25 == 0,255,0,255;
@@ -1474,7 +1472,7 @@
     ctx.fillStyle = '#f00';
     ctx.fillStyle = 'currentColor';
     ctx.fillRect(0, 0, 100, 50);
-    @assert pixel 50,25 == 0,255,0,255; @moz-todo
+    @assert pixel 50,25 == 0,255,0,255;
   expected: green
 
 - name: 2d.fillStyle.parse.current.changed
@@ -1488,7 +1486,7 @@
     ctx.fillStyle = 'currentColor';
     canvas.setAttribute('style', 'color: #f00');
     ctx.fillRect(0, 0, 100, 50);
-    @assert pixel 50,25 == 0,255,0,255; @moz-todo
+    @assert pixel 50,25 == 0,255,0,255;
   expected: green
 
 - name: 2d.fillStyle.parse.current.removed
@@ -1513,7 +1511,7 @@
     document.body.parentNode.removeAttribute('style');
     document.body.removeAttribute('style');
 
-    @assert pixel 50,25 == 0,0,0,255; @moz-todo
+    @assert pixel 50,25 == 0,0,0,255;
   expected: |
     size 100 50
     cr.set_source_rgb(0, 0, 0)
@@ -1896,7 +1894,6 @@
 - name: 2d.gradient.object.current
   testing:
     - 2d.currentColor.gradient
-  mozilla: { throws }
   code: |
     canvas.setAttribute('style', 'color: #f00');
 
@@ -2602,19 +2599,19 @@
     canvas.height = 10;
     @assert canvas.width === 0;
     @assert canvas.height === 10;
-    @assert throws INVALID_STATE_ERR ctx.createPattern(canvas, 'repeat'); @moz-todo
+    @assert throws INVALID_STATE_ERR ctx.createPattern(canvas, 'repeat');
 
     canvas.width = 10;
     canvas.height = 0;
     @assert canvas.width === 10;
     @assert canvas.height === 0;
-    @assert throws INVALID_STATE_ERR ctx.createPattern(canvas, 'repeat'); @moz-todo
+    @assert throws INVALID_STATE_ERR ctx.createPattern(canvas, 'repeat');
 
     canvas.width = 0;
     canvas.height = 0;
     @assert canvas.width === 0;
     @assert canvas.height === 0;
-    @assert throws INVALID_STATE_ERR ctx.createPattern(canvas, 'repeat'); @moz-todo
+    @assert throws INVALID_STATE_ERR ctx.createPattern(canvas, 'repeat');
 
 - name: 2d.pattern.basic.nocontext
   testing:
@@ -4506,7 +4503,7 @@
     ctx.shadowBlur = 0.1;
     ctx.fillStyle = '#f00';
     ctx.fillRect(0, 0, 100, 50);
-    @assert pixel 50,25 == 0,255,0,255; @moz-todo
+    @assert pixel 50,25 == 0,255,0,255;
   expected: green
 
 - name: 2d.shadow.enable.x
@@ -4520,7 +4517,7 @@
     ctx.shadowOffsetX = 0.1;
     ctx.fillStyle = '#f00';
     ctx.fillRect(0, 0, 100, 50);
-    @assert pixel 50,25 == 0,255,0,255; @moz-todo
+    @assert pixel 50,25 == 0,255,0,255;
   expected: green
 
 - name: 2d.shadow.enable.y
@@ -4534,7 +4531,7 @@
     ctx.shadowOffsetY = 0.1;
     ctx.fillStyle = '#f00';
     ctx.fillRect(0, 0, 100, 50);
-    @assert pixel 50,25 == 0,255,0,255; @moz-todo
+    @assert pixel 50,25 == 0,255,0,255;
   expected: green
 
 - name: 2d.shadow.offset.positiveX
@@ -5404,7 +5401,7 @@
     ctx.fillStyle = '#0f0';
     ctx.fillRect(-100, 0, 200, 50);
 
-    @assert pixel 50,25 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 50,25 ==~ 0,255,0,255;
   expected: green
 
 - name: 2d.shadow.composite.2
@@ -5420,7 +5417,7 @@
     ctx.fillStyle = '#0f0';
     ctx.fillRect(-10, -10, 120, 70);
 
-    @assert pixel 50,25 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 50,25 ==~ 0,255,0,255;
   expected: green
 
 - name: 2d.shadow.composite.3
@@ -8333,45 +8330,42 @@
   desc: isPointInPath() handles transformations correctly
   testing:
     - 2d.path.isPointInPath
-  mozilla: { bug: 405300 }
   code: |
     ctx.translate(50, 0);
     ctx.rect(0, 0, 20, 20);
     @assert ctx.isPointInPath(-40, 10) === false;
-    @assert ctx.isPointInPath(10, 10) === false; @moz-todo
+    @assert ctx.isPointInPath(10, 10) === false;
     @assert ctx.isPointInPath(49, 10) === false;
-    @assert ctx.isPointInPath(51, 10) === true; @moz-todo
-    @assert ctx.isPointInPath(69, 10) === true; @moz-todo
+    @assert ctx.isPointInPath(51, 10) === true;
+    @assert ctx.isPointInPath(69, 10) === true;
     @assert ctx.isPointInPath(71, 10) === false;
 
 - name: 2d.path.isPointInPath.transform.2
   desc: isPointInPath() handles transformations correctly
   testing:
     - 2d.path.isPointInPath
-  mozilla: { bug: 405300 }
   code: |
     ctx.rect(50, 0, 20, 20);
     ctx.translate(50, 0);
     @assert ctx.isPointInPath(-40, 10) === false;
-    @assert ctx.isPointInPath(10, 10) === false; @moz-todo
+    @assert ctx.isPointInPath(10, 10) === false;
     @assert ctx.isPointInPath(49, 10) === false;
-    @assert ctx.isPointInPath(51, 10) === true; @moz-todo
-    @assert ctx.isPointInPath(69, 10) === true; @moz-todo
+    @assert ctx.isPointInPath(51, 10) === true;
+    @assert ctx.isPointInPath(69, 10) === true;
     @assert ctx.isPointInPath(71, 10) === false;
 
 - name: 2d.path.isPointInPath.transform.3
   desc: isPointInPath() handles transformations correctly
   testing:
     - 2d.path.isPointInPath
-  mozilla: { bug: 405300 }
   code: |
     ctx.scale(-1, 1);
     ctx.rect(-70, 0, 20, 20);
     @assert ctx.isPointInPath(-40, 10) === false;
     @assert ctx.isPointInPath(10, 10) === false;
     @assert ctx.isPointInPath(49, 10) === false;
-    @assert ctx.isPointInPath(51, 10) === true; @moz-todo
-    @assert ctx.isPointInPath(69, 10) === true; @moz-todo
+    @assert ctx.isPointInPath(51, 10) === true;
+    @assert ctx.isPointInPath(69, 10) === true;
     @assert ctx.isPointInPath(71, 10) === false;
 
 - name: 2d.path.isPointInPath.nonfinite
@@ -8613,9 +8607,9 @@
   code: |
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 0, 100, 50);
-    @assert throws INDEX_SIZE_ERR ctx.drawImage(document.getElementById('red.png'), 10, 10, 0, 1, 0, 0, 100, 50);
-    @assert throws INDEX_SIZE_ERR ctx.drawImage(document.getElementById('red.png'), 10, 10, 1, 0, 0, 0, 100, 50);
-    @assert throws INDEX_SIZE_ERR ctx.drawImage(document.getElementById('red.png'), 10, 10, 0, 0, 0, 0, 100, 50);
+    @assert throws INDEX_SIZE_ERR ctx.drawImage(document.getElementById('red.png'), 10, 10, 0, 1, 0, 0, 100, 50); @moz-todo
+    @assert throws INDEX_SIZE_ERR ctx.drawImage(document.getElementById('red.png'), 10, 10, 1, 0, 0, 0, 100, 50); @moz-todo
+    @assert throws INDEX_SIZE_ERR ctx.drawImage(document.getElementById('red.png'), 10, 10, 0, 0, 0, 0, 100, 50); @moz-todo
     @assert pixel 50,25 ==~ 0,255,0,255;
   expected: green
 
@@ -8623,6 +8617,7 @@
   desc: Negative source width/height represents the correct rectangle
   testing:
     - 2d.drawImage.direction
+  mozilla: { throws }
   images:
     - ggrr-256x256.png
   code: |
@@ -8646,6 +8641,7 @@
   desc: Negative destination width/height represents the correct rectangle
   testing:
     - 2d.drawImage.direction
+  mozilla: { throws }
   images:
     - ggrr-256x256.png
   code: |
@@ -8669,6 +8665,7 @@
   desc: Negative dimensions do not affect the direction of the image
   testing:
     - 2d.drawImage.direction
+  mozilla: { throws }
   images:
     - ggrr-256x256.png
   code: |
@@ -9004,8 +9001,8 @@
     window.ImageData.prototype.thisImplementsImageData = true;
     window.CanvasPixelArray.prototype.thisImplementsCanvasPixelArray = true;
     var imgdata = ctx.createImageData(ctx.createImageData(1, 1));
-    @assert imgdata.thisImplementsImageData;
-    @assert imgdata.data.thisImplementsCanvasPixelArray;
+    @assert imgdata.thisImplementsImageData; @moz-todo
+    @assert imgdata.data.thisImplementsCanvasPixelArray; @moz-todo
 
 - name: 2d.imageData.create2.initial
   desc: createImageData(sw, sh) returns transparent black data of the right size
@@ -9113,7 +9110,7 @@
   testing:
     - 2d.imageData.create.null
   code: |
-    @assert throws TypeError ctx.createImageData(null);
+    @assert throws TypeError ctx.createImageData(null); @moz-todo
 
 - name: 2d.imageData.create2.round
   desc: createImageData(w, h) is rounded the same as getImageData(0, 0, w, h)
@@ -9599,8 +9596,8 @@
     - 2d.imageData.put.nonfinite
   code: |
     var imgdata = ctx.getImageData(0, 0, 10, 10);
-    @nonfinite @assert throws NOT_SUPPORTED_ERR ctx.putImageData(<imgdata>, <10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>); @moz-todo
-    @nonfinite @assert throws NOT_SUPPORTED_ERR ctx.putImageData(<imgdata>, <10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>); @moz-todo
+    @nonfinite @assert throws NOT_SUPPORTED_ERR ctx.putImageData(<imgdata>, <10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>);
+    @nonfinite @assert throws NOT_SUPPORTED_ERR ctx.putImageData(<imgdata>, <10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>);
 
 - name: 2d.imageData.put.basic
   desc: putImageData() puts image data from getImageData() onto the canvas

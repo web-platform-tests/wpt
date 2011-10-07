@@ -129,7 +129,6 @@
 - name: 2d.text.align.invalid
   testing:
     - 2d.text.align.invalid
-  mozilla: { throws }
   code: |
     ctx.textAlign = 'start';
     ctx.textAlign = 'bogus';

@@ -236,44 +236,18 @@
         ("trailingjunk", "100#!?", 100),
     ]
     def gen(name, exp, code):
-        status = {
-            "zero": { "attr": True, "css": False },
-            "empty": { "attr": True },
-            "onlyspace": { "attr": True },
-            "space": { "attr": True, "css": False },
-            "whitespace": { "attr": True, "css": False },
-            "plus": { "attr": True, "css": False },
-            "minus": { "attr": True },
-            "octal": { "attr": True, "css": False },
-            "hex": { "attr": False, "css": False },
-            "exp": { "attr": False, "css": False },
-            "decimal": { "attr": True, "css": False },
-            "percent": { "attr": True, "css": False },
-            "em": { "attr": False, "css": False },
-            "junk": { "attr": True },
-            "trailingjunk": { "attr": True, "css": False }
-        }
         testing = ["size.nonnegativeinteger"]
         if exp is None:
             testing.append("size.error")
-            postfix = ""
-            if not status[name]["attr"]:
-                postfix = " @moz-todo"
-            code += "@assert canvas.width === 300;%s\n@assert canvas.height === 150;%s\n" % (postfix, postfix)
+            code += "@assert canvas.width === 300;\n@assert canvas.height === 150;\n"
             expected = "size 300 150"
         else:
-            postfix = ""
-            if not status[name]["attr"]:
-                postfix = " @moz-todo"
-            code += "@assert canvas.width === %s;%s\n@assert canvas.height === %s;%s\n" % (exp, postfix, exp, postfix)
+            code += "@assert canvas.width === %s;\n@assert canvas.height === %s;\n" % (exp, exp)
             expected = "size %s %s" % (exp, exp)
 
             # With "100%", Opera gets canvas.width = 100 but renders at 100% of the frame width,
             # so check the CSS display width
-            postfix = ""
-            if not status[name]["css"]:
-                postfix = " @moz-todo"
-            code += '@assert window.getComputedStyle(canvas, null).getPropertyValue("width") == "%spx";%s\n' % (exp, postfix)
+            code += '@assert window.getComputedStyle(canvas, null).getPropertyValue("width") == "%spx";\n' % (exp, )
 
         if exp == 0:
             expected = None # can't generate zero-sized PNGs for the expected image

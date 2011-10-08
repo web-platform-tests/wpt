@@ -3,6 +3,7 @@ dir browsing-the-web
 dir dom-tree-accessors
 dir dynamic-markup-insertion
 dir elements-in-the-dom
+dir events
 dir general
 dir global-attributes
 dir obsolete-features

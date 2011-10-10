@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<title>Node.replaceChild</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body><a><b></b><c></c></a>
+<div id="log"></div>
+<script>
+test(function() {
+  document.addEventListener("DOMNodeRemoved", function(e) {
+    document.body.appendChild(document.createElement("x"));
+  }, false);
+  var a = document.body.firstChild, b = a.firstChild, c = b.nextSibling;
+  assert_equals(a.replaceChild(c, b), b);
+}, "replaceChild should work in the presence of mutation events.")
+</script>

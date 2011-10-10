@@ -77,6 +77,7 @@ Node-normalize.html
 Node-parentElement.html
 Node-parentNode.html
 Node-removeChild.html
+Node-replaceChild.html
 NodeFilter-constants.html
 support productions.js
 Range-attributes.html

@@ -377,6 +377,18 @@ policies and contribution forms [3].
     expose(on_event, 'on_event');
 
     /*
+     * Return a string truncated to the given length, with ... added at the end
+     * if it was longer.
+     */
+    function truncate(s, len)
+    {
+        if (s.length > len) {
+            return s.substring(0, len - 3) + "...";
+        }
+        return s;
+    }
+
+    /*
      * Convert a value to a nice, human-readable string
      */
     function format_value(val)
@@ -454,27 +466,19 @@ policies and contribution forms [3].
                 switch (val.nodeType)
                 {
                 case Node.ELEMENT_NODE:
-                    var ret = "Element node <";
-                    if (val.namespaceURI == "http://www.w3.org/1999/xhtml" || val.namespaceURI === null)
-                    {
-                        ret += val.tagName.toLowerCase();
-                    }
-                    else
-                    {
-                        ret += val.tagName;
-                    }
+                    var ret = "<" + val.tagName.toLowerCase();
                     for (var i = 0; i < val.attributes.length; i++)
                     {
-                        ret += " " + val.attributes[i].name + "=" + format_value(val.attributes[i].value);
+                        ret += " " + val.attributes[i].name + '="' + val.attributes[i].value + '"';
                     }
-                    ret += "> with " + val.childNodes.length + (val.childNodes.length == 1 ? " child" : " children");
-                    return ret;
+                    ret += ">" + val.innerHTML + "</" + val.tagName.toLowerCase() + ">";
+                    return "Element node " + truncate(ret, 30);
                 case Node.TEXT_NODE:
-                    return "Text node with data " + format_value(val.data) + " and parent " + format_value(val.parentNode);
+                    return 'Text node "' + val.data + '"';
                 case Node.PROCESSING_INSTRUCTION_NODE:
                     return "ProcessingInstruction node with target " + format_value(val.target) + " and data " + format_value(val.data);
                 case Node.COMMENT_NODE:
-                    return "Comment node with data " + format_value(val.data);
+                    return "Comment node <!--" + val.data + "-->";
                 case Node.DOCUMENT_NODE:
                     return "Document node with " + val.childNodes.length + (val.childNodes.length == 1 ? " child" : " children");
                 case Node.DOCUMENT_TYPE_NODE:
@@ -486,30 +490,9 @@ policies and contribution forms [3].
                 }
             }
 
-            // Also special-case ranges and selections, since these aren't handled
-            // well by the general-purpose code: they stringify, which we don't
-            // want.
-            if ("startContainer" in val
-            && "startOffset" in val
-            && "endContainer" in val
-            && "endOffset" in val)
-            {
-                return "Range with start (" + format_value(val.startContainer) + ", " + val.startOffset + "), "
-                    + "end (" + format_value(val.endContainer) + ", " + val.endOffset + ")";
-            }
-
-            if ("anchorNode" in val
-            && "anchorOffset" in val
-            && "focusNode" in val
-            && "focusOffset" in val)
-            {
-                return "Selection with anchor (" + format_value(val.anchorNode) + ", " + val.anchorOffset + "), "
-                    + "focus (" + format_value(val.focusNode) + ", " + val.focusOffset + ")";
-            }
-
             // Fall through to default
         default:
-            return typeof val + ' "' + val + '"';
+            return typeof val + ' "' + truncate(String(val), 30) + '"';
         }
     }
     expose(format_value, "format_value");

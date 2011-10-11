@@ -630,6 +630,32 @@ to fix right now are in comments prefixed with "TODO".
 
 <h2>Selections</h2>
 <!-- @{ -->
+<div class=comments>
+<p>IE9 and Firefox 6.0a2 allow arbitrary ranges in the selection, which follows
+what this spec originally said.  However, this leads to unpleasant corner cases
+that authors, implementers, and spec writers all have to deal with, and they
+don't make any real sense.  Chrome 14 dev and Opera 11.11 aggressively
+normalize selections, like not letting them lie inside empty elements and
+things like that, but this is also viewed as a bad idea, because it takes
+flexibility away from authors.
+
+<p>So I changed the spec to a made-up compromise
+that allows some simplification but doesn't constrain authors much.  See
+<a href=http://lists.whatwg.org/pipermail/whatwg-whatwg.org/2011-June/032072.html>discussion</a>.
+Basically it would throw exceptions in some places to try to stop the selection
+from containing a range that had a boundary point other than an Element or Text
+node, or a boundary point that didn't descend from a Document.
+
+<p>But this meant getRangeAt() had to start returning a copy, not a reference.
+Also, it would be prone to things failing weirdly in corner cases.  Perhaps
+most significantly, all sorts of problems might arise when DOM mutations
+transpire, like if a boundary point's node is removed from its parent and the
+mutation rules would place the new boundary point inside a non-Text/Element
+node.  And finally, the previously-specified behavior had the advantage of
+matching two major implementations, while the new behavior matched no one.  So
+I changed it back.
+</div>
+
 <p>Every [[browsingcontext]] has a <dfn
 title=concept-selection>selection</dfn>.  Each [[selection]] is associated with
 a single [[range]], which may be null and is initially null. The user agent
@@ -668,29 +694,6 @@ and its [[seldir]] is forwards, its <span>anchor</span> is the [[range]]'s
 [[rangestart]], and its <span>focus</span> is the [[rangeend]].  Otherwise, its
 <span>focus</span> is the [[rangestart]] and its <span>anchor</span> is the
 [[rangeend]].
-
-<div class=comments>
-<p>IE9 and Firefox 6.0a2 allow arbitrary ranges in the selection, which follows
-what this spec used to say.  However, this leads to unpleasant corner cases
-that authors, implementers, and spec writers all have to deal with, and they
-don't make any real sense.  Chrome 14 dev and Opera 11.11 aggressively
-normalize selections, like not letting them lie inside empty elements and
-things like that, but this is also viewed as a bad idea, because it takes
-flexibility away from authors.  The current spec here is a made-up compromise
-that allows some simplification but doesn't constrain authors much.  See
-<a href=http://lists.whatwg.org/pipermail/whatwg-whatwg.org/2011-June/032072.html>discussion</a>.
-
-<p>The various places where we throw exceptions if these conditions aren't met
-are all novel.  Mostly browsers only throw if the boundary point is a
-DocumentType, or maybe a ProcessingInstruction.
-</div>
-
-<p>The [[boundarypoint]] of every [[range]] that is part of a [[selection]]
-must be either a [[text]] or [[element]] node, and must have a [[document]]
-[[ancestor]].
-
-<p class=XXX>What happens if a range within the selection gets mutated?  Should
-we make the ranges returned by getRangeAt() not live?
 
 <pre class=idl>interface <dfn>Selection</dfn> {
   readonly attribute <span data-anolis-spec=dom>Node</span>? <span title=dom-Selection-anchorNode>anchorNode</span>;
@@ -806,11 +809,8 @@ attribute must return the [[contextobject]]'s <span>focus</span>'s
   <dd>
     <p>Replaces the selection with a collapsed one at the given position.
 
-    <p>Throws an [[InvalidNodeTypeError]] exception if <var>parentNode</var> is
-    not a [[text]] or [[element]] node, an [[InvalidModificationError]] exception
-    if <var>parentNode</var> doesn't descend from a [[document]], and an
-    [[IndexSizeError]] exception if <var>offset</var> is negative or longer than
-    <var>parentNode</var>'s [[length]].
+    <p>Throws an [[IndexSizeError]] exception if <var>offset</var> is negative
+    or longer than <var>parentNode</var>'s [[length]].
 
   <dt><var>selection</var> . <code title=dom-Selection-collapseToStart>collapseToStart</code>()
   <dd>
@@ -831,12 +831,9 @@ attribute must return the [[contextobject]]'s <span>focus</span>'s
     <p>Changes the <span>focus</span> while leaving the <span>anchor</span> in
     place.
 
-    <p>Throws an [[InvalidStateError]] if there's no selection, an
-    [[InvalidNodeTypeError]] exception if <var>parentNode</var> is not a [[text]]
-    or [[element]] node, an [[InvalidModificationError]] exception if
-    <var>parentNode</var> doesn't descend from a [[document]], and an
-    [[IndexSizeError]] exception if <var>offset</var> is negative or longer than
-    <var>parentNode</var>'s [[length]].
+    <p>Throws an [[InvalidStateError]] if there's no selection, and an
+    [[IndexSizeError]] exception if <var>offset</var> is negative or longer
+    than <var>parentNode</var>'s [[length]].
 
   <dt><var>selection</var> . <code title=dom-Selection-modify>modify</code>(<var>alter</var>, <var>direction</var>, <var>granularity</var>)
   <dd>
@@ -862,12 +859,6 @@ are the same (including if both are null).  Otherwise it must return false.
 <var>offset</var>)</code></dfn> method must run the following steps:
 
 <ol>
-  <li>If <var>parentNode</var> is not a [[text]] or [[element]] node, [[throw]]
-  an [[InvalidNodeTypeError]] exception and abort these steps.
-
-  <li>If <var>parentNode</var> does not have a [[document]] [[ancestor]],
-  [[throw]] an [[InvalidModificationError]] and abort these steps.
-
   <li>If <var>offset</var> is greater than the [[length]] of
   <var>parentNode</var>, [[throw]] an [[IndexSizeError]] exception and abort
   these steps.
@@ -892,7 +883,8 @@ the [[endnode]] and [[endoffset]] values of the last [[range]] object in the
 list as the arguments.
 
 <p class=XXX>This implies that they'll replace the range object instead of
-changing it.  Will they?  Needs testing.  It seems like they shouldn't.
+changing it.  Will they?  Needs testing.  It seems like they shouldn't.  Same
+for collapse() itself.
 
 <p class=comments>Reverse-engineered circa January 2011.  IE doesn't support it, so I'm
 relying on Firefox (implemented extend() sometime before 2000) and WebKit
@@ -910,12 +902,6 @@ tells me its implementation isn't compatible.
 
   <p>If the [[contextobject]]'s [[range]] is null, [[throw]] an
   [[InvalidStateError]] exception and abort these steps.
-
-  <li>If <var>parentNode</var> is not a [[text]] or [[element]] node, [[throw]]
-  an [[InvalidNodeTypeError]] exception and abort these steps.
-
-  <li>If <var>parentNode</var> does not have a [[document]] [[ancestor]],
-  [[throw]] an [[InvalidModificationError]] and abort these steps.
 
   <li>
   <p class=comments>Gecko and WebKit agree on this, Opera ignores the call.
@@ -1054,10 +1040,6 @@ tests.
     <p>Replaces the selection with one that contains all the contents of the
     given element.
 
-    <p>Throws an [[InvalidNodeTypeError]] exception if <var>parentNode</var> is
-    not a [[text]] or [[element]] node, and an [[InvalidModificationError]]
-    exception if <var>parentNode</var> doesn't descend from a [[document]].
-
   <dt><var>selection</var> . <code title=dom-Selection-deleteFromDocument>deleteFromDocument</code>()
   <dd>
     <p>Deletes the selection.
@@ -1092,11 +1074,6 @@ title=dom-Range-deleteContents>deleteContents()</code> method on the
   <dt><var>selection</var> . <code title=dom-Selection-addRange>addRange</code>(<var>range</var>)
   <dd>
     <p>Adds the given [[range]] to the selection.
-
-    <p>Throws an [[InvalidNodeTypeError]] exception if the given [[range]] has a
-    boundary point node that's not a [[text]] or [[element]] node, and an
-    [[InvalidModificationError]] exception if it has a boundary point node that
-    doesn't descend from a [[document]].
 
   <dt><var>selection</var> . <code title=dom-Selection-removeRange>removeRange</code>(<var>range</var>)
   <dd>
@@ -1135,12 +1112,8 @@ more useful than silent failure, so the spec goes with that.
 
 <p>The <dfn
 title=dom-Selection-addRange><code>addRange(<var>range</var>)</code></dfn>
-method must [[throw]] an [[InvalidNodeTypeError]] exception if <var>range</var>'s
-[[startnode]] or [[endnode]] is not a [[text]] or [[element]] node.  Otherwise,
-if <var>range</var>'s [[startnode]] or [[endnode]] does not have a [[document]]
-[[ancestor]], it must [[throw]] an [[InvalidModificationError]].  Otherwise, it must
-set the [[contextobject]]'s [[range]] to a reference to (not a copy of)
-<var>range</var>. Since <var>range</var> is added by reference, subsequent
+method must set the [[contextobject]]'s [[range]] to a reference to (not a copy
+of) <var>range</var>. Since <var>range</var> is added by reference, subsequent
 calls to <code title=dom-Selection-getRangeAt>getRangeAt(0)</code> must return
 the same object, and any changes that a script makes to <var>range</var> after
 it is added must be reflected in the [[selection]], until something else
@@ -1180,10 +1153,9 @@ interfaces defined in this specification.
   <span>Selection</span> <span title=dom-Document-getSelection>getSelection</span>();
 };</pre>
 
-<p>For historical reasons, the <dfn
-title=dom-Document-getSelection><code>getSelection()</code></dfn> method on the
-[[document]] interface must return the same <code>Selection</code> object as
-its <code data-anolis-spec=html
+<p>The <dfn title=dom-Document-getSelection><code>getSelection()</code></dfn>
+method on the [[document]] interface must return the same
+<code>Selection</code> object as its <code data-anolis-spec=html
 title=dom-Document-defaultView>defaultView</code>'s <code
 title=dom-Window-getSelection>getSelection()</code> method.
 
@@ -2568,13 +2540,10 @@ nodes</span> that are <span>effectively contained</span> in the <span>active
 range</span>, there are two that have distinct <span title="effective command
 value">effective command values</span>.  Its <span>value</span> is the
 <span>effective command value</span> of the first <span>formattable node</span>
-that is <span>effectively contained</span> in the <span>active range</span>, or
+that is <span>effectively contained</span> in the <span>active range</span>; or
 if there is no such node, the <span>effective command value</span> of the
-<span>active range</span>'s [[startnode]].
-
-<p class=note>The effective command value of the active range's start node
-cannot be null, since the boundary point node of a selection must always be
-either an element or a text node that's the child of an element.
+<span>active range</span>'s [[startnode]]; or if that is null, the empty
+string.
 
 <p class=note>The notions of inline command activated values and standard
 inline value commands are mostly just shorthand to avoid repeating the same

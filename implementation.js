@@ -8044,8 +8044,9 @@ commandNames.forEach(function(command) {
 	// among formattable nodes that are effectively contained in the active
 	// range, there are two that have distinct effective command values. Its
 	// value is the effective command value of the first formattable node that
-	// is effectively contained in the active range, or if there is no such
-	// node, the effective command value of the active range's start node."
+	// is effectively contained in the active range; or if there is no such
+	// node, the effective command value of the active range's start node; or
+	// if that is null, the empty string."
 	if ("standardInlineValueCommand" in commands[command]) {
 		commands[command].indeterm = function() {
 			var values = getAllEffectivelyContainedNodes(getActiveRange())
@@ -8069,7 +8070,11 @@ commandNames.forEach(function(command) {
 				refNode = getActiveRange().startContainer;
 			}
 
-			return getEffectiveCommandValue(refNode, command);
+			var ret = getEffectiveCommandValue(refNode, command);
+			if (ret === null) {
+				return "";
+			}
+			return ret;
 		};
 	}
 });

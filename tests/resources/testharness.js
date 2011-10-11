@@ -472,7 +472,7 @@ policies and contribution forms [3].
                         ret += " " + val.attributes[i].name + '="' + val.attributes[i].value + '"';
                     }
                     ret += ">" + val.innerHTML + "</" + val.tagName.toLowerCase() + ">";
-                    return "Element node " + truncate(ret, 30);
+                    return "Element node " + truncate(ret, 60);
                 case Node.TEXT_NODE:
                     return 'Text node "' + val.data + '"';
                 case Node.PROCESSING_INSTRUCTION_NODE:
@@ -492,7 +492,7 @@ policies and contribution forms [3].
 
             // Fall through to default
         default:
-            return typeof val + ' "' + truncate(String(val), 30) + '"';
+            return typeof val + ' "' + truncate(String(val), 60) + '"';
         }
     }
     expose(format_value, "format_value");

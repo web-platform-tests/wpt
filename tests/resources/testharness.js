@@ -1351,23 +1351,34 @@ policies and contribution forms [3].
                              });
                 });
 
+        // This use of innerHTML plus manual escaping is not recommended in
+        // general, but is necessary here for performance.  Using textContent
+        // on each individual <td> adds tens of seconds of execution time for
+        // large test suites (tens of thousands of tests).
+        function escape_html(s)
+        {
+            return s.replace(/\&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#39;");
+        }
+
         log.appendChild(document.createElement("section"));
         var html = "<h2>Details</h2><table id=results>"
             + "<thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead>"
             + "<tbody>";
         for (var i = 0; i < tests.length; i++) {
-            html += "<tr><td></td><td></td><td></td></tr>";
+            html += '<tr class="'
+                + escape_html(status_class(status_text[tests[i].status]))
+                + '"><td>'
+                + escape_html(status_text[tests[i].status])
+                + "</td><td>"
+                + escape_html(tests[i].name)
+                + "</td><td>"
+                + escape_html(tests[i].message ? tests[i].message : " ")
+                + "</td></tr>";
         }
         log.lastChild.innerHTML = html + "</tbody></table>";
-        var tbody = log.querySelector("tbody");
-        for (var i = 0; i < tests.length; i++)
-        {
-            var tr = tbody.childNodes[i];
-            tr.className = status_class(status_text[tests[i].status]);
-            tr.childNodes[0].textContent = status_text[tests[i].status];
-            tr.childNodes[1].textContent = tests[i].name;
-            tr.childNodes[2].textContent = tests[i].message ? tests[i].message : " ";
-        }
     };
 
     var output = new Output();

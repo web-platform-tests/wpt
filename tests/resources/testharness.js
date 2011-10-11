@@ -437,6 +437,30 @@ policies and contribution forms [3].
                 return "Node object of unknown type";
             }
         }
+
+        // Also special-case ranges and selections, since these aren't handled
+        // well by the general-purpose code: they stringify, which we don't
+        // want.
+        if (typeof val == "object"
+        && "startContainer" in val
+        && "startOffset" in val
+        && "endContainer" in val
+        && "endOffset" in val)
+        {
+            return "Range with start (" + format_value(val.startContainer) + ", " + val.startOffset + "), "
+                + "end (" + format_value(val.endContainer) + ", " + val.endOffset + ")";
+        }
+
+        if (typeof val == "object"
+        && "anchorNode" in val
+        && "anchorOffset" in val
+        && "focusNode" in val
+        && "focusOffset" in val)
+        {
+            return "Selection with anchor (" + format_value(val.anchorNode) + ", " + val.anchorOffset + "), "
+                + "focus (" + format_value(val.focusNode) + ", " + val.focusOffset + ")";
+        }
+
         switch (typeof val)
         {
         case "string":

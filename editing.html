@@ -863,10 +863,10 @@ attribute must return the <a class=external data-anolis-spec=dom href=http://dvc
   <dd>
     <p>Replaces the selection with a collapsed one at the given position.
 
-    <p>Throws an "InvalidNodeTypeError" exception if <var title="">parentNode</var> is
-    not a <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> or <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> node, an "InvalidModificationError" exception
+    <p>Throws an <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#invalidnodetypeerror>InvalidNodeTypeError</a></code> exception if <var title="">parentNode</var> is
+    not a <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> or <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> node, an <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#invalidmodificationerror>InvalidModificationError</a></code> exception
     if <var title="">parentNode</var> doesn't descend from a <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document>Document</a></code>, and an
-    "IndexSizeError" exception if <var title="">offset</var> is negative or longer than
+    <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#indexsizeerror>IndexSizeError</a></code> exception if <var title="">offset</var> is negative or longer than
     <var title="">parentNode</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node-length title=concept-node-length>length</a>.
 
   <dt><var title="">selection</var> . <code title=dom-Selection-collapseToStart><a href=#dom-selection-collapsetostart>collapseToStart</a></code>()
@@ -874,25 +874,25 @@ attribute must return the <a class=external data-anolis-spec=dom href=http://dvc
     <p>Replaces the selection with an empty one at the position of the start of
     the current selection.
 
-    <p>Throws an "InvalidStateError" exception if there is no selection.
+    <p>Throws an <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#invalidstateerror>InvalidStateError</a></code> exception if there is no selection.
 
   <dt><var title="">selection</var> . <code title=dom-Selection-collapseToEnd><a href=#dom-selection-collapsetoend>collapseToEnd</a></code>()
   <dd>
     <p>Replaces the selection with an empty one at the position of the end of
     the current selection.
 
-    <p>Throws an "InvalidStateError" exception if there is no selection.
+    <p>Throws an <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#invalidstateerror>InvalidStateError</a></code> exception if there is no selection.
 
   <dt><var title="">selection</var> . <code title=dom-Selection-extend><a href=#dom-selection-extend>extend</a></code>(<var title="">parentNode</var>, <var title="">offset</var>)
   <dd>
     <p>Changes the <a href=#focus>focus</a> while leaving the <a href=#anchor>anchor</a> in
     place.
 
-    <p>Throws an "InvalidStateError" if there's no selection, an
-    "InvalidNodeTypeError" exception if <var title="">parentNode</var> is not a <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>
-    or <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> node, an "InvalidModificationError" exception if
+    <p>Throws an <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#invalidstateerror>InvalidStateError</a></code> if there's no selection, an
+    <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#invalidnodetypeerror>InvalidNodeTypeError</a></code> exception if <var title="">parentNode</var> is not a <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>
+    or <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> node, an <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#invalidmodificationerror>InvalidModificationError</a></code> exception if
     <var title="">parentNode</var> doesn't descend from a <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document>Document</a></code>, and an
-    "IndexSizeError" exception if <var title="">offset</var> is negative or longer than
+    <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#indexsizeerror>IndexSizeError</a></code> exception if <var title="">offset</var> is negative or longer than
     <var title="">parentNode</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node-length title=concept-node-length>length</a>.
 
   <dt><var title="">selection</var> . <code title=dom-Selection-modify><a href=#dom-selection-modify>modify</a></code>(<var title="">alter</var>, <var title="">direction</var>, <var title="">granularity</var>)
@@ -908,7 +908,7 @@ attribute must return the <a class=external data-anolis-spec=dom href=http://dvc
     <p>If <var title="">alter</var> is "move", then the anchor is also moved to the same
     position, so that the selection is empty.
 
-    <p>Throws "SyntaxError" if one of the arguments is invalid.
+    <p>Throws <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#syntaxerror>SyntaxError</a></code> if one of the arguments is invalid.
 </dl>
 
 <p>The <dfn id=dom-selection-iscollapsed title=dom-Selection-isCollapsed><code>isCollapsed</code></dfn>
@@ -920,13 +920,13 @@ are the same (including if both are null).  Otherwise it must return false.
 
 <ol>
   <li>If <var title="">parentNode</var> is not a <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> or <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> node, <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a>
-  an "InvalidNodeTypeError" exception and abort these steps.
+  an <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#invalidnodetypeerror>InvalidNodeTypeError</a></code> exception and abort these steps.
 
   <li>If <var title="">parentNode</var> does not have a <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document>Document</a></code> <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a>,
-  <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> an "InvalidModificationError" and abort these steps.
+  <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> an <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#invalidmodificationerror>InvalidModificationError</a></code> and abort these steps.
 
   <li>If <var title="">offset</var> is greater than the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node-length title=concept-node-length>length</a> of
-  <var title="">parentNode</var>, <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> an "IndexSizeError" exception and abort
+  <var title="">parentNode</var>, <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> an <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#indexsizeerror>IndexSizeError</a></code> exception and abort
   these steps.
 
   <li>Set the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> to a new <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> object with
@@ -935,13 +935,13 @@ are the same (including if both are null).  Otherwise it must return false.
 </ol>
 
 <p>The <dfn id=dom-selection-collapsetostart title=dom-Selection-collapseToStart><code>collapseToStart()</code></dfn> method
-must <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> an "InvalidStateError" exception if the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s
+must <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> an <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#invalidstateerror>InvalidStateError</a></code> exception if the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s
 <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> is null. Otherwise, it must invoke the <code title=dom-Selection-collapse><a href=#dom-selection-collapse>collapse()</a></code> method with
 the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-node title=concept-range-start-node>start node</a> and <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-offset title=concept-range-start-offset>start offset</a> of the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> as
 the arguments.
 
 <p>The <dfn id=dom-selection-collapsetoend title=dom-Selection-collapseToEnd><code>collapseToEnd()</code></dfn> method
-must <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> an "InvalidStateError" exception if the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s
+must <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> an <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#invalidstateerror>InvalidStateError</a></code> exception if the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s
 <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> is null. Otherwise, it must invoke the <code title=dom-Selection-collapse><a href=#dom-selection-collapse>collapse()</a></code> method with
 the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end-node title=concept-range-end-node>end node</a> and <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end-offset title=concept-range-end-offset>end offset</a> values of the last <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> object in the
 list as the arguments.
@@ -964,19 +964,19 @@ tells me its implementation isn't compatible.
   Gecko's behavior of throwing wins, but with a standardized exception type.
 
   <p>If the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> is null, <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> an
-  "InvalidStateError" exception and abort these steps.
+  <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#invalidstateerror>InvalidStateError</a></code> exception and abort these steps.
 
   <li>If <var title="">parentNode</var> is not a <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> or <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> node, <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a>
-  an "InvalidNodeTypeError" exception and abort these steps.
+  an <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#invalidnodetypeerror>InvalidNodeTypeError</a></code> exception and abort these steps.
 
   <li>If <var title="">parentNode</var> does not have a <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document>Document</a></code> <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a>,
-  <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> an "InvalidModificationError" and abort these steps.
+  <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> an <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#invalidmodificationerror>InvalidModificationError</a></code> and abort these steps.
 
   <li>
   <p class=comments>Gecko and WebKit agree on this, Opera ignores the call.
 
   <p>If <var title="">offset</var> is greater than <var title="">parentNode</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node-length title=concept-node-length>length</a>,
-  <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> an "IndexSizeError" exception and abort these steps.
+  <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> an <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#indexsizeerror>IndexSizeError</a></code> exception and abort these steps.
 
   <li>Let <var title="">range</var> be the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>.
 
@@ -1037,15 +1037,15 @@ tests.
   but Gecko throws.  Following Gecko for consistency for the other APIs here.
 
   <p>If <var title="">alter</var> does not equal either "extend" or "move", <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> a
-  "SyntaxError" exception and abort these steps.
+  <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#syntaxerror>SyntaxError</a></code> exception and abort these steps.
 
   <li>If <var title="">direction</var> does not equal one of "forward", "backward",
-  "left", or "right", <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> a "SyntaxError" exception and abort these
+  "left", or "right", <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> a <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#syntaxerror>SyntaxError</a></code> exception and abort these
   steps.
 
   <li>If <var title="">granularity</var> does not equal one of "character", "word",
   "sentence", "line", "paragraph", "lineboundary", "sentenceboundary",
-  "paragraphboundary", or "documentboundary", <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> a "SyntaxError"
+  "paragraphboundary", or "documentboundary", <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> a <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#syntaxerror>SyntaxError</a></code>
   exception and abort these steps.
 
   <li>Let <var title="">anchor</var> and <var title="">focus</var> be the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s
@@ -1108,8 +1108,8 @@ tests.
     <p>Replaces the selection with one that contains all the contents of the
     given element.
 
-    <p>Throws an "InvalidNodeTypeError" exception if <var title="">parentNode</var> is
-    not a <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> or <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> node, and an "InvalidModificationError"
+    <p>Throws an <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#invalidnodetypeerror>InvalidNodeTypeError</a></code> exception if <var title="">parentNode</var> is
+    not a <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> or <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> node, and an <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#invalidmodificationerror>InvalidModificationError</a></code>
     exception if <var title="">parentNode</var> doesn't descend from a <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document>Document</a></code>.
 
   <dt><var title="">selection</var> . <code title=dom-Selection-deleteFromDocument><a href=#dom-selection-deletefromdocument>deleteFromDocument</a></code>()
@@ -1137,16 +1137,16 @@ otherwise must invoke the <code class=external data-anolis-spec=dom title=dom-Ra
   <dd>
     <p>Returns the selection's <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>, if <var title="">index</var> is 0.
 
-    <p>Throws an "IndexSizeError" exception if <var title="">index</var> is not 0, or if
+    <p>Throws an <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#indexsizeerror>IndexSizeError</a></code> exception if <var title="">index</var> is not 0, or if
     there is no <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> in the selection.
 
   <dt><var title="">selection</var> . <code title=dom-Selection-addRange><a href=#dom-selection-addrange>addRange</a></code>(<var title="">range</var>)
   <dd>
     <p>Adds the given <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> to the selection.
 
-    <p>Throws an "InvalidNodeTypeError" exception if the given <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> has a
+    <p>Throws an <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#invalidnodetypeerror>InvalidNodeTypeError</a></code> exception if the given <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> has a
     boundary point node that's not a <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> or <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> node, and an
-    "InvalidModificationError" exception if it has a boundary point node that
+    <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#invalidmodificationerror>InvalidModificationError</a></code> exception if it has a boundary point node that
     doesn't descend from a <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document>Document</a></code>.
 
   <dt><var title="">selection</var> . <code title=dom-Selection-removeRange><a href=#dom-selection-removerange>removeRange</a></code>(<var title="">range</var>)
@@ -1167,7 +1167,7 @@ attribute must return 0 if the <a class=external data-anolis-spec=dom href=http:
 spec says.  Chrome 12 dev and Opera 11.10 return a different object every time.
 
 <p>The <dfn id=dom-selection-getrangeat title=dom-Selection-getRangeAt><code>getRangeAt(<var title="">index</var>)</code></dfn>
-method must <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> an "IndexSizeError" exception if <var title="">index</var> is not
+method must <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> an <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#indexsizeerror>IndexSizeError</a></code> exception if <var title="">index</var> is not
 0, or if the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> is null.  Otherwise, it must return
 a reference to (not a copy of) the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>. (Thus
 subsequent calls must return the same object if nothing has removed the
@@ -1184,10 +1184,10 @@ more useful than silent failure, so the spec goes with that.
 </div>
 
 <p>The <dfn id=dom-selection-addrange title=dom-Selection-addRange><code>addRange(<var title="">range</var>)</code></dfn>
-method must <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> an "InvalidNodeTypeError" exception if <var title="">range</var>'s
+method must <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> an <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#invalidnodetypeerror>InvalidNodeTypeError</a></code> exception if <var title="">range</var>'s
 <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-node title=concept-range-start-node>start node</a> or <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end-node title=concept-range-end-node>end node</a> is not a <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> or <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> node.  Otherwise,
 if <var title="">range</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-node title=concept-range-start-node>start node</a> or <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end-node title=concept-range-end-node>end node</a> does not have a <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document>Document</a></code>
-<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a>, it must <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> an "InvalidModificationError".  Otherwise, it must
+<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a>, it must <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> an <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#invalidmodificationerror>InvalidModificationError</a></code>.  Otherwise, it must
 set the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> to a reference to (not a copy of)
 <var title="">range</var>. Since <var title="">range</var> is added by reference, subsequent
 calls to <code title=dom-Selection-getRangeAt><a href=#dom-selection-getrangeat>getRangeAt(0)</a></code> must return
@@ -1410,8 +1410,8 @@ must run the following steps:
   <p class=comments>See comment before <a href=#supported-commands>Supported
   commands</a>.
 
-  <p>If <var title="">command</var> is not <a href=#supported>supported</a>, raise a
-  <code class=external data-anolis-spec=dom title=dom-DOMException-NOT_SUPPORTED_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-not_supported_err>NOT_SUPPORTED_ERR</a></code> exception.
+  <p>If <var title="">command</var> is not <a href=#supported>supported</a>, <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> a
+  <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#notsupportederror>NotSupportedError</a></code> exception.
 
   <li>
   <p class=comments>I didn't research this closely, but at a first glance, this
@@ -1437,8 +1437,8 @@ invoked, the user agent must run the following steps:
   <p class=comments>See comment before <a href=#supported-commands>Supported
   commands</a>.
 
-  <p>If <var title="">command</var> is not <a href=#supported>supported</a>, raise a
-  <code class=external data-anolis-spec=dom title=dom-DOMException-NOT_SUPPORTED_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-not_supported_err>NOT_SUPPORTED_ERR</a></code> exception.
+  <p>If <var title="">command</var> is not <a href=#supported>supported</a>, <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> a
+  <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#notsupportederror>NotSupportedError</a></code> exception.
 
   <li>Return true if <var title="">command</var> is <a href=#enabled>enabled</a>, false
   otherwise.
@@ -1453,8 +1453,8 @@ invoked, the user agent must run the following steps:
   <p class=comments>See comment before <a href=#supported-commands>Supported
   commands</a>.
 
-  <p>If <var title="">command</var> is not <a href=#supported>supported</a>, raise a
-  <code class=external data-anolis-spec=dom title=dom-DOMException-NOT_SUPPORTED_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-not_supported_err>NOT_SUPPORTED_ERR</a></code> exception.
+  <p>If <var title="">command</var> is not <a href=#supported>supported</a>, <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> a
+  <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#notsupportederror>NotSupportedError</a></code> exception.
 
   <li>
   <div class=comments>
@@ -1503,8 +1503,8 @@ invoked, the user agent must run the following steps:
   <p class=comments>See comment before <a href=#supported-commands>Supported
   commands</a>.
 
-  <p>If <var title="">command</var> is not <a href=#supported>supported</a>, raise a
-  <code class=external data-anolis-spec=dom title=dom-DOMException-NOT_SUPPORTED_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-not_supported_err>NOT_SUPPORTED_ERR</a></code> exception.
+  <p>If <var title="">command</var> is not <a href=#supported>supported</a>, <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> a
+  <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#notsupportederror>NotSupportedError</a></code> exception.
 
   <li>
   <p class=comments>See comment on the comparable line for
@@ -1543,8 +1543,8 @@ invoked, the user agent must run the following steps:
   <p class=comments>See comment before <a href=#supported-commands>Supported
   commands</a>.
 
-  <p>If <var title="">command</var> is not <a href=#supported>supported</a>, raise a
-  <code class=external data-anolis-spec=dom title=dom-DOMException-NOT_SUPPORTED_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-not_supported_err>NOT_SUPPORTED_ERR</a></code> exception.
+  <p>If <var title="">command</var> is not <a href=#supported>supported</a>, <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> a
+  <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#notsupportederror>NotSupportedError</a></code> exception.
 
   <li>
   <p class=comments>This is what Firefox 6.0a2 and Opera 11.11 seem to do when
@@ -9700,8 +9700,8 @@ trying to get interop.  It seems like as of June 2011, everyone just <a href=htt
 would be nice if we could work out a more secure standardized substitute.
 
 <p><a href=#action>Action</a>: The user agent must either copy the current selection
-to the clipboard as though the user had requested it, or raise a
-<code class=external data-anolis-spec=dom title=dom-DOMException-SECURITY_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-security_err>SECURITY_ERR</a></code> exception.  This specification does not define exactly how the
+to the clipboard as though the user had requested it, or <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> a
+<code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#securityerror>SecurityError</a></code> exception.  This specification does not define exactly how the
 selection is to be copied to the clipboard, but the <a href=http://dev.w3.org/2006/webapi/clipops/clipops.html>Clipboard API and
 events</a> specification might be useful.
 
@@ -9717,9 +9717,8 @@ to reconfigure their browser insecurely.
 <p>User agents may choose not to <a href=#supported title=supported>support</a> this
 <a href=#command>command</a> at all.  If a user agent will only honor the
 <a href=#command>command</a> for some whitelisted sites depending on configuration, it
-may either raise a <code class=external data-anolis-spec=dom title=dom-DOMException-SECURITY_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-security_err>SECURITY_ERR</a></code> for non-whitelisted sites, or it may act as
-though the <a href=#command>command</a> is <a href=#supported title=supported>unsupported</a> on
-those sites.
+may either <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> a <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#securityerror>SecurityError</a></code> exception for non-whitelisted sites,
+or it may act as though the <a href=#command>command</a> is <a href=#supported title=supported>unsupported</a> on those sites.
 
 
 <h3 id=the-cut-command><dfn>The <code title="">cut</code> command</dfn></h3>
@@ -9728,8 +9727,9 @@ those sites.
 
 <p><a href=#action>Action</a>: The user agent must either copy the current selection
 to the clipboard and then delete it, as though the user had requested it, or
-raise a <code class=external data-anolis-spec=dom title=dom-DOMException-SECURITY_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-security_err>SECURITY_ERR</a></code> exception.  This specification does not define exactly
-how the selection is to be deleted or copied to the clipboard, but the <a href=http://dev.w3.org/2006/webapi/clipops/clipops.html>Clipboard API and
+<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> a <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#securityerror>SecurityError</a></code> exception.  This specification does not define
+exactly how the selection is to be deleted or copied to the clipboard, but the
+<a href=http://dev.w3.org/2006/webapi/clipops/clipops.html>Clipboard API and
 events</a> specification might be useful.
 
 <p>User agents should exercise caution in respecting this command, because
@@ -9739,9 +9739,8 @@ with extremely long, obscene, or otherwise objectionable content.
 <p>User agents may choose not to <a href=#supported title=supported>support</a> this
 <a href=#command>command</a> at all.  If a user agent will only honor the
 <a href=#command>command</a> for some whitelisted sites depending on configuration, it
-may either raise a <code class=external data-anolis-spec=dom title=dom-DOMException-SECURITY_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-security_err>SECURITY_ERR</a></code> for non-whitelisted sites, or it may act as
-though the <a href=#command>command</a> is <a href=#supported title=supported>unsupported</a> on
-those sites.
+may either <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> a <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#securityerror>SecurityError</a></code> exception for non-whitelisted sites,
+or it may act as though the <a href=#command>command</a> is <a href=#supported title=supported>unsupported</a> on those sites.
 
 
 <h3 id=the-paste-command><dfn>The <code title="">paste</code> command</dfn></h3>
@@ -9750,7 +9749,7 @@ those sites.
 
 <p><a href=#action>Action</a>: The user agent must either <a href=#delete-the-selection>delete the
 selection</a> and then paste the clipboard's contents to the current cursor
-position, as though the user had requested it, or raise a <code class=external data-anolis-spec=dom title=dom-DOMException-SECURITY_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-security_err>SECURITY_ERR</a></code>
+position, as though the user had requested it, or <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> a <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#securityerror>SecurityError</a></code>
 exception.  This specification does not define exactly how the clipboard is to
 be converted to HTML for pasting, but the <a href=http://dev.w3.org/2006/webapi/clipops/clipops.html>Clipboard API and
 events</a> specification might be useful.
@@ -9761,9 +9760,8 @@ because sites could abuse it to read private information from the clipboard.
 <p>User agents may choose not to <a href=#supported title=supported>support</a> this
 <a href=#command>command</a> at all.  If a user agent will only honor the
 <a href=#command>command</a> for some whitelisted sites depending on configuration, it
-may either raise a <code class=external data-anolis-spec=dom title=dom-DOMException-SECURITY_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-security_err>SECURITY_ERR</a></code> for non-whitelisted sites, or it may act as
-though the <a href=#command>command</a> is <a href=#supported title=supported>unsupported</a> on
-those sites.
+may either <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> a <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#securityerror>SecurityError</a></code> exception for non-whitelisted sites,
+or it may act as though the <a href=#command>command</a> is <a href=#supported title=supported>unsupported</a> on those sites.
 
 
 <h3 id=the-selectall-command><dfn>The <code title="">selectAll</code> command</dfn></h3>

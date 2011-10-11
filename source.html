@@ -806,10 +806,10 @@ attribute must return the [[contextobject]]'s <span>focus</span>'s
   <dd>
     <p>Replaces the selection with a collapsed one at the given position.
 
-    <p>Throws an "InvalidNodeTypeError" exception if <var>parentNode</var> is
-    not a [[text]] or [[element]] node, an "InvalidModificationError" exception
+    <p>Throws an [[InvalidNodeTypeError]] exception if <var>parentNode</var> is
+    not a [[text]] or [[element]] node, an [[InvalidModificationError]] exception
     if <var>parentNode</var> doesn't descend from a [[document]], and an
-    "IndexSizeError" exception if <var>offset</var> is negative or longer than
+    [[IndexSizeError]] exception if <var>offset</var> is negative or longer than
     <var>parentNode</var>'s [[length]].
 
   <dt><var>selection</var> . <code title=dom-Selection-collapseToStart>collapseToStart</code>()
@@ -817,25 +817,25 @@ attribute must return the [[contextobject]]'s <span>focus</span>'s
     <p>Replaces the selection with an empty one at the position of the start of
     the current selection.
 
-    <p>Throws an "InvalidStateError" exception if there is no selection.
+    <p>Throws an [[InvalidStateError]] exception if there is no selection.
 
   <dt><var>selection</var> . <code title=dom-Selection-collapseToEnd>collapseToEnd</code>()
   <dd>
     <p>Replaces the selection with an empty one at the position of the end of
     the current selection.
 
-    <p>Throws an "InvalidStateError" exception if there is no selection.
+    <p>Throws an [[InvalidStateError]] exception if there is no selection.
 
   <dt><var>selection</var> . <code title=dom-Selection-extend>extend</code>(<var>parentNode</var>, <var>offset</var>)
   <dd>
     <p>Changes the <span>focus</span> while leaving the <span>anchor</span> in
     place.
 
-    <p>Throws an "InvalidStateError" if there's no selection, an
-    "InvalidNodeTypeError" exception if <var>parentNode</var> is not a [[text]]
-    or [[element]] node, an "InvalidModificationError" exception if
+    <p>Throws an [[InvalidStateError]] if there's no selection, an
+    [[InvalidNodeTypeError]] exception if <var>parentNode</var> is not a [[text]]
+    or [[element]] node, an [[InvalidModificationError]] exception if
     <var>parentNode</var> doesn't descend from a [[document]], and an
-    "IndexSizeError" exception if <var>offset</var> is negative or longer than
+    [[IndexSizeError]] exception if <var>offset</var> is negative or longer than
     <var>parentNode</var>'s [[length]].
 
   <dt><var>selection</var> . <code title=dom-Selection-modify>modify</code>(<var>alter</var>, <var>direction</var>, <var>granularity</var>)
@@ -851,7 +851,7 @@ attribute must return the [[contextobject]]'s <span>focus</span>'s
     <p>If <var>alter</var> is "move", then the anchor is also moved to the same
     position, so that the selection is empty.
 
-    <p>Throws "SyntaxError" if one of the arguments is invalid.
+    <p>Throws [[SyntaxError]] if one of the arguments is invalid.
 </dl>
 
 <p>The <dfn title=dom-Selection-isCollapsed><code>isCollapsed</code></dfn>
@@ -863,13 +863,13 @@ are the same (including if both are null).  Otherwise it must return false.
 
 <ol>
   <li>If <var>parentNode</var> is not a [[text]] or [[element]] node, [[throw]]
-  an "InvalidNodeTypeError" exception and abort these steps.
+  an [[InvalidNodeTypeError]] exception and abort these steps.
 
   <li>If <var>parentNode</var> does not have a [[document]] [[ancestor]],
-  [[throw]] an "InvalidModificationError" and abort these steps.
+  [[throw]] an [[InvalidModificationError]] and abort these steps.
 
   <li>If <var>offset</var> is greater than the [[length]] of
-  <var>parentNode</var>, [[throw]] an "IndexSizeError" exception and abort
+  <var>parentNode</var>, [[throw]] an [[IndexSizeError]] exception and abort
   these steps.
 
   <li>Set the [[contextobject]]'s [[range]] to a new [[range]] object with
@@ -879,14 +879,14 @@ are the same (including if both are null).  Otherwise it must return false.
 
 <p>The <dfn
 title=dom-Selection-collapseToStart><code>collapseToStart()</code></dfn> method
-must [[throw]] an "InvalidStateError" exception if the [[contextobject]]'s
+must [[throw]] an [[InvalidStateError]] exception if the [[contextobject]]'s
 [[range]] is null. Otherwise, it must invoke the [[selcollapse|]] method with
 the [[startnode]] and [[startoffset]] of the [[contextobject]]'s [[range]] as
 the arguments.
 
 <p>The <dfn
 title=dom-Selection-collapseToEnd><code>collapseToEnd()</code></dfn> method
-must [[throw]] an "InvalidStateError" exception if the [[contextobject]]'s
+must [[throw]] an [[InvalidStateError]] exception if the [[contextobject]]'s
 [[range]] is null. Otherwise, it must invoke the [[selcollapse|]] method with
 the [[endnode]] and [[endoffset]] values of the last [[range]] object in the
 list as the arguments.
@@ -909,19 +909,19 @@ tells me its implementation isn't compatible.
   Gecko's behavior of throwing wins, but with a standardized exception type.
 
   <p>If the [[contextobject]]'s [[range]] is null, [[throw]] an
-  "InvalidStateError" exception and abort these steps.
+  [[InvalidStateError]] exception and abort these steps.
 
   <li>If <var>parentNode</var> is not a [[text]] or [[element]] node, [[throw]]
-  an "InvalidNodeTypeError" exception and abort these steps.
+  an [[InvalidNodeTypeError]] exception and abort these steps.
 
   <li>If <var>parentNode</var> does not have a [[document]] [[ancestor]],
-  [[throw]] an "InvalidModificationError" and abort these steps.
+  [[throw]] an [[InvalidModificationError]] and abort these steps.
 
   <li>
   <p class=comments>Gecko and WebKit agree on this, Opera ignores the call.
 
   <p>If <var>offset</var> is greater than <var>parentNode</var>'s [[length]],
-  [[throw]] an "IndexSizeError" exception and abort these steps.
+  [[throw]] an [[IndexSizeError]] exception and abort these steps.
 
   <li>Let <var>range</var> be the [[contextobject]]'s [[range]].
 
@@ -983,15 +983,15 @@ tests.
   but Gecko throws.  Following Gecko for consistency for the other APIs here.
 
   <p>If <var>alter</var> does not equal either "extend" or "move", [[throw]] a
-  "SyntaxError" exception and abort these steps.
+  [[SyntaxError]] exception and abort these steps.
 
   <li>If <var>direction</var> does not equal one of "forward", "backward",
-  "left", or "right", [[throw]] a "SyntaxError" exception and abort these
+  "left", or "right", [[throw]] a [[SyntaxError]] exception and abort these
   steps.
 
   <li>If <var>granularity</var> does not equal one of "character", "word",
   "sentence", "line", "paragraph", "lineboundary", "sentenceboundary",
-  "paragraphboundary", or "documentboundary", [[throw]] a "SyntaxError"
+  "paragraphboundary", or "documentboundary", [[throw]] a [[SyntaxError]]
   exception and abort these steps.
 
   <li>Let <var>anchor</var> and <var>focus</var> be the [[contextobject]]'s
@@ -1054,8 +1054,8 @@ tests.
     <p>Replaces the selection with one that contains all the contents of the
     given element.
 
-    <p>Throws an "InvalidNodeTypeError" exception if <var>parentNode</var> is
-    not a [[text]] or [[element]] node, and an "InvalidModificationError"
+    <p>Throws an [[InvalidNodeTypeError]] exception if <var>parentNode</var> is
+    not a [[text]] or [[element]] node, and an [[InvalidModificationError]]
     exception if <var>parentNode</var> doesn't descend from a [[document]].
 
   <dt><var>selection</var> . <code title=dom-Selection-deleteFromDocument>deleteFromDocument</code>()
@@ -1086,16 +1086,16 @@ title=dom-Range-deleteContents>deleteContents()</code> method on the
   <dd>
     <p>Returns the selection's [[range]], if <var>index</var> is 0.
 
-    <p>Throws an "IndexSizeError" exception if <var>index</var> is not 0, or if
+    <p>Throws an [[IndexSizeError]] exception if <var>index</var> is not 0, or if
     there is no [[range]] in the selection.
 
   <dt><var>selection</var> . <code title=dom-Selection-addRange>addRange</code>(<var>range</var>)
   <dd>
     <p>Adds the given [[range]] to the selection.
 
-    <p>Throws an "InvalidNodeTypeError" exception if the given [[range]] has a
+    <p>Throws an [[InvalidNodeTypeError]] exception if the given [[range]] has a
     boundary point node that's not a [[text]] or [[element]] node, and an
-    "InvalidModificationError" exception if it has a boundary point node that
+    [[InvalidModificationError]] exception if it has a boundary point node that
     doesn't descend from a [[document]].
 
   <dt><var>selection</var> . <code title=dom-Selection-removeRange>removeRange</code>(<var>range</var>)
@@ -1117,7 +1117,7 @@ spec says.  Chrome 12 dev and Opera 11.10 return a different object every time.
 
 <p>The <dfn
 title=dom-Selection-getRangeAt><code>getRangeAt(<var>index</var>)</code></dfn>
-method must [[throw]] an "IndexSizeError" exception if <var>index</var> is not
+method must [[throw]] an [[IndexSizeError]] exception if <var>index</var> is not
 0, or if the [[contextobject]]'s [[range]] is null.  Otherwise, it must return
 a reference to (not a copy of) the [[contextobject]]'s [[range]]. (Thus
 subsequent calls must return the same object if nothing has removed the
@@ -1135,10 +1135,10 @@ more useful than silent failure, so the spec goes with that.
 
 <p>The <dfn
 title=dom-Selection-addRange><code>addRange(<var>range</var>)</code></dfn>
-method must [[throw]] an "InvalidNodeTypeError" exception if <var>range</var>'s
+method must [[throw]] an [[InvalidNodeTypeError]] exception if <var>range</var>'s
 [[startnode]] or [[endnode]] is not a [[text]] or [[element]] node.  Otherwise,
 if <var>range</var>'s [[startnode]] or [[endnode]] does not have a [[document]]
-[[ancestor]], it must [[throw]] an "InvalidModificationError".  Otherwise, it must
+[[ancestor]], it must [[throw]] an [[InvalidModificationError]].  Otherwise, it must
 set the [[contextobject]]'s [[range]] to a reference to (not a copy of)
 <var>range</var>. Since <var>range</var> is added by reference, subsequent
 calls to <code title=dom-Selection-getRangeAt>getRangeAt(0)</code> must return
@@ -1379,8 +1379,8 @@ must run the following steps:
   <p class=comments>See comment before <a href=#supported-commands>Supported
   commands</a>.
 
-  <p>If <var>command</var> is not <span>supported</span>, raise a
-  [[NOT_SUPPORTED_ERR]] exception.
+  <p>If <var>command</var> is not <span>supported</span>, [[throw]] a
+  [[NotSupportedError]] exception.
 
   <li>
   <p class=comments>I didn't research this closely, but at a first glance, this
@@ -1407,8 +1407,8 @@ invoked, the user agent must run the following steps:
   <p class=comments>See comment before <a href=#supported-commands>Supported
   commands</a>.
 
-  <p>If <var>command</var> is not <span>supported</span>, raise a
-  [[NOT_SUPPORTED_ERR]] exception.
+  <p>If <var>command</var> is not <span>supported</span>, [[throw]] a
+  [[NotSupportedError]] exception.
 
   <li>Return true if <var>command</var> is <span>enabled</span>, false
   otherwise.
@@ -1424,8 +1424,8 @@ invoked, the user agent must run the following steps:
   <p class=comments>See comment before <a href=#supported-commands>Supported
   commands</a>.
 
-  <p>If <var>command</var> is not <span>supported</span>, raise a
-  [[NOT_SUPPORTED_ERR]] exception.
+  <p>If <var>command</var> is not <span>supported</span>, [[throw]] a
+  [[NotSupportedError]] exception.
 
   <li>
   <div class=comments>
@@ -1477,8 +1477,8 @@ invoked, the user agent must run the following steps:
   <p class=comments>See comment before <a href=#supported-commands>Supported
   commands</a>.
 
-  <p>If <var>command</var> is not <span>supported</span>, raise a
-  [[NOT_SUPPORTED_ERR]] exception.
+  <p>If <var>command</var> is not <span>supported</span>, [[throw]] a
+  [[NotSupportedError]] exception.
 
   <li>
   <p class=comments>See comment on the comparable line for
@@ -1519,8 +1519,8 @@ invoked, the user agent must run the following steps:
   <p class=comments>See comment before <a href=#supported-commands>Supported
   commands</a>.
 
-  <p>If <var>command</var> is not <span>supported</span>, raise a
-  [[NOT_SUPPORTED_ERR]] exception.
+  <p>If <var>command</var> is not <span>supported</span>, [[throw]] a
+  [[NotSupportedError]] exception.
 
   <li>
   <p class=comments>This is what Firefox 6.0a2 and Opera 11.11 seem to do when
@@ -9798,8 +9798,8 @@ href=http://code.google.com/p/zeroclipboard/>uses Flash for this</a>.  So it
 would be nice if we could work out a more secure standardized substitute.
 
 <p><span>Action</span>: The user agent must either copy the current selection
-to the clipboard as though the user had requested it, or raise a
-[[SECURITY_ERR]] exception.  This specification does not define exactly how the
+to the clipboard as though the user had requested it, or [[throw]] a
+[[SecurityError]] exception.  This specification does not define exactly how the
 selection is to be copied to the clipboard, but the <a
 href=http://dev.w3.org/2006/webapi/clipops/clipops.html>Clipboard API and
 events</a> specification might be useful.
@@ -9816,9 +9816,9 @@ to reconfigure their browser insecurely.
 <p>User agents may choose not to <span title=supported>support</span> this
 <span>command</span> at all.  If a user agent will only honor the
 <span>command</span> for some whitelisted sites depending on configuration, it
-may either raise a [[SECURITY_ERR]] for non-whitelisted sites, or it may act as
-though the <span>command</span> is <span title=supported>unsupported</span> on
-those sites.
+may either [[throw]] a [[SecurityError]] exception for non-whitelisted sites,
+or it may act as though the <span>command</span> is <span
+title=supported>unsupported</span> on those sites.
 
 <!-- @} -->
 <h3><dfn>The <code title>cut</code> command</dfn></h3>
@@ -9827,9 +9827,9 @@ those sites.
 
 <p><span>Action</span>: The user agent must either copy the current selection
 to the clipboard and then delete it, as though the user had requested it, or
-raise a [[SECURITY_ERR]] exception.  This specification does not define exactly
-how the selection is to be deleted or copied to the clipboard, but the <a
-href=http://dev.w3.org/2006/webapi/clipops/clipops.html>Clipboard API and
+[[throw]] a [[SecurityError]] exception.  This specification does not define
+exactly how the selection is to be deleted or copied to the clipboard, but the
+<a href=http://dev.w3.org/2006/webapi/clipops/clipops.html>Clipboard API and
 events</a> specification might be useful.
 
 <p>User agents should exercise caution in respecting this command, because
@@ -9839,9 +9839,9 @@ with extremely long, obscene, or otherwise objectionable content.
 <p>User agents may choose not to <span title=supported>support</span> this
 <span>command</span> at all.  If a user agent will only honor the
 <span>command</span> for some whitelisted sites depending on configuration, it
-may either raise a [[SECURITY_ERR]] for non-whitelisted sites, or it may act as
-though the <span>command</span> is <span title=supported>unsupported</span> on
-those sites.
+may either [[throw]] a [[SecurityError]] exception for non-whitelisted sites,
+or it may act as though the <span>command</span> is <span
+title=supported>unsupported</span> on those sites.
 
 <!-- @} -->
 <h3><dfn>The <code title>paste</code> command</dfn></h3>
@@ -9850,7 +9850,7 @@ those sites.
 
 <p><span>Action</span>: The user agent must either <span>delete the
 selection</span> and then paste the clipboard's contents to the current cursor
-position, as though the user had requested it, or raise a [[SECURITY_ERR]]
+position, as though the user had requested it, or [[throw]] a [[SecurityError]]
 exception.  This specification does not define exactly how the clipboard is to
 be converted to HTML for pasting, but the <a
 href=http://dev.w3.org/2006/webapi/clipops/clipops.html>Clipboard API and
@@ -9862,9 +9862,9 @@ because sites could abuse it to read private information from the clipboard.
 <p>User agents may choose not to <span title=supported>support</span> this
 <span>command</span> at all.  If a user agent will only honor the
 <span>command</span> for some whitelisted sites depending on configuration, it
-may either raise a [[SECURITY_ERR]] for non-whitelisted sites, or it may act as
-though the <span>command</span> is <span title=supported>unsupported</span> on
-those sites.
+may either [[throw]] a [[SecurityError]] exception for non-whitelisted sites,
+or it may act as though the <span>command</span> is <span
+title=supported>unsupported</span> on those sites.
 
 <!-- @} -->
 <h3><dfn>The <code title>selectAll</code> command</dfn></h3>

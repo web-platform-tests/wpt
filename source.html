@@ -868,23 +868,24 @@ are the same (including if both are null).  Otherwise it must return false.
   <var>offset</var>).
 </ol>
 
+<p class=comments>For collapseToStart/End, IE9 mutates the existing range,
+while Firefox 9.0a2 and Chrome 15 dev replace it with a new one.  The spec
+follows the majority and replaces it with a new one, leaving the old Range
+object unchanged.
+
 <p>The <dfn
 title=dom-Selection-collapseToStart><code>collapseToStart()</code></dfn> method
 must [[throw]] an [[InvalidStateError]] exception if the [[contextobject]]'s
-[[range]] is null. Otherwise, it must invoke the [[selcollapse|]] method with
-the [[startnode]] and [[startoffset]] of the [[contextobject]]'s [[range]] as
-the arguments.
+[[range]] is null.  Otherwise, it must set the [[contextobject]]'s [[range]] to
+a new [[range]] object with [[rangestart]] and [[rangeend]] both equal to the
+[[contextobject]]'s old [[range]]'s [[rangestart]].
 
 <p>The <dfn
 title=dom-Selection-collapseToEnd><code>collapseToEnd()</code></dfn> method
 must [[throw]] an [[InvalidStateError]] exception if the [[contextobject]]'s
-[[range]] is null. Otherwise, it must invoke the [[selcollapse|]] method with
-the [[endnode]] and [[endoffset]] values of the last [[range]] object in the
-list as the arguments.
-
-<p class=XXX>This implies that they'll replace the range object instead of
-changing it.  Will they?  Needs testing.  It seems like they shouldn't.  Same
-for collapse() itself.
+[[range]] is null.  Otherwise, it must set the [[contextobject]]'s [[range]] to
+a new [[range]] object with [[rangestart]] and [[rangeend]] both equal to the
+[[contextobject]]'s old [[range]]'s [[rangeend]].
 
 <p class=comments>Reverse-engineered circa January 2011.  IE doesn't support it, so I'm
 relying on Firefox (implemented extend() sometime before 2000) and WebKit

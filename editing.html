@@ -925,21 +925,22 @@ are the same (including if both are null).  Otherwise it must return false.
   <var title="">offset</var>).
 </ol>
 
+<p class=comments>For collapseToStart/End, IE9 mutates the existing range,
+while Firefox 9.0a2 and Chrome 15 dev replace it with a new one.  The spec
+follows the majority and replaces it with a new one, leaving the old Range
+object unchanged.
+
 <p>The <dfn id=dom-selection-collapsetostart title=dom-Selection-collapseToStart><code>collapseToStart()</code></dfn> method
 must <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> an <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#invalidstateerror>InvalidStateError</a></code> exception if the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s
-<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> is null. Otherwise, it must invoke the <code title=dom-Selection-collapse><a href=#dom-selection-collapse>collapse()</a></code> method with
-the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-node title=concept-range-start-node>start node</a> and <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-offset title=concept-range-start-offset>start offset</a> of the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> as
-the arguments.
+<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> is null.  Otherwise, it must set the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> to
+a new <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> object with <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a> and <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end title=concept-range-end>end</a> both equal to the
+<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s old <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a>.
 
 <p>The <dfn id=dom-selection-collapsetoend title=dom-Selection-collapseToEnd><code>collapseToEnd()</code></dfn> method
 must <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> an <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#invalidstateerror>InvalidStateError</a></code> exception if the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s
-<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> is null. Otherwise, it must invoke the <code title=dom-Selection-collapse><a href=#dom-selection-collapse>collapse()</a></code> method with
-the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end-node title=concept-range-end-node>end node</a> and <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end-offset title=concept-range-end-offset>end offset</a> values of the last <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> object in the
-list as the arguments.
-
-<p class=XXX>This implies that they'll replace the range object instead of
-changing it.  Will they?  Needs testing.  It seems like they shouldn't.  Same
-for collapse() itself.
+<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> is null.  Otherwise, it must set the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> to
+a new <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> object with <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a> and <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end title=concept-range-end>end</a> both equal to the
+<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s old <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end title=concept-range-end>end</a>.
 
 <p class=comments>Reverse-engineered circa January 2011.  IE doesn't support it, so I'm
 relying on Firefox (implemented extend() sometime before 2000) and WebKit

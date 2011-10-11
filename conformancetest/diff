@@ -1,3 +1,17 @@
+@@ -1121,11 +1121,11 @@
+ 	{"stylewithcss":[false,false,"",false,true,""],"bold":[false,false,"",false,true,""]}],
+ ["<font color=blue face=monospace><b>foo</b></font>[bar]",
+ 	[["stylewithcss","false"],["bold",""]],
+-	"<b><font color=\"blue\" face=\"monospace\">foo</font>[bar]</b>",
++	"<b><font face=\"monospace\" color=\"blue\">foo</font>[bar]</b>",
+ 	{"stylewithcss":[false,true,"",false,false,""],"bold":[false,false,"",false,true,""]}],
+ ["<font color=blue face=monospace><b>foo</b></font>[bar]",
+ 	[["stylewithcss","true"],["bold",""]],
+-	"<b><font color=\"blue\" face=\"monospace\">foo</font>[bar]</b>",
++	"<b><font face=\"monospace\" color=\"blue\">foo</font>[bar]</b>",
+ 	{"stylewithcss":[false,false,"",false,true,""],"bold":[false,false,"",false,true,""]}],
+ ["foo<span style=\"font-weight: normal\"><b>{bar}</b></span>baz",
+ 	[["stylewithcss","false"],["bold",""]],
 @@ -1585,11 +1585,11 @@
  	{"stylewithcss":[false,false,"",false,true,""],"delete":[false,false,"",false,false,""]}],
  ["foo&#x308;&#x327;[]bar",

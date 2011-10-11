@@ -1134,10 +1134,16 @@ if <var>range</var>'s [[startnode]] or [[endnode]] does not have a [[document]]
 [[ancestor]], it must [[throw]] an "InvalidModificationError".  Otherwise, it must
 set the [[contextobject]]'s [[range]] to a reference to (not a copy of)
 <var>range</var>. Since <var>range</var> is added by reference, subsequent
-calls to <code title=dom-Selection-getRangeAt>getRangeAt()</code> with a
-suitable argument must return the same object, and any changes that a script
-makes to <var>range</var> after it is added must be reflected in the
-[[selection]], until <var>range</var> is removed from the list.
+calls to <code title=dom-Selection-getRangeAt>getRangeAt(0)</code> must return
+the same object, and any changes that a script makes to <var>range</var> after
+it is added must be reflected in the [[selection]], until something else
+removes or replaces the [[contextobject]]'s [[range]].
+
+<p class=comments>Firefox 9.0a2 allows multiple Ranges per Selection, as noted
+elsewhere, so of course this isn't how it behaves.  Chrome 15 dev seems to
+ignore addRange() if there's already a range.  The spec matches IE9, which
+replaces the existing range.  This is likely to behave closest to Firefox, and
+is also more useful than silent failure.
 
 <p>The <dfn
 title=dom-Selection-removeRange><code>removeRange(<var>range</var>)</code></dfn>

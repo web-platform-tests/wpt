@@ -65,7 +65,7 @@ a code { text-decoration: underline }
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing APIs</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-5-october-2011>Work in Progress &mdash; Last Update 5 October 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-11-october-2011>Work in Progress &mdash; Last Update 11 October 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;<a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a>&gt;
@@ -1183,10 +1183,16 @@ if <var title="">range</var>'s <a class=external data-anolis-spec=dom href=http:
 <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a>, it must <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> an "InvalidModificationError".  Otherwise, it must
 set the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> to a reference to (not a copy of)
 <var title="">range</var>. Since <var title="">range</var> is added by reference, subsequent
-calls to <code title=dom-Selection-getRangeAt><a href=#dom-selection-getrangeat>getRangeAt()</a></code> with a
-suitable argument must return the same object, and any changes that a script
-makes to <var title="">range</var> after it is added must be reflected in the
-<a href=#concept-selection title=concept-selection>selection</a>, until <var title="">range</var> is removed from the list.
+calls to <code title=dom-Selection-getRangeAt><a href=#dom-selection-getrangeat>getRangeAt(0)</a></code> must return
+the same object, and any changes that a script makes to <var title="">range</var> after
+it is added must be reflected in the <a href=#concept-selection title=concept-selection>selection</a>, until something else
+removes or replaces the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>.
+
+<p class=comments>Firefox 9.0a2 allows multiple Ranges per Selection, as noted
+elsewhere, so of course this isn't how it behaves.  Chrome 15 dev seems to
+ignore addRange() if there's already a range.  The spec matches IE9, which
+replaces the existing range.  This is likely to behave closest to Firefox, and
+is also more useful than silent failure.
 
 <p>The <dfn id=dom-selection-removerange title=dom-Selection-removeRange><code>removeRange(<var title="">range</var>)</code></dfn>
 method must set the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> to null if its <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> is

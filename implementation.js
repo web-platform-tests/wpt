@@ -407,6 +407,16 @@ function normalizeColor(color) {
 		return null;
 	}
 
+	if (normalizeColor.resultCache === undefined) {
+		normalizeColor.resultCache = {};
+	}
+
+	if (normalizeColor.resultCache[color] !== undefined) {
+		return normalizeColor.resultCache[color];
+	}
+
+	var originalColor = color;
+
 	var outerSpan = document.createElement("span");
 	document.body.appendChild(outerSpan);
 	outerSpan.style.color = "black";
@@ -421,7 +431,7 @@ function normalizeColor(color) {
 		outerSpan.color = "white";
 		color = getComputedStyle(innerSpan).color;
 		if (color != "rgb(0, 0, 0)") {
-			return null;
+			return normalizeColor.resultCache[originalColor] = null;
 		}
 	}
 
@@ -432,17 +442,19 @@ function normalizeColor(color) {
 	// three exceptions I found:
 	if (/^rgba\([0-9]+, [0-9]+, [0-9]+, 1\)$/.test(color)) {
 		// IE10PP2 seems to do this sometimes.
-		return color.replace("rgba", "rgb").replace(", 1)", ")");
+		return normalizeColor.resultCache[originalColor] =
+			color.replace("rgba", "rgb").replace(", 1)", ")");
 	}
 	if (color == "transparent") {
 		// IE10PP2, Firefox 7.0a2, and Opera 11.50 all return "transparent" if
 		// the specified value is "transparent".
-		return "rgba(0, 0, 0, 0)";
+		return normalizeColor.resultCache[originalColor] =
+			"rgba(0, 0, 0, 0)";
 	}
 	// Chrome 15 dev adds way too many significant figures.  This isn't a full
 	// fix, it just fixes one case that comes up in tests.
 	color = color.replace(/, 0.496094\)$/, ", 0.5)");
-	return color;
+	return normalizeColor.resultCache[originalColor] = color;
 }
 
 // Returns either null, or something of the form #xxxxxx.
@@ -3248,17 +3260,25 @@ commands.fontsize = {
 };
 
 function getLegacyFontSize(size) {
+	if (getLegacyFontSize.resultCache === undefined) {
+		getLegacyFontSize.resultCache = {};
+	}
+
+	if (getLegacyFontSize.resultCache[size] !== undefined) {
+		return getLegacyFontSize.resultCache[size];
+	}
+
 	// For convenience in other places in my code, I handle all sizes, not just
 	// pixel sizes as the spec says.  This means pixel sizes have to be passed
 	// in suffixed with "px", not as plain numbers.
 	if (normalizeFontSize(size) !== null) {
-		return cssSizeToLegacy(normalizeFontSize(size));
+		return getLegacyFontSize.resultCache[size] = cssSizeToLegacy(normalizeFontSize(size));
 	}
 
 	if (["xx-small", "x-small", "small", "medium", "large", "x-large", "xx-large", "xxx-large"].indexOf(size) == -1
 	&& !/^[0-9]+(\.[0-9]+)?(cm|mm|in|pt|pc|px)$/.test(size)) {
 		// There is no sensible legacy size for things like "2em".
-		return null;
+		return getLegacyFontSize.resultCache[size] = null;
 	}
 
 	var font = document.createElement("font");
@@ -3296,7 +3316,7 @@ function getLegacyFontSize(size) {
 		// "If pixel size is less than average, return the one-element
 		// string consisting of the digit returned size."
 		if (pixelSize < average) {
-			return String(returnedSize);
+			return getLegacyFontSize.resultCache[size] = String(returnedSize);
 		}
 
 		// "Add one to returned size."
@@ -3304,7 +3324,7 @@ function getLegacyFontSize(size) {
 	}
 
 	// "Return "7"."
-	return "7";
+	return getLegacyFontSize.resultCache[size] = "7";
 }
 
 //@}

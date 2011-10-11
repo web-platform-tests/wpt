@@ -2204,13 +2204,6 @@ title>&lt;b></code> element.
 elements.  I mostly got the obsolete element list by testing what Firefox 5.0a2
 splits when you do insertHorizontalRule.
 
-<p>At the time of this writing (July 2011), dt is only allowed to contain
-inline contents by HTML.  I deliberately omit it from the list regardless,
-because I don't like the fact that including it will cause various commands to
-break apart lists rather than put bad things inside dt.  I filed a <a
-href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=13201>bug</a> asking that
-the spec be changed.
-
 <p>TODO: The definitions of prohibited paragraph children and elements with
 inline contents should be in the HTML spec (possibly under a different name) so
 they don't fall out of sync.  They'll do for now.
@@ -2242,6 +2235,11 @@ few reasons:
   <li>I just haven't had bothered to be systematic about it yet.  I've only
   covered what's come up in my tests.
 </ol>
+
+<p>I deliberately allow [[dt]] to contain headers and such, in violation of
+HTML.  If I didn't, then when the user tried to formatBlock a [[dt]] as a
+header, it would break apart the whole [[dl]], which seems worse.  See <a
+href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=13201>bug 13201</a>.
 </div>
 
 <p>A [[node]] or string <var>child</var> is an <dfn>allowed child</dfn> of a

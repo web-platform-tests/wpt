@@ -381,86 +381,6 @@ policies and contribution forms [3].
      */
     function format_value(val)
     {
-        if (val === null)
-        {
-            // typeof is object, so the switch isn't useful
-            return "null";
-        }
-        // In JavaScript, -0 === 0 and String(-0) == "0", so we have to
-        // special-case.
-        if (val === -0 && 1/val === -Infinity)
-        {
-            return "-0";
-        }
-        // Special-case Node objects, since those come up a lot in my tests.  I
-        // ignore namespaces.  I use duck-typing instead of instanceof, because
-        // instanceof doesn't work if the node is from another window (like an
-        // iframe's contentWindow):
-        // http://www.w3.org/Bugs/Public/show_bug.cgi?id=12295
-        if (typeof val == "object"
-        && "nodeType" in val
-        && "nodeName" in val
-        && "nodeValue" in val
-        && "childNodes" in val)
-        {
-            switch (val.nodeType)
-            {
-            case Node.ELEMENT_NODE:
-                var ret = "Element node <";
-                if (val.namespaceURI == "http://www.w3.org/1999/xhtml" || val.namespaceURI === null)
-                {
-                    ret += val.tagName.toLowerCase();
-                }
-                else
-                {
-                    ret += val.tagName;
-                }
-                for (var i = 0; i < val.attributes.length; i++)
-                {
-                    ret += " " + val.attributes[i].name + "=" + format_value(val.attributes[i].value);
-                }
-                ret += "> with " + val.childNodes.length + (val.childNodes.length == 1 ? " child" : " children");
-                return ret;
-            case Node.TEXT_NODE:
-                return "Text node with data " + format_value(val.data) + " and parent " + format_value(val.parentNode);
-            case Node.PROCESSING_INSTRUCTION_NODE:
-                return "ProcessingInstruction node with target " + format_value(val.target) + " and data " + format_value(val.data);
-            case Node.COMMENT_NODE:
-                return "Comment node with data " + format_value(val.data);
-            case Node.DOCUMENT_NODE:
-                return "Document node with " + val.childNodes.length + (val.childNodes.length == 1 ? " child" : " children");
-            case Node.DOCUMENT_TYPE_NODE:
-                return "DocumentType node";
-            case Node.DOCUMENT_FRAGMENT_NODE:
-                return "DocumentFragment node with " + val.childNodes.length + (val.childNodes.length == 1 ? " child" : " children");
-            default:
-                return "Node object of unknown type";
-            }
-        }
-
-        // Also special-case ranges and selections, since these aren't handled
-        // well by the general-purpose code: they stringify, which we don't
-        // want.
-        if (typeof val == "object"
-        && "startContainer" in val
-        && "startOffset" in val
-        && "endContainer" in val
-        && "endOffset" in val)
-        {
-            return "Range with start (" + format_value(val.startContainer) + ", " + val.startOffset + "), "
-                + "end (" + format_value(val.endContainer) + ", " + val.endOffset + ")";
-        }
-
-        if (typeof val == "object"
-        && "anchorNode" in val
-        && "anchorOffset" in val
-        && "focusNode" in val
-        && "focusOffset" in val)
-        {
-            return "Selection with anchor (" + format_value(val.anchorNode) + ", " + val.anchorOffset + "), "
-                + "focus (" + format_value(val.focusNode) + ", " + val.focusOffset + ")";
-        }
-
         switch (typeof val)
         {
         case "string":
@@ -506,8 +426,88 @@ policies and contribution forms [3].
             return '"' + val.replace(/"/g, '\\"') + '"';
         case "boolean":
         case "undefined":
-        case "number":
             return String(val);
+        case "number":
+            // In JavaScript, -0 === 0 and String(-0) == "0", so we have to
+            // special-case.
+            if (val === -0 && 1/val === -Infinity)
+            {
+                return "-0";
+            }
+            return String(val);
+        case "object":
+            if (val === null)
+            {
+                return "null";
+            }
+
+            // Special-case Node objects, since those come up a lot in my tests.  I
+            // ignore namespaces.  I use duck-typing instead of instanceof, because
+            // instanceof doesn't work if the node is from another window (like an
+            // iframe's contentWindow):
+            // http://www.w3.org/Bugs/Public/show_bug.cgi?id=12295
+            if ("nodeType" in val
+            && "nodeName" in val
+            && "nodeValue" in val
+            && "childNodes" in val)
+            {
+                switch (val.nodeType)
+                {
+                case Node.ELEMENT_NODE:
+                    var ret = "Element node <";
+                    if (val.namespaceURI == "http://www.w3.org/1999/xhtml" || val.namespaceURI === null)
+                    {
+                        ret += val.tagName.toLowerCase();
+                    }
+                    else
+                    {
+                        ret += val.tagName;
+                    }
+                    for (var i = 0; i < val.attributes.length; i++)
+                    {
+                        ret += " " + val.attributes[i].name + "=" + format_value(val.attributes[i].value);
+                    }
+                    ret += "> with " + val.childNodes.length + (val.childNodes.length == 1 ? " child" : " children");
+                    return ret;
+                case Node.TEXT_NODE:
+                    return "Text node with data " + format_value(val.data) + " and parent " + format_value(val.parentNode);
+                case Node.PROCESSING_INSTRUCTION_NODE:
+                    return "ProcessingInstruction node with target " + format_value(val.target) + " and data " + format_value(val.data);
+                case Node.COMMENT_NODE:
+                    return "Comment node with data " + format_value(val.data);
+                case Node.DOCUMENT_NODE:
+                    return "Document node with " + val.childNodes.length + (val.childNodes.length == 1 ? " child" : " children");
+                case Node.DOCUMENT_TYPE_NODE:
+                    return "DocumentType node";
+                case Node.DOCUMENT_FRAGMENT_NODE:
+                    return "DocumentFragment node with " + val.childNodes.length + (val.childNodes.length == 1 ? " child" : " children");
+                default:
+                    return "Node object of unknown type";
+                }
+            }
+
+            // Also special-case ranges and selections, since these aren't handled
+            // well by the general-purpose code: they stringify, which we don't
+            // want.
+            if ("startContainer" in val
+            && "startOffset" in val
+            && "endContainer" in val
+            && "endOffset" in val)
+            {
+                return "Range with start (" + format_value(val.startContainer) + ", " + val.startOffset + "), "
+                    + "end (" + format_value(val.endContainer) + ", " + val.endOffset + ")";
+            }
+
+            if ("anchorNode" in val
+            && "anchorOffset" in val
+            && "focusNode" in val
+            && "focusOffset" in val)
+            {
+                return "Selection with anchor (" + format_value(val.anchorNode) + ", " + val.anchorOffset + "), "
+                    + "focus (" + format_value(val.focusNode) + ", " + val.focusOffset + ")";
+            }
+
+            // Fall through to default
         default:
             return typeof val + ' "' + val + '"';
         }

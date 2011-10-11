@@ -1670,16 +1670,18 @@ policies and contribution forms [3].
 
  function ancestor_windows() {
      //Get the windows [self ... top] as an array
+     if ("result_cache" in ancestor_windows)
+     {
+         return ancestor_windows.result_cache;
+     }
      var rv = [self];
      var w = self;
-     do
+     while (w != w.parent)
      {
-
          w = w.parent;
-         if (w != self) {
-             rv.push(w);
-         }
-     } while(w.parent !== w)
+         rv.push(w);
+     }
+     ancestor_windows.result_cache = rv;
      return rv;
  }
 

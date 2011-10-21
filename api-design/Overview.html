@@ -8,10 +8,15 @@
           specStatus: "ED",
           shortName:  "api-design",
           editors: [
+	
                 {   name:       "Robin Berjon",
                     url:        "http://berjon.com/",
                     company:    "Robineko",
-                    companyURL: "http://robineko.com/" }
+                    companyURL: "http://robineko.com/" },
+				{   name:       "Marcos Caceres",
+                    url:        "http://marcosc.com",
+                    company:    "Data.Driven()",
+                    companyURL: "http://datadriven.com.au/" }	
           ],
           edDraftURI:   "http://w3c-test.org/webapps/api-design/",
           copyrightStart: 2011,
@@ -67,18 +72,21 @@
         ...
       </p>
     </section>
-    <section>
-      <h2>Exceptions</h2>
-      <p>
-        ...
-      </p>
-    </section>
+  <section>
+    <h2>Exception    </h2>
+    <p>Web IDL forbids exception fields named "message" (and "name"). This 
+      property will exist automatically as an own property on the exception 
+      object if a message is specified when throwing the exception. So you 
+      just need to say, for example.</p>
+    <p >How to write: </p>
+    <p>Throw an FooException of type "SomeError" with message "Something went wrong!". </span></p>
+  </section>
     <section>
       <h2>When to use NoInterfaceObject</h2>
       <p>
         ...
       </p>
-    </section>
+  </section>
     <section>
       <h2>Using Dictionaries</h2>
       <p>

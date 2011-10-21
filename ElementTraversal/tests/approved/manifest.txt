@@ -1,0 +1,35 @@
+et-firstElementChild.svg			#attribute-firstElementChild	Test of Entity Reference Nodes
+et-lastElementChild.xhtml			#attribute-lastElementChild	Test of lastElementChild
+et-childElementCount.svg			#attribute-childElementCount	Test of childElementCount
+et-childElementCount-nochild.svg			#attribute-childElementCount	Test of childElementCount with No Child Element Nodes
+et-childElement-null.html			#attribute-firstElementChild,#attribute-lastElementChild	Test of firstElementChild and lastChildElement returning null
+et-lastElementChild.svg			#attribute-lastElementChild	Test of lastElementChild
+et-dynamic-remove.svg			#attribute-childElementCount	Test of Dynamic Removal of Elements
+et-namespace.svg			#attribute-firstElementChild	Test of firstElementChild with Namespaces
+et-siblingElement-null.svg			#attribute-nextElementChild,#attribute-previousElementChild	Test of previousElementSibling and nextElementSibling returning null
+et-childElementCount.xhtml			#attribute-childElementCount	Test of childElementCount
+et-dynamic-remove.html			#attribute-childElementCount	Test of Dynamic Removal of Elements
+et-nextElementSibling.html			#attribute-nextElementSibling	Test of nextElementSibling
+et-dynamic-add.svg			#attribute-childElementCount	Test of Dynamic Adding of Elements
+et-dynamic-add.html			#attribute-childElementCount	Test of Dynamic Adding of Elements
+et-childElement-null.xhtml			#attribute-firstElementChild,#attribute-lastElementChild	Test of firstElementChild and lastChildElement returning null
+et-firstElementChild.xhtml			#attribute-firstElementChild	Test of firstElementChild
+et-namespace.html			#attribute-firstElementChild	Test of firstElementChild with Namespaces
+et-firstElementChild.html			#attribute-firstElementChild	Test of firstElementChild
+et-namespace.xhtml			#attribute-firstElementChild	Test of firstElementChild with Namespaces
+et-entity.svg			#attribute-firstElementChild	Test of Entity Reference Nodes
+et-previousElementSibling.svg			#attribute-previousElementSibling	Test of previousElementSibling
+et-lastElementChild.html			#attribute-lastElementChild	Test of lastElementChild
+et-previousElementSibling.html			#attribute-previousElementSibling	Test of previousElementSibling
+et-siblingElement-null.html			#attribute-nextElementChild,#attribute-previousElementChild	Test of firstElementChild and lastChildElement returning null
+et-childElementCount.html			#attribute-childElementCount	Test of childElementCount
+et-childElementCount-nochild.xhtml			#attribute-childElementCount	Test of childElementCount with No Child Element Nodes
+et-dynamic-add.xhtml			#attribute-childElementCount	Test of Dynamic Adding of Elements
+et-childElement-null.svg			#attribute-firstElementChild,#attribute-lastElementChild	Test of firstElementChild and lastElementChild null returns
+et-siblingElement-null.xhtml			#attribute-nextElementChild,#attribute-previousElementChild	Test of firstElementChild and lastChildElement returning null
+et-nextElementSibling.xhtml			#attribute-nextElementSibling	Test of nextElementSibling
+et-childElementCount-nochild.html			#attribute-childElementCount	Test of childElementCount with No Child Element Nodes
+et-previousElementSibling.xhtml			#attribute-previousElementSibling	Test of previousElementSibling
+et-entity.xhtml			#attribute-firstElementChild	Test of Entity Reference Nodes
+et-dynamic-remove.xhtml			#attribute-childElementCount	Test of Dynamic Adding of Elements
+et-nextElementSibling.svg			#attribute-nextElementSibling	Test of nextElementSibling

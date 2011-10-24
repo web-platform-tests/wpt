@@ -1046,12 +1046,31 @@ tests.
     <p>Deletes the selection.
 </dl>
 
+<div class=comments>
+<p>Based mostly on Firefox 9.0a2.  It has a bug that I didn't reproduce, namely
+that if you pass a Document as the argument, the end offset becomes 1 instead
+of the number of children it has.  It also throws a RangeException instead of
+DOMException, because its implementation predated their merging.
+
+<p>IE9 behaves similarly but with glitches.  It throws "Unspecified error." if
+the node is detached or display:none, and apparently in some random other cases
+too.  It throws "Invalid argument." for detached comments (only!).  Finally, if
+you pass it a comment, it seems to select the whole comment, unlike with text
+nodes.
+
+<p>Chrome 16 dev behaves as you'd expect given its Selection implementation.
+It refuses to select anything that's not visible, so it's almost always wrong.
+Opera 11.50 just does nothing in all my tests, as usual.
+</div>
+
 <p>The <dfn
 title=dom-Selection-selectAllChildren><code>selectAllChildren(<var>parentNode</var>)</code></dfn>
-method must set the [[contextobject]]'s [[range]] to one whose [[rangestart]]
-is (<var>parentNode</var>, 0) and whose [[rangeend]] is (<var>parentNode</var>,
-<var>parentNode</var>'s [[length]]), then set the [[contextobject]]'s
-[[seldir]] to "forwards".
+method must [[throw]] an [[InvalidNodeTypeError]] if <var>parentNode</var> is a
+[[documenttype]].  Otherwise, it must set the [[contextobject]]'s [[range]] to
+a new [[range]] whose [[startnode]] and [[endnode]] are <var>parentNode</var>,
+whose [[startoffset]] is 0, and whose [[endoffset]] is the number of
+<var>parentNode</var>'s [[children]]; then set the [[contextobject]]'s
+[[seldir]] to forwards.
 
 <p>The <dfn
 title=dom-Selection-deleteFromDocument><code>deleteFromDocument()</code></dfn>

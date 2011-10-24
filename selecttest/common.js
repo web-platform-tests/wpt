@@ -910,3 +910,17 @@ function getDomExceptionName(e) {
 	throw e;
 }
 
+/**
+ * Given an array of endpoint data [start container, start offset, end
+ * container, end offset], returns a Range with those endpoints.  Uses
+ * addRange, so the range will always be forwards.
+ */
+function rangeFromEndpoints(endpoints) {
+	// If we just use document instead of the ownerDocument of endpoints[0],
+	// WebKit will throw on setStart/setEnd.  This is a WebKit bug, but it's in
+	// range, not selection, so we don't want to fail anything for it.
+	var range = ownerDocument(endpoints[0]).createRange();
+	range.setStart(endpoints[0], endpoints[1]);
+	range.setEnd(endpoints[2], endpoints[3]);
+	return range;
+}

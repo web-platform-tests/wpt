@@ -1,0 +1,42 @@
+<!doctype html>
+<title>Selection.selectAllChildren tests</title>
+<div id=log></div>
+<script src=http://w3c-test.org/resources/testharness.js></script>
+<script src=common.js></script>
+<script>
+"use strict";
+
+// TODO: Test what happens if there's an existing range in the selection.  Make
+// sure a new range is created, rather than the existing range being replaced.
+
+for (var i = 0; i < testNodes.length; i++) {
+	test(function() {
+		selection.removeAllRanges();
+
+		var node = eval(testNodes[i]);
+
+		if (node.nodeType == Node.DOCUMENT_TYPE_NODE) {
+			assert_throws("INVALID_NODE_TYPE_ERR", function() {
+				selection.selectAllChildren(node);
+			}, "selectAllChildren() on a DocumentType must throw InvalidNodeTypeError");
+			return;
+		}
+
+		selection.selectAllChildren(node);
+		// This implicitly tests that the selection is forwards, by using
+		// anchorOffset/focusOffset instead of getRangeAt.
+		assert_equals(selection.rangeCount, 1,
+			"After selectAllChildren, rangeCount must be 1");
+		assert_equals(selection.anchorNode, node,
+			"After selectAllChildren, anchorNode must be the given node");
+		assert_equals(selection.anchorOffset, 0,
+			"After selectAllChildren, anchorOffset must be 0");
+		assert_equals(selection.focusNode, node,
+			"After selectAllChildren, focusNode must be the given node");
+		assert_equals(selection.focusOffset, node.childNodes.length,
+			"After selectAllChildren, focusOffset must be the given node's number of children");
+	}, "Node " + i + " " + testNodes[i]);
+}
+
+testDiv.style.display = "none";
+</script>

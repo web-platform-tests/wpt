@@ -65,7 +65,7 @@ a code { text-decoration: underline }
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing APIs</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-11-october-2011>Work in Progress &mdash; Last Update 11 October 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-24-october-2011>Work in Progress &mdash; Last Update 24 October 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;<a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a>&gt;
@@ -1100,11 +1100,30 @@ tests.
     <p>Deletes the selection.
 </dl>
 
+<div class=comments>
+<p>Based mostly on Firefox 9.0a2.  It has a bug that I didn't reproduce, namely
+that if you pass a Document as the argument, the end offset becomes 1 instead
+of the number of children it has.  It also throws a RangeException instead of
+DOMException, because its implementation predated their merging.
+
+<p>IE9 behaves similarly but with glitches.  It throws "Unspecified error." if
+the node is detached or display:none, and apparently in some random other cases
+too.  It throws "Invalid argument." for detached comments (only!).  Finally, if
+you pass it a comment, it seems to select the whole comment, unlike with text
+nodes.
+
+<p>Chrome 16 dev behaves as you'd expect given its Selection implementation.
+It refuses to select anything that's not visible, so it's almost always wrong.
+Opera 11.50 just does nothing in all my tests, as usual.
+</div>
+
 <p>The <dfn id=dom-selection-selectallchildren title=dom-Selection-selectAllChildren><code>selectAllChildren(<var title="">parentNode</var>)</code></dfn>
-method must set the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> to one whose <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a>
-is (<var title="">parentNode</var>, 0) and whose <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end title=concept-range-end>end</a> is (<var title="">parentNode</var>,
-<var title="">parentNode</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node-length title=concept-node-length>length</a>), then set the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s
-<a href=#concept-selection-dir title=concept-selection-dir>direction</a> to "forwards".
+method must <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> an <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#invalidnodetypeerror>InvalidNodeTypeError</a></code> if <var title="">parentNode</var> is a
+<code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#documenttype>DocumentType</a></code>.  Otherwise, it must set the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> to
+a new <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> whose <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-node title=concept-range-start-node>start node</a> and <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end-node title=concept-range-end-node>end node</a> are <var title="">parentNode</var>,
+whose <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-offset title=concept-range-start-offset>start offset</a> is 0, and whose <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end-offset title=concept-range-end-offset>end offset</a> is the number of
+<var title="">parentNode</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>; then set the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s
+<a href=#concept-selection-dir title=concept-selection-dir>direction</a> to forwards.
 
 <p>The <dfn id=dom-selection-deletefromdocument title=dom-Selection-deleteFromDocument><code>deleteFromDocument()</code></dfn>
 method must do nothing if the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> is null, and

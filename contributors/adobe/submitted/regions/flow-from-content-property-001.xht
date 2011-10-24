@@ -1,0 +1,66 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>CSS Test: flow-from and content interaction.</title>
+    <link rel="author" title="Alan Stearns" href="mailto:stearns@adobe.com"/>
+    <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property"/>
+    <link rel="match" href="flow-from-content-property-001-ref.xht"/>
+    <meta name="flags" content="image" />
+    <meta name="assert" content="If the ‘content’ property is set to a url, none or inhibit on a region, that declaration has no effect."/>
+    <style type="text/css">
+      body{
+        font-size: 16px;
+        line-height: 19px;
+      }
+      .region{
+        width: 5em;
+        height: 20px;
+      }
+      .contentOne{
+        -webkit-flow-into: one; /* TEMP */
+        flow-into: one;
+      }
+      .contentTwo{
+        -webkit-flow-into: two; /* TEMP */
+        flow-into: two;
+      }
+      .contentThree{
+        -webkit-flow-into: three; /* TEMP */
+        flow-into: three;
+      }
+      .rOne{
+        content: url(support/1x1-red.png);
+        -webkit-flow-from: one; /* TEMP */
+        flow-from: one;
+      }
+      .rTwo{
+        content: none;
+        -webkit-flow-from: two; /* TEMP */
+        flow-from: two;
+      }
+      .rThree{
+        content: inhibit;
+        -webkit-flow-from: three; /* TEMP */
+        flow-from: two;
+      }
+      .error{
+        color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="contentOne">1</div>
+    <div class="contentTwo">2</div>
+    <div class="contentThree">3</div>
+    <p>This test passes if this is followed by three lines of text containing "1 2 3" in order.</p>
+    <div class="region rOne">
+      <div class="error">FAIL</div>
+    </div>
+    <div class="region rTwo">
+      <div class="error">FAIL</div>
+    </div>
+    <div class="region rThree">
+      <div class="error">FAIL</div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>CSS Test: invalid flow-into idents</title>
+    <link rel="author" title="Alan Stearns" href="mailto:stearns@adobe.com"/>
+    <style type="text/css">
+      body{
+        font-size: 16px;
+        line-height: 19px;   
+      }
+      .sourceWrapper{
+        background-color: lightgreen;
+        width: 10em;
+      }
+      .region{
+        width: 100%;
+        height: 20px;
+      }
+      .success{
+        color: green;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sourceWrapper">
+      <div>none</div>
+      <div>inherit</div>
+      <div>default</div>
+      <div>initial</div>
+    </div>
+    <div class="success">content not replaced by none ident</div>
+    <div class="success">content not replaced by inherit ident</div>
+    <div class="success">content not replaced by default ident</div>
+    <div class="success">content not replaced by initial ident</div>
+    <div>This test succeeds if there are four lines above with invalid flow names on a light green background followed by four lines of green text.</div>
+
+  </body>
+</html>

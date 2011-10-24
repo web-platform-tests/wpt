@@ -21,7 +21,7 @@ ReflectionTests.start = new Date().getTime();
  */
 ReflectionTests.resolveUrl = function(url) {
 	var el = document.createElement("a");
-	el.href = url;
+	el.href = String(url);
 	var ret = el.protocol + "//" + el.host + el.pathname + el.search + el.hash;
 	if (ret == "//") {
 		return "";

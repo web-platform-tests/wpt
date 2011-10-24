@@ -18,8 +18,10 @@ policies and contribution forms [3].
  *
  * == Basic Usage ==
  *
- * To use this file, import the script into the test document:
- * <script src="http://w3c-test.org/resources/testharness.js"></script>
+ * To use this file, import the script and the testhrnessreport script into
+ * the test document:
+ * <script src="/resources/testharnessreport.js"></script>
+ * <script src="/resources/testharness.js"></script>
  *
  * Within each file one may define one or more tests. Each test is atomic
  * in the sense that a single test has a single result (pass/fail/timeout).
@@ -822,7 +824,7 @@ policies and contribution forms [3].
 
         this.steps.push(func);
 
-        if (arguments.length == 1)
+        if (arguments.length === 1)
         {
             this_obj = this;
         }
@@ -859,7 +861,7 @@ policies and contribution forms [3].
     {
         var test_this = this;
 
-        if (arguments.length == 1) 
+        if (arguments.length === 1)
         {
             this_obj = test_this;
         }

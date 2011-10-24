@@ -18,6 +18,11 @@ ReflectionTests.start = new Date().getTime();
  * for <a>, which causes all these tests to fail.  Ideally I'd do this in some
  * other way, but the failure does stem from an incorrect implementation of
  * HTML, so I'll leave it alone for now.
+ *
+ * TODO: This relies on reflection to test reflection, so it could mask bugs.
+ * Either get a JS implementation of the "resolve a URL" algorithm, or just
+ * specify expected values manually here.  It shouldn't be too hard to write
+ * special cases for all the values we test.
  */
 ReflectionTests.resolveUrl = function(url) {
 	var el = document.createElement("a");

@@ -311,7 +311,7 @@ if ("setup" in window) {
 /**
  * Return the length of a node as specified in DOM Range.
  */
-function nodeLength(node) {
+function getNodeLength(node) {
 	if (node.nodeType == Node.DOCUMENT_TYPE_NODE) {
 		return 0;
 	}
@@ -473,7 +473,7 @@ function getPosition(nodeA, offsetA, nodeB, offsetB) {
  */
 function isContained(node, range) {
 	var pos1 = getPosition(node, 0, range.startContainer, range.startOffset);
-	var pos2 = getPosition(node, nodeLength(node), range.endContainer, range.endOffset);
+	var pos2 = getPosition(node, getNodeLength(node), range.endContainer, range.endOffset);
 
 	return furthestAncestor(node) == furthestAncestor(range.startContainer)
 		&& pos1 == "after"
@@ -672,7 +672,7 @@ function myExtractContents(range) {
 		// argument and (length of original start node − original start offset)
 		// as the second."
 		clone.data = originalStartNode.substringData(originalStartOffset,
-			nodeLength(originalStartNode) - originalStartOffset);
+			getNodeLength(originalStartNode) - originalStartOffset);
 
 		// "Append clone as the last child of frag."
 		frag.appendChild(clone);
@@ -681,7 +681,7 @@ function myExtractContents(range) {
 		// offset as the first argument and (length of original start node −
 		// original start offset) as the second."
 		originalStartNode.deleteData(originalStartOffset,
-			nodeLength(originalStartNode) - originalStartOffset);
+			getNodeLength(originalStartNode) - originalStartOffset);
 	// "Otherwise, if first partially contained child is not null:"
 	} else if (firstPartiallyContainedChild) {
 		// "Let clone be the result of calling cloneNode(false) on first
@@ -697,7 +697,7 @@ function myExtractContents(range) {
 		var subrange = ownerDoc.createRange();
 		subrange.setStart(originalStartNode, originalStartOffset);
 		subrange.setEnd(firstPartiallyContainedChild,
-			nodeLength(firstPartiallyContainedChild));
+			getNodeLength(firstPartiallyContainedChild));
 
 		// "Let subfrag be the result of calling extractContents() on
 		// subrange."

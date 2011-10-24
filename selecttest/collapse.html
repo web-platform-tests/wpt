@@ -22,7 +22,7 @@ function testCollapse(range, point) {
 		return;
 	}
 
-	if (point[1] < 0 || point[1] > nodeLength(point[0])) {
+	if (point[1] < 0 || point[1] > getNodeLength(point[0])) {
 		assert_throws("INDEX_SIZE_ERR", function() {
 			selection.collapse(point[0], point[1]);
 		}, "Must throw INDEX_SIZE_ERR when collapse()ing if the offset is negative or greater than the node's length");

@@ -116,10 +116,10 @@ function testExtend(extendTarget, numRanges) {
 		return;
 	}
 
-	if (offset < 0 || offset > nodeLength(node)) {
+	if (offset < 0 || offset > getNodeLength(node)) {
 		assert_throws("INDEX_SIZE_ERR", function() {
 			selection.extend(node, offset);
-		}, "extend() to an offset that's negative or greater than node length (" + nodeLength(node) + ") must throw INDEX_SIZE_ERR");
+		}, "extend() to an offset that's negative or greater than node length (" + getNodeLength(node) + ") must throw INDEX_SIZE_ERR");
 		return;
 	}
 

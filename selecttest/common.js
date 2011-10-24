@@ -912,8 +912,7 @@ function getDomExceptionName(e) {
 
 /**
  * Given an array of endpoint data [start container, start offset, end
- * container, end offset], returns a Range with those endpoints.  Uses
- * addRange, so the range will always be forwards.
+ * container, end offset], returns a Range with those endpoints.
  */
 function rangeFromEndpoints(endpoints) {
 	// If we just use document instead of the ownerDocument of endpoints[0],
@@ -923,4 +922,31 @@ function rangeFromEndpoints(endpoints) {
 	range.setStart(endpoints[0], endpoints[1]);
 	range.setEnd(endpoints[2], endpoints[3]);
 	return range;
+}
+
+/**
+ * Given an array of endpoint data [start container, start offset, end
+ * container, end offset], sets the selection to have those endpoints.  Uses
+ * addRange, so the range will be forwards.  Accepts an empty array for
+ * endpoints, in which case the selection will just be emptied.
+ */
+function setSelectionForwards(endpoints) {
+	selection.removeAllRanges();
+	if (endpoints.length) {
+		selection.addRange(rangeFromEndpoints(endpoints));
+	}
+}
+
+/**
+ * Given an array of endpoint data [start container, start offset, end
+ * container, end offset], sets the selection to have those endpoints, with the
+ * direction backwards.  Uses extend, so it will throw in IE.  Accepts an empty
+ * array for endpoints, in which case the selection will just be emptied.
+ */
+function setSelectionBackwards(endpoints) {
+	selection.removeAllRanges();
+	if (endpoints.length) {
+		selection.collapse(endpoints[2], endpoints[3]);
+		selection.extend(endpoints[0], endpoints[1]);
+	}
 }

@@ -4808,55 +4808,57 @@ function doSameCell(tr) {
 	tr.className = (" " + tr.className + " ").replace(" active ", "").trim();
 
 	var sameCell = document.createElement("td");
-	var exception = false;
-	try {
-		// Ad hoc normalization to avoid basically spurious mismatches.  For
-		// now this includes ignoring where the selection goes.
-		var normalizedSpecCell = tr.childNodes[1].lastChild.firstChild.textContent
-			.replace(/[[\]{}]/g, "")
-			.replace(/ style="margin: 0 0 0 40px; border: none; padding: 0px;"/g, '')
-			.replace(/ style="margin-right: 0px;" dir="ltr"/g, '')
-			.replace(/ style="margin-left: 0px;" dir="rtl"/g, '')
-			.replace(/ style="margin-(left|right): 40px;"/g, '')
-			.replace(/: /g, ":")
-			.replace(/;? ?"/g, '"')
-			.replace(/<(\/?)strong/g, '<$1b')
-			.replace(/<(\/?)strike/g, '<$1s')
-			.replace(/<(\/?)em/g, '<$1i')
-			.replace(/#[0-9a-fA-F]{6}/g, function(match) { return match.toUpperCase(); });
-		var normalizedBrowserCell = tr.childNodes[2].lastChild.firstChild.textContent
-			.replace(/[[\]{}]/g, "")
-			.replace(/ style="margin: 0 0 0 40px; border: none; padding: 0px;"/g, '')
-			.replace(/ style="margin-right: 0px;" dir="ltr"/g, '')
-			.replace(/ style="margin-left: 0px;" dir="rtl"/g, '')
-			.replace(/ style="margin-(left|right): 40px;"/g, '')
-			.replace(/: /g, ":")
-			.replace(/;? ?"/g, '"')
-			.replace(/<(\/?)strong/g, '<$1b')
-			.replace(/<(\/?)strike/g, '<$1s')
-			.replace(/<(\/?)em/g, '<$1i')
-			.replace(/#[0-9a-fA-F]{6}/g, function(match) { return match.toUpperCase(); })
-			.replace(/ size="2" width="100%"/g, '');
-		if (navigator.userAgent.indexOf("MSIE") != -1) {
-			// IE produces <font style> instead of <span style>, so let's
-			// translate all <span>s to <font>s.
-			normalizedSpecCell = normalizedSpecCell
-				.replace(/<(\/?)span/g, '<$1font');
-			normalizedBrowserCell = normalizedBrowserCell
-				.replace(/<(\/?)span/g, '<$1font');
-		}
-	} catch (e) {
-		exception = true;
-	}
 	if (!document.querySelector("#browser-checkbox").checked) {
 		sameCell.className = "maybe";
 		sameCell.textContent = "?";
-	} else if (!exception && normalizedSpecCell == normalizedBrowserCell) {
-		sameCell.className = "yes";
-		sameCell.textContent = "\u2713";
 	} else {
-		sameCell.className = "no";
-		sameCell.textContent = "\u2717";
+		var exception = false;
+		try {
+			// Ad hoc normalization to avoid basically spurious mismatches.  For
+			// now this includes ignoring where the selection goes.
+			var normalizedSpecCell = tr.childNodes[1].lastChild.firstChild.textContent
+				.replace(/[[\]{}]/g, "")
+				.replace(/ style="margin: 0 0 0 40px; border: none; padding: 0px;"/g, '')
+				.replace(/ style="margin-right: 0px;" dir="ltr"/g, '')
+				.replace(/ style="margin-left: 0px;" dir="rtl"/g, '')
+				.replace(/ style="margin-(left|right): 40px;"/g, '')
+				.replace(/: /g, ":")
+				.replace(/;? ?"/g, '"')
+				.replace(/<(\/?)strong/g, '<$1b')
+				.replace(/<(\/?)strike/g, '<$1s')
+				.replace(/<(\/?)em/g, '<$1i')
+				.replace(/#[0-9a-fA-F]{6}/g, function(match) { return match.toUpperCase(); });
+			var normalizedBrowserCell = tr.childNodes[2].lastChild.firstChild.textContent
+				.replace(/[[\]{}]/g, "")
+				.replace(/ style="margin: 0 0 0 40px; border: none; padding: 0px;"/g, '')
+				.replace(/ style="margin-right: 0px;" dir="ltr"/g, '')
+				.replace(/ style="margin-left: 0px;" dir="rtl"/g, '')
+				.replace(/ style="margin-(left|right): 40px;"/g, '')
+				.replace(/: /g, ":")
+				.replace(/;? ?"/g, '"')
+				.replace(/<(\/?)strong/g, '<$1b')
+				.replace(/<(\/?)strike/g, '<$1s')
+				.replace(/<(\/?)em/g, '<$1i')
+				.replace(/#[0-9a-fA-F]{6}/g, function(match) { return match.toUpperCase(); })
+				.replace(/ size="2" width="100%"/g, '');
+			if (navigator.userAgent.indexOf("MSIE") != -1) {
+				// IE produces <font style> instead of <span style>, so let's
+				// translate all <span>s to <font>s.
+				normalizedSpecCell = normalizedSpecCell
+					.replace(/<(\/?)span/g, '<$1font');
+				normalizedBrowserCell = normalizedBrowserCell
+					.replace(/<(\/?)span/g, '<$1font');
+			}
+		} catch (e) {
+			exception = true;
+		}
+		if (!exception && normalizedSpecCell == normalizedBrowserCell) {
+			sameCell.className = "yes";
+			sameCell.textContent = "\u2713";
+		} else {
+			sameCell.className = "no";
+			sameCell.textContent = "\u2717";
+		}
 	}
 	tr.appendChild(sameCell);
 
@@ -4864,8 +4866,8 @@ function doSameCell(tr) {
 		// Insert <wbr> so IE doesn't stretch the screen.  This is considerably
 		// more complicated than it has to be, thanks to Firefox's lack of
 		// support for outerHTML.
-		try {
-			var div = tr.childNodes[i].lastChild;
+		var div = tr.childNodes[i].lastChild;
+		if (div.firstChild) {
 			var text = div.firstChild.textContent;
 			div.removeChild(div.firstChild);
 			div.insertBefore(document.createElement("div"), div.firstChild);
@@ -4878,7 +4880,7 @@ function doSameCell(tr) {
 				div.insertBefore(div.firstChild.lastChild, div.firstChild.nextSibling);
 			}
 			div.removeChild(div.firstChild);
-		} catch (e) {};
+		}
 
 		// Add position: absolute span to not affect vertical layout
 		getDescendants(tr.childNodes[i].firstChild)

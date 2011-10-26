@@ -30,7 +30,7 @@ if (typeof testsJsLibraryOnly == "undefined" || !testsJsLibraryOnly) {
 		var toolbarDiv = document.createElement("div");
 		toolbarDiv.id = "toolbar";
 		// Note: this is completely not a hack at all.
-		toolbarDiv.innerHTML = "<style id=alerts>/* body > div > table > tbody > tr:not(.alert):not(:first-child):not(.active) { display: none } */</style>"
+		toolbarDiv.innerHTML = "<style id=alerts>body > div > table > tbody > tr:not(.alert):not(:first-child):not(.active) { display: none }</style>"
 			+ "<label><input id=alert-checkbox type=checkbox accesskey=a checked onclick='updateAlertRowStyle()'> Display rows without spec <u>a</u>lerts</label>"
 			+ "<label><input id=browser-checkbox type=checkbox accesskey=b checked onclick='localStorage[\"display-browser-tests\"] = event.target.checked'> Run <u>b</u>rowser tests as well as spec tests</label>";
 

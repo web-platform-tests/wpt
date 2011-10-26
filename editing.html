@@ -193,8 +193,10 @@ restriction.
    <li><a href=#the-copy-command>The <code title="">copy</code> command</a></li>
    <li><a href=#the-cut-command>The <code title="">cut</code> command</a></li>
    <li><a href=#the-paste-command>The <code title="">paste</code> command</a></li>
+   <li><a href=#the-redo-command>The <code title="">redo</code> command</a></li>
    <li><a href=#the-selectall-command>The <code title="">selectAll</code> command</a></li>
    <li><a href=#the-stylewithcss-command>The <code title="">styleWithCSS</code> command</a></li>
+   <li><a href=#the-undo-command>The <code title="">undo</code> command</a></li>
    <li><a href=#the-usecss-command>The <code title="">useCSS</code> command</a></ol></li>
  <li><a href=#additional-requirements>Additional requirements</a></li>
  <li><a class=no-num href=#acknowledgements>Acknowledgements</a></ol>
@@ -9782,6 +9784,11 @@ may either <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/dom
 or it may act as though the <a href=#command>command</a> is <a href=#supported title=supported>unsupported</a> on those sites.
 
 
+<h3 id=the-redo-command><dfn>The <code title="">redo</code> command</dfn></h3>
+
+<p><a href=#action>Action</a>: As defined by the <a href=http://rniwa.com/editing/undomanager.html>UndoManager</a> specification.
+
+
 <h3 id=the-selectall-command><dfn>The <code title="">selectAll</code> command</dfn></h3>
 
 <p class=XXX>This is totally broken: if executed inside an editing host, it has
@@ -9870,6 +9877,11 @@ queryCommandState() for styleWithCSS.
 
 <p><a href=#state>State</a>: True if the <a href=#css-styling-flag>CSS styling flag</a> is true,
 otherwise false.
+
+
+<h3 id=the-undo-command><dfn>The <code title="">undo</code> command</dfn></h3>
+
+<p><a href=#action>Action</a>: As defined by the <a href=http://rniwa.com/editing/undomanager.html>UndoManager</a> specification.
 
 
 <h3 id=the-usecss-command><dfn>The <code title="">useCSS</code> command</dfn></h3>

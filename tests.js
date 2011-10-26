@@ -4806,6 +4806,9 @@ function formatException(e) {
 function doSameCell(tr) {
 //@{
 	tr.className = (" " + tr.className + " ").replace(" active ", "").trim();
+	if (tr.className == "") {
+		tr.removeAttribute("class");
+	}
 
 	var sameCell = document.createElement("td");
 	if (!document.querySelector("#browser-checkbox").checked) {

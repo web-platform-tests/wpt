@@ -7272,6 +7272,30 @@ commands.insertparagraph = {
 			container = container.parentNode;
 		}
 
+		// "If container is an editable single-line container in the same
+		// editing host as node, and its local name is "p" or "div":"
+		if (isEditable(container)
+		&& isSingleLineContainer(container)
+		&& inSameEditingHost(node, container.parentNode)
+		&& (container.tagName == "P" || container.tagName == "DIV")) {
+			// "Let outer container equal container."
+			var outerContainer = container;
+
+			// "While outer container is not a dd or dt or li, and outer
+			// container's parent is editable, set outer container to its
+			// parent."
+			while (!isHtmlElement(outerContainer, ["dd", "dt", "li"])
+			&& isEditable(outerContainer.parentNode)) {
+				outerContainer = outerContainer.parentNode;
+			}
+
+			// "If outer container is a dd or dt or li, set container to outer
+			// container."
+			if (isHtmlElement(outerContainer, ["dd", "dt", "li"])) {
+				container = outerContainer;
+			}
+		}
+
 		// "If container is not editable or not in the same editing host as
 		// node or is not a single-line container:"
 		if (!isEditable(container)
@@ -7413,18 +7437,18 @@ commands.insertparagraph = {
 		newLineRange.setEnd(container, getNodeLength(container));
 
 		// "While new line range's start offset is zero and its start node is
-		// not container, set its start to (parent of start node, index of
-		// start node)."
+		// not a prohibited paragraph child, set its start to (parent of start
+		// node, index of start node)."
 		while (newLineRange.startOffset == 0
-		&& newLineRange.startContainer != container) {
+		&& !isProhibitedParagraphChild(newLineRange.startContainer)) {
 			newLineRange.setStart(newLineRange.startContainer.parentNode, getNodeIndex(newLineRange.startContainer));
 		}
 
 		// "While new line range's start offset is the length of its start node
-		// and its start node is not container, set its start to (parent of
-		// start node, 1 + index of start node)."
+		// and its start node is not a prohibited paragraph child, set its
+		// start to (parent of start node, 1 + index of start node)."
 		while (newLineRange.startOffset == getNodeLength(newLineRange.startContainer)
-		&& newLineRange.startContainer != container) {
+		&& !isProhibitedParagraphChild(newLineRange.startContainer)) {
 			newLineRange.setStart(newLineRange.startContainer.parentNode, 1 + getNodeIndex(newLineRange.startContainer));
 		}
 
@@ -7495,6 +7519,18 @@ commands.insertparagraph = {
 
 		// "Call appendChild(frag) on new container."
 		newContainer.appendChild(frag);
+
+		// "While container's lastChild is a prohibited paragraph child, set
+		// container to its lastChild."
+		while (isProhibitedParagraphChild(container.lastChild)) {
+			container = container.lastChild;
+		}
+
+		// "While new container's lastChild is a prohibited paragraph child,
+		// set new container to its lastChild."
+		while (isProhibitedParagraphChild(newContainer.lastChild)) {
+			newContainer = newContainer.lastChild;
+		}
 
 		// "If container has no visible children, call createElement("br") on
 		// the context object, and append the result as the last child of

@@ -9047,6 +9047,25 @@ whatwg thread</a>.
   its [[parent]].
 
   <li>
+  <p class=comments><a
+  href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=13841>Bug 13841</a>.
+
+  <p>If <var>container</var> is an <span>editable</span> <span>single-line
+  container</span> <span>in the same editing host</span> as <var>node</var>,
+  and its [[localname]] is "p" or "div":
+
+  <ol>
+    <li>Let <var>outer container</var> equal <var>container</var>.
+
+    <li>While <var>outer container</var> is not a [[dd]] or [[dt]] or [[li]],
+    and <var>outer container</var>'s [[parent]] is <span>editable</span>, set
+    <var>outer container</var> to its [[parent]].
+
+    <li>If <var>outer container</var> is a [[dd]] or [[dt]] or [[li]], set
+    <var>container</var> to <var>outer container</var>.
+  </ol>
+
+  <li>
   <p class=comments>We add the default wrapper in this case.
 
   <p>If <var>container</var> is not <span>editable</span> or not <span>in the
@@ -9196,17 +9215,17 @@ whatwg thread</a>.
   <li>
   <p class=comments>We don't want the start to be just inside a node, because
   if it is, we'll leave behind an empty element either in the new or old
-  container.  Clearly we don't want the start point to get any higher than the
-  container itself, though.
+  container.  Empty block nodes are fine, and we'll add a [[br]] later, but
+  empty inline nodes are bad, since the user can't interact with them.
 
   <p>While <var>new line range</var>'s [[startoffset]] is zero and its
-  [[startnode]] is not <var>container</var>, set its [[rangestart]] to
-  ([[parent]] of [[startnode]], [[index]] of [[startnode]]).
+  [[startnode]] is not a <span>prohibited paragraph child</span>, set its
+  [[rangestart]] to ([[parent]] of [[startnode]], [[index]] of [[startnode]]).
 
   <li>While <var>new line range</var>'s [[startoffset]] is the [[length]]
-  of its [[startnode]] and its [[startnode]] is not <var>container</var>, set
-  its [[rangestart]] to ([[parent]] of [[startnode]], 1 + [[index]] of
-  [[startnode]]).
+  of its [[startnode]] and its [[startnode]] is not a <span>prohibited
+  paragraph child</span>, set its [[rangestart]] to ([[parent]] of
+  [[startnode]], 1 + [[index]] of [[startnode]]).
 
   <li>Let <var>end of line</var> be true if <var>new line range</var>
   [[contains]] either nothing or a single [[br]], and false otherwise.
@@ -9263,6 +9282,18 @@ whatwg thread</a>.
   <var>frag</var> that is not in <var>contained nodes</var>.
 
   <li>Call [[appendchild|<var>frag</var>]] on <var>new container</var>.
+
+  <li>
+  <p class=comments>Needed in case we have something like
+  {{code|<ol><li><p>[]foo</ol>}}, which becomes
+  {{code|<ol><li><p><li><p>foo</ol>}}.  In this case we want to add the [[br]]
+  to the [[p]], not the [[li]].  Likewise for {{code|<ol><li><p>foo[]</ol>}}.
+
+  <p>While <var>container</var>'s [[lastchild]] is a <span>prohibited paragraph
+  child</span>, set <var>container</var> to its [[lastchild]].
+
+  <li>While <var>new container</var>'s [[lastchild]] is a <span>prohibited
+  paragraph child</span>, set <var>new container</var> to its [[lastchild]].
 
   <li>If <var>container</var> has no <span>visible</span> [[children]], call
   [[createelement|"br"]] on the [[contextobject]], and append the result as the

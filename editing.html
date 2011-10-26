@@ -65,7 +65,7 @@ a code { text-decoration: underline }
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing APIs</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-24-october-2011>Work in Progress &mdash; Last Update 24 October 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-26-october-2011>Work in Progress &mdash; Last Update 26 October 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;<a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a>&gt;
@@ -8957,6 +8957,24 @@ whatwg thread</a>.
   its <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
   <li>
+  <p class=comments><a href="http://www.w3.org/Bugs/Public/show_bug.cgi?id=13841">Bug 13841</a>.
+
+  <p>If <var title="">container</var> is an <a href=#editable>editable</a> <a href=#single-line-container>single-line
+  container</a> <a href=#in-the-same-editing-host>in the same editing host</a> as <var title="">node</var>,
+  and its <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> is "p" or "div":
+
+  <ol>
+    <li>Let <var title="">outer container</var> equal <var title="">container</var>.
+
+    <li>While <var title="">outer container</var> is not a <code class=external data-anolis-spec=html title="the dd element"><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/grouping-content.html#the-dd-element>dd</a></code> or <code class=external data-anolis-spec=html title="the dt element"><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/grouping-content.html#the-dt-element>dt</a></code> or <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/grouping-content.html#the-li-element>li</a></code>,
+    and <var title="">outer container</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is <a href=#editable>editable</a>, set
+    <var title="">outer container</var> to its <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+
+    <li>If <var title="">outer container</var> is a <code class=external data-anolis-spec=html title="the dd element"><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/grouping-content.html#the-dd-element>dd</a></code> or <code class=external data-anolis-spec=html title="the dt element"><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/grouping-content.html#the-dt-element>dt</a></code> or <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/grouping-content.html#the-li-element>li</a></code>, set
+    <var title="">container</var> to <var title="">outer container</var>.
+  </ol>
+
+  <li>
   <p class=comments>We add the default wrapper in this case.
 
   <p>If <var title="">container</var> is not <a href=#editable>editable</a> or not <a href=#in-the-same-editing-host>in the
@@ -9106,17 +9124,17 @@ whatwg thread</a>.
   <li>
   <p class=comments>We don't want the start to be just inside a node, because
   if it is, we'll leave behind an empty element either in the new or old
-  container.  Clearly we don't want the start point to get any higher than the
-  container itself, though.
+  container.  Empty block nodes are fine, and we'll add a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/text-level-semantics.html#the-br-element>br</a></code> later, but
+  empty inline nodes are bad, since the user can't interact with them.
 
   <p>While <var title="">new line range</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-offset title=concept-range-start-offset>start offset</a> is zero and its
-  <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-node title=concept-range-start-node>start node</a> is not <var title="">container</var>, set its <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a> to
-  (<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-node title=concept-range-start-node>start node</a>, <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-index title=concept-tree-index>index</a> of <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-node title=concept-range-start-node>start node</a>).
+  <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-node title=concept-range-start-node>start node</a> is not a <a href=#prohibited-paragraph-child>prohibited paragraph child</a>, set its
+  <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a> to (<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-node title=concept-range-start-node>start node</a>, <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-index title=concept-tree-index>index</a> of <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-node title=concept-range-start-node>start node</a>).
 
   <li>While <var title="">new line range</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-offset title=concept-range-start-offset>start offset</a> is the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node-length title=concept-node-length>length</a>
-  of its <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-node title=concept-range-start-node>start node</a> and its <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-node title=concept-range-start-node>start node</a> is not <var title="">container</var>, set
-  its <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a> to (<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-node title=concept-range-start-node>start node</a>, 1 + <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-index title=concept-tree-index>index</a> of
-  <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-node title=concept-range-start-node>start node</a>).
+  of its <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-node title=concept-range-start-node>start node</a> and its <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-node title=concept-range-start-node>start node</a> is not a <a href=#prohibited-paragraph-child>prohibited
+  paragraph child</a>, set its <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a> to (<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of
+  <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-node title=concept-range-start-node>start node</a>, 1 + <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-index title=concept-tree-index>index</a> of <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-node title=concept-range-start-node>start node</a>).
 
   <li>Let <var title="">end of line</var> be true if <var title="">new line range</var>
   <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#contained title=contained>contains</a> either nothing or a single <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/text-level-semantics.html#the-br-element>br</a></code>, and false otherwise.
@@ -9173,6 +9191,18 @@ whatwg thread</a>.
   <var title="">frag</var> that is not in <var title="">contained nodes</var>.
 
   <li>Call <code class=external data-anolis-spec=dom title=dom-Node-appendChild><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-appendchild>appendChild(<var title="">frag</var>)</a></code> on <var title="">new container</var>.
+
+  <li>
+  <p class=comments>Needed in case we have something like
+  <code title="">&lt;ol&gt;&lt;li&gt;&lt;p&gt;[]foo&lt;/ol&gt;</code>, which becomes
+  <code title="">&lt;ol&gt;&lt;li&gt;&lt;p&gt;&lt;li&gt;&lt;p&gt;foo&lt;/ol&gt;</code>.  In this case we want to add the <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/text-level-semantics.html#the-br-element>br</a></code>
+  to the <code class=external data-anolis-spec=html title="the p element"><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/grouping-content.html#the-p-element>p</a></code>, not the <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/grouping-content.html#the-li-element>li</a></code>.  Likewise for <code title="">&lt;ol&gt;&lt;li&gt;&lt;p&gt;foo[]&lt;/ol&gt;</code>.
+
+  <p>While <var title="">container</var>'s <code class=external data-anolis-spec=dom title=dom-Node-lastChild><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-lastchild>lastChild</a></code> is a <a href=#prohibited-paragraph-child>prohibited paragraph
+  child</a>, set <var title="">container</var> to its <code class=external data-anolis-spec=dom title=dom-Node-lastChild><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-lastchild>lastChild</a></code>.
+
+  <li>While <var title="">new container</var>'s <code class=external data-anolis-spec=dom title=dom-Node-lastChild><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-lastchild>lastChild</a></code> is a <a href=#prohibited-paragraph-child>prohibited
+  paragraph child</a>, set <var title="">new container</var> to its <code class=external data-anolis-spec=dom title=dom-Node-lastChild><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-lastchild>lastChild</a></code>.
 
   <li>If <var title="">container</var> has no <a href=#visible>visible</a> <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, call
   <code class=external data-anolis-spec=dom title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("br")</a></code> on the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>, and append the result as the

@@ -1390,7 +1390,7 @@ null, and disabled otherwise.
 <p class=comments>TODO: Define behavior for <var title="">show UI</var>.
 
 <p>When the <dfn id=execcommand() title=execCommand()><code>execCommand(<var title="">command</var>,
-<var title="">show UI</var>, <var title="">value</var>)</code></dfn> method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/dom.html#htmldocument>HTMLDocument</a></code> interface is invoked, the user agent
+<var title="">show UI</var>, <var title="">value</var>)</code></dfn> method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#htmldocument>HTMLDocument</a></code> interface is invoked, the user agent
 must run the following steps:
 
 <ol>
@@ -1422,7 +1422,7 @@ must run the following steps:
 </ol>
 
 <p>When the <dfn id=querycommandenabled() title=queryCommandEnabled()><code>queryCommandEnabled(<var title="">command</var>)</code></dfn>
-method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/dom.html#htmldocument>HTMLDocument</a></code> interface is
+method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#htmldocument>HTMLDocument</a></code> interface is
 invoked, the user agent must run the following steps:
 
 <ol>
@@ -1438,7 +1438,7 @@ invoked, the user agent must run the following steps:
 </ol>
 
 <p>When the <dfn id=querycommandindeterm() title=queryCommandIndeterm()><code>queryCommandIndeterm(<var title="">command</var>)</code></dfn>
-method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/dom.html#htmldocument>HTMLDocument</a></code> interface is
+method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#htmldocument>HTMLDocument</a></code> interface is
 invoked, the user agent must run the following steps:
 
 <ol>
@@ -1488,7 +1488,7 @@ invoked, the user agent must run the following steps:
 </ol>
 
 <p>When the <dfn id=querycommandstate() title=queryCommandState()><code>queryCommandState(<var title="">command</var>)</code></dfn>
-method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/dom.html#htmldocument>HTMLDocument</a></code> interface is
+method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#htmldocument>HTMLDocument</a></code> interface is
 invoked, the user agent must run the following steps:
 
 <ol>
@@ -1523,12 +1523,12 @@ exception types, especially since as of June 2011 UAs aren't remotely
 consistent on what they do with unsupported commands.
 
 <p>When the <dfn id=querycommandsupported() title=queryCommandSupported()><code>queryCommandSupported(<var title="">command</var>)</code></dfn>
-method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/dom.html#htmldocument>HTMLDocument</a></code> interface is
+method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#htmldocument>HTMLDocument</a></code> interface is
 invoked, the user agent must return true if <var title="">command</var> is
 <a href=#supported>supported</a>, and false otherwise.
 
 <p>When the <dfn id=querycommandvalue() title=queryCommandValue()><code>queryCommandValue(<var title="">command</var>)</code></dfn>
-method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/dom.html#htmldocument>HTMLDocument</a></code> interface is
+method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#htmldocument>HTMLDocument</a></code> interface is
 invoked, the user agent must run the following steps:
 
 <ol>
@@ -1820,12 +1820,12 @@ have the command affect all ranges.  But I'll leave this for later.
 calling <code title=dom-Document-getSelection><a href=#dom-document-getselection>getSelection()</a></code> on the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>.  (Thus the <a href=#active-range>active
 range</a> may be null.)
 
-<p>Each <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/dom.html#htmldocument>HTMLDocument</a></code> has a boolean <dfn id=css-styling-flag>CSS styling flag</dfn> associated
+<p>Each <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#htmldocument>HTMLDocument</a></code> has a boolean <dfn id=css-styling-flag>CSS styling flag</dfn> associated
 with it, which must initially be false.  (<a href=#the-stylewithcss-command>The <code title="">styleWithCSS</code> command</a> can be used to modify or query it, by
 means of the <code><a href=#execcommand()>execCommand()</a></code> and <code><a href=#querycommandstate()>queryCommandState()</a></code>
 methods.)
 
-<p>For some <a href=#command title=command>commands</a>, each <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/dom.html#htmldocument>HTMLDocument</a></code> must
+<p>For some <a href=#command title=command>commands</a>, each <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#htmldocument>HTMLDocument</a></code> must
 have a boolean <dfn id=state-override>state override</dfn> and/or a string <dfn id=value-override>value
 override</dfn>.  These do not change the <a href=#command>command</a>'s
 <a href=#state>state</a> or <a href=#value>value</a>, but change the way some algorithms

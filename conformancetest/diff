@@ -1,4 +1,4 @@
-@@ -1121,11 +1121,11 @@
+@@
  	{"stylewithcss":[false,false,"",false,true,""],"bold":[false,false,"",false,true,""]}],
  ["<font color=blue face=monospace><b>foo</b></font>[bar]",
  	[["stylewithcss","false"],["bold",""]],
@@ -12,7 +12,7 @@
  	{"stylewithcss":[false,false,"",false,true,""],"bold":[false,false,"",false,true,""]}],
  ["foo<span style=\"font-weight: normal\"><b>{bar}</b></span>baz",
  	[["stylewithcss","false"],["bold",""]],
-@@ -1585,11 +1585,11 @@
+@@
  	{"stylewithcss":[false,false,"",false,true,""],"delete":[false,false,"",false,false,""]}],
  ["foo&#x308;&#x327;[]bar",
  	[["stylewithcss","false"],["delete",""]],
@@ -26,7 +26,7 @@
  	{"stylewithcss":[false,false,"",false,true,""],"delete":[false,false,"",false,false,""]}],
  ["&ouml;[]bar",
  	[["stylewithcss","false"],["delete",""]],
-@@ -1609,11 +1609,11 @@
+@@
  	{"stylewithcss":[false,false,"",false,true,""],"delete":[false,false,"",false,false,""]}],
  ["o&#x308;&#x327;[]bar",
  	[["stylewithcss","false"],["delete",""]],
@@ -40,7 +40,7 @@
  	{"stylewithcss":[false,false,"",false,true,""],"delete":[false,false,"",false,false,""]}],
  ["&#x5e9;&#x5c1;&#x5b8;[]&#x5dc;&#x5d5;&#x5b9;&#x5dd;",
  	[["stylewithcss","false"],["delete",""]],
-@@ -1625,11 +1625,11 @@
+@@
  	{"stylewithcss":[false,false,"",false,true,""],"delete":[false,false,"",false,false,""]}],
  ["&#x5e9;&#x5c1;&#x5b8;&#x5dc;&#x5d5;&#x5b9;[]&#x5dd;",
  	[["stylewithcss","false"],["delete",""]],
@@ -54,7 +54,7 @@
  	{"stylewithcss":[false,false,"",false,true,""],"delete":[false,false,"",false,false,""]}],
  ["<p>foo</p><p>[]bar</p>",
  	[["stylewithcss","false"],["delete",""]],
-@@ -5034,11 +5034,11 @@
+@@
  ["foo[bar]baz",
  	[["stylewithcss","false"],["forecolor","rgba(0, 0, 255, 0.0)"]],
  	"foo<span style=\"color:rgba(0, 0, 0, 0)\">[bar]</span>baz",
@@ -68,7 +68,7 @@
  ["foo[bar]baz",
  	[["stylewithcss","false"],["forecolor","rgb(15, -10, 375)"]],
  	"foo<font color=\"#0f00ff\">[bar]</font>baz",
-@@ -5330,11 +5330,11 @@
+@@
  ["<span style=\"color: rgba(0, 0, 255, 0.0)\">[foo]</span>",
  	[["stylewithcss","false"],["forecolor","#0000FF"]],
  	"<font color=\"#0000ff\">[foo]</font>",
@@ -82,7 +82,7 @@
  ["<span style=\"color: rgb(15, -10, 375)\">[foo]</span>",
  	[["stylewithcss","false"],["forecolor","#0000FF"]],
  	"<font color=\"#0000ff\">[foo]</font>",
-@@ -7465,11 +7465,11 @@
+@@
  	{"stylewithcss":[false,false,"",false,true,""],"forwarddelete":[false,false,"",false,false,""]}],
  ["&#x5e9;&#x5c1;&#x5b8;&#x5dc;[]&#x5d5;&#x5b9;&#x5dd;",
  	[["stylewithcss","false"],["forwarddelete",""]],
@@ -96,7 +96,7 @@
  	{"stylewithcss":[false,false,"",false,true,""],"forwarddelete":[false,false,"",false,false,""]}],
  ["<p>foo[]</p><p>bar</p>",
  	[["stylewithcss","false"],["forwarddelete",""]],
-@@ -11719,18 +11719,10 @@
+@@
  	[["stylewithcss","true"],["inserthtml","abc"]],
  	"<xmp>fabc{}o</xmp>",
  	{"stylewithcss":[false,false,"",false,true,""],"inserthtml":[false,false,"",false,false,""]}],
@@ -116,7 +116,7 @@
  ["<script>f[o]o</script>bar",
  	[["stylewithcss","true"],["inserthtml","abc"]],
  	"<script>fabc{}o</script>bar",
-@@ -17697,11 +17689,11 @@
+@@
  	{"stylewithcss":[false,false,"",false,true,""],"italic":[true,false,"",false,true,""]}],
  ["fo[o<span style=font-style:oblique>b]ar</span>baz",
  	[["stylewithcss","false"],["italic",""]],

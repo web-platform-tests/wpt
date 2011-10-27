@@ -4614,14 +4614,12 @@ unserializable DOMs, blocks nested inside inlines, etc.
   <li>If <var>node</var> is not <span>editable</span>, abort these steps.
 
   <li>
-  <p class=comments>The requirement about default containers is to prevent an
-  infinite loop.  This case is really intended to handle stuff like list items
-  or table cells that wander outside their proper place.
+  <p class=comments>This case is really intended to handle stuff like list
+  items or table cells that wander outside their proper place.  We generally
+  convert them into [[p]]s.
 
   <p>If <var>node</var> is not an <span>allowed child</span> of any of its
-  [[ancestors]] <span>in the same editing host</span>, and is not an <span>HTML
-  element</span> with [[localname]] equal to the <span>default single-line
-  container name</span>:
+  [[ancestors]] <span>in the same editing host</span>:
 
   <ol>
     <li>If <var>node</var> is a [[dd]] or [[dt]], <span>wrap</span> the
@@ -4630,6 +4628,13 @@ unserializable DOMs, blocks nested inside inlines, etc.
     false otherwise, and <var>new parent instructions</var> returning the
     result of calling [[createelement|"dl"]] on the [[contextobject]].  Then
     abort these steps.
+
+    <li>
+    <p class=comments>There's no reason to change the node to a paragraph if
+    that won't make it an allowed child anyway.
+
+    <p>If "p" is not an <span>allowed child</span> of the <span>editing host
+    of</span> <var>node</var>, abort these steps.
 
     <li>If <var>node</var> is not a <span>prohibited paragraph child</span>,
     abort these steps.

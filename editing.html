@@ -4575,14 +4575,12 @@ unserializable DOMs, blocks nested inside inlines, etc.
   <li>If <var title="">node</var> is not <a href=#editable>editable</a>, abort these steps.
 
   <li>
-  <p class=comments>The requirement about default containers is to prevent an
-  infinite loop.  This case is really intended to handle stuff like list items
-  or table cells that wander outside their proper place.
+  <p class=comments>This case is really intended to handle stuff like list
+  items or table cells that wander outside their proper place.  We generally
+  convert them into <code class=external data-anolis-spec=html title="the p element"><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/grouping-content.html#the-p-element>p</a></code>s.
 
   <p>If <var title="">node</var> is not an <a href=#allowed-child>allowed child</a> of any of its
-  <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestors</a> <a href=#in-the-same-editing-host>in the same editing host</a>, and is not an <a href=#html-element>HTML
-  element</a> with <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> equal to the <a href=#default-single-line-container-name>default single-line
-  container name</a>:
+  <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestors</a> <a href=#in-the-same-editing-host>in the same editing host</a>:
 
   <ol>
     <li>If <var title="">node</var> is a <code class=external data-anolis-spec=html title="the dd element"><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/grouping-content.html#the-dd-element>dd</a></code> or <code class=external data-anolis-spec=html title="the dt element"><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/grouping-content.html#the-dt-element>dt</a></code>, <a href=#wrap>wrap</a> the
@@ -4591,6 +4589,13 @@ unserializable DOMs, blocks nested inside inlines, etc.
     false otherwise, and <var title="">new parent instructions</var> returning the
     result of calling <code class=external data-anolis-spec=dom title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("dl")</a></code> on the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>.  Then
     abort these steps.
+
+    <li>
+    <p class=comments>There's no reason to change the node to a paragraph if
+    that won't make it an allowed child anyway.
+
+    <p>If "p" is not an <a href=#allowed-child>allowed child</a> of the <a href=#editing-host-of>editing host
+    of</a> <var title="">node</var>, abort these steps.
 
     <li>If <var title="">node</var> is not a <a href=#prohibited-paragraph-child>prohibited paragraph child</a>,
     abort these steps.

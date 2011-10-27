@@ -3754,13 +3754,11 @@ function fixDisallowedAncestors(node) {
 	}
 
 	// "If node is not an allowed child of any of its ancestors in the same
-	// editing host, and is not an HTML element with local name equal to the
-	// default single-line container name:"
+	// editing host:"
 	if (getAncestors(node).every(function(ancestor) {
 		return !inSameEditingHost(node, ancestor)
 			|| !isAllowedChild(node, ancestor)
-	})
-	&& !isHtmlElement(node, defaultSingleLineContainerName)) {
+	})) {
 		// "If node is a dd or dt, wrap the one-node list consisting of node,
 		// with sibling criteria returning true for any dl with no attributes
 		// and false otherwise, and new parent instructions returning the
@@ -3770,6 +3768,12 @@ function fixDisallowedAncestors(node) {
 			wrap([node],
 				function(sibling) { return isHtmlElement(sibling, "dl") && !sibling.attributes.length },
 				function() { return document.createElement("dl") });
+			return;
+		}
+
+		// "If "p" is not an allowed child of the editing host of node, abort
+		// these steps."
+		if (!isAllowedChild("p", getEditingHostOf(node))) {
 			return;
 		}
 

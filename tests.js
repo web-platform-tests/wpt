@@ -2199,6 +2199,12 @@ var tests = {
 		'<ol><li>foo</ol> <p>[bar]',
 		'<p>[foo]</p> <ol><li>bar</ol>',
 		'<ol><li>foo</ol> <p>[bar]</p> <ol><li>baz</ol>',
+
+		// This caused an infinite loop at one point due to a bug in "fix
+		// disallowed ancestors".  Disabled because I'm not sure how we want it
+		// to behave:
+		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=14578
+		'!<span contenteditable=true>foo[]</span>',
 	],
 	//@}
 	insertparagraph: [

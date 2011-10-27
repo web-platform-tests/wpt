@@ -1,4 +1,4 @@
-@@
+@@ -1121,11 +1121,11 @@
  	{"stylewithcss":[false,false,"",false,true,""],"bold":[false,false,"",false,true,""]}],
  ["<font color=blue face=monospace><b>foo</b></font>[bar]",
  	[["stylewithcss","false"],["bold",""]],
@@ -12,7 +12,7 @@
  	{"stylewithcss":[false,false,"",false,true,""],"bold":[false,false,"",false,true,""]}],
  ["foo<span style=\"font-weight: normal\"><b>{bar}</b></span>baz",
  	[["stylewithcss","false"],["bold",""]],
-@@
+@@ -1737,11 +1737,11 @@
  	{"stylewithcss":[false,false,"",false,true,""],"delete":[false,false,"",false,false,""]}],
  ["foo&#x308;&#x327;[]bar",
  	[["stylewithcss","false"],["delete",""]],
@@ -26,7 +26,7 @@
  	{"stylewithcss":[false,false,"",false,true,""],"delete":[false,false,"",false,false,""]}],
  ["&ouml;[]bar",
  	[["stylewithcss","false"],["delete",""]],
-@@
+@@ -1761,11 +1761,11 @@
  	{"stylewithcss":[false,false,"",false,true,""],"delete":[false,false,"",false,false,""]}],
  ["o&#x308;&#x327;[]bar",
  	[["stylewithcss","false"],["delete",""]],
@@ -40,7 +40,7 @@
  	{"stylewithcss":[false,false,"",false,true,""],"delete":[false,false,"",false,false,""]}],
  ["&#x5e9;&#x5c1;&#x5b8;[]&#x5dc;&#x5d5;&#x5b9;&#x5dd;",
  	[["stylewithcss","false"],["delete",""]],
-@@
+@@ -1777,11 +1777,11 @@
  	{"stylewithcss":[false,false,"",false,true,""],"delete":[false,false,"",false,false,""]}],
  ["&#x5e9;&#x5c1;&#x5b8;&#x5dc;&#x5d5;&#x5b9;[]&#x5dd;",
  	[["stylewithcss","false"],["delete",""]],
@@ -54,7 +54,7 @@
  	{"stylewithcss":[false,false,"",false,true,""],"delete":[false,false,"",false,false,""]}],
  ["<p>foo</p><p>[]bar</p>",
  	[["stylewithcss","false"],["delete",""]],
-@@
+@@ -5650,11 +5650,11 @@
  ["foo[bar]baz",
  	[["stylewithcss","false"],["forecolor","rgba(0, 0, 255, 0.0)"]],
  	"foo<span style=\"color:rgba(0, 0, 0, 0)\">[bar]</span>baz",
@@ -68,7 +68,7 @@
  ["foo[bar]baz",
  	[["stylewithcss","false"],["forecolor","rgb(15, -10, 375)"]],
  	"foo<font color=\"#0f00ff\">[bar]</font>baz",
-@@
+@@ -5946,11 +5946,11 @@
  ["<span style=\"color: rgba(0, 0, 255, 0.0)\">[foo]</span>",
  	[["stylewithcss","false"],["forecolor","#0000FF"]],
  	"<font color=\"#0000ff\">[foo]</font>",
@@ -82,7 +82,7 @@
  ["<span style=\"color: rgb(15, -10, 375)\">[foo]</span>",
  	[["stylewithcss","false"],["forecolor","#0000FF"]],
  	"<font color=\"#0000ff\">[foo]</font>",
-@@
+@@ -8081,11 +8081,11 @@
  	{"stylewithcss":[false,false,"",false,true,""],"forwarddelete":[false,false,"",false,false,""]}],
  ["&#x5e9;&#x5c1;&#x5b8;&#x5dc;[]&#x5d5;&#x5b9;&#x5dd;",
  	[["stylewithcss","false"],["forwarddelete",""]],
@@ -96,7 +96,7 @@
  	{"stylewithcss":[false,false,"",false,true,""],"forwarddelete":[false,false,"",false,false,""]}],
  ["<p>foo[]</p><p>bar</p>",
  	[["stylewithcss","false"],["forwarddelete",""]],
-@@
+@@ -12751,18 +12759,10 @@
  	[["stylewithcss","true"],["inserthtml","abc"]],
  	"<xmp>fabc{}o</xmp>",
  	{"stylewithcss":[false,false,"",false,true,""],"inserthtml":[false,false,"",false,false,""]}],
@@ -116,7 +116,7 @@
  ["<script>f[o]o</script>bar",
  	[["stylewithcss","true"],["inserthtml","abc"]],
  	"<script>fabc{}o</script>bar",
-@@
+@@ -19849,11 +19849,11 @@
  	{"stylewithcss":[false,false,"",false,true,""],"italic":[true,false,"",false,true,""]}],
  ["fo[o<span style=font-style:oblique>b]ar</span>baz",
  	[["stylewithcss","false"],["italic",""]],
@@ -130,7 +130,7 @@
  	{"stylewithcss":[false,false,"",false,true,""],"italic":[true,false,"",false,true,""]}],
  ["<span style=font-style:italic>fo[o</span><span style=font-style:oblique>b]ar</span>",
  	[["stylewithcss","false"],["italic",""]],
-@@
+@@ -22889,35 +22889,35 @@
  	{"stylewithcss":[false,false,"",false,true,""],"outdent":[false,false,"",false,false,""]}],
  ["<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px;\"><p>foo[bar]</p><p>baz</p></blockquote><p>extra",
  	[["stylewithcss","false"],["outdent",""]],

@@ -309,15 +309,28 @@ if ("setup" in window) {
 }
 
 /**
- * Return the length of a node as specified in DOM Range.
+ * The "length" of a node as defined by the Ranges section of DOM4.
  */
 function nodeLength(node) {
+	// "The length of a node node depends on node:
+	//
+	// "DocumentType
+	//   "0."
 	if (node.nodeType == Node.DOCUMENT_TYPE_NODE) {
 		return 0;
 	}
+	// "Text
+	// "ProcessingInstruction
+	// "Comment
+	//   "Its length attribute value."
+	// Browsers don't historically support the length attribute on
+	// ProcessingInstruction, so to avoid spurious failures, do
+	// node.data.length instead of node.length.
 	if (node.nodeType == Node.TEXT_NODE || node.nodeType == Node.PROCESSING_INSTRUCTION_NODE || node.nodeType == Node.COMMENT_NODE) {
-		return node.length;
+		return node.data.length;
 	}
+	// "Any other node
+	//   "Its number of children."
 	return node.childNodes.length;
 }
 

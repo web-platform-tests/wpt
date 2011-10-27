@@ -21,8 +21,10 @@ xmp {
   margin-left: 2em;
   white-space: pre-wrap;
 }
-div.note > p:first-child::before { content: 'Note: '; }
+div.note > p:first-child::before,
+li.note > p:first-child::before { content: 'Note: ' }
 .note var { font-style: normal }
+li.note { display: block }
 .XXX > :last-child { margin-bottom: 0 }
 .XXX li {
   margin-top: 0;
@@ -65,7 +67,7 @@ a code { text-decoration: underline }
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing APIs</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-26-october-2011>Work in Progress &mdash; Last Update 26 October 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-27-october-2011>Work in Progress &mdash; Last Update 27 October 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;<a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a>&gt;
@@ -5212,11 +5214,11 @@ style from the old text.
   and <var title="">end offset</var> be the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a>
   and <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> and <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp-offset title=concept-range-bp-offset>offsets</a>.
 
+  <li class=note>
+  <p>First we adjust the selection so that we don't delete more than we should.
+
   <li>
   <div class=comments>
-  <p>We drill the range down to the lowest possible level, so we don't delete
-  more elements than necessary.
-
   <p>We don't want to keep going when we hit an element with no children,
   because then we'd do something like
 
@@ -5338,19 +5340,17 @@ style from the old text.
   <li>Call <code title=dom-Selection-extend><a href=#dom-selection-extend>extend(<var title="">end node</var>, <var title="">end offset</var>)</a></code> on the
   <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a href=#concept-selection title=concept-selection>selection</a>.
 
-  <li>
-  <div class=comments>
+  <li class=note>
   <p>When we delete a selection that spans multiple blocks, we merge the end
   block's contents into the start block, like
 
 <pre>&lt;p&gt;fo[o&lt;/p&gt;&lt;pre&gt;b]ar&lt;/pre&gt;
 -&gt; &lt;p&gt;fo[]ar&lt;/p&gt;.</pre>
 
-  <p>Figure out what the start and end blocks are before we start deleting
+  <p>We figure out what the start and end blocks are before we start deleting
   anything.
-  </div>
 
-  <p>Let <var title="">start block</var> be the <a href=#active-range>active range</a>'s
+  <li>Let <var title="">start block</var> be the <a href=#active-range>active range</a>'s
   <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-node title=concept-range-start-node>start node</a>.
 
   <li>While <var title="">start block</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is <a href=#in-the-same-editing-host>in the same editing
@@ -5362,10 +5362,11 @@ style from the old text.
   <p>We only merge to or from block nodes or editing hosts.  (This is just in
   case someone makes a span into an editing host and sticks paragraphs inside
   it or something . . . we could probably drop that proviso.)  Firefox 7.0a2
-  ignores the display property when merging, so it doesn't merge &lt;span
-  style=display:block&gt; but does merge &lt;p style=display:inline&gt;.  This is
-  undesirable, because it's visually wrong.  IE10PP2 and Chrome 14 dev behave
-  more like the spec, and Opera 11.50 seems to be unable to make up its mind.
+  ignores the display property when merging, so it doesn't merge <code title="">&lt;span
+  style=display:block&gt;</code> but does merge <code title="">&lt;p style=display:inline&gt;</code>.
+  This is undesirable, because it's visually wrong.  IE10PP2 and Chrome 14 dev
+  behave more like the spec, and Opera 11.50 seems to be unable to make up its
+  mind.
 
   <p>If span isn't an allowed child, it's probably something unpleasant like a
   table row or a list or such.  We don't want to merge to or from something
@@ -5398,6 +5399,11 @@ style from the old text.
   <var title="">end block</var>, or <var title="">end block</var> is a <code class=external data-anolis-spec=html title="the td element"><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/tabular-data.html#the-td-element>td</a></code> or <code class=external data-anolis-spec=html title="the th element"><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/tabular-data.html#the-th-element>th</a></code>, set
   <var title="">end block</var> to null.
 
+  <li class=note>
+  <p>Later on we'll restore <var title="">overrides</var>.  This ensures that
+  if we delete inline formatting elements and the user then types something,
+  the typed text will have the same style as before.
+
   <li>
   <div class=comments>
   <p>As far as I can tell, IE9 and Opera 11.50 don't do this at all.  If you
@@ -5414,6 +5420,9 @@ style from the old text.
 
   <p><a href=#record-current-states-and-values>Record current states and values</a>, and let
   <var title="">overrides</var> be the result.
+
+  <li class=note>
+  <p>Now we actually begin deleting things.
 
   <li>
   <p class=comments>This whole piece of the algorithm is based on
@@ -5476,15 +5485,16 @@ style from the old text.
 
     <li>
     <p class=comments>Taking insertText to test the case where strip wrappers
-    is false, with value a: &lt;p&gt;[foo&lt;b&gt;bar&lt;/b&gt;]baz becomes &lt;p&gt;a[]baz
-    per spec, in IE9, and in Chrome 14 dev.  Firefox 7.0a2 and Opera 11.50 make
-    it &lt;p&gt;a[]&lt;b&gt;&lt;/b&gt;baz, with a useless wrapper.
-    &lt;p&gt;foo&lt;b&gt;[bar&lt;/b&gt;baz] becomes &lt;p&gt;foo&lt;b&gt;a[]&lt;/b&gt; per spec
+    is false, with value a: <code title="">&lt;p&gt;[foo&lt;b&gt;bar&lt;/b&gt;]baz</code> becomes
+    <code title="">&lt;p&gt;a[]baz</code> per spec, in IE9, and in Chrome 14 dev.  Firefox 7.0a2
+    and Opera 11.50 make it <code title="">&lt;p&gt;a[]&lt;b&gt;&lt;/b&gt;baz</code>, with a useless wrapper.
+    <code title="">&lt;p&gt;foo&lt;b&gt;[bar&lt;/b&gt;baz]</code> becomes <code title="">&lt;p&gt;foo&lt;b&gt;a[]&lt;/b&gt;</code> per spec
     and in IE9 and Firefox 7.0a2 and Opera 11.50; in Chrome 14 dev apparently
-    it initially becomes &lt;p&gt;fooa[], but then the style is recreated.  This
-    is detectable if you do something weird like &lt;span style=color:#aBcDeF&gt;
-    instead of &lt;b&gt;: it comes &lt;font class=Apple-style-span color=#abcdef&gt;
-    or such.  I follow IE9 in all cases, because it makes the most sense.
+    it initially becomes <code title="">&lt;p&gt;fooa[]</code>, but then the style is recreated.
+    This is detectable if you do something weird like <code title="">&lt;span
+    style=color:#aBcDeF&gt;</code> instead of <code title="">&lt;b&gt;</code>: it comes <code title="">&lt;font
+    class=Apple-style-span color=#abcdef&gt;</code> or such.  I follow IE9 in all
+    cases, because it makes the most sense.
 
     <p>If <var title="">strip wrappers</var> is true or <var title="">parent</var> is not an
     <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-inclusive-ancestor title=concept-tree-inclusive-ancestor>inclusive ancestor</a> of <var title="">start node</var>, while <var title="">parent</var> is
@@ -5508,8 +5518,7 @@ style from the old text.
   <li><a href=#canonicalize-whitespace>Canonicalize whitespace</a> at the <a href=#active-range>active range</a>'s
   <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end title=concept-range-end>end</a>, with <var title="">fix collapsed space</var> false.
 
-  <li>
-  <div class=comments>
+  <li class=note>
   <p>Now we need to merge blocks.  The simplest case is something like
 
 <pre>&lt;p&gt;fo[o&lt;/p&gt;&lt;p&gt;bar&lt;/p&gt;&lt;p&gt;b]az&lt;/p&gt;
@@ -5528,9 +5537,8 @@ style from the old text.
 -&gt; &lt;p&gt;foo[]bar&lt;/p&gt;</pre>
 
   <p>where one descends from the other.
-  </div>
 
-  <p>If <var title="">block merging</var> is false, or <var title="">start block</var> or
+  <li>If <var title="">block merging</var> is false, or <var title="">start block</var> or
   <var title="">end block</var> is null, or <var title="">start block</var> is not <a href=#in-the-same-editing-host>in the
   same editing host</a> as <var title="">end block</var>, or <var title="">start block</var>
   and <var title="">end block</var> are the same:

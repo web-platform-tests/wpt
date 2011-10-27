@@ -23,8 +23,10 @@ xmp {
   margin-left: 2em;
   white-space: pre-wrap;
 }
-div.note > p:first-child::before { content: 'Note: '; }
+div.note > p:first-child::before,
+li.note > p:first-child::before { content: 'Note: ' }
 .note var { font-style: normal }
+li.note { display: block }
 .XXX > :last-child { margin-bottom: 0 }
 .XXX li {
   margin-top: 0;
@@ -5261,11 +5263,11 @@ style from the old text.
   and <var>end offset</var> be the <span>active range</span>'s [[rangestart]]
   and [[rangeend]] [[nodes]] and [[bpoffsets]].
 
+  <li class=note>
+  <p>First we adjust the selection so that we don't delete more than we should.
+
   <li>
   <div class=comments>
-  <p>We drill the range down to the lowest possible level, so we don't delete
-  more elements than necessary.
-
   <p>We don't want to keep going when we hit an element with no children,
   because then we'd do something like
 
@@ -5388,19 +5390,18 @@ foo{&lt;br />bar]
   <li>Call [[extend|<var>end node</var>, <var>end offset</var>]] on the
   [[contextobject]]'s [[selection]].
 
-  <li>
-  <div class=comments>
+  <li class=note>
   <p>When we delete a selection that spans multiple blocks, we merge the end
   block's contents into the start block, like
 
-<pre>&lt;p>fo[o&lt;/p>&lt;pre>b]ar&lt;/pre>
--> &lt;p>fo[]ar&lt;/p>.</pre>
+<pre>{{html|
+<p>fo[o</p><pre>b]ar</pre>
+-> <p>fo[]ar</p>.}}</pre>
 
-  <p>Figure out what the start and end blocks are before we start deleting
+  <p>We figure out what the start and end blocks are before we start deleting
   anything.
-  </div>
 
-  <p>Let <var>start block</var> be the <span>active range</span>'s
+  <li>Let <var>start block</var> be the <span>active range</span>'s
   [[startnode]].
 
   <li>While <var>start block</var>'s [[parent]] is <span>in the same editing
@@ -5412,10 +5413,11 @@ foo{&lt;br />bar]
   <p>We only merge to or from block nodes or editing hosts.  (This is just in
   case someone makes a span into an editing host and sticks paragraphs inside
   it or something . . . we could probably drop that proviso.)  Firefox 7.0a2
-  ignores the display property when merging, so it doesn't merge &lt;span
-  style=display:block> but does merge &lt;p style=display:inline>.  This is
-  undesirable, because it's visually wrong.  IE10PP2 and Chrome 14 dev behave
-  more like the spec, and Opera 11.50 seems to be unable to make up its mind.
+  ignores the display property when merging, so it doesn't merge {{code|<span
+  style=display:block>}} but does merge {{code|<p style=display:inline>}}.
+  This is undesirable, because it's visually wrong.  IE10PP2 and Chrome 14 dev
+  behave more like the spec, and Opera 11.50 seems to be unable to make up its
+  mind.
 
   <p>If span isn't an allowed child, it's probably something unpleasant like a
   table row or a list or such.  We don't want to merge to or from something
@@ -5448,6 +5450,11 @@ foo{&lt;br />bar]
   <var>end block</var>, or <var>end block</var> is a [[td]] or [[th]], set
   <var>end block</var> to null.
 
+  <li class=note>
+  <p>Later on we'll restore <var>overrides</var>.  This ensures that
+  if we delete inline formatting elements and the user then types something,
+  the typed text will have the same style as before.
+
   <li>
   <div class=comments>
   <p>As far as I can tell, IE9 and Opera 11.50 don't do this at all.  If you
@@ -5464,6 +5471,9 @@ foo{&lt;br />bar]
 
   <p><span>Record current states and values</span>, and let
   <var>overrides</var> be the result.
+
+  <li class=note>
+  <p>Now we actually begin deleting things.
 
   <li>
   <p class=comments>This whole piece of the algorithm is based on
@@ -5526,15 +5536,16 @@ foo{&lt;br />bar]
 
     <li>
     <p class=comments>Taking insertText to test the case where strip wrappers
-    is false, with value a: &lt;p>[foo&lt;b>bar&lt;/b>]baz becomes &lt;p>a[]baz
-    per spec, in IE9, and in Chrome 14 dev.  Firefox 7.0a2 and Opera 11.50 make
-    it &lt;p>a[]&lt;b>&lt;/b>baz, with a useless wrapper.
-    &lt;p>foo&lt;b>[bar&lt;/b>baz] becomes &lt;p>foo&lt;b>a[]&lt;/b> per spec
+    is false, with value a: {{code<|p>[foo<b>bar</b>]baz}} becomes
+    {{code|<p>a[]baz}} per spec, in IE9, and in Chrome 14 dev.  Firefox 7.0a2
+    and Opera 11.50 make it {{code<|p>a[]<b></b>baz}}, with a useless wrapper.
+    {{code<|p>foo<b>[bar</b>baz]}} becomes {{code<|p>foo<b>a[]</b>}} per spec
     and in IE9 and Firefox 7.0a2 and Opera 11.50; in Chrome 14 dev apparently
-    it initially becomes &lt;p>fooa[], but then the style is recreated.  This
-    is detectable if you do something weird like &lt;span style=color:#aBcDeF>
-    instead of &lt;b>: it comes &lt;font class=Apple-style-span color=#abcdef>
-    or such.  I follow IE9 in all cases, because it makes the most sense.
+    it initially becomes {{code|<p>fooa[]}}, but then the style is recreated.
+    This is detectable if you do something weird like {{code<|span
+    style=color:#aBcDeF>}} instead of {{code<|b>}}: it comes {{code<|font
+    class=Apple-style-span color=#abcdef>}} or such.  I follow IE9 in all
+    cases, because it makes the most sense.
 
     <p>If <var>strip wrappers</var> is true or <var>parent</var> is not an
     [[inclusiveancestor]] of <var>start node</var>, while <var>parent</var> is
@@ -5558,32 +5569,30 @@ foo{&lt;br />bar]
   <li><span>Canonicalize whitespace</span> at the <span>active range</span>'s
   [[rangeend]], with <var>fix collapsed space</var> false.
 
-  <li>
-  <div class=comments>
+  <li class=note>
   <p>Now we need to merge blocks.  The simplest case is something like
 
-<pre>
-&lt;p>fo[o&lt;/p>&lt;p>bar&lt;/p>&lt;p>b]az&lt;/p>
--> &lt;p>fo&lt;/p>{}&lt;p>az&lt;/p>
--> &lt;p>fo{}az&lt;/p></pre>
+<pre>{{html|
+<p>fo[o</p><p>bar</p><p>b]az</p>
+-> <p>fo</p>{}<p>az</p>
+-> <p>fo{}az</p>}}</pre>
 
   <p>where neither block descends from the other.  More complicated is
   something like
 
-<pre>
-foo[&lt;p>]bar&lt;/p>
--> foo[]bar</pre>
+<pre>{{html|
+foo[<p>]bar</p>
+-> foo[]bar}}</pre>
 
   <p>or
 
-<pre>
-&lt;p>foo[&lt;/p>]bar
--> &lt;p>foo[]bar&lt;/p></pre>
+<pre>{{html|
+<p>foo[</p>]bar
+-> <p>foo[]bar</p>}}</pre>
 
   <p>where one descends from the other.
-  </div>
 
-  <p>If <var>block merging</var> is false, or <var>start block</var> or
+  <li>If <var>block merging</var> is false, or <var>start block</var> or
   <var>end block</var> is null, or <var>start block</var> is not <span>in the
   same editing host</span> as <var>end block</var>, or <var>start block</var>
   and <var>end block</var> are the same:

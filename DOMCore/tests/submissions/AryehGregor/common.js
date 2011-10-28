@@ -1,4 +1,6 @@
 "use strict";
+// Written by Aryeh Gregor <ayg@aryeh.name>
+
 // TODO: iframes, contenteditable/designMode
 
 // Everything is done in functions in this test harness, so we have to declare

@@ -8,14 +8,15 @@
 <script>
 "use strict";
 
+// Specified by WebIDL
 test(function() {
-	// Specified by WebIDL
 	assert_equals(Range.prototype.isPointInRange.length, 2,
 		"Range.prototype.isPointInRange.length must equal 2");
 }, "Range.prototype.isPointInRange.length must equal 2");
 
-// TODO: Test requirement to throw if passed too few arguments.  Should be
-// TypeError?  I'm not sure, after reading WebIDL.
+// TODO: WebIDL requires throwing a TypeError if passed too few arguments.
+// Test this when testharness.js supports it:
+// http://www.w3.org/Bugs/Public/show_bug.cgi?id=14590
 
 // Will be filled in on the first run for that range
 var testRangesCached = [];

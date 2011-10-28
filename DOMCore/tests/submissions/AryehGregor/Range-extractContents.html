@@ -11,6 +11,12 @@ browser's debugging tools.
 <script>
 "use strict";
 
+// Specified by WebIDL
+test(function() {
+	assert_equals(Range.prototype.extractContents.length, 0,
+		"Range.prototype.extractContents.length must equal 0");
+}, "Range.prototype.extractContents.length must equal 0");
+
 testDiv.parentNode.removeChild(testDiv);
 
 function testExtractContents(i) {

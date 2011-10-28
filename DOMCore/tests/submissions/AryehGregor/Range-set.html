@@ -8,6 +8,36 @@
 <script>
 "use strict";
 
+// Specified by WebIDL
+test(function() {
+	assert_equals(Range.prototype.setStart.length, 2,
+		"Range.prototype.setStart.length must equal 2");
+}, "Range.prototype.setStart.length must equal 2");
+test(function() {
+	assert_equals(Range.prototype.setEnd.length, 2,
+		"Range.prototype.setEnd.length must equal 2");
+}, "Range.prototype.setEnd.length must equal 2");
+test(function() {
+	assert_equals(Range.prototype.setStartBefore.length, 1,
+		"Range.prototype.setStartBefore.length must equal 1");
+}, "Range.prototype.setStartBefore.length must equal 1");
+test(function() {
+	assert_equals(Range.prototype.setStartAfter.length, 1,
+		"Range.prototype.setStartAfter.length must equal 1");
+}, "Range.prototype.setStartAfter.length must equal 1");
+test(function() {
+	assert_equals(Range.prototype.setEndBefore.length, 1,
+		"Range.prototype.setEndBefore.length must equal 1");
+}, "Range.prototype.setEndBefore.length must equal 1");
+test(function() {
+	assert_equals(Range.prototype.setEndAfter.length, 1,
+		"Range.prototype.setEndAfter.length must equal 1");
+}, "Range.prototype.setEndAfter.length must equal 1");
+
+// TODO: WebIDL requires throwing a TypeError if passed too few arguments.
+// Test this when testharness.js supports it:
+// http://www.w3.org/Bugs/Public/show_bug.cgi?id=14590
+
 function testSetStart(range, node, offset) {
 	if (node.nodeType == Node.DOCUMENT_TYPE_NODE) {
 		assert_throws("INVALID_NODE_TYPE_ERR", function() {

@@ -8,7 +8,7 @@
     <meta name="flags" content="" />
     <meta name="assert" content="The z-index set on region content does not affect how they are stacked with siblings of the region."/>
     <style type="text/css">
-      .box{
+      .square{
         height: 50px;
         width: 50px;
         position: relative;
@@ -44,14 +44,14 @@
   </head>
   <body>
     <div class="stackingFlow">
-      <div class="flowGreen box"></div>
-      <div class="flowError box"></div>
+      <div class="flowGreen square"></div>
+      <div class="flowError square"></div>
     </div>
     <p>Test passes if there is no red visible on the page.</p>
     <div>
-      <div class="error box"></div>
+      <div class="error square"></div>
       <div class="stackingRegion"></div>
-      <div class="green box"></div>
+      <div class="green square"></div>
     </div>
   </body>
 </html>

@@ -63,7 +63,9 @@ Element-siblingElement-null.svg
 Element-siblingElement-null.xhtml
 Element-tagName.html
 Event-constants.html
+Event-constructors.html
 EventTarget-dispatchEvent.html
+historical.html
 interfaces.html
 Node-appendChild.html
 Node-cloneNode.html

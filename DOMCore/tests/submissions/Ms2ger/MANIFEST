@@ -19,6 +19,7 @@ Document-createProcessingInstruction.xhtml
 Document-getElementById.html
 Document-getElementsByTagName.html
 Document-getElementsByTagNameNS.html
+Document-importNode.html
 DOMException-constants.html
 DOMImplementation-createDocument.html
 DOMImplementation-createDocumentType.html

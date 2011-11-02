@@ -15,8 +15,9 @@ test(function() {
 test(function() {
   var l = document.getElementsByTagName("nosuchtag")
   l[5] = "foopy"
+  assert_equals(l[5], undefined)
   assert_equals(l.item(5), null)
-}, "Expandos shouldn't affect item()")
+}, "Shouldn't be able to set unsigned properties on a NodeList")
 test(function() {
   assert_equals(document.createElementNS("http://www.w3.org/1999/xhtml", "i").localName, "i") // Sanity
   var i = document.body.appendChild(document.createElementNS("http://www.w3.org/1999/xhtml", "I"))

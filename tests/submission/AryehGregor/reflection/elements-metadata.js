@@ -2,6 +2,7 @@ var metadataElements = {
 	head: {},
 	title: {},
 	base: {
+		href: "url",
 		target: "string",
 	},
 	link: {

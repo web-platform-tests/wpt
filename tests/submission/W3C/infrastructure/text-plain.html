@@ -9,16 +9,15 @@
   <script src="/resources/testharness.js"></script>
 </head>
 
-<body onload='run()'>
+<body>
 	<script>
 	  var t = async_test("A user agent must not consider the type text/plain as having a registered plugin.");
 
-          function run() {
-	    t.step(function() {
-                assert_equals(document.getElementById("frameContext").contentDocument.body.firstChild.nodeName, "PRE");
+          window.onload =
+            t.step_func(function() {
+                  assert_equals(document.getElementById("frameContext").contentDocument.body.firstChild.nodeName, "PRE");
+                 t.done();
              });
-            t.done();
-          }
 	</script>
 
   <h1>Test of plugin support</h1>

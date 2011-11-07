@@ -4372,6 +4372,71 @@ function restoreStatesAndValues(overrides) {
 ///// Deleting the selection /////
 //@{
 
+function getNextEquivalentPoint(node, offset) {
+	// "If node's length is zero, return null."
+	if (getNodeLength(node) == 0) {
+		return null;
+	}
+
+	// "If offset is node's length, and node's parent is not null, return
+	// (node's parent, 1 + node's index)."
+	if (offset == getNodeLength(node) && node.parentNode) {
+		return [node.parentNode, 1 + getNodeIndex(node)];
+	}
+
+	// "If node has a child with index offset, and that child's length is not
+	// zero, return (that child, 0)."
+	if (0 <= node.childNodes.length
+	&& offset < node.childNodes.length
+	&& getNodeLength(node.childNodes[offset]) != 0) {
+		return [node.childNodes[offset], 0];
+	}
+
+	// "Return null."
+	return null;
+}
+
+function getPreviousEquivalentPoint(node, offset) {
+	// "If node's length is zero, return null."
+	if (getNodeLength(node) == 0) {
+		return null;
+	}
+
+	// "If offset is 0, and node's parent is not null, return (node's parent,
+	// node's index)."
+	if (offset == 0 && node.parentNode) {
+		return [node.parentNode, getNodeIndex(node)];
+	}
+
+	// "If node has a child with index offset − 1, and that child's length is
+	// not zero, return (that child, that child's length)."
+	if (0 <= node.childNodes.length
+	&& offset - 1 < node.childNodes.length
+	&& getNodeLength(node.childNodes[offset - 1]) != 0) {
+		return [node.childNodes[offset - 1], getNodeLength(node.childNodes[offset - 1])];
+	}
+
+	// "Return null."
+	return null;
+}
+
+function getBlockNodeOf(node) {
+	// "While node is an inline node, set node to its parent."
+	while (isInlineNode(node)) {
+		node = node.parentNode;
+	}
+
+	// "Return node."
+	return node;
+}
+
+// "Two nodes are in the same block if the block node of the first is non-null
+// and the same as the block node of the second."
+function inSameBlock(node1, node2) {
+	return getBlockNodeOf(node1)
+		&& getBlockNodeOf(node1) === getBlockNodeOf(node2);
+}
+
 // The flags argument is a dictionary that can have blockMerging,
 // stripWrappers, and/or direction as keys.
 function deleteSelection(flags) {
@@ -4401,81 +4466,28 @@ function deleteSelection(flags) {
 	var endNode = getActiveRange().endContainer;
 	var endOffset = getActiveRange().endOffset;
 
-	// "While start node has at least one child:"
-	while (startNode.hasChildNodes()) {
-		// "If start offset is start node's length, and start node's parent is
-		// in the same editing host, and start node is an inline node, set
-		// start offset to one plus the index of start node, then set start
-		// node to its parent and continue this loop from the beginning."
-		if (startOffset == getNodeLength(startNode)
-		&& inSameEditingHost(startNode, startNode.parentNode)
-		&& isInlineNode(startNode)) {
-			startOffset = 1 + getNodeIndex(startNode);
-			startNode = startNode.parentNode;
-			continue;
-		}
-
-		// "If start offset is start node's length, break from this loop."
-		if (startOffset == getNodeLength(startNode)) {
-			break;
-		}
-
-		// "Let reference node be the child of start node with index equal to
-		// start offset."
-		var referenceNode = startNode.childNodes[startOffset];
-
-		// "If reference node is a block node or an Element with no children,
-		// or is neither an Element nor a Text node, break from this loop."
-		if (isBlockNode(referenceNode)
-		|| (referenceNode.nodeType == Node.ELEMENT_NODE
-		&& !referenceNode.hasChildNodes())
-		|| (referenceNode.nodeType != Node.ELEMENT_NODE
-		&& referenceNode.nodeType != Node.TEXT_NODE)) {
-			break;
-		}
-
-		// "Set start node to reference node and start offset to 0."
-		startNode = referenceNode;
-		startOffset = 0;
+	// "While the next equivalent point for (start node, start offset) is not
+	// null, and that boundary point's node is in the same editing host and in
+	// the same block as start node, set (start node, start offset) to its next
+	// equivalent point."
+	while (getNextEquivalentPoint(startNode, startOffset)
+	&& inSameEditingHost(getNextEquivalentPoint(startNode, startOffset)[0], startNode)
+	&& inSameBlock(getNextEquivalentPoint(startNode, startOffset)[0], startNode)) {
+		var next = getNextEquivalentPoint(startNode, startOffset);
+		startNode = next[0];
+		startOffset = next[1];
 	}
 
-	// "While end node has at least one child:"
-	while (endNode.hasChildNodes()) {
-		// "If end offset is 0, and end node's parent is in the same editing
-		// host, and end node is an inline node, set end offset to the index of
-		// end node, then set end node to its parent and continue this loop
-		// from the beginning."
-		if (endOffset == 0
-		&& inSameEditingHost(endNode, endNode.parentNode)
-		&& isInlineNode(endNode)) {
-			endOffset = getNodeIndex(endNode);
-			endNode = endNode.parentNode;
-			continue;
-		}
-
-		// "If end offset is 0, break from this loop."
-		if (endOffset == 0) {
-			break;
-		}
-
-		// "Let reference node be the child of end node with index equal to end
-		// offset minus one."
-		var referenceNode = endNode.childNodes[endOffset - 1];
-
-		// "If reference node is a block node or an Element with no children,
-		// or is neither an Element nor a Text node, break from this loop."
-		if (isBlockNode(referenceNode)
-		|| (referenceNode.nodeType == Node.ELEMENT_NODE
-		&& !referenceNode.hasChildNodes())
-		|| (referenceNode.nodeType != Node.ELEMENT_NODE
-		&& referenceNode.nodeType != Node.TEXT_NODE)) {
-			break;
-		}
-
-		// "Set end node to reference node and end offset to the length of
-		// reference node."
-		endNode = referenceNode;
-		endOffset = getNodeLength(referenceNode);
+	// "While the previous equivalent point for (end node, end offset) is not
+	// null, and that boundary point's node is in the same editing host and in
+	// the same block as end node, set (end node, end offset) to its previous
+	// equivalent point."
+	while (getPreviousEquivalentPoint(endNode, endOffset)
+	&& inSameEditingHost(getPreviousEquivalentPoint(endNode, endOffset)[0], endNode)
+	&& inSameBlock(getPreviousEquivalentPoint(endNode, endOffset)[0], endNode)) {
+		var prev = getPreviousEquivalentPoint(endNode, endOffset);
+		endNode = prev[0];
+		endOffset = prev[1];
 	}
 
 	// "If (end node, end offset) is not after (start node, start offset):"

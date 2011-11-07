@@ -168,19 +168,21 @@ if "[[" in s:
 
 # {{html|<foo>}} -> &lt;foo>, no wrapper.  Also, to avoid things like
 # {{code|<b>}} messing up syntax highlighting, {{html<|b>}} is also supported
-# with the same effect as {{html|<b>}}.
+# with the same effect as {{html|<b>}}.  Trailing whitespace before the }} will
+# be ignored, so that {{html|} }} will produce "}", since {{html|}}} won't work
+# (the first two "}"'s will terminate the expression).
 def htmlsub(matchobj):
     return matchobj.group(1).replace("<", "&lt;") \
          + matchobj.group(2).replace("&", "&amp;").replace("<", "&lt;")
 
-# {{code|...}} is just a shortcut for <code title>{{pre|...}}</code>.
+# {{code|...}} is just a shortcut for <code title>{{html|...}}</code>.
 def codesub(matchobj):
     return "<code title>" \
         + htmlsub(matchobj) \
         + "</code>"
 
-s = re.compile(r"\{\{html(<?)\|(.*?)\}\}", re.DOTALL).sub(htmlsub, s)
-s = re.compile(r"\{\{code(<?)\|(.*?)\}\}", re.DOTALL).sub(codesub, s)
+s = re.compile(r"\{\{html(<?)\|(.*?)\s*\}\}", re.DOTALL).sub(htmlsub, s)
+s = re.compile(r"\{\{code(<?)\|(.*?)\s*\}\}", re.DOTALL).sub(codesub, s)
 
 s = s.replace("<var>", "<var title>")
 

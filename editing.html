@@ -67,7 +67,7 @@ a code { text-decoration: underline }
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing APIs</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-27-october-2011>Work in Progress &mdash; Last Update 27 October 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-7-november-2011>Work in Progress &mdash; Last Update 7 November 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;<a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a>&gt;
@@ -336,7 +336,7 @@ end:
   bad, <code title="">&lt;b&gt;{}&lt;/b&gt;</code> is correct.
 
   <li>Curly braces mark a selection inside an element, like
-  <code title="">&lt;b&gt;{foobarbaz&lt;/b&gt;} </code> for a selection whose start node is the element
+  <code title="">&lt;b&gt;{foobarbaz&lt;/b&gt;}</code> for a selection whose start node is the element
   <code title="">&lt;b&gt;</code>, whose start offset is 0, whose end node is the root of the
   editable region, and whose end offset is 1.  Do not use curly braces in the
   middle of a text node: <code title="">foo{bar}baz</code> is bad, <code title="">foo[bar]baz</code> is correct.
@@ -5160,6 +5160,104 @@ algorithm returns true:
 <!--@}-->
 <h3 id=deleting-the-selection>Deleting the selection</h3>
 
+<p class=note>Sometimes one location corresponds to multiple distinct boundary
+points.  For instance, in the DOM <code title="">&lt;p&gt;Hello&lt;/p&gt;</code>, a boundary point might
+lie at the beginning of the text node or the beginning of the element node, but
+these don't logically differ much and will appear the same to the user, so we
+often want to treat them the same.  The algorithms here (currently used only
+for the delete algorithm) allow navigating through such equivalent boundary
+points, for when we want to make the selection as inclusive or exclusive as
+possible.  For deletion, we want to delete as few nodes as possible, so we move
+the start node forward and the end node backward.  In other cases we might do
+the reverse, expanding the selection.
+
+<p>Given a <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp title=concept-range-bp>boundary point</a> (<var title="">node</var>, <var title="">offset</var>), the
+<dfn id=next-equivalent-point>next equivalent point</dfn> is either a <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp title=concept-range-bp>boundary point</a> or null, as
+returned by the following algorithm:
+
+<ol>
+  <li>If <var title="">node</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node-length title=concept-node-length>length</a> is zero, return null.
+
+  <li class=note>We don't want to move into or out of zero-length nodes,
+  because that would move us straight through them.  For instance, if
+  <code title="">{}&lt;span&gt;&lt;/span&gt;</code> were equivalent to <code title="">&lt;span&gt;{}&lt;/span&gt;</code>, it
+  would also be equivalent to <code title="">&lt;span&gt;&lt;/span&gt;{}</code>.  This produces very
+  unexpected results for nodes like <code title="">&lt;br&gt;</code>.
+
+  <li>If <var title="">offset</var> is <var title="">node</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node-length title=concept-node-length>length</a>, and
+  <var title="">node</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is not null, return (<var title="">node</var>'s
+  <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>, 1 + <var title="">node</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-index title=concept-tree-index>index</a>).
+
+  <li class=note>For instance, <code title="">&lt;span&gt;foo[]&lt;/span&gt;</code> is equivalent to
+  <code title="">&lt;span&gt;foo{}&lt;/span&gt;</code>, which is equivalent to <code title="">&lt;span&gt;foo&lt;/span&gt;{}</code>.
+
+  <li>If <var title="">node</var> has a <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> with <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-index title=concept-tree-index>index</a> <var title="">offset</var>,
+  and that <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node-length title=concept-node-length>length</a> is not zero, return (that <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, 0).
+
+  <li class=note>For instance, <code title="">{}&lt;span&gt;foo&lt;/span&gt;</code> is equivalent to
+  <code title="">&lt;span&gt;{}foo&lt;/span&gt;</code>, which is equivalent to
+  <code title="">&lt;span&gt;[]foo&lt;/span&gt;</code>.  As noted before, though, we don't descend into
+  empty nodes.
+
+  <li>Return null.
+</ol>
+
+<p>Given a <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp title=concept-range-bp>boundary point</a> (<var title="">node</var>, <var title="">offset</var>), the
+<dfn id=previous-equivalent-point>previous equivalent point</dfn> is either a <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp title=concept-range-bp>boundary point</a> or null, as
+returned by the following algorithm:
+
+<ol>
+  <li>If <var title="">node</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node-length title=concept-node-length>length</a> is zero, return null.
+
+  <li>If <var title="">offset</var> is 0, and <var title="">node</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is not null,
+  return (<var title="">node</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>, <var title="">node</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-index title=concept-tree-index>index</a>).
+
+  <li>If <var title="">node</var> has a <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> with <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-index title=concept-tree-index>index</a> <var title="">offset</var>
+  &minus; 1, and that <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node-length title=concept-node-length>length</a> is not zero, return (that
+  <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, that <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node-length title=concept-node-length>length</a>).
+
+  <li>Return null.
+</ol>
+
+<!-- Turned out not to be necessary here, but I've left it in case it turns out
+to be handy elsewhere. -->
+<!--
+<p>Two <span data-anolis-spec=dom title=concept-range-bp>boundary points</span> <var title>A</var> and <var title>B</var> are <dfn>equivalent
+boundary points</dfn> if the following algorithm returns true:
+
+<p class=note>This is indeed an <a
+href=http://en.wikipedia.org/wiki/Equivalence_relation>equivalence
+relation</a>.  Reflexivity, symmetry, and transitivity are all fairly obvious
+from the definition.  It also isn't hard to check that using <span>next
+equivalent point</span> instead of <span>previous equivalent point</span> would
+yield the same definition, because the two algorithms are inverses if neither
+output is null.
+
+<ol>
+  <li>While <var title>A</var>'s <span>previous equivalent point</span> is not null,
+  set <var title>A</var> to its <span>previous equivalent point</span>.
+
+  <li>While <var title>B</var>'s <span>previous equivalent point</span> is not null,
+  set <var title>B</var> to its <span>previous equivalent point</span>.
+
+  <li>Return true if <var title>A</var> is the same as <var title>B</var>, otherwise false.
+</ol>
+-->
+
+<p>The <dfn id=block-node-of>block node of</dfn> a <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var> is either a
+<a href=#block-node>block node</a> or null, as returned by the following algorithm:
+
+<ol>
+  <li>While <var title="">node</var> is an <a href=#inline-node>inline node</a>, set <var title="">node</var>
+  to its <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+
+  <li>Return <var title="">node</var>.
+</ol>
+
+<p>Two <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> are <dfn id=in-the-same-block>in the same block</dfn> if the <a href=#block-node-of>block node
+of</a> the first is non-null and the same as the <a href=#block-node-of>block node of</a>
+the second.
+
 <p class=comments>TODO: Consider what should happen for block merging in corner
 cases like display: inline-table.
 
@@ -5175,7 +5273,7 @@ being remarkably complicated.
 selection will be collapsed.  By way of contrast, <a href=#effectively-contained>effectively
 contained</a> tries to expand the range to include as much as possible, so
 <code title="">&lt;p&gt;[foo]&lt;/p&gt;</code> contains the <code title="">&lt;p&gt;</code>.  What we do here is contract
-the range to include as little as possible, so <code title="">{&lt;p&gt;foo&lt;/p&gt;} </code> contains
+the range to include as little as possible, so <code title="">{&lt;p&gt;foo&lt;/p&gt;}</code> contains
 only <code title="">foo</code> and doesn't delete the paragraph.
 
 <p>After that, if the selection originally started and ended in different
@@ -5219,104 +5317,21 @@ style from the old text.
   and <var title="">end offset</var> be the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a>
   and <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> and <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp-offset title=concept-range-bp-offset>offsets</a>.
 
-  <li class=note>
-  <p>First we adjust the selection so that we don't delete more than we should.
+  <li>While the <a href=#next-equivalent-point>next equivalent point</a> for (<var title="">start node</var>,
+  <var title="">start offset</var>) is not null, and that <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp title=concept-range-bp>boundary point</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>
+  is <a href=#in-the-same-editing-host>in the same editing host</a> and <a href=#in-the-same-block>in the same block</a>
+  as <var title="">start node</var>, set (<var title="">start node</var>, <var title="">start
+  offset</var>) to its <a href=#next-equivalent-point>next equivalent point</a>.
 
-  <li>
-  <div class=comments>
-  <p>We don't want to keep going when we hit an element with no children,
-  because then we'd do something like
+  <li class=note>We don't want to leave the current block because otherwise,
+  for instance, a selection of <code title="">&lt;p&gt;foo[&lt;/p&gt;&lt;p&gt;]bar&lt;/p&gt;</code> would be treated
+  as empty and nothing would be deleted, when we want it to merge the blocks.
 
-<pre>foo{&lt;br /&gt;bar]
--&gt; foo&lt;br&gt;{&lt;/br&gt;bar]
--&gt; foo&lt;br /&gt;{bar]
--&gt; foo&lt;br /&gt;[bar]</pre>
-
-  <p>and we deselected the <code title="">&lt;br&gt;</code>.
-  </div>
-
-  <p>While <var title="">start node</var> has at least one <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>:
-
-  <ol>
-    <li>
-    <div class=comments>
-    <p>For instance:
-
-<pre>&lt;b&gt;foo[&lt;/b&gt;&lt;i&gt;bar]&lt;/i&gt;
--&gt; &lt;b&gt;foo{&lt;/b&gt;&lt;i&gt;bar]&lt;/i&gt;
--&gt; &lt;b&gt;foo&lt;/b&gt;{&lt;i&gt;bar]&lt;/i&gt;</pre>
-
-    <p>Then the next step will make it <code title="">&lt;b&gt;foo&lt;/b&gt;&lt;i&gt;[bar]&lt;/i&gt;</code>.
-
-    <p>We don't want to do this for block nodes, because that would lead to
-    something like
-
-      <pre>&lt;p&gt;foo[&lt;/p&gt;&lt;p&gt;]bar&lt;p&gt;</pre>
-
-    <p>ultimately collapsing, which is wrong.  Once we do the deletion, it
-    needs to wind up <code title="">&lt;p&gt;foo[]bar&lt;/p&gt;</code>, whereas an actually collapsed
-    selection should do nothing.
-    </div>
-
-    <p>If <var title="">start offset</var> is <var title="">start node</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node-length title=concept-node-length>length</a>, and
-    <var title="">start node</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is <a href=#in-the-same-editing-host>in the same editing
-    host</a>, and <var title="">start node</var> is an <a href=#inline-node>inline node</a>, set
-    <var title="">start offset</var> to one plus the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-index title=concept-tree-index>index</a> of <var title="">start node</var>,
-    then set <var title="">start node</var> to its <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> and continue this loop
-    from the beginning.
-
-    <li>
-    <p class=comments>This happens if the first step brought us all the way up
-    to the root.  The step immediately after this loop will bring us back down
-    again.
-
-    <p>If <var title="">start offset</var> is <var title="">start node</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node-length title=concept-node-length>length</a>,
-    break from this loop.
-
-    <li>Let <var title="">reference node</var> be the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">start node</var>
-    with <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-index title=concept-tree-index>index</a> equal to <var title="">start offset</var>.
-
-    <li>
-    <div class=comments>
-    <p>Don't descend into an element with no children, since then it won't get
-    deleted even if it's selected.  Don't descend into a block node, because
-    then we might wind up not merging blocks when we should, e.g.
-
-<pre>foo{&lt;p&gt;}bar&lt;/p&gt;
--&gt; foo&lt;p&gt;{}bar&lt;/p&gt;</pre>
-
-    <p>and nothing gets changed.
-    </div>
-
-    <p>If <var title="">reference node</var> is a <a href=#block-node>block node</a> or an
-    <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> with no <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, or is neither an <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> nor a
-    <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node, break from this loop.
-
-    <li>Set <var title="">start node</var> to <var title="">reference node</var> and <var title="">start
-    offset</var> to 0.
-  </ol>
-
-  <li>While <var title="">end node</var> has at least one <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>:
-
-  <ol>
-    <li>If <var title="">end offset</var> is 0, and <var title="">end node</var>'s
-    <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is <a href=#in-the-same-editing-host>in the same editing host</a>, and <var title="">end
-    node</var> is an <a href=#inline-node>inline node</a>, set <var title="">end offset</var> to the
-    <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-index title=concept-tree-index>index</a> of <var title="">end node</var>, then set <var title="">end node</var> to its
-    <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> and continue this loop from the beginning.
-
-    <li>If <var title="">end offset</var> is 0, break from this loop.
-
-    <li>Let <var title="">reference node</var> be the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">end node</var>
-    with <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-index title=concept-tree-index>index</a> equal to <var title="">end offset</var> minus one.
-
-    <li>If <var title="">reference node</var> is a <a href=#block-node>block node</a> or an
-    <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> with no <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, or is neither an <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> nor a
-    <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node, break from this loop.
-
-    <li>Set <var title="">end node</var> to <var title="">reference node</var> and <var title="">end
-    offset</var> to the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node-length title=concept-node-length>length</a> of <var title="">reference node</var>.
-  </ol>
+  <li>While the <a href=#previous-equivalent-point>previous equivalent point</a> for (<var title="">end
+  node</var>, <var title="">end offset</var>) is not null, and that <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp title=concept-range-bp>boundary point</a>'s
+  <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> is <a href=#in-the-same-editing-host>in the same editing host</a> and <a href=#in-the-same-block>in the same
+  block</a> as <var title="">end node</var>, set (<var title="">end node</var>, <var title="">end
+  offset</var>) to its <a href=#previous-equivalent-point>previous equivalent point</a>.
 
   <li>If (<var title="">end node</var>, <var title="">end offset</var>) is not <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp-after title=concept-range-bp-after>after</a>
   (<var title="">start node</var>, <var title="">start offset</var>):

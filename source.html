@@ -5209,6 +5209,105 @@ algorithm returns true:
 <!--@}-->
 <h3>Deleting the selection</h3>
 <!-- @{ -->
+<p class=note>Sometimes one location corresponds to multiple distinct boundary
+points.  For instance, in the DOM {{code|<p>Hello</p>}}, a boundary point might
+lie at the beginning of the text node or the beginning of the element node, but
+these don't logically differ much and will appear the same to the user, so we
+often want to treat them the same.  The algorithms here (currently used only
+for the delete algorithm) allow navigating through such equivalent boundary
+points, for when we want to make the selection as inclusive or exclusive as
+possible.  For deletion, we want to delete as few nodes as possible, so we move
+the start node forward and the end node backward.  In other cases we might do
+the reverse, expanding the selection.
+
+<p>Given a [[boundarypoint]] (<var>node</var>, <var>offset</var>), the
+<dfn>next equivalent point</dfn> is either a [[boundarypoint]] or null, as
+returned by the following algorithm:
+
+<ol>
+  <li>If <var>node</var>'s [[length]] is zero, return null.
+
+  <li class=note>We don't want to move into or out of zero-length nodes,
+  because that would move us straight through them.  For instance, if
+  {{code|{}<span></span>}} were equivalent to {{code|<span>{}</span>}}, it
+  would also be equivalent to {{code|<span></span>{} }}.  This produces very
+  unexpected results for nodes like {{code|<br>}}.
+
+  <li>If <var>offset</var> is <var>node</var>'s [[length]], and
+  <var>node</var>'s [[parent]] is not null, return (<var>node</var>'s
+  [[parent]], 1 + <var>node</var>'s [[index]]).
+
+  <li class=note>For instance, {{code|<span>foo[]</span>}} is equivalent to
+  {{code|<span>foo{}</span>}}, which is equivalent to {{code|<span>foo</span>{}
+  }}.
+
+  <li>If <var>node</var> has a [[child]] with [[index]] <var>offset</var>,
+  and that [[child]]'s [[length]] is not zero, return (that [[child]], 0).
+
+  <li class=note>For instance, {{code|{}<span>foo</span>}} is equivalent to
+  {{code|<span>{}foo</span>}}, which is equivalent to
+  {{code|<span>[]foo</span>}}.  As noted before, though, we don't descend into
+  empty nodes.
+
+  <li>Return null.
+</ol>
+
+<p>Given a [[boundarypoint]] (<var>node</var>, <var>offset</var>), the
+<dfn>previous equivalent point</dfn> is either a [[boundarypoint]] or null, as
+returned by the following algorithm:
+
+<ol>
+  <li>If <var>node</var>'s [[length]] is zero, return null.
+
+  <li>If <var>offset</var> is 0, and <var>node</var>'s [[parent]] is not null,
+  return (<var>node</var>'s [[parent]], <var>node</var>'s [[index]]).
+
+  <li>If <var>node</var> has a [[child]] with [[index]] <var>offset</var>
+  &minus; 1, and that [[child]]'s [[length]] is not zero, return (that
+  [[child]], that [[child]]'s [[length]]).
+
+  <li>Return null.
+</ol>
+
+<!-- Turned out not to be necessary here, but I've left it in case it turns out
+to be handy elsewhere. -->
+<!--
+<p>Two [[boundarypoints]] <var>A</var> and <var>B</var> are <dfn>equivalent
+boundary points</dfn> if the following algorithm returns true:
+
+<p class=note>This is indeed an <a
+href=http://en.wikipedia.org/wiki/Equivalence_relation>equivalence
+relation</a>.  Reflexivity, symmetry, and transitivity are all fairly obvious
+from the definition.  It also isn't hard to check that using <span>next
+equivalent point</span> instead of <span>previous equivalent point</span> would
+yield the same definition, because the two algorithms are inverses if neither
+output is null.
+
+<ol>
+  <li>While <var>A</var>'s <span>previous equivalent point</span> is not null,
+  set <var>A</var> to its <span>previous equivalent point</span>.
+
+  <li>While <var>B</var>'s <span>previous equivalent point</span> is not null,
+  set <var>B</var> to its <span>previous equivalent point</span>.
+
+  <li>Return true if <var>A</var> is the same as <var>B</var>, otherwise false.
+</ol>
+-->
+
+<p>The <dfn>block node of</dfn> a [[node]] <var>node</var> is either a
+<span>block node</span> or null, as returned by the following algorithm:
+
+<ol>
+  <li>While <var>node</var> is an <span>inline node</span>, set <var>node</var>
+  to its [[parent]].
+
+  <li>Return <var>node</var>.
+</ol>
+
+<p>Two [[nodes]] are <dfn>in the same block</dfn> if the <span>block node
+of</span> the first is non-null and the same as the <span>block node of</span>
+the second.
+
 <p class=comments>TODO: Consider what should happen for block merging in corner
 cases like display: inline-table.
 
@@ -5268,105 +5367,21 @@ style from the old text.
   and <var>end offset</var> be the <span>active range</span>'s [[rangestart]]
   and [[rangeend]] [[nodes]] and [[bpoffsets]].
 
-  <li class=note>
-  <p>First we adjust the selection so that we don't delete more than we should.
+  <li>While the <span>next equivalent point</span> for (<var>start node</var>,
+  <var>start offset</var>) is not null, and that [[boundarypoint]]'s [[node]]
+  is <span>in the same editing host</span> and <span>in the same block</span>
+  as <var>start node</var>, set (<var>start node</var>, <var>start
+  offset</var>) to its <span>next equivalent point</span>.
 
-  <li>
-  <div class=comments>
-  <p>We don't want to keep going when we hit an element with no children,
-  because then we'd do something like
+  <li class=note>We don't want to leave the current block because otherwise,
+  for instance, a selection of {{code|<p>foo[</p><p>]bar</p>}} would be treated
+  as empty and nothing would be deleted, when we want it to merge the blocks.
 
-<pre>
-foo{&lt;br />bar]
--> foo&lt;br>{&lt;/br>bar]
--> foo&lt;br />{bar]
--> foo&lt;br />[bar]</pre>
-
-  <p>and we deselected the {{code|<br>}}.
-  </div>
-
-  <p>While <var>start node</var> has at least one [[child]]:
-
-  <ol>
-    <li>
-    <div class=comments>
-    <p>For instance:
-
-<pre>&lt;b>foo[&lt;/b>&lt;i>bar]&lt;/i>
--> &lt;b>foo{&lt;/b>&lt;i>bar]&lt;/i>
--> &lt;b>foo&lt;/b>{&lt;i>bar]&lt;/i></pre>
-
-    <p>Then the next step will make it {{code|<b>foo</b><i>[bar]</i>}}.
-
-    <p>We don't want to do this for block nodes, because that would lead to
-    something like
-
-      <pre>&lt;p>foo[&lt;/p>&lt;p>]bar&lt;p></pre>
-
-    <p>ultimately collapsing, which is wrong.  Once we do the deletion, it
-    needs to wind up {{code|<p>foo[]bar</p>}}, whereas an actually collapsed
-    selection should do nothing.
-    </div>
-
-    <p>If <var>start offset</var> is <var>start node</var>'s [[length]], and
-    <var>start node</var>'s [[parent]] is <span>in the same editing
-    host</span>, and <var>start node</var> is an <span>inline node</span>, set
-    <var>start offset</var> to one plus the [[index]] of <var>start node</var>,
-    then set <var>start node</var> to its [[parent]] and continue this loop
-    from the beginning.
-
-    <li>
-    <p class=comments>This happens if the first step brought us all the way up
-    to the root.  The step immediately after this loop will bring us back down
-    again.
-
-    <p>If <var>start offset</var> is <var>start node</var>'s [[length]],
-    break from this loop.
-
-    <li>Let <var>reference node</var> be the [[child]] of <var>start node</var>
-    with [[index]] equal to <var>start offset</var>.
-
-    <li>
-    <div class=comments>
-    <p>Don't descend into an element with no children, since then it won't get
-    deleted even if it's selected.  Don't descend into a block node, because
-    then we might wind up not merging blocks when we should, e.g.
-
-<pre>foo{&lt;p>}bar&lt;/p>
--> foo&lt;p>{}bar&lt;/p></pre>
-
-    <p>and nothing gets changed.
-    </div>
-
-    <p>If <var>reference node</var> is a <span>block node</span> or an
-    [[element]] with no [[children]], or is neither an [[element]] nor a
-    [[text]] node, break from this loop.
-
-    <li>Set <var>start node</var> to <var>reference node</var> and <var>start
-    offset</var> to 0.
-  </ol>
-
-  <li>While <var>end node</var> has at least one [[child]]:
-
-  <ol>
-    <li>If <var>end offset</var> is 0, and <var>end node</var>'s
-    [[parent]] is <span>in the same editing host</span>, and <var>end
-    node</var> is an <span>inline node</span>, set <var>end offset</var> to the
-    [[index]] of <var>end node</var>, then set <var>end node</var> to its
-    [[parent]] and continue this loop from the beginning.
-
-    <li>If <var>end offset</var> is 0, break from this loop.
-
-    <li>Let <var>reference node</var> be the [[child]] of <var>end node</var>
-    with [[index]] equal to <var>end offset</var> minus one.
-
-    <li>If <var>reference node</var> is a <span>block node</span> or an
-    [[element]] with no [[children]], or is neither an [[element]] nor a
-    [[text]] node, break from this loop.
-
-    <li>Set <var>end node</var> to <var>reference node</var> and <var>end
-    offset</var> to the [[length]] of <var>reference node</var>.
-  </ol>
+  <li>While the <span>previous equivalent point</span> for (<var>end
+  node</var>, <var>end offset</var>) is not null, and that [[boundarypoint]]'s
+  [[node]] is <span>in the same editing host</span> and <span>in the same
+  block</span> as <var>end node</var>, set (<var>end node</var>, <var>end
+  offset</var>) to its <span>previous equivalent point</span>.
 
   <li>If (<var>end node</var>, <var>end offset</var>) is not [[bpafter]]
   (<var>start node</var>, <var>start offset</var>):

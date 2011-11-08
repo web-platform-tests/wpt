@@ -1972,11 +1972,13 @@ function isSimpleModifiableElement(node) {
 	return false;
 }
 
-// "A formattable node is an editable visible Text node."
+// "A formattable node is an editable visible node that is either a Text node,
+// an img, or a br."
 function isFormattableNode(node) {
 	return isEditable(node)
 		&& isVisible(node)
-		&& node.nodeType == Node.TEXT_NODE;
+		&& (node.nodeType == Node.TEXT_NODE
+		|| isHtmlElement(node, ["img", "br"]));
 }
 
 // "Two quantities are equivalent values for a command if either both are null,
@@ -8180,10 +8182,7 @@ commandNames.forEach(function(command) {
 		};
 
 		commands[command].value = function() {
-			var refNode = getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
-				return isEditable(node)
-					&& node.nodeType == Node.TEXT_NODE;
-			})[0];
+			var refNode = getAllEffectivelyContainedNodes(getActiveRange(), isFormattableNode)[0];
 
 			if (typeof refNode == "undefined") {
 				refNode = getActiveRange().startContainer;

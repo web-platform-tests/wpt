@@ -5563,6 +5563,16 @@ style from the old text.
     <li>Remove <var>node</var> from <var>parent</var>.
 
     <li>
+    <p class=comments>Do this before stripping wrappers: see <a
+    href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=13831>bug 13831</a>.
+
+    <p>If the <span>block node of</span> <var>parent</var> has no
+    <span>visible</span> [[children]], and <var>parent</var> is
+    <span>editable</span> or an <span>editing host</span>, call
+    [[createelement|"br"]] on the [[contextobject]] and append the result as
+    the last [[child]] of <var>parent</var>.
+
+    <li>
     <p class=comments>Taking insertText to test the case where strip wrappers
     is false, with value a: {{code<|p>[foo<b>bar</b>]baz}} becomes
     {{code|<p>a[]baz}} per spec, in IE9, and in Chrome 14 dev.  Firefox 7.0a2
@@ -5588,11 +5598,6 @@ style from the old text.
     content right afterward, like text or an image, but that new content will
     be inserted at the start node.  Wrappers in other places still need to be
     removed, because they would otherwise remain empty.
-
-    <li>If <var>parent</var> is <span>editable</span> or an <span>editing
-    host</span>, is not an <span>inline node</span>, and has no [[children]],
-    call [[createelement|"br"]] on the [[contextobject]] and append the result
-    as the last [[child]] of <var>parent</var>.
   </ol>
 
   <li>If <var>end node</var> is an <span>editable</span> [[text]] node, call

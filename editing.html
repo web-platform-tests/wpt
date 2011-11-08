@@ -5512,6 +5512,15 @@ style from the old text.
     <li>Remove <var title="">node</var> from <var title="">parent</var>.
 
     <li>
+    <p class=comments>Do this before stripping wrappers: see <a href="http://www.w3.org/Bugs/Public/show_bug.cgi?id=13831">bug 13831</a>.
+
+    <p>If the <a href=#block-node-of>block node of</a> <var title="">parent</var> has no
+    <a href=#visible>visible</a> <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, and <var title="">parent</var> is
+    <a href=#editable>editable</a> or an <a href=#editing-host>editing host</a>, call
+    <code class=external data-anolis-spec=dom title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("br")</a></code> on the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a> and append the result as
+    the last <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">parent</var>.
+
+    <li>
     <p class=comments>Taking insertText to test the case where strip wrappers
     is false, with value a: <code title="">&lt;p&gt;[foo&lt;b&gt;bar&lt;/b&gt;]baz</code> becomes
     <code title="">&lt;p&gt;a[]baz</code> per spec, in IE9, and in Chrome 14 dev.  Firefox 7.0a2
@@ -5537,11 +5546,6 @@ style from the old text.
     content right afterward, like text or an image, but that new content will
     be inserted at the start node.  Wrappers in other places still need to be
     removed, because they would otherwise remain empty.
-
-    <li>If <var title="">parent</var> is <a href=#editable>editable</a> or an <a href=#editing-host>editing
-    host</a>, is not an <a href=#inline-node>inline node</a>, and has no <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>,
-    call <code class=external data-anolis-spec=dom title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("br")</a></code> on the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a> and append the result
-    as the last <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">parent</var>.
   </ol>
 
   <li>If <var title="">end node</var> is an <a href=#editable>editable</a> <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node, call

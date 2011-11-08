@@ -4656,6 +4656,14 @@ function deleteSelection(flags) {
 		// "Remove node from parent."
 		parent_.removeChild(node);
 
+		// "If the block node of parent has no visible children, and parent is
+		// editable or an editing host, call createElement("br") on the context
+		// object and append the result as the last child of parent."
+		if (![].some.call(getBlockNodeOf(parent_).childNodes, isVisible)
+		&& (isEditable(parent_) || isEditingHost(parent_))) {
+			parent_.appendChild(document.createElement("br"));
+		}
+
 		// "If strip wrappers is true or parent is not an ancestor container of
 		// start node, while parent is an editable inline node with length 0,
 		// let grandparent be the parent of parent, then remove parent from
@@ -4669,15 +4677,6 @@ function deleteSelection(flags) {
 				grandparent.removeChild(parent_);
 				parent_ = grandparent;
 			}
-		}
-
-		// "If parent is editable or an editing host, is not an inline node,
-		// and has no children, call createElement("br") on the context object
-		// and append the result as the last child of parent."
-		if ((isEditable(parent_) || isEditingHost(parent_))
-		&& !isInlineNode(parent_)
-		&& !parent_.hasChildNodes()) {
-			parent_.appendChild(document.createElement("br"));
 		}
 	}
 

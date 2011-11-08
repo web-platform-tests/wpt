@@ -689,6 +689,16 @@ var tests = {
 		'<ol><li>foo</ol><p>{}<br></p><ul><li>bar</ul>',
 		'<ul><li>foo</ul>{}<br><ol><li>bar</ol>',
 		'<ul><li>foo</ul><p>{}<br></p><ol><li>bar</ol>',
+
+		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=13831
+		'<p><b>[foo]</b>',
+		'<p><quasit>[foo]</quasit>',
+		'<p><b><i>[foo]</i></b>',
+		'<p><b>{foo}</b>',
+		'<p>{<b>foo</b>}',
+		'<p><b>f[]</b>',
+		'<b>[foo]</b>',
+		'<div><b>[foo]</b></div>',
 	],
 	//@}
 	fontname: [
@@ -1617,6 +1627,16 @@ var tests = {
 		'<ol><li>foo</ol><p>{}<br></p><ul><li>bar</ul>',
 		'<ul><li>foo</ul>{}<br><ol><li>bar</ol>',
 		'<ul><li>foo</ul><p>{}<br></p><ol><li>bar</ol>',
+
+		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=13831
+		'<p><b>[foo]</b>',
+		'<p><quasit>[foo]</quasit>',
+		'<p><b><i>[foo]</i></b>',
+		'<p><b>{foo}</b>',
+		'<p>{<b>foo</b>}',
+		'<p><b>[]f</b>',
+		'<b>[foo]</b>',
+		'<div><b>[foo]</b></div>',
 	],
 	//@}
 	hilitecolor: [

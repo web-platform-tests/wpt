@@ -5373,7 +5373,7 @@ style from the old text.
   as <var>start node</var>, set (<var>start node</var>, <var>start
   offset</var>) to its <span>next equivalent point</span>.
 
-  <li class=note>We don't want to leave the current block because otherwise,
+  <p class=note>We don't want to leave the current block because otherwise,
   for instance, a selection of {{code|<p>foo[</p><p>]bar</p>}} would be treated
   as empty and nothing would be deleted, when we want it to merge the blocks.
 
@@ -5385,6 +5385,11 @@ style from the old text.
 
   <li>If (<var>end node</var>, <var>end offset</var>) is not [[bpafter]]
   (<var>start node</var>, <var>start offset</var>):
+
+  <p class=note>This is a selection like
+  {{code|<span>foo[</span></span>]bar</span>}}, where the boundary points are
+  equivalent but not identical.  We just collapse it and abort, since there's
+  nothing to delete.
 
   <ol>
     <li>If <var>direction</var> is "forward", call [[collapsetostart]] on the
@@ -5403,6 +5408,9 @@ style from the old text.
   <li>If <var>end node</var> is a [[text]] node and <var>end offset</var> is
   its [[length]], set <var>end offset</var> to one plus the [[index]] of
   <var>end node</var>, then set <var>end node</var> to its [[parent]].
+
+  <p class=note>The previous two steps are so that we won't leave empty text
+  nodes anywhere.
 
   <li>Call [[selcollapse|<var>start node</var>, <var>start offset</var>]] on
   the [[contextobject]]'s [[selection]].
@@ -5533,9 +5541,9 @@ style from the old text.
   <li>Let <var>node list</var> be a list of [[nodes]], initially empty.
 
   <li>
-  <p class=comments> IE9 doesn't seem to let you do any intercell deletions:
-  the delete key does nothing if you select across multiple cells.  Firefox
-  5.0a2 and Opera 11.11 behave as the spec says, not removing any table things.
+  <p class=comments>IE9 doesn't seem to let you do any intercell deletions: the
+  delete key does nothing if you select across multiple cells.  Firefox 5.0a2
+  and Opera 11.11 behave as the spec says, not removing any table things.
   Chrome 13 dev will remove entire rows if selected.  Note that IE, Firefox,
   Word 2007, and OpenOffice.org 3.2.1 Ubuntu all switch to a magic
   cell-selection mode when you try to select between cells, at least in some
@@ -5573,6 +5581,13 @@ style from the old text.
     let <var>grandparent</var> be the [[parent]] of <var>parent</var>, then
     remove <var>parent</var> from <var>grandparent</var>, then set
     <var>parent</var> to <var>grandparent</var>.
+
+    <p class=note>Even if <var>strip wrappers</var> is false, we still want to
+    strip wrappers that aren't [[inclusiveancestors]] of <var>start node</var>.
+    The idea of not stripping wrappers is that we're going to insert new
+    content right afterward, like text or an image, but that new content will
+    be inserted at the start node.  Wrappers in other places still need to be
+    removed, because they would otherwise remain empty.
 
     <li>If <var>parent</var> is <span>editable</span> or an <span>editing
     host</span>, is not an <span>inline node</span>, and has no [[children]],

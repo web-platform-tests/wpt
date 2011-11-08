@@ -67,7 +67,7 @@ a code { text-decoration: underline }
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing APIs</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-7-november-2011>Work in Progress &mdash; Last Update 7 November 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-8-november-2011>Work in Progress &mdash; Last Update 8 November 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;<a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a>&gt;
@@ -5323,7 +5323,7 @@ style from the old text.
   as <var title="">start node</var>, set (<var title="">start node</var>, <var title="">start
   offset</var>) to its <a href=#next-equivalent-point>next equivalent point</a>.
 
-  <li class=note>We don't want to leave the current block because otherwise,
+  <p class=note>We don't want to leave the current block because otherwise,
   for instance, a selection of <code title="">&lt;p&gt;foo[&lt;/p&gt;&lt;p&gt;]bar&lt;/p&gt;</code> would be treated
   as empty and nothing would be deleted, when we want it to merge the blocks.
 
@@ -5335,6 +5335,11 @@ style from the old text.
 
   <li>If (<var title="">end node</var>, <var title="">end offset</var>) is not <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp-after title=concept-range-bp-after>after</a>
   (<var title="">start node</var>, <var title="">start offset</var>):
+
+  <p class=note>This is a selection like
+  <code title="">&lt;span&gt;foo[&lt;/span&gt;&lt;/span&gt;]bar&lt;/span&gt;</code>, where the boundary points are
+  equivalent but not identical.  We just collapse it and abort, since there's
+  nothing to delete.
 
   <ol>
     <li>If <var title="">direction</var> is "forward", call <code title=dom-Selection-collapseToStart><a href=#dom-selection-collapsetostart>collapseToStart()</a></code> on the
@@ -5353,6 +5358,9 @@ style from the old text.
   <li>If <var title="">end node</var> is a <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node and <var title="">end offset</var> is
   its <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node-length title=concept-node-length>length</a>, set <var title="">end offset</var> to one plus the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-index title=concept-tree-index>index</a> of
   <var title="">end node</var>, then set <var title="">end node</var> to its <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+
+  <p class=note>The previous two steps are so that we won't leave empty text
+  nodes anywhere.
 
   <li>Call <code title=dom-Selection-collapse><a href=#dom-selection-collapse>collapse(<var title="">start node</var>, <var title="">start offset</var>)</a></code> on
   the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a href=#concept-selection title=concept-selection>selection</a>.
@@ -5482,9 +5490,9 @@ style from the old text.
   <li>Let <var title="">node list</var> be a list of <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>, initially empty.
 
   <li>
-  <p class=comments> IE9 doesn't seem to let you do any intercell deletions:
-  the delete key does nothing if you select across multiple cells.  Firefox
-  5.0a2 and Opera 11.11 behave as the spec says, not removing any table things.
+  <p class=comments>IE9 doesn't seem to let you do any intercell deletions: the
+  delete key does nothing if you select across multiple cells.  Firefox 5.0a2
+  and Opera 11.11 behave as the spec says, not removing any table things.
   Chrome 13 dev will remove entire rows if selected.  Note that IE, Firefox,
   Word 2007, and OpenOffice.org 3.2.1 Ubuntu all switch to a magic
   cell-selection mode when you try to select between cells, at least in some
@@ -5522,6 +5530,13 @@ style from the old text.
     let <var title="">grandparent</var> be the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">parent</var>, then
     remove <var title="">parent</var> from <var title="">grandparent</var>, then set
     <var title="">parent</var> to <var title="">grandparent</var>.
+
+    <p class=note>Even if <var title="">strip wrappers</var> is false, we still want to
+    strip wrappers that aren't <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-inclusive-ancestor title=concept-tree-inclusive-ancestor>inclusive ancestors</a> of <var title="">start node</var>.
+    The idea of not stripping wrappers is that we're going to insert new
+    content right afterward, like text or an image, but that new content will
+    be inserted at the start node.  Wrappers in other places still need to be
+    removed, because they would otherwise remain empty.
 
     <li>If <var title="">parent</var> is <a href=#editable>editable</a> or an <a href=#editing-host>editing
     host</a>, is not an <a href=#inline-node>inline node</a>, and has no <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>,

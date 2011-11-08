@@ -1610,16 +1610,19 @@ does not have [[resval]] "inline" or "inline-block" or "inline-table" or
 <p>An <dfn>inline node</dfn> is a [[node]] that is not a <span>block
 node</span>.
 
-<p>An <dfn>editing host</dfn> is a [[node]] that is either an [[element]] with
-a <code data-anolis-spec=html title=attr-contenteditable>contenteditable</code>
-attribute set to the true state, or the [[element]] [[child]] of a [[document]]
-whose <code data-anolis-spec=html>designMode</code> is enabled.
+<p>An <dfn>editing host</dfn> is a [[node]] that is either an <span>HTML
+element</span> with a <code data-anolis-spec=html
+title=attr-contenteditable>contenteditable</code> attribute set to the true
+state, or the <span>HTML element</span> [[child]] of a [[document]] whose <code
+data-anolis-spec=html>designMode</code> is enabled.
 
-<p>Something is <dfn>editable</dfn> if it is a [[node]] which is not an
-<span>editing host</span>, does not have a <code data-anolis-spec=html
+<p>Something is <dfn>editable</dfn> if it is a [[node]]; it is not an
+<span>editing host</span>; it does not have a <code data-anolis-spec=html
 title=attr-contenteditable>contenteditable</code> attribute set to the false
-state, and whose [[parent]] is an <span>editing host</span> or
-<span>editable</span>.
+state; its [[parent]] is an <span>editing host</span> or <span>editable</span>;
+and either it is an <span>HTML element</span>, or it is an [[svg]] or [[math]]
+element, or it is not an [[element]] and its [[parent]] is an <span>HTML
+element</span>.
 
 <p class=note>An <span>editable</span> node cannot be a [[document]] or
 [[documentfragment]], its [[parent]] cannot be null, and it must descend from

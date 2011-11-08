@@ -716,28 +716,32 @@ function isInlineNode(node) {
 	return node && !isBlockNode(node);
 }
 
-// "An editing host is a node that is either an Element with a contenteditable
-// attribute set to the true state, or the Element child of a Document whose
-// designMode is enabled."
+// "An editing host is a node that is either an HTML element with a
+// contenteditable attribute set to the true state, or the HTML element child
+// of a Document whose designMode is enabled."
 function isEditingHost(node) {
 	return node
-		&& node.nodeType == Node.ELEMENT_NODE
+		&& isHtmlElement(node)
 		&& (node.contentEditable == "true"
 		|| (node.parentNode
 		&& node.parentNode.nodeType == Node.DOCUMENT_NODE
 		&& node.parentNode.designMode == "on"));
 }
 
-// "Something is editable if it is a node which is not an editing host, does
-// not have a contenteditable attribute set to the false state, and whose
-// parent is an editing host or editable."
+// "Something is editable if it is a node; it is not an editing host; it does
+// not have a contenteditable attribute set to the false state; its parent is
+// an editing host or editable; and either it is an HTML element, or it is an
+// svg or math element, or it is not an Element and its parent is an HTML
+// element."
 function isEditable(node) {
-	// This is slightly a lie, because we're excluding non-HTML elements with
-	// contentEditable attributes.
 	return node
 		&& !isEditingHost(node)
 		&& (node.nodeType != Node.ELEMENT_NODE || node.contentEditable != "false")
-		&& (isEditingHost(node.parentNode) || isEditable(node.parentNode));
+		&& (isEditingHost(node.parentNode) || isEditable(node.parentNode))
+		&& (isHtmlElement(node)
+		|| (node.nodeType == Node.ELEMENT_NODE && node.namespaceURI == "http://www.w3.org/2000/svg" && node.localName == "svg")
+		|| (node.nodeType == Node.ELEMENT_NODE && node.namespaceURI == "http://www.w3.org/1998/Math/MathML" && node.localName == "math")
+		|| (node.nodeType != Node.ELEMENT_NODE && isHtmlElement(node.parentNode)));
 }
 
 // Helper function, not defined in the spec

@@ -97,6 +97,10 @@ function getAncestors(node) {
 	return ancestors;
 }
 
+function getInclusiveAncestors(node) {
+	return getAncestors(node).concat(node);
+}
+
 function getDescendants(node) {
 	var descendants = [];
 	var stop = nextNodeDescendants(node);
@@ -105,6 +109,10 @@ function getDescendants(node) {
 		descendants.push(node);
 	}
 	return descendants;
+}
+
+function getInclusiveDescendants(node) {
+	return [node].concat(getDescendants(node));
 }
 
 function convertProperty(property) {
@@ -4904,6 +4912,46 @@ function deleteSelection(flags) {
 			parent_.removeChild(endBlock);
 			endBlock = parent_;
 		}
+	}
+
+	// "Let ancestor be start block."
+	var ancestor = startBlock;
+
+	// "While ancestor has an inclusive ancestor ol in the same editing host
+	// whose nextSibling is also an ol in the same editing host, or an
+	// inclusive ancestor ul in the same editing host whose nextSibling is also
+	// a ul in the same editing host:"
+	while (getInclusiveAncestors(ancestor).some(function(node) {
+		return inSameEditingHost(ancestor, node)
+			&& (
+				(isHtmlElement(node, "ol") && isHtmlElement(node.nextSibling, "ol"))
+				|| (isHtmlElement(node, "ul") && isHtmlElement(node.nextSibling, "ul"))
+			) && inSameEditingHost(ancestor, node.nextSibling);
+	})) {
+		// "While ancestor and its nextSibling are not both ols in the same
+		// editing host, and are also not both uls in the same editing host,
+		// set ancestor to its parent."
+		while (!(
+			isHtmlElement(ancestor, "ol")
+			&& isHtmlElement(ancestor.nextSibling, "ol")
+			&& inSameEditingHost(ancestor, ancestor.nextSibling)
+		) && !(
+			isHtmlElement(ancestor, "ul")
+			&& isHtmlElement(ancestor.nextSibling, "ul")
+			&& inSameEditingHost(ancestor, ancestor.nextSibling)
+		)) {
+			ancestor = ancestor.parentNode;
+		}
+
+		// "While ancestor's nextSibling has children, append ancestor's
+		// nextSibling's firstChild as the last child of ancestor, preserving
+		// ranges."
+		while (ancestor.nextSibling.hasChildNodes()) {
+			movePreservingRanges(ancestor.nextSibling.firstChild, ancestor, -1);
+		}
+
+		// "Remove ancestor's nextSibling from its parent."
+		ancestor.parentNode.removeChild(ancestor.nextSibling);
 	}
 
 	// "Restore the values from values."

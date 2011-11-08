@@ -5783,6 +5783,31 @@ foo[<p>]bar</p>
     <var>parent</var>, then set <var>end block</var> to <var>parent</var>.
   </ol>
 
+  <li class=note><p>We might have deleted the contents between two lists, in
+  which case we should merge them.  See <a
+  href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=13976>bug 13976</a>.
+
+  <li>Let <var>ancestor</var> be <var>start block</var>.
+
+  <li>While <var>ancestor</var> has an [[inclusiveancestor]] [[ol]] <span>in
+  the same editing host</span> whose [[nextsibling]] is also an [[ol]] <span>in
+  the same editing host</span>, or an [[inclusiveancestor]] [[ul]] <span>in the
+  same editing host</span> whose [[nextsibling]] is also a [[ul]] <span>in the
+  same editing host</span>:
+
+  <ol>
+    <li>While <var>ancestor</var> and its [[nextsibling]] are not both [[ol]]s
+    <span>in the same editing host</span>, and are also not both [[ul]]s
+    <span>in the same editing host</span>, set <var>ancestor</var> to its
+    [[parent]].
+
+    <li>While <var>ancestor</var>'s [[nextsibling]] has [[children]], append
+    <var>ancestor</var>'s [[nextsibling]]'s [[firstchild]] as the last
+    [[child]] of <var>ancestor</var>, <span>preserving ranges</span>.
+
+    <li>Remove <var>ancestor</var>'s [[nextsibling]] from its [[parent]].
+  </ol>
+
   <li><span>Restore the values</span> from <var>values</var>.
 
   <li>If <var>start block</var> has no [[children]], call

@@ -6025,6 +6025,112 @@ function justifySelection(alignment) {
 
 
 //@}
+///// Automatic linking /////
+//@{
+// "An autolinkable URL is a string of the following form:"
+var autolinkableUrlRegexp =
+	// "Either a string matching the scheme pattern from RFC 3986 section 3.1
+	// followed by the literal string ://, or the literal string mailto:;
+	// followed by"
+	//
+	// From the RFC: scheme      = ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
+	"([a-zA-Z][a-zA-Z0-9+.-]*://|mailto:)"
+	// "Zero or more characters other than space characters; followed by"
+	+ "[^ \t\n\f\r]*"
+	// "A character that is not one of the ASCII characters !"'(),-.:;<>[]`{}."
+	+ "[^!\"'(),\\-.:;<>[\\]`{}]";
+
+// "A valid e-mail address is a string that matches the ABNF production 1*(
+// atext / "." ) "@" ldh-str *( "." ldh-str ) where atext is defined in RFC
+// 5322 section 3.2.3, and ldh-str is defined in RFC 1034 section 3.5."
+//
+// atext: ALPHA / DIGIT / "!" / "#" / "$" / "%" / "&" / "'" / "*" / "+" / "-" /
+// "/" / "=" / "?" / "^" / "_" / "`" / "{" / "|" / "}" / "~"
+//
+//<ldh-str> ::= <let-dig-hyp> | <let-dig-hyp> <ldh-str>
+//<let-dig-hyp> ::= <let-dig> | "-"
+//<let-dig> ::= <letter> | <digit>
+var validEmailRegexp =
+	"[a-zA-Z0-9!#$%&'*+\\-/=?^_`{|}~.]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*";
+
+function autolink(node, endOffset) {
+	// "While (node, end offset)'s previous equivalent point is not null, set
+	// it to its previous equivalent point."
+	while (getPreviousEquivalentPoint(node, endOffset)) {
+		var prev = getPreviousEquivalentPoint(node, endOffset);
+		node = prev[0];
+		endOffset = prev[1];
+	}
+
+	// "If node is not a Text node, or has an a ancestor, do nothing and abort
+	// these steps."
+	if (node.nodeType != Node.TEXT_NODE
+	|| getAncestors(node).some(function(ancestor) { return isHtmlElement(ancestor, "a") })) {
+		return;
+	}
+
+	// "Let search be the largest substring of node's data whose end is end
+	// offset and that contains no space characters."
+	var search = /[^ \t\n\f\r]*$/.exec(node.substringData(0, endOffset))[0];
+
+	// "If some substring of search is an autolinkable URL:"
+	if (new RegExp(autolinkableUrlRegexp).test(search)) {
+		// "While there is no substring of node's data ending at end offset
+		// that is an autolinkable URL, decrement end offset."
+		while (!(new RegExp(autolinkableUrlRegexp + "$").test(node.substringData(0, endOffset)))) {
+			endOffset--;
+		}
+
+		// "Let start offset be the start index of the longest substring of
+		// node's data that is an autolinkable URL ending at end offset."
+		var startOffset = new RegExp(autolinkableUrlRegexp + "$").exec(node.substringData(0, endOffset)).index;
+
+		// "Let href be the substring of node's data starting at start offset
+		// and ending at end offset."
+		var href = node.substringData(startOffset, endOffset - startOffset);
+
+	// "Otherwise, if some substring of search is a valid e-mail address:"
+	} else if (new RegExp(validEmailRegexp).test(search)) {
+		// "While there is no substring of node's data ending at end offset
+		// that is a valid e-mail address, decrement end offset."
+		while (!(new RegExp(validEmailRegexp + "$").test(node.substringData(0, endOffset)))) {
+			endOffset--;
+		}
+
+		// "Let start offset be the start index of the longest substring of
+		// node's data that is a valid e-mail address ending at end offset."
+		var startOffset = new RegExp(validEmailRegexp + "$").exec(node.substringData(0, endOffset)).index;
+
+		// "Let href be "mailto:" concatenated with the substring of node's
+		// data starting at start offset and ending at end offset."
+		var href = "mailto:" + node.substringData(startOffset, endOffset - startOffset);
+
+	// "Otherwise, do nothing and abort these steps."
+	} else {
+		return;
+	}
+
+	// "Let original range be the active range."
+	var originalRange = getActiveRange();
+
+	// "Create a new range with start (node, start offset) and end (node, end
+	// offset), and set the context object's selection's range to it."
+	var newRange = document.createRange();
+	newRange.setStart(node, startOffset);
+	newRange.setEnd(node, endOffset);
+	getSelection().removeAllRanges();
+	getSelection().addRange(newRange);
+	globalRange = newRange;
+
+	// "Call execCommand("createLink", false, href) on the context object."
+	myExecCommand("createLink", false, href);
+
+	// "Set the context object's selection's range to original range."
+	getSelection().removeAllRanges();
+	getSelection().addRange(originalRange);
+	globalRange = originalRange;
+}
+//@}
 ///// The delete command /////
 //@{
 commands["delete"] = {
@@ -7760,6 +7866,11 @@ commands.inserttext = {
 		// "Canonicalize whitespace at the active range's end, with fix
 		// collapsed space false."
 		canonicalizeWhitespace(getActiveRange().endContainer, getActiveRange().endOffset, false);
+
+		// "If value is a space character, autolink the active range's start."
+		if (/^[ \t\n\f\r]$/.test(value)) {
+			autolink(getActiveRange().startContainer, getActiveRange().startOffset);
+		}
 
 		// "Call collapseToEnd() on the context object's Selection."
 		//

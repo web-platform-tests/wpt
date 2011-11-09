@@ -173,6 +173,7 @@ restriction.
    <li><a href=#indenting-and-outdenting>Indenting and outdenting</a></li>
    <li><a href=#toggling-lists>Toggling lists</a></li>
    <li><a href=#justifying-the-selection>Justifying the selection</a></li>
+   <li><a href=#automatic-linking>Automatic linking</a></li>
    <li><a href=#the-delete-command>The <code title="">delete</code> command</a></li>
    <li><a href=#the-formatblock-command>The <code title="">formatBlock</code> command</a></li>
    <li><a href=#the-forwarddelete-command>The <code title="">forwardDelete</code> command</a></li>
@@ -7468,6 +7469,131 @@ would be worth the added complexity.
 </ol>
 
 
+<h3 id=automatic-linking>Automatic linking</h3>
+
+<p class=comments><a href="http://www.w3.org/Bugs/Public/show_bug.cgi?id=13807">Bug 13807</a>.
+
+<p class=note>When the user inserts whitespace immediately following something
+that looks like a URL or e-mail address, we automatically run <a href=#the-createlink-command>the <code title="">createLink</code> command</a> on it.
+
+<p>An <dfn id=autolinkable-url>autolinkable URL</dfn> is a string of the following form:
+
+<ol>
+  <li>
+  <p class=comments>IE9 and LibreOffice 3.3.4 both have a whitelist of URL
+  schemes.  That would be complicated and involve political decisions, so
+  instead, we'll just accept anything that looks like a hierarchical URL
+  scheme.  Google Docs is similar (as of November 9, 2011), but it's too lax,
+  and allows characters in the scheme that can't be in a scheme.  For
+  non-hierarchical schemes, we just whitelist mailto:, since it's the only
+  common one that makes sense to autolink.
+
+  <p>Either a string matching the <var title="">scheme</var> pattern from <a href=http://tools.ietf.org/html/rfc3986#section-3.1>RFC 3986 section 3.1</a>
+  followed by the literal string <code title="">://</code>, or the literal string
+  <code title="">mailto:</code>; followed by
+
+  <li>
+  <p class=comments>We don't try to enforce that the URL is anything resembling
+  valid per spec.  Too complicated for not enough gain.
+
+  <p>Zero or more characters other than <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#space-character title="space character">space characters</a>; followed by
+
+  <li>
+  <div class=comments>
+  <p>If the user types a URL followed by some punctuation, we still want to
+  autolink, but we don't want to include the punctuation if it's probably not
+  meant as part of the URL.
+
+  <p>IE9 excludes <code title="">!#&amp;()*+,-.:;&lt;=?@[]^_`{|}~</code> as
+  trailing characters from both URLs and e-mails.  A trailing <code title="">"</code> or
+  <code title="">&gt;</code> will prevent autolinking, and a trailing <code title="">$%'/\</code> is
+  included in the link.
+
+  <p>LibreOffice 3.3.4 excludes trailing <code title="">!&rdquo;#'()*+,.:;&lt;=&gt;?[\]^_`{|}~</code>,
+  and prevents autolinking on <code title="">$%&amp;-@</code>.  It includes a trailing
+  <code title="">/</code> in URLs, but it inhibits linking for e-mails.
+
+  <p>Google Docs (as of November 9, 2011) is complicated.  Trailing
+  <code title="">&rdquo;&rsquo;,-.</code> always prevents autolinking of a URL, and trailing
+  <code title="">#%/?_</code> is always included in a URL.  Trailing <code title="">!&amp;=$()*+:;&lt;&gt;@[\]^`{|}~</code> prevent autolinking if there's no
+  <code title="">?</code> before them, but are included in the URL if there is a <code title="">?</code>.
+  For e-mails, <code title="">_</code> is included, and everything else prevents
+  autolinking.
+
+  <p>None of these behaviors makes maximal sense.  We should exclude characters
+  if they're more likely as delimiters than actual trailing characters; include
+  them if they're more likely as actual trailing characters; and prevent
+  autolinking if their presence suggests that we're not actually looking at a
+  link or e-mail address.  The lists I made up for URLs are: exclude trailing
+  <code title="">!"'(),-.:;&lt;&gt;[]`{}</code>, include anything else.  For e-mail,
+  exclude anything at all.
+  </div>
+
+  <p>A character that is not one of the ASCII characters <code title="">!"'(),-.:;&lt;&gt;[]`{}</code>.
+</ol>
+
+<p>To <dfn id=autolink>autolink</dfn> (<var title="">node</var>, <var title="">end offset</var>):
+
+<ol>
+  <li>While (<var title="">node</var>, <var title="">end offset</var>)'s <a href=#previous-equivalent-point>previous
+  equivalent point</a> is not null, set it to its <a href=#previous-equivalent-point>previous equivalent
+  point</a>.
+
+  <li>If <var title="">node</var> is not a <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node, or has an <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/text-level-semantics.html#the-a-element>a</a></code> <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a>,
+  do nothing and abort these steps.
+
+  <li>Let <var title="">search</var> be the largest substring of <var title="">node</var>'s
+  <code class=external data-anolis-spec=dom title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> whose end is <var title="">end offset</var> and that contains no
+  <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#space-character title="space character">space characters</a>.
+
+  <li>If some substring of <var title="">search</var> is an <a href=#autolinkable-url>autolinkable
+  URL</a>:
+
+  <ol>
+    <li>While there is no substring of <var title="">node</var>'s <code class=external data-anolis-spec=dom title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> ending at
+    <var title="">end offset</var> that is an <a href=#autolinkable-url>autolinkable URL</a>, decrement
+    <var title="">end offset</var>.
+
+    <li>Let <var title="">start offset</var> be the start index of the longest substring
+    of <var title="">node</var>'s <code class=external data-anolis-spec=dom title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> that is an <a href=#autolinkable-url>autolinkable URL</a>
+    ending at <var title="">end offset</var>.
+
+    <li>Let <var title="">href</var> be the substring of <var title="">node</var>'s <code class=external data-anolis-spec=dom title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code>
+    starting at <var title="">start offset</var> and ending at <var title="">end offset</var>.
+  </ol>
+
+  <li>Otherwise, if some substring of <var title="">search</var> is a <a class=external data-anolis-spec=html href=http://www.whatwg.org/specs/web-apps/current-work/multipage/states-of-the-type-attribute.html#valid-e-mail-address>valid e-mail address</a>:
+
+  <ol>
+    <li>While there is no substring of <var title="">node</var>'s <code class=external data-anolis-spec=dom title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> ending at
+    <var title="">end offset</var> that is a <a class=external data-anolis-spec=html href=http://www.whatwg.org/specs/web-apps/current-work/multipage/states-of-the-type-attribute.html#valid-e-mail-address>valid e-mail
+    address</a>, decrement <var title="">end offset</var>.
+
+    <li>Let <var title="">start offset</var> be the start index of the longest substring
+    of <var title="">node</var>'s <code class=external data-anolis-spec=dom title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> that is a <a class=external data-anolis-spec=html href=http://www.whatwg.org/specs/web-apps/current-work/multipage/states-of-the-type-attribute.html#valid-e-mail-address>valid
+    e-mail address</a> ending at <var title="">end offset</var>.
+
+    <li>Let <var title="">href</var> be "mailto:" concatenated with the substring of
+    <var title="">node</var>'s <code class=external data-anolis-spec=dom title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> starting at <var title="">start offset</var> and ending
+    at <var title="">end offset</var>.
+  </ol>
+
+  <li>Otherwise, do nothing and abort these steps.
+
+  <li>Let <var title="">original range</var> be the <a href=#active-range>active range</a>.
+
+  <li>Create a new <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> with <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a> (<var title="">node</var>, <var title="">start
+  offset</var>) and <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end title=concept-range-end>end</a> (<var title="">node</var>, <var title="">end offset</var>), and
+  set the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a href=#concept-selection title=concept-selection>selection</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> to it.
+
+  <li>Call <code title=execCommand()><a href=#execcommand()>execCommand("createLink", false, <var title="">href</var>)</a></code> on the
+  <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>.
+
+  <li>Set the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a href=#concept-selection title=concept-selection>selection</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> to <var title="">original
+  range</var>.
+</ol>
+
+
 <h3 id=the-delete-command><dfn>The <code title="">delete</code> command</dfn></h3>
 
 <div class=note>
@@ -9529,8 +9655,8 @@ unnecessarily.
     <p>If <var title="">node</var> has only one <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, which is a <a href=#collapsed-line-break>collapsed
     line break</a>, remove its <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> from it.
 
-    <li>Let <var title="">text</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createTextNode><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createtextnode>createTextNode(<var title="">value</var>)</a></code> on
-    the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>.
+    <li>Let <var title="">text</var> be the result of calling
+    <code class=external data-anolis-spec=dom title=dom-Document-createTextNode><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createtextnode>createTextNode(<var title="">value</var>)</a></code> on the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>.
 
     <li>Call <code class=external data-anolis-spec=dom title=dom-Range-insertNode><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-range-insertnode>insertNode(<var title="">text</var>)</a></code> on the <a href=#active-range>active range</a>.
 
@@ -9548,6 +9674,9 @@ unnecessarily.
 
   <li><a href=#canonicalize-whitespace>Canonicalize whitespace</a> at the <a href=#active-range>active range</a>'s
   <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end title=concept-range-end>end</a>, with <var title="">fix collapsed space</var> false.
+
+  <li>If <var title="">value</var> is a <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#space-character title="space character">space character</a>, <a href=#autolink>autolink</a> the
+  <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a>.
 
   <li>Call <code title=dom-Selection-collapseToEnd><a href=#dom-selection-collapsetoend>collapseToEnd()</a></code> on the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a href=#concept-selection title=concept-selection>selection</a>.
 </ol>

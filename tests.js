@@ -2580,6 +2580,40 @@ var tests = {
 
 		// End whitespace tests
 
+		// Autolinking tests
+		[' ', 'http://a[]'],
+		[' ', 'ftp://a[]'],
+		[' ', 'quasit://a[]'],
+		[' ', '.x-++-.://a[]'],
+		[' ', '(http://a)[]'],
+		[' ', '&lt;http://a>[]'],
+		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=14744
+		['! ', '&#x5b;http://a&#x5d;[]'],
+		['! ', '&#x7b;http://a&#x7d;[]'],
+		[' ', 'http://a![]'],
+		[' ', '!"#$%&amp;\'()*+,-./:;&lt;=>?\^_`|~http://a!"#$%&amp;\'()*+,-./:;&lt;=>?\^_`|~[]'],
+		[' ', 'http://a!"\'(),-.:;&lt;>`[]'],
+		[' ', 'http://a#$%&amp;*+/=?\^_|~[]'],
+		[' ', 'mailto:a[]'],
+		[' ', 'a@b[]'],
+		[' ', 'a@[]'],
+		[' ', '@b[]'],
+		[' ', '#@x[]'],
+		[' ', 'a@.[]'],
+		[' ', '!"#$%&amp;\'()*+,-./:;&lt;=>?\^_`|~a@b!"#$%&amp;\'()*+,-./:;&lt;=>?\^_`|~[]'],
+		[' ', '<b>a@b</b>{}'],
+		[' ', '<b>a</b><i>@</i><u>b</u>{}'],
+		[' ', 'a@b<b>[]c</b>'],
+		[' ', '<p>a@b</p><p>[]c</p>'],
+		['a', 'http://a[]'],
+		['\t', 'http://a[]'],
+		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=14254
+		['!\r', 'http://a[]'],
+		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=14745
+		['!\n', 'http://a[]'],
+		['\f', 'http://a[]'],
+		['\u00A0', 'http://a[]'],
+
 		['   ', 'foo[]'],
 
 		'foo[]bar',

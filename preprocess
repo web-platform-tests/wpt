@@ -150,6 +150,7 @@ fnreplace = {
     'addrange': '<code title=dom-Selection-addRange>addRange(\\1)</code>',
     'appendchild': '<code data-anolis-spec=dom title=dom-Node-appendChild>appendChild(\\1)</code>',
     'createelement': '<code data-anolis-spec=dom title=dom-Document-createElement>createElement(\\1)</code>',
+    'createtextnode': '<code data-anolis-spec=dom title=dom-Document-createTextNode>createTextNode(\\1)</code>',
     'deletedata': '<code data-anolis-spec=dom title=dom-CharacterData-deleteData>deleteData(\\1)</code>',
     'execcommand': '<code title=execCommand()>execCommand(\\1)</code>',
     'extend': '<code title=dom-Selection-extend>extend(\\1)</code>',

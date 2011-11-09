@@ -7548,6 +7548,137 @@ would be worth the added complexity.
 </ol>
 
 <!-- @} -->
+<h3>Automatic linking</h3>
+<!-- @{ -->
+<p class=comments><a
+href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=13807>Bug 13807</a>.
+
+<p class=note>When the user inserts whitespace immediately following something
+that looks like a URL or e-mail address, we automatically run <span>the <code
+title>createLink</code> command</span> on it.
+
+<p>An <dfn>autolinkable URL</dfn> is a string of the following form:
+
+<ol>
+  <li>
+  <p class=comments>IE9 and LibreOffice 3.3.4 both have a whitelist of URL
+  schemes.  That would be complicated and involve political decisions, so
+  instead, we'll just accept anything that looks like a hierarchical URL
+  scheme.  Google Docs is similar (as of November 9, 2011), but it's too lax,
+  and allows characters in the scheme that can't be in a scheme.  For
+  non-hierarchical schemes, we just whitelist mailto:, since it's the only
+  common one that makes sense to autolink.
+
+  <p>Either a string matching the <var>scheme</var> pattern from <a
+  href=http://tools.ietf.org/html/rfc3986#section-3.1>RFC 3986 section 3.1</a>
+  followed by the literal string {{code|://}}, or the literal string
+  {{code|mailto:}}; followed by
+
+  <li>
+  <p class=comments>We don't try to enforce that the URL is anything resembling
+  valid per spec.  Too complicated for not enough gain.
+
+  <p>Zero or more characters other than [[spacecharacters]]; followed by
+
+  <li>
+  <div class=comments>
+  <p>If the user types a URL followed by some punctuation, we still want to
+  autolink, but we don't want to include the punctuation if it's probably not
+  meant as part of the URL.
+
+  <p>IE9 excludes <code title>!#&amp;()*+,-.:;&lt;=?@[]^_`{|}~</code> as
+  trailing characters from both URLs and e-mails.  A trailing {{code|"}} or
+  {{code|>}} will prevent autolinking, and a trailing {{code|$%'/\}} is
+  included in the link.
+
+  <p>LibreOffice 3.3.4 excludes trailing {{code|!”#'()*+,.:;<=>?[\]^_`{|}~}},
+  and prevents autolinking on {{code|$%&-@ }}.  It includes a trailing
+  {{code|/}} in URLs, but it inhibits linking for e-mails.
+
+  <p>Google Docs (as of November 9, 2011) is complicated.  Trailing
+  {{code|”’,-.}} always prevents autolinking of a URL, and trailing
+  {{code|#%/?_}} is always included in a URL.  Trailing <code
+  title>!&amp;=$()*+:;&lt;>@[\]^`{|}~</code> prevent autolinking if there's no
+  {{code|?}} before them, but are included in the URL if there is a {{code|?}}.
+  For e-mails, {{code|_}} is included, and everything else prevents
+  autolinking.
+
+  <p>None of these behaviors makes maximal sense.  We should exclude characters
+  if they're more likely as delimiters than actual trailing characters; include
+  them if they're more likely as actual trailing characters; and prevent
+  autolinking if their presence suggests that we're not actually looking at a
+  link or e-mail address.  The lists I made up for URLs are: exclude trailing
+  <code title>!"'(),-.:;&lt;>[]`{}</code>, include anything else.  For e-mail,
+  exclude anything at all.
+  </div>
+
+  <p>A character that is not one of the ASCII characters <code
+  title>!"'(),-.:;&lt;>[]`{}</code>.
+</ol>
+
+<p>To <dfn>autolink</dfn> (<var>node</var>, <var>end offset</var>):
+
+<ol>
+  <li>While (<var>node</var>, <var>end offset</var>)'s <span>previous
+  equivalent point</span> is not null, set it to its <span>previous equivalent
+  point</span>.
+
+  <li>If <var>node</var> is not a [[text]] node, or has an [[a]] [[ancestor]],
+  do nothing and abort these steps.
+
+  <li>Let <var>search</var> be the largest substring of <var>node</var>'s
+  [[cddata]] whose end is <var>end offset</var> and that contains no
+  [[spacecharacters]].
+
+  <li>If some substring of <var>search</var> is an <span>autolinkable
+  URL</span>:
+
+  <ol>
+    <li>While there is no substring of <var>node</var>'s [[cddata]] ending at
+    <var>end offset</var> that is an <span>autolinkable URL</span>, decrement
+    <var>end offset</var>.
+
+    <li>Let <var>start offset</var> be the start index of the longest substring
+    of <var>node</var>'s [[cddata]] that is an <span>autolinkable URL</span>
+    ending at <var>end offset</var>.
+
+    <li>Let <var>href</var> be the substring of <var>node</var>'s [[cddata]]
+    starting at <var>start offset</var> and ending at <var>end offset</var>.
+  </ol>
+
+  <li>Otherwise, if some substring of <var>search</var> is a <span
+  data-anolis-spec=html>valid e-mail address</span>:
+
+  <ol>
+    <li>While there is no substring of <var>node</var>'s [[cddata]] ending at
+    <var>end offset</var> that is a <span data-anolis-spec=html>valid e-mail
+    address</span>, decrement <var>end offset</var>.
+
+    <li>Let <var>start offset</var> be the start index of the longest substring
+    of <var>node</var>'s [[cddata]] that is a <span data-anolis-spec=html>valid
+    e-mail address</span> ending at <var>end offset</var>.
+
+    <li>Let <var>href</var> be "mailto:" concatenated with the substring of
+    <var>node</var>'s [[cddata]] starting at <var>start offset</var> and ending
+    at <var>end offset</var>.
+  </ol>
+
+  <li>Otherwise, do nothing and abort these steps.
+
+  <li>Let <var>original range</var> be the <span>active range</span>.
+
+  <li>Create a new [[range]] with [[rangestart]] (<var>node</var>, <var>start
+  offset</var>) and [[rangeend]] (<var>node</var>, <var>end offset</var>), and
+  set the [[contextobject]]'s [[selection]]'s [[range]] to it.
+
+  <li>Call [[execcommand|"createLink", false, <var>href</var>]] on the
+  [[contextobject]].
+
+  <li>Set the [[contextobject]]'s [[selection]]'s [[range]] to <var>original
+  range</var>.
+</ol>
+
+<!-- @} -->
 <h3><dfn>The <code title>delete</code> command</dfn></h3>
 <!-- @{ -->
 <div class=note>
@@ -9625,10 +9756,8 @@ unnecessarily.
     <p>If <var>node</var> has only one [[child]], which is a <span>collapsed
     line break</span>, remove its [[child]] from it.
 
-    <li>Let <var>text</var> be the result of calling <code
-    data-anolis-spec=domcore
-    title=dom-Document-createTextNode>createTextNode(<var>value</var>)</code> on
-    the [[contextobject]].
+    <li>Let <var>text</var> be the result of calling
+    [[createtextnode|<var>value</var>]] on the [[contextobject]].
 
     <li>Call [[insertnode|<var>text</var>]] on the <span>active range</span>.
 
@@ -9646,6 +9775,9 @@ unnecessarily.
 
   <li><span>Canonicalize whitespace</span> at the <span>active range</span>'s
   [[rangeend]], with <var>fix collapsed space</var> false.
+
+  <li>If <var>value</var> is a [[spacecharacter]], <span>autolink</span> the
+  <span>active range</span>'s [[rangestart]].
 
   <li>Call [[collapsetoend]] on the [[contextobject]]'s [[selection]].
 </ol>

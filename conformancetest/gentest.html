@@ -37,6 +37,8 @@ if (/WebKit/.test(navigator.userAgent)) {
 	document.querySelector("[type=radio][value=gecko]").checked = true;
 }
 
+var originalTitle = document.title;
+
 var testOutput = '';
 
 function generateTests() {
@@ -45,6 +47,7 @@ function generateTests() {
 
 	testOutput = "var browserTests = [\n";
 	for (var command in tests) {
+		document.title = "(" + command + ") " + originalTitle;
 		tests[command].forEach(function(test) {
 			if (badTests[command].indexOf(test) != -1) {
 				return;
@@ -65,6 +68,8 @@ function generateTests() {
 			}
 		});
 	}
+
+	document.title = "(submitting) " + originalTitle;
 
 	// Finish up our JSON.  First remove the last comma, since JSON doesn't
 	// like that, then add a closing bracket.

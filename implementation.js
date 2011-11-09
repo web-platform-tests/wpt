@@ -4029,7 +4029,7 @@ function getNextEquivalentPoint(node, offset) {
 
 	// "If node has a child with index offset, and that child's length is not
 	// zero, return (that child, 0)."
-	if (0 <= node.childNodes.length
+	if (0 <= offset
 	&& offset < node.childNodes.length
 	&& getNodeLength(node.childNodes[offset]) != 0) {
 		return [node.childNodes[offset], 0];
@@ -4053,7 +4053,7 @@ function getPreviousEquivalentPoint(node, offset) {
 
 	// "If node has a child with index offset − 1, and that child's length is
 	// not zero, return (that child, that child's length)."
-	if (0 <= node.childNodes.length
+	if (0 <= offset - 1
 	&& offset - 1 < node.childNodes.length
 	&& getNodeLength(node.childNodes[offset - 1]) != 0) {
 		return [node.childNodes[offset - 1], getNodeLength(node.childNodes[offset - 1])];

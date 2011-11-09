@@ -3766,13 +3766,6 @@ function getBlockNodeOf(node) {
 	return node;
 }
 
-// "Two nodes are in the same block if the block node of the first is non-null
-// and the same as the block node of the second."
-function inSameBlock(node1, node2) {
-	return getBlockNodeOf(node1)
-		&& getBlockNodeOf(node1) === getBlockNodeOf(node2);
-}
-
 //@}
 ///// Assorted block formatting command algorithms /////
 //@{
@@ -4021,17 +4014,20 @@ function getNextEquivalentPoint(node, offset) {
 		return null;
 	}
 
-	// "If offset is node's length, and node's parent is not null, return
-	// (node's parent, 1 + node's index)."
-	if (offset == getNodeLength(node) && node.parentNode) {
+	// "If offset is node's length, and node's parent is not null, and node is
+	// an inline node, return (node's parent, 1 + node's index)."
+	if (offset == getNodeLength(node)
+	&& node.parentNode
+	&& isInlineNode(node)) {
 		return [node.parentNode, 1 + getNodeIndex(node)];
 	}
 
 	// "If node has a child with index offset, and that child's length is not
-	// zero, return (that child, 0)."
+	// zero, and that child is an inline node, return (that child, 0)."
 	if (0 <= offset
 	&& offset < node.childNodes.length
-	&& getNodeLength(node.childNodes[offset]) != 0) {
+	&& getNodeLength(node.childNodes[offset]) != 0
+	&& isInlineNode(node.childNodes[offset])) {
 		return [node.childNodes[offset], 0];
 	}
 
@@ -4045,22 +4041,52 @@ function getPreviousEquivalentPoint(node, offset) {
 		return null;
 	}
 
-	// "If offset is 0, and node's parent is not null, return (node's parent,
-	// node's index)."
-	if (offset == 0 && node.parentNode) {
+	// "If offset is 0, and node's parent is not null, and node is an inline
+	// node, return (node's parent, node's index)."
+	if (offset == 0
+	&& node.parentNode
+	&& isInlineNode(node)) {
 		return [node.parentNode, getNodeIndex(node)];
 	}
 
 	// "If node has a child with index offset − 1, and that child's length is
-	// not zero, return (that child, that child's length)."
+	// not zero, and that child is an inline node, return (that child, that
+	// child's length)."
 	if (0 <= offset - 1
 	&& offset - 1 < node.childNodes.length
-	&& getNodeLength(node.childNodes[offset - 1]) != 0) {
+	&& getNodeLength(node.childNodes[offset - 1]) != 0
+	&& isInlineNode(node.childNodes[offset - 1])) {
 		return [node.childNodes[offset - 1], getNodeLength(node.childNodes[offset - 1])];
 	}
 
 	// "Return null."
 	return null;
+}
+
+function getFirstEquivalentPoint(node, offset) {
+	// "While (node, offset)'s previous equivalent point is not null, set
+	// (node, offset) to its previous equivalent point."
+	var prev;
+	while (prev = getPreviousEquivalentPoint(node, offset)) {
+		node = prev[0];
+		offset = prev[1];
+	}
+
+	// "Return (node, offset)."
+	return [node, offset];
+}
+
+function getLastEquivalentPoint(node, offset) {
+	// "While (node, offset)'s next equivalent point is not null, set (node,
+	// offset) to its next equivalent point."
+	var next;
+	while (next = getNextEquivalentPoint(node, offset)) {
+		node = next[0];
+		offset = next[1];
+	}
+
+	// "Return (node, offset)."
+	return [node, offset];
 }
 
 //@}
@@ -4472,36 +4498,17 @@ function deleteSelection(flags) {
 	// "Canonicalize whitespace at the active range's end."
 	canonicalizeWhitespace(getActiveRange().endContainer, getActiveRange().endOffset);
 
-	// "Let start node, start offset, end node, and end offset be the active
-	// range's start and end nodes and offsets."
-	var startNode = getActiveRange().startContainer;
-	var startOffset = getActiveRange().startOffset;
-	var endNode = getActiveRange().endContainer;
-	var endOffset = getActiveRange().endOffset;
+	// "Let (start node, start offset) be the last equivalent point for the
+	// active range's start."
+	var start = getLastEquivalentPoint(getActiveRange().startContainer, getActiveRange().startOffset);
+	var startNode = start[0];
+	var startOffset = start[1];
 
-	// "While the next equivalent point for (start node, start offset) is not
-	// null, and that boundary point's node is in the same editing host and in
-	// the same block as start node, set (start node, start offset) to its next
-	// equivalent point."
-	while (getNextEquivalentPoint(startNode, startOffset)
-	&& inSameEditingHost(getNextEquivalentPoint(startNode, startOffset)[0], startNode)
-	&& inSameBlock(getNextEquivalentPoint(startNode, startOffset)[0], startNode)) {
-		var next = getNextEquivalentPoint(startNode, startOffset);
-		startNode = next[0];
-		startOffset = next[1];
-	}
-
-	// "While the previous equivalent point for (end node, end offset) is not
-	// null, and that boundary point's node is in the same editing host and in
-	// the same block as end node, set (end node, end offset) to its previous
-	// equivalent point."
-	while (getPreviousEquivalentPoint(endNode, endOffset)
-	&& inSameEditingHost(getPreviousEquivalentPoint(endNode, endOffset)[0], endNode)
-	&& inSameBlock(getPreviousEquivalentPoint(endNode, endOffset)[0], endNode)) {
-		var prev = getPreviousEquivalentPoint(endNode, endOffset);
-		endNode = prev[0];
-		endOffset = prev[1];
-	}
+	// "Let (end node, end offset) be the first equivalent point for the active
+	// range's end."
+	var end = getFirstEquivalentPoint(getActiveRange().endContainer, getActiveRange().endOffset);
+	var endNode = end[0];
+	var endOffset = end[1];
 
 	// "If (end node, end offset) is not after (start node, start offset):"
 	if (getPosition(endNode, endOffset, startNode, startOffset) !== "after") {

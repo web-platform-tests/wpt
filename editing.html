@@ -4570,10 +4570,6 @@ container</a>, or an <a href=#html-element>HTML element</a> with <a class=extern
   <li>Return <var title="">node</var>.
 </ol>
 
-<p>Two <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> are <dfn id=in-the-same-block>in the same block</dfn> if the <a href=#block-node-of>block node
-of</a> the first is non-null and the same as the <a href=#block-node-of>block node of</a>
-the second.
-
 
 <h3 id=assorted-block-formatting-command-algorithms>Assorted block formatting command algorithms</h3>
 
@@ -4878,19 +4874,24 @@ returned by the following algorithm:
   unexpected results for nodes like <code title="">&lt;br&gt;</code>.
 
   <li>If <var title="">offset</var> is <var title="">node</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node-length title=concept-node-length>length</a>, and
-  <var title="">node</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is not null, return (<var title="">node</var>'s
-  <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>, 1 + <var title="">node</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-index title=concept-tree-index>index</a>).
+  <var title="">node</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is not null, and <var title="">node</var> is an
+  <a href=#inline-node>inline node</a>, return (<var title="">node</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>, 1 +
+  <var title="">node</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-index title=concept-tree-index>index</a>).
 
   <li class=note>For instance, <code title="">&lt;span&gt;foo[]&lt;/span&gt;</code> is equivalent to
-  <code title="">&lt;span&gt;foo{}&lt;/span&gt;</code>, which is equivalent to <code title="">&lt;span&gt;foo&lt;/span&gt;{}</code>.
+  <code title="">&lt;span&gt;foo{}&lt;/span&gt;</code>, which is equivalent to <code title="">&lt;span&gt;foo&lt;/span&gt;{}</code>.  However, <code title="">&lt;p&gt;foo{}&lt;/p&gt;</code> is <em>not</em> equivalent to
+  <code title="">&lt;p&gt;foo&lt;/p&gt;{}</code> &ndash; the cursor might look like it's in a visibly
+  different position.
 
   <li>If <var title="">node</var> has a <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> with <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-index title=concept-tree-index>index</a> <var title="">offset</var>,
-  and that <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node-length title=concept-node-length>length</a> is not zero, return (that <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, 0).
+  and that <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node-length title=concept-node-length>length</a> is not zero, and that <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is an
+  <a href=#inline-node>inline node</a>, return (that <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, 0).
 
   <li class=note>For instance, <code title="">{}&lt;span&gt;foo&lt;/span&gt;</code> is equivalent to
   <code title="">&lt;span&gt;{}foo&lt;/span&gt;</code>, which is equivalent to
   <code title="">&lt;span&gt;[]foo&lt;/span&gt;</code>.  As noted before, though, we don't descend into
-  empty nodes.
+  empty nodes.  And again, <code title="">{}&lt;p&gt;foo&lt;/p&gt;</code> is different from
+  <code title="">&lt;p&gt;{}foo&lt;/p&gt;</code>.
 
   <li>Return null.
 </ol>
@@ -4903,13 +4904,37 @@ returned by the following algorithm:
   <li>If <var title="">node</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node-length title=concept-node-length>length</a> is zero, return null.
 
   <li>If <var title="">offset</var> is 0, and <var title="">node</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is not null,
-  return (<var title="">node</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>, <var title="">node</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-index title=concept-tree-index>index</a>).
+  and <var title="">node</var> is an <a href=#inline-node>inline node</a>, return (<var title="">node</var>'s
+  <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>, <var title="">node</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-index title=concept-tree-index>index</a>).
 
   <li>If <var title="">node</var> has a <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> with <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-index title=concept-tree-index>index</a> <var title="">offset</var>
-  &minus; 1, and that <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node-length title=concept-node-length>length</a> is not zero, return (that
-  <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, that <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node-length title=concept-node-length>length</a>).
+  &minus; 1, and that <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node-length title=concept-node-length>length</a> is not zero, and that <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is
+  an <a href=#inline-node>inline node</a>, return (that <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, that <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>'s
+  <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node-length title=concept-node-length>length</a>).
 
   <li>Return null.
+</ol>
+
+<p>The <dfn id=first-equivalent-point>first equivalent point</dfn> of a <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp title=concept-range-bp>boundary point</a>
+(<var title="">node</var>, <var title="">offset</var>) is returned by the following algorithm:
+
+<ol>
+  <li>While (<var title="">node</var>, <var title="">offset</var>)'s <a href=#previous-equivalent-point>previous equivalent
+  point</a> is not null, set (<var title="">node</var>, <var title="">offset</var>) to its
+  <a href=#previous-equivalent-point>previous equivalent point</a>.
+
+  <li>Return (<var title="">node</var>, <var title="">offset</var>).
+</ol>
+
+<p>The <dfn id=last-equivalent-point>last equivalent point</dfn> of a <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp title=concept-range-bp>boundary point</a>
+(<var title="">node</var>, <var title="">offset</var>) is returned by the following algorithm:
+
+<ol>
+  <li>While (<var title="">node</var>, <var title="">offset</var>)'s <a href=#next-equivalent-point>next equivalent
+  point</a> is not null, set (<var title="">node</var>, <var title="">offset</var>) to its
+  <a href=#next-equivalent-point>next equivalent point</a>.
+
+  <li>Return (<var title="">node</var>, <var title="">offset</var>).
 </ol>
 
 <!-- Turned out not to be necessary here, but I've left it in case it turns out
@@ -5317,25 +5342,11 @@ style from the old text.
   <li><a href=#canonicalize-whitespace>Canonicalize whitespace</a> at the <a href=#active-range>active range</a>'s
   <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end title=concept-range-end>end</a>.
 
-  <li>Let <var title="">start node</var>, <var title="">start offset</var>, <var title="">end node</var>,
-  and <var title="">end offset</var> be the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a>
-  and <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> and <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp-offset title=concept-range-bp-offset>offsets</a>.
+  <li>Let (<var title="">start node</var>, <var title="">start offset</var>) be the <a href=#last-equivalent-point>last
+  equivalent point</a> for the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a>.
 
-  <li>While the <a href=#next-equivalent-point>next equivalent point</a> for (<var title="">start node</var>,
-  <var title="">start offset</var>) is not null, and that <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp title=concept-range-bp>boundary point</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>
-  is <a href=#in-the-same-editing-host>in the same editing host</a> and <a href=#in-the-same-block>in the same block</a>
-  as <var title="">start node</var>, set (<var title="">start node</var>, <var title="">start
-  offset</var>) to its <a href=#next-equivalent-point>next equivalent point</a>.
-
-  <p class=note>We don't want to leave the current block because otherwise,
-  for instance, a selection of <code title="">&lt;p&gt;foo[&lt;/p&gt;&lt;p&gt;]bar&lt;/p&gt;</code> would be treated
-  as empty and nothing would be deleted, when we want it to merge the blocks.
-
-  <li>While the <a href=#previous-equivalent-point>previous equivalent point</a> for (<var title="">end
-  node</var>, <var title="">end offset</var>) is not null, and that <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp title=concept-range-bp>boundary point</a>'s
-  <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> is <a href=#in-the-same-editing-host>in the same editing host</a> and <a href=#in-the-same-block>in the same
-  block</a> as <var title="">end node</var>, set (<var title="">end node</var>, <var title="">end
-  offset</var>) to its <a href=#previous-equivalent-point>previous equivalent point</a>.
+  <li>Let (<var title="">end node</var>, <var title="">end offset</var>) be the <a href=#first-equivalent-point>first
+  equivalent point</a> for the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end title=concept-range-end>end</a>.
 
   <li>If (<var title="">end node</var>, <var title="">end offset</var>) is not <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp-after title=concept-range-bp-after>after</a>
   (<var title="">start node</var>, <var title="">start offset</var>):

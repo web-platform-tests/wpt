@@ -4611,10 +4611,6 @@ container</span>, or an <span>HTML element</span> with [[localname]] "li",
   <li>Return <var>node</var>.
 </ol>
 
-<p>Two [[nodes]] are <dfn>in the same block</dfn> if the <span>block node
-of</span> the first is non-null and the same as the <span>block node of</span>
-the second.
-
 <!-- @} -->
 <h3>Assorted block formatting command algorithms</h3>
 <!-- @{ -->
@@ -4921,20 +4917,25 @@ returned by the following algorithm:
   unexpected results for nodes like {{code|<br>}}.
 
   <li>If <var>offset</var> is <var>node</var>'s [[length]], and
-  <var>node</var>'s [[parent]] is not null, return (<var>node</var>'s
-  [[parent]], 1 + <var>node</var>'s [[index]]).
+  <var>node</var>'s [[parent]] is not null, and <var>node</var> is an
+  <span>inline node</span>, return (<var>node</var>'s [[parent]], 1 +
+  <var>node</var>'s [[index]]).
 
   <li class=note>For instance, {{code|<span>foo[]</span>}} is equivalent to
   {{code|<span>foo{}</span>}}, which is equivalent to {{code|<span>foo</span>{}
-  }}.
+  }}.  However, {{code|<p>foo{}</p>}} is <em>not</em> equivalent to
+  {{code|<p>foo</p>{} }} &ndash; the cursor might look like it's in a visibly
+  different position.
 
   <li>If <var>node</var> has a [[child]] with [[index]] <var>offset</var>,
-  and that [[child]]'s [[length]] is not zero, return (that [[child]], 0).
+  and that [[child]]'s [[length]] is not zero, and that [[child]] is an
+  <span>inline node</span>, return (that [[child]], 0).
 
   <li class=note>For instance, {{code|{}<span>foo</span>}} is equivalent to
   {{code|<span>{}foo</span>}}, which is equivalent to
   {{code|<span>[]foo</span>}}.  As noted before, though, we don't descend into
-  empty nodes.
+  empty nodes.  And again, {{code|{}<p>foo</p>}} is different from
+  {{code|<p>{}foo</p>}}.
 
   <li>Return null.
 </ol>
@@ -4947,13 +4948,37 @@ returned by the following algorithm:
   <li>If <var>node</var>'s [[length]] is zero, return null.
 
   <li>If <var>offset</var> is 0, and <var>node</var>'s [[parent]] is not null,
-  return (<var>node</var>'s [[parent]], <var>node</var>'s [[index]]).
+  and <var>node</var> is an <span>inline node</span>, return (<var>node</var>'s
+  [[parent]], <var>node</var>'s [[index]]).
 
   <li>If <var>node</var> has a [[child]] with [[index]] <var>offset</var>
-  &minus; 1, and that [[child]]'s [[length]] is not zero, return (that
-  [[child]], that [[child]]'s [[length]]).
+  &minus; 1, and that [[child]]'s [[length]] is not zero, and that [[child]] is
+  an <span>inline node</span>, return (that [[child]], that [[child]]'s
+  [[length]]).
 
   <li>Return null.
+</ol>
+
+<p>The <dfn>first equivalent point</dfn> of a [[boundarypoint]]
+(<var>node</var>, <var>offset</var>) is returned by the following algorithm:
+
+<ol>
+  <li>While (<var>node</var>, <var>offset</var>)'s <span>previous equivalent
+  point</span> is not null, set (<var>node</var>, <var>offset</var>) to its
+  <span>previous equivalent point</span>.
+
+  <li>Return (<var>node</var>, <var>offset</var>).
+</ol>
+
+<p>The <dfn>last equivalent point</dfn> of a [[boundarypoint]]
+(<var>node</var>, <var>offset</var>) is returned by the following algorithm:
+
+<ol>
+  <li>While (<var>node</var>, <var>offset</var>)'s <span>next equivalent
+  point</span> is not null, set (<var>node</var>, <var>offset</var>) to its
+  <span>next equivalent point</span>.
+
+  <li>Return (<var>node</var>, <var>offset</var>).
 </ol>
 
 <!-- Turned out not to be necessary here, but I've left it in case it turns out
@@ -5369,25 +5394,11 @@ style from the old text.
   <li><span>Canonicalize whitespace</span> at the <span>active range</span>'s
   [[rangeend]].
 
-  <li>Let <var>start node</var>, <var>start offset</var>, <var>end node</var>,
-  and <var>end offset</var> be the <span>active range</span>'s [[rangestart]]
-  and [[rangeend]] [[nodes]] and [[bpoffsets]].
+  <li>Let (<var>start node</var>, <var>start offset</var>) be the <span>last
+  equivalent point</span> for the <span>active range</span>'s [[rangestart]].
 
-  <li>While the <span>next equivalent point</span> for (<var>start node</var>,
-  <var>start offset</var>) is not null, and that [[boundarypoint]]'s [[node]]
-  is <span>in the same editing host</span> and <span>in the same block</span>
-  as <var>start node</var>, set (<var>start node</var>, <var>start
-  offset</var>) to its <span>next equivalent point</span>.
-
-  <p class=note>We don't want to leave the current block because otherwise,
-  for instance, a selection of {{code|<p>foo[</p><p>]bar</p>}} would be treated
-  as empty and nothing would be deleted, when we want it to merge the blocks.
-
-  <li>While the <span>previous equivalent point</span> for (<var>end
-  node</var>, <var>end offset</var>) is not null, and that [[boundarypoint]]'s
-  [[node]] is <span>in the same editing host</span> and <span>in the same
-  block</span> as <var>end node</var>, set (<var>end node</var>, <var>end
-  offset</var>) to its <span>previous equivalent point</span>.
+  <li>Let (<var>end node</var>, <var>end offset</var>) be the <span>first
+  equivalent point</span> for the <span>active range</span>'s [[rangeend]].
 
   <li>If (<var>end node</var>, <var>end offset</var>) is not [[bpafter]]
   (<var>start node</var>, <var>start offset</var>):

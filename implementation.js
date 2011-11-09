@@ -3756,6 +3756,22 @@ function isSingleLineContainer(node) {
 // "The default single-line container name is "p"."
 var defaultSingleLineContainerName = "p";
 
+function getBlockNodeOf(node) {
+	// "While node is an inline node, set node to its parent."
+	while (isInlineNode(node)) {
+		node = node.parentNode;
+	}
+
+	// "Return node."
+	return node;
+}
+
+// "Two nodes are in the same block if the block node of the first is non-null
+// and the same as the block node of the second."
+function inSameBlock(node1, node2) {
+	return getBlockNodeOf(node1)
+		&& getBlockNodeOf(node1) === getBlockNodeOf(node2);
+}
 
 //@}
 ///// Assorted block formatting command algorithms /////
@@ -3997,6 +4013,54 @@ function getAlignmentValue(node) {
 
 	// "Return "left"."
 	return "left";
+}
+
+function getNextEquivalentPoint(node, offset) {
+	// "If node's length is zero, return null."
+	if (getNodeLength(node) == 0) {
+		return null;
+	}
+
+	// "If offset is node's length, and node's parent is not null, return
+	// (node's parent, 1 + node's index)."
+	if (offset == getNodeLength(node) && node.parentNode) {
+		return [node.parentNode, 1 + getNodeIndex(node)];
+	}
+
+	// "If node has a child with index offset, and that child's length is not
+	// zero, return (that child, 0)."
+	if (0 <= node.childNodes.length
+	&& offset < node.childNodes.length
+	&& getNodeLength(node.childNodes[offset]) != 0) {
+		return [node.childNodes[offset], 0];
+	}
+
+	// "Return null."
+	return null;
+}
+
+function getPreviousEquivalentPoint(node, offset) {
+	// "If node's length is zero, return null."
+	if (getNodeLength(node) == 0) {
+		return null;
+	}
+
+	// "If offset is 0, and node's parent is not null, return (node's parent,
+	// node's index)."
+	if (offset == 0 && node.parentNode) {
+		return [node.parentNode, getNodeIndex(node)];
+	}
+
+	// "If node has a child with index offset − 1, and that child's length is
+	// not zero, return (that child, that child's length)."
+	if (0 <= node.childNodes.length
+	&& offset - 1 < node.childNodes.length
+	&& getNodeLength(node.childNodes[offset - 1]) != 0) {
+		return [node.childNodes[offset - 1], getNodeLength(node.childNodes[offset - 1])];
+	}
+
+	// "Return null."
+	return null;
 }
 
 //@}
@@ -4385,71 +4449,6 @@ function restoreStatesAndValues(overrides) {
 //@}
 ///// Deleting the selection /////
 //@{
-
-function getNextEquivalentPoint(node, offset) {
-	// "If node's length is zero, return null."
-	if (getNodeLength(node) == 0) {
-		return null;
-	}
-
-	// "If offset is node's length, and node's parent is not null, return
-	// (node's parent, 1 + node's index)."
-	if (offset == getNodeLength(node) && node.parentNode) {
-		return [node.parentNode, 1 + getNodeIndex(node)];
-	}
-
-	// "If node has a child with index offset, and that child's length is not
-	// zero, return (that child, 0)."
-	if (0 <= node.childNodes.length
-	&& offset < node.childNodes.length
-	&& getNodeLength(node.childNodes[offset]) != 0) {
-		return [node.childNodes[offset], 0];
-	}
-
-	// "Return null."
-	return null;
-}
-
-function getPreviousEquivalentPoint(node, offset) {
-	// "If node's length is zero, return null."
-	if (getNodeLength(node) == 0) {
-		return null;
-	}
-
-	// "If offset is 0, and node's parent is not null, return (node's parent,
-	// node's index)."
-	if (offset == 0 && node.parentNode) {
-		return [node.parentNode, getNodeIndex(node)];
-	}
-
-	// "If node has a child with index offset − 1, and that child's length is
-	// not zero, return (that child, that child's length)."
-	if (0 <= node.childNodes.length
-	&& offset - 1 < node.childNodes.length
-	&& getNodeLength(node.childNodes[offset - 1]) != 0) {
-		return [node.childNodes[offset - 1], getNodeLength(node.childNodes[offset - 1])];
-	}
-
-	// "Return null."
-	return null;
-}
-
-function getBlockNodeOf(node) {
-	// "While node is an inline node, set node to its parent."
-	while (isInlineNode(node)) {
-		node = node.parentNode;
-	}
-
-	// "Return node."
-	return node;
-}
-
-// "Two nodes are in the same block if the block node of the first is non-null
-// and the same as the block node of the second."
-function inSameBlock(node1, node2) {
-	return getBlockNodeOf(node1)
-		&& getBlockNodeOf(node1) === getBlockNodeOf(node2);
-}
 
 // The flags argument is a dictionary that can have blockMerging,
 // stripWrappers, and/or direction as keys.

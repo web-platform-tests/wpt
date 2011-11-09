@@ -4601,6 +4601,20 @@ container</span>, or an <span>HTML element</span> with [[localname]] "li",
 
 <p>The <dfn>default single-line container name</dfn> is "p".
 
+<p>The <dfn>block node of</dfn> a [[node]] <var>node</var> is either a
+<span>block node</span> or null, as returned by the following algorithm:
+
+<ol>
+  <li>While <var>node</var> is an <span>inline node</span>, set <var>node</var>
+  to its [[parent]].
+
+  <li>Return <var>node</var>.
+</ol>
+
+<p>Two [[nodes]] are <dfn>in the same block</dfn> if the <span>block node
+of</span> the first is non-null and the same as the <span>block node of</span>
+the second.
+
 <!-- @} -->
 <h3>Assorted block formatting command algorithms</h3>
 <!-- @{ -->
@@ -4880,6 +4894,92 @@ ancestor (if any).
 
   <li>Return "left".
 </ol>
+
+<p class=note>Sometimes one location corresponds to multiple distinct boundary
+points.  For instance, in the DOM {{code|<p>Hello</p>}}, a boundary point might
+lie at the beginning of the text node or the beginning of the element node, but
+these don't logically differ much and will appear the same to the user, so we
+often want to treat them the same.  The algorithms here allow navigating
+through such equivalent boundary points, for when we want to make the selection
+as inclusive or exclusive as possible.  For deletion, we want to delete as few
+nodes as possible, so we move the start node forward and the end node backward.
+In other cases we might do the reverse, expanding the selection.  In still
+other cases we might want to move forward or backward to try getting to a text
+node.
+
+<p>Given a [[boundarypoint]] (<var>node</var>, <var>offset</var>), the
+<dfn>next equivalent point</dfn> is either a [[boundarypoint]] or null, as
+returned by the following algorithm:
+
+<ol>
+  <li>If <var>node</var>'s [[length]] is zero, return null.
+
+  <li class=note>We don't want to move into or out of zero-length nodes,
+  because that would move us straight through them.  For instance, if
+  {{code|{}<span></span>}} were equivalent to {{code|<span>{}</span>}}, it
+  would also be equivalent to {{code|<span></span>{} }}.  This produces very
+  unexpected results for nodes like {{code|<br>}}.
+
+  <li>If <var>offset</var> is <var>node</var>'s [[length]], and
+  <var>node</var>'s [[parent]] is not null, return (<var>node</var>'s
+  [[parent]], 1 + <var>node</var>'s [[index]]).
+
+  <li class=note>For instance, {{code|<span>foo[]</span>}} is equivalent to
+  {{code|<span>foo{}</span>}}, which is equivalent to {{code|<span>foo</span>{}
+  }}.
+
+  <li>If <var>node</var> has a [[child]] with [[index]] <var>offset</var>,
+  and that [[child]]'s [[length]] is not zero, return (that [[child]], 0).
+
+  <li class=note>For instance, {{code|{}<span>foo</span>}} is equivalent to
+  {{code|<span>{}foo</span>}}, which is equivalent to
+  {{code|<span>[]foo</span>}}.  As noted before, though, we don't descend into
+  empty nodes.
+
+  <li>Return null.
+</ol>
+
+<p>Given a [[boundarypoint]] (<var>node</var>, <var>offset</var>), the
+<dfn>previous equivalent point</dfn> is either a [[boundarypoint]] or null, as
+returned by the following algorithm:
+
+<ol>
+  <li>If <var>node</var>'s [[length]] is zero, return null.
+
+  <li>If <var>offset</var> is 0, and <var>node</var>'s [[parent]] is not null,
+  return (<var>node</var>'s [[parent]], <var>node</var>'s [[index]]).
+
+  <li>If <var>node</var> has a [[child]] with [[index]] <var>offset</var>
+  &minus; 1, and that [[child]]'s [[length]] is not zero, return (that
+  [[child]], that [[child]]'s [[length]]).
+
+  <li>Return null.
+</ol>
+
+<!-- Turned out not to be necessary here, but I've left it in case it turns out
+to be handy elsewhere. -->
+<!--
+<p>Two [[boundarypoints]] <var>A</var> and <var>B</var> are <dfn>equivalent
+boundary points</dfn> if the following algorithm returns true:
+
+<p class=note>This is indeed an <a
+href=http://en.wikipedia.org/wiki/Equivalence_relation>equivalence
+relation</a>.  Reflexivity, symmetry, and transitivity are all fairly obvious
+from the definition.  It also isn't hard to check that using <span>next
+equivalent point</span> instead of <span>previous equivalent point</span> would
+yield the same definition, because the two algorithms are inverses if neither
+output is null.
+
+<ol>
+  <li>While <var>A</var>'s <span>previous equivalent point</span> is not null,
+  set <var>A</var> to its <span>previous equivalent point</span>.
+
+  <li>While <var>B</var>'s <span>previous equivalent point</span> is not null,
+  set <var>B</var> to its <span>previous equivalent point</span>.
+
+  <li>Return true if <var>A</var> is the same as <var>B</var>, otherwise false.
+</ol>
+-->
 
 <!-- @} -->
 <h3>Block-extending a range</h3>
@@ -5213,104 +5313,6 @@ algorithm returns true:
 <!--@}-->
 <h3>Deleting the selection</h3>
 <!-- @{ -->
-<p class=note>Sometimes one location corresponds to multiple distinct boundary
-points.  For instance, in the DOM {{code|<p>Hello</p>}}, a boundary point might
-lie at the beginning of the text node or the beginning of the element node, but
-these don't logically differ much and will appear the same to the user, so we
-often want to treat them the same.  The algorithms here (currently used only
-for the delete algorithm) allow navigating through such equivalent boundary
-points, for when we want to make the selection as inclusive or exclusive as
-possible.  For deletion, we want to delete as few nodes as possible, so we move
-the start node forward and the end node backward.  In other cases we might do
-the reverse, expanding the selection.
-
-<p>Given a [[boundarypoint]] (<var>node</var>, <var>offset</var>), the
-<dfn>next equivalent point</dfn> is either a [[boundarypoint]] or null, as
-returned by the following algorithm:
-
-<ol>
-  <li>If <var>node</var>'s [[length]] is zero, return null.
-
-  <li class=note>We don't want to move into or out of zero-length nodes,
-  because that would move us straight through them.  For instance, if
-  {{code|{}<span></span>}} were equivalent to {{code|<span>{}</span>}}, it
-  would also be equivalent to {{code|<span></span>{} }}.  This produces very
-  unexpected results for nodes like {{code|<br>}}.
-
-  <li>If <var>offset</var> is <var>node</var>'s [[length]], and
-  <var>node</var>'s [[parent]] is not null, return (<var>node</var>'s
-  [[parent]], 1 + <var>node</var>'s [[index]]).
-
-  <li class=note>For instance, {{code|<span>foo[]</span>}} is equivalent to
-  {{code|<span>foo{}</span>}}, which is equivalent to {{code|<span>foo</span>{}
-  }}.
-
-  <li>If <var>node</var> has a [[child]] with [[index]] <var>offset</var>,
-  and that [[child]]'s [[length]] is not zero, return (that [[child]], 0).
-
-  <li class=note>For instance, {{code|{}<span>foo</span>}} is equivalent to
-  {{code|<span>{}foo</span>}}, which is equivalent to
-  {{code|<span>[]foo</span>}}.  As noted before, though, we don't descend into
-  empty nodes.
-
-  <li>Return null.
-</ol>
-
-<p>Given a [[boundarypoint]] (<var>node</var>, <var>offset</var>), the
-<dfn>previous equivalent point</dfn> is either a [[boundarypoint]] or null, as
-returned by the following algorithm:
-
-<ol>
-  <li>If <var>node</var>'s [[length]] is zero, return null.
-
-  <li>If <var>offset</var> is 0, and <var>node</var>'s [[parent]] is not null,
-  return (<var>node</var>'s [[parent]], <var>node</var>'s [[index]]).
-
-  <li>If <var>node</var> has a [[child]] with [[index]] <var>offset</var>
-  &minus; 1, and that [[child]]'s [[length]] is not zero, return (that
-  [[child]], that [[child]]'s [[length]]).
-
-  <li>Return null.
-</ol>
-
-<!-- Turned out not to be necessary here, but I've left it in case it turns out
-to be handy elsewhere. -->
-<!--
-<p>Two [[boundarypoints]] <var>A</var> and <var>B</var> are <dfn>equivalent
-boundary points</dfn> if the following algorithm returns true:
-
-<p class=note>This is indeed an <a
-href=http://en.wikipedia.org/wiki/Equivalence_relation>equivalence
-relation</a>.  Reflexivity, symmetry, and transitivity are all fairly obvious
-from the definition.  It also isn't hard to check that using <span>next
-equivalent point</span> instead of <span>previous equivalent point</span> would
-yield the same definition, because the two algorithms are inverses if neither
-output is null.
-
-<ol>
-  <li>While <var>A</var>'s <span>previous equivalent point</span> is not null,
-  set <var>A</var> to its <span>previous equivalent point</span>.
-
-  <li>While <var>B</var>'s <span>previous equivalent point</span> is not null,
-  set <var>B</var> to its <span>previous equivalent point</span>.
-
-  <li>Return true if <var>A</var> is the same as <var>B</var>, otherwise false.
-</ol>
--->
-
-<p>The <dfn>block node of</dfn> a [[node]] <var>node</var> is either a
-<span>block node</span> or null, as returned by the following algorithm:
-
-<ol>
-  <li>While <var>node</var> is an <span>inline node</span>, set <var>node</var>
-  to its [[parent]].
-
-  <li>Return <var>node</var>.
-</ol>
-
-<p>Two [[nodes]] are <dfn>in the same block</dfn> if the <span>block node
-of</span> the first is non-null and the same as the <span>block node of</span>
-the second.
 
 <p class=comments>TODO: Consider what should happen for block merging in corner
 cases like display: inline-table.

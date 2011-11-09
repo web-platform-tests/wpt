@@ -10,11 +10,11 @@ fromdos gecko-data
 # reflects the differences in tests between Gecko and WebKit.  If any new tests
 # don't match between Gecko and WebKit, I want to know about it.
 diff -u webkit-data gecko-data | tail -n +3 > tmp-diff
-# The <() stuff gets rid of the exact numbers on the @@ lines before feeding
-# the two files to diff.  Then it will compare them.  If they differ, it will
+# Compare the diffs.  If they differ, other than just line numbers, it will
 # exit with a nonzero exit code, so set -e will cause the script to abort,
-# printing out the difference.
-diff -u <(sed s/^@@.*/@@/ < tmp-diff) <(sed s/^@@.*/@@/ < diff)
+# printing out the difference.  It will need to be manually reviewed to
+# identify why there's a new difference between WebKit and Gecko.
+diff -u -I ^@@ tmp-diff diff
 rm tmp-diff
 # The file "diff" contains the differences from WebKit to Gecko.  The file
 # "patch" is a manually-crafted subset, which contains only the differences

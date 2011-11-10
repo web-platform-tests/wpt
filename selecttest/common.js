@@ -118,7 +118,7 @@ function setupRangeTests() {
 		"[document.documentElement, 0, document.documentElement, 2]",
 		"[document.documentElement, 1, document.documentElement, 2]",
 		"[document.head, 1, document.head, 1]",
-		"[document.body, 4, document.body, 5]",
+		"[document.body, 0, document.body, 1]",
 		"[foreignDoc.documentElement, 0, foreignDoc.documentElement, 1]",
 		"[foreignDoc.head, 1, foreignDoc.head, 1]",
 		"[foreignDoc.body, 0, foreignDoc.body, 0]",

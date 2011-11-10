@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en"><head>
+	<title>Streams API</title>
+	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+
+	
+	
+	
+
+	<meta name="GENERATOR" content="MSHTML 8.00.7600.16588">
+	
+	<!-- Styles to mimic File API spec -->
+	<style type="text/css">
+		table.error { border-collapse:collapse; border-style:hidden hidden none hidden }
+		table.error thead { border-bottom:solid }
+		table.error tbody th:first-child { border-left:solid }
+		table.error td, table th { border-left:solid; border-right:solid; border-bottom:solid thin; vertical-align:top; padding:0.2em }
+	</style>
+	
+		<link rel="stylesheet" type="text/css" href="http://www.w3.org/StyleSheets/TR/W3C-ED.css"/>
+		<link rel="stylesheet" type="text/css" href="http://dev.w3.org/2009/dap/ReSpec.js/css/respec.css"/>
+
+<body style="display: inherit;">
+	<div class="head">
+	   <p><a href="http://www.w3.org/"><img height="48" width="72" alt="W3C" src="http://www.w3.org/Icons/w3c_home"/></a></p>	
+	<h1 class="title" id="title">Streams API</h1>
+	<h2 id="w3c-editor-s-draft-12-september-2011">W3C Editor's Draft 12 September 2011</h2>
+	   <dl>
+		   <dt>This version:</dt>
+		   <dd>TBD</dd>
+		   <dt>Latest published version:</dt>
+		   <dd>TBD</dd>
+		   <dt>Latest editor's draft:</dt>
+		   <dd>TBD</dd>
+		   <dt>Previous version:</dt>
+		   <dd>none</dd>
+		   <dt>Editor:</dt>
+		   <dd><a href="mailto:ferasm@microsoft.com">Feras Moussa</a>, Microsoft Corporation</dd>
+	   </dl>
+	   <p class="copyright"><a href="http://www.w3.org/Consortium/Legal/ipr-notice#Copyright">Copyright</a> © 2011 <a href="http://www.w3.org/"><acronym title="World Wide Web Consortium">W3C</acronym></a><sup>®</sup> (<a href="http://www.csail.mit.edu/"><acronym title="Massachusetts Institute of Technology">MIT</acronym></a>, <a href="http://www.ercim.eu/"><acronym title="European Research Consortium for Informatics and Mathematics">ERCIM</acronym></a>, <a href="http://www.keio.ac.jp/">Keio</a>), All Rights Reserved. W3C <a href="http://www.w3.org/Consortium/Legal/ipr-notice#Legal_Disclaimer">liability</a>, <a href="http://www.w3.org/Consortium/Legal/ipr-notice#W3C_Trademarks">trademark</a> and <a href="http://www.w3.org/Consortium/Legal/copyright-documents">document use</a> rules apply.</p><hr></div>
+
+<div class="introductory section" id="abstract"><h2>Abstract</h2>
+		<!-- TODO: are all of the links and objects in the abstract formatted? -->
+		<p>
+			This specification provides an API for representing binary data in web applications as a <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a> object, 
+			as well as programmatically building and reading its contents. This includes:
+		</p>
+		<ul>
+			<li>A <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a> interface, which represents a sequence of data that can be read over time.</li>
+			<li>A <a class="idlType" href="#idl-def-StreamReader"><code>StreamReader</code></a> interface, which provides methods to read the contents of a <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a> as a 
+				<code>Blob</code>, <code>DataURL</code>, <code>ArrayBuffer</code>, or as <code>Text</code>.</li>
+			<li>A <a class="idlType" href="#idl-def-StreamBuilder"><code>StreamBuilder</code></a> interface, which allows for creating a new <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a> whose contents is read from an internal buffer that was made by appending <code>Text</code>, <code>Blobs</code>, or <code>ArrayBuffers</code>.</li>
+			<li>Extensions to <a href="http://dev.w3.org/2006/webapi/XMLHttpRequest-2/#the-xmlhttprequest-interface">XmlHttpRequest</a> [<cite><a href="#bib-XMLHTTPREQUEST2" rel="biblioentry" class="bibref">XMLHTTPREQUEST2</a></cite>] to add support for upload and download of a <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a>.</li>
+			<li>
+				Extensions to <a href="http://dev.w3.org/2006/webapi/FileAPI/#FileErrorInterface">FileError</a> and 
+				<a href="http://dev.w3.org/2006/webapi/FileAPI/#FileException">FileException</a> to encompass <a href="#streamerror-error">Stream Errors</a>.</li>
+			<li>
+				Extensions to <a href="http://dev.w3.org/2006/webapi/FileAPI/#dfn-createObjectURL">createObjectURL</a> and 
+				<a href="http://dev.w3.org/2006/webapi/FileAPI/#dfn-revokeObjectURL">revokeObjectURL</a> to add support for <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a>.</li>
+		</ul>
+		<p>
+			Additionally, this specification defines objects to be used within 
+threaded web applications for the synchronous reading of a <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a>.
+		</p>
+		<p>
+			This API is designed to be used in conjunction with other APIs and elements on the web platform, notably: 
+			<a href="http://dev.w3.org/2006/webapi/FileAPI">File</a> [<cite><a href="#bib-FILE-API" rel="biblioentry" class="bibref">FILE-API</a></cite>], 
+			<a href="http://dev.w3.org/2006/webapi/XMLHttpRequest-2">XMLHttpRequest</a> 
+			(e.g. with an overloaded <a href="http://dev.w3.org/2006/webapi/XMLHttpRequest-2/#the-send-method"><code>send()</code></a> method 
+			and <a href="http://dev.w3.org/2006/webapi/XMLHttpRequest-2/#the-responsetype-attribute"><code>response</code></a> object for <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a> objects) [<cite><a href="#bib-XMLHTTPREQUEST2" rel="biblioentry" class="bibref">XMLHTTPREQUEST2</a></cite>], 
+			<a href="http://dev.w3.org/html5/postmsg/#dom-window-postmessage"><code>postMessage</code></a>, and 
+			Web Workers [<cite><a href="#bib-WEBWORKERS" rel="biblioentry" class="bibref">WEBWORKERS</a></cite>].
+		</p>
+<!--End section: Abstract-->
+</div><div id="sotd" class="introductory section"><h2>Status of This Document</h2><p><em>This
+ section describes the status of this document at the time of its 
+publication. Other documents may supersede this document. A list of 
+current W3C publications and the latest revision of this technical 
+report can be found in the <a href="http://www.w3.org/TR/">W3C technical reports index</a> at http://www.w3.org/TR/.</em></p><p>This document was published by the <a href="http://www.w3.org/2008/webapps/">W3C Web Applications (WebApps)</a> as an Editor's Draft. If you wish to make comments regarding this document, please send them to <a href="mailto:public-webapps@w3.org">public-webapps@w3.org</a> (<a href="mailto:public-webapps-request@w3.org?subject=subscribe">subscribe</a>, <a href="http://lists.w3.org/Archives/Public/public-webapps/">archives</a>). All feedback is welcome.</p><p>Publication
+ as a Editor's Draft does not imply endorsement by the W3C Membership. 
+This is a draft document and may be updated, replaced or obsoleted by 
+other documents at any time. It is inappropriate to cite this document 
+as other than work in progress.</p><p>This document was produced by a group operating under the <a href="http://www.w3.org/Consortium/Patent-Policy-20040205/">5 February 2004 W3C Patent Policy</a>. W3C maintains a <a href="" rel="disclosure">public list of any patent disclosures</a>
+ made in connection with the deliverables of the group; that page also 
+includes instructions for disclosing a patent. An individual who has 
+actual knowledge of a patent which the individual believes contains <a href="http://www.w3.org/Consortium/Patent-Policy-20040205/#def-essential">Essential Claim(s)</a> must disclose the information in accordance with <a href="http://www.w3.org/Consortium/Patent-Policy-20040205/#sec-Disclosure">section 6 of the W3C Patent Policy</a>.</p></div><div class="section" id="toc"><h2 class="introductory">Table of Contents</h2><ul class="toc"><li class="tocline"><a class="tocxref" href="#introduction"><span class="secno">1. </span>Introduction</a></li><li class="tocline"><a class="tocxref" href="#stream%20interface"><span class="secno">2. </span>The Stream Interface</a><ul class="toc"><li class="tocline"><a class="tocxref" href="#attributes"><span class="secno">2.1 </span>Attributes</a></li></ul></li><li class="tocline"><a class="tocxref" href="#streamreader-interface"><span class="secno">3. </span>The StreamReader Interface</a><ul class="toc"><li class="tocline"><a class="tocxref" href="#attributes-1"><span class="secno">3.1 </span>Attributes</a></li><li class="tocline"><a class="tocxref" href="#methods"><span class="secno">3.2 </span>Methods</a></li><li class="tocline"><a class="tocxref" href="#constants"><span class="secno">3.3 </span>Constants</a></li><li class="tocline"><a class="tocxref" href="#streamreader-event-handler-types"><span class="secno">3.4 </span>Event Handler Attributes</a><ul class="toc"><li class="tocline"><a class="tocxref" href="#streamreader-event-summary"><span class="secno">3.4.1 </span>Event Summary</a></li></ul></li></ul></li><li class="tocline"><a class="tocxref" href="#streamreadersync-interface"><span class="secno">4. </span>The StreamReaderSync Interface</a><ul class="toc"><li class="tocline"><a class="tocxref" href="#methods-1"><span class="secno">4.1 </span>Methods</a></li></ul></li><li class="tocline"><a class="tocxref" href="#reading-empty-stream"><span class="secno">5. </span>Determining an empty Stream</a></li><li class="tocline"><a class="tocxref" href="#errors-and-exceptions"><span class="secno">6. </span>Errors and Exceptions</a><ul class="toc"><li class="tocline"><a class="tocxref" href="#streamerror-error"><span class="secno">6.1 </span>StreamError</a></li><li class="tocline"><a class="tocxref" href="#streamexception-error"><span class="secno">6.2 </span>StreamException</a></li></ul></li><li class="tocline"><a class="tocxref" href="#streambuilder-interface"><span class="secno">7. </span>The StreamBuilder Interface</a><ul class="toc"><li class="tocline"><a class="tocxref" href="#attributes-2"><span class="secno">7.1 </span>Attributes</a></li><li class="tocline"><a class="tocxref" href="#methods-2"><span class="secno">7.2 </span>Methods</a></li><li class="tocline"><a class="tocxref" href="#reads-on-a-stream-from-streambuilder"><span class="secno">7.3 </span>Reads on a Stream from StreamBuilder</a></li><li class="tocline"><a class="tocxref" href="#streambuilder-event-handler-types"><span class="secno">7.4 </span>Event Handler Attributes</a><ul class="toc"><li class="tocline"><a class="tocxref" href="#streambuilder-event-summary"><span class="secno">7.4.1 </span>Event Summary</a></li></ul></li></ul></li><li class="tocline"><a class="tocxref" href="#error-uris_for_streams"><span class="secno">8. </span>URIs for Stream</a><ul class="toc"><li class="tocline"><a class="tocxref" href="#creating-revoking-streamuri"><span class="secno">8.1 </span>Creating and Revoking a Stream URI</a><ul class="toc"><li class="tocline"><a class="tocxref" href="#methods-3"><span class="secno">8.1.1 </span>Methods</a></li></ul></li></ul></li><li class="tocline"><a class="tocxref" href="#security"><span class="secno">9. </span>Security Considerations</a></li><li class="tocline"><a class="tocxref" href="#XMLHttpRequest"><span class="secno">10. </span>Extension of XMLHttpRequest</a><ul class="toc"><li class="tocline"><a class="tocxref" href="#addition-of-stream-responsetype"><span class="secno">10.1 </span>Addition of stream responseType</a></li><li class="tocline"><a class="tocxref" href="#readystate3-changes"><span class="secno">10.2 </span>readyState 3 changes</a></li><li class="tocline"><a class="tocxref" href="#send0"><span class="secno">10.3 </span>send()</a></li></ul></li><li class="tocline"><a class="tocxref" href="#requirements"><span class="secno">11. </span>Requirements and Use Cases</a></li><li class="tocline"><a class="tocxref" href="#acknowledgements"><span class="secno">A. </span>Acknowledgements</a></li><li class="tocline"><a class="tocxref" href="#references"><span class="secno">B. </span>References</a><ul class="toc"><li class="tocline"><a class="tocxref" href="#normative-references"><span class="secno">B.1 </span>Normative references</a></li><li class="tocline"><a class="tocxref" href="#informative-references"><span class="secno">B.2 </span>Informative references</a></li></ul></li></ul></div>
+
+<div id="introduction" class="section informative">
+    	<!--OddPage--><h2><span class="secno">1. </span>Introduction</h2><p><em>This section is non-normative.</em></p>
+    	
+    	<p>
+    		Web applications should have the ability to acquire and manipulate data in a wide variety of forms, 
+    		including as a sequence of data made available over time. 
+    		This specification defines the basic representation for <a href="#idl-def-Stream"><code>Streams</code></a>, 
+    		errors raised by <a href="#idl-def-Stream"><code>Streams</code></a>, 
+    		and programmatic ways to read and create <a href="#idl-def-Stream"><code>Streams</code></a>. 
+    	</p>
+    	<p>
+			The <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a> interface represents binary data which can be obtained over time. A <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a> can come from APIs 
+			such as <a href="http://dev.w3.org/2006/webapi/XMLHttpRequest-2/#the-xmlhttprequest-interface"><code>XMLHttpRequest</code></a>, or can
+			be built using <a class="idlType" href="#idl-def-StreamBuilder"><code>StreamBuilder</code></a>. 
+			The <a class="idlType" href="#idl-def-StreamReader"><code>StreamReader</code></a> interface represents a way to read data 
+			from a <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a> as a <code>Blob</code>, <code>DataURL</code>, <code>ArrayBuffer</code>, or as <code>Text</code>, 
+			and should happen asynchronously on the user agent’s main thread, 
+			with an optional synchronous API used within threaded web applications. 
+			An asynchronous API for reading <a href="#idl-def-Stream"><code>Streams</code></a> prevents blocking and UI “freezing” on a user agent’s main thread. 
+			This specification defines an asynchronous API based on an event model to read and access a <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a>, 
+			which is closely based on the FileReader interface defined in the [<cite><a href="#bib-FILE-API" rel="biblioentry" class="bibref">FILE-API</a></cite>]. 
+			A <a class="idlType" href="#idl-def-StreamReader"><code>StreamReader</code></a> object provides asynchronous read methods to access the <a href="#idl-def-Stream"><code>Stream's</code></a> data as a 
+			<code>Blob</code>, <code>DataURL</code>, <code>ArrayBuffer</code>, or as <code>Text</code> through event handler attributes and the firing of events. 
+			The use of events and event handlers allows separate code blocks the ability to monitor the progress of the read 
+			(which is particularly useful for long <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a> reads or high latency network requests) 
+			and error conditions that may arise during reading of a <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a>. An example will be illustrative.
+		</p>
+    	<p>
+    		In the example below, different code blocks handle progress, error, and success conditions. 
+    		The example demonstrates how to read a <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a> using <a class="idlType" href="#idl-def-StreamReader"><code>StreamReader</code></a>.
+    	</p>
+    	<pre class="example">function startRead(stream) {
+        
+  var reader = new StreamReader();
+  
+  // Handle progress, success, and errors
+  reader.onprogress = updateProgress;
+  reader.onload = loaded;
+  reader.onerror = errorHandler;
+  
+    // Read the first 1024 bytes of the stream as UTF-8      
+  reader.readAsText(stream, "UTF-8", 1024);
+}
+
+function updateProgress(evt) {
+    var bytesLoaded = (evt.loaded / 1024);
+    // Increase bytes loaded counter
+}
+
+function loaded(evt) {  
+  // Obtain the read stream data    
+  var streamRead = evt.target.result;
+  
+}
+
+function errorHandler(evt) {
+  if(evt.target.error.name == "NOT_READABLE_ERR") {
+    // The stream could not be read
+  }
+}</pre>
+    	
+    	<p>
+    		In the example below, different code blocks handle progress, error, and success conditions. 
+    		The example below demonstrates how to obtain a <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a> from <code>XMLHttpRequest</code> to begin playing a large video in <code>readystate</code> 3.
+    	</p>
+    	<pre class="example">function handler() {
+  if(this.readyState == this.LOADING) {
+	var theStream = this.response;
+	var streamURL = URL.createObjectURL(theStream);
+	document.getElementById("myVideoTag").src = streamURL;
+  }
+}
+
+var client = new XMLHttpRequest();
+client.onreadystatechange = handler;
+client.setRequestHeader('customHeader', 'value');
+client.setRequestHeader('customHeader2', 'value2');
+client.open("GET", "myvideo.h264");
+client.responseType = "stream";
+client.send();</pre>
+    	
+		<p>
+			In addition to reading a Stream, this specification introduces a programatic way to build a Stream with the <a class="idlType" href="#idl-def-StreamBuilder"><code>StreamBuilder</code></a> interface.
+			The <a class="idlType" href="#idl-def-StreamBuilder"><code>StreamBuilder</code></a> interface represents a way to provide the data to be read from a Stream by appending the data to an internal buffer.
+			<a class="idlType" href="#idl-def-StreamBuilder"><code>StreamBuilder</code></a> supports appending <code>Blob</code>, <code>ArrayBuffer</code>, and <code>Text</code> data to the buffer. 
+			<a class="idlType" href="#idl-def-StreamBuilder"><code>StreamBuilder</code></a> also provides an event to notify when the data available to be read from the buffer has fallen below a given threshold.
+		</p>
+		<p>
+			The example below demonstrates how to use <a class="idlType" href="#idl-def-StreamBuilder"><code>StreamBuilder</code></a> to load a stream into the audio tag, whose data is processed and built dynamically at read time. 
+			The <code>thresholdReached</code> event is fired when the buffer falls below 1024 bytes.
+		</p>
+		
+<pre class="example">function thresholdReached(){
+  var moreData = //do work to create more data to place into the stream
+  
+  //if we have no more data to process and place in the stream, we close
+  if(moreData == null){
+  	sbuilder.close();
+  } else{
+  	sbuiler.append(moreData);
+  }
+}
+
+var sbuilder = new StreamBuilder("audio/mp3", 1024);
+var sbuilder.onthresholdreached = thresholdReached;
+  
+var streamURL = URL.createObjectURL(sbuilder.stream);
+document.getElementById('audioTag').src = streamURL;</pre>
+<!--End section: Introduction-->
+</div>
+
+<div class="section" id="stream interface">
+<!--OddPage--><h2><span class="secno">2. </span>The Stream Interface</h2>
+
+	<p>
+		This interface represents a raw sequence of linear data which can be read over time. 
+		It provides an attribute representing the type of data represented by the <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a>.
+	</p>
+	<p>A <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a> is an object that:</p>
+	<ul>
+		<li>Has a content type;</li>
+		<li>Has unspecified length;</li>
+		<li>Can generally be used in the same places <code>Blob</code> can be used, such as <code>URL.createObjectURL()</code></li>
+	</ul>
+	<pre class="idl"><span class="idlInterface" id="idl-def-Stream">interface <span class="idlInterfaceID">Stream</span> {
+<span class="idlAttribute">    readonly attribute <span class="idlAttrType"><a>DOMString</a></span> <span class="idlAttrName"><a href="#widl-Stream-type">type</a></span>;</span>
+};</span>
+</pre><div class="section" id="attributes"><h3><span class="secno">2.1 </span>Attributes</h3><dl class="attributes"><dt id="widl-Stream-type"><code>type</code> of type <span class="idlAttrType"><a>DOMString</a></span>, readonly</dt><dd>
+			The ASCII-encoded string in lower case representing the media type of the <code>Stream</code>, 
+			expressed as an RFC2046 MIME type [<cite><a href="#bib-RFC2046" rel="biblioentry" class="bibref">RFC2046</a></cite>]. 
+			Conforming user agents <em title="should" class="rfc2119">should</em> return the MIME type of the <code>Stream</code>, if it is known. 
+			If conforming user agents cannot determine the media type of the <code>Stream</code>, they <em title="must" class="rfc2119">must</em> return the empty string. 
+			A string is a valid MIME type if it matches the media-type token defined in section 3.7 "Media Types" of RFC 2616 [<cite><a href="#bib-HTTP11" rel="biblioentry" class="bibref">HTTP11</a></cite>].
+		<div><em>No exceptions.</em></div></dd></dl></div>
+</div>
+<!-- End section: The Stream Interface -->
+
+<div class="section" id="streamreader-interface">
+<!--OddPage--><h2><span class="secno">3. </span>The StreamReader Interface</h2>
+	<p>
+		This interface provides methods to read the data of a <code>Stream</code> using progress events and event handler attributes. 
+		It is desirable to read data from <a href="file:///C:/Users/eliotgra/Desktop/idl-def-Stream">Streams</a> asynchronously in the main thread of user agents. 
+		This interface provides such an asynchronous API, and is specified to be used with the global object 
+		(<a href="http://www.w3.org/TR/2011/WD-html5-20110525/browsers.html#the-window-object">Window</a> [<cite><a href="#bib-HTML5" rel="biblioentry" class="bibref">HTML5</a></cite>]).
+		The <a class="idlType" href="#idl-def-StreamReader"><code>StreamReader</code></a> is designed in a way to closely follow the W3C <a href="http://dev.w3.org/2006/webapi/FileAPI/#FileReader-interface">FileReader</a> [<cite><a href="#bib-FILE-API" rel="biblioentry" class="bibref">FILE-API</a></cite>], 
+		and thus only identifies changes or additions to the way <a href="http://dev.w3.org/2006/webapi/FileAPI/#dfn-filereader">FileReader methods</a> behave.
+	</p>
+	<p>
+		When the <code>StreamReader()</code> constructor is invoked, the user agent <em title="must" class="rfc2119">must</em> return a new <a class="idlType" href="#idl-def-StreamReader"><code>StreamReader</code></a> object.
+	</p>
+	<p>
+		In environments where the global object is represented by a <code>Window</code> or a <code>WorkerGlobalScope</code> object, 
+		the <a class="idlType" href="#idl-def-StreamReader"><code>StreamReader</code></a> constructor <em title="must" class="rfc2119">must</em> be available.
+	</p>
+	<p>
+		For event handler attributes, event handlers for <a class="idlType" href="#idl-def-StreamReader"><code>StreamReader</code></a> should mimic
+		<a href="http://dev.w3.org/2006/webapi/FileAPI/#event-handler-attributes-section">6.4.3 Event Handler Attributes</a> of the File API specification. [<cite><a href="#bib-FILE-API" rel="biblioentry" class="bibref">FILE-API</a></cite>]
+	</p>
+	<p>
+		For states, event handlers for <a class="idlType" href="#idl-def-StreamReader"><code>StreamReader</code></a> should mimic <a href="http://dev.w3.org/2006/webapi/FileAPI/#blobreader-state">6.4.4 FileReader States</a> 
+		of the File API specification, except as defined below for <a href="#widl-StreamReader-DONE"><code>DONE</code></a> (numeric value of 2). [<cite><a href="#bib-FILE-API" rel="biblioentry" class="bibref">FILE-API</a></cite>]
+	</p>
+	<p>
+		Multiple reads on <a class="idlType" href="#idl-def-StreamReader"><code>StreamReader</code></a> should mimic 
+		<a href="http://dev.w3.org/2006/webapi/FileAPI/#MultipleReads">6.4.5.1 Multiple Reads</a> of the File API specification. [<cite><a href="#bib-FILE-API" rel="biblioentry" class="bibref">FILE-API</a></cite>]
+	</p>
+
+	
+	<pre class="idl"><span class="idlInterface" id="idl-def-StreamReader">interface <span class="idlInterfaceID">StreamReader</span> : <span class="idlSuperclass"><a>EventTarget</a></span> {
+<span class="idlMethod">    <span class="idlMethType"><a>void</a></span> <span class="idlMethName"><a href="#widl-StreamReader-readAsBlob-void-Stream-stream-unsigned-long-long-maxSize">readAsBlob</a></span> (<span class="idlParam"><span class="idlParamType"><a class="idlType" href="#idl-def-Stream"><code>Stream</code></a></span> <span class="idlParamName">stream</span></span>, <span class="idlParam">optional <span class="idlParamType"><a>unsigned long long</a></span> <span class="idlParamName">maxSize</span></span>) raises (<span class="idlRaises"><a>StreamException</a></span>, <span class="idlRaises"><a>OperationNotAllowedException</a></span>);</span>
+<span class="idlMethod">    <span class="idlMethType"><a>void</a></span> <span class="idlMethName"><a href="#widl-StreamReader-readAsArrayBuffer-void-Stream-stream-unsigned-long-long-maxSize">readAsArrayBuffer</a></span> (<span class="idlParam"><span class="idlParamType"><a class="idlType" href="#idl-def-Stream"><code>Stream</code></a></span> <span class="idlParamName">stream</span></span>, <span class="idlParam">optional <span class="idlParamType"><a>unsigned long long</a></span> <span class="idlParamName">maxSize</span></span>) raises (<span class="idlRaises"><a>StreamException</a></span>, <span class="idlRaises"><a>OperationNotAllowedException</a></span>);</span>
+<span class="idlMethod">    <span class="idlMethType"><a>void</a></span> <span class="idlMethName"><a href="#widl-StreamReader-readAsText-void-Stream-stream-DOMString-encoding-unsigned-long-long-maxSize">readAsText</a></span> (<span class="idlParam"><span class="idlParamType"><a class="idlType" href="#idl-def-Stream"><code>Stream</code></a></span> <span class="idlParamName">stream</span></span>, <span class="idlParam">optional <span class="idlParamType"><a>DOMString</a></span> <span class="idlParamName">encoding</span></span>, <span class="idlParam">optional <span class="idlParamType"><a>unsigned long long</a></span> <span class="idlParamName">maxSize</span></span>) raises (<span class="idlRaises"><a>StreamException</a></span>, <span class="idlRaises"><a>OperationNotAllowedException</a></span>);</span>
+<span class="idlMethod">    <span class="idlMethType"><a>void</a></span> <span class="idlMethName"><a href="#widl-StreamReader-readAsDataURL-void-Stream-Stream-unsigned-long-long-maxSize">readAsDataURL</a></span> (<span class="idlParam"><span class="idlParamType"><a class="idlType" href="#idl-def-Stream"><code>Stream</code></a></span> <span class="idlParamName">Stream</span></span>, <span class="idlParam">optional <span class="idlParamType"><a>unsigned long long</a></span> <span class="idlParamName">maxSize</span></span>) raises (<span class="idlRaises"><a>StreamException</a></span>, <span class="idlRaises"><a>OperationNotAllowedException</a></span>);</span>
+<span class="idlMethod">    <span class="idlMethType"><a>void</a></span> <span class="idlMethName"><a href="#widl-StreamReader-abort-void">abort</a></span> ();</span>
+
+//states
+<span class="idlConst">    const <span class="idlConstType"><a>unsigned short</a></span> <span class="idlConstName"><a href="#widl-StreamReader-EMPTY">EMPTY</a></span> = <span class="idlConstValue">0</span>;</span>
+<span class="idlConst">    const <span class="idlConstType"><a>unsigned short</a></span> <span class="idlConstName"><a href="#widl-StreamReader-LOADING">LOADING</a></span> = <span class="idlConstValue">1</span>;</span>
+<span class="idlConst">    const <span class="idlConstType"><a>unsigned short</a></span> <span class="idlConstName"><a href="#widl-StreamReader-DONE">DONE</a></span> = <span class="idlConstValue">2</span>;</span>
+
+<span class="idlAttribute">    readonly attribute <span class="idlAttrType"><a>unsigned short</a></span> <span class="idlAttrName"><a href="#widl-StreamReader-readyState">readyState</a></span>;</span>
+
+//Blob data
+<span class="idlAttribute">    readonly attribute <span class="idlAttrType"><a>any</a></span>            <span class="idlAttrName"><a href="#widl-StreamReader-result">result</a></span>;</span>
+
+<span class="idlAttribute">    readonly attribute <span class="idlAttrType"><a>StreamError</a></span>    <span class="idlAttrName"><a href="#widl-StreamReader-error">error</a></span>;</span>
+
+//event handler attributes
+<span class="idlAttribute">             attribute <span class="idlAttrType"><a>Function</a></span>       <span class="idlAttrName"><a href="#widl-StreamReader-onloadstart">onloadstart</a></span>;</span>
+<span class="idlAttribute">             attribute <span class="idlAttrType"><a>Function</a></span>       <span class="idlAttrName"><a href="#widl-StreamReader-onprogress">onprogress</a></span>;</span>
+<span class="idlAttribute">             attribute <span class="idlAttrType"><a>Function</a></span>       <span class="idlAttrName"><a href="#widl-StreamReader-onload">onload</a></span>;</span>
+<span class="idlAttribute">             attribute <span class="idlAttrType"><a>Function</a></span>       <span class="idlAttrName"><a href="#widl-StreamReader-onabort">onabort</a></span>;</span>
+<span class="idlAttribute">             attribute <span class="idlAttrType"><a>Function</a></span>       <span class="idlAttrName"><a href="#widl-StreamReader-onerror">onerror</a></span>;</span>
+<span class="idlAttribute">             attribute <span class="idlAttrType"><a>Function</a></span>       <span class="idlAttrName"><a href="#widl-StreamReader-onloadend">onloadend</a></span>;</span>
+};</span>
+</pre><div class="section" id="attributes-1"><h3><span class="secno">3.1 </span>Attributes</h3><dl class="attributes"><dt id="widl-StreamReader-error"><code>error</code> of type <span class="idlAttrType"><a>StreamError</a></span>, readonly</dt><dd><div><em>No exceptions.</em></div></dd><dt id="widl-StreamReader-onabort"><code>onabort</code> of type <span class="idlAttrType"><a>Function</a></span></dt><dd>
+			This event handler should mimic the 
+        	<a href="http://dev.w3.org/2006/webapi/FileAPI/#dfn-onabort"><code>FileReader.onabort</code></a> 
+        	event handler.
+		<div><em>No exceptions.</em></div></dd><dt id="widl-StreamReader-onerror"><code>onerror</code> of type <span class="idlAttrType"><a>Function</a></span></dt><dd>
+			This event handler should mimic the 
+        	<a href="http://dev.w3.org/2006/webapi/FileAPI/#dfn-onerror"><code>FileReader.onerror</code></a> 
+        	event handler.
+		<div><em>No exceptions.</em></div></dd><dt id="widl-StreamReader-onload"><code>onload</code> of type <span class="idlAttrType"><a>Function</a></span></dt><dd>
+			This event handler should mimic the 
+        	<a href="http://dev.w3.org/2006/webapi/FileAPI/#dfn-onload"><code>FileReader.onload</code></a> 
+        	event handler.
+		<div><em>No exceptions.</em></div></dd><dt id="widl-StreamReader-onloadend"><code>onloadend</code> of type <span class="idlAttrType"><a>Function</a></span></dt><dd>
+			This event handler should mimic the 
+        	<a href="http://dev.w3.org/2006/webapi/FileAPI/#dfn-onloadend"><code>FileReader.onloadend</code></a> 
+        	event handler.
+		<div><em>No exceptions.</em></div></dd><dt id="widl-StreamReader-onloadstart"><code>onloadstart</code> of type <span class="idlAttrType"><a>Function</a></span></dt><dd>
+			This event handler should mimic the 
+        	<a href="http://dev.w3.org/2006/webapi/FileAPI/#dfn-onloadstart"><code>FileReader.onloadstart</code></a> 
+        	event handler.
+		<div><em>No exceptions.</em></div></dd><dt id="widl-StreamReader-onprogress"><code>onprogress</code> of type <span class="idlAttrType"><a>Function</a></span></dt><dd>
+			This event handler should mimic the 
+        	<a href="http://dev.w3.org/2006/webapi/FileAPI/#dfn-onprogress"><code>FileReader.onprogress</code></a> 
+        	event handler.
+		<div><em>No exceptions.</em></div></dd><dt id="widl-StreamReader-readyState"><code>readyState</code> of type <span class="idlAttrType"><a>unsigned short</a></span>, readonly</dt><dd><div><em>No exceptions.</em></div></dd><dt id="widl-StreamReader-result"><code>result</code> of type <span class="idlAttrType"><a>any</a></span>, readonly</dt><dd>
+        	This attribute should mimic the <a href="http://dev.w3.org/2006/webapi/FileAPI/#dfn-result">FileReader.result</a> attribute, with the following addition:
+        		<ul>
+        			<li>
+        				On getting, if the 
+        				<a href="#widl-StreamReader-readAsBlob-void-Stream-stream-int-maxSize">readAsBlob</a> read method is used, 
+        				this attribute <em title="must" class="rfc2119">must</em> return a <code>Blob</code> of the data read from the <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a> 
+        				with the type property set as the type of the <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a>. 
+        			</li>
+        		</ul>
+        <div><em>No exceptions.</em></div></dd></dl></div><div class="section" id="methods"><h3><span class="secno">3.2 </span>Methods</h3><dl class="methods"><dt id="widl-StreamReader-abort-void"><code>abort</code></dt><dd>This method should mimic <a href="http://dev.w3.org/2006/webapi/FileAPI/#abort"><code>FileReader.abort()</code></a>. [<cite><a href="#bib-FILE-API" rel="biblioentry" class="bibref">FILE-API</a></cite>]<div><em>No parameters.</em></div><div><em>No exceptions.</em></div><div><em>Return type: </em><code><a>void</a></code></div></dd><dt id="widl-StreamReader-readAsArrayBuffer-void-Stream-stream-unsigned-long-long-maxSize"><code>readAsArrayBuffer</code></dt><dd>
+			<p></p>
+			<p>
+				This method should mimic <a href="http://dev.w3.org/2006/webapi/FileAPI/#readAsArrayBuffer"><code>FileReader.readAsArrayBuffer()</code></a>. [<cite><a href="#bib-FILE-API" rel="biblioentry" class="bibref">FILE-API</a></cite>]
+				The only addition is the addition of a <code>maxSize</code> parameter, which has the following adjustment:
+			</p>
+				<ul>
+					<li>
+						When the stream has been fully read, 
+						or the number of bytes specified by <code>maxSize</code> has been reached, 
+						set <a class="idlType" href="#widl-StreamReader-readyState"><code>readyState</code></a> to <code>DONE</code>.
+					</li>
+				</ul>
+			<p></p>
+			
+			
+			
+
+		<table class="parameters"><tr><th>Parameter</th><th>Type</th><th>Nullable</th><th>Optional</th><th>Description</th></tr><tr><td class="prmName">stream</td><td class="prmType"><code><a class="idlType" href="#idl-def-Stream"><code>Stream</code></a></code></td><td class="prmNullFalse">✘</td><td class="prmOptFalse">✘</td><td class="prmDesc">The Stream to be read</td></tr><tr><td class="prmName">maxSize</td><td class="prmType"><code><a>unsigned long long</a></code></td><td class="prmNullFalse">✘</td><td class="prmOptTrue">✔</td><td class="prmDesc">The maximum number of bytes to be read before completion</td></tr></table><table class="exceptions"><tr><th>Exception</th><th>Description</th></tr><tr><td class="excName"><a>StreamException</a></td><td class="excDesc"><table class="exceptionCodes"><tr><td class="excCodeName"><code></code></td><td class="excCodeDesc"></td></tr></table></td></tr><tr><td class="excName"><a>OperationNotAllowedException</a></td><td class="excDesc"><table class="exceptionCodes"><tr><td class="excCodeName"><code></code></td><td class="excCodeDesc"></td></tr></table></td></tr></table><div><em>Return type: </em><code><a>void</a></code></div></dd><dt id="widl-StreamReader-readAsBlob-void-Stream-stream-unsigned-long-long-maxSize"><code>readAsBlob</code></dt><dd>
+			<p></p>
+			<p>
+				When this method is called, the user agent <em title="must" class="rfc2119">must</em> run the steps below (unless otherwise indicated).
+			</p>
+			<ol>
+				<li>
+					If <code>readyState</code> is <code>LOADING</code>, raise a <code>NOT_ALLOWED_ERR</code> exception and terminate these steps.
+				</li>
+				<li>
+					If an error occurs during reading the <code>stream</code> parameter, 
+					set <a class="idlType" href="#widl-StreamReader-readyState"><code>readyState</code></a> to <code>DONE</code> and set 
+					<a class="idlType" href="#widl-StreamReader-result"><code>result</code></a> to <code>null</code>. 
+					Proceed to the error steps below.
+						<ol>
+							<li>
+								Dispatch a progress event called <code>error</code>. 
+								Set the <a class="idlType" href="#widl-StreamReader-error"><code>error</code></a> attribute; 
+								on getting, the <a class="idlType" href="#widl-StreamReader-error"><code>error</code></a> 
+								attribute <em title="must" class="rfc2119">must</em> be a <a href="#streamerror-error"><code>StreamError</code></a> object with a valid error code 
+								that indicates the kind of file error that has occurred.
+							</li>
+							<li>
+								Dispatch a progress event called <code>loadend</code>.
+							</li>
+							<li>
+								Terminate this overall set of steps.
+							</li>
+						</ol>
+				</li>
+				<li>
+					If no error has occurred, set <a class="idlType" href="#widl-StreamReader-readyState"><code>readyState</code></a> to <code>LOADING</code>.
+				</li>
+				<li>
+					Fire a progress event called <code>loadstart</code>.
+				</li>
+				<li>
+					Make progress notifications.
+				</li>
+				<li>
+					Continue reading on the <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a>:
+						<ol>
+							<li>
+								If the optional <code>maxSize</code> parameter has been set, 
+								set the <a class="idlType" href="#widl-StreamReader-readyState"><code>readyState</code></a> to <code>DONE</code> 
+								when the number of bytes read reaches <code>MAX_SIZE</code> 
+								or the stream has been fully read and the number of bytes is less than <code>MAX_SIZE</code>.
+							</li>
+							<li>
+								If the optional parameter has not been set, 
+								set <a class="idlType" href="#widl-StreamReader-readyState"><code>readyState</code></a> 
+								to <code>DONE</code> when the stream has been fully read. 
+							</li>
+						</ol>
+				</li>
+				<li>
+					Set the <a class="idlType" href="#widl-StreamReader-result"><code>result</code></a> attribute to be stream’s data content represented as a <code>Blob</code>; 
+					on getting, the result <a class="idlType" href="#widl-StreamReader-result"><code>result</code></a> returns the (complete) data of stream as a <code>Blob</code>.
+				</li>
+				<li>
+					Terminate this overall set of steps.
+				</li>
+			</ol>
+			<p></p>
+			
+			
+			
+		<table class="parameters"><tr><th>Parameter</th><th>Type</th><th>Nullable</th><th>Optional</th><th>Description</th></tr><tr><td class="prmName">stream</td><td class="prmType"><code><a class="idlType" href="#idl-def-Stream"><code>Stream</code></a></code></td><td class="prmNullFalse">✘</td><td class="prmOptFalse">✘</td><td class="prmDesc">The Stream to be read</td></tr><tr><td class="prmName">maxSize</td><td class="prmType"><code><a>unsigned long long</a></code></td><td class="prmNullFalse">✘</td><td class="prmOptTrue">✔</td><td class="prmDesc">The maximum number of bytes to be read before completion</td></tr></table><table class="exceptions"><tr><th>Exception</th><th>Description</th></tr><tr><td class="excName"><a>StreamException</a></td><td class="excDesc"><table class="exceptionCodes"><tr><td class="excCodeName"><code></code></td><td class="excCodeDesc"></td></tr></table></td></tr><tr><td class="excName"><a>OperationNotAllowedException</a></td><td class="excDesc"><table class="exceptionCodes"><tr><td class="excCodeName"><code></code></td><td class="excCodeDesc"></td></tr></table></td></tr></table><div><em>Return type: </em><code><a>void</a></code></div></dd><dt id="widl-StreamReader-readAsDataURL-void-Stream-Stream-unsigned-long-long-maxSize"><code>readAsDataURL</code></dt><dd>
+		<p></p>
+			<p>
+				This method should mimic <a href="http://dev.w3.org/2006/webapi/FileAPI/#readAsDataURL"><code>FileReader.readAsDataURL()</code></a>. [<cite><a href="#bib-FILE-API" rel="biblioentry" class="bibref">FILE-API</a></cite>] 
+				The only addition is the addition of a <code>maxSize</code> parameter, which has the following adjustment.
+			</p>
+				<ul>
+					<li>
+						Queue a task to update the <a class="idlType" href="#widl-StreamReader-result"><code>result</code></a> attribute 
+						with the <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a> as a DataURL [<cite><a href="#bib-RFC2397" rel="biblioentry" class="bibref">RFC2397</a></cite>] after the stream has been fully read, 
+						or the number of bytes specified by <code>maxSize</code> has been reached; 
+						on getting, the <a class="idlType" href="#widl-StreamReader-result"><code>result</code></a> attribute 
+						returns the (complete) data of stream as a DataURL [<cite><a href="#bib-RFC2397" rel="biblioentry" class="bibref">RFC2397</a></cite>].
+					</li>
+				</ul>
+
+			
+			
+			
+			
+		<table class="parameters"><tr><th>Parameter</th><th>Type</th><th>Nullable</th><th>Optional</th><th>Description</th></tr><tr><td class="prmName">Stream</td><td class="prmType"><code><a class="idlType" href="#idl-def-Stream"><code>Stream</code></a></code></td><td class="prmNullFalse">✘</td><td class="prmOptFalse">✘</td><td class="prmDesc">The Stream to be read</td></tr><tr><td class="prmName">maxSize</td><td class="prmType"><code><a>unsigned long long</a></code></td><td class="prmNullFalse">✘</td><td class="prmOptTrue">✔</td><td class="prmDesc">The maximum number of bytes to be read before completionk</td></tr></table><table class="exceptions"><tr><th>Exception</th><th>Description</th></tr><tr><td class="excName"><a>StreamException</a></td><td class="excDesc"><table class="exceptionCodes"><tr><td class="excCodeName"><code></code></td><td class="excCodeDesc"></td></tr></table></td></tr><tr><td class="excName"><a>OperationNotAllowedException</a></td><td class="excDesc"><table class="exceptionCodes"><tr><td class="excCodeName"><code></code></td><td class="excCodeDesc"></td></tr></table></td></tr></table><div><em>Return type: </em><code><a>void</a></code></div></dd><dt id="widl-StreamReader-readAsText-void-Stream-stream-DOMString-encoding-unsigned-long-long-maxSize"><code>readAsText</code></dt><dd>	
+		<p></p>
+			<p>
+				This method should mimic <a href="http://dev.w3.org/2006/webapi/FileAPI/#readAsDataText"><code>FileReader.readAsText()</code></a>. [<cite><a href="#bib-FILE-API" rel="biblioentry" class="bibref">FILE-API</a></cite>]
+				The only addition is the addition of a <code>maxSize</code> parameter, which has the following adjustment:
+			</p>
+			<ol>
+				<li>
+					If no encoding is specified, use the <a href="http://dev.w3.org/2006/webapi/FileAPI/#encoding-determination">encoding determination</a> algorithm specified in the [<cite><a href="#bib-FILE-API" rel="biblioentry" class="bibref">FILE-API</a></cite>]. 
+				</li>
+				<li>
+					If no <code>maxSize</code> is specified, continue reading until the stream has been completed.
+				</li>
+				<li>
+					When the stream has been fully read, or 
+					<strong>the number of bytes specified by <code>maxSize</code> has been reached</strong>, 
+					set <a class="idlType" href="#widl-StreamReader-readyState"><code>readyState</code></a> to <code>DONE</code>.
+				</li>
+			</ol>
+		<p></p>
+			
+			
+			
+		<table class="parameters"><tr><th>Parameter</th><th>Type</th><th>Nullable</th><th>Optional</th><th>Description</th></tr><tr><td class="prmName">stream</td><td class="prmType"><code><a class="idlType" href="#idl-def-Stream"><code>Stream</code></a></code></td><td class="prmNullFalse">✘</td><td class="prmOptFalse">✘</td><td class="prmDesc">The Stream to be read</td></tr><tr><td class="prmName">encoding</td><td class="prmType"><code><a>DOMString</a></code></td><td class="prmNullFalse">✘</td><td class="prmOptTrue">✔</td><td class="prmDesc">The encoding format</td></tr><tr><td class="prmName">maxSize</td><td class="prmType"><code><a>unsigned long long</a></code></td><td class="prmNullFalse">✘</td><td class="prmOptTrue">✔</td><td class="prmDesc">The maximum number of bytes to be read before completion</td></tr></table><table class="exceptions"><tr><th>Exception</th><th>Description</th></tr><tr><td class="excName"><a>StreamException</a></td><td class="excDesc"><table class="exceptionCodes"><tr><td class="excCodeName"><code></code></td><td class="excCodeDesc"></td></tr></table></td></tr><tr><td class="excName"><a>OperationNotAllowedException</a></td><td class="excDesc"><table class="exceptionCodes"><tr><td class="excCodeName"><code></code></td><td class="excCodeDesc"></td></tr></table></td></tr></table><div><em>Return type: </em><code><a>void</a></code></div></dd></dl></div><div class="section" id="constants"><h3><span class="secno">3.3 </span>Constants</h3><dl class="constants"><dt id="widl-StreamReader-DONE"><code>DONE</code> of type <span class="idlConstType"><a>unsigned short</a></span></dt><dd>
+        	The current read request has been completed, or an error occurred during read, 
+        	or the read was aborted using <a href="#widl-StreamReader-abort-void"><code>abort()</code></a>. The <a class="idlType" href="#idl-def-StreamReader"><code>StreamReader</code></a> is no longer reading a <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a>.
+        </dd><dt id="widl-StreamReader-EMPTY"><code>EMPTY</code> of type <span class="idlConstType"><a>unsigned short</a></span></dt><dd>
+			This state should mimic the 
+			<code>EMPTY</code> state of the 
+			<a href="http://dev.w3.org/2006/webapi/FileAPI/#blobreader-state">FileReader States</a>
+		</dd><dt id="widl-StreamReader-LOADING"><code>LOADING</code> of type <span class="idlConstType"><a>unsigned short</a></span></dt><dd>
+			This state should mimic the 
+			<code>LOADING</code> state of the 
+			<a href="http://dev.w3.org/2006/webapi/FileAPI/#blobreader-state">FileReader States</a>
+        </dd></dl></div>
+ <pre class="idl"><span class="idlImplements"><a class="idlType" href="#idl-def-StreamReader"><code>StreamReader</code></a> implements <a>EventTarget</a>;</span></pre><div class="idlImplementsDesc"><p>All instances of the <code><a class="idlType" href="#idl-def-StreamReader"><code>StreamReader</code></a></code> type are defined to also implement the <a>EventTarget</a> interface.</p></div>
+	
+	<div class="section" id="streamreader-event-handler-types">
+	<h3><span class="secno">3.4 </span>Event Handler Attributes</h3>
+		<p>
+			The following are the event handler attributes (and their corresponding event handler event types) that user agents <em title="must" class="rfc2119">must</em> support on StreamReader as DOM attributes:
+		</p>
+		<table class="error">
+		   <thead>
+				<tr>
+					<th><a href="#event-handler-attributes" title="event handler attributes">event handler attribute</a></th>
+					<th><a href="#event-handler-event-type">event handler event type</a></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td><dfn id="dfn-onloadstart"><code>onloadstart</code></dfn></td>
+					<td><code><a href="#dfn-loadstart-event">loadstart</a></code></td>
+				</tr>
+				<tr>
+					<td><dfn id="dfn-onprogress"><code>onprogress</code></dfn></td>
+					<td><code><a href="#dfn-progress-event">progress</a></code></td>
+				</tr>
+				<tr>
+					<td><dfn id="dfn-onload"><code>onload</code></dfn></td>
+					<td><code><a href="#dfn-load-event">load</a></code></td>
+				</tr>
+				<tr>
+					<td><dfn id="dfn-onabort"><code>onabort</code></dfn></td>
+					<td><code title="abort-event"><a href="#dfn-abort-event">abort</a></code></td>
+				</tr>
+				<tr>
+					<td><dfn id="dfn-onerror"><code>onerror</code></dfn></td>
+					<td><code><a href="#dfn-error-event">error</a></code></td>
+				</tr>
+				<tr>
+					<td><dfn id="dfn-onloadend"><code>onloadend</code></dfn></td>
+					<td><code><a href="#dfn-loadend-event">loadend</a></code></td>
+				</tr>
+			</tbody>
+		</table>
+		
+		<div class="section" id="streamreader-event-summary">
+		<h4><span class="secno">3.4.1 </span>Event Summary</h4>
+			<p>
+				The following are the events that are fired at <code><a class="idlType" href="#idl-def-StreamReader"><code>StreamReader</code></a></code> objects; 
+				<a href="http://dev.w3.org/2006/webapi/FileAPI/#fire-a-progress-event">firing events</a> is defined in DOM Level 3 Events [<cite><a href="#bib-DOM-LEVEL-3-EVENTS" rel="biblioentry" class="bibref">DOM-LEVEL-3-EVENTS</a></cite>], 
+				and the table below is normative for the events in this specification. 
+			</p>
+				<table class="error" id="event-summary-table">
+					<thead>
+						<tr>
+							<th>Event name</th>
+							<th>Interface</th>
+							<th>Fired when…</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td><dfn id="dfn-loadstart-event"><code>loadstart</code></dfn></td>
+							<td><code>ProgressEvent</code></td>
+							<td>When the read starts.</td>
+						</tr>
+						<tr>
+							<td><dfn id="dfn-progress-event"><code>progress</code></dfn></td>
+							<td><code>ProgressEvent</code></td>
+							<td>While reading (and decoding) a <code>stream</code>, and reporting progress.
+							</td>
+						</tr>
+						<tr>
+							<td><dfn id="dfn-abort-event" title="abort-event"><code>abort</code></dfn></td>
+							<td><code>ProgressEvent</code></td>
+							<td>When the read has been aborted. For instance, by invoking the <code><a href="#widl-StreamReader-abort-void">abort()</a></code> method.</td>
+						</tr>
+						<tr>
+							<td><dfn id="dfn-error-event"><code>error</code></dfn></td>
+							<td><code>ProgressEvent</code></td>
+							<td>When the read has failed (see <a href="http://dev.w3.org/2006/webapi/FileAPI/#file-error-read">errors</a>).</td>
+						</tr>
+						<tr>
+							<td><dfn id="dfn-load-event"><code>load</code></dfn></td>
+							<td><code>ProgressEvent</code></td>
+							<td>When the read has successfully completed.</td>
+						</tr>
+						<tr>
+							<td><dfn id="dfn-loadend-event"><code>loadend</code></dfn></td>
+							<td><code>ProgressEvent</code></td>
+							<td>When the request has completed (either in success or failure).</td>
+						</tr>
+					</tbody>
+				</table>
+		</div>
+		
+	</div>
+	
+</div>
+<!-- End section: The StreamReader Interface -->
+
+<div class="section" id="streamreadersync-interface">
+<!--OddPage--><h2><span class="secno">4. </span>The StreamReaderSync Interface</h2>
+	<p>
+		This interface provides methods to read the data of a <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a>.
+	</p>
+	<p>
+		When the <code>StreamReaderSync()</code> constructor is invoked, the user agent <em title="must" class="rfc2119">must</em> return a new <code>StreamReaderSync</code> object.
+	</p>
+	<p>
+		In environments where the global object is represented by a <a href="http://dev.w3.org/html5/workers/#workerglobalscope"><code>WorkerGlobalScope</code></a> object, 
+		the <code>StreamReaderSync</code> constructor <em title="must" class="rfc2119">must</em> be available.
+	</p>
+	<pre class="idl"><span class="idlInterface" id="idl-def-StreamReaderSync">interface <span class="idlInterfaceID">StreamReaderSync</span> {
+<span class="idlMethod">    <span class="idlMethType"><a>Blob</a></span>        <span class="idlMethName"><a href="#widl-StreamReaderSync-readAsBlob-Blob-Stream-stream-unsigned-long-long-maxSize">readAsBlob</a></span> (<span class="idlParam"><span class="idlParamType"><a class="idlType" href="#idl-def-Stream"><code>Stream</code></a></span> <span class="idlParamName">stream</span></span>, <span class="idlParam">optional <span class="idlParamType"><a>unsigned long long</a></span> <span class="idlParamName">maxSize</span></span>) raises (<span class="idlRaises"><a>StreamException</a></span>);</span>
+<span class="idlMethod">    <span class="idlMethType"><a>ArrayBuffer</a></span> <span class="idlMethName"><a href="#widl-StreamReaderSync-readAsArrayBuffer-ArrayBuffer-Stream-stream-unsigned-long-long-maxSize">readAsArrayBuffer</a></span> (<span class="idlParam"><span class="idlParamType"><a class="idlType" href="#idl-def-Stream"><code>Stream</code></a></span> <span class="idlParamName">stream</span></span>, <span class="idlParam">optional <span class="idlParamType"><a>unsigned long long</a></span> <span class="idlParamName">maxSize</span></span>) raises (<span class="idlRaises"><a>StreamException</a></span>);</span>
+<span class="idlMethod">    <span class="idlMethType"><a>DOMString</a></span>   <span class="idlMethName"><a href="#widl-StreamReaderSync-readAsText-DOMString-Stream-stream-DOMString-encoding-unsigned-long-long-maxSize">readAsText</a></span> (<span class="idlParam"><span class="idlParamType"><a class="idlType" href="#idl-def-Stream"><code>Stream</code></a></span> <span class="idlParamName">stream</span></span>, <span class="idlParam">optional <span class="idlParamType"><a>DOMString</a></span> <span class="idlParamName">encoding</span></span>, <span class="idlParam">optional <span class="idlParamType"><a>unsigned long long</a></span> <span class="idlParamName">maxSize</span></span>) raises (<span class="idlRaises"><a>StreamException</a></span>);</span>
+<span class="idlMethod">    <span class="idlMethType"><a>DOMString</a></span>   <span class="idlMethName"><a href="#widl-StreamReaderSync-readAsDataURL-DOMString-Stream-stream-unsigned-long-long-maxSize">readAsDataURL</a></span> (<span class="idlParam"><span class="idlParamType"><a class="idlType" href="#idl-def-Stream"><code>Stream</code></a></span> <span class="idlParamName">stream</span></span>, <span class="idlParam">optional <span class="idlParamType"><a>unsigned long long</a></span> <span class="idlParamName">maxSize</span></span>) raises (<span class="idlRaises"><a>StreamException</a></span>);</span>
+};</span>
+</pre><div class="section" id="methods-1"><h3><span class="secno">4.1 </span>Methods</h3><dl class="methods"><dt id="widl-StreamReaderSync-readAsArrayBuffer-ArrayBuffer-Stream-stream-unsigned-long-long-maxSize"><code>readAsArrayBuffer</code></dt><dd>
+			<p>
+				This method should mimic <a href="http://dev.w3.org/2006/webapi/FileAPI/#readAsArrayBufferSyncSection"><code>FileReader.readAsArrayBuffer()</code></a>. [<cite><a href="#bib-FILE-API" rel="biblioentry" class="bibref">FILE-API</a></cite>]
+				The only addition is the addition of a <code>maxSize</code> parameter that affects the amount of bytes to read from the <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a>.
+			</p>
+			
+			
+		<table class="parameters"><tr><th>Parameter</th><th>Type</th><th>Nullable</th><th>Optional</th><th>Description</th></tr><tr><td class="prmName">stream</td><td class="prmType"><code><a class="idlType" href="#idl-def-Stream"><code>Stream</code></a></code></td><td class="prmNullFalse">✘</td><td class="prmOptFalse">✘</td><td class="prmDesc">The Stream to be read</td></tr><tr><td class="prmName">maxSize</td><td class="prmType"><code><a>unsigned long long</a></code></td><td class="prmNullFalse">✘</td><td class="prmOptTrue">✔</td><td class="prmDesc">The maximum number of bytes to be read before completion</td></tr></table><table class="exceptions"><tr><th>Exception</th><th>Description</th></tr><tr><td class="excName"><a>StreamException</a></td><td class="excDesc"><table class="exceptionCodes"><tr><td class="excCodeName"><code></code></td><td class="excCodeDesc"></td></tr></table></td></tr></table><div><em>Return type: </em><code><a>ArrayBuffer</a></code></div></dd><dt id="widl-StreamReaderSync-readAsBlob-Blob-Stream-stream-unsigned-long-long-maxSize"><code>readAsBlob</code></dt><dd>
+			<p></p>
+			<p>
+				When this method is called, the following steps <em title="must" class="rfc2119">must</em> be followed:
+			</p>
+				<ol>
+					<li>
+						If an error occurs during reading the <code>stream</code> parameter, 
+						throw a <code>StreamException</code> with the appropriate error code. 
+						Terminate these overall steps.
+					</li>
+					<li>
+						If no error has occurred, read <code>stream</code> until the end is reached, 
+						or the number of bytes specified by <code>maxSize</code> have been read. 
+						Return the data contents of <code>stream</code> as a blob 
+						with the <code>type</code> property set as the type of the <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a>.
+					</li>
+				</ol>
+			<p></p>
+			
+			
+		<table class="parameters"><tr><th>Parameter</th><th>Type</th><th>Nullable</th><th>Optional</th><th>Description</th></tr><tr><td class="prmName">stream</td><td class="prmType"><code><a class="idlType" href="#idl-def-Stream"><code>Stream</code></a></code></td><td class="prmNullFalse">✘</td><td class="prmOptFalse">✘</td><td class="prmDesc">The Stream to be read</td></tr><tr><td class="prmName">maxSize</td><td class="prmType"><code><a>unsigned long long</a></code></td><td class="prmNullFalse">✘</td><td class="prmOptTrue">✔</td><td class="prmDesc">The maximum number of bytes to be read before completion</td></tr></table><table class="exceptions"><tr><th>Exception</th><th>Description</th></tr><tr><td class="excName"><a>StreamException</a></td><td class="excDesc"><table class="exceptionCodes"><tr><td class="excCodeName"><code></code></td><td class="excCodeDesc"></td></tr></table></td></tr></table><div><em>Return type: </em><code><a>Blob</a></code></div></dd><dt id="widl-StreamReaderSync-readAsDataURL-DOMString-Stream-stream-unsigned-long-long-maxSize"><code>readAsDataURL</code></dt><dd>
+			<p>
+				This method should mimic <a href="http://dev.w3.org/2006/webapi/FileAPI/#readAsDataURLSync-section"><code>FileReader.readAsDataURL()</code></a>. [<cite><a href="#bib-FILE-API" rel="biblioentry" class="bibref">FILE-API</a></cite>]
+				The only addition is the addition of a <code>maxSize</code> parameter that affects the amount of the amount of bytes to read from the <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a>.
+			</p>
+			
+			
+		<table class="parameters"><tr><th>Parameter</th><th>Type</th><th>Nullable</th><th>Optional</th><th>Description</th></tr><tr><td class="prmName">stream</td><td class="prmType"><code><a class="idlType" href="#idl-def-Stream"><code>Stream</code></a></code></td><td class="prmNullFalse">✘</td><td class="prmOptFalse">✘</td><td class="prmDesc">The Stream to be read</td></tr><tr><td class="prmName">maxSize</td><td class="prmType"><code><a>unsigned long long</a></code></td><td class="prmNullFalse">✘</td><td class="prmOptTrue">✔</td><td class="prmDesc">The maximum number of bytes to be read before completion</td></tr></table><table class="exceptions"><tr><th>Exception</th><th>Description</th></tr><tr><td class="excName"><a>StreamException</a></td><td class="excDesc"><table class="exceptionCodes"><tr><td class="excCodeName"><code></code></td><td class="excCodeDesc"></td></tr></table></td></tr></table><div><em>Return type: </em><code><a>DOMString</a></code></div></dd><dt id="widl-StreamReaderSync-readAsText-DOMString-Stream-stream-DOMString-encoding-unsigned-long-long-maxSize"><code>readAsText</code></dt><dd>
+			<p>
+				This method should mimic <a href="http://dev.w3.org/2006/webapi/FileAPI/#readAsTextSync"><code>FileReader.readAsText()</code></a>. [<cite><a href="#bib-FILE-API" rel="biblioentry" class="bibref">FILE-API</a></cite>]
+				The only addition is the addition of a <code>maxSize</code> parameter that affects the amount of the amount of bytes to read from the <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a>.
+			</p>
+			
+			
+		<table class="parameters"><tr><th>Parameter</th><th>Type</th><th>Nullable</th><th>Optional</th><th>Description</th></tr><tr><td class="prmName">stream</td><td class="prmType"><code><a class="idlType" href="#idl-def-Stream"><code>Stream</code></a></code></td><td class="prmNullFalse">✘</td><td class="prmOptFalse">✘</td><td class="prmDesc">The Stream to be read</td></tr><tr><td class="prmName">encoding</td><td class="prmType"><code><a>DOMString</a></code></td><td class="prmNullFalse">✘</td><td class="prmOptTrue">✔</td><td class="prmDesc">The encoding format</td></tr><tr><td class="prmName">maxSize</td><td class="prmType"><code><a>unsigned long long</a></code></td><td class="prmNullFalse">✘</td><td class="prmOptTrue">✔</td><td class="prmDesc">The maximum number of bytes to be read before completion</td></tr></table><table class="exceptions"><tr><th>Exception</th><th>Description</th></tr><tr><td class="excName"><a>StreamException</a></td><td class="excDesc"><table class="exceptionCodes"><tr><td class="excCodeName"><code></code></td><td class="excCodeDesc"></td></tr></table></td></tr></table><div><em>Return type: </em><code><a>DOMString</a></code></div></dd></dl></div>
+</div>
+
+<div class="section" id="reading-empty-stream">
+<!--OddPage--><h2><span class="secno">5. </span>Determining an empty Stream</h2>
+	<p>
+		StreamReader will read a Stream until maxSize has been reached or the 
+Stream has no further data to return. If a Stream has been read until 
+the end, then there is no further data to return. Subsequent read calls 
+will return the following:
+		</p><dl class="switch">
+								<dt>If read is <a href="http://dev.w3.org/2006/webapi/XMLHttpRequest-2/#dom-xmlhttprequest-responsetype"><code>readAsBlob</code></a></dt>
+								<dd>Return an empty <code>Blob</code> with size zero</dd>
+								
+								<dt>If read is <a href="http://dev.w3.org/2006/webapi/XMLHttpRequest-2/#dom-xmlhttprequest-responsetype"><code>readAsArrayBuffer</code></a></dt>
+								<dd>Return an <code>ArrayBuffer</code> with length zero</dd>
+								
+								<dt>If read is <a href="http://dev.w3.org/2006/webapi/XMLHttpRequest-2/#dom-xmlhttprequest-responsetype"><code>readAsText</code></a></dt>
+								<dd>Return an empty string</dd>
+								
+								<dt>If read is <a href="http://dev.w3.org/2006/webapi/XMLHttpRequest-2/#dom-xmlhttprequest-responsetype"><code>readAsDataURL</code></a></dt>
+								<dd>Return an empty string</dd>
+								
+							</dl>
+	<p></p>
+</div>
+
+<div class="section" id="errors-and-exceptions">
+<!--OddPage--><h2><span class="secno">6. </span>Errors and Exceptions</h2>
+	<div class="section" id="streamerror-error">
+	<h3><span class="secno">6.1 </span>StreamError</h3>
+		<p>
+			This interface should mimic the <a href="http://dev.w3.org/2006/webapi/FileAPI/#FileErrorInterface"><code>FileError</code> Interface</a>, and contain the same error codes.
+		</p>
+	</div>
+	
+	<div class="section" id="streamexception-error">
+	<h3><span class="secno">6.2 </span>StreamException</h3>
+		<p>
+			This interface should mimic the <a href="http://dev.w3.org/2006/webapi/FileAPI/#FileException"><code>FileException</code> Interface</a>, , and contain the same error codes.
+		</p>
+	</div>
+</div>
+
+<div class="section" id="streambuilder-interface">
+<!--OddPage--><h2><span class="secno">7. </span>The StreamBuilder Interface</h2>
+	<p>
+		The <a class="idlType" href="#idl-def-StreamBuilder"><code>StreamBuilder</code></a> interface provides a way for developers to create a <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a> by appending data. During a read on the <code>stream</code> from a <a class="idlType" href="#idl-def-StreamBuilder"><code>StreamBuilder</code></a>, the data is read 'First in, First out', 
+		in the order it was appended. <a class="idlType" href="#idl-def-StreamBuilder"><code>StreamBuilder</code></a> provides methods for appending different data, as well as a <a href="#dfn-thresholdreached-event"><code>thresholdreached</code></a> event to be notified when the amount of data available for read has fallen below a specified threshold.
+	</p>
+	<p>
+		When the <code>StreamBuilder(in contentType)</code> constructor is invoked, the user agent <em title="must" class="rfc2119">must</em> return a new <a class="idlType" href="#idl-def-StreamBuilder"><code>StreamBuilder</code></a> object. 
+		If the <code>StreamBuilder(in contentType)</code> constructor is invoked with the optional <code>thresholdLimit</code> overload, 
+		then this limit will be used to fire the <a href="#dfn-thresholdreached-event"><code>thresholdreached</code></a> event.
+	</p>
+	<p>
+		In environments where the global object is represented by a <a href="http://dev.w3.org/html5/workers/#workerglobalscope"><code>WorkerGlobalScope</code></a> object, 
+		the <code>StreamBuilder()</code> constructor <em title="must" class="rfc2119">must</em> be available.
+	</p>
+	<pre class="idl"><span class="idlInterface" id="idl-def-StreamBuilder">[<span class="extAttr">Constructor, Constructor(DOMString contentType, optional int thresholdLimit)</span>]
+interface <span class="idlInterfaceID">StreamBuilder</span> : <span class="idlSuperclass"><a>EventTarget</a></span> {
+<span class="idlMethod">    <span class="idlMethType"><a>void</a></span> <span class="idlMethName"><a href="#widl-StreamBuilder-append-void-String-data">append</a></span> (<span class="idlParam"><span class="idlParamType"><a>String</a></span> <span class="idlParamName">data</span></span>) raises (<span class="idlRaises"><a>OperationNotAllowedException</a></span>);</span>
+<span class="idlMethod">    <span class="idlMethType"><a>void</a></span> <span class="idlMethName"><a href="#widl-StreamBuilder-append-void-Blob-data">append</a></span> (<span class="idlParam"><span class="idlParamType"><a>Blob</a></span> <span class="idlParamName">data</span></span>) raises (<span class="idlRaises"><a>OperationNotAllowedException</a></span>);</span>
+<span class="idlMethod">    <span class="idlMethType"><a>void</a></span> <span class="idlMethName"><a href="#widl-StreamBuilder-append-void-ArrayBuffer-data">append</a></span> (<span class="idlParam"><span class="idlParamType"><a>ArrayBuffer</a></span> <span class="idlParamName">data</span></span>) raises (<span class="idlRaises"><a>OperationNotAllowedException</a></span>);</span>
+<span class="idlMethod">    <span class="idlMethType"><a>void</a></span> <span class="idlMethName"><a href="#widl-StreamBuilder-close-void">close</a></span> ();</span>
+<span class="idlAttribute">    readonly attribute <span class="idlAttrType"><a class="idlType" href="#idl-def-Stream"><code>Stream</code></a></span>             <span class="idlAttrName"><a href="#widl-StreamBuilder-stream">stream</a></span>;</span>
+<span class="idlAttribute">    readonly attribute <span class="idlAttrType"><a>unsigned long long</a></span> <span class="idlAttrName"><a href="#widl-StreamBuilder-availableDataSize">availableDataSize</a></span>;</span>
+<span class="idlAttribute">             attribute <span class="idlAttrType"><a>Function</a></span>           <span class="idlAttrName"><a href="#widl-StreamBuilder-onthresholdreached">onthresholdreached</a></span>;</span>
+};</span>
+</pre><div class="section" id="attributes-2"><h3><span class="secno">7.1 </span>Attributes</h3><dl class="attributes"><dt id="widl-StreamBuilder-availableDataSize"><code>availableDataSize</code> of type <span class="idlAttrType"><a>unsigned long long</a></span>, readonly</dt><dd>The number of bytes of data available for read from the <a>stream</a><div><em>No exceptions.</em></div></dd><dt id="widl-StreamBuilder-onthresholdreached"><code>onthresholdreached</code> of type <span class="idlAttrType"><a>Function</a></span></dt><dd>
+			Handler for <a href="#dfn-thresholdreached-event"><code>thresholdreached</code></a> events.
+		<div><em>No exceptions.</em></div></dd><dt id="widl-StreamBuilder-stream"><code>stream</code> of type <span class="idlAttrType"><a class="idlType" href="#idl-def-Stream"><code>Stream</code></a></span>, readonly</dt><dd>Returns the underlying <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a> represented by the <a class="idlType" href="#idl-def-StreamBuilder"><code>StreamBuilder</code></a>.<div><em>No exceptions.</em></div></dd></dl></div><div class="section" id="methods-2"><h3><span class="secno">7.2 </span>Methods</h3><dl class="methods"><dt id="widl-StreamBuilder-append-void-String-data"><code>append</code></dt><dd>
+			<p></p>
+			<p>
+				Appends the supplied text to the data available for the <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a>, writing it as UTF-8.
+			</p>
+			<p></p>
+			
+			
+		<table class="parameters"><tr><th>Parameter</th><th>Type</th><th>Nullable</th><th>Optional</th><th>Description</th></tr><tr><td class="prmName">data</td><td class="prmType"><code><a>String</a></code></td><td class="prmNullFalse">✘</td><td class="prmOptFalse">✘</td><td class="prmDesc">The data to append</td></tr></table><table class="exceptions"><tr><th>Exception</th><th>Description</th></tr><tr><td class="excName"><a>OperationNotAllowedException</a></td><td class="excDesc"><table class="exceptionCodes"><tr><td class="excCodeName"><code></code></td><td class="excCodeDesc">Thrown if append is called on a closed StreamBuilder</td></tr></table></td></tr></table><div><em>Return type: </em><code><a>void</a></code></div></dd><dt id="widl-StreamBuilder-append-void-Blob-data"><code>append</code></dt><dd>
+			<p></p>
+			<p>
+				Appends the supplied <code>Blob</code> to the data available for the <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a>.
+			</p>
+			<p></p>
+			
+			
+		<table class="parameters"><tr><th>Parameter</th><th>Type</th><th>Nullable</th><th>Optional</th><th>Description</th></tr><tr><td class="prmName">data</td><td class="prmType"><code><a>Blob</a></code></td><td class="prmNullFalse">✘</td><td class="prmOptFalse">✘</td><td class="prmDesc">The data to append</td></tr></table><table class="exceptions"><tr><th>Exception</th><th>Description</th></tr><tr><td class="excName"><a>OperationNotAllowedException</a></td><td class="excDesc"><table class="exceptionCodes"><tr><td class="excCodeName"><code></code></td><td class="excCodeDesc">Thrown if append is called on a closed StreamBuilder</td></tr></table></td></tr></table><div><em>Return type: </em><code><a>void</a></code></div></dd><dt id="widl-StreamBuilder-append-void-ArrayBuffer-data"><code>append</code></dt><dd>
+			<p></p>
+			<p>
+				Appends the supplied <code>ArrayBuffer</code> to the data available for the <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a>.
+			</p>
+			<p></p>
+			
+			
+		<table class="parameters"><tr><th>Parameter</th><th>Type</th><th>Nullable</th><th>Optional</th><th>Description</th></tr><tr><td class="prmName">data</td><td class="prmType"><code><a>ArrayBuffer</a></code></td><td class="prmNullFalse">✘</td><td class="prmOptFalse">✘</td><td class="prmDesc">The data to append</td></tr></table><table class="exceptions"><tr><th>Exception</th><th>Description</th></tr><tr><td class="excName"><a>OperationNotAllowedException</a></td><td class="excDesc"><table class="exceptionCodes"><tr><td class="excCodeName"><code></code></td><td class="excCodeDesc">Thrown if append is called on a closed StreamBuilder</td></tr></table></td></tr></table><div><em>Return type: </em><code><a>void</a></code></div></dd><dt id="widl-StreamBuilder-close-void"><code>close</code></dt><dd>This method should close the <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a>. This is done by returning on the next and subsequent reads with no data.<div><em>No parameters.</em></div><div><em>No exceptions.</em></div><div><em>Return type: </em><code><a>void</a></code></div></dd></dl></div>
+	
+	<div class="section" id="reads-on-a-stream-from-streambuilder">
+			<h3><span class="secno">7.3 </span>Reads on a Stream from StreamBuilder</h3>
+			<p>
+				When a read on a stream from <a class="idlType" href="#idl-def-StreamBuilder"><code>StreamBuilder</code></a> is made, the following steps <em title="must" class="rfc2119">must</em> be followed:
+			</p>
+				<ol>
+					<li>
+						If there is enough data available to satisfy the amount requested 
+in the read, return the amount specified.	The data should be returned in
+ the order the data was appended.
+						<ul>
+							<li>
+								Update the value of <a href="#widl-StreamBuilder-availableDataSize"><code>availableDataSize</code></a>. 
+							</li>
+						</ul>
+					</li>
+					<li>
+						If there is not enough data available to satisfy the amount requested in the read:
+						<ul>
+							<li>
+								If the <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a> has been closed, return all the data available, 
+								and set <a href="#widl-StreamBuilder-availableDataSize"><code>availableDataSize</code></a> to zero.</li>
+							<li>
+								Else, keep the request pending and do not return until there is enough data available to satisfy the requset. 
+								
+							</li>
+						</ul>
+					</li>
+					<li>
+						If during the read request the value of <a href="#widl-StreamBuilder-availableDataSize"><code>availableDataSize</code></a>
+						fell below the <code>thresholdLimit</code> value specified in the constructor, 
+						fire an event called <a href="#dfn-thresholdreached-event"><code>thresholdreached</code></a>.
+					</li>
+				</ol>
+		</div>
+		
+	<div class="section" id="streambuilder-event-handler-types">
+	<h3><span class="secno">7.4 </span>Event Handler Attributes</h3>
+		<p>
+			The following are the event handler attributes (and their corresponding event handler event types) that user agents <em title="must" class="rfc2119">must</em> support on <a class="idlType" href="#idl-def-StreamBuilder"><code>StreamBuilder</code></a> as DOM attributes:
+		</p>
+		<table class="error">
+		   <thead>
+				<tr>
+					<th><a href="#event-handler-attributes" title="event handler attributes">event handler attribute</a></th>
+					<th><a href="#event-handler-event-type">event handler event type</a></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td><dfn id="dfn-onthresholdreached"><code>onthresholdreached</code></dfn></td>
+					<td><code><a href="#dfn-thresholdreached-event">thresholdreached</a></code></td>
+				</tr>
+			</tbody>
+		</table>
+		
+		<div class="section" id="streambuilder-event-summary">
+		<h4><span class="secno">7.4.1 </span>Event Summary</h4>
+			<p>
+				The following are the events that are fired at <code><a class="idlType" href="#idl-def-StreamBuilder"><code>StreamBuilder</code></a></code> objects; 
+				<a href="http://dev.w3.org/2006/webapi/FileAPI/#fire-a-progress-event">firing events</a> is defined in DOM Level 3 Events [<cite><a href="#bib-DOM-LEVEL-3-EVENTS" rel="biblioentry" class="bibref">DOM-LEVEL-3-EVENTS</a></cite>], 
+				and the table below is normative for the events in this specification. 
+			</p>
+				<table class="error" id="event-summary-table">
+					<thead>
+						<tr>
+							<th>Event name</th>
+							<th>Interface</th>
+							<th>Fired when…</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td><dfn id="dfn-thresholdreached-event"><code>thresholdreached</code></dfn></td>
+							<td><code>StreamBuilder</code></td>
+							<td>The <a href="#widl-StreamBuilder-availableDataSize"><code>availableDataSize</code></a> has fallen below the <code>thresholdLimit</code> value specified in the constructor</td>
+						</tr>
+					</tbody>
+				</table>
+		</div>
+		
+	</div>
+
+		
+</div>
+<!-- End section: The StreamBuilder Interface -->
+
+	
+<div class="section" id="error-uris_for_streams">
+<!--OddPage--><h2><span class="secno">8. </span>URIs for Stream</h2>
+	<p>
+		To reference a <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a>, <a href="http://dev.w3.org/2006/webapi/FileAPI/#url">the same URI used</a> for <code>Blobs</code> and <code>Files</code> in 
+		<a href="http://dev.w3.org/2006/webapi/FileAPI/#url">6.7. A URI for Blob and File reference</a> of 
+		the File API spec should be used. [<cite><a href="#bib-FILE-API" rel="biblioentry" class="bibref">FILE-API</a></cite>]
+		The definitions of <strong>Origin</strong>, <strong>Lifetime</strong>, <strong>Referencing</strong>, and <strong>Dereferencing</strong> of a <code>Blob</code> should be applied to a <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a>.
+	</p>
+		<div class="section" id="creating-revoking-streamuri">
+		<h3><span class="secno">8.1 </span>Creating and Revoking a Stream URI</h3>
+			<p>
+				A <dfn id="stream-uri">Stream URI</dfn> is a <code>Blob URI</code> that is referencing a <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a>. 
+				These URIs are created and revoked using methods exposed on the URL object, 
+				as defined in <a href="http://dev.w3.org/2006/webapi/FileAPI/#creating-revoking">6.7.5. Creating and Revoking a Blob URI</a> 
+				of the File API spec. [<cite><a href="#bib-FILE-API" rel="biblioentry" class="bibref">FILE-API</a></cite>]
+			</p>
+			<p>
+				<a href="http://dev.w3.org/2006/webapi/FileAPI/#dfn-createObjectURL">URL.createObjectURL</a> 
+				and <a href="http://dev.w3.org/2006/webapi/FileAPI/#dfn-revokeObjectURL">URL.revokeObjectURL</a> 
+				should both be extended as follows:
+			</p>
+			<pre class="idl"><span class="idlInterface" id="idl-def-URL">interface <span class="idlInterfaceID">URL</span> {
+<span class="idlMethod">    <span class="idlMethType"><a>static DOMString</a></span> <span class="idlMethName"><a href="#widl-URL-createObjectURL-static-DOMString-any-object">createObjectURL</a></span> (<span class="idlParam"><span class="idlParamType"><a>any</a></span> <span class="idlParamName">object</span></span>);</span>
+<span class="idlMethod">    <span class="idlMethType"><a>static void</a></span>      <span class="idlMethName"><a href="#widl-URL-revokeObjectURL-static-void-DOMString-url">revokeObjectURL</a></span> (<span class="idlParam"><span class="idlParamType"><a>DOMString</a></span> <span class="idlParamName">url</span></span>);</span>
+};</span>
+</pre><div class="section" id="methods-3"><h4><span class="secno">8.1.1 </span>Methods</h4><dl class="methods"><dt id="widl-URL-createObjectURL-static-DOMString-any-object"><code>createObjectURL</code></dt><dd>
+					<p></p>
+					<p>The extension onto <code>createObjectURL</code> should have the following steps added.</p>
+						<ol>
+							<li>
+								If this method is called with a <code>Blob</code> or <code>Stream</code> argument 
+								that is <strong>not</strong> valid, then the user agent <em title="must" class="rfc2119">must</em> return null.</li>
+							<li>
+								If this method is called with a valid <code>Blob</code> or <code>Stream</code> argument, 
+								user agents <em title="must" class="rfc2119">must</em> return a unique <code>Blob URI</code> that can be used to dereference the <code>blob</code> or <code>stream</code> argument.	
+							</li>
+						</ol>
+				<table class="parameters"><tr><th>Parameter</th><th>Type</th><th>Nullable</th><th>Optional</th><th>Description</th></tr><tr><td class="prmName">object</td><td class="prmType"><code><a>any</a></code></td><td class="prmNullFalse">✘</td><td class="prmOptFalse">✘</td><td class="prmDesc"></td></tr></table><div><em>No exceptions.</em></div><div><em>Return type: </em><code><a>static DOMString</a></code></div></dd><dt id="widl-URL-revokeObjectURL-static-void-DOMString-url"><code>revokeObjectURL</code></dt><dd>
+					<p></p>
+					<p>
+						The extension onto <code>revokeObjectURL</code> should have the following steps added.
+					</p>
+					<ol>
+						<li>
+							If the URL refers to a <code>Blob</code> or <code>Stream</code> that is both 
+							valid and in the same origin of the global object’s <code>URL</code> property on which this static method was called, 
+							user agents <em title="must" class="rfc2119">must</em> return a 404 response code when the URL is dereferenced.</li>
+						<li>
+							If the URL refers to a <code>Blob</code> or <code>Stream</code> that is <strong>not</strong> valid 
+							or if the value provided for the URL argument is not a <code>Blob URI</code> 
+							or if the URL argument refers to a <code>Blob</code> or <code>Stream</code> that is <strong>not</strong> in the same origin 
+							as the global object’s <code>URL</code> property, this method call does nothing. 
+							User agents <em title="may" class="rfc2119">may</em> display a message on their error console.
+						</li>
+					</ol>
+				<table class="parameters"><tr><th>Parameter</th><th>Type</th><th>Nullable</th><th>Optional</th><th>Description</th></tr><tr><td class="prmName">url</td><td class="prmType"><code><a>DOMString</a></code></td><td class="prmNullFalse">✘</td><td class="prmOptFalse">✘</td><td class="prmDesc"></td></tr></table><div><em>No exceptions.</em></div><div><em>Return type: </em><code><a>static void</a></code></div></dd></dl></div>
+		</div>
+</div>
+
+<div class="section" id="security">
+<!--OddPage--><h2><span class="secno">9. </span>Security Considerations</h2>
+	<p>
+		A <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a> should have the same security considerations as a <code>Blob</code>. 
+		This is outlined in <a href="http://dev.w3.org/2006/webapi/FileAPI/#security-discussion">6.8. Security Considerations</a> 
+		of the File API specification. [<cite><a href="#bib-FILE-API" rel="biblioentry" class="bibref">FILE-API</a></cite>]
+		Because a <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a> uses a <code>Blob URI</code>, cross origin requests on a <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a> will not be supported.
+	</p>
+</div>
+
+<div class="section" id="XMLHttpRequest">
+<!--OddPage--><h2><span class="secno">10. </span>Extension of XMLHttpRequest</h2>
+	<p>
+		This specification proposes an extension to <code>XMLHttpRequest</code> [<cite><a href="#bib-XMLHTTPREQUEST2" rel="biblioentry" class="bibref">XMLHTTPREQUEST2</a></cite>] to add support for <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a>.
+		This will extend <code>XMLHttpRequest</code> to allow for receiving and uploading of a <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a>. 
+		One such scenario is providing access to data during <a href="http://dev.w3.org/2006/webapi/XMLHttpRequest-2/#dom-xmlhttprequest-readystate"><code>readyState</code></a> 3 (loading). 
+		The sections below document in detail what extensions must be done to <code>XMLHttpRequest</code> to support <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a>. 
+	</p>
+	
+	<div id="addition-of-stream-responsetype" class="section" title="addition-of-stream">
+	<h3><span class="secno">10.1 </span>Addition of stream responseType</h3>
+		<p>
+			A responseType of ‘<code>stream</code>’ should be introduced to <code>XMLHttpRequest</code>.
+		</p>		
+		<p>
+			<a href="http://dev.w3.org/2006/webapi/XMLHttpRequest-2/#the-responsetype-attribute">Section 4.7.7 the <code>responseType</code> attribute</a> 
+			in XMLHttpRequest Level 2 [<cite><a href="#bib-XMLHTTPREQUEST2" rel="biblioentry" class="bibref">XMLHTTPREQUEST2</a></cite>] should now read:
+		</p>
+		<p>
+			On setting the <code>responseType</code> attribute these steps must be run:
+		</p>
+			<ol>
+				<li>
+					If the state is not <a href="http://dev.w3.org/2006/webapi/XMLHttpRequest-2/#dom-xmlhttprequest-opened"><code>OPENED</code></a> or 
+					<a href="http://dev.w3.org/2006/webapi/XMLHttpRequest-2/#dom-xmlhttprequest-headers_received"><code>HEADERS_RECEIVED</code></a> 
+					raise an <a href="http://dev.w3.org/2006/webapi/XMLHttpRequest-2/#dom-domexception-invalid_state_err"><code>INVALID_STATE_ERR</code></a> 
+					exception and terminate these steps.
+				</li>
+				<li>
+					If the given value is not the empty string, "<code>arraybuffer</code>", "<code>blob</code>", 
+					"<code>document</code>", "<code>stream</code>", or "<code>text</code>" terminate these steps.</li>
+				<li>Set the <a href="http://dev.w3.org/2006/webapi/XMLHttpRequest-2/#dom-xmlhttprequest-responsetype"><code>responseType</code></a> attribute's value to the given value.</li>
+			</ol>	
+		<p></p>
+		
+		<p>
+			<a href="http://dev.w3.org/2006/webapi/XMLHttpRequest-2/#the-response-attribute">Section 4.7.8 the <code>response</code> attribute</a> 
+			in XMLHttpRequest Level 2 [<cite><a href="#bib-XMLHTTPREQUEST2" rel="biblioentry" class="bibref">XMLHTTPREQUEST2</a></cite>] should now read:
+		</p>
+		<p>
+			The <code>response</code> attribute must return the result of running these steps:
+		</p>	
+			<dl class="switch">
+				<dt>If <a href="http://dev.w3.org/2006/webapi/XMLHttpRequest-2/#dom-xmlhttprequest-responsetype"><code>responseType</code></a> is the empty string or "text"</dt>
+				<dd>
+					<ol>
+						<li>
+							If the state is not 
+							<a href="http://dev.w3.org/2006/webapi/XMLHttpRequest-2/#dom-xmlhttprequest-loading">LOADING</a>
+							or <a href="http://dev.w3.org/2006/webapi/XMLHttpRequest-2/#dom-xmlhttprequest-done">DONE</a> 
+							return the empty string and terminate these steps.
+						</li>
+						<li>
+							If the <a href="http://dev.w3.org/2006/webapi/XMLHttpRequest-2/#error-flag">error flag</a> 
+							is true return the empty string and terminate these steps.
+						</li>
+						<li>
+							Return the <a href="http://dev.w3.org/2006/webapi/XMLHttpRequest-2/#text-response-entity-body">text response entity body</a>.
+						</li>
+					</ol>
+				</dd>
+				<dt>If <code>responseType</code> is “<code>stream</code>”</dt>
+				<dd>
+					<ol>
+						<li>
+							If the state is not 
+							<a href="http://dev.w3.org/2006/webapi/XMLHttpRequest-2/#dom-xmlhttprequest-loading">LOADING</a>
+							or <a href="http://dev.w3.org/2006/webapi/XMLHttpRequest-2/#dom-xmlhttprequest-done">DONE</a> 
+							return null and terminate these steps.</li>
+						<li>
+							If the error flag is true return null and terminate these steps.
+						</li>
+						<li>
+							Return the stream response entity body.
+						</li>
+					</ol>
+				</dd>
+				<dt>Otherwise</dt>
+				<dd>
+					<ol>
+						<li>
+							If the state is not <a href="http://dev.w3.org/2006/webapi/XMLHttpRequest-2/#dom-xmlhttprequest-done">DONE</a> return null and terminate these steps.
+						</li>
+						<li>
+							If the <a href="http://dev.w3.org/2006/webapi/XMLHttpRequest-2/#error-flag">error flag</a> is true return null and terminate these steps.
+						</li>
+						<li>
+							<dl class="switch">
+								<dt>If <a href="http://dev.w3.org/2006/webapi/XMLHttpRequest-2/#dom-xmlhttprequest-responsetype"><code>responseType</code></a> is "<code>arraybuffer</code>"</dt>
+								<dd>Return the <a href="http://dev.w3.org/2006/webapi/XMLHttpRequest-2/#arraybuffer-response-entity-body">arraybuffer response entity body</a>.</dd>
+								
+								<dt>If <a href="http://dev.w3.org/2006/webapi/XMLHttpRequest-2/#dom-xmlhttprequest-responsetype"><code>responseType</code></a> is "<code>blob</code>"</dt>
+								<dd>Return the <a href="http://dev.w3.org/2006/webapi/XMLHttpRequest-2/#blob-response-entity-body">blob response entity body</a>.</dd>
+								
+								<dt>If <a href="http://dev.w3.org/2006/webapi/XMLHttpRequest-2/#dom-xmlhttprequest-responsetype"><code>responseType</code></a> is "<code>document</code>"</dt>
+								<dd>Return the <a href="http://dev.w3.org/2006/webapi/XMLHttpRequest-2/#document-response-entity-body">document response entity body</a>.</dd>
+								
+							</dl>
+						</li>
+					</ol>
+				</dd>
+			</dl>	
+	
+	</div>
+	
+	<div class="section" id="readystate3-changes">
+	<h3><span class="secno">10.2 </span>readyState 3 changes</h3>
+		<p>
+			A <code>stream</code> is binary data obtained sequentially over time. 
+			Given this, a <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a> should be accessible in <a href="http://dev.w3.org/2006/webapi/XMLHttpRequest-2/#dom-xmlhttprequest-readystate"><code>readyState</code></a> 3 (LOADING).
+		</p>
+		<p>
+			<a href="http://dev.w3.org/2006/webapi/XMLHttpRequest-2/#response-entity-body0">Section 4.7.5 Response Entity Body</a> 
+			in XMLHttpRequest Level 2 [<cite><a href="#bib-XMLHTTPREQUEST2" rel="biblioentry" class="bibref">XMLHTTPREQUEST2</a></cite>] should have the following additions:
+		</p>
+		<p>
+			The <dfn id="stream-response-entity">stream response entity body</dfn> is a <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a> representing the <a href="http://dev.w3.org/2006/webapi/XMLHttpRequest-2/#response-entity-body">response entity body</a>. 
+			If the <a href="#stream-response-entity">stream response entity body</a> has no value assigned to it let it be the return value of the following algorithm:
+		</p>
+			<ol>
+				<li>
+					If the <a href="http://dev.w3.org/2006/webapi/XMLHttpRequest-2/#response-entity-body">response entity body</a> is null, 
+					return an empty <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a> object and terminate these steps.
+				</li>
+				<li>
+					Return a <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a> object representing the 
+					<a href="http://dev.w3.org/2006/webapi/XMLHttpRequest-2/#response-entity-body">response entity body</a>.
+				</li>
+			</ol>
+	</div>
+
+	<div class="section" clas="section" id="send0">
+	<h3><span class="secno">10.3 </span>send()</h3>
+		<p>
+			<a href="http://dev.w3.org/2006/webapi/XMLHttpRequest-2/#the-send-method">Section 4.6.6 The <code>send()</code> method</a> 
+			in XMLHttpRequest Level 2 [<cite><a href="#bib-XMLHTTPREQUEST2" rel="biblioentry" class="bibref">XMLHTTPREQUEST2</a></cite>] should have the following additions:
+		</p>
+		<dl class="switch">
+			<dt>If data is a <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a></dt>
+			<dd>
+				<p>
+					If the object's <code>type</code> attribute is not the empty string let <var>mime type</var> be its value.
+				</p>
+				<p>
+					Let the <a href="http://dev.w3.org/2006/webapi/XMLHttpRequest-2/#request-entity-body">request entity body</a> be the raw data represented by <var>data</var>.
+				</p>
+			
+			</dd>
+		</dl>	
+	</div>
+
+</div>
+
+<div class="section" id="requirements">
+<!--OddPage--><h2><span class="secno">11. </span>Requirements and Use Cases</h2>
+	<p>
+		The <a class="idlType" href="#idl-def-Stream"><code>Stream</code></a> type allows for completion of several end-to-end experiences. This section covers what the requirements are for this API, and 
+		illustrates some use cases.
+	</p>
+		<ul>
+			<li>
+				Begin loading a video through <code>XMLHttpRequest</code> in <code>readyState</code> 3
+				<p>
+					Videos can typically be large files that may take a long time to 
+download, and require authentication or certain headers to access. 
+					For certain video formats, an application can begin playing the 
+video once the first chunks of data are available, and would not need to
+ wait for the entire video to download.
+				
+				</p>
+			</li>
+			<li>
+				Begin processing data with <a class="idlType" href="#idl-def-StreamBuilder"><code>StreamBuilder</code></a> as it is being read via <code>XMLHttpRequest</code>
+				<p>
+					If a file format is understood, then an application can make sense 
+of the data as it being made available. For example, a given 
+					file may be very large and the application wants to begin 
+processing the data immediately, rather than having to wait for full 
+download of the file.
+				</p>
+			</li>
+			<li>
+				Upload of dynamic runtime data using <a class="idlType" href="#idl-def-StreamBuilder"><code>StreamBuilder</code></a> and <code>XMLHttpRequest</code>
+				<p>
+					There are situations where an application may have data to upload 
+once the application is processing. This could involve processing
+					of data an application wants to upload as it is being created. One 
+such case is the upload of GPS coordinates within an application. The
+					coordiantes may constantly change, and the application wants to 
+upload the data as it being collected.
+				
+				</p>
+			</li>
+		</ul>
+</div>
+
+<div id="acknowledgements" class="appendix section">
+<!--OddPage--><h2><span class="secno">A. </span>Acknowledgements</h2>
+<p>
+	Thanks to Eliot Graff for editorial assistance. 
+	Special thanks to the W3C.
+</p>
+</div>
+
+
+
+
+<div class="appendix section" id="references"><!--OddPage--><h2><span class="secno">B. </span>References</h2><div class="section" id="normative-references"><h3><span class="secno">B.1 </span>Normative references</h3><dl class="bibliography"><dt id="bib-DOM-LEVEL-3-EVENTS">[DOM-LEVEL-3-EVENTS]</dt><dd>Björn Höhrmann; Tom Pixley; Philippe Le Hégaret. <a href="http://www.w3.org/TR/2011/WD-DOM-Level-3-Events-20110531/"><cite>Document Object Model (DOM) Level 3 Events Specification.</cite></a> 31 May 2011. W3C Working Draft. (Work in progress.) URL: <a href="http://www.w3.org/TR/2011/WD-DOM-Level-3-Events-20110531/">http://www.w3.org/TR/2011/WD-DOM-Level-3-Events-20110531/</a> 
+</dd><dt id="bib-FILE-API">[FILE-API]</dt><dd>Arun Ranganathan. <a href="http://www.w3.org/TR/2009/WD-FileAPI-20091117/"><cite>File API.</cite></a> 17 November 2009. W3C Working Draft. (Work in progress.) URL: <a href="http://www.w3.org/TR/2009/WD-FileAPI-20091117/">http://www.w3.org/TR/2009/WD-FileAPI-20091117/</a> 
+</dd><dt id="bib-HTML5">[HTML5]</dt><dd>Ian Hickson; David Hyatt. <a href="http://www.w3.org/TR/html5"><cite>HTML5.</cite></a> 25 May 2011. W3C Working Draft. (Work in progress.) URL: <a href="http://www.w3.org/TR/html5">http://www.w3.org/TR/html5</a> 
+</dd><dt id="bib-HTTP11">[HTTP11]</dt><dd>R. Fielding; et al. <a href="http://www.ietf.org/rfc/rfc2616.txt"><cite>Hypertext Transfer Protocol - HTTP/1.1.</cite></a> June 1999. Internet RFC 2616. URL: <a href="http://www.ietf.org/rfc/rfc2616.txt">http://www.ietf.org/rfc/rfc2616.txt</a> 
+</dd><dt id="bib-RFC2046">[RFC2046]</dt><dd>N. Freed; N. Borenstein. <a href="http://www.ietf.org/rfc/rfc2046.txt"><cite>Multipurpose Internet Mail Extensions (MIME) Part Two: Media Types.</cite></a> November 1996. Internet RFC 2046. URL: <a href="http://www.ietf.org/rfc/rfc2046.txt">http://www.ietf.org/rfc/rfc2046.txt</a> 
+</dd><dt id="bib-RFC2397">[RFC2397]</dt><dd>L. Masinter. <a href="http://www.ietf.org/rfc/rfc2397.txt"><cite>The "data" URL scheme.</cite></a> August 1998. Internet RFC 2397. URL: <a href="http://www.ietf.org/rfc/rfc2397.txt">http://www.ietf.org/rfc/rfc2397.txt</a> 
+</dd><dt id="bib-WEBWORKERS">[WEBWORKERS]</dt><dd>Ian Hickson. <a href="http://www.w3.org/TR/2011/WD-workers-20110310/"><cite>Web Workers.</cite></a> 10 March 2011. W3C Working Draft. (Work in progress.) URL: <a href="http://www.w3.org/TR/2011/WD-workers-20110310/">http://www.w3.org/TR/2011/WD-workers-20110310/</a> 
+</dd><dt id="bib-XMLHTTPREQUEST2">[XMLHTTPREQUEST2]</dt><dd>Anne van Kesteren. <a href="http://www.w3.org/TR/2008/WD-XMLHttpRequest2-20080930"><cite>XMLHttpRequest Level 2.</cite></a> 30 September 2008. W3C Working Draft. (Work in progress.) URL: <a href="http://www.w3.org/TR/2008/WD-XMLHttpRequest2-20080930">http://www.w3.org/TR/2008/WD-XMLHttpRequest2-20080930</a> 
+</dd></dl></div><div class="section" id="informative-references"><h3><span class="secno">B.2 </span>Informative references</h3><p>No informative references.</p></div></div></body></html>

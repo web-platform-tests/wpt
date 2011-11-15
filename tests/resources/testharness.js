@@ -688,12 +688,6 @@ policies and contribution forms [3].
     {
          var initial_value = object[property_name];
          try {
-             assert(delete object[property_name] === false,
-                    "assert_readonly", description,
-                    "deleting property ${p} succeeded", {p:property_name});
-             assert(object[property_name] === initial_value,
-                    "assert_readonly", description,
-                    "deleting property ${p} succeeded", {p:property_name});
              //Note that this can have side effects in the case where
              //the property has PutForwards
              object[property_name] = initial_value + "a"; //XXX use some other value here?

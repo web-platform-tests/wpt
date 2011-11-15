@@ -727,29 +727,39 @@ policies and contribution forms [3].
                 return;
             }
             var required_props = {};
-            var expected_type;
-            if (code in DOMException)
+            required_props.code = {
+                INDEX_SIZE_ERR: 1,
+                HIERARCHY_REQUEST_ERR: 3,
+                WRONG_DOCUMENT_ERR: 4,
+                INVALID_CHARACTER_ERR: 5,
+                NO_MODIFICATION_ALLOWED_ERR: 7,
+                NOT_FOUND_ERR: 8,
+                NOT_SUPPOTED_ERR: 9,
+                INVALID_STATE_ERR: 11,
+                SYNTAX_ERR: 12,
+                INVALID_MODIFICATION_ERR: 13,
+                NAMESPACE_ERR: 14,
+                INVALID_ACCESS_ERR: 15,
+                TYPE_MISMATCH_ERR: 17,
+                SECURITY_ERR: 18,
+                NETWORK_ERR: 19,
+                ABORT_ERR: 20,
+                URL_MISMATCH_ERR: 21,
+                QUOTA_EXCEEDED_ERR: 22,
+                TIMEOUT_ERR: 23,
+                INVALID_NODE_TYPE_ERR: 24,
+                DATA_CLONE_ERR: 25,
+            }[code];
+            if (required_props.code === undefined)
             {
-                expected_type = "DOMException";
-                required_props[code] = DOMException[code];
-                required_props.code = DOMException[code];
-                //Uncomment this when the latest version of every browser
-                //actually implements the spec; otherwise it just creates
-                //zillions of failures
-                //required_props.name = code;
+                throw new AssertionError('Test bug: unrecognized DOMException code "' + code + '" passed to assert_throws()');
             }
-            else if (code in RangeException)
-            {
-                expected_type = "RangeException";
-                required_props[code] = RangeException[code];
-                required_props.code = RangeException[code];
-                //As above
-                //required_props.name = code;
-            }
-            else
-            {
-                throw new AssertionError('Test bug: unrecognized code "' + code + '" passed to assert_throws()');
-            }
+            required_props[code] = required_props.code;
+            //Uncomment this when the latest version of every browser
+            //actually implements the spec; otherwise it just creates
+            //zillions of failures.  Also do required_props.type.
+            //required_props.name = code;
+            //
             //We'd like to test that e instanceof the appropriate interface,
             //but we can't, because we don't know what window it was created
             //in.  It might be an instanceof the appropriate interface on some
@@ -764,7 +774,7 @@ policies and contribution forms [3].
             {
                 assert(typeof e == "object" && prop in e && e[prop] == required_props[prop],
                        "assert_throws", description,
-                       "${func} threw ${e} that is not a " + expected_type + " " + code + ": property ${prop} is equal to ${actual}, expected ${expected}",
+                       "${func} threw ${e} that is not a DOMException " + code + ": property ${prop} is equal to ${actual}, expected ${expected}",
                        {func:func, e:e, prop:prop, actual:e[prop], expected:required_props[prop]});
             }
         }

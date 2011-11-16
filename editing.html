@@ -67,7 +67,7 @@ a code { text-decoration: underline }
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing APIs</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-15-november-2011>Work in Progress &mdash; Last Update 15 November 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-16-november-2011>Work in Progress &mdash; Last Update 16 November 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;<a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a>&gt;
@@ -1226,9 +1226,19 @@ interfaces defined in this specification.
   <a href=#selection>Selection</a> <a href=#dom-document-getselection title=dom-Document-getSelection>getSelection</a>();
 };</pre>
 
+<p class=comments>Originally Gecko returned the stringification here (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=636512">bug 636512</a> fixed
+that).  Now, what happens if you create a Document object with no defaultView
+(say via <code title="">document.implementation.createHTMLDocument("")</code>) and call
+<code title="">getSelection()</code> on it?  IE9 seems to return a different Selection
+object.  Firefox 9.0a2 and Opera 12.00 return the same object as for the
+current window.  Chrome 16 dev returns null.  We go with Firefox/Opera, since
+it's likely the oldest behavior and makes the most sense.  TODO: Is the wording
+about prototypes the best way to identify the correct global object?
+
 <p>The <dfn id=dom-document-getselection title=dom-Document-getSelection><code>getSelection()</code></dfn>
 method on the <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document>Document</a></code> interface must return the same
-<code><a href=#selection>Selection</a></code> object as its <code class=external data-anolis-spec=html title=dom-Document-defaultView><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#dom-document-defaultview>defaultView</a></code>'s <code title=dom-Window-getSelection><a href=#dom-window-getselection>getSelection()</a></code> method.
+<code><a href=#selection>Selection</a></code> object as calling <code title=dom-Window-getSelection><a href=#dom-window-getselection>getSelection()</a></code> on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#window>Window</a></code> object on which the <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document>Document</a></code>'s
+prototype resides.
 
 <pre class=idl>partial interface <a class=external data-anolis-spec=html href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#window>Window</a> {
   <a href=#selection>Selection</a> <a href=#dom-window-getselection title=dom-Window-getSelection>getSelection</a>();

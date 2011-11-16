@@ -1,0 +1,74 @@
+<!doctype html>
+<title>getSelection() tests</title>
+<div id=log></div>
+<script src=/resources/testharnessreport.js></script>
+<script src=/resources/testharness.js></script>
+<script>
+"use strict";
+
+test(function() {
+	// Sanity checks like this are to flag known browser bugs with clearer
+	// error messages, instead of throwing inscrutable exceptions.
+	assert_true("Selection" in window, "window must have Selection property");
+
+	assert_true(window.getSelection() instanceof Selection);
+}, "window.getSelection() instanceof Selection");
+
+test(function() {
+	assert_true("Selection" in window, "window must have Selection property");
+
+	assert_true(document.getSelection() instanceof Selection);
+}, "document.getSelection() instanceof Selection");
+
+test(function() {
+	assert_equals(window.getSelection(), document.getSelection());
+}, "window.getSelection() === document.getSelection()");
+
+test(function() {
+	assert_true("Selection" in window, "window must have Selection property");
+
+	var doc = document.implementation.createHTMLDocument("");
+	assert_true(doc.getSelection() instanceof Selection,
+		"getSelection() on HTML document with no browsing context must be instanceof Selection");
+	assert_equals(doc.getSelection(), document.getSelection(),
+		"getSelection() on HTML document with no browsing context must be same as the window");
+}, "HTML document with no browsing context");
+
+test(function() {
+	var xmlDoc = document.implementation.createDocument(null, "", null);
+
+	assert_true("getSelection" in xmlDoc, "XML document must have getSelection()");
+	assert_true("Selection" in window, "window must have Selection property");
+
+	assert_true(xmlDoc.getSelection() instanceof Selection,
+		"getSelection() on XML document with no browsing context must be instanceof Selection");
+	assert_equals(xmlDoc.getSelection(), document.getSelection(),
+		"getSelection() on XML document with no browsing context must be same as the window");
+}, "XML document with no browsing context");
+
+var iframe = document.createElement("iframe");
+document.body.appendChild(iframe);
+test(function() {
+	assert_true("Selection" in iframe.contentWindow, "window must have Selection property");
+
+	assert_true(iframe.contentWindow.getSelection() instanceof iframe.contentWindow.Selection,
+		"window.getSelection() instanceof Selection");
+	assert_true(iframe.contentDocument.getSelection() instanceof iframe.contentWindow.Selection,
+		"document.getSelection() instanceof Selection");
+	assert_equals(iframe.contentWindow.getSelection(), iframe.contentDocument.getSelection(),
+		"window.getSelection() === document.getSelection()");
+	assert_not_equals(iframe.contentWindow.getSelection(), getSelection(),
+		"getSelection() inside and outside iframe must return different objects");
+}, "In an iframe");
+
+test(function() {
+	assert_true("Selection" in iframe.contentWindow, "window must have Selection property");
+
+	var doc = iframe.contentDocument.implementation.createHTMLDocument("");
+	assert_true(doc.getSelection() instanceof iframe.contentWindow.Selection,
+		"getSelection() on HTML document with no browsing context must be instanceof Selection");
+	assert_equals(doc.getSelection(), iframe.contentDocument.getSelection(),
+		"getSelection() on HTML document with no browsing context must be same as the window");
+}, "HTML document with no browsing context inside an iframe");
+document.body.removeChild(iframe);
+</script>

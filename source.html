@@ -1176,11 +1176,22 @@ interfaces defined in this specification.
   <span>Selection</span> <span title=dom-Document-getSelection>getSelection</span>();
 };</pre>
 
+<p class=comments>Originally Gecko returned the stringification here (<a
+href=https://bugzilla.mozilla.org/show_bug.cgi?id=636512>bug 636512</a> fixed
+that).  Now, what happens if you create a Document object with no defaultView
+(say via {{code|document.implementation.createHTMLDocument("")}}) and call
+{{code|getSelection()}} on it?  IE9 seems to return a different Selection
+object.  Firefox 9.0a2 and Opera 12.00 return the same object as for the
+current window.  Chrome 16 dev returns null.  We go with Firefox/Opera, since
+it's likely the oldest behavior and makes the most sense.  TODO: Is the wording
+about prototypes the best way to identify the correct global object?
+
 <p>The <dfn title=dom-Document-getSelection><code>getSelection()</code></dfn>
 method on the [[document]] interface must return the same
-<code>Selection</code> object as its <code data-anolis-spec=html
-title=dom-Document-defaultView>defaultView</code>'s <code
-title=dom-Window-getSelection>getSelection()</code> method.
+<code>Selection</code> object as calling <code
+title=dom-Window-getSelection>getSelection()</code> on the <code
+data-anolis-spec=html>Window</code> object on which the [[document]]'s
+prototype resides.
 
 <pre class=idl>partial interface <span data-anolis-spec=html>Window</span> {
   <span>Selection</span> <span title=dom-Window-getSelection>getSelection</span>();

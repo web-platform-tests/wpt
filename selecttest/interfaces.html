@@ -8,7 +8,7 @@
 <script>
 "use strict";
 
-new IdlInterface('interface Selection {\n\
+var selectionInterface = new IdlInterface('interface Selection {\n\
   readonly attribute Node? anchorNode;\n\
   readonly attribute unsigned long anchorOffset;\n\
   readonly attribute Node? focusNode;\n\
@@ -32,5 +32,9 @@ new IdlInterface('interface Selection {\n\
   void               removeAllRanges();\n\
 \n\
   stringifier;\n\
-};').test();
+};');
+
+selectionInterface.test();
+selectionInterface.test_primary_interface_of(getSelection(), "getSelection()");
+selectionInterface.test_primary_interface_of(document.getSelection(), "document.getSelection()");
 </script>

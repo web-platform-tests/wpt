@@ -129,6 +129,9 @@ IdlInterface.prototype.test = function()
     }, this.name + " interface: existence and properties of interface object");
 
     test(function() {
+        assert_own_property(window, interface_obj.name,
+                            "window does not have own property " + format_value(interface_obj.name));
+
         //"The interface object must also have a property named “prototype”
         //with attributes { [[Writable]]: false, [[Enumerable]]: false,
         //[[Configurable]]: false } whose value is an object called the
@@ -174,6 +177,11 @@ IdlInterface.prototype.test = function()
     }, this.name + " interface: existence and properties of interface prototype object");
 
     test(function() {
+        assert_own_property(window, interface_obj.name,
+                            "window does not have own property " + format_value(interface_obj.name));
+        assert_own_property(window[interface_obj.name], "prototype",
+                            'interface "' + interface_obj.name + '" does not have own property "prototype"');
+
         //"If the [NoInterfaceObject] extended attribute was not specified on
         //the interface, then the interface prototype object must also have a
         //property named “constructor” with attributes { [[Writable]]: true,
@@ -197,6 +205,9 @@ IdlInterface.prototype.test = function()
         if (member.type == "const")
         {
             test(function() {
+                assert_own_property(window, interface_obj.name,
+                                    "window does not have own property " + format_value(interface_obj.name));
+
                 //"For each constant defined on an interface A, there must
                 //be a corresponding property on the interface object, if
                 //it exists."
@@ -216,6 +227,11 @@ IdlInterface.prototype.test = function()
             //"In addition, a property with the same characteristics must
             //exist on the interface prototype object."
             test(function() {
+                assert_own_property(window, interface_obj.name,
+                                    "window does not have own property " + format_value(interface_obj.name));
+                assert_own_property(window[interface_obj.name], "prototype",
+                                    'interface "' + interface_obj.name + '" does not have own property "prototype"');
+
                 assert_own_property(window[interface_obj.name].prototype, member.name);
                 assert_equals(window[interface_obj.name].prototype[member.name], eval(member.value),
                               "property has wrong value");
@@ -228,6 +244,11 @@ IdlInterface.prototype.test = function()
         else if (member.type == "attribute")
         {
             test(function() {
+                assert_own_property(window, interface_obj.name,
+                                    "window does not have own property " + format_value(interface_obj.name));
+                assert_own_property(window[interface_obj.name], "prototype",
+                                    'interface "' + interface_obj.name + '" does not have own property "prototype"');
+
                 //"For each attribute defined on the interface, there must
                 //exist a corresponding property. If the attribute was
                 //declared with the [Unforgeable] extended attribute, then
@@ -294,6 +315,11 @@ IdlInterface.prototype.test = function()
                 continue;
             }
             test(function() {
+                assert_own_property(window, interface_obj.name,
+                                    "window does not have own property " + format_value(interface_obj.name));
+                assert_own_property(window[interface_obj.name], "prototype",
+                                    'interface "' + interface_obj.name + '" does not have own property "prototype"');
+
                 //"For each unique identifier of an operation defined on
                 //the interface, there must be a corresponding property on
                 //the interface prototype object (if it is a regular

@@ -218,9 +218,6 @@ new IdlInterface('interface ProcessingInstruction : CharacterData {\n\
 new IdlInterface('interface Comment : CharacterData {\n\
 };').test();
 
-/*
-Invalid per WebIDL
-http://www.w3.org/Bugs/Public/show_bug.cgi?id=14843
 new IdlInterface('interface Range {\n\
   readonly attribute Node startContainer;\n\
   readonly attribute unsigned long startOffset;\n\
@@ -239,15 +236,17 @@ new IdlInterface('interface Range {\n\
   void selectNode(Node refNode);\n\
   void selectNodeContents(Node refNode);\n\
 \n\
-  enum CompareHow : unsigned short {\n\
-    START_TO_START = 0,\n\
-    START_TO_END   = 1,\n\
-    END_TO_END     = 2,\n\
-    END_TO_START   = 3\n\
-  };\n\
+  //Invalid per WebIDL\n\
+  //http://www.w3.org/Bugs/Public/show_bug.cgi?id=14843\n\
+  //enum CompareHow : unsigned short {\n\
+  //  START_TO_START = 0,\n\
+  //  START_TO_END   = 1,\n\
+  //  END_TO_END     = 2,\n\
+  //  END_TO_START   = 3\n\
+  //};\n\
 \n\
   short compareBoundaryPoints(CompareHow how, Range sourceRange);\n\
-  void deleteContents()\n\
+  void deleteContents();\n\
   DocumentFragment extractContents();\n\
   DocumentFragment cloneContents();\n\
   void insertNode(Node node);\n\
@@ -262,7 +261,6 @@ new IdlInterface('interface Range {\n\
 \n\
   stringifier;\n\
 };').test();
-*/
 
 new IdlInterface('interface NodeIterator {\n\
   readonly attribute Node root;\n\

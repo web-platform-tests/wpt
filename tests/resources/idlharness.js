@@ -86,6 +86,7 @@ window.IdlArray = function(raw_idls)
     this.objects = {};
     WebIDLParser.parse(raw_idls).forEach(function(parsed_idl)
     {
+        parsed_idl.array = this;
         if (parsed_idl.name in this.members)
         {
             throw "Duplicate identifier " + parsed_idl.name;
@@ -149,6 +150,113 @@ IdlArray.prototype.test = function()
         }
     }
 };
+
+IdlArray.prototype.assert_type_is = function(value, type)
+{
+    if (type.idlType == "any")
+    {
+        //No assertions to make
+        return;
+    }
+
+    if (type.nullable && value === null)
+    {
+        //This is fine
+        return;
+    }
+
+    if (type.sequence)
+    {
+        //TODO: not supported yet
+        return;
+    }
+
+    if (type.sequence)
+    {
+        assert_true(Array.isArray(value), "is not array");
+        if (!type.idlType.length)
+        {
+            return;
+        }
+        type = type.idlType[0];
+    }
+    else
+    {
+        type = type.idlType;
+    }
+
+    switch(type)
+    {
+        case "void":
+            assert_equals(value, undefined);
+            return;
+
+        case "boolean":
+            assert_equals(typeof value, "boolean");
+            return;
+
+        case "byte":
+            assert_equals(typeof value, "number");
+            assert_equals(value, Math.floor(value), "not an integer");
+            assert_true(-128 <= value && value <= 127, "byte not in range [-128, 127]");
+            return;
+
+        case "octet":
+            assert_equals(typeof value, "number");
+            assert_equals(value, Math.floor(value), "not an integer");
+            assert_true(0 <= value && value <= 255, "octet not in range [0, 255]");
+            return;
+
+        case "short":
+            assert_equals(typeof value, "number");
+            assert_equals(value, Math.floor(value), "not an integer");
+            assert_true(-32768 <= value && value <= 32767, "short not in range [-32768, 32767]");
+            return;
+
+        case "unsigned short":
+            assert_equals(typeof value, "number");
+            assert_equals(value, Math.floor(value), "not an integer");
+            assert_true(0 <= value && value <= 65535, "unsigned short not in range [0, 65535]");
+            return;
+
+        case "long":
+            assert_equals(typeof value, "number");
+            assert_equals(value, Math.floor(value), "not an integer");
+            assert_true(-2147483648 <= value && value <= 2147483647, "long not in range [-2147483648, 2147483647]");
+            return;
+
+        case "unsigned long":
+            assert_equals(typeof value, "number");
+            assert_equals(value, Math.floor(value), "not an integer");
+            assert_true(0 <= value && value <= 4294967295, "unsigned long not in range [0, 4294967295]");
+            return;
+
+        case "long long":
+            assert_equals(typeof value, "number");
+            return;
+
+        case "unsigned long long":
+            assert_equals(typeof value, "number");
+            assert_true(0 <= value, "unsigned long long is negative");
+            return;
+
+        case "float":
+        case "double":
+            //TODO: distinguish these cases
+            assert_equals(typeof value, "number");
+            return;
+
+        case "DOMString":
+            assert_equals(typeof value, "string");
+            return;
+
+        case "object":
+            assert_true(typeof value == "object" || typeof value == "function", "not object or function");
+            return;
+    }
+
+    //TODO: interface and dictionary
+};
 //@}
 
 /// IdlException ///
@@ -169,6 +277,7 @@ IdlException.prototype.test = function()
 function IdlInterface(obj)
 {
     this.name = obj.name;
+    this.array = obj.array;
     this.extAttrs = obj.extAttrs ? obj.extAttrs : [];
     this.members = obj.members ? obj.members.map(function(m){return new IdlInterfaceMember(m)}) : [];
     this.inheritance = obj.inheritance ? obj.inheritance : [];
@@ -468,6 +577,7 @@ IdlInterface.prototype.test = function()
                     "property has wrong .length");
             }.bind(this), this.name + " interface: operation " + member.name);
         }
+        //TODO: check more member types, like stringifier
     }
 }
 
@@ -544,17 +654,17 @@ IdlInterface.prototype.test_interface_of = function(desc)
             {
                 assert_equals(exception, null, "Unexpected exception when evaluating object");
                 assert_inherits(obj, member.name);
+                if (member.type == "const")
+                {
+                    assert_equals(obj[member.name], eval(member.value));
+                }
+                if (member.type == "attribute")
+                {
+                    this.array.assert_type_is(obj[member.name], member.idlType);
+                }
                 if (member.type == "operation")
                 {
                     assert_equals(typeof obj[member.name], "function");
-                }
-                else if (member.type == "const" || member.type == "attribute")
-                {
-                    var expected_type = idl_typeof(member.idlType.idlType);
-                    if ((!member.idlType.nullable || obj[member.name] !== null) && expected_type)
-                    {
-                        assert_equals(typeof obj[member.name], idl_typeof(member.idlType.idlType));
-                    }
                 }
             }.bind(this), this.name + " interface: " + desc + ' must inherit property "' + member.name + '" with the proper type');
         }
@@ -619,27 +729,6 @@ IdlInterfaceMember.prototype.has_extended_attribute = function(name)
 
 /// Internal helper functions ///
 //@{
-function idl_typeof(idl_type)
-{
-    switch (idl_type)
-    {
-        case "boolean":
-            return "boolean";
-
-        case "byte": case "octet": case "short": case "unsigned short":
-        case "long": case "unsigned long": case "long long":
-        case "unsigned long long": case "float": case "double":
-            return "number";
-
-        case "DOMString":
-            return "string";
-
-        case "object":
-            return "object";
-    }
-    return undefined;
-}
-
 function create_suitable_object(type)
 {
     if (type.nullable)

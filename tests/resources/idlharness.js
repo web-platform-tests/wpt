@@ -330,7 +330,7 @@ IdlInterface.prototype.has_extended_attribute = function(name)
 {
     return this.extAttrs.some(function(o)
     {
-        return o.name == "name";
+        return o.name == name;
     });
 };
 
@@ -377,13 +377,16 @@ IdlInterface.prototype.test = function()
                     "prototype of window's property " + format_value(this.name) + " is not Object.prototype");
         //"Its [[Get]] internal property is set as described in ECMA-262
         //section 15.3.5.4."
+        //Not much to test for this.
         //"Its [[Construct]] internal property is set as described in ECMA-262
         //section 13.2.2."
-        //TODO: I'm not sure how to test these.
+        //Tested below if no constructor is defined.  TODO: test constructors
+        //if defined.
         //"Its [[HasInstance]] internal property is set as described in
         //ECMA-262 section 15.3.5.3, unless otherwise specified."
         //This needs to be tested in some other assertion that takes an object
         //that's supposed to be an instance of the interface.
+
 
         //"The [[Class]] property of the interface object must be the
         //identifier of the interface."
@@ -393,7 +396,56 @@ IdlInterface.prototype.test = function()
                       "{}.toString.call(" + this.name + ")");
         assert_equals(String(window[this.name]), "[object " + this.name + "]",
                       "String(" + this.name + ")");
+
+        if (!this.has_extended_attribute("Constructor"))
+        {
+            //"The internal [[Call]] method of the interface object behaves as
+            //follows . . .
+            //
+            //"If I was not declared with a [Constructor] extended attribute,
+            //then throw a TypeError."
+            assert_throws(new TypeError(), function()
+            {
+                window[this.name]();
+            }, "interface object didn't throw TypeError when called as a function");
+            assert_throws(new TypeError(), function()
+            {
+                new window[this.name]();
+            }, "interface object didn't throw TypeError when called as a constructor");
+        }
     }.bind(this), this.name + " interface: existence and properties of interface object");
+
+    if (this.has_extended_attribute("Constructor"))
+    {
+        test(function()
+        {
+            assert_own_property(window, this.name,
+                                "window does not have own property " + format_value(this.name));
+
+            //"Interface objects for interfaces declared with a [Constructor]
+            //extended attribute must have a property named “length” with
+            //attributes { [[Writable]]: false, [[Enumerable]]: false,
+            //[[Configurable]]: false } whose value is a Number determined as
+            //follows: . . .
+            //"Return the maximum argument list length of the constructors in
+            //the entries of S."
+            //TODO: Variadic constructors.  Should generalize this so that it
+            //works for testing operation length too (currently we just don't
+            //support multiple operations with the same identifier).
+            var expected_length = this.extAttrs
+                .filter(function(attr) { return attr.name == "Constructor" })
+                .map(function(attr) { return attr.arguments.length })
+                .reduce(function(m, n) { return Math.max(m, n) });
+            assert_own_property(window[this.name], "length");
+            assert_equals(window[this.name].length, expected_length, "wrong value for " + this.name + ".length");
+            var desc = Object.getOwnPropertyDescriptor(window[this.name], "length");
+            assert_false(desc.writable, this.name + ".length is writable");
+            assert_false(desc.enumerable, this.name + ".length is enumerable");
+            assert_false(desc.configurable, this.name + ".length is configurable");
+        }.bind(this), this.name + " interface constructor");
+    }
+
+    //TODO: Test named constructors if I find any interfaces that have them.
 
     test(function()
     {
@@ -792,7 +844,7 @@ IdlInterfaceMember.prototype.has_extended_attribute = function(name)
 {
     return this.extAttrs.some(function(o)
     {
-        return o.name == "name";
+        return o.name == name;
     });
 };
 //@}

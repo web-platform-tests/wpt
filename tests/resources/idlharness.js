@@ -102,7 +102,9 @@ window.IdlArray = function(raw_idls)
             break;
 
         case "dictionary":
-            //Nothing to test
+            //Nothing to test, but we need the dictionary info around for type
+            //checks
+            this.members[parsed_idl.name] = new IdlDictionary(parsed_idl);
             break;
 
         default:
@@ -165,7 +167,7 @@ IdlArray.prototype.assert_type_is = function(value, type)
         return;
     }
 
-    if (type.sequence)
+    if (type.array)
     {
         //TODO: not supported yet
         return;
@@ -255,8 +257,49 @@ IdlArray.prototype.assert_type_is = function(value, type)
             return;
     }
 
-    //TODO: interface and dictionary
+    if (!(type in this.members))
+    {
+        throw "Unrecognized type " + type;
+    }
+
+    if (this.members[type] instanceof IdlInterface)
+    {
+        //We don't want to run the full
+        //IdlInterface.prototype.test_instance_of, because that could result in
+        //an infinite loop.  TODO: This means we don't have tests for
+        //NoInterfaceObject interfaces, and we also can't test objects that
+        //come from another window.
+        assert_true(typeof value == "object" || typeof value == "function", "not object or function");
+        if (value instanceof Object
+        && !this.members[type].has_extended_attribute("NoInterfaceObject"))
+        {
+            assert_true(value instanceof window[type], "not instanceof " + type);
+        }
+    }
+    else if (this.members[type] instanceof IdlDictionary)
+    {
+        //TODO: Test when we actually have something to test this on
+    }
+    else
+    {
+        throw "Type " + type + " isn't an interface or dictionary";
+    }
 };
+//@}
+
+/// IdlDictionary ///
+//@{
+//Used for IdlArray.prototype.assert_type_is
+function IdlDictionary(obj)
+{
+    this.name = obj.name;
+    this.members = obj.members ? obj.members : [];
+    this.inheritance = obj.inheritance ? obj.inheritance: [];
+}
+
+IdlDictionary.prototype.test = function()
+{
+}
 //@}
 
 /// IdlException ///
@@ -344,6 +387,10 @@ IdlInterface.prototype.test = function()
 
         //"The [[Class]] property of the interface object must be the
         //identifier of the interface."
+        //String() and {}.toString.call() should be equivalent, since nothing
+        //defines a stringifier.
+        assert_equals({}.toString.call(window[this.name]), "[object " + this.name + "]",
+                      "{}.toString.call(" + this.name + ")");
         assert_equals(String(window[this.name]), "[object " + this.name + "]",
                       "String(" + this.name + ")");
     }.bind(this), this.name + " interface: existence and properties of interface object");
@@ -395,6 +442,8 @@ IdlInterface.prototype.test = function()
                             'should inherit from ' + inherit_interface + ', but that object has no "prototype" property');
         assert_true(window[inherit_interface].prototype.isPrototypeOf(window[this.name].prototype),
                     'prototype of ' + this.name + '.prototype is not ' + inherit_interface + '.prototype');
+        //TODO: test [[Class]] once that's defined
+        //http://www.w3.org/Bugs/Public/show_bug.cgi?id=14877
     }.bind(this), this.name + " interface: existence and properties of interface prototype object");
 
     test(function()
@@ -593,31 +642,52 @@ IdlInterface.prototype.test_primary_interface_of = function(desc)
         exception = e;
     }
 
-    var interface_name = this.name;
+    //TODO: WebIDLParser doesn't currently support named legacycallers, so I'm
+    //not sure what those would look like in the AST
+    var expected_typeof = this.members.some(function(member)
+    {
+        return member.legacycaller
+            || ("idlType" in member && member.idlType.legacycaller)
+            || ("idlType" in member && typeof member.idlType == "object"
+            && "idlType" in member.idlType && member.idlType.idlType == "legacycaller");
+    }) ? "function" : "object";
 
-    if (!this.has_extended_attribute("NoInterfaceObject"))
+    //We can't easily test that its prototype is correct if there's no
+    //interface object, or the object is from a different global environment
+    //(not instanceof Object).  TODO: test in this case that its prototype at
+    //least looks correct, even if we can't test that it's actually correct.
+    if (!this.has_extended_attribute("NoInterfaceObject")
+    && (typeof obj != expected_typeof || obj instanceof Object))
     {
         test(function()
         {
-            assert_own_property(window, interface_name,
-                                "window does not have own property " + format_value(interface_name));
-            assert_own_property(window[interface_name], "prototype",
-                                'interface "' + interface_name + '" does not have own property "prototype"');
+            assert_own_property(window, this.name,
+                                "window does not have own property " + format_value(this.name));
+            assert_own_property(window[this.name], "prototype",
+                                'interface "' + this.name + '" does not have own property "prototype"');
             assert_equals(exception, null, "Unexpected exception when evaluating object");
-            assert_equals(typeof obj, "object", "provided value is not an object");
+            assert_equals(typeof obj, expected_typeof, "wrong typeof object");
 
             //"The value of the internal [[Prototype]] property of the platform
             //object is the interface prototype object of the primary interface
             //from the platform object’s associated global environment."
-            assert_true(window[interface_name].prototype.isPrototypeOf(obj),
-                desc + "'s prototype is not " + interface_name + ".prototype");
-
-        }.bind(this), interface_name + " must be primary interface of " + desc);
+            assert_true(window[this.name].prototype.isPrototypeOf(obj),
+                desc + "'s prototype is not " + this.name + ".prototype");
+        }.bind(this), this.name + " must be primary interface of " + desc);
     }
 
-    //TODO: "The value of the internal [[Class]] property of a platform object
-    //that implements one or more interfaces must be the identifier of the
-    //primary interface of the platform object."
+    //"The value of the internal [[Class]] property of a platform object that
+    //implements one or more interfaces must be the identifier of the primary
+    //interface of the platform object."
+    test(function()
+    {
+        assert_equals(exception, null, "Unexpected exception when evaluating object");
+        assert_equals({}.toString.call(obj), "[object " + this.name + "]", "{}.toString.call(" + desc + ")");
+        if (!this.members.some(function(member) { return member.stringifier || member.type == "stringifier"}))
+        {
+            assert_equals(String(obj), "[object " + this.name + "]", "String(" + desc + ")");
+        }
+    }.bind(this), "Stringification of " + desc);
 };
 
 IdlInterface.prototype.test_interface_of = function(desc)

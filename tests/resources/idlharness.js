@@ -74,6 +74,9 @@ policies and contribution forms [3].
  * be careful what objects you pass.
  *
  * TODO: Partial interface support is essential.
+ * TODO: Write assert_writable, assert_enumerable, assert_configurable and
+ * their inverses, and use those instead of just checking
+ * getOwnPropertyDescriptor.
  */
 "use strict";
 (function(){
@@ -200,37 +203,37 @@ IdlArray.prototype.assert_type_is = function(value, type)
         case "byte":
             assert_equals(typeof value, "number");
             assert_equals(value, Math.floor(value), "not an integer");
-            assert_true(-128 <= value && value <= 127, "byte not in range [-128, 127]");
+            assert_true(-128 <= value && value <= 127, "byte " + value + " not in range [-128, 127]");
             return;
 
         case "octet":
             assert_equals(typeof value, "number");
             assert_equals(value, Math.floor(value), "not an integer");
-            assert_true(0 <= value && value <= 255, "octet not in range [0, 255]");
+            assert_true(0 <= value && value <= 255, "octet " + value + " not in range [0, 255]");
             return;
 
         case "short":
             assert_equals(typeof value, "number");
             assert_equals(value, Math.floor(value), "not an integer");
-            assert_true(-32768 <= value && value <= 32767, "short not in range [-32768, 32767]");
+            assert_true(-32768 <= value && value <= 32767, "short " + value + " not in range [-32768, 32767]");
             return;
 
         case "unsigned short":
             assert_equals(typeof value, "number");
             assert_equals(value, Math.floor(value), "not an integer");
-            assert_true(0 <= value && value <= 65535, "unsigned short not in range [0, 65535]");
+            assert_true(0 <= value && value <= 65535, "unsigned short " + value + " not in range [0, 65535]");
             return;
 
         case "long":
             assert_equals(typeof value, "number");
             assert_equals(value, Math.floor(value), "not an integer");
-            assert_true(-2147483648 <= value && value <= 2147483647, "long not in range [-2147483648, 2147483647]");
+            assert_true(-2147483648 <= value && value <= 2147483647, "long " + value + " not in range [-2147483648, 2147483647]");
             return;
 
         case "unsigned long":
             assert_equals(typeof value, "number");
             assert_equals(value, Math.floor(value), "not an integer");
-            assert_true(0 <= value && value <= 4294967295, "unsigned long not in range [0, 4294967295]");
+            assert_true(0 <= value && value <= 4294967295, "unsigned long " + value + " not in range [0, 4294967295]");
             return;
 
         case "long long":
@@ -287,6 +290,21 @@ IdlArray.prototype.assert_type_is = function(value, type)
 };
 //@}
 
+/// IdlObject ///
+//@{
+function IdlObject() {}
+
+IdlObject.prototype.has_extended_attribute = function(name)
+{
+    return this.extAttrs.some(function(o)
+    {
+        return o.name == name;
+    });
+};
+
+IdlObject.prototype.test = function() {};
+//@}
+
 /// IdlDictionary ///
 //@{
 //Used for IdlArray.prototype.assert_type_is
@@ -297,21 +315,268 @@ function IdlDictionary(obj)
     this.inheritance = obj.inheritance ? obj.inheritance: [];
 }
 
-IdlDictionary.prototype.test = function()
-{
-}
+IdlDictionary.prototype = Object.create(IdlObject.prototype);
 //@}
 
 /// IdlException ///
 //@{
-//TODO
 function IdlException(obj)
 {
     this.name = obj.name;
+    this.array = obj.array;
+    this.extAttrs = obj.extAttrs ? obj.extAttrs : [];
+    this.members = obj.members ? obj.members.map(function(m){return new IdlInterfaceMember(m)}) : [];
+    this.inheritance = obj.inheritance ? obj.inheritance : [];
 }
+
+IdlException.prototype = Object.create(IdlObject.prototype);
 
 IdlException.prototype.test = function()
 {
+    // Note: largely copy-pasted from IdlInterface, but then, so is the spec
+    // text.
+    if (this.has_extended_attribute("NoInterfaceObject"))
+    {
+        //No tests to do without an instance
+        return;
+    }
+
+    test(function()
+    {
+        //"For every exception that is not declared with the
+        //[NoInterfaceObject] extended attribute, a corresponding property must
+        //exist on the exception’s relevant namespace object. The name of the
+        //property is the identifier of the exception, and its value is an
+        //object called the exception interface object, which provides access
+        //to any constants that have been associated with the exception. The
+        //property has the attributes { [[Writable]]: true, [[Enumerable]]:
+        //false, [[Configurable]]: true }."
+        assert_own_property(window, this.name,
+                            "window does not have own property " + format_value(this.name));
+        var desc = Object.getOwnPropertyDescriptor(window, this.name);
+        assert_false("get" in desc, "window's property " + format_value(this.name) + " has getter");
+        assert_false("set" in desc, "window's property " + format_value(this.name) + " has setter");
+        assert_true(desc.writable, "window's property " + format_value(this.name) + " is not writable");
+        assert_false(desc.enumerable, "window's property " + format_value(this.name) + " is enumerable");
+        assert_true(desc.configurable, "window's property " + format_value(this.name) + " is not configurable");
+
+        //"The exception interface object for a given exception must be a
+        //function object."
+        //"If an object is defined to be a function object, then it has
+        //characteristics as follows:"
+        //"Its [[Prototype]] internal property is the Function prototype
+        //object."
+        //FIXME: The spec is wrong, has to be Object.prototype and not
+        //Function.prototype.  I test for how browsers actually behave,
+        //assuming the bug will be fixed:
+        //http://www.w3.org/Bugs/Public/show_bug.cgi?id=14813
+        assert_true(Object.prototype.isPrototypeOf(window[this.name]),
+                    "prototype of window's property " + format_value(this.name) + " is not Object.prototype");
+        //"Its [[Get]] internal property is set as described in ECMA-262
+        //section 15.3.5.4."
+        //Not much to test for this.
+        //"Its [[Construct]] internal property is set as described in ECMA-262
+        //section 13.2.2."
+        //Tested below.
+        //"Its [[HasInstance]] internal property is set as described in
+        //ECMA-262 section 15.3.5.3, unless otherwise specified."
+        //TODO
+
+        //TODO: test [[Class]] once that's defined
+        //http://www.w3.org/Bugs/Public/show_bug.cgi?id=14877
+
+        //TODO: 4.9.1.1. Exception interface object [[Call]] method does not
+        //match browsers http://www.w3.org/Bugs/Public/show_bug.cgi?id=14885
+    }.bind(this), this.name + " exception: existence and properties of exception interface object");
+
+    test(function()
+    {
+        assert_own_property(window, this.name,
+                            "window does not have own property " + format_value(this.name));
+
+        //"The exception interface object must also have a property named
+        //“prototype” with attributes { [[Writable]]: false, [[Enumerable]]:
+        //false, [[Configurable]]: false } whose value is an object called the
+        //exception interface prototype object. This object also provides
+        //access to the constants that are declared on the exception."
+        assert_own_property(window[this.name], "prototype",
+                            'exception "' + this.name + '" does not have own property "prototype"');
+        var desc = Object.getOwnPropertyDescriptor(window[this.name], "prototype");
+        assert_false("get" in desc, this.name + ".prototype has getter");
+        assert_false("set" in desc, this.name + ".prototype has setter");
+        assert_false(desc.writable, this.name + ".prototype is writable");
+        assert_false(desc.enumerable, this.name + ".prototype is enumerable");
+        assert_false(desc.configurable, this.name + ".prototype is configurable");
+
+        //"The exception interface prototype object for a given exception must
+        //have an internal [[Prototype]] property whose value is as follows:
+        //
+        //"If the exception is declared to inherit from another exception, then
+        //the value of the internal [[Prototype]] property is the exception
+        //interface prototype object for the inherited exception.
+        //"Otherwise, the exception is not declared to inherit from another
+        //exception. The value of the internal [[Prototype]] property is the
+        //Error prototype object ([ECMA-262], section 15.11.3.1)."
+        //TODO: Implementations inherit from Object, not Error.  I test for how
+        //browsers behave, assuming the spec will change.
+        //http://www.w3.org/Bugs/Public/show_bug.cgi?id=14887
+        var inherit_exception = this.inheritance.length ? this.inheritance[0] : "Object";
+        assert_own_property(window, inherit_exception,
+                            'should inherit from ' + inherit_exception + ', but window has no such property');
+        assert_own_property(window[inherit_exception], "prototype",
+                            'should inherit from ' + inherit_exception + ', but that object has no "prototype" property');
+        assert_true(window[inherit_exception].prototype.isPrototypeOf(window[this.name].prototype),
+                    'prototype of ' + this.name + '.prototype is not ' + inherit_exception + '.prototype');
+
+        //TODO: test [[Class]] once that's defined
+        //http://www.w3.org/Bugs/Public/show_bug.cgi?id=14877
+    }.bind(this), this.name + " exception: existence and properties of exception interface prototype object");
+
+    test(function()
+    {
+        assert_own_property(window, this.name,
+                            "window does not have own property " + format_value(this.name));
+        assert_own_property(window[this.name], "prototype",
+                            'interface "' + this.name + '" does not have own property "prototype"');
+
+        //"There must be a property named “name” on the exception interface
+        //prototype object with attributes { [[Writable]]: true,
+        //[[Enumerable]]: false, [[Configurable]]: true } and whose value is
+        //the identifier of the exception."
+        assert_own_property(window[this.name].prototype, "name",
+                'prototype object does not have own property "name"');
+        var desc = Object.getOwnPropertyDescriptor(window[this.name].prototype, "name");
+        assert_false("get" in desc, this.name + ".prototype.name has getter");
+        assert_false("set" in desc, this.name + ".prototype.name has setter");
+        assert_true(desc.writable, this.name + ".prototype.name is not writable");
+        assert_false(desc.enumerable, this.name + ".prototype.name is enumerable");
+        assert_true(desc.configurable, this.name + ".prototype.name is not configurable");
+        assert_equals(desc.value, this.name, this.name + ".prototype.name has incorrect value");
+    }.bind(this), this.name + " exception: existence and properties of exception interface prototype object's \"name\" property");
+
+    test(function()
+    {
+        assert_own_property(window, this.name,
+                            "window does not have own property " + format_value(this.name));
+        assert_own_property(window[this.name], "prototype",
+                            'interface "' + this.name + '" does not have own property "prototype"');
+
+        //"If the [NoInterfaceObject] extended attribute was not specified on
+        //the exception, then there must also be a property named “constructor”
+        //on the exception interface prototype object with attributes {
+        //[[Writable]]: true, [[Enumerable]]: false, [[Configurable]]: true }
+        //and whose value is a reference to the exception interface object for
+        //the exception."
+        assert_own_property(window[this.name].prototype, "constructor",
+                            this.name + '.prototype does not have own property "constructor"');
+        var desc = Object.getOwnPropertyDescriptor(window[this.name].prototype, "constructor");
+        assert_false("get" in desc, this.name + ".prototype.constructor has getter");
+        assert_false("set" in desc, this.name + ".prototype.constructor has setter");
+        assert_true(desc.writable, this.name + ".prototype.constructor is not writable");
+        assert_false(desc.enumerable, this.name + ".prototype.constructor is enumerable");
+        assert_true(desc.configurable, this.name + ".prototype.constructor in not configurable");
+        assert_equals(window[this.name].prototype.constructor, window[this.name],
+                      this.name + '.prototype.constructor is not the same object as ' + this.name);
+    }.bind(this), this.name + " exception: existence and properties of exception interface prototype object's \"constructor\" property");
+
+    for (var i = 0; i < this.members.length; i++)
+    {
+        var member = this.members[i];
+        if (member.type == "const" && member.name != "prototype")
+        {
+            test(function()
+            {
+                assert_own_property(window, this.name,
+                                    "window does not have own property " + format_value(this.name));
+
+                //"For each constant defined on the exception, there must be a
+                //corresponding property on the exception interface object, if
+                //it exists, if the identifier of the constant is not
+                //“prototype”."
+                assert_own_property(window[this.name], member.name);
+                //"The value of the property is the ECMAScript value that is
+                //equivalent to the constant’s IDL value, according to the
+                //rules in section 4.2 above."
+                assert_equals(window[this.name][member.name], eval(member.value),
+                              "property has wrong value");
+                //"The property has attributes { [[Writable]]: false,
+                //[[Enumerable]]: true, [[Configurable]]: false }."
+                var desc = Object.getOwnPropertyDescriptor(window[this.name], member.name);
+                assert_false("get" in desc, "property has getter");
+                assert_false("set" in desc, "property has setter");
+                assert_false(desc.writable, "property is writable");
+                assert_true(desc.enumerable, "property is not enumerable");
+                assert_false(desc.configurable, "property is configurable");
+            }.bind(this), this.name + " exception: constant " + member.name + " on exception interface object");
+            //"In addition, a property with the same characteristics must
+            //exist on the exception interface prototype object."
+            test(function()
+            {
+                assert_own_property(window, this.name,
+                                    "window does not have own property " + format_value(this.name));
+                assert_own_property(window[this.name], "prototype",
+                                    'exception "' + this.name + '" does not have own property "prototype"');
+
+                assert_own_property(window[this.name].prototype, member.name);
+                assert_equals(window[this.name].prototype[member.name], eval(member.value),
+                              "property has wrong value");
+                var desc = Object.getOwnPropertyDescriptor(window[this.name].prototype, member.name);
+                assert_false("get" in desc, "property has getter");
+                assert_false("set" in desc, "property has setter");
+                assert_false(desc.writable, "property is writable");
+                assert_true(desc.enumerable, "property is not enumerable");
+                assert_false(desc.configurable, "property is configurable");
+            }.bind(this), this.name + " exception: constant " + member.name + " on exception interface prototype object");
+        }
+        else if (member.type == "field")
+        {
+            test(function()
+            {
+                assert_own_property(window, this.name,
+                                    "window does not have own property " + format_value(this.name));
+                assert_own_property(window[this.name], "prototype",
+                                    'exception "' + this.name + '" does not have own property "prototype"');
+
+                //"For each exception field, there must be a corresponding
+                //property on the exception interface prototype object, whose
+                //characteristics are as follows:
+                //"The name of the property is the identifier of the exception
+                //field."
+                assert_own_property(window[this.name].prototype, member.name);
+                //"The property has attributes { [[Get]]: G, [[Enumerable]]:
+                //true, [[Configurable]]: true }, where G is the exception
+                //field getter, defined below."
+                var desc = Object.getOwnPropertyDescriptor(window[this.name].prototype, member.name);
+                assert_false("value" in desc, "property has value");
+                assert_false("writable" in desc, 'property has "writable" field');
+                //TODO: ES5 doesn't seem to say whether desc should have a .set
+                //property.
+                assert_true(desc.enumerable, "property is not enumerable");
+                assert_true(desc.configurable, "property is not configurable");
+                //"The exception field getter is a Function object whose
+                //behavior when invoked is as follows:"
+                assert_equals(typeof desc.get, "function", "typeof getter");
+                //"The value of the Function object’s “length” property is the
+                //Number value 0."
+                //This test is before the TypeError tests so that it's easiest
+                //to see that Firefox 11a1 only fails one assert in this test.
+                assert_equals(desc.get.length, 0, "getter length");
+                //"Let O be the result of calling ToObject on the this value.
+                //"If O is not a platform object representing an exception for
+                //the exception on which the exception field was declared, then
+                //throw a TypeError."
+                //TODO: Test on a platform object representing an exception.
+                assert_throws(new TypeError(), function()
+                {
+                    window[this.name].prototype[member.name];
+                }, "getting property on prototype object must throw TypeError");
+                assert_throws(new TypeError(), function()
+                {
+                    desc.get.call({});
+                }, "calling getter on wrong object type must throw TypeError");
+            }.bind(this), this.name + " exception: field " + member.name + " on exception interface prototype object");
+        }
+    }
 }
 //@}
 
@@ -326,13 +591,7 @@ function IdlInterface(obj)
     this.inheritance = obj.inheritance ? obj.inheritance : [];
 }
 
-IdlInterface.prototype.has_extended_attribute = function(name)
-{
-    return this.extAttrs.some(function(o)
-    {
-        return o.name == name;
-    });
-};
+IdlInterface.prototype = Object.create(IdlObject.prototype);
 
 IdlInterface.prototype.test = function()
 {
@@ -357,12 +616,12 @@ IdlInterface.prototype.test = function()
         //etc., or trust getOwnPropertyDescriptor?
         assert_own_property(window, this.name,
                             "window does not have own property " + format_value(this.name));
-        assert_true(Object.getOwnPropertyDescriptor(window, this.name).writable,
-                    "window's property " + format_value(this.name) + " is not writable");
-        assert_false(Object.getOwnPropertyDescriptor(window, this.name).enumerable,
-                     "window's property " + format_value(this.name) + " is enumerable");
-        assert_true(Object.getOwnPropertyDescriptor(window, this.name).configurable,
-                    "window's property " + format_value(this.name) + " is not configurable");
+        var desc = Object.getOwnPropertyDescriptor(window, this.name);
+        assert_false("get" in desc, "window's property " + format_value(this.name) + " has getter");
+        assert_false("set" in desc, "window's property " + format_value(this.name) + " has setter");
+        assert_true(desc.writable, "window's property " + format_value(this.name) + " is not writable");
+        assert_false(desc.enumerable, "window's property " + format_value(this.name) + " is enumerable");
+        assert_true(desc.configurable, "window's property " + format_value(this.name) + " is not configurable");
 
         //"Interface objects are always function objects."
         //"If an object is defined to be a function object, then it has
@@ -384,9 +643,7 @@ IdlInterface.prototype.test = function()
         //if defined.
         //"Its [[HasInstance]] internal property is set as described in
         //ECMA-262 section 15.3.5.3, unless otherwise specified."
-        //This needs to be tested in some other assertion that takes an object
-        //that's supposed to be an instance of the interface.
-
+        //TODO
 
         //"The [[Class]] property of the interface object must be the
         //identifier of the interface."
@@ -461,6 +718,8 @@ IdlInterface.prototype.test = function()
         assert_own_property(window[this.name], "prototype",
                             'interface "' + this.name + '" does not have own property "prototype"');
         var desc = Object.getOwnPropertyDescriptor(window[this.name], "prototype");
+        assert_false("get" in desc, this.name + ".prototype has getter");
+        assert_false("set" in desc, this.name + ".prototype has setter");
         assert_false(desc.writable, this.name + ".prototype is writable");
         assert_false(desc.enumerable, this.name + ".prototype is enumerable");
         assert_false(desc.configurable, this.name + ".prototype is configurable");
@@ -512,15 +771,15 @@ IdlInterface.prototype.test = function()
         //reference to the interface object for the interface."
         assert_own_property(window[this.name].prototype, "constructor",
                             this.name + '.prototype does not have own property "constructor"');
-        assert_true(Object.getOwnPropertyDescriptor(window[this.name].prototype, "constructor").writable,
-                    this.name + ".prototype.constructor is not writable");
-        assert_false(Object.getOwnPropertyDescriptor(window[this.name].prototype, "constructor").enumerable,
-                     this.name + ".prototype.constructor is enumerable");
-        assert_true(Object.getOwnPropertyDescriptor(window[this.name].prototype, "constructor").configurable,
-                    this.name + ".prototype.constructor in not configurable");
+        var desc = Object.getOwnPropertyDescriptor(window[this.name].prototype, "constructor");
+        assert_false("get" in desc, this.name + ".prototype.constructor has getter");
+        assert_false("set" in desc, this.name + ".prototype.constructor has setter");
+        assert_true(desc.writable, this.name + ".prototype.constructor is not writable");
+        assert_false(desc.enumerable, this.name + ".prototype.constructor is enumerable");
+        assert_true(desc.configurable, this.name + ".prototype.constructor in not configurable");
         assert_equals(window[this.name].prototype.constructor, window[this.name],
                       this.name + '.prototype.constructor is not the same object as ' + this.name);
-    }.bind(this), this.name + " interface: existence and properties of interface prototype's object constructor member");
+    }.bind(this), this.name + ' interface: existence and properties of interface prototype object\'s "constructor" property');
 
     for (var i = 0; i < this.members.length; i++)
     {
@@ -544,9 +803,11 @@ IdlInterface.prototype.test = function()
                 //"The property has attributes { [[Writable]]: false,
                 //[[Enumerable]]: true, [[Configurable]]: false }."
                 var desc = Object.getOwnPropertyDescriptor(window[this.name], member.name);
-                assert_true(desc.writable, "property is not writable");
+                assert_false("get" in desc, "property has getter");
+                assert_false("set" in desc, "property has setter");
+                assert_false(desc.writable, "property is writable");
                 assert_true(desc.enumerable, "property is not enumerable");
-                assert_true(desc.configurable, "property is not configurable");
+                assert_false(desc.configurable, "property is configurable");
             }.bind(this), this.name + " interface: constant " + member.name + " on interface object");
             //"In addition, a property with the same characteristics must
             //exist on the interface prototype object."
@@ -561,9 +822,11 @@ IdlInterface.prototype.test = function()
                 assert_equals(window[this.name].prototype[member.name], eval(member.value),
                               "property has wrong value");
                 var desc = Object.getOwnPropertyDescriptor(window[this.name], member.name);
-                assert_true(desc.writable, "property is not writable");
+                assert_false("get" in desc, "property has getter");
+                assert_false("set" in desc, "property has setter");
+                assert_false(desc.writable, "property is writable");
                 assert_true(desc.enumerable, "property is not enumerable");
-                assert_true(desc.configurable, "property is not configurable");
+                assert_false(desc.configurable, "property is configurable");
             }.bind(this), this.name + " interface: constant " + member.name + " on interface prototype object");
         }
         else if (member.type == "attribute")
@@ -594,6 +857,7 @@ IdlInterface.prototype.test = function()
                 //"G is the attribute getter, defined below; and
                 //"S is the attribute setter, also defined below."
                 var desc = Object.getOwnPropertyDescriptor(window[this.name].prototype, member.name);
+                assert_false("writable" in desc, 'property descriptor has "writable" field');
                 assert_true(desc.enumerable, "property is not enumerable");
                 if (member.has_extended_attribute("Unforgeable"))
                 {
@@ -662,9 +926,11 @@ IdlInterface.prototype.test = function()
                 var desc = Object.getOwnPropertyDescriptor(window[this.name].prototype, member.name);
                 //"The property has attributes { [[Writable]]: true,
                 //[[Enumerable]]: true, [[Configurable]]: true }."
-                assert_true(desc.writable, "property must be writable");
-                assert_true(desc.enumerable, "property must be enumerable");
-                assert_true(desc.configurable, "property must be configurable");
+                assert_false("get" in desc, "property has getter");
+                assert_false("set" in desc, "property has setter");
+                assert_true(desc.writable, "property is not writable");
+                assert_true(desc.enumerable, "property is not enumerable");
+                assert_true(desc.configurable, "property is not configurable");
                 //"The value of the property is a Function object whose
                 //behavior is as follows . . ."
                 assert_equals(typeof window[this.name].prototype[member.name], "function",
@@ -713,12 +979,12 @@ IdlInterface.prototype.test_primary_interface_of = function(desc)
     {
         test(function()
         {
+            assert_equals(exception, null, "Unexpected exception when evaluating object");
+            assert_equals(typeof obj, expected_typeof, "wrong typeof object");
             assert_own_property(window, this.name,
                                 "window does not have own property " + format_value(this.name));
             assert_own_property(window[this.name], "prototype",
                                 'interface "' + this.name + '" does not have own property "prototype"');
-            assert_equals(exception, null, "Unexpected exception when evaluating object");
-            assert_equals(typeof obj, expected_typeof, "wrong typeof object");
 
             //"The value of the internal [[Prototype]] property of the platform
             //object is the interface prototype object of the primary interface
@@ -734,6 +1000,7 @@ IdlInterface.prototype.test_primary_interface_of = function(desc)
     test(function()
     {
         assert_equals(exception, null, "Unexpected exception when evaluating object");
+        assert_equals(typeof obj, expected_typeof, "wrong typeof object");
         assert_equals({}.toString.call(obj), "[object " + this.name + "]", "{}.toString.call(" + desc + ")");
         if (!this.members.some(function(member) { return member.stringifier || member.type == "stringifier"}))
         {
@@ -754,6 +1021,16 @@ IdlInterface.prototype.test_interface_of = function(desc)
         exception = e;
     }
 
+    //TODO: WebIDLParser doesn't currently support named legacycallers, so I'm
+    //not sure what those would look like in the AST
+    var expected_typeof = this.members.some(function(member)
+    {
+        return member.legacycaller
+            || ("idlType" in member && member.idlType.legacycaller)
+            || ("idlType" in member && typeof member.idlType == "object"
+            && "idlType" in member.idlType && member.idlType.idlType == "legacycaller");
+    }) ? "function" : "object";
+
     //TODO: Indexed and named properties, more checks on interface members
 
     for (var i = 0; i < this.members.length; i++)
@@ -764,6 +1041,7 @@ IdlInterface.prototype.test_interface_of = function(desc)
             test(function()
             {
                 assert_equals(exception, null, "Unexpected exception when evaluating object");
+                assert_equals(typeof obj, expected_typeof, "wrong typeof object");
                 assert_own_property(obj, member.name);
             }.bind(this), this.name + " interface: " + desc + ' must have own property "' + member.name + '"');
         }
@@ -775,6 +1053,7 @@ IdlInterface.prototype.test_interface_of = function(desc)
             test(function()
             {
                 assert_equals(exception, null, "Unexpected exception when evaluating object");
+                assert_equals(typeof obj, expected_typeof, "wrong typeof object");
                 assert_inherits(obj, member.name);
                 if (member.type == "const")
                 {
@@ -798,6 +1077,7 @@ IdlInterface.prototype.test_interface_of = function(desc)
             test(function()
             {
                 assert_equals(exception, null, "Unexpected exception when evaluating object");
+                assert_equals(typeof obj, expected_typeof, "wrong typeof object");
                 assert_inherits(obj, member.name);
                 var args = [];
                 for (var i = 0; i < member.arguments.length; i++)
@@ -840,13 +1120,7 @@ function IdlInterfaceMember(obj)
     }
 }
 
-IdlInterfaceMember.prototype.has_extended_attribute = function(name)
-{
-    return this.extAttrs.some(function(o)
-    {
-        return o.name == name;
-    });
-};
+IdlInterfaceMember.prototype = Object.create(IdlObject.prototype);
 //@}
 
 /// Internal helper functions ///

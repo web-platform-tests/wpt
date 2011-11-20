@@ -140,17 +140,7 @@ IdlArray.prototype.test = function()
         {
             this.objects[name].forEach(function(str)
             {
-                this.members[name].test_primary_interface_of(str);
-                var current_interface_name = name;
-                while (current_interface_name)
-                {
-                    if (!(current_interface_name in this.members))
-                    {
-                        throw "Interface " + current_interface_name + " not found (inherited by " + name + ")";
-                    }
-                    this.members[current_interface_name].test_interface_of(str);
-                    current_interface_name = this.members[current_interface_name].inheritance[0];
-                }
+                this.members[name].test_object(str);
             }.bind(this));
         }
     }
@@ -578,6 +568,70 @@ IdlException.prototype.test = function()
         }
     }
 }
+
+IdlException.prototype.test_object = function(desc)
+{
+    var obj, exception = null;
+    try
+    {
+        obj = eval(desc);
+    }
+    catch(e)
+    {
+        exception = e;
+    }
+
+    test(function()
+    {
+        assert_equals(exception, null, "Unexpected exception when evaluating object");
+        assert_equals(typeof obj, "object", "wrong typeof object");
+
+        //We can't easily test that its prototype is correct if there's no
+        //interface object, or the object is from a different global environment
+        //(not instanceof Object).  TODO: test in this case that its prototype at
+        //least looks correct, even if we can't test that it's actually correct.
+        if (!this.has_extended_attribute("NoInterfaceObject")
+        && (typeof obj != "object" || obj instanceof Object))
+        {
+            assert_own_property(window, this.name,
+                                "window does not have own property " + format_value(this.name));
+            assert_own_property(window[this.name], "prototype",
+                                'exception "' + this.name + '" does not have own property "prototype"');
+
+            //"The value of the internal [[Prototype]] property of the
+            //exception object must be the exception interface prototype object
+            //from the global environment the exception object is associated
+            //with."
+            assert_true(window[this.name].prototype.isPrototypeOf(obj),
+                desc + "'s prototype is not " + this.name + ".prototype");
+        }
+
+        //"The value of the internal [[Class]] property of the exception object
+        //must be the identifier of the exception."
+        assert_equals({}.toString.call(obj), "[object " + this.name + "]", "{}.toString.call(" + desc + ")");
+        //Stringifier is not defined for DOMExceptions, because message isn't
+        //defined.
+    }.bind(this), this.name + " must be represented by " + desc);
+
+    for (var i = 0; i < this.members.length; i++)
+    {
+        var member = this.members[i];
+        test(function()
+        {
+            assert_equals(exception, null, "Unexpected exception when evaluating object");
+            assert_equals(typeof obj, "object", "wrong typeof object");
+            assert_inherits(obj, member.name);
+            if (member.type == "const")
+            {
+                assert_equals(obj[member.name], eval(member.value));
+            }
+            if (member.type == "field")
+            {
+                this.array.assert_type_is(obj[member.name], member.idlType);
+            }
+        }.bind(this), this.name + " exception: " + desc + ' must inherit property "' + member.name + '" with the proper type');
+    }
+}
 //@}
 
 /// IdlInterface ///
@@ -948,7 +1002,7 @@ IdlInterface.prototype.test = function()
     }
 }
 
-IdlInterface.prototype.test_primary_interface_of = function(desc)
+IdlInterface.prototype.test_object = function(desc)
 {
     var obj, exception = null;
     try
@@ -970,6 +1024,21 @@ IdlInterface.prototype.test_primary_interface_of = function(desc)
             && "idlType" in member.idlType && member.idlType.idlType == "legacycaller");
     }) ? "function" : "object";
 
+    this.test_primary_interface_of(desc, obj, exception, expected_typeof);
+    var current_interface_name = this.name;
+    while (current_interface_name)
+    {
+        if (!(current_interface_name in this.array.members))
+        {
+            throw "Interface " + current_interface_name + " not found (inherited by " + this.name + ")";
+        }
+        this.array.members[current_interface_name].test_interface_of(desc, obj, exception, expected_typeof);
+        current_interface_name = this.array.members[current_interface_name].inheritance[0];
+    }
+}
+
+IdlInterface.prototype.test_primary_interface_of = function(desc, obj, exception, expected_typeof)
+{
     //We can't easily test that its prototype is correct if there's no
     //interface object, or the object is from a different global environment
     //(not instanceof Object).  TODO: test in this case that its prototype at
@@ -1009,28 +1078,8 @@ IdlInterface.prototype.test_primary_interface_of = function(desc)
     }.bind(this), "Stringification of " + desc);
 };
 
-IdlInterface.prototype.test_interface_of = function(desc)
+IdlInterface.prototype.test_interface_of = function(desc, obj, exception, expected_typeof)
 {
-    var obj, exception = null;
-    try
-    {
-        obj = eval(desc);
-    }
-    catch(e)
-    {
-        exception = e;
-    }
-
-    //TODO: WebIDLParser doesn't currently support named legacycallers, so I'm
-    //not sure what those would look like in the AST
-    var expected_typeof = this.members.some(function(member)
-    {
-        return member.legacycaller
-            || ("idlType" in member && member.idlType.legacycaller)
-            || ("idlType" in member && typeof member.idlType == "object"
-            && "idlType" in member.idlType && member.idlType.idlType == "legacycaller");
-    }) ? "function" : "object";
-
     //TODO: Indexed and named properties, more checks on interface members
 
     for (var i = 0; i < this.members.length; i++)

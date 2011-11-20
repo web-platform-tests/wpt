@@ -458,8 +458,11 @@ interface DOMSettableTokenList : DOMTokenList {
 <script>
 "use strict";
 var xmlDoc = document.implementation.createDocument(null, "", null);
+var domException;
+try { document.appendChild(document); } catch(e) { domException = e; }
 var idlArray = new IdlArray(document.querySelector("script[type=text\\/plain]").textContent);
 idlArray.add_objects({
+	DOMException: ['domException'],
 	Event: ['document.createEvent("Event")'],
 	XMLDocument: ['xmlDoc'],
 	DOMImplementation: ['document.implementation'],

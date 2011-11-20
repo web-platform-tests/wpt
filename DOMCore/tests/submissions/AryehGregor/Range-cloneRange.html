@@ -8,16 +8,6 @@
 <script>
 "use strict";
 
-// Specified by WebIDL
-test(function() {
-	assert_equals(Range.prototype.cloneRange.length, 0,
-		"Range.prototype.cloneRange.length must equal 0");
-}, "Range.prototype.cloneRange.length must equal 0");
-test(function() {
-	assert_equals(Document.prototype.createRange.length, 0,
-		"Document.prototype.createRange.length must equal 0");
-}, "Document.prototype.createRange.length must equal 0");
-
 function testCloneRange(rangeEndpoints) {
 	var range;
 	if (rangeEndpoints == "detached") {

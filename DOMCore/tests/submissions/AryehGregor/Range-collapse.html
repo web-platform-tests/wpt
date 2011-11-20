@@ -8,16 +8,6 @@
 <script>
 "use strict";
 
-// Specified by WebIDL
-test(function() {
-	assert_equals(Range.prototype.collapse.length, 1,
-		"Range.prototype.collapse.length must equal 1");
-}, "Range.prototype.collapse.length must equal 1");
-
-// TODO: WebIDL requires throwing a TypeError if passed too few arguments.
-// Test this when testharness.js supports it:
-// http://www.w3.org/Bugs/Public/show_bug.cgi?id=14590
-
 function testCollapse(rangeEndpoints, toStart) {
 	var range;
 	if (rangeEndpoints == "detached") {

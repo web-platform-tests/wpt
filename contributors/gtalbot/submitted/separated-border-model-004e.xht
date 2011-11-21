@@ -32,22 +32,22 @@
   
   The width of a CSS table is given by the greater of the value of 
   the 'width' property as set for the CSS table and the sum of the columns 
-  width (plus cell spacing and cell borders):
+  width (plus border spacing):
 
-  max(set width, sum of columns width plus cell spacing and cell borders)  
+  max(set width, sum of columns width plus border spacing)  
   
   Here, the set width is 200px.
   
-  The sums of columns' width plus cell spacing and cell borders is given by:
+  The sums of columns' width plus border spacing is given by:
   
    52px   (left-most border-spacing)
     0px   (div#td's width)
    52px   (right-most border-spacing)
   -----
-  104px : sum of columns plus cell spacing and cell borders   
+  104px : sum of columns plus border spacing   
 
   200px (set width of table)
- -104px (sum of columns plus cell spacing and cell borders)
+ -104px (sum of columns plus border spacing)
   ------
    96px : such extra (exceeding) 96px width will be distributed over 
   the columns, therefore given to the unique cell of such div#table 

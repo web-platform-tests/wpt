@@ -24,16 +24,16 @@
   width: 100px; 
   /* 
   The set width (100px) of this CSS table is larger than sum of columns plus 
-  cell spacing and cell borders
+  border spacing
 
    17px   (left-most border-spacing)
    16px   (div#td's width)
    17px   (right-most border-spacing)
   -----
-   50px : sum of columns plus cell spacing and cell borders
+   50px : sum of columns plus border spacing
 
   100px (width of table)
- - 50px (sum of columns plus cell spacing and cell borders)
+ - 50px (sum of columns plus border spacing)
   ------
    50px : such extra (exceeding) 50px width will be distributed 
    over the columns, therefore given to the unique cell of such 
@@ -64,18 +64,17 @@
   /* 
   The width of a CSS table is given by the greater of the value of 
   the 'width' property as set for the table element and the sum of the columns' 
-  width (plus cell spacing and cell borders):
+  width (plus border spacing):
 
-  max(set width, sum of columns width plus cell spacing and cell borders)
+  max(set width, sum of columns width plus border spacing)
 
-  The set width (9px) is smaller than sum of columns (plus cell spacing 
-  and cell borders)
+  The set width (9px) is smaller than sum of columns (plus border spacing)
 
    42px   (left-most border-spacing)
  + 16px   (div.td's width)
  + 42px   (right-most border-spacing)
   -----
-   100px : sum of columns plus cell spacing and cell borders 
+   100px : sum of columns plus border spacing
   */
   }
 

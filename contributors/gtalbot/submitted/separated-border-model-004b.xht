@@ -9,7 +9,7 @@
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> 
   <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#separated-borders" title="17.6.1 The separated borders model" />
   <meta content="" name="flags" />
-  <meta content="The width of a CSS table is the distance from the left inner padding edge to the right inner padding edge (including the table border-spacing but excluding table padding and table borders)." name="assert" />
+  <meta content="The width of a CSS table is the distance from the left inner padding edge to the right inner padding edge (including the table border spacing but excluding table padding and table borders)." name="assert" />
  
   <style type="text/css"><![CDATA[
   div#overlapped-red
@@ -34,9 +34,9 @@
   /* 
   The width of a CSS table is given by the greater of the value of 
   the 'width' property as set for the CSS table and the sum of the 
-  columns width (plus cell spacing and cell borders):
+  columns width plus border spacing:
 
-  max(set width, sum of columns width plus cell spacing and cell borders).
+  max(set width, sum of columns width plus border spacing).
  
   The width (as set) of a CSS table is given by its content-box, not 
   by its border-box.
@@ -46,16 +46,16 @@
   filled with green color.
   
   The set width (100px) is larger than sum of columns width plus 
-  cell spacing and cell borders
+  border spacing
 
    0px   (left-most border-spacing)
    0px   (div#td's width)
    0px   (right-most border-spacing)
   -----
-   0px : sum of columns plus cell spacing and cell borders 
+   0px : sum of columns width plus border spacing
 
    100px (width of table)
-  -  0px (sum of columns plus cell spacing)
+  -  0px (sum of columns plus border spacing)
   ------
    100px : the extra (exceeding) 100px width will be distributed over 
    the columns, therefore given to the unique cell of the table.

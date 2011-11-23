@@ -674,14 +674,18 @@ policies and contribution forms [3].
     function _assert_inherits(name) {
         return function (object, property_name, description)
         {
+            assert(typeof object === "object",
+                   name, description,
+                   "provided value is not an object");
+
+            assert("hasOwnProperty" in object,
+                   name, description,
+                   "provided value is an object but has no hasOwnProperty method");
+
             assert(!object.hasOwnProperty(property_name),
                    name, description,
                    "property ${p} found on object expected in prototype chain",
                    {p:property_name});
-
-            assert(typeof object === "object",
-                   name, description,
-                   "provided value is not an object");
 
             assert(property_name in object,
                    name, description,

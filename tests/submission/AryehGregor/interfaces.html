@@ -1702,7 +1702,8 @@ interface Window : EventTarget {
   boolean confirm(DOMString message);
   DOMString? prompt(DOMString message, optional DOMString default);
   void print();
-  any showModalDialog(DOMString url, optional any argument);
+  //TODO freezes WebKit
+  //any showModalDialog(DOMString url, optional any argument);
 
   // cross-document messaging
   void postMessage(any message, DOMString targetOrigin, optional sequence<Transferable> transfer);
@@ -1792,8 +1793,9 @@ interface History {
 
 interface Location {
   stringifier attribute DOMString href;
-  void assign(DOMString url);
-  void replace(DOMString url);
+  //TODO causes infinite loop in Opera
+  //void assign(DOMString url);
+  //void replace(DOMString url);
   void reload();
 
   // URL decomposition IDL attributes 
@@ -2639,6 +2641,57 @@ idlArray.add_objects({
 	HTMLBRElement: ['document.createElement("br")'],
 	HTMLModElement: ['document.createElement("ins")'],
 	HTMLImageElement: ['document.createElement("img")'],
+	HTMLIframeElement: ['document.createElement("iframe")'],
+	HTMLEmbedElement: ['document.createElement("embed")'],
+	HTMLObjectElement: ['document.createElement("object")'],
+	HTMLVideoElement: ['document.createElement("video")'],
+	HTMLAudioElement: ['document.createElement("audio")'],
+	HTMLSourceElement: ['document.createElement("source")'],
+	HTMLTrackElement: ['document.createElement("track")'],
+	HTMLCanvasElement: ['document.createElement("canvas")'],
+	CanvasRenderingContext2D: ['document.createElement("canvas").getContext("2d")'],
+	HTMLMapElement: ['document.createElement("map")'],
+	HTMLAreaElement: ['document.createElement("area")'],
+	HTMLTableElement: ['document.createElement("table")'],
+	HTMLTableCaptionElement: ['document.createElement("caption")'],
+	HTMLTableColElement: ['document.createElement("col")'],
+	HTMLTableSectionElement: ['document.createElement("tbody")'],
+	HTMLTableRowElement: ['document.createElement("tr")'],
+	HTMLTableDataCellElement: ['document.createElement("td")'],
+	HTMLTableHeaderCellElement: ['document.createElement("th")'],
+	HTMLFormElement: ['document.createElement("form")'],
+	HTMLFieldsetElement: ['document.createElement("fieldset")'],
+	HTMLLegendElement: ['document.createElement("legend")'],
+	HTMLLabelElement: ['document.createElement("label")'],
+	HTMLInputElement: ['document.createElement("input")'],
+	HTMLButtonElement: ['document.createElement("button")'],
+	HTMLSelectElement: ['document.createElement("select")'],
+	HTMLDataListElement: ['document.createElement("datalist")'],
+	HTMLOptGroupElement: ['document.createElement("optgroup")'],
+	HTMLOptionElement: ['document.createElement("option")'],
+	HTMLTextAreaElement: ['document.createElement("textarea")'],
+	HTMLKeygenElement: ['document.createElement("keygen")'],
+	HTMLOutputElement: ['document.createElement("output")'],
+	HTMLProgressElement: ['document.createElement("progress")'],
+	HTMLMeterElement: ['document.createElement("meter")'],
+	HTMLDetailsElement: ['document.createElement("details")'],
+	HTMLCommandElement: ['document.createElement("command")'],
+	HTMLMenuElement: ['document.createElement("menu")'],
+	HTMLAppletElement: ['document.createElement("applet")'],
+	HTMLMarqueeElement: ['document.createElement("marquee")'],
+	HTMLFrameSetElement: ['document.createElement("frameset")'],
+	HTMLFrameElement: ['document.createElement("frame")'],
+	HTMLBaseFontElement: ['document.createElement("basefont")'],
+	HTMLDirectoryElement: ['document.createElement("dir")'],
+	HTMLFontElement: ['document.createElement("font")'],
+	Window: ['window'],
+	History: ['window.history'],
+	Location: ['window.location'],
+	Navigator: ['window.navigator'],
+	External: ['window.external'],
+	WindowSessionStorage: ['window.sessionStorage'],
+	WindowLocalStorage: ['window.localStorage'],
 });
+idlArray.prevent_multiple_testing("HTMLElement");
 idlArray.test();
 </script>

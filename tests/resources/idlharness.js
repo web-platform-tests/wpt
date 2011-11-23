@@ -34,56 +34,100 @@ policies and contribution forms [3].
  * Once you have that, put it in your script somehow.  The easiest way is to
  * embed it literally in an HTML file with <script type=text/plain> or similar,
  * so that you don't have to do any escaping.  Another possibility is to put it
- * in a separate .idl file that's fetched via XHR or similar.  Once you have
- * it, run
+ * in a separate .idl file that's fetched via XHR or similar.  Sample usage:
  *
  *   var idl_array = new IdlArray();
- *   idl_array.add_idls(my_idls);
+ *   idl_array.add_untested_idls("interface Node { readonly attribute DOMString nodeName; };");
+ *   idl_array.add_idls("interface Document : Node { readonly attribute DOMString URL; };");
+ *   idl_array.add_objects({Document: ["document"]});
+ *   idl_array.test();
  *
- * where my_idls is your string.  This will throw if there are parse errors or
- * unrecognized declaration types.  If your IDLs include partial interfaces
- * that extend interfaces from another spec, or interfaces that inherit from
- * another spec's interfaces, you'll need to feed those interfaces in first
- * like so:
+ * This tests that window.Document exists and meets all the requirements of
+ * WebIDL.  It also tests that window.document (the result of evaluating the
+ * string "document") has URL and nodeName properties that behave as they
+ * should, and otherwise meets WebIDL's requirements for an object whose
+ * primary interface is Document.  It does not test that window.Node exists,
+ * which is what you want if the Node interface is already tested in some other
+ * specification's suite and your specification only extends or refers to it.
+ * Of course, each IDL string can define many different things, and calls to
+ * add_objects() can register many different objects for different interfaces:
+ * this is a very simple example.
  *
- *   idl_array.add_untested.idls(other_idls);
- *
- * This lets you add IDLs that refer to things from other_idls, but doesn't
- * actually test anything about the other IDLs (or at least not as much).
- *
- * Optionally, you can provide lists of objects that are supposed to implement
- * interfaces defined by the IDLs, like so:
- *
- *   idl_array.add_objects({
- *     Event: ['document.createEvent("Event")'],
- *     Text: ['document.createTextNode("")', 'document.querySelector("p").firstChild'],
- *   });
- *
- * The keys are interface names, and the values are lists of strings that
- * evaluate to objects.  The strings will (naturally) be evaluated in the scope
- * of the called function, so don't use local variables.  (TODO: maybe this
- * should be rethought.)  The given interface needs to be the *primary*
- * interface of the object -- for instance, don't pass Document: ['document'],
- * but rather HTMLDocument: ['document'].  Non-primary interfaces will be
- * evaluated automatically if possible.  If a non-primary interface isn't
- * recognized (wasn't passed to the constructor), test() will throw, so make
- * sure the IDL block you pass to the constructor contains every interface's
- * parent.
- *
- * Now simply run idl_array.test().  This will go through all the provided IDL
- * declarations, test various things about each, and test various further
- * things about each provided object.  The exact collection of things to be
- * tested will expand over time.  Methods on provided objects will be called
- * and properties on them will be accessed in manners that WebIDL specifies
- * must be safe, such as calling a method with too few arguments (which must
- * throw an exception and do nothing else).  If there are implementation bugs,
- * these accesses might not actually be safe and might cause side effects, so
- * be careful what objects you pass.
- *
- * TODO: Partial interface support is essential.
  * TODO: Write assert_writable, assert_enumerable, assert_configurable and
  * their inverses, and use those instead of just checking
  * getOwnPropertyDescriptor.
+ *
+ * == Public methods of IdlArray ==
+ *
+ * IdlArray objects can be obtained with new IdlArray().  Anything not
+ * documented in this section should be considered an implementation detail,
+ * and outside callers should not use it.
+ *
+ * add_idls(idl_string):
+ *   Parses idl_string (throwing on parse error) and adds the results to the
+ *   IdlArray.  All the definitions will be tested when you run test().  If
+ *   some of the definitions refer to other definitions, those must be present
+ *   too.  For instance, if idl_string says that Document inherits from Node,
+ *   the Node interface must also have been provided in some call to add_idls()
+ *   or add_untested_idls().
+ *
+ * add_untested_idls(idl_string):
+ *   Like add_idls(), but the definitions will not be tested.  If an untested
+ *   interface is added and then extended with a tested partial interface, the
+ *   members of the partial interface will still be tested.  Also, all the
+ *   members will still be tested for objects added with add_objects(), because
+ *   you probably want to test that (for instance) window.document has all the
+ *   properties from Node, not just Document, even if the Node interface itself
+ *   is tested in a different test suite.
+ *
+ * add_objects(dict):
+ *   dict should be an object whose keys are the names of interfaces or
+ *   exceptions, and whose values are arrays of strings.  When an interface or
+ *   exception is tested, every string registered for it with add_objects()
+ *   will be evaluated, and tests will be run on the result to verify that it
+ *   correctly implements that interface or exception.  This is the only way to
+ *   test anything about [NoInterfaceObject] interfaces, and there are many
+ *   tests that can't be run on any interface without an object to fiddle with.
+ *
+ *   The interface has to be the *primary* interface of all the objects
+ *   provided.  For example, don't pass {Node: ["document"]}, but rather
+ *   {Document: ["document"]}.  Assuming the Document interface was declared to
+ *   inherit from Node, this will automatically test that document implements
+ *   the Node interface too.
+ *
+ *   Warning: methods will be called on any provided objects, in a manner that
+ *   WebIDL requires be safe.  For instance, if a method has mandatory
+ *   arguments, the test suite will try calling it with too few arguments to
+ *   see if it throws an exception.  If an implementation incorrectly runs the
+ *   function instead of throwing, this might have side effects, possibly even
+ *   preventing the test suite from running correctly.
+ *
+ * prevent_multiple_testing(name):
+ *   This is a niche method for use in case you're testing many objects that
+ *   implement the same interfaces, and don't want to retest the same
+ *   interfaces every single time.  For instance, HTML defines many interfaces
+ *   that all inherit from HTMLElement, so the HTML test suite has something
+ *   like
+ *     .add_objects({
+ *         HTMLHtmlElement: ['document.documentElement'],
+ *         HTMLHeadElement: ['document.head'],
+ *         HTMLBodyElement: ['document.body'],
+ *         ...
+ *     })
+ *   and so on for dozens of element types.  This would mean that it would
+ *   retest that each and every one of those elements implements HTMLElement,
+ *   Element, and Node, which would be thousands of basically redundant tests.
+ *   The test suite therefore calls prevent_multiple_testing("HTMLElement").
+ *   This means that once one object has been tested to implement HTMLElement
+ *   and its ancestors, no other object will be.  Thus in the example code
+ *   above, the harness would test that document.documentElement correctly
+ *   implements HTMLHtmlElement, HTMLElement, Element, and Node; but
+ *   document.head would only be tested for HTMLHeadElement, and so on for
+ *   further objects.
+ *
+ * test():
+ *   Run all tests.  This should be called after you've called all other
+ *   methods to add IDLs and objects.
  */
 "use strict";
 (function(){
@@ -180,7 +224,12 @@ IdlArray.prototype.add_objects = function(dict)
             this.objects[k] = dict[k];
         }
     }
-};
+}
+
+IdlArray.prototype.prevent_multiple_testing = function(name)
+{
+    this.members[name].prevent_multiple_testing = true;
+}
 
 IdlArray.prototype.test = function()
 {
@@ -297,7 +346,7 @@ IdlArray.prototype.assert_type_is = function(value, type)
             return;
 
         case "object":
-            assert_true(typeof value == "object" || typeof value == "function", "not object or function");
+            assert_true(typeof value == "object" || typeof value == "function", "wrong type: not object or function");
             return;
     }
 
@@ -313,9 +362,10 @@ IdlArray.prototype.assert_type_is = function(value, type)
         //an infinite loop.  TODO: This means we don't have tests for
         //NoInterfaceObject interfaces, and we also can't test objects that
         //come from another window.
-        assert_true(typeof value == "object" || typeof value == "function", "not object or function");
+        assert_true(typeof value == "object" || typeof value == "function", "wrong type: not object or function");
         if (value instanceof Object
-        && !this.members[type].has_extended_attribute("NoInterfaceObject"))
+        && !this.members[type].has_extended_attribute("NoInterfaceObject")
+        && type in window)
         {
             assert_true(value instanceof window[type], "not instanceof " + type);
         }
@@ -605,8 +655,8 @@ IdlException.prototype.test_members = function()
                 //true, [[Configurable]]: true }, where G is the exception
                 //field getter, defined below."
                 var desc = Object.getOwnPropertyDescriptor(window[this.name].prototype, member.name);
-                assert_false("value" in desc, "property has value");
-                assert_false("writable" in desc, 'property has "writable" field');
+                assert_false("value" in desc, "property descriptor has value but is supposed to be accessor");
+                assert_false("writable" in desc, 'property descriptor has "writable" field but is supposed to be accessor');
                 //TODO: ES5 doesn't seem to say whether desc should have a .set
                 //property.
                 assert_true(desc.enumerable, "property is not enumerable");
@@ -970,6 +1020,11 @@ IdlInterface.prototype.test_members = function()
         }
         else if (member.type == "attribute")
         {
+            if (member.has_extended_attribute("Unforgeable"))
+            {
+                //We do the checks in test_interface_of instead
+                continue;
+            }
             test(function()
             {
                 assert_own_property(window, this.name,
@@ -977,61 +1032,7 @@ IdlInterface.prototype.test_members = function()
                 assert_own_property(window[this.name], "prototype",
                                     'interface "' + this.name + '" does not have own property "prototype"');
 
-                //"For each attribute defined on the interface, there must
-                //exist a corresponding property. If the attribute was
-                //declared with the [Unforgeable] extended attribute, then
-                //the property exists on every object that implements the
-                //interface.  Otherwise, it exists on the interface’s
-                //interface prototype object."
-                if (!member.has_extended_attribute("Unforgeable"))
-                {
-                    assert_own_property(window[this.name].prototype, member.name);
-                }
-
-                //"The property has attributes { [[Get]]: G, [[Set]]: S,
-                //[[Enumerable]]: true, [[Configurable]]: configurable },
-                //where:
-                //"configurable is false if the attribute was declared with
-                //the [Unforgeable] extended attribute and true otherwise;
-                //"G is the attribute getter, defined below; and
-                //"S is the attribute setter, also defined below."
-                var desc = Object.getOwnPropertyDescriptor(window[this.name].prototype, member.name);
-                assert_false("writable" in desc, 'property descriptor has "writable" field');
-                assert_true(desc.enumerable, "property is not enumerable");
-                if (member.has_extended_attribute("Unforgeable"))
-                {
-                    assert_false(desc.configurable, "[Unforgeable] property must not be configurable");
-                }
-                else
-                {
-                    assert_true(desc.configurable, "property must be configurable");
-                }
-                //"The attribute getter is a Function object whose behavior
-                //when invoked is as follows:
-                //"...
-                //"The value of the Function object’s “length” property is
-                //the Number value 0."
-                assert_equals(typeof desc.get, "function", "getter must be Function");
-                assert_equals(desc.get.length, 0, "getter length must be 0");
-                //"The attribute setter is undefined if the attribute is
-                //declared readonly and has neither a [PutForwards] nor a
-                //[Replaceable] extended attribute declared on it.
-                //Otherwise, it is a Function object whose behavior when
-                //invoked is as follows:
-                //"...
-                //"The value of the Function object’s “length” property is
-                //the Number value 1."
-                if (member.readonly
-                && !member.has_extended_attribute("PutForwards")
-                && !member.has_extended_attribute("Replaceable"))
-                {
-                    assert_equals(desc.set, undefined, "setter must be undefined for readonly attributes");
-                }
-                else
-                {
-                    assert_equals(typeof desc.set, "function", "setter must be function for PutForwards, Replaceable, or non-readonly attributes");
-                    assert_equals(desc.set.length, 1, "setter length must be 1");
-                }
+                do_interface_attribute_asserts(window[this.name].prototype, member);
             }.bind(this), this.name + " interface: attribute " + member.name);
         }
         else if (member.type == "operation")
@@ -1110,15 +1111,19 @@ IdlInterface.prototype.test_object = function(desc)
     }) ? "function" : "object";
 
     this.test_primary_interface_of(desc, obj, exception, expected_typeof);
-    var current_interface_name = this.name;
-    while (current_interface_name)
+    var current_interface = this;
+    while (current_interface)
     {
-        if (!(current_interface_name in this.array.members))
+        if (!(current_interface.name in this.array.members))
         {
-            throw "Interface " + current_interface_name + " not found (inherited by " + this.name + ")";
+            throw "Interface " + current_interface.name + " not found (inherited by " + this.name + ")";
         }
-        this.array.members[current_interface_name].test_interface_of(desc, obj, exception, expected_typeof);
-        current_interface_name = this.array.members[current_interface_name].inheritance[0];
+        if (current_interface.prevent_multiple_testing && current_interface.already_tested)
+        {
+            return;
+        }
+        current_interface.test_interface_of(desc, obj, exception, expected_typeof);
+        current_interface = this.array.members[current_interface.inheritance[0]];
     }
 }
 
@@ -1166,6 +1171,7 @@ IdlInterface.prototype.test_primary_interface_of = function(desc, obj, exception
 IdlInterface.prototype.test_interface_of = function(desc, obj, exception, expected_typeof)
 {
     //TODO: Indexed and named properties, more checks on interface members
+    this.already_tested = true;
 
     for (var i = 0; i < this.members.length; i++)
     {
@@ -1176,7 +1182,7 @@ IdlInterface.prototype.test_interface_of = function(desc, obj, exception, expect
             {
                 assert_equals(exception, null, "Unexpected exception when evaluating object");
                 assert_equals(typeof obj, expected_typeof, "wrong typeof object");
-                assert_own_property(obj, member.name);
+                do_interface_attribute_asserts(obj, member);
             }.bind(this), this.name + " interface: " + desc + ' must have own property "' + member.name + '"');
         }
         else if ((member.type == "const"
@@ -1229,6 +1235,64 @@ IdlInterface.prototype.test_interface_of = function(desc, obj, exception, expect
                 }
             }.bind(this), this.name + " interface: calling " + member.name + "() on " + desc + " with too few arguments must throw TypeError");
         }
+    }
+}
+
+function do_interface_attribute_asserts(obj, member)
+{
+    //"For each attribute defined on the interface, there must exist a
+    //corresponding property. If the attribute was declared with the
+    //[Unforgeable] extended attribute, then the property exists on every
+    //object that implements the interface.  Otherwise, it exists on the
+    //interface’s interface prototype object."
+    //This is called by test_self() with the prototype as obj, and by
+    //test_interface_of() with the object as obj.
+    assert_own_property(obj, member.name);
+
+    //"The property has attributes { [[Get]]: G, [[Set]]: S,
+    //[[Enumerable]]: true, [[Configurable]]: configurable },
+    //where:
+    //"configurable is false if the attribute was declared with
+    //the [Unforgeable] extended attribute and true otherwise;
+    //"G is the attribute getter, defined below; and
+    //"S is the attribute setter, also defined below."
+    var desc = Object.getOwnPropertyDescriptor(obj, member.name);
+    assert_false("value" in desc, 'property descriptor has value but is supposed to be accessor');
+    assert_false("writable" in desc, 'property descriptor has "writable" field but is supposed to be accessor');
+    assert_true(desc.enumerable, "property is not enumerable");
+    if (member.has_extended_attribute("Unforgeable"))
+    {
+        assert_false(desc.configurable, "[Unforgeable] property must not be configurable");
+    }
+    else
+    {
+        assert_true(desc.configurable, "property must be configurable");
+    }
+    //"The attribute getter is a Function object whose behavior
+    //when invoked is as follows:
+    //"...
+    //"The value of the Function object’s “length” property is
+    //the Number value 0."
+    assert_equals(typeof desc.get, "function", "getter must be Function");
+    assert_equals(desc.get.length, 0, "getter length must be 0");
+    //"The attribute setter is undefined if the attribute is
+    //declared readonly and has neither a [PutForwards] nor a
+    //[Replaceable] extended attribute declared on it.
+    //Otherwise, it is a Function object whose behavior when
+    //invoked is as follows:
+    //"...
+    //"The value of the Function object’s “length” property is
+    //the Number value 1."
+    if (member.readonly
+    && !member.has_extended_attribute("PutForwards")
+    && !member.has_extended_attribute("Replaceable"))
+    {
+        assert_equals(desc.set, undefined, "setter must be undefined for readonly attributes");
+    }
+    else
+    {
+        assert_equals(typeof desc.set, "function", "setter must be function for PutForwards, Replaceable, or non-readonly attributes");
+        assert_equals(desc.set.length, 1, "setter length must be 1");
     }
 }
 //@}

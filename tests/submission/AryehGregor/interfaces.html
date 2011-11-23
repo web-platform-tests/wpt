@@ -516,7 +516,8 @@ interface DOMElementMap {
 [NoInterfaceObject]
 interface Transferable { };
 
-//TODO [OverrideBuiltins]
+//TODO http://www.w3.org/Bugs/Public/show_bug.cgi?id=14913
+//[OverrideBuiltins]
 partial interface Document {
   // resource metadata management
   [PutForwards=href] readonly attribute Location? location;
@@ -1619,7 +1620,7 @@ interface HTMLMeterElement : HTMLElement {
   readonly attribute NodeList labels;
 };
 
-//TODO needs to be partial interface or something
+//TODO http://www.w3.org/Bugs/Public/show_bug.cgi?id=14914
 //  void select();
 //           attribute unsigned long selectionStart;
 //           attribute unsigned long selectionEnd;
@@ -2037,7 +2038,7 @@ interface BlobCallback {
   void handleEvent(Blob blob);
 };
 
-//TODO where's the full interface?
+//TODO http://www.w3.org/Bugs/Public/show_bug.cgi?id=14915
 /*
 partial interface URL {
   static DOMString createObjectURL(MediaStream stream);
@@ -2081,7 +2082,8 @@ interface MediaStreamEvent : Event {
 };
 
 dictionary MediaStreamEventInit : EventInit {
-  /* TODO DOMString */ MediaStream? stream;
+  //TODO http://www.w3.org/Bugs/Public/show_bug.cgi?id=14912
+  /* DOMString */ MediaStream? stream;
 };
 
 interface WorkerGlobalScope : EventTarget {

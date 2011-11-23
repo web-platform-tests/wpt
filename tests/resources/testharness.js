@@ -99,6 +99,10 @@ policies and contribution forms [3].
  * The description parameter is used to present more useful error messages when
  * a test fails
  *
+ * NOTE: All asserts must be located in a test() or a step of an async_test().
+ *       asserts outside these places won't be detected correctly by the harness
+ *       and may cause a file to stop testing.
+ *
  * == Setup ==
  *
  * Sometimes tests require non-trivial setup that may fail. For this purpose

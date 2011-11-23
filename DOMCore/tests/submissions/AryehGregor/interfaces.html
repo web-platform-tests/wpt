@@ -460,7 +460,8 @@ interface DOMSettableTokenList : DOMTokenList {
 var xmlDoc = document.implementation.createDocument(null, "", null);
 var domException;
 try { document.appendChild(document); } catch(e) { domException = e; }
-var idlArray = new IdlArray(document.querySelector("script[type=text\\/plain]").textContent);
+var idlArray = new IdlArray();
+idlArray.add_idls(document.querySelector("script[type=text\\/plain]").textContent);
 idlArray.add_objects({
 	DOMException: ['domException'],
 	Event: ['document.createEvent("Event")'],

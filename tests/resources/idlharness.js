@@ -37,12 +37,19 @@ policies and contribution forms [3].
  * in a separate .idl file that's fetched via XHR or similar.  Once you have
  * it, run
  *
- *   var idl_array = new IdlArray(my_idls);
+ *   var idl_array = new IdlArray();
+ *   idl_array.add_idls(my_idls);
  *
  * where my_idls is your string.  This will throw if there are parse errors or
- * unrecognized declaration types.  (TODO: allow importing additional IDL
- * blocks that will be used when testing inheritance, but won't be tested
- * themselves.  Needed for pretty much all specs except DOM4.)
+ * unrecognized declaration types.  If your IDLs include partial interfaces
+ * that extend interfaces from another spec, or interfaces that inherit from
+ * another spec's interfaces, you'll need to feed those interfaces in first
+ * like so:
+ *
+ *   idl_array.add_untested.idls(other_idls);
+ *
+ * This lets you add IDLs that refer to things from other_idls, but doesn't
+ * actually test anything about the other IDLs (or at least not as much).
  *
  * Optionally, you can provide lists of objects that are supposed to implement
  * interfaces defined by the IDLs, like so:
@@ -83,12 +90,51 @@ policies and contribution forms [3].
 /// IdlArray ///
 //@{
 //Entry point
-window.IdlArray = function(raw_idls)
+window.IdlArray = function()
 {
     this.members = {};
     this.objects = {};
-    WebIDLParser.parse(raw_idls).forEach(function(parsed_idl)
+}
+
+IdlArray.prototype.add_idls = function(raw_idls)
+{
+    this.internal_add_idls(WebIDLParser.parse(raw_idls));
+};
+
+IdlArray.prototype.add_untested_idls = function(raw_idls)
+{
+    var parsed_idls = WebIDLParser.parse(raw_idls);
+    for (var i = 0; i < parsed_idls.length; i++)
     {
+        parsed_idls[i].untested = true;
+        if ("members" in parsed_idls[i])
+        {
+            for (var j = 0; j < parsed_idls[i].members.length; j++)
+            {
+                parsed_idls[i].members[j].untested = true;
+            }
+        }
+    }
+    this.internal_add_idls(parsed_idls);
+}
+
+IdlArray.prototype.internal_add_idls = function(parsed_idls)
+{
+    parsed_idls.forEach(function(parsed_idl)
+    {
+        if (parsed_idl.type == "partialinterface")
+        {
+            if (!(parsed_idl.name in this.members))
+            {
+                throw "Partial interface " + parsed_idl.name + " with no original interface";
+            }
+            parsed_idl.members.forEach(function(member)
+            {
+                this.members[parsed_idl.name].members.push(new IdlInterfaceMember(member));
+            }.bind(this));
+            return;
+        }
+
         parsed_idl.array = this;
         if (parsed_idl.name in this.members)
         {
@@ -110,11 +156,16 @@ window.IdlArray = function(raw_idls)
             this.members[parsed_idl.name] = new IdlDictionary(parsed_idl);
             break;
 
+        case "typedef":
+        case "implements":
+            //TODO
+            break;
+
         default:
             throw parsed_idl.name + ": " + parsed_idl.type + " not yet supported";
         }
     }.bind(this));
-};
+}
 
 IdlArray.prototype.add_objects = function(dict)
 {
@@ -314,6 +365,7 @@ function IdlException(obj)
 {
     this.name = obj.name;
     this.array = obj.array;
+    this.untested = obj.untested;
     this.extAttrs = obj.extAttrs ? obj.extAttrs : [];
     this.members = obj.members ? obj.members.map(function(m){return new IdlInterfaceMember(m)}) : [];
     this.inheritance = obj.inheritance ? obj.inheritance : [];
@@ -331,6 +383,15 @@ IdlException.prototype.test = function()
         return;
     }
 
+    if (!this.untested)
+    {
+        this.test_self();
+    }
+    this.test_members();
+}
+
+IdlException.prototype.test_self = function()
+{
     test(function()
     {
         //"For every exception that is not declared with the
@@ -468,10 +529,17 @@ IdlException.prototype.test = function()
         assert_equals(window[this.name].prototype.constructor, window[this.name],
                       this.name + '.prototype.constructor is not the same object as ' + this.name);
     }.bind(this), this.name + " exception: existence and properties of exception interface prototype object's \"constructor\" property");
+}
 
+IdlException.prototype.test_members = function()
+{
     for (var i = 0; i < this.members.length; i++)
     {
         var member = this.members[i];
+        if (member.untested)
+        {
+            continue;
+        }
         if (member.type == "const" && member.name != "prototype")
         {
             test(function()
@@ -640,6 +708,7 @@ function IdlInterface(obj)
 {
     this.name = obj.name;
     this.array = obj.array;
+    this.untested = obj.untested;
     this.extAttrs = obj.extAttrs ? obj.extAttrs : [];
     this.members = obj.members ? obj.members.map(function(m){return new IdlInterfaceMember(m)}) : [];
     this.inheritance = obj.inheritance ? obj.inheritance : [];
@@ -657,6 +726,15 @@ IdlInterface.prototype.test = function()
         return;
     }
 
+    if (!this.untested)
+    {
+        this.test_self();
+    }
+    this.test_members();
+}
+
+IdlInterface.prototype.test_self = function()
+{
     test(function()
     {
         //"For every interface that is not declared with the
@@ -834,10 +912,17 @@ IdlInterface.prototype.test = function()
         assert_equals(window[this.name].prototype.constructor, window[this.name],
                       this.name + '.prototype.constructor is not the same object as ' + this.name);
     }.bind(this), this.name + ' interface: existence and properties of interface prototype object\'s "constructor" property');
+}
 
+IdlInterface.prototype.test_members = function()
+{
     for (var i = 0; i < this.members.length; i++)
     {
         var member = this.members[i];
+        if (member.untested)
+        {
+            continue;
+        }
         if (member.type == "const")
         {
             test(function()

@@ -738,7 +738,7 @@ policies and contribution forms [3].
                 INVALID_CHARACTER_ERR: 5,
                 NO_MODIFICATION_ALLOWED_ERR: 7,
                 NOT_FOUND_ERR: 8,
-                NOT_SUPPOTED_ERR: 9,
+                NOT_SUPPORTED_ERR: 9,
                 INVALID_STATE_ERR: 11,
                 SYNTAX_ERR: 12,
                 INVALID_MODIFICATION_ERR: 13,

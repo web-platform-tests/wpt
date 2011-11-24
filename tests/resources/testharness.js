@@ -32,6 +32,10 @@ policies and contribution forms [3].
  * this will be populated with a table containing the test results after all
  * the tests have run.
  *
+ * NOTE: By default tests must be created before the load event fires. For ways
+ *       to load tests after the load event, see "Determining when all tests are
+ *       complete", below
+ *
  * == Synchronous Tests ==
  *
  * To create a synchronous test use the test() function:

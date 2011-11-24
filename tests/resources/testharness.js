@@ -33,7 +33,7 @@ policies and contribution forms [3].
  * the tests have run.
  *
  * NOTE: By default tests must be created before the load event fires. For ways
- *       to load tests after the load event, see "Determining when all tests are
+ *       to create tests after the load event, see "Determining when all tests are
  *       complete", below
  *
  * == Synchronous Tests ==

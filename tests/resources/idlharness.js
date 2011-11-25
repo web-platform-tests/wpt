@@ -1228,7 +1228,7 @@ IdlInterface.prototype.test_interface_of = function(desc, obj, exception, expect
                     }
                     assert_throws(new TypeError(), function()
                     {
-                        obj[member.name].call(obj, args);
+                        obj[member.name].apply(obj, args);
                     }, "Called with " + i + " arguments");
 
                     args.push(create_suitable_object(member.arguments[i].type));

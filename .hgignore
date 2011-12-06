@@ -6,3 +6,4 @@ dist
 *.pyc
 *.svn
 *.directory
+*~

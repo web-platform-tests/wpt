@@ -57,7 +57,7 @@ rmtree('dist/css-style-attr');
 
 ###############################################################################
 # fantasai
-push @dirs, 'contributors/fantasai/submitted/css-style-attr'; 
+#push @dirs, 'contributors/fantasai/submitted/css-style-attr'; 
 
 ###############################################################################
 # CSSWG Issues

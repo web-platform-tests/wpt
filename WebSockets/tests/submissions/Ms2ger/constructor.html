@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<title>WebSocket constructor</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+test(function() {
+  if (!("WebSocket" in window) && ("MozWebSocket" in window)) {
+    window.WebSocket = window.MozWebSocket
+  }
+
+  var __SERVER__NAME = "html5labs-interop.cloudapp.net"
+  var __PORT = 80
+  var __PATH = "echo"
+  var ws = new WebSocket("ws://" + __SERVER__NAME + ":" + __PORT + "/" + __PATH,
+                         "echo", "Stray argument")
+  assert_true(ws instanceof WebSocket, "Expected a WebSocket instance.")
+}, "Calling the WebSocket constructor with too many arguments should not throw.")
+</script>

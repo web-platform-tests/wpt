@@ -6,11 +6,13 @@
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/background/dynamic/003.html" type="text/html"/>
   <meta name="flags" content="dom"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#background" />
-  <style type="text/css">
+  <link rel="match" href="background-root-101-ref.xht" />
+
+  <style type="text/css"><![CDATA[
     html[lang="en-before"] > body { background: red; color: yellow; }
     html[lang="en-after"] > body { background: green; color: white; }
     p[lang="en-after"] { font-weight: bold; }
-  </style>
+  ]]></style>
   <script type="text/javascript">
     function test() {
       document.getElementsByTagName('html')[0].lang = 'en-after';

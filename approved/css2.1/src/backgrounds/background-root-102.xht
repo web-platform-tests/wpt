@@ -6,11 +6,13 @@
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/background/dynamic/002.html" type="text/html"/>
   <meta name="flags" content="dom"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#background" />
-  <style type="text/css">
+  <link rel="match" href="background-root-101-ref.xht" />
+
+  <style type="text/css"><![CDATA[
     body.before { background: red; color: yellow; }
     body.after { background: green; color: white; }
     p.after { font-weight: bold; }
-  </style>
+  ]]></style>
   <script type="text/javascript">
     function test() {
       document.getElementsByTagName('body')[0].className = 'after';

@@ -9,32 +9,23 @@
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch" />
 
   <style type="text/css"><![CDATA[
-  div
-  {
-  border: black solid;
-  color: navy;
-  font: 2em monospace;
-  margin: 1em;
-  padding: 1em;
-  }
-
-  span
-  {
-  background-color: yellow;
-  border: orange solid;
-  margin: 0.1em 1em;
-  padding: 0.1em 1em;
-  }
+   div
+   {
+   background-color: lime;
+   border: solid;
+   font-size: 2.5em;
+   height: 1em;
+   width: 17em;
+   }
   ]]></style>
+
  </head>
 
  <body>
+  
+  <p>There should be no red below, just one unbroken bar of green. (Force bidi: &#x05D0;)</p>
 
-  <p>The following two lines should be identical. (Force bidi: &#x05D0;)</p>
-
-  <div>TEST<span>TEST</span></div>
-
-  <div>TEST<span>TEST</span></div> 
+  <div></div>
 
  </body>
 </html>

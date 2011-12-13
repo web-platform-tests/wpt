@@ -5,6 +5,8 @@
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/ib/003.html" type="text/html"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#display-prop" />
+  <link rel="match" href="block-in-inline-003-ref.xht" />
+
   <meta name="assert" content="When an inline box contains a block box,
     the inline box is broken around the box and its pieces, if empty,
     will not show any background."/>
@@ -17,7 +19,7 @@
   <div class="block">
    <div class="inline">
     <div class="block">
-     There should be no red on this page.
+     There should be no red.
     </div>
    </div>
   </div>

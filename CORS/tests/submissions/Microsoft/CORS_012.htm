@@ -1,0 +1,43 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <title>Verify non-simple Headers are only exposed if in Access-Control-Expose-Header for XHR requests</title>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+        <meta description="Verify non-simple Headers are only exposed if in Access-Control-Expose-Header for XHR requests" />
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://dvcs.w3.org/hg/cors/raw-file/tip/Overview.html#handling-a-response-to-a-cross-origin-request"/>
+        <script src="http://w3c-test.org/resources/testharness.js"></script>
+        <script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+        <script src="SetCORSUrls.js"></script>
+    </head>
+    <body>
+        <div id=log></div>
+        <script type="text/javascript">
+            var t = async_test("Verify non-simple Headers are only exposed if in Access-Control-Expose-Header for XHR requests");
+            var xhr = new XMLHttpRequest();
+            if('withCredentials' in xhr)
+            {
+                var url = CORS_SERVER_URL + "?TestID=12"
+                xhr.open("GET", url, true);
+                xhr.onreadystatechange = function(e)
+                {
+                    if (xhr.readyState == 4)
+                    {
+                        // The server responds back with two custom headers 'X-FOO' and 'X-TEST'
+                        // It also responds with the header 'Access-Control-Expose-Header: X-FOO'
+                        // 'X-FOO' should be exposed to getResponseHeader(), but not 'X-TEST'
+                        t.step(function(){assert_true(xhr.getResponseHeader("X-FOO") !== null, "['X-FOO' should have been exposed]")});
+                        t.step(function(){assert_true(xhr.getResponseHeader("X-TEST") === null, "['X-TEST' should not have been exposed]")});
+                        t.done();
+                    }
+                }
+                xhr.send();
+            }
+            else
+            {
+                t.step(function(){assert_unreached("[Cross-Origin XMLHttpRequests are not supported]")});
+                t.done();
+            }
+        </script>
+    </body>
+</html>

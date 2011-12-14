@@ -1,0 +1,42 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <title>Cross-origin XHR Redirect scenario</title>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+        <meta description="Cross-origin XHR Redirect scenario" />
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://dvcs.w3.org/hg/cors/raw-file/tip/Overview.html#redirect-steps"/>
+        <script src="http://w3c-test.org/resources/testharness.js"></script>
+        <script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+        <script src="SetCORSUrls.js"></script>
+    </head>
+    <body>
+        <div id=log></div>
+        <script type="text/javascript">
+            var t = async_test("Cross-origin XHR Redirect scenario");
+            var xhr = new XMLHttpRequest();
+            if('withCredentials' in xhr)
+            {
+                var url = CORS_SERVER_URL + "?TestID=14";
+                xhr.open("GET", url, true);
+                xhr.onreadystatechange = function(e)
+                {
+                    if (xhr.readyState == 4)
+                    {
+                        // The server performs a 302 redirect to CORS_SERVER_URL + "?TestID=140"
+                        // Both the initial request and the redirected request contain the proper
+                        // "Access-Control-Allow-Origin: origin" headers, so the request should succeed
+                        t.step(function(){assert_true(xhr.status === 200 && xhr.responseText === "test")});
+                        t.done();
+                    }
+                }
+                xhr.send();
+            }
+            else
+            {
+                t.step(function(){assert_unreached("[Cross-Origin XMLHttpRequests are not supported]")});
+                t.done();
+            }
+        </script>
+    </body>
+</html>

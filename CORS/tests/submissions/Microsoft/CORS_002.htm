@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <title>Cross-Origin XHR Test - Allowed (Access-Control-Allow-Origin: origin)</title>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+        <meta description="Cross-Origin XHR Test - Allowed (Access-Control-Allow-Origin: origin)" />
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://dvcs.w3.org/hg/cors/raw-file/tip/Overview.html#resource-sharing-check-0"/>
+        <script src="http://w3c-test.org/resources/testharness.js"></script>
+        <script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+        <script src="SetCORSUrls.js"></script>
+    </head>
+    <body>
+        <div id=log></div>
+        <script type="text/javascript">
+            var t = async_test("Cross-Origin XHR Test - Allowed (Access-Control-Allow-Origin: origin)");
+            var xhr = new XMLHttpRequest();
+            if('withCredentials' in xhr)
+            {
+                var url = CORS_SERVER_URL + "?TestID=2";
+                xhr.open("GET", url, true);
+                xhr.onreadystatechange = function(e)
+                {
+                    if (xhr.readyState == 4)
+                    {
+                        // The request should succeed because the requesting origin matches the
+                        // origin given in the 'Access-Control-Allow-Origin' response header
+                        t.step(function(){assert_true(xhr.status === 200 && xhr.responseText === "test")});
+                        t.done();
+                    }
+                }
+                xhr.send();
+            }
+            else
+            {
+                t.step(function(){assert_unreached("[Cross-Origin XMLHttpRequests are not supported]")});
+                t.done();
+            }
+        </script>
+    </body>
+</html>

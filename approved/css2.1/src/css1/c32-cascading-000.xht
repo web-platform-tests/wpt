@@ -6,6 +6,8 @@
   <link rel="author" title="CSS1 Test Suite Contributors" href="http://www.w3.org/Style/CSS/Test/CSS1/current/tsack.html"/>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
   <link rel="stylesheet" href="support/c-red.css"/>
+  <link rel="match" href="c32-cascading-000-ref.xht" />
+
   <style type="text/css"><![CDATA[
    body * { color: red; list-style: none; margin: 0; padding: 0; }
    span { color: red; }
@@ -32,23 +34,25 @@
   ]]></style>
   <link rel="help" href="http://www.w3.org/TR/CSS21/cascade.html#cascading-order" title="6.4.1 Cascading order"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/cascade.html#specificity" title="6.4.3 Calculating a selector's specificity"/>
+
+  <meta http-equiv="Content-Style-Type" content="text/css" />
  </head>
  <body>
   <ul>
-   <li> <span class="a"> This should be green. </span> </li>
-   <li> <span class="b"> This should be green. </span>
+   <li> <span class="a"> This sentence should be green. </span> </li>
+   <li> <span class="b"> This sentence should be green. </span>
     <ul>
-     <li> <span class="c"> This should be green. </span> </li>
-     <li> <span class="c"> This should be green. </span> </li>
-     <li class="test1"> <span class="d"> This should be green. </span> </li>
+     <li> <span class="c"> This sentence should be green. </span> </li>
+     <li> <span class="c"> This sentence should be green. </span> </li>
+     <li class="test1"> <span class="d"> This sentence should be green. </span> </li>
     </ul>
    </li>
-   <li class="test2"> <span class="e"> This should be green. </span> </li>
-   <li class="test3" id="test3"> <span class="f"> This should be green. </span> </li>
-   <li> <span class="a"> This should be green. </span> </li>
+   <li class="test2"> <span class="e"> This sentence should be green. </span> </li>
+   <li class="test3" id="test3"> <span class="f"> This sentence should be green. </span> </li>
+   <li> <span class="a"> This sentence should be green. </span> </li>
   </ul>
-  <p style="color: green;"> This should be green. </p>
-  <p class="test4"> This should be green. </p>
-  <p class="c"> This should be green. </p>
+  <p style="color: green;"> This sentence should be green. </p>
+  <p class="test4"> This sentence should be green. </p>
+  <p class="c"> This sentence should be green. </p>
  </body>
 </html>

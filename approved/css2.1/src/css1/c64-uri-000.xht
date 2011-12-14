@@ -7,6 +7,8 @@
   <link rel="author" title="CSS1 Test Suite Contributors" href="http://www.w3.org/Style/CSS/Test/CSS1/current/tsack.html"/>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
   <link rel="stylesheet" href="support/css1test64a.css"/>
+  <link rel="match" href="c64-uri-000-ref.xht" />
+
   <style type="text/css"><![CDATA[
    @import url(support/css1test64b.css);
    p.zero {background: red url(support/swatch-green.png);color:white;}
@@ -15,9 +17,9 @@
   <link rel="help" href="http://www.w3.org/TR/CSS21/cascade.html#at-import" title="6.3 The @import rule"/>
  </head>
  <body>
-  <p>There should be three green lines below.</p>
-  <p class="zero"> This line should be green. </p>
-  <p class="one"> This line should be green. </p>
-  <p class="two"> This line should be green. </p>
+  <p>Test passes if there are 3 sentences with a green background.</p>
+  <p class="zero"> This sentence should have a green background. </p>
+  <p class="one"> This sentence should have a green background. </p>
+  <p class="two"> This sentence should have a green background. </p>
  </body>
 </html>

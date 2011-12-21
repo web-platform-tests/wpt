@@ -32,6 +32,10 @@ policies and contribution forms [3].
  * this will be populated with a table containing the test results after all
  * the tests have run.
  *
+ * NOTE: By default tests must be created before the load event fires. For ways
+ *       to create tests after the load event, see "Determining when all tests are
+ *       complete", below
+ *
  * == Synchronous Tests ==
  *
  * To create a synchronous test use the test() function:
@@ -98,6 +102,10 @@ policies and contribution forms [3].
  *
  * The description parameter is used to present more useful error messages when
  * a test fails
+ *
+ * NOTE: All asserts must be located in a test() or a step of an async_test().
+ *       asserts outside these places won't be detected correctly by the harness
+ *       and may cause a file to stop testing.
  *
  * == Setup ==
  *
@@ -670,6 +678,14 @@ policies and contribution forms [3].
     function _assert_inherits(name) {
         return function (object, property_name, description)
         {
+            assert(typeof object === "object",
+                   name, description,
+                   "provided value is not an object");
+
+            assert("hasOwnProperty" in object,
+                   name, description,
+                   "provided value is an object but has no hasOwnProperty method");
+
             assert(!object.hasOwnProperty(property_name),
                    name, description,
                    "property ${p} found on object expected in prototype chain",
@@ -734,7 +750,7 @@ policies and contribution forms [3].
                 INVALID_CHARACTER_ERR: 5,
                 NO_MODIFICATION_ALLOWED_ERR: 7,
                 NOT_FOUND_ERR: 8,
-                NOT_SUPPOTED_ERR: 9,
+                NOT_SUPPORTED_ERR: 9,
                 INVALID_STATE_ERR: 11,
                 SYNTAX_ERR: 12,
                 INVALID_MODIFICATION_ERR: 13,

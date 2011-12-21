@@ -1,0 +1,20 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>HTML Test: newline in &lt;textarea&gt; separates bidi paragraphs</title>
+<link rel="reference" href="textarea-newline-bidi-ref.html" />
+<link rel="author" title="Amir E. Aharoni" href="mailto:amir.aharoni@mail.huji.ac.il"/>
+<link rel="author" title="Eyal Sela" href="mailto:eyal@post.isoc.org.il"/>
+<link rel="author" title="Aharon Lanin" href="mailto:aharon@google.com"/>
+<link rel="help" href="http://dev.w3.org/html5/spec/Overview.html#the-textarea-element"/>
+<meta name="assert"
+      content="A newline in a textarea element, and in its raw value, should separate paragraphs for the purposes of the Unicode bidirectional algorithm.">
+</head>
+<body>
+<p>The rightmost character in the first line in the textarea must be a full stop and to the left of it must be a Hebrew letter.</p>
+<textarea cols="70" rows="3">
+A Hebrew letter and a full stop: &#x05d0;.
+&#x05d0; this line begins with a Hebrew letter.
+</textarea>
+</body>
+</html>

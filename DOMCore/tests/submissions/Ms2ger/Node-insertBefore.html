@@ -4,22 +4,37 @@
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
 <script>
-function testHRE(node) {
+function testLeafNode(node) {
+  test(function() {
+    assert_throws(new TypeError(), function() { node.insertBefore(null, null) })
+  }, "Calling insertBefore with a non-Node first argument on a leaf node " + node + " must throw TypeError.")
   test(function() {
     assert_throws("HIERARCHY_REQUEST_ERR", function() { node.insertBefore(document.createTextNode("fail"), null) })
-    assert_throws(new TypeError(), function() { node.insertBefore(null, null) })
-  })
+    // Would be step 2.
+    assert_throws("HIERARCHY_REQUEST_ERR", function() { node.insertBefore(node, null) })
+    // Would be step 3.
+    assert_throws("HIERARCHY_REQUEST_ERR", function() { node.insertBefore(node, document.createTextNode("child")) })
+  }, "Calling insertBefore an a leaf node " + node + " must throw HIERARCHY_REQUEST_ERR.")
 }
+
 test(function() {
+  // WebIDL.
+  assert_throws(new TypeError(), function() { document.body.insertBefore(null, null) })
+  assert_throws(new TypeError(), function() { document.body.insertBefore(null, document.body.firstChild) })
+  assert_throws(new TypeError(), function() { document.body.insertBefore({'a':'b'}, document.body.firstChild) })
+}, "Calling insertBefore with a non-Node first argument must throw TypeError.")
+
+test(function() {
+  // Step 1.
+  testLeafNode(document.doctype)
+  testLeafNode(document.createTextNode("Foo"))
+  testLeafNode(document.createComment("Foo"))
+  testLeafNode(document.createProcessingInstruction("foo", "bar"))
+}, "Must be able to create all leaf nodes in HTML documents.")
+
+test(function() {
+  // Step 2.
   assert_throws("HIERARCHY_REQUEST_ERR", function() { document.body.insertBefore(document.body, document.getElementById("log")) })
   assert_throws("HIERARCHY_REQUEST_ERR", function() { document.body.insertBefore(document.documentElement, document.getElementById("log")) })
-
-  assert_throws(new TypeError(), function() { document.body.insertBefore(null, null) })
-
-  assert_throws(new TypeError(), function() { document.body.insertBefore(null, document.body.firstChild) })
-
-  assert_throws(new TypeError(), function() { document.body.insertBefore({'a':'b'}, document.body.firstChild) })
-
-  testHRE(document.createTextNode("Foo"))
-})
+}, "Calling insertBefore with an inclusive ancestor of the context object must throw HIERARCHY_REQUEST_ERR.")
 </script>

@@ -214,10 +214,7 @@ interface Document : Node {
   readonly attribute DOMString URL;
   readonly attribute DOMString documentURI;
   readonly attribute DOMString compatMode;
-
-           attribute DOMString charset;
   readonly attribute DOMString characterSet;
-  readonly attribute DOMString defaultCharset;
   readonly attribute DOMString contentType;
 
   readonly attribute DocumentType? doctype;
@@ -243,6 +240,11 @@ interface Document : Node {
 
   NodeIterator createNodeIterator(Node root, optional unsigned long whatToShow, optional NodeFilter? filter);
   TreeWalker createTreeWalker(Node root, optional unsigned long whatToShow, optional NodeFilter? filter);
+
+  // NEW
+  // Invalid WebIDL https://www.w3.org/Bugs/Public/show_bug.cgi?id=15346
+  //void prepend((Node or DOMString)... nodes);
+  //void append((Node or DOMString)... nodes);
 };
 
 interface XMLDocument : Document {};
@@ -256,12 +258,23 @@ interface DOMImplementation {
 };
 
 interface DocumentFragment : Node {
+  // NEW
+  // Invalid WebIDL https://www.w3.org/Bugs/Public/show_bug.cgi?id=15346
+  //void prepend((Node or DOMString)... nodes);
+  //void append((Node or DOMString)... nodes);
 };
 
 interface DocumentType : Node {
   readonly attribute DOMString name;
   readonly attribute DOMString publicId;
   readonly attribute DOMString systemId;
+
+  // NEW
+  // Invalid WebIDL https://www.w3.org/Bugs/Public/show_bug.cgi?id=15346
+  //void before((Node or DOMString)... nodes);
+  //void after((Node or DOMString)... nodes);
+  //void replace((Node or DOMString)... nodes);
+  void remove();
 };
 
 interface Element : Node {
@@ -275,13 +288,13 @@ interface Element : Node {
   readonly attribute DOMTokenList classList;
 
   readonly attribute Attr[] attributes;
-  DOMString? getAttribute(DOMString qualifiedName);
+  DOMString? getAttribute(DOMString name);
   DOMString? getAttributeNS(DOMString? namespace, DOMString localName);
-  void setAttribute(DOMString qualifiedName, DOMString value);
-  void setAttributeNS(DOMString? namespace, DOMString qualifiedName, DOMString value);
-  void removeAttribute(DOMString qualifiedName);
+  void setAttribute(DOMString name, DOMString value);
+  void setAttributeNS(DOMString? namespace, DOMString name, DOMString value);
+  void removeAttribute(DOMString name);
   void removeAttributeNS(DOMString? namespace, DOMString localName);
-  boolean hasAttribute(DOMString qualifiedName);
+  boolean hasAttribute(DOMString name);
   boolean hasAttributeNS(DOMString? namespace, DOMString localName);
 
   NodeList getElementsByTagName(DOMString qualifiedName);
@@ -294,14 +307,24 @@ interface Element : Node {
   readonly attribute Element? previousElementSibling;
   readonly attribute Element? nextElementSibling;
   readonly attribute unsigned long childElementCount;
+
+  // NEW
+  // Invalid WebIDL https://www.w3.org/Bugs/Public/show_bug.cgi?id=15346
+  //void prepend((Node or DOMString)... nodes);
+  //void append((Node or DOMString)... nodes);
+  //void before((Node or DOMString)... nodes);
+  //void after((Node or DOMString)... nodes);
+  //void replace((Node or DOMString)... nodes);
+  void remove();
 };
 
 interface Attr {
+  readonly attribute DOMString name;
+           attribute DOMString value;
+
   readonly attribute DOMString? namespaceURI;
   readonly attribute DOMString? prefix;
   readonly attribute DOMString localName;
-  readonly attribute DOMString name;
-           attribute DOMString value;
 };
 
 interface CharacterData : Node {
@@ -312,6 +335,13 @@ interface CharacterData : Node {
   void insertData(unsigned long offset, DOMString data);
   void deleteData(unsigned long offset, unsigned long count);
   void replaceData(unsigned long offset, unsigned long count, DOMString data);
+
+  // NEW
+  // Invalid WebIDL https://www.w3.org/Bugs/Public/show_bug.cgi?id=15346
+  //void before((Node or DOMString)... nodes);
+  //void after((Node or DOMString)... nodes);
+  //void replace((Node or DOMString)... nodes);
+  void remove();
 };
 
 interface Text : CharacterData {
@@ -344,21 +374,18 @@ interface Range {
   void selectNode(Node refNode);
   void selectNodeContents(Node refNode);
 
-  // Invalid per WebIDL
-  // http://www.w3.org/Bugs/Public/show_bug.cgi?id=14843
-  //enum CompareHow : unsigned short {
-  //  START_TO_START = 0,
-  //  START_TO_END   = 1,
-  //  END_TO_END     = 2,
-  //  END_TO_START   = 3
-  //};
+  const unsigned short START_TO_START = 0;
+  const unsigned short START_TO_END = 1;
+  const unsigned short END_TO_END = 2;
+  const unsigned short END_TO_START = 3;
+  short compareBoundaryPoints(unsigned short how, Range sourceRange);
 
-  short compareBoundaryPoints(CompareHow how, Range sourceRange);
   void deleteContents();
   DocumentFragment extractContents();
   DocumentFragment cloneContents();
   void insertNode(Node node);
   void surroundContents(Node newParent);
+
   Range cloneRange();
   void detach();
 

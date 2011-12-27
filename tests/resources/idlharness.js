@@ -518,10 +518,9 @@ IdlException.prototype.test_self = function()
         //"Otherwise, the exception is not declared to inherit from another
         //exception. The value of the internal [[Prototype]] property is the
         //Error prototype object ([ECMA-262], section 15.11.3.1)."
-        //TODO: Implementations inherit from Object, not Error.  I test for how
-        //browsers behave, assuming the spec will change.
-        //http://www.w3.org/Bugs/Public/show_bug.cgi?id=14887
-        var inherit_exception = this.inheritance.length ? this.inheritance[0] : "Object";
+        //Note: This doesn't match browsers as of December 2011, see
+        //https://www.w3.org/Bugs/Public/show_bug.cgi?id=14887.
+        var inherit_exception = this.inheritance.length ? this.inheritance[0] : "Error";
         assert_own_property(window, inherit_exception,
                             'should inherit from ' + inherit_exception + ', but window has no such property');
         assert_own_property(window[inherit_exception], "prototype",

@@ -1,0 +1,45 @@
+<!DOCTYPE HTML>
+<html>
+ <head>
+  <title>Web Storage</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+ </head>
+ <body>
+	<p>
+		<h3>storage_local_setItem_NOT_SUPPORTED_ERR</h3>
+	</p>
+	
+	<hr>
+
+	<div id="log"></div>
+
+	<script>
+
+		if (('localStorage' in window) && window.localStorage !== null){
+			localStorage.clear();
+
+			try {
+				localStorage.setItem("name", value);
+			} catch (e) {
+				if (e.code == e["NOT_SUPPORTED_ERR"]) {
+					test(function() {
+						assert_true(true);
+					}, "NOT_SUPPORTED_ERR error test")
+				} else {
+					test(function() {
+						assert_unreached("NOT_SUPPORTED_ERR error did not raised.");
+					}, "NOT_SUPPORTED_ERR error test")
+				}
+			}
+
+		} else {
+			test(function()
+			{
+				assert_unreached("localStorage is not supported.");
+			}, "localStorage support test")
+		}	
+	</script>
+
+ </body>
+</html>

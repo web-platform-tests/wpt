@@ -471,12 +471,10 @@ IdlException.prototype.test_self = function()
         //characteristics as follows:"
         //"Its [[Prototype]] internal property is the Function prototype
         //object."
-        //FIXME: The spec is wrong, has to be Object.prototype and not
-        //Function.prototype.  I test for how browsers actually behave,
-        //assuming the bug will be fixed:
+        //Note: This doesn't match browsers as of December 2011, see
         //http://www.w3.org/Bugs/Public/show_bug.cgi?id=14813
-        assert_true(Object.prototype.isPrototypeOf(window[this.name]),
-                    "prototype of window's property " + format_value(this.name) + " is not Object.prototype");
+        assert_true(Function.prototype.isPrototypeOf(window[this.name]),
+                    "prototype of window's property " + format_value(this.name) + " is not Function.prototype");
         //"Its [[Get]] internal property is set as described in ECMA-262
         //section 15.3.5.4."
         //Not much to test for this.
@@ -813,12 +811,10 @@ IdlInterface.prototype.test_self = function()
         //characteristics as follows:"
         //"Its [[Prototype]] internal property is the Function prototype
         //object."
-        //FIXME: The spec is wrong, has to be Object.prototype and not
-        //Function.prototype.  I test for how browsers actually behave,
-        //assuming the bug will be fixed:
+        //Note: This doesn't match browsers as of December 2011, see
         //http://www.w3.org/Bugs/Public/show_bug.cgi?id=14813
-        assert_true(Object.prototype.isPrototypeOf(window[this.name]),
-                    "prototype of window's property " + format_value(this.name) + " is not Object.prototype");
+        assert_true(Function.prototype.isPrototypeOf(window[this.name]),
+                    "prototype of window's property " + format_value(this.name) + " is not Function.prototype");
         //"Its [[Get]] internal property is set as described in ECMA-262
         //section 15.3.5.4."
         //Not much to test for this.

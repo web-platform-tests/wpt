@@ -142,6 +142,12 @@ window.IdlArray = function()
 {
     this.members = {};
     this.objects = {};
+    // When adding multiple collections of IDLs one at a time, an earlier one
+    // might contain a partial interface or implements statement that depends
+    // on a later one.  Save these up and handle them right before we run
+    // tests.
+    this.partials = [];
+    this.implements = {};
 }
 
 IdlArray.prototype.add_idls = function(raw_idls)
@@ -172,14 +178,17 @@ IdlArray.prototype.internal_add_idls = function(parsed_idls)
     {
         if (parsed_idl.type == "partialinterface")
         {
-            if (!(parsed_idl.name in this.members))
+            this.partials.push(parsed_idl);
+            return;
+        }
+
+        if (parsed_idl.type == "implements")
+        {
+            if (!(parsed_idl.target in this.implements))
             {
-                throw "Partial interface " + parsed_idl.name + " with no original interface";
+                this.implements[parsed_idl.target] = [];
             }
-            parsed_idl.members.forEach(function(member)
-            {
-                this.members[parsed_idl.name].members.push(new IdlInterfaceMember(member));
-            }.bind(this));
+            this.implements[parsed_idl.target].push(parsed_idl.implements);
             return;
         }
 
@@ -205,7 +214,6 @@ IdlArray.prototype.internal_add_idls = function(parsed_idls)
             break;
 
         case "typedef":
-        case "implements":
             //TODO
             break;
 
@@ -235,8 +243,59 @@ IdlArray.prototype.prevent_multiple_testing = function(name)
     this.members[name].prevent_multiple_testing = true;
 }
 
+IdlArray.prototype.recursively_get_implements = function(interface_name)
+{
+    var ret = this.implements[interface_name];
+    if (ret === undefined)
+    {
+        return [];
+    }
+    for (var i = 0; i < this.implements[interface_name].length; i++)
+    {
+        ret = ret.concat(this.recursively_get_implements(ret[i]));
+        if (ret.indexOf(ret[i]) != ret.lastIndexOf(ret[i]))
+        {
+            throw "Circular implements statements involving " + ret[i];
+        }
+    }
+    return ret;
+}
+
 IdlArray.prototype.test = function()
 {
+    this.partials.forEach(function(parsed_idl)
+    {
+        if (!(parsed_idl.name in this.members)
+        || !(this.members[parsed_idl.name] instanceof IdlInterface))
+        {
+            throw "Partial interface " + parsed_idl.name + " with no original interface";
+        }
+        parsed_idl.members.forEach(function(member)
+        {
+            this.members[parsed_idl.name].members.push(new IdlInterfaceMember(member));
+        }.bind(this));
+    }.bind(this));
+    this.partials = [];
+
+    for (var lhs in this.implements)
+    {
+        this.recursively_get_implements(lhs).forEach(function(rhs)
+        {
+            if (!(lhs in this.members)
+            || !(this.members[lhs] instanceof IdlInterface)
+            || !(rhs in this.members)
+            || !(this.members[rhs] instanceof IdlInterface))
+            {
+                throw lhs + " implements " + rhs + ", but one is undefined or not an interface";
+            }
+            this.members[rhs].members.forEach(function(member)
+            {
+                this.members[lhs].members.push(new IdlInterfaceMember(member));
+            }.bind(this));
+        }.bind(this));
+    }
+    this.implements = {};
+
     for (var name in this.members)
     {
         this.members[name].test();

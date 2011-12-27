@@ -23,7 +23,11 @@ policies and contribution forms [3].
  *
      var s = "";
      [].forEach.call(document.getElementsByClassName("idl"), function(idl) {
-       s += idl.textContent + "\n\n"
+       //https://www.w3.org/Bugs/Public/show_bug.cgi?id=14914
+       if (!idl.classList.contains("extract"))
+       {
+         s += idl.textContent + "\n\n";
+       }
      });
      document.body.innerHTML = '<pre></pre>';
      document.body.firstChild.textContent = s;

@@ -543,12 +543,16 @@ IdlException.prototype.test_self = function()
         //"Its [[HasInstance]] internal property is set as described in
         //ECMA-262 section 15.3.5.3, unless otherwise specified."
         //TODO
+        //"Its [[Class]] internal property is “Function”."
+        //String() and {}.toString.call() should be equivalent, since nothing
+        //defines a stringifier.
+        assert_equals({}.toString.call(window[this.name]), "[object Function]",
+                      "{}.toString.call(" + this.name + ")");
+        assert_equals(String(window[this.name]), "[object Function]",
+                      "String(" + this.name + ")");
 
-        //TODO: test [[Class]] once that's defined
-        //http://www.w3.org/Bugs/Public/show_bug.cgi?id=14877
-
-        //TODO: 4.9.1.1. Exception interface object [[Call]] method does not
-        //match browsers http://www.w3.org/Bugs/Public/show_bug.cgi?id=14885
+        //TODO: Test 4.9.1.1. Exception interface object [[Call]] method (which
+        //does not match browsers: //http://www.w3.org/Bugs/Public/show_bug.cgi?id=14885)
     }.bind(this), this.name + " exception: existence and properties of exception interface object");
 
     test(function()
@@ -589,8 +593,15 @@ IdlException.prototype.test_self = function()
         assert_true(window[inherit_exception].prototype.isPrototypeOf(window[this.name].prototype),
                     'prototype of ' + this.name + '.prototype is not ' + inherit_exception + '.prototype');
 
-        //TODO: test [[Class]] once that's defined
-        //http://www.w3.org/Bugs/Public/show_bug.cgi?id=14877
+        //"The class string of an exception interface prototype object is the
+        //concatenation of the exception’s identifier and the string
+        //“Prototype”."
+        //String() and {}.toString.call() should be equivalent, since nothing
+        //defines a stringifier.
+        assert_equals({}.toString.call(window[this.name].prototype), "[object " + this.name + "Prototype]",
+                      "{}.toString.call(" + this.name + ")");
+        assert_equals(String(window[this.name].prototype), "[object " + this.name + "Prototype]",
+                      "String(" + this.name + ")");
     }.bind(this), this.name + " exception: existence and properties of exception interface prototype object");
 
     test(function()
@@ -784,8 +795,8 @@ IdlException.prototype.test_object = function(desc)
                 desc + "'s prototype is not " + this.name + ".prototype");
         }
 
-        //"The value of the internal [[Class]] property of the exception object
-        //must be the identifier of the exception."
+        //"The class string of the exception object must be the identifier of
+        //the exception."
         assert_equals({}.toString.call(obj), "[object " + this.name + "]", "{}.toString.call(" + desc + ")");
         //Stringifier is not defined for DOMExceptions, because message isn't
         //defined.
@@ -884,14 +895,12 @@ IdlInterface.prototype.test_self = function()
         //"Its [[HasInstance]] internal property is set as described in
         //ECMA-262 section 15.3.5.3, unless otherwise specified."
         //TODO
-
-        //"The [[Class]] property of the interface object must be the
-        //identifier of the interface."
+        //"Its [[Class]] internal property is “Function”."
         //String() and {}.toString.call() should be equivalent, since nothing
         //defines a stringifier.
-        assert_equals({}.toString.call(window[this.name]), "[object " + this.name + "]",
+        assert_equals({}.toString.call(window[this.name]), "[object Function]",
                       "{}.toString.call(" + this.name + ")");
-        assert_equals(String(window[this.name]), "[object " + this.name + "]",
+        assert_equals(String(window[this.name]), "[object Function]",
                       "String(" + this.name + ")");
 
         if (!this.has_extended_attribute("Constructor"))
@@ -993,8 +1002,16 @@ IdlInterface.prototype.test_self = function()
                             'should inherit from ' + inherit_interface + ', but that object has no "prototype" property');
         assert_true(window[inherit_interface].prototype.isPrototypeOf(window[this.name].prototype),
                     'prototype of ' + this.name + '.prototype is not ' + inherit_interface + '.prototype');
-        //TODO: test [[Class]] once that's defined
-        //http://www.w3.org/Bugs/Public/show_bug.cgi?id=14877
+
+        //"The class string of an interface prototype object is the
+        //concatenation of the interface’s identifier and the string
+        //“Prototype”."
+        //String() and {}.toString.call() should be equivalent, since nothing
+        //defines a stringifier.
+        assert_equals({}.toString.call(window[this.name].prototype), "[object " + this.name + "Prototype]",
+                      "{}.toString.call(" + this.name + ")");
+        assert_equals(String(window[this.name].prototype), "[object " + this.name + "Prototype]",
+                      "String(" + this.name + ")");
     }.bind(this), this.name + " interface: existence and properties of interface prototype object");
 
     test(function()
@@ -1211,9 +1228,9 @@ IdlInterface.prototype.test_primary_interface_of = function(desc, obj, exception
         }.bind(this), this.name + " must be primary interface of " + desc);
     }
 
-    //"The value of the internal [[Class]] property of a platform object that
-    //implements one or more interfaces must be the identifier of the primary
-    //interface of the platform object."
+    //"The class string of a platform object that implements one or more
+    //interfaces must be the identifier of the primary interface of the
+    //platform object."
     test(function()
     {
         assert_equals(exception, null, "Unexpected exception when evaluating object");

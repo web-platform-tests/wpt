@@ -1,0 +1,47 @@
+<!DOCTYPE HTML>
+<html manifest="manifest/clock.manifest">
+ <head>
+  <title>Offline Application Cache</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+ </head>
+ <body>
+	<p>
+		<h3>Event_cached</h3>
+	</p>
+	
+	<ol type="1">
+	<li>Remove the application cache.</li>
+	<li>Refresh the page.</li>
+	</ol>
+
+	<hr>
+
+	<div id="log"></div>
+
+	<script>
+
+		var t = async_test("cached event test");
+
+		if (('applicationCache' in window) && window.applicationCache !== null){
+			var cache = window.applicationCache;
+			
+			cache.addEventListener('cached', function(){
+				t.step(function() {
+				   assert_true(true);
+				  });
+			    t.done();
+			}, false);
+
+			cache.addEventListener('updateready', function(){
+				try {
+					cache.swapCache();
+				} catch (e) {
+					
+				}}, false);
+		}
+
+	</script>
+
+ </body>
+</html>

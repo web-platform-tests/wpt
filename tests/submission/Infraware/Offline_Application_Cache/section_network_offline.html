@@ -1,0 +1,22 @@
+<!DOCTYPE HTML>
+<html manifest="manifest/clock.manifest">
+ <head>
+  <title>Offline Application Cache</title>
+  <link rel="stylesheet" href="css/result.css">
+ </head>
+ <body>
+	<p>
+		<h3>Section_network_offline</h3>
+	</p>
+
+	<ol type="1">
+	<li>Disable the network connection.</li>
+	<li>Refresh the page.</li>
+	<li>If only the frame element can't be loaded, then test is <span class="manualpass"><b>PASS</b></span>, otherwise <span class="manualfail"><b>FAIL</b></span>.</li>
+	</ol>
+
+	<IFRAME id="TestFrame" name="TestWindow" src="html/clock.html" width="600" height="50" scrolling="auto" frameborder="1">
+	</IFRAME>
+
+ </body>
+</html>

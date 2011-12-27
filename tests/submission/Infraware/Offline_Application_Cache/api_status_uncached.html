@@ -1,0 +1,36 @@
+<!DOCTYPE HTML>
+<html>
+ <head>
+  <title>Offline Application Cache</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+ </head>
+ <body>
+	<p>
+		<h3>API_status_UNCACHED</h3>
+	</p>
+	
+	<hr>
+
+	<div id="log"></div>
+		 
+	<script>
+
+		if (('applicationCache' in window) && window.applicationCache !== null){
+			var cache = window.applicationCache;
+			
+			if (cache.status == cache.UNCACHED && cache.status == 0) {
+				test(function() {
+					assert_true(true);
+				}, "uncached status test")
+			} else {
+				test(function() {
+					assert_unreached("applicationCache status is not uncached.");
+				}, "uncached status test")
+			}
+		}
+
+	</script>
+
+ </body>
+</html>

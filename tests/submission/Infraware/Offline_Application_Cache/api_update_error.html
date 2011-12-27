@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<html manifest="manifest/clock.manifest">
+ <head>
+  <title>Offline Application Cache</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+ </head>
+ <body>
+	<p>
+		<h3>API_update_error</h3>
+	</p>
+	
+	<ol type="1">
+	<li>Remove the manifest file of server.</li>
+	<li>Refresh the page, then cache will be removed.</li>
+	<li>Refresh the page again, then calling of update method will fail.</li>
+	</ol>
+
+	<hr>
+
+	<div id="log"></div>
+		 
+	<script>
+
+		if (('applicationCache' in window) && window.applicationCache !== null){
+			var cache = window.applicationCache;
+
+			test(function()
+			{
+				assert_throws("INVALID_STATE_ERR", function(){cache.update();});
+			}, "INVALID_STATE_ERR error test")
+		}
+
+	</script>
+
+ </body>
+</html>

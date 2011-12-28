@@ -5,10 +5,6 @@
 <div id="log"></div>
 <script>
 test(function() {
-  if (!("WebSocket" in window) && ("MozWebSocket" in window)) {
-    window.WebSocket = window.MozWebSocket
-  }
-
   var __SERVER__NAME = "html5labs-interop.cloudapp.net"
   var __PORT = 80
   var __PATH = "echo"

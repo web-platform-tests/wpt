@@ -142,6 +142,7 @@ function setupRangeTests() {
 		"[document, 0, document, 1]",
 		"[document, 0, document, 2]",
 		"[document, 1, document, 2]",
+		"[comment, 2, comment, 3]",
 		"[testDiv, 0, comment, 5]",
 		"[paras[2].firstChild, 4, comment, 2]",
 		"[paras[3], 1, comment, 8]",
@@ -801,12 +802,11 @@ function myInsertNode(range, newNode) {
 		return "INVALID_STATE_ERR";
 	}
 
-	// "If the context object's start node is a Text or Comment node and its
-	// parent is null, raise an HIERARCHY_REQUEST_ERR exception and abort these
-	// steps."
-	if ((range.startContainer.nodeType == Node.TEXT_NODE
-	|| range.startContainer.nodeType == Node.COMMENT_NODE)
-	&& !range.startContainer.parentNode) {
+	// "If start node is a Comment node, or a Text node whose parent is null,
+	// throw an "HierarchyRequestError" exception and terminate these steps."
+	if (range.startContainer.nodeType == Node.COMMENT_NODE
+	|| (range.startContainer.nodeType == Node.TEXT_NODE
+	&& !range.startContainer.parentNode)) {
 		return "HIERARCHY_REQUEST_ERR";
 	}
 
@@ -833,10 +833,7 @@ function myInsertNode(range, newNode) {
 		}
 		range.setStart(start[0], start[1]);
 		range.setEnd(end[0], end[1]);
-	// "Otherwise, if the context object's start node is a Comment, let
-	// reference node be the context object's start node."
-	} else if (range.startContainer.nodeType == Node.COMMENT_NODE) {
-		referenceNode = range.startContainer;
+
 	// "Otherwise, let reference node be the child of the context object's
 	// start node with index equal to the context object's start offset, or
 	// null if there is no such child."

@@ -1,14 +1,4 @@
 support common.js
-Range-cloneContents.html
-Range-cloneRange.html
-Range-collapse.html
-Range-deleteContents.html
-Range-extractContents.html
 Range-insertNode.html
-Range-isPointInRange.html
-Range-mutations.html
-Range-selectNode.html
-Range-set.html
-Range-surroundContents.html
 interfaces.html
 support Range-test-iframe.html

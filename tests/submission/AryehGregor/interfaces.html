@@ -849,8 +849,7 @@ interface DOMElementMap {
 [NoInterfaceObject]
 interface Transferable { };
 
-//TODO http://www.w3.org/Bugs/Public/show_bug.cgi?id=14913
-//[OverrideBuiltins]
+[OverrideBuiltins]
 partial interface Document {
   // resource metadata management
   [PutForwards=href] readonly attribute Location? location;

@@ -270,6 +270,13 @@ IdlArray.prototype.test = function()
         {
             throw "Partial interface " + parsed_idl.name + " with no original interface";
         }
+        if (parsed_idl.extAttrs)
+        {
+            parsed_idl.extAttrs.forEach(function(extAttr)
+            {
+                this.members[parsed_idl.name].extAttrs.push(extAttr);
+            }.bind(this));
+        }
         parsed_idl.members.forEach(function(member)
         {
             this.members[parsed_idl.name].members.push(new IdlInterfaceMember(member));

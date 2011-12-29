@@ -1283,7 +1283,16 @@ IdlInterface.prototype.test_interface_of = function(desc, obj, exception, expect
                 }
                 if (member.type == "attribute")
                 {
-                    this.array.assert_type_is(obj[member.name], member.idlType);
+                    // Attributes are accessor properties, so they might
+                    // legitimately throw an exception rather than returning
+                    // anything.
+                    try
+                    {
+                        this.array.assert_type_is(obj[member.name], member.idlType);
+                    }
+                    catch (e)
+                    {
+                    }
                 }
                 if (member.type == "operation")
                 {

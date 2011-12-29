@@ -136,9 +136,9 @@ policies and contribution forms [3].
 "use strict";
 (function(){
 /// IdlArray ///
-//@{
 //Entry point
 window.IdlArray = function()
+//@{
 {
     this.members = {};
     this.objects = {};
@@ -150,12 +150,16 @@ window.IdlArray = function()
     this.implements = {};
 }
 
+//@}
 IdlArray.prototype.add_idls = function(raw_idls)
+//@{
 {
     this.internal_add_idls(WebIDLParser.parse(raw_idls));
 };
 
+//@}
 IdlArray.prototype.add_untested_idls = function(raw_idls)
+//@{
 {
     var parsed_idls = WebIDLParser.parse(raw_idls);
     for (var i = 0; i < parsed_idls.length; i++)
@@ -172,7 +176,9 @@ IdlArray.prototype.add_untested_idls = function(raw_idls)
     this.internal_add_idls(parsed_idls);
 }
 
+//@}
 IdlArray.prototype.internal_add_idls = function(parsed_idls)
+//@{
 {
     parsed_idls.forEach(function(parsed_idl)
     {
@@ -223,7 +229,9 @@ IdlArray.prototype.internal_add_idls = function(parsed_idls)
     }.bind(this));
 }
 
+//@}
 IdlArray.prototype.add_objects = function(dict)
+//@{
 {
     for (var k in dict)
     {
@@ -238,12 +246,16 @@ IdlArray.prototype.add_objects = function(dict)
     }
 }
 
+//@}
 IdlArray.prototype.prevent_multiple_testing = function(name)
+//@{
 {
     this.members[name].prevent_multiple_testing = true;
 }
 
+//@}
 IdlArray.prototype.recursively_get_implements = function(interface_name)
+//@{
 {
     var ret = this.implements[interface_name];
     if (ret === undefined)
@@ -261,7 +273,9 @@ IdlArray.prototype.recursively_get_implements = function(interface_name)
     return ret;
 }
 
+//@}
 IdlArray.prototype.test = function()
+//@{
 {
     this.partials.forEach(function(parsed_idl)
     {
@@ -316,7 +330,9 @@ IdlArray.prototype.test = function()
     }
 };
 
+//@}
 IdlArray.prototype.assert_type_is = function(value, type)
+//@{
 {
     if (type.idlType == "any")
     {
@@ -452,10 +468,9 @@ IdlArray.prototype.assert_type_is = function(value, type)
 //@}
 
 /// IdlObject ///
-//@{
 function IdlObject() {}
-
 IdlObject.prototype.has_extended_attribute = function(name)
+//@{
 {
     return this.extAttrs.some(function(o)
     {
@@ -463,25 +478,25 @@ IdlObject.prototype.has_extended_attribute = function(name)
     });
 };
 
-IdlObject.prototype.test = function() {};
 //@}
+IdlObject.prototype.test = function() {};
 
 /// IdlDictionary ///
-//@{
 //Used for IdlArray.prototype.assert_type_is
 function IdlDictionary(obj)
+//@{
 {
     this.name = obj.name;
     this.members = obj.members ? obj.members : [];
     this.inheritance = obj.inheritance ? obj.inheritance: [];
 }
 
-IdlDictionary.prototype = Object.create(IdlObject.prototype);
 //@}
+IdlDictionary.prototype = Object.create(IdlObject.prototype);
 
 /// IdlException ///
-//@{
 function IdlException(obj)
+//@{
 {
     this.name = obj.name;
     this.array = obj.array;
@@ -491,9 +506,10 @@ function IdlException(obj)
     this.inheritance = obj.inheritance ? obj.inheritance : [];
 }
 
+//@}
 IdlException.prototype = Object.create(IdlObject.prototype);
-
 IdlException.prototype.test = function()
+//@{
 {
     // Note: largely copy-pasted from IdlInterface, but then, so is the spec
     // text.
@@ -510,7 +526,9 @@ IdlException.prototype.test = function()
     this.test_members();
 }
 
+//@}
 IdlException.prototype.test_self = function()
+//@{
 {
     test(function()
     {
@@ -659,7 +677,9 @@ IdlException.prototype.test_self = function()
     }.bind(this), this.name + " exception: existence and properties of exception interface prototype object's \"constructor\" property");
 }
 
+//@}
 IdlException.prototype.test_members = function()
+//@{
 {
     for (var i = 0; i < this.members.length; i++)
     {
@@ -765,7 +785,9 @@ IdlException.prototype.test_members = function()
     }
 }
 
+//@}
 IdlException.prototype.test_object = function(desc)
+//@{
 {
     var obj, exception = null;
     try
@@ -831,8 +853,8 @@ IdlException.prototype.test_object = function(desc)
 //@}
 
 /// IdlInterface ///
-//@{
 function IdlInterface(obj)
+//@{
 {
     this.name = obj.name;
     this.array = obj.array;
@@ -842,9 +864,10 @@ function IdlInterface(obj)
     this.inheritance = obj.inheritance ? obj.inheritance : [];
 }
 
+//@}
 IdlInterface.prototype = Object.create(IdlObject.prototype);
-
 IdlInterface.prototype.test = function()
+//@{
 {
     if (this.has_extended_attribute("NoInterfaceObject"))
     {
@@ -859,7 +882,9 @@ IdlInterface.prototype.test = function()
     this.test_members();
 }
 
+//@}
 IdlInterface.prototype.test_self = function()
+//@{
 {
     test(function()
     {
@@ -1046,7 +1071,9 @@ IdlInterface.prototype.test_self = function()
     }.bind(this), this.name + ' interface: existence and properties of interface prototype object\'s "constructor" property');
 }
 
+//@}
 IdlInterface.prototype.test_members = function()
+//@{
 {
     for (var i = 0; i < this.members.length; i++)
     {
@@ -1170,7 +1197,9 @@ IdlInterface.prototype.test_members = function()
     }
 }
 
+//@}
 IdlInterface.prototype.test_object = function(desc)
+//@{
 {
     var obj, exception = null;
     try
@@ -1209,7 +1238,9 @@ IdlInterface.prototype.test_object = function(desc)
     }
 }
 
+//@}
 IdlInterface.prototype.test_primary_interface_of = function(desc, obj, exception, expected_typeof)
+//@{
 {
     //We can't easily test that its prototype is correct if there's no
     //interface object, or the object is from a different global environment
@@ -1248,9 +1279,11 @@ IdlInterface.prototype.test_primary_interface_of = function(desc, obj, exception
             assert_equals(String(obj), "[object " + this.name + "]", "String(" + desc + ")");
         }
     }.bind(this), "Stringification of " + desc);
-};
+}
 
+//@}
 IdlInterface.prototype.test_interface_of = function(desc, obj, exception, expected_typeof)
+//@{
 {
     //TODO: Indexed and named properties, more checks on interface members
     this.already_tested = true;
@@ -1329,7 +1362,9 @@ IdlInterface.prototype.test_interface_of = function(desc, obj, exception, expect
     }
 }
 
+//@}
 function do_interface_attribute_asserts(obj, member)
+//@{
 {
     //"For each attribute defined on the interface, there must exist a
     //corresponding property. If the attribute was declared with the
@@ -1389,8 +1424,8 @@ function do_interface_attribute_asserts(obj, member)
 //@}
 
 /// IdlInterfaceMember ///
-//@{
 function IdlInterfaceMember(obj)
+//@{
 {
     for (var k in obj)
     {
@@ -1409,12 +1444,12 @@ function IdlInterfaceMember(obj)
     }
 }
 
-IdlInterfaceMember.prototype = Object.create(IdlObject.prototype);
 //@}
+IdlInterfaceMember.prototype = Object.create(IdlObject.prototype);
 
 /// Internal helper functions ///
-//@{
 function create_suitable_object(type)
+//@{
 {
     if (type.nullable)
     {

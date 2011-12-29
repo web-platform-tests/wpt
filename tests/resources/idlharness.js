@@ -229,7 +229,7 @@ IdlArray.prototype.add_objects = function(dict)
     {
         if (k in this.objects)
         {
-            this.objects[k].push(dict[k]);
+            this.objects[k] = this.objects[k].concat(dict[k]);
         }
         else
         {
@@ -846,8 +846,6 @@ IdlInterface.prototype = Object.create(IdlObject.prototype);
 
 IdlInterface.prototype.test = function()
 {
-    //TODO: Test constructors, probably lots of other stuff
-
     if (this.has_extended_attribute("NoInterfaceObject"))
     {
         //No tests to do without an instance
@@ -952,6 +950,8 @@ IdlInterface.prototype.test_self = function()
             assert_own_property(window[this.name], "length");
             assert_equals(window[this.name].length, expected_length, "wrong value for " + this.name + ".length");
             var desc = Object.getOwnPropertyDescriptor(window[this.name], "length");
+            assert_false("get" in desc, this.name + ".length has getter");
+            assert_false("set" in desc, this.name + ".length has setter");
             assert_false(desc.writable, this.name + ".length is writable");
             assert_false(desc.enumerable, this.name + ".length is enumerable");
             assert_false(desc.configurable, this.name + ".length is configurable");

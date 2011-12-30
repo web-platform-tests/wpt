@@ -1369,7 +1369,7 @@ policies and contribution forms [3].
         }
 
         log.appendChild(document.createElement("section"));
-        var html = "<h2>Details</h2><table id=results>"
+        var html = "<h2>Details</h2><table id='results'>"
             + "<thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead>"
             + "<tbody>";
         for (var i = 0; i < tests.length; i++) {

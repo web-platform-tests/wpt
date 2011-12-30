@@ -18,7 +18,7 @@ policies and contribution forms [3].
  *
  * == Basic Usage ==
  *
- * To use this file, import the script and the testhrnessreport script into
+ * To use this file, import the script and the testharnessreport script into
  * the test document:
  * <script src="/resources/testharnessreport.js"></script>
  * <script src="/resources/testharness.js"></script>

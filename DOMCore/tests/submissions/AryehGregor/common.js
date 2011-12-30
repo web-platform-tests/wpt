@@ -423,10 +423,26 @@ function isAncestor(ancestor, descendant) {
 }
 
 /**
+ * Returns true if ancestor is an inclusive ancestor of descendant, false
+ * otherwise.
+ */
+function isInclusiveAncestor(ancestor, descendant) {
+	return ancestor === descendant || isAncestor(ancestor, descendant);
+}
+
+/**
  * Returns true if descendant is a descendant of ancestor, false otherwise.
  */
 function isDescendant(descendant, ancestor) {
 	return isAncestor(ancestor, descendant);
+}
+
+/**
+ * Returns true if descendant is an inclusive descendant of ancestor, false
+ * otherwise.
+ */
+function isInclusiveDescendant(descendant, ancestor) {
+	return descendant === ancestor || isDescendant(descendant, ancestor);
 }
 
 /**

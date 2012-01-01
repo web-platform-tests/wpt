@@ -1,4 +1,8 @@
 support common.js
-Range-insertNode.html
 interfaces.html
+Range-commonAncestorContainer.html
+Range-compareBoundaryPoints.html
+Range-comparePoint.html
+Range-insertNode.html
+Range-intersectsNode.html
 support Range-test-iframe.html

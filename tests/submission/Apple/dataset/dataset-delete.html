@@ -14,7 +14,7 @@
         var d = document.createElement("div");
         d.setAttribute(attr, "value");
         delete d.dataset[prop];
-        return d.getAttribute(attr) != "value";
+        return d.hasAttribute(attr) === false && d.getAttribute(attr) != "value";
       }
 
       function testDeleteNoAdd(prop)
@@ -25,23 +25,23 @@
       }
 
       test(function() { assert_true(testDelete('data-foo', 'foo')); },
-        "Deleting element.dataset['foo'] should also remove an attribute with name 'data-foo' should it exist.'");
+        "Deleting element.dataset['foo'] should also remove an attribute with name 'data-foo' should it exist.");
       test(function() { assert_true(testDelete('data-foo-bar', 'fooBar')); },
-        "Deleting element.dataset['fooBar'] should also remove an attribute with name 'data-foo-bar' should it exist.'");
+        "Deleting element.dataset['fooBar'] should also remove an attribute with name 'data-foo-bar' should it exist.");
       test(function() { assert_true(testDelete('data--', '-')); },
-        "Deleting element.dataset['-'] should also remove an attribute with name 'data--' should it exist.'");
+        "Deleting element.dataset['-'] should also remove an attribute with name 'data--' should it exist.");
       test(function() { assert_true(testDelete('data--foo', 'Foo')); },
-        "Deleting element.dataset['Foo'] should also remove an attribute with name 'data--foo' should it exist.'");
+        "Deleting element.dataset['Foo'] should also remove an attribute with name 'data--foo' should it exist.");
+      test(function() { assert_true(testDeleteNoAdd('data--foo', '-foo')); },
+        "Deleting element.dataset['-foo'] should also remove an attribute with name 'data--foo' should it exist.");
       test(function() { assert_true(testDelete('data---foo', '-Foo')); },
-        "Deleting element.dataset['-Foo'] should also remove an attribute with name 'data---foo' should it exist.'");
+        "Deleting element.dataset['-Foo'] should also remove an attribute with name 'data---foo' should it exist.");
       test(function() { assert_true(testDelete('data-', '')); },
-        "Deleting element.dataset[''] should also remove an attribute with name 'data-' should it exist.'");
+        "Deleting element.dataset[''] should also remove an attribute with name 'data-' should it exist.");
       test(function() { assert_true(testDelete('data-\xE0', '\xE0')); },
-        "Deleting element.dataset['\xE0'] should also remove an attribute with name 'data-\xE0' should it exist.'");
+        "Deleting element.dataset['\xE0'] should also remove an attribute with name 'data-\xE0' should it exist.");
       test(function() { assert_true(testDeleteNoAdd('foo')); },
-        "Deleting element.dataset['foo'] should not throw if even if the element does now have an attribute with the name data-foo.'");
-      test(function() { assert_throws("SYNTAX_ERR", function() { testDelete('dummy', '-foo') }); },
-        "Deleting element.dataset['-foo'] should throw a SYNTAX_ERR.'");
+        "Deleting element.dataset['foo'] should not throw if even if the element does now have an attribute with the name data-foo.");
     </script>
   </body>
 </html>

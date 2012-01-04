@@ -1,0 +1,247 @@
+<!doctype html>
+<title>CSS 2D Transforms tests</title>
+<link rel=author title="Aryeh Gregor" href="ayg@aryeh.name">
+<script src=http://w3c-test.org/resources/testharness.js></script>
+<script src=http://w3c-test.org/resources/testharnessreport.js></script>
+<style>
+body { margin: 0 }
+#test { height: 50px; width: 50px; background: blue }
+</style>
+<div id=test></div>
+<div id=log></div>
+<script>
+var div = document.querySelector("#test");
+// Arbitrarily chosen epsilon that makes browsers mostly pass with some extra
+// breathing room, since the specs don't define rounding.
+var epsilon = 1.5;
+var prop = "transform" in div.style ? "transform"
+	: "msTransform" in div.style ? "msTransform"
+	: "MozTransform" in div.style ? "MozTransform"
+	: "webkitTransform" in div.style ? "webkitTransform"
+	: "OTransform" in div.style ? "OTransform"
+	: undefined;
+
+function testTransform(value, a, b, c, d, e, f) {
+	div.style[prop] = value;
+
+	var originalPoints = [[0, 0], [0, 50], [50, 0], [50, 50]];
+	var xOffset = 25, yOffset = 25;
+	var expectedTop, expectedRight, expectedBottom, expectedLeft;
+	for (var i = 0; i < originalPoints.length; i++) {
+		var newX = a*(originalPoints[i][0]-xOffset) + c*(originalPoints[i][1]-yOffset) + e + xOffset;
+		var newY = b*(originalPoints[i][0]-xOffset) + d*(originalPoints[i][1]-yOffset) + f + yOffset;
+		if (expectedTop === undefined || newY < expectedTop) {
+			expectedTop = newY;
+		}
+		if (expectedRight === undefined || newX > expectedRight) {
+			expectedRight = newX;
+		}
+		if (expectedBottom === undefined || newY > expectedBottom) {
+			expectedBottom = newY;
+		}
+		if (expectedLeft === undefined || newX < expectedLeft) {
+			expectedLeft = newX;
+		}
+	}
+
+	test(function() {
+		if (a*d - b*c !== 0) {
+			// Don't test singular matrices for now.  IE fails some of them,
+			// which might be due to getBoundingClientRect() instead of
+			// transforms.
+			var rect = div.getBoundingClientRect();
+			assert_approx_equals(rect.top, expectedTop, epsilon, "top");
+			assert_approx_equals(rect.right, expectedRight, epsilon, "right");
+			assert_approx_equals(rect.bottom, expectedBottom, epsilon, "bottom");
+			assert_approx_equals(rect.left, expectedLeft, epsilon, "left");
+			assert_approx_equals(rect.width, expectedRight - expectedLeft, epsilon, "width");
+			assert_approx_equals(rect.height, expectedBottom - expectedTop, epsilon, "height");
+		}
+		var computed = getComputedStyle(div)[prop].replace(/px/g, "");
+		var re = /^matrix\(([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+)\)$/;
+		assert_regexp_match(computed, re, "computed value has unexpected form");
+		var match = re.exec(computed);
+		assert_approx_equals(Number(match[1]), a, epsilon, "getComputedStyle first matrix component");
+		assert_approx_equals(Number(match[2]), b, epsilon, "getComputedStyle second matrix component");
+		assert_approx_equals(Number(match[3]), c, epsilon, "getComputedStyle third matrix component");
+		assert_approx_equals(Number(match[4]), d, epsilon, "getComputedStyle fourth matrix component");
+		assert_approx_equals(Number(match[5]), e, epsilon, "getComputedStyle fifth matrix component");
+		assert_approx_equals(Number(match[6]), f, epsilon, "getComputedStyle sixth matrix component");
+	}, "transform: " + value);
+}
+
+var matrixValues = [-1, 0, 1, 1.72];
+matrixValues.forEach(function(a) {
+matrixValues.forEach(function(b) {
+matrixValues.forEach(function(c) {
+matrixValues.forEach(function(d) {
+matrixValues.forEach(function(e) {
+matrixValues.forEach(function(f) {
+	testTransform(
+		"matrix(" + a + ", " + b + ", " + c + ", " + d + ", " + e + ", " + f + ")",
+		a, b, c, d, e, f
+	);
+});
+});
+});
+});
+});
+});
+
+var translates = [-53.7, -5, -1, -0.12, 0, 0.1, 1, 5, 53.7];
+translates.forEach(function(tx) {
+	testTransform(
+		"translateX(" + tx + "px)",
+		1, 0, 0, 1, tx, 0
+	);
+	// tx is poorly named, since it's used for y here.
+	testTransform(
+		"translateY(" + tx + "px)",
+		1, 0, 0, 1, 0, tx
+	);
+	testTransform(
+		"translate(" + tx + "px)",
+		1, 0, 0, 1, tx, 0
+	);
+
+	translates.forEach(function(ty) {
+		testTransform(
+			"translate(" + tx + "px, " + ty + "px)",
+			1, 0, 0, 1, tx, ty
+		);
+	});
+});
+
+var scales = [-2, -1, -0.12, 0, 0.12, 1, 2];
+scales.forEach(function(sx) {
+	testTransform(
+		"scaleX(" + sx + ")",
+		sx, 0, 0, 1, 0, 0
+	);
+	// sx is poorly named, since it's used for y here, then for both x and y.
+	testTransform(
+		"scaleY(" + sx + ")",
+		1, 0, 0, sx, 0, 0
+	);
+	testTransform(
+		"scale(" + sx + ")",
+		sx, 0, 0, sx, 0, 0
+	);
+
+	scales.forEach(function(sy) {
+		testTransform(
+			"scale(" + sx + ", " + sy + ")",
+			sx, 0, 0, sy, 0, 0
+		);
+	});
+});
+
+var rotates = [-7, 0, 22.5, 45, 86.451, 90, 180, 270, 452];
+rotates.forEach(function(angle) {
+	testTransform(
+		"rotate(" + angle + "deg)",
+		Math.cos(angle * Math.PI/180),
+		Math.sin(angle * Math.PI/180),
+		-Math.sin(angle * Math.PI/180),
+		Math.cos(angle * Math.PI/180),
+		0,
+		0
+	);
+});
+
+// Do not test values close to 90 degrees, because this will cause coordinates
+// to get large, and the maximum values for coordinates is (of course) not
+// defined.
+var skews = [-45, -32.6, -0.05, 0, 0.05, 32.6, 45, 300];
+skews.forEach(function(angle) {
+	testTransform(
+		"skewX(" + angle + "deg)",
+		1, 0, Math.tan(angle * Math.PI/180), 1, 0, 0
+	);
+	testTransform(
+		"skewY(" + angle + "deg)",
+		1, Math.tan(angle * Math.PI/180), 0, 1, 0, 0
+	);
+});
+
+
+div.style[prop] = "";
+
+function testTransformOriginParsing(value, expectedHoriz, expectedVert) {
+	test(function() {
+		if (expectedHoriz == "left") {
+			expectedHoriz = "0%";
+		} else if (expectedHoriz == "center") {
+			expectedHoriz = "50%";
+		} else if (expectedHoriz == "right") {
+			expectedHoriz = "100%";
+		}
+		if (expectedVert == "top") {
+			expectedVert = "0%";
+		} else if (expectedVert == "center") {
+			expectedVert = "50%";
+		} else if (expectedVert == "bottom") {
+			expectedVert = "100%";
+		}
+
+		div.style[prop + "Origin"] = value;
+		var actual = getComputedStyle(div)[prop + "Origin"];
+		var re = /^([^ ]+)(px|%) ([^ ]+)(px|%)$/;
+		assert_regexp_match(actual, re, "Computed value has unexpected form");
+		var match = re.exec(actual);
+
+		if (/%$/.test(expectedHoriz)) {
+			assert_equals(match[2], "%",
+				"Expected percentage for horizontal part but got pixels");
+		} else {
+			assert_equals(match[2], "px",
+				"Expected pixels for horizontal part but got percentage");
+		}
+		assert_approx_equals(Number(match[1]), parseFloat(expectedHoriz),
+			epsilon, "Value of horizontal part");
+
+		if (/%$/.test(expectedVert)) {
+			assert_equals(match[4], "%",
+				"Expected percentage for vertical part but got pixels");
+		} else {
+			assert_equals(match[4], "px",
+				"Expected pixels for vertical part but got percentage");
+		}
+		assert_approx_equals(Number(match[3]), parseFloat(expectedVert),
+			epsilon, "Value of vertical part");
+	}, "Parsing of transform-origin: " + value);
+}
+
+// One argument
+[
+	["none", "50%", "50%"],
+	["quasit", "50%", "50%"],
+	["top", "50%", "0%"],
+	["right", "100%", "50%"],
+	["bottom", "50%", "100%"],
+	[" BOttOm\t", "50%", "100%"],
+	["left", "0%", "50%"],
+	["center", "50%", "50%"],
+	["37%", "37%", "50%"],
+	["117%", "117%", "50%"],
+	["41.2px", "41.2px", "50%"],
+	["-31.8px", "-31.8px", "50%"],
+].forEach(function(arr) {
+	testTransformOriginParsing(arr[0], arr[1], arr[2]);
+});
+
+// Two arguments
+var originArguments1 = ["left", "center", "right", "-12%", "0%", "50%",
+	"51.235%", "100%", "126%", "-15px", "-1px", "-0.25px", "0px", "0.25px",
+	"1px", "15px"];
+var originArguments2 = ["top", "center", "bottom", "-12%", "0%", "50%",
+	"51.235%", "100%", "126%", "-15px", "-1px", "-0.25px", "0px", "0.25px",
+	"1px", "15px"];
+originArguments1.forEach(function(arg1) {
+	originArguments2.forEach(function(arg2) {
+		testTransformOriginParsing(arg1 + " " + arg2, arg1, arg2);
+	});
+});
+
+document.querySelector("style").disabled = true;
+</script>

@@ -31,13 +31,28 @@ var prop = "transform" in div.style ? "transform"
 	: "webkitTransform" in div.style ? "webkitTransform"
 	: "OTransform" in div.style ? "OTransform"
 	: undefined;
+var hyphenatedProp = {
+	transform: "transform",
+	msTransform: "-ms-transform",
+	MozTransform: "-moz-transform",
+	webkitTransform: "-webkit-transform",
+	OTransform: "-o-transform",
+}[prop];
 
 /**
  * Tests that style="transform: value" results in transformation by the matrix
  * [a, b, c, d, e, f].  Checks both the computed value and bounding box.
  */
 function testTransform(value, a, b, c, d, e, f) {
-	testTransformParsing(value, a, b, c, d, e, f);
+	div.removeAttribute("style");
+	test(function() {
+		div.style[prop] = value;
+		testTransformParsing(a, b, c, d, e, f);
+	}, "Computed value for transform: " + value + " set via CSSOM");
+	test(function() {
+		div.setAttribute("style", hyphenatedProp + ": " + value);
+		testTransformParsing(a, b, c, d, e, f);
+	}, "Computed value for transform: " + value + " set via setAttribute()");
 	testTransformedBoundary(value, a, b, c, d, e, f, "50% 50%", divWidth/2, divHeight/2);
 }
 
@@ -45,25 +60,21 @@ function testTransform(value, a, b, c, d, e, f) {
  * Tests that style="transform: value" results in a computed value of
  * "matrix(a, b, c, d, e, f)".
  */
-function testTransformParsing(value, a, b, c, d, e, f) {
-	test(function() {
-		// TODO: test div.setAttribute("style", ...) too
-		div.style[prop] = value;
-		// FIXME: We allow px optionally in the last two entries because Gecko
-		// adds it while other engines don't, and the spec is unclear about
-		// which behavior is correct:
-		// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15431
-		var computed = getComputedStyle(div)[prop];
-		var re = /^matrix\(([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+?)(?:px)?, ([^,]+?)(?:px)?\)$/;
-		assert_regexp_match(computed, re, "computed value has unexpected form");
-		var match = re.exec(computed);
-		assert_approx_equals(Number(match[1]), a, epsilon, "getComputedStyle first matrix component");
-		assert_approx_equals(Number(match[2]), b, epsilon, "getComputedStyle second matrix component");
-		assert_approx_equals(Number(match[3]), c, epsilon, "getComputedStyle third matrix component");
-		assert_approx_equals(Number(match[4]), d, epsilon, "getComputedStyle fourth matrix component");
-		assert_approx_equals(Number(match[5]), e, epsilon, "getComputedStyle fifth matrix component");
-		assert_approx_equals(Number(match[6]), f, epsilon, "getComputedStyle sixth matrix component");
-	}, "Computed value for transform: " + value);
+function testTransformParsing(a, b, c, d, e, f) {
+	// FIXME: We allow px optionally in the last two entries because Gecko
+	// adds it while other engines don't, and the spec is unclear about
+	// which behavior is correct:
+	// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15431
+	var computed = getComputedStyle(div)[prop];
+	var re = /^matrix\(([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+?)(?:px)?, ([^,]+?)(?:px)?\)$/;
+	assert_regexp_match(computed, re, "computed value has unexpected form");
+	var match = re.exec(computed);
+	assert_approx_equals(Number(match[1]), a, epsilon, "getComputedStyle first matrix component");
+	assert_approx_equals(Number(match[2]), b, epsilon, "getComputedStyle second matrix component");
+	assert_approx_equals(Number(match[3]), c, epsilon, "getComputedStyle third matrix component");
+	assert_approx_equals(Number(match[4]), d, epsilon, "getComputedStyle fourth matrix component");
+	assert_approx_equals(Number(match[5]), e, epsilon, "getComputedStyle fifth matrix component");
+	assert_approx_equals(Number(match[6]), f, epsilon, "getComputedStyle sixth matrix component");
 }
 
 /**
@@ -74,47 +85,58 @@ function testTransformParsing(value, a, b, c, d, e, f) {
  */
 function testTransformedBoundary(transformValue, a, b, c, d, e, f,
                                  transformOriginValue, xOffset, yOffset) {
+	var originalPoints = [[0, 0], [0, divHeight], [divWidth, 0], [divWidth, divHeight]];
+	var expectedTop, expectedRight, expectedBottom, expectedLeft;
+	for (var i = 0; i < originalPoints.length; i++) {
+		var newX = a*(originalPoints[i][0]-xOffset) + c*(originalPoints[i][1]-yOffset) + e + xOffset;
+		var newY = b*(originalPoints[i][0]-xOffset) + d*(originalPoints[i][1]-yOffset) + f + yOffset;
+		if (expectedTop === undefined || newY < expectedTop) {
+			expectedTop = newY;
+		}
+		if (expectedRight === undefined || newX > expectedRight) {
+			expectedRight = newX;
+		}
+		if (expectedBottom === undefined || newY > expectedBottom) {
+			expectedBottom = newY;
+		}
+		if (expectedLeft === undefined || newX < expectedLeft) {
+			expectedLeft = newX;
+		}
+	}
+	// Don't test singular matrices for now.  IE fails some of them, which
+	// might be due to getBoundingClientRect() instead of transforms.
+	if (a*d - b*c === 0) {
+		return;
+	}
+
+	div.removeAttribute("style");
 	test(function() {
-		// TODO: test div.setAttribute("style", ...) too
 		div.style[prop] = transformValue;
 		div.style[prop + "Origin"] = transformOriginValue;
-
-		var originalPoints = [[0, 0], [0, divHeight], [divWidth, 0], [divWidth, divHeight]];
-		var expectedTop, expectedRight, expectedBottom, expectedLeft;
-		for (var i = 0; i < originalPoints.length; i++) {
-			var newX = a*(originalPoints[i][0]-xOffset) + c*(originalPoints[i][1]-yOffset) + e + xOffset;
-			var newY = b*(originalPoints[i][0]-xOffset) + d*(originalPoints[i][1]-yOffset) + f + yOffset;
-			if (expectedTop === undefined || newY < expectedTop) {
-				expectedTop = newY;
-			}
-			if (expectedRight === undefined || newX > expectedRight) {
-				expectedRight = newX;
-			}
-			if (expectedBottom === undefined || newY > expectedBottom) {
-				expectedBottom = newY;
-			}
-			if (expectedLeft === undefined || newX < expectedLeft) {
-				expectedLeft = newX;
-			}
-		}
-
-		// Don't test singular matrices for now.  IE fails some of them, which
-		// might be due to getBoundingClientRect() instead of transforms.
-		if (a*d - b*c !== 0) {
-			// FIXME: We assume getBoundingClientRect() returns the rectangle
-			// that contains the transformed box, not the untransformed box.
-			// This is not actually specified anywhere:
-			// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15430
-			var rect = div.getBoundingClientRect();
-			assert_approx_equals(rect.top, expectedTop, epsilon, "top");
-			assert_approx_equals(rect.right, expectedRight, epsilon, "right");
-			assert_approx_equals(rect.bottom, expectedBottom, epsilon, "bottom");
-			assert_approx_equals(rect.left, expectedLeft, epsilon, "left");
-			assert_approx_equals(rect.width, expectedRight - expectedLeft, epsilon, "width");
-			assert_approx_equals(rect.height, expectedBottom - expectedTop, epsilon, "height");
-		}
-	}, "Boundaries with transform: " + transformValue + "; transform-origin: " + transformOriginValue);
+		testTransformedBoundaryAsserts(expectedTop, expectedRight, expectedBottom, expectedLeft);
+	}, "Boundaries with transform: " + transformValue + "; transform-origin: " + transformOriginValue + " set via CSSOM");
+	test(function() {
+		div.setAttribute("style", hyphenatedProp + ": " + transformValue + "; "
+			+ hyphenatedProp + "-origin: " + transformOriginValue);
+		testTransformedBoundaryAsserts(expectedTop, expectedRight, expectedBottom, expectedLeft);
+	}, "Boundaries with transform: " + transformValue + "; transform-origin: " + transformOriginValue + " set via setAttribute()");
 }
+
+function testTransformedBoundaryAsserts(expectedTop, expectedRight, expectedBottom, expectedLeft) {
+	// FIXME: We assume getBoundingClientRect() returns the rectangle
+	// that contains the transformed box, not the untransformed box.
+	// This is not actually specified anywhere:
+	// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15430
+	var rect = div.getBoundingClientRect();
+	assert_approx_equals(rect.top, expectedTop, epsilon, "top");
+	assert_approx_equals(rect.right, expectedRight, epsilon, "right");
+	assert_approx_equals(rect.bottom, expectedBottom, epsilon, "bottom");
+	assert_approx_equals(rect.left, expectedLeft, epsilon, "left");
+	assert_approx_equals(rect.width, expectedRight - expectedLeft, epsilon, "width");
+	assert_approx_equals(rect.height, expectedBottom - expectedTop, epsilon, "height");
+}
+
+// TODO: Test no attribute, and "none"
 
 // Test style="transform: matrix(*)" (4^6 = 4096 permutations)
 var matrixValues = [-1, 0, 1, 1.72];
@@ -258,7 +280,31 @@ function testTransformOrigin(value, expectedHoriz, expectedVert) {
 		expectedVert = (parseFloat(expectedVert) * divHeight/100) + "px";
 	}
 
-	testTransformOriginParsing(value, expectedHoriz, expectedVert);
+	if (testTransformOrigin.counter === undefined) {
+		testTransformOrigin.counter = 0;
+	}
+	// The transform doesn't matter here, so set it to one of several
+	// possibilities arbitrarily (this actually catches a Gecko bug!)
+	var transformValue = {
+		0: "none",
+		1: "matrix(7, 0, -1, 13, 0, 0)",
+		2: "translate(4em, -15px)",
+		3: "scale(1.2, 1)",
+		4: "rotate(43deg)",
+	}[testTransformOrigin.counter % 5];
+	testTransformOrigin.counter++;
+	div.removeAttribute("style");
+
+	test(function() {
+		div.style[prop] = transformValue;
+		div.style[prop + "Origin"] = value;
+		testTransformOriginParsing(expectedHoriz, expectedVert);
+	}, "Computed value for transform-origin with transform: " + transformValue + "; transform-origin: " + value + " set via CSSOM");
+	test(function() {
+		div.setAttribute("style", hyphenatedProp + ": " + transformValue
+			+ "; " + hyphenatedProp + "-origin:" + value);
+		testTransformOriginParsing(expectedHoriz, expectedVert);
+	}, "Computed value for transform-origin with transform: " + transformValue + "; transform-origin: " + value + " set via setAttribute()");
 
 	// Test with a 45-degree rotation, since the effect of changing the origin
 	// will be easy to understand.
@@ -279,37 +325,19 @@ function testTransformOrigin(value, expectedHoriz, expectedVert) {
  * getComputedStyle().transformOrigin being expectedHoriz + " " + expectedVert.
  * expectedHoriz and expectedVert are always in pixels.
  */
-function testTransformOriginParsing(value, expectedHoriz, expectedVert) {
-	if (testTransformOriginParsing.counter === undefined) {
-		testTransformOriginParsing.counter = 0;
-	}
-	// The transform doesn't matter here, so set it to one of several
-	// possibilities arbitrarily (this actually catches a Gecko bug!)
-	var transformValue = {
-		0: "none",
-		1: "matrix(7, 0, -1, 13, 0, 0)",
-		2: "translate(4em, -15px)",
-		3: "scale(1.2, 1)",
-		4: "rotate(43deg)",
-	}[testTransformOriginParsing.counter % 5];
-	testTransformOriginParsing.counter++;
-	test(function() {
-		// TODO: test div.setAttribute("style", ...) too
-		div.style[prop] = transformValue;
-		div.style[prop + "Origin"] = value;
-		var actual = getComputedStyle(div)[prop + "Origin"];
-		var re = /^([^ ]+)px ([^ ]+)px$/;
-		assert_regexp_match(actual, re, "Computed value has unexpected form");
-		var match = re.exec(actual);
+function testTransformOriginParsing(expectedHoriz, expectedVert) {
+	var actual = getComputedStyle(div)[prop + "Origin"];
+	var re = /^([^ ]+)px ([^ ]+)px$/;
+	assert_regexp_match(actual, re, "Computed value has unexpected form");
+	var match = re.exec(actual);
 
-		assert_approx_equals(Number(match[1]), parseFloat(expectedHoriz),
-			epsilon, "Value of horizontal part (actual: "
-				 + actual + ", expected " + expectedHoriz + " " + expectedVert + ")");
+	assert_approx_equals(Number(match[1]), parseFloat(expectedHoriz),
+		epsilon, "Value of horizontal part (actual: "
+			 + actual + ", expected " + expectedHoriz + " " + expectedVert + ")");
 
-		assert_approx_equals(Number(match[2]), parseFloat(expectedVert),
-			epsilon, "Value of vertical part (actual: "
-				 + actual + ", expected " + expectedHoriz + " " + expectedVert + ")");
-	}, "Computed value for transform-origin with transform-origin: " + value + "; transform: " + transformValue);
+	assert_approx_equals(Number(match[2]), parseFloat(expectedVert),
+		epsilon, "Value of vertical part (actual: "
+			 + actual + ", expected " + expectedHoriz + " " + expectedVert + ")");
 }
 
 // Test transform-origin with one argument

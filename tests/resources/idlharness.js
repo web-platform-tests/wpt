@@ -1394,6 +1394,7 @@ function do_interface_attribute_asserts(obj, member)
     {
         assert_true(desc.configurable, "property must be configurable");
     }
+
     //"The attribute getter is a Function object whose behavior
     //when invoked is as follows:
     //"...
@@ -1401,6 +1402,10 @@ function do_interface_attribute_asserts(obj, member)
     //the Number value 0."
     assert_equals(typeof desc.get, "function", "getter must be Function");
     assert_equals(desc.get.length, 0, "getter length must be 0");
+
+    //TODO: Test calling setter on the interface prototype (should throw
+    //TypeError in most cases).
+    //
     //"The attribute setter is undefined if the attribute is
     //declared readonly and has neither a [PutForwards] nor a
     //[Replaceable] extended attribute declared on it.

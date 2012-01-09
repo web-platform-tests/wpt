@@ -312,8 +312,6 @@ skews.forEach(function(angle) {
  * (expectedHoriz, expectedVert), where the latter two parameters can be
  * keywords, percentages, or lengths.  Tests both that the computed value is
  * correct, and that the boundary box is as expected for a 45-degree rotation.
- *
- * TODO: Allow non-pixel units.
  */
 function testTransformOrigin(value, expectedHoriz, expectedVert) {
 	if (expectedHoriz == "left") {
@@ -322,9 +320,6 @@ function testTransformOrigin(value, expectedHoriz, expectedVert) {
 		expectedHoriz = "50%";
 	} else if (expectedHoriz == "right") {
 		expectedHoriz = "100%";
-	} else if (expectedHoriz == "0") {
-		// CSSOM says a length of zero is "0px".
-		expectedHoriz = "0px";
 	}
 	if (expectedVert == "top") {
 		expectedVert = "0%";
@@ -332,18 +327,12 @@ function testTransformOrigin(value, expectedHoriz, expectedVert) {
 		expectedVert = "50%";
 	} else if (expectedVert == "bottom") {
 		expectedVert = "100%";
-	} else if (expectedVert == "0") {
-		expectedVert = "0px";
 	}
 	// FIXME: Nothing defines resolved values here.  I picked the behavior of
 	// all non-Gecko engines, which is also the behavior Gecko for transforms
 	// other than "none": https://www.w3.org/Bugs/Public/show_bug.cgi?id=15433
-	if (/%$/.test(expectedHoriz)) {
-		expectedHoriz = (parseFloat(expectedHoriz) * divWidth/100) + "px";
-	}
-	if (/%$/.test(expectedVert)) {
-		expectedVert = (parseFloat(expectedVert) * divHeight/100) + "px";
-	}
+	expectedHoriz = convertToPx(expectedHoriz, divWidth);
+	expectedVert = convertToPx(expectedVert, divHeight);
 
 	if (testTransformOrigin.counter === undefined) {
 		testTransformOrigin.counter = 0;
@@ -381,14 +370,13 @@ function testTransformOrigin(value, expectedHoriz, expectedVert) {
 		-Math.sin(Math.PI/4), Math.cos(Math.PI/4),
 		0, 0,
 		// Origin
-		value, parseFloat(expectedHoriz), parseFloat(expectedVert)
+		value, expectedHoriz, expectedVert
 	);
 }
 
 /**
  * Tests that style="transform-origin: value" results in
- * getComputedStyle().transformOrigin being expectedHoriz + " " + expectedVert.
- * expectedHoriz and expectedVert are always in pixels.
+ * getComputedStyle().transformOrigin being expectedHoriz + "px " + expectedVert + "px".
  */
 function testTransformOriginParsing(expectedHoriz, expectedVert) {
 	var actual = getComputedStyle(div)[prop + "Origin"];
@@ -396,13 +384,13 @@ function testTransformOriginParsing(expectedHoriz, expectedVert) {
 	assert_regexp_match(actual, re, "Computed value has unexpected form");
 	var match = re.exec(actual);
 
-	assert_approx_equals(Number(match[1]), parseFloat(expectedHoriz),
+	assert_approx_equals(Number(match[1]), expectedHoriz,
 		epsilon, "Value of horizontal part (actual: "
-			 + actual + ", expected " + expectedHoriz + " " + expectedVert + ")");
+			 + actual + ", expected " + expectedHoriz + "px " + expectedVert + "px)");
 
-	assert_approx_equals(Number(match[2]), parseFloat(expectedVert),
+	assert_approx_equals(Number(match[2]), expectedVert,
 		epsilon, "Value of vertical part (actual: "
-			 + actual + ", expected " + expectedHoriz + " " + expectedVert + ")");
+			 + actual + ", expected " + expectedHoriz + "px " + expectedVert + "px)");
 }
 
 // Test transform-origin with one argument
@@ -423,9 +411,10 @@ function testTransformOriginParsing(expectedHoriz, expectedVert) {
 	testTransformOrigin(arr[0], arr[1], arr[2]);
 });
 
-// Test transform-origin with two arguments
+// Test transform-origin with two arguments.  TODO: test non-absolute lengths.
 var percentagesAndLengths = ["-12%", "0%", "50%", "51.235%", "100%", "126%",
-	"-15px", "-1px", "-0.25px", "0", "0px", "0.25px", "1px", "15px"];
+	"-15px", "-1px", "-0.25px", "0", "0px", "0.25px", "1px", "15px",
+	"1in", "1cm", "1mm", "1pt", "1pc"];
 var originArguments1 = ["left", "center", "right"]
 	.concat(percentagesAndLengths);
 var originArguments2 = ["top", "center", "bottom"]

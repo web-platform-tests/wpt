@@ -108,8 +108,7 @@ function testTransform(value, a, b, c, d, e, f) {
 }
 
 /**
- * Tests that style="transform: value" results in a computed value of
- * "matrix(a, b, c, d, e, f)".
+ * Tests that div's computed style for transform is "matrix(a, b, c, d, e, f)".
  */
 function testTransformParsing(a, b, c, d, e, f) {
 	// FIXME: We allow px optionally in the last two entries because Gecko

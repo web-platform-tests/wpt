@@ -4,8 +4,22 @@
 <script src=http://w3c-test.org/resources/testharness.js></script>
 <script src=http://w3c-test.org/resources/testharnessreport.js></script>
 <style>
-body { margin: 0 }
-#test { height: 50px; width: 50px; background: blue }
+/* Everything we care about is relative to the border box: in particular,
+ * percentages are all computed relative to the border box, and
+ * getBoundingClientRect() is relative to the border box.  Thus for our
+ * purposes, the div is 100px wide and 50px tall, with its upper left corner at
+ * the origin. */
+body {
+	margin: -5px;
+}
+#test {
+	height: 30px;
+	width: 80px;
+	padding: 5px;
+	border: 5px solid black;
+	margin: 5px;
+	background: blue;
+}
 </style>
 <div id=test></div>
 <div id=log></div>
@@ -14,12 +28,11 @@ body { margin: 0 }
 // (inline/table/etc.), both atomic and non-atomic inline elements, CSSMatrix,
 // interaction with SVG, nested transformations, overflow, creation of stacking
 // context/containing block, fixed backgrounds, specificity of SVG transform
-// attribute, multiple transformations, inheritance (computed values),
-// percentages being relative to border box (not content/padding/margin)
+// attribute, multiple transformations, inheritance (computed values)
 //
 // Not for now: transitions, animations
 var div = document.querySelector("#test");
-var divWidth = 50, divHeight = 50;
+var divWidth = 100, divHeight = 50;
 // Arbitrarily chosen epsilon that makes browsers mostly pass with some extra
 // breathing room, since the specs don't define rounding.
 var epsilon = 1.5;
@@ -183,7 +196,7 @@ function testTransformedBoundaryAsserts(expectedTop, expectedRight, expectedBott
 test(function() {
 	// Not really a transform test, just included for completeness.  It can
 	// serve as something of a sanity check.
-	testTransformedBoundaryAsserts(0, 50, 50, 0);
+	testTransformedBoundaryAsserts(0, divWidth, divHeight, 0);
 }, "Boundaries with no style attribute");
 
 testTransform("none", 1, 0, 0, 1, 0, 0);

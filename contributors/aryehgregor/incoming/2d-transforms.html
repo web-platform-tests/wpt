@@ -11,6 +11,8 @@
  * the origin. */
 body {
 	margin: -5px;
+	width: 110px;
+	position: relative;
 }
 #test {
 	height: 30px;
@@ -21,14 +23,43 @@ body {
 	background: blue;
 }
 </style>
+<!-- Extra styles we switch between.  They should all look the same, so which
+one we use shouldn't affect results. -->
+<style class=switch></style>
+<style class=switch>
+#test { float: left }
+</style>
+<style class=switch>
+#test { float: right }
+</style>
+<style class=switch>
+#test { float: right }
+body { width: 160px; margin-left: -55px }
+</style>
+<style class=switch>
+#test { position: absolute }
+</style>
+<style class=switch>
+#test { position: absolute; right: 50px }
+body { width: 160px }
+</style>
+<style class=switch>
+#test { position: relative; left: 50px }
+body { margin-left: -55px }
+</style>
+<style class=switch>
+#test { display: inline-block }
+</style>
+<style class=switch>
+#test { display: table }
+</style>
 <div id=test></div>
 <div id=log></div>
 <script>
-// TODO: Test floats, non-static positioning, different display
-// (inline/table/etc.), both atomic and non-atomic inline elements, CSSMatrix,
-// interaction with SVG, nested transformations, overflow, creation of stacking
-// context/containing block, fixed backgrounds, specificity of SVG transform
-// attribute, multiple transformations, inheritance (computed values)
+// TODO: Test images, CSSMatrix, interaction with SVG, nested transformations,
+// overflow, creation of stacking context/containing block, fixed backgrounds,
+// specificity of SVG transform attribute, multiple transformations,
+// inheritance (computed values)
 //
 // Not for now: transitions, animations
 var div = document.querySelector("#test");
@@ -56,6 +87,9 @@ var emPixels = parseFloat(getComputedStyle(div).fontSize);
 div.style.fontSize = "1ex";
 var exPixels = parseFloat(getComputedStyle(div).fontSize);
 div.removeAttribute("style");
+
+var switchStyles = document.querySelectorAll("style.switch");
+[].forEach.call(switchStyles, function(style) { style.disabled = true });
 
 /**
  * Accepts a string that's a CSS length or percentage, and returns a number of
@@ -165,17 +199,27 @@ function testTransformedBoundary(transformValue, a, b, c, d, e, f,
 		return;
 	}
 
+	// Pick a different <style class=switch> for each test; they shouldn't
+	// affect results
+	if (testTransformedBoundary.switchStyleIdx === undefined) {
+		testTransformedBoundary.switchStyleIdx = switchStyles.length - 1;
+	}
+	switchStyles[testTransformedBoundary.switchStyleIdx].disabled = true;
+	testTransformedBoundary.switchStyleIdx++;
+	testTransformedBoundary.switchStyleIdx %= switchStyles.length;
+	switchStyles[testTransformedBoundary.switchStyleIdx].disabled = false;
+
 	div.removeAttribute("style");
 	test(function() {
 		div.style[prop] = transformValue;
 		div.style[prop + "Origin"] = transformOriginValue;
 		testTransformedBoundaryAsserts(expectedTop, expectedRight, expectedBottom, expectedLeft);
-	}, "Boundaries with transform: " + transformValue + "; transform-origin: " + transformOriginValue + " set via CSSOM");
+	}, "Boundaries with transform: " + transformValue + "; transform-origin: " + transformOriginValue + " set via CSSOM; switch style " + testTransformedBoundary.switchStyleIdx);
 	test(function() {
 		div.setAttribute("style", hyphenatedProp + ": " + transformValue + "; "
 			+ hyphenatedProp + "-origin: " + transformOriginValue);
 		testTransformedBoundaryAsserts(expectedTop, expectedRight, expectedBottom, expectedLeft);
-	}, "Boundaries with transform: " + transformValue + "; transform-origin: " + transformOriginValue + " set via setAttribute()");
+	}, "Boundaries with transform: " + transformValue + "; transform-origin: " + transformOriginValue + " set via setAttribute(); switch style " + testTransformedBoundary.switchStyleIdx);
 }
 
 function testTransformedBoundaryAsserts(expectedTop, expectedRight, expectedBottom, expectedLeft) {
@@ -483,5 +527,5 @@ percentagesAndLengths.forEach(function(height) {
 });
 */
 
-document.querySelector("style").disabled = true;
+[].forEach.call(document.querySelectorAll("style"), function(style) {style.disabled = true});
 </script>

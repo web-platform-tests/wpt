@@ -250,18 +250,24 @@ test(function() {
 
 testTransform("none", 1, 0, 0, 1, 0, 0);
 
-// Test style="transform: matrix(*)" (4^6 = 4096 permutations)
+// Test style="transform: matrix(*)" (4^6 = 4096 permutations, but we only run
+// every 13th to avoid creating excessive numbers of tests)
 var matrixValues = [-1, 0, 1, 1.72];
+var i = 0;
 matrixValues.forEach(function(a) {
 matrixValues.forEach(function(b) {
 matrixValues.forEach(function(c) {
 matrixValues.forEach(function(d) {
 matrixValues.forEach(function(e) {
 matrixValues.forEach(function(f) {
-	testTransform(
-		"matrix(" + a + ", " + b + ", " + c + ", " + d + ", " + e + ", " + f + ")",
-		a, b, c, d, e, f
-	);
+	if (i % 13 == 0) {
+		testTransform(
+			"matrix(" + a + ", " + b + ", " + c + ", " + d + ", " + e + ", " + f + ")",
+			a, b, c, d, e, f
+		);
+	}
+	i++;
+	i %= 13;
 });
 });
 });
@@ -270,11 +276,12 @@ matrixValues.forEach(function(f) {
 });
 
 // Test translate()/translateX()/translateY()
-var translates = ["-53.7px", "-5px", "-1px", "-0.12px", "0", "0px", "0.1px",
-	"1px", "5px", "53.7px",
-	"-122.5%", "-50%", "-0.12%", "0%", "0.12%", "50%", "122.5%",
+var percentagesAndLengths = [
+	".0",
+	"-53.7px", "-1px", "0.0px", "0.12px", "1px", "53.7px",
+	"-50%", "0%", "0.12%",
 	"1em", "1ex", "1in", "1cm", "1mm", "1pt", "1pc"];
-translates.forEach(function(tx) {
+percentagesAndLengths.forEach(function(tx) {
 	testTransform(
 		"translateX(" + tx + ")",
 		1, 0, 0, 1, convertToPx(tx, divWidth), 0
@@ -289,7 +296,7 @@ translates.forEach(function(tx) {
 		1, 0, 0, 1, convertToPx(tx, divWidth), 0
 	);
 
-	translates.forEach(function(ty) {
+	percentagesAndLengths.forEach(function(ty) {
 		testTransform(
 			"translate(" + tx + ", " + ty + ")",
 			1, 0, 0, 1, convertToPx(tx, divWidth), convertToPx(ty, divHeight)
@@ -460,9 +467,6 @@ function testTransformOriginParsing(expectedHoriz, expectedVert) {
 });
 
 // Test transform-origin with two arguments.
-var percentagesAndLengths = ["-12%", "0%", "50%", "51.235%", "100%", "126%",
-	"-15px", "-1px", "-0.25px", "0", "0px", "0.25px", "1px", "15px",
-	"1em", "1ex", "1in", "1cm", "1mm", "1pt", "1pc"];
 var originArguments1 = ["left", "center", "right"]
 	.concat(percentagesAndLengths);
 var originArguments2 = ["top", "center", "bottom"]

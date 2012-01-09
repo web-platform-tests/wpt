@@ -14,7 +14,7 @@ body { margin: 0 }
 // (inline/table/etc.), both atomic and non-atomic inline elements, CSSMatrix,
 // interaction with SVG, nested transformations, overflow, creation of stacking
 // context/containing block, fixed backgrounds, specificity of SVG transform
-// attribute, multiple transformations
+// attribute, multiple transformations, inheritance (computed values)
 //
 // Not for now: transitions, animations
 var div = document.querySelector("#test");
@@ -45,14 +45,19 @@ var hyphenatedProp = {
  */
 function testTransform(value, a, b, c, d, e, f) {
 	div.removeAttribute("style");
-	test(function() {
-		div.style[prop] = value;
-		testTransformParsing(a, b, c, d, e, f);
-	}, "Computed value for transform: " + value + " set via CSSOM");
-	test(function() {
-		div.setAttribute("style", hyphenatedProp + ": " + value);
-		testTransformParsing(a, b, c, d, e, f);
-	}, "Computed value for transform: " + value + " set via setAttribute()");
+	// FIXME: The spec doesn't match browsers for serialization of the
+	// transform property when it's unset or "none".
+	// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15471
+	if (value != "none") {
+		test(function() {
+			div.style[prop] = value;
+			testTransformParsing(a, b, c, d, e, f);
+		}, "Computed value for transform: " + value + " set via CSSOM");
+		test(function() {
+			div.setAttribute("style", hyphenatedProp + ": " + value);
+			testTransformParsing(a, b, c, d, e, f);
+		}, "Computed value for transform: " + value + " set via setAttribute()");
+	}
 	testTransformedBoundary(value, a, b, c, d, e, f, "50% 50%", divWidth/2, divHeight/2);
 }
 
@@ -136,7 +141,19 @@ function testTransformedBoundaryAsserts(expectedTop, expectedRight, expectedBott
 	assert_approx_equals(rect.height, expectedBottom - expectedTop, epsilon, "height");
 }
 
-// TODO: Test no attribute, and "none"
+// FIXME: The spec doesn't match browsers for serialization of the transform
+// property when it's unset or "none".
+// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15471
+//test(function() {
+//	testTransformParsing(1, 0, 0, 1, 0, 0);
+//}, "Computed value for transform with no style attribute");
+test(function() {
+	// Not really a transform test, just included for completeness.  It can
+	// serve as something of a sanity check.
+	testTransformedBoundaryAsserts(0, 50, 50, 0);
+}, "Boundaries with no style attribute");
+
+testTransform("none", 1, 0, 0, 1, 0, 0);
 
 // Test style="transform: matrix(*)" (4^6 = 4096 permutations)
 var matrixValues = [-1, 0, 1, 1.72];

@@ -14,7 +14,8 @@ body { margin: 0 }
 // (inline/table/etc.), both atomic and non-atomic inline elements, CSSMatrix,
 // interaction with SVG, nested transformations, overflow, creation of stacking
 // context/containing block, fixed backgrounds, specificity of SVG transform
-// attribute, multiple transformations, inheritance (computed values)
+// attribute, multiple transformations, inheritance (computed values),
+// percentages being relative to border box (not content/padding/margin)
 //
 // Not for now: transitions, animations
 var div = document.querySelector("#test");
@@ -38,6 +39,38 @@ var hyphenatedProp = {
 	webkitTransform: "-webkit-transform",
 	OTransform: "-o-transform",
 }[prop];
+
+/**
+ * Accepts a string that's a CSS absolute length or percentage, and returns a
+ * number of pixels (not a string), or null if parsing fails.  For percentages
+ * to be accepted, percentRef must not be undefined.
+ */
+function convertToPx(input, percentRef) {
+	var match = /^([-+]?[0-9]+|[-+]?[0-9]*\.[0-9]+)(in|cm|mm|pt|pc|px|%)?$/.exec(input);
+	if (!match) {
+		return null;
+	}
+	var amount = Number(match[1]);
+	var unit = match[2];
+	if (amount == 0) {
+		return 0;
+	}
+	if (!unit) {
+		return null;
+	}
+	if (unit == "%" && percentRef === undefined) {
+		return null;
+	}
+	return amount * {
+		in: 72/0.75,
+		cm: (1/2.54)*72/0.75,
+		mm: (1/25.4)*72/0.75,
+		pt: 1/0.75,
+		pc: 12/0.75,
+		px: 1,
+		"%": percentRef/100,
+	}[unit];
+}
 
 /**
  * Tests that style="transform: value" results in transformation by the matrix
@@ -176,27 +209,30 @@ matrixValues.forEach(function(f) {
 
 // Test translate()/translateX()/translateY()
 //
-// TODO: Percentage translations
-var translates = [-53.7, -5, -1, -0.12, 0, 0.1, 1, 5, 53.7];
+// TODO: Test non-absolute lengths
+var translates = ["-53.7px", "-5px", "-1px", "-0.12px", "0", "0px", "0.1px",
+	"1px", "5px", "53.7px",
+	"-122.5%", "-50%", "-0.12%", "0%", "0.12%", "50%", "122.5%",
+	"1in", "1cm", "1mm", "1pt", "1pc"];
 translates.forEach(function(tx) {
 	testTransform(
-		"translateX(" + tx + "px)",
-		1, 0, 0, 1, tx, 0
+		"translateX(" + tx + ")",
+		1, 0, 0, 1, convertToPx(tx, divWidth), 0
 	);
 	// tx is poorly named, since it's used for y here.
 	testTransform(
-		"translateY(" + tx + "px)",
-		1, 0, 0, 1, 0, tx
+		"translateY(" + tx + ")",
+		1, 0, 0, 1, 0, convertToPx(tx, divHeight)
 	);
 	testTransform(
-		"translate(" + tx + "px)",
-		1, 0, 0, 1, tx, 0
+		"translate(" + tx + ")",
+		1, 0, 0, 1, convertToPx(tx, divWidth), 0
 	);
 
 	translates.forEach(function(ty) {
 		testTransform(
-			"translate(" + tx + "px, " + ty + "px)",
-			1, 0, 0, 1, tx, ty
+			"translate(" + tx + ", " + ty + ")",
+			1, 0, 0, 1, convertToPx(tx, divWidth), convertToPx(ty, divHeight)
 		);
 	});
 });

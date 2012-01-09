@@ -125,6 +125,25 @@ function convertToPx(input, percentRef) {
 }
 
 /**
+ * Accepts a string that's a CSS angle, and returns a number of radians (not a
+ * string), or null if parsing fails.
+ */
+function convertToRad(input) {
+	var match = /^([-+]?[0-9]+|[-+]?[0-9]*\.[0-9]+)(deg|grad|rad|turn)$/.exec(input);
+	if (!match) {
+		return null;
+	}
+	var amount = Number(match[1]);
+	var unit = match[2];
+	return amount * {
+		deg: Math.PI/180,
+		grad: Math.PI/200,
+		rad: 1,
+		turn: 2*Math.PI,
+	}[unit];
+}
+
+/**
  * Multiplies the two 3x2 matrices.
  */
 function mxmul(A, B) {
@@ -343,38 +362,37 @@ scales.forEach(function(sx) {
 });
 
 // Test rotate()
-//
-// TODO: Test non-degree units
-var rotates = [-7, 0, 22.5, 45, 86.451, 90, 180, 270, 452];
+var rotates = ["-7deg", "0deg", "22.5deg", "45deg", "86.451deg", "90deg",
+	"180deg", "270deg", "452deg",
+	"-1rad", "0rad", "1rad", "6.28rad",
+	"0.721turn", "256grad"];
 rotates.forEach(function(angle) {
+	var rads = convertToRad(angle);
 	testTransform(
-		"rotate(" + angle + "deg)",
-		Math.cos(angle * Math.PI/180),
-		Math.sin(angle * Math.PI/180),
-		-Math.sin(angle * Math.PI/180),
-		Math.cos(angle * Math.PI/180),
-		0,
-		0
+		"rotate(" + angle + ")",
+		Math.cos(rads), Math.sin(rads), -Math.sin(rads), Math.cos(rads),
+		0, 0
 	);
 });
 
 // Test skewX()/skewY()
 //
-// TODO: Test non-degree units
-//
 // Do not test values close to 90 degrees, because this will cause coordinates
 // to get large.  The maximum values for coordinates are (of course) not
 // defined, and even if they were, the result would be extremely sensitive to
 // rounding error.
-var skews = [-80, -45, -32.6, -0.05, 0, 0.05, 32.6, 45, 80, 300];
+var skews = ["-80deg", "-45deg", "-32.6deg", "-0.05deg", "0deg", "0.05deg",
+	"32.6deg", "45deg", "80deg", "300deg",
+	"-0.3rad", "0rad", "0.3rad", "2.9rad",
+	"0.921turn", "22grad"];
 skews.forEach(function(angle) {
 	testTransform(
-		"skewX(" + angle + "deg)",
-		1, 0, Math.tan(angle * Math.PI/180), 1, 0, 0
+		"skewX(" + angle + ")",
+		1, 0, Math.tan(convertToRad(angle)), 1, 0, 0
 	);
 	testTransform(
-		"skewY(" + angle + "deg)",
-		1, Math.tan(angle * Math.PI/180), 0, 1, 0, 0
+		"skewY(" + angle + ")",
+		1, Math.tan(convertToRad(angle)), 0, 1, 0, 0
 	);
 });
 

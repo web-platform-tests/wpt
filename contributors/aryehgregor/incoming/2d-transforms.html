@@ -52,14 +52,18 @@ var hyphenatedProp = {
 	webkitTransform: "-webkit-transform",
 	OTransform: "-o-transform",
 }[prop];
+var emPixels = parseFloat(getComputedStyle(div).fontSize);
+div.style.fontSize = "1ex";
+var exPixels = parseFloat(getComputedStyle(div).fontSize);
+div.removeAttribute("style");
 
 /**
- * Accepts a string that's a CSS absolute length or percentage, and returns a
- * number of pixels (not a string), or null if parsing fails.  For percentages
- * to be accepted, percentRef must not be undefined.
+ * Accepts a string that's a CSS length or percentage, and returns a number of
+ * pixels (not a string), or null if parsing fails.  For percentages to be
+ * accepted, percentRef must not be undefined.
  */
 function convertToPx(input, percentRef) {
-	var match = /^([-+]?[0-9]+|[-+]?[0-9]*\.[0-9]+)(in|cm|mm|pt|pc|px|%)?$/.exec(input);
+	var match = /^([-+]?[0-9]+|[-+]?[0-9]*\.[0-9]+)(em|ex|in|cm|mm|pt|pc|px|%)?$/.exec(input);
 	if (!match) {
 		return null;
 	}
@@ -75,6 +79,8 @@ function convertToPx(input, percentRef) {
 		return null;
 	}
 	return amount * {
+		em: emPixels,
+		ex: exPixels,
 		in: 72/0.75,
 		cm: (1/2.54)*72/0.75,
 		mm: (1/25.4)*72/0.75,
@@ -220,12 +226,10 @@ matrixValues.forEach(function(f) {
 });
 
 // Test translate()/translateX()/translateY()
-//
-// TODO: Test non-absolute lengths
 var translates = ["-53.7px", "-5px", "-1px", "-0.12px", "0", "0px", "0.1px",
 	"1px", "5px", "53.7px",
 	"-122.5%", "-50%", "-0.12%", "0%", "0.12%", "50%", "122.5%",
-	"1in", "1cm", "1mm", "1pt", "1pc"];
+	"1em", "1ex", "1in", "1cm", "1mm", "1pt", "1pc"];
 translates.forEach(function(tx) {
 	testTransform(
 		"translateX(" + tx + ")",
@@ -411,10 +415,10 @@ function testTransformOriginParsing(expectedHoriz, expectedVert) {
 	testTransformOrigin(arr[0], arr[1], arr[2]);
 });
 
-// Test transform-origin with two arguments.  TODO: test non-absolute lengths.
+// Test transform-origin with two arguments.
 var percentagesAndLengths = ["-12%", "0%", "50%", "51.235%", "100%", "126%",
 	"-15px", "-1px", "-0.25px", "0", "0px", "0.25px", "1px", "15px",
-	"1in", "1cm", "1mm", "1pt", "1pc"];
+	"1em", "1ex", "1in", "1cm", "1mm", "1pt", "1pc"];
 var originArguments1 = ["left", "center", "right"]
 	.concat(percentagesAndLengths);
 var originArguments2 = ["top", "center", "bottom"]

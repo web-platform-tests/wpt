@@ -298,7 +298,7 @@ function testTransformedBoundaryAsserts(expectedTop, expectedRight, expectedBott
 	arr[0].forEach(function(transform, i) {
 		var transformKeyword = {0: "TRANSFORM", 1: "tRAnSFoRM", 2: "transform"}[i%3];
 		test(function() {
-			div.style[prop.replace(/-[^-]*$/, "-" + transformKeyword)] = transform;
+			div.style[prop.replace("transform", transformKeyword)] = transform;
 			testTransformParsing(arr[1], arr[2], arr[3], arr[4], arr[5], arr[6]);
 		}, "Computed value for " + transformKeyword + ": " + transform + " set via CSSOM");
 	});

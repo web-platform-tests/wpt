@@ -82,6 +82,11 @@ var hyphenatedProp = {
 	webkitTransform: "-webkit-transform",
 	OTransform: "-o-transform",
 }[prop];
+var percentagesAndLengths = [
+	".0",
+	"-53.7px", "-1px", "0.0px", "0.12px", "1px", "53.7px",
+	"-50%", "0%", "0.12%",
+	"1em", "1ex", "1in", "1cm", "1mm", "1pt", "1pc"];
 var emPixels = parseFloat(getComputedStyle(div).fontSize);
 div.style.fontSize = "1ex";
 var exPixels = parseFloat(getComputedStyle(div).fontSize);
@@ -316,6 +321,7 @@ testTransform("none", 1, 0, 0, 1, 0, 0);
 
 // Test style="transform: matrix(*)" (4^6 = 4096 permutations, but we only run
 // every 13th to avoid creating excessive numbers of tests)
+(function(){
 var matrixValues = [-1, 0, 1, 1.72];
 var i = 0;
 matrixValues.forEach(function(a) {
@@ -338,13 +344,9 @@ matrixValues.forEach(function(f) {
 });
 });
 });
+})();
 
 // Test translate()/translateX()/translateY()
-var percentagesAndLengths = [
-	".0",
-	"-53.7px", "-1px", "0.0px", "0.12px", "1px", "53.7px",
-	"-50%", "0%", "0.12%",
-	"1em", "1ex", "1in", "1cm", "1mm", "1pt", "1pc"];
 percentagesAndLengths.forEach(function(tx) {
 	testTransform(
 		"translateX(" + tx + ")",
@@ -369,6 +371,7 @@ percentagesAndLengths.forEach(function(tx) {
 });
 
 // Test scale()/scaleX()/scaleY()
+(function(){
 var scales = [-2, -1, -0.12, 0, 0.12, 1, 2];
 scales.forEach(function(sx) {
 	testTransform(
@@ -392,13 +395,15 @@ scales.forEach(function(sx) {
 		);
 	});
 });
+})();
 
 // Test rotate()
-var rotates = ["-7deg", "0deg", "22.5deg", "45deg", "86.451deg", "90deg",
-	"180deg", "270deg", "452deg",
+[
+	"-7deg", "0deg", "22.5deg", "45deg", "86.451deg", "90deg", "180deg",
+	"270deg", "452deg",
 	"-1rad", "0rad", "1rad", "6.28rad",
-	"0.721turn", "256grad"];
-rotates.forEach(function(angle) {
+	"0.721turn", "256grad",
+].forEach(function(angle) {
 	var rads = convertToRad(angle);
 	testTransform(
 		"rotate(" + angle + ")",
@@ -413,11 +418,12 @@ rotates.forEach(function(angle) {
 // to get large.  The maximum values for coordinates are (of course) not
 // defined, and even if they were, the result would be extremely sensitive to
 // rounding error.
-var skews = ["-80deg", "-45deg", "-32.6deg", "-0.05deg", "0deg", "0.05deg",
-	"32.6deg", "45deg", "80deg", "300deg",
+[
+	"-80deg", "-45deg", "-32.6deg", "-0.05deg", "0deg", "0.05deg", "32.6deg",
+	"45deg", "80deg", "300deg",
 	"-0.3rad", "0rad", "0.3rad", "2.9rad",
-	"0.921turn", "22grad"];
-skews.forEach(function(angle) {
+	"0.921turn", "22grad"
+].forEach(function(angle) {
 	testTransform(
 		"skewX(" + angle + ")",
 		1, 0, Math.tan(convertToRad(angle)), 1, 0, 0
@@ -429,6 +435,7 @@ skews.forEach(function(angle) {
 });
 
 // Test multiple transformations
+(function(){
 var transforms = [
 	["matrix(4, -7, 2.3, -3.8, 6, 6)", 4, -7, 2.3, -3.8, 6, 6],
 	["translate(22.1%, -17pt)",
@@ -454,6 +461,7 @@ transforms.forEach(function(trans1) {
 		});
 	});
 });
+})();
 
 
 /**
@@ -572,12 +580,8 @@ function testTransformOriginParsing(expectedHoriz, expectedVert) {
 });
 
 // Test transform-origin with two arguments.
-var originArguments1 = ["left", "center", "right"]
-	.concat(percentagesAndLengths);
-var originArguments2 = ["top", "center", "bottom"]
-	.concat(percentagesAndLengths);
-originArguments1.forEach(function(arg1) {
-	originArguments2.forEach(function(arg2) {
+["left", "center", "right"].concat(percentagesAndLengths).forEach(function(arg1) {
+	["top", "center", "bottom"].concat(percentagesAndLengths).forEach(function(arg2) {
 		testTransformOrigin(arg1 + " " + arg2, arg1, arg2);
 	});
 });

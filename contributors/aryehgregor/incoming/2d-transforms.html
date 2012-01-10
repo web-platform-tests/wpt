@@ -144,7 +144,7 @@ function convertToRad(input) {
 }
 
 /**
- * Multiplies the two 3x2 matrices.
+ * Multiplies two 3x2 matrices.
  */
 function mxmul(A, B) {
 	return [
@@ -267,6 +267,38 @@ function testTransformedBoundaryAsserts(expectedTop, expectedRight, expectedBott
 	assert_approx_equals(rect.width, expectedRight - expectedLeft, epsilon, "width");
 	assert_approx_equals(rect.height, expectedBottom - expectedTop, epsilon, "height");
 }
+
+// Test case-sensitivity
+[
+	// FIXME: The spec doesn't match browsers for serialization of the
+	// transform property when it's unset or "none".
+	// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15471
+	// [["none", "NONE", "nOnE"], 1, 0, 0, 1, 0, 0],
+	[["matrix(1,2,3,4,5,6)", "MATRIX(1,2,3,4,5,6)", "mAtRiX(1,2,3,4,5,6)"], 1, 2, 3, 4, 5, 6],
+	[["translate(1px)", "TRANSLATE(1PX)", "tRaNsLaTe(1Px)"], 1, 0, 0, 1, 1, 0],
+	[["translatex(1pt)", "TRANSLATEX(1PT)", "tRaNsLaTeX(1pT)"], 1, 0, 0, 1, 0.75, 0],
+	[["translatey(1in)", "TRANSLATEY(1IN)", "tRaNsLaTeY(1iN)"], 1, 0, 0, 1, 0, 96],
+	[["scale(2)", "SCALE(2)", "sCaLe(2)"], 2, 0, 0, 2, 0, 0],
+	[["scalex(2)", "SCALEX(2)", "sCaLeX(2)"], 2, 0, 0, 1, 0, 0],
+	[["scaley(2)", "SCALEY(2)", "sCaLeY(2)"], 1, 0, 0, 2, 0, 0],
+	// Nothing much uses angle units, so I'll test the case-insensitivity of
+	// those while I'm here.
+	[["rotate(90deg)", "ROTATE(90DEG)", "rOtAtE(90dEg)",
+	  "rotate(100grad)", "ROTATE(100GRAD)", "rOtAtE(100gRaD)",
+	  "rotate(0.7854rad)", "ROTATE(0.7854RAD)", "rOtAtE(0.7854rAd)",
+	  "rotate(0.25turn)", "ROTATE(0.25TUN)", "rOtAtE(0.25tUrN)"], 0, 1, -1, 0, 0, 0],
+	[["skewx(45deg)", "SKEWX(45DEG)", "sKeWx(45DeG)"], 1, 0, 1, 1, 0, 0],
+	[["skewy(45deg)", "SKEWY(45DEG)", "sKeWy(45DeG)"], 1, 1, 0, 1, 0, 0],
+].forEach(function(arr) {
+	arr[0].forEach(function(transform, i) {
+		var transformKeyword = {0: "TRANSFORM", 1: "tRAnSFoRM", 2: "transform"}[i%3];
+		test(function() {
+			div.style[prop.replace(/-[^-]*$/, "-" + transformKeyword)] = transform;
+			testTransformParsing(arr[1], arr[2], arr[3], arr[4], arr[5], arr[6]);
+		}, "Computed value for " + transformKeyword + ": " + transform + " set via CSSOM");
+	});
+});
+div.removeAttribute("style");
 
 // FIXME: The spec doesn't match browsers for serialization of the transform
 // property when it's unset or "none".
@@ -513,13 +545,24 @@ function testTransformOriginParsing(expectedHoriz, expectedVert) {
 // Test transform-origin with one argument
 [
 	["none", "50%", "50%"],
+	["NONE", "50%", "50%"],
+	["nOnE", "50%", "50%"],
 	["quasit", "50%", "50%"],
 	["top", "50%", "0%"],
+	["TOP", "50%", "0%"],
+	["tOp", "50%", "0%"],
 	["right", "100%", "50%"],
+	["RIGHT", "100%", "50%"],
+	["rIgHt", "100%", "50%"],
 	["bottom", "50%", "100%"],
-	[" BOttOm\t", "50%", "100%"],
+	["BOTTOM", "50%", "100%"],
+	["bOtToM", "50%", "100%"],
 	["left", "0%", "50%"],
+	["LEFT", "0%", "50%"],
+	["lEfT", "0%", "50%"],
 	["center", "50%", "50%"],
+	["CENTER", "50%", "50%"],
+	["cEnTeR", "50%", "50%"],
 	["37%", "37%", "50%"],
 	["117%", "117%", "50%"],
 	["41.2px", "41.2px", "50%"],

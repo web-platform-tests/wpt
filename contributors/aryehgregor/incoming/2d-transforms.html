@@ -6,15 +6,47 @@
 <style>
 /* Everything we care about is relative to the border box: in particular,
  * percentages are all computed relative to the border box, and
- * getBoundingClientRect() is relative to the border box.  Thus for our
- * purposes, the div is 100px wide and 50px tall, with its upper left corner at
- * the origin. */
+ * getBoundingClientRect() is relative to the border box.  The default
+ * transform-origin is the center of the border box.
+ *
+ * Our setup is the test div is nested in two other divs nested in the body.
+ * The test div has width 80px and height 30px, then 5px each of padding,
+ * border, and margin.  (This is to catch UAs that compute things relative to
+ * the content, padding, or margin boxes instead of border.)  Thus its border
+ * box is 100px wide and 50px tall, and its margin box is 110px by 60px.
+ *
+ * The test div's parent has a content area large enough to contain its child,
+ * and then five pixels of padding.  The same holds for the test div's
+ * grandparent.  Finally, the body has a content area large enough to hold its
+ * div child, and -15px of margin so that the test div's border box lines up
+ * with the top left of the viewport (makes calculations easier).
+ *
+ * In this way, the border boxes of the test div and its parent and grandparent
+ * all have the same center, so the transform-origin is the same with no extra
+ * work.  However, they have different sizes, so percentages need to be
+ * computed differently. */
 body {
-	margin: -5px;
+	margin: -15px;
+	width: 130px;
+	height: 80px;
+}
+body > div {
+	width: 120px;
+	height: 70px;
+	padding: 5px;
+	background: orange;
+}
+body > div > div {
 	width: 110px;
+	height: 60px;
+	padding: 5px;
+	background: yellow;
+}
+body, div {
 	position: relative;
 }
 #test {
+	position: static;
 	height: 30px;
 	width: 80px;
 	padding: 5px;
@@ -22,30 +54,33 @@ body {
 	margin: 5px;
 	background: blue;
 }
+#log { display: none }
 </style>
 <!-- Extra styles we switch between.  They should all look the same, so which
-one we use shouldn't affect results. -->
+one we use shouldn't affect results.  To ensure that they look the same even
+when transforms are applied to different divs, they're designed to not move the
+border box of any of the three nested divs. -->
 <style class=switch></style>
 <style class=switch>
-#test { float: left }
+div { float: left }
 </style>
 <style class=switch>
-#test { float: right }
+div { float: right }
 </style>
 <style class=switch>
-#test { float: right }
-body { width: 160px; margin-left: -55px }
+div { float: right }
+body { width: 180px; margin-left: -65px }
 </style>
 <style class=switch>
 #test { position: absolute }
 </style>
 <style class=switch>
-#test { position: absolute; right: 50px }
-body { width: 160px }
+body > div > div { border-right: 10px solid transparent; width: 100px }
+#test { position: absolute; right: -5px }
 </style>
 <style class=switch>
-#test { position: relative; left: 50px }
-body { margin-left: -55px }
+body > div > div { padding-left: 10px; width: 105px }
+#test { position: relative; left: -5px }
 </style>
 <style class=switch>
 #test { display: inline-block }
@@ -53,12 +88,12 @@ body { margin-left: -55px }
 <style class=switch>
 #test { display: table }
 </style>
-<div id=test></div>
+<div><div><div id=test></div></div></div>
 <div id=log></div>
 <script>
-// TODO: Test images, CSSMatrix, interaction with SVG, nested transformations,
-// overflow, creation of stacking context/containing block, fixed backgrounds,
-// specificity of SVG transform attribute, inheritance (computed values)
+// TODO: Test images, CSSMatrix, interaction with SVG, overflow, creation of
+// stacking context/containing block, fixed backgrounds, specificity of SVG
+// transform attribute, inheritance (computed values)
 //
 // Not for now: transitions, animations
 var div = document.querySelector("#test");
@@ -163,25 +198,41 @@ function mxmul(A, B) {
 }
 
 /**
+ * Returns true or false every time it's called.  It more or less alternates,
+ * but actually has a period of 17, so it won't repeat with the same period as
+ * other cyclic things (these are quite repetitive tests).
+ */
+function getUseCssom() {
+	if (getUseCssom.counter === undefined) {
+		getUseCssom.counter = 0;
+	}
+	getUseCssom.counter++;
+	getUseCssom.counter %= 17;
+	return Boolean(getUseCssom.counter % 2);
+}
+
+/**
  * Tests that style="transform: value" results in transformation by the matrix
  * [a, b, c, d, e, f].  Checks both the computed value and bounding box.
  */
 function testTransform(value, a, b, c, d, e, f) {
-	div.removeAttribute("style");
 	// FIXME: The spec doesn't match browsers for serialization of the
 	// transform property when it's unset or "none".
 	// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15471
 	if (value != "none") {
+		var useCssom = getUseCssom();
 		test(function() {
-			div.style[prop] = value;
+			if (useCssom) {
+				div.removeAttribute("style");
+				div.style[prop] = value;
+			} else {
+				div.setAttribute("style", hyphenatedProp + ": " + value);
+			}
 			testTransformParsing(a, b, c, d, e, f);
-		}, "Computed value for transform: " + value + " set via CSSOM");
-		test(function() {
-			div.setAttribute("style", hyphenatedProp + ": " + value);
-			testTransformParsing(a, b, c, d, e, f);
-		}, "Computed value for transform: " + value + " set via setAttribute()");
+		}, "Computed value for transform: " + value
+		+ " set via " + (useCssom ? "CSSOM" : "setAttribute()"));
 	}
-	testTransformedBoundary(value, a, b, c, d, e, f, "50% 50%", divWidth/2, divHeight/2);
+	testTransformedBoundary(value, a, b, c, d, e, f);
 }
 
 /**
@@ -209,9 +260,34 @@ function testTransformParsing(a, b, c, d, e, f) {
  *   style="transform: transformValue; transform-origin: transformOriginValue"
  * results in the boundary box that you'd get from transforming with a matrix
  * of [a, b, c, d, e, f] around an offset of [xOffset, yOffset].
+ * transformOriginValue defaults to "50% 50%", xOffset to divWidth/2, yOffset
+ * to divHeight/2.
+ *
+ * transformValue can also be an array of three values.  If it is, they're used
+ * for the test div's grandparent, its parent, and the test div itself,
+ * respectively.  a, b, c, d, e, f should then be the entries of the matrix of
+ * all three transforms multiplied together.
  */
 function testTransformedBoundary(transformValue, a, b, c, d, e, f,
                                  transformOriginValue, xOffset, yOffset) {
+	// Don't test singular matrices for now.  IE fails some of them, which
+	// might be due to getBoundingClientRect() instead of transforms.
+	if (a*d - b*c === 0) {
+		return;
+	}
+
+	if (transformOriginValue === undefined) {
+		transformOriginValue = "50% 50%";
+	}
+	if (xOffset === undefined) {
+		xOffset = divWidth/2;
+	}
+	if (yOffset === undefined) {
+		yOffset = divHeight/2;
+	}
+
+	// Compute the expected bounding box by applying the given matrix to the
+	// vertices of the test div's border box.
 	var originalPoints = [[0, 0], [0, divHeight], [divWidth, 0], [divWidth, divHeight]];
 	var expectedTop, expectedRight, expectedBottom, expectedLeft;
 	for (var i = 0; i < originalPoints.length; i++) {
@@ -230,33 +306,68 @@ function testTransformedBoundary(transformValue, a, b, c, d, e, f,
 			expectedLeft = newX;
 		}
 	}
-	// Don't test singular matrices for now.  IE fails some of them, which
-	// might be due to getBoundingClientRect() instead of transforms.
-	if (a*d - b*c === 0) {
-		return;
-	}
 
 	// Pick a different <style class=switch> for each test; they shouldn't
-	// affect results
+	// affect results, so it's fine to just alternate.  We cycle through using
+	// a reasonably large prime number (19) so that when the tests are
+	// repetitive, we're unlikely to keep hitting the same styles for the same
+	// sort of test.
 	if (testTransformedBoundary.switchStyleIdx === undefined) {
 		testTransformedBoundary.switchStyleIdx = switchStyles.length - 1;
 	}
-	switchStyles[testTransformedBoundary.switchStyleIdx].disabled = true;
+	switchStyles[testTransformedBoundary.switchStyleIdx % switchStyles.length].disabled = true;
 	testTransformedBoundary.switchStyleIdx++;
-	testTransformedBoundary.switchStyleIdx %= switchStyles.length;
-	switchStyles[testTransformedBoundary.switchStyleIdx].disabled = false;
+	testTransformedBoundary.switchStyleIdx %= 19;
+	switchStyles[testTransformedBoundary.switchStyleIdx % switchStyles.length].disabled = false;
 
-	div.removeAttribute("style");
-	test(function() {
-		div.style[prop] = transformValue;
-		div.style[prop + "Origin"] = transformOriginValue;
-		testTransformedBoundaryAsserts(expectedTop, expectedRight, expectedBottom, expectedLeft);
-	}, "Boundaries with transform: " + transformValue + "; transform-origin: " + transformOriginValue + " set via CSSOM; switch style " + testTransformedBoundary.switchStyleIdx);
-	test(function() {
-		div.setAttribute("style", hyphenatedProp + ": " + transformValue + "; "
-			+ hyphenatedProp + "-origin: " + transformOriginValue);
-		testTransformedBoundaryAsserts(expectedTop, expectedRight, expectedBottom, expectedLeft);
-	}, "Boundaries with transform: " + transformValue + "; transform-origin: " + transformOriginValue + " set via setAttribute(); switch style " + testTransformedBoundary.switchStyleIdx);
+	if (testTransformedBoundary.cssomIdx === undefined) {
+		testTransformedBoundary.cssomIdx = 0;
+	}
+
+	var useCssom = getUseCssom();
+	if (typeof transformValue == "string") {
+		test(function() {
+			if (useCssom) {
+				div.removeAttribute("style");
+				div.style[prop] = transformValue;
+				div.style[prop + "Origin"] = transformOriginValue;
+			} else {
+				div.setAttribute("style", hyphenatedProp + ": " + transformValue + "; "
+					+ hyphenatedProp + "-origin: " + transformOriginValue);
+			}
+			testTransformedBoundaryAsserts(expectedTop, expectedRight, expectedBottom, expectedLeft);
+		}, "Boundaries with \"transform: " + transformValue + "; "
+		+ "transform-origin: " + transformOriginValue + "\" "
+		+ "set via " + (useCssom ? "CSSOM" : "setAttribute()") + "; "
+		+ "switch style " + (testTransformedBoundary.switchStyleIdx % switchStyles.length));
+	} else {
+		test(function() {
+			if (useCssom) {
+				div.parentNode.parentNode.style[prop] = transformValue[0];
+				div.parentNode.style[prop] = transformValue[1];
+				div.removeAttribute("style");
+				div.style[prop] = transformValue[2];
+				div.style[prop + "Origin"] = transformOriginValue;
+			} else {
+				div.parentNode.parentNode.setAttribute("style",
+					hyphenatedProp + ": " + transformValue[0]);
+				div.parentNode.setAttribute("style",
+					hyphenatedProp + ": " + transformValue[1]);
+				div.setAttribute("style",
+					hyphenatedProp + ": " + transformValue[2] + "; "
+					+ hyphenatedProp + "-origin: " + transformOriginValue);
+			}
+			testTransformedBoundaryAsserts(expectedTop, expectedRight, expectedBottom, expectedLeft);
+		}, "Boundaries with \"transform: " + transformValue[0] + "\" on test div's grandparent, "
+		+ "\"transform: " + transformValue[1] + "\" on its parent, "
+		+ "\"transform: " + transformValue[2] + "; "
+		+ "transform-origin: " + transformOriginValue + "\" on test div, "
+		+ "set via " + (useCssom ? "CSSOM" : "setAttribute()") + "; "
+		+ "switch style " + (testTransformedBoundary.switchStyleIdx % switchStyles.length));
+
+		div.parentNode.removeAttribute("style");
+		div.parentNode.parentNode.removeAttribute("style");
+	}
 }
 
 function testTransformedBoundaryAsserts(expectedTop, expectedRight, expectedBottom, expectedLeft) {
@@ -265,12 +376,20 @@ function testTransformedBoundaryAsserts(expectedTop, expectedRight, expectedBott
 	// This is not actually specified anywhere:
 	// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15430
 	var rect = div.getBoundingClientRect();
-	assert_approx_equals(rect.top, expectedTop, epsilon, "top");
-	assert_approx_equals(rect.right, expectedRight, epsilon, "right");
-	assert_approx_equals(rect.bottom, expectedBottom, epsilon, "bottom");
-	assert_approx_equals(rect.left, expectedLeft, epsilon, "left");
-	assert_approx_equals(rect.width, expectedRight - expectedLeft, epsilon, "width");
-	assert_approx_equals(rect.height, expectedBottom - expectedTop, epsilon, "height");
+	var msg = " (actual " + rect.top.toFixed(3) + ", "
+		+ rect.right.toFixed(3) + ", "
+		+ rect.bottom.toFixed(3) + ", "
+		+ rect.left.toFixed(3) + "; "
+		+ "expected " + expectedTop.toFixed(3) + ", "
+		+ expectedRight.toFixed(3) + ", "
+		+ expectedBottom.toFixed(3) + ", "
+		+ expectedLeft.toFixed(3) + ")";
+	assert_approx_equals(rect.top, expectedTop, epsilon, "top" + msg);
+	assert_approx_equals(rect.right, expectedRight, epsilon, "right" + msg);
+	assert_approx_equals(rect.bottom, expectedBottom, epsilon, "bottom" + msg);
+	assert_approx_equals(rect.left, expectedLeft, epsilon, "left" + msg);
+	assert_approx_equals(rect.width, expectedRight - expectedLeft, epsilon, "width" + msg);
+	assert_approx_equals(rect.height, expectedBottom - expectedTop, epsilon, "height" + msg);
 }
 
 // Test case-sensitivity
@@ -438,8 +557,8 @@ scales.forEach(function(sx) {
 (function(){
 var transforms = [
 	["matrix(4, -7, 2.3, -3.8, 6, 6)", 4, -7, 2.3, -3.8, 6, 6],
-	["translate(22.1%, -17pt)",
-		1, 0, 0, 1, convertToPx("22.1%", divWidth), convertToPx("-17pt")],
+	["translate(0.23in, -17pt)",
+		1, 0, 0, 1, convertToPx("0.23in"), convertToPx("-17pt")],
 	["scale(1.3, -5.6)", 1.3, 0, 0, -5.6, 0, 0],
 	["rotate(0.759rad)", Math.cos(0.759), Math.sin(0.759),
 		-Math.sin(0.759), Math.cos(0.759), 0, 0],
@@ -451,12 +570,21 @@ transforms.forEach(function(trans1) {
 
 	transforms.forEach(function(trans2) {
 		var mx = mxmul(trans1.slice(1), trans2.slice(1));
+
+		// First put both transforms on the test div
 		testTransform(trans1[0] + " " + trans2[0],
+			mx[0], mx[1], mx[2], mx[3], mx[4], mx[5]);
+
+		// Now put the first on its grandparent, and the second on its parent.
+		// No need to test parsing.
+		testTransformedBoundary([trans1[0], trans2[0], "none"],
 			mx[0], mx[1], mx[2], mx[3], mx[4], mx[5]);
 
 		transforms.forEach(function(trans3) {
 			var mx = mxmul(mxmul(trans1.slice(1), trans2.slice(1)), trans3.slice(1));
 			testTransform(trans1[0] + " " + trans2[0] + " " + trans3[0],
+				mx[0], mx[1], mx[2], mx[3], mx[4], mx[5]);
+			testTransformedBoundary([trans1[0], trans2[0], trans3[0]],
 				mx[0], mx[1], mx[2], mx[3], mx[4], mx[5]);
 		});
 	});
@@ -586,59 +714,9 @@ function testTransformOriginParsing(expectedHoriz, expectedVert) {
 	});
 });
 
-// FIXME: Three- and four-value variants are not generally implemented
+// FIXME: Three- and four-value variants are not generally implemented; see
+// revision history for tests
 // https://www.w3.org/Bugs/Public/show_bug.cgi?id=15432
-/*
-percentagesAndLengths.forEach(function(height) {
-	// height is a misnomer, it's also used for width in this part.
-	// Three arguments with width first:
-	testTransformOrigin("center top " + height, "", "");
-	testTransformOrigin("center bottom " + height, "", "");
-
-	testTransformOrigin("left " + height + " center", "", "");
-	testTransformOrigin("left " + height + " top", "", "");
-	testTransformOrigin("left " + height + " bottom", "", "");
-	testTransformOrigin("left top " + height, "", "");
-	testTransformOrigin("left bottom " + height, "", "");
-
-	testTransformOrigin("right " + height + " center", "", "");
-	testTransformOrigin("right " + height + " top", "", "");
-	testTransformOrigin("right " + height + " bottom", "", "");
-	testTransformOrigin("right top " + height, "", "");
-	testTransformOrigin("right bottom " + height, "", "");
-
-	// Three arguments with height first:
-	testTransformOrigin("center left " + height, "", "");
-	testTransformOrigin("center right " + height, "", "");
-
-	testTransformOrigin("top " + height + " center", "", "");
-	testTransformOrigin("top " + height + " left", "", "");
-	testTransformOrigin("top " + height + " right", "", "");
-	testTransformOrigin("top left " + height, "", "");
-	testTransformOrigin("top right " + height, "", "");
-
-	testTransformOrigin("bottom " + height + " center", "", "");
-	testTransformOrigin("bottom " + height + " left", "", "");
-	testTransformOrigin("bottom " + height + " right", "", "");
-	testTransformOrigin("bottom left " + height, "", "");
-	testTransformOrigin("bottom right " + height, "", "");
-
-	// Four arguments
-	percentagesAndLengths.forEach(function(width) {
-		// Width first:
-		testTransformOrigin("left " + width + " top " + height, "", "");
-		testTransformOrigin("left " + width + " bottom " + height, "", "");
-		testTransformOrigin("right " + width + " top " + height, "", "");
-		testTransformOrigin("right " + width + " bottom " + height, "", "");
-
-		// Height first:
-		testTransformOrigin("top " + height + " left " + width, "", "");
-		testTransformOrigin("top " + height + " right " + width, "", "");
-		testTransformOrigin("bottom " + height + " left " + width, "", "");
-		testTransformOrigin("bottom " + height + " right " + width, "", "");
-	});
-});
-*/
 
 [].forEach.call(document.querySelectorAll("style"), function(style) {style.disabled = true});
 </script>

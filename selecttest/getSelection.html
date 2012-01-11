@@ -32,6 +32,18 @@ test(function() {
 	assert_equals(window.getSelection(), document.getSelection());
 }, "window.getSelection() === document.getSelection()");
 
+// "Each selection is associated with a single range, which may be null and is
+// initially null."
+//
+// "The rangeCount attribute must return 0 if the context object's range is
+// null, otherwise 1."
+test(function() {
+	assert_equals(window.getSelection().rangeCount, 0,
+		"window.getSelection().rangeCount must initially be 0");
+	assert_equals(document.getSelection().rangeCount, 0,
+		"document.getSelection().rangeCount must initially be 0");
+}, "Selection's range must initially be null");
+
 test(function() {
 	assert_true("Selection" in window, "window must have Selection property");
 

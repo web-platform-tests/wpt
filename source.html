@@ -658,30 +658,32 @@ mutation rules would place the new boundary point inside a non-Text/Element
 node.  And finally, the previously-specified behavior had the advantage of
 matching two major implementations, while the new behavior matched no one.  So
 I changed it back.
+
+<p>See <a href=https://www.w3.org/Bugs/Public/show_bug.cgi?id=15470>bug
+15470</a>.  IE9, Firefox 12.0a1, Chrome 17 dev, and Opera Next 12.00 alpha all
+make the range initially null.
 </div>
 
 <p>Every [[browsingcontext]] has a <dfn
 title=concept-selection>selection</dfn>.  Each [[selection]] is associated with
-a single [[range]], which may be null.  The [[selection]]'s [[range]] must
-initially have [[rangestart]] and [[rangeend]] ([[selection]]'s [[document]],
-0).  This one [[selection]] must be shared by all the content of the
-[[browsingcontext]] (though not by nested [[browsingcontexts]]), including any
-editing hosts in the document. <span title="editing host">Editing hosts</span>
-that are not inside a document cannot have a [[selection]].
+a single [[range]], which may be null and is initially null.  This one
+[[selection]] must be shared by all the content of the [[browsingcontext]]
+(though not by nested [[browsingcontexts]]), including any editing hosts in the
+document. <span title="editing host">Editing hosts</span> that are not inside a
+document cannot have a [[selection]].
 
 <p class=comments>See <a
-href=https://www.w3.org/Bugs/Public/show_bug.cgi?id=15470>bug 15470</a>.  This
-behavior is patterned after Firefox 12.0a1, because it's simplest for authors:
-rangeCount is always exactly one unless someone calls
-removeRange/removeAllRanges.  IE9, Chrome 17 dev, and Opera Next 12.00 alpha
-make the range initially null, and IE9 and Opera Next 12.00 alpha allow the
-user to reset the range to null after the fact by clicking somewhere.
+href=https://www.w3.org/Bugs/Public/show_bug.cgi?id=15470>bug 15470</a>.  IE9
+and Opera Next 12.00 alpha allow the user to reset the range to null after the
+fact by clicking somewhere; Firefox 12.0a1 and Chrome 17 dev do not.  I follow
+Gecko/WebKit, because it lessens the chance of getRangeAt(0) throwing.
 
 <p>The user agent should allow the user to change the [[selection]].  If the
 user makes any modification to the [[selection]], the user agent must create a
 new [[range]] with suitable [[rangestart]] and [[rangeend]] and associate the
 [[selection]] with this new [[range]] (not modify the existing [[range]]).  The
-user agent must not allow the user to set a [[selection]]'s [[range]] to null.
+user agent must not allow the user to set a [[selection]]'s [[range]] to null
+if it was not already null.
 
 <p class=comments>This matches Firefox 12.0a1, as far as I can tell.  Chrome 17
 dev and Opera Next 12.00 alpha return copies from getRangeAt(), so the
@@ -699,6 +701,19 @@ the [[selection]].  However, if the user changes the selection or a script
 calls <code title=dom-Selection-addRange>addRange()</code>, the [[selection]]
 must be associated with a new [[range]] object, as required elsewhere in this
 specification.
+
+<p class=comments>If the document is being unloaded, we want to clear all state
+associated with the old document.  If the selection's range was non-null, it
+will get collapsed to (document, 0) when the document's children are removed.
+This is indeed what Firefox 12.0a1 and Chrome 17 dev seem to do.  IE9 seems to
+reset the selection's range to null, at least when the document is unloaded via
+{{code|document.open()}}.  This makes more sense than collapsing it to the
+root.
+
+<p>As one of the <span data-anolis-spec=html>unloading document cleanup
+steps</span>, the user agent must remove any [[range]] from the [[selection]]
+associated with the [[document]]'s [[browsingcontext]], so the [[selection]]'s
+[[range]] is null.
 
 <p class=comments>This paragraph is vague.  It needs to be replaced by detailed
 conformance requirements saying exactly what to do for particular keystrokes,

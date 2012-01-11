@@ -720,28 +720,30 @@ mutation rules would place the new boundary point inside a non-Text/Element
 node.  And finally, the previously-specified behavior had the advantage of
 matching two major implementations, while the new behavior matched no one.  So
 I changed it back.
+
+<p>See <a href="https://www.w3.org/Bugs/Public/show_bug.cgi?id=15470">bug
+15470</a>.  IE9, Firefox 12.0a1, Chrome 17 dev, and Opera Next 12.00 alpha all
+make the range initially null.
 </div>
 
 <p>Every <a class=external data-anolis-spec=html href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#browsing-context title="browsing context">browsing context</a> has a <dfn id=concept-selection title=concept-selection>selection</dfn>.  Each <a href=#concept-selection title=concept-selection>selection</a> is associated with
-a single <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>, which may be null.  The <a href=#concept-selection title=concept-selection>selection</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> must
-initially have <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a> and <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end title=concept-range-end>end</a> (<a href=#concept-selection title=concept-selection>selection</a>'s <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document>Document</a></code>,
-0).  This one <a href=#concept-selection title=concept-selection>selection</a> must be shared by all the content of the
-<a class=external data-anolis-spec=html href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#browsing-context title="browsing context">browsing context</a> (though not by nested <a class=external data-anolis-spec=html href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#browsing-context title="browsing context">browsing contexts</a>), including any
-editing hosts in the document. <a href=#editing-host title="editing host">Editing hosts</a>
-that are not inside a document cannot have a <a href=#concept-selection title=concept-selection>selection</a>.
+a single <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>, which may be null and is initially null.  This one
+<a href=#concept-selection title=concept-selection>selection</a> must be shared by all the content of the <a class=external data-anolis-spec=html href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#browsing-context title="browsing context">browsing context</a>
+(though not by nested <a class=external data-anolis-spec=html href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#browsing-context title="browsing context">browsing contexts</a>), including any editing hosts in the
+document. <a href=#editing-host title="editing host">Editing hosts</a> that are not inside a
+document cannot have a <a href=#concept-selection title=concept-selection>selection</a>.
 
-<p class=comments>See <a href="https://www.w3.org/Bugs/Public/show_bug.cgi?id=15470">bug 15470</a>.  This
-behavior is patterned after Firefox 12.0a1, because it's simplest for authors:
-rangeCount is always exactly one unless someone calls
-removeRange/removeAllRanges.  IE9, Chrome 17 dev, and Opera Next 12.00 alpha
-make the range initially null, and IE9 and Opera Next 12.00 alpha allow the
-user to reset the range to null after the fact by clicking somewhere.
+<p class=comments>See <a href="https://www.w3.org/Bugs/Public/show_bug.cgi?id=15470">bug 15470</a>.  IE9
+and Opera Next 12.00 alpha allow the user to reset the range to null after the
+fact by clicking somewhere; Firefox 12.0a1 and Chrome 17 dev do not.  I follow
+Gecko/WebKit, because it lessens the chance of getRangeAt(0) throwing.
 
 <p>The user agent should allow the user to change the <a href=#concept-selection title=concept-selection>selection</a>.  If the
 user makes any modification to the <a href=#concept-selection title=concept-selection>selection</a>, the user agent must create a
 new <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> with suitable <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a> and <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end title=concept-range-end>end</a> and associate the
 <a href=#concept-selection title=concept-selection>selection</a> with this new <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> (not modify the existing <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>).  The
-user agent must not allow the user to set a <a href=#concept-selection title=concept-selection>selection</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> to null.
+user agent must not allow the user to set a <a href=#concept-selection title=concept-selection>selection</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> to null
+if it was not already null.
 
 <p class=comments>This matches Firefox 12.0a1, as far as I can tell.  Chrome 17
 dev and Opera Next 12.00 alpha return copies from getRangeAt(), so the
@@ -759,6 +761,19 @@ the <a href=#concept-selection title=concept-selection>selection</a>.  However, 
 calls <code title=dom-Selection-addRange><a href=#dom-selection-addrange>addRange()</a></code>, the <a href=#concept-selection title=concept-selection>selection</a>
 must be associated with a new <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> object, as required elsewhere in this
 specification.
+
+<p class=comments>If the document is being unloaded, we want to clear all state
+associated with the old document.  If the selection's range was non-null, it
+will get collapsed to (document, 0) when the document's children are removed.
+This is indeed what Firefox 12.0a1 and Chrome 17 dev seem to do.  IE9 seems to
+reset the selection's range to null, at least when the document is unloaded via
+<code title="">document.open()</code>.  This makes more sense than collapsing it to the
+root.
+
+<p>As one of the <a class=external data-anolis-spec=html href=http://www.whatwg.org/specs/web-apps/current-work/multipage/history.html#unloading-document-cleanup-steps>unloading document cleanup
+steps</a>, the user agent must remove any <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> from the <a href=#concept-selection title=concept-selection>selection</a>
+associated with the <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document>Document</a></code>'s <a class=external data-anolis-spec=html href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#browsing-context title="browsing context">browsing context</a>, so the <a href=#concept-selection title=concept-selection>selection</a>'s
+<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> is null.
 
 <p class=comments>This paragraph is vague.  It needs to be replaced by detailed
 conformance requirements saying exactly what to do for particular keystrokes,

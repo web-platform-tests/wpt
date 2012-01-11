@@ -7,9 +7,12 @@
 
 // This tests the requirement "As one of the unloading document cleanup steps,
 // the user agent must remove any range from the selection associated with the
-// Document's browsing context, so the selection's range is null."  To do so,
-// it creates an iframe and runs document.open().  TODO: Test additional ways
-// of unloading the document, like back and forward.
+// Document's browsing context (so the selection's range is null) and set its
+// direction to forwards."  To do so, it creates an iframe and runs
+// document.open().
+//
+// TODO: Test additional ways of unloading the document, like back and forward.
+// TODO: Test that selection direction is reset.
 
 var iframe = document.createElement("iframe");
 var t = async_test("Selection.rangeCount must be reset to 0 after document.open()");

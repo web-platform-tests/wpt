@@ -712,8 +712,8 @@ root.
 
 <p>As one of the <span data-anolis-spec=html>unloading document cleanup
 steps</span>, the user agent must remove any [[range]] from the [[selection]]
-associated with the [[document]]'s [[browsingcontext]], so the [[selection]]'s
-[[range]] is null.
+associated with the [[document]]'s [[browsingcontext]] (so the [[selection]]'s
+[[range]] is null) and set its [[seldir]] to <i title>forwards</i>.
 
 <p class=comments>This paragraph is vague.  It needs to be replaced by detailed
 conformance requirements saying exactly what to do for particular keystrokes,

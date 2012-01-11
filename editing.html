@@ -772,8 +772,8 @@ root.
 
 <p>As one of the <a class=external data-anolis-spec=html href=http://www.whatwg.org/specs/web-apps/current-work/multipage/history.html#unloading-document-cleanup-steps>unloading document cleanup
 steps</a>, the user agent must remove any <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> from the <a href=#concept-selection title=concept-selection>selection</a>
-associated with the <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document>Document</a></code>'s <a class=external data-anolis-spec=html href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#browsing-context title="browsing context">browsing context</a>, so the <a href=#concept-selection title=concept-selection>selection</a>'s
-<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> is null.
+associated with the <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document>Document</a></code>'s <a class=external data-anolis-spec=html href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#browsing-context title="browsing context">browsing context</a> (so the <a href=#concept-selection title=concept-selection>selection</a>'s
+<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> is null) and set its <a href=#concept-selection-dir title=concept-selection-dir>direction</a> to <i title="">forwards</i>.
 
 <p class=comments>This paragraph is vague.  It needs to be replaced by detailed
 conformance requirements saying exactly what to do for particular keystrokes,

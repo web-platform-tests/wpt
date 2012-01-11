@@ -15,10 +15,18 @@ test(function() {
 }, "window.getSelection() instanceof Selection");
 
 test(function() {
+	assert_equals(window.getSelection(), window.getSelection());
+}, "window.getSelection() === window.getSelection()");
+
+test(function() {
 	assert_true("Selection" in window, "window must have Selection property");
 
 	assert_true(document.getSelection() instanceof Selection);
 }, "document.getSelection() instanceof Selection");
+
+test(function() {
+	assert_equals(document.getSelection(), document.getSelection());
+}, "document.getSelection() === document.getSelection()");
 
 test(function() {
 	assert_equals(window.getSelection(), document.getSelection());

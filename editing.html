@@ -67,7 +67,7 @@ a code { text-decoration: underline }
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing APIs</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-10-january-2012>Work in Progress &mdash; Last Update 10 January 2012</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-11-january-2012>Work in Progress &mdash; Last Update 11 January 2012</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;<a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a>&gt;
@@ -723,11 +723,42 @@ I changed it back.
 </div>
 
 <p>Every <a class=external data-anolis-spec=html href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#browsing-context title="browsing context">browsing context</a> has a <dfn id=concept-selection title=concept-selection>selection</dfn>.  Each <a href=#concept-selection title=concept-selection>selection</a> is associated with
-a single <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>, which may be null and is initially null. The user agent
-should allow the user to change the <a href=#concept-selection title=concept-selection>selection</a>.  This one <a href=#concept-selection title=concept-selection>selection</a> must
-be shared by all the content of the <a class=external data-anolis-spec=html href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#browsing-context title="browsing context">browsing context</a> (though not by nested
-<a class=external data-anolis-spec=html href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#browsing-context title="browsing context">browsing contexts</a>), including any editing hosts in the document. Editing
-hosts that are not inside a document cannot have a <a href=#concept-selection title=concept-selection>selection</a>.
+a single <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>, which may be null.  The <a href=#concept-selection title=concept-selection>selection</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> must
+initially have <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a> and <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end title=concept-range-end>end</a> (<a href=#concept-selection title=concept-selection>selection</a>'s <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document>Document</a></code>,
+0).  This one <a href=#concept-selection title=concept-selection>selection</a> must be shared by all the content of the
+<a class=external data-anolis-spec=html href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#browsing-context title="browsing context">browsing context</a> (though not by nested <a class=external data-anolis-spec=html href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#browsing-context title="browsing context">browsing contexts</a>), including any
+editing hosts in the document. <a href=#editing-host title="editing host">Editing hosts</a>
+that are not inside a document cannot have a <a href=#concept-selection title=concept-selection>selection</a>.
+
+<p class=comments>See <a href="https://www.w3.org/Bugs/Public/show_bug.cgi?id=15470">bug 15470</a>.  This
+behavior is patterned after Firefox 12.0a1, because it's simplest for authors:
+rangeCount is always exactly one unless someone calls
+removeRange/removeAllRanges.  IE9, Chrome 17 dev, and Opera Next 12.00 alpha
+make the range initially null, and IE9 and Opera Next 12.00 alpha allow the
+user to reset the range to null after the fact by clicking somewhere.
+
+<p>The user agent should allow the user to change the <a href=#concept-selection title=concept-selection>selection</a>.  If the
+user makes any modification to the <a href=#concept-selection title=concept-selection>selection</a>, the user agent must create a
+new <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> with suitable <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a> and <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end title=concept-range-end>end</a> and associate the
+<a href=#concept-selection title=concept-selection>selection</a> with this new <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> (not modify the existing <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>).  The
+user agent must not allow the user to set a <a href=#concept-selection title=concept-selection>selection</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> to null.
+
+<p class=comments>This matches Firefox 12.0a1, as far as I can tell.  Chrome 17
+dev and Opera Next 12.00 alpha return copies from getRangeAt(), so the
+requirement isn't testable for them.  IE9 threw weird exceptions in my testing,
+so I match the only browser I could test.
+
+<p>Once a <a href=#concept-selection title=concept-selection>selection</a> is associated with a given <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> object, it must
+continue to be associated with that same <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> object until this
+specification requires otherwise.
+
+<p class=note>For instance, if the DOM changes in a way that changes the
+<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp title=concept-range-bp>boundary points</a>, or a script modifies the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp title=concept-range-bp>boundary points</a> of
+the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>, the same <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> object must continue to be associated with
+the <a href=#concept-selection title=concept-selection>selection</a>.  However, if the user changes the selection or a script
+calls <code title=dom-Selection-addRange><a href=#dom-selection-addrange>addRange()</a></code>, the <a href=#concept-selection title=concept-selection>selection</a>
+must be associated with a new <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> object, as required elsewhere in this
+specification.
 
 <p class=comments>This paragraph is vague.  It needs to be replaced by detailed
 conformance requirements saying exactly what to do for particular keystrokes,

@@ -662,11 +662,43 @@ I changed it back.
 
 <p>Every [[browsingcontext]] has a <dfn
 title=concept-selection>selection</dfn>.  Each [[selection]] is associated with
-a single [[range]], which may be null and is initially null. The user agent
-should allow the user to change the [[selection]].  This one [[selection]] must
-be shared by all the content of the [[browsingcontext]] (though not by nested
-[[browsingcontexts]]), including any editing hosts in the document. Editing
-hosts that are not inside a document cannot have a [[selection]].
+a single [[range]], which may be null.  The [[selection]]'s [[range]] must
+initially have [[rangestart]] and [[rangeend]] ([[selection]]'s [[document]],
+0).  This one [[selection]] must be shared by all the content of the
+[[browsingcontext]] (though not by nested [[browsingcontexts]]), including any
+editing hosts in the document. <span title="editing host">Editing hosts</span>
+that are not inside a document cannot have a [[selection]].
+
+<p class=comments>See <a
+href=https://www.w3.org/Bugs/Public/show_bug.cgi?id=15470>bug 15470</a>.  This
+behavior is patterned after Firefox 12.0a1, because it's simplest for authors:
+rangeCount is always exactly one unless someone calls
+removeRange/removeAllRanges.  IE9, Chrome 17 dev, and Opera Next 12.00 alpha
+make the range initially null, and IE9 and Opera Next 12.00 alpha allow the
+user to reset the range to null after the fact by clicking somewhere.
+
+<p>The user agent should allow the user to change the [[selection]].  If the
+user makes any modification to the [[selection]], the user agent must create a
+new [[range]] with suitable [[rangestart]] and [[rangeend]] and associate the
+[[selection]] with this new [[range]] (not modify the existing [[range]]).  The
+user agent must not allow the user to set a [[selection]]'s [[range]] to null.
+
+<p class=comments>This matches Firefox 12.0a1, as far as I can tell.  Chrome 17
+dev and Opera Next 12.00 alpha return copies from getRangeAt(), so the
+requirement isn't testable for them.  IE9 threw weird exceptions in my testing,
+so I match the only browser I could test.
+
+<p>Once a [[selection]] is associated with a given [[range]] object, it must
+continue to be associated with that same [[range]] object until this
+specification requires otherwise.
+
+<p class=note>For instance, if the DOM changes in a way that changes the
+[[range]]'s [[boundarypoints]], or a script modifies the [[boundarypoints]] of
+the [[range]], the same [[range]] object must continue to be associated with
+the [[selection]].  However, if the user changes the selection or a script
+calls <code title=dom-Selection-addRange>addRange()</code>, the [[selection]]
+must be associated with a new [[range]] object, as required elsewhere in this
+specification.
 
 <p class=comments>This paragraph is vague.  It needs to be replaced by detailed
 conformance requirements saying exactly what to do for particular keystrokes,

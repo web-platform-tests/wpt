@@ -91,9 +91,14 @@ body > div > div { padding-left: 10px; width: 105px }
 <div><div><div id=test></div></div></div>
 <div id=log></div>
 <script>
-// TODO: Test images, CSSMatrix, interaction with SVG, overflow, creation of
-// stacking context/containing block, fixed backgrounds, specificity of SVG
-// transform attribute, inheritance (computed values)
+// TODO: Test images, interaction with SVG, creation of stacking
+// context/containing block, fixed backgrounds, specificity of SVG transform
+// attribute, inheritance (computed values)
+//
+// FIXME: CSSMatrix seems not to be implemented by most UAs.
+// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15443
+//
+// Probably requires reftests: interaction with overflow
 //
 // Not for now: transitions, animations
 var div = document.querySelector("#test");

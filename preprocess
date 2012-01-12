@@ -8,6 +8,7 @@ import re
 
 replace = {
     'a': '<code data-anolis-spec=html title="the a element">a</code>',
+    'activedocument': '<span data-anolis-spec=html title="active document">active document</span>',
     'ancestor': '<span data-anolis-spec=dom title=concept-tree-ancestor>ancestor</span>',
     'attribute': '<span data-anolis-spec=dom title=concept-attribute>attribute</span>',
     'attrlocalname': '<span data-anolis-spec=dom title=concept-attribute-local-name>local name</span>',
@@ -40,7 +41,7 @@ replace = {
     'dd': '<code data-anolis-spec=html title="the dd element">dd</code>',
     'dl': '<code data-anolis-spec=html title="the dl element">dl</code>',
     'dt': '<code data-anolis-spec=html title="the dt element">dt</code>',
-    'document': '<code data-anolis-spec=dom>Document</code>',
+    'document': '<span data-anolis-spec=dom title=concept-document>document</span>',
     'documentfragment': '<code data-anolis-spec=dom>DocumentFragment</code>',
     'documenttype': '<code data-anolis-spec=dom>DocumentType</code>',
     'element': '<code data-anolis-spec=dom>Element</code>',

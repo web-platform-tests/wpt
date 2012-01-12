@@ -44,6 +44,8 @@ test(function() {
 		"document.getSelection().rangeCount must initially be 0");
 }, "Selection's range must initially be null");
 
+// Commented out pending decision on what the correct behavior is
+/*
 test(function() {
 	assert_true("Selection" in window, "window must have Selection property");
 
@@ -65,6 +67,7 @@ test(function() {
 	assert_equals(xmlDoc.getSelection(), document.getSelection(),
 		"getSelection() on XML document with no browsing context must be same as the window");
 }, "XML document with no browsing context");
+*/
 
 var iframe = document.createElement("iframe");
 document.body.appendChild(iframe);
@@ -81,6 +84,7 @@ test(function() {
 		"getSelection() inside and outside iframe must return different objects");
 }, "In an iframe");
 
+/*
 test(function() {
 	assert_true("Selection" in iframe.contentWindow, "window must have Selection property");
 
@@ -90,5 +94,6 @@ test(function() {
 	assert_equals(doc.getSelection(), iframe.contentDocument.getSelection(),
 		"getSelection() on HTML document with no browsing context must be same as the window");
 }, "HTML document with no browsing context inside an iframe");
+*/
 document.body.removeChild(iframe);
 </script>

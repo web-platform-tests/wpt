@@ -67,7 +67,7 @@ a code { text-decoration: underline }
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing APIs</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-11-january-2012>Work in Progress &mdash; Last Update 11 January 2012</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-12-january-2012>Work in Progress &mdash; Last Update 12 January 2012</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;<a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a>&gt;
@@ -726,33 +726,41 @@ I changed it back.
 make the range initially null.
 </div>
 
-<p>Every <a class=external data-anolis-spec=html href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#browsing-context title="browsing context">browsing context</a> has a <dfn id=concept-selection title=concept-selection>selection</dfn>.  Each <a href=#concept-selection title=concept-selection>selection</a> is associated with
-a single <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>, which may be null and is initially null.  This one
-<a href=#concept-selection title=concept-selection>selection</a> must be shared by all the content of the <a class=external data-anolis-spec=html href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#browsing-context title="browsing context">browsing context</a>
-(though not by nested <a class=external data-anolis-spec=html href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#browsing-context title="browsing context">browsing contexts</a>), including any editing hosts in the
-document. <a href=#editing-host title="editing host">Editing hosts</a> that are not inside a
-document cannot have a <a href=#concept-selection title=concept-selection>selection</a>.
+<p>Every <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document title=concept-document>document</a> has a unique <code><a href=#selection>Selection</a></code> object associated
+with it.  <code><a href=#selection>Selection</a></code> objects are known as <dfn id=concept-selection title=concept-selection>selections</dfn>.  Each <a href=#concept-selection title=concept-selection>selection</a> is associated
+with a single <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>, which may be null and is initially null.  This one
+<a href=#concept-selection title=concept-selection>selection</a> must be shared by all the content of the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document title=concept-document>document</a> (though not
+by nested <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document title=concept-document>documents</a>), including any editing hosts in the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document title=concept-document>document</a>.
+<a href=#editing-host title="editing host">Editing hosts</a> that are not inside a
+<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document title=concept-document>document</a> cannot have a <a href=#concept-selection title=concept-selection>selection</a>.
+
+<p class=comments>This is a requirement of the HTML spec.  IE9 and Opera Next
+12.00 alpha seem to follow it, while Firefox 12.0a1 and Chrome 17 dev seem not
+to.  See <a href=selecttest/Document-open.html>test</a>, <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=717339">Mozilla bug</a>, <a href="https://bugs.webkit.org/show_bug.cgi?id=76114">WebKit bug</a>.
+
+<p class=note>A document's selection is a singleton object associated with that
+document, so it gets replaced with a new object when <code class=external data-anolis-spec=html title=dom-Document-open><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/elements.html#dom-document-open>Document.open()</a></code> is called.
 
 <p class=comments>See <a href="https://www.w3.org/Bugs/Public/show_bug.cgi?id=15470">bug 15470</a>.  IE9
 and Opera Next 12.00 alpha allow the user to reset the range to null after the
 fact by clicking somewhere; Firefox 12.0a1 and Chrome 17 dev do not.  I follow
 Gecko/WebKit, because it lessens the chance of getRangeAt(0) throwing.
 
-<p>The user agent should allow the user to change the <a href=#concept-selection title=concept-selection>selection</a>.  If the
-user makes any modification to the <a href=#concept-selection title=concept-selection>selection</a>, the user agent must create a
-new <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> with suitable <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a> and <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end title=concept-range-end>end</a> and associate the
-<a href=#concept-selection title=concept-selection>selection</a> with this new <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> (not modify the existing <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>).  The
-user agent must not allow the user to set a <a href=#concept-selection title=concept-selection>selection</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> to null
-if it was not already null.
+<p>The user agent should allow the user to change the <a class=external data-anolis-spec=html href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#active-document title="active document">active document</a>'s
+<a href=#concept-selection title=concept-selection>selection</a>.  If the user makes any modification to a <a href=#concept-selection title=concept-selection>selection</a>, the user
+agent must create a new <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> with suitable <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a> and <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end title=concept-range-end>end</a>
+and associate the <a href=#concept-selection title=concept-selection>selection</a> with this new <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> (not modify the
+existing <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>).  The user agent must not allow the user to set a
+<a href=#concept-selection title=concept-selection>selection</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> to null if it was not already null.
 
 <p class=comments>This matches Firefox 12.0a1, as far as I can tell.  Chrome 17
 dev and Opera Next 12.00 alpha return copies from getRangeAt(), so the
 requirement isn't testable for them.  IE9 threw weird exceptions in my testing,
 so I match the only browser I could test.
 
-<p>Once a <a href=#concept-selection title=concept-selection>selection</a> is associated with a given <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> object, it must
-continue to be associated with that same <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> object until this
-specification requires otherwise.
+<p>Once a <a href=#concept-selection title=concept-selection>selection</a> is associated with a given <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>, it must continue
+to be associated with that same <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> until this specification requires
+otherwise.
 
 <p class=note>For instance, if the DOM changes in a way that changes the
 <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp title=concept-range-bp>boundary points</a>, or a script modifies the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp title=concept-range-bp>boundary points</a> of
@@ -761,19 +769,6 @@ the <a href=#concept-selection title=concept-selection>selection</a>.  However, 
 calls <code title=dom-Selection-addRange><a href=#dom-selection-addrange>addRange()</a></code>, the <a href=#concept-selection title=concept-selection>selection</a>
 must be associated with a new <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> object, as required elsewhere in this
 specification.
-
-<p class=comments>If the document is being unloaded, we want to clear all state
-associated with the old document.  If the selection's range was non-null, it
-will get collapsed to (document, 0) when the document's children are removed.
-This is indeed what Firefox 12.0a1 and Chrome 17 dev seem to do.  IE9 seems to
-reset the selection's range to null, at least when the document is unloaded via
-<code title="">document.open()</code>.  This makes more sense than collapsing it to the
-root.
-
-<p>As one of the <a class=external data-anolis-spec=html href=http://www.whatwg.org/specs/web-apps/current-work/multipage/history.html#unloading-document-cleanup-steps>unloading document cleanup
-steps</a>, the user agent must remove any <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> from the <a href=#concept-selection title=concept-selection>selection</a>
-associated with the <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document>Document</a></code>'s <a class=external data-anolis-spec=html href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#browsing-context title="browsing context">browsing context</a> (so the <a href=#concept-selection title=concept-selection>selection</a>'s
-<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> is null) and set its <a href=#concept-selection-dir title=concept-selection-dir>direction</a> to <i title="">forwards</i>.
 
 <p class=comments>This paragraph is vague.  It needs to be replaced by detailed
 conformance requirements saying exactly what to do for particular keystrokes,
@@ -836,8 +831,6 @@ from Gecko.  This spec doesn't have everything from there yet, in particular
 selectionLanguageChange() and containsNode() are missing. They are missing
 because I couldn't work out how to define them in terms of Ranges.
 
-<p>The <code><a href=#selection>Selection</a></code> interface represents a <a href=#concept-selection title=concept-selection>selection</a>.
-
 <div class=note>
 <p>Originally, the Selection interface was a Netscape feature.  The
 original implementation was carried on into Gecko (Firefox), and the feature
@@ -859,10 +852,13 @@ zero.
 
 <p>All of the members of the <code><a href=#selection>Selection</a></code> interface are defined in
 terms of operations on the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> object (if any) represented by the object.
-These operations can raise exceptions, as defined for the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> interface;
-this can therefore result in the members of the <code><a href=#selection>Selection</a></code>
-interface raising exceptions as well, in addition to any explicitly called out
-below.
+These operations can raise exceptions, as defined for the <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#range>Range</a></code> interface; this can therefore result in the
+members of the <code><a href=#selection>Selection</a></code> interface raising exceptions as well, in
+addition to any explicitly called out below.
+
+<p class=XXX>What happens if you try to put a selection in some node that's not
+part of the selection's document?  Assuming it works, how is it presented to
+the user?
 
 <dl class=domintro>
   <dt><var title="">selection</var> . <code title=dom-Selection-anchorNode><a href=#dom-selection-anchornode>anchorNode</a></code>
@@ -1276,15 +1272,18 @@ interfaces defined in this specification.
 that).  Now, what happens if you create a Document object with no defaultView
 (say via <code title="">document.implementation.createHTMLDocument("")</code>) and call
 <code title="">getSelection()</code> on it?  IE9 seems to return a different Selection
-object.  Firefox 9.0a2 and Opera 12.00 return the same object as for the
-current window.  Chrome 16 dev returns null.  We go with Firefox/Opera, since
-it's likely the oldest behavior and makes the most sense.  TODO: Is the wording
-about prototypes the best way to identify the correct global object?
+object.  Firefox 12.0a1 and Opera Next 12.00 alpha return the same object as
+for the current window.  Chrome 17 dev returns null.  We go with IE9 for now,
+because it's the simplest to spec and understand -- we don't have to
+distinguish between different kinds of documents.  But maybe this isn't
+desired.
 
 <p>The <dfn id=dom-document-getselection title=dom-Document-getSelection><code>getSelection()</code></dfn>
-method on the <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document>Document</a></code> interface must return the same
-<code><a href=#selection>Selection</a></code> object as calling <code title=dom-Window-getSelection><a href=#dom-window-getselection>getSelection()</a></code> on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#window>Window</a></code> object on which the <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document>Document</a></code>'s
-prototype resides.
+method on the <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document>Document</a></code> interface must return
+the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a href=#concept-selection title=concept-selection>selection</a>.
+
+<p class=XXX>Browsers other than IE don't actually give every document a
+selection.  Consider changing this to match Gecko or WebKit.
 
 <pre class=idl>partial interface <a class=external data-anolis-spec=html href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#window>Window</a> {
   <a href=#selection>Selection</a> <a href=#dom-window-getselection title=dom-Window-getSelection>getSelection</a>();
@@ -1292,7 +1291,8 @@ prototype resides.
 
 <p>The <dfn id=dom-window-getselection title=dom-Window-getSelection><code>getSelection()</code></dfn>
 method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#window>Window</a></code> interface must return
-the <code><a href=#selection>Selection</a></code> object representing the <a href=#concept-selection title=concept-selection>selection</a> of that <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#window>Window</a></code> object's <a class=external data-anolis-spec=html href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#browsing-context>browsing context</a>.
+the the <a href=#concept-selection title=concept-selection>selection</a> of the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document title=concept-document>document</a> returned by the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s
+<code class=external data-anolis-spec=html title=dom-document-0><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#dom-document-0>document</a></code> property.
 
 
 <h2 id=commands>Commands</h2>
@@ -1688,14 +1688,14 @@ they descend from display: none).
 
 <p>A <dfn id=block-node>block node</dfn> is either an <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> whose "display" property
 does not have <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved value</a> "inline" or "inline-block" or "inline-table" or
-"none", or a <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document>Document</a></code>, or a <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#documentfragment>DocumentFragment</a></code>.
+"none", or a <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document title=concept-document>document</a>, or a <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#documentfragment>DocumentFragment</a></code>.
 
 <p>An <dfn id=inline-node>inline node</dfn> is a <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is not a <a href=#block-node>block
 node</a>.
 
 <p>An <dfn id=editing-host>editing host</dfn> is a <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is either an <a href=#html-element>HTML
 element</a> with a <code class=external data-anolis-spec=html title=attr-contenteditable><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/editing.html#attr-contenteditable>contenteditable</a></code> attribute set to the true
-state, or the <a href=#html-element>HTML element</a> <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of a <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document>Document</a></code> whose <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/editing.html#designMode>designMode</a></code> is enabled.
+state, or the <a href=#html-element>HTML element</a> <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of a <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document title=concept-document>document</a> whose <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/editing.html#designMode>designMode</a></code> is enabled.
 
 <p>Something is <dfn id=editable>editable</dfn> if it is a <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>; it is not an
 <a href=#editing-host>editing host</a>; it does not have a <code class=external data-anolis-spec=html title=attr-contenteditable><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/editing.html#attr-contenteditable>contenteditable</a></code> attribute set to the false
@@ -1704,9 +1704,9 @@ and either it is an <a href=#html-element>HTML element</a>, or it is an <code cl
 element, or it is not an <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> and its <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is an <a href=#html-element>HTML
 element</a>.
 
-<p class=note>An <a href=#editable>editable</a> node cannot be a <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document>Document</a></code> or
+<p class=note>An <a href=#editable>editable</a> node cannot be a <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document title=concept-document>document</a> or
 <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#documentfragment>DocumentFragment</a></code>, its <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> cannot be null, and it must descend from
-either an <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> or a <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document>Document</a></code>.
+either an <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> or a <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document title=concept-document>document</a>.
 
 <p>The <dfn id=editing-host-of>editing host of</dfn> <var title="">node</var> is null if <var title="">node</var> is
 neither <a href=#editable>editable</a> nor an <a href=#editing-host>editing host</a>; <var title="">node</var>
@@ -2350,7 +2350,7 @@ caller of this algorithm.
   <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> equal to one of those, and
   <var title="">child</var> is not a <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node, return false.
 
-  <li>If <var title="">child</var> is a <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document>Document</a></code>, <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#documentfragment>DocumentFragment</a></code>, or
+  <li>If <var title="">child</var> is a <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document title=concept-document>document</a>, <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#documentfragment>DocumentFragment</a></code>, or
   <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#documenttype>DocumentType</a></code>, return false.
 
   <li>If <var title="">child</var> is an <a href=#html-element>HTML element</a>, set <var title="">child</var>

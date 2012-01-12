@@ -664,13 +664,24 @@ I changed it back.
 make the range initially null.
 </div>
 
-<p>Every [[browsingcontext]] has a <dfn
-title=concept-selection>selection</dfn>.  Each [[selection]] is associated with
-a single [[range]], which may be null and is initially null.  This one
-[[selection]] must be shared by all the content of the [[browsingcontext]]
-(though not by nested [[browsingcontexts]]), including any editing hosts in the
-document. <span title="editing host">Editing hosts</span> that are not inside a
-document cannot have a [[selection]].
+<p>Every [[document]] has a unique <code>Selection</code> object associated
+with it.  <code>Selection</code> objects are known as <dfn
+title=concept-selection>selections</dfn>.  Each [[selection]] is associated
+with a single [[range]], which may be null and is initially null.  This one
+[[selection]] must be shared by all the content of the [[document]] (though not
+by nested [[documents]]), including any editing hosts in the [[document]].
+<span title="editing host">Editing hosts</span> that are not inside a
+[[document]] cannot have a [[selection]].
+
+<p class=comments>This is a requirement of the HTML spec.  IE9 and Opera Next
+12.00 alpha seem to follow it, while Firefox 12.0a1 and Chrome 17 dev seem not
+to.  See <a href=selecttest/Document-open.html>test</a>, <a
+href=https://bugzilla.mozilla.org/show_bug.cgi?id=717339>Mozilla bug</a>, <a
+href=https://bugs.webkit.org/show_bug.cgi?id=76114>WebKit bug</a>.
+
+<p class=note>A document's selection is a singleton object associated with that
+document, so it gets replaced with a new object when <code
+data-anolis-spec=html title=dom-Document-open>Document.open()</code> is called.
 
 <p class=comments>See <a
 href=https://www.w3.org/Bugs/Public/show_bug.cgi?id=15470>bug 15470</a>.  IE9
@@ -678,21 +689,21 @@ and Opera Next 12.00 alpha allow the user to reset the range to null after the
 fact by clicking somewhere; Firefox 12.0a1 and Chrome 17 dev do not.  I follow
 Gecko/WebKit, because it lessens the chance of getRangeAt(0) throwing.
 
-<p>The user agent should allow the user to change the [[selection]].  If the
-user makes any modification to the [[selection]], the user agent must create a
-new [[range]] with suitable [[rangestart]] and [[rangeend]] and associate the
-[[selection]] with this new [[range]] (not modify the existing [[range]]).  The
-user agent must not allow the user to set a [[selection]]'s [[range]] to null
-if it was not already null.
+<p>The user agent should allow the user to change the [[activedocument]]'s
+[[selection]].  If the user makes any modification to a [[selection]], the user
+agent must create a new [[range]] with suitable [[rangestart]] and [[rangeend]]
+and associate the [[selection]] with this new [[range]] (not modify the
+existing [[range]]).  The user agent must not allow the user to set a
+[[selection]]'s [[range]] to null if it was not already null.
 
 <p class=comments>This matches Firefox 12.0a1, as far as I can tell.  Chrome 17
 dev and Opera Next 12.00 alpha return copies from getRangeAt(), so the
 requirement isn't testable for them.  IE9 threw weird exceptions in my testing,
 so I match the only browser I could test.
 
-<p>Once a [[selection]] is associated with a given [[range]] object, it must
-continue to be associated with that same [[range]] object until this
-specification requires otherwise.
+<p>Once a [[selection]] is associated with a given [[range]], it must continue
+to be associated with that same [[range]] until this specification requires
+otherwise.
 
 <p class=note>For instance, if the DOM changes in a way that changes the
 [[range]]'s [[boundarypoints]], or a script modifies the [[boundarypoints]] of
@@ -701,19 +712,6 @@ the [[selection]].  However, if the user changes the selection or a script
 calls <code title=dom-Selection-addRange>addRange()</code>, the [[selection]]
 must be associated with a new [[range]] object, as required elsewhere in this
 specification.
-
-<p class=comments>If the document is being unloaded, we want to clear all state
-associated with the old document.  If the selection's range was non-null, it
-will get collapsed to (document, 0) when the document's children are removed.
-This is indeed what Firefox 12.0a1 and Chrome 17 dev seem to do.  IE9 seems to
-reset the selection's range to null, at least when the document is unloaded via
-{{code|document.open()}}.  This makes more sense than collapsing it to the
-root.
-
-<p>As one of the <span data-anolis-spec=html>unloading document cleanup
-steps</span>, the user agent must remove any [[range]] from the [[selection]]
-associated with the [[document]]'s [[browsingcontext]] (so the [[selection]]'s
-[[range]] is null) and set its [[seldir]] to <i title>forwards</i>.
 
 <p class=comments>This paragraph is vague.  It needs to be replaced by detailed
 conformance requirements saying exactly what to do for particular keystrokes,
@@ -778,8 +776,6 @@ from Gecko.  This spec doesn't have everything from there yet, in particular
 selectionLanguageChange() and containsNode() are missing. They are missing
 because I couldn't work out how to define them in terms of Ranges.
 
-<p>The <code>Selection</code> interface represents a [[selection]].
-
 <div class=note>
 <p>Originally, the Selection interface was a Netscape feature.  The
 original implementation was carried on into Gecko (Firefox), and the feature
@@ -801,10 +797,14 @@ zero.
 
 <p>All of the members of the <code>Selection</code> interface are defined in
 terms of operations on the [[range]] object (if any) represented by the object.
-These operations can raise exceptions, as defined for the [[range]] interface;
-this can therefore result in the members of the <code>Selection</code>
-interface raising exceptions as well, in addition to any explicitly called out
-below.
+These operations can raise exceptions, as defined for the <code
+data-anolis-spec=dom>Range</code> interface; this can therefore result in the
+members of the <code>Selection</code> interface raising exceptions as well, in
+addition to any explicitly called out below.
+
+<p class=XXX>What happens if you try to put a selection in some node that's not
+part of the selection's document?  Assuming it works, how is it presented to
+the user?
 
 <dl class=domintro>
   <dt><var>selection</var> . <code title=dom-Selection-anchorNode>anchorNode</code>
@@ -1229,17 +1229,18 @@ href=https://bugzilla.mozilla.org/show_bug.cgi?id=636512>bug 636512</a> fixed
 that).  Now, what happens if you create a Document object with no defaultView
 (say via {{code|document.implementation.createHTMLDocument("")}}) and call
 {{code|getSelection()}} on it?  IE9 seems to return a different Selection
-object.  Firefox 9.0a2 and Opera 12.00 return the same object as for the
-current window.  Chrome 16 dev returns null.  We go with Firefox/Opera, since
-it's likely the oldest behavior and makes the most sense.  TODO: Is the wording
-about prototypes the best way to identify the correct global object?
+object.  Firefox 12.0a1 and Opera Next 12.00 alpha return the same object as
+for the current window.  Chrome 17 dev returns null.  We go with IE9 for now,
+because it's the simplest to spec and understand -- we don't have to
+distinguish between different kinds of documents.  But maybe this isn't
+desired.
 
 <p>The <dfn title=dom-Document-getSelection><code>getSelection()</code></dfn>
-method on the [[document]] interface must return the same
-<code>Selection</code> object as calling <code
-title=dom-Window-getSelection>getSelection()</code> on the <code
-data-anolis-spec=html>Window</code> object on which the [[document]]'s
-prototype resides.
+method on the <code data-anolis-spec=dom>Document</code> interface must return
+the [[contextobject]]'s [[selection]].
+
+<p class=XXX>Browsers other than IE don't actually give every document a
+selection.  Consider changing this to match Gecko or WebKit.
 
 <pre class=idl>partial interface <span data-anolis-spec=html>Window</span> {
   <span>Selection</span> <span title=dom-Window-getSelection>getSelection</span>();
@@ -1247,9 +1248,8 @@ prototype resides.
 
 <p>The <dfn title=dom-Window-getSelection><code>getSelection()</code></dfn>
 method on the <code data-anolis-spec=html>Window</code> interface must return
-the <code>Selection</code> object representing the [[selection]] of that <code
-data-anolis-spec=html>Window</code> object's <span
-data-anolis-spec=html>browsing context</span>.
+the the [[selection]] of the [[document]] returned by the [[contextobject]]'s
+<code data-anolis-spec=html title=dom-document-0>document</code> property.
 <!-- @} -->
 
 <h2>Commands</h2>

@@ -119,16 +119,22 @@ function mxmul32(A, B) {
  * if it's equivalent to a six-element array (a 2D matrix), false otherwise.
  */
 function is2dMatrix(mx) {
-	return Math.abs(mx[2]) < computedEpsilon
-		&& Math.abs(mx[3]) < computedEpsilon
-		&& Math.abs(mx[6]) < computedEpsilon
-		&& Math.abs(mx[7]) < computedEpsilon
-		&& Math.abs(mx[8]) < computedEpsilon
-		&& Math.abs(mx[9]) < computedEpsilon
-		&& Math.abs(mx[10] - 1) < computedEpsilon
-		&& Math.abs(mx[11]) < computedEpsilon
-		&& Math.abs(mx[14]) < computedEpsilon
-		&& Math.abs(mx[15] - 1) < computedEpsilon;
+	// Use a really small epsilon here.  Otherwise we'll think perspective
+	// matrices are 2D.
+	var e = 1.0e-5;
+	return Math.abs(mx[2]) < e
+		&& Math.abs(mx[3]) < e
+
+		&& Math.abs(mx[6]) < e
+		&& Math.abs(mx[7]) < e
+
+		&& Math.abs(mx[8]) < e
+		&& Math.abs(mx[9]) < e
+		&& Math.abs(mx[10] - 1) < e
+		&& Math.abs(mx[11]) < e
+
+		&& Math.abs(mx[14]) < e
+		&& Math.abs(mx[15] - 1) < e;
 }
 
 /**

@@ -102,7 +102,7 @@ body > div > div { padding-left: 10px; width: 105px }
 	// [["none", "NONE", "nOnE"], 1, 0, 0, 1, 0, 0],
 	[["matrix(1,2,3,4,5,6)", "MATRIX(1,2,3,4,5,6)", "mAtRiX(1,2,3,4,5,6)"], 1, 2, 3, 4, 5, 6],
 	[["translate(1px)", "TRANSLATE(1PX)", "tRaNsLaTe(1Px)"], 1, 0, 0, 1, 1, 0],
-	[["translatex(1pt)", "TRANSLATEX(1PT)", "tRaNsLaTeX(1pT)"], 1, 0, 0, 1, 0.75, 0],
+	[["translatex(1pt)", "TRANSLATEX(1PT)", "tRaNsLaTeX(1pT)"], 1, 0, 0, 1, 1/0.75, 0],
 	[["translatey(1in)", "TRANSLATEY(1IN)", "tRaNsLaTeY(1iN)"], 1, 0, 0, 1, 0, 96],
 	[["scale(2)", "SCALE(2)", "sCaLe(2)"], 2, 0, 0, 2, 0, 0],
 	[["scalex(2)", "SCALEX(2)", "sCaLeX(2)"], 2, 0, 0, 1, 0, 0],
@@ -111,8 +111,8 @@ body > div > div { padding-left: 10px; width: 105px }
 	// those while I'm here.
 	[["rotate(90deg)", "ROTATE(90DEG)", "rOtAtE(90dEg)",
 	  "rotate(100grad)", "ROTATE(100GRAD)", "rOtAtE(100gRaD)",
-	  "rotate(0.7854rad)", "ROTATE(0.7854RAD)", "rOtAtE(0.7854rAd)",
-	  "rotate(0.25turn)", "ROTATE(0.25TUN)", "rOtAtE(0.25tUrN)"], 0, 1, -1, 0, 0, 0],
+	  "rotate(1.57079633rad)", "ROTATE(1.57079633RAD)", "rOtAtE(1.57079633rAd)",
+	  "rotate(0.25turn)", "ROTATE(0.25TURN)", "rOtAtE(0.25tUrN)"], 0, 1, -1, 0, 0, 0],
 	[["skewx(45deg)", "SKEWX(45DEG)", "sKeWx(45DeG)"], 1, 0, 1, 1, 0, 0],
 	[["skewy(45deg)", "SKEWY(45DEG)", "sKeWy(45DeG)"], 1, 1, 0, 1, 0, 0],
 ].forEach(function(arr) {

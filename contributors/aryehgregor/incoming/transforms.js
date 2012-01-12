@@ -12,8 +12,12 @@
 var div = document.querySelector("#test");
 var divWidth = 100, divHeight = 50;
 // Arbitrarily chosen epsilon that makes browsers mostly pass with some extra
-// breathing room, since the specs don't define rounding.
-var epsilon = 1.5;
+// breathing room, since the specs don't define rounding for display.
+var pixelEpsilon = 1.5;
+// A much smaller epsilon for computed style values, since there's no good
+// reason for those to be very far off.  Some UAs do a bunch of rounding, but
+// it should still be good to one decimal place.
+var computedEpsilon = 0.05;
 // Account for prefixing so that I can check whether browsers actually follow
 // the spec.  Obviously, in any final version of the test, only the unprefixed
 // property will be tested.
@@ -115,19 +119,16 @@ function mxmul32(A, B) {
  * if it's equivalent to a six-element array (a 2D matrix), false otherwise.
  */
 function is2dMatrix(mx) {
-	// A smaller epsilon than we use elsewhere, because entries of around 1 in
-	// matrices are to be expected.
-	var e = 0.001;
-	return Math.abs(mx[2]) < e
-		&& Math.abs(mx[3]) < e
-		&& Math.abs(mx[6]) < e
-		&& Math.abs(mx[7]) < e
-		&& Math.abs(mx[8]) < e
-		&& Math.abs(mx[9]) < e
-		&& Math.abs(mx[10] - 1) < e
-		&& Math.abs(mx[11]) < e
-		&& Math.abs(mx[14]) < e
-		&& Math.abs(mx[15] - 1) < e;
+	return Math.abs(mx[2]) < computedEpsilon
+		&& Math.abs(mx[3]) < computedEpsilon
+		&& Math.abs(mx[6]) < computedEpsilon
+		&& Math.abs(mx[7]) < computedEpsilon
+		&& Math.abs(mx[8]) < computedEpsilon
+		&& Math.abs(mx[9]) < computedEpsilon
+		&& Math.abs(mx[10] - 1) < computedEpsilon
+		&& Math.abs(mx[11]) < computedEpsilon
+		&& Math.abs(mx[14]) < computedEpsilon
+		&& Math.abs(mx[15] - 1) < computedEpsilon;
 }
 
 /**
@@ -189,20 +190,26 @@ function testTransformParsing(mx) {
 		var re = /^matrix\(([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+?)(?:px)?, ([^,]+?)(?:px)?\)$/;
 		assert_regexp_match(computed, re, "computed value has unexpected form for 2D matrix");
 		var match = re.exec(computed);
-		assert_approx_equals(Number(match[1]), mx[0], epsilon, "getComputedStyle matrix component 0");
-		assert_approx_equals(Number(match[2]), mx[1], epsilon, "getComputedStyle matrix component 1");
-		assert_approx_equals(Number(match[3]), mx[4], epsilon, "getComputedStyle matrix component 2");
-		assert_approx_equals(Number(match[4]), mx[5], epsilon, "getComputedStyle matrix component 3");
-		assert_approx_equals(Number(match[5]), mx[12], epsilon, "getComputedStyle matrix component 4");
-		assert_approx_equals(Number(match[6]), mx[13], epsilon, "getComputedStyle matrix component 5");
+		assert_approx_equals(Number(match[1]), mx[0], computedEpsilon,
+			"getComputedStyle matrix component 0");
+		assert_approx_equals(Number(match[2]), mx[1], computedEpsilon,
+			"getComputedStyle matrix component 1");
+		assert_approx_equals(Number(match[3]), mx[4], computedEpsilon,
+			"getComputedStyle matrix component 2");
+		assert_approx_equals(Number(match[4]), mx[5], computedEpsilon,
+			"getComputedStyle matrix component 3");
+		assert_approx_equals(Number(match[5]), mx[12], computedEpsilon,
+			"getComputedStyle matrix component 4");
+		assert_approx_equals(Number(match[6]), mx[13], computedEpsilon,
+			"getComputedStyle matrix component 5");
 		return;
 	}
 
-	var re = /^matrix\(([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+?)(?:px)?, ([^,]+?)(?:px)?, ([^,]+?)(?:px)?, ([^,]+?)\)$/;
+	var re = /^matrix3d\(([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+?)(?:px)?, ([^,]+?)(?:px)?, ([^,]+?)(?:px)?, ([^,]+?)\)$/;
 	assert_regexp_match(computed, re, "computed value has unexpected form for 3D matrix");
 	var match = re.exec(computed);
 	for (var i = 0; i < 16; i++) {
-		assert_approx_equals(Number(match[i + 1]), mx[i], epsilon,
+		assert_approx_equals(Number(match[i + 1]), mx[i], computedEpsilon,
 			"getComputedStyle matrix component " + i);
 	}
 }
@@ -341,12 +348,12 @@ function testTransformedBoundaryAsserts(expectedTop, expectedRight, expectedBott
 		+ expectedRight.toFixed(3) + ", "
 		+ expectedBottom.toFixed(3) + ", "
 		+ expectedLeft.toFixed(3) + ")";
-	assert_approx_equals(rect.top, expectedTop, epsilon, "top" + msg);
-	assert_approx_equals(rect.right, expectedRight, epsilon, "right" + msg);
-	assert_approx_equals(rect.bottom, expectedBottom, epsilon, "bottom" + msg);
-	assert_approx_equals(rect.left, expectedLeft, epsilon, "left" + msg);
-	assert_approx_equals(rect.width, expectedRight - expectedLeft, epsilon, "width" + msg);
-	assert_approx_equals(rect.height, expectedBottom - expectedTop, epsilon, "height" + msg);
+	assert_approx_equals(rect.top, expectedTop, pixelEpsilon, "top" + msg);
+	assert_approx_equals(rect.right, expectedRight, pixelEpsilon, "right" + msg);
+	assert_approx_equals(rect.bottom, expectedBottom, pixelEpsilon, "bottom" + msg);
+	assert_approx_equals(rect.left, expectedLeft, pixelEpsilon, "left" + msg);
+	assert_approx_equals(rect.width, expectedRight - expectedLeft, pixelEpsilon, "width" + msg);
+	assert_approx_equals(rect.height, expectedBottom - expectedTop, pixelEpsilon, "height" + msg);
 }
 
 /**
@@ -426,11 +433,11 @@ function testTransformOriginParsing(expectedHoriz, expectedVert) {
 	assert_regexp_match(actual, re, "Computed value has unexpected form");
 	var match = re.exec(actual);
 
-	assert_approx_equals(Number(match[1]), expectedHoriz,
-		epsilon, "Value of horizontal part (actual: "
-			 + actual + ", expected " + expectedHoriz + "px " + expectedVert + "px)");
+	assert_approx_equals(Number(match[1]), expectedHoriz, computedEpsilon,
+		"Value of horizontal part (actual: "
+		 + actual + ", expected " + expectedHoriz + "px " + expectedVert + "px)");
 
-	assert_approx_equals(Number(match[2]), expectedVert,
-		epsilon, "Value of vertical part (actual: "
-			 + actual + ", expected " + expectedHoriz + "px " + expectedVert + "px)");
+	assert_approx_equals(Number(match[2]), expectedVert, computedEpsilon,
+		"Value of vertical part (actual: "
+		 + actual + ", expected " + expectedHoriz + "px " + expectedVert + "px)");
 }

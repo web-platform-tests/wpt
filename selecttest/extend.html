@@ -108,11 +108,10 @@ function testExtend(extendTarget, numRanges) {
 		return;
 	}
 
-	if (node.nodeType == Node.DOCUMENT_TYPE_NODE
-	|| node.nodeType == Node.PROCESSING_INSTRUCTION_NODE) {
+	if (node.nodeType == Node.DOCUMENT_TYPE_NODE) {
 		assert_throws("INVALID_NODE_TYPE_ERR", function() {
 			selection.extend(node, offset);
-		}, "extend() to a doctype or PI must throw INVALID_NODE_TYPE_ERR");
+		}, "extend() to a doctype must throw INVALID_NODE_TYPE_ERR");
 		return;
 	}
 

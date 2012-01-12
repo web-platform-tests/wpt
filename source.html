@@ -806,6 +806,8 @@ addition to any explicitly called out below.
 part of the selection's document?  Assuming it works, how is it presented to
 the user?
 
+<p class=XXX>What does {{code|getSelection().getRangeAt(0).detach()}} do?
+
 <dl class=domintro>
   <dt><var>selection</var> . <code title=dom-Selection-anchorNode>anchorNode</code>
   <dd>
@@ -907,17 +909,10 @@ attribute must return true if the <span>anchor</span> and <span>focus</span>
 are the same (including if both are null).  Otherwise it must return false.
 
 <p>The <dfn title=dom-Selection-collapse><code>collapse(<var>parentNode</var>,
-<var>offset</var>)</code></dfn> method must run the following steps:
-
-<ol>
-  <li>If <var>offset</var> is greater than the [[length]] of
-  <var>parentNode</var>, [[throw]] an [[IndexSizeError]] exception and abort
-  these steps.
-
-  <li>Set the [[contextobject]]'s [[range]] to a new [[range]] object with
-  [[rangestart]] and [[rangeend]] both equal to (<var>parentNode</var>,
-  <var>offset</var>).
-</ol>
+<var>offset</var>)</code></dfn> method must create a new [[range]],
+[[rangeset]] both its [[rangestart]] and [[rangeend]] to
+(<var>parentNode</var>, <var>offset</var>), and set the [[contextobject]]'s
+[[range]] to the newly-created [[range]].
 
 <p class=comments>For collapseToStart/End, IE9 mutates the existing range,
 while Firefox 9.0a2 and Chrome 15 dev replace it with a new one.  The spec
@@ -927,16 +922,18 @@ object unchanged.
 <p>The <dfn
 title=dom-Selection-collapseToStart><code>collapseToStart()</code></dfn> method
 must [[throw]] an [[InvalidStateError]] exception if the [[contextobject]]'s
-[[range]] is null.  Otherwise, it must set the [[contextobject]]'s [[range]] to
-a new [[range]] object with [[rangestart]] and [[rangeend]] both equal to the
-[[contextobject]]'s old [[range]]'s [[rangestart]].
+[[range]] is null.  Otherwise, it must create a new [[range]] object,
+[[rangeset]] both its [[rangestart]] and [[rangeend]] to the
+[[contextobject]]'s [[range]]'s [[rangestart]], and then set the
+[[contextobject]]'s [[range]] to the newly-created [[range]].
 
 <p>The <dfn
 title=dom-Selection-collapseToEnd><code>collapseToEnd()</code></dfn> method
 must [[throw]] an [[InvalidStateError]] exception if the [[contextobject]]'s
-[[range]] is null.  Otherwise, it must set the [[contextobject]]'s [[range]] to
-a new [[range]] object with [[rangestart]] and [[rangeend]] both equal to the
-[[contextobject]]'s old [[range]]'s [[rangeend]].
+[[range]] is null.  Otherwise, it must create a new [[range]] object,
+[[rangeset]] both its [[rangestart]] and [[rangeend]] to the
+[[contextobject]]'s [[range]]'s [[rangeend]], and then set the
+[[contextobject]]'s [[range]] to the newly-created [[range]].
 
 <p class=comments>Reverse-engineered circa January 2011.  IE doesn't support it, so I'm
 relying on Firefox (implemented extend() sometime before 2000) and WebKit
@@ -945,6 +942,8 @@ tells me its implementation isn't compatible.
 
 <p>The <dfn title=dom-Selection-extend><code>extend(<var>parentNode</var>,
 <var>offset</var>)</code></dfn> method must run these steps:
+
+<p class=XXX>Does this mutate the existing range or make a new one?
 
 <ol>
   <li>
@@ -955,12 +954,6 @@ tells me its implementation isn't compatible.
   <p>If the [[contextobject]]'s [[range]] is null, [[throw]] an
   [[InvalidStateError]] exception and abort these steps.
 
-  <li>
-  <p class=comments>Gecko and WebKit agree on this, Opera ignores the call.
-
-  <p>If <var>offset</var> is greater than <var>parentNode</var>'s [[length]],
-  [[throw]] an [[IndexSizeError]] exception and abort these steps.
-
   <li>Let <var>range</var> be the [[contextobject]]'s [[range]].
 
   <li>
@@ -970,9 +963,9 @@ tells me its implementation isn't compatible.
   case.)
 
   <p>If <var>parentNode</var>'s [[root]] is not the same as <var>range</var>'s
-  [[rangeroot]], set <var>range</var>'s [[rangestart]] and [[rangeend]] to
-  (<var>parentNode</var>, <var>offset</var>), set the [[contextobject]]'s
-  [[seldir]] to backwards, and abort these steps.
+  [[rangeroot]], [[rangeset]] <var>range</var>'s [[rangestart]] and
+  [[rangeend]] to (<var>parentNode</var>, <var>offset</var>), set the
+  [[contextobject]]'s [[seldir]] to backwards, and abort these steps.
 
   <li>Let <var>anchor</var> and <var>focus</var> be the [[contextobject]]'s
   <span>anchor</span> and <span>focus</span>, and let <var>newFocus</var> be
@@ -988,9 +981,9 @@ tells me its implementation isn't compatible.
   <p>If <var>focus</var> and <var>newFocus</var> are the same, abort these
   steps.
 
-  <li>Set <var>range</var>'s [[rangestart]] to <var>anchor</var> and its
-  [[rangeend]] to <var>newFocus</var>, if <var>anchor</var> is [[bpbefore]] or
-  equal to <var>newFocus</var>; or vice versa, if it's [[bpafter]].
+  <li>[[Rangeset]] <var>range</var>'s [[rangestart]] to <var>anchor</var> and
+  its [[rangeend]] to <var>newFocus</var>, if <var>anchor</var> is [[bpbefore]]
+  or equal to <var>newFocus</var>; or vice versa, if it's [[bpafter]].
 
   <li>If <var>newFocus</var> is [[bpbefore]] <var>anchor</var>, set the
   [[contextobject]]'s [[seldir]] to backwards.  Otherwise, set it to forwards.
@@ -1115,13 +1108,21 @@ Opera 11.50 just does nothing in all my tests, as usual.
 </div>
 
 <p>The <dfn
-title=dom-Selection-selectAllChildren><code>selectAllChildren(<var>parentNode</var>)</code></dfn>
-method must [[throw]] an [[InvalidNodeTypeError]] if <var>parentNode</var> is a
-[[documenttype]].  Otherwise, it must set the [[contextobject]]'s [[range]] to
-a new [[range]] whose [[startnode]] and [[endnode]] are <var>parentNode</var>,
-whose [[startoffset]] is 0, and whose [[endoffset]] is the number of
-<var>parentNode</var>'s [[children]]; then set the [[contextobject]]'s
-[[seldir]] to forwards.
+title=dom-Selection-selectAllChildren><code>selectAllChildren(<var>node</var>)</code></dfn>
+method must run the following steps:
+
+<ol>
+  <li>Let <var>range</var> be a new [[range]].
+
+  <li>[[Rangeset]] <var>range</var>'s [[rangestart]] to (<var>node</var>, 0).
+
+  <li>[[Rangeset]] <var>range</var>'s [[rangeend]] to (<var>node</var>, number
+  of <var>node</var>'s [[children]]).
+
+  <li>Set the [[contextobject]]'s [[range]] to <var>range</var>.
+
+  <li>Set the [[contextobject]]'s [[seldir]] to <i title>forwards</i>.
+</ol>
 
 <p>The <dfn
 title=dom-Selection-deleteFromDocument><code>deleteFromDocument()</code></dfn>

@@ -90,6 +90,7 @@ replace = {
     'rangeend': '<span data-anolis-spec=dom title=concept-range-end>end</span>',
     'rangemutationrules': '<span data-anolis-spec=dom>range mutation rules</span>',
     'rangeroot': '<span data-anolis-spec=dom title=concept-range-root>root</span>',
+    'rangeset': '<span data-anolis-spec=dom title=concept-range-bp-set>set</span>',
     'rangestart': '<span data-anolis-spec=dom title=concept-range-start>start</span>',
     'remove': '<span data-anolis-spec=dom title=concept-node-remove>remove</span>',
     'removeallranges': '<code title=dom-Selection-removeAllRanges>removeAllRanges()</code>',

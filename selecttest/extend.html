@@ -94,13 +94,6 @@ function testExtend(extendTarget, numRanges) {
 	var node = extendTarget[0];
 	var offset = extendTarget[1];
 
-	if (node === null) {
-		assert_throws("TYPE_MISMATCH_ERR", function() {
-			selection.extend(node, offset);
-		}, "extend(null, foo) must throw TYPE_MISMATCH_ERR");
-		return;
-	}
-
 	if (selection.rangeCount == 0) {
 		assert_throws("INVALID_STATE_ERR", function() {
 			selection.extend(node, offset);

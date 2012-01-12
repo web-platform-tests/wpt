@@ -759,7 +759,6 @@ and its [[seldir]] is forwards, its <span>anchor</span> is the [[range]]'s
   void               <span title=dom-Selection-collapseToEnd>collapseToEnd</span>();
 
   void               <span title=dom-Selection-extend>extend</span>(<span data-anolis-spec=dom>Node</span> node, unsigned long offset);
-  void               <span title=dom-Selection-modify>modify</span>(DOMString alter, DOMString direction, DOMString granularity);
 
   void               <span title=dom-Selection-selectAllChildren>selectAllChildren</span>(<span data-anolis-spec=dom>Node</span> node);
   void               <span title=dom-Selection-deleteFromDocument>deleteFromDocument</span>();
@@ -895,21 +894,6 @@ attribute must return the [[contextobject]]'s <span>focus</span>'s
     [[InvalidNodeTypeError]] if <var>node</var> is a [[doctype]], and an
     [[IndexSizeError]] exception if <var>offset</var> is negative or longer
     than <var>node</var>'s [[length]].
-
-  <dt><var>selection</var> . <code title=dom-Selection-modify>modify</code>(<var>alter</var>, <var>direction</var>, <var>granularity</var>)
-  <dd>
-    <p>If <var>alter</var> is "extend", changes the selection's focus in the
-    indicated <var>direction</var> by <var>granularity</var>.
-    <var>direction</var> can be "forward" or "backward", which move logically,
-    or "left" or "right", which move visually (the difference matters for
-    right-to-left text).  <var>granularity</var> can be "character", "word",
-    "sentence", "line", "paragraph", "lineboundary", "sentenceboundary",
-    "paragraphboundary", or "documentboundary".
-
-    <p>If <var>alter</var> is "move", then the anchor is also moved to the same
-    position, so that the selection is empty.
-
-    <p>Throws [[SyntaxError]] if one of the arguments is invalid.
 </dl>
 
 <p>The <dfn title=dom-Selection-isCollapsed><code>isCollapsed</code></dfn>
@@ -1000,88 +984,6 @@ They were the ones who introduced it, and so far only Gecko has copied them in
 Firefox 4, which isn't even a final release yet, so presumably WebKit is the
 one to track.  Still, it probably isn't so widely used yet, so I follow Gecko
 when it makes more sense.
-
-<p>The <dfn title=dom-Selection-modify><code>modify(<var>alter</var>,
-<var>direction</var>, <var>granularity</var>)</code></dfn> method must run
-these steps:
-
-<p class=XXX>Does not match reality at all.  Needs precise definition and
-tests.
-
-<ol>
-  <li>If the [[contextobject]]'s [[range]] is null, abort these steps.
-
-  <li>Convert <var>alter</var>, <var>direction</var>, and
-  <var>granularity</var> <span title="converted to ASCII lowercase"
-  data-anolis-spec=html>to ASCII lowercase</span>.
-
-  <li>
-  <p class=comments>WebKit silently aborts if the arguments aren't recognized,
-  but Gecko throws.  Following Gecko for consistency for the other APIs here.
-
-  <p>If <var>alter</var> does not equal either "extend" or "move", [[throw]] a
-  [[SyntaxError]] exception and abort these steps.
-
-  <li>If <var>direction</var> does not equal one of "forward", "backward",
-  "left", or "right", [[throw]] a [[SyntaxError]] exception and abort these
-  steps.
-
-  <li>If <var>granularity</var> does not equal one of "character", "word",
-  "sentence", "line", "paragraph", "lineboundary", "sentenceboundary",
-  "paragraphboundary", or "documentboundary", [[throw]] a [[SyntaxError]]
-  exception and abort these steps.
-
-  <li>Let <var>anchor</var> and <var>focus</var> be the [[contextobject]]'s
-  <span>anchor</span> and <span>focus</span>.
-
-  <li>If <var>direction</var> is "forward", or if it's "right" and the
-  [[directionality]] of <var>focus</var>' [[node]] is "ltr", or if it's "left"
-  and the [[directionality]] of <var>focus</var>' [[node]] is "rtl", let
-  <var>logical direction</var> be "forward".  Otherwise, let it be "backward".
-
-  <li>Let <var>target</var> be the [[boundarypoint]] obtained by the following
-  subalgorithm:
-
-  <p class=XXX>?
-
-  <!--
-    <ol>
-    <li>If <var>granularity</var> is "character", "word", "sentence",
-    "sentenceboundary", or "lineboundary", and <var>logical
-    direction</var> is "forward" (respectively "backward"), set <var
-    title>target</var> to the <span>first boundary point after</span>
-    (respectively <span>last boundary point before</span>) <var
-    title>focus</var> that has the relevant property:
-
-      <dl class=switch>
-      <dt>character: <dd><span>grapheme cluster boundary</span>
-      <dt>word: <dd><span>word boundary</span>
-      <dt>sentence:
-      <dt>sentenceboundary: <dd><span>sentence boundary</span>
-      <dt>lineboundary: <dd><span>line boundary</span>
-      </dl>
-
-    <li>If <var>granularity</var> is "line", set <var>target</var>
-    to the position that is visually one line above or below <var
-    title>focus</var>, depending on <var>logical direction</var>.  This
-    might be the place the cursor would go if it started at <var
-    title>focus</var> and the user pressed the up or down key.  The exact
-    position is not defined by this specification, and should match platform
-    conventions.
-    </ol>
-  -->
-
-  <li>If <var>alter</var> is "move", set the [[contextobject]]'s [[range]]'s
-  [[rangestart]] and [[rangeend]] to <var>target</var>, and abort these steps.
-
-  <li>Set the [[rangestart]] of the [[contextobject]]'s [[range]] to
-  <var>anchor</var> and its [[rangeend]] to <var>target</var>, if
-  <var>anchor</var> is [[bpbefore]] or equal to <var>target</var>; or vice
-  versa, if it's [[bpafter]].
-
-  <li>If <var>target</var> is [[bpbefore]] <var>anchor</var>, set the
-  [[contextobject]]'s [[seldir]] to backwards.  Otherwise, set it to forwards.
-</ol>
 
 <hr>
 

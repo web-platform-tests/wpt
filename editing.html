@@ -815,7 +815,6 @@ and its <a href=#concept-selection-dir title=concept-selection-dir>direction</a>
   void               <a href=#dom-selection-collapsetoend title=dom-Selection-collapseToEnd>collapseToEnd</a>();
 
   void               <a href=#dom-selection-extend title=dom-Selection-extend>extend</a>(<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node>Node</a> node, unsigned long offset);
-  void               <a href=#dom-selection-modify title=dom-Selection-modify>modify</a>(DOMString alter, DOMString direction, DOMString granularity);
 
   void               <a href=#dom-selection-selectallchildren title=dom-Selection-selectAllChildren>selectAllChildren</a>(<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node>Node</a> node);
   void               <a href=#dom-selection-deletefromdocument title=dom-Selection-deleteFromDocument>deleteFromDocument</a>();
@@ -949,21 +948,6 @@ attribute must return the <a class=external data-anolis-spec=dom href=http://dvc
     <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#invalidnodetypeerror>InvalidNodeTypeError</a></code> if <var title="">node</var> is a <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-doctype title=concept-doctype>doctype</a>, and an
     <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#indexsizeerror>IndexSizeError</a></code> exception if <var title="">offset</var> is negative or longer
     than <var title="">node</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node-length title=concept-node-length>length</a>.
-
-  <dt><var title="">selection</var> . <code title=dom-Selection-modify><a href=#dom-selection-modify>modify</a></code>(<var title="">alter</var>, <var title="">direction</var>, <var title="">granularity</var>)
-  <dd>
-    <p>If <var title="">alter</var> is "extend", changes the selection's focus in the
-    indicated <var title="">direction</var> by <var title="">granularity</var>.
-    <var title="">direction</var> can be "forward" or "backward", which move logically,
-    or "left" or "right", which move visually (the difference matters for
-    right-to-left text).  <var title="">granularity</var> can be "character", "word",
-    "sentence", "line", "paragraph", "lineboundary", "sentenceboundary",
-    "paragraphboundary", or "documentboundary".
-
-    <p>If <var title="">alter</var> is "move", then the anchor is also moved to the same
-    position, so that the selection is empty.
-
-    <p>Throws <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#syntaxerror>SyntaxError</a></code> if one of the arguments is invalid.
 </dl>
 
 <p>The <dfn id=dom-selection-iscollapsed title=dom-Selection-isCollapsed><code>isCollapsed</code></dfn>
@@ -1052,87 +1036,6 @@ They were the ones who introduced it, and so far only Gecko has copied them in
 Firefox 4, which isn't even a final release yet, so presumably WebKit is the
 one to track.  Still, it probably isn't so widely used yet, so I follow Gecko
 when it makes more sense.
-
-<p>The <dfn id=dom-selection-modify title=dom-Selection-modify><code>modify(<var title="">alter</var>,
-<var title="">direction</var>, <var title="">granularity</var>)</code></dfn> method must run
-these steps:
-
-<p class=XXX>Does not match reality at all.  Needs precise definition and
-tests.
-
-<ol>
-  <li>If the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> is null, abort these steps.
-
-  <li>Convert <var title="">alter</var>, <var title="">direction</var>, and
-  <var title="">granularity</var> <a class=external data-anolis-spec=html href=http://www.whatwg.org/specs/web-apps/current-work/multipage/infrastructure.html#converted-to-ascii-lowercase title="converted to ASCII lowercase">to ASCII lowercase</a>.
-
-  <li>
-  <p class=comments>WebKit silently aborts if the arguments aren't recognized,
-  but Gecko throws.  Following Gecko for consistency for the other APIs here.
-
-  <p>If <var title="">alter</var> does not equal either "extend" or "move", <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> a
-  <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#syntaxerror>SyntaxError</a></code> exception and abort these steps.
-
-  <li>If <var title="">direction</var> does not equal one of "forward", "backward",
-  "left", or "right", <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> a <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#syntaxerror>SyntaxError</a></code> exception and abort these
-  steps.
-
-  <li>If <var title="">granularity</var> does not equal one of "character", "word",
-  "sentence", "line", "paragraph", "lineboundary", "sentenceboundary",
-  "paragraphboundary", or "documentboundary", <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> a <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#syntaxerror>SyntaxError</a></code>
-  exception and abort these steps.
-
-  <li>Let <var title="">anchor</var> and <var title="">focus</var> be the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s
-  <a href=#anchor>anchor</a> and <a href=#focus>focus</a>.
-
-  <li>If <var title="">direction</var> is "forward", or if it's "right" and the
-  <a class=external data-anolis-spec=html href=http://www.whatwg.org/specs/web-apps/current-work/multipage/elements.html#the-directionality title="the directionality">directionality</a> of <var title="">focus</var>' <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> is "ltr", or if it's "left"
-  and the <a class=external data-anolis-spec=html href=http://www.whatwg.org/specs/web-apps/current-work/multipage/elements.html#the-directionality title="the directionality">directionality</a> of <var title="">focus</var>' <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> is "rtl", let
-  <var title="">logical direction</var> be "forward".  Otherwise, let it be "backward".
-
-  <li>Let <var title="">target</var> be the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp title=concept-range-bp>boundary point</a> obtained by the following
-  subalgorithm:
-
-  <p class=XXX>?
-
-  <!--
-    <ol>
-    <li>If <var title>granularity</var> is "character", "word", "sentence",
-    "sentenceboundary", or "lineboundary", and <var title>logical
-    direction</var> is "forward" (respectively "backward"), set <var
-    title>target</var> to the <span>first boundary point after</span>
-    (respectively <span>last boundary point before</span>) <var
-    title>focus</var> that has the relevant property:
-
-      <dl class=switch>
-      <dt>character: <dd><span>grapheme cluster boundary</span>
-      <dt>word: <dd><span>word boundary</span>
-      <dt>sentence:
-      <dt>sentenceboundary: <dd><span>sentence boundary</span>
-      <dt>lineboundary: <dd><span>line boundary</span>
-      </dl>
-
-    <li>If <var title>granularity</var> is "line", set <var title>target</var>
-    to the position that is visually one line above or below <var
-    title>focus</var>, depending on <var title>logical direction</var>.  This
-    might be the place the cursor would go if it started at <var
-    title>focus</var> and the user pressed the up or down key.  The exact
-    position is not defined by this specification, and should match platform
-    conventions.
-    </ol>
-  -->
-
-  <li>If <var title="">alter</var> is "move", set the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>'s
-  <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a> and <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end title=concept-range-end>end</a> to <var title="">target</var>, and abort these steps.
-
-  <li>Set the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a> of the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> to
-  <var title="">anchor</var> and its <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end title=concept-range-end>end</a> to <var title="">target</var>, if
-  <var title="">anchor</var> is <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp-before title=concept-range-bp-before>before</a> or equal to <var title="">target</var>; or vice
-  versa, if it's <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp-after title=concept-range-bp-after>after</a>.
-
-  <li>If <var title="">target</var> is <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp-before title=concept-range-bp-before>before</a> <var title="">anchor</var>, set the
-  <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a href=#concept-selection-dir title=concept-selection-dir>direction</a> to backwards.  Otherwise, set it to forwards.
-</ol>
 
 <hr>
 

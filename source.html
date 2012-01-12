@@ -736,6 +736,9 @@ corresponding [[selection]] must initially be backwards. Otherwise, it must be
 forwards (including if the user didn't create the [[selection]], created it by
 selecting an entire part of the page using a keyboard shortcut, etc.).
 
+<p class=XXX>Wouldn't it make more sense if addRange()/removeRange() reset
+direction?
+
 <p>[[Selections]] also have an <dfn>anchor</dfn> and a <dfn>focus</dfn>.  If
 the [[selection]]'s [[range]] is null, its <span>anchor</span> and
 <span>focus</span> are both null.  If the [[selection]]'s [[range]] is not null
@@ -751,14 +754,14 @@ and its [[seldir]] is forwards, its <span>anchor</span> is the [[range]]'s
   readonly attribute unsigned long <span title=dom-Selection-focusOffset>focusOffset</span>;
 
   readonly attribute boolean <span title=dom-Selection-isCollapsed>isCollapsed</span>;
-  void               <span title=dom-Selection-collapse>collapse</span>(<span data-anolis-spec=dom>Node</span> parentNode, unsigned long offset);
+  void               <span title=dom-Selection-collapse>collapse</span>(<span data-anolis-spec=dom>Node</span> node, unsigned long offset);
   void               <span title=dom-Selection-collapseToStart>collapseToStart</span>();
   void               <span title=dom-Selection-collapseToEnd>collapseToEnd</span>();
 
-  void               <span title=dom-Selection-extend>extend</span>(<span data-anolis-spec=dom>Node</span> parentNode, unsigned long offset);
+  void               <span title=dom-Selection-extend>extend</span>(<span data-anolis-spec=dom>Node</span> node, unsigned long offset);
   void               <span title=dom-Selection-modify>modify</span>(DOMString alter, DOMString direction, DOMString granularity);
 
-  void               <span title=dom-Selection-selectAllChildren>selectAllChildren</span>(<span data-anolis-spec=dom>Node</span> parentNode);
+  void               <span title=dom-Selection-selectAllChildren>selectAllChildren</span>(<span data-anolis-spec=dom>Node</span> node);
   void               <span title=dom-Selection-deleteFromDocument>deleteFromDocument</span>();
 
   readonly attribute unsigned long <span title=dom-Selection-rangeCount>rangeCount</span>;
@@ -858,12 +861,14 @@ attribute must return the [[contextobject]]'s <span>focus</span>'s
     <p>Returns true if there's no selection or if the selection is empty.
     Otherwise, returns false.
 
-  <dt><var>selection</var> . <code title=dom-Selection-collapse>collapse</code>(<var>parentNode</var>, <var>offset</var>)
+  <dt><var>selection</var> .
+  <code title=dom-Selection-collapse>collapse</code>(<var>node</var>,
+  <var>offset</var>)
   <dd>
     <p>Replaces the selection with a collapsed one at the given position.
 
     <p>Throws an [[IndexSizeError]] exception if <var>offset</var> is negative
-    or longer than <var>parentNode</var>'s [[length]].
+    or longer than <var>node</var>'s [[length]].
 
   <dt><var>selection</var> . <code title=dom-Selection-collapseToStart>collapseToStart</code>()
   <dd>
@@ -879,14 +884,17 @@ attribute must return the [[contextobject]]'s <span>focus</span>'s
 
     <p>Throws an [[InvalidStateError]] exception if there is no selection.
 
-  <dt><var>selection</var> . <code title=dom-Selection-extend>extend</code>(<var>parentNode</var>, <var>offset</var>)
+  <dt><var>selection</var> .
+  <code title=dom-Selection-extend>extend</code>(<var>node</var>,
+  <var>offset</var>)
   <dd>
     <p>Changes the <span>focus</span> while leaving the <span>anchor</span> in
     place.
 
-    <p>Throws an [[InvalidStateError]] if there's no selection, and an
+    <p>Throws an [[InvalidStateError]] if there's no selection, an
+    [[InvalidNodeTypeError]] if <var>node</var> is a [[doctype]], and an
     [[IndexSizeError]] exception if <var>offset</var> is negative or longer
-    than <var>parentNode</var>'s [[length]].
+    than <var>node</var>'s [[length]].
 
   <dt><var>selection</var> . <code title=dom-Selection-modify>modify</code>(<var>alter</var>, <var>direction</var>, <var>granularity</var>)
   <dd>
@@ -908,11 +916,11 @@ attribute must return the [[contextobject]]'s <span>focus</span>'s
 attribute must return true if the <span>anchor</span> and <span>focus</span>
 are the same (including if both are null).  Otherwise it must return false.
 
-<p>The <dfn title=dom-Selection-collapse><code>collapse(<var>parentNode</var>,
+<p>The <dfn title=dom-Selection-collapse><code>collapse(<var>node</var>,
 <var>offset</var>)</code></dfn> method must create a new [[range]],
 [[rangeset]] both its [[rangestart]] and [[rangeend]] to
-(<var>parentNode</var>, <var>offset</var>), and set the [[contextobject]]'s
-[[range]] to the newly-created [[range]].
+(<var>node</var>, <var>offset</var>), and set the [[contextobject]]'s [[range]]
+to the newly-created [[range]].
 
 <p class=comments>For collapseToStart/End, IE9 mutates the existing range,
 while Firefox 9.0a2 and Chrome 15 dev replace it with a new one.  The spec
@@ -940,10 +948,8 @@ relying on Firefox (implemented extend() sometime before 2000) and WebKit
 (implemented extend() in 2007).  I'm mostly ignoring Opera, because gsnedders
 tells me its implementation isn't compatible.
 
-<p>The <dfn title=dom-Selection-extend><code>extend(<var>parentNode</var>,
+<p>The <dfn title=dom-Selection-extend><code>extend(<var>node</var>,
 <var>offset</var>)</code></dfn> method must run these steps:
-
-<p class=XXX>Does this mutate the existing range or make a new one?
 
 <ol>
   <li>
@@ -954,38 +960,38 @@ tells me its implementation isn't compatible.
   <p>If the [[contextobject]]'s [[range]] is null, [[throw]] an
   [[InvalidStateError]] exception and abort these steps.
 
-  <li>Let <var>range</var> be the [[contextobject]]'s [[range]].
-
-  <li>
-  <p class=comments>Gecko does this.  I can't work out what WebKit does, but it
-  seems weird.  Why backwards?  I don't know, it's what Gecko seems to do.
-  (Direction in WebKit does not appear to be black-box detectable in this
-  case.)
-
-  <p>If <var>parentNode</var>'s [[root]] is not the same as <var>range</var>'s
-  [[rangeroot]], [[rangeset]] <var>range</var>'s [[rangestart]] and
-  [[rangeend]] to (<var>parentNode</var>, <var>offset</var>), set the
-  [[contextobject]]'s [[seldir]] to backwards, and abort these steps.
-
   <li>Let <var>anchor</var> and <var>focus</var> be the [[contextobject]]'s
-  <span>anchor</span> and <span>focus</span>, and let <var>newFocus</var> be
-  the [[boundarypoint]] given by <var>parentNode</var> and <var>offset</var>.
+  <span>anchor</span> and <span>focus</span>, and let <var>new focus</var> be
+  the [[boundarypoint]] (<var>node</var>, <var>offset</var>).
 
   <li>
-  <p class=comments>Gecko actually seems to set the direction to forwards if
-  the selection was collapsed.  But this doesn't make any sense, since it
-  doesn't appear to change the direction otherwise, so I'm just going to call
-  it a bug.  (WebKit's direction here does not seem to be black-box
-  detectable.)
+  <p class=comments>Firefox 12.0a1 seems to mutate the existing range.  IE9
+  doesn't support extend(), and it's impossible to tell whether Chrome 17 dev
+  or Opera Next 12.00 alpha mutate or replace, because getRangeAt() returns a
+  copy anyway.  Nevertheless, I go against Gecko here, to be consistent with
+  collapse().
 
-  <p>If <var>focus</var> and <var>newFocus</var> are the same, abort these
-  steps.
+  <p>Let <var>new range</var> be a new [[range]].
 
-  <li>[[Rangeset]] <var>range</var>'s [[rangestart]] to <var>anchor</var> and
-  its [[rangeend]] to <var>newFocus</var>, if <var>anchor</var> is [[bpbefore]]
-  or equal to <var>newFocus</var>; or vice versa, if it's [[bpafter]].
+  <li>
+  <p class=comments>Gecko sets the direction backwards here.  Why backwards?  I
+  don't know.  I'm ignoring direction for collapsed selections for now.
 
-  <li>If <var>newFocus</var> is [[bpbefore]] <var>anchor</var>, set the
+  <p>If <var>node</var>'s [[root]] is not the same as the [[contextobject]]'s
+  [[range]]'s [[rangeroot]], [[rangeset]] <var>new range</var>'s [[rangestart]]
+  and [[rangeend]] to (<var>node</var>, <var>offset</var>).
+
+  <li>Otherwise, if <var>anchor</var> is [[bpbefore]] or equal to
+  <var>new focus</var>, [[rangeset]] <var>new range</var>'s [[rangestart]] to
+  <var>anchor</var>, then [[rangeset]] its [[rangeend]] to
+  <var>new focus</var>.
+
+  <li>Otherwise, [[rangeset]] <var>new range</var>'s [[rangestart]] to <var>new
+  focus</var>, then [[rangeset]] its [[rangeend]] to <var>anchor</var>.
+
+  <li>Set the [[contextobject]]'s [[range]] to <var>new range</var>.
+
+  <li>If <var>new focus</var> is [[bpbefore]] <var>anchor</var>, set the
   [[contextobject]]'s [[seldir]] to backwards.  Otherwise, set it to forwards.
 </ol>
 
@@ -1080,7 +1086,7 @@ tests.
 <hr>
 
 <dl class=domintro>
-  <dt><var>selection</var> . <code title=dom-Selection-selectAllChildren>selectAllChildren</code>(<var>parentNode</var>)
+  <dt><var>selection</var> . <code title=dom-Selection-selectAllChildren>selectAllChildren</code>(<var>node</var>)
   <dd>
     <p>Replaces the selection with one that contains all the contents of the
     given element.

@@ -41,6 +41,7 @@ replace = {
     'dd': '<code data-anolis-spec=html title="the dd element">dd</code>',
     'dl': '<code data-anolis-spec=html title="the dl element">dl</code>',
     'dt': '<code data-anolis-spec=html title="the dt element">dt</code>',
+    'doctype': '<span data-anolis-spec=dom title=concept-doctype>doctype</span>',
     'document': '<span data-anolis-spec=dom title=concept-document>document</span>',
     'documentfragment': '<code data-anolis-spec=dom>DocumentFragment</code>',
     'documenttype': '<code data-anolis-spec=dom>DocumentType</code>',

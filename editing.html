@@ -792,6 +792,9 @@ corresponding <a href=#concept-selection title=concept-selection>selection</a> m
 forwards (including if the user didn't create the <a href=#concept-selection title=concept-selection>selection</a>, created it by
 selecting an entire part of the page using a keyboard shortcut, etc.).
 
+<p class=XXX>Wouldn't it make more sense if addRange()/removeRange() reset
+direction?
+
 <p><a href=#concept-selection title=concept-selection>Selections</a> also have an <dfn id=anchor>anchor</dfn> and a <dfn id=focus>focus</dfn>.  If
 the <a href=#concept-selection title=concept-selection>selection</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> is null, its <a href=#anchor>anchor</a> and
 <a href=#focus>focus</a> are both null.  If the <a href=#concept-selection title=concept-selection>selection</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> is not null
@@ -807,14 +810,14 @@ and its <a href=#concept-selection-dir title=concept-selection-dir>direction</a>
   readonly attribute unsigned long <a href=#dom-selection-focusoffset title=dom-Selection-focusOffset>focusOffset</a>;
 
   readonly attribute boolean <a href=#dom-selection-iscollapsed title=dom-Selection-isCollapsed>isCollapsed</a>;
-  void               <a href=#dom-selection-collapse title=dom-Selection-collapse>collapse</a>(<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node>Node</a> parentNode, unsigned long offset);
+  void               <a href=#dom-selection-collapse title=dom-Selection-collapse>collapse</a>(<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node>Node</a> node, unsigned long offset);
   void               <a href=#dom-selection-collapsetostart title=dom-Selection-collapseToStart>collapseToStart</a>();
   void               <a href=#dom-selection-collapsetoend title=dom-Selection-collapseToEnd>collapseToEnd</a>();
 
-  void               <a href=#dom-selection-extend title=dom-Selection-extend>extend</a>(<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node>Node</a> parentNode, unsigned long offset);
+  void               <a href=#dom-selection-extend title=dom-Selection-extend>extend</a>(<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node>Node</a> node, unsigned long offset);
   void               <a href=#dom-selection-modify title=dom-Selection-modify>modify</a>(DOMString alter, DOMString direction, DOMString granularity);
 
-  void               <a href=#dom-selection-selectallchildren title=dom-Selection-selectAllChildren>selectAllChildren</a>(<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node>Node</a> parentNode);
+  void               <a href=#dom-selection-selectallchildren title=dom-Selection-selectAllChildren>selectAllChildren</a>(<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node>Node</a> node);
   void               <a href=#dom-selection-deletefromdocument title=dom-Selection-deleteFromDocument>deleteFromDocument</a>();
 
   readonly attribute unsigned long <a href=#dom-selection-rangecount title=dom-Selection-rangeCount>rangeCount</a>;
@@ -912,12 +915,14 @@ attribute must return the <a class=external data-anolis-spec=dom href=http://dvc
     <p>Returns true if there's no selection or if the selection is empty.
     Otherwise, returns false.
 
-  <dt><var title="">selection</var> . <code title=dom-Selection-collapse><a href=#dom-selection-collapse>collapse</a></code>(<var title="">parentNode</var>, <var title="">offset</var>)
+  <dt><var title="">selection</var> .
+  <code title=dom-Selection-collapse><a href=#dom-selection-collapse>collapse</a></code>(<var title="">node</var>,
+  <var title="">offset</var>)
   <dd>
     <p>Replaces the selection with a collapsed one at the given position.
 
     <p>Throws an <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#indexsizeerror>IndexSizeError</a></code> exception if <var title="">offset</var> is negative
-    or longer than <var title="">parentNode</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node-length title=concept-node-length>length</a>.
+    or longer than <var title="">node</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node-length title=concept-node-length>length</a>.
 
   <dt><var title="">selection</var> . <code title=dom-Selection-collapseToStart><a href=#dom-selection-collapsetostart>collapseToStart</a></code>()
   <dd>
@@ -933,14 +938,17 @@ attribute must return the <a class=external data-anolis-spec=dom href=http://dvc
 
     <p>Throws an <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#invalidstateerror>InvalidStateError</a></code> exception if there is no selection.
 
-  <dt><var title="">selection</var> . <code title=dom-Selection-extend><a href=#dom-selection-extend>extend</a></code>(<var title="">parentNode</var>, <var title="">offset</var>)
+  <dt><var title="">selection</var> .
+  <code title=dom-Selection-extend><a href=#dom-selection-extend>extend</a></code>(<var title="">node</var>,
+  <var title="">offset</var>)
   <dd>
     <p>Changes the <a href=#focus>focus</a> while leaving the <a href=#anchor>anchor</a> in
     place.
 
-    <p>Throws an <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#invalidstateerror>InvalidStateError</a></code> if there's no selection, and an
+    <p>Throws an <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#invalidstateerror>InvalidStateError</a></code> if there's no selection, an
+    <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#invalidnodetypeerror>InvalidNodeTypeError</a></code> if <var title="">node</var> is a <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-doctype title=concept-doctype>doctype</a>, and an
     <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#indexsizeerror>IndexSizeError</a></code> exception if <var title="">offset</var> is negative or longer
-    than <var title="">parentNode</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node-length title=concept-node-length>length</a>.
+    than <var title="">node</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node-length title=concept-node-length>length</a>.
 
   <dt><var title="">selection</var> . <code title=dom-Selection-modify><a href=#dom-selection-modify>modify</a></code>(<var title="">alter</var>, <var title="">direction</var>, <var title="">granularity</var>)
   <dd>
@@ -962,11 +970,11 @@ attribute must return the <a class=external data-anolis-spec=dom href=http://dvc
 attribute must return true if the <a href=#anchor>anchor</a> and <a href=#focus>focus</a>
 are the same (including if both are null).  Otherwise it must return false.
 
-<p>The <dfn id=dom-selection-collapse title=dom-Selection-collapse><code>collapse(<var title="">parentNode</var>,
+<p>The <dfn id=dom-selection-collapse title=dom-Selection-collapse><code>collapse(<var title="">node</var>,
 <var title="">offset</var>)</code></dfn> method must create a new <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>,
 <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp-set title=concept-range-bp-set>set</a> both its <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a> and <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end title=concept-range-end>end</a> to
-(<var title="">parentNode</var>, <var title="">offset</var>), and set the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s
-<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> to the newly-created <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>.
+(<var title="">node</var>, <var title="">offset</var>), and set the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>
+to the newly-created <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>.
 
 <p class=comments>For collapseToStart/End, IE9 mutates the existing range,
 while Firefox 9.0a2 and Chrome 15 dev replace it with a new one.  The spec
@@ -992,10 +1000,8 @@ relying on Firefox (implemented extend() sometime before 2000) and WebKit
 (implemented extend() in 2007).  I'm mostly ignoring Opera, because gsnedders
 tells me its implementation isn't compatible.
 
-<p>The <dfn id=dom-selection-extend title=dom-Selection-extend><code>extend(<var title="">parentNode</var>,
+<p>The <dfn id=dom-selection-extend title=dom-Selection-extend><code>extend(<var title="">node</var>,
 <var title="">offset</var>)</code></dfn> method must run these steps:
-
-<p class=XXX>Does this mutate the existing range or make a new one?
 
 <ol>
   <li>
@@ -1006,38 +1012,38 @@ tells me its implementation isn't compatible.
   <p>If the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> is null, <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> an
   <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#invalidstateerror>InvalidStateError</a></code> exception and abort these steps.
 
-  <li>Let <var title="">range</var> be the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>.
-
-  <li>
-  <p class=comments>Gecko does this.  I can't work out what WebKit does, but it
-  seems weird.  Why backwards?  I don't know, it's what Gecko seems to do.
-  (Direction in WebKit does not appear to be black-box detectable in this
-  case.)
-
-  <p>If <var title="">parentNode</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-root title=concept-tree-root>root</a> is not the same as <var title="">range</var>'s
-  <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-root title=concept-range-root>root</a>, <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp-set title=concept-range-bp-set>set</a> <var title="">range</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a> and
-  <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end title=concept-range-end>end</a> to (<var title="">parentNode</var>, <var title="">offset</var>), set the
-  <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a href=#concept-selection-dir title=concept-selection-dir>direction</a> to backwards, and abort these steps.
-
   <li>Let <var title="">anchor</var> and <var title="">focus</var> be the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s
-  <a href=#anchor>anchor</a> and <a href=#focus>focus</a>, and let <var title="">newFocus</var> be
-  the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp title=concept-range-bp>boundary point</a> given by <var title="">parentNode</var> and <var title="">offset</var>.
+  <a href=#anchor>anchor</a> and <a href=#focus>focus</a>, and let <var title="">new focus</var> be
+  the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp title=concept-range-bp>boundary point</a> (<var title="">node</var>, <var title="">offset</var>).
 
   <li>
-  <p class=comments>Gecko actually seems to set the direction to forwards if
-  the selection was collapsed.  But this doesn't make any sense, since it
-  doesn't appear to change the direction otherwise, so I'm just going to call
-  it a bug.  (WebKit's direction here does not seem to be black-box
-  detectable.)
+  <p class=comments>Firefox 12.0a1 seems to mutate the existing range.  IE9
+  doesn't support extend(), and it's impossible to tell whether Chrome 17 dev
+  or Opera Next 12.00 alpha mutate or replace, because getRangeAt() returns a
+  copy anyway.  Nevertheless, I go against Gecko here, to be consistent with
+  collapse().
 
-  <p>If <var title="">focus</var> and <var title="">newFocus</var> are the same, abort these
-  steps.
+  <p>Let <var title="">new range</var> be a new <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>.
 
-  <li><a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp-set title=concept-range-bp-set>Set</a> <var title="">range</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a> to <var title="">anchor</var> and
-  its <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end title=concept-range-end>end</a> to <var title="">newFocus</var>, if <var title="">anchor</var> is <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp-before title=concept-range-bp-before>before</a>
-  or equal to <var title="">newFocus</var>; or vice versa, if it's <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp-after title=concept-range-bp-after>after</a>.
+  <li>
+  <p class=comments>Gecko sets the direction backwards here.  Why backwards?  I
+  don't know.  I'm ignoring direction for collapsed selections for now.
 
-  <li>If <var title="">newFocus</var> is <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp-before title=concept-range-bp-before>before</a> <var title="">anchor</var>, set the
+  <p>If <var title="">node</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-root title=concept-tree-root>root</a> is not the same as the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s
+  <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-root title=concept-range-root>root</a>, <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp-set title=concept-range-bp-set>set</a> <var title="">new range</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a>
+  and <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end title=concept-range-end>end</a> to (<var title="">node</var>, <var title="">offset</var>).
+
+  <li>Otherwise, if <var title="">anchor</var> is <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp-before title=concept-range-bp-before>before</a> or equal to
+  <var title="">new focus</var>, <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp-set title=concept-range-bp-set>set</a> <var title="">new range</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a> to
+  <var title="">anchor</var>, then <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp-set title=concept-range-bp-set>set</a> its <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end title=concept-range-end>end</a> to
+  <var title="">new focus</var>.
+
+  <li>Otherwise, <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp-set title=concept-range-bp-set>set</a> <var title="">new range</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a> to <var title="">new
+  focus</var>, then <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp-set title=concept-range-bp-set>set</a> its <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end title=concept-range-end>end</a> to <var title="">anchor</var>.
+
+  <li>Set the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> to <var title="">new range</var>.
+
+  <li>If <var title="">new focus</var> is <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp-before title=concept-range-bp-before>before</a> <var title="">anchor</var>, set the
   <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a href=#concept-selection-dir title=concept-selection-dir>direction</a> to backwards.  Otherwise, set it to forwards.
 </ol>
 
@@ -1131,7 +1137,7 @@ tests.
 <hr>
 
 <dl class=domintro>
-  <dt><var title="">selection</var> . <code title=dom-Selection-selectAllChildren><a href=#dom-selection-selectallchildren>selectAllChildren</a></code>(<var title="">parentNode</var>)
+  <dt><var title="">selection</var> . <code title=dom-Selection-selectAllChildren><a href=#dom-selection-selectallchildren>selectAllChildren</a></code>(<var title="">node</var>)
   <dd>
     <p>Replaces the selection with one that contains all the contents of the
     given element.

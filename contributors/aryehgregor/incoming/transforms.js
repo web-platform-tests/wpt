@@ -111,6 +111,26 @@ function mxmul32(A, B) {
 }
 
 /**
+ * Given a sixteen-element numeric array mx in column-major order, returns true
+ * if it's equivalent to a six-element array (a 2D matrix), false otherwise.
+ */
+function is2dMatrix(mx) {
+	// A smaller epsilon than we use elsewhere, because entries of around 1 in
+	// matrices are to be expected.
+	var e = 0.001;
+	return Math.abs(mx[2]) < e
+		&& Math.abs(mx[3]) < e
+		&& Math.abs(mx[6]) < e
+		&& Math.abs(mx[7]) < e
+		&& Math.abs(mx[8]) < e
+		&& Math.abs(mx[9]) < e
+		&& Math.abs(mx[10] - 1) < e
+		&& Math.abs(mx[11]) < e
+		&& Math.abs(mx[14]) < e
+		&& Math.abs(mx[15] - 1) < e;
+}
+
+/**
  * Returns true or false every time it's called.  It more or less alternates,
  * but actually has a period of 17, so it won't repeat with the same period as
  * other cyclic things (these are quite repetitive tests).
@@ -126,9 +146,10 @@ function getUseCssom() {
 
 /**
  * Tests that style="transform: value" results in transformation by the matrix
- * [a, b, c, d, e, f].  Checks both the computed value and bounding box.
+ * mx, which may have either six or sixteen entries.  Checks both the computed
+ * value and bounding box.
  */
-function testTransform(value, a, b, c, d, e, f) {
+function testTransform(value, mx) {
 	// FIXME: The spec doesn't match browsers for serialization of the
 	// transform property when it's unset or "none".
 	// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15471
@@ -141,51 +162,74 @@ function testTransform(value, a, b, c, d, e, f) {
 			} else {
 				div.setAttribute("style", hyphenatedProp + ": " + value);
 			}
-			testTransformParsing(a, b, c, d, e, f);
+			testTransformParsing(mx);
 		}, "Computed value for transform: " + value
 		+ " set via " + (useCssom ? "CSSOM" : "setAttribute()"));
 	}
-	testTransformedBoundary(value, a, b, c, d, e, f);
+	testTransformedBoundary(value, mx);
 }
 
 /**
- * Tests that div's computed style for transform is "matrix(a, b, c, d, e, f)".
+ * Tests that div's computed style for transform is "matrix(...)" or
+ * "matrix3d(...)", as appropriate.  mx can have either six or sixteen entries,
+ * but the required output format is the same regardless -- an sixteen-entry
+ * matrix with zeroes and ones in the right places still has to be output in
+ * the matrix() format.
  */
-function testTransformParsing(a, b, c, d, e, f) {
+function testTransformParsing(mx) {
+	if (mx.length == 6) {
+		mx = [mx[0], mx[1], 0, 0, mx[2], mx[3], 0, 0, 0, 0, 1, 0, mx[4], mx[5], 0, 1];
+	}
 	// FIXME: We allow px optionally in the last two entries because Gecko
 	// adds it while other engines don't, and the spec is unclear about
 	// which behavior is correct:
 	// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15431
 	var computed = getComputedStyle(div)[prop];
-	var re = /^matrix\(([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+?)(?:px)?, ([^,]+?)(?:px)?\)$/;
-	assert_regexp_match(computed, re, "computed value has unexpected form");
+	if (is2dMatrix(mx)) {
+		var re = /^matrix\(([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+?)(?:px)?, ([^,]+?)(?:px)?\)$/;
+		assert_regexp_match(computed, re, "computed value has unexpected form for 2D matrix");
+		var match = re.exec(computed);
+		assert_approx_equals(Number(match[1]), mx[0], epsilon, "getComputedStyle matrix component 0");
+		assert_approx_equals(Number(match[2]), mx[1], epsilon, "getComputedStyle matrix component 1");
+		assert_approx_equals(Number(match[3]), mx[4], epsilon, "getComputedStyle matrix component 2");
+		assert_approx_equals(Number(match[4]), mx[5], epsilon, "getComputedStyle matrix component 3");
+		assert_approx_equals(Number(match[5]), mx[12], epsilon, "getComputedStyle matrix component 4");
+		assert_approx_equals(Number(match[6]), mx[13], epsilon, "getComputedStyle matrix component 5");
+		return;
+	}
+
+	var re = /^matrix\(([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+?)(?:px)?, ([^,]+?)(?:px)?, ([^,]+?)(?:px)?, ([^,]+?)\)$/;
+	assert_regexp_match(computed, re, "computed value has unexpected form for 3D matrix");
 	var match = re.exec(computed);
-	assert_approx_equals(Number(match[1]), a, epsilon, "getComputedStyle first matrix component");
-	assert_approx_equals(Number(match[2]), b, epsilon, "getComputedStyle second matrix component");
-	assert_approx_equals(Number(match[3]), c, epsilon, "getComputedStyle third matrix component");
-	assert_approx_equals(Number(match[4]), d, epsilon, "getComputedStyle fourth matrix component");
-	assert_approx_equals(Number(match[5]), e, epsilon, "getComputedStyle fifth matrix component");
-	assert_approx_equals(Number(match[6]), f, epsilon, "getComputedStyle sixth matrix component");
+	for (var i = 0; i < 16; i++) {
+		assert_approx_equals(Number(match[i + 1]), mx[i], epsilon,
+			"getComputedStyle matrix component " + i);
+	}
 }
 
 /**
  * Tests that
  *   style="transform: transformValue; transform-origin: transformOriginValue"
  * results in the boundary box that you'd get from transforming with a matrix
- * of [a, b, c, d, e, f] around an offset of [xOffset, yOffset].
- * transformOriginValue defaults to "50% 50%", xOffset to divWidth/2, yOffset
- * to divHeight/2.
+ * of mx around an offset of [xOffset, yOffset].  transformOriginValue defaults
+ * to "50% 50%", xOffset to divWidth/2, yOffset to divHeight/2.
  *
  * transformValue can also be an array of three values.  If it is, they're used
  * for the test div's grandparent, its parent, and the test div itself,
- * respectively.  a, b, c, d, e, f should then be the entries of the matrix of
- * all three transforms multiplied together.
+ * respectively.  mx should then be the entries of the matrix of all three
+ * transforms multiplied together.
  */
-function testTransformedBoundary(transformValue, a, b, c, d, e, f,
+function testTransformedBoundary(transformValue, mx,
                                  transformOriginValue, xOffset, yOffset) {
+	if (mx.length == 6) {
+		mx = [mx[0], mx[1], 0, 0, mx[2], mx[3], 0, 0, 0, 0, 1, 0, mx[4], mx[5], 0, 1];
+	}
+
 	// Don't test singular matrices for now.  IE fails some of them, which
-	// might be due to getBoundingClientRect() instead of transforms.
-	if (a*d - b*c === 0) {
+	// might be due to getBoundingClientRect() instead of transforms.  Only
+	// skipped for 2D matrices, for sanity's sake.
+	if (is2dMatrix(mx)
+	&& mx[0]*mx[5] - mx[1]*mx[4] === 0) {
 		return;
 	}
 
@@ -200,12 +244,16 @@ function testTransformedBoundary(transformValue, a, b, c, d, e, f,
 	}
 
 	// Compute the expected bounding box by applying the given matrix to the
-	// vertices of the test div's border box.
+	// vertices of the test div's border box.  We ignore the z components of
+	// the result, and use the fact that the z component of the input is zero,
+	// so this isn't complicated when the matrix is 3D.
 	var originalPoints = [[0, 0], [0, divHeight], [divWidth, 0], [divWidth, divHeight]];
 	var expectedTop, expectedRight, expectedBottom, expectedLeft;
 	for (var i = 0; i < originalPoints.length; i++) {
-		var newX = a*(originalPoints[i][0]-xOffset) + c*(originalPoints[i][1]-yOffset) + e + xOffset;
-		var newY = b*(originalPoints[i][0]-xOffset) + d*(originalPoints[i][1]-yOffset) + f + yOffset;
+		var newX = mx[0]*(originalPoints[i][0]-xOffset) + mx[4]*(originalPoints[i][1]-yOffset)
+			+ mx[12] + xOffset;
+		var newY = mx[1]*(originalPoints[i][0]-xOffset) + mx[5]*(originalPoints[i][1]-yOffset)
+			+ mx[13] + yOffset;
 		if (expectedTop === undefined || newY < expectedTop) {
 			expectedTop = newY;
 		}
@@ -232,10 +280,6 @@ function testTransformedBoundary(transformValue, a, b, c, d, e, f,
 	testTransformedBoundary.switchStyleIdx++;
 	testTransformedBoundary.switchStyleIdx %= 19;
 	switchStyles[testTransformedBoundary.switchStyleIdx % switchStyles.length].disabled = false;
-
-	if (testTransformedBoundary.cssomIdx === undefined) {
-		testTransformedBoundary.cssomIdx = 0;
-	}
 
 	var useCssom = getUseCssom();
 	if (typeof transformValue == "string") {
@@ -364,9 +408,9 @@ function testTransformOrigin(value, expectedHoriz, expectedVert) {
 		// Transform
 		"rotate(45deg)",
 		// Matrix entries
-		Math.cos(Math.PI/4), Math.sin(Math.PI/4),
+		[Math.cos(Math.PI/4), Math.sin(Math.PI/4),
 		-Math.sin(Math.PI/4), Math.cos(Math.PI/4),
-		0, 0,
+		0, 0],
 		// Origin
 		value, expectedHoriz, expectedVert
 	);

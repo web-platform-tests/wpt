@@ -120,7 +120,7 @@ body > div > div { padding-left: 10px; width: 105px }
 		var transformKeyword = {0: "TRANSFORM", 1: "tRAnSFoRM", 2: "transform"}[i%3];
 		test(function() {
 			div.style[prop.replace("transform", transformKeyword)] = transform;
-			testTransformParsing(arr[1], arr[2], arr[3], arr[4], arr[5], arr[6]);
+			testTransformParsing(arr.slice(1));
 		}, "Computed value for " + transformKeyword + ": " + transform + " set via CSSOM");
 	});
 });
@@ -130,7 +130,7 @@ div.removeAttribute("style");
 // property when it's unset or "none".
 // https://www.w3.org/Bugs/Public/show_bug.cgi?id=15471
 //test(function() {
-//	testTransformParsing(1, 0, 0, 1, 0, 0);
+//	testTransformParsing([1, 0, 0, 1, 0, 0]);
 //}, "Computed value for transform with no style attribute");
 test(function() {
 	// Not really a transform test, just included for completeness.  It can
@@ -138,7 +138,7 @@ test(function() {
 	testTransformedBoundaryAsserts(0, divWidth, divHeight, 0);
 }, "Boundaries with no style attribute");
 
-testTransform("none", 1, 0, 0, 1, 0, 0);
+testTransform("none", [1, 0, 0, 1, 0, 0]);
 
 // Test style="transform: matrix(*)" (4^6 = 4096 permutations, but we only run
 // every 13th to avoid creating excessive numbers of tests)
@@ -154,7 +154,7 @@ matrixValues.forEach(function(f) {
 	if (i % 13 == 0) {
 		testTransform(
 			"matrix(" + a + ", " + b + ", " + c + ", " + d + ", " + e + ", " + f + ")",
-			a, b, c, d, e, f
+			[a, b, c, d, e, f]
 		);
 	}
 	i++;
@@ -171,22 +171,22 @@ matrixValues.forEach(function(f) {
 percentagesAndLengths.forEach(function(tx) {
 	testTransform(
 		"translateX(" + tx + ")",
-		1, 0, 0, 1, convertToPx(tx, divWidth), 0
+		[1, 0, 0, 1, convertToPx(tx, divWidth), 0]
 	);
 	// tx is poorly named, since it's used for y here.
 	testTransform(
 		"translateY(" + tx + ")",
-		1, 0, 0, 1, 0, convertToPx(tx, divHeight)
+		[1, 0, 0, 1, 0, convertToPx(tx, divHeight)]
 	);
 	testTransform(
 		"translate(" + tx + ")",
-		1, 0, 0, 1, convertToPx(tx, divWidth), 0
+		[1, 0, 0, 1, convertToPx(tx, divWidth), 0]
 	);
 
 	percentagesAndLengths.forEach(function(ty) {
 		testTransform(
 			"translate(" + tx + ", " + ty + ")",
-			1, 0, 0, 1, convertToPx(tx, divWidth), convertToPx(ty, divHeight)
+			[1, 0, 0, 1, convertToPx(tx, divWidth), convertToPx(ty, divHeight)]
 		);
 	});
 });
@@ -197,22 +197,22 @@ var scales = [-2, -1, -0.12, 0, 0.12, 1, 2];
 scales.forEach(function(sx) {
 	testTransform(
 		"scaleX(" + sx + ")",
-		sx, 0, 0, 1, 0, 0
+		[sx, 0, 0, 1, 0, 0]
 	);
 	// sx is poorly named, since it's used for y here, then for both x and y.
 	testTransform(
 		"scaleY(" + sx + ")",
-		1, 0, 0, sx, 0, 0
+		[1, 0, 0, sx, 0, 0]
 	);
 	testTransform(
 		"scale(" + sx + ")",
-		sx, 0, 0, sx, 0, 0
+		[sx, 0, 0, sx, 0, 0]
 	);
 
 	scales.forEach(function(sy) {
 		testTransform(
 			"scale(" + sx + ", " + sy + ")",
-			sx, 0, 0, sy, 0, 0
+			[sx, 0, 0, sy, 0, 0]
 		);
 	});
 });
@@ -228,8 +228,8 @@ scales.forEach(function(sx) {
 	var rads = convertToRad(angle);
 	testTransform(
 		"rotate(" + angle + ")",
-		Math.cos(rads), Math.sin(rads), -Math.sin(rads), Math.cos(rads),
-		0, 0
+		[Math.cos(rads), Math.sin(rads), -Math.sin(rads), Math.cos(rads),
+		0, 0]
 	);
 });
 
@@ -247,11 +247,11 @@ scales.forEach(function(sx) {
 ].forEach(function(angle) {
 	testTransform(
 		"skewX(" + angle + ")",
-		1, 0, Math.tan(convertToRad(angle)), 1, 0, 0
+		[1, 0, Math.tan(convertToRad(angle)), 1, 0, 0]
 	);
 	testTransform(
 		"skewY(" + angle + ")",
-		1, Math.tan(convertToRad(angle)), 0, 1, 0, 0
+		[1, Math.tan(convertToRad(angle)), 0, 1, 0, 0]
 	);
 });
 
@@ -267,27 +267,22 @@ var transforms = [
 	["skewX(-0.221rad)", 1, 0, Math.tan(-0.221), 1, 0, 0],
 ];
 transforms.forEach(function(trans1) {
-	testTransform(trans1[0], trans1[1], trans1[2],
-		trans1[3], trans1[4], trans1[5], trans1[6]);
+	testTransform(trans1[0], trans1.slice(1));
 
 	transforms.forEach(function(trans2) {
 		var mx = mxmul32(trans1.slice(1), trans2.slice(1));
 
 		// First put both transforms on the test div
-		testTransform(trans1[0] + " " + trans2[0],
-			mx[0], mx[1], mx[2], mx[3], mx[4], mx[5]);
+		testTransform(trans1[0] + " " + trans2[0], mx);
 
 		// Now put the first on its grandparent, and the second on its parent.
 		// No need to test parsing.
-		testTransformedBoundary([trans1[0], trans2[0], "none"],
-			mx[0], mx[1], mx[2], mx[3], mx[4], mx[5]);
+		testTransformedBoundary([trans1[0], trans2[0], "none"], mx);
 
 		transforms.forEach(function(trans3) {
 			var mx = mxmul32(mxmul32(trans1.slice(1), trans2.slice(1)), trans3.slice(1));
-			testTransform(trans1[0] + " " + trans2[0] + " " + trans3[0],
-				mx[0], mx[1], mx[2], mx[3], mx[4], mx[5]);
-			testTransformedBoundary([trans1[0], trans2[0], trans3[0]],
-				mx[0], mx[1], mx[2], mx[3], mx[4], mx[5]);
+			testTransform(trans1[0] + " " + trans2[0] + " " + trans3[0], mx);
+			testTransformedBoundary([trans1[0], trans2[0], trans3[0]], mx);
 		});
 	});
 });

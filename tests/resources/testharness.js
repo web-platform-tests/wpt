@@ -484,11 +484,11 @@ policies and contribution forms [3].
                     ret += ">" + val.innerHTML + "</" + val.tagName.toLowerCase() + ">";
                     return "Element node " + truncate(ret, 60);
                 case Node.TEXT_NODE:
-                    return 'Text node "' + val.data + '"';
+                    return 'Text node "' + truncate(val.data, 60) + '"';
                 case Node.PROCESSING_INSTRUCTION_NODE:
-                    return "ProcessingInstruction node with target " + format_value(val.target) + " and data " + format_value(val.data);
+                    return "ProcessingInstruction node with target " + format_value(truncate(val.target, 60)) + " and data " + format_value(truncate(val.data, 60));
                 case Node.COMMENT_NODE:
-                    return "Comment node <!--" + val.data + "-->";
+                    return "Comment node <!--" + truncate(val.data, 60) + "-->";
                 case Node.DOCUMENT_NODE:
                     return "Document node with " + val.childNodes.length + (val.childNodes.length == 1 ? " child" : " children");
                 case Node.DOCUMENT_TYPE_NODE:

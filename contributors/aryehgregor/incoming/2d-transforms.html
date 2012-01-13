@@ -94,12 +94,34 @@ body > div > div { padding-left: 10px; width: 105px }
 <script>
 "use strict";
 
-// Test case-sensitivity
+// Test case-sensitivity and other parsing issues
 [
-	// FIXME: The spec doesn't match browsers for serialization of the
-	// transform property when it's unset or "none".
-	// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15471
-	// [["none", "NONE", "nOnE"], 1, 0, 0, 1, 0, 0],
+	// "none" and parse errors
+	[[// "none"
+	  "none", "NONE", "nOnE",
+	  // No arguments
+	  "matrix()", "translate()", "translateX()", "translateY()", "scale()",
+	  "scaleX()", "scaleY()", "rotate()", "skewX()", "skewY()",
+	  // Too few arguments
+	  "matrix(1)", "matrix(1,2)", "matrix(1,2,3)", "matrix(1,2,3,4)",
+	  "matrix(1,2,3,4,5)",
+	  // Too many arguments
+	  "matrix(1,2,3,4,5,6,7)", "translateX(0, 0)", "translateY(0, 0)",
+	  "scaleX(1, 1)", "scaleY(1, 1)", "rotate(90deg, 90deg)",
+	  "rotate(1, 90deg)", "rotate(90deg, 1)", "rotate(1, 1, 90deg)",
+	  "rotate(90deg, 1, 1)", "rotate(90deg, 1, 1, 1)", "skewX(90deg, 90deg)",
+	  "skewY(90deg, 90deg)",
+	  // <angle> doesn't allow "0" with no unit
+	  "rotate(0)", "skewX(0)", "skewY(0)",
+	  // The spec says <number> for all entries, so pixels are not allowed in
+	  // the last two entries
+	  "matrix(1,2,3,4,5px,6)", "matrix(1,2,3,4,5,6px)", "matrix(1,2,3,4,5px,6px)",
+	  // The 3D transform spec requires that the 3D versions of these all have
+	  // "3d" (matrix3d, translate3d, scale3d, rotate3d), so these are all
+	  // parse errors
+	  "matrix(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16)",
+	  "translate(1px, 1px, 1px)", "scale(1, 1, 1)", "rotate(1, 1, 1, 90deg)"]],
+	// Case-sensitivity
 	[["matrix(1,2,3,4,5,6)", "MATRIX(1,2,3,4,5,6)", "mAtRiX(1,2,3,4,5,6)"], 1, 2, 3, 4, 5, 6],
 	[["translate(1px)", "TRANSLATE(1PX)", "tRaNsLaTe(1Px)"], 1, 0, 0, 1, 1, 0],
 	[["translatex(1pt)", "TRANSLATEX(1PT)", "tRaNsLaTeX(1pT)"], 1, 0, 0, 1, 1/0.75, 0],
@@ -107,8 +129,8 @@ body > div > div { padding-left: 10px; width: 105px }
 	[["scale(2)", "SCALE(2)", "sCaLe(2)"], 2, 0, 0, 2, 0, 0],
 	[["scalex(2)", "SCALEX(2)", "sCaLeX(2)"], 2, 0, 0, 1, 0, 0],
 	[["scaley(2)", "SCALEY(2)", "sCaLeY(2)"], 1, 0, 0, 2, 0, 0],
-	// Nothing much uses angle units, so I'll test the case-insensitivity of
-	// those while I'm here.
+	// Nothing much uses angle units, so I'll test case-insensitivity for those
+	// while I'm here
 	[["rotate(90deg)", "ROTATE(90DEG)", "rOtAtE(90dEg)",
 	  "rotate(100grad)", "ROTATE(100GRAD)", "rOtAtE(100gRaD)",
 	  "rotate(1.57079633rad)", "ROTATE(1.57079633RAD)", "rOtAtE(1.57079633rAd)",
@@ -119,6 +141,7 @@ body > div > div { padding-left: 10px; width: 105px }
 	arr[0].forEach(function(transform, i) {
 		var transformKeyword = {0: "TRANSFORM", 1: "tRAnSFoRM", 2: "transform"}[i%3];
 		test(function() {
+			div.removeAttribute("style");
 			div.style[prop.replace("transform", transformKeyword)] = transform;
 			testTransformParsing(arr.slice(1));
 		}, "Computed value for " + transformKeyword + ": " + transform + " set via CSSOM");
@@ -126,19 +149,16 @@ body > div > div { padding-left: 10px; width: 105px }
 });
 div.removeAttribute("style");
 
-// FIXME: The spec doesn't match browsers for serialization of the transform
-// property when it's unset or "none".
-// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15471
-//test(function() {
-//	testTransformParsing([1, 0, 0, 1, 0, 0]);
-//}, "Computed value for transform with no style attribute");
+test(function() {
+	testTransformParsing([]);
+}, "Computed value for transform with no style attribute");
 test(function() {
 	// Not really a transform test, just included for completeness.  It can
 	// serve as something of a sanity check.
 	testTransformedBoundaryAsserts(0, divWidth, divHeight, 0);
 }, "Boundaries with no style attribute");
 
-testTransform("none", [1, 0, 0, 1, 0, 0]);
+testTransform("none", []);
 
 // Test style="transform: matrix(*)" (4^6 = 4096 permutations, but we only run
 // every 13th to avoid creating excessive numbers of tests)

@@ -157,66 +157,83 @@ function getUseCssom() {
  * value and bounding box.
  */
 function testTransform(value, mx) {
-	// FIXME: The spec doesn't match browsers for serialization of the
-	// transform property when it's unset or "none".
-	// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15471
-	if (value != "none") {
-		var useCssom = getUseCssom();
-		test(function() {
-			if (useCssom) {
-				div.removeAttribute("style");
-				div.style[prop] = value;
-			} else {
-				div.setAttribute("style", hyphenatedProp + ": " + value);
-			}
-			testTransformParsing(mx);
-		}, "Computed value for transform: " + value
-		+ " set via " + (useCssom ? "CSSOM" : "setAttribute()"));
-	}
+	var useCssom = getUseCssom();
+	test(function() {
+		if (useCssom) {
+			div.removeAttribute("style");
+			div.style[prop] = value;
+		} else {
+			div.setAttribute("style", hyphenatedProp + ": " + value);
+		}
+		testTransformParsing(mx);
+	}, "Computed value for transform: " + value
+	+ " set via " + (useCssom ? "CSSOM" : "setAttribute()"));
 	testTransformedBoundary(value, mx);
 }
 
 /**
  * Tests that div's computed style for transform is "matrix(...)" or
- * "matrix3d(...)", as appropriate.  mx can have either six or sixteen entries,
- * but the required output format is the same regardless -- an sixteen-entry
- * matrix with zeroes and ones in the right places still has to be output in
- * the matrix() format.
+ * "matrix3d(...)", as appropriate.  mx can have either zero, six, or sixteen
+ * entries.
+ *
+ * If mx has zero entries, that means the transform is supposed to parse the
+ * same as "none" or be a parse error.  FIXME: The spec doesn't match browsers
+ * for serialization of the transform property when it's unset or "none".
+ * <https://www.w3.org/Bugs/Public/show_bug.cgi?id=15471>  Thus for now we
+ * accept either "matrix(1, 0, 0, 1, 0, 0)" or "none" in this case.
+ *
+ * If mx has six entries, it's equivalent to a 4x4 matrix with 0's and 1's in
+ * the right places.  If it has sixteen entries, the required output format is
+ * still matrix() instead of matrix3d() if it's equivalent to a 2D matrix.
  */
 function testTransformParsing(mx) {
+	var noneAllowed = false;
+	if (mx.length == 0) {
+		noneAllowed = true;
+		mx = [1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1];
+	}
 	if (mx.length == 6) {
-		mx = [mx[0], mx[1], 0, 0, mx[2], mx[3], 0, 0, 0, 0, 1, 0, mx[4], mx[5], 0, 1];
+		mx = [mx[0], mx[1], 0, 0,  mx[2], mx[3], 0, 0,  0, 0, 1, 0,  mx[4], mx[5], 0, 1];
 	}
 	// FIXME: We allow px optionally in the last two entries because Gecko
 	// adds it while other engines don't, and the spec is unclear about
 	// which behavior is correct:
 	// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15431
 	var computed = getComputedStyle(div)[prop];
+	if (noneAllowed && computed == "none") {
+		return;
+	}
 	if (is2dMatrix(mx)) {
 		var re = /^matrix\(([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+?)(?:px)?, ([^,]+?)(?:px)?\)$/;
 		assert_regexp_match(computed, re, "computed value has unexpected form for 2D matrix");
+		var msg = ' (actual: "' + computed + '"; '
+			+ 'expected: "matrix(' + [mx[0], mx[1], mx[4], mx[5], mx[12], mx[13]].join(', ') +')"'
+			+ (noneAllowed ? ' or "none"' : '')
+			+ ')';
 		var match = re.exec(computed);
 		assert_approx_equals(Number(match[1]), mx[0], computedEpsilon,
-			"getComputedStyle matrix component 0");
+			"getComputedStyle matrix component 0" + msg);
 		assert_approx_equals(Number(match[2]), mx[1], computedEpsilon,
-			"getComputedStyle matrix component 1");
+			"getComputedStyle matrix component 1" + msg);
 		assert_approx_equals(Number(match[3]), mx[4], computedEpsilon,
-			"getComputedStyle matrix component 2");
+			"getComputedStyle matrix component 2" + msg);
 		assert_approx_equals(Number(match[4]), mx[5], computedEpsilon,
-			"getComputedStyle matrix component 3");
+			"getComputedStyle matrix component 3" + msg);
 		assert_approx_equals(Number(match[5]), mx[12], computedEpsilon,
-			"getComputedStyle matrix component 4");
+			"getComputedStyle matrix component 4" + msg);
 		assert_approx_equals(Number(match[6]), mx[13], computedEpsilon,
-			"getComputedStyle matrix component 5");
+			"getComputedStyle matrix component 5" + msg);
 		return;
 	}
 
 	var re = /^matrix3d\(([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+?)(?:px)?, ([^,]+?)(?:px)?, ([^,]+?)(?:px)?, ([^,]+?)\)$/;
 	assert_regexp_match(computed, re, "computed value has unexpected form for 3D matrix");
+	var msg = ' (actual: "' + computed + '"; '
+		+ 'expected: "matrix3d(' + mx.join(', ') +')")';
 	var match = re.exec(computed);
 	for (var i = 0; i < 16; i++) {
 		assert_approx_equals(Number(match[i + 1]), mx[i], computedEpsilon,
-			"getComputedStyle matrix component " + i);
+			"getComputedStyle matrix component " + i + msg);
 	}
 }
 
@@ -231,11 +248,17 @@ function testTransformParsing(mx) {
  * for the test div's grandparent, its parent, and the test div itself,
  * respectively.  mx should then be the entries of the matrix of all three
  * transforms multiplied together.
+ *
+ * mx can have zero, six, or sixteen entries.  If it has zero, it's the same as
+ * the identity matrix.
  */
 function testTransformedBoundary(transformValue, mx,
                                  transformOriginValue, xOffset, yOffset) {
+	if (mx.length == 0) {
+		mx = [1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1];
+	}
 	if (mx.length == 6) {
-		mx = [mx[0], mx[1], 0, 0, mx[2], mx[3], 0, 0, 0, 0, 1, 0, mx[4], mx[5], 0, 1];
+		mx = [mx[0], mx[1], 0, 0,  mx[2], mx[3], 0, 0,  0, 0, 1, 0,  mx[4], mx[5], 0, 1];
 	}
 
 	// Don't test singular matrices for now.  IE fails some of them, which

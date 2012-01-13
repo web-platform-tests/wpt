@@ -20,8 +20,8 @@ policies and contribution forms [3].
  *
  * To use this file, import the script and the testharnessreport script into
  * the test document:
- * <script src="/resources/testharnessreport.js"></script>
  * <script src="/resources/testharness.js"></script>
+ * <script src="/resources/testharnessreport.js"></script>
  *
  * Within each file one may define one or more tests. Each test is atomic
  * in the sense that a single test has a single result (pass/fail/timeout).
@@ -276,8 +276,11 @@ policies and contribution forms [3].
 {
     var debug = false;
     // default timeout is 5 seconds, test can override if needed
-    var default_timeout = 5000;
-    var default_test_timeout = 2000;
+    var settings = {
+      output:true,
+      timeout:5000,
+      test_timeout:2000
+    };
 
     var xhtml_ns = "http://www.w3.org/1999/xhtml";
 
@@ -353,10 +356,9 @@ policies and contribution forms [3].
             func = func_or_properties;
         } else {
             properties = func_or_properties;
-
         }
-
         tests.setup(func, properties);
+        output.setup(properties);
     }
 
     function done() {
@@ -810,7 +812,7 @@ policies and contribution forms [3].
         this.timeout_id = null;
         this.is_done = false;
 
-        this.timeout_length = properties.timeout ? properties.timeout : default_test_timeout;
+        this.timeout_length = properties.timeout ? properties.timeout : settings.test_timeout;
 
         this.message = null;
 
@@ -959,7 +961,7 @@ policies and contribution forms [3].
         this.wait_for_finish = false;
         this.processing_callbacks = false;
 
-        this.timeout_length = default_timeout;
+        this.timeout_length = settings.timeout;
         this.timeout_id = null;
         this.set_timeout();
 
@@ -992,7 +994,11 @@ policies and contribution forms [3].
             this.phase = this.phases.SETUP;
         }
 
-        this.properties = properties;
+        for(p in properties) {
+            if (properties.hasOwnProperty(p)) {
+                this.properties[p] = properties[p];
+            }
+        }
 
         if (properties.timeout)
         {
@@ -1200,17 +1206,29 @@ policies and contribution forms [3].
       this.output_document = null;
       this.output_node = null;
       this.done_count = 0;
+      this.enabled = settings.output;
       this.phase = this.INITIAL;
     }
 
     Output.prototype.INITIAL = 0;
-    Output.prototype.SETUP = 1;
+    Output.prototype.STARTED = 1;
     Output.prototype.HAVE_RESULTS = 2;
     Output.prototype.COMPLETE = 3;
 
-    Output.prototype.setup = function(properties)
+    Output.prototype.setup = function(properties) {
+        if (this.phase > this.INIT) {
+            return;
+        }
+
+        //If output is disabled in testharnessreport.js the test shouldn't be
+        //able to override that
+        this.enabled = this.enabled && (properties.hasOwnProperty("output") ?
+                                        properties.output : settings.output);
+    }
+
+    Output.prototype.init = function(properties)
     {
-        if (this.phase >= this.SETUP) {
+        if (this.phase >= this.STARTED) {
             return;
         }
         if (properties.output_document) {
@@ -1218,7 +1236,7 @@ policies and contribution forms [3].
         } else {
             this.output_document = document;
         }
-        this.phase = this.SETUP;
+        this.phase = this.STARTED;
     };
 
     Output.prototype.resolve_log = function()
@@ -1234,9 +1252,13 @@ policies and contribution forms [3].
 
     Output.prototype.show_status = function(test)
     {
-        if (this.phase < this.SETUP)
+        if (this.phase < this.STARTED)
         {
-            this.setup();
+            this.init();
+        }
+        if (!this.enabled)
+        {
+            return;
         }
         if (this.phase < this.HAVE_RESULTS)
         {
@@ -1259,6 +1281,10 @@ policies and contribution forms [3].
     Output.prototype.show_results = function (tests, harness_status)
     {
         if (this.phase >= this.COMPLETE) {
+            return;
+        }
+        if (!this.enabled)
+        {
             return;
         }
         if (!this.output_node) {
@@ -1387,7 +1413,7 @@ policies and contribution forms [3].
     };
 
     var output = new Output();
-    add_start_callback(function (properties) {output.setup(properties);});
+    add_start_callback(function (properties) {output.init(properties);});
     add_result_callback(function (test) {output.show_status(tests);});
     add_completion_callback(function (tests, harness_status) {output.show_results(tests, harness_status);});
 

@@ -1,0 +1,42 @@
+<!DOCTYPE HTML>
+<html manifest="manifest/clock.manifest">
+ <head>
+  <title>Offline Application Cache</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+ </head>
+ <body>
+	<p>
+		<h3>API_update</h3>
+	</p>
+	
+	<ol type="1">
+	<li>Refresh the page.</li>
+	</ol>
+
+	<hr>
+
+	<div id="log"></div>
+		 
+	<script>
+
+		if (('applicationCache' in window) && window.applicationCache !== null){
+			var cache = window.applicationCache;
+			
+			try {
+				cache.update();
+
+				test(function() {
+					assert_true(true);
+				}, "update method test")
+			} catch (e) {
+				test(function() {
+					assert_unreached("update method is failed.");
+				}, "update method test")
+			}
+		}
+
+	</script>
+
+ </body>
+</html>

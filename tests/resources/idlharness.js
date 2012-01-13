@@ -23,7 +23,11 @@ policies and contribution forms [3].
  *
      var s = "";
      [].forEach.call(document.getElementsByClassName("idl"), function(idl) {
-       s += idl.textContent + "\n\n"
+       //https://www.w3.org/Bugs/Public/show_bug.cgi?id=14914
+       if (!idl.classList.contains("extract"))
+       {
+         s += idl.textContent + "\n\n";
+       }
      });
      document.body.innerHTML = '<pre></pre>';
      document.body.firstChild.textContent = s;
@@ -132,20 +136,30 @@ policies and contribution forms [3].
 "use strict";
 (function(){
 /// IdlArray ///
-//@{
 //Entry point
 window.IdlArray = function()
+//@{
 {
     this.members = {};
     this.objects = {};
+    // When adding multiple collections of IDLs one at a time, an earlier one
+    // might contain a partial interface or implements statement that depends
+    // on a later one.  Save these up and handle them right before we run
+    // tests.
+    this.partials = [];
+    this.implements = {};
 }
 
+//@}
 IdlArray.prototype.add_idls = function(raw_idls)
+//@{
 {
     this.internal_add_idls(WebIDLParser.parse(raw_idls));
 };
 
+//@}
 IdlArray.prototype.add_untested_idls = function(raw_idls)
+//@{
 {
     var parsed_idls = WebIDLParser.parse(raw_idls);
     for (var i = 0; i < parsed_idls.length; i++)
@@ -162,20 +176,25 @@ IdlArray.prototype.add_untested_idls = function(raw_idls)
     this.internal_add_idls(parsed_idls);
 }
 
+//@}
 IdlArray.prototype.internal_add_idls = function(parsed_idls)
+//@{
 {
     parsed_idls.forEach(function(parsed_idl)
     {
         if (parsed_idl.type == "partialinterface")
         {
-            if (!(parsed_idl.name in this.members))
+            this.partials.push(parsed_idl);
+            return;
+        }
+
+        if (parsed_idl.type == "implements")
+        {
+            if (!(parsed_idl.target in this.implements))
             {
-                throw "Partial interface " + parsed_idl.name + " with no original interface";
+                this.implements[parsed_idl.target] = [];
             }
-            parsed_idl.members.forEach(function(member)
-            {
-                this.members[parsed_idl.name].members.push(new IdlInterfaceMember(member));
-            }.bind(this));
+            this.implements[parsed_idl.target].push(parsed_idl.implements);
             return;
         }
 
@@ -201,7 +220,6 @@ IdlArray.prototype.internal_add_idls = function(parsed_idls)
             break;
 
         case "typedef":
-        case "implements":
             //TODO
             break;
 
@@ -211,13 +229,15 @@ IdlArray.prototype.internal_add_idls = function(parsed_idls)
     }.bind(this));
 }
 
+//@}
 IdlArray.prototype.add_objects = function(dict)
+//@{
 {
     for (var k in dict)
     {
         if (k in this.objects)
         {
-            this.objects[k].push(dict[k]);
+            this.objects[k] = this.objects[k].concat(dict[k]);
         }
         else
         {
@@ -226,13 +246,77 @@ IdlArray.prototype.add_objects = function(dict)
     }
 }
 
+//@}
 IdlArray.prototype.prevent_multiple_testing = function(name)
+//@{
 {
     this.members[name].prevent_multiple_testing = true;
 }
 
-IdlArray.prototype.test = function()
+//@}
+IdlArray.prototype.recursively_get_implements = function(interface_name)
+//@{
 {
+    var ret = this.implements[interface_name];
+    if (ret === undefined)
+    {
+        return [];
+    }
+    for (var i = 0; i < this.implements[interface_name].length; i++)
+    {
+        ret = ret.concat(this.recursively_get_implements(ret[i]));
+        if (ret.indexOf(ret[i]) != ret.lastIndexOf(ret[i]))
+        {
+            throw "Circular implements statements involving " + ret[i];
+        }
+    }
+    return ret;
+}
+
+//@}
+IdlArray.prototype.test = function()
+//@{
+{
+    this.partials.forEach(function(parsed_idl)
+    {
+        if (!(parsed_idl.name in this.members)
+        || !(this.members[parsed_idl.name] instanceof IdlInterface))
+        {
+            throw "Partial interface " + parsed_idl.name + " with no original interface";
+        }
+        if (parsed_idl.extAttrs)
+        {
+            parsed_idl.extAttrs.forEach(function(extAttr)
+            {
+                this.members[parsed_idl.name].extAttrs.push(extAttr);
+            }.bind(this));
+        }
+        parsed_idl.members.forEach(function(member)
+        {
+            this.members[parsed_idl.name].members.push(new IdlInterfaceMember(member));
+        }.bind(this));
+    }.bind(this));
+    this.partials = [];
+
+    for (var lhs in this.implements)
+    {
+        this.recursively_get_implements(lhs).forEach(function(rhs)
+        {
+            if (!(lhs in this.members)
+            || !(this.members[lhs] instanceof IdlInterface)
+            || !(rhs in this.members)
+            || !(this.members[rhs] instanceof IdlInterface))
+            {
+                throw lhs + " implements " + rhs + ", but one is undefined or not an interface";
+            }
+            this.members[rhs].members.forEach(function(member)
+            {
+                this.members[lhs].members.push(new IdlInterfaceMember(member));
+            }.bind(this));
+        }.bind(this));
+    }
+    this.implements = {};
+
     for (var name in this.members)
     {
         this.members[name].test();
@@ -246,7 +330,9 @@ IdlArray.prototype.test = function()
     }
 };
 
+//@}
 IdlArray.prototype.assert_type_is = function(value, type)
+//@{
 {
     if (type.idlType == "any")
     {
@@ -382,10 +468,9 @@ IdlArray.prototype.assert_type_is = function(value, type)
 //@}
 
 /// IdlObject ///
-//@{
 function IdlObject() {}
-
 IdlObject.prototype.has_extended_attribute = function(name)
+//@{
 {
     return this.extAttrs.some(function(o)
     {
@@ -393,25 +478,25 @@ IdlObject.prototype.has_extended_attribute = function(name)
     });
 };
 
-IdlObject.prototype.test = function() {};
 //@}
+IdlObject.prototype.test = function() {};
 
 /// IdlDictionary ///
-//@{
 //Used for IdlArray.prototype.assert_type_is
 function IdlDictionary(obj)
+//@{
 {
     this.name = obj.name;
     this.members = obj.members ? obj.members : [];
     this.inheritance = obj.inheritance ? obj.inheritance: [];
 }
 
-IdlDictionary.prototype = Object.create(IdlObject.prototype);
 //@}
+IdlDictionary.prototype = Object.create(IdlObject.prototype);
 
 /// IdlException ///
-//@{
 function IdlException(obj)
+//@{
 {
     this.name = obj.name;
     this.array = obj.array;
@@ -421,9 +506,10 @@ function IdlException(obj)
     this.inheritance = obj.inheritance ? obj.inheritance : [];
 }
 
+//@}
 IdlException.prototype = Object.create(IdlObject.prototype);
-
 IdlException.prototype.test = function()
+//@{
 {
     // Note: largely copy-pasted from IdlInterface, but then, so is the spec
     // text.
@@ -440,7 +526,9 @@ IdlException.prototype.test = function()
     this.test_members();
 }
 
+//@}
 IdlException.prototype.test_self = function()
+//@{
 {
     test(function()
     {
@@ -467,12 +555,10 @@ IdlException.prototype.test_self = function()
         //characteristics as follows:"
         //"Its [[Prototype]] internal property is the Function prototype
         //object."
-        //FIXME: The spec is wrong, has to be Object.prototype and not
-        //Function.prototype.  I test for how browsers actually behave,
-        //assuming the bug will be fixed:
+        //Note: This doesn't match browsers as of December 2011, see
         //http://www.w3.org/Bugs/Public/show_bug.cgi?id=14813
-        assert_true(Object.prototype.isPrototypeOf(window[this.name]),
-                    "prototype of window's property " + format_value(this.name) + " is not Object.prototype");
+        assert_true(Function.prototype.isPrototypeOf(window[this.name]),
+                    "prototype of window's property " + format_value(this.name) + " is not Function.prototype");
         //"Its [[Get]] internal property is set as described in ECMA-262
         //section 15.3.5.4."
         //Not much to test for this.
@@ -482,12 +568,16 @@ IdlException.prototype.test_self = function()
         //"Its [[HasInstance]] internal property is set as described in
         //ECMA-262 section 15.3.5.3, unless otherwise specified."
         //TODO
+        //"Its [[Class]] internal property is “Function”."
+        //String() and {}.toString.call() should be equivalent, since nothing
+        //defines a stringifier.
+        assert_equals({}.toString.call(window[this.name]), "[object Function]",
+                      "{}.toString.call(" + this.name + ")");
+        assert_equals(String(window[this.name]), "[object Function]",
+                      "String(" + this.name + ")");
 
-        //TODO: test [[Class]] once that's defined
-        //http://www.w3.org/Bugs/Public/show_bug.cgi?id=14877
-
-        //TODO: 4.9.1.1. Exception interface object [[Call]] method does not
-        //match browsers http://www.w3.org/Bugs/Public/show_bug.cgi?id=14885
+        //TODO: Test 4.9.1.1. Exception interface object [[Call]] method (which
+        //does not match browsers: //http://www.w3.org/Bugs/Public/show_bug.cgi?id=14885)
     }.bind(this), this.name + " exception: existence and properties of exception interface object");
 
     test(function()
@@ -518,10 +608,9 @@ IdlException.prototype.test_self = function()
         //"Otherwise, the exception is not declared to inherit from another
         //exception. The value of the internal [[Prototype]] property is the
         //Error prototype object ([ECMA-262], section 15.11.3.1)."
-        //TODO: Implementations inherit from Object, not Error.  I test for how
-        //browsers behave, assuming the spec will change.
-        //http://www.w3.org/Bugs/Public/show_bug.cgi?id=14887
-        var inherit_exception = this.inheritance.length ? this.inheritance[0] : "Object";
+        //Note: This doesn't match browsers as of December 2011, see
+        //https://www.w3.org/Bugs/Public/show_bug.cgi?id=14887.
+        var inherit_exception = this.inheritance.length ? this.inheritance[0] : "Error";
         assert_own_property(window, inherit_exception,
                             'should inherit from ' + inherit_exception + ', but window has no such property');
         assert_own_property(window[inherit_exception], "prototype",
@@ -529,8 +618,15 @@ IdlException.prototype.test_self = function()
         assert_true(window[inherit_exception].prototype.isPrototypeOf(window[this.name].prototype),
                     'prototype of ' + this.name + '.prototype is not ' + inherit_exception + '.prototype');
 
-        //TODO: test [[Class]] once that's defined
-        //http://www.w3.org/Bugs/Public/show_bug.cgi?id=14877
+        //"The class string of an exception interface prototype object is the
+        //concatenation of the exception’s identifier and the string
+        //“Prototype”."
+        //String() and {}.toString.call() should be equivalent, since nothing
+        //defines a stringifier.
+        assert_equals({}.toString.call(window[this.name].prototype), "[object " + this.name + "Prototype]",
+                      "{}.toString.call(" + this.name + ")");
+        assert_equals(String(window[this.name].prototype), "[object " + this.name + "Prototype]",
+                      "String(" + this.name + ")");
     }.bind(this), this.name + " exception: existence and properties of exception interface prototype object");
 
     test(function()
@@ -581,7 +677,9 @@ IdlException.prototype.test_self = function()
     }.bind(this), this.name + " exception: existence and properties of exception interface prototype object's \"constructor\" property");
 }
 
+//@}
 IdlException.prototype.test_members = function()
+//@{
 {
     for (var i = 0; i < this.members.length; i++)
     {
@@ -687,7 +785,9 @@ IdlException.prototype.test_members = function()
     }
 }
 
+//@}
 IdlException.prototype.test_object = function(desc)
+//@{
 {
     var obj, exception = null;
     try
@@ -724,8 +824,8 @@ IdlException.prototype.test_object = function(desc)
                 desc + "'s prototype is not " + this.name + ".prototype");
         }
 
-        //"The value of the internal [[Class]] property of the exception object
-        //must be the identifier of the exception."
+        //"The class string of the exception object must be the identifier of
+        //the exception."
         assert_equals({}.toString.call(obj), "[object " + this.name + "]", "{}.toString.call(" + desc + ")");
         //Stringifier is not defined for DOMExceptions, because message isn't
         //defined.
@@ -753,8 +853,8 @@ IdlException.prototype.test_object = function(desc)
 //@}
 
 /// IdlInterface ///
-//@{
 function IdlInterface(obj)
+//@{
 {
     this.name = obj.name;
     this.array = obj.array;
@@ -764,12 +864,11 @@ function IdlInterface(obj)
     this.inheritance = obj.inheritance ? obj.inheritance : [];
 }
 
+//@}
 IdlInterface.prototype = Object.create(IdlObject.prototype);
-
 IdlInterface.prototype.test = function()
+//@{
 {
-    //TODO: Test constructors, probably lots of other stuff
-
     if (this.has_extended_attribute("NoInterfaceObject"))
     {
         //No tests to do without an instance
@@ -783,7 +882,9 @@ IdlInterface.prototype.test = function()
     this.test_members();
 }
 
+//@}
 IdlInterface.prototype.test_self = function()
+//@{
 {
     test(function()
     {
@@ -810,12 +911,10 @@ IdlInterface.prototype.test_self = function()
         //characteristics as follows:"
         //"Its [[Prototype]] internal property is the Function prototype
         //object."
-        //FIXME: The spec is wrong, has to be Object.prototype and not
-        //Function.prototype.  I test for how browsers actually behave,
-        //assuming the bug will be fixed:
+        //Note: This doesn't match browsers as of December 2011, see
         //http://www.w3.org/Bugs/Public/show_bug.cgi?id=14813
-        assert_true(Object.prototype.isPrototypeOf(window[this.name]),
-                    "prototype of window's property " + format_value(this.name) + " is not Object.prototype");
+        assert_true(Function.prototype.isPrototypeOf(window[this.name]),
+                    "prototype of window's property " + format_value(this.name) + " is not Function.prototype");
         //"Its [[Get]] internal property is set as described in ECMA-262
         //section 15.3.5.4."
         //Not much to test for this.
@@ -826,14 +925,12 @@ IdlInterface.prototype.test_self = function()
         //"Its [[HasInstance]] internal property is set as described in
         //ECMA-262 section 15.3.5.3, unless otherwise specified."
         //TODO
-
-        //"The [[Class]] property of the interface object must be the
-        //identifier of the interface."
+        //"Its [[Class]] internal property is “Function”."
         //String() and {}.toString.call() should be equivalent, since nothing
         //defines a stringifier.
-        assert_equals({}.toString.call(window[this.name]), "[object " + this.name + "]",
+        assert_equals({}.toString.call(window[this.name]), "[object Function]",
                       "{}.toString.call(" + this.name + ")");
-        assert_equals(String(window[this.name]), "[object " + this.name + "]",
+        assert_equals(String(window[this.name]), "[object Function]",
                       "String(" + this.name + ")");
 
         if (!this.has_extended_attribute("Constructor"))
@@ -878,6 +975,8 @@ IdlInterface.prototype.test_self = function()
             assert_own_property(window[this.name], "length");
             assert_equals(window[this.name].length, expected_length, "wrong value for " + this.name + ".length");
             var desc = Object.getOwnPropertyDescriptor(window[this.name], "length");
+            assert_false("get" in desc, this.name + ".length has getter");
+            assert_false("set" in desc, this.name + ".length has setter");
             assert_false(desc.writable, this.name + ".length is writable");
             assert_false(desc.enumerable, this.name + ".length is enumerable");
             assert_false(desc.configurable, this.name + ".length is configurable");
@@ -935,8 +1034,16 @@ IdlInterface.prototype.test_self = function()
                             'should inherit from ' + inherit_interface + ', but that object has no "prototype" property');
         assert_true(window[inherit_interface].prototype.isPrototypeOf(window[this.name].prototype),
                     'prototype of ' + this.name + '.prototype is not ' + inherit_interface + '.prototype');
-        //TODO: test [[Class]] once that's defined
-        //http://www.w3.org/Bugs/Public/show_bug.cgi?id=14877
+
+        //"The class string of an interface prototype object is the
+        //concatenation of the interface’s identifier and the string
+        //“Prototype”."
+        //String() and {}.toString.call() should be equivalent, since nothing
+        //defines a stringifier.
+        assert_equals({}.toString.call(window[this.name].prototype), "[object " + this.name + "Prototype]",
+                      "{}.toString.call(" + this.name + ")");
+        assert_equals(String(window[this.name].prototype), "[object " + this.name + "Prototype]",
+                      "String(" + this.name + ")");
     }.bind(this), this.name + " interface: existence and properties of interface prototype object");
 
     test(function()
@@ -964,7 +1071,9 @@ IdlInterface.prototype.test_self = function()
     }.bind(this), this.name + ' interface: existence and properties of interface prototype object\'s "constructor" property');
 }
 
+//@}
 IdlInterface.prototype.test_members = function()
+//@{
 {
     for (var i = 0; i < this.members.length; i++)
     {
@@ -1088,7 +1197,9 @@ IdlInterface.prototype.test_members = function()
     }
 }
 
+//@}
 IdlInterface.prototype.test_object = function(desc)
+//@{
 {
     var obj, exception = null;
     try
@@ -1127,7 +1238,9 @@ IdlInterface.prototype.test_object = function(desc)
     }
 }
 
+//@}
 IdlInterface.prototype.test_primary_interface_of = function(desc, obj, exception, expected_typeof)
+//@{
 {
     //We can't easily test that its prototype is correct if there's no
     //interface object, or the object is from a different global environment
@@ -1153,9 +1266,9 @@ IdlInterface.prototype.test_primary_interface_of = function(desc, obj, exception
         }.bind(this), this.name + " must be primary interface of " + desc);
     }
 
-    //"The value of the internal [[Class]] property of a platform object that
-    //implements one or more interfaces must be the identifier of the primary
-    //interface of the platform object."
+    //"The class string of a platform object that implements one or more
+    //interfaces must be the identifier of the primary interface of the
+    //platform object."
     test(function()
     {
         assert_equals(exception, null, "Unexpected exception when evaluating object");
@@ -1166,9 +1279,11 @@ IdlInterface.prototype.test_primary_interface_of = function(desc, obj, exception
             assert_equals(String(obj), "[object " + this.name + "]", "String(" + desc + ")");
         }
     }.bind(this), "Stringification of " + desc);
-};
+}
 
+//@}
 IdlInterface.prototype.test_interface_of = function(desc, obj, exception, expected_typeof)
+//@{
 {
     //TODO: Indexed and named properties, more checks on interface members
     this.already_tested = true;
@@ -1201,7 +1316,16 @@ IdlInterface.prototype.test_interface_of = function(desc, obj, exception, expect
                 }
                 if (member.type == "attribute")
                 {
-                    this.array.assert_type_is(obj[member.name], member.idlType);
+                    // Attributes are accessor properties, so they might
+                    // legitimately throw an exception rather than returning
+                    // anything.
+                    try
+                    {
+                        this.array.assert_type_is(obj[member.name], member.idlType);
+                    }
+                    catch (e)
+                    {
+                    }
                 }
                 if (member.type == "operation")
                 {
@@ -1238,7 +1362,9 @@ IdlInterface.prototype.test_interface_of = function(desc, obj, exception, expect
     }
 }
 
+//@}
 function do_interface_attribute_asserts(obj, member)
+//@{
 {
     //"For each attribute defined on the interface, there must exist a
     //corresponding property. If the attribute was declared with the
@@ -1268,6 +1394,7 @@ function do_interface_attribute_asserts(obj, member)
     {
         assert_true(desc.configurable, "property must be configurable");
     }
+
     //"The attribute getter is a Function object whose behavior
     //when invoked is as follows:
     //"...
@@ -1275,6 +1402,10 @@ function do_interface_attribute_asserts(obj, member)
     //the Number value 0."
     assert_equals(typeof desc.get, "function", "getter must be Function");
     assert_equals(desc.get.length, 0, "getter length must be 0");
+
+    //TODO: Test calling setter on the interface prototype (should throw
+    //TypeError in most cases).
+    //
     //"The attribute setter is undefined if the attribute is
     //declared readonly and has neither a [PutForwards] nor a
     //[Replaceable] extended attribute declared on it.
@@ -1298,8 +1429,8 @@ function do_interface_attribute_asserts(obj, member)
 //@}
 
 /// IdlInterfaceMember ///
-//@{
 function IdlInterfaceMember(obj)
+//@{
 {
     for (var k in obj)
     {
@@ -1318,12 +1449,12 @@ function IdlInterfaceMember(obj)
     }
 }
 
-IdlInterfaceMember.prototype = Object.create(IdlObject.prototype);
 //@}
+IdlInterfaceMember.prototype = Object.create(IdlObject.prototype);
 
 /// Internal helper functions ///
-//@{
 function create_suitable_object(type)
+//@{
 {
     if (type.nullable)
     {

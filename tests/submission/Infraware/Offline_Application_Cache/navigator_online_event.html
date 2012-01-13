@@ -1,0 +1,54 @@
+<!DOCTYPE HTML>
+<html>
+ <head>
+  <title>Offline Application Cache</title>
+  <link rel="stylesheet" href="css/result.css">
+ </head>
+ <body>
+	<p>
+		<h3>navigator_online_event</h3>
+	</p>
+	
+	<ol type="1">
+	<li>Change the 'work offline' mode.</li>
+	<li>If actual result and expected result are same, then test is <span class="manualpass">Pass</span>, otherwise <span class="manualfail">Fail</span>.</li>
+	</ol>
+
+	<hr>
+
+	<p>
+		<h3>[Actual Result]</h3>
+		<div id="actualResult" >
+			<span id="actualMsg"></span>
+		</div>
+	</p>
+  
+	<p>
+		<h3>[Expected Result]</h3>
+		<div id="expectedResult" >
+			<span id="expectedMsg">apply 'work offline': offline event is raised.<p>release 'work offline': online event is raised.</span>
+		</div>
+	</p> 
+	<script>
+
+	function showOnline() {
+		document.getElementById('actualMsg').innerHTML = 'online event is raised.';
+	}
+
+	function showOffline() {
+		document.getElementById('actualMsg').innerHTML = 'offline event is raised.';
+	}
+
+	if (window.addEventListener) {
+        window.addEventListener("online", showOnline, false);
+		window.addEventListener("offline", showOffline, false);
+	} else if (window.attachEvent) {
+		window.attachEvent("ononline", showOnline);
+		window.attachEvent("onoffline", showOffline);
+	} else {
+		
+	}
+
+	</script>
+ </body>
+</html>

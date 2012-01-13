@@ -1,0 +1,32 @@
+<!DOCTYPE HTML>
+<html>
+ <head>
+  <title>Offline Application Cache</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+ </head>
+ <body>
+	<p>
+		<h3>navigator_online_online</h3>
+	</p>
+	
+	<hr>
+
+	<div id="log"></div>
+
+  <script>
+
+	 if (navigator.onLine) {
+		test(function() {
+			assert_true(true);
+		}, "online test")
+	 } else {
+		test(function() {
+			assert_unreached("offline.");
+		}, "online test")
+	 }
+
+  </script>
+
+ </body>
+</html>

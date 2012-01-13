@@ -1,0 +1,45 @@
+<!DOCTYPE HTML>
+<html manifest="manifest/clock.manifest">
+ <head>
+  <title>Offline Application Cache</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+ </head>
+ <body>
+	<p>
+		<h3>API_status_OBSOLETE</h3>
+	</p>
+	
+	<ol type="1">
+	<li>Remove the manifest file of server.</li>
+	<li>Refresh the page.</li>
+	</ol>
+
+	<hr>
+
+	<div id="log"></div>
+		 
+	<script>
+
+		var t = async_test("oblolete status test");
+
+		if (('applicationCache' in window) && window.applicationCache !== null) {
+			var cache = window.applicationCache;
+
+			cache.addEventListener('obsolete', function(){
+				if (cache.status == cache.OBSOLETE && cache.status == 5) {
+					t.step(function() {
+					   assert_true(true);
+					  });
+					t.done();
+				} else {
+					test(function() {
+						assert_unreached("applicationCache status is not obsolete.");
+					}, "obsolete status test")
+				}}, false)
+		}
+
+	</script>
+
+ </body>
+</html>

@@ -987,15 +987,19 @@ policies and contribution forms [3].
 
     Tests.prototype.setup = function(func, properties)
     {
-        if (this.phase >= this.phases.HAVE_RESULTS) {
+        if (this.phase >= this.phases.HAVE_RESULTS)
+        {
             return;
         }
-        if (this.phase < this.phases.SETUP) {
+        if (this.phase < this.phases.SETUP)
+        {
             this.phase = this.phases.SETUP;
         }
 
-        for(p in properties) {
-            if (properties.hasOwnProperty(p)) {
+        for (var p in properties)
+        {
+            if (properties.hasOwnProperty(p))
+            {
                 this.properties[p] = properties[p];
             }
         }
@@ -1216,7 +1220,7 @@ policies and contribution forms [3].
     Output.prototype.COMPLETE = 3;
 
     Output.prototype.setup = function(properties) {
-        if (this.phase > this.INIT) {
+        if (this.phase > this.INITIAL) {
             return;
         }
 
@@ -1224,7 +1228,7 @@ policies and contribution forms [3].
         //able to override that
         this.enabled = this.enabled && (properties.hasOwnProperty("output") ?
                                         properties.output : settings.output);
-    }
+    };
 
     Output.prototype.init = function(properties)
     {

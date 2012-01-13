@@ -5,61 +5,50 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
-<div id="test">
 <script>
-var i = 0;
-</script>
-<script type="application/ecmascript">
-++i;
-</script>
-<script type="application/javascript">
-++i;
-</script>
-<script type="application/x-ecmascript">
-++i;
-</script>
-<script type="application/x-javascript">
-++i;
-</script>
-<script type="text/ecmascript">
-++i;
-</script>
-<script type="text/javascript">
-++i;
-</script>
-<script type="text/javascript1.0">
-++i;
-</script>
-<script type="text/javascript1.1">
-++i;
-</script>
-<script type="text/javascript1.2">
-++i;
-</script>
-<script type="text/javascript1.3">
-++i;
-</script>
-<script type="text/javascript1.4">
-++i;
-</script>
-<script type="text/javascript1.5">
-++i;
-</script>
-<script type="text/jscript">
-++i;
-</script>
-<script type="text/livescript">
-++i;
-</script>
-<script type="text/x-ecmascript">
-++i;
-</script>
-<script type="text/x-javascript">
-++i;
-</script>
-</div>
-<script>
-test(function() {
-  assert_equals(i, 16, "Didn't support all type values")
-})
+function testAttribute(attr, val) {
+  test(function() {
+    assert_false(ran, "ran variable not reset");
+    var script = document.createElement("script");
+    script.setAttribute(attr, val);
+    script.textContent = "ran = true;"
+    document.body.appendChild(script);
+    assert_true(ran);
+    ran = false
+  }, "Script should run with " + attr + "=" + val);
+}
+function testType(type) {
+  testAttribute("type", type);
+}
+function testLanguage(lang) {
+  testAttribute("language", lang);
+}
+var application = [
+  "ecmascript",
+  "javascript",
+  "x-ecmascript",
+  "x-javascript"
+];
+var text = [
+  "ecmascript",
+  "javascript",
+  "javascript1.0",
+  "javascript1.1",
+  "javascript1.2",
+  "javascript1.3",
+  "javascript1.4",
+  "javascript1.5",
+  "jscript",
+  "livescript",
+  "x-ecmascript",
+  "x-javascript"
+];
+var ran = false;
+application.map(function(t) { return "application/" + t; }).forEach(testType);
+application.map(function(t) { return ("application/" + t).toUpperCase(); }).forEach(testType);
+text.map(function(t) { return "text/" + t; }).forEach(testType);
+text.map(function(t) { return ("text/" + t).toUpperCase(); }).forEach(testType);
+
+text.forEach(testLanguage);
+text.map(function(t) { return t.toUpperCase(); }).forEach(testLanguage);
 </script>

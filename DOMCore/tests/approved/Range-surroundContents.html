@@ -24,8 +24,8 @@ function mySurroundContents(range, newParent) {
 			return "INVALID_STATE_ERR";
 		}
 
-		// "If some non-Text node is partially contained in the context object,
-		// raise a INVALID_STATE_ERR exception and abort these steps."
+		// "If a non-Text node is partially contained in the context object,
+		// throw an "InvalidStateError" exception and terminate these steps."
 		var node = range.commonAncestorContainer;
 		var stop = nextNodeDescendants(node);
 		for (; node != stop; node = nextNode(node)) {

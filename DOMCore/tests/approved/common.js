@@ -142,6 +142,7 @@ function setupRangeTests() {
 		"[document, 0, document, 1]",
 		"[document, 0, document, 2]",
 		"[document, 1, document, 2]",
+		"[comment, 2, comment, 3]",
 		"[testDiv, 0, comment, 5]",
 		"[paras[2].firstChild, 4, comment, 2]",
 		"[paras[3], 1, comment, 8]",
@@ -422,10 +423,26 @@ function isAncestor(ancestor, descendant) {
 }
 
 /**
+ * Returns true if ancestor is an inclusive ancestor of descendant, false
+ * otherwise.
+ */
+function isInclusiveAncestor(ancestor, descendant) {
+	return ancestor === descendant || isAncestor(ancestor, descendant);
+}
+
+/**
  * Returns true if descendant is a descendant of ancestor, false otherwise.
  */
 function isDescendant(descendant, ancestor) {
 	return isAncestor(ancestor, descendant);
+}
+
+/**
+ * Returns true if descendant is an inclusive descendant of ancestor, false
+ * otherwise.
+ */
+function isInclusiveDescendant(descendant, ancestor) {
+	return descendant === ancestor || isDescendant(descendant, ancestor);
 }
 
 /**
@@ -790,9 +807,9 @@ function myExtractContents(range) {
  * return an arbitrary human-readable string if a condition is hit that implies
  * a spec bug.
  */
-function myInsertNode(range, newNode) {
-	// "If the context object's detached flag is set, raise an
-	// INVALID_STATE_ERR exception and abort these steps."
+function myInsertNode(range, node) {
+	// "If the detached flag is set, throw an "InvalidStateError" exception and
+	// terminate these steps."
 	//
 	// Assume that if accessing collapsed throws, it's detached.
 	try {
@@ -801,18 +818,16 @@ function myInsertNode(range, newNode) {
 		return "INVALID_STATE_ERR";
 	}
 
-	// "If the context object's start node is a Text or Comment node and its
-	// parent is null, raise an HIERARCHY_REQUEST_ERR exception and abort these
-	// steps."
-	if ((range.startContainer.nodeType == Node.TEXT_NODE
-	|| range.startContainer.nodeType == Node.COMMENT_NODE)
-	&& !range.startContainer.parentNode) {
+	// "If start node is a Comment node, or a Text node whose parent is null,
+	// throw an "HierarchyRequestError" exception and terminate these steps."
+	if (range.startContainer.nodeType == Node.COMMENT_NODE
+	|| (range.startContainer.nodeType == Node.TEXT_NODE
+	&& !range.startContainer.parentNode)) {
 		return "HIERARCHY_REQUEST_ERR";
 	}
 
-	// "If the context object's start node is a Text node, run splitText() on
-	// it with the context object's start offset as its argument, and let
-	// reference node be the result."
+	// "If start node is a Text node, split it with offset context object's
+	// start offset, and let reference node be the result."
 	var referenceNode;
 	if (range.startContainer.nodeType == Node.TEXT_NODE) {
 		// We aren't testing how ranges vary under mutations, and browsers vary
@@ -833,13 +848,9 @@ function myInsertNode(range, newNode) {
 		}
 		range.setStart(start[0], start[1]);
 		range.setEnd(end[0], end[1]);
-	// "Otherwise, if the context object's start node is a Comment, let
-	// reference node be the context object's start node."
-	} else if (range.startContainer.nodeType == Node.COMMENT_NODE) {
-		referenceNode = range.startContainer;
-	// "Otherwise, let reference node be the child of the context object's
-	// start node with index equal to the context object's start offset, or
-	// null if there is no such child."
+
+	// "Otherwise, let reference node be the child of start node whose index is
+	// start offset, or null if there is no such child."
 	} else {
 		referenceNode = range.startContainer.childNodes[range.startOffset];
 		if (typeof referenceNode == "undefined") {
@@ -847,22 +858,36 @@ function myInsertNode(range, newNode) {
 		}
 	}
 
-	// "If reference node is null, let parent node be the context object's
-	// start node."
-	var parentNode;
+	// "If reference node is null, let parent be start node."
+	var parent_;
 	if (!referenceNode) {
-		parentNode = range.startContainer;
-	// "Otherwise, let parent node be the parent of reference node."
+		parent_ = range.startContainer;
+
+	// "Otherwise, let parent be the parent of reference node."
 	} else {
-		parentNode = referenceNode.parentNode;
+		parent_ = referenceNode.parentNode;
 	}
 
-	// "Call insertBefore(newNode, reference node) on parent node, re-raising
-	// any exceptions that call raised."
+	// "Let new offset be the index of reference node, or parent's length if
+	// reference node is null."
+	var newOffset = referenceNode ? indexOf(referenceNode) : nodeLength(parent_);
+
+	// "Add node's length to new offset, if node is a DocumentFragment.
+	// Otherwise add one to new offset."
+	newOffset += node.nodeType == Node.DOCUMENT_FRAGMENT_NODE
+		? nodeLength(node)
+		: 1;
+
+	// "Pre-insert node into parent before reference node."
 	try {
-		parentNode.insertBefore(newNode, referenceNode);
+		parent_.insertBefore(node, referenceNode);
 	} catch (e) {
 		return getDomExceptionName(e);
+	}
+
+	// "If start and end are the same, set end to (parent, new offset)."
+	if (range.collapsed) {
+		range.setEnd(parent_, newOffset);
 	}
 }
 

@@ -66,6 +66,9 @@ spaces.forEach(function(s) {
   application.map(function(t) { return s + "application/" + t; }).forEach(testType);
 })
 
+application.map(function(t) { return "application/" + t + "\0"; }).forEach(testTypeIgnored);
+application.map(function(t) { return "application/" + t + "\0foo"; }).forEach(testTypeIgnored);
+
 text.map(function(t) { return "text/" + t; }).forEach(testType);
 text.map(function(t) { return ("text/" + t).toUpperCase(); }).forEach(testType);
 
@@ -73,6 +76,9 @@ spaces.forEach(function(s) {
   text.map(function(t) { return "text/" + t + s; }).forEach(testType);
   text.map(function(t) { return s + "text/" + t; }).forEach(testType);
 })
+
+text.map(function(t) { return "text/" + t + "\0"; }).forEach(testTypeIgnored);
+text.map(function(t) { return "text/" + t + "\0foo"; }).forEach(testTypeIgnored);
 
 // Language attribute
 
@@ -86,4 +92,7 @@ text.map(function(t) { return t + " "; }).forEach(testLanguageIgnored);
 text.map(function(t) { return " " + t; }).forEach(testLanguageIgnored);
 text.map(function(t) { return t + "xyz"; }).forEach(testLanguageIgnored);
 text.map(function(t) { return "xyz" + t; }).forEach(testLanguageIgnored);
+
+text.map(function(t) { return t + "\0"; }).forEach(testLanguageIgnored);
+text.map(function(t) { return t + "\0foo"; }).forEach(testLanguageIgnored);
 </script>

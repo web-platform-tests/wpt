@@ -4,20 +4,13 @@
   <title>Media Queries Self-Contained Test Suite</title>
   <script type="text/javascript" src="http://w3c-test.org/resources/testharness.js"></script>
   <script type="text/javascript" src="http://w3c-test.org/resources/testharnessreport.js"></script>
-  <script type="text/javascript" src="packed.js"></script>
-  <script type="text/javascript" src="SimpleTest.js"></script>
-  <link rel="stylesheet" type="text/css" href="test.css" />
 </head>
 <body onload="run()">
 <div id=log></div>
 <iframe id="subdoc" src="media_queries_iframe.html"></iframe>
-<div id="content" style="display: none">
-  
-</div>
-<pre id="test">
-<script class="testbody" type="text/javascript">
+<div id="content" style="display: none"></div>
 
-SimpleTest.waitForExplicitFinish();
+<script type="text/javascript">
 setup({ "explicit_done": true });
 
 function run() {
@@ -459,13 +452,10 @@ test(function() {
   should_not_apply("not all and (bogus)")
   should_not_apply("only all and (bogus)")
 
-  SimpleTest.finish();
   done();
 });
 }
 
 </script>
-</pre>
 </body>
 </html>
-

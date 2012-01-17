@@ -8,6 +8,8 @@
 
 // TODO: Figure out more places where defaultView is or is not guaranteed to be
 // null, and test whether getSelection() is null.
+//
+// TODO: Figure out a good way to test display: none iframes.
 
 test(function() {
 	// Sanity checks like this are to flag known browser bugs with clearer
@@ -32,6 +34,8 @@ test(function() {
 	assert_not_equals(document.defaultView, null,
 		"Sanity check: document.defaultView must not be null");
 
+	assert_equals(typeof document.getSelection(), "object",
+		"document.getSelection() must be an object");
 	assert_true(document.getSelection() instanceof Selection);
 }, "document.getSelection() instanceof Selection");
 
@@ -55,6 +59,8 @@ test(function() {
 test(function() {
 	assert_equals(window.getSelection().rangeCount, 0,
 		"window.getSelection().rangeCount must initially be 0");
+	assert_equals(typeof document.getSelection(), "object",
+		"Sanity check: document.getSelection() must be an object");
 	assert_equals(document.getSelection().rangeCount, 0,
 		"document.getSelection().rangeCount must initially be 0");
 }, "Selection's range must initially be null");
@@ -63,9 +69,8 @@ test(function() {
 	var doc = document.implementation.createHTMLDocument("");
 	assert_equals(doc.defaultView, null,
 		"Sanity check: defaultView of created HTML document must be null");
-	assert_equals(doc.getSelection(), null,
-		"getSelection() on HTML document with null defaultView must be null");
-}, "HTML document with no browsing context");
+	assert_equals(doc.getSelection(), null);
+}, "getSelection() on HTML document with null defaultView must be null");
 
 test(function() {
 	var xmlDoc = document.implementation.createDocument(null, "", null);
@@ -74,34 +79,82 @@ test(function() {
 
 	assert_equals(xmlDoc.defaultView, null,
 		"Sanity check: defaultView of created XML document must be null");
-	assert_equals(xmlDoc.getSelection(), null,
-		"getSelection() on XML document with null defaultView must be null");
-}, "XML document with no browsing context");
+	assert_equals(xmlDoc.getSelection(), null);
+}, "getSelection() on XML document with null defaultView must be null");
 
+
+// Run a bunch of iframe tests, once immediately after the iframe is appended
+// to the document and once onload.  This makes a difference, because browsers
+// differ (at the time of this writing) in whether they load about:blank in
+// iframes synchronously or not.  Per the HTML spec, there must be a browsing
+// context associated with the iframe as soon as it's appended to the document,
+// so there should be a selection too.
 var iframe = document.createElement("iframe");
-document.body.appendChild(iframe);
-test(function() {
+add_completion_callback(function() {
+	document.body.removeChild(iframe);
+});
+
+var testDescs = [];
+var testFuncs = [];
+testDescs.push("window.getSelection() instanceof Selection in an iframe");
+testFuncs.push(function() {
 	assert_true("Selection" in iframe.contentWindow,
 		"Sanity check: window must have Selection property");
+	assert_not_equals(iframe.contentWindow.document.defaultView, null,
+		"Sanity check: document.defaultView must not be null");
+	assert_not_equals(iframe.contentWindow.getSelection(), null,
+		"window.getSelection() must not be null");
+	assert_true(iframe.contentWindow.getSelection() instanceof iframe.contentWindow.Selection);
+});
 
-	assert_true(iframe.contentWindow.getSelection() instanceof iframe.contentWindow.Selection,
-		"window.getSelection() instanceof Selection");
+testDescs.push("document.getSelection() instanceof Selection in an iframe");
+testFuncs.push(function() {
+	assert_true("Selection" in iframe.contentWindow,
+		"Sanity check: window must have Selection property");
 	assert_not_equals(iframe.contentDocument.defaultView, null,
 		"Sanity check: document.defaultView must not be null");
-	assert_true(iframe.contentDocument.getSelection() instanceof iframe.contentWindow.Selection,
-		"document.getSelection() instanceof Selection");
-	assert_equals(iframe.contentWindow.getSelection(), iframe.contentDocument.getSelection(),
-		"window.getSelection() === document.getSelection()");
-	assert_not_equals(iframe.contentWindow.getSelection(), getSelection(),
-		"getSelection() inside and outside iframe must return different objects");
-}, "In an iframe");
+	assert_not_equals(iframe.contentDocument.getSelection(), null,
+		"document.getSelection() must not be null");
+	assert_equals(typeof iframe.contentDocument.getSelection(), "object",
+		"document.getSelection() must be an object");
+	assert_true(iframe.contentDocument.getSelection() instanceof iframe.contentWindow.Selection);
+});
 
-test(function() {
+testDescs.push("window.getSelection() === document.getSelection() in an iframe");
+testFuncs.push(function() {
+	assert_not_equals(iframe.contentDocument.defaultView, null,
+		"Sanity check: document.defaultView must not be null");
+	assert_equals(iframe.contentWindow.getSelection(), iframe.contentDocument.getSelection());
+});
+
+testDescs.push("getSelection() inside and outside iframe must return different objects");
+testFuncs.push(function() {
+	assert_not_equals(iframe.contentWindow.getSelection(), getSelection());
+});
+
+testDescs.push("getSelection() on HTML document with null defaultView must be null inside an iframe");
+testFuncs.push(function() {
 	var doc = iframe.contentDocument.implementation.createHTMLDocument("");
 	assert_equals(doc.defaultView, null,
 		"Sanity check: defaultView of created HTML document must be null");
-	assert_equals(doc.getSelection(), null,
-		"getSelection() on HTML document with null defaultView must be null");
-}, "HTML document with no browsing context inside an iframe");
-document.body.removeChild(iframe);
+	assert_equals(doc.getSelection(), null);
+});
+
+var asyncTests = [];
+testDescs.forEach(function(desc) {
+	asyncTests.push(async_test(desc + " onload"));
+});
+
+iframe.onload = function() {
+	asyncTests.forEach(function(t, i) {
+		t.step(testFuncs[i]);
+		t.done();
+	});
+};
+
+document.body.appendChild(iframe);
+
+testDescs.forEach(function(desc, i) {
+	test(testFuncs[i], desc + " immediately after appendChild");
+});
 </script>

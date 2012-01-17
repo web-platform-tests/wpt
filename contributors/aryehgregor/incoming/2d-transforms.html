@@ -96,33 +96,43 @@ body > div > div { padding-left: 10px; width: 105px }
 
 // Test case-sensitivity and other parsing issues
 [
-	// "none" and parse errors
+	// "none" and parse errors; we prepend scale(2) for parse errors to ensure
+	// that any resulting identity matrix is really due to a parse error and
+	// not just the function happening to evaluate to the identity matrix
 	[[// "none"
 	  "none", "NONE", "nOnE",
 	  // Gibberish
-	  "quasit", "QUASIT", "qUaSiT",
+	  "scale(2) quasit", "scale(2) QUASIT", "scale(2) qUaSiT",
 	  // No arguments
-	  "matrix()", "translate()", "translateX()", "translateY()", "scale()",
-	  "scaleX()", "scaleY()", "rotate()", "skewX()", "skewY()",
+	  "scale(2) matrix()", "scale(2) translate()", "scale(2) translateX()",
+	  "scale(2) translateY()", "scale(2) scale()", "scale(2) scaleX()",
+	  "scale(2) scaleY()", "scale(2) rotate()", "scale(2) skewX()",
+	  "scale(2) skewY()",
 	  // Too few arguments
-	  "matrix(1)", "matrix(1,2)", "matrix(1,2,3)", "matrix(1,2,3,4)",
-	  "matrix(1,2,3,4,5)",
+	  "scale(2) matrix(1)", "scale(2) matrix(1,2)", "scale(2) matrix(1,2,3)",
+	  "scale(2) matrix(1,2,3,4)", "scale(2) matrix(1,2,3,4,5)",
 	  // Too many arguments
-	  "matrix(1,2,3,4,5,6,7)", "translateX(0, 0)", "translateY(0, 0)",
-	  "scaleX(1, 1)", "scaleY(1, 1)", "rotate(90deg, 90deg)",
-	  "rotate(1, 90deg)", "rotate(90deg, 1)", "rotate(1, 1, 90deg)",
-	  "rotate(90deg, 1, 1)", "rotate(90deg, 1, 1, 1)", "skewX(90deg, 90deg)",
-	  "skewY(90deg, 90deg)",
-	  // <angle> doesn't allow "0" with no unit
-	  "rotate(0)", "skewX(0)", "skewY(0)",
+	  "scale(2) matrix(1,2,3,4,5,6,7)", "scale(2) translateX(0,0)",
+	  "scale(2) translateY(0,0)", "scale(2) scaleX(1,1)",
+	  "scale(2) scaleY(1,1)", "scale(2) rotate(90deg,90deg)",
+	  "scale(2) rotate(1,90deg)", "scale(2) rotate(90deg,1)",
+	  "scale(2) rotate(1,1,90deg)", "scale(2) rotate(90deg,1,1)",
+	  "scale(2) rotate(90deg,1,1,1)", "scale(2) skewX(90deg,90deg)",
+	  "scale(2) skewY(90deg,90deg)",
+	  // FIXME: <angle> doesn't allow "0" with no unit, except really it does
+	  // https://www.w3.org/Bugs/Public/show_bug.cgi?id=15598
+	  //"scale(2) rotate(0)", "scale(2) skewX(0)", "scale(2) skewY(0)",
 	  // The spec says <number> for all entries, so pixels are not allowed in
 	  // the last two entries
-	  "matrix(1,2,3,4,5px,6)", "matrix(1,2,3,4,5,6px)", "matrix(1,2,3,4,5px,6px)",
+	  "scale(2) matrix(1,2,3,4,5px,6)", "scale(2) matrix(1,2,3,4,5,6px)",
+	  "scale(2) matrix(1,2,3,4,5px,6px)",
 	  // The 3D transform spec requires that the 3D versions of these all have
 	  // "3d" (matrix3d, translate3d, scale3d, rotate3d), so these are all
 	  // parse errors
-	  "matrix(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16)",
-	  "translate(1px, 1px, 1px)", "scale(1, 1, 1)", "rotate(1, 1, 1, 90deg)"]],
+	  "scale(2) matrix(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16)",
+	  "scale(2) translate(1px,1px,1px)", "scale(2) scale(1,1,1)",
+	  "scale(2) rotate(1,1,1,90deg)",
+	]],
 	// Case-sensitivity
 	[["matrix(1,2,3,4,5,6)", "MATRIX(1,2,3,4,5,6)", "mAtRiX(1,2,3,4,5,6)"], 1, 2, 3, 4, 5, 6],
 	[["translate(1px)", "TRANSLATE(1PX)", "tRaNsLaTe(1Px)"], 1, 0, 0, 1, 1, 0],

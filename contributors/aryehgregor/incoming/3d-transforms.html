@@ -70,12 +70,47 @@ body > div > div { padding-left: 10px; width: 105px }
 <script>
 "use strict";
 
-// Test case-sensitivity
+// Test case-sensitivity and other parsing issues
 [
-	// FIXME: The spec doesn't match browsers for serialization of the
-	// transform property when it's unset or "none".
-	// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15471
-	// [["none", "NONE", "nOnE"], 1, 0, 0, 1, 0, 0],
+	// Parse errors; we prepend scale(2) to ensure that any resulting identity
+	// matrix is really due to a parse error and not just the function
+	// happening to evaluate to the identity matrix
+	[[
+	 // No arguments
+	 "scale(2) matrix3d()", "scale(2) translate3d()", "scale(2) translateZ()",
+	 "scale(2) scale3d()", "scale(2) scaleZ()", "scale(2) rotate3d()",
+	 "scale(2) rotateX()", "scale(2) rotateY()", "scale(2) rotateZ()",
+	 "scale(2) skew()", "scale(2) perspective()",
+	 // Too few arguments
+	 "scale(2) matrix3d(1,2,3,4,5,6)",
+	 "scale(2) matrix3d(1,2,3,4,5,6,7,8,9,10,11,12)",
+	 "scale(2) matrix3d(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15)",
+	 "scale(2) translate3d(5px, 5px)", "scale(2) scale3d(2, 2)",
+	 "scale(2) rotate3d(90deg)", "scale(2) rotate3d(1)",
+	 "scale(2) rotate3d(1,0)", "scale(2) rotate3d(1,0,0)",
+	 // Too many arguments
+	 "scale(2) matrix3d(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17)",
+	 "scale(2) translate3d(5px,5px,5px,5px)", "scale(2) translateZ(5px,5px)",
+	 "scale(2) scale3d(2,2,2,2)", "scale(2) scaleZ(2,2)",
+	 "scale(2) rotate3d(1,0,0,0,90deg)",
+	 "scale(2) rotateX(90deg,90deg)", "scale(2) rotateX(1,0,0,90deg)",
+	 "scale(2) rotateY(90deg,90deg)", "scale(2) rotateY(1,0,0,90deg)",
+	 "scale(2) rotateZ(90deg,90deg)", "scale(2) rotateZ(1,0,0,90deg)",
+	 "scale(2) skew(90deg,90deg,90deg)",
+	 // Wrong unit
+	 "scale(2) rotate3d(90deg,1,0,0)", "scale(2) perspective(10deg)",
+	  // FIXME: <angle> doesn't allow "0" with no unit, except really it does
+	  // https://www.w3.org/Bugs/Public/show_bug.cgi?id=15598
+	  //"scale(2) rotate3d(1,0,0,0)", "scale(2) rotateX(0)",
+	  //"scale(2) rotateY(0)", "scale(2) rotateZ(0)", "scale(2) skew(90deg,0)",
+	  //"scale(2) skew(0,90deg)", "scale(2) skew(0,0)",
+	  // The spec says <number> for all entries, so pixels are not allowed in
+	  // any of the entries
+	  "scale(2) matrix3d(1,2,3,4,5,6,7,8,9,10,11,12,1px,14,15,16)",
+	  "scale(2) matrix3d(1,2,3,4,5,6,7,8,9,10,11,12,13,1px,15,16)",
+	  "scale(2) matrix3d(1,2,3,4,5,6,7,8,9,10,11,12,13,14,1px,16)",
+	  "scale(2) matrix3d(1,2,3,4,5,6,7,8,9,10,11,12,1px,1px,1px,16)",
+	]],
 	[["matrix3d(1,2,3,0,4,5,6,0,7,8,9,0,10,11,12,1)",
 	  "MATRIX3D(1,2,3,0,4,5,6,0,7,8,9,0,10,11,12,1)",
 	  "mAtRiX3d(1,2,3,0,4,5,6,0,7,8,9,0,10,11,12,1)"],

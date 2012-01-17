@@ -182,34 +182,30 @@ function testTransform(value, mx) {
  * <https://www.w3.org/Bugs/Public/show_bug.cgi?id=15471>  Thus for now we
  * accept either "matrix(1, 0, 0, 1, 0, 0)" or "none" in this case.
  *
+ * FIXME: We allow px optionally in the last two entries because Gecko adds it
+ * while other engines don't, and the spec is unclear about which behavior is
+ * correct: https://www.w3.org/Bugs/Public/show_bug.cgi?id=15431
+ *
  * If mx has six entries, it's equivalent to a 4x4 matrix with 0's and 1's in
  * the right places.  If it has sixteen entries, the required output format is
  * still matrix() instead of matrix3d() if it's equivalent to a 2D matrix.
  */
 function testTransformParsing(mx) {
-	var noneAllowed = false;
 	if (mx.length == 0) {
-		noneAllowed = true;
-		mx = [1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1];
+		assert_regexp_match(getComputedStyle(div)[prop],
+			/^(none|matrix\(1, 0, 0, 1, 0, 0\))$/,
+			"computed value has unexpected form");
+		return;
 	}
 	if (mx.length == 6) {
 		mx = [mx[0], mx[1], 0, 0,  mx[2], mx[3], 0, 0,  0, 0, 1, 0,  mx[4], mx[5], 0, 1];
 	}
-	// FIXME: We allow px optionally in the last two entries because Gecko
-	// adds it while other engines don't, and the spec is unclear about
-	// which behavior is correct:
-	// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15431
 	var computed = getComputedStyle(div)[prop];
-	if (noneAllowed && computed == "none") {
-		return;
-	}
 	if (is2dMatrix(mx)) {
 		var re = /^matrix\(([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+?)(?:px)?, ([^,]+?)(?:px)?\)$/;
 		assert_regexp_match(computed, re, "computed value has unexpected form for 2D matrix");
 		var msg = ' (actual: "' + computed + '"; '
-			+ 'expected: "matrix(' + [mx[0], mx[1], mx[4], mx[5], mx[12], mx[13]].join(', ') +')"'
-			+ (noneAllowed ? ' or "none"' : '')
-			+ ')';
+			+ 'expected: "matrix(' + [mx[0], mx[1], mx[4], mx[5], mx[12], mx[13]].join(', ') +')")';
 		var match = re.exec(computed);
 		assert_approx_equals(Number(match[1]), mx[0], computedEpsilon,
 			"getComputedStyle matrix component 0" + msg);

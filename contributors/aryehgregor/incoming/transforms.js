@@ -259,7 +259,8 @@ function testTransformedBoundary(transformValue, mx,
 
 	// Don't test singular matrices for now.  IE fails some of them, which
 	// might be due to getBoundingClientRect() instead of transforms.  Only
-	// skipped for 2D matrices, for sanity's sake.
+	// skipped for 2D matrices, for sanity's sake (don't want to compute 4x4
+	// determinants).
 	if (is2dMatrix(mx)
 	&& mx[0]*mx[5] - mx[1]*mx[4] === 0) {
 		return;
@@ -282,10 +283,14 @@ function testTransformedBoundary(transformValue, mx,
 	var originalPoints = [[0, 0], [0, divHeight], [divWidth, 0], [divWidth, divHeight]];
 	var expectedTop, expectedRight, expectedBottom, expectedLeft;
 	for (var i = 0; i < originalPoints.length; i++) {
-		var newX = mx[0]*(originalPoints[i][0]-xOffset) + mx[4]*(originalPoints[i][1]-yOffset)
-			+ mx[12] + xOffset;
-		var newY = mx[1]*(originalPoints[i][0]-xOffset) + mx[5]*(originalPoints[i][1]-yOffset)
-			+ mx[13] + yOffset;
+		// Perspective; hope w isn't 0.  FIXME: Is this precise behavior
+		// defined anywhere?
+		var newW = mx[3]*(originalPoints[i][0]-xOffset) + mx[7]*(originalPoints[i][1]-yOffset)
+			+ mx[15];
+		var newX = (mx[0]*(originalPoints[i][0]-xOffset) + mx[4]*(originalPoints[i][1]-yOffset)
+			+ mx[12])/newW + xOffset;
+		var newY = (mx[1]*(originalPoints[i][0]-xOffset) + mx[5]*(originalPoints[i][1]-yOffset)
+			+ mx[13])/newW + yOffset;
 		if (expectedTop === undefined || newY < expectedTop) {
 			expectedTop = newY;
 		}

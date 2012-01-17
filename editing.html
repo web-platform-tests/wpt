@@ -67,7 +67,7 @@ a code { text-decoration: underline }
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing APIs</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-12-january-2012>Work in Progress &mdash; Last Update 12 January 2012</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-17-january-2012>Work in Progress &mdash; Last Update 17 January 2012</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;<a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a>&gt;
@@ -724,15 +724,21 @@ I changed it back.
 <p>See <a href="https://www.w3.org/Bugs/Public/show_bug.cgi?id=15470">bug
 15470</a>.  IE9, Firefox 12.0a1, Chrome 17 dev, and Opera Next 12.00 alpha all
 make the range initially null.
+
+<p>For the stuff about <code title="">defaultView</code>, see the comments on
+<code title=dom-Document-getSelection><a href=#dom-document-getselection>document.getSelection()</a></code>.
 </div>
 
-<p>Every <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document title=concept-document>document</a> has a unique <code><a href=#selection>Selection</a></code> object associated
-with it.  <code><a href=#selection>Selection</a></code> objects are known as <dfn id=concept-selection title=concept-selection>selections</dfn>.  Each <a href=#concept-selection title=concept-selection>selection</a> is associated
-with a single <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>, which may be null and is initially null.  This one
-<a href=#concept-selection title=concept-selection>selection</a> must be shared by all the content of the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document title=concept-document>document</a> (though not
-by nested <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document title=concept-document>documents</a>), including any editing hosts in the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document title=concept-document>document</a>.
-<a href=#editing-host title="editing host">Editing hosts</a> that are not inside a
-<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document title=concept-document>document</a> cannot have a <a href=#concept-selection title=concept-selection>selection</a>.
+<p>Every <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document title=concept-document>document</a> with a non-null
+<code class=external data-anolis-spec=html title=dom-Document-defaultView><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#dom-document-defaultview>defaultView</a></code>
+has a unique <code><a href=#selection>Selection</a></code> object associated with it.
+<code><a href=#selection>Selection</a></code> objects are known as
+<dfn id=concept-selection title=concept-selection>selections</dfn>.  Each <a href=#concept-selection title=concept-selection>selection</a> is
+associated with a single <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>, which may be null and is initially null.
+This one <a href=#concept-selection title=concept-selection>selection</a> must be shared by all the content of the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document title=concept-document>document</a>
+(though not by nested <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document title=concept-document>documents</a>), including any editing hosts in the
+<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document title=concept-document>document</a>.  <a href=#editing-host title="editing host">Editing hosts</a> that are not
+inside a <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document title=concept-document>document</a> cannot have a <a href=#concept-selection title=concept-selection>selection</a>.
 
 <p class=comments>This is a requirement of the HTML spec.  IE9 and Opera Next
 12.00 alpha seem to follow it, while Firefox 12.0a1 and Chrome 17 dev seem not
@@ -1178,22 +1184,30 @@ interfaces defined in this specification.
   <a href=#selection>Selection</a> <a href=#dom-document-getselection title=dom-Document-getSelection>getSelection</a>();
 };</pre>
 
-<p class=comments>Originally Gecko returned the stringification here (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=636512">bug 636512</a> fixed
-that).  Now, what happens if you create a Document object with no defaultView
+<div class=comments>
+<p>Originally Gecko returned the stringification here (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=636512">bug 636512</a> fixed
+that).
+
+<p>Now, what happens if you create a Document object with no defaultView
 (say via <code title="">document.implementation.createHTMLDocument("")</code>) and call
 <code title="">getSelection()</code> on it?  IE9 seems to return a different Selection
 object.  Firefox 12.0a1 and Opera Next 12.00 alpha return the same object as
-for the current window.  Chrome 17 dev returns null.  We go with IE9 for now,
-because it's the simplest to spec and understand -- we don't have to
-distinguish between different kinds of documents.  But maybe this isn't
-desired.
+for the current window.  Chrome 17 dev returns null.  See
+<a href=http://lists.w3.org/Archives/Public/public-webapps/2012JanMar/0159.html>discussion</a>.
+There's no meaningful selection associated with such a document, so we follow
+WebKit and require returning null.
+
+<p>This leaves open the question of which documents should actually return
+null.  We somewhat cheat by deferring the question to the definition of
+<code title="">defaultView</code>, even though at the time of this writing that's
+<a href="https://www.w3.org/Bugs/Public/show_bug.cgi?id=15548">underdefined and
+not very interoperable</a>.
+</div>
 
 <p>The <dfn id=dom-document-getselection title=dom-Document-getSelection><code>getSelection()</code></dfn>
 method on the <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document>Document</a></code> interface must return
-the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a href=#concept-selection title=concept-selection>selection</a>.
-
-<p class=XXX>Browsers other than IE don't actually give every document a
-selection.  Consider changing this to match Gecko or WebKit.
+null if the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <code class=external data-anolis-spec=html title=dom-Document-defaultView><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#dom-document-defaultview>defaultView</a></code> is null, and the
+<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a href=#concept-selection title=concept-selection>selection</a> otherwise.
 
 <pre class=idl>partial interface <a class=external data-anolis-spec=html href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#window>Window</a> {
   <a href=#selection>Selection</a> <a href=#dom-window-getselection title=dom-Window-getSelection>getSelection</a>();
@@ -1201,7 +1215,9 @@ selection.  Consider changing this to match Gecko or WebKit.
 
 <p>The <dfn id=dom-window-getselection title=dom-Window-getSelection><code>getSelection()</code></dfn>
 method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#window>Window</a></code> interface must return
-the the <a href=#concept-selection title=concept-selection>selection</a> of the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document title=concept-document>document</a> returned by the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s
+the same thing as calling
+<code title=dom-Document-getSelection><a href=#dom-document-getselection>getSelection()</a></code> on the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document title=concept-document>document</a>
+returned by the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s
 <code class=external data-anolis-spec=html title=dom-document-0><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#dom-document-0>document</a></code> property.
 
 

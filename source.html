@@ -662,16 +662,21 @@ I changed it back.
 <p>See <a href=https://www.w3.org/Bugs/Public/show_bug.cgi?id=15470>bug
 15470</a>.  IE9, Firefox 12.0a1, Chrome 17 dev, and Opera Next 12.00 alpha all
 make the range initially null.
+
+<p>For the stuff about {{code|defaultView}}, see the comments on
+<code title=dom-Document-getSelection>document.getSelection()</code>.
 </div>
 
-<p>Every [[document]] has a unique <code>Selection</code> object associated
-with it.  <code>Selection</code> objects are known as <dfn
-title=concept-selection>selections</dfn>.  Each [[selection]] is associated
-with a single [[range]], which may be null and is initially null.  This one
-[[selection]] must be shared by all the content of the [[document]] (though not
-by nested [[documents]]), including any editing hosts in the [[document]].
-<span title="editing host">Editing hosts</span> that are not inside a
-[[document]] cannot have a [[selection]].
+<p>Every [[document]] with a non-null
+<code data-anolis-spec=html title=dom-Document-defaultView>defaultView</code>
+has a unique <code>Selection</code> object associated with it.
+<code>Selection</code> objects are known as
+<dfn title=concept-selection>selections</dfn>.  Each [[selection]] is
+associated with a single [[range]], which may be null and is initially null.
+This one [[selection]] must be shared by all the content of the [[document]]
+(though not by nested [[documents]]), including any editing hosts in the
+[[document]].  <span title="editing host">Editing hosts</span> that are not
+inside a [[document]] cannot have a [[selection]].
 
 <p class=comments>This is a requirement of the HTML spec.  IE9 and Opera Next
 12.00 alpha seem to follow it, while Firefox 12.0a1 and Chrome 17 dev seem not
@@ -1133,23 +1138,32 @@ interfaces defined in this specification.
   <span>Selection</span> <span title=dom-Document-getSelection>getSelection</span>();
 };</pre>
 
-<p class=comments>Originally Gecko returned the stringification here (<a
+<div class=comments>
+<p>Originally Gecko returned the stringification here (<a
 href=https://bugzilla.mozilla.org/show_bug.cgi?id=636512>bug 636512</a> fixed
-that).  Now, what happens if you create a Document object with no defaultView
+that).
+
+<p>Now, what happens if you create a Document object with no defaultView
 (say via {{code|document.implementation.createHTMLDocument("")}}) and call
 {{code|getSelection()}} on it?  IE9 seems to return a different Selection
 object.  Firefox 12.0a1 and Opera Next 12.00 alpha return the same object as
-for the current window.  Chrome 17 dev returns null.  We go with IE9 for now,
-because it's the simplest to spec and understand -- we don't have to
-distinguish between different kinds of documents.  But maybe this isn't
-desired.
+for the current window.  Chrome 17 dev returns null.  See
+<a href=http://lists.w3.org/Archives/Public/public-webapps/2012JanMar/0159.html>discussion</a>.
+There's no meaningful selection associated with such a document, so we follow
+WebKit and require returning null.
+
+<p>This leaves open the question of which documents should actually return
+null.  We somewhat cheat by deferring the question to the definition of
+{{code|defaultView}}, even though at the time of this writing that's
+<a href=https://www.w3.org/Bugs/Public/show_bug.cgi?id=15548>underdefined and
+not very interoperable</a>.
+</div>
 
 <p>The <dfn title=dom-Document-getSelection><code>getSelection()</code></dfn>
 method on the <code data-anolis-spec=dom>Document</code> interface must return
-the [[contextobject]]'s [[selection]].
-
-<p class=XXX>Browsers other than IE don't actually give every document a
-selection.  Consider changing this to match Gecko or WebKit.
+null if the [[contextobject]]'s <code data-anolis-spec=html
+title=dom-Document-defaultView>defaultView</code> is null, and the
+[[contextobject]]'s [[selection]] otherwise.
 
 <pre class=idl>partial interface <span data-anolis-spec=html>Window</span> {
   <span>Selection</span> <span title=dom-Window-getSelection>getSelection</span>();
@@ -1157,7 +1171,9 @@ selection.  Consider changing this to match Gecko or WebKit.
 
 <p>The <dfn title=dom-Window-getSelection><code>getSelection()</code></dfn>
 method on the <code data-anolis-spec=html>Window</code> interface must return
-the the [[selection]] of the [[document]] returned by the [[contextobject]]'s
+the same thing as calling
+<code title=dom-Document-getSelection>getSelection()</code> on the [[document]]
+returned by the [[contextobject]]'s
 <code data-anolis-spec=html title=dom-document-0>document</code> property.
 <!-- @} -->
 

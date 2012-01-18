@@ -305,6 +305,12 @@ transforms.forEach(function(trans1) {
 });
 })();
 
+// Try to trigger rounding errors (although this is not precisely defined by
+// the spec)
+testTransform("translateX(-1000px) scaleX(1000000) "
+	+ "translateX(0.001px) scaleX(0.000001)",
+	[1, 0, 0, 1, 0, 0]);
+
 
 // Test transform-origin with one argument
 [

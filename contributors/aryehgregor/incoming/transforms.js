@@ -501,16 +501,23 @@ function testTransformOrigin(value, expectedX, expectedY, expectedZ) {
 	testTransformOrigin.counter++;
 	div.removeAttribute("style");
 
-	test(function() {
-		div.style[prop] = transformValue;
-		div.style[prop + "Origin"] = value;
-		testTransformOriginParsing(expectedX, expectedY, expectedZ);
-	}, "Computed value for transform-origin with transform: " + transformValue + "; transform-origin: " + value + " set via CSSOM");
-	test(function() {
-		div.setAttribute("style", hyphenatedProp + ": " + transformValue
-			+ "; " + hyphenatedProp + "-origin:" + value);
-		testTransformOriginParsing(expectedX, expectedY, expectedZ);
-	}, "Computed value for transform-origin with transform: " + transformValue + "; transform-origin: " + value + " set via setAttribute()");
+	if (getUseCssom()) {
+		test(function() {
+			div.style[prop] = transformValue;
+			div.style[prop + "Origin"] = value;
+			testTransformOriginParsing(expectedX, expectedY, expectedZ);
+		}, "Computed value for transform-origin "
+		+ "with transform: " + transformValue + "; "
+		+ "transform-origin: " + value + " set via CSSOM");
+	} else {
+		test(function() {
+			div.setAttribute("style", hyphenatedProp + ": " + transformValue
+				+ "; " + hyphenatedProp + "-origin:" + value);
+			testTransformOriginParsing(expectedX, expectedY, expectedZ);
+		}, "Computed value for transform-origin "
+		+ "with transform: " + transformValue + "; "
+		+ "transform-origin: " + value + " set via setAttribute()");
+	}
 
 	// Test with a 45-degree rotation, since the effect of changing the origin
 	// will be easy to understand.  In the 3D case, rotate around an

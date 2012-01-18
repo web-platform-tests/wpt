@@ -131,6 +131,25 @@ function mxmul23(A, B) {
 }
 
 /**
+ * Multiplies two 4x4 matrices.
+ */
+function mxmul44(A, B) {
+	A = [A.slice(0, 4), A.slice(4, 8), A.slice(8, 12), A.slice(12, 16)];
+	B = [B.slice(0, 4), B.slice(4, 8), B.slice(8, 12), B.slice(12, 16)];
+	var C = [];
+	for (var i = 0; i < 4; i++) {
+		C.push([]);
+		for (var j = 0; j < 4; j++) {
+			C[i].push(0);
+			for (var k = 0; k < 4; k++) {
+				C[i][j] += B[i][k]*A[k][j];
+			}
+		}
+	}
+	return C[0].concat(C[1]).concat(C[2]).concat(C[3]);
+}
+
+/**
  * Given a sixteen-element numeric array mx in column-major order, returns true
  * if it's equivalent to a six-element array (a 2D matrix), false otherwise.
  */

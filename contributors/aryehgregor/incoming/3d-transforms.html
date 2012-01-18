@@ -100,6 +100,10 @@ body > div > div { padding-left: 10px; width: 105px }
 	 // Wrong unit
 	 "scale(2) rotate3d(90deg,1,0,0)", "scale(2) perspective(10deg)",
 	 "scale(2) translateZ(10%)", "scale(2) translate(10px,10px,10%)",
+	 "scale(2) perspective(10%)",
+	 // perspective() with nonpositive lengths is not allowed
+	 "scale(2) perspective(-1px)", "scale(2) perspective(-100em)",
+	 "scale(2) perspective(0pt)", "scale(2) perspective(0)",
 	 // FIXME: <angle> doesn't allow "0" with no unit, except really it does
 	 // https://www.w3.org/Bugs/Public/show_bug.cgi?id=15598
 	 //"scale(2) rotate3d(1,0,0,0)", "scale(2) rotateX(0)",

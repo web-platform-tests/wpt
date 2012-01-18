@@ -271,32 +271,21 @@ scales.forEach(function(sz) {
 
 // Test rotate3d(), rotateX(), rotateY(), rotateZ()
 rotateAngles.forEach(function(angle) {
-	// FIXME: I've followed what Gecko/WebKit actually do, not what the spec
-	// says.  https://www.w3.org/Bugs/Public/show_bug.cgi?id=15610
 	// FIXME: rotateX/Y/Z are not defined precisely enough that this is
 	// obviously correct from the spec.  I've followed what Gecko/WebKit do in
 	// interpreting it.  https://www.w3.org/Bugs/Public/show_bug.cgi?id=15612
 	var rads = convertToRad(angle);
 	testTransform(
 		"rotateX(" + angle + ")",
-		// Copied from spec and simplified
-		[1, 0,               0,              0,
-		 0, Math.cos(rads),  Math.sin(rads), 0,
-		 0, -Math.sin(rads), Math.cos(rads), 0,
-		 0, 0,               0,              1]
+		getRotationMatrix(1, 0, 0, angle)
 	);
 	testTransform(
 		"rotateY(" + angle + ")",
-		// Copied from spec and simplified
-		[Math.cos(rads), 0, -Math.sin(rads), 0,
-		 0,              1, 0,               0,
-		 Math.sin(rads), 0, Math.cos(rads),  0,
-		 0,              0, 0,               1]
+		getRotationMatrix(0, 1, 0, angle)
 	);
 	testTransform(
 		"rotateZ(" + angle + ")",
-		[Math.cos(rads), Math.sin(rads), -Math.sin(rads), Math.cos(rads),
-		0, 0]
+		getRotationMatrix(0, 0, 1, angle)
 	);
 
 	var vectors = [
@@ -307,29 +296,9 @@ rotateAngles.forEach(function(angle) {
 		[3, -17.2, 0.14],
 	];
 	vectors.forEach(function(vec) {
-		var len = Math.sqrt(vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2]);
-		var x = vec[0]/len;
-		var y = vec[1]/len;
-		var z = vec[2]/len;
 		testTransform(
 			"rotate3d(" + vec.join(", ") + ", " + angle + ")",
-			// Copied from spec
-			[1 + (1-Math.cos(rads))*(x*x-1),
-			z*Math.sin(rads)+(1-Math.cos(rads))*x*y,
-			-y*Math.sin(rads)+(1-Math.cos(rads))*x*z,
-			0,
-
-			-z*Math.sin(rads)+(1-Math.cos(rads))*x*y,
-			1 + (1-Math.cos(rads))*(y*y-1),
-			x*Math.sin(rads)+(1-Math.cos(rads))*y*z,
-			0,
-
-			y*Math.sin(rads)+(1-Math.cos(rads))*x*z,
-			-x*Math.sin(rads)+(1-Math.cos(rads))*y*z,
-			1 + (1-Math.cos(rads))*(z*z-1),
-			0,
-
-			0, 0, 0, 1]
+			getRotationMatrix(vec[0], vec[1], vec[2], angle)
 		);
 	});
 });
@@ -395,11 +364,8 @@ var transforms = [
 	 0, -1, 0, 0,
 	 0, 0, 6, 0,
 	 0, 0, 0, 1],
-	["rotate3d(0, 0.6, 0.8, 90deg)",
-	 0,    0.8,  -0.6, 0,
-	 -0.8, 0.36, 0.48, 0,
-	 0.6,  0.48, 0.64, 0,
-	 0,    0,    0,    1],
+	["rotate3d(0, 0.6, 0.8, 90deg)"]
+	 .concat(getRotationMatrix(0, 0.6, 0.8, "90deg")),
 	["perspective(200px)",
 	 1, 0, 0, 0,
 	 0, 1, 0, 0,

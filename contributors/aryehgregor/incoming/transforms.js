@@ -187,6 +187,38 @@ function getUseCssom() {
 }
 
 /**
+ * Returns the rotation matrix used for rotate3d(x, y, z, angle).  FIXME: I've
+ * followed what Gecko/WebKit actually do, not what the spec says.
+ * https://www.w3.org/Bugs/Public/show_bug.cgi?id=15610
+ */
+function getRotationMatrix(x, y, z, angle) {
+	var rads = convertToRad(angle);
+	var len = Math.sqrt(x*x + y*y + z*z);
+	x /= len;
+	y /= len;
+	z /= len;
+	var ret =
+		[1 + (1-Math.cos(rads))*(x*x-1),
+		z*Math.sin(rads)+(1-Math.cos(rads))*x*y,
+		-y*Math.sin(rads)+(1-Math.cos(rads))*x*z,
+		0,
+
+		-z*Math.sin(rads)+(1-Math.cos(rads))*x*y,
+		1 + (1-Math.cos(rads))*(y*y-1),
+		x*Math.sin(rads)+(1-Math.cos(rads))*y*z,
+		0,
+
+		y*Math.sin(rads)+(1-Math.cos(rads))*x*z,
+		-x*Math.sin(rads)+(1-Math.cos(rads))*y*z,
+		1 + (1-Math.cos(rads))*(z*z-1),
+		0,
+
+		0, 0, 0, 1];
+	return ret;
+}
+
+
+/**
  * Tests that style="transform: value" results in transformation by the matrix
  * mx, which may have either six or sixteen entries.  Checks both the computed
  * value and bounding box.

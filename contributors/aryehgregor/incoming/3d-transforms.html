@@ -354,6 +354,26 @@ skewAngles.forEach(function(angle1) {
 	});
 });
 
+// Test perspective()
+//
+// FIXME: The spec has a bug in its definition of perspective().
+// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15538
+lengths
+.concat("2000px", "1000px", "200px")
+.forEach(function(length) {
+	var pixels = convertToPx(length);
+	if (pixels <= 0) {
+		return;
+	}
+	testTransform(
+		"perspective(" + length + ")",
+		[1, 0, 0, 0,
+		 0, 1, 0, 0,
+		 0, 0, 1, -1/pixels,
+		 0, 0, 0, 1]
+	);
+});
+
 /*
 // Test multiple transformations
 (function(){

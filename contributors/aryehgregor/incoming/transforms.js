@@ -34,11 +34,18 @@ var hyphenatedProp = {
 	webkitTransform: "-webkit-transform",
 	OTransform: "-o-transform",
 }[prop];
-var percentagesAndLengths = [
+
+var lengths = [
 	".0",
 	"-53.7px", "-1px", "0.0px", "0.12px", "1px", "53.7px",
-	"-50%", "0%", "0.12%",
 	"1em", "1ex", "1in", "1cm", "1mm", "1pt", "1pc"];
+var percentagesAndLengths = lengths.concat("-50%", "0%", "0.12%");
+var rotateAngles = [
+	"-7deg", "0deg", "22.5deg", "45deg", "86.451deg", "90deg", "180deg",
+	"270deg", "452deg",
+	"-1rad", "0rad", "1rad", "6.28rad",
+	"0.721turn", "256grad"];
+
 var emPixels = parseFloat(getComputedStyle(div).fontSize);
 div.style.fontSize = "1ex";
 var exPixels = parseFloat(getComputedStyle(div).fontSize);

@@ -251,12 +251,7 @@ scales.forEach(function(sx) {
 })();
 
 // Test rotate()
-[
-	"-7deg", "0deg", "22.5deg", "45deg", "86.451deg", "90deg", "180deg",
-	"270deg", "452deg",
-	"-1rad", "0rad", "1rad", "6.28rad",
-	"0.721turn", "256grad",
-].forEach(function(angle) {
+rotateAngles.forEach(function(angle) {
 	var rads = convertToRad(angle);
 	testTransform(
 		"rotate(" + angle + ")",

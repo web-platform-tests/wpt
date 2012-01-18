@@ -99,17 +99,18 @@ body > div > div { padding-left: 10px; width: 105px }
 	 "scale(2) skew(90deg,90deg,90deg)",
 	 // Wrong unit
 	 "scale(2) rotate3d(90deg,1,0,0)", "scale(2) perspective(10deg)",
-	  // FIXME: <angle> doesn't allow "0" with no unit, except really it does
-	  // https://www.w3.org/Bugs/Public/show_bug.cgi?id=15598
-	  //"scale(2) rotate3d(1,0,0,0)", "scale(2) rotateX(0)",
-	  //"scale(2) rotateY(0)", "scale(2) rotateZ(0)", "scale(2) skew(90deg,0)",
-	  //"scale(2) skew(0,90deg)", "scale(2) skew(0,0)",
-	  // The spec says <number> for all entries, so pixels are not allowed in
-	  // any of the entries
-	  "scale(2) matrix3d(1,2,3,4,5,6,7,8,9,10,11,12,1px,14,15,16)",
-	  "scale(2) matrix3d(1,2,3,4,5,6,7,8,9,10,11,12,13,1px,15,16)",
-	  "scale(2) matrix3d(1,2,3,4,5,6,7,8,9,10,11,12,13,14,1px,16)",
-	  "scale(2) matrix3d(1,2,3,4,5,6,7,8,9,10,11,12,1px,1px,1px,16)",
+	 "scale(2) translateZ(10%)", "scale(2) translate(10px,10px,10%)",
+	 // FIXME: <angle> doesn't allow "0" with no unit, except really it does
+	 // https://www.w3.org/Bugs/Public/show_bug.cgi?id=15598
+	 //"scale(2) rotate3d(1,0,0,0)", "scale(2) rotateX(0)",
+	 //"scale(2) rotateY(0)", "scale(2) rotateZ(0)", "scale(2) skew(90deg,0)",
+	 //"scale(2) skew(0,90deg)", "scale(2) skew(0,0)",
+	 // The spec says <number> for all entries, so pixels are not allowed in
+	 // any of the entries
+	 "scale(2) matrix3d(1,2,3,4,5,6,7,8,9,10,11,12,1px,14,15,16)",
+	 "scale(2) matrix3d(1,2,3,4,5,6,7,8,9,10,11,12,13,1px,15,16)",
+	 "scale(2) matrix3d(1,2,3,4,5,6,7,8,9,10,11,12,13,14,1px,16)",
+	 "scale(2) matrix3d(1,2,3,4,5,6,7,8,9,10,11,12,1px,1px,1px,16)",
 	]],
 	[["matrix3d(1,2,3,0,4,5,6,0,7,8,9,0,10,11,12,1)",
 	  "MATRIX3D(1,2,3,0,4,5,6,0,7,8,9,0,10,11,12,1)",
@@ -213,73 +214,123 @@ testMatrices.forEach(function(mx) {
 });
 })();
 
-/*
-// Test translate()/translateX()/translateY()
-percentagesAndLengths.forEach(function(tx) {
+// Test translate3d()/translateZ()
+lengths.forEach(function(tz) {
 	testTransform(
-		"translateX(" + tx + ")",
-		[1, 0, 0, 1, convertToPx(tx, divWidth), 0]
-	);
-	// tx is poorly named, since it's used for y here.
-	testTransform(
-		"translateY(" + tx + ")",
-		[1, 0, 0, 1, 0, convertToPx(tx, divHeight)]
-	);
-	testTransform(
-		"translate(" + tx + ")",
-		[1, 0, 0, 1, convertToPx(tx, divWidth), 0]
+		"translateZ(" + tz + ")",
+		[1, 0, 0, 0,
+		 0, 1, 0, 0,
+		 0, 0, 1, 0,
+		 0, 0, convertToPx(tz), 1]
 	);
 
 	percentagesAndLengths.forEach(function(ty) {
-		testTransform(
-			"translate(" + tx + ", " + ty + ")",
-			[1, 0, 0, 1, convertToPx(tx, divWidth), convertToPx(ty, divHeight)]
-		);
+		percentagesAndLengths.forEach(function(tx) {
+			testTransform(
+				"translate3d(" + tx + ", " + ty + ", " + tz + ")",
+				[1, 0, 0, 0,
+				 0, 1, 0, 0,
+				 0, 0, 1, 0,
+				 convertToPx(tx, divWidth),
+				 convertToPx(ty, divHeight),
+				 convertToPx(tz), 1]
+			);
+		});
 	});
 });
 
-// Test scale()/scaleX()/scaleY()
+// Test scale3d()/scaleZ()
 (function(){
-var scales = [-2, -1, -0.12, 0, 0.12, 1, 2];
-scales.forEach(function(sx) {
+var scales = [-2, -0.12, 0, 0.12, 2];
+scales.forEach(function(sz) {
 	testTransform(
-		"scaleX(" + sx + ")",
-		[sx, 0, 0, 1, 0, 0]
-	);
-	// sx is poorly named, since it's used for y here, then for both x and y.
-	testTransform(
-		"scaleY(" + sx + ")",
-		[1, 0, 0, sx, 0, 0]
-	);
-	testTransform(
-		"scale(" + sx + ")",
-		[sx, 0, 0, sx, 0, 0]
+		"scaleZ(" + sz + ")",
+		[1, 0, 0, 0,
+		 0, 1, 0, 0,
+		 0, 0, sz, 0,
+		 0, 0, 0, 1]
 	);
 
 	scales.forEach(function(sy) {
-		testTransform(
-			"scale(" + sx + ", " + sy + ")",
-			[sx, 0, 0, sy, 0, 0]
-		);
+		scales.forEach(function(sx) {
+			testTransform(
+				"scale3d(" + sx + ", " + sy + ", " + sz + ")",
+				[sx, 0, 0, 0,
+				 0, sy, 0, 0,
+				 0, 0, sz, 0,
+				 0, 0, 0, 1]
+			);
+		});
 	});
 });
 })();
 
-// Test rotate()
-[
-	"-7deg", "0deg", "22.5deg", "45deg", "86.451deg", "90deg", "180deg",
-	"270deg", "452deg",
-	"-1rad", "0rad", "1rad", "6.28rad",
-	"0.721turn", "256grad",
-].forEach(function(angle) {
+// Test rotate3d(), rotateX(), rotateY(), rotateZ()
+rotateAngles.forEach(function(angle) {
+	// FIXME: I've followed what Gecko/WebKit actually do, not what the spec
+	// says.  https://www.w3.org/Bugs/Public/show_bug.cgi?id=15610
+	// FIXME: rotateX/Y/Z are not defined precisely enough that this is
+	// obviously correct from the spec.  I've followed what Gecko/WebKit do in
+	// interpreting it.  https://www.w3.org/Bugs/Public/show_bug.cgi?id=15612
 	var rads = convertToRad(angle);
 	testTransform(
-		"rotate(" + angle + ")",
+		"rotateX(" + angle + ")",
+		// Copied from spec and simplified
+		[1, 0,               0,              0,
+		 0, Math.cos(rads),  Math.sin(rads), 0,
+		 0, -Math.sin(rads), Math.cos(rads), 0,
+		 0, 0,               0,              1]
+	);
+	testTransform(
+		"rotateY(" + angle + ")",
+		// Copied from spec and simplified
+		[Math.cos(rads), 0, -Math.sin(rads), 0,
+		 0,              1, 0,               0,
+		 Math.sin(rads), 0, Math.cos(rads),  0,
+		 0,              0, 0,               1]
+	);
+	testTransform(
+		"rotateZ(" + angle + ")",
 		[Math.cos(rads), Math.sin(rads), -Math.sin(rads), Math.cos(rads),
 		0, 0]
 	);
+
+	var vectors = [
+		[1, 0, 0],
+		[0, 1, 0],
+		[0, 0, 1],
+		[1, -1, 0],
+		[3, -17.2, 0.14],
+	];
+	vectors.forEach(function(vec) {
+		var len = Math.sqrt(vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2]);
+		var x = vec[0]/len;
+		var y = vec[1]/len;
+		var z = vec[2]/len;
+		testTransform(
+			"rotate3d(" + vec.join(", ") + ", " + angle + ")",
+			// Copied from spec
+			[1 + (1-Math.cos(rads))*(x*x-1),
+			z*Math.sin(rads)+(1-Math.cos(rads))*x*y,
+			-y*Math.sin(rads)+(1-Math.cos(rads))*x*z,
+			0,
+
+			-z*Math.sin(rads)+(1-Math.cos(rads))*x*y,
+			1 + (1-Math.cos(rads))*(y*y-1),
+			x*Math.sin(rads)+(1-Math.cos(rads))*y*z,
+			0,
+
+			y*Math.sin(rads)+(1-Math.cos(rads))*x*z,
+			-x*Math.sin(rads)+(1-Math.cos(rads))*y*z,
+			1 + (1-Math.cos(rads))*(z*z-1),
+			0,
+
+			0, 0, 0, 1]
+		);
+	});
 });
 
+/*
 // Test skewX()/skewY()
 //
 // Do not test values close to 90 degrees, because this will cause coordinates

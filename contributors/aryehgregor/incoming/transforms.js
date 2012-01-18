@@ -117,9 +117,9 @@ function convertToRad(input) {
 }
 
 /**
- * Multiplies two 3x2 matrices.
+ * Multiplies two 2x3 matrices.
  */
-function mxmul32(A, B) {
+function mxmul23(A, B) {
 	return [
 		A[0]*B[0] + A[2]*B[1],
 		A[1]*B[0] + A[3]*B[1],

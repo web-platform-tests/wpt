@@ -167,7 +167,8 @@ div.removeAttribute("style");
 
 // Test style="transform: matrix3d(*)" for various inputs.  I've pretty-printed
 // everything as 4x4 matrices, but they're actually transposed.
-[
+(function(){
+var testMatrices = [
 	// 2D matrices in disguise
 	[-1.72, -3.57, 0, 0,
 	 -3.95,  2.29, 0, 0,
@@ -186,23 +187,6 @@ div.removeAttribute("style");
 	-37.24, -18.45,  41.11, 0,
 	 24.12,  -3.30, -46.37, 0,
 	 32.76, -36.50,  18.25, 1],
-	// Identity matrix except for the bottom row
-	[1, 0, 0, 2,
-	 0, 1, 0, 0,
-	 0, 0, 1, 0,
-	 0, 0, 0, 1],
-	[1, 0, 0, 0,
-	 0, 1, 0, 2,
-	 0, 0, 1, 0,
-	 0, 0, 0, 1],
-	[1, 0, 0, 0,
-	 0, 1, 0, 0,
-	 0, 0, 1, 2,
-	 0, 0, 0, 1],
-	[1, 0, 0,  0,
-	 0, 1, 0,  0,
-	 0, 0, 1,  0,
-	 0, 0, 0, 10],
 	// All entries random
 	[-1.72, -3.57,  0.15, -0.79,
 	 -3.95,  2.29, -1.53,  3.77,
@@ -212,10 +196,22 @@ div.removeAttribute("style");
 	-37.24, -18.45,  41.11, -14.74,
 	 24.12,  -3.30, -46.37,   4.60,
 	 32.76, -36.50,  18.25,  -5.34],
-].forEach(function(mx) {
+];
+// Add the identity matrix with one or two arbitrary entries changed to 10.
+// This is a fairly cheap form of fuzz-testing that can catch bugs like
+// https://bugzilla.mozilla.org/show_bug.cgi?id=718809
+for (var i = 0; i < 16; i++) {
+	for (var j = 0; j <= i; j++) {
+		var mx = [1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1];
+		mx[i] = mx[j] = 10;
+		testMatrices.push(mx);
+	}
+}
+testMatrices.forEach(function(mx) {
 	testTransform("matrix3d(" + mx.join(", ") + ")", mx);
 	testTransformedBoundary("matrix3d(" + mx.join(", ") + ")", mx, "0 0", 0, 0);
 });
+})();
 
 /*
 // Test translate()/translateX()/translateY()

@@ -11,6 +11,8 @@
 test(function() {
   assert_equals(document.all.namedItem("img"),
                 document.getElementsByName("img")[0]);
+  assert_equals(document.all.item("img"),
+                document.getElementsByName("img")[0]);
   assert_equals(document.all["img"],
                 document.getElementsByName("img")[0]);
   assert_equals(document.all("img"),

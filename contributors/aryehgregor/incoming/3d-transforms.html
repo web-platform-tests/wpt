@@ -395,47 +395,32 @@ transforms.forEach(function(trans1) {
 })();
 
 
-/*
-// Test transform-origin with one argument
-[
-	["none", "50%", "50%"],
-	["NONE", "50%", "50%"],
-	["nOnE", "50%", "50%"],
-	["quasit", "50%", "50%"],
-	["top", "50%", "0%"],
-	["TOP", "50%", "0%"],
-	["tOp", "50%", "0%"],
-	["right", "100%", "50%"],
-	["RIGHT", "100%", "50%"],
-	["rIgHt", "100%", "50%"],
-	["bottom", "50%", "100%"],
-	["BOTTOM", "50%", "100%"],
-	["bOtToM", "50%", "100%"],
-	["left", "0%", "50%"],
-	["LEFT", "0%", "50%"],
-	["lEfT", "0%", "50%"],
-	["center", "50%", "50%"],
-	["CENTER", "50%", "50%"],
-	["cEnTeR", "50%", "50%"],
-	["37%", "37%", "50%"],
-	["117%", "117%", "50%"],
-	["41.2px", "41.2px", "50%"],
-	["-31.8px", "-31.8px", "50%"],
-].forEach(function(arr) {
-	testTransformOrigin(arr[0], arr[1], arr[2]);
-});
+// Test transform-origin
+// TODO: Test parse errors
+["0", "-53.7px", "-1px", "0.12px", "53.7px"]
+.forEach(function(arg3) {
+	var testedPercentagesAndLengths =
+		["0", "-53.7px", "-1px", "0.12px", "53.7px",
+		"-50%", "0%", "0.12%"];
+	// Ordered variant
+	["left", "center", "right"].concat(testedPercentagesAndLengths).forEach(function(arg1) {
+		["top", "center", "bottom"].concat(testedPercentagesAndLengths).forEach(function(arg2) {
+			testTransformOrigin(arg1 + " " + arg2 + " " + arg3, arg1, arg2, arg3);
+		});
+	});
 
-// Test transform-origin with two arguments.
-["left", "center", "right"].concat(percentagesAndLengths).forEach(function(arg1) {
-	["top", "center", "bottom"].concat(percentagesAndLengths).forEach(function(arg2) {
-		testTransformOrigin(arg1 + " " + arg2, arg1, arg2);
+	// Reverse order is allowed if only keywords are used in the first two
+	// arguments
+	["top", "center", "bottom"].forEach(function(arg1) {
+		["left", "center", "right"].forEach(function(arg2) {
+			if (arg1 == "center" && arg2 == "center") {
+				// Already tested
+				return;
+			}
+			testTransformOrigin(arg1 + " " + arg2 + " " + arg3, arg2, arg1, arg3);
+		});
 	});
 });
-
-// FIXME: Three- and four-value variants are not generally implemented; see
-// revision history for tests
-// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15432
-*/
 
 [].forEach.call(document.querySelectorAll("style"), function(style) {style.disabled = true});
 div.parentNode.removeChild(div);

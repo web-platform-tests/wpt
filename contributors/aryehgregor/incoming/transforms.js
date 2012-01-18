@@ -305,7 +305,7 @@ function testTransformParsing(mx) {
  *   style="transform: transformValue; transform-origin: transformOriginValue"
  * results in the boundary box that you'd get from transforming with a matrix
  * of mx around an offset of [xOffset, yOffset].  transformOriginValue defaults
- * to "50% 50%", xOffset to divWidth/2, yOffset to divHeight/2.
+ * to "50% 50%", xOffset to divWidth/2, yOffset to divHeight/2, zOffset to 0.
  *
  * transformValue can also be an array of three values.  If it is, they're used
  * for the test div's grandparent, its parent, and the test div itself,
@@ -316,7 +316,7 @@ function testTransformParsing(mx) {
  * the identity matrix.
  */
 function testTransformedBoundary(transformValue, mx,
-                                 transformOriginValue, xOffset, yOffset) {
+                                 transformOriginValue, xOffset, yOffset, zOffset) {
 	if (mx.length == 0) {
 		mx = [1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1];
 	}
@@ -342,23 +342,25 @@ function testTransformedBoundary(transformValue, mx,
 	if (yOffset === undefined) {
 		yOffset = divHeight/2;
 	}
+	if (zOffset === undefined) {
+		zOffset = 0;
+	}
 
 	// Compute the expected bounding box by applying the given matrix to the
-	// vertices of the test div's border box.  We ignore the z components of
-	// the result, and use the fact that the z component of the input is zero,
-	// so this isn't complicated when the matrix is 3D.
+	// vertices of the test div's border box.
 	var originalPoints = [[0, 0], [0, divHeight], [divWidth, 0], [divWidth, divHeight]];
 	var expectedTop, expectedRight, expectedBottom, expectedLeft;
 	for (var i = 0; i < originalPoints.length; i++) {
+		var x = originalPoints[i][0] - xOffset;
+		var y = originalPoints[i][1] - yOffset;
+		var z = -zOffset;
 		// Perspective; hope w isn't 0.  FIXME: Precise behavior isn't really
 		// defined anywhere, although the intent is relatively clear:
 		// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15605
-		var newW = mx[3]*(originalPoints[i][0]-xOffset) + mx[7]*(originalPoints[i][1]-yOffset)
-			+ mx[15];
-		var newX = (mx[0]*(originalPoints[i][0]-xOffset) + mx[4]*(originalPoints[i][1]-yOffset)
-			+ mx[12])/newW + xOffset;
-		var newY = (mx[1]*(originalPoints[i][0]-xOffset) + mx[5]*(originalPoints[i][1]-yOffset)
-			+ mx[13])/newW + yOffset;
+		var newW = mx[3]*x + mx[7]*y + mx[11]*z + mx[15];
+		var newX = (mx[0]*x + mx[4]*y + mx[8]*z + mx[12])/newW + xOffset;
+		var newY = (mx[1]*x + mx[5]*y + mx[9]*z + mx[13])/newW + yOffset;
+		// Don't care about the new Z -- that doesn't affect rendering.
 		if (expectedTop === undefined || newY < expectedTop) {
 			expectedTop = newY;
 		}
@@ -460,26 +462,29 @@ function testTransformedBoundaryAsserts(expectedTop, expectedRight, expectedBott
  * keywords, percentages, or lengths.  Tests both that the computed value is
  * correct, and that the boundary box is as expected for a 45-degree rotation.
  */
-function testTransformOrigin(value, expectedHoriz, expectedVert) {
-	if (expectedHoriz == "left") {
-		expectedHoriz = "0%";
-	} else if (expectedHoriz == "center") {
-		expectedHoriz = "50%";
-	} else if (expectedHoriz == "right") {
-		expectedHoriz = "100%";
+function testTransformOrigin(value, expectedX, expectedY, expectedZ) {
+	if (expectedX == "left") {
+		expectedX = "0%";
+	} else if (expectedX == "center") {
+		expectedX = "50%";
+	} else if (expectedX == "right") {
+		expectedX = "100%";
 	}
-	if (expectedVert == "top") {
-		expectedVert = "0%";
-	} else if (expectedVert == "center") {
-		expectedVert = "50%";
-	} else if (expectedVert == "bottom") {
-		expectedVert = "100%";
+	if (expectedY == "top") {
+		expectedY = "0%";
+	} else if (expectedY == "center") {
+		expectedY = "50%";
+	} else if (expectedY == "bottom") {
+		expectedY = "100%";
 	}
 	// FIXME: Nothing defines resolved values here.  I picked the behavior of
 	// all non-Gecko engines, which is also the behavior Gecko for transforms
 	// other than "none": https://www.w3.org/Bugs/Public/show_bug.cgi?id=15433
-	expectedHoriz = convertToPx(expectedHoriz, divWidth);
-	expectedVert = convertToPx(expectedVert, divHeight);
+	expectedX = convertToPx(expectedX, divWidth);
+	expectedY = convertToPx(expectedY, divHeight);
+	if (expectedZ !== undefined) {
+		expectedZ = convertToPx(expectedZ);
+	}
 
 	if (testTransformOrigin.counter === undefined) {
 		testTransformOrigin.counter = 0;
@@ -499,43 +504,62 @@ function testTransformOrigin(value, expectedHoriz, expectedVert) {
 	test(function() {
 		div.style[prop] = transformValue;
 		div.style[prop + "Origin"] = value;
-		testTransformOriginParsing(expectedHoriz, expectedVert);
+		testTransformOriginParsing(expectedX, expectedY, expectedZ);
 	}, "Computed value for transform-origin with transform: " + transformValue + "; transform-origin: " + value + " set via CSSOM");
 	test(function() {
 		div.setAttribute("style", hyphenatedProp + ": " + transformValue
 			+ "; " + hyphenatedProp + "-origin:" + value);
-		testTransformOriginParsing(expectedHoriz, expectedVert);
+		testTransformOriginParsing(expectedX, expectedY, expectedZ);
 	}, "Computed value for transform-origin with transform: " + transformValue + "; transform-origin: " + value + " set via setAttribute()");
 
 	// Test with a 45-degree rotation, since the effect of changing the origin
-	// will be easy to understand.
+	// will be easy to understand.  In the 3D case, rotate around an
+	// arbitrarily-chosen vector.
 	testTransformedBoundary(
 		// Transform
-		"rotate(45deg)",
+		expectedZ === undefined
+			? "rotate(45deg)"
+			: "rotate3d(1,-1,1,45deg)",
 		// Matrix entries
-		[Math.cos(Math.PI/4), Math.sin(Math.PI/4),
-		-Math.sin(Math.PI/4), Math.cos(Math.PI/4),
-		0, 0],
+		expectedZ === undefined
+			? getRotationMatrix(0, 0, 1, "45deg")
+			: getRotationMatrix(1, -1, 1, "45deg"),
 		// Origin
-		value, expectedHoriz, expectedVert
+		value, expectedX, expectedY, expectedZ
 	);
 }
 
 /**
  * Tests that style="transform-origin: value" results in
- * getComputedStyle().transformOrigin being expectedHoriz + "px " + expectedVert + "px".
+ * getComputedStyle().transformOrigin being
+ *   expectedX + "px " + expectedY + "px " + expectedZ + "px",
+ * or if expectedZ is 0, just
+ *   expectedX + "px " + expectedY + "px".
  */
-function testTransformOriginParsing(expectedHoriz, expectedVert) {
+function testTransformOriginParsing(expectedX, expectedY, expectedZ) {
+	if (expectedZ === undefined) {
+		expectedZ = 0;
+	}
 	var actual = getComputedStyle(div)[prop + "Origin"];
-	var re = /^([^ ]+)px ([^ ]+)px$/;
+	var re = expectedZ == 0
+		? /^([^ ]+)px ([^ ]+)px$/
+		: /^([^ ]+)px ([^ ]+)px ([^ ]+)px$/;
 	assert_regexp_match(actual, re, "Computed value has unexpected form");
 	var match = re.exec(actual);
 
-	assert_approx_equals(Number(match[1]), expectedHoriz, computedEpsilon,
-		"Value of horizontal part (actual: "
-		 + actual + ", expected " + expectedHoriz + "px " + expectedVert + "px)");
+	var msg = ' (actual: "' + actual + '", expected: "'
+		+ expectedX + "px " + expectedY
+		+ (expectedZ == 0 ? "" : "px " + expectedZ)
+		+ 'px")';
 
-	assert_approx_equals(Number(match[2]), expectedVert, computedEpsilon,
-		"Value of vertical part (actual: "
-		 + actual + ", expected " + expectedHoriz + "px " + expectedVert + "px)");
+	assert_approx_equals(Number(match[1]), expectedX, computedEpsilon,
+		"Value of X part" + msg);
+
+	assert_approx_equals(Number(match[2]), expectedY, computedEpsilon,
+		"Value of Y part" + msg);
+
+	if (expectedZ != 0) {
+		assert_approx_equals(Number(match[3]), expectedZ, computedEpsilon,
+			"Value of Z part" + msg);
+	}
 }

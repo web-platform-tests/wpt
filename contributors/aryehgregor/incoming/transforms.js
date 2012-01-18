@@ -283,8 +283,9 @@ function testTransformedBoundary(transformValue, mx,
 	var originalPoints = [[0, 0], [0, divHeight], [divWidth, 0], [divWidth, divHeight]];
 	var expectedTop, expectedRight, expectedBottom, expectedLeft;
 	for (var i = 0; i < originalPoints.length; i++) {
-		// Perspective; hope w isn't 0.  FIXME: Is this precise behavior
-		// defined anywhere?
+		// Perspective; hope w isn't 0.  FIXME: Precise behavior isn't really
+		// defined anywhere, although the intent is relatively clear:
+		// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15605
 		var newW = mx[3]*(originalPoints[i][0]-xOffset) + mx[7]*(originalPoints[i][1]-yOffset)
 			+ mx[15];
 		var newX = (mx[0]*(originalPoints[i][0]-xOffset) + mx[4]*(originalPoints[i][1]-yOffset)

@@ -261,17 +261,7 @@ rotateAngles.forEach(function(angle) {
 });
 
 // Test skewX()/skewY()
-//
-// Do not test values close to 90 degrees, because this will cause coordinates
-// to get large.  The maximum values for coordinates are (of course) not
-// defined, and even if they were, the result would be extremely sensitive to
-// rounding error.
-[
-	"-80deg", "-45deg", "-32.6deg", "-0.05deg", "0deg", "0.05deg", "32.6deg",
-	"45deg", "80deg", "300deg",
-	"-0.3rad", "0rad", "0.3rad", "2.9rad",
-	"0.921turn", "22grad"
-].forEach(function(angle) {
+skewAngles.forEach(function(angle) {
 	testTransform(
 		"skewX(" + angle + ")",
 		[1, 0, Math.tan(convertToRad(angle)), 1, 0, 0]

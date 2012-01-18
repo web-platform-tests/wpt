@@ -45,6 +45,15 @@ var rotateAngles = [
 	"270deg", "452deg",
 	"-1rad", "0rad", "1rad", "6.28rad",
 	"0.721turn", "256grad"];
+// Do not test values close to 90 degrees, because this will cause coordinates
+// to get large.  The maximum values for coordinates are (of course) not
+// defined, and even if they were, the result would be extremely sensitive to
+// rounding error.
+var skewAngles = [
+	"-80deg", "-45deg", "-32.6deg", "-0.05deg", "0deg", "0.05deg", "32.6deg",
+	"45deg", "80deg", "300deg",
+	"-0.3rad", "0rad", "0.3rad", "2.9rad",
+	"0.921turn", "22grad"];
 
 var emPixels = parseFloat(getComputedStyle(div).fontSize);
 div.style.fontSize = "1ex";

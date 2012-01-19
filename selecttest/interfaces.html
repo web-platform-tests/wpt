@@ -5,36 +5,37 @@
 <script src=http://w3c-test.org/resources/testharness.js></script>
 <script src=http://w3c-test.org/resources/WebIDLParser.js></script>
 <script src=http://w3c-test.org/resources/idlharness.js></script>
+<script type=text/plain>
+interface Selection {
+  readonly attribute Node? anchorNode;
+  readonly attribute unsigned long anchorOffset;
+  readonly attribute Node? focusNode;
+  readonly attribute unsigned long focusOffset;
+
+  readonly attribute boolean isCollapsed;
+  void               collapse(Node node, unsigned long offset);
+  void               collapseToStart();
+  void               collapseToEnd();
+
+  void               extend(Node node, unsigned long offset);
+
+  void               selectAllChildren(Node node);
+  void               deleteFromDocument();
+
+  readonly attribute unsigned long rangeCount;
+  Range              getRangeAt(unsigned long index);
+  void               addRange(Range range);
+  void               removeRange(Range range);
+  void               removeAllRanges();
+
+  stringifier;
+};
+</script>
 <script>
 "use strict";
 
-var selectionInterface = new IdlInterface('interface Selection {\n\
-  readonly attribute Node? anchorNode;\n\
-  readonly attribute unsigned long anchorOffset;\n\
-  readonly attribute Node? focusNode;\n\
-  readonly attribute unsigned long focusOffset;\n\
-\n\
-  readonly attribute boolean isCollapsed;\n\
-  void               collapse(Node parentNode, unsigned long offset);\n\
-  void               collapseToStart();\n\
-  void               collapseToEnd();\n\
-\n\
-  void               extend(Node parentNode, unsigned long offset);\n\
-  void               modify(DOMString alter, DOMString direction, DOMString granularity);\n\
-\n\
-  void               selectAllChildren(Node parentNode);\n\
-  void               deleteFromDocument();\n\
-\n\
-  readonly attribute unsigned long rangeCount;\n\
-  Range              getRangeAt(unsigned long index);\n\
-  void               addRange(Range range);\n\
-  void               removeRange(Range range);\n\
-  void               removeAllRanges();\n\
-\n\
-  stringifier;\n\
-};');
-
-selectionInterface.test();
-selectionInterface.test_primary_interface_of(getSelection(), "getSelection()");
-selectionInterface.test_primary_interface_of(document.getSelection(), "document.getSelection()");
+var idlArray = new IdlArray();
+idlArray.add_idls(document.querySelector("script[type=text\\/plain]").textContent);
+idlArray.add_objects({Selection: ['getSelection()']});
+idlArray.test();
 </script>

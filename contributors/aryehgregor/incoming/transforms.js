@@ -258,8 +258,8 @@ function testTransform(value, mx) {
 			div.setAttribute("style", hyphenatedProp + ": " + value);
 		}
 		testTransformParsing(mx);
-	}, "Computed value for transform: " + value
-	+ " set via " + (useCssom ? "CSSOM" : "setAttribute()"));
+	}, 'Computed value for "transform: ' + value
+	+ '" set via ' + (useCssom ? "CSSOM" : "setAttribute()"));
 	testTransformedBoundary(value, mx);
 }
 
@@ -532,16 +532,16 @@ function testTransformOrigin(value, expectedX, expectedY, expectedZ) {
 			div.style[prop + "Origin"] = value;
 			testTransformOriginParsing(expectedX, expectedY, expectedZ);
 		}, "Computed value for transform-origin "
-		+ "with transform: " + transformValue + "; "
-		+ "transform-origin: " + value + " set via CSSOM");
+		+ 'with "transform: ' + transformValue + "; "
+		+ "transform-origin: " + value + '" set via CSSOM');
 	} else {
 		test(function() {
 			div.setAttribute("style", hyphenatedProp + ": " + transformValue
 				+ "; " + hyphenatedProp + "-origin:" + value);
 			testTransformOriginParsing(expectedX, expectedY, expectedZ);
 		}, "Computed value for transform-origin "
-		+ "with transform: " + transformValue + "; "
-		+ "transform-origin: " + value + " set via setAttribute()");
+		+ 'with "transform: ' + transformValue + "; "
+		+ "transform-origin: " + value + '" set via setAttribute()');
 	}
 
 	// Test with a 45-degree rotation, since the effect of changing the origin

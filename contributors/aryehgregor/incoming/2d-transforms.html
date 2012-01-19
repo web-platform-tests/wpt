@@ -157,7 +157,7 @@ section = "parsing";
 			div.removeAttribute("style");
 			div.style[prop.replace("transform", transformKeyword)] = transform;
 			testTransformParsing(arr.slice(1));
-		}, "Computed value for " + transformKeyword + ": " + transform + " set via CSSOM");
+		}, 'Computed value for "' + transformKeyword + ": " + transform + '" set via CSSOM');
 	});
 });
 div.removeAttribute("style");

@@ -411,9 +411,10 @@ transforms.forEach(function(trans1) {
 
 
 // Test transform-origin
-// TODO: Test parse errors
+// FIXME: Spec's description is confusing, not completely clear that this is
+// per spec https://www.w3.org/Bugs/Public/show_bug.cgi?id=15631
 section = "origin";
-lengths
+percentagesAndLengths
 .slice(0, 7)
 .forEach(function(arg3) {
 	// Ordered variant
@@ -423,7 +424,12 @@ lengths
 		["top", "center", "bottom"]
 		.concat(percentagesAndLengths.slice(0, 5))
 		.forEach(function(arg2) {
-			testTransformOrigin(arg1 + " " + arg2 + " " + arg3, arg1, arg2, arg3);
+			if (/%$/.test(arg3)) {
+				// Parse error: no percentages allowed in the Z component
+				testTransformOrigin(arg1 + " " + arg2 + " " + arg3, "50%", "50%", 0);
+			} else {
+				testTransformOrigin(arg1 + " " + arg2 + " " + arg3, arg1, arg2, arg3);
+			}
 		});
 	});
 
@@ -435,7 +441,12 @@ lengths
 				// Already tested
 				return;
 			}
-			testTransformOrigin(arg1 + " " + arg2 + " " + arg3, arg2, arg1, arg3);
+			if (/%$/.test(arg3)) {
+				// Parse error: no percentages allowed in the Z component
+				testTransformOrigin(arg1 + " " + arg2 + " " + arg3, "50%", "50%", 0);
+			} else {
+				testTransformOrigin(arg1 + " " + arg2 + " " + arg3, arg2, arg1, arg3);
+			}
 		});
 	});
 });

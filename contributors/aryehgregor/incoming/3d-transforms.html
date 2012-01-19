@@ -70,6 +70,8 @@ body > div > div { padding-left: 10px; width: 105px }
 <script>
 "use strict";
 
+section = "parsing";
+
 // Test case-sensitivity and other parsing issues
 [
 	// Parse errors; we prepend scale(2) to ensure that any resulting identity
@@ -172,6 +174,7 @@ div.removeAttribute("style");
 
 // Test style="transform: matrix3d(*)" for various inputs.  I've pretty-printed
 // everything as 4x4 matrices, but they're actually transposed.
+section = "matrix";
 (function(){
 var testMatrices = [
 	// 2D matrices in disguise
@@ -219,7 +222,10 @@ testMatrices.forEach(function(mx) {
 })();
 
 // Test translate3d()/translateZ()
-lengths.forEach(function(tz) {
+section = "translate";
+lengths
+.slice(0, 10)
+.forEach(function(tz) {
 	testTransform(
 		"translateZ(" + tz + ")",
 		[1, 0, 0, 0,
@@ -228,8 +234,12 @@ lengths.forEach(function(tz) {
 		 0, 0, convertToPx(tz), 1]
 	);
 
-	percentagesAndLengths.forEach(function(ty) {
-		percentagesAndLengths.forEach(function(tx) {
+	percentagesAndLengths
+	.slice(0, 5)
+	.forEach(function(ty) {
+		percentagesAndLengths
+		.slice(0, 5)
+		.forEach(function(tx) {
 			testTransform(
 				"translate3d(" + tx + ", " + ty + ", " + tz + ")",
 				[1, 0, 0, 0,
@@ -244,6 +254,7 @@ lengths.forEach(function(tz) {
 });
 
 // Test scale3d()/scaleZ()
+section = "scale";
 (function(){
 var scales = [-2, -0.12, 0, 0.12, 2];
 scales.forEach(function(sz) {
@@ -270,6 +281,7 @@ scales.forEach(function(sz) {
 })();
 
 // Test rotate3d(), rotateX(), rotateY(), rotateZ()
+section = "rotate";
 rotateAngles.forEach(function(angle) {
 	// FIXME: rotateX/Y/Z are not defined precisely enough that this is
 	// obviously correct from the spec.  I've followed what Gecko/WebKit do in
@@ -307,6 +319,7 @@ rotateAngles.forEach(function(angle) {
 //
 // FIXME: The spec doesn't actually define skew(), so I figured it out from
 // implementations. https://www.w3.org/Bugs/Public/show_bug.cgi?id=15537
+section = "skew";
 skewAngles.forEach(function(angle1) {
 	testTransform(
 		"skew(" + angle1 + ")",
@@ -327,6 +340,7 @@ skewAngles.forEach(function(angle1) {
 //
 // FIXME: The spec has a bug in its definition of perspective().
 // https://www.w3.org/Bugs/Public/show_bug.cgi?id=15538
+section = "perspective";
 lengths
 .concat("2000px", "1000px", "200px")
 .forEach(function(length) {
@@ -344,6 +358,7 @@ lengths
 });
 
 // Test multiple transformations
+section = "multiple";
 (function(){
 var transforms = [
 	["matrix3d(0.98, 1.06, 4.07, 3.29, "
@@ -397,14 +412,17 @@ transforms.forEach(function(trans1) {
 
 // Test transform-origin
 // TODO: Test parse errors
-["0", "-53.7px", "-1px", "0.12px", "53.7px"]
+section = "origin";
+lengths
+.slice(0, 7)
 .forEach(function(arg3) {
-	var testedPercentagesAndLengths =
-		["0", "-53.7px", "-1px", "0.12px", "53.7px",
-		"-50%", "0%", "0.12%"];
 	// Ordered variant
-	["left", "center", "right"].concat(testedPercentagesAndLengths).forEach(function(arg1) {
-		["top", "center", "bottom"].concat(testedPercentagesAndLengths).forEach(function(arg2) {
+	["left", "center", "right"]
+	.concat(percentagesAndLengths.slice(0, 5))
+	.forEach(function(arg1) {
+		["top", "center", "bottom"]
+		.concat(percentagesAndLengths.slice(0, 5))
+		.forEach(function(arg2) {
 			testTransformOrigin(arg1 + " " + arg2 + " " + arg3, arg1, arg2, arg3);
 		});
 	});

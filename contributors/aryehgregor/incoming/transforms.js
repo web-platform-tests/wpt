@@ -35,11 +35,16 @@ var hyphenatedProp = {
 	OTransform: "-o-transform",
 }[prop];
 
-var lengths = [
-	".0",
-	"-53.7px", "-1px", "0.0px", "0.12px", "1px", "53.7px",
-	"1em", "1ex", "1in", "1cm", "1mm", "1pt", "1pc"];
-var percentagesAndLengths = lengths.concat("-50%", "0%", "0.12%");
+// percentagesAndLengths and lengths are both ordered with the most interesting
+// things first, so you can truncate them to avoid undue combinatorial
+// explosion.
+var percentagesAndLengths = [
+	".0", "-1px", "1pt", "53.7px", "-50%",
+	"1em", "1px", "0.12%", "0.12px", "0%",
+	"-53.7px", "0.0px",
+	"1ex", "1in", "1cm", "1mm", "1pc"];
+var lengths = percentagesAndLengths.filter(function(s){return !/%$/.test(s)});
+
 var rotateAngles = [
 	"-7deg", "0deg", "22.5deg", "45deg", "86.451deg", "90deg", "180deg",
 	"270deg", "452deg",
@@ -62,6 +67,26 @@ div.removeAttribute("style");
 
 var switchStyles = document.querySelectorAll("style.switch");
 [].forEach.call(switchStyles, function(style) { style.disabled = true });
+
+// Track how many tests we're running for each section of the test files
+var section;
+var sectionCounts = {};
+add_result_callback(function() {
+	if (!(section in sectionCounts)) {
+		sectionCounts[section] = 0;
+	}
+	sectionCounts[section]++;
+});
+add_completion_callback(function() {
+	var msg = "Tests: ";
+	var total = 0;
+	for (var key in sectionCounts) {
+		msg += key + " " + sectionCounts[key] + ", ";
+		total += sectionCounts[key];
+	}
+	msg += "total " + total;
+	document.body.appendChild(document.createTextNode(msg));
+});
 
 /**
  * Accepts a string that's a CSS length or percentage, and returns a number of

@@ -95,6 +95,7 @@ body > div > div { padding-left: 10px; width: 105px }
 "use strict";
 
 // Test case-sensitivity and other parsing issues
+section = "parsing";
 [
 	// "none" and parse errors; we prepend scale(2) for parse errors to ensure
 	// that any resulting identity matrix is really due to a parse error and
@@ -174,6 +175,7 @@ testTransform("none", []);
 
 // Test style="transform: matrix(*)" (4^6 = 4096 permutations, but we only run
 // every 13th to avoid creating excessive numbers of tests)
+section = "matrix";
 (function(){
 var matrixValues = [-1, 0, 1, 1.72];
 var i = 0;
@@ -200,6 +202,7 @@ matrixValues.forEach(function(f) {
 })();
 
 // Test translate()/translateX()/translateY()
+section = "translate";
 percentagesAndLengths.forEach(function(tx) {
 	testTransform(
 		"translateX(" + tx + ")",
@@ -224,6 +227,7 @@ percentagesAndLengths.forEach(function(tx) {
 });
 
 // Test scale()/scaleX()/scaleY()
+section = "scale";
 (function(){
 var scales = [-2, -1, -0.12, 0, 0.12, 1, 2];
 scales.forEach(function(sx) {
@@ -251,6 +255,7 @@ scales.forEach(function(sx) {
 })();
 
 // Test rotate()
+section = "rotate";
 rotateAngles.forEach(function(angle) {
 	var rads = convertToRad(angle);
 	testTransform(
@@ -261,6 +266,7 @@ rotateAngles.forEach(function(angle) {
 });
 
 // Test skewX()/skewY()
+section = "skew";
 skewAngles.forEach(function(angle) {
 	testTransform(
 		"skewX(" + angle + ")",
@@ -273,6 +279,7 @@ skewAngles.forEach(function(angle) {
 });
 
 // Test multiple transformations
+section = "multiple";
 (function(){
 var transforms = [
 	["matrix(4, -7, 2.3, -3.8, 6, 6)", 4, -7, 2.3, -3.8, 6, 6],
@@ -312,6 +319,7 @@ testTransform("translateX(-1000px) scaleX(1000000) "
 	[1, 0, 0, 1, 0, 0]);
 
 
+section = "origin";
 // Test transform-origin with one argument
 [
 	["none", "50%", "50%"],

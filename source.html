@@ -1025,7 +1025,12 @@ title=dom-Selection-selectAllChildren><code>selectAllChildren(<var>node</var>)</
 method must run the following steps:
 
 <ol>
-  <li>Let <var>range</var> be a new [[range]].
+  <li>
+  <p class=comments>The new range replaces any existing one, doesn't mutate it.
+  This matches IE9 and Firefox 12.0a1.  (Chrome 17 dev and Opera Next 12.00
+  alpha can't be tested, because getRangeAt() returns a copy anyway.)
+
+  <p>Let <var>range</var> be a new [[range]].
 
   <li>[[Rangeset]] <var>range</var>'s [[rangestart]] to (<var>node</var>, 0).
 
@@ -1037,12 +1042,21 @@ method must run the following steps:
   <li>Set the [[contextobject]]'s [[seldir]] to <i title>forwards</i>.
 </ol>
 
+<p class=comments>This is the one method that actually mutates the range
+instead of replacing it.  This matches IE9 and Firefox 12.0a1.  (Chrome 17 dev
+and Opera Next 12.00 alpha can't be tested, because getRangeAt() returns a copy
+anyway.)
+
 <p>The <dfn
 title=dom-Selection-deleteFromDocument><code>deleteFromDocument()</code></dfn>
 method must do nothing if the [[contextobject]]'s [[range]] is null, and
 otherwise must invoke the <code data-anolis-spec=dom
 title=dom-Range-deleteContents>deleteContents()</code> method on the
 [[contextobject]]'s [[range]].
+
+<p class=XXX>Should we replace the range rather than mutating it here?  This is
+currently the only Selection method that actually mutates an existing range in
+place.
 
 <dl class=domintro>
   <dt><var>selection</var> . <code title=dom-Selection-rangeCount>rangeCount</code>

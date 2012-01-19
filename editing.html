@@ -67,7 +67,7 @@ a code { text-decoration: underline }
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing APIs</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-17-january-2012>Work in Progress &mdash; Last Update 17 January 2012</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-19-january-2012>Work in Progress &mdash; Last Update 19 January 2012</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;<a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a>&gt;
@@ -1077,7 +1077,12 @@ Opera 11.50 just does nothing in all my tests, as usual.
 method must run the following steps:
 
 <ol>
-  <li>Let <var title="">range</var> be a new <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>.
+  <li>
+  <p class=comments>The new range replaces any existing one, doesn't mutate it.
+  This matches IE9 and Firefox 12.0a1.  (Chrome 17 dev and Opera Next 12.00
+  alpha can't be tested, because getRangeAt() returns a copy anyway.)
+
+  <p>Let <var title="">range</var> be a new <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>.
 
   <li><a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp-set title=concept-range-bp-set>Set</a> <var title="">range</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a> to (<var title="">node</var>, 0).
 
@@ -1089,10 +1094,19 @@ method must run the following steps:
   <li>Set the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a href=#concept-selection-dir title=concept-selection-dir>direction</a> to <i title="">forwards</i>.
 </ol>
 
+<p class=comments>This is the one method that actually mutates the range
+instead of replacing it.  This matches IE9 and Firefox 12.0a1.  (Chrome 17 dev
+and Opera Next 12.00 alpha can't be tested, because getRangeAt() returns a copy
+anyway.)
+
 <p>The <dfn id=dom-selection-deletefromdocument title=dom-Selection-deleteFromDocument><code>deleteFromDocument()</code></dfn>
 method must do nothing if the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> is null, and
 otherwise must invoke the <code class=external data-anolis-spec=dom title=dom-Range-deleteContents><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-range-deletecontents>deleteContents()</a></code> method on the
 <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a>.
+
+<p class=XXX>Should we replace the range rather than mutating it here?  This is
+currently the only Selection method that actually mutates an existing range in
+place.
 
 <dl class=domintro>
   <dt><var title="">selection</var> . <code title=dom-Selection-rangeCount><a href=#dom-selection-rangecount>rangeCount</a></code>

@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+ <head>
+
+  <title>CSS Reftest Reference</title>
+
+  <link rel="author" title="CSS1 Test Suite Contributors" href="http://www.w3.org/Style/CSS/Test/CSS1/current/tsack.html" />
+  <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch" />
+
+  <style type="text/css"><![CDATA[
+  div {margin: 1em 0;}  
+  
+  img {vertical-align: bottom;}  
+  
+  img.swatch-lime
+  {
+  border-bottom: yellow solid 1em;
+  border-top: yellow solid 1em;
+  }
+  ]]>
+  </style>
+
+ </head>
+
+ <body>
+
+  <p>The three diagrams below should be identical:</p>
+
+  <div>
+     <img src="support/swatch-orange.png" alt="" height="48" width="48"
+   /><img src="support/swatch-lime.png"   alt="" height="16" width="16" class="swatch-lime"
+   /><img src="support/swatch-orange.png" alt="" height="48" width="48"
+   /><img src="support/swatch-yellow.png" alt="" height="48" width="48" />
+  </div>
+
+  <div>
+     <img src="support/swatch-orange.png" alt="" height="48" width="48"
+   /><img src="support/swatch-lime.png"   alt="" height="16" width="16" class="swatch-lime"
+   /><img src="support/swatch-orange.png" alt="" height="48" width="48"
+   /><img src="support/swatch-yellow.png" alt="" height="48" width="48" />
+  </div>
+
+  <div>
+     <img src="support/swatch-orange.png" alt="" height="48" width="48"
+   /><img src="support/swatch-lime.png"   alt="" height="16" width="16" class="swatch-lime"
+   /><img src="support/swatch-orange.png" alt="" height="48" width="48"
+   /><img src="support/swatch-yellow.png" alt="" height="48" width="48" />
+  </div>
+
+ </body>
+</html>

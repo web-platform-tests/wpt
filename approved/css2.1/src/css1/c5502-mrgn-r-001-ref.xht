@@ -1,0 +1,69 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+ <head>
+
+  <title>CSS Reftest Reference</title>
+
+  <link rel="author" title="CSS1 Test Suite Contributors" href="http://www.w3.org/Style/CSS/Test/CSS1/current/tsack.html" />
+  <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch" />
+
+  <style type="text/css"><![CDATA[
+  p
+  {
+  color: navy;
+  margin: 0;
+  }
+  
+  div.control
+  {
+  border: black solid medium;  
+  margin: 1em;
+  width: 10em;
+  }
+
+  div.control div {height: 1em;}
+  
+  div.a
+  {
+  border-left: yellow solid 7em;
+  border-right: orange solid 2em;
+  }  
+  
+  div.aa {border-right: teal solid 1em;}
+  
+  div.b
+  {
+  border-left: aqua solid 5em;
+  border-right: orange solid 2em;
+  }  
+
+  div.bb
+  {
+  border-left: teal solid 1em;
+  border-right: yellow solid 2em;
+  }
+  ]]>
+  </style>
+
+ </head>
+
+ <body>
+
+  <p>The following two diagrams should look identical.</p>
+
+  <div class="control">
+   <div class="a"><div class="aa"></div></div>
+   <div class="b"><div class="bb"></div></div>
+   <div class="a"><div class="aa"></div></div>
+  </div>
+
+  <div class="control">
+   <div class="a"><div class="aa"></div></div>
+   <div class="b"><div class="bb"></div></div>
+   <div class="a"><div class="aa"></div></div>
+  </div>
+
+ </body>
+</html>

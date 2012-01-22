@@ -5,4 +5,5 @@ Range-compareBoundaryPoints.html
 Range-comparePoint.html
 Range-insertNode.html
 Range-intersectsNode.html
+Range-surroundContents.html
 support Range-test-iframe.html

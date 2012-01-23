@@ -1,0 +1,68 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+ <head>
+
+  <title>CSS Reftest Reference</title>
+
+  <link rel="author" title="CSS1 Test Suite Contributors" href="http://www.w3.org/Style/CSS/Test/CSS1/current/tsack.html" />
+  <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch" />
+
+  <style type="text/css"><![CDATA[
+  p {margin: 0;}
+
+  td
+  {
+  border: black solid medium;
+  padding: 0;
+  width: 60px;
+  }
+
+  div.blue {border-top: blue solid 12px;}
+  div.yellow {border-top: yellow solid 12px;}
+  div.aqua {border-top: aqua solid 12px;}
+  div.lime {border-top: lime solid 12px;}
+  div.fuchsia {border-top: fuchsia solid 12px;}
+  div.orange {border-top: orange solid 12px;}
+  ]]>
+  </style>
+
+ </head>
+
+ <body>
+
+  <p>The next two columns should be identical.</p>
+
+  <table>
+   <tr>
+    <td>
+     <div class="blue"></div>
+     <div class="yellow"></div>
+     <div class="aqua"></div>
+     <div class="lime"></div>
+     <div class="fuchsia"></div>
+     <div class="blue"></div>
+     <div class="orange"></div>
+     <div class="aqua"></div>
+     <div class="yellow"></div>
+     <div class="lime"></div>
+    </td>
+
+    <td>
+     <div class="blue"></div>
+     <div class="yellow"></div>
+     <div class="aqua"></div>
+     <div class="lime"></div>
+     <div class="fuchsia"></div>
+     <div class="blue"></div>
+     <div class="orange"></div>
+     <div class="aqua"></div>
+     <div class="yellow"></div>
+     <div class="lime"></div>
+    </td>
+   </tr>
+  </table>
+
+ </body>
+</html>

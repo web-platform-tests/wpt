@@ -187,7 +187,7 @@ section = "parsing";
 		var transformKeyword = {0: "TRANSFORM", 1: "tRAnSFoRM", 2: "transform"}[i%3];
 		test(function() {
 			div.removeAttribute("style");
-			div.style[prop.replace("transform", transformKeyword)] = transform;
+			div.style[prefixProp("transform").replace("transform", transformKeyword)] = transform;
 			testTransformParsing(arr.slice(1));
 		}, 'Computed value for "' + transformKeyword + ": " + transform + '" set via CSSOM');
 	});

@@ -18,22 +18,6 @@ var pixelEpsilon = 1.5;
 // reason for those to be very far off.  Some UAs do a bunch of rounding, but
 // it should still be good to one decimal place.
 var computedEpsilon = 0.05;
-// Account for prefixing so that I can check whether browsers actually follow
-// the spec.  Obviously, in any final version of the test, only the unprefixed
-// property will be tested.
-var prop = "transform" in div.style ? "transform"
-	: "msTransform" in div.style ? "msTransform"
-	: "MozTransform" in div.style ? "MozTransform"
-	: "webkitTransform" in div.style ? "webkitTransform"
-	: "OTransform" in div.style ? "OTransform"
-	: undefined;
-var hyphenatedProp = {
-	transform: "transform",
-	msTransform: "-ms-transform",
-	MozTransform: "-moz-transform",
-	webkitTransform: "-webkit-transform",
-	OTransform: "-o-transform",
-}[prop];
 
 // percentagesAndLengths and lengths are both ordered with the most interesting
 // things first, so you can truncate them to avoid undue combinatorial
@@ -87,6 +71,43 @@ add_completion_callback(function() {
 	msg += "total " + total;
 	document.body.appendChild(document.createTextNode(msg));
 });
+
+/**
+ * Account for prefixing so that I can check whether browsers actually follow
+ * the spec.  Obviously, in any final version of the test, only the unprefixed
+ * property will be tested.  Usage: prefixProp("transformOrigin") ==
+ * "msTransformOrigin", "mozTransformOrigin", etc. as appropriate.
+ */
+function prefixProp(s) {
+	if (s in div.style) {
+		return s;
+	}
+	s = s[0].toUpperCase() + s.slice(1);
+	var prefixes = ["ms", "Moz", "moz", "webkit", "O"];
+	for (var i = 0; i < prefixes.length; i++) {
+		if ((prefixes[i] + s) in div.style) {
+			return prefixes[i] + s;
+		}
+	}
+	return undefined;
+}
+
+/**
+ * Likewise, but gives the hyphenated version.
+ * prefixHyphenatedProp("transform-origin") is "-ms-transform-origin",
+ * "-moz-transform-origin", etc.
+ */
+function prefixHyphenatedProp(s) {
+	s = s.split("-")
+		.map(function(bit, i) {
+			return i == 0 ? bit : bit[0].toUpperCase() + bit.slice(1)
+		})
+		.join("");
+	s = prefixProp(s);
+	s = s[0].toUpperCase() + s.slice(1);
+	return s.replace(/([A-Z])/g, "-$1")
+		.toLowerCase();
+}
 
 /**
  * Accepts a string that's a CSS length or percentage, and returns a number of
@@ -253,9 +274,9 @@ function testTransform(value, mx) {
 	test(function() {
 		if (useCssom) {
 			div.removeAttribute("style");
-			div.style[prop] = value;
+			div.style[prefixProp("transform")] = value;
 		} else {
-			div.setAttribute("style", hyphenatedProp + ": " + value);
+			div.setAttribute("style", prefixHyphenatedProp("transform") + ": " + value);
 		}
 		testTransformParsing(mx);
 	}, 'Computed value for "transform: ' + value
@@ -284,7 +305,7 @@ function testTransform(value, mx) {
  */
 function testTransformParsing(mx) {
 	if (mx.length == 0) {
-		assert_regexp_match(getComputedStyle(div)[prop],
+		assert_regexp_match(getComputedStyle(div)[prefixProp("transform")],
 			/^(none|matrix\(1, 0, 0, 1, 0, 0\))$/,
 			"computed value has unexpected form");
 		return;
@@ -292,7 +313,7 @@ function testTransformParsing(mx) {
 	if (mx.length == 6) {
 		mx = [mx[0], mx[1], 0, 0,  mx[2], mx[3], 0, 0,  0, 0, 1, 0,  mx[4], mx[5], 0, 1];
 	}
-	var computed = getComputedStyle(div)[prop];
+	var computed = getComputedStyle(div)[prefixProp("transform")];
 	if (is2dMatrix(mx)) {
 		var re = /^matrix\(([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+?)(?:px)?, ([^,]+?)(?:px)?\)$/;
 		assert_regexp_match(computed, re, "computed value has unexpected form for 2D matrix");
@@ -418,11 +439,11 @@ function testTransformedBoundary(transformValue, mx,
 		test(function() {
 			if (useCssom) {
 				div.removeAttribute("style");
-				div.style[prop] = transformValue;
-				div.style[prop + "Origin"] = transformOriginValue;
+				div.style[prefixProp("transform")] = transformValue;
+				div.style[prefixProp("transformOrigin")] = transformOriginValue;
 			} else {
-				div.setAttribute("style", hyphenatedProp + ": " + transformValue + "; "
-					+ hyphenatedProp + "-origin: " + transformOriginValue);
+				div.setAttribute("style", prefixHyphenatedProp("transform") + ": " + transformValue + "; "
+					+ prefixHyphenatedProp("transform-origin") + ": " + transformOriginValue);
 			}
 			testTransformedBoundaryAsserts(expectedTop, expectedRight, expectedBottom, expectedLeft);
 		}, "Boundaries with \"transform: " + transformValue + "; "
@@ -432,19 +453,19 @@ function testTransformedBoundary(transformValue, mx,
 	} else {
 		test(function() {
 			if (useCssom) {
-				div.parentNode.parentNode.style[prop] = transformValue[0];
-				div.parentNode.style[prop] = transformValue[1];
+				div.parentNode.parentNode.style[prefixProp("transform")] = transformValue[0];
+				div.parentNode.style[prefixProp("transform")] = transformValue[1];
 				div.removeAttribute("style");
-				div.style[prop] = transformValue[2];
-				div.style[prop + "Origin"] = transformOriginValue;
+				div.style[prefixProp("transform")] = transformValue[2];
+				div.style[prefixProp("transformOrigin")] = transformOriginValue;
 			} else {
 				div.parentNode.parentNode.setAttribute("style",
-					hyphenatedProp + ": " + transformValue[0]);
+					prefixHyphenatedProp("transform") + ": " + transformValue[0]);
 				div.parentNode.setAttribute("style",
-					hyphenatedProp + ": " + transformValue[1]);
+					prefixHyphenatedProp("transform") + ": " + transformValue[1]);
 				div.setAttribute("style",
-					hyphenatedProp + ": " + transformValue[2] + "; "
-					+ hyphenatedProp + "-origin: " + transformOriginValue);
+					prefixHyphenatedProp("transform") + ": " + transformValue[2] + "; "
+					+ prefixHyphenatedProp("transform-origin") + ": " + transformOriginValue);
 			}
 			testTransformedBoundaryAsserts(expectedTop, expectedRight, expectedBottom, expectedLeft);
 		}, "Boundaries with \"transform: " + transformValue[0] + "\" on test div's grandparent, "
@@ -528,16 +549,16 @@ function testTransformOrigin(value, expectedX, expectedY, expectedZ) {
 
 	if (getUseCssom()) {
 		test(function() {
-			div.style[prop] = transformValue;
-			div.style[prop + "Origin"] = value;
+			div.style[prefixProp("transform")] = transformValue;
+			div.style[prefixProp("transformOrigin")] = value;
 			testTransformOriginParsing(expectedX, expectedY, expectedZ);
 		}, "Computed value for transform-origin "
 		+ 'with "transform: ' + transformValue + "; "
 		+ "transform-origin: " + value + '" set via CSSOM');
 	} else {
 		test(function() {
-			div.setAttribute("style", hyphenatedProp + ": " + transformValue
-				+ "; " + hyphenatedProp + "-origin:" + value);
+			div.setAttribute("style", prefixHyphenatedProp("transform") + ": " + transformValue
+				+ "; " + prefixHyphenatedProp("transform-origin") + ":" + value);
 			testTransformOriginParsing(expectedX, expectedY, expectedZ);
 		}, "Computed value for transform-origin "
 		+ 'with "transform: ' + transformValue + "; "
@@ -572,7 +593,7 @@ function testTransformOriginParsing(expectedX, expectedY, expectedZ) {
 	if (expectedZ === undefined) {
 		expectedZ = 0;
 	}
-	var actual = getComputedStyle(div)[prop + "Origin"];
+	var actual = getComputedStyle(div)[prefixProp("transformOrigin")];
 	var re = expectedZ == 0
 		? /^([^ ]+)px ([^ ]+)px$/
 		: /^([^ ]+)px ([^ ]+)px ([^ ]+)px$/;

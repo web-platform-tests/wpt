@@ -70,6 +70,8 @@ body > div > div { padding-left: 10px; width: 105px }
 <script>
 "use strict";
 
+// Needs reftests: transform-style, backface-visibility.
+
 section = "parsing";
 
 // Test case-sensitivity and other parsing issues
@@ -100,8 +102,27 @@ section = "parsing";
 	 "scale(2) rotateZ(90deg,90deg)", "scale(2) rotateZ(1,0,0,90deg)",
 	 "scale(2) skew(90deg,90deg,90deg)",
 	 // Wrong unit
-	 "scale(2) rotate3d(90deg,1,0,0)", "scale(2) perspective(10deg)",
-	 "scale(2) translateZ(10%)", "scale(2) translate(10px,10px,10%)",
+	 "scale(2) translate3d(10,10,10)", "scale(2) translate3d(10px,10px,10)",
+	 "scale(2) translate3d(10px,10,10px)",
+	 "scale(2) translate3d(10,10px,10px)",
+	 "scale(2) translate3d(10px,10px,10%)",
+	 "scale(2) translateZ(10)", "scale(2) translateZ(10%)",
+	 "scale(2) scale3d(10,10,10px)", "scale(2) scale3d(10,10px,10)",
+	 "scale(2) scale3d(10px,10,10)", "scale(2) scale3d(10px,10px,10px)",
+	 "scale(2) scale3d(10,10,10%)", "scale(2) scale3d(10,10%,10)",
+	 "scale(2) scale3d(10%,10,10)", "scale(2) scale3d(10%,10%,10%)",
+	 "scale(2) scaleZ(10px)", "scale(2) scaleZ(10%)",
+	 "scale(2) rotate3d(0,0,1,10px)", "scale(2) rotate3d(1px,0,0,90deg)",
+	 "scale(2) rotate3d(1,0px,0,90deg)", "scale(2) rotate3d(1,0,0px,90deg)",
+	 "scale(2) rotate3d(90deg,1,0,0)", "scale(2) rotate3d(1,0,0,1)",
+	 "scale(2) rotate3d(10%,10%,10%,90deg)", "scale(2) rotate3d(1,0,0,10%)",
+	 "scale(2) rotateX(10px)", "scale(2) rotateX(10%)", "scale(2) rotateX(10)",
+	 "scale(2) rotateY(10px)", "scale(2) rotateY(10%)", "scale(2) rotateY(10)",
+	 "scale(2) rotateZ(10px)", "scale(2) rotateZ(10%)", "scale(2) rotateZ(10)",
+	 "scale(2) skew(10px,10px)", "scale(2) skew(0deg,10px)",
+	 "scale(2) skew(10px,0deg)", "scale(2) skew(10,10)",
+	 "scale(2) skew(0deg,10)", "scale(2) skew(10,0deg)",
+	 "scale(2) perspective(100)", "scale(2) perspective(10deg)",
 	 "scale(2) perspective(10%)",
 	 // perspective() with nonpositive lengths is not allowed
 	 "scale(2) perspective(-1px)", "scale(2) perspective(-100em)",
@@ -165,6 +186,7 @@ section = "parsing";
 	arr[0].forEach(function(transform, i) {
 		var transformKeyword = {0: "TRANSFORM", 1: "tRAnSFoRM", 2: "transform"}[i%3];
 		test(function() {
+			div.removeAttribute("style");
 			div.style[prop.replace("transform", transformKeyword)] = transform;
 			testTransformParsing(arr.slice(1));
 		}, 'Computed value for "' + transformKeyword + ": " + transform + '" set via CSSOM');

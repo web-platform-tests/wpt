@@ -120,6 +120,18 @@ section = "parsing";
 	  "scale(2) rotate(1,1,90deg)", "scale(2) rotate(90deg,1,1)",
 	  "scale(2) rotate(90deg,1,1,1)", "scale(2) skewX(90deg,90deg)",
 	  "scale(2) skewY(90deg,90deg)",
+	  // Wrong unit
+	 "scale(2) translate(10,10)", "scale(2) translate(10px,10)",
+	 "scale(2) translate(10,10px)", "scale(2) translateX(10)",
+	 "scale(2) translateY(10)",
+	 "scale(2) scale(10px,10px)", "scale(2) scale(10px,10)",
+	 "scale(2) scale(10,10px)", "scale(2) scale(10%,10%)",
+	 "scale(2) scale(10%,10)", "scale(2) scale(10,10%)",
+	 "scale(2) scaleX(10px)", "scale(2) scaleX(10%)",
+	 "scale(2) scaleY(10px)", "scale(2) scaleY(10%)",
+	 "scale(2) rotate(10px)", "scale(2) rotate(10%)", "scale(2) rotate(10)",
+	 "scale(2) skewX(10px)", "scale(2) skewX(10)",
+	 "scale(2) skewY(10px)", "scale(2) skewY(10)",
 	  // FIXME: <angle> doesn't allow "0" with no unit, except really it does
 	  // https://www.w3.org/Bugs/Public/show_bug.cgi?id=15598
 	  //"scale(2) rotate(0)", "scale(2) skewX(0)", "scale(2) skewY(0)",

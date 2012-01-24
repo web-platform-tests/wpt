@@ -3,6 +3,14 @@
 // context/containing block, fixed backgrounds, specificity of SVG transform
 // attribute, inheritance (computed values)
 //
+// TODO: Note in particular that WebKit appears to resolve relative lengths for
+// the computed value of transform, other browsers don't.  And IE seems to
+// *not* resolve relative lengths for the computed value of transform-origin,
+// but other browsers do.  But everyone seems to not resolve percents for
+// transform-origin.
+//
+// TODO: CSSTransformList?
+//
 // FIXME: CSSMatrix seems not to be implemented by most UAs.
 // https://www.w3.org/Bugs/Public/show_bug.cgi?id=15443
 //
@@ -11,6 +19,7 @@
 // Not for now: transitions, animations
 var div = document.querySelector("#test");
 var divWidth = 100, divHeight = 50;
+var divParentWidth = 120, divParentHeight = 70;
 // Arbitrarily chosen epsilon that makes browsers mostly pass with some extra
 // breathing room, since the specs don't define rounding for display.
 var pixelEpsilon = 1.5;
@@ -163,9 +172,13 @@ function convertToRad(input) {
 }
 
 /**
- * Multiplies two 2x3 matrices.
+ * Multiplies two or more 2x3 matrices passed as one-dimensional column-major
+ * arrays (interpreted as 3x3 matrices with bottom row 0 0 1).
  */
 function mxmul23(A, B) {
+	if (arguments.length > 2) {
+		return mxmul23(A, mxmul23.apply(this, [].slice.call(arguments, 1)));
+	}
 	return [
 		A[0]*B[0] + A[2]*B[1],
 		A[1]*B[0] + A[3]*B[1],
@@ -177,9 +190,13 @@ function mxmul23(A, B) {
 }
 
 /**
- * Multiplies two 4x4 matrices.
+ * Multiplies two or more 4x4 matrices passed as one-dimensional column-major
+ * arrays.
  */
 function mxmul44(A, B) {
+	if (arguments.length > 2) {
+		return mxmul44(A, mxmul44.apply(this, [].slice.call(arguments, 1)));
+	}
 	A = [A.slice(0, 4), A.slice(4, 8), A.slice(8, 12), A.slice(12, 16)];
 	B = [B.slice(0, 4), B.slice(4, 8), B.slice(8, 12), B.slice(12, 16)];
 	var C = [];
@@ -442,7 +459,8 @@ function testTransformedBoundary(transformValue, mx,
 				div.style[prefixProp("transform")] = transformValue;
 				div.style[prefixProp("transformOrigin")] = transformOriginValue;
 			} else {
-				div.setAttribute("style", prefixHyphenatedProp("transform") + ": " + transformValue + "; "
+				div.setAttribute("style",
+					prefixHyphenatedProp("transform") + ": " + transformValue + "; "
 					+ prefixHyphenatedProp("transform-origin") + ": " + transformOriginValue);
 			}
 			testTransformedBoundaryAsserts(expectedTop, expectedRight, expectedBottom, expectedLeft);
@@ -615,4 +633,112 @@ function testTransformOriginParsing(expectedX, expectedY, expectedZ) {
 		assert_approx_equals(Number(match[3]), expectedZ, computedEpsilon,
 			"Value of Z part" + msg);
 	}
+}
+
+function testPerspective(value, originValue, expectedX, expectedY) {
+	testPerspectiveParsing(value);
+
+	// TODO: Test boundaries, when I get access to more than one implementation
+	// that actually supports the perspective property.
+}
+
+/**
+ * Tests that getComputedStyle(div.parentNode).perspective is either "none" or
+ * a number of pixels, dependent on the value passed.
+ *
+ * TODO: Support stripping whitespace, etc.
+ *
+ * FIXME: Resolved values are not defined properly
+ * https://www.w3.org/Bugs/Public/show_bug.cgi?id=15681
+ */
+function testPerspectiveParsing(value) {
+	var useCssom = getUseCssom();
+	test(function() {
+		if (useCssom) {
+			div.parentNode.style[prefixProp("perspective")] = value;
+		} else {
+			div.parentNode.setAttribute("style",
+				prefixHyphenatedProp("perspective") + ": " + value);
+		}
+
+		var actual = getComputedStyle(div.parentNode)[prefixProp("perspective")];
+		if (convertToPx(value) === null
+		|| convertToPx(value) <= 0) {
+			assert_equals(actual, "none");
+			return;
+		}
+		assert_regexp_match(actual, /^[0-9]+(\.[0-9]+)?px$/, "Computed value has unexpected form");
+		assert_approx_equals(parseFloat(actual), convertToPx(value), computedEpsilon);
+	}, "Computed value for perspective "
+	+ 'with "perspective: ' + value + '" '
+	+ "set via " + (useCssom ? "CSSOM" : "setAttribute()"));
+
+	div.parentNode.removeAttribute("style");
+}
+
+/**
+ * Tests that getComputedStyle(div.parentNode).perspectiveOrigin is
+ *   expectedX + "px " + expectedY + "px".
+ *
+ * FIXME: Resolved values are not defined properly
+ * https://www.w3.org/Bugs/Public/show_bug.cgi?id=15681
+ *
+ * FIXME: WebKit clamps to whole pixels, and transform-origin too.  Need to
+ * file spec bug to confirm this is wrong.
+ */
+function testPerspectiveOrigin(value, expectedX, expectedY) {
+	if (expectedX == "left") {
+		expectedX = "0%";
+	} else if (expectedX == "center") {
+		expectedX = "50%";
+	} else if (expectedX == "right") {
+		expectedX = "100%";
+	}
+	if (expectedY == "top") {
+		expectedY = "0%";
+	} else if (expectedY == "center") {
+		expectedY = "50%";
+	} else if (expectedY == "bottom") {
+		expectedY = "100%";
+	}
+
+	if (/%$/.test(expectedX) || /%$/.test(expectedY)) {
+		// FIXME: Gecko and WebKit disagree, and spec doesn't say which is
+		// right https://www.w3.org/Bugs/Public/show_bug.cgi?id=15681
+		//
+		// FIXME: What does "refer to the size of the element's box" mean?
+		// Border box?  Need to file spec bug.
+		return;
+	}
+
+	expectedX = convertToPx(expectedX, divParentWidth);
+	expectedY = convertToPx(expectedY, divParentHeight);
+
+	var useCssom = getUseCssom();
+	test(function() {
+		if (useCssom) {
+			div.parentNode.style[prefixProp("perspectiveOrigin")] = value;
+		} else {
+			div.parentNode.setAttribute("style",
+				prefixHyphenatedProp("perspective-origin") + ":" + value);
+		}
+
+		var actual = getComputedStyle(div.parentNode)[prefixProp("perspectiveOrigin")];
+		var re = /^([^ ]+)px ([^ ]+)px$/;
+		assert_regexp_match(actual, re, "Computed value has unexpected form");
+		var match = re.exec(actual);
+
+		var msg = ' (actual: "' + actual + '", expected: "'
+			+ expectedX + "px " + expectedY + 'px")';
+
+		assert_approx_equals(Number(match[1]), expectedX, computedEpsilon,
+			"Value of X part" + msg);
+
+		assert_approx_equals(Number(match[2]), expectedY, computedEpsilon,
+			"Value of Y part" + msg);
+	}, "Computed value for perspective-origin "
+	+ 'with "perspective-origin: "' + value + '" '
+	+ "set via " + (useCssom ? "CSSOM" : "setAttribute()"));
+
+	div.parentNode.removeAttribute("style");
 }

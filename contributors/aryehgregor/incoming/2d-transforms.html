@@ -316,7 +316,7 @@ transforms.forEach(function(trans1) {
 		testTransformedBoundary([trans1[0], trans2[0], "none"], mx);
 
 		transforms.forEach(function(trans3) {
-			var mx = mxmul23(mxmul23(trans1.slice(1), trans2.slice(1)), trans3.slice(1));
+			var mx = mxmul23(trans1.slice(1), trans2.slice(1), trans3.slice(1));
 			testTransform(trans1[0] + " " + trans2[0] + " " + trans3[0], mx);
 			testTransformedBoundary([trans1[0], trans2[0], trans3[0]], mx);
 		});

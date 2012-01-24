@@ -423,7 +423,7 @@ transforms.forEach(function(trans1) {
 		testTransformedBoundary([trans1[0], trans2[0], "none"], mx);
 
 		transforms.forEach(function(trans3) {
-			var mx = mxmul44(mxmul44(trans1.slice(1), trans2.slice(1)), trans3.slice(1));
+			var mx = mxmul44(trans1.slice(1), trans2.slice(1), trans3.slice(1));
 			testTransform(trans1[0] + " " + trans2[0] + " " + trans3[0], mx);
 			testTransformedBoundary([trans1[0], trans2[0], trans3[0]], mx);
 		});
@@ -435,7 +435,7 @@ transforms.forEach(function(trans1) {
 // Test transform-origin
 // FIXME: Spec's description is confusing, not completely clear that this is
 // per spec https://www.w3.org/Bugs/Public/show_bug.cgi?id=15631
-section = "origin";
+section = "transform-origin";
 percentagesAndLengths
 .slice(0, 7)
 .forEach(function(arg3) {
@@ -472,6 +472,67 @@ percentagesAndLengths
 		});
 	});
 });
+
+
+// Test perspective and perspective-origin
+section = "perspective-origin";
+
+// Test perspective-origin with one argument.
+[
+	["none", "50%", "50%"],
+	["NONE", "50%", "50%"],
+	["nOnE", "50%", "50%"],
+	["quasit", "50%", "50%"],
+	["top", "50%", "0%"],
+	["TOP", "50%", "0%"],
+	["tOp", "50%", "0%"],
+	["right", "100%", "50%"],
+	["RIGHT", "100%", "50%"],
+	["rIgHt", "100%", "50%"],
+	["bottom", "50%", "100%"],
+	["BOTTOM", "50%", "100%"],
+	["bOtToM", "50%", "100%"],
+	["left", "0%", "50%"],
+	["LEFT", "0%", "50%"],
+	["lEfT", "0%", "50%"],
+	["center", "50%", "50%"],
+	["CENTER", "50%", "50%"],
+	["cEnTeR", "50%", "50%"],
+	["37%", "37%", "50%"],
+	["117%", "117%", "50%"],
+	["41.2px", "41.2px", "50%"],
+	["-31.8px", "-31.8px", "50%"],
+].forEach(function(arr) {
+	testPerspectiveOrigin(arr[0], arr[1], arr[2]);
+});
+
+// Test perspective-origin with two arguments.
+["left", "center", "right"].concat(percentagesAndLengths).forEach(function(arg1) {
+	["top", "center", "bottom"].concat(percentagesAndLengths).forEach(function(arg2) {
+		testPerspectiveOrigin(arg1 + " " + arg2, arg1, arg2);
+	});
+});
+
+// Test in backwards order too
+["top", "center", "bottom"].forEach(function(arg1) {
+	["left", "center", "right"].forEach(function(arg2) {
+		if (arg1 == "center" && arg2 == "center") {
+			// Already tested
+			return;
+		}
+		testPerspectiveOrigin(arg1 + " " + arg2, arg2, arg1);
+	});
+});
+
+section = "perspective-prop";
+
+testPerspective("none", "50% 50%", "50%", "50%");
+testPerspective("NONE", "50% 50%", "50%", "50%");
+testPerspective("nOnE", "50% 50%", "50%", "50%");
+testPerspective("100px", "50% 50%", "50%", "50%");
+testPerspective("100px", "25% 25%", "25%", "25%");
+testPerspective("100px", "0 0", "0", "0");
+testPerspective("100px", "1000px 1000px", "1000px", "1000px");
 
 [].forEach.call(document.querySelectorAll("style"), function(style) {style.disabled = true});
 div.parentNode.removeChild(div);

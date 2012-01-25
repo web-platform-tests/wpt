@@ -22,6 +22,9 @@ var divWidth = 100, divHeight = 50;
 var divParentWidth = 120, divParentHeight = 70;
 // Arbitrarily chosen epsilon that makes browsers mostly pass with some extra
 // breathing room, since the specs don't define rounding for display.
+//
+// FIXME: These need to be specified.
+// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15709
 var pixelEpsilon = 1.5;
 // A much smaller epsilon for computed style values, since there's no good
 // reason for those to be very far off.  Some UAs do a bunch of rounding, but
@@ -682,9 +685,6 @@ function testPerspectiveParsing(value) {
  *
  * FIXME: Resolved values are not defined properly
  * https://www.w3.org/Bugs/Public/show_bug.cgi?id=15681
- *
- * FIXME: WebKit clamps to whole pixels, and transform-origin too.  Need to
- * file spec bug to confirm this is wrong.
  */
 function testPerspectiveOrigin(value, expectedX, expectedY) {
 	if (expectedX == "left") {
@@ -707,7 +707,7 @@ function testPerspectiveOrigin(value, expectedX, expectedY) {
 		// right https://www.w3.org/Bugs/Public/show_bug.cgi?id=15681
 		//
 		// FIXME: What does "refer to the size of the element's box" mean?
-		// Border box?  Need to file spec bug.
+		// Border box?  https://www.w3.org/Bugs/Public/show_bug.cgi?id=15708
 		return;
 	}
 

@@ -132,12 +132,20 @@ section = "parsing";
 	 //"scale(2) rotate3d(1,0,0,0)", "scale(2) rotateX(0)",
 	 //"scale(2) rotateY(0)", "scale(2) rotateZ(0)", "scale(2) skew(90deg,0)",
 	 //"scale(2) skew(0,90deg)", "scale(2) skew(0,0)",
-	 // The spec says <number> for all entries, so pixels are not allowed in
-	 // any of the entries
+	 // The spec says <number> for all entries, so lengths and percentages are
+	 // not allowed in any of the entries.  FIXME: Mozilla wants this changed.
+	 // https://www.w3.org/Bugs/Public/show_bug.cgi?id=15628
 	 "scale(2) matrix3d(1,2,3,4,5,6,7,8,9,10,11,12,1px,14,15,16)",
 	 "scale(2) matrix3d(1,2,3,4,5,6,7,8,9,10,11,12,13,1px,15,16)",
 	 "scale(2) matrix3d(1,2,3,4,5,6,7,8,9,10,11,12,13,14,1px,16)",
 	 "scale(2) matrix3d(1,2,3,4,5,6,7,8,9,10,11,12,1px,1px,1px,16)",
+	 "scale(2) matrix3d(1,2,3,4,5,6,7,8,9,10,11,12,1%,14,15,16)",
+	 "scale(2) matrix3d(1,2,3,4,5,6,7,8,9,10,11,12,13,1%,15,16)",
+	 // Even if we allowed <translation-value>s, we would only allow <length>
+	 // for the z-translation entry, so these should be parse errors regardless
+	 // (and indeed they are, even in Gecko).
+	 "scale(2) matrix3d(1,2,3,4,5,6,7,8,9,10,11,12,13,14,1%,16)",
+	 "scale(2) matrix3d(1,2,3,4,5,6,7,8,9,10,11,12,1%,1%,1%,16)",
 	]],
 	[["matrix3d(1,2,3,0,4,5,6,0,7,8,9,0,10,11,12,1)",
 	  "MATRIX3D(1,2,3,0,4,5,6,0,7,8,9,0,10,11,12,1)",
@@ -477,7 +485,9 @@ percentagesAndLengths
 // Test perspective and perspective-origin
 section = "perspective-origin";
 
-// Test perspective-origin with one argument.
+// Test perspective-origin with one argument.  FIXME: Not technically defined
+// by the spec, although the intent is guessable.
+// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15680
 [
 	["none", "50%", "50%"],
 	["NONE", "50%", "50%"],

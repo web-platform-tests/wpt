@@ -319,6 +319,9 @@ function testTransform(value, mx) {
  * while other engines don't, and the spec is unclear about which behavior is
  * correct: https://www.w3.org/Bugs/Public/show_bug.cgi?id=15431
  *
+ * FIXME: This does not actually match the 3D Transforms spec.
+ * https://www.w3.org/Bugs/Public/show_bug.cgi?id=15535
+ *
  * If mx has six entries, it's equivalent to a 4x4 matrix with 0's and 1's in
  * the right places.  If it has sixteen entries, the required output format is
  * still matrix() instead of matrix3d() if it's equivalent to a 2D matrix.

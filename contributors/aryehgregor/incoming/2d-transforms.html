@@ -365,5 +365,16 @@ section = "origin";
 // revision history for tests
 // https://www.w3.org/Bugs/Public/show_bug.cgi?id=15432
 
+// Test inheritance.  Relative lengths need to be resolved to absolute, but
+// percentages must not be resolved.
+setStyles(undefined, {transformOrigin: "25px 25px"});
+testTransformOrigin("inherit", "25px", "25px");
+setStyles(undefined, {transformOrigin: "0% 75%"});
+testTransformOrigin("inherit", "0%", "75%");
+setStyles(undefined,
+	{transformOrigin: "inherit", fontSize: "0.5em"},
+	{transformOrigin: "1em 1em", fontSize: "2em"});
+testTransformOrigin("inherit", "2em", "2em");
+
 [].forEach.call(document.querySelectorAll("style"), function(style) {style.disabled = true});
 </script>

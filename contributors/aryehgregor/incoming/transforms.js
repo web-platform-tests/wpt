@@ -1,4 +1,5 @@
 "use strict";
+//@{
 // TODO: Test images, interaction with SVG, creation of stacking
 // context/containing block, fixed backgrounds, specificity of SVG transform
 // attribute, inheritance (computed values)
@@ -13,6 +14,9 @@
 //
 // FIXME: CSSMatrix seems not to be implemented by most UAs.
 // https://www.w3.org/Bugs/Public/show_bug.cgi?id=15443
+//
+// FIXME: Test serialization of inline style once that's defined
+// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15710
 //
 // Probably requires reftests: interaction with overflow
 //
@@ -63,8 +67,10 @@ div.removeAttribute("style");
 
 var switchStyles = document.querySelectorAll("style.switch");
 [].forEach.call(switchStyles, function(style) { style.disabled = true });
+//@}
 
 // Track how many tests we're running for each section of the test files
+//@{
 var section;
 var sectionCounts = {};
 add_result_callback(function() {
@@ -83,6 +89,7 @@ add_completion_callback(function() {
 	msg += "total " + total;
 	document.body.appendChild(document.createTextNode(msg));
 });
+//@}
 
 /**
  * Account for prefixing so that I can check whether browsers actually follow
@@ -91,6 +98,7 @@ add_completion_callback(function() {
  * "msTransformOrigin", "mozTransformOrigin", etc. as appropriate.
  */
 function prefixProp(s) {
+//@{
 	if (s in div.style) {
 		return s;
 	}
@@ -103,6 +111,7 @@ function prefixProp(s) {
 	}
 	return undefined;
 }
+//@}
 
 /**
  * Likewise, but gives the hyphenated version.
@@ -110,6 +119,7 @@ function prefixProp(s) {
  * "-moz-transform-origin", etc.
  */
 function prefixHyphenatedProp(s) {
+//@{
 	s = s.split("-")
 		.map(function(bit, i) {
 			return i == 0 ? bit : bit[0].toUpperCase() + bit.slice(1)
@@ -120,6 +130,7 @@ function prefixHyphenatedProp(s) {
 	return s.replace(/([A-Z])/g, "-$1")
 		.toLowerCase();
 }
+//@}
 
 /**
  * Accepts a string that's a CSS length or percentage, and returns a number of
@@ -127,6 +138,7 @@ function prefixHyphenatedProp(s) {
  * accepted, percentRef must not be undefined.
  */
 function convertToPx(input, percentRef) {
+//@{
 	var match = /^([-+]?[0-9]+|[-+]?[0-9]*\.[0-9]+)(em|ex|in|cm|mm|pt|pc|px|%)?$/.exec(input);
 	if (!match) {
 		return null;
@@ -154,12 +166,14 @@ function convertToPx(input, percentRef) {
 		"%": percentRef/100,
 	}[unit];
 }
+//@}
 
 /**
  * Accepts a string that's a CSS angle, and returns a number of radians (not a
  * string), or null if parsing fails.
  */
 function convertToRad(input) {
+//@{
 	var match = /^([-+]?[0-9]+|[-+]?[0-9]*\.[0-9]+)(deg|grad|rad|turn)$/.exec(input);
 	if (!match) {
 		return null;
@@ -173,12 +187,14 @@ function convertToRad(input) {
 		turn: 2*Math.PI,
 	}[unit];
 }
+//@}
 
 /**
  * Multiplies two or more 2x3 matrices passed as one-dimensional column-major
  * arrays (interpreted as 3x3 matrices with bottom row 0 0 1).
  */
 function mxmul23(A, B) {
+//@{
 	if (arguments.length > 2) {
 		return mxmul23(A, mxmul23.apply(this, [].slice.call(arguments, 1)));
 	}
@@ -191,12 +207,14 @@ function mxmul23(A, B) {
 		A[1]*B[4] + A[3]*B[5] + A[5]
 	];
 }
+//@}
 
 /**
  * Multiplies two or more 4x4 matrices passed as one-dimensional column-major
  * arrays.
  */
 function mxmul44(A, B) {
+//@{
 	if (arguments.length > 2) {
 		return mxmul44(A, mxmul44.apply(this, [].slice.call(arguments, 1)));
 	}
@@ -214,12 +232,14 @@ function mxmul44(A, B) {
 	}
 	return C[0].concat(C[1]).concat(C[2]).concat(C[3]);
 }
+//@}
 
 /**
  * Given a sixteen-element numeric array mx in column-major order, returns true
  * if it's equivalent to a six-element array (a 2D matrix), false otherwise.
  */
 function is2dMatrix(mx) {
+//@{
 	// Use a really small epsilon here.  Otherwise we'll think perspective
 	// matrices are 2D.
 	var e = 1.0e-5;
@@ -237,6 +257,7 @@ function is2dMatrix(mx) {
 		&& Math.abs(mx[14]) < e
 		&& Math.abs(mx[15] - 1) < e;
 }
+//@}
 
 /**
  * Returns true or false every time it's called.  It more or less alternates,
@@ -244,6 +265,7 @@ function is2dMatrix(mx) {
  * other cyclic things (these are quite repetitive tests).
  */
 function getUseCssom() {
+//@{
 	if (getUseCssom.counter === undefined) {
 		getUseCssom.counter = 0;
 	}
@@ -251,6 +273,7 @@ function getUseCssom() {
 	getUseCssom.counter %= 17;
 	return Boolean(getUseCssom.counter % 2);
 }
+//@}
 
 /**
  * Returns the rotation matrix used for rotate3d(x, y, z, angle).  FIXME: I've
@@ -258,6 +281,7 @@ function getUseCssom() {
  * https://www.w3.org/Bugs/Public/show_bug.cgi?id=15610
  */
 function getRotationMatrix(x, y, z, angle) {
+//@{
 	var rads = convertToRad(angle);
 	var len = Math.sqrt(x*x + y*y + z*z);
 	x /= len;
@@ -282,6 +306,7 @@ function getRotationMatrix(x, y, z, angle) {
 		0, 0, 0, 1];
 	return ret;
 }
+//@}
 
 
 /**
@@ -290,6 +315,7 @@ function getRotationMatrix(x, y, z, angle) {
  * value and bounding box.
  */
 function testTransform(value, mx) {
+//@{
 	var useCssom = getUseCssom();
 	test(function() {
 		if (useCssom) {
@@ -303,6 +329,7 @@ function testTransform(value, mx) {
 	+ '" set via ' + (useCssom ? "CSSOM" : "setAttribute()"));
 	testTransformedBoundary(value, mx);
 }
+//@}
 
 /**
  * Tests that div's computed style for transform is "matrix(...)" or
@@ -327,6 +354,7 @@ function testTransform(value, mx) {
  * still matrix() instead of matrix3d() if it's equivalent to a 2D matrix.
  */
 function testTransformParsing(mx) {
+//@{
 	if (mx.length == 0) {
 		assert_regexp_match(getComputedStyle(div)[prefixProp("transform")],
 			/^(none|matrix\(1, 0, 0, 1, 0, 0\))$/,
@@ -368,6 +396,7 @@ function testTransformParsing(mx) {
 			"getComputedStyle matrix component " + i + msg);
 	}
 }
+//@}
 
 /**
  * Tests that
@@ -386,6 +415,7 @@ function testTransformParsing(mx) {
  */
 function testTransformedBoundary(transformValue, mx,
                                  transformOriginValue, xOffset, yOffset, zOffset) {
+//@{
 	if (mx.length == 0) {
 		mx = [1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1];
 	}
@@ -503,8 +533,10 @@ function testTransformedBoundary(transformValue, mx,
 		div.parentNode.parentNode.removeAttribute("style");
 	}
 }
+//@}
 
 function testTransformedBoundaryAsserts(expectedTop, expectedRight, expectedBottom, expectedLeft) {
+//@{
 	// FIXME: We assume getBoundingClientRect() returns the rectangle
 	// that contains the transformed box, not the untransformed box.
 	// This is not actually specified anywhere:
@@ -525,6 +557,7 @@ function testTransformedBoundaryAsserts(expectedTop, expectedRight, expectedBott
 	assert_approx_equals(rect.width, expectedRight - expectedLeft, pixelEpsilon, "width" + msg);
 	assert_approx_equals(rect.height, expectedBottom - expectedTop, pixelEpsilon, "height" + msg);
 }
+//@}
 
 /**
  * Test that "transform-origin: value" acts like the origin is at
@@ -533,6 +566,7 @@ function testTransformedBoundaryAsserts(expectedTop, expectedRight, expectedBott
  * correct, and that the boundary box is as expected for a 45-degree rotation.
  */
 function testTransformOrigin(value, expectedX, expectedY, expectedZ) {
+//@{
 	if (expectedX == "left") {
 		expectedX = "0%";
 	} else if (expectedX == "center") {
@@ -605,6 +639,7 @@ function testTransformOrigin(value, expectedX, expectedY, expectedZ) {
 		value, expectedX, expectedY, expectedZ
 	);
 }
+//@}
 
 /**
  * Tests that style="transform-origin: value" results in
@@ -614,6 +649,7 @@ function testTransformOrigin(value, expectedX, expectedY, expectedZ) {
  *   expectedX + "px " + expectedY + "px".
  */
 function testTransformOriginParsing(expectedX, expectedY, expectedZ) {
+//@{
 	if (expectedZ === undefined) {
 		expectedZ = 0;
 	}
@@ -640,13 +676,16 @@ function testTransformOriginParsing(expectedX, expectedY, expectedZ) {
 			"Value of Z part" + msg);
 	}
 }
+//@}
 
 function testPerspective(value, originValue, expectedX, expectedY) {
+//@{
 	testPerspectiveParsing(value);
 
 	// TODO: Test boundaries, when I get access to more than one implementation
 	// that actually supports the perspective property.
 }
+//@}
 
 /**
  * Tests that getComputedStyle(div.parentNode).perspective is either "none" or
@@ -658,6 +697,7 @@ function testPerspective(value, originValue, expectedX, expectedY) {
  * https://www.w3.org/Bugs/Public/show_bug.cgi?id=15681
  */
 function testPerspectiveParsing(value) {
+//@{
 	var useCssom = getUseCssom();
 	test(function() {
 		if (useCssom) {
@@ -681,6 +721,7 @@ function testPerspectiveParsing(value) {
 
 	div.parentNode.removeAttribute("style");
 }
+//@}
 
 /**
  * Tests that getComputedStyle(div.parentNode).perspectiveOrigin is
@@ -690,6 +731,7 @@ function testPerspectiveParsing(value) {
  * https://www.w3.org/Bugs/Public/show_bug.cgi?id=15681
  */
 function testPerspectiveOrigin(value, expectedX, expectedY) {
+//@{
 	if (expectedX == "left") {
 		expectedX = "0%";
 	} else if (expectedX == "center") {
@@ -745,3 +787,6 @@ function testPerspectiveOrigin(value, expectedX, expectedY) {
 
 	div.parentNode.removeAttribute("style");
 }
+//@}
+
+// vim: foldmarker=@{,@} foldmethod=marker

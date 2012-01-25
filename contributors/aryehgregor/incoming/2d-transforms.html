@@ -174,17 +174,8 @@ section = "parsing";
 		}, 'Computed value for "' + transformKeyword + ": " + transform + '" set via CSSOM');
 	});
 });
-div.removeAttribute("style");
 
-test(function() {
-	testTransformParsing([]);
-}, "Computed value for transform with no style attribute");
-test(function() {
-	// Not really a transform test, just included for completeness.  It can
-	// serve as something of a sanity check.
-	testTransformedBoundaryAsserts(0, divWidth, divHeight, 0);
-}, "Boundaries with no style attribute");
-
+testTransform("", []);
 testTransform("none", []);
 
 // Test style="transform: matrix(*)" (4^6 = 4096 permutations, but we only run

@@ -260,22 +260,6 @@ function is2dMatrix(mx) {
 //@}
 
 /**
- * Returns true or false every time it's called.  It more or less alternates,
- * but actually has a period of 17, so it won't repeat with the same period as
- * other cyclic things (these are quite repetitive tests).
- */
-function getUseCssom() {
-//@{
-	if (getUseCssom.counter === undefined) {
-		getUseCssom.counter = 0;
-	}
-	getUseCssom.counter++;
-	getUseCssom.counter %= 17;
-	return Boolean(getUseCssom.counter % 2);
-}
-//@}
-
-/**
  * Returns the rotation matrix used for rotate3d(x, y, z, angle).  FIXME: I've
  * followed what Gecko/WebKit actually do, not what the spec says.
  * https://www.w3.org/Bugs/Public/show_bug.cgi?id=15610
@@ -308,6 +292,108 @@ function getRotationMatrix(x, y, z, angle) {
 }
 //@}
 
+/**
+ * Sets the styles of the test div, its parent, and its grandparent.  It will
+ * sometimes use CSSOM and sometimes setAttribute(), in an arbitrary but
+ * deterministic fashion.  Each of the three arguments can be either undefined
+ * (meaning not to touch that element's style), or an object.  The object has
+ * a format like
+ *   {transform: "scale(2)", transformOrigin: "top 10px"}.
+ */
+function setStyles(divStyle, parentStyle, grandparentStyle) {
+//@{
+	// If any existing styles are being overwritten, toggle useCssom.
+	if ((setStyles.currentStyles[0] && divStyle && Object.keys(divStyle).length)
+	|| (setStyles.currentStyles[1] && parentStyle && Object.keys(parentStyle).length)
+	|| (setStyles.currentStyles[2] && grandparentStyle && Object.keys(grandparentStyle).length)) {
+		setStyles.useCssomCounter++;
+		setStyles.useCssomCounter %= 17;
+		setStyles.useCssom = Boolean(setStyles.useCssomCounter % 2);
+	}
+
+	if (divStyle) {
+		setStyles.currentStyles[0] = setStyle(div, divStyle);
+	}
+	if (parentStyle) {
+		setStyles.currentStyles[1] = setStyle(div.parentNode, parentStyle);
+	}
+	if (grandparentStyle) {
+		setStyles.currentStyles[2] =
+			setStyle(div.parentNode.parentNode, grandparentStyle);
+	}
+}
+//@}
+setStyles.currentStyles = ["", "", ""];
+setStyles.useCssomCounter = 0;
+setStyles.useCssom = false;
+
+/**
+ * Helper function for setStyle().
+ */
+function setStyle(node, style) {
+//@{
+	node.removeAttribute("style");
+
+	var ret = [];
+	// Used if !setStyles.useCssom
+	var textToSet = [];
+	for (var prop in style) {
+		if (style[prop] == "") {
+			continue;
+		}
+		var hyphenatedProp = prop.replace(/([A-Z])/g, "-$1").toLowerCase();
+		ret.push(hyphenatedProp + ": " + style[prop]);
+
+		if (setStyles.useCssom) {
+			node.style[prefixProp(prop)] = style[prop];
+		} else {
+			textToSet.push(prefixHyphenatedProp(hyphenatedProp)
+				+ ": " + style[prop]);
+		}
+	}
+	if (!setStyles.useCssom) {
+		node.setAttribute("style", textToSet.join("; "));
+	}
+	return ret.join("; ");
+}
+//@}
+
+/**
+ * Returns a string describing the style attributes currently in effect on the
+ * test div and its parents/grandparents, like
+ *   with "transform: scale(1.2, 1); transform-origin: 50% 50%", set via CSSOM
+ * or
+ *   with "transform: matrix(4, -7, 2.3, -3.8, 6, 6)" on test div's
+ *   grandparent, "transform: matrix(4, -7, 2.3, -3.8, 6, 6)" on its parent,
+ *   "transform: none; transform-origin: 50% 50%" on test div, set via
+ *   setAttribute()
+ * This relies on setStyles() being used, rather than direct manipulation of
+ * attributes or CSSOM.
+ */
+function getStyleDescription() {
+//@{
+	var styleText = [];
+	if (setStyles.currentStyles[2]) {
+		styleText.push('"' + setStyles.currentStyles[2] + '"'
+			+ " on test div's grandparent");
+	}
+	if (setStyles.currentStyles[1]) {
+		styleText.push('"' + setStyles.currentStyles[1] + '"'
+			+ " on test div's parent");
+	}
+	if (setStyles.currentStyles[0]) {
+		styleText.push('"' + setStyles.currentStyles[0] + '"'
+			+ (styleText.length ? " on test div" : ""));
+	}
+	if (styleText.length) {
+		return "with "
+			+ styleText.join(", ");
+			+ ", set via " + (setStyles.useCssom ? "CSSOM" : "setAttribute()");
+	}
+	return "with no attributes set";
+}
+//@}
+
 
 /**
  * Tests that style="transform: value" results in transformation by the matrix
@@ -316,17 +402,10 @@ function getRotationMatrix(x, y, z, angle) {
  */
 function testTransform(value, mx) {
 //@{
-	var useCssom = getUseCssom();
+	setStyles({transform: value});
 	test(function() {
-		if (useCssom) {
-			div.removeAttribute("style");
-			div.style[prefixProp("transform")] = value;
-		} else {
-			div.setAttribute("style", prefixHyphenatedProp("transform") + ": " + value);
-		}
 		testTransformParsing(mx);
-	}, 'Computed value for "transform: ' + value
-	+ '" set via ' + (useCssom ? "CSSOM" : "setAttribute()"));
+	}, "Computed value for transform " + getStyleDescription());
 	testTransformedBoundary(value, mx);
 }
 //@}
@@ -487,50 +566,23 @@ function testTransformedBoundary(transformValue, mx,
 	testTransformedBoundary.switchStyleIdx %= 19;
 	switchStyles[testTransformedBoundary.switchStyleIdx % switchStyles.length].disabled = false;
 
-	var useCssom = getUseCssom();
 	if (typeof transformValue == "string") {
+		setStyles({transform: transformValue,
+			transformOrigin: transformOriginValue})
 		test(function() {
-			if (useCssom) {
-				div.removeAttribute("style");
-				div.style[prefixProp("transform")] = transformValue;
-				div.style[prefixProp("transformOrigin")] = transformOriginValue;
-			} else {
-				div.setAttribute("style",
-					prefixHyphenatedProp("transform") + ": " + transformValue + "; "
-					+ prefixHyphenatedProp("transform-origin") + ": " + transformOriginValue);
-			}
 			testTransformedBoundaryAsserts(expectedTop, expectedRight, expectedBottom, expectedLeft);
-		}, "Boundaries with \"transform: " + transformValue + "; "
-		+ "transform-origin: " + transformOriginValue + "\" "
-		+ "set via " + (useCssom ? "CSSOM" : "setAttribute()") + "; "
+		}, "Boundaries " + getStyleDescription() + "; "
 		+ "switch style " + (testTransformedBoundary.switchStyleIdx % switchStyles.length));
 	} else {
+		setStyles({transform: transformValue[2],
+			transformOrigin: transformOriginValue},
+			{transform: transformValue[1]}, {transform: transformValue[0]});
 		test(function() {
-			if (useCssom) {
-				div.parentNode.parentNode.style[prefixProp("transform")] = transformValue[0];
-				div.parentNode.style[prefixProp("transform")] = transformValue[1];
-				div.removeAttribute("style");
-				div.style[prefixProp("transform")] = transformValue[2];
-				div.style[prefixProp("transformOrigin")] = transformOriginValue;
-			} else {
-				div.parentNode.parentNode.setAttribute("style",
-					prefixHyphenatedProp("transform") + ": " + transformValue[0]);
-				div.parentNode.setAttribute("style",
-					prefixHyphenatedProp("transform") + ": " + transformValue[1]);
-				div.setAttribute("style",
-					prefixHyphenatedProp("transform") + ": " + transformValue[2] + "; "
-					+ prefixHyphenatedProp("transform-origin") + ": " + transformOriginValue);
-			}
 			testTransformedBoundaryAsserts(expectedTop, expectedRight, expectedBottom, expectedLeft);
-		}, "Boundaries with \"transform: " + transformValue[0] + "\" on test div's grandparent, "
-		+ "\"transform: " + transformValue[1] + "\" on its parent, "
-		+ "\"transform: " + transformValue[2] + "; "
-		+ "transform-origin: " + transformOriginValue + "\" on test div, "
-		+ "set via " + (useCssom ? "CSSOM" : "setAttribute()") + "; "
+		}, "Boundaries " + getStyleDescription() + "; "
 		+ "switch style " + (testTransformedBoundary.switchStyleIdx % switchStyles.length));
 
-		div.parentNode.removeAttribute("style");
-		div.parentNode.parentNode.removeAttribute("style");
+		setStyles(undefined, {}, {});
 	}
 }
 //@}
@@ -605,23 +657,11 @@ function testTransformOrigin(value, expectedX, expectedY, expectedZ) {
 	testTransformOrigin.counter++;
 	div.removeAttribute("style");
 
-	if (getUseCssom()) {
-		test(function() {
-			div.style[prefixProp("transform")] = transformValue;
-			div.style[prefixProp("transformOrigin")] = value;
-			testTransformOriginParsing(expectedX, expectedY, expectedZ);
-		}, "Computed value for transform-origin "
-		+ 'with "transform: ' + transformValue + "; "
-		+ "transform-origin: " + value + '" set via CSSOM');
-	} else {
-		test(function() {
-			div.setAttribute("style", prefixHyphenatedProp("transform") + ": " + transformValue
-				+ "; " + prefixHyphenatedProp("transform-origin") + ":" + value);
-			testTransformOriginParsing(expectedX, expectedY, expectedZ);
-		}, "Computed value for transform-origin "
-		+ 'with "transform: ' + transformValue + "; "
-		+ "transform-origin: " + value + '" set via setAttribute()');
-	}
+	setStyles({transform: transformValue, transformOrigin: value});
+	test(function() {
+		testTransformOriginParsing(expectedX, expectedY, expectedZ);
+	}, "Computed value for transform-origin "
+	+ getStyleDescription());
 
 	// Test with a 45-degree rotation, since the effect of changing the origin
 	// will be easy to understand.  In the 3D case, rotate around an
@@ -698,15 +738,8 @@ function testPerspective(value, originValue, expectedX, expectedY) {
  */
 function testPerspectiveParsing(value) {
 //@{
-	var useCssom = getUseCssom();
+	setStyles({}, {perspective: value});
 	test(function() {
-		if (useCssom) {
-			div.parentNode.style[prefixProp("perspective")] = value;
-		} else {
-			div.parentNode.setAttribute("style",
-				prefixHyphenatedProp("perspective") + ": " + value);
-		}
-
 		var actual = getComputedStyle(div.parentNode)[prefixProp("perspective")];
 		if (convertToPx(value) === null
 		|| convertToPx(value) <= 0) {
@@ -715,11 +748,9 @@ function testPerspectiveParsing(value) {
 		}
 		assert_regexp_match(actual, /^[0-9]+(\.[0-9]+)?px$/, "Computed value has unexpected form");
 		assert_approx_equals(parseFloat(actual), convertToPx(value), computedEpsilon);
-	}, "Computed value for perspective "
-	+ 'with "perspective: ' + value + '" '
-	+ "set via " + (useCssom ? "CSSOM" : "setAttribute()"));
+	}, "Computed value for perspective " + getStyleDescription());
 
-	div.parentNode.removeAttribute("style");
+	setStyles(undefined, {});
 }
 //@}
 
@@ -759,15 +790,8 @@ function testPerspectiveOrigin(value, expectedX, expectedY) {
 	expectedX = convertToPx(expectedX, divParentWidth);
 	expectedY = convertToPx(expectedY, divParentHeight);
 
-	var useCssom = getUseCssom();
+	setStyles({}, {perspectiveOrigin: value});
 	test(function() {
-		if (useCssom) {
-			div.parentNode.style[prefixProp("perspectiveOrigin")] = value;
-		} else {
-			div.parentNode.setAttribute("style",
-				prefixHyphenatedProp("perspective-origin") + ":" + value);
-		}
-
 		var actual = getComputedStyle(div.parentNode)[prefixProp("perspectiveOrigin")];
 		var re = /^([^ ]+)px ([^ ]+)px$/;
 		assert_regexp_match(actual, re, "Computed value has unexpected form");
@@ -781,11 +805,9 @@ function testPerspectiveOrigin(value, expectedX, expectedY) {
 
 		assert_approx_equals(Number(match[2]), expectedY, computedEpsilon,
 			"Value of Y part" + msg);
-	}, "Computed value for perspective-origin "
-	+ 'with "perspective-origin: "' + value + '" '
-	+ "set via " + (useCssom ? "CSSOM" : "setAttribute()"));
+	}, "Computed value for perspective-origin " + getStyleDescription());
 
-	div.parentNode.removeAttribute("style");
+	setStyles(undefined, {});
 }
 //@}
 

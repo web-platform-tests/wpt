@@ -482,13 +482,15 @@ percentagesAndLengths
 });
 
 
-// Test perspective and perspective-origin
 section = "perspective-origin";
 
-// Test perspective-origin with one argument.  FIXME: Not technically defined
-// by the spec, although the intent is guessable.
+setStyles({}, {}, {});
+
+// Test perspective-origin with zero and one argument.  FIXME: Not technically
+// defined by the spec, although the intent is guessable.
 // https://www.w3.org/Bugs/Public/show_bug.cgi?id=15680
 [
+	["", "50%", "50%"],
 	["none", "50%", "50%"],
 	["NONE", "50%", "50%"],
 	["nOnE", "50%", "50%"],
@@ -534,15 +536,68 @@ section = "perspective-origin";
 	});
 });
 
+// Test inheritance.  perspective-origin should be inherited as an absolute
+// length, not relative; but percentages should be resolved after inheritance.
+// FIXME: Not defined this way by the spec, this matches WebKit.
+// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15681
+setStyles({}, {perspectiveOrigin: "25px 25px"}, {});
+testPerspectiveOrigin("inherit", "25px", "25px");
+setStyles({}, {perspectiveOrigin: "0% 75%"}, {});
+testPerspectiveOrigin("inherit", "0%", "75%");
+setStyles({},
+	{perspectiveOrigin: "inherit", fontSize: "0.5em"},
+	{perspectiveOrigin: "1em 1em", fontSize: "2em"});
+testPerspectiveOrigin("inherit", "2em", "2em");
+setStyles({}, {}, {});
+
 section = "perspective-prop";
 
-testPerspective("none", "50% 50%", "50%", "50%");
-testPerspective("NONE", "50% 50%", "50%", "50%");
-testPerspective("nOnE", "50% 50%", "50%", "50%");
-testPerspective("100px", "50% 50%", "50%", "50%");
-testPerspective("100px", "25% 25%", "25%", "25%");
-testPerspective("100px", "0 0", "0", "0");
-testPerspective("100px", "1000px 1000px", "1000px", "1000px");
+testPerspective("", "", "50%", "50%");
+testPerspective("none", "", "50%", "50%");
+testPerspective("NONE", "", "50%", "50%");
+testPerspective("nOnE", "", "50%", "50%");
+lengths.forEach(function(length) {
+	[
+		["", "50%", "50%"],
+		["8em -22px", "8em", "-22px"],
+		["0 0", "0", "0"],
+		["1000px 1000px", "1000px", "1000px"],
+		["top left", "top", "left"],
+	].forEach(function(origin) {
+		testPerspective(length, origin[0], origin[1], origin[2]);
+	});
+});
+
+// Test inheritance.  perspective should be inherited as an absolute length,
+// not relative.  FIXME: Not defined this way by the spec, but this matches
+// Gecko and WebKit.
+//
+// Note that only the perspective of the parent counts!  Grandparents don't do
+// anything with transform-style: flat (the default).
+setStyles({}, {}, {perspective: "100px"});
+testPerspectiveParsing("none");
+testPerspectiveBoundary("none");
+
+setStyles({}, {perspective: "inherit"}, {perspective: "100px"});
+testPerspectiveParsing("100px");
+testPerspectiveBoundary("100px");
+
+setStyles({}, {perspective: "20em"}, {});
+testPerspectiveParsing("20em");
+testPerspectiveBoundary("20em");
+
+setStyles({}, {perspective: "inherit", fontSize: "0.5em"},
+	{perspective: "10em", fontSize: "2em"});
+testPerspectiveParsing("20em");
+testPerspectiveBoundary("20em");
+
+setStyles({}, {perspective: "inherit"},
+	{perspective: "inherit", fontSize: "0.5em"},
+	{perspective: "10em", fontSize: "2em"});
+testPerspectiveParsing("20em");
+testPerspectiveBoundary("20em");
+
+setStyles({}, {}, {}, {});
 
 [].forEach.call(document.querySelectorAll("style"), function(style) {style.disabled = true});
 div.parentNode.removeChild(div);

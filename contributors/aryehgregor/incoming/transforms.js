@@ -293,19 +293,21 @@ function getRotationMatrix(x, y, z, angle) {
 //@}
 
 /**
- * Sets the styles of the test div, its parent, and its grandparent.  It will
- * sometimes use CSSOM and sometimes setAttribute(), in an arbitrary but
- * deterministic fashion.  Each of the three arguments can be either undefined
- * (meaning not to touch that element's style), or an object.  The object has
- * a format like
+ * Sets the styles of the test div, its parent, its grandparent, and the body.
+ * It will sometimes use CSSOM and sometimes setAttribute(), in an arbitrary
+ * but deterministic fashion.  Each of the four arguments can be either
+ * undefined (meaning not to touch that element's style), or an object.  The
+ * object has a format like
  *   {transform: "scale(2)", transformOrigin: "top 10px"}.
  */
-function setStyles(divStyle, parentStyle, grandparentStyle) {
+function setStyles(divStyle, parentStyle, grandparentStyle, bodyStyle) {
 //@{
-	// If any existing styles are being overwritten, toggle useCssom.
+	// If any existing styles are being overwritten, toggle useCssom.  TODO:
+	// This logic seems wrong, although it doesn't matter much.
 	if ((setStyles.currentStyles[0] && divStyle && Object.keys(divStyle).length)
 	|| (setStyles.currentStyles[1] && parentStyle && Object.keys(parentStyle).length)
-	|| (setStyles.currentStyles[2] && grandparentStyle && Object.keys(grandparentStyle).length)) {
+	|| (setStyles.currentStyles[2] && grandparentStyle && Object.keys(grandparentStyle).length)
+	|| (setStyles.currentStyles[3] && bodyStyle && Object.keys(bodyStyle).length)) {
 		setStyles.useCssomCounter++;
 		setStyles.useCssomCounter %= 17;
 		setStyles.useCssom = Boolean(setStyles.useCssomCounter % 2);
@@ -321,9 +323,13 @@ function setStyles(divStyle, parentStyle, grandparentStyle) {
 		setStyles.currentStyles[2] =
 			setStyle(div.parentNode.parentNode, grandparentStyle);
 	}
+	if (bodyStyle) {
+		setStyles.currentStyles[3] =
+			setStyle(document.body, bodyStyle);
+	}
 }
 //@}
-setStyles.currentStyles = ["", "", ""];
+setStyles.currentStyles = ["", "", "", ""];
 setStyles.useCssomCounter = 0;
 setStyles.useCssom = false;
 
@@ -332,6 +338,12 @@ setStyles.useCssom = false;
  */
 function setStyle(node, style) {
 //@{
+	// TODO: The setAttribute() here is redundant in theory, but sometimes
+	// removeAttribute() randomly fails in WebKit.  We should remove the
+	// redundant line and let WebKit fail -- there's no reason to work around
+	// its bugs.  But that interferes with checking test correctness, so leave
+	// it for now.
+	node.setAttribute("style", "");
 	node.removeAttribute("style");
 
 	var ret = [];
@@ -373,6 +385,10 @@ function setStyle(node, style) {
 function getStyleDescription() {
 //@{
 	var styleText = [];
+	if (setStyles.currentStyles[3]) {
+		styleText.push('"' + setStyles.currentStyles[3] + '"'
+			+ " on body");
+	}
 	if (setStyles.currentStyles[2]) {
 		styleText.push('"' + setStyles.currentStyles[2] + '"'
 			+ " on test div's grandparent");
@@ -405,7 +421,7 @@ function testTransform(value, mx) {
 	setStyles({transform: value});
 	test(function() {
 		testTransformParsing(mx);
-	}, "Computed value for transform " + getStyleDescription());
+	}, "getComputedStyle(div).transform " + getStyleDescription());
 	testTransformedBoundary(value, mx);
 }
 //@}
@@ -482,7 +498,8 @@ function testTransformParsing(mx) {
  *   style="transform: transformValue; transform-origin: transformOriginValue"
  * results in the boundary box that you'd get from transforming with a matrix
  * of mx around an offset of [xOffset, yOffset].  transformOriginValue defaults
- * to "50% 50%", xOffset to divWidth/2, yOffset to divHeight/2, zOffset to 0.
+ * to nothing (thus the default of "50% 50%"), xOffset to divWidth/2, yOffset
+ * to divHeight/2, zOffset to 0.
  *
  * transformValue can also be an array of three values.  If it is, they're used
  * for the test div's grandparent, its parent, and the test div itself,
@@ -512,7 +529,7 @@ function testTransformedBoundary(transformValue, mx,
 	}
 
 	if (transformOriginValue === undefined) {
-		transformOriginValue = "50% 50%";
+		transformOriginValue = "";
 	}
 	if (xOffset === undefined) {
 		xOffset = divWidth/2;
@@ -640,6 +657,8 @@ function testTransformOrigin(value, expectedX, expectedY, expectedZ) {
 	expectedY = convertToPx(expectedY, divHeight);
 	if (expectedZ !== undefined) {
 		expectedZ = convertToPx(expectedZ);
+	} else {
+		expectedZ = 0;
 	}
 
 	if (testTransformOrigin.counter === undefined) {
@@ -659,8 +678,29 @@ function testTransformOrigin(value, expectedX, expectedY, expectedZ) {
 
 	setStyles({transform: transformValue, transformOrigin: value});
 	test(function() {
-		testTransformOriginParsing(expectedX, expectedY, expectedZ);
-	}, "Computed value for transform-origin "
+		var actual = getComputedStyle(div)[prefixProp("transformOrigin")];
+		var re = expectedZ == 0
+			? /^([^ ]+)px ([^ ]+)px$/
+			: /^([^ ]+)px ([^ ]+)px ([^ ]+)px$/;
+		assert_regexp_match(actual, re, "Computed value has unexpected form");
+		var match = re.exec(actual);
+
+		var msg = ' (actual: "' + actual + '", expected: "'
+			+ expectedX + "px " + expectedY
+			+ (expectedZ == 0 ? "" : "px " + expectedZ)
+			+ 'px")';
+
+		assert_approx_equals(Number(match[1]), expectedX, computedEpsilon,
+			"Value of X part" + msg);
+
+		assert_approx_equals(Number(match[2]), expectedY, computedEpsilon,
+			"Value of Y part" + msg);
+
+		if (expectedZ != 0) {
+			assert_approx_equals(Number(match[3]), expectedZ, computedEpsilon,
+				"Value of Z part" + msg);
+		}
+	}, "getComputedStyle(div).transformOrigin "
 	+ getStyleDescription());
 
 	// Test with a 45-degree rotation, since the effect of changing the origin
@@ -690,55 +730,45 @@ function testTransformOrigin(value, expectedX, expectedY, expectedZ) {
  */
 function testTransformOriginParsing(expectedX, expectedY, expectedZ) {
 //@{
-	if (expectedZ === undefined) {
-		expectedZ = 0;
-	}
-	var actual = getComputedStyle(div)[prefixProp("transformOrigin")];
-	var re = expectedZ == 0
-		? /^([^ ]+)px ([^ ]+)px$/
-		: /^([^ ]+)px ([^ ]+)px ([^ ]+)px$/;
-	assert_regexp_match(actual, re, "Computed value has unexpected form");
-	var match = re.exec(actual);
-
-	var msg = ' (actual: "' + actual + '", expected: "'
-		+ expectedX + "px " + expectedY
-		+ (expectedZ == 0 ? "" : "px " + expectedZ)
-		+ 'px")';
-
-	assert_approx_equals(Number(match[1]), expectedX, computedEpsilon,
-		"Value of X part" + msg);
-
-	assert_approx_equals(Number(match[2]), expectedY, computedEpsilon,
-		"Value of Y part" + msg);
-
-	if (expectedZ != 0) {
-		assert_approx_equals(Number(match[3]), expectedZ, computedEpsilon,
-			"Value of Z part" + msg);
-	}
-}
-//@}
-
-function testPerspective(value, originValue, expectedX, expectedY) {
-//@{
-	testPerspectiveParsing(value);
-
-	// TODO: Test boundaries, when I get access to more than one implementation
-	// that actually supports the perspective property.
 }
 //@}
 
 /**
- * Tests that getComputedStyle(div.parentNode).perspective is either "none" or
- * a number of pixels, dependent on the value passed.
- *
- * TODO: Support stripping whitespace, etc.
+ * Tests that if perspective is set to value and perspective-origin is set to
+ * originValue on div.parentNode, everything behaves as expected.  Tests
+ * parsing of the perspective property, and boundaries of the test div.
+ * expectedX and expectedY are strings to be passed to convertToPx(), so they
+ * can be <length> or <percentage>.
  *
  * FIXME: Resolved values are not defined properly
  * https://www.w3.org/Bugs/Public/show_bug.cgi?id=15681
  */
-function testPerspectiveParsing(value) {
+function testPerspective(value, originValue, expectedX, expectedY) {
 //@{
 	setStyles({}, {perspective: value});
+	testPerspectiveParsing(value);
+
+	// The expectedX/Y values used in the matrix need to be resolved relative
+	// to the border box of the test div's parent, then offset by the
+	// difference between their widths/heights.  FIXME: This isn't completely
+	// clear in the spec. https://www.w3.org/Bugs/Public/show_bug.cgi?id=15708
+	expectedX = convertToPx(expectedX, divParentWidth)
+		- (divParentWidth - divWidth)/2;
+	expectedY = convertToPx(expectedY, divParentHeight)
+		- (divParentHeight - divHeight)/2;
+
+	setStyles({}, {perspective: value, perspectiveOrigin: originValue});
+	testPerspectiveBoundary(value, expectedX, expectedY);
+	setStyles({}, {});
+}
+//@}
+
+/**
+ * Tests that getComputedStyle(div.parentNode).perspective is as one would
+ * expect if it had the given perspective.
+ */
+function testPerspectiveParsing(value) {
+//@{
 	test(function() {
 		var actual = getComputedStyle(div.parentNode)[prefixProp("perspective")];
 		if (convertToPx(value) === null
@@ -748,15 +778,55 @@ function testPerspectiveParsing(value) {
 		}
 		assert_regexp_match(actual, /^[0-9]+(\.[0-9]+)?px$/, "Computed value has unexpected form");
 		assert_approx_equals(parseFloat(actual), convertToPx(value), computedEpsilon);
-	}, "Computed value for perspective " + getStyleDescription());
-
-	setStyles(undefined, {});
+	}, "getComputedStyle(div.parentNode).perspective " + getStyleDescription());
 }
 //@}
 
 /**
- * Tests that getComputedStyle(div.parentNode).perspectiveOrigin is
- *   expectedX + "px " + expectedY + "px".
+ * Tests that the boundaries of the test div are as one would expect if its
+ * parent had the given perspective and perspective-origin.  perspective will
+ * be parsed to obtain the correct value, while perspectiveOriginX and
+ * perspectiveOriginY must be numbers representing the pixel offset from the
+ * *test div's* box (not its parent's).  perspectiveOriginX defaults to
+ * divWidth/2, and perspectiveOriginY defaults to divHeight/2.
+ */
+function testPerspectiveBoundary(perspective, perspectiveOriginX, perspectiveOriginY) {
+//@{
+	if (convertToPx(perspective) === null || convertToPx(perspective) <= 0) {
+		perspective = "none";
+	}
+	if (perspectiveOriginX === undefined) {
+		perspectiveOriginX = divWidth/2;
+	}
+	if (perspectiveOriginY === undefined) {
+		perspectiveOriginY = divHeight/2;
+	}
+
+	var mx = mxmul44(
+		// Re-apply transform-origin of 50% 50%
+		[1,0,0,0, 0,1,0,0, 0,0,1,0,
+		-convertToPx("50%", divWidth), -convertToPx("50%", divHeight), 0, 1],
+		// Un-apply perspective-origin
+		[1,0,0,0, 0,1,0,0, 0,0,1,0, perspectiveOriginX, perspectiveOriginY, 0, 1],
+		// Perspective
+		[1,0,0,0, 0,1,0,0, 0,0,1,
+		perspective == "none" ? 0 : -1/convertToPx(perspective),
+		0,0,0,1],
+		// Apply perspective-origin
+		[1,0,0,0, 0,1,0,0, 0,0,1,0, -perspectiveOriginX, -perspectiveOriginY, 0, 1],
+		// Un-apply transform-origin of 50% 50%
+		[1,0,0,0, 0,1,0,0, 0,0,1,0,
+		convertToPx("50%", divWidth), convertToPx("50%", divHeight), 0, 1],
+		// Apply rotation of 45deg around X-axis
+		getRotationMatrix(1, 0, 0, "45deg")
+	);
+	testTransformedBoundary("rotateX(45deg)", mx);
+}
+//@}
+
+/**
+ * Sets div.style.perspectiveOrigin to value, then tests that its computed
+ * style is as expected.
  *
  * FIXME: Resolved values are not defined properly
  * https://www.w3.org/Bugs/Public/show_bug.cgi?id=15681
@@ -778,21 +848,15 @@ function testPerspectiveOrigin(value, expectedX, expectedY) {
 		expectedY = "100%";
 	}
 
-	if (/%$/.test(expectedX) || /%$/.test(expectedY)) {
-		// FIXME: Gecko and WebKit disagree, and spec doesn't say which is
-		// right https://www.w3.org/Bugs/Public/show_bug.cgi?id=15681
-		//
-		// FIXME: What does "refer to the size of the element's box" mean?
-		// Border box?  https://www.w3.org/Bugs/Public/show_bug.cgi?id=15708
-		return;
-	}
+	// FIXME: Gecko and WebKit disagree, and spec doesn't say which is right;
+	// we go with WebKit to match transform-origin
+	// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15681
+	expectedX = convertToPx(expectedX, divWidth);
+	expectedY = convertToPx(expectedY, divHeight);
 
-	expectedX = convertToPx(expectedX, divParentWidth);
-	expectedY = convertToPx(expectedY, divParentHeight);
-
-	setStyles({}, {perspectiveOrigin: value});
+	setStyles({perspectiveOrigin: value});
 	test(function() {
-		var actual = getComputedStyle(div.parentNode)[prefixProp("perspectiveOrigin")];
+		var actual = getComputedStyle(div)[prefixProp("perspectiveOrigin")];
 		var re = /^([^ ]+)px ([^ ]+)px$/;
 		assert_regexp_match(actual, re, "Computed value has unexpected form");
 		var match = re.exec(actual);
@@ -805,9 +869,9 @@ function testPerspectiveOrigin(value, expectedX, expectedY) {
 
 		assert_approx_equals(Number(match[2]), expectedY, computedEpsilon,
 			"Value of Y part" + msg);
-	}, "Computed value for perspective-origin " + getStyleDescription());
+	}, "getComputedStyle(div).perspectiveOrigin " + getStyleDescription());
 
-	setStyles(undefined, {});
+	setStyles({});
 }
 //@}
 

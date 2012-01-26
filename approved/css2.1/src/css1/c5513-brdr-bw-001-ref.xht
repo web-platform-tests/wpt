@@ -10,18 +10,18 @@
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch" />
 
   <style type="text/css"><![CDATA[
-  div#background
-  {
-  background: url("support/swatch-green.png") repeat-x;
-  line-height: 15px;
-  }
-
   div#border
   {
   border-color: green;
   border-style: solid;
-  border-width: 0px 3px 3px 3px;
+  border-width: 3px 3px 0px 3px;
   color: green;
+  }
+
+  div#background
+  {
+  background: url("support/swatch-green.png") repeat-x;
+  line-height: 15px;
   }
   ]]></style>
 
@@ -29,9 +29,9 @@
 
  <body>
 
-  <div id="background">&nbsp;</div>
-
   <div id="border">There should be no red on this page.</div>
+
+  <div id="background">&nbsp;</div>
 
  </body>
 </html>

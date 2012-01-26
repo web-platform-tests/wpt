@@ -1,0 +1,69 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+ <head>
+
+  <title>CSS Reftest Reference</title>
+
+  <link rel="author" title="CSS1 Test Suite Contributors" href="http://www.w3.org/Style/CSS/Test/CSS1/current/tsack.html" />
+  <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch" />
+
+  <style type="text/css"><![CDATA[
+  p
+  {
+  color: navy;
+  margin: 0;
+  }
+
+  div.control
+  {
+  border: black solid medium;  
+  margin: 1em;
+  width: 10em;
+  }
+
+  div.yellow
+  {
+  background-color: yellow;
+  border: yellow solid 1em;
+  }
+
+  div.control div.teal
+  {
+  background-color: teal;
+  height: 1em;
+  width: 1em;
+  }
+
+  div.control div.aqua
+  {
+  background-color: aqua;
+  border: aqua solid 1em;
+  }
+  ]]></style>
+
+ </head>
+
+ <body>
+
+  <p>The following two diagrams should look identical.</p>
+
+  <div class="control">
+   <div class="yellow">
+    <div class="teal"></div>
+    <div class="aqua"><div class="teal"></div></div>
+    <div class="teal"></div>
+   </div>
+  </div>
+
+  <div class="control">
+   <div class="yellow">
+    <div class="teal"></div>
+    <div class="aqua"><div class="teal"></div></div>
+    <div class="teal"></div>
+   </div>
+  </div>
+
+ </body>
+</html>

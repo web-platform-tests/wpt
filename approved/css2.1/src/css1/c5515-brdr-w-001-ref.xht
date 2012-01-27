@@ -10,18 +10,16 @@
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch" />
 
   <style type="text/css"><![CDATA[
-  div
+  div.background
   {
-  border-color: green;
-  border-style: solid none solid solid;
-  border-width: medium 0px medium medium;
-  color: green;
+  background: url("support/swatch-green.png") repeat-x;
+  line-height: 15px;  
   }
-  
-  img
+
+  div#sentence
   {
-  float: right;
-  vertical-align: bottom;
+  border-left: green solid 15px;
+  border-right: green solid 15px;
   }
   ]]></style>
 
@@ -29,7 +27,11 @@
 
  <body>
 
-  <div><img src="support/swatch-green.png" height="19" width="15" alt="Image download support must be enabled" />There should be no red on this page.</div>
+  <div class="background">&nbsp;</div>
+
+  <div id="sentence">There should be no red on this page.</div>
+
+  <div class="background">&nbsp;</div>
 
  </body>
 </html>

@@ -10,11 +10,22 @@
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch" />
 
   <style type="text/css"><![CDATA[
+  p {margin: 3em;}
+
   span
   {
-  border-color: black black black black;
+  border-color: green green green green;
   border-style: solid solid solid solid;
-  border-width: medium medium thin medium; 
+  border-width: medium medium medium medium;
+  }
+  
+  span#multi-color
+  {
+  border-top: purple solid 2em;
+  border-right: green solid 2em;
+  border-bottom: blue solid 2em;
+  border-left: yellow solid 2em;
+  line-height: 6em;
   }
   ]]></style>
 
@@ -22,11 +33,11 @@
 
  <body>
 
-  <p>
-   <span>This box should have a thin bottom border.</span>
-  </p>
+  <p><span>This box should have a green border.</span></p>
 
-  <div>There should be no red on this line.</div>
+  <p><span>This box should have a green border.</span></p>
+
+  <p>Clockwise from top, the borders around <span id="multi-color">THIS&nbsp;PHRASE</span> should be: PURPLE, GREEN, BLUE, YELLOW.</p>
 
  </body>
 </html>

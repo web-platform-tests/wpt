@@ -10,14 +10,11 @@
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch" />
 
   <style type="text/css"><![CDATA[
-  p
+  span
   {
-  border-color: black;
-  border-style: solid solid solid;
-  border-width: 1px 3px 3px;
-  color: black;
-  display: inline-block;
-  margin: 7px 0px 13px;
+  border-color: black black black black;
+  border-style: solid solid solid solid;
+  border-width: thin medium medium medium; 
   }
   ]]></style>
 
@@ -25,7 +22,9 @@
 
  <body>
 
-  <p>This box should have a thin top border.</p>
+  <p>
+    <span>This box should have a thin top border.</span>
+  </p>
 
   <div>There should be no red on this line.</div>
 

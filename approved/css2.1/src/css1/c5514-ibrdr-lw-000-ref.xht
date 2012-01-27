@@ -10,18 +10,11 @@
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch" />
 
   <style type="text/css"><![CDATA[
-  div
+  span
   {
-  border-color: green;
-  border-style: solid none solid solid;
-  border-width: medium 0px medium medium;
-  color: green;
-  }
-  
-  img
-  {
-  float: right;
-  vertical-align: bottom;
+  border-color: black black black black;
+  border-style: solid solid solid solid;
+  border-width: medium medium medium thin;
   }
   ]]></style>
 
@@ -29,7 +22,11 @@
 
  <body>
 
-  <div><img src="support/swatch-green.png" height="19" width="15" alt="Image download support must be enabled" />There should be no red on this page.</div>
+  <p>
+   <span>This box should have a thin left border.</span>
+  </p>
+
+  <div>There should be no red on this line.</div>
 
  </body>
 </html>

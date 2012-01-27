@@ -1,0 +1,251 @@
+<!doctype html>
+<title>Transforms reftest viewer</title>
+<base href="ref-2d/">
+<style>iframe { overflow:hidden; height:600px;width:800px }</style>
+<iframe id=test></iframe>
+<iframe id=ref style="display:none"></iframe>
+<p><input type=button id=prev value=Prev onclick="prev()" disabled>
+<input type=button id=next value=Next onclick="next()">
+<p>Test: <span id=testname>None</span>
+<p>Ref: <span id=refname>None</span>
+<script>
+"use strict";
+var testNames = [
+/*
+	"601894-1.html",
+	"601894-2.html",
+	"abspos-1a.html",
+	"abspos-1b.html",
+	"abspos-1c.html",
+	"abspos-1d.html",
+	"abspos-1e.html",
+	"compound-1a.html",
+	"descendant-1.html",
+	"dynamic-inherit-1.html",
+	"iframe-1.html",
+	"matrix-1a.html",
+	"matrix-2a.html",
+	"matrix-3a.html",
+	"matrix3d-1.html",
+	"matrix-4a.html",
+	"matrix-5a.html",
+	"matrix-6a.html",
+	"matrix-7a.html",
+*/
+	"origin-1a.html",
+	"origin-1b.html",
+	"origin-2a.html",
+	"origin-2b.html",
+	"origin-2c.html",
+/*
+	"origin-name-1a.html",
+	"origin-name-1b.html",
+	"origin-name-2a.html",
+	"origin-name-2b.html",
+	"origin-name-2c.html",
+	"origin-name-3a.html",
+	"origin-name-3b.html",
+*/
+	"percent-1a.html",
+	"percent-1b.html",
+	"percent-1c.html",
+	"percent-1d.html",
+	"percent-1e.html",
+	"percent-1f.html",
+	"percent-1g.html",
+	//"propagate-inherit-boolean.html",
+	"rotate-1a.html",
+	"rotate-1b.html",
+	"rotate-1c.html",
+	"rotate-1d.html",
+	"rotate-1e.html",
+	"rotate-1f.html",
+	"rotate-2a.html",
+	"scale-1a.html",
+	"scale-1b.html",
+	"scale-percent-1.html",
+	"scalex-1.html",
+	"scaley-1.html",
+	"singular-1a.html",
+	"skew-1a.html",
+	"skew-1b.html",
+	"skew-2a.html",
+/*
+	"snapping-1.html",
+	"transform-svg-1a.xhtml",
+	"transform-svg-2a.xhtml",
+*/
+	"translate-1a.html",
+	"translate-1b.html",
+	"translate-1c.html",
+	"translate-1d.html",
+	"translate-1e.html",
+	"translatex-1a.html",
+	"translatex-1b.html",
+	"translatex-1c.html",
+	"translatex-1d.html",
+	"translatex-1e.html",
+	"translatex-2.html",
+	"translatey-1a.html",
+	"translatey-1b.html",
+	"translatey-1c.html",
+	"translatey-1d.html",
+	"translatey-1e.html",
+	"translatey-2.html",
+];
+
+var testsAndRefs = [];
+
+var test = document.querySelector("#test");
+test.onload = testLoaded;
+var ref = document.querySelector("#ref");
+ref.onload = refLoaded;
+
+var prefix = "transform" in document.body.style ? ""
+	: "msTransform" in document.body.style ? "-ms-"
+	: "MozTransform" in document.body.style ? "-moz-"
+	: "webkitTransform" in document.body.style ? "-webkit-"
+	: "OTransform" in document.body.style ? "-o-"
+	: "";
+
+// IE9 seems not to support relative URLs in <base href>
+document.querySelector("base").href =
+	document.querySelector("base").href;
+
+loadTestInitially(testNames[0]);
+
+function next() {
+	document.querySelector("#prev").disabled = false;
+
+	var testName = test.getAttribute("src");
+	var refName = ref.getAttribute("src");
+	if (testName == "") {
+		// No test loaded previously
+		loadTestInitially(testNames[0]);
+		return;
+	}
+
+	for (var i = 0; i < testsAndRefs.length; i++) {
+		if (testName != testsAndRefs[i][0]
+		|| refName != testsAndRefs[i][1]) {
+			continue;
+		}
+		if (i + 1 == testsAndRefs.length
+		&& 1 + testNames.indexOf(testName) == testNames.length) {
+			document.querySelector("#next").disabled = true;
+		}
+		if (i + 1 < testsAndRefs.length) {
+			loadTest(testsAndRefs[i + 1][0]);
+			loadRef(testsAndRefs[i + 1][1]);
+			return;
+		}
+		if (1 + testNames.indexOf(testName) == testNames.length) {
+			// Last test, nothing to do
+			return;
+		}
+		loadTestInitially(testNames[1 + testNames.indexOf(testName)]);
+	}
+}
+
+function prev() {
+	document.querySelector("#next").disabled = false;
+
+	var testName = test.getAttribute("src");
+	var refName = ref.getAttribute("src");
+
+	for (var i = 1; i < testsAndRefs.length; i++) {
+		if (testsAndRefs[i][0] == testName
+		&& testsAndRefs[i][1] == refName) {
+			if (i == 1) {
+				document.querySelector("#prev").disabled = true;
+			}
+			loadTest(testsAndRefs[i - 1][0]);
+			loadRef(testsAndRefs[i - 1][1]);
+		}
+	}
+}
+
+function loadTestInitially(name) {
+	document.querySelector("#next").disabled = true;
+	test.onload = testLoadedInitially;
+	loadTest(name);
+}
+
+function loadTest(name) {
+	test.style.visibility = "hidden";
+	ref.style.visibility = "hidden";
+	ref.removeAttribute("src");
+	document.querySelector("#refname").textContent = "(waiting for test)";
+	test.src = name;
+	document.querySelector("#testname").textContent = "(loading)";
+}
+
+function loadRef(name) {
+	test.style.visibility = "hidden";
+	ref.style.visibility = "hidden";
+	ref.src = name;
+	document.querySelector("#refname").textContent = "(loading)";
+}
+
+function testLoadedInitially() {
+	var matches = test.contentDocument
+		.querySelectorAll("link[rel=match]");
+	var testName = test.getAttribute("src");
+	if (!matches.length) {
+		if (1 + testNames.indexOf(testName) < testNames.length) {
+			loadTestInitially(testNames[1 + testNames.indexOf(testName)]);
+		}
+		return;
+	}
+	for (var i = 0; i < matches.length; i++) {
+		testsAndRefs.push([testName, matches[i].getAttribute("href")]);
+	}
+	document.querySelector("#next").disabled = false;
+	loadRef(matches[0].getAttribute("href"));
+
+	test.onload = testLoaded;
+	testLoaded();
+}
+
+function testLoaded() {
+	if (test.contentDocument.readyState == "complete"
+	&& ref.contentDocument.readyState == "complete") {
+		test.style.visibility = "";
+		ref.style.visibility = "";
+	}
+	prefixStyles(test.contentDocument);
+	document.querySelector("#testname").textContent = test.getAttribute("src");
+}
+
+function refLoaded() {
+	if (test.contentDocument.readyState == "complete"
+	&& ref.contentDocument.readyState == "complete") {
+		test.style.visibility = "";
+		ref.style.visibility = "";
+	}
+	prefixStyles(ref.contentDocument);
+	document.querySelector("#refname").textContent = ref.getAttribute("src");
+}
+
+function prefixStyles(doc) {
+	[].forEach.call(doc.querySelectorAll("[style]"), function(el) {
+		el.setAttribute("style",
+			el.getAttribute("style").replace(/transform/g, prefix + "transform")
+		);
+	});
+	[].forEach.call(doc.querySelectorAll("style"), function(el) {
+		el.textContent = el.textContent
+			.replace(/transform/g, prefix + "transform");
+	});
+}
+
+setInterval(function() {
+	if (test.style.display) {
+		test.style.display = "";
+		ref.style.display = "none";
+	} else {
+		test.style.display = "none";
+		ref.style.display = "";
+	}
+}, 100);
+</script>

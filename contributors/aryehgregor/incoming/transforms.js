@@ -1,5 +1,4 @@
 "use strict";
-//@{
 // TODO: Test images, interaction with SVG, creation of stacking
 // context/containing block, fixed backgrounds, specificity of SVG transform
 // attribute, inheritance (computed values)
@@ -18,9 +17,14 @@
 // FIXME: Test serialization of inline style once that's defined
 // https://www.w3.org/Bugs/Public/show_bug.cgi?id=15710
 //
+// FIXME: Test inlines once that's defined (and I can work out how to integrate
+// it into my testing scheme)
+// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15755
+//
 // Probably requires reftests: interaction with overflow
 //
 // Not for now: transitions, animations
+//@{
 var div = document.querySelector("#test");
 var divWidth = 100, divHeight = 50;
 var divParentWidth = 120, divParentHeight = 70;

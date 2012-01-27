@@ -11,18 +11,22 @@
 <script>
 "use strict";
 var testNames = [
-/*
-	"601894-1.html",
-	"601894-2.html",
+	// TODO: Uncomment after reviewing
+	//"601894-1.html",
+	//"601894-2.html",
 	"abspos-1a.html",
 	"abspos-1b.html",
 	"abspos-1c.html",
 	"abspos-1d.html",
 	"abspos-1e.html",
 	"compound-1a.html",
-	"descendant-1.html",
+	// FIXME: Uncomment when
+	// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15755 is fixed, and add a
+	// separate reftest
+	//"descendant-1.html",
 	"dynamic-inherit-1.html",
-	"iframe-1.html",
+	// TODO: Uncomment when fixed to work with prefixing
+	//"iframe-1.html",
 	"matrix-1a.html",
 	"matrix-2a.html",
 	"matrix-3a.html",
@@ -31,13 +35,11 @@ var testNames = [
 	"matrix-5a.html",
 	"matrix-6a.html",
 	"matrix-7a.html",
-*/
 	"origin-1a.html",
 	"origin-1b.html",
 	"origin-2a.html",
 	"origin-2b.html",
 	"origin-2c.html",
-/*
 	"origin-name-1a.html",
 	"origin-name-1b.html",
 	"origin-name-2a.html",
@@ -45,7 +47,6 @@ var testNames = [
 	"origin-name-2c.html",
 	"origin-name-3a.html",
 	"origin-name-3b.html",
-*/
 	"percent-1a.html",
 	"percent-1b.html",
 	"percent-1c.html",
@@ -53,6 +54,7 @@ var testNames = [
 	"percent-1e.html",
 	"percent-1f.html",
 	"percent-1g.html",
+	// TODO: Uncomment after reviewing
 	//"propagate-inherit-boolean.html",
 	"rotate-1a.html",
 	"rotate-1b.html",
@@ -67,14 +69,7 @@ var testNames = [
 	"scalex-1.html",
 	"scaley-1.html",
 	"singular-1a.html",
-	"skew-1a.html",
-	"skew-1b.html",
-	"skew-2a.html",
-/*
-	"snapping-1.html",
-	"transform-svg-1a.xhtml",
-	"transform-svg-2a.xhtml",
-*/
+	"stresstest-1.html",
 	"translate-1a.html",
 	"translate-1b.html",
 	"translate-1c.html",
@@ -110,7 +105,7 @@ var prefix = "transform" in document.body.style ? ""
 
 // IE9 seems not to support relative URLs in <base href>
 document.querySelector("base").href =
-	document.querySelector("base").href;
+	String(location).replace(/[^\/]*$/, "ref-2d/");
 
 loadTestInitially(testNames[0]);
 

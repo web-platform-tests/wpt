@@ -8977,32 +8977,32 @@
     @assert ctx.createImageData(ctx.createImageData(1, 1)) !== null;
 
 - name: 2d.imageData.create2.type
-  desc: createImageData(sw, sh) returns an ImageData object containing a CanvasPixelArray object
+  desc: createImageData(sw, sh) returns an ImageData object containing a Uint8ClampedArray object
   testing:
     - 2d.imageData.create2.object
   mozilla: { throws }
   code: |
     @assert window.ImageData !== undefined; @moz-todo
-    @assert window.CanvasPixelArray !== undefined; @moz-todo
+    @assert window.Uint8ClampedArray !== undefined; @moz-todo
     window.ImageData.prototype.thisImplementsImageData = true;
-    window.CanvasPixelArray.prototype.thisImplementsCanvasPixelArray = true;
+    window.Uint8ClampedArray.prototype.thisImplementsUint8ClampedArray = true;
     var imgdata = ctx.createImageData(1, 1);
     @assert imgdata.thisImplementsImageData;
-    @assert imgdata.data.thisImplementsCanvasPixelArray;
+    @assert imgdata.data.thisImplementsUint8ClampedArray;
 
 - name: 2d.imageData.create1.type
-  desc: createImageData(imgdata) returns an ImageData object containing a CanvasPixelArray object
+  desc: createImageData(imgdata) returns an ImageData object containing a Uint8ClampedArray object
   testing:
     - 2d.imageData.create1.object
   mozilla: { throws }
   code: |
     @assert window.ImageData !== undefined; @moz-todo
-    @assert window.CanvasPixelArray !== undefined; @moz-todo
+    @assert window.Uint8ClampedArray !== undefined; @moz-todo
     window.ImageData.prototype.thisImplementsImageData = true;
-    window.CanvasPixelArray.prototype.thisImplementsCanvasPixelArray = true;
+    window.Uint8ClampedArray.prototype.thisImplementsUint8ClampedArray = true;
     var imgdata = ctx.createImageData(ctx.createImageData(1, 1));
     @assert imgdata.thisImplementsImageData; @moz-todo
-    @assert imgdata.data.thisImplementsCanvasPixelArray; @moz-todo
+    @assert imgdata.data.thisImplementsUint8ClampedArray; @moz-todo
 
 - name: 2d.imageData.create2.initial
   desc: createImageData(sw, sh) returns transparent black data of the right size
@@ -9130,18 +9130,18 @@
     @assert ctx.getImageData(0, 0, 100, 50) !== null;
 
 - name: 2d.imageData.get.type
-  desc: getImageData() returns an ImageData object containing a CanvasPixelArray object
+  desc: getImageData() returns an ImageData object containing a Uint8ClampedArray object
   testing:
     - 2d.imageData.get.object
   mozilla: { throws }
   code: |
     @assert window.ImageData !== undefined; @moz-todo
-    @assert window.CanvasPixelArray !== undefined; @moz-todo
+    @assert window.Uint8ClampedArray !== undefined; @moz-todo
     window.ImageData.prototype.thisImplementsImageData = true;
-    window.CanvasPixelArray.prototype.thisImplementsCanvasPixelArray = true;
+    window.Uint8ClampedArray.prototype.thisImplementsUint8ClampedArray = true;
     var imgdata = ctx.getImageData(0, 0, 1, 1);
     @assert imgdata.thisImplementsImageData;
-    @assert imgdata.data.thisImplementsCanvasPixelArray;
+    @assert imgdata.data.thisImplementsUint8ClampedArray;
 
 - name: 2d.imageData.get.zero
   desc: getImageData() throws INDEX_SIZE_ERR if size is zero
@@ -9325,7 +9325,7 @@
     @assert imgdata2.data[2] === 255;
 
 - name: 2d.imageData.get.length
-  desc: getImageData() returns a correctly-sized CanvasPixelArray
+  desc: getImageData() returns a correctly-sized Uint8ClampedArray
   testing:
     - 2d.pixelarray.length
   code: |

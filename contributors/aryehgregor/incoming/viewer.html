@@ -6,8 +6,8 @@
 <input type=button id=next value=Next onclick="next()" disabled>
 <p>Test: <span id=testname>(loading)</span>
 <p>Ref: <span id=refname>(loading)</span>
-<p><label><input type=radio name=toggle id=matches onclick="reset()" checked> Matches</label>
-<label><input type=radio name=toggle id=mismatches onclick="reset()"> Mismatches</label>
+<p><label><input type=radio name=toggle id=matches onclick="reset()" disabled checked> Matches</label>
+<label><input type=radio name=toggle id=mismatches onclick="reset()" disabled> Mismatches</label>
 <script>
 "use strict";
 var testNames = [
@@ -267,9 +267,10 @@ function conditionalLoadHandler() {
 		}
 	}, 100);
 
-	document.querySelector("#testname").textContent = tests[testIdx].getAttribute("src");
-	document.querySelector("#refname").textContent = refs[testIdx][refIdx].getAttribute("src");
-	document.querySelector("#next").disabled = false;
+	document.querySelector("#matches").disabled = false;
+	document.querySelector("#mismatches").disabled = false;
+
+	reset();
 }
 
 window.onload = conditionalLoadHandler;

@@ -2,18 +2,13 @@
 <title>Transforms reftest viewer</title>
 <base href="ref-2d/">
 <style>iframe { overflow:hidden; height:600px;width:800px }</style>
-<iframe id=test></iframe>
-<iframe id=ref style="display:none"></iframe>
 <p><input type=button id=prev value=Prev onclick="prev()" disabled>
-<input type=button id=next value=Next onclick="next()">
-<p>Test: <span id=testname>None</span>
-<p>Ref: <span id=refname>None</span>
+<input type=button id=next value=Next onclick="next()" disabled>
+<p>Test: <span id=testname>(loading)</span>
+<p>Ref: <span id=refname>(loading)</span>
 <script>
 "use strict";
 var testNames = [
-	// TODO: Uncomment after reviewing
-	//"601894-1.html",
-	//"601894-2.html",
 	"abspos-1a.html",
 	"abspos-1b.html",
 	"abspos-1c.html",
@@ -24,13 +19,13 @@ var testNames = [
 	// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15755 is fixed, and add a
 	// separate reftest
 	//"descendant-1.html",
-	"dynamic-inherit-1.html",
-	// TODO: Uncomment when fixed to work with prefixing
-	//"iframe-1.html",
+	// TODO: Uncomment when I figure out how to handle dynamic setting of
+	// prefixes
+	//"dynamic-inherit-1.html",
+	"iframe-1.html",
 	"matrix-1a.html",
 	"matrix-2a.html",
 	"matrix-3a.html",
-	"matrix3d-1.html",
 	"matrix-4a.html",
 	"matrix-5a.html",
 	"matrix-6a.html",
@@ -54,8 +49,7 @@ var testNames = [
 	"percent-1e.html",
 	"percent-1f.html",
 	"percent-1g.html",
-	// TODO: Uncomment after reviewing
-	//"propagate-inherit-boolean.html",
+	"propagate-inherit-boolean.html",
 	"rotate-1a.html",
 	"rotate-1b.html",
 	"rotate-1c.html",
@@ -89,13 +83,6 @@ var testNames = [
 	"translatey-2.html",
 ];
 
-var testsAndRefs = [];
-
-var test = document.querySelector("#test");
-test.onload = testLoaded;
-var ref = document.querySelector("#ref");
-ref.onload = refLoaded;
-
 var prefix = "transform" in document.body.style ? ""
 	: "msTransform" in document.body.style ? "-ms-"
 	: "MozTransform" in document.body.style ? "-moz-"
@@ -107,119 +94,39 @@ var prefix = "transform" in document.body.style ? ""
 document.querySelector("base").href =
 	String(location).replace(/[^\/]*$/, "ref-2d/");
 
-loadTestInitially(testNames[0]);
+testNames.forEach(function(testName, i) {
+	var test = document.createElement("iframe");
+	test.onload = testLoaded;
+	test.src = testName;
+	test.style.display = "none";
+	test.setAttribute("data-test", i);
+	document.body.insertBefore(test, document.querySelector("p"));
+});
 
-function next() {
-	document.querySelector("#prev").disabled = false;
-
-	var testName = test.getAttribute("src");
-	var refName = ref.getAttribute("src");
-	if (testName == "") {
-		// No test loaded previously
-		loadTestInitially(testNames[0]);
-		return;
-	}
-
-	for (var i = 0; i < testsAndRefs.length; i++) {
-		if (testName != testsAndRefs[i][0]
-		|| refName != testsAndRefs[i][1]) {
-			continue;
-		}
-		if (i + 1 == testsAndRefs.length
-		&& 1 + testNames.indexOf(testName) == testNames.length) {
-			document.querySelector("#next").disabled = true;
-		}
-		if (i + 1 < testsAndRefs.length) {
-			loadTest(testsAndRefs[i + 1][0]);
-			loadRef(testsAndRefs[i + 1][1]);
-			return;
-		}
-		if (1 + testNames.indexOf(testName) == testNames.length) {
-			// Last test, nothing to do
-			return;
-		}
-		loadTestInitially(testNames[1 + testNames.indexOf(testName)]);
-	}
-}
-
-function prev() {
-	document.querySelector("#next").disabled = false;
-
-	var testName = test.getAttribute("src");
-	var refName = ref.getAttribute("src");
-
-	for (var i = 1; i < testsAndRefs.length; i++) {
-		if (testsAndRefs[i][0] == testName
-		&& testsAndRefs[i][1] == refName) {
-			if (i == 1) {
-				document.querySelector("#prev").disabled = true;
-			}
-			loadTest(testsAndRefs[i - 1][0]);
-			loadRef(testsAndRefs[i - 1][1]);
-		}
-	}
-}
-
-function loadTestInitially(name) {
-	document.querySelector("#next").disabled = true;
-	test.onload = testLoadedInitially;
-	loadTest(name);
-}
-
-function loadTest(name) {
-	test.style.visibility = "hidden";
-	ref.style.visibility = "hidden";
-	ref.removeAttribute("src");
-	document.querySelector("#refname").textContent = "(waiting for test)";
-	test.src = name;
-	document.querySelector("#testname").textContent = "(loading)";
-}
-
-function loadRef(name) {
-	test.style.visibility = "hidden";
-	ref.style.visibility = "hidden";
-	ref.src = name;
-	document.querySelector("#refname").textContent = "(loading)";
-}
-
-function testLoadedInitially() {
-	var matches = test.contentDocument
-		.querySelectorAll("link[rel=match]");
-	var testName = test.getAttribute("src");
+function testLoaded(e) {
+	var test = e.target;
+	var matches = test.contentDocument.querySelectorAll("link[rel=match]");
 	if (!matches.length) {
-		if (1 + testNames.indexOf(testName) < testNames.length) {
-			loadTestInitially(testNames[1 + testNames.indexOf(testName)]);
-		}
+		document.body.removeChild(test);
 		return;
 	}
 	for (var i = 0; i < matches.length; i++) {
-		testsAndRefs.push([testName, matches[i].getAttribute("href")]);
-	}
-	document.querySelector("#next").disabled = false;
-	loadRef(matches[0].getAttribute("href"));
-
-	test.onload = testLoaded;
-	testLoaded();
-}
-
-function testLoaded() {
-	if (test.contentDocument.readyState == "complete"
-	&& ref.contentDocument.readyState == "complete") {
-		test.style.visibility = "";
-		ref.style.visibility = "";
+		var ref = document.createElement("iframe");
+		ref.onload = refLoaded;
+		ref.src = matches[i].getAttribute("href");
+		ref.style.display = "none";
+		ref.setAttribute("data-test", test.getAttribute("data-test"));
+		ref.setAttribute("data-ref", i);
+		ref.setAttribute("data-not-loaded", "");
+		document.body.insertBefore(ref, document.querySelector("p"));
 	}
 	prefixStyles(test.contentDocument);
-	document.querySelector("#testname").textContent = test.getAttribute("src");
 }
 
-function refLoaded() {
-	if (test.contentDocument.readyState == "complete"
-	&& ref.contentDocument.readyState == "complete") {
-		test.style.visibility = "";
-		ref.style.visibility = "";
-	}
-	prefixStyles(ref.contentDocument);
-	document.querySelector("#refname").textContent = ref.getAttribute("src");
+function refLoaded(e) {
+	prefixStyles(e.target.contentDocument);
+	e.target.removeAttribute("data-not-loaded");
+	conditionalLoadHandler();
 }
 
 function prefixStyles(doc) {
@@ -232,15 +139,89 @@ function prefixStyles(doc) {
 		el.textContent = el.textContent
 			.replace(/transform/g, prefix + "transform");
 	});
+	[].forEach.call(doc.querySelectorAll("iframe"), function(el) {
+		prefixStyles(el.contentDocument);
+	});
 }
 
-setInterval(function() {
-	if (test.style.display) {
-		test.style.display = "";
-		ref.style.display = "none";
+function next() {
+	document.querySelector("#prev").disabled = false;
+	tests[testIdx].style.display = "none";
+	refs[testIdx][refIdx].style.display = "none";
+	if (refIdx + 1 < refs[testIdx].length) {
+		refIdx++;
 	} else {
-		test.style.display = "none";
-		ref.style.display = "";
+		testIdx++;
+		refIdx = 0;
 	}
-}, 100);
+
+	if (testIdx == tests.length - 1
+	&& refIdx == refs[testIdx].length - 1) {
+		document.querySelector("#next").disabled = true;
+	}
+	document.querySelector("#testname").textContent = tests[testIdx].getAttribute("src");
+	document.querySelector("#refname").textContent = refs[testIdx][refIdx].getAttribute("src");
+	tests[testIdx].style.display = "";
+}
+
+function prev() {
+	document.querySelector("#next").disabled = false;
+	tests[testIdx].style.display = "none";
+	refs[testIdx][refIdx].style.display = "none";
+	if (refIdx > 0) {
+		refIdx--;
+	} else {
+		testIdx--;
+		refIdx = refs[testIdx].length - 1;
+	}
+	if (testIdx == 0 && refIdx == 0) {
+		document.querySelector("#prev").disabled = true;
+	}
+	document.querySelector("#testname").textContent = tests[testIdx].getAttribute("src");
+	document.querySelector("#refname").textContent = refs[testIdx][refIdx].getAttribute("src");
+	tests[testIdx].style.display = "";
+}
+
+var tests = null, refs = [];
+var testIdx = 0, refIdx = 0;
+
+// WebKit and Opera don't delay the load event for the ref iframes, it seems
+function conditionalLoadHandler() {
+	if (document.readyState != "complete") {
+		return;
+	}
+	if ([].some.call(document.querySelectorAll("iframe"), function(iframe) {
+		return iframe.hasAttribute("data-not-loaded");
+	})) {
+		return;
+	}
+	if (tests !== null) {
+		throw "This should be impossible: conditionalLoadHandler run multiple times";
+	}
+	tests = document.querySelectorAll("[data-test]:not([data-ref])");
+	for (var i = 0; i < tests.length; i++) {
+		refs.push(document.querySelectorAll("[data-test='" +
+			tests[i].getAttribute("data-test") + "']"
+			+ "[data-ref]"));
+		if (testIdx === null && refs[i].length) {
+			testIdx = i;
+		}
+	}
+
+	setInterval(function() {
+		if (tests[testIdx].style.display) {
+			tests[testIdx].style.display = "";
+			refs[testIdx][refIdx].style.display = "none";
+		} else {
+			tests[testIdx].style.display = "none";
+			refs[testIdx][refIdx].style.display = "";
+		}
+	}, 100);
+
+	document.querySelector("#testname").textContent = tests[testIdx].getAttribute("src");
+	document.querySelector("#refname").textContent = refs[testIdx][refIdx].getAttribute("src");
+	document.querySelector("#next").disabled = false;
+}
+
+window.onload = conditionalLoadHandler;
 </script>

@@ -6,6 +6,8 @@
 <input type=button id=next value=Next onclick="next()" disabled>
 <p>Test: <span id=testname>(loading)</span>
 <p>Ref: <span id=refname>(loading)</span>
+<p><label><input type=radio name=toggle id=matches onclick="reset()" checked> Matches</label>
+<label><input type=radio name=toggle id=mismatches onclick="reset()"> Mismatches</label>
 <script>
 "use strict";
 var testNames = [
@@ -106,9 +108,8 @@ testNames.forEach(function(testName, i) {
 function testLoaded(e) {
 	var test = e.target;
 	var matches = test.contentDocument.querySelectorAll("link[rel=match]");
-	if (!matches.length) {
-		document.body.removeChild(test);
-		return;
+	if (matches.length) {
+		test.setAttribute("data-matches", "");
 	}
 	for (var i = 0; i < matches.length; i++) {
 		var ref = document.createElement("iframe");
@@ -116,10 +117,26 @@ function testLoaded(e) {
 		ref.src = matches[i].getAttribute("href");
 		ref.style.display = "none";
 		ref.setAttribute("data-test", test.getAttribute("data-test"));
-		ref.setAttribute("data-ref", i);
+		ref.setAttribute("data-ref-match", i);
 		ref.setAttribute("data-not-loaded", "");
 		document.body.insertBefore(ref, document.querySelector("p"));
 	}
+
+	var mismatches = test.contentDocument.querySelectorAll("link[rel=mismatch]");
+	if (mismatches.length) {
+		test.setAttribute("data-mismatches", "");
+	}
+	for (var i = 0; i < mismatches.length; i++) {
+		var ref = document.createElement("iframe");
+		ref.onload = refLoaded;
+		ref.src = mismatches[i].getAttribute("href");
+		ref.style.display = "none";
+		ref.setAttribute("data-test", test.getAttribute("data-test"));
+		ref.setAttribute("data-ref-mismatch", i);
+		ref.setAttribute("data-not-loaded", "");
+		document.body.insertBefore(ref, document.querySelector("p"));
+	}
+
 	prefixStyles(test.contentDocument);
 }
 
@@ -142,6 +159,25 @@ function prefixStyles(doc) {
 	[].forEach.call(doc.querySelectorAll("iframe"), function(el) {
 		prefixStyles(el.contentDocument);
 	});
+}
+
+function reset() {
+	tests[testIdx].style.display = "none";
+	refs[testIdx][refIdx].style.display = "none";
+	testIdx = 0;
+	refIdx = 0;
+	if (document.querySelector("#matches").checked) {
+		tests = matchTests;
+		refs = matchRefs;
+	} else {
+		tests = mismatchTests;
+		refs = mismatchRefs;
+	}
+	document.querySelector("#testname").textContent = tests[testIdx].getAttribute("src");
+	document.querySelector("#refname").textContent = refs[testIdx][refIdx].getAttribute("src");
+	document.querySelector("#prev").disabled = true;
+	document.querySelector("#next").disabled = false;
+	return true;
 }
 
 function next() {
@@ -183,6 +219,8 @@ function prev() {
 }
 
 var tests = null, refs = [];
+var matchTests = null, matchRefs = [];
+var mismatchTests = null, mismatchRefs = [];
 var testIdx = 0, refIdx = 0;
 
 // WebKit and Opera don't delay the load event for the ref iframes, it seems
@@ -198,15 +236,23 @@ function conditionalLoadHandler() {
 	if (tests !== null) {
 		throw "This should be impossible: conditionalLoadHandler run multiple times";
 	}
-	tests = document.querySelectorAll("[data-test]:not([data-ref])");
-	for (var i = 0; i < tests.length; i++) {
-		refs.push(document.querySelectorAll("[data-test='" +
-			tests[i].getAttribute("data-test") + "']"
-			+ "[data-ref]"));
-		if (testIdx === null && refs[i].length) {
-			testIdx = i;
-		}
+
+	matchTests = document.querySelectorAll("[data-matches]");
+	for (var i = 0; i < matchTests.length; i++) {
+		matchRefs.push(document.querySelectorAll("[data-test='" +
+			matchTests[i].getAttribute("data-test") + "']"
+			+ "[data-ref-match]"));
 	}
+
+	mismatchTests = document.querySelectorAll("[data-mismatches]");
+	for (var i = 0; i < mismatchTests.length; i++) {
+		mismatchRefs.push(document.querySelectorAll("[data-test='" +
+			mismatchTests[i].getAttribute("data-test") + "']"
+			+ "[data-ref-mismatch]"));
+	}
+
+	tests = matchTests;
+	refs = matchRefs;
 
 	setInterval(function() {
 		if (tests[testIdx].style.display) {

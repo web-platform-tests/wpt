@@ -712,7 +712,7 @@ function testTransformOrigin(value, expectedX, expectedY, expectedZ) {
 	// arbitrarily-chosen vector.
 	testTransformedBoundary(
 		// Transform
-		expectedZ === undefined
+		expectedZ === 0
 			? "rotate(45deg)"
 			: "rotate3d(1,-1,1,45deg)",
 		// Matrix entries

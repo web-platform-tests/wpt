@@ -1,0 +1,11 @@
+<!doctype html>
+<link rel=match href=percent-1-ref.html>
+<!-- For the 'transform' property: "Percentages: refer to the size of the
+element's border box". -->
+<style>
+.transformed {
+	transform: rotate(10deg) translatex(50%) rotate(10deg) translatey(50%) skewx(10deg) translate(25px, 25px);
+}
+</style>
+<div style="width:80px; height:30px; padding:5px; border:5px solid gold; margin:5px; background-color:gold; position: absolute; left:95px; top:95px;" class="transformed">
+</div>

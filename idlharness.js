@@ -12,8 +12,8 @@ policies and contribution forms [3].
  * This file automatically generates browser tests for WebIDL interfaces, using
  * the testharness.js framework.  To use, first include the following:
  *
- *   <script src=/resources/testharnessreport.js></script>
  *   <script src=/resources/testharness.js></script>
+ *   <script src=/resources/testharnessreport.js></script>
  *   <script src=/resources/WebIDLParser.js></script>
  *   <script src=/resources/idlharness.js></script>
  *

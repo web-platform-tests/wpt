@@ -113,7 +113,7 @@ function prefixProp(s) {
 			return prefixes[i] + s;
 		}
 	}
-	return undefined;
+	return s;
 }
 //@}
 

@@ -8,150 +8,193 @@
 <p>Ref: <span id=refname>(loading)</span>
 <p><label><input type=radio name=toggle id=matches onclick="reset()" disabled checked> Matches</label>
 <label><input type=radio name=toggle id=mismatches onclick="reset()" disabled> Mismatches</label>
+<p><label><input type=radio name=mode id=2d onclick="initialize()" checked> 2D</label>
+<label><input type=radio name=mode id=3d onclick="initialize()"> 3D</label>
 <script>
 "use strict";
 // FIXME: Test fixed backgrounds when they become defined
 // https://www.w3.org/Bugs/Public/show_bug.cgi?id=15833
-var testNames = [
-	"abspos-1a.html",
-	"abspos-1b.html",
-	"abspos-1c.html",
-	"abspos-1d.html",
-	"abspos-1e.html",
-	"abspos-1f.html",
-	"abspos-1g.html",
-	"background-1a.html",
-	"background-1b.html",
-	"background-1c.html",
-	"background-1d.html",
-	"background-2a.html",
-	"background-2b.html",
-	// FIXME: Uncomment if behavior becomes defined
-	// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15834
-	//"background-2c.html",
-	//"background-2d.html",
-	"compound-1a.html",
-	"descendant-1.html",
-	"display-1a.html",
-	"display-1b.html",
-	"display-1c.html",
-	"display-1d.html",
-	// TODO: Uncomment when I figure out how to handle dynamic setting of
-	// prefixes
-	//"dynamic-inherit-1.html",
-	"generated-1a.html",
-	"generated-2a.html",
-	"iframe-1.html",
-	"image-1a.html",
-	// FIXME: Spec no longer supports these two tests
-	// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15797
-	"inherit-1a.html",
-	"inherit-1b.html",
-	"inherit-origin-1a.html",
-	"inherit-origin-1b.html",
-	"inline-1a.html",
-	"input-1a.html",
-	"input-2a.html",
-	"input-3a.html",
-	"input-4a.html",
-	"input-5a.html",
-	"input-6a.html",
-	"input-7a.html",
-	"input-8a.html",
-	"input-9a.html",
-	"input-10a.html",
-	"input-11a.html",
-	"input-12a.html",
-	"input-13a.html",
-	"input-14a.html",
-	"input-15a.html",
-	"input-16a.html",
-	"input-17a.html",
-	"input-18a.html",
-	"input-19a.html",
-	"matrix-1a.html",
-	"matrix-2a.html",
-	"matrix-3a.html",
-	"matrix-4a.html",
-	"matrix-5a.html",
-	"matrix-6a.html",
-	"matrix-7a.html",
-	"matrix-8a.html",
-	"origin-1a.html",
-	"origin-1b.html",
-	"origin-2a.html",
-	"origin-2b.html",
-	"origin-2c.html",
-	"origin-2d.html",
-	"origin-name-1a.html",
-	"origin-name-1b.html",
-	"origin-name-2a.html",
-	"origin-name-2b.html",
-	"origin-name-2c.html",
-	"origin-name-3a.html",
-	"origin-name-3b.html",
-	"overflow-1a.html",
-	"overflow-2a.html",
-	"percent-1a.html",
-	"percent-1b.html",
-	"percent-1c.html",
-	"percent-1d.html",
-	"percent-1e.html",
-	"percent-1f.html",
-	"percent-1g.html",
-	"percent-1h.html",
-	"propagate-inherit-boolean.html",
-	"rotate-1a.html",
-	"rotate-1b.html",
-	"rotate-1c.html",
-	"rotate-1d.html",
-	"rotate-1e.html",
-	"rotate-1f.html",
-	"rotate-2a.html",
-	// FIXME: The spec doesn't actually impose any rounding constraints just
-	// yet, even minimal ones.
-	// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15709
-	"rounding-1a.html",
-	"scale-1a.html",
-	"scale-1b.html",
-	"scale-percent-1.html",
-	"scalex-1.html",
-	"scaley-1.html",
-	"singular-1a.html",
-	"skew-1a.html",
-	"skew-1b.html",
-	"skew-2a.html",
-	"stacking-1a.html",
-	"stacking-1b.html",
-	"stacking-1c.html",
-	"stacking-1d.html",
-	"stresstest-1.html",
-	// FIXME: The spec doesn't yet explicitly support these tests (but they
-	// match everyone but Gecko).
-	// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15815
-	"table-1a.html",
-	"table-1b.html",
-	"table-1c.html",
-	"table-2a.html",
-	"table-2b.html",
-	"translate-1a.html",
-	"translate-1b.html",
-	"translate-1c.html",
-	"translate-1d.html",
-	"translate-1e.html",
-	"translatex-1a.html",
-	"translatex-1b.html",
-	"translatex-1c.html",
-	"translatex-1d.html",
-	"translatex-1e.html",
-	"translatex-2.html",
-	"translatey-1a.html",
-	"translatey-1b.html",
-	"translatey-1c.html",
-	"translatey-1d.html",
-	"translatey-1e.html",
-	"translatey-2.html",
-];
+var testNames = {
+	"2d": [
+		"abspos-1a.html",
+		"abspos-1b.html",
+		"abspos-1c.html",
+		"abspos-1d.html",
+		"abspos-1e.html",
+		"abspos-1f.html",
+		"abspos-1g.html",
+		"background-1a.html",
+		"background-1b.html",
+		"background-1c.html",
+		"background-1d.html",
+		"background-2a.html",
+		"background-2b.html",
+		// FIXME: Uncomment if behavior becomes defined
+		// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15834
+		//"background-2c.html",
+		//"background-2d.html",
+		"compound-1a.html",
+		"descendant-1.html",
+		"display-1a.html",
+		"display-1b.html",
+		"display-1c.html",
+		"display-1d.html",
+		// TODO: Uncomment when I figure out how to handle dynamic setting of
+		// prefixes
+		//"dynamic-inherit-1.html",
+		"generated-1a.html",
+		"generated-2a.html",
+		"iframe-1.html",
+		"image-1a.html",
+		// FIXME: Spec no longer supports these two tests
+		// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15797
+		"inherit-1a.html",
+		"inherit-1b.html",
+		"inherit-origin-1a.html",
+		"inherit-origin-1b.html",
+		"inline-1a.html",
+		"input-1a.html",
+		"input-2a.html",
+		"input-3a.html",
+		"input-4a.html",
+		"input-5a.html",
+		"input-6a.html",
+		"input-7a.html",
+		"input-8a.html",
+		"input-9a.html",
+		"input-10a.html",
+		"input-11a.html",
+		"input-12a.html",
+		"input-13a.html",
+		"input-14a.html",
+		"input-15a.html",
+		"input-16a.html",
+		"input-17a.html",
+		"input-18a.html",
+		"input-19a.html",
+		"matrix-1a.html",
+		"matrix-2a.html",
+		"matrix-3a.html",
+		"matrix-4a.html",
+		"matrix-5a.html",
+		"matrix-6a.html",
+		"matrix-7a.html",
+		"matrix-8a.html",
+		"origin-1a.html",
+		"origin-1b.html",
+		"origin-2a.html",
+		"origin-2b.html",
+		"origin-2c.html",
+		"origin-2d.html",
+		"origin-name-1a.html",
+		"origin-name-1b.html",
+		"origin-name-2a.html",
+		"origin-name-2b.html",
+		"origin-name-2c.html",
+		"origin-name-3a.html",
+		"origin-name-3b.html",
+		"overflow-1a.html",
+		"overflow-2a.html",
+		"percent-1a.html",
+		"percent-1b.html",
+		"percent-1c.html",
+		"percent-1d.html",
+		"percent-1e.html",
+		"percent-1f.html",
+		"percent-1g.html",
+		"percent-1h.html",
+		"propagate-inherit-boolean.html",
+		"rotate-1a.html",
+		"rotate-1b.html",
+		"rotate-1c.html",
+		"rotate-1d.html",
+		"rotate-1e.html",
+		"rotate-1f.html",
+		"rotate-2a.html",
+		// FIXME: The spec doesn't actually impose any rounding constraints just
+		// yet, even minimal ones.
+		// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15709
+		"rounding-1a.html",
+		"scale-1a.html",
+		"scale-1b.html",
+		"scale-percent-1.html",
+		"scalex-1.html",
+		"scaley-1.html",
+		"singular-1a.html",
+		"skew-1a.html",
+		"skew-1b.html",
+		"skew-2a.html",
+		"stacking-1a.html",
+		"stacking-1b.html",
+		"stacking-1c.html",
+		"stacking-1d.html",
+		"stresstest-1.html",
+		// FIXME: The spec doesn't yet explicitly support these tests (but they
+		// match everyone but Gecko).
+		// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15815
+		"table-1a.html",
+		"table-1b.html",
+		"table-1c.html",
+		"table-2a.html",
+		"table-2b.html",
+		"translate-1a.html",
+		"translate-1b.html",
+		"translate-1c.html",
+		"translate-1d.html",
+		"translate-1e.html",
+		"translatex-1a.html",
+		"translatex-1b.html",
+		"translatex-1c.html",
+		"translatex-1d.html",
+		"translatex-1e.html",
+		"translatex-2.html",
+		"translatey-1a.html",
+		"translatey-1b.html",
+		"translatey-1c.html",
+		"translatey-1d.html",
+		"translatey-1e.html",
+		"translatey-2.html",
+	],
+	"3d": [
+		"backface-visibility-1a.html",
+		"backface-visibility-1b.html",
+		"matrix3d-1a.html",
+		"matrix3d-2a.html",
+		"overflow-hidden-1a.html",
+		"perspective-origin-1a.html",
+		"perspective-origin-1b.html",
+		"preserve3d-1a.html",
+		"preserve3d-1b.html",
+		"preserve3d-2a.html",
+		"preserve3d-2b.html",
+		"preserve3d-2c.html",
+		"preserve3d-2d.html",
+		"preserve3d-3a.html",
+		"preserve3d-4a.html",
+		"preserve3d-clipped.html",
+		"rotate3d-1a.html",
+		"rotate3d-2a.html",
+		"rotatex-1a.html",
+		"rotatex-perspective-1a.html",
+		"rotatex-perspective-1b.html",
+		"rotatex-perspective-1c.html",
+		"rotatex-perspective-3a.html",
+		"rotatex-transformorigin-1a.html",
+		"rotatey-1a.html",
+		"scale3d-all.html",
+		"scale3d-xz.html",
+		"scale3d-z.html",
+		"scalez-1a.html",
+		"scalezrotatex-1.html",
+		"sorting-1a.html",
+		"sorting-2a.html",
+		"sorting-2b.html",
+		"sorting-3a.html",
+		"translate3d-1a.html",
+		"translatez-1a.html",
+		"translatez-1b.html",
+	]
+};
 
 var prefix = "transform" in document.body.style ? ""
 	: "msTransform" in document.body.style ? "-ms-"
@@ -160,21 +203,58 @@ var prefix = "transform" in document.body.style ? ""
 	: "OTransform" in document.body.style ? "-o-"
 	: "";
 
-// IE9 seems not to support relative URLs in <base href>
-document.querySelector("base").href =
-	String(location).replace(/[^\/]*$/, "ref-2d/");
+var mode = "";
+var tests, refs;
+var matchTests, matchRefs;
+var mismatchTests, mismatchRefs;
+var testIdx, refIdx;
 
-testNames.forEach(function(testName, i) {
-	var test = document.createElement("iframe");
-	test.onload = testLoaded;
-	test.src = testName;
-	test.style.display = "none";
-	test.setAttribute("data-test", i);
-	document.body.insertBefore(test, document.querySelector("p"));
-});
+initialize();
+
+function initialize() {
+	var newMode = document.getElementById("2d").checked
+		? "2d" : "3d";
+	if (mode == newMode) {
+		return;
+	}
+	mode = newMode;
+	tests = null;
+	refs = [];
+	matchTests = null;
+	matchRefs = [];
+	mismatchTests = null;
+	mismatchRefs = [];
+	testIdx = 0;
+	refIdx = 0;
+
+	document.querySelector("#testname").textContent = "(loading)";
+	document.querySelector("#refname").textContent = "(loading)";
+
+	[].forEach.call(document.querySelectorAll("iframe"), function(iframe) {
+		iframe.parentNode.removeChild(iframe);
+	});
+
+	// IE9 seems not to support relative URLs in <base href>
+	document.querySelector("base").href =
+		String(location).replace(/[^\/]*$/, "ref-" + mode + "/");
+
+	testNames[mode].forEach(function(testName, i) {
+		var test = document.createElement("iframe");
+		test.onload = testLoaded;
+		test.src = testName;
+		test.style.display = "none";
+		test.setAttribute("data-test", i);
+		test.setAttribute("data-not-loaded", "");
+		document.body.insertBefore(test, document.querySelector("p"));
+	});
+
+	return true;
+}
 
 function testLoaded(e) {
 	var test = e.target;
+	test.removeAttribute("data-not-loaded");
+
 	var matches = test.contentDocument.querySelectorAll("link[rel=match]");
 	if (matches.length) {
 		test.setAttribute("data-matches", "");
@@ -217,12 +297,16 @@ function refLoaded(e) {
 function prefixStyles(doc) {
 	[].forEach.call(doc.querySelectorAll("[style]"), function(el) {
 		el.setAttribute("style",
-			el.getAttribute("style").replace(/transform/g, prefix + "transform")
+			el.getAttribute("style").replace(
+				/((transform(-origin)?|perspective(-origin)?|backface-visibility)\s*:)/g,
+				prefix + "$1")
 		);
 	});
 	[].forEach.call(doc.querySelectorAll("style"), function(el) {
 		el.textContent = el.textContent
-			.replace(/transform/g, prefix + "transform");
+			.replace(
+				/((transform(-origin)?|perspective(-origin)?|backface-visibility)\s*:)/g,
+				prefix + "$1");
 	});
 	[].forEach.call(doc.querySelectorAll("iframe"), function(el) {
 		prefixStyles(el.contentDocument);
@@ -286,12 +370,7 @@ function prev() {
 	tests[testIdx].style.display = "";
 }
 
-var tests = null, refs = [];
-var matchTests = null, matchRefs = [];
-var mismatchTests = null, mismatchRefs = [];
-var testIdx = 0, refIdx = 0;
-
-// WebKit and Opera don't delay the load event for the ref iframes, it seems
+// This is run once on load and once on every mode change.
 function conditionalLoadHandler() {
 	if (document.readyState != "complete") {
 		return;

@@ -1,20 +1,7 @@
 <!doctype html>
 <link rel=match href=green-rect.html>
-				<style type="text/css">
-				#parent {
-						transform-style: preserve-3d;
-						transform: rotateX(180deg);
-						width: 100px;
-						height: 100px;
-						background-color: #00FF00;
-				}
-				#child {
-					width: 100px;
-					height: 100px;
-					background-color: red;
-					transform: translatez(10px);
-				}
-				</style>
-				<div id="parent">
-						<div id="child"></div>
-				</div>
+<div style="transform-style: preserve-3d; transform: rotateX(180deg);
+width: 100px; height: 100px; background: lime">
+<div style="width: 100px; height: 100px; background: red;
+transform: translatez(10px)"></div>
+</div>

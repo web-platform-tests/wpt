@@ -160,7 +160,6 @@ var testNames = {
 		"backface-visibility-1b.html",
 		"matrix3d-1a.html",
 		"matrix3d-2a.html",
-		"overflow-hidden-1a.html",
 		"perspective-origin-1a.html",
 		"perspective-origin-1b.html",
 		"preserve3d-1a.html",
@@ -170,6 +169,7 @@ var testNames = {
 		"preserve3d-2c.html",
 		"preserve3d-2d.html",
 		"preserve3d-3a.html",
+		// FIXME: Double-check that this test is correct per spec.
 		"preserve3d-4a.html",
 		"preserve3d-clipped.html",
 		"rotate3d-1a.html",
@@ -208,6 +208,7 @@ var tests, refs;
 var matchTests, matchRefs;
 var mismatchTests, mismatchRefs;
 var testIdx, refIdx;
+var interval;
 
 initialize();
 
@@ -226,6 +227,11 @@ function initialize() {
 	mismatchRefs = [];
 	testIdx = 0;
 	refIdx = 0;
+
+	if (interval !== undefined) {
+		clearInterval(interval);
+		interval = undefined;
+	}
 
 	document.querySelector("#testname").textContent = "(loading)";
 	document.querySelector("#refname").textContent = "(loading)";
@@ -298,14 +304,14 @@ function prefixStyles(doc) {
 	[].forEach.call(doc.querySelectorAll("[style]"), function(el) {
 		el.setAttribute("style",
 			el.getAttribute("style").replace(
-				/((transform(-origin)?|perspective(-origin)?|backface-visibility)\s*:)/g,
+				/((transform(-origin|-style)?|perspective(-origin)?|backface-visibility)\s*:)/g,
 				prefix + "$1")
 		);
 	});
 	[].forEach.call(doc.querySelectorAll("style"), function(el) {
 		el.textContent = el.textContent
 			.replace(
-				/((transform(-origin)?|perspective(-origin)?|backface-visibility)\s*:)/g,
+				/((transform(-origin|-style)?|perspective(-origin)?|backface-visibility)\s*:)/g,
 				prefix + "$1");
 	});
 	[].forEach.call(doc.querySelectorAll("iframe"), function(el) {
@@ -401,7 +407,7 @@ function conditionalLoadHandler() {
 	tests = matchTests;
 	refs = matchRefs;
 
-	setInterval(function() {
+	interval = setInterval(function() {
 		if (tests[testIdx].style.display) {
 			tests[testIdx].style.display = "";
 			refs[testIdx][refIdx].style.display = "none";

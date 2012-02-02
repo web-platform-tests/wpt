@@ -1,28 +1,10 @@
 <!doctype html>
 <link rel=mismatch href=sorting-1-ref.html>
-				<style type="text/css">
-				#stage {
-					perspective: 1000px;
-				}
-				#parent {
-					transform-style: preserve-3d;
-				}
-				#big {
-					width: 1000px;
-					height: 1000px;
-					background-color: #995C7F;
-					transform: rotatey(45deg);
-				}
-				#small {
-					width: 100px;
-					height: 100px;
-					background-color: #835A99;
-					transform: translate3d(600px, 200px, 0px);
-				}
-				</style>
-				<div id="stage">
-						<div id="parent">
-  							<div id="small"></div>
-  							<div id="big"></div>
-						</div>
-				</div>
+<div style="perspective: 1000px">
+<div style="transform-style: preserve-3d">
+	<div style="width: 100px; height: 100px; background: #835A99;
+	transform: translate3d(600px, 200px, 0)"></div>
+	<div style="width: 1000px; height: 1000px; background: #995C7F;
+	transform: rotatey(45deg)"></div>
+</div>
+</div>

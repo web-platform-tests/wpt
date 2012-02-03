@@ -1,22 +1,7 @@
 <!doctype html>
 <link rel=match href=preserve3d-2-ref.html>
-<style>
-#grandparent {
-	transform-style: preserve-3d;
-	margin-left: 200px;
-}
-#parent {
-	transform-style: preserve-3d;
-}
-#child {
-	width: 100px;
-	height: 100px;
-	background-color: red;
-	transform: translatex(-200px);
-}
-</style>
-<div id="grandparent">
-	<div id="parent">
-		<div id="child"></div>
-	</div>
-</div>
+<div style="transform-style: preserve-3d; margin-left: 200px">
+<div style="transform-style: preserve-3d">
+<div style="width: 100px; height: 100px; background: red;
+transform: translatex(-200px)">
+</div></div></div>

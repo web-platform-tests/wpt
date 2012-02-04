@@ -7,8 +7,12 @@
   <title>CSS Test: floats - zero height empty float</title>
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
+
   <!-- Inspired by http://test.csswg.org/suites/css2.1/20100727/html4/floats-107.htm -->
+
   <link rel="help" title="Section 9.5 Floats" href="http://www.w3.org/TR/CSS21/visuren.html#floats" />
+  <link rel="match" href="float-006-ref.xht" />
+
   <meta content="A zero-height (margin-box) empty float without border and without padding will not require the line box to be shortened; in such case, the zero-height (margin-box) empty float will slide in or will fit in at the top of the line box." name="assert" />
   <meta content="" name="flags" />
 
@@ -18,8 +22,8 @@
    #green-overlapping-abs-pos
    {
    background-color: green;
-   border-top: green solid 2em;
    border-bottom: green solid 2em;
+   border-top: green solid 2em;
    left: 0em;
    padding: 3em;
    position: absolute;
@@ -30,7 +34,9 @@
    #zero-height-first-float
    {
    float: left;
-   width: 18em; /* or any other width number which would represent less than the document box width */
+   width: 18em; 
+   /* or any other width number which would represent 
+   less than the document box width */
    }
    
    #red-overlapped-second-float

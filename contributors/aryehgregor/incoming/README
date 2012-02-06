@@ -26,7 +26,9 @@ work pretty well in all recent browsers, including IE9.
 
 Warning: I'm still working on the 3D stuff.  Many of the tests are likely to be
 wrong at this point.  I hope to have it relatively ready soon.  2D tests should
-be pretty good at this point, but review would be highly appreciated.
+be pretty good at this point, but review would be highly appreciated.  Also,
+nothing here tests transitions or animations, because I have no good way to
+test them at this point.
 
 There are bunch of ambiguities and possible errors in the spec that I've
 disabled some tests for.  These are marked with FIXME in the test files.  You

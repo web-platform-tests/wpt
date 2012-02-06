@@ -4,6 +4,8 @@
         <title>CSS Test: Floated replaced elements and 'auto' specified for 'margin-left', 'margin-right' and no intrinsic height or width</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#float-replaced-width" />
+        <link rel="match" href="float-replaced-width-009-ref.xht" />        
+        
         <meta name="flags" content="nonHTML svg" />
         <meta name="assert" content="Computed value of 'auto' for 'margin-left' or margin-right' on floated replaced elements becomes a used value of '0'. The height and width are adjusted by the constraints for block-level, non-replaced elements." />
         <style type="text/css">
@@ -31,7 +33,7 @@
         </style>
     </head>
     <body>
-        <p>Test passes if the blue and orange boxes below are the same width, and the blue box is in the upper-left corner of the black box.</p>
+        <p>Test passes if the blue and orange rectangles have the same width and if the blue rectangle is in the upper-left corner of the hollow black square.</p>
         <div id="div1">
             <div id="div2">
                 <svg:svg version="1.1" baseProfile="full">

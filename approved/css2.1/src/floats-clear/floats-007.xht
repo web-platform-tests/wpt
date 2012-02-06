@@ -4,6 +4,8 @@
         <title>CSS Test: Floated elements shifting down below non-floated elements</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#floats" />
+        <link rel="match" href="floats-007-ref.xht" />
+
         <meta name="flags" content="" />
         <meta name="assert" content="Left floated boxes shift down until next to another float and there is room to fit." />
         <style type="text/css">
@@ -36,7 +38,7 @@
         </style>
     </head>
     <body>
-        <p>Test passes if the top edges of the orange and blue boxes aligned and both boxes are below all other boxes.</p>
+        <p>Test passes if the top edges of the orange and blue squares are aligned and both squares are below the purple rectangle and yellow stripe.</p>
         <div>
            <div id="div1"></div>
            <div id="div2"></div>

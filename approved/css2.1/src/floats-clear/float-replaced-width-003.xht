@@ -4,6 +4,8 @@
         <title>CSS Test: Floated replaced elements with 'auto' right margin</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#float-replaced-width" />
+        <link rel="match" href="float-non-replaced-width-003-ref.xht" />
+
         <meta name="flags" content="image" />
         <meta name="assert" content="If 'margin-right' is computed as 'auto' its used value is '0'." />
         <style type="text/css">
@@ -24,7 +26,7 @@
         </style>
     </head>
     <body>
-        <p>Test passes if the blue box is in the upper-right corner of the black box.</p>
+        <p>Test passes if the filled blue square is in the upper-right corner of the hollow black square.</p>
         <div id="div1">
             <img alt="blue 15x15" src="support/blue15x15.png" />
         </div>

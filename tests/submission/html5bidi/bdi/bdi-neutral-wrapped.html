@@ -11,22 +11,7 @@
       'For the purposes of applying the bidirectional algorithm to the paragraph-level
       container that a bdi element finds itself within, the bdi element must be treated
       like a U+FFFC OBJECT REPLACEMENT CHARACTER.'
-
-      Obviously, this should hold even if the BDI's content is wrapped over more than one line.
-      A single character (U+FFFC or otherwise) obviously never gets wrapped over more than one
-      line, but we still expect the part of the content preceding the BDI, if any, that is
-      displayed on the same line as some part of the BDI to be ordered the same as it would be
-      if that part of the BDI were replaced with U+FFFC. Similarly, we expect the part of the
-      content following the BDI, if any, that is displayed on the same line as some part of the
-      BDI to be ordered the same as it would be if that part of the BDI were replaced with U+FFFC.
-      
-      In the test below, the content surrounding the BDI forms a single directional run (despite
-      the containing element and the BDI both having the opposite direction, because the BDI is
-      treated as a neutral). Thus, on the line containing the first part of the BDI, the BDI's
-      content appears after the content preceding it, and on the line containing the last part of
-      the BDI, the BDI content appears before the content following it, where both 'before' and
-      'after' are defined relative to the surrounding content's direction. And, of course, the line
-      containing just BDI content should be ordered in the BDI's direction."/>
+      This should hold even if the BDI's content is wrapped over more than one line."/>
     <style>
       body{
         font-size:2em;
@@ -47,7 +32,14 @@
         &#x05D0; ... &#x05D5; - The first six Hebrew letters (strongly RTL).
         &#x202D; - The LRO (left-to-right-override) formatting character.
         &#x202C; - The PDF (pop directional formatting) formatting character; closes LRO.
-      The non-breaking spaces after the &gt;s make the &gt;s display on a line of its own.
+      In the test below, the non-breaking spaces in the BDI's middle "word" make it so long that it
+      must be displayed on a line of its own, with the BDI wrapped before and after it. At the same
+      time, the content surrounding the BDI is supposed to form a single directional run, despite
+      the containing element and the BDI both having the opposite direction, because the BDI must be
+      treated as a neutral. Thus, on the line containing the first part of the BDI, the BDI's
+      content must appear after the content preceding it, and on the line containing the last part
+      of the BDI, the BDI content must appear before the content following it, where both 'before'
+      and 'after' are defined relative to the surrounding directional run.
     </div>
     <div class="test">
       <div dir="ltr">

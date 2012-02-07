@@ -716,7 +716,7 @@ function testTransformOrigin(value, expectedX, expectedY, expectedZ) {
 			? "rotate(45deg)"
 			: "rotate3d(1,-1,1,45deg)",
 		// Matrix entries
-		expectedZ === undefined
+		expectedZ === 0
 			? getRotationMatrix(0, 0, 1, "45deg")
 			: getRotationMatrix(1, -1, 1, "45deg"),
 		// Origin

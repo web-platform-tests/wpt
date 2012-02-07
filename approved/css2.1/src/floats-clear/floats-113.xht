@@ -6,15 +6,18 @@
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/float/013.xml" type="application/xhtml+xml"/>
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/float/013.html" type="text/html"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#floats" />
-  <style>
+  <link rel="match" href="floats-113-ref.xht" />
+
+  <meta name="flags" content="ahem" />
+  <style type="text/css"><![CDATA[
    .control { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
    .container { width: 40%; padding: 0; margin: 1em; border: solid black; font: 2em/1 Ahem; height: 1em; width: 3em; background: white; }
    .test { text-align: right; float: right; clear: right; color: green; }
-  </style>
+  ]]></style>
  </head>
  <body>
-  <p class="control">Ahem_font_would_be_nice_for_this_test.</p>
-  <p>The following two boxes should look identical.</p>
+
+  <p>Test passes if there are 2 identical rectangles with a black border.</p>
   <div class="container"> <div class="test">x x</div> </div>
   <div class="container"> <div class="test"> x x </div> </div>
  </body>

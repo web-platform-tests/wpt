@@ -129,8 +129,13 @@ function prefixHyphenatedProp(s) {
 			return i == 0 ? bit : bit[0].toUpperCase() + bit.slice(1)
 		})
 		.join("");
-	s = prefixProp(s);
-	s = s[0].toUpperCase() + s.slice(1);
+	var prefixed = prefixProp(s);
+	if (prefixed != s) {
+		// Capitalize the first letter so the return line adds a leading
+		// hyphen, e.g., "msTransform" -> "MsTransform" -> "-ms-transform"
+		// instead of "ms-transform".
+		s = prefixed[0].toUpperCase() + prefixed.slice(1);
+	}
 	return s.replace(/([A-Z])/g, "-$1")
 		.toLowerCase();
 }

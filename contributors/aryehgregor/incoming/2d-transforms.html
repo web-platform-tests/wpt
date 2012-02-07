@@ -108,7 +108,7 @@ section = "parsing";
 	  "scale(2) matrix()", "scale(2) translate()", "scale(2) translateX()",
 	  "scale(2) translateY()", "scale(2) scale()", "scale(2) scaleX()",
 	  "scale(2) scaleY()", "scale(2) rotate()", "scale(2) skewX()",
-	  "scale(2) skewY()",
+	  "scale(2) skewY()", "scale(2) skew()",
 	  // Too few arguments
 	  "scale(2) matrix(1)", "scale(2) matrix(1,2)", "scale(2) matrix(1,2,3)",
 	  "scale(2) matrix(1,2,3,4)", "scale(2) matrix(1,2,3,4,5)",
@@ -119,7 +119,7 @@ section = "parsing";
 	  "scale(2) rotate(1,90deg)", "scale(2) rotate(90deg,1)",
 	  "scale(2) rotate(1,1,90deg)", "scale(2) rotate(90deg,1,1)",
 	  "scale(2) rotate(90deg,1,1,1)", "scale(2) skewX(90deg,90deg)",
-	  "scale(2) skewY(90deg,90deg)",
+	  "scale(2) skewY(90deg,90deg)", "scale(2) skew(90deg,90deg,90deg)",
 	  // Wrong unit
 	 "scale(2) translate(10,10)", "scale(2) translate(10px,10)",
 	 "scale(2) translate(10,10px)", "scale(2) translateX(10)",
@@ -132,9 +132,13 @@ section = "parsing";
 	 "scale(2) rotate(10px)", "scale(2) rotate(10%)", "scale(2) rotate(10)",
 	 "scale(2) skewX(10px)", "scale(2) skewX(10)",
 	 "scale(2) skewY(10px)", "scale(2) skewY(10)",
+	 "scale(2) skew(10px,10px)", "scale(2) skew(0deg,10px)",
+	 "scale(2) skew(10px,0deg)", "scale(2) skew(10,10)",
+	 "scale(2) skew(0deg,10)", "scale(2) skew(10,0deg)",
 	  // FIXME: <angle> doesn't allow "0" with no unit, except really it does
 	  // https://www.w3.org/Bugs/Public/show_bug.cgi?id=15598
 	  //"scale(2) rotate(0)", "scale(2) skewX(0)", "scale(2) skewY(0)",
+	  //"scale(2) skew(90deg,0)", "scale(2) skew(0,90deg)", "scale(2) skew(0,0)",
 	  // The spec says <number> for all entries, so lengths and percentages are
 	  // not allowed in the last two entries.  FIXME: Mozilla wants this
 	  // changed.  https://www.w3.org/Bugs/Public/show_bug.cgi?id=15628
@@ -164,6 +168,7 @@ section = "parsing";
 	  "rotate(0.25turn)", "ROTATE(0.25TURN)", "rOtAtE(0.25tUrN)"], 0, 1, -1, 0, 0, 0],
 	[["skewx(45deg)", "SKEWX(45DEG)", "sKeWx(45DeG)"], 1, 0, 1, 1, 0, 0],
 	[["skewy(45deg)", "SKEWY(45DEG)", "sKeWy(45DeG)"], 1, 1, 0, 1, 0, 0],
+	[["skew(45deg, 45deg)", "SKEW(45DEG, 45DEG)", "sKeW(45dEg, 45DeG)"], 1, 1, 1, 1, 0, 0],
 ].forEach(function(arr) {
 	arr[0].forEach(function(transform, i) {
 		var transformKeyword = {0: "TRANSFORM", 1: "tRAnSFoRM", 2: "transform"}[i%3];
@@ -270,17 +275,30 @@ rotateAngles.forEach(function(angle) {
 	);
 });
 
-// Test skewX()/skewY()
+// Test skewX()/skewY()/skew()
 section = "skew";
-skewAngles.forEach(function(angle) {
+skewAngles.forEach(function(angle1) {
 	testTransform(
-		"skewX(" + angle + ")",
-		[1, 0, Math.tan(convertToRad(angle)), 1, 0, 0]
+		"skewX(" + angle1 + ")",
+		[1, 0, Math.tan(convertToRad(angle1)), 1, 0, 0]
 	);
 	testTransform(
-		"skewY(" + angle + ")",
-		[1, Math.tan(convertToRad(angle)), 0, 1, 0, 0]
+		"skewY(" + angle1 + ")",
+		[1, Math.tan(convertToRad(angle1)), 0, 1, 0, 0]
 	);
+	testTransform(
+		"skew(" + angle1 + ")",
+		[1, 0, Math.tan(convertToRad(angle1)), 1, 0, 0]
+	);
+
+	skewAngles.forEach(function(angle2) {
+		testTransform(
+			"skew(" + angle1 + ", " + angle2 + ")",
+			[1, Math.tan(convertToRad(angle2)),
+			 Math.tan(convertToRad(angle1)), 1,
+			 0, 0]
+		);
+	});
 });
 
 // Test multiple transformations
@@ -322,7 +340,6 @@ transforms.forEach(function(trans1) {
 testTransform("translateX(-1000px) scaleX(1000000) "
 	+ "translateX(0.001px) scaleX(0.000001)",
 	[1, 0, 0, 1, 0, 0]);
-
 
 section = "origin";
 // Test transform-origin with one argument

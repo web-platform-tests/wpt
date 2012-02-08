@@ -392,14 +392,25 @@ transforms.forEach(function(trans1) {
 		testTransform(trans1[0] + " " + trans2[0], mx);
 
 		// Now put the first on its grandparent, and the second on its parent.
-		// No need to test parsing.
-		testTransformedBoundary([trans1[0], trans2[0], "none"], mx);
+		// No need to test parsing.  TODO: Test with transform-style: flat.
+		setStyles({},
+			{transform: trans2[0], transformStyle: "preserve-3d"},
+			{transform: trans1[0], transformStyle: "preserve-3d"});
+		testTransformedBoundary("none", mx);
+		setStyles({}, {}, {});
 
 		transforms.forEach(function(trans3) {
 			var mx = mxmul44(trans1.slice(1), trans2.slice(1), trans3.slice(1));
+
 			testTransform(trans1[0] + " " + trans2[0] + " " + trans3[0], mx);
-			testTransformedBoundary([trans1[0], trans2[0], trans3[0]], mx);
+
+			setStyles({},
+				{transform: trans2[0], transformStyle: "preserve-3d"},
+				{transform: trans1[0], transformStyle: "preserve-3d"});
+			testTransformedBoundary(trans3[0], mx);
+			setStyles({}, {}, {});
 		});
+
 	});
 });
 })();

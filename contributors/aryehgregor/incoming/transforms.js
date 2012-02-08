@@ -412,7 +412,7 @@ function getStyleDescription() {
 	}
 	if (styleText.length) {
 		return "with "
-			+ styleText.join(", ");
+			+ styleText.join(", ")
 			+ ", set via " + (setStyles.useCssom ? "CSSOM" : "setAttribute()");
 	}
 	return "with no attributes set";

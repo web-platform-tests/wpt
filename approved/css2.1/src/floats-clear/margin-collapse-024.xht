@@ -4,6 +4,8 @@
         <title>CSS Test: Margin collapsing - in-flow block-level margin adjoining child's margin</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#collapsing-margins" />
+        <link rel="match" href="margin-collapse-024-ref.xht" />
+
         <meta name="flags" content="ahem image" />
         <meta name="assert" content="When an in-flow block-level element (#div3) is adjoining its in-flow block-level child's top margin and the child has no top border, no top padding or no clearance applied to it, then such top margins collapse." />
         <style type="text/css">
@@ -33,7 +35,7 @@
         </style>
     </head>
     <body>
-        <p>Test passes if there is no red visible on the page.</p>
+        <p>Test passes if there is no red.</p>
         <div id="div1">
             <div id="div2"></div>
             <div id="div3">

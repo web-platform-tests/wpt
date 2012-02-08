@@ -6,6 +6,8 @@
   <link rel="reviewer" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact" />
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/float/root-formatting-contexts/001.html" type="text/html"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#floats" />
+  <link rel="match" href="floats-bfc-001-ref.xht" />
+
   <style type="text/css">
    .outer { background: red; height: 300px; width: 300px; }
    .block { background: green; height: auto; width: 300px; }
@@ -14,7 +16,7 @@
   </style> 
  </head> 
  <body>
-  <p>There should be a green square below with no red.</p>
+  <p>Test passes if there is a big filled green square and <strong>no red</strong>.</p>
   <div class="outer">
    <div class="block">
     <div class="float"></div>

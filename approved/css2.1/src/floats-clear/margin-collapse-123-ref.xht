@@ -10,42 +10,46 @@
   <style type="text/css"><![CDATA[
   table
   {
+  background-color: orange;
   border: black solid medium;
   border-spacing: 0px;
   display: inline-table;
   margin: 1em 0em auto 1em;
   }
   
-  td {padding: 0px;}
+  td
+  {
+  height: 2em;
+  padding: 0px;
+  width: 3em;
+  }
 
-  td.square { height: 4em; width: 4em; }
-  td.rectangle { height: 4em; width: 8em; }
-  td.lime { background-color: lime; }
-  td.aqua { background-color: aqua; }
-  td.yellow { background-color: yellow; }
+  td.yellow {background-color: yellow;}
   ]]></style>  
 
  </head>
 
  <body>
 
-  <p>The following two squares should be identical.</p>
+  <p>The following two rectangles should be identical.</p>
 
   <table>
     <tr>
-     <td class="square aqua"></td>
-     <td class="square lime"></td>
+     <td></td>
+     <td class="yellow"></td>
     </tr>
     <tr>
-     <td colspan="2" class="rectangle yellow"></td>
+     <td></td>
+     <td></td>
     </tr>
    </table><table>
     <tr>
-     <td class="square aqua"></td>
-     <td class="square lime"></td>
+     <td></td>
+     <td class="yellow"></td>
     </tr>
     <tr>
-     <td colspan="2" class="rectangle yellow"></td>
+     <td></td>
+     <td></td>
     </tr>
   </table>
 

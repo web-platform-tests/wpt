@@ -5,6 +5,8 @@
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/block/margin-collapse/035.html" type="text/html"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#collapsing-margins"/>
+  <link rel="match" href="margin-collapse-135-ref.xht" />
+
   <style type="text/css">
    .container { background: red; height: auto; border: 1em lime solid; }
    div { clear: both; }
@@ -17,7 +19,7 @@
   </style>
  </head>
  <body>
-  <p>There should be no red below.</p>
+  <p>Test passes if there is <strong>no red</strong>.</p>
   <div class="container">
    <div class="a">
     <div class="b"> </div>

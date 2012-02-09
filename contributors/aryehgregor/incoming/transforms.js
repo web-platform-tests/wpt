@@ -446,9 +446,10 @@ function testTransform(value, mx) {
  * <https://www.w3.org/Bugs/Public/show_bug.cgi?id=15471>  Thus for now we
  * accept either "matrix(1, 0, 0, 1, 0, 0)" or "none" in this case.
  *
- * FIXME: We allow px optionally in the last two entries because Gecko adds it
- * while other engines don't, and the spec is unclear about which behavior is
- * correct: https://www.w3.org/Bugs/Public/show_bug.cgi?id=15431
+ * FIXME: The spec is technically not completely clear about whether px are
+ * allowed in the serialization of any of the matrix() or matrix3d() entries,
+ * although the intent is almost surely not:
+ * https://www.w3.org/Bugs/Public/show_bug.cgi?id=15431
  *
  * FIXME: This does not actually match the 3D Transforms spec.
  * https://www.w3.org/Bugs/Public/show_bug.cgi?id=15535
@@ -470,7 +471,7 @@ function testTransformParsing(mx) {
 	}
 	var computed = getComputedStyle(div)[prefixProp("transform")];
 	if (is2dMatrix(mx)) {
-		var re = /^matrix\(([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+?)(?:px)?, ([^,]+?)(?:px)?\)$/;
+		var re = /^matrix\(([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+)\)$/;
 		assert_regexp_match(computed, re, "computed value has unexpected form for 2D matrix");
 		var msg = ' (actual: "' + computed + '"; '
 			+ 'expected: "matrix(' + [mx[0], mx[1], mx[4], mx[5], mx[12], mx[13]].join(', ') +')")';
@@ -490,7 +491,7 @@ function testTransformParsing(mx) {
 		return;
 	}
 
-	var re = /^matrix3d\(([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+?)(?:px)?, ([^,]+?)(?:px)?, ([^,]+?)(?:px)?, ([^,]+?)\)$/;
+	var re = /^matrix3d\(([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+?)\)$/;
 	assert_regexp_match(computed, re, "computed value has unexpected form for 3D matrix");
 	var msg = ' (actual: "' + computed + '"; '
 		+ 'expected: "matrix3d(' + mx.join(', ') +')")';

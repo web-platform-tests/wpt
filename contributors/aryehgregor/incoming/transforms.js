@@ -3,11 +3,16 @@
 // context/containing block, fixed backgrounds, specificity of SVG transform
 // attribute, inheritance (computed values)
 //
+// TODO: Test serialization of style attribute, tables with captions,
+// elementFromPoint() and other CSSOM stuff
+//
 // TODO: Note in particular that WebKit appears to resolve relative lengths for
 // the computed value of transform, other browsers don't.  And IE seems to
 // *not* resolve relative lengths for the computed value of transform-origin,
 // but other browsers do.  But everyone seems to not resolve percents for
 // transform-origin.
+//
+// TODO: Break into multiple files?
 //
 // TODO: CSSTransformList?
 //

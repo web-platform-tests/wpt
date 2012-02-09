@@ -14,9 +14,6 @@
 "use strict";
 // FIXME: Test fixed backgrounds when they become defined
 // https://www.w3.org/Bugs/Public/show_bug.cgi?id=15833
-//
-// TODO: More table tests, particularly anonymous frames.
-// https://bugzilla.mozilla.org/show_bug.cgi?id=722777#c8
 var testNames = {
 	"2d": [
 		"abspos-1a.html",
@@ -140,6 +137,14 @@ var testNames = {
 		"table-1c.html",
 		"table-2a.html",
 		"table-2b.html",
+		// FIXME: The spec here doesn't match browsers and is probably wrong.
+		// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15943
+		//"table-3a.html",
+		//"table-3b.html",
+		//"table-3c.html",
+		//"table-4a.html",
+		//"table-4b.html",
+		//"table-4c.html",
 		"translate-1a.html",
 		"translate-1b.html",
 		"translate-1c.html",

@@ -10,6 +10,8 @@
   <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#normal-block" />
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="author" title="Bruno Fassino" href="fassino[at]gmail.com" />
+  <link rel="match" href="margin-collapse-clear-012-ref.xht" />
+
   <meta content="When an element has had clearance applied to it and its own margins collapse, these margins collapse with the adjoining margins of following siblings but the resulting margin does not collapse with the bottom margin of the parent block" name="assert" />
   <meta content="" name="flags" />
 
@@ -78,7 +80,7 @@
 
  <body>
 
-  <p>Test passes if there is no red visible on the page.</p>
+  <p>Test passes if there is <strong>no red</strong>.</p>
 
   <div id="relatively-positioned-wrapper">
 

@@ -16,10 +16,7 @@
   <meta content="" name="flags" />
 
   <style type="text/css"><![CDATA[
-  #relatively-positioned-wrapper
-  {
-  position: relative;
-  }
+  #rel-pos-wrapper {position: relative;}
 
   #parent-lime
   {
@@ -82,33 +79,50 @@
 
   <p>Test passes if there is <strong>no red</strong>.</p>
 
-  <div id="relatively-positioned-wrapper">
+  <div id="rel-pos-wrapper">
 
   <!--
+
   #parent-lime should have height 200px, sum of:
-  height of #sole-preceding-sibling-aqua plus its margin-bottom (100px)
-  height of #float-left-blue (100px)
+  
+     60px  : height of #sole-preceding-sibling-aqua 
+  +
+     40px  : margin-bottom of #sole-preceding-sibling-aqua
+  +
+    100px  : height of #float-left-blue
+  ========================================================
+    200px
+
   -->
 
-   <div id="parent-lime">
-    <div id="sole-preceding-sibling-aqua"></div>
-    <div id="float-left-blue"></div>
-    <div id="clear-left"></div>
-   </div>
+    <div id="parent-lime">
+      <div id="sole-preceding-sibling-aqua"></div>
+      <div id="float-left-blue"></div>
+      <div id="clear-left"></div>
+    </div>
+
+  <!--
+
+     clearance 
+   + 
+     margin-top of #clear-left (120px)
+   ====================================
+     height of #float-left-blue (100px) 
+     
+     therefore, clearance is equal to -20px 
+
+  -->
+
+    <div id="next-yellow"></div>
 
    <!--
-   clearance + #clear-left's margin-top (120px) = #float-left-blue's height (100px);
-   therefore, clearance is -20px
+   #ref1 and #ref2 boxes create a sort of 'reference rendering' 
+   where #ref1 should be covered, overlapped by #parent-lime 
+   while #ref2 should be covered, overlapped by #next-yellow.
    -->
 
-   <div id="next-yellow"></div>
-
-   <!--
-   #ref1 and #ref2 boxes create a sort of 'reference rendering' where #ref1 should be covered, overlapped by #parent-lime while #ref2 should be covered, overlapped by #next-yellow.
-   -->
-
-   <div id="ref1" class="ref-overlapped-red"></div>
-   <div id="ref2" class="ref-overlapped-red"></div>
+    <div id="ref1" class="ref-overlapped-red"></div>
+    <div id="ref2" class="ref-overlapped-red"></div>
 
   </div>
 

@@ -5,7 +5,8 @@
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/fonts/size/001.xml" type="application/xhtml+xml"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/fonts.html#font-size-props" />
-  <style type="text/css">
+
+  <style type="text/css"><![CDATA[
 
     .tests * { line-height: 0; border: none; margin: 0; padding: 0; display: block; }
     .tests { margin: 10em 2em 2em 2em; display: block; }
@@ -18,10 +19,10 @@
     .medium > .text { background: red; }
     .smaller > .text { background: green; }
 
-  </style>
+  ]]></style>
  </head>
  <body class="test">
-  <p>This test has passed if below you see only green, and no red at all.</p>
+  <p>Test passes if there is a filled green rectangle and <strong>no red</strong>.</p>
   <div class="tests">
     <div class="medium"><div class="text">        </div></div>
     <div class="big"><div class="smaller"><div class="text">        </div></div></div>

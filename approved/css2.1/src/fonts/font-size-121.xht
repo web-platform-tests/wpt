@@ -5,13 +5,15 @@
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/fonts/size/003.xml" type="application/xhtml+xml"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/fonts.html#font-size-props" />
-  <style type="text/css">
+
+  <meta name="flags" content="ahem" />
+  <style type="text/css"><![CDATA[
 
     .tests { display: block; padding: 2em; font: 900 1em Ahem, Verdana, sans-serif; }
     .tests > * { position: absolute; color: red; }
     .tests > * + * { color: green; }
 
-    smallest span { font-size: larger; }
+    .smallest span { font-size: larger; }
     .largest span { font-size: smaller; }
 
     .smallest { font-size: xx-small; }
@@ -19,10 +21,10 @@
 
     .tests * { vertical-align: bottom; }
 
-  </style>
+  ]]></style>
  </head>
  <body class="test">
-  <p>This test has passed if you see no red on this page (a faint trace of red may be visible in anti-aliasing).</p>
+  <p>Test passes if there is no red, except for antialiasing issues.</p>
   <div class="tests">
    <span class="smallest">X<span>X<span>X<span>X<span>X<span>X<span>X</span></span></span></span></span></span></span>
    <span class="largest"><span><span><span><span><span><span>X</span>X</span>X</span>X</span>X</span>X</span>X</span>

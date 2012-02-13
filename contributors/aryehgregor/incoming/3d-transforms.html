@@ -327,7 +327,7 @@ rotateAngles.forEach(function(angle) {
 // Test perspective()
 section = "perspective";
 lengths
-.concat("2000px", "1000px", "200px")
+.concat("2000px", "1000px", "200px", "0.001px")
 .forEach(function(length) {
 	var pixels = convertToPx(length);
 	if (pixels <= 0) {
@@ -541,12 +541,9 @@ testPerspective("", "", "50%", "50%");
 testPerspective("none", "", "50%", "50%");
 testPerspective("NONE", "", "50%", "50%");
 testPerspective("nOnE", "", "50%", "50%");
-// Don't use the lengths array, because many of those are ridiculously small
-// for a perspective and will cause unreasonable rounding error.
-[
-	".0", "-1px", "100pt", "53.7px", "10em", "100px", "1346px", "-53.7px",
-	"0.0px", "100ex", "10in", "10cm", "100mm", "10pc"
-].forEach(function(length) {
+lengths
+.concat("2000px", "1000px", "200px", "0.001px")
+.forEach(function(length) {
 	[
 		["", "50%", "50%"],
 		["8em -22px", "8em", "-22px"],

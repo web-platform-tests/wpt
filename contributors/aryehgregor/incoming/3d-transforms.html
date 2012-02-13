@@ -180,8 +180,8 @@ section = "parsing";
 	 "perspective(400px)",
 	 1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, -1/400,  0, 0, 0, 1],
 	// Test a whole bunch of functions mashed together
-	[["tranSlatex( 16px )rotatez(-90deg)  rotate(100grad)\ttranslate3d(12pt, 0, 0.0em)"],
-	 "translateX(16px) rotateZ(-90deg) rotate(100grad) translate3d(12pt, 0px, 0em)",
+	[["tranSlatex( 16px )rotatez(-90deg)  rotate(100grad)\ttranslate3d(-12pt, 0, 0.0em)"],
+	 "translateX(16px) rotateZ(-90deg) rotate(100grad) translate3d(-12pt, 0px, 0em)",
 	 1, 0, 0, 1, 0, 0],
 ].forEach(function(arr) {
 	arr[0].forEach(function(transform, i) {

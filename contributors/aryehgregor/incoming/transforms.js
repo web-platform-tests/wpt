@@ -559,7 +559,7 @@ function testTransformedBoundary(transformValue, mx,
 	// Compute the expected bounding box by applying the given matrix to the
 	// vertices of the test div's border box.
 	var originalPoints = [[0, 0], [0, divHeight], [divWidth, 0], [divWidth, divHeight]];
-	var expectedTop, expectedRight, expectedBottom, expectedLeft;
+	var newPoints = [];
 	for (var i = 0; i < originalPoints.length; i++) {
 		var x = originalPoints[i][0] - xOffset;
 		var y = originalPoints[i][1] - yOffset;
@@ -570,19 +570,7 @@ function testTransformedBoundary(transformValue, mx,
 		var newW = mx[3]*x + mx[7]*y + mx[11]*z + mx[15];
 		var newX = (mx[0]*x + mx[4]*y + mx[8]*z + mx[12])/newW + xOffset;
 		var newY = (mx[1]*x + mx[5]*y + mx[9]*z + mx[13])/newW + yOffset;
-		// Don't care about the new Z -- that doesn't affect rendering.
-		if (expectedTop === undefined || newY < expectedTop) {
-			expectedTop = newY;
-		}
-		if (expectedRight === undefined || newX > expectedRight) {
-			expectedRight = newX;
-		}
-		if (expectedBottom === undefined || newY > expectedBottom) {
-			expectedBottom = newY;
-		}
-		if (expectedLeft === undefined || newX < expectedLeft) {
-			expectedLeft = newX;
-		}
+		newPoints.push([newX, newY]);
 	}
 
 	// Pick a different <style class=switch> for each test; they shouldn't
@@ -601,45 +589,155 @@ function testTransformedBoundary(transformValue, mx,
 	if (typeof transformValue == "string") {
 		setStyles({transform: transformValue,
 			transformOrigin: transformOriginValue})
-		test(function() {
-			testTransformedBoundaryAsserts(expectedTop, expectedRight, expectedBottom, expectedLeft);
-		}, "Boundaries " + getStyleDescription() + "; "
-		+ "switch style " + (testTransformedBoundary.switchStyleIdx % switchStyles.length));
 	} else {
 		setStyles({transform: transformValue[2],
 			transformOrigin: transformOriginValue},
 			{transform: transformValue[1]}, {transform: transformValue[0]});
-		test(function() {
-			testTransformedBoundaryAsserts(expectedTop, expectedRight, expectedBottom, expectedLeft);
-		}, "Boundaries " + getStyleDescription() + "; "
-		+ "switch style " + (testTransformedBoundary.switchStyleIdx % switchStyles.length));
+	}
 
+	test(function() {
+		// FIXME: We assume getBoundingClientRect() returns the rectangle
+		// that contains the transformed box, not the untransformed box.
+		// This is not actually specified anywhere.  Likewise the other CSSOM
+		// functions we use here.
+		// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15430
+		//
+		// First we do getBoundingClientRect().
+		var expectedTop = Math.min.apply(null, newPoints.map(function(p){return p[1]}));
+		var expectedRight = Math.max.apply(null, newPoints.map(function(p){return p[0]}));
+		var expectedBottom = Math.max.apply(null, newPoints.map(function(p){return p[1]}));
+		var expectedLeft = Math.min.apply(null, newPoints.map(function(p){return p[0]}));
+		var rect = div.getBoundingClientRect();
+		var msg = " (actual " + rect.top.toFixed(3) + ", "
+			+ rect.right.toFixed(3) + ", "
+			+ rect.bottom.toFixed(3) + ", "
+			+ rect.left.toFixed(3) + "; "
+			+ "expected " + expectedTop.toFixed(3) + ", "
+			+ expectedRight.toFixed(3) + ", "
+			+ expectedBottom.toFixed(3) + ", "
+			+ expectedLeft.toFixed(3) + ")";
+		assert_approx_equals(rect.top, expectedTop, pixelEpsilon, "top" + msg);
+		assert_approx_equals(rect.right, expectedRight, pixelEpsilon, "right" + msg);
+		assert_approx_equals(rect.bottom, expectedBottom, pixelEpsilon, "bottom" + msg);
+		assert_approx_equals(rect.left, expectedLeft, pixelEpsilon, "left" + msg);
+		assert_approx_equals(rect.width, expectedRight - expectedLeft, pixelEpsilon, "width" + msg);
+		assert_approx_equals(rect.height, expectedBottom - expectedTop, pixelEpsilon, "height" + msg);
+	}, "getBoundingClientRect() " + getStyleDescription() + "; "
+	+ "switch style " + (testTransformedBoundary.switchStyleIdx % switchStyles.length));
+
+	// Now elementFromPoint.  Don't test for points inside if two opposite
+	// sides are separated by less than (arbitrarily chosen) 5px.  Take the
+	// left side and project the center right point onto it, and the top side
+	// with the center bottom point projected onto it.  Also don't assume that
+	// anything is inside the element if we have transform-style: preserve-3d
+	// anywhere, because the test div might be covered by something else.
+	var getVectorToLine = function(origin, point, line) {
+		point = [point[0] - origin[0], point[1] - origin[1]];
+		line = [line[0] - origin[0], line[1] - origin[1]];
+		var lineLength = Math.sqrt(line[0]*line[0] + line[1]*line[1]);
+		line[0] /= lineLength;
+		line[1] /= lineLength;
+		return [
+			point[0] - line[0] * (point[0]*line[0] + point[1]*line[1]),
+			point[1] - line[1] * (point[0]*line[0] + point[1]*line[1])
+		];
+	};
+	var getOrthogonalDistance = function(origin, point, line) {
+		var projected = getVectorToLine(origin, point, line);
+		return Math.sqrt(projected[0]*projected[0] + projected[1]*projected[1]);
+	};
+	var distance1 = getOrthogonalDistance(newPoints[0],
+		[(newPoints[2][0] + newPoints[3][0])/2, (newPoints[2][1] + newPoints[3][1])/2],
+		newPoints[1]
+	);
+	var distance2 = getOrthogonalDistance(newPoints[0],
+		[(newPoints[1][0] + newPoints[3][0])/2, (newPoints[1][1] + newPoints[3][1])/2],
+		newPoints[2]
+	);
+
+	var testInside = distance1 >= 5 && distance2 >= 5
+		&& getComputedStyle(div.parentNode)[prefixProp("transformStyle")] == "flat"
+		&& getComputedStyle(div.parentNode.parentNode)[prefixProp("transformStyle")] == "flat";
+
+	test(function() {
+		if (testInside) {
+			// We'll test inside points as well as outside.  Take weighted
+			// averages of the corners to get points that are 1/4 of the way
+			// inside.
+			var weightPoints = function(topLeft, bottomLeft, topRight, bottomRight) {
+				var sum = topLeft + bottomLeft + topRight + bottomRight;
+				topLeft /= sum;
+				bottomLeft /= sum;
+				topRight /= sum;
+				bottomRight /= sum;
+				return [
+					newPoints[0][0]*topLeft + newPoints[1][0]*bottomLeft
+					+ newPoints[2][0]*topRight + newPoints[3][0]*bottomRight,
+					newPoints[0][1]*topLeft + newPoints[1][1]*bottomLeft
+					+ newPoints[2][1]*topRight + newPoints[3][1]*bottomRight
+				];
+			};
+
+			var pointsInside = [
+				weightPoints(3, 3, 1, 1),
+				weightPoints(1, 1, 3, 3),
+				weightPoints(3, 1, 3, 1),
+				weightPoints(1, 3, 1, 3),
+			];
+
+			pointsInside.forEach(function(p) {
+				document.documentElement.style.position = "relative";
+				document.documentElement.style.left = (10 - p[0]) + "px";
+				document.documentElement.style.top = (10 - p[1]) + "px";
+				assert_equals(document.elementFromPoint(10, 10), div,
+					"Point (" + p[0] + ", " + p[1] + ") is not in the test div.  "
+					+ "Expected vertices: " + newPoints.map(function(p) {
+						return "(" + p[0] + ", " + p[1] + ")";
+					}).join("; ")
+				);
+			});
+		}
+
+		// Test outside points regardless.  Make them always 5px outside, so
+		// it should be valid even if the test div is very skinny.
+		var getOutsideEdge = function(origin, point1, point2, line) {
+			var point = [(point1[0] + point2[0])/2, (point1[1] + point2[1])/2];
+			var projected = getVectorToLine(origin, point, line);
+			var len = Math.sqrt(projected[0]*projected[0] + projected[1]*projected[1]);
+			projected[0] *= -5/len;
+			projected[1] *= -5/len;
+			projected[0] += origin[0];
+			projected[1] += origin[1];
+			return projected;
+		};
+		var pointsOutside = [
+			getOutsideEdge(newPoints[0], newPoints[1], newPoints[3], newPoints[2]),
+			getOutsideEdge(newPoints[2], newPoints[0], newPoints[1], newPoints[3]),
+			getOutsideEdge(newPoints[1], newPoints[0], newPoints[2], newPoints[3]),
+			getOutsideEdge(newPoints[0], newPoints[2], newPoints[3], newPoints[1]),
+		];
+
+		pointsOutside.forEach(function(p) {
+			document.documentElement.style.position = "relative";
+			document.documentElement.style.left = (10 - p[0]) + "px";
+			document.documentElement.style.top = (10 - p[1]) + "px";
+			assert_not_equals(document.elementFromPoint(10, 10), div,
+				"Point (" + p[0] + ", " + p[1] + ") is in the test div.  "
+				+ "Expected vertices: " + newPoints.map(function(p) {
+					return "(" + p[0] + ", " + p[1] + ")";
+				}).join("; ")
+			);
+		});
+	}, "elementFromPoint() " + (testInside ? "" : "(outside points only) ")
+	+ getStyleDescription() + "; "
+	+ "switch style " + (testTransformedBoundary.switchStyleIdx % switchStyles.length));
+
+	if (typeof transformValue != "string") {
 		setStyles(undefined, {}, {});
 	}
-}
-//@}
 
-function testTransformedBoundaryAsserts(expectedTop, expectedRight, expectedBottom, expectedLeft) {
-//@{
-	// FIXME: We assume getBoundingClientRect() returns the rectangle
-	// that contains the transformed box, not the untransformed box.
-	// This is not actually specified anywhere:
-	// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15430
-	var rect = div.getBoundingClientRect();
-	var msg = " (actual " + rect.top.toFixed(3) + ", "
-		+ rect.right.toFixed(3) + ", "
-		+ rect.bottom.toFixed(3) + ", "
-		+ rect.left.toFixed(3) + "; "
-		+ "expected " + expectedTop.toFixed(3) + ", "
-		+ expectedRight.toFixed(3) + ", "
-		+ expectedBottom.toFixed(3) + ", "
-		+ expectedLeft.toFixed(3) + ")";
-	assert_approx_equals(rect.top, expectedTop, pixelEpsilon, "top" + msg);
-	assert_approx_equals(rect.right, expectedRight, pixelEpsilon, "right" + msg);
-	assert_approx_equals(rect.bottom, expectedBottom, pixelEpsilon, "bottom" + msg);
-	assert_approx_equals(rect.left, expectedLeft, pixelEpsilon, "left" + msg);
-	assert_approx_equals(rect.width, expectedRight - expectedLeft, pixelEpsilon, "width" + msg);
-	assert_approx_equals(rect.height, expectedBottom - expectedTop, pixelEpsilon, "height" + msg);
+	document.documentElement.setAttribute("style", "");
+	document.documentElement.removeAttribute("style");
 }
 //@}
 

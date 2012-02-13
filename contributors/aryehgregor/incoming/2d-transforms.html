@@ -153,11 +153,15 @@ section = "parsing";
 	 "matrix(1, 2, 3, 4, 5, 6)", 1, 2, 3, 4, 5, 6],
 	[["translate(1px)", "TRANSLATE(1PX)", " tRaNsLaTe( 1Px ) "],
 	 "translate(1px)", 1, 0, 0, 1, 1, 0],
+	[["translate(1px, 3pt)", "TRANSLATE(1PX, 3PT)", " tRaNsLaTe( 1Px,3Pt ) "],
+	 "translate(1px, 3pt)", 1, 0, 0, 1, 1, 4],
 	[["translatex(1pt)", "TRANSLATEX(1PT)", " tRaNsLaTeX( 1pT ) "],
 	 "translateX(1pt)", 1, 0, 0, 1, 1/0.75, 0],
 	[["translatey(1in)", "TRANSLATEY(1IN)", " tRaNsLaTeY( 1iN ) "],
 	 "translateY(1in)", 1, 0, 0, 1, 0, 96],
 	[["scale(2)", "SCALE(2)", " sCaLe( 2 ) "], "scale(2)", 2, 0, 0, 2, 0, 0],
+	[["scale(2, 3)", "SCALE(2, 3)", " sCaLe( 2,3 ) "],
+	 "scale(2, 3)", 2, 0, 0, 3, 0, 0],
 	[["scalex(2)", "SCALEX(2)", " sCaLeX( 2 ) "], "scaleX(2)", 2, 0, 0, 1, 0, 0],
 	[["scaley(2)", "SCALEY(2)", " sCaLeY( 2 ) "], "scaleY(2)", 1, 0, 0, 2, 0, 0],
 	// Nothing much uses angle units, so I'll test case-insensitivity for those
@@ -176,6 +180,8 @@ section = "parsing";
 	 "skewY(45deg)", 1, 1, 0, 1, 0, 0],
 	[["skew(45deg, 45deg)", "SKEW(45DEG, 45DEG)", " sKeW( 45dEg,45DeG ) "],
 	 "skew(45deg, 45deg)", 1, 1, 1, 1, 0, 0],
+	[["skew(45deg)", "SKEW(45DEG)", " sKeW( 45dEg ) "],
+	 "skew(45deg)", 1, 0, 1, 1, 0, 0],
 ].forEach(function(arr) {
 	arr[0].forEach(function(transform, i) {
 		var transformKeyword = {0: "TRANSFORM", 1: "tRAnSFoRM", 2: "transform"}[i%3];

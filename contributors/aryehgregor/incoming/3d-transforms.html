@@ -134,49 +134,64 @@ section = "parsing";
 	 // (and indeed they are, even in Gecko).
 	 "scale(2) matrix3d(1,2,3,4,5,6,7,8,9,10,11,12,13,14,1%,16)",
 	 "scale(2) matrix3d(1,2,3,4,5,6,7,8,9,10,11,12,1%,1%,1%,16)",
-	]],
+	], ""],
 	[["matrix3d(1,2,3,0,4,5,6,0,7,8,9,0,10,11,12,1)",
 	  "MATRIX3D(1,2,3,0,4,5,6,0,7,8,9,0,10,11,12,1)",
-	  "mAtRiX3d(1,2,3,0,4,5,6,0,7,8,9,0,10,11,12,1)"],
+	  " mAtRiX3d( 1,2,3,0,4 ,5,6,0,7,8 , 9,0,10, 11,12,1 )  "],
+	 "matrix3d(1, 2, 3, 0, 4, 5, 6, 0, 7, 8, 9, 0, 10, 11, 12, 1)",
 	 1, 2, 3, 0,  4, 5, 6, 0,  7, 8, 9, 0,  10, 11, 12, 1],
 	[["translate3d(21px, -6px, 4px)",
 	  "TRANSLATE3D(21PX, -6PX, 4PX)",
-	  "tRaNsLaTe3D(21pX, -6pX, 4pX)"],
+	  " tRaNsLaTe3D( 21pX,-6pX , 4pX )  "],
+	 "translate3d(21px, -6px, 4px)",
 	 1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  21, -6, 4, 1],
-	[["translatez(15.4px)","TRANSLATEZ(15.4PX)",  "tRaNsLaTeZ(15.4pX)"],
+	[["translatez(15.4px)","TRANSLATEZ(15.4PX)",  " tRaNsLaTeZ( 15.4pX ) "],
+	 "translateZ(15.4px)",
 	 1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 15.4, 1],
-	[["scale3d(2, 4, -9)","SCALE3D(2, 4, -9)",  "sCaLe3D(2, 4, -9)"],
+	[["scale3d(2, 4, -9)","SCALE3D(2, 4, -9)",  " sCaLe3D( 2,4 ,  -9 )  "],
+	 "scale3d(2, 4, -9)",
 	 2, 0, 0, 0,  0, 4, 0, 0,  0, 0, -9, 0,  0, 0, 0, 1],
-	[["scalez(2)","SCALEZ(2)",  "sCaLeZ(2)"],
+	[["scalez(2)","SCALEZ(2)",  " sCaLeZ( 2 ) "],
+	 "scaleZ(2)",
 	 1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 2, 0,  0, 0, 0, 1],
 	[["rotate3d(0, 0, 1, 180deg)",
 	  "ROTATE3D(0, 0, 1, 180DEG)",
-	  "rOtAtE3d(0, 0, 1, 180DeG)"],
+	  " rOtAtE3d( 0,0 , 1 ,180DeG ) "],
+	 "rotate3d(0, 0, 1, 180deg)",
 	 -1, 0, 0, 0,  0, -1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1],
 	[["rotatex(180deg)",
 	  "ROTATEX(180DEG)",
-	  "rOtAtEx(180DeG)"],
+	  " rOtAtEx( 180DeG ) "],
+	 "rotateX(180deg)",
 	 1, 0, 0, 0,  0, -1, 0, 0,  0, 0, -1, 0,  0, 0, 0, 1],
 	[["rotatey(180deg)",
 	  "ROTATEY(180DEG)",
-	  "rOtAtEy(180DeG)"],
+	  " rOtAtEy( 180DeG ) "],
+	 "rotateY(180deg)",
 	 -1, 0, 0, 0,  0, 1, 0, 0,  0, 0, -1, 0,  0, 0, 0, 1],
 	[["rotatez(180deg)",
 	  "ROTATEZ(180DEG)",
-	  "rOtAtEz(180DeG)"],
+	  " rOtAtEz( 180DeG ) "],
+	 "rotateZ(180deg)",
 	 -1, 0, 0, 0,  0, -1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1],
 	[["perspective(400px)",
 	  "PERSPECTIVE(400PX)",
-	  "pErSpEcTiVe(400Px)"],
+	  " pErSpEcTiVe( 400Px ) "],
+	 "perspective(400px)",
 	 1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, -1/400,  0, 0, 0, 1],
 ].forEach(function(arr) {
 	arr[0].forEach(function(transform, i) {
 		var transformKeyword = {0: "TRANSFORM", 1: "tRAnSFoRM", 2: "transform"}[i%3];
+		div.setAttribute("style", "");
+		div.removeAttribute("style");
+		div.style[prefixProp("transform").replace("transform", transformKeyword)] = transform;
 		test(function() {
-			div.removeAttribute("style");
-			div.style[prefixProp("transform").replace("transform", transformKeyword)] = transform;
-			testTransformParsing(arr.slice(1));
-		}, 'Computed value for "' + transformKeyword + ": " + transform + '" set via CSSOM');
+			testInlineTransform(arr[1]);
+		}, 'div.style.cssText and .transform '
+		+ 'with "' + transformKeyword + ": " + transform + '" set via CSSOM');
+		test(function() {
+			testComputedTransform(arr.slice(2));
+		}, 'getComputedStyle(div).transform with "' + transformKeyword + ": " + transform + '" set via CSSOM');
 	});
 });
 div.removeAttribute("style");

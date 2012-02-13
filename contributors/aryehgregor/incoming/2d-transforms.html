@@ -97,11 +97,12 @@ body > div > div { padding-left: 10px; width: 105px }
 // Test case-sensitivity and other parsing issues
 section = "parsing";
 [
-	// "none" and parse errors; we prepend scale(2) for parse errors to ensure
-	// that any resulting identity matrix is really due to a parse error and
-	// not just the function happening to evaluate to the identity matrix
-	[[// "none"
-	  "none", "NONE", "nOnE",
+	[["none", "NONE", " nOnE "], "none"],
+	[["inherit", "INHERIT", " iNhErIt "], "inherit"],
+	// Parse errors.  We prepend scale(2) to ensure that any resulting identity
+	// matrix is really due to a parse error and not just the function
+	// happening to evaluate to the identity matrix
+	[[
 	  // Gibberish
 	  "scale(2) quasit", "scale(2) QUASIT", "scale(2) qUaSiT",
 	  // No arguments
@@ -146,32 +147,48 @@ section = "parsing";
 	  "scale(2) matrix(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16)",
 	  "scale(2) translate(1px,1px,1px)", "scale(2) scale(1,1,1)",
 	  "scale(2) rotate(1,1,1,90deg)",
-	]],
+	], ""],
 	// Case-sensitivity
-	[["matrix(1,2,3,4,5,6)", "MATRIX(1,2,3,4,5,6)", "mAtRiX(1,2,3,4,5,6)"], 1, 2, 3, 4, 5, 6],
-	[["translate(1px)", "TRANSLATE(1PX)", "tRaNsLaTe(1Px)"], 1, 0, 0, 1, 1, 0],
-	[["translatex(1pt)", "TRANSLATEX(1PT)", "tRaNsLaTeX(1pT)"], 1, 0, 0, 1, 1/0.75, 0],
-	[["translatey(1in)", "TRANSLATEY(1IN)", "tRaNsLaTeY(1iN)"], 1, 0, 0, 1, 0, 96],
-	[["scale(2)", "SCALE(2)", "sCaLe(2)"], 2, 0, 0, 2, 0, 0],
-	[["scalex(2)", "SCALEX(2)", "sCaLeX(2)"], 2, 0, 0, 1, 0, 0],
-	[["scaley(2)", "SCALEY(2)", "sCaLeY(2)"], 1, 0, 0, 2, 0, 0],
+	[["matrix(1,2,3,4,5,6)", "MATRIX(1,2,3,4,5,6)", " mAtRiX(1, 2,3,4, 5,6 ) "],
+	 "matrix(1, 2, 3, 4, 5, 6)", 1, 2, 3, 4, 5, 6],
+	[["translate(1px)", "TRANSLATE(1PX)", " tRaNsLaTe( 1Px ) "],
+	 "translate(1px)", 1, 0, 0, 1, 1, 0],
+	[["translatex(1pt)", "TRANSLATEX(1PT)", " tRaNsLaTeX( 1pT ) "],
+	 "translateX(1pt)", 1, 0, 0, 1, 1/0.75, 0],
+	[["translatey(1in)", "TRANSLATEY(1IN)", " tRaNsLaTeY( 1iN ) "],
+	 "translateY(1in)", 1, 0, 0, 1, 0, 96],
+	[["scale(2)", "SCALE(2)", " sCaLe( 2 ) "], "scale(2)", 2, 0, 0, 2, 0, 0],
+	[["scalex(2)", "SCALEX(2)", " sCaLeX( 2 ) "], "scaleX(2)", 2, 0, 0, 1, 0, 0],
+	[["scaley(2)", "SCALEY(2)", " sCaLeY( 2 ) "], "scaleY(2)", 1, 0, 0, 2, 0, 0],
 	// Nothing much uses angle units, so I'll test case-insensitivity for those
 	// while I'm here
-	[["rotate(90deg)", "ROTATE(90DEG)", "rOtAtE(90dEg)",
-	  "rotate(100grad)", "ROTATE(100GRAD)", "rOtAtE(100gRaD)",
-	  "rotate(1.57079633rad)", "ROTATE(1.57079633RAD)", "rOtAtE(1.57079633rAd)",
-	  "rotate(0.25turn)", "ROTATE(0.25TURN)", "rOtAtE(0.25tUrN)"], 0, 1, -1, 0, 0, 0],
-	[["skewx(45deg)", "SKEWX(45DEG)", "sKeWx(45DeG)"], 1, 0, 1, 1, 0, 0],
-	[["skewy(45deg)", "SKEWY(45DEG)", "sKeWy(45DeG)"], 1, 1, 0, 1, 0, 0],
-	[["skew(45deg, 45deg)", "SKEW(45DEG, 45DEG)", "sKeW(45dEg, 45DeG)"], 1, 1, 1, 1, 0, 0],
+	[["rotate(90deg)", "ROTATE(90DEG)", " rOtAtE( 90dEg ) "],
+	 "rotate(90deg)", 0, 1, -1, 0, 0, 0],
+	[["rotate(100grad)", "ROTATE(100GRAD)", " rOtAtE( 100gRaD ) "],
+	 "rotate(100grad)", 0, 1, -1, 0, 0, 0],
+	[["rotate(1.57rad)", "ROTATE(1.57RAD)", " rOtAtE( 1.57rAd ) "],
+	 "rotate(1.57rad)", 0, 1, -1, 0, 0, 0],
+	[["rotate(0.25turn)", "ROTATE(0.25TURN)", " rOtAtE( 0.25tUrN )"],
+	 "rotate(0.25turn)", 0, 1, -1, 0, 0, 0],
+	[["skewx(45deg)", "SKEWX(45DEG)", " sKeWx( 45DeG ) "],
+	 "skewX(45deg)", 1, 0, 1, 1, 0, 0],
+	[["skewy(45deg)", "SKEWY(45DEG)", " sKeWy( 45DeG ) "],
+	 "skewY(45deg)", 1, 1, 0, 1, 0, 0],
+	[["skew(45deg, 45deg)", "SKEW(45DEG, 45DEG)", " sKeW( 45dEg,45DeG ) "],
+	 "skew(45deg, 45deg)", 1, 1, 1, 1, 0, 0],
 ].forEach(function(arr) {
 	arr[0].forEach(function(transform, i) {
 		var transformKeyword = {0: "TRANSFORM", 1: "tRAnSFoRM", 2: "transform"}[i%3];
+		div.setAttribute("style", "");
+		div.removeAttribute("style");
+		div.style[prefixProp("transform").replace("transform", transformKeyword)] = transform;
 		test(function() {
-			div.removeAttribute("style");
-			div.style[prefixProp("transform").replace("transform", transformKeyword)] = transform;
-			testTransformParsing(arr.slice(1));
-		}, 'Computed value for "' + transformKeyword + ": " + transform + '" set via CSSOM');
+			testInlineTransform(arr[1]);
+		}, 'div.style.cssText and .transform '
+		+ 'with "' + transformKeyword + ": " + transform + '" set via CSSOM');
+		test(function() {
+			testComputedTransform(arr.slice(2));
+		}, 'getComputedStyle(div).transform with "' + transformKeyword + ": " + transform + '" set via CSSOM');
 	});
 });
 

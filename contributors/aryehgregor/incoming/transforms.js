@@ -439,7 +439,7 @@ function testTransform(value, mx) {
 //@{
 	setStyles({transform: value});
 	test(function() {
-		testTransformParsing(mx);
+		testComputedTransform(mx);
 	}, "getComputedStyle(div).transform " + getStyleDescription());
 	testTransformedBoundary(value, mx);
 }
@@ -468,7 +468,7 @@ function testTransform(value, mx) {
  * the right places.  If it has sixteen entries, the required output format is
  * still matrix() instead of matrix3d() if it's equivalent to a 2D matrix.
  */
-function testTransformParsing(mx) {
+function testComputedTransform(mx) {
 //@{
 	if (mx.length == 0) {
 		assert_regexp_match(getComputedStyle(div)[prefixProp("transform")],
@@ -509,6 +509,27 @@ function testTransformParsing(mx) {
 	for (var i = 0; i < 16; i++) {
 		assert_approx_equals(Number(match[i + 1]), mx[i], computedEpsilon,
 			"getComputedStyle matrix component " + i + msg);
+	}
+}
+//@}
+
+/**
+ * Tests that div.style.transform and div.style.cssText are set as would be
+ * appropriate if the div has style="transform: value".  FIXME: This is not
+ * specified anywhere yet.
+ * https://www.w3.org/Bugs/Public/show_bug.cgi?id=15710
+ */
+function testInlineTransform(expectedValue) {
+//@{
+	assert_equals(div.style[prefixProp("transform")], expectedValue,
+		"div.style.transform");
+	if (expectedValue == "") {
+		assert_equals(div.style.cssText, "", "div.style.cssText");
+	} else {
+		// Browsers vary in whether they output ";" or "; " at the end
+		assert_equals(div.style.cssText.replace(/;? ?$/, ""),
+			prefixHyphenatedProp("transform") + ": " + expectedValue,
+			"div.style.cssText");
 	}
 }
 //@}

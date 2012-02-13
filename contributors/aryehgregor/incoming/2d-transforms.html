@@ -182,6 +182,16 @@ section = "parsing";
 	 "skew(45deg, 45deg)", 1, 1, 1, 1, 0, 0],
 	[["skew(45deg)", "SKEW(45DEG)", " sKeW( 45dEg ) "],
 	 "skew(45deg)", 1, 0, 1, 1, 0, 0],
+	// Serialization of unitless zeroes
+	[["translate(0)"], "translate(0px)", 1, 0, 0, 1, 0, 0],
+	[["translate(0,0)"], "translate(0px, 0px)", 1, 0, 0, 1, 0, 0],
+	[["translateX(0)"], "translateX(0px)", 1, 0, 0, 1, 0, 0],
+	[["translateY(0)"], "translateY(0px)", 1, 0, 0, 1, 0, 0],
+	[["rotate(0)"], "rotate(0deg)", 1, 0, 0, 1, 0, 0],
+	[["skew(0)"], "skew(0deg)", 1, 0, 0, 1, 0, 0],
+	[["skew(0,0)"], "skew(0deg, 0deg)", 1, 0, 0, 1, 0, 0],
+	[["skewX(0)"], "skewX(0deg)", 1, 0, 0, 1, 0, 0],
+	[["skewY(0)"], "skewY(0deg)", 1, 0, 0, 1, 0, 0],
 ].forEach(function(arr) {
 	arr[0].forEach(function(transform, i) {
 		var transformKeyword = {0: "TRANSFORM", 1: "tRAnSFoRM", 2: "transform"}[i%3];

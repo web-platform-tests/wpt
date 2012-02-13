@@ -159,6 +159,9 @@ section = "parsing";
 	  " rOtAtE3d( 0,0 , 1 ,180DeG ) "],
 	 "rotate3d(0, 0, 1, 180deg)",
 	 -1, 0, 0, 0,  0, -1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1],
+	// Rotating around the zero vector should be a no-op
+	[["scale(2) rotate3d(0, 0.0, 0, 180deg)"],
+	 "scale(2) rotate3d(0, 0, 0, 180deg)", 1, 0, 0, 1, 0, 0],
 	[["rotatex(180deg)",
 	  "ROTATEX(180DEG)",
 	  " rOtAtEx( 180DeG ) "],
@@ -179,6 +182,13 @@ section = "parsing";
 	  " pErSpEcTiVe( 400Px ) "],
 	 "perspective(400px)",
 	 1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, -1/400,  0, 0, 0, 1],
+	// Serialization of unitless zeroes
+	[["translate3d(0,0,0)"], "translate3d(0px, 0px, 0px)", 1, 0, 0, 1, 0, 0],
+	[["translatez(0)"], "translateZ(0px)", 1, 0, 0, 1, 0, 0],
+	[["rotate3d(1,0,0,0)"], "rotate3d(1, 0, 0, 0deg)", 1, 0, 0, 1, 0, 0],
+	[["rotatex(0)"], "rotateX(0deg)", 1, 0, 0, 1, 0, 0],
+	[["rotatey(0)"], "rotateY(0deg)", 1, 0, 0, 1, 0, 0],
+	[["rotatez(0)"], "rotateZ(0deg)", 1, 0, 0, 1, 0, 0],
 	// Test a whole bunch of functions mashed together
 	[["tranSlatex( 16px )rotatez(-90deg)  rotate(100grad)\ttranslate3d(-12pt, 0, 0.0em)"],
 	 "translateX(16px) rotateZ(-90deg) rotate(100grad) translate3d(-12pt, 0px, 0em)",

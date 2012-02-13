@@ -135,13 +135,8 @@ section = "parsing";
 	 "scale(2) skew(10px,10px)", "scale(2) skew(0deg,10px)",
 	 "scale(2) skew(10px,0deg)", "scale(2) skew(10,10)",
 	 "scale(2) skew(0deg,10)", "scale(2) skew(10,0deg)",
-	  // FIXME: <angle> doesn't allow "0" with no unit, except really it does
-	  // https://www.w3.org/Bugs/Public/show_bug.cgi?id=15598
-	  //"scale(2) rotate(0)", "scale(2) skewX(0)", "scale(2) skewY(0)",
-	  //"scale(2) skew(90deg,0)", "scale(2) skew(0,90deg)", "scale(2) skew(0,0)",
 	  // The spec says <number> for all entries, so lengths and percentages are
-	  // not allowed in the last two entries.  FIXME: Mozilla wants this
-	  // changed.  https://www.w3.org/Bugs/Public/show_bug.cgi?id=15628
+	  // not allowed in the last two entries.
 	  "scale(2) matrix(1,2,3,4,5px,6)", "scale(2) matrix(1,2,3,4,5%,6)",
 	  "scale(2) matrix(1,2,3,4,5,6px)", "scale(2) matrix(1,2,3,4,5,6%)",
 	  "scale(2) matrix(1,2,3,4,5px,6px)", "scale(2) matrix(1,2,3,4,5%,6%)",

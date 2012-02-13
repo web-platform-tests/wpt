@@ -1,7 +1,7 @@
 "use strict";
 // TODO: Test images, interaction with SVG, creation of stacking
 // context/containing block, fixed backgrounds, specificity of SVG transform
-// attribute, inheritance (computed values)
+// attribute, inlines
 //
 // TODO: Test serialization of style attribute, tables with captions,
 // elementFromPoint() and other CSSOM stuff
@@ -21,10 +21,6 @@
 //
 // FIXME: Test serialization of inline style once that's defined
 // https://www.w3.org/Bugs/Public/show_bug.cgi?id=15710
-//
-// FIXME: Test inlines once that's defined (and I can work out how to integrate
-// it into my testing scheme)
-// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15755
 //
 // Probably requires reftests: interaction with overflow
 //
@@ -55,7 +51,7 @@ var percentagesAndLengths = [
 var lengths = percentagesAndLengths.filter(function(s){return !/%$/.test(s)});
 
 var rotateAngles = [
-	"-7deg", "0deg", "22.5deg", "45deg", "86.451deg", "90deg", "180deg",
+	"-7deg", "0", "0deg", "22.5deg", "45deg", "86.451deg", "90deg", "180deg",
 	"270deg", "452deg",
 	"-1rad", "0rad", "1rad", "6.28rad",
 	"0.721turn", "256grad"];
@@ -64,7 +60,7 @@ var rotateAngles = [
 // defined, and even if they were, the result would be extremely sensitive to
 // rounding error.
 var skewAngles = [
-	"-80deg", "-45deg", "-32.6deg", "-0.05deg", "0deg", "0.05deg", "32.6deg",
+	"-80deg", "0", "-45deg", "-32.6deg", "-0.05deg", "0deg", "0.05deg", "32.6deg",
 	"45deg", "80deg", "300deg",
 	"-0.3rad", "0rad", "0.3rad", "2.9rad",
 	"0.921turn", "22grad"];
@@ -184,16 +180,23 @@ function convertToPx(input, percentRef) {
 
 /**
  * Accepts a string that's a CSS angle, and returns a number of radians (not a
- * string), or null if parsing fails.
+ * string), or null if parsing fails.  0 is accepted without a unit, as the
+ * transform spec requires.
  */
 function convertToRad(input) {
 //@{
-	var match = /^([-+]?[0-9]+|[-+]?[0-9]*\.[0-9]+)(deg|grad|rad|turn)$/.exec(input);
+	var match = /^([-+]?[0-9]+|[-+]?[0-9]*\.[0-9]+)(deg|grad|rad|turn|)$/.exec(input);
 	if (!match) {
 		return null;
 	}
 	var amount = Number(match[1]);
 	var unit = match[2];
+	if (unit == "" && amount == 0) {
+		return 0;
+	}
+	if (unit == "") {
+		return null;
+	}
 	return amount * {
 		deg: Math.PI/180,
 		grad: Math.PI/200,
@@ -274,8 +277,8 @@ function is2dMatrix(mx) {
 //@}
 
 /**
- * Returns the rotation matrix used for rotate3d(x, y, z, angle).  FIXME: I've
- * followed what Gecko/WebKit actually do, not what the spec says.
+ * Returns the rotation matrix used for rotate3d(x, y, z, angle).  FIXME: The
+ * spec isn't quite right yet, and the code here matches implementations.
  * https://www.w3.org/Bugs/Public/show_bug.cgi?id=15610
  */
 function getRotationMatrix(x, y, z, angle) {
@@ -285,20 +288,22 @@ function getRotationMatrix(x, y, z, angle) {
 	x /= len;
 	y /= len;
 	z /= len;
+	var sc = Math.sin(rads/2)*Math.cos(rads/2);
+	var sq = Math.sin(rads/2)*Math.sin(rads/2);
 	var ret =
-		[1 + (1-Math.cos(rads))*(x*x-1),
-		z*Math.sin(rads)+(1-Math.cos(rads))*x*y,
-		-y*Math.sin(rads)+(1-Math.cos(rads))*x*z,
+		[1 - 2*(y*y + z*z)*sq,
+		2*(x*y*sq + z*sc),
+		2*(x*z*sq - y*sc),
 		0,
 
-		-z*Math.sin(rads)+(1-Math.cos(rads))*x*y,
-		1 + (1-Math.cos(rads))*(y*y-1),
-		x*Math.sin(rads)+(1-Math.cos(rads))*y*z,
+		2*(x*y*sq - z*sc),
+		1 - 2*(z*z + x*x)*sq,
+		2*(y*z*sq + x*sc),
 		0,
 
-		y*Math.sin(rads)+(1-Math.cos(rads))*x*z,
-		-x*Math.sin(rads)+(1-Math.cos(rads))*y*z,
-		1 + (1-Math.cos(rads))*(z*z-1),
+		2*(x*z*sq + y*sc),
+		2*(y*z*sq - x*sc),
+		1 - 2*(x*x + y*y)*sq,
 		0,
 
 		0, 0, 0, 1];
@@ -863,8 +868,7 @@ function testPerspective(value, originValue, expectedX, expectedY) {
 
 	// The expectedX/Y values used in the matrix need to be resolved relative
 	// to the border box of the test div's parent, then offset by the
-	// difference between their widths/heights.  FIXME: This isn't completely
-	// clear in the spec. https://www.w3.org/Bugs/Public/show_bug.cgi?id=15708
+	// difference between their widths/heights.
 	expectedX = convertToPx(expectedX, divParentWidth)
 		- (divParentWidth - divWidth)/2;
 	expectedY = convertToPx(expectedY, divParentHeight)

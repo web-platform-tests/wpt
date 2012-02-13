@@ -121,13 +121,8 @@ section = "parsing";
 	 // perspective() with nonpositive lengths is not allowed
 	 "scale(2) perspective(-1px)", "scale(2) perspective(-100em)",
 	 "scale(2) perspective(0pt)", "scale(2) perspective(0)",
-	 // FIXME: <angle> doesn't allow "0" with no unit, except really it does
-	 // https://www.w3.org/Bugs/Public/show_bug.cgi?id=15598
-	 //"scale(2) rotate3d(1,0,0,0)", "scale(2) rotateX(0)",
-	 //"scale(2) rotateY(0)", "scale(2) rotateZ(0)",
 	 // The spec says <number> for all entries, so lengths and percentages are
-	 // not allowed in any of the entries.  FIXME: Mozilla wants this changed.
-	 // https://www.w3.org/Bugs/Public/show_bug.cgi?id=15628
+	 // not allowed in any of the entries.
 	 "scale(2) matrix3d(1,2,3,4,5,6,7,8,9,10,11,12,1px,14,15,16)",
 	 "scale(2) matrix3d(1,2,3,4,5,6,7,8,9,10,11,12,13,1px,15,16)",
 	 "scale(2) matrix3d(1,2,3,4,5,6,7,8,9,10,11,12,13,14,1px,16)",
@@ -170,8 +165,6 @@ section = "parsing";
 	  "ROTATEZ(180DEG)",
 	  "rOtAtEz(180DeG)"],
 	 -1, 0, 0, 0,  0, -1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1],
-	// FIXME: The spec has a bug in its definition of perspective().
-	// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15538
 	[["perspective(400px)",
 	  "PERSPECTIVE(400PX)",
 	  "pErSpEcTiVe(400Px)"],
@@ -332,9 +325,6 @@ rotateAngles.forEach(function(angle) {
 });
 
 // Test perspective()
-//
-// FIXME: The spec has a bug in its definition of perspective().
-// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15538
 section = "perspective";
 lengths
 .concat("2000px", "1000px", "200px")

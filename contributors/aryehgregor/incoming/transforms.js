@@ -277,9 +277,7 @@ function is2dMatrix(mx) {
 //@}
 
 /**
- * Returns the rotation matrix used for rotate3d(x, y, z, angle).  FIXME: The
- * spec isn't quite right yet, and the code here matches implementations.
- * https://www.w3.org/Bugs/Public/show_bug.cgi?id=15610
+ * Returns the rotation matrix used for rotate3d(x, y, z, angle).
  */
 function getRotationMatrix(x, y, z, angle) {
 //@{
@@ -297,7 +295,7 @@ function getRotationMatrix(x, y, z, angle) {
 		0,
 
 		2*(x*y*sq - z*sc),
-		1 - 2*(z*z + x*x)*sq,
+		1 - 2*(x*x + z*z)*sq,
 		2*(y*z*sq + x*sc),
 		0,
 

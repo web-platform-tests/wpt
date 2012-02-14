@@ -1,16 +1,8 @@
 "use strict";
-// TODO: Test images, interaction with SVG, creation of stacking
-// context/containing block, fixed backgrounds, specificity of SVG transform
-// attribute, inlines
+// TODO: Test interaction with SVG, specificity of SVG transform attribute,
+// inlines
 //
-// TODO: Test serialization of style attribute, tables with captions,
-// elementFromPoint() and other CSSOM stuff
-//
-// TODO: Note in particular that WebKit appears to resolve relative lengths for
-// the computed value of transform, other browsers don't.  And IE seems to
-// *not* resolve relative lengths for the computed value of transform-origin,
-// but other browsers do.  But everyone seems to not resolve percents for
-// transform-origin.
+// TODO: Test more CSSOM stuff
 //
 // TODO: Break into multiple files?
 //
@@ -18,11 +10,6 @@
 //
 // FIXME: CSSMatrix seems not to be implemented by most UAs.
 // https://www.w3.org/Bugs/Public/show_bug.cgi?id=15443
-//
-// FIXME: Test serialization of inline style once that's defined
-// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15710
-//
-// Probably requires reftests: interaction with overflow
 //
 // Not for now: transitions, animations
 //@{
@@ -449,14 +436,12 @@ function testTransform(value, mx) {
  * entries.
  *
  * If mx has zero entries, that means the transform is supposed to parse the
- * same as "none" or be a parse error.  FIXME: The spec doesn't match browsers
- * for serialization of the transform property when it's unset or "none".
- * <https://www.w3.org/Bugs/Public/show_bug.cgi?id=15471>  Thus for now we
- * accept either "matrix(1, 0, 0, 1, 0, 0)" or "none" in this case.
+ * same as "none" or be a parse error.  FIXME: Serialization of the transform
+ * property when it's unset or "none" is not specced right yet.
+ * <https://www.w3.org/Bugs/Public/show_bug.cgi?id=15471>
  *
- * FIXME: The spec is technically not completely clear about whether px are
- * allowed in the serialization of any of the matrix() or matrix3d() entries,
- * although the intent is almost surely not:
+ * FIXME: The spec is not yet completely clear that all matrix()/matrix3d()
+ * entries are serialized as <number>s:
  * https://www.w3.org/Bugs/Public/show_bug.cgi?id=15431
  *
  * FIXME: This does not actually match the 3D Transforms spec.
@@ -469,9 +454,8 @@ function testTransform(value, mx) {
 function testComputedTransform(mx) {
 //@{
 	if (mx.length == 0) {
-		assert_regexp_match(getComputedStyle(div)[prefixProp("transform")],
-			/^(none|matrix\(1, 0, 0, 1, 0, 0\))$/,
-			"computed value has unexpected form");
+		assert_equals(getComputedStyle(div)[prefixProp("transform")], "none",
+			"wrong computed value");
 		return;
 	}
 	if (mx.length == 6) {
@@ -589,9 +573,15 @@ function testTransformedBoundary(transformValue, mx,
 		var y = originalPoints[i][1] - yOffset;
 		var z = -zOffset;
 		// Perspective; hope w isn't 0.  FIXME: Precise behavior isn't really
-		// defined anywhere, although the intent is relatively clear:
+		// defined anywhere, although the intent is relatively clear as long as
+		// nothing gets w <= 0:
 		// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15605
 		var newW = mx[3]*x + mx[7]*y + mx[11]*z + mx[15];
+		if (newW <= 0) {
+			// There's no reasonable bounding rect -- theoretically the box is
+			// probably infinite or invisible.
+			return;
+		}
 		var newX = (mx[0]*x + mx[4]*y + mx[8]*z + mx[12])/newW + xOffset;
 		var newY = (mx[1]*x + mx[5]*y + mx[9]*z + mx[13])/newW + yOffset;
 		newPoints.push([newX, newY]);

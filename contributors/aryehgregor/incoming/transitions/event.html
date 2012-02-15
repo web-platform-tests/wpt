@@ -1,0 +1,189 @@
+<!doctype html>
+<title>CSS Transitions event tests</title>
+<link rel=author title="Aryeh Gregor" href="ayg@aryeh.name">
+<script src=/resources/testharness.js></script>
+<script src=http://w3c-test.org/resources/testharnessreport.js></script>
+<style>
+#tests { width: 200px }
+#tests > div {
+	height: 3px;
+	background: blue;
+	border: 1px solid black;
+}
+</style>
+<div id=tests></div>
+<div id=log></div>
+<script>
+"use strict";
+
+var prop = "transition" in document.body.style ? "transition"
+	: "msTransition" in document.body.style ? "msTransition"
+	: "MozTransition" in document.body.style ? "MozTransition"
+	: "webkitTransition" in document.body.style ? "webkitTransition"
+	: "OTransition" in document.body.style ? "OTransition"
+	: undefined;
+
+if (prop === undefined) {
+	throw "Transitions not supported?";
+}
+
+add_completion_callback(function() {
+	document.body.removeChild(document.querySelector("#tests"));
+});
+
+var tests = [
+	["background-color",
+		["rgb(0, 128, 0)", "rgba(0, 128, 0, 1)"],
+		["rgb(0, 0, 255)", "rgba(0, 0, 255, 1)"]],
+	["background-position", ["0% 0%"], ["50% 100%"]],
+	["border-bottom-color",
+		["rgb(0, 128, 0)", "rgba(0, 128, 0, 1)"],
+		["rgb(0, 0, 255)", "rgba(0, 0, 255, 1)"]],
+	["border-bottom-width", ["1px"], ["5px"]],
+	["border-left-color",
+		["rgb(0, 128, 0)", "rgba(0, 128, 0, 1)"],
+		["rgb(0, 0, 255)", "rgba(0, 0, 255, 1)"]],
+	["border-left-width", ["1px"], ["5px"]],
+	["border-right-color",
+		["rgb(0, 128, 0)", "rgba(0, 128, 0, 1)"],
+		["rgb(0, 0, 255)", "rgba(0, 0, 255, 1)"]],
+	["border-right-width", ["1px"], ["5px"]],
+	["border-spacing", ["1px 10px"], ["10px 1px"]],
+	["border-top-color",
+		["rgb(0, 128, 0)", "rgba(0, 128, 0, 1)"],
+		["rgb(0, 0, 255)", "rgba(0, 0, 255, 1)"]],
+	["border-top-width", ["1px"], ["5px"]],
+	["bottom", ["1px"], ["10px"]],
+	//["bottom", ["1%"], ["10%"]],
+	["clip",
+		["rect(0px, 100px, 100px, 0px)", "rect(0px 100px 100px 0px)"],
+		["rect(25px, 75px, 75px, 25px)", "rect(25px 75px 75px 25px)"]],
+	["color",
+		["rgb(0, 128, 0)", "rgba(0, 128, 0, 1)"],
+		["rgb(0, 0, 255)", "rgba(0, 0, 255, 1)"]],
+	["font-size", ["16px"], ["32px"]],
+	//["font-size", ["100%"], ["200%"]],
+	["height", ["3px"], ["8px"]],
+	//["height", ["1%"], ["2%"]],
+	["left", ["1px"], ["10px"]],
+	//["left", ["1%"], ["10%"]],
+	["letter-spacing", ["1px"], ["10px"]],
+	//["line-height", ["1"], ["1.5"]],
+	["line-height", ["16px"], ["24px"]],
+	//["line-height", ["100%"], ["150%"]],
+	["margin-bottom", ["1px"], ["5px"]],
+	["margin-left", ["1px"], ["5px"]],
+	["margin-right", ["1px"], ["5px"]],
+	["margin-top", ["1px"], ["5px"]],
+	["max-height", ["3px"], ["1px"]],
+	//["max-height", ["1%"], ["0.1%"]],
+	["max-width", ["100px"], ["50px"]],
+	//["max-width", ["100%"], ["50%"]],
+	["min-height", ["3px"], ["6px"]],
+	//["min-height", ["1%"], ["2%"]],
+	["min-width", ["100px"], ["200px"]],
+	//["min-width", ["100%"], ["200%"]],
+	["opacity", ["1"], ["0"]],
+	["outline-color",
+		["rgb(0, 128, 0)", "rgba(0, 128, 0, 1)"],
+		["rgb(0, 0, 255)", "rgba(0, 0, 255, 1)"]],
+	["outline-offset", ["1px"], ["10px"]],
+	["outline-width", ["1px"], ["10px"]],
+	["padding-bottom", ["5px"], ["10px"]],
+	["padding-left", ["5px"], ["10px"]],
+	["padding-right", ["5px"], ["10px"]],
+	["padding-top", ["5px"], ["10px"]],
+	["right", ["1px"], ["10px"]],
+	//["right", ["1%"], ["10%"]],
+	["text-indent", ["1px"], ["10px"]],
+	//["text-indent", ["1%"], ["10%"]],
+	["text-shadow",
+		["rgb(0, 0, 255) 1px 2px 0px", "1px 2px 0px rgb(0, 0, 255)",
+		"1px 2px 0px rgb(0,0,255)"],
+		["rgb(0, 0, 255) -3px -4px 0px", "-3px -4px 0px rgb(0, 0, 255)"]],
+	["top", ["1px"], ["10px"]],
+	//["top", ["1%"], ["10%"]],
+	["vertical-align", ["1px"], ["10px"]],
+	//["vertical-align", ["0%"], ["100%"]],
+	["visibility", ["hidden"], ["visible"]],
+	["width", ["100px"], ["200px"]],
+	//["width", ["100%"], ["200%"]],
+	["word-spacing", ["1px"], ["10px"]],
+	//["word-spacing", ["1%"], ["10%"]],
+	["z-index", ["0"], ["3"]],
+];
+
+tests.forEach(function(arr) {
+	var testProp = arr[0];
+	var testStart = arr[1];
+	var testEnd = arr[2];
+
+	["50ms", "0.05s"].forEach(function(duration) {
+		["50ms", "0.05s"].forEach(function(delay) {
+			["ease", "linear"].forEach(function(timing) {
+				var div = document.createElement("div");
+				div.className = "test";
+				document.querySelector("#tests").appendChild(div);
+				div.style.setProperty(testProp, testStart[0]);
+				if (testProp == "outline-width") {
+					// Special case, to be generalized if more properties need
+					// it
+					div.style.outlineStyle = "solid";
+				}
+				div.style[prop] = testProp + " " + duration + " " + delay + " " + timing;
+
+				var t = async_test(testProp + " " + duration + " " + delay + " " + timing
+					+ " from " + testStart[0] + " to " + testEnd[0]);
+				t.step(function() {
+					assert_in_array(
+						getComputedStyle(div).getPropertyValue(testProp),
+						testStart,
+						"Computed style wrong before we even began"
+					);
+				});
+
+				(function(div, t, testProp, testStart, testEnd) {
+					var handler = function(e) {
+						t.step(function() {
+							assert_equals(this, div, "this");
+							//assert_equals(e.type, "transitionend", "event.type");
+							assert_equals(e.target, div, "event.target");
+							assert_equals(e.currentTarget, div, "event.currentTarget");
+							assert_equals(e.eventPhase, Event.AT_TARGET, "event.eventPhase");
+							assert_equals(e.bubbles, true, "event.bubbles");
+							assert_equals(e.cancelable, true, "event.cancelable");
+							assert_equals(e.propertyName, testProp, "event.propertyName");
+							assert_approx_equals(e.elapsedTime,
+								parseFloat(duration) / (/ms$/.test(duration) ? 1000 : 1),
+								0.001,
+								"event.elapsedTime");
+							assert_in_array(
+								getComputedStyle(div).getPropertyValue(testProp),
+								testEnd,
+								"Computed style wrong at transitionend"
+							);
+						}.bind(this));
+
+						t.done();
+					};
+					div.addEventListener("transitionend", handler);
+					div.addEventListener("MSTransitionEnd", handler);
+					div.addEventListener("webkitTransitionEnd", handler);
+					div.addEventListener("oTransitionEnd", handler);
+
+					setTimeout(function() {
+						div.style.setProperty(testProp, testEnd[0]);
+						t.step(function() {
+							assert_in_array(
+								getComputedStyle(div).getPropertyValue(testProp),
+								testStart,
+								"Computed style wrong after setting new property"
+							);
+						});
+					}, 50);
+				})(div, t, testProp, testStart, testEnd);
+			});
+		});
+	});
+});
+</script>

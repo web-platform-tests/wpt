@@ -1,25 +1,28 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
 <html xmlns="http://www.w3.org/1999/xhtml">
+
  <head>
-  <title>CSS Test: Generated Content: \A and white-space</title>
+
+  <title>CSS Reftest Reference</title>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
-  <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/content/002.html" type="text/html"/>
-  <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#content" />
-  <link rel="match" href="content-172-ref.xht" />
 
-  <style type="text/css">
-   /* Setup */
-   td { font: 1em/1em monospace; border: solid; }
-   .normal div { white-space: normal; }
-   .pre div { white-space: pre; }
-   .nowrap div { white-space: nowrap; }
-   :before, :after { white-space: inherit; /* this isn't a cascade test */ }
+  <style type="text/css"><![CDATA[
+  td
+  {
+  border: black solid medium;
+  font: 1em/1 monospace;
+  }
 
-   /* Test */
-   .test:before { content: 'XXX\A    XXX\A       '; }
-   .test:after { content: 'XXX'; }
-  </style>
+  tr.normal div {white-space: normal;}
+
+  tr.pre div {white-space: pre;}
+
+  tr.nowrap div {white-space: nowrap;}
+  ]]></style>
+
  </head>
+
  <body>
 
   <p>The following two columns should be pixel-perfect identical (the
@@ -36,7 +39,9 @@
    <tbody>
     <tr class="normal">
      <td>
-<div class="test"></div>
+<div>XXX
+   XXX
+      XXX</div>
      </td>
      <td> 
 <div>XXX
@@ -46,7 +51,9 @@
     </tr>
     <tr class="nowrap">
      <td>
-<div class="test"></div>
+<div>XXX
+   XXX
+      XXX</div>
      </td>
      <td>
 <div>XXX
@@ -56,7 +63,9 @@
     </tr>
     <tr class="pre">
      <td>
-<div class="test"></div>
+<div>XXX
+   XXX
+      XXX</div>
      </td>
      <td> 
 <div>XXX
@@ -66,5 +75,6 @@
     </tr>
    </tbody>
   </table>
+
  </body>
 </html>

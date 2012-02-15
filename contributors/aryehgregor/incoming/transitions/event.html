@@ -31,159 +31,259 @@ add_completion_callback(function() {
 	document.body.removeChild(document.querySelector("#tests"));
 });
 
-var tests = [
-	["background-color",
-		["rgb(0, 128, 0)", "rgba(0, 128, 0, 1)"],
-		["rgb(0, 0, 255)", "rgba(0, 0, 255, 1)"]],
-	["background-position", ["0% 0%"], ["50% 100%"]],
-	["border-bottom-color",
-		["rgb(0, 128, 0)", "rgba(0, 128, 0, 1)"],
-		["rgb(0, 0, 255)", "rgba(0, 0, 255, 1)"]],
-	["border-bottom-width", ["1px"], ["5px"]],
-	["border-left-color",
-		["rgb(0, 128, 0)", "rgba(0, 128, 0, 1)"],
-		["rgb(0, 0, 255)", "rgba(0, 0, 255, 1)"]],
-	["border-left-width", ["1px"], ["5px"]],
-	["border-right-color",
-		["rgb(0, 128, 0)", "rgba(0, 128, 0, 1)"],
-		["rgb(0, 0, 255)", "rgba(0, 0, 255, 1)"]],
-	["border-right-width", ["1px"], ["5px"]],
-	["border-spacing", ["1px 10px"], ["10px 1px"]],
-	["border-top-color",
-		["rgb(0, 128, 0)", "rgba(0, 128, 0, 1)"],
-		["rgb(0, 0, 255)", "rgba(0, 0, 255, 1)"]],
-	["border-top-width", ["1px"], ["5px"]],
-	["bottom", ["1px"], ["10px"]],
-	//["bottom", ["1%"], ["10%"]],
-	["clip",
-		["rect(0px, 100px, 100px, 0px)", "rect(0px 100px 100px 0px)"],
-		["rect(25px, 75px, 75px, 25px)", "rect(25px 75px 75px 25px)"]],
-	["color",
-		["rgb(0, 128, 0)", "rgba(0, 128, 0, 1)"],
-		["rgb(0, 0, 255)", "rgba(0, 0, 255, 1)"]],
-	["font-size", ["16px"], ["32px"]],
-	//["font-size", ["100%"], ["200%"]],
-	["height", ["3px"], ["8px"]],
-	//["height", ["1%"], ["2%"]],
-	["left", ["1px"], ["10px"]],
-	//["left", ["1%"], ["10%"]],
-	["letter-spacing", ["1px"], ["10px"]],
-	//["line-height", ["1"], ["1.5"]],
-	["line-height", ["16px"], ["24px"]],
-	//["line-height", ["100%"], ["150%"]],
-	["margin-bottom", ["1px"], ["5px"]],
-	["margin-left", ["1px"], ["5px"]],
-	["margin-right", ["1px"], ["5px"]],
-	["margin-top", ["1px"], ["5px"]],
-	["max-height", ["3px"], ["1px"]],
-	//["max-height", ["1%"], ["0.1%"]],
-	["max-width", ["100px"], ["50px"]],
-	//["max-width", ["100%"], ["50%"]],
-	["min-height", ["3px"], ["6px"]],
-	//["min-height", ["1%"], ["2%"]],
-	["min-width", ["100px"], ["200px"]],
-	//["min-width", ["100%"], ["200%"]],
-	["opacity", ["1"], ["0"]],
-	["outline-color",
-		["rgb(0, 128, 0)", "rgba(0, 128, 0, 1)"],
-		["rgb(0, 0, 255)", "rgba(0, 0, 255, 1)"]],
-	["outline-offset", ["1px"], ["10px"]],
-	["outline-width", ["1px"], ["10px"]],
-	["padding-bottom", ["5px"], ["10px"]],
-	["padding-left", ["5px"], ["10px"]],
-	["padding-right", ["5px"], ["10px"]],
-	["padding-top", ["5px"], ["10px"]],
-	["right", ["1px"], ["10px"]],
-	//["right", ["1%"], ["10%"]],
-	["text-indent", ["1px"], ["10px"]],
-	//["text-indent", ["1%"], ["10%"]],
-	["text-shadow",
-		["rgb(0, 0, 255) 1px 2px 0px", "1px 2px 0px rgb(0, 0, 255)",
-		"1px 2px 0px rgb(0,0,255)"],
-		["rgb(0, 0, 255) -3px -4px 0px", "-3px -4px 0px rgb(0, 0, 255)"]],
-	["top", ["1px"], ["10px"]],
-	//["top", ["1%"], ["10%"]],
-	["vertical-align", ["1px"], ["10px"]],
-	//["vertical-align", ["0%"], ["100%"]],
-	["visibility", ["hidden"], ["visible"]],
-	["width", ["100px"], ["200px"]],
-	//["width", ["100%"], ["200%"]],
-	["word-spacing", ["1px"], ["10px"]],
-	//["word-spacing", ["1%"], ["10%"]],
-	["z-index", ["0"], ["3"]],
-];
+var testTypes = {
+	color: {
+		start: "green",
+		end: "blue",
+		startValues: [0, 128, 0],
+		endValues: [0, 0, 255],
+		computedFormat: ["rgb($, $, $)", "rgba($, $, $, 1)"],
+	},
+	length: {
+		start: "50px",
+		end: "100px",
+		startValues: [50],
+		endValues: [100],
+		computedFormat: ["$px"],
+	},
+	// TODO: add percentage
+	lengthOrPercentage: {
+		start: "50px",
+		end: "100px",
+		startValues: [50],
+		endValues: [100],
+		computedFormat: ["$px"],
+	},
+	position: {
+		start: "24% 72px",
+		end: "103% -5px",
+		startValues: [24, 72],
+		endValues: [103, -5],
+		computedFormat: ["$% $px"],
+	},
+	twoLengths: {
+		start: "50px 75px",
+		end: "100px 25px",
+		startValues: [50, 75],
+		endValues: [100, 25],
+		computedFormat: ["$px $px"],
+	},
+};
 
-tests.forEach(function(arr) {
-	var testProp = arr[0];
-	var testStart = arr[1];
-	var testEnd = arr[2];
+// TODO: Shorthands
+var tests = {
+	"background-color": testTypes.color,
+	"background-position": testTypes.position,
+	"border-bottom-color": testTypes.color,
+	"border-bottom-width": testTypes.length,
+	"border-left-color": testTypes.color,
+	"border-left-width": testTypes.length,
+	"border-right-color": testTypes.color,
+	"border-right-width": testTypes.length,
+	"border-spacing": testTypes.twoLengths,
+	"border-top-color": testTypes.color,
+	"border-top-width": testTypes.length,
+	"bottom": testTypes.lengthOrPercentage,
+	"clip": {
+		start: "rect(-10px, 110px, 110px, -10px)",
+		end: "rect(25px, 75px, 75px, 25px)",
+		startValues: [-10, 110, 110, -10],
+		endValues: [25, 75, 75, 25],
+		computedFormat: ["rect($px, $px, $px, $px)", "rect($px $px $px $px)"],
+	},
+	"color": testTypes.color,
+	"font-size": testTypes.lengthOrPercentage,
+	"height": testTypes.lengthOrPercentage,
+	"left": testTypes.lengthOrPercentage,
+	"letter-spacing": testTypes.length,
+	// TODO: Add number too
+	"line-height": testTypes.lengthOrPercentage,
+	"margin-bottom": testTypes.length,
+	"margin-left": testTypes.length,
+	"margin-right": testTypes.length,
+	"margin-top": testTypes.length,
+	"max-height": testTypes.lengthOrPercentage,
+	"max-width": testTypes.lengthOrPercentage,
+	"min-height": testTypes.lengthOrPercentage,
+	"min-width": testTypes.lengthOrPercentage,
+	"opacity": {
+		start: "1",
+		end: "0",
+		startValues: "1",
+		endValues: "0",
+		computedFormat: ["$"],
+		tolerance: 0.05,
+	},
+	"outline-color": testTypes.color,
+	"outline-offset": testTypes.length,
+	"outline-width": testTypes.length,
+	"padding-bottom": testTypes.length,
+	"padding-left": testTypes.length,
+	"padding-right": testTypes.length,
+	"padding-top": testTypes.length,
+	"right": testTypes.lengthOrPercentage,
+	"text-indent": testTypes.lengthOrPercentage,
+	// TODO: text-shadow
+	"top": testTypes.lengthOrPercentage,
+	// TODO: keywords
+	"vertical-align": testTypes.lengthOrPercentage,
+	// TODO: visibility
+	"width": testTypes.lengthOrPercentage,
+	"word-spacing": testTypes.lengthOrPercentage,
+	// TODO: z-index
+};
 
-	["50ms", "0.05s"].forEach(function(duration) {
-		["50ms", "0.05s"].forEach(function(delay) {
-			["ease", "linear"].forEach(function(timing) {
-				var div = document.createElement("div");
-				div.className = "test";
-				document.querySelector("#tests").appendChild(div);
-				div.style.setProperty(testProp, testStart[0]);
-				if (testProp == "outline-width") {
-					// Special case, to be generalized if more properties need
-					// it
-					div.style.outlineStyle = "solid";
-				}
-				div.style[prop] = testProp + " " + duration + " " + delay + " " + timing;
+function getExpectedValues(timing, elapsed, startValues, endValues) {
+	if (elapsed < 0) {
+		elapsed = 0;
+	} else if (elapsed > 1) {
+		elapsed = 1;
+	}
+	// Linear only for now
+	var ret = [];
+	for (var i = 0; i < startValues.length; i++) {
+		ret.push((1 - elapsed)*startValues[i] + elapsed*endValues[i]);
+	}
+	return ret;
+}
 
-				var t = async_test(testProp + " " + duration + " " + delay + " " + timing
-					+ " from " + testStart[0] + " to " + testEnd[0]);
-				t.step(function() {
-					assert_in_array(
-						getComputedStyle(div).getPropertyValue(testProp),
-						testStart,
-						"Computed style wrong before we even began"
-					);
-				});
+function parseComputedValue(formats, computed) {
+	if (formats.indexOf("$") != -1) {
+		// That always works . . .
+		return [Number(computed)];
+	}
+	for (var i = 0; i < formats.length; i++) {
+		var format = formats[i].split("$");
+		var ret = [];
+		for (var j = 0; j < format.length; j++) {
+			var idx = computed.indexOf(format[j]);
+			if (idx == -1) {
+				// Wrong format
+				break;
+			}
+			if (j != 0) {
+				ret.push(Number(computed.substr(0, idx)));
+			}
+			computed = computed.substr(idx + format[j].length);
+		}
+		if (computed == "") {
+			// Success
+			return ret;
+		}
+	}
+	return null;
+}
 
-				(function(div, t, testProp, testStart, testEnd) {
-					var handler = function(e) {
-						t.step(function() {
-							assert_equals(this, div, "this");
-							//assert_equals(e.type, "transitionend", "event.type");
-							assert_equals(e.target, div, "event.target");
-							assert_equals(e.currentTarget, div, "event.currentTarget");
-							assert_equals(e.eventPhase, Event.AT_TARGET, "event.eventPhase");
-							assert_equals(e.bubbles, true, "event.bubbles");
-							assert_equals(e.cancelable, true, "event.cancelable");
-							assert_equals(e.propertyName, testProp, "event.propertyName");
-							assert_approx_equals(e.elapsedTime,
-								parseFloat(duration) / (/ms$/.test(duration) ? 1000 : 1),
-								0.001,
-								"event.elapsedTime");
-							assert_in_array(
-								getComputedStyle(div).getPropertyValue(testProp),
-								testEnd,
-								"Computed style wrong at transitionend"
-							);
-						}.bind(this));
-
-						t.done();
-					};
-					div.addEventListener("transitionend", handler);
-					div.addEventListener("MSTransitionEnd", handler);
-					div.addEventListener("webkitTransitionEnd", handler);
-					div.addEventListener("oTransitionEnd", handler);
-
-					setTimeout(function() {
-						div.style.setProperty(testProp, testEnd[0]);
-						t.step(function() {
-							assert_in_array(
-								getComputedStyle(div).getPropertyValue(testProp),
-								testStart,
-								"Computed style wrong after setting new property"
-							);
-						});
-					}, 50);
-				})(div, t, testProp, testStart, testEnd);
-			});
-		});
+function substitute(arr, values) {
+	return arr.map(function(s) {
+		for (var i = 0; i < values.length; i++) {
+			s = s.replace("$", values[i]);
+		}
+		return s;
 	});
+}
+
+Object.keys(tests).forEach(function(testProp) {
+	var duration = 2;
+	var delay = 1;
+	var timing = "linear";
+	var steps = 4;
+
+	var data = tests[testProp];
+
+	var div = document.createElement("div");
+	document.querySelector("#tests").appendChild(div);
+	div.style.setProperty(testProp, data.start);
+	if (testProp == "outline-width") {
+		// Special case, to be generalized when necessary
+		div.style.outlineStyle = "solid";
+	}
+	div.style[prop] = testProp + " " + duration + "s " + delay + "s " + timing;
+
+	var t = async_test(testProp + " " + duration + "s " + delay + "s " + timing
+		+ " from " + data.start + " to " + data.end,
+		{timeout: 1000*(duration+delay+1)});
+	t.step(function() {
+		assert_in_array(
+			getComputedStyle(div).getPropertyValue(testProp),
+			substitute(data.computedFormat, data.startValues),
+			"Computed style wrong before we even began"
+		);
+	});
+
+	(function(div, t, testProp, data) {
+		var handler = function(e) {
+			t.step(function() {
+				assert_equals(this, div, "this");
+				//assert_equals(e.type, "transitionend", "event.type");
+				assert_equals(e.target, div, "event.target");
+				assert_equals(e.currentTarget, div, "event.currentTarget");
+				assert_equals(e.eventPhase, Event.AT_TARGET,
+					"event.eventPhase");
+				assert_equals(e.bubbles, true, "event.bubbles");
+				assert_equals(e.cancelable, true, "event.cancelable");
+				assert_equals(e.propertyName, testProp, "event.propertyName");
+				assert_approx_equals(e.elapsedTime, duration, 0.001,
+					"event.elapsedTime");
+				assert_in_array(
+					getComputedStyle(div).getPropertyValue(testProp),
+					substitute(data.computedFormat, data.endValues),
+					"Computed style wrong at transitionend"
+				);
+			}.bind(this));
+
+			t.done();
+		};
+		div.addEventListener("transitionend", handler);
+		div.addEventListener("MSTransitionEnd", handler);
+		div.addEventListener("webkitTransitionEnd", handler);
+		div.addEventListener("oTransitionEnd", handler);
+
+		var startTime;
+
+		setTimeout(function() {
+			startTime = Date.now();
+			div.style.setProperty(testProp, data.end);
+			t.step(function() {
+				assert_in_array(
+					getComputedStyle(div).getPropertyValue(testProp),
+					substitute(data.computedFormat, data.startValues),
+					"Computed style wrong after setting new property"
+				);
+			});
+		}, 50);
+
+		for (var i = 1; i <= steps; i++) {
+			(function(i) {
+				var elapsed = delay + i*duration/steps;
+				setTimeout(function() {
+					t.step(function() {
+						var actualElapsed = (Date.now() - startTime)/1000;
+						assert_approx_equals(actualElapsed, elapsed, 0.25,
+							"Elapsed time is further off than we want");
+						var computed = getComputedStyle(div).getPropertyValue(testProp);
+						var parsed = parseComputedValue(data.computedFormat,
+							computed);
+						assert_not_equals(parsed, null,
+							"Invalid format for computed style " + computed +
+							" after " + elapsed + "s");
+						var expected = getExpectedValues(timing,
+							(actualElapsed - delay)/duration,
+							data.startValues, data.endValues);
+						for (var j = 0; j < parsed.length; j++) {
+							assert_approx_equals(parsed[j], expected[j],
+								"tolerance" in data ? data.tolerance : 3,
+								"Value " + j + " is wrong " +
+								"after " + elapsed + "s " +
+								"(really " + actualElapsed + "s): " +
+								"expected " + format_value(expected) + ", " +
+								"got " + computed + " " +
+								"(= " + format_value(parsed) + ")");
+						}
+					});
+				}, 50 + 1000*elapsed);
+			})(i);
+		}
+	})(div, t, testProp, data);
 });
 </script>

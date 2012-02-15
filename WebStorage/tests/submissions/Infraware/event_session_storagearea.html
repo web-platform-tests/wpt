@@ -2,8 +2,8 @@
 <html>
  <head>
   <title>Web Storage</title>
-  <script src="/resources/testharness.js"></script>
-  <script src="/resources/testharnessreport.js"></script>
+  <script src="../../resources/testharness.js"></script>
+  <script src="../../resources/testharnessreport.js"></script>
  </head>
  <body>
 	<p>
@@ -32,9 +32,10 @@
 						t.done();
 					}
 				} catch (e) {
-					test(function() {
+					t.step(function() {
 						assert_unreached("Storage Interface error!");
-					}, "storageArea property test")
+					});
+					t.done();
 				}
 			}
 		}

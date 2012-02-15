@@ -7,7 +7,7 @@
  </head>
  <body>
 	<p>
-		<h3>event_local_newValue</h3>
+		<h3>event_session_StorageEventInit</h3>
 	</p>
 	
 	<hr>
@@ -16,12 +16,12 @@
 
 	<script>
 
-		var t = async_test("newvalue property test of local event");
+		var t = async_test("storageeventinit test");
 
 		function onStorageEvent(event) {
-			if (event.newValue != '') { 
-				switch (event.newValue) {
-					case "user2":
+			if (event.key != '') { 
+				switch (event.key) {
+					case 'key':
 						t.step(function() {
 						   assert_true(true);
 						  });
@@ -45,14 +45,17 @@
 			}, "existence of event listener")
         }
 
-		var el = document.createElement("iframe");
-		el.setAttribute('id', 'ifrm');
-		el.setAttribute('src', 'iframe/local_change_item_iframe.html');
-		el.style.border='0px';
-		el.style.width='0px';
-		el.style.height='0px'		
-		document.body.appendChild(el);
+		if (('sessionStorage' in window) && window.sessionStorage !== null){
 
+			var event = document.createEvent('StorageEvent');
+			event.initStorageEvent("storage", false, false, 'key', 'oldValue', 'newValue', window.location.href, window.sessionStorage);
+			window.dispatchEvent(event);
+
+		} else {
+			test(function() {
+				assert_unreached("sessionStorage is not supported.");
+			}, "sessionStorage interface test")
+		}	
 	</script>
 
  </body>

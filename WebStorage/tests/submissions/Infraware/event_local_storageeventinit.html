@@ -7,7 +7,7 @@
  </head>
  <body>
 	<p>
-		<h3>event_session_url</h3>
+		<h3>event_local_StorageEventInit</h3>
 	</p>
 	
 	<hr>
@@ -16,21 +16,21 @@
 
 	<script>
 
-		var t = async_test("url property test of session event");
+		var t = async_test("storageeventinit test");
 
 		function onStorageEvent(event) {
-			var url = window.location.href;
-
-			var pos = url.lastIndexOf("/");
-			if (pos != -1) {
-				url = url.substr(0, pos + 1);
-				url = url + "iframe/session_set_item_iframe.html";
+			if (event.key != '') { 
+				switch (event.key) {
+					case 'key':
+						t.step(function() {
+						   assert_true(true);
+						  });
+						t.done();
+						break;
+					default:
+						break;                  
+				}
 			}
-
-			t.step(function() {
-			   assert_equals(event.url, url);
-			  });
-			t.done();
 		}
 
 		if (window.addEventListener) {
@@ -45,14 +45,16 @@
 			}, "existence of event listener")
         }
 
-		var el = document.createElement("iframe");
-		el.setAttribute('id', 'ifrm');
-		el.setAttribute('src', 'iframe/session_set_item_iframe.html');
-		el.style.border='0px';
-		el.style.width='0px';
-		el.style.height='0px'		
-		document.body.appendChild(el);
+		if (('localStorage' in window) && window.localStorage !== null){
+			var event = document.createEvent('StorageEvent');
+			event.initStorageEvent("storage", false, false, 'key', 'oldValue', 'newValue', window.location.href, window.localStorage);
+			window.dispatchEvent(event);
 
+		} else {
+			test(function() {
+				assert_unreached("localStorage is not supported.");
+			}, "localStorage interface test")
+		}	
 	</script>
 
  </body>

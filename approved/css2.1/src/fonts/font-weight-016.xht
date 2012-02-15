@@ -5,18 +5,17 @@
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/fonts/ahem/005.xml" type="application/xhtml+xml"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/fonts.html#font-boldness" />
+
   <meta name="flags" content="ahem"/>
   <style type="text/css">
-   .control { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
    .overlap { height: 4em; width: 6em; background: white; position: absolute; z-index: 1; -moz-opacity: 0.95; }
    .a { font: 500 2em/1em Ahem; color: red; }
    .b { font: 600 2em/1em Ahem; color: green; }
   </style>
  </head>
  <body>
-  <div class="control">Ahem_font_required_for_this_test.</div>
 
-  <p>There should be a narrow line of green below.</p>
+  <p>Test passes if there is a narrow line of green.</p>
 
   <div> <!-- work around for bug 87712 -->
     <div class="overlap"/>

@@ -3,8 +3,8 @@
 <head>
 	<title id='title'>previousElementSibling</title>
 	<meta charset="utf-8" />
-	<script src="/resources/testharness.js"></script>
 	<script src="/resources/testharnessreport.js"></script>	
+	<script src="/resources/testharness.js"></script>
 </head>
 
 <body>
@@ -20,9 +20,6 @@
 	  test(function() {
                 assert_true(!!document.getElementById("parentEl").previousElementSibling);
                }, "previousElementSibling must exist");
-	  test(function() {
-                assert_readonly(document.getElementById("parentEl"), "previousElementSibling");
-               }, "previousElementSibling must be readonly");
 	  test(function() {
                 assert_equals( document.getElementById("h1").previousElementSibling, null);
                 assert_equals( document.getElementById("title").previousElementSibling, null);
@@ -80,6 +77,9 @@
                 assert_not_equals(span.previousElementSibling, null);
                 assert_equals( span.previousElementSibling.getAttribute("id"), "last_element_child");
                }, "previousElementSibling must be dynamically updated");
+	  test(function() {
+                assert_readonly(document.getElementById("parentEl"), "previousElementSibling");
+               }, "previousElementSibling must be readonly");
 	</script>
 </body>
 </html>

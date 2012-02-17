@@ -4,8 +4,8 @@
 	<meta charset="utf-8">
 
 	<title id='title'>childElementCount</title>
-	<script src="/resources/testharness.js"></script>
 	<script src="/resources/testharnessreport.js"></script>	
+	<script src="/resources/testharness.js"></script>
 </head>
 
 <body>
@@ -21,9 +21,6 @@
 	  test(function() {
                 assert_true(!!document.getElementById("parentEl").childElementCount);
                }, "childElementCount must exist");
-	  test(function() {
-                assert_readonly(document.getElementById("parentEl"), "childElementCount");
-               }, "childElementCount must be readonly");
 	  test(function() {
 	        // various random checks of childElementCount
                 assert_equals( document.documentElement.childElementCount, 2);
@@ -43,6 +40,9 @@
 	        h1.removeChild(span);
                 assert_equals( document.getElementById("h1").childElementCount, 0);
                }, "childElementCount must be dynamically updated");
+	  test(function() {
+                assert_readonly(document.getElementById("parentEl"), "childElementCount");
+               }, "childElementCount must be readonly");
 	</script>
 </body>
 </html>

@@ -4,8 +4,8 @@
 	<meta charset="utf-8"/>
 
 	<title id='title'>firstElementChild</title>
-	<script src="/resources/testharness.js"></script>
 	<script src="/resources/testharnessreport.js"></script>	
+	<script src="/resources/testharness.js"></script>
 </head>
 
 <body>
@@ -25,9 +25,6 @@
 	  test(function() {
                 assert_true(!!document.getElementById("parentEl").firstElementChild);
                }, "firstElementChild must exist");
-	  test(function() {
-                assert_readonly(document.getElementById("parentEl"), "firstElementChild");
-               }, "firstElementChild must be readonly");
 	  test(function() {
                 assert_equals( document.getElementById("title").firstElementChild, null);
                 assert_equals( document.getElementById("h1").firstElementChild, null);
@@ -51,6 +48,9 @@
 	        parentEl.removeChild(span);
                 assert_equals( parentEl.firstElementChild.getAttribute("id"), "first_element_child");
                }, "firstElementChild must be dynamically updated");
+	  test(function() {
+                assert_readonly(document.getElementById("parentEl"), "firstElementChild");
+               }, "firstElementChild must be readonly");
 	</script>
 </body>
 </html>

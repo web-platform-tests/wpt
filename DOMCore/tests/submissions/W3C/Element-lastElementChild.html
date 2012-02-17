@@ -4,8 +4,8 @@
 	<meta charset="utf-8">
 
 	<title id='title'>lastElementChild</title>
-	<script src="/resources/testharness.js"></script>
 	<script src="/resources/testharnessreport.js"></script>	
+	<script src="/resources/testharness.js"></script>
 </head>
 
 <body>
@@ -21,9 +21,6 @@
 	  test(function() {
                 assert_true(!!document.getElementById("parentEl").lastElementChild);
                }, "lastElementChild must exist");
-	  test(function() {
-                assert_readonly(document.getElementById("parentEl"), "lastElementChild");
-               }, "lastElementChild must be readonly");
 	  test(function() {
                 assert_equals( document.getElementById("title").lastElementChild, null);
                 assert_equals( document.getElementById("h1").lastElementChild, null);
@@ -44,6 +41,9 @@
 	        parentEl.removeChild(span);
                 assert_equals( parentEl.lastElementChild.getAttribute("id"), "last_element_child");
                }, "lastElementChild must be dynamically updated");
+	  test(function() {
+                assert_readonly(document.getElementById("parentEl"), "lastElementChild");
+               }, "lastElementChild must be readonly");
 	</script>
 </body>
 </html>

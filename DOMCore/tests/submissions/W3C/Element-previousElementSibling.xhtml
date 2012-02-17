@@ -3,8 +3,8 @@
 <head>
 	<title id='title'>previousElementSibling</title>
 	<meta charset="utf-8" />
-	<script src="/resources/testharness.js"></script>
 	<script src="/resources/testharnessreport.js"></script>	
+	<script src="/resources/testharness.js"></script>
 </head>
 
 <body>
@@ -21,12 +21,33 @@
                 assert_true(!!document.getElementById("parentEl").previousElementSibling);
                }, "previousElementSibling must exist");
 	  test(function() {
-                assert_readonly(document.getElementById("parentEl"), "previousElementSibling");
-               }, "previousElementSibling must be readonly");
-	  test(function() {
                 assert_equals( document.getElementById("h1").previousElementSibling, null);
                 assert_equals( document.getElementById("title").previousElementSibling, null);
+                assert_equals( document.getElementById("first_element_child").previousElementSibling, null);
                }, "previousElementSibling must return null if no previous element");
+	  test(function() {
+                function recurse(element) {
+                  var childrens = element.childNodes;
+	          var pos = 0;
+                  var previousElement = null;
+                  for (var pos = 0; pos != childrens.length; pos++) {                    
+	            var node = childrens.item(pos);
+	            if (node.nodeType == 1) {
+                      if (previousElement === null) {
+                         assert_equals(node.previousElementSibling, null);
+                         previousElement = node;
+                      } else {
+                        assert_equals(node.previousElementSibling.nodeType, 1);
+	                assertTrue(previousElement.isSameNode(node.previousElementSibling));
+                        previousElement = node;
+                      }
+                      recurse(node);
+                    }
+                  }
+                }
+	        var root = document.documentElement;
+                assert_equals( root.previousElementSibling, null);
+               }, "previousElementSibling must only return null or the previous element node");
 	  test(function() {
 	        var middle = document.getElementById("middle_element_child");	        
                 assert_not_equals( middle.previousElementSibling, null);
@@ -35,15 +56,30 @@
 	  test(function() {
 	        var parentEl = document.getElementById("parentEl");	        
 	        var first = document.getElementById("first_element_child");	        
-                assert_equals( first.previousElementSibling, null);
+	        var last = document.getElementById("last_element_child");	        
 	        var span = document.createElement("span");
 	        span.setAttribute("id", "dummy");
+
+                assert_equals( first.previousElementSibling, null);
+                assert_equals(span.previousElementSibling, null);
+
 	        parentEl.insertBefore(span, first);
                 assert_not_equals(first.previousElementSibling, null);
                 assert_equals( first.previousElementSibling.getAttribute("id"), "dummy");
+                assert_equals(span.previousElementSibling, null);
+
 	        parentEl.removeChild(span);
                 assert_equals(first.previousElementSibling, null);
+                assert_equals(span.previousElementSibling, null);
+
+	        parentEl.appendChild(span);
+                assert_equals(first.previousElementSibling, null);
+                assert_not_equals(span.previousElementSibling, null);
+                assert_equals( span.previousElementSibling.getAttribute("id"), "last_element_child");
                }, "previousElementSibling must be dynamically updated");
+	  test(function() {
+                assert_readonly(document.getElementById("parentEl"), "previousElementSibling");
+               }, "previousElementSibling must be readonly");
 	</script>
 </body>
 </html>

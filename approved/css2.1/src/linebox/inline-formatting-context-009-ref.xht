@@ -8,23 +8,31 @@
   <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
 
   <style type="text/css"><![CDATA[
-  div
+  table
   {
-  background-color: black;
-  float: left;
-  padding-left: 100px;
+  background-color: blue;
+  border-spacing: 0px;
+  height: 192px;
   }
-  
-  span {background-color: white;}
+
+  td
+  {
+  padding: 0px;
+  width: 96px;
+  }
+
+  td#middle {background-color: orange;}
   ]]></style>
 
  </head>
 
  <body>
 
-  <p>Test passes if there is a black stripe on the left side of "Filler Text".</p>
+  <p>Test passes if the filled orange rectangle has a filled blue rectangle on either side.</p>
 
-  <div><span>Filler Text</span></div>
+  <table>
+  <tr><td></td><td id="middle"></td><td></td></tr>
+  </table>
 
  </body>
 </html>

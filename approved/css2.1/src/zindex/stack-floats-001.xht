@@ -6,9 +6,11 @@
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/float/stacking/001.html" type="text/html"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#layers" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#floats" />
-  <style type="text/css">
-   .control { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
+  <link rel="match" href="stack-floats-001-ref.xht" />
 
+  <meta content="ahem" name="flags" />
+
+  <style type="text/css">
    /* outer block */
    .container { width: 5em; height: 5em; border: solid; font: 20px/1 Ahem; background: red; display: block; }
 
@@ -23,8 +25,7 @@
   </style>
  </head>
  <body>
-  <p class="control">Ahem_font_would_be_nice_for_this_test.</p>
-  <p>There should just be a single green square below (with a black border).</p>
+  <p>Test passes if there is one single filled bright green square (with a black border) and no red.</p>
 
   <div class="container">
    <div class="float">

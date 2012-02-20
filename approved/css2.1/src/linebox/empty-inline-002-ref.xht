@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+ <head>
+
+  <title>CSS Reftest Reference</title>
+  <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+
+  <style type="text/css"><![CDATA[
+  p {margin: 1em auto 0em;}
+
+  div
+  {
+  background-color: green;
+  height: 144px;
+  margin: 0px 120px 0px;
+  padding: 96px 0px;
+  width: 240px;
+  }
+
+  div > div
+  {
+  background-color: transparent;
+  border: green solid 24px;
+  height: 96px;
+  padding: 0px;
+  position: relative;
+  right: 240px;
+  width: 480px;
+  }
+  ]]></style>
+
+ </head>
+
+ <body>
+
+  <p>Test passes if there is <strong>no red</strong>.</p>
+
+  <div>
+    <div></div>
+  </div>
+
+ </body>
+</html>

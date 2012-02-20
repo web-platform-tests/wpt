@@ -4,6 +4,8 @@
         <title>CSS Test: Block boxes within inline boxes are affected by positioning</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level" />
+        <link rel="match" href="inline-box-002-ref.xht" />
+
         <meta name="flags" content="" />
         <meta name="assert" content="Block boxes within inline boxes are also affected by relative positioning on the inline box." />
         <style type="text/css">
@@ -29,7 +31,7 @@
         </style>
     </head>
     <body>
-        <p>Test passes if the orange box is between the two blue boxes and all three boxes are below the yellow box.</p>
+        <p>Test passes if an orange stripe is between two shorter blue stripes and all three stripes are below a yellow square.</p>
         <div id="div1">
             <div id="div2">
                 Filler Text

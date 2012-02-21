@@ -2,6 +2,7 @@ attributes.html
 support attributes.js
 case.html
 support case.js
+support creators.js
 support constants.js
 CharacterData-appendData.html
 CharacterData-deleteData.html

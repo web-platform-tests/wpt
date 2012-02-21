@@ -5,7 +5,7 @@
 <script src=http://w3c-test.org/resources/testharnessreport.js></script>
 <script src="animation_utils.js"></script>
 <style>#tests p { margin: 0 }</style>
-<div id=tests style="line-height:1"></div>
+<div id=tests style="line-height:0.8"></div>
 <div id=log></div>
 <script>
 "use strict";
@@ -16,6 +16,14 @@ var prop = "transition" in document.body.style ? "transition"
 	: "webkitTransition" in document.body.style ? "webkitTransition"
 	: "OTransition" in document.body.style ? "OTransition"
 	: undefined;
+
+var hyphPrefix = {
+	transition: "",
+	msTransition: "-ms-",
+	MozTransition: "-moz-",
+	webkitTransition: "-webkit-",
+	OTransition: "-o-",
+}[prop];
 
 if (prop === undefined) {
 	throw "Transitions not supported?";
@@ -603,6 +611,79 @@ var tests = {
 			//check();
 			addFutureCall(2, check);
 			addFutureCall(6, check);
+		},
+	},
+
+	// For all of these transitions, the transition for margin-left should have
+	// a duration of 8s, and the default timing function (ease) and delay (0).
+	number: {
+		setup: function() {
+			this.tests = [
+				{ style: "transition: 4s margin, 8s margin-left" },
+				{ style: "transition: 4s margin-left, 8s margin" },
+				{ style: "transition-property: margin-left; " +
+					"transition-duration: 8s, 2s" },
+				{ style: "transition-property: margin-left, margin-left; " +
+					"transition-duration: 2s, 8s" },
+				{ style: "transition-property: margin-left, margin-left, margin-left; " +
+					"transition-duration: 8s, 2s" },
+				// FIXME: This test's expected behavior is not yet mandated:
+				// https://www.w3.org/Bugs/Public/show_bug.cgi?id=14604
+				{ style: "transition-property: margin-left; " +
+					"transition-duration: 8s, 16s" },
+				{ style: "transition-property: margin-left, margin-left; " +
+					"transition-duration: 16s, 8s" },
+				{ style: "transition-property: margin-left, margin-left, margin-left; " +
+					"transition-duration: 8s, 16s" },
+				{ style: "transition-property: text-indent,word-spacing,margin-left; " +
+					"transition-duration: 8s; " +
+					"transition-delay: 0, 8s" },
+				// FIXME: This test's expected behavior is not yet mandated:
+				// https://www.w3.org/Bugs/Public/show_bug.cgi?id=14604
+				{ style: "transition-property: text-indent,word-spacing,margin-left; " +
+					"transition-duration: 8s, 16s; " +
+					"transition-delay: 8s, 8s, 0, 8s, 8s, 8s" },
+			];
+
+			this.tests.forEach(function(test) {
+				var p = document.createElement("p");
+				// Make failures easier to understand by using linear timing
+				test.style += "; transition-timing-function: linear";
+				p.setAttribute("style", test.style
+					.replace(/transition/g, hyphPrefix + "transition"));
+				p.appendChild(document.createTextNode(test.style));
+				p.style.marginLeft = "100px";
+				div.appendChild(p);
+				var t = async_test(p.textContent, {timeout: 9000});
+				t.step(function() {
+					assert_equals(getComputedStyle(p).marginLeft, "100px",
+						"margin-left must be 100px before changing value");
+				});
+				test.node = p;
+				test.testObj = t;
+				testObjects.push(t);
+			});
+		},
+		start: function() {
+			this.tests.forEach(function(test) {
+				test.node.style.marginLeft = "200px";
+			});
+		},
+		check: function() {
+			var check = function() {
+				var tf = timingFunctions.linear;
+				this.tests.forEach(function(test) {
+					checkTransitionValue(tf, 0, 8, 100, 200,
+						getComputedStyle(test.node).marginLeft,
+						test.testObj);
+				});
+			}.bind(this);
+
+			check(0);
+			addFutureCall(2, check);
+			addFutureCall(4, check);
+			addFutureCall(6, check);
+			addFutureCall(8, check);
 		},
 	},
 

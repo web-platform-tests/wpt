@@ -4,6 +4,8 @@
         <title>CSS Test: Inline boxes vertically stack if they do not fit horizontally</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#inline-formatting" />
+        <link rel="match" href="../generated-content/after-content-display-002-ref.xht" />
+
         <meta name="flags" content="" />
         <meta name="assert" content="Inline boxes stack vertically when they do not fit within an element horizontally." />
         <style type="text/css">
@@ -18,10 +20,10 @@
         </style>
     </head>
     <body>
-        <p>Test passes if there are two separate lines of "Filler Text" below.</p>
+        <p>Test passes if there are <strong>2 lines of "Filler text"</strong>.</p>
         <div>
-            <span>Filler Text</span>
-            <span>Filler Text</span>
+            <span>Filler text</span>
+            <span>Filler text</span>
         </div>
     </body>
 </html>

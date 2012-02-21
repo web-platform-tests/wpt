@@ -4,6 +4,8 @@
         <title>CSS Test: Vertical-align and alignment of inline boxes</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#inline-formatting" />
+        <link rel="match" href="inline-formatting-context-011-ref.xht" />
+
         <meta name="flags" content="ahem" />
         <meta name="assert" content="The 'vertical-align' property determines the vertical alignment of a box within a line box." />
         <style type="text/css">
@@ -30,7 +32,7 @@
         </style>
     </head>
     <body>
-        <p>Test passes if all the blue and black boxes touch the orange line.</p>
+        <p>Test passes if the black square and blue rectangles touch the orange line.</p>
         <div>
             <span id="span1">X</span>
             <span id="span2">X</span>

@@ -15,7 +15,7 @@ test(function() {
 }, "getElementsByClassName should work on disconnected subtrees.")
 test(function() {
   var list = document.getElementsByClassName("foo")
-  assert_true(list instanceof NodeList, "NodeList")
-  assert_false(list instanceof HTMLCollection, "HTMLCollection")
+  assert_false(list instanceof NodeList, "NodeList")
+  assert_true(list instanceof HTMLCollection, "HTMLCollection")
 }, "Interface should be correct.")
 </script>

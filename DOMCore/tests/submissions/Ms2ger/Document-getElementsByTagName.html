@@ -6,8 +6,8 @@
 <div id="log"></div>
 <script>
 test(function() {
-  assert_true(document.getElementsByTagName("html") instanceof NodeList, "NodeList")
-  assert_false(document.getElementsByTagName("html") instanceof HTMLCollection, "HTMLCollection")
+  assert_false(document.getElementsByTagName("html") instanceof NodeList, "NodeList")
+  assert_true(document.getElementsByTagName("html") instanceof HTMLCollection, "HTMLCollection")
   assert_true(document.getElementsByTagName("html") !== document.getElementsByTagName("html") ||
               document.getElementsByTagName("html") === document.getElementsByTagName("html"),
               "Caching is allowed.")
@@ -17,7 +17,7 @@ test(function() {
   l[5] = "foopy"
   assert_equals(l[5], undefined)
   assert_equals(l.item(5), null)
-}, "Shouldn't be able to set unsigned properties on a NodeList")
+}, "Shouldn't be able to set unsigned properties on a HTMLCollection")
 test(function() {
   assert_equals(document.createElementNS("http://www.w3.org/1999/xhtml", "i").localName, "i") // Sanity
   var i = document.body.appendChild(document.createElementNS("http://www.w3.org/1999/xhtml", "I"))

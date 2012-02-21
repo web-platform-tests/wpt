@@ -1408,9 +1408,9 @@ policies and contribution forms [3].
                 + '"><td>'
                 + escape_html(status_text[tests[i].status])
                 + "</td><td>"
-                + escape_html(tests[i].name)
+                + escape_html(format_value(tests[i].name))
                 + "</td><td>"
-                + escape_html(tests[i].message ? tests[i].message : " ")
+                + escape_html(tests[i].message ? format_value(tests[i].message) : " ")
                 + "</td></tr>";
         }
         log.lastChild.innerHTML = html + "</tbody></table>";

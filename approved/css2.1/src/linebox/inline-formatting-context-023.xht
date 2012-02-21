@@ -4,6 +4,7 @@
         <title>CSS Test: Bidirectional text runs can create additional line boxes</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#inline-formatting" />
+
         <meta name="flags" content="" />
         <meta name="assert" content="Additional inline boxes can be created for the bidirectional text." />
         <style type="text/css">
@@ -22,7 +23,7 @@
         </style>
     </head>
     <body>
-        <p>Test passes if there are three instances of the words "Filler Text" below.</p>
+        <p>Test passes if there are three instances of the words "Filler Text".</p>
         <div>
             <span id="span1">Filler Text <span id="span2">txeT relliF</span> Filler Text</span>
         </div>

@@ -4,6 +4,8 @@
         <title>CSS Test: Inline boxes that are split and the margin, border, padding effect</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#inline-formatting" />
+        <link rel="match" href="inline-formatting-context-022-ref.xht" />
+
         <meta name="flags" content="ahem image" />
         <meta name="assert" content="Margins, borders and padding have no visual effect when inline boxes are split." />
         <style type="text/css">
@@ -25,7 +27,7 @@
         </style>
     </head>
     <body>
-        <p>Test passes if there is no red visible on the page.</p>
+        <p>Test passes if there is <strong>no red</strong>.</p>
         <div>
             <span>XXXXX XXXXX</span>
         </div>

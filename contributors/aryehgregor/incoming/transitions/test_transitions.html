@@ -4,7 +4,36 @@
 <script src=/resources/testharness.js></script>
 <script src=http://w3c-test.org/resources/testharnessreport.js></script>
 <script src="animation_utils.js"></script>
-<style>#tests p { margin: 0 }</style>
+<style>
+#tests { line-height: 0.8; font-size: 0.8em }
+#tests p { margin: 0 }
+/* Needed for pseudo-element tests */
+#tests .before, #tests .after {
+	/* display: table for shrink-to-fit */
+	display: table;
+	border: 1px solid black;
+}
+#tests .before::before, #tests .after::after {
+	display: block;
+	width: 0;
+	text-indent: 0;
+}
+#tests .before.started::before, #tests .after.started::after {
+	width: 100px;
+	text-indent: 100px;
+	-ms-transition: 8s width ease-in-out, 8s text-indent ease-in-out;
+	-moz-transition: 8s width ease-in-out, 8s text-indent ease-in-out;
+	-webkit-transition: 8s width ease-in-out, 8s text-indent ease-in-out;
+	-o-transition: 8s width ease-in-out, 8s text-indent ease-in-out;
+	transition: 8s width ease-in-out, 8s text-indent ease-in-out;
+}
+#tests .before::before {
+	content: "Before";
+}
+#tests .after::after {
+	content: "After";
+}
+</style>
 <div id=tests style="line-height:0.8"></div>
 <div id=log></div>
 <script>
@@ -687,6 +716,105 @@ var tests = {
 		},
 	},
 
+	// Test transitions that are also from-display:none, to-display:none, and
+	// display:none throughout.
+	display: {
+		setup: function() {
+			function make(initiallyNone, text) {
+				var p = document.createElement("p");
+				p.appendChild(document.createTextNode(text));
+				p.style.textIndent = "0px";
+				p.style[prop] = "8s text-indent ease-in-out";
+				if (initiallyNone) {
+					p.style.display = "none";
+				}
+				div.appendChild(p);
+
+				var t = async_test(text, {timeout: 9000});
+				testObjects.push(t);
+
+				return [p, t];
+			}
+			this.fromNoneTest   = make(true,  "transition from display:none");
+			this.toNoneTest     = make(false, "transition to display:none");
+			this.alwaysNoneTest = make(true,  "transition always display:none");
+			this.tests = [this.fromNoneTest, this.toNoneTest, this.alwaysNoneTest];
+		},
+		start: function() {
+			this.fromNoneTest[0].style.textIndent = "100px";
+			this.fromNoneTest[0].style.display = "";
+			this.toNoneTest[0].style.textIndent = "100px";
+			this.toNoneTest[0].style.display = "none";
+			this.alwaysNoneTest[0].style.textIndent = "100px";
+		},
+		check: function() {
+			var check = function(time) {
+				var tf = timingFunctions["ease-in-out"];
+				this.tests.forEach(function(arr) {
+					var p = arr[0];
+					var t = arr[1];
+
+					checkTransitionValue(tf, 0, 8, 0, 100,
+						getComputedStyle(p).textIndent, t);
+				});
+			}.bind(this);
+
+			// FIXME: Browsers don't agree at t = 0, so comment this out
+			// https://www.w3.org/Bugs/Public/show_bug.cgi?id=16016#c3
+			//check(0);
+			addFutureCall(2, function() { check(2); });
+			addFutureCall(4, function() { check(4); });
+			addFutureCall(6, function() { check(6); });
+			addFutureCall(8, function() { check(8); });
+		},
+	},
+
+	// Test transitions on pseudo-elements
+	pseudo: {
+		setup: function() {
+			function make(pseudo) {
+				var p = document.createElement("p");
+				p.className = pseudo;
+				div.appendChild(p);
+
+				var widthTest = async_test("::" + pseudo + " width test",
+					{timeout: 9000});
+				var indentTest = async_test("::"+pseudo+" text-indent test",
+					{timeout: 9000});
+				testObjects.push(widthTest, indentTest);
+
+				return {pseudo: pseudo, element: p,
+					widthTest: widthTest, indentTest: indentTest};
+			}
+			this.tests = [make("before"), make("after")];
+		},
+		start: function() {
+			this.tests.forEach(function(test) {
+				test.element.className += " started";
+			});
+		},
+		check: function() {
+			var check = function(time) {
+				var tf = timingFunctions["ease-in-out"];
+				this.tests.forEach(function(test) {
+					checkTransitionValue(tf, 0, 8, 0, 100,
+						getComputedStyle(test.element).width,
+						test.widthTest);
+					checkTransitionValue(tf, 0, 8, 0, 100,
+						getComputedStyle(test.element, "::" + test.pseudo).textIndent,
+						test.indentTest);
+				});
+			}.bind(this);
+			// FIXME: Browsers don't agree at t = 0, so comment this out
+			// https://www.w3.org/Bugs/Public/show_bug.cgi?id=16016#c3
+			//check(0);
+			addFutureCall(2, function() { check(2); });
+			addFutureCall(4, function() { check(4); });
+			addFutureCall(6, function() { check(6); });
+			addFutureCall(8, function() { check(8); });
+		},
+	},
+
 	lateRef: {
 		setup: function() {
 			this.para = makeReferenceParagraph();
@@ -720,7 +848,7 @@ for (var type in tests) {
 }
 
 
-// flush style changes; FIXME: make this cross-browser
+// flush style changes; FIXME: not officially required to work
 // https://www.w3.org/Bugs/Public/show_bug.cgi?id=16016
 var x = getComputedStyle(div).color;
 
@@ -739,7 +867,7 @@ for (var type in tests) {
 }
 
 
-// flush style changes; FIXME: make this cross-browser
+// flush style changes; FIXME: not officially required to work
 // https://www.w3.org/Bugs/Public/show_bug.cgi?id=16016
 x = getComputedStyle(div).color;
 
@@ -750,8 +878,6 @@ gCurrentTime = gStartTime2;
 for (var type in tests) {
 	tests[type].check();
 }
-
-// TODO skipped stuff
 
 gSetupComplete = true;
 </script>

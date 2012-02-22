@@ -400,6 +400,48 @@ policies and contribution forms [3].
         return s;
     }
 
+    function format_string(str) {
+        for (var i = 0; i < 32; i++) {
+            var replace = "\\";
+            switch (i) {
+            case 0: replace += "0"; break;
+            case 1: replace += "x01"; break;
+            case 2: replace += "x02"; break;
+            case 3: replace += "x03"; break;
+            case 4: replace += "x04"; break;
+            case 5: replace += "x05"; break;
+            case 6: replace += "x06"; break;
+            case 7: replace += "x07"; break;
+            case 8: replace += "b"; break;
+            case 9: replace += "t"; break;
+            case 10: replace += "n"; break;
+            case 11: replace += "v"; break;
+            case 12: replace += "f"; break;
+            case 13: replace += "r"; break;
+            case 14: replace += "x0e"; break;
+            case 15: replace += "x0f"; break;
+            case 16: replace += "x10"; break;
+            case 17: replace += "x11"; break;
+            case 18: replace += "x12"; break;
+            case 19: replace += "x13"; break;
+            case 20: replace += "x14"; break;
+            case 21: replace += "x15"; break;
+            case 22: replace += "x16"; break;
+            case 23: replace += "x17"; break;
+            case 24: replace += "x18"; break;
+            case 25: replace += "x19"; break;
+            case 26: replace += "x1a"; break;
+            case 27: replace += "x1b"; break;
+            case 28: replace += "x1c"; break;
+            case 29: replace += "x1d"; break;
+            case 30: replace += "x1e"; break;
+            case 31: replace += "x1f"; break;
+            }
+            str = str.replace(RegExp(String.fromCharCode(i), "g"), replace);
+        }
+        return str.replace(/"/g, '\\"')
+    }
+
     /*
      * Convert a value to a nice, human-readable string
      */
@@ -408,46 +450,7 @@ policies and contribution forms [3].
         switch (typeof val)
         {
         case "string":
-            for (var i = 0; i < 32; i++)
-            {
-                var replace = "\\";
-                switch (i) {
-                case 0: replace += "0"; break;
-                case 1: replace += "x01"; break;
-                case 2: replace += "x02"; break;
-                case 3: replace += "x03"; break;
-                case 4: replace += "x04"; break;
-                case 5: replace += "x05"; break;
-                case 6: replace += "x06"; break;
-                case 7: replace += "x07"; break;
-                case 8: replace += "b"; break;
-                case 9: replace += "t"; break;
-                case 10: replace += "n"; break;
-                case 11: replace += "v"; break;
-                case 12: replace += "f"; break;
-                case 13: replace += "r"; break;
-                case 14: replace += "x0e"; break;
-                case 15: replace += "x0f"; break;
-                case 16: replace += "x10"; break;
-                case 17: replace += "x11"; break;
-                case 18: replace += "x12"; break;
-                case 19: replace += "x13"; break;
-                case 20: replace += "x14"; break;
-                case 21: replace += "x15"; break;
-                case 22: replace += "x16"; break;
-                case 23: replace += "x17"; break;
-                case 24: replace += "x18"; break;
-                case 25: replace += "x19"; break;
-                case 26: replace += "x1a"; break;
-                case 27: replace += "x1b"; break;
-                case 28: replace += "x1c"; break;
-                case 29: replace += "x1d"; break;
-                case 30: replace += "x1e"; break;
-                case 31: replace += "x1f"; break;
-                }
-                val = val.replace(RegExp(String.fromCharCode(i), "g"), replace);
-            }
-            return '"' + val.replace(/"/g, '\\"') + '"';
+            return '"' + format_string(val) + '"';
         case "boolean":
         case "undefined":
             return String(val);
@@ -1408,9 +1411,9 @@ policies and contribution forms [3].
                 + '"><td>'
                 + escape_html(status_text[tests[i].status])
                 + "</td><td>"
-                + escape_html(format_value(tests[i].name))
+                + escape_html(format_string(tests[i].name))
                 + "</td><td>"
-                + escape_html(tests[i].message ? format_value(tests[i].message) : " ")
+                + escape_html(tests[i].message ? format_string(tests[i].message) : " ")
                 + "</td></tr>";
         }
         log.lastChild.innerHTML = html + "</tbody></table>";

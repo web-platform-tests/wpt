@@ -1,0 +1,876 @@
+<!doctype html>
+<!-- Based on layout/style/test/test_transitions_per_property.html in Gecko -->
+<title>Per-property transitions tests</title>
+<script src=http://w3c-test.org/resources/testharness.js></script>
+<script src=http://w3c-test.org/resources/testharnessreport.js></script>
+<script src="animation_utils.js"></script>
+<!--
+  fixed-height container so percentage heights compute to different
+  (i.e., nonzero) values
+  fixed-width container so that percentages for margin-top and
+  margin-bottom are all relative to the same size container (rather than
+  one that depends on whether we're tall enough to need a scrollbar)
+
+  Use a 20px font size and line-height so that percentage line-height
+  and vertical-align doesn't accumulate rounding error.
+  -->
+<div id=tests style="height: 50px; width: 300px; font-size: 20px; line-height: 20px">
+</div>
+<div id=log></div>
+<script>
+"use strict";
+
+// FIXME: Tolerances for assert_approx_equals() are more or less arbitrary.
+// I tend to pick them just about low enough that all the browsers I'm testing
+// in pass, as long as they're not unreasonable (e.g., a pixel or so off).
+// Similarly, in many cases I use assert_in_array(), which is often much less
+// reasonable because it prohibits slight variation.  My goal is just to stop
+// current browsers from failing due to behavior that nothing prohibits, but
+// random changes to those browsers might cause spurious test failures if they
+// happen to hit other behavior that's not actually prohibited but that my
+// test doesn't allow for.  Solution: define precise behavior, please.
+
+var prefixed_transition = "transition" in document.body.style ? "transition"
+  : "msTransition" in document.body.style ? "msTransition"
+  : "MozTransition" in document.body.style ? "MozTransition"
+  : "webkitTransition" in document.body.style ? "webkitTransition"
+  : "OTransition" in document.body.style ? "OTransition"
+  : undefined;
+
+var hyph_prefix = {
+  transition: "",
+  msTransition: "-ms-",
+  MozTransition: "-moz-",
+  webkitTransition: "-webkit-",
+  OTransition: "-o-",
+}[prefixed_transition];
+
+if (prefixed_transition === undefined) {
+  throw "Transitions not supported?";
+}
+
+setup({timeout: 9000});
+
+add_completion_callback(function() {
+  document.body.removeChild(div.parentNode);
+});
+
+var FUNC_NEGATIVE = "cubic-bezier(0.25, -2, 0.75, 1)";
+
+// True longhand properties.
+var CSS_TYPE_LONGHAND = 0;
+
+// True shorthand properties.
+var CSS_TYPE_TRUE_SHORTHAND = 1;
+
+// Properties that we handle as shorthands but were longhands either in
+// the current spec or earlier versions of the spec.
+var CSS_TYPE_SHORTHAND_AND_LONGHAND = 2;
+
+var prereqs = {
+  "border-bottom-width": { "border-bottom-style": "solid" },
+  "border-left-width": { "border-left-style": "solid" },
+  "border-right-width": { "border-right-style": "solid" },
+  "border-top-width": { "border-top-style": "solid" },
+  "bottom": { "position": "relative" },
+  "left": { "position": "relative" },
+  "outline-width": { "outline-style": "solid" },
+  "right": { "position": "relative" },
+  "top": { "position": "relative" },
+};
+
+var supported_properties = {
+    // From the transitions spec
+    "background-color": [ test_color_transition ],
+    "background-position": [ test_background_position_transition,
+                             // FIXME: We don't currently test clamping,
+                             // why not?
+                             /* test_length_percent_pair_unclamped */ ],
+    "border-bottom-color": [ test_color_transition,
+                             test_border_color_transition ],
+    "border-bottom-width": [ test_length_transition,
+                             test_length_clamped ],
+    "border-left-color": [ test_color_transition,
+                           test_border_color_transition ],
+    "border-left-width": [ test_length_transition,
+                           test_length_clamped ],
+    "border-right-color": [ test_color_transition,
+                            test_border_color_transition ],
+    "border-right-width": [ test_length_transition,
+                            test_length_clamped ],
+    "border-spacing": [ test_length_pair_transition,
+                        test_length_pair_transition_clamped ],
+    "border-top-color": [ test_color_transition,
+                          test_border_color_transition ],
+    "border-top-width": [ test_length_transition,
+                           test_length_clamped ],
+    "bottom": [ test_length_transition, test_percent_transition,
+                test_length_percent_calc_transition,
+                test_length_unclamped, test_percent_unclamped ],
+    "clip": [ test_rect_transition ],
+    "color": [ test_color_transition ],
+    "font-size": [ test_length_transition, test_percent_transition,
+                   test_length_percent_calc_transition,
+                   test_length_clamped, test_percent_clamped ],
+    // FIXME: Transition not yet defined
+    // https://www.w3.org/Bugs/Public/show_bug.cgi?id=14613
+    //"font-weight": [ test_font_weight ],
+    "height": [ test_length_transition, test_percent_transition,
+                test_length_percent_calc_transition,
+                test_length_clamped, test_percent_clamped ],
+    "left": [ test_length_transition, test_percent_transition,
+              test_length_percent_calc_transition,
+              test_length_unclamped, test_percent_unclamped ],
+    "letter-spacing": [ test_length_transition, test_length_unclamped ],
+    "line-height": [ test_length_transition, test_percent_transition,
+                     test_length_clamped, test_percent_clamped ],
+    "margin-bottom": [ test_length_transition, test_percent_transition,
+                       test_length_percent_calc_transition,
+                       test_length_unclamped, test_percent_unclamped ],
+    "margin-left": [ test_length_transition, test_percent_transition,
+                     test_length_percent_calc_transition,
+                     test_length_unclamped, test_percent_unclamped ],
+    "margin-right": [ test_length_transition, test_percent_transition,
+                      test_length_percent_calc_transition,
+                      test_length_unclamped, test_percent_unclamped ],
+    "margin-top": [ test_length_transition, test_percent_transition,
+                    test_length_percent_calc_transition,
+                    test_length_unclamped, test_percent_unclamped ],
+    "max-height": [ test_length_transition, test_percent_transition,
+                    test_length_percent_calc_transition,
+                    test_length_clamped, test_percent_clamped ],
+    "max-width": [ test_length_transition, test_percent_transition,
+                   test_length_percent_calc_transition,
+                   test_length_clamped, test_percent_clamped ],
+    "min-height": [ test_length_transition, test_percent_transition,
+                    test_length_percent_calc_transition,
+                    test_length_clamped, test_percent_clamped ],
+    "min-width": [ test_length_transition, test_percent_transition,
+                   test_length_percent_calc_transition,
+                   test_length_clamped, test_percent_clamped ],
+    "opacity" : [ test_float_zeroToOne_transition,
+                  // opacity is clamped in computed style
+                  // (not parsing/interpolation)
+                  test_float_zeroToOne_clamped ],
+    "outline-color": [ test_color_transition ],
+    "outline-offset": [ test_length_transition, test_length_unclamped ],
+    "outline-width": [ test_length_transition, test_length_clamped ],
+    "padding-bottom": [ test_length_transition, test_percent_transition,
+                        test_length_percent_calc_transition,
+                        test_length_clamped, test_percent_clamped ],
+    "padding-left": [ test_length_transition, test_percent_transition,
+                      test_length_percent_calc_transition,
+                      test_length_clamped, test_percent_clamped ],
+    "padding-right": [ test_length_transition, test_percent_transition,
+                       test_length_percent_calc_transition,
+                       test_length_clamped, test_percent_clamped ],
+    "padding-top": [ test_length_transition, test_percent_transition,
+                     test_length_percent_calc_transition,
+                     test_length_clamped, test_percent_clamped ],
+    "right": [ test_length_transition, test_percent_transition,
+               test_length_percent_calc_transition,
+               test_length_unclamped, test_percent_unclamped ],
+    "text-indent": [ test_length_transition, test_percent_transition,
+                     test_length_percent_calc_transition,
+                     test_length_unclamped, test_percent_unclamped ],
+    "text-shadow": [ test_shadow_transition ],
+    "top": [ test_length_transition, test_percent_transition,
+             test_length_percent_calc_transition,
+             test_length_unclamped, test_percent_unclamped ],
+    "vertical-align": [ test_length_transition, test_percent_transition,
+                        test_length_percent_calc_transition,
+                        test_length_unclamped, test_percent_unclamped ],
+    "visibility": [ test_visibility_transition ],
+    "width": [ test_length_transition, test_percent_transition,
+               test_length_percent_calc_transition,
+               test_length_clamped, test_percent_clamped ],
+    "word-spacing": [ test_length_transition, test_length_unclamped ],
+    "z-index": [ test_zindex_transition, test_pos_integer_or_auto_transition ],
+    // Missing crop and zoom, because they're noted as nonstandard in the
+    // spec.  Missing grid-* because . . . why?
+
+    // Many other properties in the original Gecko test are not required by
+    // the spec, so not included here
+};
+
+var tests = document.getElementById("tests");
+
+// FIXME: Test that non-animatable properties are really not animatable?
+
+(function() {
+var delayed_funcs = [];
+
+window.add_delayed_func = function(f) {
+  delayed_funcs.push(f);
+};
+
+setTimeout(function() {
+  delayed_funcs.forEach(function(f) { f() });
+}, 100);
+})();
+
+// FIXME: The behavior here is not really defined.  This seems to work in
+// browsers in practice.  https://www.w3.org/Bugs/Public/show_bug.cgi?id=16016
+function flush_styles() {
+  var x = getComputedStyle(tests).color;
+}
+
+/**
+ * Do 3600-second linear transitions with -900 second transition delay and
+ * linear timing function so that we can expect the transition to be one
+ * quarter of the way through the value space right after changing the
+ * property.  We delay by 100 ms, but this should be small enough to be no big
+ * deal.
+ */
+function create_test_div() {
+  var div = document.createElement("div");
+  tests.appendChild(div);
+  div.style.setProperty(hyph_prefix + "transition-duration", "3600s");
+  div.style.setProperty(hyph_prefix + "transition-delay", "-900s");
+  div.style.setProperty(hyph_prefix + "transition-timing-function", "linear");
+  return div;
+}
+
+for (var prop in supported_properties) {
+  var tinfo = supported_properties[prop];
+
+  for (var idx in tinfo) {
+    var div = create_test_div();
+
+    if (prop in prereqs) {
+      for (var prereq in prereqs[prop]) {
+        div.style.setProperty(prereq, prereqs[prop][prereq]);
+      }
+    }
+
+    tinfo[idx](prop, div, getComputedStyle(div));
+  }
+}
+
+/**
+ * Given a CSS color /input/, return an array of numbers [red, green, blue,
+ * alpha].  red, green, and blue are from 0 to 255, and alpha is from 0 to 1.
+ * Does not handle all possible colors, only the sorts that come up in
+ * testing.
+ */
+function parse_color(input) {
+  var rgb_match = /^rgb\((.*), ?(.*), ?(.*)\)$/.exec(input);
+  if (rgb_match) {
+    return [Number(rgb_match[1]), Number(rgb_match[2]), Number(rgb_match[3]),
+      1];
+  }
+  var rgba_match = /^rgba\((.*), ?(.*), ?(.*), ?(.*)\)$/.exec(input);
+  if (rgba_match) {
+    return [Number(rgba_match[1]), Number(rgba_match[2]),
+      Number(rgba_match[3]), Number(rgba_match[4])];
+  }
+  var hex_match = /^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(input);
+  if (hex_match) {
+    return [parseInt(hex_match[1], 16), parseInt(hex_match[2], 16),
+      parseInt(hex_match[3], 16), 1];
+  }
+  // Support only CSS2.1 colors for now.  Hopefully tests only use those.
+  var keyword_match = {
+    maroon:  [0x80, 0x00, 0x00, 1],
+    red:     [0xff, 0x00, 0x00, 1],
+    orange:  [0xff, 0xa5, 0x00, 1],
+    yellow:  [0xff, 0xff, 0x00, 1],
+    olive:   [0x80, 0x80, 0x00, 1],
+    purple:  [0x80, 0x00, 0x80, 1],
+    fuchsia: [0xff, 0x00, 0xff, 1],
+    white:   [0xff, 0xff, 0xff, 1],
+    lime:    [0x00, 0xff, 0x00, 1],
+    green:   [0x00, 0x80, 0x00, 1],
+    navy:    [0x00, 0x00, 0x80, 1],
+    blue:    [0x00, 0x00, 0xff, 1],
+    aqua:    [0x00, 0xff, 0xff, 1],
+    teal:    [0x00, 0x80, 0x80, 1],
+    black:   [0x00, 0x00, 0x00, 1],
+    silver:  [0xc0, 0xc0, 0xc0, 1],
+    gray:    [0x80, 0x80, 0x80, 1],
+  }[input.toLowerCase().trim()];
+  if (keyword_match) {
+    return keyword_match;
+  }
+  return null;
+}
+
+/**
+ * Asserts that the strings /actual/ and /expected/ both parse to the same
+ * color.  See parse_color().
+ */
+function assert_colors_equiv(actual, expected, desc) {
+  var actual_parsed = parse_color(actual);
+  assert_not_equals(actual_parsed, null,
+    desc + " unrecognized color " + actual);
+  var expected_parsed = parse_color(expected);
+  assert_not_equals(expected_parsed, null,
+    desc + " test bug: expected a color " + format_value(expected)
+    + " that's not a recognized color");
+
+  var expected = "rgba(" + expected_parsed.join(", ") + ")";
+
+  // IE10 Developer Preview and Opera Next 12.00 alpha are off by one for some
+  // of the rgb coordinates sometimes.
+  assert_approx_equals(actual_parsed[0], expected_parsed[0], 1,
+    desc + " incorrect red coordinate; expected " + expected
+    + " but got " + format_value(actual));
+  assert_approx_equals(actual_parsed[1], expected_parsed[1], 1,
+    desc + " incorrect green coordinate; expected " + expected
+    + " but got " + format_value(actual));
+  assert_approx_equals(actual_parsed[2], expected_parsed[2], 1,
+    desc + " incorrect blue coordinate; expected " + expected
+    + " but got " + format_value(actual));
+  // Chrome 18 dev outputs an opacity of 0.75 as 0.746094.
+  assert_approx_equals(actual_parsed[3], expected_parsed[3], 0.01,
+    desc + " incorrect alpha coordinate; expected " + expected
+    + " but got " + format_value(actual));
+}
+
+/**
+ * Asserts that the strings /actual/ and /expected/ both parse to the same
+ * shadow list, as used for text-shadow.  (The extra arguments used for
+ * box-shadow are not handled.)  Does not handle all possible shadows, only
+ * those that came up in testing.  E.g., accepts only pixel lengths and
+ * doesn't tolerate unusual whitespace.
+ */
+function assert_shadows_equiv(actual, expected, desc) {
+  var parse_shadows = function(input) {
+    // We want to split on commas to get a list of shadows, so first get rid of
+    // the ones inside parentheses.
+    input = input
+      .replace(/\(([^,)]*),([^,)]*),([^,)]*)\)/g, "($1@$2@$3)")
+      .replace(/\(([^,)]*),([^,)]*),([^,)]*),([^,)]*)\)/g, "($1@$2@$3@$4)");
+    var bits = input.split(",");
+    var ret = [];
+    for (var i = 0; i < bits.length; i++) {
+      var subbits = bits[i].replace(/@/g, ",").split(/(px|\))/);
+      var shadow = {lengths: []};
+      for (var j = 0; j < subbits.length; j++) {
+        var subbit = subbits[j].trim();
+        if (subbits[j + 1] == ")") {
+          subbit += ")";
+        }
+        if (subbit == "px" || subbit == ")" || subbit == "") {
+          continue;
+        }
+        if (!isNaN(Number(subbit))) {
+          if (shadow.lengths.length >= 3) {
+            return null;
+          }
+          shadow.lengths.push(Number(subbit));
+        } else {
+          if ("color" in shadow) {
+            return null;
+          }
+          shadow.color = subbit;
+        }
+      }
+      while (shadow.lengths.length < 3) {
+        shadow.lengths.push(0);
+      }
+      ret.push(shadow);
+    }
+    return ret;
+  }
+
+  var actual_parsed = parse_shadows(actual);
+  assert_not_equals(actual_parsed, null,
+    desc + " unrecognized shadow format " + format_value(actual));
+  var expected_parsed = parse_shadows(expected);
+  assert_not_equals(expected_parsed, null,
+    desc + " test bug: expected a shadow " + format_value(expected)
+    + " that's not a valid shadow format");
+
+  var expected = expected_parsed.map(function(shadow) {
+    return "rgba(" + parse_color(shadow.color).join(", ") + ") "
+      + shadow.lengths.join("px ") + "px";
+  }).join(", ");
+
+  var expected_actual_string = "; expected "
+    + format_value(expected) + " but got "
+    + format_value(actual);
+
+  assert_equals(actual_parsed.length, expected_parsed.length,
+    desc + " wrong number of shadows" + expected_actual_string);
+
+  for (var i = 0; i < actual_parsed.length; i++) {
+    assert_colors_equiv(actual_parsed[i].color, expected_parsed[i].color,
+      desc + " wrong color in shadow " + i + expected_actual_string);
+    for (var j = 0; j < 3; j++) {
+      // Chrome 18 dev rounds the lengths to the nearest pixel.
+      assert_approx_equals(actual_parsed[i].lengths[j],
+        expected_parsed[i].lengths[j], 0.51,
+        desc + " length " + j + " is wrong in shadow " + i
+        + expected_actual_string);
+    }
+  }
+}
+
+function test_length_transition(prop, div, cs) {
+  var t = async_test("Length transition for '" + prop + "'");
+  t.step(function() {
+    div.style.setProperty(hyph_prefix + "transition-property", "none");
+    div.style.setProperty(prop, "4px");
+    assert_equals(cs.getPropertyValue(prop), "4px",
+                  "computed value before transition");
+    div.style.setProperty(hyph_prefix + "transition-property", prop);
+    var x = getComputedStyle(div).color;
+    div.style.setProperty(prop, "12px");
+  });
+
+  add_delayed_func(function(prop, div, cs, t) {
+    t.step(function() {
+      assert_equals(cs.getPropertyValue(prop), "6px",
+                    "computed value after transition");
+    });
+    t.done();
+  }.bind(null, prop, div, cs, t));
+}
+
+function test_length_clamped(prop, div, cs) {
+  test_length_clamped_or_unclamped(true, prop, div, cs);
+}
+
+function test_length_unclamped(prop, div, cs) {
+  test_length_clamped_or_unclamped(false, prop, div, cs);
+}
+
+function test_length_clamped_or_unclamped(is_clamped, prop, div, cs) {
+  var t = async_test("Length clamping test for '" + prop + "'");
+  t.step(function() {
+    div.style.setProperty(hyph_prefix + "transition-timing-function", FUNC_NEGATIVE);
+    div.style.setProperty(hyph_prefix + "transition-property", "none");
+    div.style.setProperty(prop, "0px");
+    assert_equals(cs.getPropertyValue(prop), "0px",
+       "flush before clamping test");
+    div.style.setProperty(hyph_prefix + "transition-property", prop, "");
+    flush_styles();
+    div.style.setProperty(prop, "100px");
+  });
+
+  add_delayed_func(function(is_clamped, prop, div, cs, t) {
+    t.step(function() {
+      (is_clamped ? assert_equals : assert_not_equals)(
+        cs.getPropertyValue(prop), "0px",
+        "clamping of negatives");
+    });
+    t.done();
+  }.bind(null, is_clamped, prop, div, cs, t));
+}
+
+// Test using float values in the range [0, 1] (e.g. opacity)
+function test_float_zeroToOne_transition(prop, div, cs) {
+  var t = async_test("Float transition in range [0, 1] for '" + prop + "'");
+  t.step(function() {
+    div.style.setProperty(hyph_prefix + "transition-property", "none");
+    div.style.setProperty(prop, "0.3");
+    // Chrome 18 dev is a little over 1e-8 off when reserializing.
+    assert_approx_equals(Number(cs.getPropertyValue(prop)), 0.3, 1e-7,
+                         "computed value before transition");
+    div.style.setProperty(hyph_prefix + "transition-property", prop);
+    flush_styles();
+    div.style.setProperty(prop, "0.8");
+  });
+
+  add_delayed_func(function(prop, div, cs, t) {
+    t.step(function() {
+      // Opera Next 12.00 alpha rounds to two figures, so allow 0.0051 error.
+      assert_approx_equals(Number(cs.getPropertyValue(prop)), 0.425,
+                           0.0051, "computed value after transition");
+    });
+    t.done();
+  }.bind(null, prop, div, cs, t));
+}
+
+function test_float_zeroToOne_clamped(prop, div, cs) {
+  test_float_zeroToOne_clamped_or_unclamped(true, prop, div, cs);
+}
+
+function test_float_zeroToOne_clamped_or_unclamped(is_clamped, prop, div, cs) {
+  var t = async_test("Float clamping test for '" + prop + "'");
+  t.step(function() {
+    div.style.setProperty(hyph_prefix + "transition-timing-function", FUNC_NEGATIVE);
+    div.style.setProperty(hyph_prefix + "transition-property", "none");
+    div.style.setProperty(prop, "0");
+    assert_equals(cs.getPropertyValue(prop), "0",
+                  "flush before clamping test");
+    div.style.setProperty(hyph_prefix + "transition-property", prop);
+    flush_styles();
+    div.style.setProperty(prop, "1");
+  });
+
+  add_delayed_func(function(prop, div, cs, t, is_clamped) {
+    t.step(function() {
+      (is_clamped ? assert_equals : assert_not_equals)(
+        cs.getPropertyValue(prop), "0",
+        "clamping of negatives");
+    });
+    t.done();
+  }.bind(null, prop, div, cs, t, is_clamped));
+}
+
+function test_percent_transition(prop, div, cs) {
+  var t = async_test("Percent transition for '" + prop + "'");
+  var a, b, value_a, value_b;
+  t.step(function() {
+    div.style.setProperty(hyph_prefix + "transition-property", "none");
+    div.style.setProperty(prop, "25%");
+    value_a = cs.getPropertyValue(prop);
+    a = parseFloat(value_a);
+    div.style.setProperty(prop, "75%");
+    value_b = cs.getPropertyValue(prop);
+    b = parseFloat(value_b);
+    assert_not_equals(b, a,
+      "different percentages must give different computed values");
+    div.style.setProperty(hyph_prefix + "transition-property", prop);
+    flush_styles();
+    div.style.setProperty(prop, "25%");
+  });
+
+  add_delayed_func(function(prop, div, cs, t, a, b, value_a, value_b) {
+    t.step(function() {
+      var result = cs.getPropertyValue(prop);
+      // Chrome 18 dev clamps font-size to whole pixels, so need to allow
+      // 0.51.  Opera Next 12.00 alpha gives 187.5px instead of 186px for
+      // width; I'm calling this excessive and failing it.
+      assert_approx_equals(parseFloat(result), (3*b + a)/4, 0.51,
+        "computed style must be a quarter of the way between " + value_b + " and " + value_a);
+      assert_false(isNaN(parseFloat(result)),
+         "percent must compute to number");
+    });
+    t.done();
+  }.bind(null, prop, div, cs, t, a, b, value_a, value_b));
+}
+
+function test_percent_clamped(prop, div, cs) {
+  test_percent_clamped_or_unclamped(true, prop, div, cs);
+}
+
+function test_percent_unclamped(prop, div, cs) {
+  test_percent_clamped_or_unclamped(false, prop, div, cs);
+}
+
+function test_percent_clamped_or_unclamped(is_clamped, prop, div, cs) {
+  var t = async_test("Percent clamping test for '" + prop + "'");
+  var zero_val;
+  t.step(function() {
+    div.style.setProperty(hyph_prefix + "transition-timing-function", FUNC_NEGATIVE);
+    div.style.setProperty(hyph_prefix + "transition-property", "none");
+    div.style.setProperty(prop, "0%");
+    zero_val = cs.getPropertyValue(prop);
+    div.style.setProperty(hyph_prefix + "transition-property", prop);
+    flush_styles();
+    div.style.setProperty(prop, "150%");
+  });
+
+  add_delayed_func(function(prop, div, cs, t, is_clamped, zero_val) {
+    t.step(function() {
+      (is_clamped ? assert_equals : assert_not_equals)(
+        cs.getPropertyValue(prop), zero_val,
+        "clamping of negatives");
+    });
+    t.done();
+  }.bind(null, prop, div, cs, t, is_clamped, zero_val));
+}
+
+// FIXME: This tests calc() too, in the source file, but handling of calc() is
+// not defined by the transition spec.
+function test_length_percent_calc_transition(prop, div, cs) {
+  var a, b, c;
+  var t = async_test("Length-percent transition for '" + prop + "'");
+  t.step(function() {
+    div.style.setProperty(hyph_prefix + "transition-property", "none");
+    div.style.setProperty(prop, "0%");
+    var value_a = cs.getPropertyValue(prop);
+    a = parseFloat(value_a);
+    div.style.setProperty(prop, "100%");
+    var value_b = cs.getPropertyValue(prop);
+    b = parseFloat(value_b);
+    assert_not_equals(b, a,
+      "different percentages (" + value_a + " and " + value_b +
+      ") must give different computed values");
+
+    div.style.setProperty(prop, "100px");
+    var value_c = cs.getPropertyValue(prop);
+    c = parseFloat(value_c);
+    assert_equals(c, 100, "Setting to 100px must give that computed value");
+
+    div.style.setProperty(prop, "50%");
+    var v1_value = cs.getPropertyValue(prop);
+    // Everyone seems to get this test exactly right, so no need for
+    // assert_approx_equals.
+    assert_equals(parseFloat(v1_value), (a + b)/2,
+      "computed value before transition : '" +
+      v1_value + "' must be halfway " +
+      "between '" + value_a + "' + and '" + value_b + "'.");
+    div.style.setProperty(hyph_prefix + "transition-property", prop);
+    flush_styles();
+    div.style.setProperty(prop, "200px");
+  });
+
+  add_delayed_func(function(prop, div, cs, t, a, b, c) {
+    t.step(function() {
+      var v2_value = cs.getPropertyValue(prop);
+      // Chrome 18 dev rounds font-size to whole pixels, so it needs 0.51
+      // tolerance.
+      assert_approx_equals(parseFloat(v2_value), 0.75*(a + b)/2 + 0.25*(2*c),
+        0.51,
+        "computed value after transition must be a quarter of the way "
+        + "between 50% (" + (a + b)/2 + "px) and 200px");
+    });
+    t.done();
+  }.bind(null, prop, div, cs, t, a, b, c));
+}
+
+function test_color_transition(prop, div, cs) {
+  var t = async_test("Color transition for '" + prop + "'");
+  t.step(function() {
+    div.style.setProperty(hyph_prefix + "transition-property", "none");
+    div.style.setProperty(prop, "rgb(255, 28, 0)");
+    assert_colors_equiv(cs.getPropertyValue(prop), "rgb(255, 28, 0)",
+                        "computed value before transition");
+    div.style.setProperty(hyph_prefix + "transition-property", prop);
+    flush_styles();
+    div.style.setProperty(prop, "rgb(75, 84, 128)");
+  });
+
+  add_delayed_func(function(prop, div, cs, t) {
+    t.step(function() {
+      assert_colors_equiv(cs.getPropertyValue(prop), "rgb(210, 42, 32)",
+        "computed value after transition");
+    });
+    t.done();
+  }.bind(null, prop, div, cs, t));
+
+  // We have more tests, so create more test divs.
+  div = create_test_div();
+  cs = getComputedStyle(div);
+  t = async_test("Color transition to currentColor for '" + prop + "'");
+  t.step(function() {
+    div.style.setProperty(hyph_prefix + "transition-property", "none");
+    div.style.setProperty(prop, "rgb(128, 64, 0)");
+    // We might be testing the 'color' property, so to test currentColor, we
+    // need a parent div.
+    var parentDiv = document.createElement("div");
+    tests.appendChild(parentDiv);
+    parentDiv.appendChild(div);
+    parentDiv.style.setProperty("color", "rgb(0, 0, 128)");
+    assert_colors_equiv(cs.getPropertyValue(prop), "rgb(128, 64, 0)",
+                        "computed value before transition");
+    div.style.setProperty(hyph_prefix + "transition-property", prop);
+    flush_styles();
+    div.style.setProperty(prop, "currentColor");
+  });
+
+  add_delayed_func(function(prop, div, cs, t) {
+    t.step(function() {
+      assert_colors_equiv(cs.getPropertyValue(prop), "rgb(96, 48, 32)",
+                          "computed value after transition");
+    });
+    t.done();
+  }.bind(null, prop, div, cs, t));
+
+  // FIXME: Omitted bounds-checking, because it's legitimate for
+  // implementations to support colors outside of sRGB.
+}
+
+function test_border_color_transition(prop, div, cs) {
+  var t = async_test("Border color transition for '" + prop + "'");
+  t.step(function() {
+    div.style.setProperty(hyph_prefix + "transition-property", "none");
+    div.style.setProperty(prop, "rgb(128, 64, 0)");
+    div.style.setProperty("color", "rgb(0, 0, 128)");
+    assert_colors_equiv(cs.getPropertyValue(prop), "rgb(128, 64, 0)",
+                        "computed value before transition");
+    div.style.setProperty(hyph_prefix + "transition-property", prop);
+    flush_styles();
+    div.style.removeProperty(prop);
+  });
+
+  add_delayed_func(function(prop, div, cs, t) {
+    t.step(function() {
+      assert_colors_equiv(cs.getPropertyValue(prop), "rgb(96, 48, 32)",
+                          "computed value after transition");
+    });
+    t.done();
+  }.bind(null, prop, div, cs, t));
+}
+
+function test_shadow_transition(prop, div, cs) {
+  var spread_str = (prop == "box-shadow") ? " 0px" : "";
+
+  var t = async_test("Shadow transition for '" + prop + "'");
+  t.step(function() {
+    div.style.setProperty(hyph_prefix + "transition-property", "none");
+    div.style.setProperty(prop, "none");
+    // IE10 Developer Preview returns #000000.  I fail this because
+    // "text-shadow: #000000" is a parse error per spec.
+    assert_equals(cs.getPropertyValue(prop), "none",
+      "computed value before transition");
+    div.style.setProperty(hyph_prefix + "transition-property", prop);
+    flush_styles();
+    div.style.setProperty(prop, "4px 8px 3px red");
+  });
+
+  add_delayed_func(function(prop, div, cs, t, spread_str) {
+    t.step(function() {
+      assert_shadows_equiv(cs.getPropertyValue(prop),
+        "rgba(255, 0, 0, 0.25) 1px 2px 0.75px" + spread_str,
+        "computed value after transition");
+    });
+    t.done();
+  }.bind(null, prop, div, cs, t, spread_str));
+
+  div = create_test_div();
+  cs = getComputedStyle(div);
+  var t = async_test("Two-shadow transition for '" + prop + "'");
+  t.step(function() {
+    div.style.setProperty(hyph_prefix + "transition-property", "none");
+    div.style.setProperty(prop, "#038000 4px 4px, 2px 2px blue");
+    assert_shadows_equiv(cs.getPropertyValue(prop),
+      "rgb(3, 128, 0) 4px 4px 0px" + spread_str + ", "
+        + "rgb(0, 0, 255) 2px 2px 0px" + spread_str,
+      "computed value before transition");
+    div.style.setProperty(hyph_prefix + "transition-property", prop);
+    flush_styles();
+    div.style.setProperty(prop, "8px 8px 8px red");
+  });
+  add_delayed_func(function(prop, div, cs, t, spread_str) {
+    t.step(function() {
+      var computed = cs.getPropertyValue(prop);
+      assert_shadows_equiv(computed,
+        "rgb(66, 96, 0) 5px 5px 2px" + spread_str
+        + ", rgba(0, 0, 255, 0.75) 1.5px 1.5px 0px" + spread_str,
+        'computed value after transition');
+    });
+    t.done();
+  }.bind(null, prop, div, cs, t, spread_str));
+
+  // FIXME: There were some box-shadow-related tests in the original file that
+  // weren't ported, because we don't test box-shadow right now.
+
+  div = create_test_div();
+  cs = getComputedStyle(div);
+  var t = async_test("Shadow transition from color to no color for '" + prop + "'");
+  t.step(function() {
+    div.style.setProperty(hyph_prefix + "transition-property", "none");
+    div.style.setProperty(prop, "8px 8px 8px red");
+    div.style.setProperty("color", "lime");
+    assert_shadows_equiv(cs.getPropertyValue(prop), "8px 8px 8px red",
+      "computed value before transition");
+    div.style.setProperty(hyph_prefix + "transition-property", prop);
+    flush_styles();
+    div.style.setProperty(prop, "2px 2px 2px");
+  });
+  add_delayed_func(function(prop, div, cs, t) {
+    t.step(function() {
+      assert_shadows_equiv(cs.getPropertyValue(prop),
+        "rgb(191.25, 63.75, 0) 6.5px 6.5px 6.5px",
+        "computed value after transition");
+    });
+    t.done();
+  }.bind(null, prop, div, cs, t));
+
+  div = create_test_div();
+  cs = getComputedStyle(div);
+  var t = async_test("Shadow transition from no color to color for '" + prop + "'");
+  t.step(function() {
+    div.style.setProperty(hyph_prefix + "transition-property", "none");
+    div.style.setProperty(prop, "8px 8px 8px");
+    div.style.setProperty("color", "red");
+    assert_shadows_equiv(cs.getPropertyValue(prop), "8px 8px 8px red",
+      "computed value before transition");
+    div.style.setProperty(hyph_prefix + "transition-property", prop);
+    flush_styles();
+    div.style.setProperty(prop, "2px 2px 2px lime");
+  });
+  add_delayed_func(function(prop, div, cs, t) {
+    t.step(function() {
+      assert_shadows_equiv(cs.getPropertyValue(prop),
+        "rgb(191.25, 63.75, 0) 6.5px 6.5px 6.5px",
+        "computed value after transition");
+    });
+    t.done();
+  }.bind(null, prop, div, cs, t));
+
+  div = create_test_div();
+  cs = getComputedStyle(div);
+  var t = async_test("Shadow transition with no color for '" + prop + "'");
+  t.step(function() {
+    div.style.setProperty(hyph_prefix + "transition-property", "none");
+    div.style.setProperty(prop, "2px 2px 2px");
+    div.style.setProperty("color", "red");
+    assert_shadows_equiv(cs.getPropertyValue(prop), "2px 2px 2px red",
+      "computed value before transition");
+    div.style.setProperty(hyph_prefix + "transition-property", prop);
+    flush_styles();
+    div.style.setProperty(prop, "6px 14px 10px");
+  });
+  add_delayed_func(function(prop, div, cs, t) {
+    t.step(function() {
+      assert_shadows_equiv(cs.getPropertyValue(prop),
+        "3px 5px 4px red",
+        "computed value after transition");
+    });
+    t.done();
+  }.bind(null, prop, div, cs, t));
+
+  div = create_test_div();
+  cs = getComputedStyle(div);
+  var t = async_test("Shadow clamping for '" + prop + "'");
+  t.step(function() {
+    div.style.setProperty(hyph_prefix + "transition-timing-function", FUNC_NEGATIVE);
+    div.style.setProperty(hyph_prefix + "transition-property", "none");
+    div.style.setProperty(prop, "0px 0px 0px black");
+    assert_shadows_equiv(cs.getPropertyValue(prop), "0px 0px 0px black",
+                         "computed value before transition");
+    div.style.setProperty(hyph_prefix + "transition-property", prop);
+    flush_styles();
+    div.style.setProperty(prop, "10px 10px 10px black");
+  });
+  add_delayed_func(function(prop, div, cs, t) {
+    t.step(function() {
+      // I didn't actually compute that 6.83px is correct here.  But that's
+      // what all implementations seem to yield, certainly to within my 0.5px
+      // accuracy.  No need to be precise.
+      assert_shadows_equiv(cs.getPropertyValue(prop),
+                           "-6.83px -6.83px 0px black",
+                           "clamping of negatives");
+    });
+    t.done();
+  }.bind(null, prop, div, cs, t));
+}
+
+function test_zindex_transition(prop, div, cs) {
+}
+
+function test_font_weight(prop, div, cs) {
+}
+
+function test_pos_integer_or_auto_transition(prop, div, cs) {
+}
+
+function test_length_pair_transition(prop, div, cs) {
+}
+
+function test_length_pair_transition_clamped(prop, div, cs) {
+}
+
+function test_length_percent_pair_unclamped(prop, div, cs) {
+  test_length_percent_pair_clamped_or_unclamped(prop, false);
+}
+
+function test_length_percent_pair_clamped_or_unclamped(prop, is_clamped) {
+}
+
+function test_rect_transition(prop, div, cs) {
+}
+
+function test_visibility_transition(prop, div, cs) {
+}
+
+function test_background_position_transition(prop, div, cs) {
+}
+</script>
+<!-- vim: set tw=78 sw=2 et ts=2 : -->

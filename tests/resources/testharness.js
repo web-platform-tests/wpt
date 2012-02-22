@@ -224,6 +224,10 @@ policies and contribution forms [3].
  *   asserts that /actual/ is a different value to /expected/. Yes, this means
  *   that "expected" is a misnomer
  *
+ * assert_in_array(actual, expected, description)
+ *   asserts that /expected/ is an Array, and /actual/ is equal to one of the
+ *   members -- expected.indexOf(actual) != -1
+ *
  * assert_array_equals(actual, expected, description)
  *   asserts that /actual/ and /expected/ have the same length and the value of
  *   each indexed property in /actual/ is the strictly equal to the corresponding
@@ -405,6 +409,11 @@ policies and contribution forms [3].
      */
     function format_value(val)
     {
+        if (Array.isArray(val))
+        {
+            return "[" + val.map(format_value).join(", ") + "]";
+        }
+
         switch (typeof val)
         {
         case "string":
@@ -567,6 +576,14 @@ policies and contribution forms [3].
                                               {actual:actual});
     };
     expose(assert_not_equals, "assert_not_equals");
+
+    function assert_in_array(actual, expected, description)
+    {
+        assert(expected.indexOf(actual) != -1, "assert_in_array", description,
+                                               "value ${actual} not in array ${expected}",
+                                               {actual:actual, expected:expected});
+    }
+    expose(assert_in_array, "assert_in_array");
 
     function assert_object_equals(actual, expected, description)
     {

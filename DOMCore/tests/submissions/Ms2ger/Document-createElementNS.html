@@ -29,14 +29,18 @@ test(function() {
     ["http://oops/", "xmlns:foo"],
     ["http://www.w3.org/2000/xmlns/", "xml:foo"],
     ["http://www.w3.org/2000/xmlns/", "foo:xmlns"]
-  ]
+  ];
 
-  for (var i = 0, il = invalidNames.length; i < il; i++) {
-    assert_throws("INVALID_CHARACTER_ERR", function() { document.createElementNS("", invalidNames[i]) })
-  }
+  invalidNames.forEach(function(name) {
+    test(function() {
+      assert_throws("INVALID_CHARACTER_ERR", function() { document.createElementNS("", name) });
+    }, "Invalid Name: " + name)
+  })
 
-  for (var i = 0, il = invalidNSQNameCombinations.length; i < il; i++) {
-    assert_throws("NAMESPACE_ERR", function() { document.createElementNS(invalidNSQNameCombinations[i][0], invalidNSQNameCombinations[i][1]) })
-  }
+  invalidNSQNameCombinations.forEach(function(a) {
+    test(function() {
+      assert_throws("NAMESPACE_ERR", function() { document.createElementNS(a[0], a[1]) });
+    }, "Invalid namespace " + a[0] + " and QName " + a[1])
+  })
 })
 </script>

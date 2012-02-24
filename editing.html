@@ -1399,6 +1399,49 @@ either <a href=#editable>editable</a> or an <a href=#editing-host>editing host</
 
 <h2 id=methods-to-query-and-execute-commands>Methods to query and execute commands</h2>
 
+<p class=XXX>We fire events as requested in
+<a href="https://www.w3.org/Bugs/Public/show_bug.cgi?id=13118">bug 13118</a>.
+This is a new feature does not currently match any browser.  <strong>If you are
+implementing this, please make sure to file any feedback as bugs.  The spec is
+not finalized yet and can still be easily changed.</strong>
+
+<pre class=idl>[Constructor(DOMString <var title="">type</var>, optional <a href=#editingbeforeinputeventinit>EditingBeforeInputEventInit</a> <var title="">eventInitDict</var>)]
+interface <dfn id=editingbeforeinputevent>EditingBeforeInputEvent</dfn> : <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#event>Event</a> {
+  readonly attribute DOMString <a href=#dom-editingbeforeinputevent-command title=dom-EditingBeforeInputEvent-command>command</a>;
+  readonly attribute DOMString <a href=#dom-editingbeforeinputevent-value title=dom-EditingBeforeInputEvent-value>value</a>;
+};
+
+dictionary <dfn id=editingbeforeinputeventinit>EditingBeforeInputEventInit</dfn> : <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#eventinit>EventInit</a> {
+  DOMString command;
+  DOMString value;
+};
+
+[Constructor(DOMString <var title="">type</var>, optional <a href=#editinginputeventinit>EditingInputEventInit</a> <var title="">eventInitDict</var>)]
+interface <dfn id=editinginputevent>EditingInputEvent</dfn> : <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#event>Event</a> {
+  readonly attribute DOMString <a href=#dom-editinginputevent-command title=dom-EditingInputEvent-command>command</a>;
+  readonly attribute DOMString <a href=#dom-editinginputevent-value title=dom-EditingInputEvent-value>value</a>;
+};
+
+dictionary <dfn id=editinginputeventinit>EditingInputEventInit</dfn> : <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#eventinit>EventInit</a> {
+  DOMString command;
+  DOMString value;
+};</pre>
+
+<p class=XXX>We have two different interfaces because we might want to add
+additional members to the input event but not the beforeinput event, such as a
+list of nodes that were affected.
+
+<p>When an <code><a href=#editingbeforeinputevent>EditingBeforeInputEvent</a></code> object is created, the
+<dfn id=dom-editingbeforeinputevent-command title=dom-EditingBeforeInputEvent-command><code>command</code></dfn> and
+<dfn id=dom-editingbeforeinputevent-value title=dom-EditingBeforeInputEvent-value><code>value</code></dfn>
+attributes must both be initialized to the empty string, unless otherwise
+specified.
+
+<p>When an <code><a href=#editinginputevent>EditingInputEvent</a></code> object is created, the
+<dfn id=dom-editinginputevent-command title=dom-EditingInputEvent-command><code>command</code></dfn> and
+<dfn id=dom-editinginputevent-value title=dom-EditingInputEvent-value><code>value</code></dfn> attributes must
+both be initialized to the empty string, unless otherwise specified.
+
 <p class=comments>TODO: Define behavior for <var title="">show UI</var>.
 
 <p>When the <dfn id=execcommand() title=execCommand()><code>execCommand(<var title="">command</var>,
@@ -1427,8 +1470,79 @@ must run the following steps:
 
   <p>If <var title="">command</var> is not <a href=#enabled>enabled</a>, return false.
 
+  <li>
+  <p>If <var title="">command</var> is not in the
+  <a href=#miscellaneous-commands>Miscellaneous commands</a> section:
+
+  <p class=XXX>We don't fire events for copy/cut/paste/undo/redo/selectAll
+  because they should all have their own events.  We don't fire events for
+  styleWithCSS/useCSS because it's not obvious where to fire them, or why
+  anyone would want them.  We don't fire events for unsupported commands,
+  because then if they became supported and were classified with the
+  miscellaneous events, we'd have to stop firing events for consistency's sake.
+
+  <ol>
+    <li>Let <var title="">affected editing host</var> be the <a href=#editing-host>editing host</a>
+    that is an <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-inclusive-ancestor title=concept-tree-inclusive-ancestor>inclusive ancestor</a> of the <a href=#active-range>active range</a>'s
+    <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-node title=concept-range-start-node>start node</a> and <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end-node title=concept-range-end-node>end node</a>, and is not the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of any
+    <a href=#editing-host>editing host</a> that is an <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-inclusive-ancestor title=concept-tree-inclusive-ancestor>inclusive ancestor</a> of the
+    <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-node title=concept-range-start-node>start node</a> and <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end-node title=concept-range-end-node>end node</a>.
+
+    <p class=note>Such an editing host must exist, because otherwise the
+    command would not be <a href=#enabled>enabled</a>.
+
+    <li><a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-event-dispatch title=concept-event-dispatch>Dispatch</a> an <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-event title=concept-event>event</a> at <var title="">affected editing host</var> that uses
+    the <code><a href=#editingbeforeinputevent>EditingBeforeInputEvent</a></code> interface.  The event's
+    <code class=external data-anolis-spec=dom title=dom-Event-type><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-event-type>type</a></code> attribute must
+    be initialized to "beforeinput"; its
+    <code class=external data-anolis-spec=dom title=dom-Event-isTrusted><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-event-istrusted>isTrusted</a></code>,
+    <code class=external data-anolis-spec=dom title=dom-Event-bubbles><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-event-bubbles>bubbles</a></code>, and
+    <code class=external data-anolis-spec=dom title=dom-Event-cancelable><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-event-cancelable>cancelable</a></code>
+    attributes must be initialized to true; its
+    <code title=dom-EditingBeforeInputEvent-command><a href=#dom-editingbeforeinputevent-command>command</a></code> attribute
+    must be initialized to <var title="">command</var>; and its
+    <code title=dom-EditingBeforeInputEvent-value><a href=#dom-editingbeforeinputevent-value>value</a></code> attribute must
+    be initialized to <var title="">value</var>.
+
+    <li>If the value returned by the previous step is false, return false.
+
+    <li>If <var title="">command</var> is not <a href=#enabled>enabled</a>, return false.
+
+    <p class=XXX>We have to check again whether the command is enabled, because
+    the beforeinput handler might have done something annoying like
+    getSelection().removeAllRanges().
+
+    <li>Let <var title="">affected editing host</var> be the <a href=#editing-host>editing host</a>
+    that is an <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-inclusive-ancestor title=concept-tree-inclusive-ancestor>inclusive ancestor</a> of the <a href=#active-range>active range</a>'s
+    <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-node title=concept-range-start-node>start node</a> and <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end-node title=concept-range-end-node>end node</a>, and is not the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of any
+    <a href=#editing-host>editing host</a> that is an <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-inclusive-ancestor title=concept-tree-inclusive-ancestor>inclusive ancestor</a> of the
+    <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-node title=concept-range-start-node>start node</a> and <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end-node title=concept-range-end-node>end node</a>.
+
+    <p class=XXX>This new affected editing host is what we'll fire the input
+    event at in a couple of lines.  We want to compute it beforehand just to be
+    safe: bugs in the command action might remove the selection or something
+    bad like that, and we don't want to have to handle it later.  We recompute
+    it after the beforeinput event is handled so that if the handler moves the
+    selection to some other editing host, the input event will be fired at the
+    editing host that was actually affected.
+  </ol>
+
   <li>Take the <a href=#action>action</a> for <var title="">command</var>, passing
   <var title="">value</var> to the instructions as an argument.
+
+  <li>If <var title="">command</var> is not in the
+  <a href=#miscellaneous-commands>Miscellaneous commands</a> section, then
+  <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-event-dispatch title=concept-event-dispatch>dispatch</a> an <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-event title=concept-event>event</a> at <var title="">affected editing host</var> that uses the
+  <code><a href=#editinginputevent>EditingInputEvent</a></code> interface.  The event's
+  <code class=external data-anolis-spec=dom title=dom-Event-type><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-event-type>type</a></code> attribute must be
+  initialized to "input"; its
+  <code class=external data-anolis-spec=dom title=dom-Event-isTrusted><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-event-istrusted>isTrusted</a></code> and
+  <code class=external data-anolis-spec=dom title=dom-Event-bubbles><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-event-bubbles>bubbles</a></code> attributes
+  must be initialized to true; its
+  <code title=dom-EditingInputEvent-command><a href=#dom-editinginputevent-command>command</a></code> attribute must be
+  initialized to <var title="">command</var>; and its
+  <code title=dom-EditingInputEvent-value><a href=#dom-editinginputevent-value>value</a></code> attribute must be
+  initialized to <var title="">value</var>.
 
   <li>Return true.
 </ol>

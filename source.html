@@ -1365,6 +1365,50 @@ either <span>editable</span> or an <span>editing host</span>, and there is some
 
 <h2>Methods to query and execute commands</h2>
 <!-- @{ -->
+<p class=XXX>We fire events as requested in
+<a href=https://www.w3.org/Bugs/Public/show_bug.cgi?id=13118>bug 13118</a>.
+This is a new feature does not currently match any browser.  <strong>If you are
+implementing this, please make sure to file any feedback as bugs.  The spec is
+not finalized yet and can still be easily changed.</strong>
+
+<pre class=idl>
+[Constructor(DOMString <var>type</var>, optional <span>EditingBeforeInputEventInit</span> <var>eventInitDict</var>)]
+interface <dfn>EditingBeforeInputEvent</dfn> : <span data-anolis-spec=dom>Event</span> {
+  readonly attribute DOMString <span title=dom-EditingBeforeInputEvent-command>command</span>;
+  readonly attribute DOMString <span title=dom-EditingBeforeInputEvent-value>value</span>;
+};
+
+dictionary <dfn>EditingBeforeInputEventInit</dfn> : <span data-anolis-spec=dom>EventInit</span> {
+  DOMString command;
+  DOMString value;
+};
+
+[Constructor(DOMString <var>type</var>, optional <span>EditingInputEventInit</span> <var>eventInitDict</var>)]
+interface <dfn>EditingInputEvent</dfn> : <span data-anolis-spec=dom>Event</span> {
+  readonly attribute DOMString <span title=dom-EditingInputEvent-command>command</span>;
+  readonly attribute DOMString <span title=dom-EditingInputEvent-value>value</span>;
+};
+
+dictionary <dfn>EditingInputEventInit</dfn> : <span data-anolis-spec=dom>EventInit</span> {
+  DOMString command;
+  DOMString value;
+};</pre>
+
+<p class=XXX>We have two different interfaces because we might want to add
+additional members to the input event but not the beforeinput event, such as a
+list of nodes that were affected.
+
+<p>When an <code>EditingBeforeInputEvent</code> object is created, the
+<dfn title=dom-EditingBeforeInputEvent-command><code>command</code></dfn> and
+<dfn title=dom-EditingBeforeInputEvent-value><code>value</code></dfn>
+attributes must both be initialized to the empty string, unless otherwise
+specified.
+
+<p>When an <code>EditingInputEvent</code> object is created, the
+<dfn title=dom-EditingInputEvent-command><code>command</code></dfn> and
+<dfn title=dom-EditingInputEvent-value><code>value</code></dfn> attributes must
+both be initialized to the empty string, unless otherwise specified.
+
 <p class=comments>TODO: Define behavior for <var>show UI</var>.
 
 <p>When the <dfn title=execCommand()><code>execCommand(<var>command</var>,
@@ -1394,8 +1438,79 @@ must run the following steps:
 
   <p>If <var>command</var> is not <span>enabled</span>, return false.
 
+  <li>
+  <p>If <var>command</var> is not in the
+  <a href=#miscellaneous-commands>Miscellaneous commands</a> section:
+
+  <p class=XXX>We don't fire events for copy/cut/paste/undo/redo/selectAll
+  because they should all have their own events.  We don't fire events for
+  styleWithCSS/useCSS because it's not obvious where to fire them, or why
+  anyone would want them.  We don't fire events for unsupported commands,
+  because then if they became supported and were classified with the
+  miscellaneous events, we'd have to stop firing events for consistency's sake.
+
+  <ol>
+    <li>Let <var>affected editing host</var> be the <span>editing host</span>
+    that is an [[inclusiveancestor]] of the <span>active range</span>'s
+    [[startnode]] and [[endnode]], and is not the [[ancestor]] of any
+    <span>editing host</span> that is an [[inclusiveancestor]] of the
+    <span>active range</span>'s [[startnode]] and [[endnode]].
+
+    <p class=note>Such an editing host must exist, because otherwise the
+    command would not be <span>enabled</span>.
+
+    <li>[[Dispatch]] an [[event]] at <var>affected editing host</var> that uses
+    the <code>EditingBeforeInputEvent</code> interface.  The event's
+    <code data-anolis-spec=dom title=dom-Event-type>type</code> attribute must
+    be initialized to "beforeinput"; its
+    <code data-anolis-spec=dom title=dom-Event-isTrusted>isTrusted</code>,
+    <code data-anolis-spec=dom title=dom-Event-bubbles>bubbles</code>, and
+    <code data-anolis-spec=dom title=dom-Event-cancelable>cancelable</code>
+    attributes must be initialized to true; its
+    <code title=dom-EditingBeforeInputEvent-command>command</code> attribute
+    must be initialized to <var>command</var>; and its
+    <code title=dom-EditingBeforeInputEvent-value>value</code> attribute must
+    be initialized to <var>value</var>.
+
+    <li>If the value returned by the previous step is false, return false.
+
+    <li>If <var>command</var> is not <span>enabled</span>, return false.
+
+    <p class=XXX>We have to check again whether the command is enabled, because
+    the beforeinput handler might have done something annoying like
+    getSelection().removeAllRanges().
+
+    <li>Let <var>affected editing host</var> be the <span>editing host</span>
+    that is an [[inclusiveancestor]] of the <span>active range</span>'s
+    [[startnode]] and [[endnode]], and is not the [[ancestor]] of any
+    <span>editing host</span> that is an [[inclusiveancestor]] of the
+    <span>active range</span>'s [[startnode]] and [[endnode]].
+
+    <p class=XXX>This new affected editing host is what we'll fire the input
+    event at in a couple of lines.  We want to compute it beforehand just to be
+    safe: bugs in the command action might remove the selection or something
+    bad like that, and we don't want to have to handle it later.  We recompute
+    it after the beforeinput event is handled so that if the handler moves the
+    selection to some other editing host, the input event will be fired at the
+    editing host that was actually affected.
+  </ol>
+
   <li>Take the <span>action</span> for <var>command</var>, passing
   <var>value</var> to the instructions as an argument.
+
+  <li>If <var>command</var> is not in the
+  <a href=#miscellaneous-commands>Miscellaneous commands</a> section, then
+  [[dispatch]] an [[event]] at <var>affected editing host</var> that uses the
+  <code>EditingInputEvent</code> interface.  The event's
+  <code data-anolis-spec=dom title=dom-Event-type>type</code> attribute must be
+  initialized to "input"; its
+  <code data-anolis-spec=dom title=dom-Event-isTrusted>isTrusted</code> and
+  <code data-anolis-spec=dom title=dom-Event-bubbles>bubbles</code> attributes
+  must be initialized to true; its
+  <code title=dom-EditingInputEvent-command>command</code> attribute must be
+  initialized to <var>command</var>; and its
+  <code title=dom-EditingInputEvent-value>value</code> attribute must be
+  initialized to <var>value</var>.
 
   <li>Return true.
 </ol>

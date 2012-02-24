@@ -4552,7 +4552,9 @@ function doSetup(selector, idx) {
 }
 //@}
 
-function queryOutputHelper(beforeIndeterm, beforeState, beforeValue, afterIndeterm, afterState, afterValue, command, value) {
+function queryOutputHelper(beforeIndeterm, beforeState, beforeValue,
+                           afterIndeterm, afterState, afterValue,
+                           command, value) {
 //@{
 	var frag = document.createDocumentFragment();
 	var beforeDiv = document.createElement("div");

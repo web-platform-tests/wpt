@@ -1,0 +1,10 @@
+To generate data.js (this will only work if you're me unless you hack the
+source code):
+
+1) Visit gentest.html in both Gecko and WebKit.  Enter the secret password and
+click the button to submit.
+
+2) Once both are done submitting, run conformancetest/fixdata.  If it reports
+any discrepancies, update conformancetest/diff *and* (if appropriate)
+conformancetest/patch.  Do not forget to update conformancetest/patch, or else
+stuff will get messed up.

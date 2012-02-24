@@ -53,11 +53,25 @@ function generateTests() {
 				return;
 			}
 			try {
+				var normalizedTest = normalizeTest(command, test);
 				if (command == "multitest") {
-					generateTest(normalizeTest(command, test));
+					generateTest(normalizedTest);
 				} else {
-					generateTest(normalizeTest(command, test, false));
-					generateTest(normalizeTest(command, test, true));
+					// Test all permutations of styleWithCSS and
+					// defaultParagraphSeparator.  This quadruples the number
+					// of tests, unfortunately . . .
+					normalizedTest.splice(1, 0, ["stylewithcss", "false"],
+						["defaultparagraphseparator", "p"]);
+					generateTest(normalizedTest);
+					normalizedTest.splice(1, 2, ["stylewithcss", "true"],
+						["defaultparagraphseparator", "p"]);
+					generateTest(normalizedTest);
+					normalizedTest.splice(1, 2, ["stylewithcss", "false"],
+						["defaultparagraphseparator", "div"]);
+					generateTest(normalizedTest);
+					normalizedTest.splice(1, 2, ["stylewithcss", "true"],
+						["defaultparagraphseparator", "div"]);
+					generateTest(normalizedTest);
 				}
 			} catch(e) {
 				var errorItem = document.createElement("li");

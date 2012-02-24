@@ -4,6 +4,8 @@ var htmlNamespace = "http://www.w3.org/1999/xhtml";
 
 var cssStylingFlag = false;
 
+var defaultSingleLineContainerName = "p";
+
 // This is bad :(
 var globalRange = null;
 
@@ -570,7 +572,8 @@ function myQueryCommandEnabled(command, range) {
 		// editable or an editing host, its end node is either editable or an
 		// editing host, and there is some editing host that is an inclusive
 		// ancestor of both its start node and its end node."
-		return ["copy", "selectall", "stylewithcss", "usecss"].indexOf(command) != -1
+		return ["copy", "defaultparagraphseparator", "selectall", "stylewithcss",
+		"usecss"].indexOf(command) != -1
 			|| (
 				getActiveRange() !== null
 				&& (isEditable(getActiveRange().startContainer) || isEditingHost(getActiveRange().startContainer))
@@ -3762,9 +3765,6 @@ function isSingleLineContainer(node) {
 		|| isHtmlElement(node, ["li", "dt", "dd"]);
 }
 
-// "The default single-line container name is "p"."
-var defaultSingleLineContainerName = "p";
-
 function getBlockNodeOf(node) {
 	// "While node is an inline node, set node to its parent."
 	while (isInlineNode(node)) {
@@ -3821,13 +3821,23 @@ function fixDisallowedAncestors(node) {
 		// "Fix disallowed ancestors of node."
 		fixDisallowedAncestors(node);
 
-		// "Let descendants be all descendants of node."
-		var descendants = getDescendants(node);
+		// "Let children be node's children."
+		var children = [].slice.call(node.childNodes);
 
-		// "Fix disallowed ancestors of each member of descendants."
-		for (var i = 0; i < descendants.length; i++) {
-			fixDisallowedAncestors(descendants[i]);
-		}
+		// "For each child in children, if child is a prohibited paragraph
+		// child:"
+		children.filter(isProhibitedParagraphChild)
+		.forEach(function(child) {
+			// "Record the values of the one-node list consisting of child, and
+			// let values be the result."
+			var values = recordValues([child]);
+
+			// "Split the parent of the one-node list consisting of child."
+			splitParent([child]);
+
+			// "Restore the values from values."
+			restoreValues(values);
+		});
 
 		// "Abort these steps."
 		return;
@@ -8241,6 +8251,24 @@ commands.outdent = {
 ///// Miscellaneous commands /////
 //////////////////////////////////
 
+///// The defaultParagraphSeparator command /////
+//@{
+commands.defaultparagraphseparator = {
+	action: function(value) {
+		// "Let value be converted to ASCII lowercase. If value is then equal
+		// to "p" or "div", set the context object's default single-line
+		// container name to value. Otherwise, do nothing."
+		value = value.toLowerCase();
+		if (value == "p" || value == "div") {
+			defaultSingleLineContainerName = value;
+		}
+	}, value: function() {
+		// "Return the context object's default single-line container name."
+		return defaultSingleLineContainerName;
+	},
+};
+
+//@}
 ///// The selectAll command /////
 //@{
 commands.selectall = {

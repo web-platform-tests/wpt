@@ -1937,6 +1937,12 @@ title>styleWithCSS</code> command</span> can be used to modify or query it, by
 means of the <code>execCommand()</code> and <code>queryCommandState()</code>
 methods.)
 
+<p>Each [[htmldocument]] is associated with a string known as the
+<dfn>default single-line container name</dfn>, which must initially be "p".
+(<span>The <code title>defaultParagraphSeparator</code> command</span> can be
+used to modify or query it, by means of the <code>execCommand()</code> and
+<code>queryCommandValue()</code> methods.)
+
 <p>For some <span title=command>commands</span>, each [[htmldocument]] must
 have a boolean <dfn>state override</dfn> and/or a string <dfn>value
 override</dfn>.  These do not change the <span>command</span>'s
@@ -4724,10 +4730,6 @@ with [[localname]] "address", "div", "h1", "h2", "h3", "h4", "h5", "h6",
 container</span>, or an <span>HTML element</span> with [[localname]] "li",
 "dt", or "dd".
 
-<p class=comments>TODO: Make this configurable.
-
-<p>The <dfn>default single-line container name</dfn> is "p".
-
 <p>The <dfn>block node of</dfn> a [[node]] <var>node</var> is either a
 <span>block node</span> or null, as returned by the following algorithm:
 
@@ -4789,10 +4791,20 @@ unserializable DOMs, blocks nested inside inlines, etc.
 
     <p><span>Fix disallowed ancestors</span> of <var>node</var>.
 
-    <li>Let <var>descendants</var> be all [[descendants]] of <var>node</var>.
+    <li>Let <var>children</var> be <var>node</var>'s [[children]].
 
-    <li><span>Fix disallowed ancestors</span> of each member of
-    <var>descendants</var>.
+    <li>For each <var>child</var> in <var>children</var>, if <var>child</var>
+    is a <span>prohibited paragraph child</span>:
+
+    <ol>
+      <li><span>Record the values</span> of the one-[[node]] list consisting of
+      <var>child</var>, and let <var>values</var> be the result.
+
+      <li><span>Split the parent</span> of the one-[[node]] list consisting of
+      <var>child</var>.
+
+      <li><span>Restore the values</span> from <var>values</var>.
+    </ol>
 
     <li>Abort these steps.
   </ol>
@@ -10228,6 +10240,24 @@ with extremely long, obscene, or otherwise objectionable content.
 may either [[throw]] a [[SecurityError]] exception for non-whitelisted sites,
 or it may act as though the <span>command</span> is <span
 title=supported>unsupported</span> on those sites.
+
+<!-- @} -->
+<h3><dfn>The <code title>defaultParagraphSeparator</code> command</dfn></h3>
+<!-- @{ -->
+<p class=XXX>This is a new feature, added by request in
+<a href=https://www.w3.org/Bugs/Public/show_bug.cgi?id=15527>bug 15527</a>.
+(Opera already had an o-defaultblock command that worked similarly.)
+<strong>If you are implementing this, please make sure to file any feedback as
+bugs. The spec is not finalized yet and can still be easily changed.</strong>
+
+<p><span>Action</span>: Let <var>value</var> be
+<span data-anolis-spec=dom>converted to ASCII lowercase</span>.  If
+<var>value</var> is then equal to "p" or "div", set the [[contextobject]]'s
+<span>default single-line container name</span> to <var>value</var>.
+Otherwise, do nothing.
+
+<p><span>Value</span>: Return the [[contextobject]]'s
+<span>default single-line container name</span>.
 
 <!-- @} -->
 <h3><dfn>The <code title>paste</code> command</dfn></h3>

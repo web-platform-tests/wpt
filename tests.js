@@ -4022,6 +4022,19 @@ var tests = {
 	//@}
 	copy: ['!foo[bar]baz'],
 	cut: ['!foo[bar]baz'],
+	defaultparagraphseparator: [
+	//@{
+		['', 'foo[bar]baz'],
+		['div', 'foo[bar]baz'],
+		['p', 'foo[bar]baz'],
+		['DIV', 'foo[bar]baz'],
+		['P', 'foo[bar]baz'],
+		[' div ', 'foo[bar]baz'],
+		[' p ', 'foo[bar]baz'],
+		['li', 'foo[bar]baz'],
+		['blockquote', 'foo[bar]baz'],
+	],
+	//@}
 	paste: ['!foo[bar]baz'],
 	selectall: ['foo[bar]baz'],
 	stylewithcss: [
@@ -4456,6 +4469,7 @@ var defaultValues = {
 	inserthtml: "ab<b>c</b>d",
 	insertimage: "/img/lion.svg",
 	inserttext: "a",
+	defaultparagraphseparator: "p",
 	stylewithcss: "true",
 	usecss: "true",
 };
@@ -4664,11 +4678,17 @@ function queryOutputHelper(beforeIndeterm, beforeState, beforeValue,
 		}
 	} else if (command == "formatblock") {
 		value = value.replace(/^<(.*)>$/, "$1").toLowerCase();
+	} else if (command == "defaultparagraphseparator") {
+		value = value.toLowerCase();
+		if (value != "p" && value != "div") {
+			value = "";
+		}
 	}
 
 	if (((command == "backcolor" || command == "forecolor" || command == "hilitecolor") && value.toLowerCase() == "currentcolor")
 	|| (command == "fontsize" && value === null)
-	|| (command == "formatblock" && formattableBlockNames.indexOf(value.replace(/^<(.*)>$/, "$1").trim()) == -1)) {
+	|| (command == "formatblock" && formattableBlockNames.indexOf(value.replace(/^<(.*)>$/, "$1").trim()) == -1)
+	|| (command == "defaultparagraphseparator" && value == "")) {
 		afterDiv.lastChild.className = beforeValue === afterValue
 			? "good-result"
 			: "bad-result";

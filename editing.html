@@ -195,6 +195,7 @@ restriction.
   <ol>
    <li><a href=#the-copy-command>The <code title="">copy</code> command</a></li>
    <li><a href=#the-cut-command>The <code title="">cut</code> command</a></li>
+   <li><a href=#the-defaultparagraphseparator-command>The <code title="">defaultParagraphSeparator</code> command</a></li>
    <li><a href=#the-paste-command>The <code title="">paste</code> command</a></li>
    <li><a href=#the-redo-command>The <code title="">redo</code> command</a></li>
    <li><a href=#the-selectall-command>The <code title="">selectAll</code> command</a></li>
@@ -1952,6 +1953,12 @@ range</a> may be null.)
 with it, which must initially be false.  (<a href=#the-stylewithcss-command>The <code title="">styleWithCSS</code> command</a> can be used to modify or query it, by
 means of the <code><a href=#execcommand()>execCommand()</a></code> and <code><a href=#querycommandstate()>queryCommandState()</a></code>
 methods.)
+
+<p>Each <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#htmldocument>HTMLDocument</a></code> is associated with a string known as the
+<dfn id=default-single-line-container-name>default single-line container name</dfn>, which must initially be "p".
+(<a href=#the-defaultparagraphseparator-command>The <code title="">defaultParagraphSeparator</code> command</a> can be
+used to modify or query it, by means of the <code><a href=#execcommand()>execCommand()</a></code> and
+<code><a href=#querycommandvalue()>queryCommandValue()</a></code> methods.)
 
 <p>For some <a href=#command title=command>commands</a>, each <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#htmldocument>HTMLDocument</a></code> must
 have a boolean <dfn id=state-override>state override</dfn> and/or a string <dfn id=value-override>value
@@ -4681,10 +4688,6 @@ with <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/r
 container</a>, or an <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "li",
 "dt", or "dd".
 
-<p class=comments>TODO: Make this configurable.
-
-<p>The <dfn id=default-single-line-container-name>default single-line container name</dfn> is "p".
-
 <p>The <dfn id=block-node-of>block node of</dfn> a <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var> is either a
 <a href=#block-node>block node</a> or null, as returned by the following algorithm:
 
@@ -4746,10 +4749,20 @@ unserializable DOMs, blocks nested inside inlines, etc.
 
     <p><a href=#fix-disallowed-ancestors>Fix disallowed ancestors</a> of <var title="">node</var>.
 
-    <li>Let <var title="">descendants</var> be all <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendants</a> of <var title="">node</var>.
+    <li>Let <var title="">children</var> be <var title="">node</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.
 
-    <li><a href=#fix-disallowed-ancestors>Fix disallowed ancestors</a> of each member of
-    <var title="">descendants</var>.
+    <li>For each <var title="">child</var> in <var title="">children</var>, if <var title="">child</var>
+    is a <a href=#prohibited-paragraph-child>prohibited paragraph child</a>:
+
+    <ol>
+      <li><a href=#record-the-values>Record the values</a> of the one-<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> list consisting of
+      <var title="">child</var>, and let <var title="">values</var> be the result.
+
+      <li><a href=#split-the-parent>Split the parent</a> of the one-<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> list consisting of
+      <var title="">child</var>.
+
+      <li><a href=#restore-the-values>Restore the values</a> from <var title="">values</var>.
+    </ol>
 
     <li>Abort these steps.
   </ol>
@@ -10118,6 +10131,24 @@ with extremely long, obscene, or otherwise objectionable content.
 <a href=#command>command</a> for some whitelisted sites depending on configuration, it
 may either <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-throw title=concept-throw>throw</a> a <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#securityerror>SecurityError</a></code> exception for non-whitelisted sites,
 or it may act as though the <a href=#command>command</a> is <a href=#supported title=supported>unsupported</a> on those sites.
+
+
+<h3 id=the-defaultparagraphseparator-command><dfn>The <code title="">defaultParagraphSeparator</code> command</dfn></h3>
+
+<p class=XXX>This is a new feature, added by request in
+<a href="https://www.w3.org/Bugs/Public/show_bug.cgi?id=15527">bug 15527</a>.
+(Opera already had an o-defaultblock command that worked similarly.)
+<strong>If you are implementing this, please make sure to file any feedback as
+bugs. The spec is not finalized yet and can still be easily changed.</strong>
+
+<p><a href=#action>Action</a>: Let <var title="">value</var> be
+<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#converted-to-ascii-lowercase>converted to ASCII lowercase</a>.  If
+<var title="">value</var> is then equal to "p" or "div", set the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s
+<a href=#default-single-line-container-name>default single-line container name</a> to <var title="">value</var>.
+Otherwise, do nothing.
+
+<p><a href=#value>Value</a>: Return the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s
+<a href=#default-single-line-container-name>default single-line container name</a>.
 
 
 <h3 id=the-paste-command><dfn>The <code title="">paste</code> command</dfn></h3>

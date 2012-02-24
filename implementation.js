@@ -564,11 +564,19 @@ function myQueryCommandEnabled(command, range) {
 	// "If command is not supported, raise a NOT_SUPPORTED_ERR exception."
 	return editCommandMethod(command, range, (function(command) { return function() {
 		// "Among commands defined in this specification, those listed in
-		// Miscellaneous commands are always enabled. The other commands defined
-		// here are enabled if the active range is not null, and disabled
-		// otherwise."
-		return ["copy", "cut", "paste", "selectall", "stylewithcss", "usecss"].indexOf(command) != -1
-			|| getActiveRange() !== null;
+		// Miscellaneous commands are always enabled, except for the cut
+		// command and the paste command. The other commands defined here are
+		// enabled if the active range is not null, its start node is either
+		// editable or an editing host, its end node is either editable or an
+		// editing host, and there is some editing host that is an inclusive
+		// ancestor of both its start node and its end node."
+		return ["copy", "selectall", "stylewithcss", "usecss"].indexOf(command) != -1
+			|| (
+				getActiveRange() !== null
+				&& (isEditable(getActiveRange().startContainer) || isEditingHost(getActiveRange().startContainer))
+				&& (isEditable(getActiveRange().endContainer) || isEditingHost(getActiveRange().endContainer))
+				&& (getInclusiveAncestors(getActiveRange().commonAncestorContainer).some(isEditingHost))
+			);
 	}})(command));
 }
 
@@ -579,9 +587,8 @@ function myQueryCommandIndeterm(command, range) {
 
 	// "If command is not supported, raise a NOT_SUPPORTED_ERR exception."
 	return editCommandMethod(command, range, (function(command) { return function() {
-		// "If command has no indeterminacy or is not enabled, return false."
-		if (!("indeterm" in commands[command])
-		|| !myQueryCommandEnabled(command)) {
+		// "If command has no indeterminacy, return false."
+		if (!("indeterm" in commands[command])) {
 			return false;
 		}
 
@@ -597,9 +604,8 @@ function myQueryCommandState(command, range) {
 
 	// "If command is not supported, raise a NOT_SUPPORTED_ERR exception."
 	return editCommandMethod(command, range, (function(command) { return function() {
-		// "If command has no state or is not enabled, return false."
-		if (!("state" in commands[command])
-		|| !myQueryCommandEnabled(command)) {
+		// "If command has no state, return false."
+		if (!("state" in commands[command])) {
 			return false;
 		}
 
@@ -631,10 +637,8 @@ function myQueryCommandValue(command, range) {
 
 	// "If command is not supported, raise a NOT_SUPPORTED_ERR exception."
 	return editCommandMethod(command, range, function() {
-		// "If command has no value or is not enabled, return the empty
-		// string."
-		if (!("value" in commands[command])
-		|| !myQueryCommandEnabled(command)) {
+		// "If command has no value, return the empty string."
+		if (!("value" in commands[command])) {
 			return "";
 		}
 
@@ -3257,6 +3261,11 @@ commands.fontsize = {
 			return arr.slice(0, i).indexOf(value) == -1;
 		}).length >= 2;
 	}, value: function() {
+		// "If the active range is null, return the empty string."
+		if (!getActiveRange()) {
+			return "";
+		}
+
 		// "Let pixel size be the effective command value of the first
 		// formattable node that is effectively contained in the active range,
 		// or if there is no such node, the effective command value of the
@@ -3884,6 +3893,11 @@ function normalizeSublists(item) {
 }
 
 function getSelectionListState() {
+	// "If the active range is null, return "none"."
+	if (!getActiveRange()) {
+		return "none";
+	}
+
 	// "Block-extend the active range, and let new range be the result."
 	var newRange = blockExtend(getActiveRange());
 
@@ -6643,6 +6657,11 @@ commands.formatblock = {
 		// "Restore states and values from overrides."
 		restoreStatesAndValues(overrides);
 	}, indeterm: function() {
+		// "If the active range is null, return false."
+		if (!getActiveRange()) {
+			return false;
+		}
+
 		// "Block-extend the active range, and let new range be the result."
 		var newRange = blockExtend(getActiveRange());
 
@@ -6701,6 +6720,11 @@ commands.formatblock = {
 		// "Return false."
 		return false;
 	}, value: function() {
+		// "If the active range is null, return the empty string."
+		if (!getActiveRange()) {
+			return "";
+		}
+
 		// "Block-extend the active range, and let new range be the result."
 		var newRange = blockExtend(getActiveRange());
 
@@ -7901,29 +7925,41 @@ commands.justifycenter = {
 	// "Justify the selection with alignment "center"."
 	action: function() { justifySelection("center") },
 	indeterm: function() {
-		// "Block-extend the active range. Return true if among visible
-		// editable nodes that are contained in the result and have no
-		// children, at least one has alignment value "center" and at least one
-		// does not. Otherwise return false."
+		// "Return false if the active range is null.  Otherwise, block-extend
+		// the active range. Return true if among visible editable nodes that
+		// are contained in the result and have no children, at least one has
+		// alignment value "center" and at least one does not. Otherwise return
+		// false."
+		if (!getActiveRange()) {
+			return false;
+		}
 		var nodes = getAllContainedNodes(blockExtend(getActiveRange()), function(node) {
 			return isEditable(node) && isVisible(node) && !node.hasChildNodes();
 		});
 		return nodes.some(function(node) { return getAlignmentValue(node) == "center" })
 			&& nodes.some(function(node) { return getAlignmentValue(node) != "center" });
 	}, state: function() {
-		// "Block-extend the active range. Return true if there is at least one
-		// visible editable node that is contained in the result and has no
-		// children, and all such nodes have alignment value "center".
-		// Otherwise return false."
+		// "Return false if the active range is null.  Otherwise, block-extend
+		// the active range. Return true if there is at least one visible
+		// editable node that is contained in the result and has no children,
+		// and all such nodes have alignment value "center".  Otherwise return
+		// false."
+		if (!getActiveRange()) {
+			return false;
+		}
 		var nodes = getAllContainedNodes(blockExtend(getActiveRange()), function(node) {
 			return isEditable(node) && isVisible(node) && !node.hasChildNodes();
 		});
 		return nodes.length
 			&& nodes.every(function(node) { return getAlignmentValue(node) == "center" });
 	}, value: function() {
-		// "Block-extend the active range, and return the alignment value of
-		// the first visible editable node that is contained in the result and
-		// has no children. If there is no such node, return "left"."
+		// "Return the empty string if the active range is null.  Otherwise,
+		// block-extend the active range, and return the alignment value of the
+		// first visible editable node that is contained in the result and has
+		// no children. If there is no such node, return "left"."
+		if (!getActiveRange()) {
+			return "";
+		}
 		var nodes = getAllContainedNodes(blockExtend(getActiveRange()), function(node) {
 			return isEditable(node) && isVisible(node) && !node.hasChildNodes();
 		});
@@ -7942,29 +7978,41 @@ commands.justifyfull = {
 	// "Justify the selection with alignment "justify"."
 	action: function() { justifySelection("justify") },
 	indeterm: function() {
-		// "Block-extend the active range. Return true if among visible
-		// editable nodes that are contained in the result and have no
-		// children, at least one has alignment value "justify" and at least
-		// one does not. Otherwise return false."
+		// "Return false if the active range is null.  Otherwise, block-extend
+		// the active range. Return true if among visible editable nodes that
+		// are contained in the result and have no children, at least one has
+		// alignment value "justify" and at least one does not. Otherwise
+		// return false."
+		if (!getActiveRange()) {
+			return false;
+		}
 		var nodes = getAllContainedNodes(blockExtend(getActiveRange()), function(node) {
 			return isEditable(node) && isVisible(node) && !node.hasChildNodes();
 		});
 		return nodes.some(function(node) { return getAlignmentValue(node) == "justify" })
 			&& nodes.some(function(node) { return getAlignmentValue(node) != "justify" });
 	}, state: function() {
-		// "Block-extend the active range. Return true if there is at least one
-		// visible editable node that is contained in the result and has no
-		// children, and all such nodes have alignment value "justify".
-		// Otherwise return false."
+		// "Return false if the active range is null.  Otherwise, block-extend
+		// the active range. Return true if there is at least one visible
+		// editable node that is contained in the result and has no children,
+		// and all such nodes have alignment value "justify".  Otherwise return
+		// false."
+		if (!getActiveRange()) {
+			return false;
+		}
 		var nodes = getAllContainedNodes(blockExtend(getActiveRange()), function(node) {
 			return isEditable(node) && isVisible(node) && !node.hasChildNodes();
 		});
 		return nodes.length
 			&& nodes.every(function(node) { return getAlignmentValue(node) == "justify" });
 	}, value: function() {
-		// "Block-extend the active range, and return the alignment value of
-		// the first visible editable node that is contained in the result and
-		// has no children. If there is no such node, return "left"."
+		// "Return the empty string if the active range is null.  Otherwise,
+		// block-extend the active range, and return the alignment value of the
+		// first visible editable node that is contained in the result and has
+		// no children. If there is no such node, return "left"."
+		if (!getActiveRange()) {
+			return "";
+		}
 		var nodes = getAllContainedNodes(blockExtend(getActiveRange()), function(node) {
 			return isEditable(node) && isVisible(node) && !node.hasChildNodes();
 		});
@@ -7983,29 +8031,41 @@ commands.justifyleft = {
 	// "Justify the selection with alignment "left"."
 	action: function() { justifySelection("left") },
 	indeterm: function() {
-		// "Block-extend the active range. Return true if among visible
-		// editable nodes that are contained in the result and have no
-		// children, at least one has alignment value "left" and at least one
-		// does not. Otherwise return false."
+		// "Return false if the active range is null.  Otherwise, block-extend
+		// the active range. Return true if among visible editable nodes that
+		// are contained in the result and have no children, at least one has
+		// alignment value "left" and at least one does not. Otherwise return
+		// false."
+		if (!getActiveRange()) {
+			return false;
+		}
 		var nodes = getAllContainedNodes(blockExtend(getActiveRange()), function(node) {
 			return isEditable(node) && isVisible(node) && !node.hasChildNodes();
 		});
 		return nodes.some(function(node) { return getAlignmentValue(node) == "left" })
 			&& nodes.some(function(node) { return getAlignmentValue(node) != "left" });
 	}, state: function() {
-		// "Block-extend the active range. Return true if there is at least one
-		// visible editable node that is contained in the result and has no
-		// children, and all such nodes have alignment value "left".  Otherwise
-		// return false."
+		// "Return false if the active range is null.  Otherwise, block-extend
+		// the active range. Return true if there is at least one visible
+		// editable node that is contained in the result and has no children,
+		// and all such nodes have alignment value "left".  Otherwise return
+		// false."
+		if (!getActiveRange()) {
+			return false;
+		}
 		var nodes = getAllContainedNodes(blockExtend(getActiveRange()), function(node) {
 			return isEditable(node) && isVisible(node) && !node.hasChildNodes();
 		});
 		return nodes.length
 			&& nodes.every(function(node) { return getAlignmentValue(node) == "left" });
 	}, value: function() {
-		// "Block-extend the active range, and return the alignment value of
-		// the first visible editable node that is contained in the result and
-		// has no children. If there is no such node, return "left"."
+		// "Return the empty string if the active range is null.  Otherwise,
+		// block-extend the active range, and return the alignment value of the
+		// first visible editable node that is contained in the result and has
+		// no children. If there is no such node, return "left"."
+		if (!getActiveRange()) {
+			return "";
+		}
 		var nodes = getAllContainedNodes(blockExtend(getActiveRange()), function(node) {
 			return isEditable(node) && isVisible(node) && !node.hasChildNodes();
 		});
@@ -8024,29 +8084,41 @@ commands.justifyright = {
 	// "Justify the selection with alignment "right"."
 	action: function() { justifySelection("right") },
 	indeterm: function() {
-		// "Block-extend the active range. Return true if among visible
-		// editable nodes that are contained in the result and have no
-		// children, at least one has alignment value "right" and at least one
-		// does not. Otherwise return false."
+		// "Return false if the active range is null.  Otherwise, block-extend
+		// the active range. Return true if among visible editable nodes that
+		// are contained in the result and have no children, at least one has
+		// alignment value "right" and at least one does not. Otherwise return
+		// false."
+		if (!getActiveRange()) {
+			return false;
+		}
 		var nodes = getAllContainedNodes(blockExtend(getActiveRange()), function(node) {
 			return isEditable(node) && isVisible(node) && !node.hasChildNodes();
 		});
 		return nodes.some(function(node) { return getAlignmentValue(node) == "right" })
 			&& nodes.some(function(node) { return getAlignmentValue(node) != "right" });
 	}, state: function() {
-		// "Block-extend the active range. Return true if there is at least one
-		// visible editable node that is contained in the result and has no
-		// children, and all such nodes have alignment value "right".
-		// Otherwise return false."
+		// "Return false if the active range is null.  Otherwise, block-extend
+		// the active range. Return true if there is at least one visible
+		// editable node that is contained in the result and has no children,
+		// and all such nodes have alignment value "right".  Otherwise return
+		// false."
+		if (!getActiveRange()) {
+			return false;
+		}
 		var nodes = getAllContainedNodes(blockExtend(getActiveRange()), function(node) {
 			return isEditable(node) && isVisible(node) && !node.hasChildNodes();
 		});
 		return nodes.length
 			&& nodes.every(function(node) { return getAlignmentValue(node) == "right" });
 	}, value: function() {
-		// "Block-extend the active range, and return the alignment value of
-		// the first visible editable node that is contained in the result and
-		// has no children. If there is no such node, return "left"."
+		// "Return the empty string if the active range is null.  Otherwise,
+		// block-extend the active range, and return the alignment value of the
+		// first visible editable node that is contained in the result and has
+		// no children. If there is no such node, return "left"."
+		if (!getActiveRange()) {
+			return "";
+		}
 		var nodes = getAllContainedNodes(blockExtend(getActiveRange()), function(node) {
 			return isEditable(node) && isVisible(node) && !node.hasChildNodes();
 		});
@@ -8248,6 +8320,10 @@ commandNames.forEach(function(command) {
 	if ("inlineCommandActivatedValues" in commands[command]
 	&& !("indeterm" in commands[command])) {
 		commands[command].indeterm = function() {
+			if (!getActiveRange()) {
+				return false;
+			}
+
 			var values = getAllEffectivelyContainedNodes(getActiveRange(), isFormattableNode)
 				.map(function(node) { return getEffectiveCommandValue(node, command) });
 
@@ -8268,6 +8344,10 @@ commandNames.forEach(function(command) {
 	// them have an effective command value equal to one of the given values."
 	if ("inlineCommandActivatedValues" in commands[command]) {
 		commands[command].state = function() {
+			if (!getActiveRange()) {
+				return false;
+			}
+
 			var nodes = getAllEffectivelyContainedNodes(getActiveRange(), isFormattableNode);
 
 			if (nodes.length == 0) {
@@ -8291,6 +8371,10 @@ commandNames.forEach(function(command) {
 	// if that is null, the empty string."
 	if ("standardInlineValueCommand" in commands[command]) {
 		commands[command].indeterm = function() {
+			if (!getActiveRange()) {
+				return false;
+			}
+
 			var values = getAllEffectivelyContainedNodes(getActiveRange())
 				.filter(isFormattableNode)
 				.map(function(node) { return getEffectiveCommandValue(node, command) });
@@ -8303,6 +8387,10 @@ commandNames.forEach(function(command) {
 		};
 
 		commands[command].value = function() {
+			if (!getActiveRange()) {
+				return "";
+			}
+
 			var refNode = getAllEffectivelyContainedNodes(getActiveRange(), isFormattableNode)[0];
 
 			if (typeof refNode == "undefined") {

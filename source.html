@@ -1338,18 +1338,28 @@ sense to only have the command run if the start is editable.
 
 <p>It's not clear to me what the point of this method is.  There's no way we're
 going to always return true if the command will do something and false if it
-won't.  I just stuck with a really conservative definition that happens to be
+won't.  I originally just stuck with a really conservative definition that happens to be
 convenient: if there's nothing selected, obviously nothing will work, and we
 want to bail out early in that case anyway because all the algorithms will talk
 about the active range.  If there are use-cases for it to be more precise, I
 could make it so.
+
+<p><a href=https://www.w3.org/Bugs/Public/show_bug.cgi?id=16094>Bug 16094</a>
+illustrated that we don't really want to be able to modify multiple editing
+hosts at once, nor do we want to do anything if the start and end aren't both
+editable, so I co-opted this definition to fit my ends.
 </div>
 
 <p>Among <span title=command>commands</span> defined in this specification,
 those listed in <a href=#miscellaneous-commands>Miscellaneous commands</a> are
-always <span>enabled</span>.  The other <span title=command>commands</span>
-defined here are <span>enabled</span> if the <span>active range</span> is not
-null, and disabled otherwise.
+always <span>enabled</span>, except for <span>the <code title>cut</code>
+command</span> and <span>the <code title>paste</code> command</span>.  The
+other <span title=command>commands</span> defined here are <span>enabled</span>
+if the <span>active range</span> is not null, its [[startnode]] is either
+<span>editable</span> or an <span>editing host</span>, its [[endnode]] is
+either <span>editable</span> or an <span>editing host</span>, and there is some
+<span>editing host</span> that is an [[inclusiveancestor]] of both its
+[[startnode]] and its [[endnode]].
 
 <!-- @} -->
 
@@ -1453,8 +1463,7 @@ invoked, the user agent must run the following steps:
   </div>
 
   <p>If <var>command</var> has no <span
-  title=indeterminate>indeterminacy</span> or is not <span>enabled</span>,
-  return false.
+  title=indeterminate>indeterminacy</span>, return false.
 
   <li>Return true if <var>command</var> is <span>indeterminate</span>,
   otherwise false.
@@ -1477,8 +1486,7 @@ invoked, the user agent must run the following steps:
   <p class=comments>See comment on the comparable line for
   <span>queryCommandIndeterm()</span>.
 
-  <p>If <var>command</var> has no <span>state</span> or is not
-  <span>enabled</span>, return false.
+  <p>If <var>command</var> has no <span>state</span>, return false.
 
   <li>If the <span>state override</span> for <var>command</var> is set, return
   it.
@@ -1522,8 +1530,7 @@ invoked, the user agent must run the following steps:
   see the comment on the comparable line for
   <span>queryCommandIndeterm()</span>.
 
-  <p>If <var>command</var> has no <span>value</span> or is not
-  <span>enabled</span>, return the empty string.
+  <p>If <var>command</var> has no <span>value</span>, return the empty string.
 
   <li>
   <p class=comments>Yuck.  This is incredibly messy, as are lots of other
@@ -4016,6 +4023,8 @@ other browsers behave differently.  I see no reason to behave differently.
 <p><span>Value</span>:
 
 <ol>
+  <li>If the <span>active range</span> is null, return the empty string.
+
   <li>
   <p class=comments>See comment for standard inline value commands on how I
   decided on this choice of node.
@@ -4772,6 +4781,8 @@ algorithm:
 </div>
 
 <ol>
+  <li>If the <span>active range</span> is null, return "none".
+
   <li><span>Block-extend</span> the <span>active range</span>, and let <var>new
   range</var> be the result.
 
@@ -8358,6 +8369,8 @@ sense.
 <p><span>Indeterminate</span>:
 
 <ol>
+  <li>If the <span>active range</span> is null, return the empty string.
+
   <li><span>Block-extend</span> the <span>active range</span>, and let <var>new
   range</var> be the result.
 
@@ -8413,6 +8426,8 @@ writing means what Firefox supports plus div.
 
 <p><span>Value</span>:
 <ol>
+  <li>If the <span>active range</span> is null, return the empty string.
+
   <li><span>Block-extend</span> the <span>active range</span>, and let <var>new
   range</var> be the result.
 
@@ -9816,11 +9831,12 @@ instead, or something like that.  At any rate, it fails on images.  Firefox
 attention even to some nodes that do have children.
 </div>
 
-<p><span>Indeterminate</span>: <span>Block-extend</span> the <span>active
-range</span>.  Return true if among <span>visible</span> <span>editable</span>
-[[nodes]] that are [[contained]] in the result and have no [[children]], at
-least one has <span>alignment value</span> "center" and at least one does not.
-Otherwise return false.
+<p><span>Indeterminate</span>: Return false if the <span>active range</span> is
+null.  Otherwise, <span>block-extend</span> the <span>active range</span>.
+Return true if among <span>visible</span> <span>editable</span> [[nodes]] that
+are [[contained]] in the result and have no [[children]], at least one has
+<span>alignment value</span> "center" and at least one does not.  Otherwise
+return false.
 
 <div class=comments>
 <p>IE9 throws exceptions in almost every case when querying the state of
@@ -9844,8 +9860,9 @@ indeterminate is false and the value is equal to the desired value.  However,
 I'll support it anyway, since Gecko/WebKit do.
 </div>
 
-<p><span>State</span>: <span>Block-extend</span> the <span>active range</span>.
-Return true if there is at least one <span>visible</span> <span>editable</span>
+<p><span>State</span>: Return false if the <span>active range</span> is null.
+Otherwise, <span>block-extend</span> the <span>active range</span>.  Return
+true if there is at least one <span>visible</span> <span>editable</span>
 [[node]] that is [[contained]] in the result and has no [[children]], and all
 such [[nodes]] have <span>alignment value</span> "center".  Otherwise return
 false.
@@ -9858,7 +9875,8 @@ would suggest that the whole selection is aligned left, but that's not the
 case.  Chrome 14 dev returns the state cast to a string, as usual.  Opera 11.11
 always returns the empty string.
 
-<p><span>Value</span>: <span>Block-extend</span> the <span>active range</span>,
+<p><span>Value</span>: Return the empty string if the <span>active range</span>
+is null.  Otherwise, <span>block-extend</span> the <span>active range</span>,
 and return the <span>alignment value</span> of the first <span>visible</span>
 <span>editable</span> [[node]] that is [[contained]] in the result and has no
 [[children]].  If there is no such [[node]], return "left".
@@ -9869,19 +9887,22 @@ and return the <span>alignment value</span> of the first <span>visible</span>
 <p><span>Action</span>: <span>Justify the selection</span> with
 <var>alignment</var> "justify".
 
-<p><span>Indeterminate</span>: <span>Block-extend</span> the <span>active
-range</span>.  Return true if among <span>visible</span> <span>editable</span>
-[[nodes]] that are [[contained]] in the result and have no [[children]], at
-least one has <span>alignment value</span> "justify" and at least one does not.
-Otherwise return false.
+<p><span>Indeterminate</span>: Return false if the <span>active range</span> is
+null.  Otherwise, <span>block-extend</span> the <span>active range</span>.
+Return true if among <span>visible</span> <span>editable</span> [[nodes]] that
+are [[contained]] in the result and have no [[children]], at least one has
+<span>alignment value</span> "justify" and at least one does not.  Otherwise
+return false.
 
-<p><span>State</span>: <span>Block-extend</span> the <span>active range</span>.
-Return true if there is at least one <span>visible</span> <span>editable</span>
+<p><span>State</span>: Return false if the <span>active range</span> is null.
+Otherwise, <span>block-extend</span> the <span>active range</span>.  Return
+true if there is at least one <span>visible</span> <span>editable</span>
 [[node]] that is [[contained]] in the result and has no [[children]], and all
 such [[nodes]] have <span>alignment value</span> "justify".  Otherwise return
 false.
 
-<p><span>Value</span>: <span>Block-extend</span> the <span>active range</span>,
+<p><span>Value</span>: Return the empty string if the <span>active range</span>
+is null.  Otherwise, <span>block-extend</span> the <span>active range</span>,
 and return the <span>alignment value</span> of the first <span>visible</span>
 <span>editable</span> [[node]] that is [[contained]] in the result and has no
 [[children]].  If there is no such [[node]], return "left".
@@ -9892,19 +9913,22 @@ and return the <span>alignment value</span> of the first <span>visible</span>
 <p><span>Action</span>: <span>Justify the selection</span> with
 <var>alignment</var> "left".
 
-<p><span>Indeterminate</span>: <span>Block-extend</span> the <span>active
-range</span>.  Return true if among <span>visible</span> <span>editable</span>
-[[nodes]] that are [[contained]] in the result and have no [[children]], at
-least one has <span>alignment value</span> "left" and at least one does not.
-Otherwise return false.
+<p><span>Indeterminate</span>: Return false if the <span>active range</span> is
+null.  Otherwise, <span>block-extend</span> the <span>active range</span>.
+Return true if among <span>visible</span> <span>editable</span> [[nodes]] that
+are [[contained]] in the result and have no [[children]], at least one has
+<span>alignment value</span> "left" and at least one does not.  Otherwise
+return false.
 
-<p><span>State</span>: <span>Block-extend</span> the <span>active range</span>.
-Return true if there is at least one <span>visible</span> <span>editable</span>
+<p><span>State</span>: Return false if the <span>active range</span> is null.
+Otherwise, <span>block-extend</span> the <span>active range</span>.  Return
+true if there is at least one <span>visible</span> <span>editable</span>
 [[node]] that is [[contained]] in the result and has no [[children]], and all
 such [[nodes]] have <span>alignment value</span> "left".  Otherwise return
 false.
 
-<p><span>Value</span>: <span>Block-extend</span> the <span>active range</span>,
+<p><span>Value</span>: Return the empty string if the <span>active range</span>
+is null.  Otherwise, <span>block-extend</span> the <span>active range</span>,
 and return the <span>alignment value</span> of the first <span>visible</span>
 <span>editable</span> [[node]] that is [[contained]] in the result and has no
 [[children]].  If there is no such [[node]], return "left".
@@ -9915,19 +9939,22 @@ and return the <span>alignment value</span> of the first <span>visible</span>
 <p><span>Action</span>: <span>Justify the selection</span> with
 <var>alignment</var> "right".
 
-<p><span>Indeterminate</span>: <span>Block-extend</span> the <span>active
-range</span>.  Return true if among <span>visible</span> <span>editable</span>
-[[nodes]] that are [[contained]] in the result and have no [[children]], at
-least one has <span>alignment value</span> "right" and at least one does not.
-Otherwise return false.
+<p><span>Indeterminate</span>: Return false if the <span>active range</span> is
+null.  Otherwise, <span>block-extend</span> the <span>active range</span>.
+Return true if among <span>visible</span> <span>editable</span> [[nodes]] that
+are [[contained]] in the result and have no [[children]], at least one has
+<span>alignment value</span> "right" and at least one does not.  Otherwise
+return false.
 
-<p><span>State</span>: <span>Block-extend</span> the <span>active range</span>.
-Return true if there is at least one <span>visible</span> <span>editable</span>
+<p><span>State</span>: Return false if the <span>active range</span> is null.
+Otherwise, <span>block-extend</span> the <span>active range</span>.  Return
+true if there is at least one <span>visible</span> <span>editable</span>
 [[node]] that is [[contained]] in the result and has no [[children]], and all
 such [[nodes]] have <span>alignment value</span> "right".  Otherwise return
 false.
 
-<p><span>Value</span>: <span>Block-extend</span> the <span>active range</span>,
+<p><span>Value</span>: Return the empty string if the <span>active range</span>
+is null.  Otherwise, <span>block-extend</span> the <span>active range</span>,
 and return the <span>alignment value</span> of the first <span>visible</span>
 <span>editable</span> [[node]] that is [[contained]] in the result and has no
 [[children]].  If there is no such [[node]], return "left".

@@ -67,7 +67,7 @@ a code { text-decoration: underline }
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing APIs</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-19-january-2012>Work in Progress &mdash; Last Update 19 January 2012</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-24-february-2012>Work in Progress &mdash; Last Update 24 February 2012</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;<a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a>&gt;
@@ -1372,18 +1372,28 @@ sense to only have the command run if the start is editable.
 
 <p>It's not clear to me what the point of this method is.  There's no way we're
 going to always return true if the command will do something and false if it
-won't.  I just stuck with a really conservative definition that happens to be
+won't.  I originally just stuck with a really conservative definition that happens to be
 convenient: if there's nothing selected, obviously nothing will work, and we
 want to bail out early in that case anyway because all the algorithms will talk
 about the active range.  If there are use-cases for it to be more precise, I
 could make it so.
+
+<p><a href="https://www.w3.org/Bugs/Public/show_bug.cgi?id=16094">Bug 16094</a>
+illustrated that we don't really want to be able to modify multiple editing
+hosts at once, nor do we want to do anything if the start and end aren't both
+editable, so I co-opted this definition to fit my ends.
 </div>
 
 <p>Among <a href=#command title=command>commands</a> defined in this specification,
 those listed in <a href=#miscellaneous-commands>Miscellaneous commands</a> are
-always <a href=#enabled>enabled</a>.  The other <a href=#command title=command>commands</a>
-defined here are <a href=#enabled>enabled</a> if the <a href=#active-range>active range</a> is not
-null, and disabled otherwise.
+always <a href=#enabled>enabled</a>, except for <a href=#the-cut-command>the <code title="">cut</code>
+command</a> and <a href=#the-paste-command>the <code title="">paste</code> command</a>.  The
+other <a href=#command title=command>commands</a> defined here are <a href=#enabled>enabled</a>
+if the <a href=#active-range>active range</a> is not null, its <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-node title=concept-range-start-node>start node</a> is either
+<a href=#editable>editable</a> or an <a href=#editing-host>editing host</a>, its <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end-node title=concept-range-end-node>end node</a> is
+either <a href=#editable>editable</a> or an <a href=#editing-host>editing host</a>, and there is some
+<a href=#editing-host>editing host</a> that is an <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-inclusive-ancestor title=concept-tree-inclusive-ancestor>inclusive ancestor</a> of both its
+<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-node title=concept-range-start-node>start node</a> and its <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end-node title=concept-range-end-node>end node</a>.
 
 
 
@@ -1482,8 +1492,7 @@ invoked, the user agent must run the following steps:
   behavior but made slightly more sane.
   </div>
 
-  <p>If <var title="">command</var> has no <a href=#indeterminate title=indeterminate>indeterminacy</a> or is not <a href=#enabled>enabled</a>,
-  return false.
+  <p>If <var title="">command</var> has no <a href=#indeterminate title=indeterminate>indeterminacy</a>, return false.
 
   <li>Return true if <var title="">command</var> is <a href=#indeterminate>indeterminate</a>,
   otherwise false.
@@ -1505,8 +1514,7 @@ invoked, the user agent must run the following steps:
   <p class=comments>See comment on the comparable line for
   <a href=#querycommandindeterm()>queryCommandIndeterm()</a>.
 
-  <p>If <var title="">command</var> has no <a href=#state>state</a> or is not
-  <a href=#enabled>enabled</a>, return false.
+  <p>If <var title="">command</var> has no <a href=#state>state</a>, return false.
 
   <li>If the <a href=#state-override>state override</a> for <var title="">command</var> is set, return
   it.
@@ -1548,8 +1556,7 @@ invoked, the user agent must run the following steps:
   see the comment on the comparable line for
   <a href=#querycommandindeterm()>queryCommandIndeterm()</a>.
 
-  <p>If <var title="">command</var> has no <a href=#value>value</a> or is not
-  <a href=#enabled>enabled</a>, return the empty string.
+  <p>If <var title="">command</var> has no <a href=#value>value</a>, return the empty string.
 
   <li>
   <p class=comments>Yuck.  This is incredibly messy, as are lots of other
@@ -3982,6 +3989,8 @@ other browsers behave differently.  I see no reason to behave differently.
 <p><a href=#value>Value</a>:
 
 <ol>
+  <li>If the <a href=#active-range>active range</a> is null, return the empty string.
+
   <li>
   <p class=comments>See comment for standard inline value commands on how I
   decided on this choice of node.
@@ -4728,6 +4737,8 @@ algorithm:
 </div>
 
 <ol>
+  <li>If the <a href=#active-range>active range</a> is null, return "none".
+
   <li><a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>, and let <var title="">new
   range</var> be the result.
 
@@ -8266,6 +8277,8 @@ sense.
 <p><a href=#indeterminate>Indeterminate</a>:
 
 <ol>
+  <li>If the <a href=#active-range>active range</a> is null, return the empty string.
+
   <li><a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>, and let <var title="">new
   range</var> be the result.
 
@@ -8321,6 +8334,8 @@ writing means what Firefox supports plus div.
 
 <p><a href=#value>Value</a>:
 <ol>
+  <li>If the <a href=#active-range>active range</a> is null, return the empty string.
+
   <li><a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>, and let <var title="">new
   range</var> be the result.
 
@@ -9712,11 +9727,12 @@ instead, or something like that.  At any rate, it fails on images.  Firefox
 attention even to some nodes that do have children.
 </div>
 
-<p><a href=#indeterminate>Indeterminate</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active
-range</a>.  Return true if among <a href=#visible>visible</a> <a href=#editable>editable</a>
-<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> that are <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#contained>contained</a> in the result and have no <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, at
-least one has <a href=#alignment-value>alignment value</a> "center" and at least one does not.
-Otherwise return false.
+<p><a href=#indeterminate>Indeterminate</a>: Return false if the <a href=#active-range>active range</a> is
+null.  Otherwise, <a href=#block-extend>block-extend</a> the <a href=#active-range>active range</a>.
+Return true if among <a href=#visible>visible</a> <a href=#editable>editable</a> <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> that
+are <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#contained>contained</a> in the result and have no <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, at least one has
+<a href=#alignment-value>alignment value</a> "center" and at least one does not.  Otherwise
+return false.
 
 <div class=comments>
 <p>IE9 throws exceptions in almost every case when querying the state of
@@ -9740,8 +9756,9 @@ indeterminate is false and the value is equal to the desired value.  However,
 I'll support it anyway, since Gecko/WebKit do.
 </div>
 
-<p><a href=#state>State</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>.
-Return true if there is at least one <a href=#visible>visible</a> <a href=#editable>editable</a>
+<p><a href=#state>State</a>: Return false if the <a href=#active-range>active range</a> is null.
+Otherwise, <a href=#block-extend>block-extend</a> the <a href=#active-range>active range</a>.  Return
+true if there is at least one <a href=#visible>visible</a> <a href=#editable>editable</a>
 <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#contained>contained</a> in the result and has no <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, and all
 such <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> have <a href=#alignment-value>alignment value</a> "center".  Otherwise return
 false.
@@ -9754,7 +9771,8 @@ would suggest that the whole selection is aligned left, but that's not the
 case.  Chrome 14 dev returns the state cast to a string, as usual.  Opera 11.11
 always returns the empty string.
 
-<p><a href=#value>Value</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>,
+<p><a href=#value>Value</a>: Return the empty string if the <a href=#active-range>active range</a>
+is null.  Otherwise, <a href=#block-extend>block-extend</a> the <a href=#active-range>active range</a>,
 and return the <a href=#alignment-value>alignment value</a> of the first <a href=#visible>visible</a>
 <a href=#editable>editable</a> <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#contained>contained</a> in the result and has no
 <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.  If there is no such <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, return "left".
@@ -9765,19 +9783,22 @@ and return the <a href=#alignment-value>alignment value</a> of the first <a href
 <p><a href=#action>Action</a>: <a href=#justify-the-selection>Justify the selection</a> with
 <var title="">alignment</var> "justify".
 
-<p><a href=#indeterminate>Indeterminate</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active
-range</a>.  Return true if among <a href=#visible>visible</a> <a href=#editable>editable</a>
-<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> that are <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#contained>contained</a> in the result and have no <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, at
-least one has <a href=#alignment-value>alignment value</a> "justify" and at least one does not.
-Otherwise return false.
+<p><a href=#indeterminate>Indeterminate</a>: Return false if the <a href=#active-range>active range</a> is
+null.  Otherwise, <a href=#block-extend>block-extend</a> the <a href=#active-range>active range</a>.
+Return true if among <a href=#visible>visible</a> <a href=#editable>editable</a> <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> that
+are <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#contained>contained</a> in the result and have no <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, at least one has
+<a href=#alignment-value>alignment value</a> "justify" and at least one does not.  Otherwise
+return false.
 
-<p><a href=#state>State</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>.
-Return true if there is at least one <a href=#visible>visible</a> <a href=#editable>editable</a>
+<p><a href=#state>State</a>: Return false if the <a href=#active-range>active range</a> is null.
+Otherwise, <a href=#block-extend>block-extend</a> the <a href=#active-range>active range</a>.  Return
+true if there is at least one <a href=#visible>visible</a> <a href=#editable>editable</a>
 <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#contained>contained</a> in the result and has no <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, and all
 such <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> have <a href=#alignment-value>alignment value</a> "justify".  Otherwise return
 false.
 
-<p><a href=#value>Value</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>,
+<p><a href=#value>Value</a>: Return the empty string if the <a href=#active-range>active range</a>
+is null.  Otherwise, <a href=#block-extend>block-extend</a> the <a href=#active-range>active range</a>,
 and return the <a href=#alignment-value>alignment value</a> of the first <a href=#visible>visible</a>
 <a href=#editable>editable</a> <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#contained>contained</a> in the result and has no
 <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.  If there is no such <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, return "left".
@@ -9788,19 +9809,22 @@ and return the <a href=#alignment-value>alignment value</a> of the first <a href
 <p><a href=#action>Action</a>: <a href=#justify-the-selection>Justify the selection</a> with
 <var title="">alignment</var> "left".
 
-<p><a href=#indeterminate>Indeterminate</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active
-range</a>.  Return true if among <a href=#visible>visible</a> <a href=#editable>editable</a>
-<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> that are <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#contained>contained</a> in the result and have no <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, at
-least one has <a href=#alignment-value>alignment value</a> "left" and at least one does not.
-Otherwise return false.
+<p><a href=#indeterminate>Indeterminate</a>: Return false if the <a href=#active-range>active range</a> is
+null.  Otherwise, <a href=#block-extend>block-extend</a> the <a href=#active-range>active range</a>.
+Return true if among <a href=#visible>visible</a> <a href=#editable>editable</a> <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> that
+are <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#contained>contained</a> in the result and have no <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, at least one has
+<a href=#alignment-value>alignment value</a> "left" and at least one does not.  Otherwise
+return false.
 
-<p><a href=#state>State</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>.
-Return true if there is at least one <a href=#visible>visible</a> <a href=#editable>editable</a>
+<p><a href=#state>State</a>: Return false if the <a href=#active-range>active range</a> is null.
+Otherwise, <a href=#block-extend>block-extend</a> the <a href=#active-range>active range</a>.  Return
+true if there is at least one <a href=#visible>visible</a> <a href=#editable>editable</a>
 <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#contained>contained</a> in the result and has no <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, and all
 such <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> have <a href=#alignment-value>alignment value</a> "left".  Otherwise return
 false.
 
-<p><a href=#value>Value</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>,
+<p><a href=#value>Value</a>: Return the empty string if the <a href=#active-range>active range</a>
+is null.  Otherwise, <a href=#block-extend>block-extend</a> the <a href=#active-range>active range</a>,
 and return the <a href=#alignment-value>alignment value</a> of the first <a href=#visible>visible</a>
 <a href=#editable>editable</a> <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#contained>contained</a> in the result and has no
 <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.  If there is no such <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, return "left".
@@ -9811,19 +9835,22 @@ and return the <a href=#alignment-value>alignment value</a> of the first <a href
 <p><a href=#action>Action</a>: <a href=#justify-the-selection>Justify the selection</a> with
 <var title="">alignment</var> "right".
 
-<p><a href=#indeterminate>Indeterminate</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active
-range</a>.  Return true if among <a href=#visible>visible</a> <a href=#editable>editable</a>
-<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> that are <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#contained>contained</a> in the result and have no <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, at
-least one has <a href=#alignment-value>alignment value</a> "right" and at least one does not.
-Otherwise return false.
+<p><a href=#indeterminate>Indeterminate</a>: Return false if the <a href=#active-range>active range</a> is
+null.  Otherwise, <a href=#block-extend>block-extend</a> the <a href=#active-range>active range</a>.
+Return true if among <a href=#visible>visible</a> <a href=#editable>editable</a> <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> that
+are <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#contained>contained</a> in the result and have no <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, at least one has
+<a href=#alignment-value>alignment value</a> "right" and at least one does not.  Otherwise
+return false.
 
-<p><a href=#state>State</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>.
-Return true if there is at least one <a href=#visible>visible</a> <a href=#editable>editable</a>
+<p><a href=#state>State</a>: Return false if the <a href=#active-range>active range</a> is null.
+Otherwise, <a href=#block-extend>block-extend</a> the <a href=#active-range>active range</a>.  Return
+true if there is at least one <a href=#visible>visible</a> <a href=#editable>editable</a>
 <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#contained>contained</a> in the result and has no <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, and all
 such <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> have <a href=#alignment-value>alignment value</a> "right".  Otherwise return
 false.
 
-<p><a href=#value>Value</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>,
+<p><a href=#value>Value</a>: Return the empty string if the <a href=#active-range>active range</a>
+is null.  Otherwise, <a href=#block-extend>block-extend</a> the <a href=#active-range>active range</a>,
 and return the <a href=#alignment-value>alignment value</a> of the first <a href=#visible>visible</a>
 <a href=#editable>editable</a> <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#contained>contained</a> in the result and has no
 <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.  If there is no such <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, return "left".

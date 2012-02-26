@@ -5,11 +5,11 @@
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/fonts/line-height/007.html" type="text/html"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#line-height" />
+  <link rel="match" href="line-height-127-ref.xht" />
 
   <meta content="ahem image" name="flags" />
 
   <style type="text/css">
-   .ahemreq { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
    table { font: 10em/1 Ahem; border-spacing: 0; }
    td { padding: 0; background: red; }
    img { width: 1em; height: 1px; }
@@ -18,7 +18,6 @@
   </style>
  </head>
  <body>
-  <p class="ahemreq">Ahem_font_required_for_this_test,_see_directory_listing.</p>
 
   <!--
    !   The 0.3em comes from the following:
@@ -34,7 +33,7 @@
    !
    !-->
 
-  <p>There should be no red below.</p>
+  <p>Test passes if there is <strong>no red</strong>.</p>
   <table>
    <tr>
     <td><div class="test"><img src="support/1x1-white.png" alt="FAIL (images required)"/></div></td>

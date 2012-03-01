@@ -17,8 +17,8 @@ Inside your contributors directory there are two subdirectories:
 
   submitted/ is for tests in the *correct format* only, put files
   here when they are ready to be submitted for review
-    http://wiki.csswg.org/test/css2.1/format
+    http://wiki.csswg.org/test/format
   If they're not in the right format, leave them in incoming/.
   Please avoid name conflicts when adding files to your submitted/
   directory. A list of all test file names in use can be found at
-    TBD
+    http://test.csswg.org/shepherd/

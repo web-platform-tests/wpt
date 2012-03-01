@@ -1281,10 +1281,11 @@ given user agent, and some will not.  All <span title=command>commands</span>
 defined in this specification must be <span>supported</span>, except optionally
 <span>the <code title>copy</code> command</span>, <span>the <code
 title>cut</code> command</span>, and/or <span>the <code title>paste</code>
-command</span>.  Additional <span title=command>commands</span> can also be
-<span>supported</span>, but implementers should prefix any nonstandard
-<span>command</span> names with a vendor-specific string (e.g., "ms", "moz",
-"webkit", "opera").
+command</span>.  Additional
+<dfn title="vendor-specific command">vendor-specific commands</dfn> can also be
+<span>supported</span>, but implementers must prefix any
+<span>vendor-specific command</span> names with a vendor-specific string (e.g.,
+"ms", "moz", "webkit", "opera").
 
 <p class=comments>I.e., no trying to look good on lazy conformance tests by
 just sticking in a stub implementation that does nothing.
@@ -10432,45 +10433,49 @@ that should be left up to platform behavior, please say so.
 
 <p>When the user instructs the user agent to insert a line break inside an
 <span>editing host</span>, such as by pressing the Enter key while the cursor
-is in an <span>editable</span> [[node]], the user agent must take the
-<span>action</span> for <span>the <code title>insertParagraph</code>
-command</span>.
+is in an <span>editable</span> [[node]], the user agent must call
+<code title=execCommand()>execCommand("insertparagraph")</code> on the relevant
+[[document]].
 
 <p>When the user instructs the user agent to insert a line break inside an
 <span>editing host</span> without breaking out of the current block, such as by
 pressing Shift-Enter or Option-Enter while the cursor is in an
-<span>editable</span> [[node]], the user agent must take the
-<span>action</span> for <span>the <code title>insertLineBreak</code>
-command</span>.
+<span>editable</span> [[node]], the user agent must call
+<code title=execCommand()>execCommand("insertlinebreak")</code> on the relevant
+[[document]].
 
 <p>When the user instructs the user agent to delete the previous character
 inside an <span>editing host</span>, such as by pressing the Backspace key
 while the cursor is in an <span>editable</span> [[node]], the user agent must
-take the <span>action</span> for <span>the <code title>delete</code>
-command</span>.
+call <code title=execCommand()>execCommand("delete")</code> on the relevant
+[[document]].
 
 <p>When the user instructs the user agent to delete the next character inside
 an <span>editing host</span>, such as by pressing the Delete key while the
-cursor is in an <span>editable</span> [[node]], the user agent must take the
-<span>action</span> for <span>the <code title>forwardDelete</code>
-command</span>.
+cursor is in an <span>editable</span> [[node]], the user agent must call
+<code title=execCommand()>execCommand("forwarddelete")</code> on the relevant
+[[document]].
 
 <p>When the user instructs the user agent to insert text inside an
 <span>editing host</span>, such as by typing on the keyboard while the cursor
-is in an <span>editable</span> [[node]], the user agent must take the
-<span>action</span> for <span>the <code title>insertText</code> command</span>,
-with <var>value</var> equal to the text the user provided.  If the user inserts
-multiple characters at once or in quick succession, this specification does not
-define whether it is treated as one insertion or several consecutive
-insertions.
+is in an <span>editable</span> [[node]], the user agent must call
+<code title=execCommand()>execCommand("inserttext", false, <var>value</var>)</code>
+on the relevant [[document]], with <var>value</var> equal to the text the user
+provided.  If the user inserts multiple characters at once or in quick
+succession, this specification does not define whether it is treated as one
+insertion or several consecutive insertions.
 
 <p class=comments><a
 href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=13938>Bug 13938</a>.
 
 <p>The user agent may allow the user to make other changes to editable content,
-such as causing Ctrl-B to execute <span>the <code title>bold</code>
-command</span>.  Any such change should take the <span>action</span> for some
-<span>command</span> defined by this specification, if possible.
+such as causing Ctrl-B to call
+<code title=execCommand()>execCommand("bold")</code>.  Any such change must
+be accomplished by calling <code>execCommand()</code>, so that in particular,
+"beforeinput" and "input" events fire as appropriate.  The <span>command</span>
+invoked should be one of the standard <span title=command>commands</span>
+defined in this specification if possible, and otherwise must be a
+<span>vendor-specific command</span>.
 <!-- @} -->
 
 <h2 class=no-num>Acknowledgements</h2>

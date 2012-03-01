@@ -67,7 +67,7 @@ a code { text-decoration: underline }
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing APIs</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-24-february-2012>Work in Progress &mdash; Last Update 24 February 2012</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-1-march-2012>Work in Progress &mdash; Last Update 1 March 2012</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;<a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a>&gt;
@@ -1319,10 +1319,11 @@ exception type.
 given user agent, and some will not.  All <a href=#command title=command>commands</a>
 defined in this specification must be <a href=#supported>supported</a>, except optionally
 <a href=#the-copy-command>the <code title="">copy</code> command</a>, <a href=#the-cut-command>the <code title="">cut</code> command</a>, and/or <a href=#the-paste-command>the <code title="">paste</code>
-command</a>.  Additional <a href=#command title=command>commands</a> can also be
-<a href=#supported>supported</a>, but implementers should prefix any nonstandard
-<a href=#command>command</a> names with a vendor-specific string (e.g., "ms", "moz",
-"webkit", "opera").
+command</a>.  Additional
+<dfn id=vendor-specific-command title="vendor-specific command">vendor-specific commands</dfn> can also be
+<a href=#supported>supported</a>, but implementers must prefix any
+<a href=#vendor-specific-command>vendor-specific command</a> names with a vendor-specific string (e.g.,
+"ms", "moz", "webkit", "opera").
 
 <p class=comments>I.e., no trying to look good on lazy conformance tests by
 just sticking in a stub implementation that does nothing.
@@ -10311,44 +10312,48 @@ that should be left up to platform behavior, please say so.
 
 <p>When the user instructs the user agent to insert a line break inside an
 <a href=#editing-host>editing host</a>, such as by pressing the Enter key while the cursor
-is in an <a href=#editable>editable</a> <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, the user agent must take the
-<a href=#action>action</a> for <a href=#the-insertparagraph-command>the <code title="">insertParagraph</code>
-command</a>.
+is in an <a href=#editable>editable</a> <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, the user agent must call
+<code title=execCommand()><a href=#execcommand()>execCommand("insertparagraph")</a></code> on the relevant
+<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document title=concept-document>document</a>.
 
 <p>When the user instructs the user agent to insert a line break inside an
 <a href=#editing-host>editing host</a> without breaking out of the current block, such as by
 pressing Shift-Enter or Option-Enter while the cursor is in an
-<a href=#editable>editable</a> <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, the user agent must take the
-<a href=#action>action</a> for <a href=#the-insertlinebreak-command>the <code title="">insertLineBreak</code>
-command</a>.
+<a href=#editable>editable</a> <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, the user agent must call
+<code title=execCommand()><a href=#execcommand()>execCommand("insertlinebreak")</a></code> on the relevant
+<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document title=concept-document>document</a>.
 
 <p>When the user instructs the user agent to delete the previous character
 inside an <a href=#editing-host>editing host</a>, such as by pressing the Backspace key
 while the cursor is in an <a href=#editable>editable</a> <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, the user agent must
-take the <a href=#action>action</a> for <a href=#the-delete-command>the <code title="">delete</code>
-command</a>.
+call <code title=execCommand()><a href=#execcommand()>execCommand("delete")</a></code> on the relevant
+<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document title=concept-document>document</a>.
 
 <p>When the user instructs the user agent to delete the next character inside
 an <a href=#editing-host>editing host</a>, such as by pressing the Delete key while the
-cursor is in an <a href=#editable>editable</a> <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, the user agent must take the
-<a href=#action>action</a> for <a href=#the-forwarddelete-command>the <code title="">forwardDelete</code>
-command</a>.
+cursor is in an <a href=#editable>editable</a> <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, the user agent must call
+<code title=execCommand()><a href=#execcommand()>execCommand("forwarddelete")</a></code> on the relevant
+<a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document title=concept-document>document</a>.
 
 <p>When the user instructs the user agent to insert text inside an
 <a href=#editing-host>editing host</a>, such as by typing on the keyboard while the cursor
-is in an <a href=#editable>editable</a> <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, the user agent must take the
-<a href=#action>action</a> for <a href=#the-inserttext-command>the <code title="">insertText</code> command</a>,
-with <var title="">value</var> equal to the text the user provided.  If the user inserts
-multiple characters at once or in quick succession, this specification does not
-define whether it is treated as one insertion or several consecutive
-insertions.
+is in an <a href=#editable>editable</a> <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, the user agent must call
+<code title=execCommand()><a href=#execcommand()>execCommand("inserttext", false, <var title="">value</var>)</a></code>
+on the relevant <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document title=concept-document>document</a>, with <var title="">value</var> equal to the text the user
+provided.  If the user inserts multiple characters at once or in quick
+succession, this specification does not define whether it is treated as one
+insertion or several consecutive insertions.
 
 <p class=comments><a href="http://www.w3.org/Bugs/Public/show_bug.cgi?id=13938">Bug 13938</a>.
 
 <p>The user agent may allow the user to make other changes to editable content,
-such as causing Ctrl-B to execute <a href=#the-bold-command>the <code title="">bold</code>
-command</a>.  Any such change should take the <a href=#action>action</a> for some
-<a href=#command>command</a> defined by this specification, if possible.
+such as causing Ctrl-B to call
+<code title=execCommand()><a href=#execcommand()>execCommand("bold")</a></code>.  Any such change must
+be accomplished by calling <code><a href=#execcommand()>execCommand()</a></code>, so that in particular,
+"beforeinput" and "input" events fire as appropriate.  The <a href=#command>command</a>
+invoked should be one of the standard <a href=#command title=command>commands</a>
+defined in this specification if possible, and otherwise must be a
+<a href=#vendor-specific-command>vendor-specific command</a>.
 
 
 <h2 class=no-num id=acknowledgements>Acknowledgements</h2>

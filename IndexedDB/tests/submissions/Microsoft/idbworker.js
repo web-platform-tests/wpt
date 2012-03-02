@@ -4,12 +4,10 @@ function MessageHandler(e)
 {
 	if( self.msIndexedDB ||
         self.webkitIndexedDB ||
-        self.mozIndexedDB)
+        self.mozIndexedDB) 
     {
         self.postMessage(true);
-    }
-    else
-    {
+    } else {
         self.postMessage(false);
     }
 }

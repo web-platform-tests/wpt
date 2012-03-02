@@ -1,113 +1,62 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <title id='desc'>IDBCursor.continue() - index - iterate to the next record</title>
+    <title>IDBCursor.continue() - index - iterate to the next record</title>
     <script type="text/javascript" src="support.js"></script>
-    <script src="http://w3c-test.org/resources/testharness.js"></script>
-    <script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+    <script src="resources/testharness.js"></script>
+    <script src="resources/testharnessreport.js"></script>
     <script type="text/javascript">
-            var objectStoreName = "objectstore";
-            var indexName = "index";
-            var records = [ { pKey: "primaryKey_0", iKey: "indexKey_0" },
-                            { pKey: "primaryKey_1", iKey: "indexKey_1" }];
-            var count = 0;
-            var db = null;
-            
-            var t = async_test(document.title); 
-            Initialize();
-            function RunTest()
-            {
-                try
-                {
-                    var rqOpen = window.indexedDB.open(databaseName);
-                    rqOpen.onsuccess = function(event)
-                    {
-                        try
-                        {
-                            db = event.target.result;
-                            db.onerror = FailTest;
-                            var rqVersionChange = db.setVersion("1");
-                            rqVersionChange.onsuccess = function(event)
-                            {
-                                try
-                                {
-                                    var objStore = db.createObjectStore(objectStoreName, {keyPath:"pKey"});
-                                    objStore.createIndex(indexName, "iKey");
-                                    for(var i = 0; i < records.length; i++)
-                                    {
-                                        objStore.add(records[i]);
-                                    }
-                                    event.target.transaction.oncomplete = VerifyCursorIterates;
-                                }
-                                catch (ex)
-                                {
-                                    FailTest();
-                                }
-                            };
-                        }
-                        catch (ex)
-                        {
-                            FailTest();
-                        }
-                    };
-                    rqOpen.onerror = FailTest;
+        var objectStoreName = "objectstore";
+        var indexName = "index";
+        var records = [ { pKey: "primaryKey_0", iKey: "indexKey_0" },
+                        { pKey: "primaryKey_1", iKey: "indexKey_1" }];
+        var count = 0;
+        var db = null;
+        var t = async_test();
+        
+        function RunTest() {
+            var rqOpen = window.indexedDB.open(databaseName, databaseVersion);
+            rqOpen.onupgradeneeded = t.step_func( function (event) {
+                db = event.target.result;
+                db.onerror = t.step_func( assert_database_error );
+                var objStore = db.createObjectStore(objectStoreName, {keyPath:"pKey"});
+                objStore.createIndex(indexName, "iKey");
+                for(var i = 0; i < records.length; i++) {
+                    objStore.add(records[i]);
                 }
-                catch (ex)
-                {
-                    FailTest();
+            });
+            rqOpen.onsuccess = t.step_func( VerifyCursorIterates );
+            rqOpen.onerror = t.step_func( assert_open_request_error );
+        }
+        
+        function VerifyCursorIterates(event) {
+            var txn = db.transaction(objectStoreName, IDBTransaction.READ_ONLY);
+            var objStore = txn.objectStore(objectStoreName);
+            var index = objStore.index(indexName);
+            var rqCursor = index.openCursor();
+            rqCursor.onsuccess = t.step_func( function(event) {
+                var cursor = event.target.result;
+                if(cursor) {
+                    var record = cursor.value;
+                    
+                    assert_equals(record.pKey, records[count].pKey, "record.pKey");
+                    assert_equals(record.iKey, records[count].iKey, "record.iKey");
+                    
+                    count++;
+                    cursor.continue();
+                } else {
+                    assert_equals(count, records.length, "count");
+                    t.done();
                 }
-            }
-            
-            function VerifyCursorIterates(event)
-            {
-                try
-                {
-                    var txn = db.transaction(objectStoreName, IDBTransaction.READ_ONLY);
-                    var objStore = txn.objectStore(objectStoreName);
-                    var index = objStore.index(indexName);
-                    var rqCursor = index.openCursor();
-                    rqCursor.onsuccess = function(event)
-                    {
-                        var cursor = event.target.result;
-                        if(cursor)
-                        {
-                            try
-                            {
-                                var record = cursor.value;
-                                if(record.pKey == records[count].pKey &&
-                                    record.iKey == records[count].iKey)
-                                {
-                                    count++;
-                                    cursor.continue();
-                                }
-                                else
-                                {
-                                    FailTest();
-                                }
-                            }
-                            catch(ex)
-                            {
-                                FailTest();
-                            }
-                        }
-                        else
-                        {
-                            if(count == records.length)
-                            {
-                                PassTest();
-                            }
-                            else
-                            {
-                                FailTest();
-                            }
-                        }
-                    };
-                }
-                catch (ex)
-                {
-                    FailTest();
-                }
-            }
+            });
+        }
+        
+        add_completion_callback(function() { if(db) db.close(); });
+        
+        setup(function() {
+            var rqDelete = window.indexedDB.deleteDatabase(databaseName);
+            rqDelete.onsuccess = t.step_func( RunTest );
+        });
     </script>
 </head>
 <body>

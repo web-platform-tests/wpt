@@ -1,73 +1,47 @@
 ﻿<!DOCTYPE html>
 <html>
-    <head>
-        <meta content="text/html; charset=utf-8" http-equiv="content-type" />
-        <title id='desc'> IDBObjectStore.put() - put where an index has unique:true specified </title>
-        <script type="text/javascript" src="support.js"></script>
-        <script src="http://w3c-test.org/resources/testharness.js"></script>
-        <script src="http://w3c-test.org/resources/testharnessreport.js"></script>
-        <script type="text/javascript">
-            var objectStoreName = "objectstore";
-            var record = {indexedProperty:"data"};
-            var db = null;
-            
-            var t = async_test(document.title);
-            Initialize();
-            function RunTest()
-            {
-                try
-                {
-                    var rqOpen = window.indexedDB.open(databaseName);
-                    rqOpen.onsuccess = function(event)
-                    {
-                        try
-                        {
-                            db = event.target.result;
-                            db.onerror = FailTest;
-                            var rqVersionChange = db.setVersion("1");
-                            rqVersionChange.onsuccess = function(event)
-                            {
-                                try
-                                {
-                                    var objStore = db.createObjectStore(objectStoreName, {autoIncrement:true});
-                                    objStore.createIndex("i1", "indexedProperty", {unique:true});
-                                    objStore.put(record);
-                                    var rqAdd = objStore.put(record);
-                                    rqAdd.onsuccess = FailTest;
-                                    rqAdd.onerror = function(event)
-                                    {
-                                        event.stopPropagation();
-                                        if (IDBDatabaseException.CONSTRAINT_ERR == event.target.errorCode)
-                                        {
-                                            PassTest();
-                                        }
-                                        else
-                                        {
-                                            FailTest();
-                                        }
-                                    }
-                                }
-                                catch (ex)
-                                {
-                                    FailTest();
-                                }
-                            };
-                        }
-                        catch (ex)
-                        {
-                            FailTest();
-                        }
-                    };
-                    rqOpen.onerror = FailTest;
-                }
-                catch (ex)
-                {
-                    FailTest();
-                }
-            }
-        </script>
-    </head>
-    <body>
-        <div id="log"></div>
-    </body>
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <title> IDBObjectStore.put() - put where an index has unique:true specified </title>
+    <script type="text/javascript" src="support.js"></script>
+    <script src="resources/testharness.js"></script>
+    <script src="resources/testharnessreport.js"></script>
+    <script type="text/javascript">
+        var objectStoreName = "objectstore";
+        var record = {indexedProperty:"data"};
+        var db = null;
+        
+        var t = async_test();
+        
+        function RunTest() {
+            var rqOpen = window.indexedDB.open(databaseName, databaseVersion);
+            rqOpen.onupgradeneeded = t.step_func(function(event) {
+                db = event.target.result;
+                db.onerror = t.step_func(assert_database_error);
+                var objStore = db.createObjectStore(objectStoreName, {autoIncrement:true});
+                objStore.createIndex("i1", "indexedProperty", {unique:true});
+                objStore.put(record);
+                var rqPut = objStore.put(record);
+                rqPut.onsuccess = t.step_func( function(event) { assert_unexpected_success(event); });
+                rqPut.onerror = t.step_func(function(event) {
+                    event.stopPropagation();
+                    event.preventDefault();
+                    assert_equals(event.target.errorCode, IDBDatabaseException.CONSTRAINT_ERR, 'event.target.errorCode');
+                    t.done();
+                });
+            });
+            rqOpen.onerror = t.step_func(assert_open_request_error);
+        }
+        
+        add_completion_callback(function() { if(db) db.close(); });
+        
+        setup(function() {
+            var rqDelete = window.indexedDB.deleteDatabase(databaseName);
+            rqDelete.onsuccess = t.step_func( RunTest );
+        });
+    </script>
+</head>
+<body>
+    <div id="log"></div>
+</body>
 </html>

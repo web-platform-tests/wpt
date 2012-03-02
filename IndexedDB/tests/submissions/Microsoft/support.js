@@ -1,4 +1,5 @@
 ﻿var databaseName = "database";
+var databaseVersion = 1;
 
 if (!window.indexedDB)
 {
@@ -23,62 +24,34 @@ if (!window.indexedDB)
     }
 }
 
-function PassTest()
-{
-    if (db)
-    {
-        db.close();
-        db = null;
-    }
-    t.step(function() { assert_true(true); } );
-    t.done();
+function assert_open_request_error(event) {
+    assert_unreached("Open request error: " + event.target.errorCode); 
 }
 
-function FailTest()
-{
-    if (db)
-    {
-        db.close();
-        db = null;
-    }
-    t.step(function() { assert_true(false); } );
-    t.done();
+function assert_deleteDatabase_request_error(event) {
+    assert_unreached("Delete database request error: " + event.target.errorCode); 
 }
 
-function Initialize()
-{
-    try
-    {
-        if (window.indexedDB.deleteDatabase)
-        {
-            var rqDelete = window.indexedDB.deleteDatabase(databaseName);
-            rqDelete.onsuccess = RunTest;
-        }
-        else
-        {
-            var rqOpen = window.indexedDB.open(databaseName);
-            rqOpen.onsuccess = function(event)
-            {
-                var database = event.target.result;
-                var rqVersionChange = database.setVersion("1")
-                rqVersionChange.onsuccess = function(event)
-                {
-                    while (0 < database.objectStoreNames.length)
-                    {
-                        database.deleteObjectStore(database.objectStoreNames[0]);
-                    }
-                    this.transaction.oncomplete = RunTest;
-                };
-                rqVersionChange.onerror = function(event)
-                {
-                    FailTest();
-                }
-                database.close();
-            };
-        }
-    }
-    catch (ex)
-    {
-        FailTest();
-    }
+function assert_database_error(event) {
+    assert_unreached("Database error, error code: " + event.target.errorCode);
+}
+
+function assert_unexpected_success() {
+    assert_unreached("Unexpected success event fired.");
+}
+
+function assert_unexpected_upgradeneeded() {
+    assert_unreached("Unexpected upgradeneeded event fired.");
+}
+
+function assert_expected_exception() {
+    assert_unreached("Expected exception did not throw.");
+}
+
+function assert_cursor_exists(cursor) {
+    assert_not_equals(cursor, null, "Cursor does not exist.");
+}
+
+function assert_unexpected_complete() {
+    assert_unreached("Unexpected complete event fired.");
 }

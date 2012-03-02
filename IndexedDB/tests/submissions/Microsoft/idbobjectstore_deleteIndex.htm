@@ -1,107 +1,69 @@
 ﻿<!DOCTYPE html>
 <html>
-    <head>  
-        <meta content="text/html; charset=utf-8" http-equiv="content-type" />
-        <title id='desc'> IDBObjectStore.deleteIndex() - removes the index </title>
-        <script type="text/javascript" src="support.js"></script>
-        <script src="http://w3c-test.org/resources/testharness.js"></script>
-        <script src="http://w3c-test.org/resources/testharnessreport.js"></script>
-        <script type="text/javascript">
-            var objectStoreName = "objectstore";
-            var indexName = "i1"
-            var db = null;
-            
-            var t = async_test(document.title);
-            Initialize();
-            function RunTest()
-            {
-                try
-                {
-                    var rqOpen = window.indexedDB.open(databaseName);
-                    rqOpen.onsuccess = function(event)
-                    {
-                        try
-                        {
-                            db = event.target.result;
-                            db.onerror = FailTest;
-                            var rqVersionChange = db.setVersion("1");
-                            rqVersionChange.onsuccess = function(event)
-                            {
-                                try
-                                {
-                                    var objStore = db.createObjectStore(objectStoreName);
-                                    objStore.createIndex(indexName, "indexedProperty");
-                                    event.target.transaction.oncomplete = DeleteTheIndex;
-                                }
-                                catch (ex)
-                                {
-                                    FailTest();
-                                }
-                            };
-                        }
-                        catch (ex)
-                        {
-                            FailTest();
-                        }
-                    };
-                    rqOpen.onerror = FailTest;
-                }
-                catch (ex)
-                {
-                    FailTest();
-                }
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <title> IDBObjectStore.deleteIndex() - removes the index </title>
+    <script type="text/javascript" src="support.js"></script>
+    <script src="resources/testharness.js"></script>
+    <script src="resources/testharnessreport.js"></script>
+    <script type="text/javascript">
+        var objectStoreName = "objectstore";
+        var indexName = "i1"
+        var db = null;
+        
+        var t = async_test();
+        
+        function RunTest() {
+            var rqOpen = window.indexedDB.open(databaseName, databaseVersion);
+            rqOpen.onupgradeneeded = t.step_func(function(event) {
+                db = event.target.result;
+                db.onerror = t.step_func(assert_database_error);
+                var objStore = db.createObjectStore(objectStoreName);
+                objStore.createIndex(indexName, "indexedProperty");
+            });
+            rqOpen.onerror = t.step_func(assert_open_request_error);
+            rqOpen.onsuccess = t.step_func(function(event) {
+                db.close();
+                db = null;
+                DeleteTheIndex();
+            });
+        }
+        
+        function DeleteTheIndex() {
+            databaseVersion++;
+            var rqOpen = window.indexedDB.open(databaseName, databaseVersion);
+            rqOpen.onupgradeneeded = t.step_func(function(event) {
+                db = event.target.result;
+                db.onerror = t.step_func(assert_database_error);
+                var objStore = event.target.transaction.objectStore(objectStoreName);
+                objStore.deleteIndex(indexName);
+            });
+            rqOpen.onerror = t.step_func(assert_open_request_error);
+            rqOpen.onsuccess = t.step_func(VerifyIndexDoesNotExist);
+        }
+        
+        function VerifyIndexDoesNotExist() {
+            try {
+                var txn = db.transaction(objectStoreName, IDBTransaction.READ_ONLY);
+                var objStore = txn.objectStore(objectStoreName);
+                var index = objStore.index(indexName);
+                
+                assert_expected_exception();
+            } catch (ex) {
+                assert_equals(ex.code, IDBDatabaseException.NOT_FOUND_ERR, 'ex.code');
+                t.done();
             }
-            
-            function DeleteTheIndex(event)
-            {
-                try
-                {
-                    var rqVersionChange = db.setVersion("1");
-                    rqVersionChange.onsuccess = function(event)
-                    {
-                        try
-                        {
-                            var objStore = event.target.transaction.objectStore(objectStoreName);
-                            objStore.deleteIndex(indexName);
-                            event.target.transaction.oncomplete = VerifyIndexDoesNotExist;
-                        }
-                        catch (ex)
-                        {
-                            FailTest();
-                        }
-                    };
-                }
-                catch (ex)
-                {
-                    FailTest();
-                }
-            }
-            
-            function VerifyIndexDoesNotExist(event)
-            {
-                try
-                {
-                    var txn = db.transaction(objectStoreName, IDBTransaction.READ_ONLY);
-                    var objStore = txn.objectStore(objectStoreName);
-                    var index = objStore.index(indexName);
-                    alert(index);
-                    FailTest();
-                }
-                catch (ex)
-                {
-                    if (IDBDatabaseException.NOT_FOUND_ERR == ex.code)
-                    {
-                        PassTest();
-                    }
-                    else
-                    {
-                        FailTest();
-                    }
-                }
-            }
-        </script>
-    </head>
-    <body>
-        <div id="log"></div>
-    </body>
+        }
+        
+        add_completion_callback(function() { if(db) db.close(); });
+        
+        setup(function() {
+            var rqDelete = window.indexedDB.deleteDatabase(databaseName);
+            rqDelete.onsuccess = t.step_func( RunTest );
+        });
+    </script>
+</head>
+<body>
+    <div id="log"></div>
+</body>
 </html>

@@ -1,10 +1,10 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <title id='desc'>IDBCursor.delete() - index - remove a record from the object store</title>
+    <title>IDBCursor.delete() - index - remove a record from the object store</title>
     <script type="text/javascript" src="support.js"></script>
-    <script src="http://w3c-test.org/resources/testharness.js"></script>
-    <script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+    <script src="resources/testharness.js"></script>
+    <script src="resources/testharnessreport.js"></script>
     <script type="text/javascript">
         var objectStoreName = "objectstore";
         var indexName = "index";
@@ -12,128 +12,57 @@
                         { pKey: "primaryKey_1", iKey: "indexKey_1" }];
         var count = records.length;
         var db = null;
+        var t = async_test(); 
         
-        var t = async_test(document.title); 
-        Initialize();
-        function RunTest()
-        {
-            try
-            {
-                var rqOpen = window.indexedDB.open(databaseName);
-                rqOpen.onsuccess = function(event)
-                {
-                    try
-                    {
-                        db = event.target.result;
-                        db.onerror = FailTest;
-                        var rqVersionChange = db.setVersion("1");
-                        rqVersionChange.onsuccess = function(event)
-                        {
-                            try
-                            {
-                                var objStore = db.createObjectStore(objectStoreName, {keyPath:"pKey"});
-                                objStore.createIndex(indexName, "iKey");
-                                for(var i = 0; i < records.length; i++)
-                                {
-                                    objStore.add(records[i]);
-                                }
-                                event.target.transaction.oncomplete = CursorDeleteRecord;
-                            }
-                            catch (ex)
-                            {
-                                FailTest();
-                            }
-                        };
-                    }
-                    catch (ex)
-                    {
-                        FailTest();
-                    }
-                };
-                rqOpen.onerror = FailTest;
-            }
-            catch (ex)
-            {
-                FailTest();
-            }
+        function RunTest() {
+            var rqOpen = window.indexedDB.open(databaseName, databaseVersion);
+            rqOpen.onupgradeneeded = t.step_func( function (event) {
+                db = event.target.result;
+                db.onerror = t.step_func( assert_database_error );
+                var objStore = db.createObjectStore(objectStoreName, {keyPath:"pKey"});
+                objStore.createIndex(indexName, "iKey");
+                for(var i = 0; i < records.length; i++) {
+                    objStore.add(records[i]);
+                }
+            });
+            rqOpen.onsuccess = t.step_func( CursorDeleteRecord );
+            rqOpen.onerror = t.step_func( assert_open_request_error );
         }
         
-        function CursorDeleteRecord(event)
-        {
-            try
-            {
-                var txn = db.transaction(objectStoreName, IDBTransaction.READ_WRITE);
-                var objStore = txn.objectStore(objectStoreName);
-                var index = objStore.index(indexName);
-                var rqCursor = index.openCursor();
-                rqCursor.onsuccess = function(event)
-                {
-                    var cursor = event.target.result;
-                    if(cursor)
-                    {
-                        try
-                        {
-                            cursor.delete();
-                        }
-                        catch(ex)
-                        {
-                            FailTest();
-                        }
-                    }
-                    else
-                    {
-                        FailTest();
-                    }
-                };
-                txn.oncomplete = VerifyRecordWasDeleted;
-            }
-            catch (ex)
-            {
-                FailTest();
-            }
+        function CursorDeleteRecord(event) {
+            var txn = db.transaction(objectStoreName, IDBTransaction.READ_WRITE);
+            var objStore = txn.objectStore(objectStoreName);
+            var index = objStore.index(indexName);
+            var rqCursor = index.openCursor();
+            rqCursor.onsuccess = t.step_func( function(event) {
+                var cursor = event.target.result;
+                assert_cursor_exists(cursor);
+                cursor.delete();
+            });
+            txn.oncomplete = t.step_func( VerifyRecordWasDeleted );
         }
         
-        function VerifyRecordWasDeleted()
-        {
-            try
-            {
-                var txn = db.transaction(objectStoreName, IDBTransaction.READ_ONLY);
-                var objStore = txn.objectStore(objectStoreName);
-                var rqCursor = objStore.openCursor();
-                rqCursor.onsuccess = function(event)
-                {
-                    var cursor = event.target.result;
-                    if(cursor)
-                    {
-                        try
-                        {
-                            var record = cursor.value;
-                            if( record.pKey == records[1].pKey &&
-                                record.iKey == records[1].iKey)
-                            {
-                                PassTest();
-                            }
-                            else
-                            {
-                                FailTest();
-                            }
-                        }
-                        catch(ex)
-                        {
-                            FailTest();
-                        }
-                    }
-                    else
-                    {
-                        PassTest();
-                    }
-                };
-            }
-            catch (ex)
-            {
-                FailTest();
-            }
+        function VerifyRecordWasDeleted() {
+            var txn = db.transaction(objectStoreName, IDBTransaction.READ_ONLY);
+            var objStore = txn.objectStore(objectStoreName);
+            var rqCursor = objStore.openCursor();
+            rqCursor.onsuccess = t.step_func( function(event) {
+                var cursor = event.target.result;
+                assert_cursor_exists(cursor);
+                
+                var record = cursor.value;
+                assert_equals(record.pKey, records[1].pKey, "record.pKey");
+                assert_equals(record.iKey, records[1].iKey, "record.iKey");
+                t.done();
+            });
         }
+        
+        add_completion_callback(function() { if(db) db.close(); });
+        
+        setup(function() {
+            var rqDelete = window.indexedDB.deleteDatabase(databaseName);
+            rqDelete.onsuccess = t.step_func( RunTest );
+        });
     </script>
 </head>
 <body>

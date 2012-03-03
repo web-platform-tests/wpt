@@ -9004,6 +9004,27 @@
     @assert imgdata.thisImplementsImageData; @moz-todo
     @assert imgdata.data.thisImplementsUint8ClampedArray; @moz-todo
 
+- name: 2d.imageData.create2.this
+  desc: createImageData(sw, sh) should throw when called with the wrong |this|
+  notes: *bindings
+  testing:
+    - 2d.imageData.create2.object
+  code: |
+    @assert throws TypeError CanvasRenderingContext2D.prototype.createImageData.call(null, 1, 1); @moz-todo
+    @assert throws TypeError CanvasRenderingContext2D.prototype.createImageData.call(undefined, 1, 1); @moz-todo
+    @assert throws TypeError CanvasRenderingContext2D.prototype.createImageData.call({}, 1, 1); @moz-todo
+
+- name: 2d.imageData.create1.this
+  desc: createImageData(imgdata) should throw when called with the wrong |this|
+  notes: *bindings
+  testing:
+    - 2d.imageData.create2.object
+  code: |
+    var imgdata = ctx.createImageData(1, 1);
+    @assert throws TypeError CanvasRenderingContext2D.prototype.createImageData.call(null, imgdata); @moz-todo
+    @assert throws TypeError CanvasRenderingContext2D.prototype.createImageData.call(undefined, imgdata); @moz-todo
+    @assert throws TypeError CanvasRenderingContext2D.prototype.createImageData.call({}, imgdata); @moz-todo
+
 - name: 2d.imageData.create2.initial
   desc: createImageData(sw, sh) returns transparent black data of the right size
   testing:

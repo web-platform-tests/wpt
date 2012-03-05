@@ -67,7 +67,7 @@ a code { text-decoration: underline }
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing APIs</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-1-march-2012>Work in Progress &mdash; Last Update 1 March 2012</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-5-march-2012>Work in Progress &mdash; Last Update 5 March 2012</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;<a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a>&gt;
@@ -208,6 +208,25 @@ restriction.
 
 <h2 id=introduction>Introduction</h2>
 
+<p class=comments>
+<a href="https://www.w3.org/Bugs/Public/show_bug.cgi?id=16206">Bug 16206</a>.
+
+<p>A piece of software that claims to implement this specification must follow
+every <dfn id=normative>normative</dfn> requirement in it.  Every requirement in this
+specification is <a href=#normative>normative</a> unless stated otherwise.
+
+<p class=comments>These are comments.  All comments other than this one are
+non-<a href=#normative>normative</a>.
+
+<p class=note>This is a note.  All notes other than this one are
+non-<a href=#normative>normative</a>.
+
+<p class=XXX>This is an open issue.  All issues other than this one are
+non-<a href=#normative>normative</a>.
+
+<p>The remainder of this section is not <a href=#normative>normative</a>, and nor is any
+preceding section.
+
 <p>This specification defines commands to edit HTML documents programmatically.
 The APIs specified here were originally introduced in Microsoft's Internet
 Explorer, but have subsequently been copied by other browsers in a haphazard
@@ -281,16 +300,18 @@ and commonly record what the major browsers do and other essential information.
 
 <h2 id=tests>Tests</h2>
 
+<p><i title="">This section is not <a href=#normative>normative</a>.</i>
+
 <h3 id=general-remarks>General remarks</h3>
 
 
 <p>There are two groups of tests currently associated with this document:
-selection tests, and command tests.  These tests are a non-normative part of
-this specification.  The command tests are available in two formats,
-development tests and conformance tests.  This has a lot to do with the history
-of how the specification was developed: selection was originally part of the
-defunct <a href=http://html5.org/specs/dom-range.html>DOM Range</a> spec, while
-the command parts were developed on their own.  The selection things have been
+selection tests, and command tests.  These tests are a
+non-<a href=#normative>normative</a> part of this specification.  The command tests are
+available in two formats, development tests and conformance tests.  This has a
+lot to do with the history of how the specification was developed: selection
+was originally part of the defunct <a href=http://html5.org/specs/dom-range.html>DOM Range</a> spec, while the
+command parts were developed on their own.  The selection things have been
 merged into the command spec, but neither the spec text nor the tests have been
 fully unified at the time of this writing.
 
@@ -540,6 +561,8 @@ probably be merged into runtest.html so that it's tested more thoroughly.
 
 
 <h2 id=issues>Issues</h2>
+
+<p><i title="">This section is not <a href=#normative>normative</a>.</i>
 
 <p>This specification is mostly feature-complete.  It's more or less fully
 implemented in JavaScript, and has been tested on a fairly significant amount
@@ -10357,6 +10380,8 @@ defined in this specification if possible, and otherwise must be a
 
 
 <h2 class=no-num id=acknowledgements>Acknowledgements</h2>
+
+<p><i title="">This section is not <a href=#normative>normative</a>.</i>
 
 <p>Thanks to:
 

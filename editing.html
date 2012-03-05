@@ -2010,6 +2010,21 @@ newly-inserted text.  Other commands like <a href=#the-delete-command><code titl
 <p class=XXX>Figure out exactly what commands need to preserve state/value
 overrides.
 
+<p class=comments>See
+<a href="https://www.w3.org/Bugs/Public/show_bug.cgi?id=16207">bug 16207</a>.
+
+<p>When
+<code class=external data-anolis-spec=html title=dom-Document-open><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/elements.html#dom-document-open>document.open()</a></code> is
+called and a <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document title=concept-document>document</a>'s singleton objects are all replaced by new instances
+of those objects, editing state associated with that document (including the
+<a href=#css-styling-flag>CSS styling flag</a>, <a href=#default-single-line-container-name>default single-line container name</a>,
+and any <a href=#state-override title="state override">state overrides</a> or
+<a href=#value-override title="value override">value overrides</a>) must be reset.
+
+<p class=note>Of course, any action that replaces a <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document title=concept-document>document</a> object
+entirely, such as reloading the page, will also reset any editing state
+associated with the document.
+
 <p>When this specification refers to a method or attribute that is defined in a
 specification, the user agent must treat the method or attribute as defined by
 that specification.  In particular, if a script has overridden a standard

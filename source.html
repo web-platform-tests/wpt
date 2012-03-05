@@ -1996,6 +1996,21 @@ title>delete</code></a> also interact with overrides.
 <p class=XXX>Figure out exactly what commands need to preserve state/value
 overrides.
 
+<p class=comments>See
+<a href=https://www.w3.org/Bugs/Public/show_bug.cgi?id=16207>bug 16207</a>.
+
+<p>When
+<code data-anolis-spec=html title=dom-Document-open>document.open()</code> is
+called and a [[document]]'s singleton objects are all replaced by new instances
+of those objects, editing state associated with that document (including the
+<span>CSS styling flag</span>, <span>default single-line container name</span>,
+and any <span title="state override">state overrides</span> or
+<span title="value override">value overrides</span>) must be reset.
+
+<p class=note>Of course, any action that replaces a [[document]] object
+entirely, such as reloading the page, will also reset any editing state
+associated with the document.
+
 <p>When this specification refers to a method or attribute that is defined in a
 specification, the user agent must treat the method or attribute as defined by
 that specification.  In particular, if a script has overridden a standard

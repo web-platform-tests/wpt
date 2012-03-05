@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+ <head>
+
+  <title>CSS Test: Vertical-align applied to empty 'inline-block' and baseline alignment</title>
+
+  <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#leading" />
+
+  <meta content="ahem" name="flags" />
+  <meta content="The baseline of an 'inline-block' that has no in-flow line boxes is at its bottom margin edge. The bottom margin edge of an 'inline-block' that has no inflow line boxes will 'sit' on the baseline, will be located on the baseline of such 'inline-block'." name="assert" />
+
+  <style type="text/css">
+  div
+  {
+  background-color: yellow;
+  /*
+  The sole purpose for such yellow background
+  is to help delimit and visually identify the 
+  content area of the block container box.
+  */
+
+  color: black; 
+  font: 160px/1 Ahem;
+  /*
+  So that 160px / 5 == 32 without remainder;
+  that way, the accurate position of baseline
+  does not imply fractional pixel.
+  */
+  }
+
+  div#inline-block-without-inflow-line-boxes
+  {
+  background-color: blue;
+  display: inline-block;
+  height: 32px;
+  margin-bottom: 2px;
+  margin-left: -32px;
+  margin-right: -32px;
+  width: 352px;
+  }
+  </style>
+
+ </head>
+
+ <body>
+
+  <p>Test passes if the blue stripe is vertically offset <strong>above the black stripes on both sides</strong>. The blue stripe must be clearly and entirely above the black stripes.</p>
+
+  <div>p<div id="inline-block-without-inflow-line-boxes"></div>p</div>
+  
+  <!--
+  By definition, the top of "p" glyphs - which are the 
+  2 black stripes in the rendered layout - should be 
+  perfectly flush with the baseline.
+  -->
+
+ </body>
+</html>

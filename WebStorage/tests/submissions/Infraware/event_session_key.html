@@ -37,9 +37,7 @@
 		if (window.addEventListener) {
 			window.addEventListener('storage', onStorageEvent, false);
 		}
-		else if (window.attachEvent) {
-			window.attachEvent("onstorage", onStorageEvent);
-		}
+
 		else {
 			test(function() {
 				assert_unreached("DOM event subscribtion is not supported.");

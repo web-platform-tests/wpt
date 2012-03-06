@@ -36,9 +36,7 @@
 		if (window.addEventListener) {
             window.addEventListener('storage', onStorageEvent, false);
         }
-        else if (window.attachEvent) {
-            window.attachEvent("onstorage", onStorageEvent);
-        }
+
         else {
 			test(function() {
 				assert_unreached("DOM event subscribtion is not supported.");
@@ -46,8 +44,15 @@
         }
 
 		if (('localStorage' in window) && window.localStorage !== null){
-			var event = document.createEvent('StorageEvent');
-			event.initStorageEvent("storage", false, false, 'key', 'oldValue', 'newValue', window.location.href, window.localStorage);
+
+			var event = new StorageEvent('storage', {
+             key: 'key',
+             oldValue: 'oldValue',
+             newValue: 'newValue',
+             url: window.location.href,
+             storageArea: window.localStorage
+			 });
+
 			window.dispatchEvent(event);
 
 		} else {

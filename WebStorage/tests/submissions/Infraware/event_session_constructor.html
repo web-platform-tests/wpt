@@ -28,9 +28,7 @@
 		if (window.addEventListener) {
             window.addEventListener('storage', onStorageEvent, false);
         }
-        else if (window.attachEvent) {
-            window.attachEvent("onstorage", onStorageEvent);
-        }
+
         else {
 			test(function() {
 				assert_unreached("DOM event subscribtion is not supported.");
@@ -39,8 +37,7 @@
 
 		if (('sessionStorage' in window) && window.sessionStorage !== null){
 
-			var event = document.createEvent('StorageEvent');
-			event.initStorageEvent("storage");
+			var event = new StorageEvent('storage');
 
 			window.dispatchEvent(event);
 		} else {

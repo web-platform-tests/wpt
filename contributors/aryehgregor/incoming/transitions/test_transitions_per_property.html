@@ -779,28 +779,187 @@ function test_shadow_transition(prop, div, cs) {
 }
 
 function test_zindex_transition(prop, div, cs) {
-}
+  do_transition_test("Z-index transition", prop, div,
+    function() {
+      div.style.setProperty(prop, "4");
+      assert_equals(cs.getPropertyValue(prop), "4",
+                    "computed value before transition");
+    },
+    function() { div.style.setProperty(prop, "-14") },
+    function() {
+      // The distance from 4 to -14 is 18, so it will be 4 - 18/4 = -0.5.  The
+      // spec says the conversion to integer is via floor(), so it should
+      // become -1.  This should be true even if the value isn't quite -0.5,
+      // as long as it's less than 0.5 off.
+      assert_equals(cs.getPropertyValue(prop), "-1",
+                    "computed value after transition");
+    }
+  );
 
-function test_font_weight(prop, div, cs) {
+  (function() {
+    var div = create_test_div();
+    var cs = getComputedStyle(div);
+    do_transition_test("Z-index transition to auto", prop, div,
+      function() {
+        div.style.setProperty(prop, "6");
+        assert_equals(cs.getPropertyValue(prop), "6",
+                      "computed value before transition");
+      },
+      function() { div.style.setProperty(prop, "auto") },
+      function() {
+        // FIXME: https://www.w3.org/Bugs/Public/show_bug.cgi?id=16265
+        // We want a bunch more tests once this is specced, to handle corner
+        // cases.  At least testing from auto, and (if it's not specced to
+        // jump) expected values of 0 when transitioning both to and from.
+        //assert_equals(cs.getPropertyValue(prop), "2",
+        //              "computed value after transition");
+      }
+    );
+  })();
+
+  (function() {
+    var div = create_test_div();
+    var cs = getComputedStyle(div);
+    do_transition_test("Z-index transition to exact value", prop, div,
+      function() {
+        div.style.setProperty(prop, "-4");
+        assert_equals(cs.getPropertyValue(prop), "-4",
+                      "computed value before transition");
+      },
+      function() { div.style.setProperty(prop, "8") },
+      function() {
+        // There's a delay of a handful of milliseconds here, so the computed
+        // value should be just above -1.  This should be clamped to -1.
+        assert_equals(cs.getPropertyValue(prop), "-1",
+                      "computed value after transition");
+      }
+    );
+  })();
+
+  (function() {
+    var div = create_test_div();
+    var cs = getComputedStyle(div);
+    do_transition_test("Z-index clamping test", prop, div,
+      function() {
+        div.style.setProperty(hyph_prefix + "transition-timing-function", FUNC_NEGATIVE);
+        div.style.setProperty(prop, "0");
+        assert_equals(cs.getPropertyValue(prop), "0",
+                      "computed value before transition");
+      },
+      function() { div.style.setProperty(prop, "100") },
+      function() {
+        assert_not_equals(cs.getPropertyValue(prop), "0",
+                          "computed value after transition");
+      }
+    );
+  })();
 }
 
 function test_pos_integer_or_auto_transition(prop, div, cs) {
+  // This is redundant with test_zindex_transition.  In the original source
+  // file it was used for column-count as well, but that's not currently
+  // transitioned per spec.
 }
 
 function test_length_pair_transition(prop, div, cs) {
+  do_transition_test("Length pair transition", prop, div,
+    function() {
+      div.style.setProperty(prop, "4px 6px");
+      assert_equals(cs.getPropertyValue(prop), "4px 6px",
+                    "computed value before transition");
+    },
+    function() { div.style.setProperty(prop, "12px 10px") },
+    function() {
+      // Browsers all seem to round the computed values properly here, so no
+      // need for assert_approx_equals.
+      assert_equals(cs.getPropertyValue(prop), "6px 7px",
+                    "computed value after transition");
+    }
+  );
 }
 
 function test_length_pair_transition_clamped(prop, div, cs) {
-}
-
-function test_length_percent_pair_unclamped(prop, div, cs) {
-  test_length_percent_pair_clamped_or_unclamped(prop, false);
-}
-
-function test_length_percent_pair_clamped_or_unclamped(prop, is_clamped) {
+  do_transition_test("Length pair clamping test", prop, div,
+    function() {
+      div.style.setProperty(hyph_prefix + "transition-timing-function", FUNC_NEGATIVE);
+      div.style.setProperty(prop, "0px 0px");
+      assert_equals(cs.getPropertyValue(prop), "0px 0px",
+                    "computed value before transition");
+    },
+    function() { div.style.setProperty(prop, "30px 50px") },
+    function() {
+      // Opera Next 12.00 alpha serializes border-spacing here as "0px", which
+      // is at least as correct as "0px 0px", so we'll give it a pass.
+      assert_in_array(cs.getPropertyValue(prop), ["0px 0px", "0px"],
+                    "computed value after transition");
+    }
+  );
 }
 
 function test_rect_transition(prop, div, cs) {
+  // FIXME: Chrome 19 dev serializes rect() with no spaces.  This is probably
+  // wrong, but CSSOM is not totally clear, so I have to pass it for now.
+  // https://www.w3.org/Bugs/Public/show_bug.cgi?id=16266
+  var re = /^rect\((-?[0-9.]+)px,? (-?[0-9.]+)px,? (-?[0-9.]+)px,? (-?[0-9.]+)px\)$/;
+  do_transition_test("Rectangle transition", prop, div,
+    function() {
+      div.style.setProperty(prop, "rect(4px, 16px, 12px, 6px)");
+      assert_in_array(cs.getPropertyValue(prop),
+                    ["rect(4px, 16px, 12px, 6px)", "rect(4px 16px 12px 6px)"],
+                    "computed value before transition");
+    },
+    function() { div.style.setProperty(prop, "rect(0px, 4px, 4px, 2px)") },
+    function() {
+      // IE10 Developer Preview is about 0.01px off, so we need to test all
+      // the components individually, not as a string.  Chrome 19 dev
+      // apparently rounds *down* to the nearest pixel, which is quite dodgy
+      // but I'm not going to say it's actually prohibited.  So I allow plus
+      // or minus one pixel.
+      var val = cs.getPropertyValue(prop);
+      assert_regexp_match(val, re, "computed value after transition");
+      var desc = " component of computed value after transition"
+        + " (expected \"rect(3px, 13px, 10px, 5px)\", got \"" + val + "\")";
+      var matches = re.exec(val);
+      assert_approx_equals(Number(matches[1]), 3, 1, "first" + desc);
+      assert_approx_equals(Number(matches[2]), 13, 1, "second" + desc);
+      assert_approx_equals(Number(matches[3]), 10, 1, "third" + desc);
+      assert_approx_equals(Number(matches[4]), 5, 1, "fourth" + desc);
+    }
+  );
+
+  // FIXME: There were some tests for transitions to/from auto in the original
+  // file, but that's not defined right now.
+  // https://www.w3.org/Bugs/Public/show_bug.cgi?id=15844
+
+  (function() {
+    var div = create_test_div();
+    var cs = getComputedStyle(div);
+    do_transition_test("Rectangle clamping test", prop, div,
+      function() {
+        div.style.setProperty(hyph_prefix + "transition-timing-function", FUNC_NEGATIVE);
+        div.style.setProperty(prop, "rect(-10px, 30px, 0px, 0px)");
+        assert_in_array(cs.getPropertyValue(prop),
+                  ["rect(-10px, 30px, 0px, 0px)", "rect(-10px 30px 0px 0px)"],
+                  "computed value before transition");
+      },
+      function() {
+        div.style.setProperty(prop, "rect(0px, 40px, 10px, 10px)");
+      },
+      function() {
+        var val = cs.getPropertyValue(prop);
+        assert_regexp_match(val, re, "computed value after transition");
+        var desc = " component of computed value after transition must be "
+          + "less than we started with "
+          + "(expected < \"rect(-10px, 30px, 0px, 0px)\", "
+          + "got " + format_value(val) + ")";
+        var matches = re.exec(val);
+        assert_true(Number(matches[1]) < -10, "first" + desc);
+        assert_true(Number(matches[2]) < 30, "second" + desc);
+        assert_true(Number(matches[3]) < 0, "third" + desc);
+        assert_true(Number(matches[4]) < 0, "fourth" + desc);
+      }
+    );
+  })();
 }
 
 function test_visibility_transition(prop, div, cs) {

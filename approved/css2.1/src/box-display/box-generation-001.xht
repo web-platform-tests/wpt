@@ -4,6 +4,8 @@
         <title>CSS Test: Block-level elements generate principal block boxes with block boxes</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#block-boxes" />
+        <link rel="match" href="box-generation-001-ref.xht" />
+
         <meta name="flags" content="" />
         <meta name="assert" content="Block boxes can reside within a principal block box established by a block-level element; inline boxes are outside of the principal block box." />
         <style type="text/css">
@@ -26,7 +28,7 @@
         </style>
     </head>
     <body>
-        <p>Test passes if the orange box is below the blue box and the yellow box is directly left of the orange box.</p>
+        <p>Test passes if the orange stripe is below the blue stripe and the yellow stripe is on the left-hand side of the orange stripe.</p>
         <div id="div1">
             <div>Block box</div>
             <span id="span1">Inline box</span>

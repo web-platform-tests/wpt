@@ -1,11 +1,12 @@
 // Copyright 2012 Google Inc. All Rights Reserved.
+// See LICENSE for license information.
+// 
 // Author: dominicc@chromium.org (Dominic Cooney)
 
 // Test suite for Shadow DOM.
 //
 // This is based on the following revision of the spec:
-// Editor's Draft 6 March 2012
-// https://dvcs.w3.org/hg/webcomponents/raw-file/tip/spec/shadow/index.html
+// http://dvcs.w3.org/hg/webcomponents/raw-file/9ff70a713eef/spec/shadow/index.html
 
 "use strict";
 

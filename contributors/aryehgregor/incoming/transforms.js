@@ -777,9 +777,6 @@ function testTransformOrigin(value, expectedX, expectedY, expectedZ) {
 	} else if (expectedY == "bottom") {
 		expectedY = "100%";
 	}
-	// FIXME: Nothing defines resolved values here.  I picked the behavior of
-	// all non-Gecko engines, which is also the behavior Gecko for transforms
-	// other than "none": https://www.w3.org/Bugs/Public/show_bug.cgi?id=15433
 	expectedX = convertToPx(expectedX, divWidth);
 	expectedY = convertToPx(expectedY, divHeight);
 	if (expectedZ !== undefined) {
@@ -953,9 +950,6 @@ function testPerspectiveBoundary(perspective, perspectiveOriginX, perspectiveOri
 /**
  * Sets div.style.perspectiveOrigin to value, then tests that its computed
  * style is as expected.
- *
- * FIXME: Resolved values are not defined properly
- * https://www.w3.org/Bugs/Public/show_bug.cgi?id=15681
  */
 function testPerspectiveOrigin(value, expectedX, expectedY) {
 //@{
@@ -974,9 +968,6 @@ function testPerspectiveOrigin(value, expectedX, expectedY) {
 		expectedY = "100%";
 	}
 
-	// FIXME: Gecko and WebKit disagree, and spec doesn't say which is right;
-	// we go with WebKit to match transform-origin
-	// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15681
 	expectedX = convertToPx(expectedX, divWidth);
 	expectedY = convertToPx(expectedY, divHeight);
 

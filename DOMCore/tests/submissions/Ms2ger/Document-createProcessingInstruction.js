@@ -20,8 +20,9 @@ test(function() {
       assert_throws("INVALID_CHARACTER_ERR", function() {
         document.createProcessingInstruction(invalid[i][0], invalid[i][1])
       })
-    }, "Should throw an INVALID_CHARACTER_ERR for target " + invalid[i][0] +
-       " and data " + invalid[i][1] + ".")
+    }, "Should throw an INVALID_CHARACTER_ERR for target " +
+       format_value(invalid[i][0]) + " and data " +
+       format_value(invalid[i][1]) + ".")
   }
   for (var i = 0, il = valid.length; i < il; ++i) {
     test(function() {
@@ -31,7 +32,8 @@ test(function() {
       assert_equals(pi.ownerDocument, document);
       assert_true(pi instanceof ProcessingInstruction);
       assert_true(pi instanceof Node);
-    }, "Should get a ProcessingInstruction for target " + valid[i][0] +
-       " and data " + valid[i][1] + ".")
+    }, "Should get a ProcessingInstruction for target " +
+      format_value(valid[i][0]) + " and data " +
+      format_value(valid[i][1]) + ".")
   }
 })

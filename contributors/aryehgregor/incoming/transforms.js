@@ -6,11 +6,6 @@
 //
 // TODO: Break into multiple files?
 //
-// TODO: CSSTransformList?
-//
-// FIXME: CSSMatrix seems not to be implemented by most UAs.
-// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15443
-//
 // Not for now: transitions, animations
 //@{
 var div = document.querySelector("#test");
@@ -436,9 +431,7 @@ function testTransform(value, mx) {
  * entries.
  *
  * If mx has zero entries, that means the transform is supposed to parse the
- * same as "none" or be a parse error.  FIXME: Serialization of the transform
- * property when it's unset or "none" is not specced right yet.
- * <https://www.w3.org/Bugs/Public/show_bug.cgi?id=15471>
+ * same as "none" or be a parse error.
  *
  * FIXME: The spec is not yet completely clear that all matrix()/matrix3d()
  * entries are serialized as <number>s:
@@ -863,9 +856,6 @@ function testTransformOriginParsing(expectedX, expectedY, expectedZ) {
  * parsing of the perspective property, and boundaries of the test div.
  * expectedX and expectedY are strings to be passed to convertToPx(), so they
  * can be <length> or <percentage>.
- *
- * FIXME: Resolved values are not defined properly
- * https://www.w3.org/Bugs/Public/show_bug.cgi?id=15681
  */
 function testPerspective(value, originValue, expectedX, expectedY) {
 //@{

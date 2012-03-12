@@ -67,7 +67,7 @@ a code { text-decoration: underline }
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing APIs</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-5-march-2012>Work in Progress &mdash; Last Update 5 March 2012</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-12-march-2012>Work in Progress &mdash; Last Update 12 March 2012</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;<a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a>&gt;
@@ -5399,13 +5399,15 @@ algorithm returns true:
 
   <ol>
     <li>If <var title="">override</var> is a boolean, and <code title=queryCommandState()><a href=#querycommandstate()>queryCommandState(<var title="">command</var>)</a></code>
-    returns something different from <var title="">override</var>, call <code title=execCommand()><a href=#execcommand()>execCommand(<var title="">command</var>)</a></code>.
+    returns something different from <var title="">override</var>, take the
+    <a href=#action>action</a> for <var title="">command</var>, with <var title="">value</var> equal to
+    the empty string.
 
     <li>Otherwise, if <var title="">override</var> is a string, and <var title="">command</var>
     is neither "createLink" nor "fontSize", and <code title=queryCommandValue()><a href=#querycommandvalue()>queryCommandValue(<var title="">command</var>)</a></code>
     returns something not <a href=#equivalent-values title="equivalent values">equivalent</a> to
-    <var title="">override</var>, call <code title=execCommand()><a href=#execcommand()>execCommand(<var title="">command</var>, false,
-    <var title="">override</var>)</a></code>.
+    <var title="">override</var>, take the <a href=#action>action</a> for <var title="">command</var>,
+    with <var title="">value</var> equal to <var title="">override</var>.
 
     <li>
     <p class=comments>This special case is needed because <a href="http://www.w3.org/Bugs/Public/show_bug.cgi?id=14067">createLink has no
@@ -5416,8 +5418,8 @@ algorithm returns true:
     "createLink" that is not equal to <var title="">override</var>, or there is no
     <a href=#value-override>value override</a> for "createLink" and <var title="">node</var>'s
     <a href=#effective-command-value>effective command value</a> for "createLink" is not equal to
-    <var title="">override</var>: call <code title=execCommand()><a href=#execcommand()>execCommand("createLink", false,
-    <var title="">override</var>)</a></code>.
+    <var title="">override</var>: take the <var title="">action</var> for "createLink", with
+    <var title="">value</var> equal to <var title="">override</var>.
 
     <li>
     <p class=comments>The override will be some CSS value, so we have to
@@ -5434,13 +5436,14 @@ algorithm returns true:
       <li>Convert <var title="">override</var> to an integer number of pixels, and set
       <var title="">override</var> to the <a href=#legacy-font-size-for>legacy font size for</a> the result.
 
-      <li>Call <code title=execCommand()><a href=#execcommand()>execCommand("fontSize", false, <var title="">override</var>)</a></code>.
+      <li>Take the <a href=#action>action</a> for "fontSize", with <var title="">value</var>
+      equal to <var title="">override</var>.
     </ol>
 
     <li>Otherwise, continue this loop from the beginning.
 
     <li>
-    <p class=comments>If we called <code title="">execCommand()</code>, we need to reset
+    <p class=comments>If we took the action for a command, we need to reset
     <var title="">node</var>, because it might have changed.  For instance, if the
     selection was <code title="">foo[bar]baz</code>, the text node could have been split so
     that the first part is now outside the active range.
@@ -7764,8 +7767,8 @@ that looks like a URL or e-mail address, we automatically run <a href=#the-creat
   offset</var>) and <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end title=concept-range-end>end</a> (<var title="">node</var>, <var title="">end offset</var>), and
   set the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a href=#concept-selection title=concept-selection>selection</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> to it.
 
-  <li>Call <code title=execCommand()><a href=#execcommand()>execCommand("createLink", false, <var title="">href</var>)</a></code> on the
-  <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>.
+  <li>Take the <a href=#action>action</a> for "createLink", with <var title="">value</var>
+  equal to <var title="">href</var>.
 
   <li>Set the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a href=#concept-selection title=concept-selection>selection</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> to <var title="">original
   range</var>.

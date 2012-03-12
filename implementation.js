@@ -4405,28 +4405,28 @@ function restoreStatesAndValues(overrides) {
 			var override = overrides[i][1];
 
 			// "If override is a boolean, and queryCommandState(command)
-			// returns something different from override, call
-			// execCommand(command)."
+			// returns something different from override, take the action for
+			// command, with value equal to the empty string."
 			if (typeof override == "boolean"
 			&& myQueryCommandState(command) != override) {
-				myExecCommand(command);
+				commands[command].action("");
 
 			// "Otherwise, if override is a string, and command is neither
 			// "createLink" nor "fontSize", and queryCommandValue(command)
-			// returns something not equivalent to override, call
-			// execCommand(command, false, override)."
+			// returns something not equivalent to override, take the action
+			// for command, with value equal to override."
 			} else if (typeof override == "string"
 			&& command != "createlink"
 			&& command != "fontsize"
 			&& !areEquivalentValues(command, myQueryCommandValue(command), override)) {
-				myExecCommand(command, false, override);
+				commands[command].action(override);
 
 			// "Otherwise, if override is a string; and command is
 			// "createLink"; and either there is a value override for
 			// "createLink" that is not equal to override, or there is no value
 			// override for "createLink" and node's effective command value for
-			// "createLink" is not equal to override: call
-			// execCommand("createLink", false, override)."
+			// "createLink" is not equal to override: take the action for
+			// "createLink", with value equal to override."
 			} else if (typeof override == "string"
 			&& command == "createlink"
 			&& (
@@ -4438,7 +4438,7 @@ function restoreStatesAndValues(overrides) {
 					&& getEffectiveCommandValue(node, "createlink") !== override
 				)
 			)) {
-				myExecCommand("createlink", false, override);
+				commands.createlink.action(override);
 
 			// "Otherwise, if override is a string; and command is "fontSize";
 			// and either there is a value override for "fontSize" that is not
@@ -4460,8 +4460,9 @@ function restoreStatesAndValues(overrides) {
 				// override to the legacy font size for the result."
 				override = getLegacyFontSize(override);
 
-				// "Call execCommand("fontSize", false, override)."
-				myExecCommand("fontsize", false, override);
+				// "Take the action for "fontSize", with value equal to
+				// override."
+				commands.fontsize.action(override);
 
 			// "Otherwise, continue this loop from the beginning."
 			} else {
@@ -6146,8 +6147,8 @@ function autolink(node, endOffset) {
 	getSelection().addRange(newRange);
 	globalRange = newRange;
 
-	// "Call execCommand("createLink", false, href) on the context object."
-	myExecCommand("createLink", false, href);
+	// "Take the action for "createLink", with value equal to href."
+	commands.createlink.action(href);
 
 	// "Set the context object's selection's range to original range."
 	getSelection().removeAllRanges();

@@ -5449,16 +5449,16 @@ algorithm returns true:
   <ol>
     <li>If <var>override</var> is a boolean, and <code
     title=queryCommandState()>queryCommandState(<var>command</var>)</code>
-    returns something different from <var>override</var>, call <code
-    title=execCommand()>execCommand(<var>command</var>)</code>.
+    returns something different from <var>override</var>, take the
+    <span>action</span> for <var>command</var>, with <var>value</var> equal to
+    the empty string.
 
     <li>Otherwise, if <var>override</var> is a string, and <var>command</var>
     is neither "createLink" nor "fontSize", and <code
     title=queryCommandValue()>queryCommandValue(<var>command</var>)</code>
     returns something not <span title="equivalent values">equivalent</span> to
-    <var>override</var>, call <code
-    title=execCommand()>execCommand(<var>command</var>, false,
-    <var>override</var>)</code>.
+    <var>override</var>, take the <span>action</span> for <var>command</var>,
+    with <var>value</var> equal to <var>override</var>.
 
     <li>
     <p class=comments>This special case is needed because <a
@@ -5470,8 +5470,8 @@ algorithm returns true:
     "createLink" that is not equal to <var>override</var>, or there is no
     <span>value override</span> for "createLink" and <var>node</var>'s
     <span>effective command value</span> for "createLink" is not equal to
-    <var>override</var>: call [[execcommand|"createLink", false,
-    <var>override</var>]].
+    <var>override</var>: take the <var>action</var> for "createLink", with
+    <var>value</var> equal to <var>override</var>.
 
     <li>
     <p class=comments>The override will be some CSS value, so we have to
@@ -5488,13 +5488,14 @@ algorithm returns true:
       <li>Convert <var>override</var> to an integer number of pixels, and set
       <var>override</var> to the <span>legacy font size for</span> the result.
 
-      <li>Call [[execcommand|"fontSize", false, <var>override</var>]].
+      <li>Take the <span>action</span> for "fontSize", with <var>value</var>
+      equal to <var>override</var>.
     </ol>
 
     <li>Otherwise, continue this loop from the beginning.
 
     <li>
-    <p class=comments>If we called {{code|execCommand()}}, we need to reset
+    <p class=comments>If we took the action for a command, we need to reset
     <var>node</var>, because it might have changed.  For instance, if the
     selection was {{code|foo[bar]baz}}, the text node could have been split so
     that the first part is now outside the active range.
@@ -7852,8 +7853,8 @@ title>createLink</code> command</span> on it.
   offset</var>) and [[rangeend]] (<var>node</var>, <var>end offset</var>), and
   set the [[contextobject]]'s [[selection]]'s [[range]] to it.
 
-  <li>Call [[execcommand|"createLink", false, <var>href</var>]] on the
-  [[contextobject]].
+  <li>Take the <span>action</span> for "createLink", with <var>value</var>
+  equal to <var>href</var>.
 
   <li>Set the [[contextobject]]'s [[selection]]'s [[range]] to <var>original
   range</var>.

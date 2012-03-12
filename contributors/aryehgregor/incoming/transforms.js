@@ -433,12 +433,8 @@ function testTransform(value, mx) {
  * If mx has zero entries, that means the transform is supposed to parse the
  * same as "none" or be a parse error.
  *
- * FIXME: The spec is not yet completely clear that all matrix()/matrix3d()
- * entries are serialized as <number>s:
- * https://www.w3.org/Bugs/Public/show_bug.cgi?id=15431
- *
- * FIXME: This does not actually match the 3D Transforms spec.
- * https://www.w3.org/Bugs/Public/show_bug.cgi?id=15535
+ * FIXME: This now contradicts the spec, after
+ * https://www.w3.org/Bugs/Public/show_bug.cgi?id=15797 was fixed.
  *
  * If mx has six entries, it's equivalent to a 4x4 matrix with 0's and 1's in
  * the right places.  If it has sixteen entries, the required output format is

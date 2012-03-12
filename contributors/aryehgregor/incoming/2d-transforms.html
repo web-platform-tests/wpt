@@ -419,22 +419,20 @@ testTransformOrigin("inherit", "2em", "2em");
 setStyles({}, {}, {});
 
 section = "inheritance";
-// Likewise test inheritance of the transform property.  Here, neither relative
-// lengths nor percentages are to be resolved.  Note that the transformations
-// are cumulative in this case.
+// Likewise test inheritance of the transform property.  Here, again, relative
+// lengths are to be resolved but not percentages.  Note that the
+// transformations are cumulative in this case.
 testTransformedBoundary(["", "translate(25px)", "inherit"],
 	[1, 0, 0, 1, 50, 0]);
 testTransformedBoundary(["", "translate(50%)", "inherit"],
 	[1, 0, 0, 1,
 	convertToPx("50%", divParentWidth) + convertToPx("50%", divWidth),
 	0]);
-// FIXME: Resolution of relative lengths is unclear.
-// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15797
-//setStyles({},
-//	{transform: "inherit", fontSize: "0.5em"},
-//	{transform: "translate(1em)", fontSize: "2em"});
-//testTransformedBoundary("inherit",
-//	[1, 0, 0, 1, convertToPx("4em"), 0]);
+setStyles({},
+	{transform: "inherit", fontSize: "0.5em"},
+	{transform: "translate(1em)", fontSize: "2em"});
+testTransformedBoundary("inherit",
+	[1, 0, 0, 1, convertToPx("6em"), 0]);
 
 [].forEach.call(document.querySelectorAll("style"), function(style) {style.disabled = true});
 </script>

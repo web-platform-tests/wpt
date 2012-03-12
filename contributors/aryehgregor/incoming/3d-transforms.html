@@ -455,8 +455,6 @@ transforms.forEach(function(trans1) {
 
 
 // Test transform-origin
-// FIXME: Spec's description is confusing, not completely clear that this is
-// per spec https://www.w3.org/Bugs/Public/show_bug.cgi?id=15631
 section = "transform-origin";
 percentagesAndLengths
 .slice(0, 7)
@@ -494,6 +492,9 @@ percentagesAndLengths
 		});
 	});
 });
+
+// Four values is a parse error
+testTransformOrigin("left 10px bottom -10px", "50%", "50%", 0);
 
 
 section = "perspective-origin";

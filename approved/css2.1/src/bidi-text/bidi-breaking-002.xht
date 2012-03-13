@@ -5,6 +5,8 @@
   <title>CSS Test: Bidi paragraph boundaries: Forced Line Breaks</title>
   <link rel="author" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#direction"/>
+  <link rel="match" href="bidi-breaking-002-ref.xht" />
+
   <meta name="flags" content=""/>
   <meta name="assert" content="Forced line breaks of class B (but not class WS)
         break bidi paragraphs."/>
@@ -42,6 +44,11 @@
 </head>
 <body>
   <p>In each pair of silver boxes below, the two patterns must be identical.</p>
+
+  <!--  
+  &#x05D0; א is hebrew letter alef
+  &#x05EA; ת is hebrew letter tav
+  -->
 
   <!-- control for bidi support -->
   <div class="set">

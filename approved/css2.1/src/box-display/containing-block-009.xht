@@ -3,7 +3,9 @@
     <head>
         <title>CSS Test: Containing block for absolute positioned elements is nearest positioned (relative) ancestor</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-03-07 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#containing-block-details" />
+
         <meta name="flags" content="" />
         <meta name="assert" content="If the element has 'position: absolute', the containing block is established by the nearest positioned ancestor." />
         <style type="text/css">
@@ -33,7 +35,7 @@
         </style>
     </head>
     <body>
-        <p>Test passes if the blue box is in the upper-right corner of the black box.</p>
+        <p>Test passes if the filled blue square is in the upper-right corner of the hollow wide black rectangle.</p>
         <div id="div1">
             <div id="div2">
                 <div id="div3"></div>

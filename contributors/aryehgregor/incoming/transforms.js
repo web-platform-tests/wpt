@@ -6,11 +6,6 @@
 //
 // TODO: Break into multiple files?
 //
-// TODO: CSSTransformList?
-//
-// FIXME: CSSMatrix seems not to be implemented by most UAs.
-// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15443
-//
 // Not for now: transitions, animations
 //@{
 var div = document.querySelector("#test");
@@ -436,16 +431,10 @@ function testTransform(value, mx) {
  * entries.
  *
  * If mx has zero entries, that means the transform is supposed to parse the
- * same as "none" or be a parse error.  FIXME: Serialization of the transform
- * property when it's unset or "none" is not specced right yet.
- * <https://www.w3.org/Bugs/Public/show_bug.cgi?id=15471>
+ * same as "none" or be a parse error.
  *
- * FIXME: The spec is not yet completely clear that all matrix()/matrix3d()
- * entries are serialized as <number>s:
- * https://www.w3.org/Bugs/Public/show_bug.cgi?id=15431
- *
- * FIXME: This does not actually match the 3D Transforms spec.
- * https://www.w3.org/Bugs/Public/show_bug.cgi?id=15535
+ * FIXME: This now contradicts the spec, after
+ * https://www.w3.org/Bugs/Public/show_bug.cgi?id=15797 was fixed.
  *
  * If mx has six entries, it's equivalent to a 4x4 matrix with 0's and 1's in
  * the right places.  If it has sixteen entries, the required output format is
@@ -777,9 +766,6 @@ function testTransformOrigin(value, expectedX, expectedY, expectedZ) {
 	} else if (expectedY == "bottom") {
 		expectedY = "100%";
 	}
-	// FIXME: Nothing defines resolved values here.  I picked the behavior of
-	// all non-Gecko engines, which is also the behavior Gecko for transforms
-	// other than "none": https://www.w3.org/Bugs/Public/show_bug.cgi?id=15433
 	expectedX = convertToPx(expectedX, divWidth);
 	expectedY = convertToPx(expectedY, divHeight);
 	if (expectedZ !== undefined) {
@@ -866,9 +852,6 @@ function testTransformOriginParsing(expectedX, expectedY, expectedZ) {
  * parsing of the perspective property, and boundaries of the test div.
  * expectedX and expectedY are strings to be passed to convertToPx(), so they
  * can be <length> or <percentage>.
- *
- * FIXME: Resolved values are not defined properly
- * https://www.w3.org/Bugs/Public/show_bug.cgi?id=15681
  */
 function testPerspective(value, originValue, expectedX, expectedY) {
 //@{
@@ -953,9 +936,6 @@ function testPerspectiveBoundary(perspective, perspectiveOriginX, perspectiveOri
 /**
  * Sets div.style.perspectiveOrigin to value, then tests that its computed
  * style is as expected.
- *
- * FIXME: Resolved values are not defined properly
- * https://www.w3.org/Bugs/Public/show_bug.cgi?id=15681
  */
 function testPerspectiveOrigin(value, expectedX, expectedY) {
 //@{
@@ -974,9 +954,6 @@ function testPerspectiveOrigin(value, expectedX, expectedY) {
 		expectedY = "100%";
 	}
 
-	// FIXME: Gecko and WebKit disagree, and spec doesn't say which is right;
-	// we go with WebKit to match transform-origin
-	// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15681
 	expectedX = convertToPx(expectedX, divWidth);
 	expectedY = convertToPx(expectedY, divHeight);
 

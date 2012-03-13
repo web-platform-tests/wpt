@@ -321,9 +321,6 @@ scales.forEach(function(sz) {
 // Test rotate3d(), rotateX(), rotateY(), rotateZ()
 section = "rotate";
 rotateAngles.forEach(function(angle) {
-	// FIXME: rotateX/Y/Z are not defined precisely enough that this is
-	// obviously correct from the spec.  I've followed what Gecko/WebKit do in
-	// interpreting it.  https://www.w3.org/Bugs/Public/show_bug.cgi?id=15612
 	var rads = convertToRad(angle);
 	testTransform(
 		"rotateX(" + angle + ")",
@@ -455,8 +452,6 @@ transforms.forEach(function(trans1) {
 
 
 // Test transform-origin
-// FIXME: Spec's description is confusing, not completely clear that this is
-// per spec https://www.w3.org/Bugs/Public/show_bug.cgi?id=15631
 section = "transform-origin";
 percentagesAndLengths
 .slice(0, 7)
@@ -495,14 +490,15 @@ percentagesAndLengths
 	});
 });
 
+// Four values is a parse error
+testTransformOrigin("left 10px bottom -10px", "50%", "50%", 0);
+
 
 section = "perspective-origin";
 
 setStyles({}, {}, {});
 
-// Test perspective-origin with zero and one argument.  FIXME: Not technically
-// defined by the spec, although the intent is guessable.
-// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15680
+// Test perspective-origin with zero and one argument.
 [
 	["", "50%", "50%"],
 	["none", "50%", "50%"],
@@ -552,8 +548,6 @@ setStyles({}, {}, {});
 
 // Test inheritance.  perspective-origin should be inherited as an absolute
 // length, not relative; but percentages should be resolved after inheritance.
-// FIXME: Not defined this way by the spec, this matches WebKit.
-// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15681
 setStyles({}, {perspectiveOrigin: "25px 25px"}, {});
 testPerspectiveOrigin("inherit", "25px", "25px");
 setStyles({}, {perspectiveOrigin: "0% 75%"}, {});
@@ -563,6 +557,13 @@ setStyles({},
 	{perspectiveOrigin: "1em 1em", fontSize: "2em"});
 testPerspectiveOrigin("inherit", "2em", "2em");
 setStyles({}, {}, {});
+
+// Three or more arguments are invalid.
+testPerspectiveOrigin("10px 20px 30px", "50%", "50%");
+testPerspectiveOrigin("10px 20px 30px 40px", "50%", "50%");
+testPerspectiveOrigin("10px 20px 30px 40px 50px", "50%", "50%");
+testPerspectiveOrigin("left 25px center", "50%", "50%");
+testPerspectiveOrigin("left 25px center -10px", "50%", "50%");
 
 section = "perspective-prop";
 
@@ -585,8 +586,7 @@ lengths
 });
 
 // Test inheritance.  perspective should be inherited as an absolute length,
-// not relative.  FIXME: Not defined this way by the spec, but this matches
-// Gecko and WebKit.
+// not relative.
 //
 // Note that only the perspective of the parent counts!  Grandparents don't do
 // anything with transform-style: flat (the default).

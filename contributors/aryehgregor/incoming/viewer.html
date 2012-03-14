@@ -12,8 +12,6 @@
 <label><input type=radio name=mode id=3d onclick="initialize()"> 3D</label>
 <script>
 "use strict";
-// FIXME: Test fixed backgrounds when they become defined
-// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15833
 var testNames = {
 	"2d": [
 		"abspos-1a.html",
@@ -39,6 +37,16 @@ var testNames = {
 		"display-1b.html",
 		"display-1c.html",
 		"display-1d.html",
+		// TODO: Verify that these are actually sane and match the spec.  No
+		// browser actually behaves this way yet.  See
+		// https://www.w3.org/Bugs/Public/show_bug.cgi?id=15833.
+		"fixed-background-1a.html",
+		"fixed-background-1b.html",
+		"fixed-background-1c.html",
+		"fixed-background-1d.html",
+		"fixed-background-1e.html",
+		"fixed-background-1f.html",
+		"fixed-background-1g.html",
 		"generated-1a.html",
 		"generated-2a.html",
 		"iframe-1.html",
@@ -275,7 +283,6 @@ function initialize() {
 		var test = document.createElement("iframe");
 		test.onload = testLoaded;
 		test.src = testName;
-		test.style.display = "none";
 		test.setAttribute("data-test", i);
 		test.setAttribute("data-not-loaded", "");
 		document.body.insertBefore(test, document.querySelector("p"));
@@ -286,6 +293,7 @@ function initialize() {
 
 function testLoaded(e) {
 	var test = e.target;
+	test.style.display = "none";
 	test.removeAttribute("data-not-loaded");
 
 	var matches = test.contentDocument.querySelectorAll("link[rel=match]");
@@ -296,7 +304,6 @@ function testLoaded(e) {
 		var ref = document.createElement("iframe");
 		ref.onload = refLoaded;
 		ref.src = matches[i].getAttribute("href");
-		ref.style.display = "none";
 		ref.setAttribute("data-test", test.getAttribute("data-test"));
 		ref.setAttribute("data-ref-match", i);
 		ref.setAttribute("data-not-loaded", "");
@@ -311,7 +318,6 @@ function testLoaded(e) {
 		var ref = document.createElement("iframe");
 		ref.onload = refLoaded;
 		ref.src = mismatches[i].getAttribute("href");
-		ref.style.display = "none";
 		ref.setAttribute("data-test", test.getAttribute("data-test"));
 		ref.setAttribute("data-ref-mismatch", i);
 		ref.setAttribute("data-not-loaded", "");
@@ -322,6 +328,7 @@ function testLoaded(e) {
 }
 
 function refLoaded(e) {
+	e.target.style.display = "none";
 	prefixStyles(e.target.contentDocument);
 	e.target.removeAttribute("data-not-loaded");
 	conditionalLoadHandler();

@@ -5,6 +5,8 @@
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#propdef-direction" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#direction" />
+        <link rel="match" href="direction-applies-to-005-ref.xht" />
+
         <meta name="flags" content="ahem" />
         <meta name="assert" content="The 'direction' property applies to elements with a display of 'table-column-group'." />
         <style type="text/css">
@@ -26,14 +28,14 @@
             #cell
             {
                 display: table-cell;
-                font: 0.5in/1em Ahem;
-                height: 1in;
-                width: 1in;
+                font: 50px/1em Ahem;
+                height: 100px;
+                width: 100px;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if there is a box in the upper-left corner of the orange box.</p>
+        <p>Test passes if there is a black square in the <strong>upper-left corner</strong> of the orange square.</p>
         <div id="table">
             <div id="test"></div>
             <div id="row">

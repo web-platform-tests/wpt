@@ -9,14 +9,12 @@
     <meta name="assert" content="A region set next to a float will clear the float in a new block formatting context."/>
     <style type="text/css">
       .flow{
-        -webkit-flow-into: block; /* TEMP */
         flow-into: block;
       }
       .region{
         background-color: blue;
         height: 100px;
         width: 100px;        
-        -webkit-flow-from: block; /* TEMP */
         flow-from: block;
       }
       .floatLeft{
@@ -31,7 +29,7 @@
     </style>
   </head>
   <body>
-    <p>Test passes if you see a blue box to the right of a green box.</p>
+    <p>Test passes if you see a blue square to the right of a green square.</p>
     <div class="floatLeft"></div>
     <div class="region">
       <div class="error">FAIL</div>

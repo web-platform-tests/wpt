@@ -12,12 +12,10 @@
         line-height: 20px;
       }
       .autoContent{
-        -webkit-flow-into: autoFlow; /* TEMP */
         flow-into: autoFlow;
       }
       .breakContent{
         line-height: 20px;
-        -webkit-flow-into: breakFlow; /* TEMP */
         flow-into: breakFlow;
       }
       .region{
@@ -28,14 +26,10 @@
       .auto{
         float: left;
         margin-right: 5px;
-        -webkit-region-overflow: auto; /* TEMP */
-        -webkit-flow-from: autoFlow; /* TEMP */
         -region-overflow: auto;
         flow-from: autoFlow;
       }
       .break{
-        -webkit-region-overflow: break; /* TEMP */
-        -webkit-flow-from: breakFlow; /* TEMP */
         -region-overflow: break;
         flow-from: breakFlow;
       }
@@ -45,7 +39,7 @@
     </style>
   </head>
   <body>
-    <p>This test passes if "auto 2" runs through the bottom edge of the silver box and "break 2" is set below the silver box.</p>
+    <p>This test passes if "auto 2" runs through the bottom edge of the silver rectangle and "break 2" is set below the silver rectangle.</p>
     <div class="autoContent">
       <div>auto 1</div>
       <div>auto 2</div>

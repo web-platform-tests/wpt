@@ -9,11 +9,9 @@
     <meta name="assert" content="The second region should lay out two of the content boxes."/>
     <style type="text/css">
       .content{
-        -webkit-flow-into: boxes; /* TEMP */
         flow-into: boxes;
       }
       .region{
-        -webkit-flow-from: boxes; /* TEMP */
         flow-from: boxes;
       }
       .box{
@@ -40,6 +38,7 @@
     </style>
   </head>
   <body>
+    <p>Test passes if there is no red.</p>
     <div class="abs">
       <div class="error one"></div>
       <div class="error two"></div>
@@ -60,6 +59,5 @@
     <div class="region three">
       <div class="error">FAIL</div>
     </div>
-    <div>Test passes if there is no red displayed.</div>
   </body>
 </html>

@@ -14,11 +14,9 @@
         position: relative;
       }
       .stackingFlow{
-        -webkit-flow-into: stacking; /* TEMP */
         flow-into: stacking;
       }
       .stackingRegion{
-        -webkit-flow-from: stacking; /* TEMP */
         flow-from: stacking;
         width: 50px;
         height: 100px;
@@ -47,7 +45,7 @@
       <div class="flowGreen square"></div>
       <div class="flowError square"></div>
     </div>
-    <p>Test passes if there is no red visible on the page.</p>
+    <p>Test passes if there is no red.</p>
     <div>
       <div class="error square"></div>
       <div class="stackingRegion"></div>

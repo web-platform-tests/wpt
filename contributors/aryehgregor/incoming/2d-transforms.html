@@ -109,7 +109,7 @@ section = "parsing";
 	  "scale(2) matrix()", "scale(2) translate()", "scale(2) translateX()",
 	  "scale(2) translateY()", "scale(2) scale()", "scale(2) scaleX()",
 	  "scale(2) scaleY()", "scale(2) rotate()", "scale(2) skewX()",
-	  "scale(2) skewY()", "scale(2) skew()",
+	  "scale(2) skewY()",
 	  // Too few arguments
 	  "scale(2) matrix(1)", "scale(2) matrix(1,2)", "scale(2) matrix(1,2,3)",
 	  "scale(2) matrix(1,2,3,4)", "scale(2) matrix(1,2,3,4,5)",
@@ -120,7 +120,7 @@ section = "parsing";
 	  "scale(2) rotate(1,90deg)", "scale(2) rotate(90deg,1)",
 	  "scale(2) rotate(1,1,90deg)", "scale(2) rotate(90deg,1,1)",
 	  "scale(2) rotate(90deg,1,1,1)", "scale(2) skewX(90deg,90deg)",
-	  "scale(2) skewY(90deg,90deg)", "scale(2) skew(90deg,90deg,90deg)",
+	  "scale(2) skewY(90deg,90deg)",
 	  // Wrong unit
 	 "scale(2) translate(10,10)", "scale(2) translate(10px,10)",
 	 "scale(2) translate(10,10px)", "scale(2) translateX(10)",
@@ -133,9 +133,6 @@ section = "parsing";
 	 "scale(2) rotate(10px)", "scale(2) rotate(10%)", "scale(2) rotate(10)",
 	 "scale(2) skewX(10px)", "scale(2) skewX(10)",
 	 "scale(2) skewY(10px)", "scale(2) skewY(10)",
-	 "scale(2) skew(10px,10px)", "scale(2) skew(0deg,10px)",
-	 "scale(2) skew(10px,0deg)", "scale(2) skew(10,10)",
-	 "scale(2) skew(0deg,10)", "scale(2) skew(10,0deg)",
 	  // The spec says <number> for all entries, so lengths and percentages are
 	  // not allowed in the last two entries.
 	  "scale(2) matrix(1,2,3,4,5px,6)", "scale(2) matrix(1,2,3,4,5%,6)",
@@ -147,6 +144,9 @@ section = "parsing";
 	  "scale(2) matrix(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16)",
 	  "scale(2) translate(1px,1px,1px)", "scale(2) scale(1,1,1)",
 	  "scale(2) rotate(1,1,1,90deg)",
+	  // skew() was removed, so let's make sure browsers really remove it.
+	  // https://www.w3.org/Bugs/Public/show_bug.cgi?id=16300#c17
+	  "scale(2) skew(45deg)", "scale(2) skew(45deg, 45deg)",
 	], ""],
 	// Case-sensitivity
 	[["matrix(1,2,3,4,5,6)", "MATRIX(1,2,3,4,5,6)", " mAtRiX(1, 2,3,4, 5,6 ) "],
@@ -178,18 +178,12 @@ section = "parsing";
 	 "skewX(45deg)", 1, 0, 1, 1, 0, 0],
 	[["skewy(45deg)", "SKEWY(45DEG)", " sKeWy( 45DeG ) "],
 	 "skewY(45deg)", 1, 1, 0, 1, 0, 0],
-	[["skew(45deg, 45deg)", "SKEW(45DEG, 45DEG)", " sKeW( 45dEg,45DeG ) "],
-	 "skew(45deg, 45deg)", 1, 1, 1, 1, 0, 0],
-	[["skew(45deg)", "SKEW(45DEG)", " sKeW( 45dEg ) "],
-	 "skew(45deg)", 1, 0, 1, 1, 0, 0],
 	// Serialization of unitless zeroes
 	[["translate(0)"], "translate(0px)", 1, 0, 0, 1, 0, 0],
 	[["translate(0,0)"], "translate(0px, 0px)", 1, 0, 0, 1, 0, 0],
 	[["translateX(0)"], "translateX(0px)", 1, 0, 0, 1, 0, 0],
 	[["translateY(0)"], "translateY(0px)", 1, 0, 0, 1, 0, 0],
 	[["rotate(0)"], "rotate(0deg)", 1, 0, 0, 1, 0, 0],
-	[["skew(0)"], "skew(0deg)", 1, 0, 0, 1, 0, 0],
-	[["skew(0,0)"], "skew(0deg, 0deg)", 1, 0, 0, 1, 0, 0],
 	[["skewX(0)"], "skewX(0deg)", 1, 0, 0, 1, 0, 0],
 	[["skewY(0)"], "skewY(0deg)", 1, 0, 0, 1, 0, 0],
 ].forEach(function(arr) {
@@ -303,7 +297,7 @@ rotateAngles.forEach(function(angle) {
 	);
 });
 
-// Test skewX()/skewY()/skew()
+// Test skewX()/skewY()
 section = "skew";
 skewAngles.forEach(function(angle1) {
 	testTransform(
@@ -314,19 +308,6 @@ skewAngles.forEach(function(angle1) {
 		"skewY(" + angle1 + ")",
 		[1, Math.tan(convertToRad(angle1)), 0, 1, 0, 0]
 	);
-	testTransform(
-		"skew(" + angle1 + ")",
-		[1, 0, Math.tan(convertToRad(angle1)), 1, 0, 0]
-	);
-
-	skewAngles.forEach(function(angle2) {
-		testTransform(
-			"skew(" + angle1 + ", " + angle2 + ")",
-			[1, Math.tan(convertToRad(angle2)),
-			 Math.tan(convertToRad(angle1)), 1,
-			 0, 0]
-		);
-	});
 });
 
 // Test multiple transformations

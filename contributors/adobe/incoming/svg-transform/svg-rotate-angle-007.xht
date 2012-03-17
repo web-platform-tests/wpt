@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title>CSS Test: SVG presentation attribute and rotate with negative degrees</title>
+  <link rel="author" title="Dirk Schulze" href="dschulze@adobe.com"/>
+  <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-angle"/>
+  <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions"/>
+  <link rel="match" href="reftest/svg-rotate-angle-ref.xht"/>
+  <meta name="flags" content="svg" />
+  <meta name="assert" content="The rotate transform function must support negative, 'degree' angle arguments. The rectangle in the test should be rotated by 90 degrees clockwise."/>
+  <style type="text/css">
+    svg {
+      width: 200px;
+      height: 200px;
+    }
+  </style>
+ </head>
+ <body>
+   <p>You should see a vertical fuchsia stripe next to an orange stripe.</p>
+   <svg>
+     <!-- Fill with Gradient to avoid false positive. -->
+     <defs>
+       <linearGradient id="grad" x2="0%" y2="100%">
+         <stop offset="50%" stop-color="orange" />
+         <stop offset="50%" stop-color="fuchsia" />
+       </linearGradient>
+     </defs>
+     <!-- Explicitly test rotate with one argument. So translation must be done previously, since origin is at (0,0) of CTM. -->
+     <g transform="translate(100,0)">
+       <rect width="100" height="100" fill="url(#grad)" transform="rotate(-270deg)"/>
+     </g>
+   </svg>
+ </body>
+</html>

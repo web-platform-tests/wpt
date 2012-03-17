@@ -23,4 +23,10 @@ function testAlias(arg, iface) {
   testAlias(alias[0].toLowerCase(), alias[1]);
   testAlias(alias[0].toUpperCase(), alias[1]);
 });
+
+test(function() {
+  assert_throws("NOT_SUPPORTED_ERR", function() {
+    var evt = document.createEvent("foo");
+  });
+}, "Should throw NOT_SUPPORTED_ERR for unrecognized arguments");
 </script>

@@ -12,6 +12,7 @@ Document-adoptNode.html
 Document-createComment.html
 Document-createElement.html
 Document-createElementNS.html
+Document-createEvent.html
 Document-createProcessingInstruction.html
 support Document-createProcessingInstruction.js
 Document-createProcessingInstruction-literal-1.xhtml

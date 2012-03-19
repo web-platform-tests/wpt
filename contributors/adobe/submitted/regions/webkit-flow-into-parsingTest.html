@@ -4,7 +4,7 @@
         <title>CSS Regions Parsing Test: Parse webkit-flow-into property</title>
         <link rel="author" title="Jacob Goldstein" href="mailto:jacobg@adobe.com"/>
         <link rel="help" href="http://www.w3.org/TR/css3-regions/#properties-and-rules"/>
-        <meta name="flags" content="" />
+        <meta name="flags" content="dom" />
         <meta name="assert" content="Value specified for the webkit-flow-into property should be parsed correctly."/>
         <script src="/resources/testharness.js"></script>
         <script src="/resources/testharnessreport.js"></script>        
@@ -41,26 +41,26 @@
                 document.body.removeChild(parentDiv);
                 return childWebKitFlowComputedValue;
             }
+            
+            test(function() {assert_equals(testParse("-webkit-flow-into: none"), "none")}, "Test Parse none"); 
+            test(function() {assert_equals(testParse("-webkit-flow-into: first-flow"), "first-flow")}, "Test Parse first-flow");
+            test(function() {assert_equals(testParse("-webkit-flow-into: \'first flow\'"), "")}, "Test Parse 'first-flow'");
+            test(function() {assert_equals(testParse("-webkit-flow-into: ;"), "")}, "Test Parse ;");
+            test(function() {assert_equals(testParse("-webkit-flow-into: 1"), "")}, "Test Parse 1");
+            test(function() {assert_equals(testParse("-webkit-flow-into: 1.2"), "")}, "Test Parse 1.2");
+            test(function() {assert_equals(testParse("-webkit-flow-into: -1"), "")}, "Test Parse -1");
+            test(function() {assert_equals(testParse("-webkit-flow-into: 12px"), "")}, "Test Parse 12px");
 
-            test(function() {assert_equals(testParse("-webkit-flow-into: none"), "none")}, "testParse: Assigned none to property, expected return = none"); 
-            test(function() {assert_equals(testParse("-webkit-flow-into: first-flow"), "first-flow")}, "testParse: Assigned first-flow to property, expected return = first-flow");
-            test(function() {assert_equals(testParse("-webkit-flow-into: \'first flow\'"), "")}, "testParse: Assigned 'first-flow' to property, expected return = ''");
-            test(function() {assert_equals(testParse("-webkit-flow-into: ;"), "")}, "testParse: Assigned ; to property, expected return = ''");
-            test(function() {assert_equals(testParse("-webkit-flow-into: 1"), "")}, "testParse: Assigned 1 to property, expected return = ''");
-            test(function() {assert_equals(testParse("-webkit-flow-into: 1.2"), "")}, "testParse: Assigned 1.2 to property, expected return = ''");
-            test(function() {assert_equals(testParse("-webkit-flow-into: -1"), "")}, "testParse: Assigned -1 to property, expected return = ''");
-            test(function() {assert_equals(testParse("-webkit-flow-into: 12px"), "")}, "testParse: Assigned 12px to property, expected return = ''");
+            test(function() {assert_equals(testComputedStyle("none"), "none")}, "Test Computed Style none");
+            test(function() {assert_equals(testComputedStyle(""), "none")}, "Test Computed Style ''");
+            test(function() {assert_equals(testComputedStyle("\'first-flow\'"), "none")}, "Test Computed Style 'first-flow'");
+            test(function() {assert_equals(testComputedStyle("first-flow"), "first-flow")}, "Test Computed Style first-flow");
+            test(function() {assert_equals(testComputedStyle("12px"), "none")}, "Test Computed Style 12px ");
 
-            test(function() {assert_equals(testComputedStyle("none"), "none")}, "testComputedStyle: Assigned none to property, expected return = none");
-            test(function() {assert_equals(testComputedStyle(""), "none")}, "testComputedStyle: Assigned \"\" to property, expected return = none");
-            test(function() {assert_equals(testComputedStyle("\'first-flow\'"), "none")}, "testComputedStyle: Assigned 'first-flow' to property, expected return = none");
-            test(function() {assert_equals(testComputedStyle("first-flow"), "first-flow")}, "testComputedStyle: Assigned first-flow to property, expected return = first-flow");
-            test(function() {assert_equals(testComputedStyle("12px"), "none")}, "testComputedStyle: Assigned 12px to property, expected return = none");
-
-            test(function() {assert_equals(testNotInherited("none", "none"), "none")}, "testNotInherited: Assigned none, none to property, expected return = none");
-            test(function() {assert_equals(testNotInherited("none", "child-flow"), "child-flow")}, "testNotInherited: Assigned none, child-flow to property, expected return = child-flow");
-            test(function() {assert_equals(testNotInherited("parent-flow", "none"), "none")}, "testNotInherited: Assigned parent-flow, none to property, expected return = none");
-            test(function() {assert_equals(testNotInherited("parent-flow", "child-flow"), "child-flow")}, "testNotInherited: Assigned parent-flow, child-flow to property, expected return = child-flow");
+            test(function() {assert_equals(testNotInherited("none", "none"), "none")}, "Test Non-Inherited none, none");
+            test(function() {assert_equals(testNotInherited("none", "child-flow"), "child-flow")}, "Test Non-Inherited none, child-flow");
+            test(function() {assert_equals(testNotInherited("parent-flow", "none"), "none")}, "Test Non-Inherited parent-flow, none");
+            test(function() {assert_equals(testNotInherited("parent-flow", "child-flow"), "child-flow")}, "Test Non-Inherited parent-flow, child-flow");
         </script>
     </body>
 </html>

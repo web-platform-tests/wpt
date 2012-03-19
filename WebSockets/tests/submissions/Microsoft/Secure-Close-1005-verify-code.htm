@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <title>W3C WebSocket API - Close Secure WebSocket - Code is 1000 and reason</title>
+    <title>W3C WebSocket API - Close Secure WebSocket - verify return code is 1005</title>
     <script type="text/javascript" src="http://w3c-test.org/resources/testharness.js"></script>
     <script type="text/javascript" src="http://w3c-test.org/resources/testharnessreport.js"></script>
     <script type="text/javascript" src="websocket.js"></script>
@@ -10,22 +10,22 @@
     <div id="log"></div>
     <script type="text/javascript">
 
-        var testOpen = async_test("W3C WebSocket API - Create Secure WebSocket - Close the Connection - close(1000, reason) - Connection should be opened");
-        var testClose = async_test("W3C WebSocket API - Create Secure WebSocket - Close the Connection - close(1000, reason) - readyState should be in CLOSED state and wasClean is TRUE - Connection should be closed");
+        var testOpen = async_test("W3C WebSocket API - Create Secure WebSocket - Close the Connection - close() - Connection should be opened");
+        var testClose = async_test("W3C WebSocket API - Create Secure WebSocket - Close the Connection - close() - return close code is 1005 - Connection should be closed");
 
         var wsocket = CreateWebSocket(true, false, false);
         var isOpenCalled = false;
 
         wsocket.addEventListener('open', testOpen.step_func(function (evt) {
-            wsocket.close(1000, "Clean Close");
+            wsocket.close();
             isOpenCalled = true;
             testOpen.done();
         }), true);
 
         wsocket.addEventListener('close', testClose.step_func(function (evt) {
             assert_true(isOpenCalled, "WebSocket connection should be open");
-            assert_equals(wsocket.readyState, 3, "readyState should be 3(CLOSED)");
-            assert_equals(evt.wasClean, true, "wasClean should be TRUE");
+            assert_equals(evt.code, 1005, "CloseEvent.code should be 1005");
+            assert_equals(evt.reason, "", "CloseEvent.reason should be empty");
             clearTimeout(timeOut);
             testClose.done();
         }), true);

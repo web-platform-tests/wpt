@@ -1,0 +1,20 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>W3C WebSocket API - Create WebSocket - wsocket.url is set correctly - default port</title>
+    <script type="text/javascript" src="http://w3c-test.org/resources/testharness.js"></script>
+    <script type="text/javascript" src="http://w3c-test.org/resources/testharnessreport.js"></script>
+    <script type="text/javascript" src="websocket.js"></script>
+</head>
+<body>
+    <div id="log"></div>
+    <script type="text/javascript">
+        test(function () {
+            var wsocket = CreateWebSocket(false, false, false);
+            var urlNormalized = "ws://" + __SERVER__NAME + "/" + __PATH;
+            assert_equals(wsocket.url, urlNormalized, "wsocket.url is set correctly");
+            wsocket.close();
+        }, "W3C WebSocket API - Create WebSocket - wsocket.url should be set correctly")            
+    </script>
+</body>
+</html>

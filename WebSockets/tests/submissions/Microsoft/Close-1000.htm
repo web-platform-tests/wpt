@@ -23,10 +23,9 @@
         }), true);
 
         wsocket.addEventListener('close', testClose.step_func(function (evt) {
-            if (isOpenCalled) {
-                assert_equals(wsocket.readyState, 3, "readyState should be 3(CLOSED)");
-                assert_equals(evt.wasClean, true, "wasClean should be TRUE");
-            }
+            assert_true(isOpenCalled, "WebSocket connection should be opened");
+            assert_equals(wsocket.readyState, 3, "readyState should be 3(CLOSED)");
+            assert_equals(evt.wasClean, true, "wasClean should be TRUE");        
             clearTimeout(timeOut);
             testClose.done();
         }), true);

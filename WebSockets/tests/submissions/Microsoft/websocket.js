@@ -1,6 +1,9 @@
-﻿var __SERVER__NAME = "html5labs-interop.cloudapp.net";
+﻿// Need to replace with W3C Jetty Server once echo module is in place
+var __SERVER__NAME = "html5labs-interop.cloudapp.net";
 var __PORT = 80;
 var __SECURE__PORT = 443;
+var __NEW__PORT = 81;
+var __NEW__SECURE__PORT = 444;
 var __PATH = "echo";
 var __PROTOCOL = "echo";
 var __PROTOCOLS = ["echo", "chat"];
@@ -12,16 +15,14 @@ var __FAIL = "Fail";
 var wsocket;
 var data;
 var timeOut;
+var defaultTimeout = 12000;
 
 function IsWebSocket() {
-    if (!window.WebSocket && window.MozWebSocket) {
-        WebSocket = MozWebSocket;
-    }
-    else if (!window.WebSocket) {
+    if (!window.WebSocket) {
         BrowserDoesNotSupportWebSocket();
     }
 
-    timeOut = setTimeout(OnTimeOutFail, 12000);
+    timeOut = setTimeout(OnTimeOutFail, defaultTimeout);
 }
 
 function CreateWebSocketNonAbsolute() {

@@ -18,10 +18,12 @@
 
         wsocket.addEventListener('open', testOpen.step_func(function (evt) {
             wsocket.close();
+            isOpenCalled = true;
             testOpen.done();
         }), true);
 
         wsocket.addEventListener('close', testClose.step_func(function (evt) {
+            assert_true(isOpenCalled, "WebSocket connection should be open");
             assert_equals(wsocket.readyState, 3, "readyState should be 3(CLOSED)");
             assert_equals(evt.wasClean, true, "wasClean should be TRUE");
             clearTimeout(timeOut);

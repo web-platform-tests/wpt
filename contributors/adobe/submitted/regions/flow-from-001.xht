@@ -3,6 +3,7 @@
   <head>
     <title>CSS Test: Region chain ordering</title>
     <link rel="author" title="Alan Stearns" href="mailto:stearns@adobe.com"/>
+    <link rel="help" href="http://www.w3.org/TR/css3-regions/#properties-and-rules"/>
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property"/>
     <link rel="match" href="flow-from-001-ref.xht"/>
     <meta name="flags" content="" />
@@ -10,26 +11,23 @@
     <style type="text/css">
       body{
         font-size: 16px;
-        line-height: 19px;
+        line-height: 18px;
       }
       .region{
         width: 5em;
         height: 20px;
       }
       .content{
-        -webkit-flow-into: counting; /* TEMP */
         flow-into: counting;
+        color: green;
       }
       .A{
-        -webkit-flow-from: counting; /* TEMP */
         flow-from: counting;
       }
       .B{
-        -webkit-flow-from: counting; /* TEMP */
         flow-from: counting;
       }
       .C{
-        -webkit-flow-from: counting; /* TEMP */
         flow-from: counting;
       }
       .error{

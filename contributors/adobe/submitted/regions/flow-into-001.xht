@@ -3,6 +3,7 @@
   <head>
     <title>CSS Test: flow-into behavior</title>
     <link rel="author" title="Alan Stearns" href="mailto:stearns@adobe.com"/>
+    <link rel="help" href="http://www.w3.org/TR/css3-regions/#properties-and-rules"/>
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property"/>
     <link rel="match" href="flow-into-001-ref.xht"/>
     <meta name="flags" content="" />
@@ -10,7 +11,7 @@
     <style type="text/css">
       body{
         font-size: 16px;
-        line-height: 19px;   
+        line-height: 18px;   
       }
       .source{
         color: green;
@@ -20,55 +21,42 @@
         height: 20px;
       }
       .disjointFlow{
-        -webkit-flow-into: disjoint-flow; /* TEMP */
         flow-into: disjoint-flow;
       }
       .disjointRegion{
-        -webkit-flow-from: disjoint-flow; /* TEMP */
         flow-from: disjoint-flow;
       }
       .emptyFlow{
-        -webkit-flow-into: empty-flow; /* TEMP */
         flow-into: empty-flow;
       }
       .emptyRegion{
-        -webkit-flow-from: empty-flow; /* TEMP */
         flow-from: empty-flow;
       }
       .parentFlow{
-        -webkit-flow-into: parent-flow; /* TEMP */
         flow-into: parent-flow;
       }
       .parentRegion{
-        -webkit-flow-from: parent-flow; /* TEMP */
         flow-from: parent-flow;
       }
       .childFlow{
-        -webkit-flow-into: child-flow; /* TEMP */
         flow-into: child-flow;
       }
       .childRegion{
-        -webkit-flow-from: child-flow; /* TEMP */
         flow-from: child-flow;
       }
       .nestedFlow{
-        -webkit-flow-into: nested-flow; /* TEMP */
         flow-into: nested-flow;
       }
       .nestedRegion{
-        -webkit-flow-from: nested-flow; /* TEMP */
         flow-from: nested-flow;
       }
       .noInheritFlow{
-        -webkit-flow-into: noInherit-flow; /* TEMP */
         flow-into: noInherit-flow;
       }
       .noInheritRegion{
-        -webkit-flow-from: noInherit-flow; /* TEMP */
         flow-from: noInherit-flow;
       }
       .autoFlow{
-        -webkit-flow-into: auto; /* TEMP */
         flow-into: auto;
       }
       .error{
@@ -105,7 +93,7 @@
       </span>
     </div>
     <div>
-      No text should appear above this line. After a 19px gap there should be lines with three green numbers each counting up to 18.
+      No text should appear above this line. Below should be lines with three green numbers each counting up to 18.
     </div>
     <div class="region emptyRegion">
       <div class="error">FAIL - empty flow should replace this content.</div>

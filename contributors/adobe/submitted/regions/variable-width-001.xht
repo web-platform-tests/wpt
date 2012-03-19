@@ -3,17 +3,16 @@
   <head>
     <title>CSS Test: Variable-width Regions</title>
     <link rel="author" title="Alan Stearns" href="mailto:stearns@adobe.com"/>
+    <link rel="help" href="http://www.w3.org/TR/css3-regions/#properties-and-rules"/>
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property"/>
     <link rel="match" href="variable-width-001-ref.xht"/>
     <meta name="flags" content="" />
     <meta name="assert" content="The second region should lay out two of the content boxes."/>
     <style type="text/css">
       .content{
-        -webkit-flow-into: boxes; /* TEMP */
         flow-into: boxes;
       }
       .region{
-        -webkit-flow-from: boxes; /* TEMP */
         flow-from: boxes;
       }
       .box{
@@ -40,6 +39,7 @@
     </style>
   </head>
   <body>
+    <p>Test passes if there is no red.</p>
     <div class="abs">
       <div class="error one"></div>
       <div class="error two"></div>
@@ -60,6 +60,5 @@
     <div class="region three">
       <div class="error">FAIL</div>
     </div>
-    <div>Test passes if there is no red displayed.</div>
   </body>
 </html>

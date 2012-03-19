@@ -6,22 +6,20 @@
     <style type="text/css">
       body{
         font-size: 16px;
-        line-height: 19px;   
+        line-height: 18px;   
       }
       .sourceWrapper{
         background-color: lightgreen;
         width: 10em;
       }
-      .region{
-        width: 100%;
-        height: 20px;
-      }
       .success{
         color: green;
+        height: 20px;
       }
     </style>
   </head>
   <body>
+    <p>You should see four words in a light green rectangle followed by four 'content not replaced…' lines.</p>
     <div class="sourceWrapper">
       <div>none</div>
       <div>inherit</div>
@@ -32,7 +30,5 @@
     <div class="success">content not replaced by inherit ident</div>
     <div class="success">content not replaced by default ident</div>
     <div class="success">content not replaced by initial ident</div>
-    <div>This test succeeds if there are four lines above with invalid flow names on a light green background followed by four lines of green text.</div>
-
   </body>
 </html>

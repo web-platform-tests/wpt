@@ -12,12 +12,10 @@
         line-height: 20px;
       }
       .autoContent{
-        -webkit-flow-into: autoFlow; /* TEMP */
         flow-into: autoFlow;
       }
       .breakContent{
         line-height: 20px;
-        -webkit-flow-into: breakFlow; /* TEMP */
         flow-into: breakFlow;
       }
       .first{
@@ -31,14 +29,10 @@
       .auto{
         float: left;
         margin-right: 5px;
-        -webkit-region-overflow: auto; /* TEMP */
-        -webkit-flow-from: autoFlow; /* TEMP */
         -region-overflow: auto;
         flow-from: autoFlow;
       }
       .break{
-        -webkit-region-overflow: break; /* TEMP */
-        -webkit-flow-from: breakFlow; /* TEMP */
         -region-overflow: break;
         flow-from: breakFlow;
       }
@@ -48,7 +42,7 @@
     </style>
   </head>
   <body>
-    <p>This test passes if the top boxes are identical and in the lower boxes "auto 2" runs through the bottom edge of the box and "break 2" is set below the box.</p>
+    <p>This test passes if the top rectangles are identical and in the lower rectangles "auto 2" runs through the bottom edge of the rectangle and "break 2" is set below the rectangle.</p>
     <div class="auto region first">
       <div class="error">FAIL</div>
     </div>

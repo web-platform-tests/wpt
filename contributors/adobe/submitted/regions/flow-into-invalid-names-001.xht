@@ -3,6 +3,7 @@
   <head>
     <title>CSS Test: invalid flow-into idents</title>
     <link rel="author" title="Alan Stearns" href="mailto:stearns@adobe.com"/>
+    <link rel="help" href="http://www.w3.org/TR/css3-regions/#properties-and-rules"/>
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property"/>
     <link rel="match" href="flow-into-invalid-names-001-ref.xht"/>
     <meta name="flags" content="" />
@@ -10,46 +11,37 @@
     <style type="text/css">
       body{
         font-size: 16px;
-        line-height: 19px;   
+        line-height: 18px;   
       }
       .sourceWrapper{
         background-color: lightgreen;
         width: 10em;
       }
       .region{
-        width: 100%;
         height: 20px;
       }
       .noneFlow{
-        -webkit-flow-into: none; /* TEMP */
         flow-into: none;
       }
       .noneRegion{
-        -webkit-flow-from: none; /* TEMP */
         flow-from: none;
       }
       .inheritFlow{
-        -webkit-flow-into: inherit; /* TEMP */
         flow-into: inherit;
       }
       .inheritRegion{
-        -webkit-flow-from: inherit; /* TEMP */
         flow-from: inherit;
       }
       .defaultFlow{
-        -webkit-flow-into: default; /* TEMP */
         flow-into: default;
       }
       .defaultRegion{
-        -webkit-flow-from: default; /* TEMP */
         flow-from: default;
       }
       .initialFlow{
-        -webkit-flow-into: initial; /* TEMP */
         flow-into: initial;
       }
       .initialRegion{
-        -webkit-flow-from: initial; /* TEMP */
         flow-from: initial;
       }
       .success{
@@ -58,6 +50,7 @@
     </style>
   </head>
   <body>
+    <p>You should see four words in a light green rectangle followed by four 'content not replaced…' lines.</p>
     <div class="sourceWrapper">
       <div class="source noneFlow">none</div>
       <div class="source inheritFlow">inherit</div>
@@ -76,6 +69,5 @@
     <div class="region initialRegion">
       <div class="success">content not replaced by initial ident</div>
     </div>
-    <div>This test succeeds if there are four lines above with invalid flow names on a light green background followed by four lines of green text.</div>
   </body>
 </html>

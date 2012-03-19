@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title>CSS Test: No separation between transform functions on SVG presentation attribute</title>
+  <link rel="author" title="Dirk Schulze" href="dschulze@adobe.com"/>
+  <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-transform-list"/>
+  <meta name="flags" content="" />
+  <meta name="assert" content="Transform functions don't need separations, the test passes if the green rectangle has an offset."/>
+  <style type="text/css">
+    svg {
+      width: 200px;
+      height: 200px;
+    }
+  </style>
+ </head>
+ <body>
+  <svg>
+    <rect x="100" y="100" width="100" height="100" fill="green"/>
+  </svg>
+ </body>
+</html>

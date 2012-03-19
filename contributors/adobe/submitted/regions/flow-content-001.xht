@@ -9,12 +9,10 @@
     <meta name="assert" content="Content placed into a named flow with the flow-into property should display in the element whose flow-from property specifies that named flow."/>
     <style type="text/css">
       .source{
-        -webkit-flow-into: main-thread; /* TEMP */
         flow-into: main-thread;
         color: green;
       }
       .region{
-        -webkit-flow-from: main-thread; /* TEMP */
         flow-from: main-thread;
       }
       .error{
@@ -26,11 +24,11 @@
     <div class="source">
       flow content
     </div>
-    <div>
-      The words "flow content" in green should display after this div
-    </div>
+    <p>
+      The words "flow content" in green should be in a single line below.
+    </p>
     <div class="region">
-      <div class="error">FAIL if this text is displayed.</div>
+      <div class="error">FAIL.</div>
     </div>
   </body>
 </html>

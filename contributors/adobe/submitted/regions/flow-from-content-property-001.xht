@@ -3,6 +3,7 @@
   <head>
     <title>CSS Test: flow-from and content interaction.</title>
     <link rel="author" title="Alan Stearns" href="mailto:stearns@adobe.com"/>
+    <link rel="help" href="http://www.w3.org/TR/css3-regions/#properties-and-rules"/>
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property"/>
     <link rel="match" href="flow-from-content-property-001-ref.xht"/>
     <meta name="flags" content="image" />
@@ -10,37 +11,34 @@
     <style type="text/css">
       body{
         font-size: 16px;
-        line-height: 19px;
+        line-height: 18px;
       }
       .region{
         width: 5em;
         height: 20px;
       }
       .contentOne{
-        -webkit-flow-into: one; /* TEMP */
         flow-into: one;
+        color: green;
       }
       .contentTwo{
-        -webkit-flow-into: two; /* TEMP */
         flow-into: two;
+        color: green;
       }
       .contentThree{
-        -webkit-flow-into: three; /* TEMP */
         flow-into: three;
+        color: green;
       }
       .rOne{
         content: url(support/1x1-red.png);
-        -webkit-flow-from: one; /* TEMP */
         flow-from: one;
       }
       .rTwo{
         content: none;
-        -webkit-flow-from: two; /* TEMP */
         flow-from: two;
       }
       .rThree{
         content: inhibit;
-        -webkit-flow-from: three; /* TEMP */
         flow-from: two;
       }
       .error{

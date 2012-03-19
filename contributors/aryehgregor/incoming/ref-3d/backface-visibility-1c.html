@@ -1,7 +1,8 @@
 <!doctype html>
 <!-- https://bugzilla.mozilla.org/show_bug.cgi?id=724750 -->
-<link rel=match href=about:blank>
-<div style="transform: rotatex(180deg); backface-visibility: hidden;
-width: 100px; height: 100px; display: table">
-	Test Text
+<link rel=match href=green-rect.html>
+<div style="height:100px;width:100px;background:lime">
+	<div style="height:100px;width:100px;background:red;
+		transform:rotatex(180deg);backface-visibility:hidden;display:table">
+	</div>
 </div>

@@ -916,38 +916,17 @@ function assertNodesEqual(actual, expected, msg) {
 }
 
 /**
- * Given a DOMException, return the name (e.g., "HIERARCHY_REQUEST_ERR").  In
- * theory this should be just e.name, but in practice it's not.  So I could
- * legitimately just return e.name, but then every engine but WebKit would fail
- * every test, since no one seems to care much for standardizing DOMExceptions.
- * Instead I mangle it to account for browser bugs, so as not to fail
- * insertNode() tests (for instance) for insertBefore() bugs.  Of course, a
- * standards-compliant browser will work right in any event.
- *
- * If the exception has no string property called "name" or "message", we just
- * re-throw it.
+ * Given a DOMException, return the name (e.g., "HIERARCHY_REQUEST_ERR").
  */
 function getDomExceptionName(e) {
-	if (typeof e.name == "string"
-	&& /^[A-Z_]+_ERR$/.test(e.name)) {
-		// Either following the standard, or prefixing NS_ERROR_DOM (I'm
-		// looking at you, Gecko).
-		return e.name.replace(/^NS_ERROR_DOM_/, "");
+	var ret = null;
+	for (var prop in e) {
+		if (/^[A-Z_]+_ERR$/.test(prop) && e[prop] == e.code) {
+			return prop;
+		}
 	}
 
-	if (typeof e.message == "string"
-	&& /^[A-Z_]+_ERR$/.test(e.message)) {
-		// Opera
-		return e.message;
-	}
-
-	if (typeof e.message == "string"
-	&& /^DOM Exception:/.test(e.message)) {
-		// IE
-		return /[A-Z_]+_ERR/.exec(e.message)[0];
-	}
-
-	throw e;
+	throw "Exception seems to not be a DOMException?  " + e;
 }
 
 /**

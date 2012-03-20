@@ -6,7 +6,7 @@
 // Test suite for Shadow DOM.
 //
 // This is based on the following revision of the spec:
-// http://dvcs.w3.org/hg/webcomponents/raw-file/9ff70a713eef/spec/shadow/index.html
+// http://dvcs.w3.org/hg/webcomponents/raw-file/c2f82425ba8d/spec/shadow/index.html
 
 "use strict";
 
@@ -18,6 +18,29 @@ var SR = window.ShadowRoot ||
          function () { assert_unreached('no ShadowRoot constructor'); };
 
 // Section 5.1 Shadow DOM Subtrees, Upper-boundary Encapsulation
+
+test(function () {
+  var d = document.implementation.createHTMLDocument('test doc');
+
+  var s = new SR(d.body);
+  assert_equals(s.ownerDocument, d,
+                'the ownerDocument of a shadow root must refer to the ' +
+                'document of the shadow host');
+
+  var e1 = d.createElement('div');
+  e1 = s.appendChild(e1);
+  assert_equals(e1.ownerDocument, s.ownerDocument,
+                'the ownerDocument of a node in a shadow tree must refer ' +
+                'to the document of the shadow host');
+
+  var d2 = document.implementation.createHTMLDocument('test doc 2');
+  var e2 = d2.createElement('div');
+  e2 = s.appendChild(e2);
+  assert_equals(e2.ownerDocument, s.ownerDocument,
+                'the ownerDocument of an adopted node in a shadow tree ' +
+                'must refer to the document of the shadow host');
+}, 'Upper-boundary encapsulation: the ownerDocument of nodes in a shadow ' +
+   'tree refer to the document of the shadow host');
 
 test(function () {
   var d = document.implementation.createHTMLDocument('test doc');
@@ -64,7 +87,7 @@ test(function () {
   var d = document.implementation.createHTMLDocument('test doc');
   var s = new SR(d.body);
 
-  var span = document.createElement('span');
+  var span = d.createElement('span');
   s.appendChild(span);
 
   // querySelector
@@ -235,6 +258,75 @@ test(function () {
 }, 'Upper-boundary encapsulation: nodes in a shadow DOM subtree are not ' +
    'accessible using the shadow host\'s document DOM tree accessors ' +
    'defined in HTML');
+
+// TODO(dcooney): Move this to the test harness.
+function assert_nodelist_contents(expected, actual, message) {
+  assert_equals(expected.length, actual.length, message);
+  for (var i = 0; i < expected.length; i++) {
+    assert_equals(expected[i], actual[i], message);
+  }
+}
+
+test(function () {
+  var d = document.implementation.createHTMLDocument('test doc');
+  d.body.innerHTML =
+      '<div id="m" name="name_m" class="a"></div>' +
+      '<p>' +  // host
+      '  <div id="n" name="name_n" class="a"></div>' +
+      '</p>';
+
+  var s = new SR(d.body.lastChild);
+  s.innerHTML =
+      '<div id="o" name="name_o" class="a"></div>' +
+      '<p>' +  // inner host
+      '  <div id="p" name="name_p" class="a"></div>' +
+      '</p>';
+
+  var innerShadow = new SR(s.lastChild);
+  innerShadow.innerHTML = '<div id="q" name="name_q" class="a"></div>';
+
+  var m = d.querySelector('#m');
+  var n = d.querySelector('#n');
+  var o = s.querySelector('#o');
+  var p = s.querySelector('#p');
+  var q = innerShadow.querySelector('#q');
+
+  assert_true(m != null, 'set up: m');
+  assert_true(n != null, 'set up: n');
+  assert_true(o != null, 'set up: o');
+  assert_true(p != null, 'set up: p');
+  assert_true(q != null, 'set up: q');
+
+  // getElementsByTagName
+  assert_nodelist_contents(
+      s.getElementsByTagName('div'), [o, p],
+      'no nodes other than shadow root descendants are accessible with ' +
+      'ShadowRoot.getElementsByTagName');
+
+  // getElementsByTagNameNS
+  assert_nodelist_contents(
+      s.getElementsByTagNameNS(null, 'div'), [o, p],
+      'no nodes other than shadow root descendants are accessible with ' +
+      'ShadowRoot.getElementsByTagNameNS');
+
+  // getElementsByClassName
+  assert_nodelist_contents(
+      s.getElementsByClassName('a'), [o, p],
+      'no nodes other than shadow root descendants are accessible with ' +
+      'ShadowRoot.getElementsByClassName');
+
+  // getElementById
+  assert_equals(s.getElementById('m'), null,
+                'elements in the document must not be exposed via ' +
+                'ShadowRoot.getElementById');
+  assert_equals(s.getElementById('n'), null,
+                'children of the host element must not be exposed via ' +
+                'ShadowRoot.getElementById');
+  assert_equals(s.getElementById('q'), null,
+                'elements in a nested shadow root must not be exposed via ' +
+                'ShadowRoot.getElementById');
+}, 'Upper-boundary encapsulation: no nodes other than shadow root ' +
+   'descendants are accessible with shadow root DOM tree accessor methods');
 
 test(function () {
   var d = document.implementation.createHTMLDocument('test doc');

@@ -9,11 +9,11 @@
 			try {
 				localStorage.setItem("name", "user1");
 			} catch (e) {
-				top.fail("setItem method is failed.");
+				parent.fail("setItem method is failed.");
 			}
 
 		} else {
-			top.fail("localStorage is not supported.");
+			parent.fail("localStorage is not supported.");
 		}	
 	</script>
 

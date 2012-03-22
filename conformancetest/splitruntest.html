@@ -33,13 +33,14 @@ for documentation.
 	var groupedBrowserTests = {};
 	for (var i = 0; i < browserTests.length; i++) {
 		var commands = browserTests[i][1];
-		if (commands.length == 2
-		&& commands[0][0] == "stylewithcss") {
+		if (commands.length == 3
+		&& commands[0][0] == "stylewithcss"
+		&& commands[1][0] == "defaultparagraphseparator") {
 			// Regular test, not a multitest
-			if (!(commands[1][0] in groupedBrowserTests)) {
-				groupedBrowserTests[commands[1][0]] = [];
+			if (!(commands[2][0] in groupedBrowserTests)) {
+				groupedBrowserTests[commands[2][0]] = [];
 			}
-			groupedBrowserTests[commands[1][0]].push(browserTests[i]);
+			groupedBrowserTests[commands[2][0]].push(browserTests[i]);
 		} else {
 			// Multitest
 			if (!("multitest" in groupedBrowserTests)) {

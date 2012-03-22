@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title>CSS Test: SVG presentation attribute and rotate must support scientific numbers with negative exponents for unit less arguments</title>
+  <link rel="author" title="Rebecca Hauck" href="rhauck@adobe.com"/>
+  <link rel="help" href="http://www.w3.org/TR/css3-transforms/#effects"/>
+  <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-angle"/>
+  <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions"/>
+  <link rel="match" href="reftest/svg-rotate-angle-45-ref.xht"/>
+  <meta name="flags" content="svg" />
+  <meta name="assert" content="The rotate transform function must support scientific numbers with negative exponents for unit less angle arguments. The rectangle in the test should be rotated by 45 degrees clockwise."/>
+  <style type="text/css">
+    svg {
+      width: 200px;
+      height: 200px;
+    }
+  </style>
+ </head>
+ <body>
+     <p>You should see a circle divided vertically down the middle where the left half is fuchsia and the right half is orange.</p>
+     <svg>
+     <!-- Fill with Gradient to avoid false positive. -->
+     <defs>
+         <linearGradient id="grad" x1="0%" y1="100%" >
+             <stop offset="50%" stop-color="fuchsia" />
+             <stop offset="50%" stop-color="orange" />
+         </linearGradient>
+     </defs>
+     <!-- Explicitly test rotate with one argument. So translation must be done previously, since origin is at (0,0) of CTM. -->
+     <g transform="translate(60,0)">
+         <circle cx="60" cy="60" r="60" fill="url(#grad)" transform="rotate(450e-1)"/>
+     </g>
+     </svg>
+ </body>
+</html>

@@ -1,0 +1,11 @@
+<!doctype html>
+<title>CSS Test (Transforms): Transform of Background Image (nested flip)</title>
+<link rel=author title="Aryeh Gregor" href=http://aryeh.name/>
+<link rel=help href=http://dev.w3.org/csswg/css3-transforms/>
+<meta name=assert content="Background images fall within the element's border
+box, so they need to be transformed along with it.  This file tests that a
+transform on the parent works correctly, not just on the element itself.">
+<link rel=match href=background-1-ref.html>
+<div style="width:200px;height:100px;transform: scale(-1)">
+<div style="background:url(background-1c.svg);width:200px;height:100px"></div>
+</div>

@@ -6,61 +6,34 @@
   <script src="/resources/testharnessreport.js"></script>
  </head>
  <body>
-	<p>
-		<h3>event_local_StorageEventInit</h3>
-	</p>
-	
-	<hr>
+    <h1>event_local_StorageEventInit</h1>
+    <div id="log"></div>
+    <script>
+        test(function() {
+            var t = async_test("storageeventinit test");
+            function onStorageEvent(event) {
+                t.step(function() {
+                    assert_equals(event.key, 'key');
+                    assert_equals(event.oldValue, 'oldValue');
+                    assert_equals(event.newValue, 'newValue');
+                    assert_equals(event.url, window.location.href);
+                    assert_equals(event.storageArea, window.localStorage);
+                });
+                t.done();
+            }
 
-	<div id="log"></div>
-
-	<script>
-
-		var t = async_test("storageeventinit test");
-
-		function onStorageEvent(event) {
-			if (event.key != '') { 
-				switch (event.key) {
-					case 'key':
-						t.step(function() {
-						   assert_true(true);
-						  });
-						t.done();
-						break;
-					default:
-						break;                  
-				}
-			}
-		}
-
-		if (window.addEventListener) {
             window.addEventListener('storage', onStorageEvent, false);
-        }
 
-        else {
-			test(function() {
-				assert_unreached("DOM event subscribtion is not supported.");
-			}, "existence of event listener")
-        }
+            var event = new StorageEvent('storage', {
+                key: 'key',
+                oldValue: 'oldValue',
+                newValue: 'newValue',
+                url: window.location.href,
+                storageArea: window.localStorage
+            });
 
-		if (('localStorage' in window) && window.localStorage !== null){
-
-			var event = new StorageEvent('storage', {
-             key: 'key',
-             oldValue: 'oldValue',
-             newValue: 'newValue',
-             url: window.location.href,
-             storageArea: window.localStorage
-			 });
-
-			window.dispatchEvent(event);
-
-		} else {
-			test(function() {
-				assert_unreached("localStorage is not supported.");
-			}, "localStorage interface test")
-		}	
-	</script>
-
+            window.dispatchEvent(event);
+        });
+    </script>
  </body>
 </html>

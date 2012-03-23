@@ -8,6 +8,7 @@
 			} catch (e) {
 				parent.fail("setItem method is failed.");
 			}
+			localStorage.clear();
 		} else {
 			parent.fail("localStorage is not supported.");
 		}	

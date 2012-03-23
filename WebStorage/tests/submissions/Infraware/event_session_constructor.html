@@ -6,46 +6,29 @@
   <script src="/resources/testharnessreport.js"></script>
  </head>
  <body>
-	<p>
-		<h3>event_session_Constructor</h3>
-	</p>
-	
-	<hr>
+    <h1>event_session_Constructor</h1>
+    <div id="log"></div>
+    <script>
+        test(function() {
+            var t = async_test("storageeventinit test");
+            function onStorageEvent(event) {
+                t.step(function() {
+                    assert_equals(event.type, 'storage');
+                    assert_equals(event.key, '');
+                    assert_equals(event.oldValue, null);
+                    assert_equals(event.newValue, null);
+                    assert_equals(event.url, '');
+                    assert_equals(event.storageArea, null);
+                });
+                t.done();
+            }
 
-	<div id="log"></div>
-
-	<script>
-
-		var t = async_test("storageeventinit test");
-
-		function onStorageEvent(event) {
-			t.step(function() {
-			   assert_true(true);
-			  });
-			t.done();
-		}
-
-		if (window.addEventListener) {
             window.addEventListener('storage', onStorageEvent, false);
-        }
 
-        else {
-			test(function() {
-				assert_unreached("DOM event subscribtion is not supported.");
-			}, "existence of event listener")
-        }
-
-		if (('sessionStorage' in window) && window.sessionStorage !== null){
-
-			var event = new StorageEvent('storage');
-
-			window.dispatchEvent(event);
-		} else {
-			test(function() {
-				assert_unreached("sessionStorage is not supported.");
-			}, "sessionStorage interface test")
-		}	
-	</script>
+            var event = new StorageEvent('storage');
+            window.dispatchEvent(event);
+        });
+    </script>
 
  </body>
 </html>

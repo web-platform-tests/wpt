@@ -4,54 +4,44 @@
   <title>Web Storage</title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
+  <script>
+      function fail(msg) {
+          t.step(function() {
+              assert_notreached(msg);
+          });
+          t.done();
+      }
+  </script>
  </head>
  <body>
-	<p>
-		<h3>event_local_url</h3>
-	</p>
-	
-	<hr>
+    <h1>event_local_url</h1>
+    <div id="log"></div>
+    <script>
+        test(function() {
+            localStorage.clear();
+            var t = async_test("url property test of local event");
+            function onStorageEvent(event) {
+                t.step(function() {
+                    var url = window.location.href;
 
-	<div id="log"></div>
+                    var pos = url.lastIndexOf("/");
+                    if (pos != -1) {
+                        url = url.substr(0, pos + 1);
+                        url = url + "iframe/local_set_item_iframe.html";
+                    }
 
-	<script>
+                   assert_equals(event.url, url);
+                });
+                t.done();
+            }
 
-		var t = async_test("url property test of local event");
-
-		function onStorageEvent(event) {
-			var url = window.location.href;
-
-			var pos = url.lastIndexOf("/");
-			if (pos != -1) {
-				url = url.substr(0, pos + 1);
-				url = url + "iframe/local_set_item_iframe.html";
-			}
-
-			t.step(function() {
-			   assert_equals(event.url, url);
-			  });
-			t.done();
-		}
-
-		if (window.addEventListener) {
             window.addEventListener('storage', onStorageEvent, false);
-        }
 
-        else {
-			test(function() {
-				assert_unreached("DOM event subscribtion is not supported.");
-			}, "existence of event listener")
-        }
-
-		var el = document.createElement("iframe");
-		el.setAttribute('id', 'ifrm');
-		el.setAttribute('src', 'iframe/local_set_item_iframe.html');
-		el.style.border='0px';
-		el.style.width='0px';
-		el.style.height='0px'		
-		document.body.appendChild(el);
-
-	</script>
-
+            var el = document.createElement("iframe");
+            el.setAttribute('id', 'ifrm');
+            el.setAttribute('src', 'iframe/local_set_item_iframe.html');
+            document.body.appendChild(el);
+        });
+    </script>
  </body>
 </html>

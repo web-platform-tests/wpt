@@ -4,55 +4,40 @@
   <title>Web Storage</title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
+  <script>
+      function fail(msg) {
+          t.step(function() {
+              assert_notreached(msg);
+          });
+          t.done();
+      }
+  </script>
  </head>
  <body>
+    <h1>event_session_key</h1>
+    <div id="log"></div>
+    <script>
+        test(function() {
+            sessionStorage.clear();
+            var t = async_test("key property test of session event");
+            // XXX https://www.w3.org/Bugs/Public/show_bug.cgi?id=16469
+            var expected = ['name', null]
+            function onStorageEvent(event) {
+                t.step(function() {
+                    assert_equals(event.key, expected.shift());
+                });
+                if (!expected.length) {
+                    t.done();
+                }
+            }
 
-	<p>
-		<h3>event_session_key</h3>
-	</p>
-	
-	<hr>
+            window.addEventListener('storage', onStorageEvent, false);
 
-	<div id="log"></div>
-		 
-	<script>
-
-		var t = async_test("key property test of session event");
-
-		function onStorageEvent(event) {
-			if (event.key != '') { 
-				switch (event.key) {
-					case 'name':
-						t.step(function() {
-						   assert_true(true);
-						  });
-						t.done();
-						break;
-					default:
-						break;                  
-				}
-			}
-		}
-
-		if (window.addEventListener) {
-			window.addEventListener('storage', onStorageEvent, false);
-		}
-
-		else {
-			test(function() {
-				assert_unreached("DOM event subscribtion is not supported.");
-			}, "existence of event listener")
-		}
-
-		var el = document.createElement("iframe");
-		el.setAttribute('id', 'ifrm');
-		el.setAttribute('src', 'iframe/session_set_item_iframe.html');
-		el.style.border='0px';
-		el.style.width='0px';
-		el.style.height='0px'		
-		document.body.appendChild(el);
-		
-	</script>
-
+            var el = document.createElement("iframe");
+            el.setAttribute('id', 'ifrm');
+            el.setAttribute('src', 'iframe/session_set_item_clear_iframe.html');
+            document.body.appendChild(el);
+        });
+    </script>
  </body>
 </html>

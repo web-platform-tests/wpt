@@ -15,17 +15,13 @@ event_session_url.html
 dir iframe
 storage_local_clear.html
 storage_local_getitem.html
-storage_local_getitem_null.html
 storage_local_key.html
-storage_local_key_null.html
 storage_local_length.html
 storage_local_removeitem.html
 storage_local_setitem.html
 storage_session_clear.html
 storage_session_getitem.html
-storage_session_getitem_null.html
 storage_session_key.html
-storage_session_key_null.html
 storage_session_length.html
 storage_session_removeitem.html
 storage_session_setitem.html

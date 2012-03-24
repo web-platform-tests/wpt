@@ -6,39 +6,14 @@
   <script src="/resources/testharnessreport.js"></script>
  </head>
  <body>
-	<p>
-		<h3>storage_local_setItem</h3>
-	</p>
-	
-	<hr>
-
-	<div id="log"></div>
-
-	<script>
-
-		if (('localStorage' in window) && window.localStorage !== null){
-			localStorage.clear();
-
-			try {
-				localStorage.setItem("name", "user1");
-			} catch (e) {
-				test(function()
-				{
-					assert_unreached("setItem method is failed.");
-				}, "setItem method test")
-			}
-
-			test(function() {
-				assert_not_equals(localStorage.length, 0, "localStorage.setItem")
-			}, "setItem method test")
-
-		} else {
-			test(function()
-			{
-				assert_unreached("localStorage is not supported.");
-			}, "localStorage support test")
-		}	
-	</script>
-
+    <h1>storage_local_setItem</h1>
+    <div id="log"></div>
+    <script>
+        test(function() {
+            localStorage.clear();
+            localStorage.setItem("name", "user1");
+            assert_equals(localStorage.length, 1, "localStorage.setItem")
+        });
+    </script>
  </body>
 </html>

@@ -6,62 +6,35 @@
   <script src="/resources/testharnessreport.js"></script>
  </head>
  <body>
-	<p>
-		<h3>storage_local_key</h3>
-	</p>
-	
-	<p>
-		<h3>
-			<div id="result" >
-				<span id="resultMsg"><span class="fail">FAIL<span></span>
-			</div>
-		</h3>
-	</p>
+    <h1>storage_local_key</h1>
+    <div id="log"></div>
+    <script>
+        test(function() {
+            localStorage.clear();
 
-	<hr>
+            localStorage.setItem("name", "user1");
+            localStorage.setItem("age", "20");
+            localStorage.setItem("a", "1");
+            localStorage.setItem("b", "2");
 
-	<div id="log"></div>
-
-	<script>
-
-		if (('localStorage' in window) && window.localStorage !== null){
-			localStorage.clear();
-
-			localStorage.setItem("name", "user1");
-			localStorage.setItem("age", "20");
-			localStorage.setItem("a", "1");
-			localStorage.setItem("b", "2");
-
-			try {
-				var keys = ["name","age","a","b"];
-				function checkMatch(index){
-					for (var i = 0; i < keys.length ; i++){
-						if(localStorage.key(index) == keys[i]){
-							delete keys[i];
-							return true;
-						}
-					}
-					return false;
-				}
-				
-				test(function()
-				{
-					assert_true(checkMatch(0) && checkMatch(1) && checkMatch(2) && checkMatch(3), "key method is failed.");
-				}, "key method test")
-					
-			} catch (e) {
-				test(function()
-				{
-					assert_unreached("key method is failed.");
-				}, "key method test")
-			}
-		} else {
-			test(function()
-			{
-				assert_unreached("localStorage is not supported.");
-			}, "localStorage support test")
-		}	
-	</script>
-
+            var keys = ["name", "age", "a", "b"];
+            function doTest(index) {
+                test(function() {
+                    var key = localStorage.key(index);
+                    assert_not_equals(key, null);
+                    assert_true(keys.indexOf(key) >= 0,
+                                "Unexpected key " + key + " found.");
+                }, "key(" + index + ") should return the right thing.");
+            }
+            for (var i = 0; i < keys.length; ++i) {
+                doTest(i);
+                doTest(i + 0x100000000);
+            }
+            test(function() {
+                assert_equals(localStorage.key(-1), null, "localStorage.key(-1)");
+                assert_equals(localStorage.key(4), null, "localStorage.key(4)");
+            }, "key() should return null for out-of-range arguments.");
+        });
+    </script>
  </body>
 </html>

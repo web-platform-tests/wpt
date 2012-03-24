@@ -6,51 +6,20 @@
   <script src="/resources/testharnessreport.js"></script>
  </head>
  <body>
-	<p>
-		<h3>storage_session_clear</h3>
-	</p>
-	
-	<hr>
+    <h1>storage_session_clear</h1>
+    <div id="log"></div>
+    <script>
+        test(function() {
+            sessionStorage.clear();
+            sessionStorage.setItem("name", "user1");
 
-	<div id="log"></div>
+            assert_not_equals(sessionStorage.getItem("name"), null);
+            assert_equals(sessionStorage.length, 1);
 
-	<script>
-
-		if (('sessionStorage' in window) && window.sessionStorage !== null){
-			sessionStorage.clear();
-			sessionStorage.setItem("name", "user1");
-
-			if (sessionStorage.getItem("name") != null && sessionStorage.length == 1)
-			{
-				try {
-					sessionStorage.clear();
-				} catch (e) {
-					test(function()
-					{
-						assert_unreached("clear method is failed.");
-					}, "clear method test")
-				}
-
-				test(function() {
-					assert_equals(sessionStorage.getItem("name"), null, "sessionStorage.getItem('name')")
-				}, "result test of clear method (item)")
-
-				test(function() {
-					assert_equals(sessionStorage.length, 0, "sessionStorage.length")
-				}, "result test of clear method (length)")
-
-			} else {
-				test(function() {
-					assert_unreached("'name' item is not exist.");
-				}, "item existence test")
-			}
-		} else {
-			test(function()
-			{
-				assert_unreached("sessionStorage is not supported.");
-			}, "sessionStorage support test")
-		}	
-	</script>
-
+            sessionStorage.clear();
+            assert_equals(sessionStorage.getItem("name"), null, "sessionStorage.getItem('name')")
+            assert_equals(sessionStorage.length, 0, "sessionStorage.length")
+        });
+    </script>
  </body>
 </html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title>CSS Test: scaleY down 0.5</title>
+  <link rel="author" title="Rebecca Hauck" href="rhauck@adobe.com"/>
+  <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-tranform"/>
+  <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions"/>
+  <link rel="help" href="http://www.w3.org/TR/css3-transforms/#ScaleDefined"/>
+  <meta name="flags" content="svg" />
+  <meta name="assert" content="The rect in the test should be vertically scaled down 0.5 to 150x150"/>
+  <style type="text/css">
+    svg {
+      width: 200px;
+      height: 200px;
+    }
+  </style>
+ </head>
+ <body>
+     <p>You should see 150 x 150 blue rect.</p>
+     <svg>
+         <rect width="150" height="300" fill="blue" transform="scaleY(0.5)"/>
+     </svg>
+  </body>
+</html>
+

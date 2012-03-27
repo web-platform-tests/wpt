@@ -15,18 +15,18 @@
   <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#leading" title="10.8.1 Leading and half-leading" />
   <link rel="bookmark" href="http://archive.webstandards.org/css/winie/inline.html" />
   <meta content="ahem" name="flags" />
-  <meta content="Although margins, borders and padding of inline non-replaced elements do not enter into the line box calculation, they are still rendered around inline boxes. This means that if the height specified by 'line-height' (32px in this testcase) is equal to the content height (32px in this testcase) of contained boxes, then background-color of padding-top area and border-top may 'bleed' into the adjoining preceding line box. Since line boxes are rendered in document order, this causes border-top of 2nd line box (the span element in this testcase) to be painted over border-bottom and padding-bottom of inline boxes of previous line and, in this testcase, over the 1st line box." name="assert" />
+  <meta content="Although margins, borders and padding of inline non-replaced elements do not enter into the line box calculation, they are still rendered around inline boxes. This means that if the height specified by 'line-height' (40px in this testcase) is equal to the content height (40px in this testcase) of contained boxes, then background-color of padding-top area and border-top may 'bleed' into the adjoining preceding line box. Since line boxes are rendered in document order, this causes border-top of 2nd line box (the span element in this testcase) to be painted over border-bottom and padding-bottom of inline boxes of previous line and, in this testcase, over the 1st line box." name="assert" />
 
   <style type="text/css"><![CDATA[
   div
   {
   color: red;
-  font: 32px/32px Ahem;
+  font: 40px/1 Ahem;
   }
 
   span
   {
-  border-top: green solid 32px;
+  border-top: green solid 1em;
   color: green;
   }
   ]]></style>
@@ -37,15 +37,8 @@
 
   <p>Test passes if there is a filled green rectangle and <strong>no red</strong>.</p>
 
-  <div>shold be overlapped<br />
-  <span>bleed-over-1st-line</span></div>
-
-  <!--
-  The testcase will succeed at a viewport of 640px wide but not at a 
-  narrower viewport.
-  This testcase makes the assumption that the device displaying it has a 
-  viewport width of at least 640px (approx).
-  -->
+  <div>shuldboverlaPPed<br />
+  <span>bleedover1stline</span></div>
 
  </body>
 </html>

@@ -12,28 +12,37 @@
   <meta name="assert" content="'em' and 'ex' length values when defining 'font-size' property refer to the computed font size of the parent element." />
 
   <style type="text/css"><![CDATA[
-  div {font-family: Ahem; font-size: 32px;}
+  div
+  {
+  font-family: Ahem;
+  line-height: 1;
+  margin-top: 8px;
+  }
 
-  p {margin: 10px 30px;}
+  div#parent {font-size: 40px;}
 
-  #test {font-size: 16px;}
-  #control, #test {font-size: 2.5ex;} 
+  div#test {font-size: 20px;}
+  
+  div#control, div#test {font-size: 2.5ex;} 
 
-  #control2 {font-family: Ahem; font-size: 64px;} 
+  div#control2 {font-size: 80px;}
   ]]></style>
 
  </head>
 
  <body>
 
-  <p>The 3 black squares below should have the same width and the same height.</p>
+  <p>Test passes if the 3 black squares have <strong>the same width and the same height</strong>.</p>
 
-  <div>
-   <p id="control">X</p>
-   <p id="test">X</p>
+  <div id="parent"> 
+
+    <div id="control">C</div>
+
+    <div id="test">T</div>
+
   </div>
 
-  <p id="control2">X</p>
+  <div id="control2">2</div>
 
  </body>
 </html>

@@ -1,0 +1,14 @@
+storage_local_clear.html
+storage_local_getitem.html
+storage_local_index.html
+storage_local_in.html
+storage_local_length.html
+storage_local_removeitem.html
+storage_local_setitem.html
+storage_session_clear.html
+storage_session_getitem.html
+storage_session_index.html
+storage_session_in.html
+storage_session_length.html
+storage_session_removeitem.html
+storage_session_setitem.html

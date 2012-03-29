@@ -1,23 +1,24 @@
 <!DOCTYPE html>
 <html>
  <head>
-  <title>CSS Test: scaleY up -1.5</title>
+  <title>CSS Test: SVG presentation attribute and scaleY -1.5</title>
   <link rel="author" title="Rebecca Hauck" href="rhauck@adobe.com"/>
   <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-tranform"/>
   <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions"/>
   <link rel="help" href="http://www.w3.org/TR/css3-transforms/#ScaleDefined"/>
+  <link rel="match" href="reftest/svg-scale-ref.xht"/>
   <meta name="flags" content="svg" />
   <meta name="assert" content="Scaling by a negative value should flip the rect. In this test, it should be flipped down into view and vertically scaled up 1.5 to 150x150"/>
   <style type="text/css">
     svg {
-      width: 200px;
-      height: 200px;
+      width: 300px;
+      height: 300px;
     }
   </style>
  </head>
  <body>
      <p>You should see 150 x 150 blue rect.</p>
-     <svg>
+    <svg>
          <rect x="0" y="-100" width="150" height="100" fill="blue" transform="scaleY(-1.5)"/>
      </svg>
   </body>

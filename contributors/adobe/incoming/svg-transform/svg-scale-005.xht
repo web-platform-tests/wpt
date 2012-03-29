@@ -1,23 +1,24 @@
 <!DOCTYPE html>
 <html>
  <head>
-  <title>CSS Test: Percent values in the scale transform function not supported</title>
+  <title>CSS Test: SVG presentation attribute and scale with percent values - not supported</title>
   <link rel="author" title="Rebecca Hauck" href="rhauck@adobe.com"/>
   <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-tranform"/>
   <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions"/>
   <link rel="help" href="http://www.w3.org/TR/css3-transforms/#ScaleDefined"/>
+  <link rel="match" href="reftest/svg-scale-ref.xht"/>
   <meta name="flags" content="svg" />
-  <meta name="assert" content="Percent values are not supported. The rect in the test should not be scaled down and should be to 150x150"/>
+  <meta name="assert" content="Percent values are not supported. The rect in the test should not be scaled and should remain 150x150"/>
   <style type="text/css">
     svg {
-      width: 200px;
-      height: 200px;
+      width: 300px;
+      height: 300px;
     }
   </style>
  </head>
  <body>
      <p>You should see 150 x 150 blue rect.</p>
-     <svg>
+    <svg>
          <rect width="150" height="150" fill="blue" transform="scale(50%)"/>
      </svg>
   </body>

@@ -1,23 +1,24 @@
 <!DOCTYPE html>
 <html>
  <head>
-  <title>CSS Test: Scale down -0.5 with parameters separated by commas + no whitespace</title>
+  <title>CSS Test: SVG presentation attribute and scale -0.5 with parameters separated by commas + no whitespace</title>
   <link rel="author" title="Rebecca Hauck" href="rhauck@adobe.com"/>
   <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-tranform"/>
   <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions"/>
   <link rel="help" href="http://www.w3.org/TR/css3-transforms/#ScaleDefined"/>
+  <link rel="match" href="reftest/svg-scale-ref.xht"/>
   <meta name="flags" content="svg" />
   <meta name="assert" content="Scaling by a negative value should flip the rect. In this test, it should be flipped into view right + down and scaled down 0.5 to 150x150 with the parameters separated by commas + no whitespace"/>
   <style type="text/css">
     svg {
-      width: 200px;
-      height: 200px;
+      width: 300px;
+      height: 300px;
     }
   </style>
  </head>
  <body>
      <p>You should see 150 x 150 blue rect.</p>
-     <svg>
+    <svg>
          <rect x="-300" y="-300" width="300" height="300" fill="blue" transform="scale(-0.5,-0.5)"/>
      </svg>
   </body>

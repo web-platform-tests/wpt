@@ -11,4 +11,15 @@ test(function() {
   assert_true(result instanceof Element, "Expected an Element.");
   assert_false(result.hasAttribute("id"), "Expected the IDless Element.")
 })
+test(function() {
+  var container = document.getElementById("test");
+  var list = container.children;
+  var result = [];
+  for (var p in list) {
+    if (list.hasOwnProperty(p)) {
+      result.push(p);
+    }
+  }
+  assert_array_equals(result, ['0', '1', '2', 'foo']);
+});
 </script>

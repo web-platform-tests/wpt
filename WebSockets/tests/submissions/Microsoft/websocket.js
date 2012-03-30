@@ -1,8 +1,8 @@
-﻿// Need to replace with W3C Jetty Server once echo module is in place
-var __SERVER__NAME = "html5labs-interop.cloudapp.net";
-var __PORT = 80;
+﻿// SECURE PORTS NOT WORKING YET
+var __SERVER__NAME = "w3c-test.org";
+var __PORT = 8080;
 var __SECURE__PORT = 443;
-var __NEW__PORT = 81;
+var __NEW__PORT = 8081;
 var __NEW__SECURE__PORT = 444;
 var __PATH = "echo";
 var __PROTOCOL = "echo";

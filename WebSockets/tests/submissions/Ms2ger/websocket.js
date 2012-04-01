@@ -1,3 +1,3 @@
-var __SERVER__NAME = "html5labs-interop.cloudapp.net";
-var __PORT = 80;
+var __SERVER__NAME = "w3c-test.org";
+var __PORT = 8080;
 var __PATH = "echo";

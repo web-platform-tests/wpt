@@ -216,7 +216,17 @@ tests.forEach(function(obj) {
 		//	finalTarget.dispatchEvent(e);
 		//}
 
-		document.execCommand(command, false, value);
+		var exception = null;
+		try {
+			document.execCommand(command, false, value);
+		} catch(e) {
+			exception = e;
+		}
+
+		test(function() {
+			assert_equals(exception, null, "Unexpected exception");
+		}, obj.name + ": execCommand() must not throw, "
+		+ (cancel ? "canceled" : "uncanceled"));
 
 		test(function() {
 			assert_equals(beforeInputEvents.length, target ? 1 : 0,
@@ -234,13 +244,16 @@ tests.forEach(function(obj) {
 			assert_equals(e.bubbles, true, "event.bubbles");
 			assert_equals(e.cancelable, true, "event.cancelable");
 			assert_equals(e.defaultPrevented, false, "event.defaultPrevented");
-			assert_equals(e.isTrusted, true, "event.isTrusted");
 			assert_equals(e.command, command, "e.command");
 			assert_equals(e.value, value, "e.value");
-			assert_equals(Object.getPrototypeOf(e.original), EditingBeforeInputEvent,
+			assert_own_property(window, "EditingBeforeInputEvent",
+				"window.EditingBeforeInputEvent must exist");
+			assert_equals(Object.getPrototypeOf(e.original),
+				EditingBeforeInputEvent.prototype,
 				"event prototype");
 			assert_true(originalContents.isEqualNode(div),
 				"div contents not yet changed");
+			assert_equals(e.isTrusted, true, "event.isTrusted");
 		}, obj.name + ": beforeinput event, " + (cancel ? "canceled" : "uncanceled"));
 
 		test(function() {
@@ -259,12 +272,18 @@ tests.forEach(function(obj) {
 			assert_equals(e.bubbles, true, "event.bubbles");
 			assert_equals(e.cancelable, false, "event.cancelable");
 			assert_equals(e.defaultPrevented, false, "event.defaultPrevented");
-			assert_equals(e.isTrusted, true, "event.isTrusted");
 			assert_equals(e.command, command, "e.command");
 			assert_equals(e.value, value, "e.value");
-			assert_equals(Object.getPrototypeOf(e.original), EditingInputEvent,
+			assert_own_property(window, "EditingInputEvent",
+				"window.EditingInputEvent must exist");
+			assert_equals(Object.getPrototypeOf(e.original),
+				EditingInputEvent.prototype,
 				"event prototype");
+			assert_equals(e.isTrusted, true, "event.isTrusted");
 		}, obj.name + ": input event, " + (cancel ? "canceled" : "uncanceled"));
 	});
 });
+
+// Thanks, Gecko.
+document.body.bgColor = "";
 </script>

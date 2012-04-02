@@ -18,6 +18,7 @@ storage_local_getitem.html
 storage_local_key.html
 storage_local_length.html
 storage_local_removeitem.html
+storage_local_security.html
 storage_local_setitem.html
 storage_session_clear.html
 storage_session_getitem.html

@@ -1,11 +1,10 @@
-event_local_constructor.html
+event_constructor.html
 event_local_key.html
 event_local_newvalue.html
 event_local_oldvalue.html
 event_local_storagearea.html
 event_local_storageeventinit.html
 event_local_url.html
-event_session_constructor.html
 event_session_key.html
 event_session_newvalue.html
 event_session_oldvalue.html

@@ -20,7 +20,6 @@
         test(function() {
             localStorage.clear();
             var t = async_test("key property test of local event");
-            // XXX https://www.w3.org/Bugs/Public/show_bug.cgi?id=16469
             var expected = ['name', null]
             function onStorageEvent(event) {
                 t.step(function() {

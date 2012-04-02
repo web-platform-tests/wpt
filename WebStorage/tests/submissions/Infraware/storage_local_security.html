@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+<html>
+ <head>
+  <title>Web Storage</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+ </head>
+ <body>
+    <h1>storage_local_security</h1>
+	<iframe id="frame" style="width: 0px; height: 0px;"></iframe>
+    <div id="log"></div>
+    <script>
+		try {
+			iframeWindow = document.getElementById('frame').contentWindow;
+			iframeWindow.document.domain = "hello.world";
+			iframeWindow.localStorage.clear();
+			
+			test(function() {
+				assert_unreached('SECURITY_ERR error is not raised.');
+			});
+		} catch (e) {
+			test(function() {
+				assert_equals(e.code, e['SECURITY_ERR'], 'SECURITY_ERR error is not raised.')
+			});
+		}
+    </script>
+ </body>
+</html>

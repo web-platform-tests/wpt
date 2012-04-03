@@ -128,4 +128,14 @@ var nodeNuked = [
   "setUserData"
 ]
 nodeNuked.forEach(isNukedFromNode)
+
+function isNukedFromWindow(name) {
+  test(function() {
+    assert_equals(window[name], undefined)
+  }, "Window member must be nuked: " + name)
+}
+var windowNuked = [
+  "attachEvent"
+]
+windowNuked.forEach(isNukedFromWindow)
 </script>

@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title>CSS Test: height:auto on region box</title>
+    <title>CSS Test: height:auto on region box with mulit-column layout</title>
     <link rel="author" title="Vincent Hardy, Adobe Systems" href="mailto:vhardy@adobe.com" />
     <link rel="help" href="http://dev.w3.org/csswg/css3-regions/#rfcb-flow-fragment-height-resolution-phase-2" />
     <link rel="match" href="regions-auto-size-6-ref.xht" />
@@ -13,7 +13,12 @@
      into its columns." />
     <style>
     /*<![CDATA[*/
-    
+body {
+    width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}    
+
 #article {
     -webkit-flow-into: article;
 }

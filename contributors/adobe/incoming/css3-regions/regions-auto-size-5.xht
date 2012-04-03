@@ -1,16 +1,26 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title>CSS Test: height:auto on region box</title>
+    <title>CSS Test: height:auto on region box when used width changes between Step 1 and Step 2</title>
     <link rel="author" title="Vincent Hardy, Adobe Systems" href="mailto:vhardy@adobe.com" />
-    <link rel="help" href="http://dev.w3.org/csswg/css3-regions/#rfcb-height-computation" />
-    <link rel="match" href="regions-auto-size-4-ref.xht" />
+    <link rel="help" href="http://dev.w3.org/csswg/css3-regions/#rfcb-flow-fragment-height-resolution" />
+    <link rel="match" href="regions-auto-size-5-ref.xht" />
     <meta name="flags" content="" />
     <meta name="assert" content=
-    "The height of a region with height:auto is computed from the fragment content" />
+    "The height of region rC should be 'too large' because the flow fragment height in Step 1 Phase 2 is computed on a width 
+    that is different from that used for the Step 2 region box layout. In Step 1 Phase 2, region rC has a used width of 50% 
+    of its containing block. But has a width of 100% of its containing block during the Step 2 region box layout. As a consequence,
+    during Step 3, the flow content fits in a smaller height and there is extra space at the end of the region box. This is an 
+    edge case but this test validates the expected behavior." />
     <style>
     /*<![CDATA[*/
     
+body {
+    width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 #article {
     -webkit-flow-into: article;
 }
@@ -56,7 +66,7 @@
 /*]]>*/
 </style>
 </head>
-<body style="border: 1px solid black">
+<body>
     <div id="article">
         <!-- rA -->
         <div class="line"></div>

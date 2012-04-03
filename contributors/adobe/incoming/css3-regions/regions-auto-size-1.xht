@@ -1,9 +1,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title>CSS Test: height:auto on region box</title>
+    <title>CSS Test: width:auto and height:auto on single region box</title>
     <link rel="author" title="Vincent Hardy, Adobe Systems" href="mailto:vhardy@adobe.com" />
-    <link rel="help" href="http://dev.w3.org/csswg/css3-regions/#rfcb-height-computation" />
+    <link rel="help" href="http://dev.w3.org/csswg/css3-regions/#rfcb-flow-fragment-height-resolution" />
     <link rel="match" href="regions-auto-size-1-ref.xht" />
     <meta name="flags" content="" />
     <meta name="assert" content=
@@ -14,18 +14,17 @@
     -webkit-flow-into: article;
 }
 
-#regionA {
+#region {
     -webkit-flow-from: article;
-    width: 100%; /** FIXME: should be auto **/
+    width: auto;
     height: auto;
-    border: 1px solid lime;
+    border: 1px solid #a0a0a0;
 }
 
 /*]]>*/
 </style>
 </head>
 <body>
-    <div id="wrapper">
     <div id="article">
         <p>I am not a plane Figure, but a Solid. You call me a Circle; but in reality I
         am not a Circle, but an infinite number of Circles, of size varying from a
@@ -47,7 +46,6 @@
         powder- magazines, barracks, and other state buildings, which it is not
         desirable that the general public should approach without circumspection.</p>
     </div>
-    </div>
-    <div id="regionA"></div>
+    <div id="region"></div>
 </body>
 </html>

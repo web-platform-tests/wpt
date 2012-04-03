@@ -1,13 +1,14 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title>CSS Test: height:auto on region box</title>
+    <title>CSS Test: height:auto on two regions box with different widths</title>
     <link rel="author" title="Vincent Hardy, Adobe Systems" href="mailto:vhardy@adobe.com" />
-    <link rel="help" href="http://dev.w3.org/csswg/css3-regions/#rfcb-height-computation" />
+    <link rel="help" href="http://dev.w3.org/csswg/css3-regions/#rfcb-flow-fragment-height-resolution" />
     <link rel="match" href="regions-auto-size-2-ref.xht" />
     <meta name="flags" content="" />
     <meta name="assert" content=
-    "The height of a region with height:auto is computed from the fragment content" />
+    "The height of a region with height:auto is computed from the fragment content. The first region only
+    lays out the content until the first break. The second region lays out the reminder of the flow." />
     <style>
     /*<![CDATA[*/
 #article {
@@ -22,23 +23,22 @@
     -webkit-flow-from: article;
     width: 800px;
     height: auto;
-    border: 1px solid lime;
+    border: 1px solid #a0a0a0;
 }
 
 #regionB {
     -webkit-flow-from: article;
     width: 400px;
     height: auto;
-    border: 1px solid lime;
+    border: 1px solid #a0a0a0;
 }
 
 /*]]>*/
 </style>
 </head>
 <body>
-    <div id="wrapper">
     <div id="article">
-        <p style="">I am not a plane Figure, but a Solid. You call me a Circle; but in reality I
+        <p>I am not a plane Figure, but a Solid. You call me a Circle; but in reality I
         am not a Circle, but an infinite number of Circles, of size varying from a
         Point to a Circle of thirteen inches in diameter, one placed on the top of
         the other. When I cut through your plane as I am now doing, I make in your
@@ -57,7 +57,6 @@
         universally forbidden by Law, the only exceptions being fortifications,
         powder- magazines, barracks, and other state buildings, which it is not
         desirable that the general public should approach without circumspection.</p>
-    </div>
     </div>
     <div id="regionA"></div>
     <div id="regionB"></div>

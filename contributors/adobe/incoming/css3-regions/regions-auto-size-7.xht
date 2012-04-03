@@ -4,7 +4,7 @@
     <title>CSS Test: height:auto on region box with top/bottom layout dependencies</title>
     <link rel="author" title="Vincent Hardy, Adobe Systems" href="mailto:vhardy@adobe.com" />
     <link rel="help" href="http://dev.w3.org/csswg/css3-regions/#rfcb-flow-fragment-height-resolution-phase-2" />
-    <link rel="match" href="regions-auto-size-6-ref.xht" />
+    <link rel="match" href="regions-auto-size-7-ref.xht" />
     <meta name="flags" content="" />
     <meta name="assert" content=
     "In Step 1, Phase 2, the flow fragment height computed for rA should be zero and the flow fragment height computed
@@ -13,13 +13,24 @@
     rA which can fit the entire flow content and rB will be empty (and oversized);" />
     <style>
     /*<![CDATA[*/
+    
+#container {
+    position: relative;
+    border: 1px solid red;
+}
+
+#rA, #rB {
+    border: 3px solid #46A4E9;
+    border-radius: 0.5em;;
+}
+
 #rA {
     top: 0;
     bottom: 0;
+    left: 0;
     width: 100px;
     position: absolute;
     -webkit-flow-from: article;
-    border: 1px solid lime;
 }
 
 #rB {
@@ -28,7 +39,6 @@
     height: auto;
     box-sizing: border;
     margin-left: 120px;
-    border: 1px solid green;
 }
 #article {
     -webkit-flow-into: article;
@@ -41,7 +51,7 @@
         <div style="width:50px;height: 300px; background: #a0a0a0;"></div>
     </div>
     
-    <div id="container" style="position:relative;border: 1px solid red;">
+    <div id="container">
         <div id="rA"></div>
         <div id="rB"></div>
     </div>

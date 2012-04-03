@@ -3,37 +3,26 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 
  <head>
- 
+
   <title>CSS Reftest Reference</title>
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
 
   <style type="text/css"><![CDATA[
-  table
+  div
   {
-  background-color: blue;
-  border-spacing: 0px;
-  height: 200px;
+  line-height: 30px;
+  margin: auto 2px;
   }
-
-  td
-  {
-  padding: 0px;
-  width: 100px;
-  }
-
-  td#middle {background-color: orange;}
   ]]></style>
 
  </head>
 
  <body>
 
-  <p>Test passes if the filled orange rectangle has a filled blue rectangle on either side.</p>
+  <p>Test passes if there are 3 instances of "Filler Text".</p>
 
-  <table>
-  <tr><td></td><td id="middle"></td><td></td></tr>
-  </table>
+  <div>Filler Text Filler Text Filler Text</div>
 
  </body>
 </html>

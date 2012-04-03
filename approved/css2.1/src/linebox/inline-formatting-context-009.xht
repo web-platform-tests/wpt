@@ -3,6 +3,7 @@
     <head>
         <title>CSS Test: Inline element widths are determined by the containing block and floated elements</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-04-02 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#inline-formatting" />
         <link rel="match" href="inline-formatting-context-009-ref.xht" />
 
@@ -12,7 +13,7 @@
             #div1
             {
                 background: orange;
-                font: 1in/1em Ahem;
+                font: 100px/1em Ahem;
                 height: 2em;
                 width: 3em;
             }
@@ -30,7 +31,7 @@
         </style>
     </head>
     <body>
-        <p>Test passes if the orange box has a blue box on either side.</p>
+        <p>Test passes if the filled orange rectangle has a filled blue rectangle on either side.</p>
         <div id="div1">
             <div id="div2"></div>
             <div>X X X</div>

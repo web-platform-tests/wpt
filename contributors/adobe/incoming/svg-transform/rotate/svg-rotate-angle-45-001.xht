@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CSS Test: SVG presentation attribute and angle argument without unit on rotate</title>
+    <link rel="author" title="Rebecca Hauck" href="rhauck@adobe.com"/>
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-transform"/>
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-angle"/>
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions"/>
+    <link rel="match" href="reftest/svg-rotate-angle-45-ref.xht"/>
+    <meta name="flags" content="svg" />
+    <meta name="assert" content="The rotate transform function must support unitless arguments for angle. The circle in the test should be rotated by 45 degrees clockwise, even if no unit was specified."/>
+    <style type="text/css">
+    svg {
+        width: 300px;
+        height: 300px;
+    }
+    </style>
+</head>
+<body>
+    <p>You should see a 80x80 square divided vertically down the middle where the left half is fuchsia and the right half is orange.</p>
+    <svg>
+        <defs>
+            <!-- Fill with gradient to make visible the circle's position after the rotation -->
+            <linearGradient id="grad" x1="0%" y1="100%" >
+                <stop offset="50%" stop-color="fuchsia" />
+                <stop offset="50%" stop-color="orange" />
+            </linearGradient>
+            <!-- Clip a square path to clip away any anti-aliasing issues -->
+            <clipPath id="clip">
+                <path d = "M 41 130 L 121 130 L 121 210 L 41 210 Z"/>
+            </clipPath>
+        </defs>
+        <g clip-path="url(#clip)">
+            <circle cx="175" cy="60" r="60" fill="url(#grad)" transform="rotate(45)" />
+        </g>
+    </svg>
+</body>
+</html>

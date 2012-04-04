@@ -14,14 +14,19 @@
     <style>
     /*<![CDATA[*/
     
+body {
+    width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 #container {
     position: relative;
-    border: 1px solid red;
+    border: 1px solid #a0a0a0;
 }
 
 #rA, #rB {
     border: 3px solid #46A4E9;
-    border-radius: 0.5em;;
 }
 
 #rA {
@@ -39,14 +44,20 @@
     height: auto;
     box-sizing: border;
     margin-left: 120px;
+    z-index: 1;
 }
 #article {
     -webkit-flow-into: article;
 }
+
+
 /*]]>*/
 </style>
 </head>
 <body>
+    <p>You should see a 300px hight gray border box with two blue boxes to the left tightly fitting
+        along the y-axis. The leftmost box should contain a gray box that also tightly fit along the
+        y-axis. The rightmost box should be empty.</p>
     <div id="article">
         <div style="width:50px;height: 300px; background: #a0a0a0;"></div>
     </div>

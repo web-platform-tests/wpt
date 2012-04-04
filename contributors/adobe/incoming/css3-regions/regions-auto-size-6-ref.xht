@@ -13,8 +13,7 @@ body {
 #rA, #rB, #rC {
     padding: 0em;
     box-sizing: border-box;
-    border: 3px solid #46A4E9;
-    border-radius: 0.5em;
+    border: 1px solid #a0a0a0;
     width: 100%;
 }
 
@@ -34,12 +33,19 @@ body {
 </style>
 </head>
 <body>
-	<div id="rA"><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus orci mi, feugiat quis feugiat imperdiet, scelerisque et sem. Vivamus nec nisi sit amet risus elementum rutrum sed ac mi. Curabitur sapien nulla, dictum eu consectetur et, pulvinar ut ipsum. Nullam non purus non nibh aliquet tincidunt a nec est. Ut vitae libero eu dolor ullamcorper pharetra. Curabitur consequat, felis a fringilla varius, lectus turpis auctor enim, id lacinia tellus lacus at sem. Etiam bibendum nibh vitae purus vestibulum molestie. Phasellus tristique purus eget nisi euismod et feugiat est imperdiet. Phasellus laoreet turpis malesuada nisi sollicitudin scelerisque.</p>
+    <p>You should see three gray boxes:</p>
+    <ul>
+        <li>the first box should read 'In first region'</li>
+        <li>the second box should have three evenly spaced columns and read 'col 0', 'col 1', 'col 2' in each colum</li>
+        <li>the third box should read 'In third region'</li>
+    </ul>
+    	<div id="rA"><p>In first region</p>
     </div>
 	<div id="rB">
-	   <p style="-webkit-region-break-after:always;">Morbi imperdiet, massa ac molestie lacinia, tortor sapien ornare quam, quis luctus nisl est et purus. Cras vel odio felis, ut rhoncus urna. Maecenas ut quam eu est vehicula feugiat. Praesent eget leo augue, vel tincidunt mauris. Maecenas accumsan, velit dictum sagittis imperdiet, elit velit gravida ligula, in pulvinar velit libero ac nibh. Mauris eget rhoncus magna. Donec ultricies massa tortor, nec euismod nibh. Sed a nibh mauris, venenatis gravida nisl. Cras neque metus, vulputate et cursus non, ultricies sit amet metus. Praesent vestibulum lacinia gravida. Nunc eget nulla quis tellus consectetur aliquam in quis purus. Sed nec turpis vel leo vehicula vulputate ac at diam. Aenean at turpis non enim viverra faucibus a in massa. Donec et dui a leo scelerisque luctus. Cras in justo a mauris hendrerit faucibus.</p>
-	   
+ 	   <p>In second region</p>
+	   <p>In second region</p>
+	   <p>In second region</p>
 	</div>
-	<div id="rC"><p style="-webkit-region-break-after:always;">Morbi imperdiet, massa ac molestie lacinia, tortor sapien ornare quam, quis luctus nisl est et purus. Cras vel odio felis, ut rhoncus urna. Maecenas ut quam eu est vehicula feugiat. Praesent eget leo augue, vel tincidunt mauris. Maecenas accumsan, velit dictum sagittis imperdiet, elit velit gravida ligula, in pulvinar velit libero ac nibh. Mauris eget rhoncus magna. Donec ultricies massa tortor, nec euismod nibh. Sed a nibh mauris, venenatis gravida nisl. Cras neque metus, vulputate et cursus non, ultricies sit amet metus. Praesent vestibulum lacinia gravida. Nunc eget nulla quis tellus consectetur aliquam in quis purus. Sed nec turpis vel leo vehicula vulputate ac at diam. Aenean at turpis non enim viverra faucibus a in massa. Donec et dui a leo scelerisque luctus. Cras in justo a mauris hendrerit faucibus.</p></div>
+	<div id="rC">In third region</div>
 </body>
 </html>

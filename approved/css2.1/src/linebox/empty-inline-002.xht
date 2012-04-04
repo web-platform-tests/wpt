@@ -3,6 +3,7 @@
     <head>
         <title>CSS Test: Empty line box influence</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-04-04 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#propdef-line-height" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#leading" />
         <link rel="match" href="empty-inline-002-ref.xht" /> 
@@ -12,44 +13,44 @@
         <style type="text/css">
             div, span
             {
-                font: 1in/1em Ahem;
+                font: 100px/1em Ahem;
             }
             #div1
             {
-                margin-top: 1in;
+                margin-top: 100px;
             }
             #div2, #div3
             {
-                width: 5in;
+                width: 500px;
             }
             #div2
             {
-                border: 0.25in solid green;
+                border: 25px solid green;
             }
             span
             {
                 background: green;
-                border: 0.25in solid green;
-                margin: 1in;
-                padding: 1in;
+                border: 25px solid green;
+                margin: 100px;
+                padding: 100px;
             }
             #div3
             {
-                border: 0.25in solid red;
-                height: 1in;
+                border: 25px solid red;
+                height: 100px;
                 position: relative;
-                top: -1.5in;
+                top: -150px;
                 z-index: -1;
             }
             #div3 div
             {
                 background: red;
-                border: 0.25in solid red;
-                height: 3in;
-                margin: 0 1in;
+                border: 25px solid red;
+                height: 300px;
+                margin: 0 100px;
                 position: relative;
-                top: -1.25in;
-                width: 2in;
+                top: -125px;
+                width: 200px;
             }
         </style>
     </head>

@@ -15,6 +15,7 @@ body {
     box-sizing: border-box;
     border: 1px solid #a0a0a0;
     width: 100%;
+    margin-top: 2em;
 }
 
 #rA {
@@ -29,6 +30,11 @@ body {
 #rC {
      height: auto;
 }
+
+#rA p, #rB p, #rC p {
+    background: #e0e0e0;
+}
+
 /*]]>*/
 </style>
 </head>
@@ -39,13 +45,13 @@ body {
         <li>the second box should have three evenly spaced columns and read 'col 0', 'col 1', 'col 2' in each colum</li>
         <li>the third box should read 'In third region'</li>
     </ul>
-    	<div id="rA"><p>In first region</p>
+    	<div id="rA"><p>In first region</p><p>In first region</p>
     </div>
 	<div id="rB">
  	   <p>In second region</p>
 	   <p>In second region</p>
 	   <p>In second region</p>
 	</div>
-	<div id="rC">In third region</div>
+	<div id="rC"><p>In third region</p></div>
 </body>
 </html>

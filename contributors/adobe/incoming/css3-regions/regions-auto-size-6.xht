@@ -23,16 +23,9 @@ body {
     -webkit-flow-into: article;
 }
 
-.line {
-    display: inline-block;
-    background: #a0a0a0;
-    width: 250px;
-    height: 25px;
-}
-
-.line.with-break {
-    -webkit-region-break-after:always;
-    border: 1px solid red;
+#article p {
+    
+    background: #e0e0e0;
 }
 
 #rA, #rB, #rC {
@@ -41,6 +34,7 @@ body {
     box-sizing: border-box;
     border: 1px solid #a0a0a0;
     width: 100%;
+    margin-top: 2em;
 }
 
 #rA {
@@ -66,8 +60,9 @@ body {
         <li>the third box should read 'In third region'</li>
     </ul>
     <div id="article">
+        <p>In first region</p>
         <p style="-webkit-region-break-after:always;">In first region</p>
-        <p >In second region</p>
+        <p style="-webkit-column-break-after: always;">In second region</p>
         <p >In second region</p>
         <p style="-webkit-region-break-after:always;">In second region</p>
         <p style="-webkit-region-break-after:always;">In third region</p>

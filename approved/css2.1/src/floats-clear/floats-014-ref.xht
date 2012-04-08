@@ -5,6 +5,7 @@
  <head>
 
   <title>CSS Reftest Reference</title>
+
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
 
   <style type="text/css"><![CDATA[
@@ -16,11 +17,7 @@
   padding: 9px;
   }
   
-  td
-  {
-  color: blue;
-  font: 96px/1 Ahem;
-  }
+  img {vertical-align: top;}
   
   td.left-column {padding-right: 10px;}
 
@@ -39,9 +36,9 @@
 
   <table>
 
-    <tr><td class="left-column top-row">1</td><td class="right-column top-row">2</td></tr>  
+    <tr><td class="left-column top-row"><img src="support/swatch-blue.png" width="96" height="96" alt="Image download support must be enabled" /></td><td class="right-column top-row"><img src="support/swatch-blue.png" width="96" height="96" alt="Image download support must be enabled" /></td></tr>  
 
-    <tr><td class="left-column bottom-row">3</td><td class="right-column bottom-row">4</td></tr>  
+    <tr><td class="left-column bottom-row"><img src="support/swatch-blue.png" width="96" height="96" alt="Image download support must be enabled" /></td><td class="right-column bottom-row"><img src="support/swatch-blue.png" width="96" height="96" alt="Image download support must be enabled" /></td></tr>  
 
   </table>
 

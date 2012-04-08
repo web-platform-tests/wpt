@@ -3,19 +3,20 @@
  <head>
   <title>CSS Test: CSS: font-weight 500/600 defaulting to normal/bold</title>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-04-08 -->
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/fonts/ahem/005.xml" type="application/xhtml+xml"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/fonts.html#font-boldness" />
 
   <meta name="flags" content="ahem"/>
   <style type="text/css">
-   .overlap { height: 4em; width: 6em; background: white; position: absolute; z-index: 1; }
-   .a { font: 500 2em/1em Ahem; color: red; }
-   .b { font: 600 2em/1em Ahem; color: green; }
+   .overlap { height: 5em; width: 7.5em; background: white; position: absolute; z-index: 1; }
+   .a { font: 500 2.5em/1em Ahem; color: red; }
+   .b { font: 600 2.5em/1em Ahem; color: green; }
   </style>
  </head>
  <body>
 
-  <p>Test passes if there is a narrow line of green.</p>
+  <p>Test passes if there is a short and narrow vertical line of green.</p>
 
   <div> <!-- work around for bug 87712 -->
     <div class="overlap"/>

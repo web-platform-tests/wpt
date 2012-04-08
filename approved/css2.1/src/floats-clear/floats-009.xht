@@ -3,6 +3,7 @@
     <head>
         <title>CSS Test: Right floats interacting with right-to-left inline content</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-04-07 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#floats" />
         <link rel="match" href="floats-009-ref.xht" />
 
@@ -12,20 +13,20 @@
             #div1
             {
                 direction: rtl;
-                height: 2in;
-                width: 3in;
+                height: 200px;
+                width: 300px;
             }
             #span1
             {
                 color: orange;
-                font: 1in/1 Ahem;
+                font: 100px/1 Ahem;
             }
             .class1
             {
                 background-color: blue;
                 float: right;
-                height: 1in;
-                width: 1in;
+                height: 100px;
+                width: 100px;
             }
         </style>
     </head>

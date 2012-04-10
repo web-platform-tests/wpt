@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <title>Canvas test: 2d.shadow.gradient.alpha</title>
 <meta name="author" content="Philip Taylor">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
 <script src="../common/canvas-tests.js"></script>
 <link rel="stylesheet" href="../common/canvas-tests.css">
 <body class="show_output">
@@ -19,6 +21,7 @@
 <p class="output expectedtext">Expected output:<p><img src="2d.shadow.gradient.alpha.png" class="output expected" id="expected" alt="">
 <ul id="d"></ul>
 <script>
+var t = async_test("Shadows are drawn correctly for partially-transparent gradient fills");
 _addTest(function(canvas, ctx) {
 
 var gradient = ctx.createLinearGradient(0, 0, 100, 0);

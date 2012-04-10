@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <title>Canvas test: 2d.missingargs</title>
 <meta name="author" content="Philip Taylor">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
 <script src="../common/canvas-tests.js"></script>
 <link rel="stylesheet" href="../common/canvas-tests.css">
 <body class="show_output">
@@ -18,6 +20,7 @@
 
 <ul id="d"></ul>
 <script>
+var t = async_test("Missing arguments cause TypeError");
 _addTest(function(canvas, ctx) {
 
 try { var _thrown = false;

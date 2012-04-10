@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <title>Canvas test: 2d.imageData.create2.nonfinite</title>
 <meta name="author" content="Philip Taylor">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
 <script src="../common/canvas-tests.js"></script>
 <link rel="stylesheet" href="../common/canvas-tests.css">
 <body class="show_output">
@@ -19,6 +21,7 @@
 
 <ul id="d"></ul>
 <script>
+var t = async_test("createImageData() throws NOT_SUPPORTED_ERR if arguments are not finite");
 _addTest(function(canvas, ctx) {
 
 try { var _thrown = false;

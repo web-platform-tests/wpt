@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <title>Canvas test: 2d.imageData.create1.initial</title>
 <meta name="author" content="Philip Taylor">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
 <script src="../common/canvas-tests.js"></script>
 <link rel="stylesheet" href="../common/canvas-tests.css">
 <body class="show_output">
@@ -21,6 +23,7 @@
 
 <ul id="d"></ul>
 <script>
+var t = async_test("createImageData(imgdata) returns transparent black data of the right size");
 _addTest(function(canvas, ctx) {
 
 ctx.fillStyle = '#0f0';

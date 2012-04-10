@@ -86,6 +86,8 @@ w3c: |
     <!DOCTYPE html>
     <title>Canvas test: %(name)s</title>
     <meta name="author" content="Philip Taylor">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
     <script src="../common/canvas-tests.js"></script>
     <link rel="stylesheet" href="../common/canvas-tests.css">
     %(fonts)s<body class="show_output">
@@ -103,6 +105,7 @@ w3c: |
     %(expected)s
     <ul id="d"></ul>
     <script>
+    var t = async_test("%(desc)s");
     _addTest(function(canvas, ctx) {
 
     %(code)s

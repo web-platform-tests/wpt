@@ -1,9 +1,10 @@
-﻿// SECURE PORTS NOT WORKING YET
-var __SERVER__NAME = "w3c-test.org";
+﻿var __SERVER__NAME = "w3c-test.org";
 var __PORT = 8080;
-var __SECURE__PORT = 443;
+var __SECURE__PORT = 8443;
+// NOT ENABLED, NOT NEEDED AT THIS TIME
 var __NEW__PORT = 8081;
-var __NEW__SECURE__PORT = 444;
+// NOT ENABLED, NOT NEEDED AT THIS TIME
+var __NEW__SECURE__PORT = 8444;
 var __PATH = "echo";
 var __PROTOCOL = "echo";
 var __PROTOCOLS = ["echo", "chat"];

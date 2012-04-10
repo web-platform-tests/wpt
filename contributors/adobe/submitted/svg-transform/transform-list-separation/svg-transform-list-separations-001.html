@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>CSS Test: Comma, whitespace, and no separations between transform functions on SVG presentation attribute</title>
+    <title>CSS Test: No separations between transform functions on SVG presentation attribute</title>
     <link rel="author" title="Rebecca Hauck" href="rhauck@adobe.com"/>
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-transform"/>
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-transform-list"/>
-    <link rel="match" href="reftest/svg-transform-list-separations-ref.xht"/>
+    <link rel="match" href="reftest/svg-transform-list-separations-ref.html"/>
     <meta name="flags" content="svg" />
-    <meta name="assert" content="The rect in the test should have an x offset of 100, a y offset of 100, and should be rotated 90 degrees clockwise with 4 transform functions in the list delimited by a comma, whitespace, and nothing."/>
+    <meta name="assert" content="The rect in the test should have an x offset of 100, a y offset of 100, and should be rotated 90 degrees clockwise with no separation between the 3 transform functions in the list"/>
     <style type="text/css">
     svg {
         width: 300px;
@@ -25,7 +25,7 @@
                 <stop offset="50%" stop-color="orange" />
             </linearGradient>
         </defs>
-        <rect width="100" height="100" fill="url(#grad)" transform="translateX(200),translateY(100) rotate(45)rotate(45)"/>
+        <rect width="100" height="100" fill="url(#grad)" transform="translateX(200)translateY(100)rotate(90)"/>
     </svg>
 </body>
 </html>

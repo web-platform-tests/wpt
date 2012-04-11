@@ -27,8 +27,11 @@
   {
   background-color: green;
   border: white solid 3px; 
-  /* Such border prevents margin collapsing among vertical margins */
-  margin: 25%; /* 25% of 400px == 100px; */
+  /*
+  Such border prevents margin collapsing between 
+  #child's vertical margin and #parent's vertical margins
+  */
+  margin: 15%; /* 15% of 400px == 60px; */
   width: 200px;
   }
 
@@ -36,36 +39,36 @@
   {
   margin: inherit; 
   /* 
-  computes to 25% which is then applied on #child's 
-  containing block width: 25% of 200px == 50px 
+  computes to 15% which is then applied on #child's 
+  containing block width: 15% of 200px == 30px 
   */
   }
 
   div#abs-pos-overlapping-green
   {
-  left: 161px;
+  left: 101px;
   position: absolute;
-  top: 209px;
+  top: 149px;
   }
 
   /*
        8px (body's margin-left)
-   + 100px (#parent's margin-left) 
+   +  60px (#parent's margin-left) 
    +   3px (#parent's border-left) 
-   +  50px (#child's margin-left) 
+   +  30px (#child's margin-left) 
   ==================
-     161px
+     101px
   */
 
   /* 
       16px (max(8px, 16px): body's margin-top collapses with p's margin-top) 
   +   20px (first line) 
   +   20px (second line) 
-  +  100px (max(16px, 100px): p's margin-bottom collapses with #parent's margin-top) 
+  +   60px (max(16px, 60px): p's margin-bottom collapses with #parent's margin-top) 
   +    3px (#parent's border-top) 
-  +   50px (#child's margin-top) 
+  +   30px (#child's margin-top) 
   ==================
-     209px 
+     149px 
   */
   ]]></style>
 
@@ -74,7 +77,7 @@
  <body>
 
   <p>Test passes if there is a filled green<br />
-  square and if there is no red.</p>
+  rectangle and if there is no red.</p>
 
   <div id="grand-parent">
     <div id="parent">

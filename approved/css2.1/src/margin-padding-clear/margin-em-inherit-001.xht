@@ -18,20 +18,20 @@
 
   p
   {
-  font: 16px/20px serif;
+  font: 1em/1.25 serif;
   margin: 1em 0em;  
   }
   
-  div#grand-parent
-  {
-  width: 600px;
-  }
+  div#grand-parent {width: 600px;}
 
   div#parent
   {
-  background-color: lime;
+  background-color: green;
   border: white solid 6px;
-  /* Such border prevents margin collapsing between #parent's vertical margins and #child's vertical margins */  
+  /* 
+  Such border prevents margin collapsing between 
+  #parent's vertical margins and #child's vertical margins 
+  */  
   font-size: 28px;
   margin: 2em 3em 1em 4em; /* 56px 84px 28px 112px */
   }
@@ -40,16 +40,18 @@
   {
   font-size: 40px;
   margin: inherit; 
-  /* What is inherited is a computed length value: so it is 56px 84px 28px 112px and not 80px 120px 40px 160px */
+  /* 
+  What is inherited is a computed length value: so 
+  it is 56px 84px 28px 112px and not 80px 120px 40px 160px 
+  */
   }
 
-  div#abs-pos-overlapping-lime
+  div#abs-pos-overlapping-green
   {
   left: 238px;
   position: absolute;
   top: 174px;
   }
-
 
   /*
        8px (body's margin-left)
@@ -76,8 +78,8 @@
 
  <body>
 
-  <p>Test passes if there is a filled bright<br />
-  green rectangle and if there is no red.</p>
+  <p>Test passes if there is a filled green<br />
+  rectangle and if there is no red.</p>
 
   <div id="grand-parent">
     <div id="parent">
@@ -85,7 +87,7 @@
     </div>
   </div>
 
-  <div id="abs-pos-overlapping-lime"><img src="support/100x100-lime.png" alt="Image download support must be enabled" /></div>
+  <div id="abs-pos-overlapping-green"><img src="support/swatch-green.png" width="100" height="100" alt="Image download support must be enabled" /></div>
 
  </body>
 </html>

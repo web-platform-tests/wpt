@@ -18,13 +18,13 @@
 
   p
   {
-  font: 16px/20px serif;
+  font: 1em/1.25 serif;
   margin: 1em 0em;
   }
 
   div#rel-pos-grand-parent
   {
-  background-color: lime;
+  background-color: green;
   height: 300px;
   position: relative;
   width: 400px;
@@ -32,7 +32,7 @@
 
   div#abs-pos-parent
   {
-  background-color: lime;
+  background-color: green;
   bottom: 10%; /* 10% of 300px == 30px */
   left: 15%; /* 15% of 400px == 60px */
   position: absolute;
@@ -58,9 +58,9 @@
   */
   }
 
-  div#abs-pos-overlapping-lime
+  div#abs-pos-overlapping-green
   {
-  background-color: lime;
+  background-color: green;
   height: 108px;
   left: 107px;
   /*
@@ -92,7 +92,7 @@
   <body>
 
   <p>Test passes if there is a filled <br />
-  bright green rectangle and no red.</p>
+  green rectangle and no red.</p>
 
   <div id="rel-pos-grand-parent">
     <div id="abs-pos-parent">
@@ -100,7 +100,7 @@
     </div>
   </div>
 
-  <div id="abs-pos-overlapping-lime"></div>
+  <div id="abs-pos-overlapping-green"></div>
 
  </body>
 </html>

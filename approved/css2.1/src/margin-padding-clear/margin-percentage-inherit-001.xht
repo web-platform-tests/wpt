@@ -17,19 +17,17 @@
 
   p
   {
-  font: 16px/20px serif;
+  font: 1em/1.25 serif;
   margin: 1em 0em;  
   }
   
-  div#grand-parent
-  {
-  width: 400px;
-  }
+  div#grand-parent {width: 400px;}
 
   div#parent
   {
-  background-color: lime;
-  border: white solid 3px; /* Such border prevents margin collapsing among vertical margins */
+  background-color: green;
+  border: white solid 3px; 
+  /* Such border prevents margin collapsing among vertical margins */
   margin: 25%; /* 25% of 400px == 100px; */
   width: 200px;
   }
@@ -37,10 +35,13 @@
   div#child
   {
   margin: inherit; 
-  /* computes to 25% which is then applied on #child's containing block width: 25% of 200px == 50px */
+  /* 
+  computes to 25% which is then applied on #child's 
+  containing block width: 25% of 200px == 50px 
+  */
   }
 
-  div#abs-pos-overlapping-lime
+  div#abs-pos-overlapping-green
   {
   left: 161px;
   position: absolute;
@@ -72,8 +73,8 @@
 
  <body>
 
-  <p>Test passes if there is a filled bright<br />
-  green square and if there is no red.</p>
+  <p>Test passes if there is a filled green<br />
+  square and if there is no red.</p>
 
   <div id="grand-parent">
     <div id="parent">
@@ -81,7 +82,7 @@
     </div>
   </div>
 
-  <div id="abs-pos-overlapping-lime"><img src="support/100x100-lime.png" alt="Image download support must be enabled" /></div>
+  <div id="abs-pos-overlapping-green"><img src="support/swatch-green.png" width="100" height="100" alt="Image download support must be enabled" /></div>
 
  </body>
 </html>

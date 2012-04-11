@@ -17,18 +17,15 @@
 
   p
   {
-  font: 16px/20px serif;
+  font: 1em/1.25 serif;
   margin: 1em 0em;  
   }
   
-  div#grand-parent
-  {
-  width: 300px;
-  }
+  div#grand-parent {width: 300px;}
 
   div#parent
   {
-  background-color: lime;
+  background-color: green;
   height: 150px;
   padding: 20%; /* 20% of 300px == 60px; */
   width: 150px;
@@ -37,11 +34,13 @@
   div#child
   {
   padding: inherit; 
-  /* computes to 20% which is then applied 
-  on #child's containing block width: 20% of 150px == 30px */
+  /* 
+  computes to 20% which is then applied 
+  on #child's containing block width: 20% of 150px == 30px 
+  */
   }
 
-  div#abs-pos-overlapping-lime
+  div#abs-pos-overlapping-green
   {
   left: 98px;
   /*
@@ -72,7 +71,7 @@
  <body>
 
   <p>Test passes if there is a filled<br />
-  bright green square and no red.</p>
+  green square and no red.</p>
 
   <div id="grand-parent">
     <div id="parent">
@@ -80,7 +79,7 @@
     </div>
   </div>
 
-  <div id="abs-pos-overlapping-lime"><img src="support/100x100-lime.png" alt="Image download support must be enabled" /></div>
+  <div id="abs-pos-overlapping-green"><img src="support/swatch-green.png" width="100" height="100" alt="Image download support must be enabled" /></div>
 
  </body>
 </html>

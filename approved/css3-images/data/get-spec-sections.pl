@@ -30,7 +30,9 @@ use LWP::Simple;
 
 # read the page in from the web
 my $specURI = 'http://www.w3.org/TR/css3-images/';
-my $page = get($specURI);
+my $draftSpecURI = 'http://dev.w3.org/csswg/css3-images/';
+# my $page = get($specURI);
+my $page = get($draftSpecURI);
 $page =~ s/\x{D}\x{A}|\x{A}\{D}|\x{D}|\x{A}/\n/gos; # normalize newlines
 
 # remove everything except the toc

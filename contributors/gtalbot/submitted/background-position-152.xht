@@ -15,7 +15,7 @@
   <style type="text/css"><![CDATA[
   #nearest-positioned-ancestor
   {
-  background-color: lime; /* padding box will be lime */
+  background-color: green; /* padding box will be green */
   background-image: url("support/100x100-red.png");
   background-position: 14% 84%;
   background-attachment: scroll;
@@ -42,7 +42,7 @@
     56px (14% of #nearest-positioned-ancestor's padding box width)
   - 14px (14% of 100x100-red's width)
   ------------------
-    42px (overlapping bright green box's left offset within #nearest-positioned-ancestor)  
+    42px (overlapping green box's left offset within #nearest-positioned-ancestor)  
 
    42px represents exactly 10.5% of #nearest-positioned-ancestor's padding box 
    width (400px)
@@ -53,13 +53,13 @@
    252px (84% of #nearest-positioned-ancestor's padding box height)
   - 84px (84% of 100x100-red's height)
   ------------------
-   168px (overlapping bright green box's top offset within #nearest-positioned-ancestor)
+   168px (overlapping green box's top offset within #nearest-positioned-ancestor)
    
    168px represents exactly 56% of #nearest-positioned-ancestor's padding box 
    height (300px)
   */
 
-  #overlapping-abs-pos-lime-box
+  #overlapping-abs-pos-green-box
   {
   left: 10.5%; /* == 42px */
   position: absolute;
@@ -71,10 +71,10 @@
 
  <body>
 
-  <p>Test passes if there is a bright green rectangle and <strong>no red</strong>.</p>
+  <p>Test passes if there is a filled green rectangle and <strong>no red</strong>.</p>
 
   <div id="nearest-positioned-ancestor">
-    <div id="overlapping-abs-pos-lime-box"><img src="support/100x100-lime.png" alt="Image download support must be enabled" /></div>
+    <div id="overlapping-abs-pos-green-box"><img src="support/swatch-green.png" width="100" height="100" alt="Image download support must be enabled" /></div>
   </div>
 
  </body>

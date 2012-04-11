@@ -6,20 +6,20 @@
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-transform"/>
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions"/>
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#TranslateDefined"/>
-    <link rel="match" href="reftest/svg-translate-ref.html"/>
+    <link rel="match" href="reftest/svg-translate-x-relative-ref.html"/>
     <meta name="flags" content="svg" />
-    <meta name="assert" content="The translate transform function can have combinations of relative and absolute arguments and can be applied to relative sized shapes. The rect in the test should be moved 50 pixels in the X direction and 50 pixels in the Y direction"/>
+    <meta name="assert" content="The translate transform function can have combinations of relative and absolute arguments and can be applied to relative sized shapes. The rect in the test should be moved 50 pixels in the X direction and 75 pixels in the Y direction"/>
     <style type="text/css">
     svg {
-        width: 200px;
-        height: 200px;
+        width: 400px;
+        height: 400px;
     }
     </style>
 </head>
 <body>
-    <p>You should see a 100x100 orange rect at 50,50</p>
+    <p>You should see a 200x150 orange rect at 50,75</p>
     <svg>
-        <rect width="50%" height="100" fill="orange" transform="translate(50% 50)"/>
+        <rect width="50%" height="150" fill="orange" transform="translate(25% 75)"/>
     </svg>
 </body>
 </html>

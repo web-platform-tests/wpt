@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>CSS Test: SVG presentation attribute and translation-value arguments with percentage units on translate</title>
+    <title>CSS Test: SVG presentation attribute and translation-value arguments with translate applied twice in percentage units</title>
     <link rel="author" title="Rebecca Hauck" href="rhauck@adobe.com"/>
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-transform"/>
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions"/>
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#TranslateDefined"/>
     <link rel="match" href="reftest/svg-translate-x-relative-ref.html"/>
     <meta name="flags" content="svg" />
-    <meta name="assert" content="The translate transform function must support percentage units on translation-value arguments. The rect in the test should be moved 50 pixels in the X direction and 75 pixels in the Y direction"/>
+    <meta name="assert" content="The translate transform function can be called multiple times in relative translation-values. The rect in the test should be moved 50 pixels in the X direction and 75 pixels in the Y direction"/>
     <style type="text/css">
     svg {
         width: 300px;
@@ -19,7 +19,7 @@
 <body>
     <p>You should see a 200x150 orange rect at 50,75</p>
     <svg>
-        <rect width="200" height="150" fill="orange" transform="translate(25% 50%)"/>
+        <rect width="200" height="150" fill="orange" transform="translate(20% 20%) translate(5% 30%)"/>
     </svg>
 </body>
 </html>

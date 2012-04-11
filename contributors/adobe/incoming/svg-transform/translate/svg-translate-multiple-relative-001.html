@@ -6,9 +6,9 @@
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-transform"/>
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions"/>
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#TranslateDefined"/>
-    <link rel="match" href="reftest/svg-translate-ref.html"/>
+    <link rel="match" href="reftest/svg-translate-multiple-ref.html"/>
     <meta name="flags" content="svg" />
-    <meta name="assert" content="The translate transform function can be called twice on the same element with different translation-value units. The rect in the test should be moved 50 pixels in the X direction and 50 pixels in the Y direction"/>
+    <meta name="assert" content="The translate transform function can be called multiple times on the same element with relative and absolute values. The rect in the test should be moved 50 pixels in the X direction and 75 pixels in the Y direction"/>
     <style type="text/css">
     svg {
         width: 300px;
@@ -17,9 +17,9 @@
     </style>
 </head>
 <body>
-    <p>You should see a 100x100 orange rect at 50,50</p>
+    <p>You should see a 150x150 orange rect at 50,75</p>
     <svg>
-        <rect width="100" height="100" fill="orange" transform="translate(25px 25px) translate(25% 25%)"/>
+        <rect width="150" height="150" fill="orange" transform="translate(20px 45px) translate(20% 20%)"/>
     </svg>
 </body>
 </html>

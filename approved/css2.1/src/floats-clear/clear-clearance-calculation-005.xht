@@ -14,10 +14,7 @@
   <meta content="With clear: none, the first and last paragraphs' margins collapse and the last paragraph's top border edge should be flush with the top of the floating paragraph." name="assert" />
   
   <style type="text/css"><![CDATA[
-  body
-  {
-  margin: 8px;
-  }
+  body {margin: 8px;}
 
   #overlapped-red
   {
@@ -26,14 +23,14 @@
   left: 8px;
   position: absolute;
   right: 8px;
-  top: 178px;
+  top: 118px;
   z-index: -1;
   }
 
   #firstParg
   {
   height: 20px;
-  margin-bottom: 150px;
+  margin-bottom: 90px;
   margin-top: 0px;
   }
 
@@ -48,7 +45,7 @@
 
   #lastParg
   {
-  background-color: lime;
+  background-color: green;
   clear: none;
   height: 100px;
   margin-top: 75px;
@@ -67,7 +64,7 @@
 
   <p id="lastParg"></p>
 
-  <p>Test passes if there is above an orange rectangle and a wide bright green rectangle side by side, touching each other. The top of the orange rectangle should be flush with the top of the bright green rectangle. There should be no red.</p>
+  <p>Test passes if there is above an orange rectangle and a wide green rectangle side by side, touching each other. The top of the orange rectangle should be flush with the top of the green rectangle. There should be no red.</p>
 
  </body>
 </html>

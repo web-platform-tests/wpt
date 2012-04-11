@@ -14,10 +14,7 @@
   <meta content="With clear: left, the top border edge of the last paragraph must be below the floating paragraph, i.e., 50px lower. That means that the margin-bottom of the first paragraph must not collapse with the margin-top of the last paragraph and clearance must be added such that clearance + margin-top of last paragraph = 50px, i.e., clearance = 50px - margin-top  of last paragraph = 50px - 75px = - 25px." name="assert" />
   
   <style type="text/css"><![CDATA[
-  body
-  {
-  margin: 8px;
-  }
+  body {margin: 8px;}
 
   #overlapped-red
   {
@@ -46,7 +43,7 @@
 
   #lastParg
   {
-  background-color: lime;
+  background-color: green;
   clear: left;
   height: 100px;
   margin-top: 75px;
@@ -65,7 +62,7 @@
 
   <p id="lastParg"></p>
 
-  <p>Test passes if there is a wide bright green rectangle above and <strong>no red</strong>.</p>
+  <p>Test passes if there is a wide green rectangle above and <strong>no red</strong>.</p>
 
  </body>
 </html>

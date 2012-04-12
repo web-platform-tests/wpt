@@ -13,7 +13,6 @@
 		try {
 			iframeWindow = document.getElementById('frame').contentWindow;
 			iframeWindow.document.domain = "hello.world";
-			iframeWindow.localStorage.clear();
 			
 			test(function() {
 				assert_unreached('SECURITY_ERR error is not raised.');

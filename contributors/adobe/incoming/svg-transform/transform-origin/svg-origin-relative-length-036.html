@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title>CSS Test: SVG presentation attribute transform-origin, 'left 75'</title>
+  <link rel="author" title="Dirk Schulze" href="dschulze@adobe.com"/>
+  <link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-origin-property"/>
+  <link rel="help" href="http://dev.w3.org/csswg/css3-transforms/#svg-transform"/>
+  <link rel="help" href="http://dev.w3.org/csswg/css3-transforms/#svg-object-bounding-box"/>
+  <link rel="match" href="reftest/svg-origin-relative-length-ref.html"/>
+  <meta name="flags" content="svg"/>
+  <meta name="assert" content="The initial point of origin gets translated to 75,75 since 'left 75' is relative the bounding box of the object."/>
+  <style type="text/css">
+    svg {
+      width: 200px;
+      height: 200px;
+    }
+  </style>
+ </head>
+ <body>
+   <p>You should see a vertical fuchsia stripe next to an orange stripe.</p>
+   <svg>
+     <!-- Fill with Gradient to avoid false positive. -->
+     <defs>
+       <linearGradient id="grad" x2="0%" y2="100%">
+         <stop offset="50%" stop-color="orange" />
+         <stop offset="50%" stop-color="fuchsia" />
+       </linearGradient>
+     </defs>
+     <rect x="75" y="75" width="150" height="150" fill="url(#grad)" transform="rotate(90deg) translate(-75,-75)" transform-origin="left 75"/>
+   </svg>
+ </body>
+</html>

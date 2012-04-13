@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CSS Test: SVG patternTransform presentation attribute and translation-value argument with percentage unit on translateX - not supported</title>
+    <link rel="author" title="Rebecca Hauck" href="rhauck@adobe.com"/>
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-transform"/>
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions"/>
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#TranslateDefined"/>
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-gradient-transform-pattern-transform"/>
+    <link rel="match" href="reftest/svg-patternTransform-relative-ref.html"/>
+    <meta name="flags" content="svg" />
+    <meta name="assert" content="The patternTransform does not support functions with percentage units on translation-value arguments. The pattern in the test should be moved 25 pixels in the X direction resulting in a solid blue rect. You should see no red."/>
+    <style type="text/css">
+    svg {
+        width: 100px;
+        height: 100px;
+        background:red;
+    }
+    </style>
+</head>
+<body>
+    <p>You should see a 100x100 blue rect. You should see no red.</p>
+    <svg>
+        <defs>
+            <pattern id="blueRects" patternUnits="userSpaceOnUse" x="0" y="0" width="50" height="50" patternTransform="translateX(25%)" >
+                <rect x="25" y="0" width="25" height="25" fill="blue" />
+                <rect x="25" y="25" width="25" height="25" fill="blue" />
+            </pattern>
+        </defs>
+        <rect fill="blue" x="0" y="0" width="25" height="100" />
+        <rect fill="blue" x="50" y="0" width="25" height="100" />
+        <rect fill="url(#blueRects)" x="0" y="0" width="100" height="100" />
+    </svg>
+</body>
+</html>

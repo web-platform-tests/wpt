@@ -8,7 +8,7 @@
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#TranslateDefined"/>
     <link rel="match" href="reftest/svg-gradientTransform-ref.html"/>
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-gradient-transform-pattern-transform"/>
-    <meta name="flags" content="svg" />
+    <meta name="flags" content="svg"/>
     <meta name="assert" content="The gradientTransform attribute does not support the transform presentation attribute. The gradient in the test should only be be moved 25 pixels to the left and should not be moved to the right resulting in a solid green rect. You should see no red."/>
     <style type="text/css">
     svg {
@@ -24,8 +24,8 @@
     <svg>
         <defs>
             <linearGradient id="grad" x1="0%" y1="0%" gradientTransform="translateX(-25px)" transform="translateX(25px)">
-                <stop offset="50%" stop-color="red" />
-                <stop offset="50%" stop-color="green" />
+                <stop offset="50%" stop-color="red"/>
+                <stop offset="50%" stop-color="green"/>
             </linearGradient>
         </defs>
         <rect fill="url(#grad)" x="0" y="0" width="100" height="100"/>

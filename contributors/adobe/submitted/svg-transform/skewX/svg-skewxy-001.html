@@ -8,7 +8,7 @@
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#SkewXDefined"/>
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#SkewYDefined"/>
     <link rel="match" href="reftest/svg-skewxy-ref.html"/>
-    <meta name="flags" content="svg" />
+    <meta name="flags" content="svg"/>
     <meta name="assert" content="The rect in the test should be skewed horizontally 27 degrees and vertically 27 degrees"/>
     <style type="text/css">
     svg {
@@ -23,8 +23,8 @@
         <defs>
             <!-- Use a gradient so that clipping results in a different color after the skew -->
             <linearGradient id="grad" x1="0%" x2="100%" y1="0%" y2="100%" >
-                <stop offset="50%" stop-color="blue" />
-                <stop offset="50%" stop-color="yellow" />
+                <stop offset="50%" stop-color="blue"/>
+                <stop offset="50%" stop-color="yellow"/>
             </linearGradient>
             <clipPath id = "clip">
                 <rect x="50" y="65" width="20" height="20"/>

@@ -8,7 +8,7 @@
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#TranslateDefined"/>
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-gradient-transform-pattern-transform"/>
     <link rel="match" href="reftest/svg-patternTransform-relative-ref.html"/>
-    <meta name="flags" content="svg" />
+    <meta name="flags" content="svg"/>
     <meta name="assert" content="Arguments in percentage units in patternTransform functions should have no effect. The gradient in the test should be not be moved resulting in a solid blue rect."/>
     <style type="text/css">
     svg {
@@ -23,13 +23,13 @@
     <svg>
         <defs>
             <pattern id="blueRects" patternUnits="userSpaceOnUse" x="0" y="0" width="50" height="50" patternTransform="translateX(25%)" >
-                <rect x="25" y="0" width="25" height="25" fill="blue" />
-                <rect x="25" y="25" width="25" height="25" fill="blue" />
+                <rect x="25" y="0" width="25" height="25" fill="blue"/>
+                <rect x="25" y="25" width="25" height="25" fill="blue"/>
             </pattern>
         </defs>
-        <rect fill="blue" x="0" y="0" width="25" height="100" />
-        <rect fill="blue" x="50" y="0" width="25" height="100" />
-        <rect fill="url(#blueRects)" x="0" y="0" width="100" height="100" />
+        <rect fill="blue" x="0" y="0" width="25" height="100"/>
+        <rect fill="blue" x="50" y="0" width="25" height="100"/>
+        <rect fill="url(#blueRects)" x="0" y="0" width="100" height="100"/>
     </svg>
 </body>
 </html>

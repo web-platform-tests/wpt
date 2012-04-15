@@ -1,9 +1,8 @@
-<!doctype html>
-<title>CSS Test (Transforms): Transform of Background Image (propagated
-body with root element transform)</title>
-<link rel=author title="Aryeh Gregor" href=http://aryeh.name/>
-<link rel=help href=http://www.w3.org/TR/css3-transforms/#transform-rendering>
-<meta name=assert content='"If the root element is transformed, the
+<!DOCTYPE html>
+<title>CSS Test (Transforms): Transform of Background Image (propagated body with root element transform)</title>
+<link rel="author" title="Aryeh Gregor" href="http://aryeh.name/">
+<link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-rendering">
+<meta name="assert" content='"If the root element is transformed, the
 transformation applies to the entire canvas, including any background specified
 for the root element. Since the background painting area for the root element
 is the entire canvas, which is infinite, the transformation might cause parts
@@ -17,7 +16,7 @@ needs to affect the background.  The rotation 90 degrees clockwise means that
 most of the screen will be filled with triangles that were originally above the
 top of the viewport; the original top row of triangles will now be on the
 left.'>
-<link rel=match href=background-ref-2.html>
+<link rel="match" href="background-ref-2.html">
 <html style="overflow:hidden;
 transform:rotate(90deg);transform-origin:50px 50px">
 <body style="background:url(support/background-1a.svg)">

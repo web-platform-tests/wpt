@@ -1,14 +1,13 @@
-<!doctype html>
-<title>CSS Test (Transforms): Containing Block for Absolute Positioning
-(bottom/right)</title>
-<link rel=author title="Aryeh Gregor" href=http://aryeh.name/>
-<link rel=help href=http://www.w3.org/TR/css3-transforms/#transform-rendering>
-<meta name=assert content='"In the HTML namespace, any value other than 'none'
+<!DOCTYPE html>
+<title>CSS Test (Transforms): Containing Block for Absolute Positioning (bottom/right)</title>
+<link rel="author" title="Aryeh Gregor" href="http://aryeh.name/">
+<link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-rendering">
+<meta name="assert" content='"In the HTML namespace, any value other than 'none'
 for the transform results in the creation of . . . a containing block."  This
 means absolutely positioned elements need to be rooted at a transformed
 ancestor, just as though it had non-static position.  Therefore, this test
 should be offset by one pixel from the reference.'>
-<link rel=mismatch href=abspos-ref.html>
+<link rel="mismatch" href="abspos-ref.html">
 <div style="width: 100px; height: 200px; transform: translate(50px, 50px) ;background-color: gold;">
 	A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
 	<div style="background-color: navy; color: gold; width: 200px; height: 100px; position: absolute; right: -151px; bottom: 0px;">

@@ -1,12 +1,31 @@
 <!DOCTYPE html>
-<title>CSS Test (Transforms): Transform of Background Image (nested flip)</title>
-<link rel="author" title="Aryeh Gregor" href="http://aryeh.name/">
-<link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-property">
-<meta name="assert" content="Background images fall within the element's border
-box, so they need to be transformed along with it.  This file tests that a
-transform on the parent works correctly, not just on the element itself.">
-<meta name="flags" content="svg">
-<link rel="match" href="transform-background-ref-1.html">
-<div style="width:200px;height:100px;transform: scale(-1)">
-<div style="background:url(support/background-1c.svg);width:200px;height:100px"></div>
-</div>
+<html>
+  <head>
+    <title>CSS Test (Transforms): Transform of Background Image (nested flip)</title>
+    <link rel="author" title="Aryeh Gregor" href="http://aryeh.name/">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-property">
+    <meta name="assert" content="Background images fall within the element's
+    border box, so they need to be transformed along with it.  This file tests
+    that a transform on the parent works correctly, not just on the element
+    itself.">
+    <meta name="flags" content="svg">
+    <link rel="match" href="transform-background-ref-1.html">
+    <style>
+      div {
+        width: 200px;
+        height: 100px;
+      }
+      body > div {
+        transform: scale(-1);
+      }
+      body > div > div {
+        background: url(support/background-1c.svg);
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <div></div>
+    </div>
+  </body>
+</html>

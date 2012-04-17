@@ -1,10 +1,23 @@
 <!DOCTYPE html>
-<title>CSS Test (Transforms): Transform of Background Image (flip)</title>
-<link rel="author" title="Aryeh Gregor" href="http://aryeh.name/">
-<link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-property">
-<meta name="assert" content="Background images fall within the element's border
-box, so they need to be transformed along with it.">
-<meta name="flags" content="svg">
-<link rel="match" href="transform-background-ref-1.html">
-<div style="background:url(support/background-1c.svg);width:200px;height:100px;
-transform:scale(-1)"></div>
+<html>
+  <head>
+    <title>CSS Test (Transforms): Transform of Background Image (flip)</title>
+    <link rel="author" title="Aryeh Gregor" href="http://aryeh.name/">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-property">
+    <meta name="assert" content="Background images fall within the element's
+    border box, so they need to be transformed along with it.">
+    <meta name="flags" content="svg">
+    <link rel="match" href="transform-background-ref-1.html">
+    <style>
+      div {
+        width: 200px;
+        height: 100px;
+        background: url(support/background-1c.svg);
+        transform: scale(-1);
+      }
+    </style>
+  </head>
+  <body>
+    <div></div>
+  </body>
+</html>

@@ -5,7 +5,7 @@
 		if (('localStorage' in window) && window.localStorage != null){
 			try {
 				localStorage.setItem("Security", "false");
-				parent.localstorage.clear();
+				parent.localStorage.clear();
 			} catch (e) {
 				if(e.code == e['SECURITY_ERR'])
 					localStorage.setItem("Security", "true");

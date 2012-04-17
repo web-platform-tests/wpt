@@ -15,16 +15,7 @@ rmtree('dist/css3-transforms');
 
 ###############################################################################
 # Adobe
-push @dirs, 'contributors/adobe/submitted/svg-transform/patternTransform';
-push @dirs, 'contributors/adobe/submitted/svg-transform/rotate';
-push @dirs, 'contributors/adobe/submitted/svg-transform/scale';
-push @dirs, 'contributors/adobe/submitted/svg-transform/skewX';
-push @dirs, 'contributors/adobe/submitted/svg-transform/skewY';
-push @dirs, 'contributors/adobe/submitted/svg-transform/transform-list-separation';
-push @dirs, 'contributors/adobe/submitted/svg-transform/transform-origin';
-push @dirs, 'contributors/adobe/submitted/svg-transform/translate';
-push @dirs, 'contributors/adobe/submitted/svg-transform/translateX';
-push @dirs, 'contributors/adobe/submitted/svg-transform/translateY';
+push @dirs, 'contributors/adobe/submitted/svg-transform/*';
 
 ###############################################################################
 # Apple - No CSS2.1 tests

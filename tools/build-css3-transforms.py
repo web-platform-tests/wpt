@@ -26,6 +26,7 @@ print "Requested unreviewed source directories."
 
 # Set up
 suite = TestSuite('css3-transforms', 'CSS Transforms Module Test Suite', 'http://www.w3.org/TR/css3-transforms/')
+suite.setFormats(('html5', 'xhtml1'))
 
 # Add approved tests
 root = join('approved', 'css3-transforms', 'src')
@@ -67,5 +68,4 @@ for path in unreviewed:
 data = join('approved', 'css3-transforms', 'data')
 indexer = Indexer(suite, join(data, 'sections.dat'), True, templatePathList=[data],
                   extraData={ 'devel' : False, 'official' : True })
-suite.buildInto(HTMLFormat(join('dist', 'css3-transforms'), outputDirName='html'), indexer)
-suite.buildInto(XHTMLFormat(join('dist', 'css3-transforms')), indexer)
+suite.buildInto(join('dist', 'css3-transforms'), indexer)

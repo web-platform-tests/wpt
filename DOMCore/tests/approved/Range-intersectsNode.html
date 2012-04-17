@@ -49,12 +49,10 @@ for (var i = 0; i < testNodes.length; i++) {
 			// "Let parent be node's parent."
 			var parent_ = node.parentNode;
 
-			// "If parent is null, throw a "NotFoundError" exception and
-			// terminate these steps."
+			// "If parent is null, return true and terminate these steps."
 			if (!parent_) {
-				assert_throws("NOT_FOUND_ERR", function() {
-					range.intersectsNode(node);
-				}, "Must throw NotFoundError if node's parent is null");
+				assert_equals(range.intersectsNode(node), true,
+					"Must return true if node's parent is null");
 				return;
 			}
 

@@ -2,14 +2,14 @@
 <html>
 <head>
     <title>CSS Transforms Test: SVG patternTransform presentation attribute and translation-value argument with percentage unit having no effect on translateX</title>
-    <link rel="author" title="Rebecca Hauck" href="rhauck@adobe.com"/>
-    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-transform"/>
-    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions"/>
-    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-object-bounding-box"/>
-    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-gradient-transform-pattern-transform"/>
-    <link rel="match" href="reftest/svg-patternTransform-relative-ref.html"/>
-    <meta name="flags" content="svg"/>
-    <meta name="assert" content="Arguments in percentage units in patternTransform functions should have no affect. The gradient in the test should be not be moved resulting in a solid blue rect."/>
+    <link rel="author" title="Rebecca Hauck" href="rhauck@adobe.com">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-transform">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-object-bounding-box">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-gradient-transform-pattern-transform">
+    <link rel="match" href="reftest/svg-patternTransform-relative-ref.html">
+    <meta name="flags" content="svg">
+    <meta name="assert" content="Arguments in percentage units in patternTransform functions should have no affect. The gradient in the test should be not be moved resulting in a solid blue rect.">
     <style type="text/css">
     svg {
         width: 100px;
@@ -22,7 +22,7 @@
     <p>The test passes if there is a blue square and no red.</p>
     <svg>
         <defs>
-            <pattern id="blueRects" patternUnits="userSpaceOnUse" x="0" y="0" width="50" height="50" patternTransform="translateX(25%)" >
+            <pattern id="blueRects" patternUnits="userSpaceOnUse" x="0" y="0" width="50" height="50" patternTransform="translateX(25%)">
                 <rect x="25" y="0" width="25" height="25" fill="blue"/>
                 <rect x="25" y="25" width="25" height="25" fill="blue"/>
             </pattern>

@@ -7,7 +7,7 @@
 # Version 1.0
 #
 # Copyright (c) 2004 by Ian Hickson
-# Modified for css3-transforms by Peter Linss
+# Modified for cssom by Peter Linss
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -29,16 +29,15 @@ use utf8;
 use LWP::Simple;
 
 # read the page in from the web
-my $specURI = 'http://www.w3.org/TR/css3-transforms/';
+my $specURI = 'http://www.w3.org/TR/cssom/';
 my $page = get($specURI);
 $page =~ s/\x{D}\x{A}|\x{A}\{D}|\x{D}|\x{A}/\n/gos; # normalize newlines
 
 # remove everything except the toc
-$page =~ s/.*<!--begin-toc-->//gos;
+$page =~ s/.*<!--begin-toc-->//os;
 $page =~ s/<!--end-toc-->.*//os;
-print "$page\n";
 
-while ($page =~ m/<a[\s]+href=[\'\"]?([^\"\']+)[\'\"]?><span[\s]+class=[\'\"]?secno[\'\"]?>([A-Z]?[0-9.]+)\.[\s]+<\/span>(.+?)<\/a>/gos) {
+while ($page =~ m/<a[\s]+href=[\'\"]?([^\"\']+)[\'\"]?><span[\s]+class=[\'\"]?secno[\'\"]?>([A-Z]?[0-9.]+)[\s]+<\/span>(.+?)<\/a>/gos) {
     my $uri = "$specURI$1";
     my $section = $2;
     my $title = $3;

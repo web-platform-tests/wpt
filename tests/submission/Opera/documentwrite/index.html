@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>HTML 5 document.write test</title>
+    <script src="harness.js"></script>
+    <script>
+      var file_names = ['001.html',
+                        '002.html',
+                        '003.html',
+                        '004.html',
+                        '005.html',
+                        '006.html',
+                        '007.html',
+                        '008.html',
+                        '009.html',
+                        '010.html',
+                        '011.html',
+                        '012.html',
+                        '013.html',
+                        '014.html',
+                        '015.html',
+                        '016.html',
+                        '017.html',
+                        '018.html',
+                        '019.html',
+                        '020.html',
+                        '021.html',
+                        '022.html',
+                        '023.html',
+                        '024.html',
+                        '025.html',
+                        '026.html',
+                        '027.html',
+                        '028.html',
+                        '029.html',
+                        '030.html',
+                        '031.html',
+                        '032.html',
+                        '033.html',
+                        '034.html',
+                        '035.html',
+                        '036.html',
+                        '037.html',
+                        '038.html',
+                        '039.html',
+                        '040.html',
+                        '041.html',
+                        '042.html',
+                        '043.html',
+                        '044.html',
+                        '045.html',
+                        '046.html',
+                        '047.html',
+                        '048.html',
+                        '049.html',
+                        '050.html',
+                        '051.html',
+                        'script/001.html',
+                        'script/002.html',
+                        'script/003.html',
+                        'script/004.html',
+                        'script/005.html',
+                        'script/006.html',
+                        'script/007.html',
+                        'script/008.html',
+                        'script/009.html',
+                        'script/010.html',
+                        'script/011.html',
+                        'script/012.html',
+                        'script/013.html',
+                        'iframe/001.html',
+                        'iframe/002.html',
+                        'iframe/003.html',
+                        'iframe/004.html',
+                        'iframe/005.html',
+                        'iframe/006.html',
+                        'iframe/007.html',
+                        'iframe/008.html',
+                        'iframe/009.html',
+                        'iframe/010.html'];
+
+      function run(file_names, filters) {
+        clear();
+        var limits = get_limits();
+        var filter = get_filter();
+        if (filter) {
+          filters.push(filter);
+        }
+        document.getElementById("stop").disabled = false;
+        run_tests(file_names, filters, limits[0], limits[1]);
+      }
+      function get_limits() {
+        return ["min_index", "max_index"].map(function(x) {
+          var element = document.getElementById(x);
+          var value = Number(element.value !== "" ? element.value : undefined);
+          if (value !== value) {
+            return undefined;
+          } else {
+            return value;
+          }
+        });
+      }
+      function get_filter() {
+        var element = document.getElementById("filter");
+        var re = undefined;
+        try {
+          re = new RegExp(element.value, "g");
+        } catch(e) {}
+        return re;
+      }
+      function stop() {
+        done = true;
+        document.getElementById("stop").disabled = true;
+      }
+    </script>
+  </head>
+  <body>
+    <h1>document.write Tests</h1>
+    <p>
+      Run from test <input type="number" id="min_index"> to test <input type="number" id="max_index"> (leave blank for 0 -&gt; maximum)
+    </p>
+    <p>Test filter (regexp on filename)<input type="text" id="filter"></p>
+    <p>
+      <button onclick="run(file_names, [])">Run Tests</button>
+    </p>
+    <p>
+      <button id="stop" onclick="stop()" disabled>Stop</button>
+    </p>
+    <div id="status"></div>
+    <div id="progress"></div>
+    <div id="details"></div>
+  </body>
+</html>

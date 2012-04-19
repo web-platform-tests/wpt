@@ -4,7 +4,7 @@
     <title>CSS Reftest Reference</title>
     <link rel="author" title="Aryeh Gregor" href="http://aryeh.name/">
     <style>
-      #div1 {
+      body > div {
         background: green;
         height: 100px;
         width: 100px;
@@ -12,11 +12,16 @@
       span {
         background: yellow;
       }
+      body > div > div {
+        position: relative;
+        top: 150px;
+        left: 20px;
+      }
     </style>
   </head>
   <body>
-    <div id="div1">
-      <div style="position: relative; top: 150px; left: 20px"><span>span 1</span></div>
+    <div>
+      <div><span>span 1</span></div>
     </div>
     <span>span 2</span>
   </body>

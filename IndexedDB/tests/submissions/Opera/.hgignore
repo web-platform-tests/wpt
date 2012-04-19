@@ -1,0 +1,4 @@
+syntax: glob
+.git
+*.tmp
+*.swp

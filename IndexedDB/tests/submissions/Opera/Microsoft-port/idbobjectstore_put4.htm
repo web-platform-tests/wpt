@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html>
+<meta charset="utf-8">
+<title>IDBObjectStore.put() - put where an index has unique:true specified </title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="support.js"></script>
+
+<script>
+    var db,
+      t = async_test(),
+      record = { key: 1, property: "data" };
+
+    var open_rq = createdb(t);
+    open_rq.onupgradeneeded = function(e) {
+        db = e.target.result;
+        var objStore = db.createObjectStore("store", { autoIncrement: true });
+        objStore.createIndex("i1", "property", { unique: true });
+        objStore.put(record);
+
+        var rq = objStore.put(record);
+        rq.onsuccess = fail(t, "success on putting duplicate indexed record")
+
+        rq.onerror = t.step_func(function(e) {
+            assert_equals(e.type, "ConstraintError");
+
+            e.stopPropagation();
+        });
+    };
+
+    // Defer done, giving a spurious rq.onsuccess a chance to run
+    open_rq.onsuccess = function(e) {
+        t.done();
+    }
+</script>
+
+<div id="log"></div>

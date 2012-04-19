@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<title>IDBDatabase.transaction() - opening a transaction defaults to a read-only mode </title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="support.js"></script>
+
+<script type="text/javascript">
+
+var db,
+  t = async_test(),
+  open_rq = createdb(t);
+
+open_rq.onupgradeneeded = function(e) {
+    db = e.target.result;
+    db.createObjectStore('readonly');
+};
+open_rq.onsuccess = function(e) {
+    var txn = db.transaction('readonly');
+    assert_equals(txn.mode, IDBTransaction.READ_ONLY, 'txn.mode');
+    assert_equals(txn.mode, 0, 'txn.mode hardcoded');
+
+    t.done();
+};
+
+</script>
+
+<div id="log"></div>

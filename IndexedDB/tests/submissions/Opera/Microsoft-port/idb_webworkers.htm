@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<title>IndexedDB inside of a WebWorker </title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="support.js"></script>
+
+<script>
+    var db,
+      t = async_test();
+
+    t.step(function() {
+        var worker = new Worker("idbworker.js");
+        worker.onmessage = t.step_func(function (e) {
+            assert_true(e.data, 'worker has idb object')
+            t.done()
+        });
+
+        worker.postMessage(1);
+    })
+
+</script>
+
+<div id="log"></div>

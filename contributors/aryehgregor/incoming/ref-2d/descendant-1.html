@@ -1,19 +1,29 @@
-<!doctype html>
-<link rel=match href=descendant-1-ref.html>
-<style>
-#div1 {
-	background: green;
-	height: 100px;
-	width: 100px;
-}
-span {
-	background: yellow;
-}
-#div1 div {transform: translate(20px, 150px);
-				transform-origin: 0% 0%;
-}
-</style>
-<div id="div1">
-	<div><span>span 1</span></div>
-</div>
-<span>span 2</span>
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CSS Test (Transforms): </title>
+    <link rel="author" title="Aryeh Gregor" href="http://aryeh.name/">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#">
+    <meta name="assert" content=''>
+    <link rel="match" href="descendant-1-ref.html">
+    <style>
+      #div1 {
+        background: green;
+        height: 100px;
+        width: 100px;
+      }
+      span {
+        background: yellow;
+      }
+      #div1 div {transform: translate(20px, 150px);
+        transform-origin: 0% 0%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="div1">
+      <div><span>span 1</span></div>
+    </div>
+    <span>span 2</span>
+  </body>
+</html>

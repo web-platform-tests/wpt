@@ -1,7 +1,17 @@
-<!doctype html>
-<link rel=match href=green-rect.html>
-<!-- This verifies that perspective() isn't just a no-op. -->
-<div style="padding: 25px">
-<div style="height: 50px; width: 50px; background: lime;
-transform: perspective(100px) translatez(50px)">
-</div></div>
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CSS Test (Transforms): </title>
+    <link rel="author" title="Aryeh Gregor" href="http://aryeh.name/">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#">
+    <meta name="assert" content=''>
+    <link rel="match" href="green-rect.html">
+    <!-- This verifies that perspective() isn't just a no-op. -->
+  </head>
+  <body>
+    <div style="padding: 25px">
+      <div style="height: 50px; width: 50px; background: lime;
+        transform: perspective(100px) translatez(50px)">
+    </div></div>
+  </body>
+</html>

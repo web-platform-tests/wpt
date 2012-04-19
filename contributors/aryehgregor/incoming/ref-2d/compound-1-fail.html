@@ -1,24 +1,34 @@
-<!doctype html>
-<style>
-div.test {
-	background-color: gold;
-	width:200px;
-	height:100px;
-	border: 1px solid black;
-}
-div {
-	transform-origin: top left;
-}
-</style>
-<div style="position:relative; left:200px; top:0;">
-	<div style="transform: skew(15deg);">
-		<div style="transform: rotate(90deg);">
-<div style="transform: scale(2);">
-  <div style="transform: translate(100px);">
-    <div class="test">
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CSS Test (Transforms): </title>
+    <link rel="author" title="Aryeh Gregor" href="http://aryeh.name/">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#">
+    <meta name="assert" content=''>
+    <style>
+      div.test {
+        background-color: gold;
+        width:200px;
+        height:100px;
+        border: 1px solid black;
+      }
+      div {
+        transform-origin: top left;
+      }
+    </style>
+  </head>
+  <body>
+    <div style="position:relative; left:200px; top:0;">
+      <div style="transform: skew(15deg);">
+        <div style="transform: rotate(90deg);">
+          <div style="transform: scale(2);">
+            <div style="transform: translate(100px);">
+              <div class="test">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
-		</div>
-	</div>
-</div>
+  </body>
+</html>

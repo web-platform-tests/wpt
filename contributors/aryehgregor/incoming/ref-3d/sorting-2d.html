@@ -1,17 +1,27 @@
-<!doctype html>
-<link rel=match href=sorting-2-ref.html>
-<!--
-"An element participates in a 3D rendering context if its containing block
-establishes or extends a 3D rendering context."  The containing block for a
-statically-positioned element is just its nearest block ancestor.  Thus,
-preserve-3d only affects children, not grandchildren, and the outermost div
-here should have no effect.
--->
-<div style="transform-style: preserve-3d">
-	<div>
-		<div style="width: 100px; height: 100px; background: red;
-		transform: translatez(10px) translatey(50px)"></div>
-		<div style="width: 100px; height: 100px; background: lime;
-		transform: translatez(-10px) translatey(-100px)"></div>
-	</div>
-</div>
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CSS Test (Transforms): </title>
+    <link rel="author" title="Aryeh Gregor" href="http://aryeh.name/">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#">
+    <meta name="assert" content=''>
+    <link rel="match" href="sorting-2-ref.html">
+    <!--
+    "An element participates in a 3D rendering context if its containing block
+    establishes or extends a 3D rendering context."  The containing block for a
+    statically-positioned element is just its nearest block ancestor.  Thus,
+    preserve-3d only affects children, not grandchildren, and the outermost div
+    here should have no effect.
+    -->
+  </head>
+  <body>
+    <div style="transform-style: preserve-3d">
+      <div>
+        <div style="width: 100px; height: 100px; background: red;
+          transform: translatez(10px) translatey(50px)"></div>
+        <div style="width: 100px; height: 100px; background: lime;
+          transform: translatez(-10px) translatey(-100px)"></div>
+      </div>
+    </div>
+  </body>
+</html>

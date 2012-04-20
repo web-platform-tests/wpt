@@ -281,5 +281,49 @@
             "TEST_CSS" : "@viewport { width: 300px !important; } @viewport { width: 500px; }",
             "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, 300);"
         }]
+    },
+    {
+        "FILE_PREFIX" : "syntax-",
+        "SPEC_SECTION" : "#syntax",
+        "TESTS" : [{
+            "DESCRIPTION" : "@viewport syntax - inside @media",
+            "AUTHOR_NAME" : "Rune Lillesveen",
+            "AUTHOR_EMAIL" : "rune@opera.com",
+            "TOKENS" : "dom",
+            "ASSERTION" : "@viewport is allowed inside @media.",
+            "TEST_CSS" : "@media all { @viewport { width: 500px; } }",
+            "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, 500);"
+        },
+        {
+            "DESCRIPTION" : "@viewport syntax - unknown descriptor",
+            "AUTHOR_NAME" : "Rune Lillesveen",
+            "AUTHOR_EMAIL" : "rune@opera.com",
+            "TOKENS" : "dom invalid",
+            "ASSERTION" : "Descriptors after unknown descriptor declaration in @viewport is recognized.",
+            "VIEWPORT_DESC" : "a: b; width: 500px",
+            "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, 500);"
+        },
+        {
+            "DESCRIPTION" : "@viewport syntax - descriptor recovery",
+            "AUTHOR_NAME" : "Rune Lillesveen",
+            "AUTHOR_EMAIL" : "rune@opera.com",
+            "TOKENS" : "dom invalid",
+            "ASSERTION" : "@viewport supports forward compatible parsing for descriptors.",
+            "VIEWPORT_DESC" : "width: 500px; width: 200px x: { !important []}; height: 700px",
+            "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, 500); assert_equals(viewport.actualHeight, 700);"
+        }]
+    },
+    {
+        "FILE_PREFIX" : "cssom-",
+        "SPEC_SECTION" : "#dom-interfaces",
+        "TESTS" : [{
+            "DESCRIPTION" : "@viewport CSSOM - CSSRule.VIEWPORT_RULE",
+            "AUTHOR_NAME" : "Rune Lillesveen",
+            "AUTHOR_EMAIL" : "rune@opera.com",
+            "TOKENS" : "dom",
+            "ASSERTION" : "CSSRule.VIEWPORT_RULE has the value 15, and the stylesheet contains a CSSViewportRule with type value 15.",
+            "VIEWPORT_DESC" : "width: auto 1200px; min-height: 700px; max-zoom: 100%",
+            "TEST_FUNCTION" : "assert_equals(CSSRule.VIEWPORT_RULE, 15); assert_equals(testStyleSheet.cssRules.item(0).type, 15);"
+        }]
     }]
 }

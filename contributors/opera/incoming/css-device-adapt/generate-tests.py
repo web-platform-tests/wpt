@@ -38,8 +38,10 @@ class TestGenerator:
 
         if "VIEWPORT_DESC" in test:
             test["TEST_CSS"] = "@{VENDOR_PREFIX}viewport {{ {VIEWPORT_DESC} }}".format(**test)
-        else:
+        elif "TEST_CSS" in test:
             test["TEST_CSS"] = re.sub("viewport", self.getVendorPrefix()+"viewport", test["TEST_CSS"])
+        else:
+            test["TEST_CSS"] = ""
 
         file = open(file_name, "w")
         file.write(self.test_file_template.format(**test))
@@ -96,8 +98,10 @@ class TestGenerator:
    var test = async_test("CSS Test: {DESCRIPTION}");
    window.onload = function(){{
 
+    var testStyleSheet = document.styleSheets.item(1);
+
     /* Disable the stylesheet that contains the @viewport to test. */
-    document.styleSheets.item(1).disabled = true;
+    testStyleSheet.disabled = true;
 
     /* Initialize an object to store viewport values to be used by the test
        asserts. */
@@ -113,7 +117,7 @@ class TestGenerator:
     viewport.fontSize = parseInt(getComputedStyle(testElm, "").fontSize);
 
     /* Enable the stylesheet that contains the @viewport to test. */
-    document.styleSheets.item(1).disabled = false;
+    testStyleSheet.disabled = false;
 
     /* Retrieve the actual viewport values for the test. */
     viewport.actualWidth = testElm.offsetWidth;
@@ -127,7 +131,7 @@ class TestGenerator:
 
     /* Finished. Show the results. */
     test.done();
-    document.styleSheets.item(1).disabled = true;
+    testStyleSheet.disabled = true;
     document.getElementById("log").style.display = "block";
    }}
   ]]></script>

@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>CSS Transforms Test: SVG presentation attribute and angle argument without unit on skewY</title>
-    <link rel="author" title="Rebecca Hauck" href="rhauck@adobe.com">
+    <link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-transform">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-transform-value">
@@ -17,13 +17,13 @@
     </style>
 </head>
 <body>
-    <p>The test passes if there is a blue square.</p>
+    <p>The test passes if there is a green square and no red.</p>
     <svg>
         <defs>
             <!-- Use a gradient so that clipping results in a different color after the skew -->
             <linearGradient id="grad" x2="0%" y2="100%">
-                <stop offset="50%" stop-color="blue"/>
-                <stop offset="50%" stop-color="yellow"/>
+                <stop offset="50%" stop-color="green"/>
+                <stop offset="50%" stop-color="red"/>
             </linearGradient>
             <clipPath id="clip">
                 <rect x="75" y="60" width="20" height="20"/>

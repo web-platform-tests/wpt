@@ -222,7 +222,7 @@
     },
     {
         "FILE_PREFIX" : "orientation-",
-        "SPEC_SECTION" : "#the-lsquoorientationrsquo-property",
+        "SPEC_SECTION" : "#the-lsquoorientationrsquo-descriptor",
         "TESTS" : [{
             "DESCRIPTION" : "@viewport orientation - portrait",
             "AUTHOR_NAME" : "Rune Lillesveen",

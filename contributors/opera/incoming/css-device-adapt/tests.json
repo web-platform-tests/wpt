@@ -241,5 +241,45 @@
             "VIEWPORT_DESC" : "orientation: portrait",
             "TEST_FUNCTION" : "assert_true(viewport.actualWidth >= viewport.actualHeight);"
         }]
+    },
+    {
+        "FILE_PREFIX" : "cascading-",
+        "SPEC_SECTION" : "#the-viewport-rule",
+        "TESTS" : [{
+            "DESCRIPTION" : "@viewport cascading - last declaration wins",
+            "AUTHOR_NAME" : "Rune Lillesveen",
+            "AUTHOR_EMAIL" : "rune@opera.com",
+            "TOKENS" : "dom",
+            "ASSERTION" : "The last of two non-important declarations for the same descriptor wins.",
+            "VIEWPORT_DESC" : "width: 300px; width: 500px",
+            "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, 500);"
+        },
+        {
+            "DESCRIPTION" : "@viewport cascading - !important declaration wins",
+            "AUTHOR_NAME" : "Rune Lillesveen",
+            "AUTHOR_EMAIL" : "rune@opera.com",
+            "TOKENS" : "dom",
+            "ASSERTION" : "A preceeding !important declaration wins over a non-important descriptor.",
+            "VIEWPORT_DESC" : "width: 300px !important; width: 500px",
+            "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, 300);"
+        },
+        {
+            "DESCRIPTION" : "@viewport cascading - descriptors cascaded separately",
+            "AUTHOR_NAME" : "Rune Lillesveen",
+            "AUTHOR_EMAIL" : "rune@opera.com",
+            "TOKENS" : "dom",
+            "ASSERTION" : "Descriptors are cascaded separately and may stem from different @viewport rules.",
+            "TEST_CSS" : "@viewport { width: 300px; height: 300px; } @viewport { height: 500px; }",
+            "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, 300); assert_equals(viewport.actualHeight, 500);"
+        },
+        {
+            "DESCRIPTION" : "@viewport cascading - !important declaration from preceding rule wins",
+            "AUTHOR_NAME" : "Rune Lillesveen",
+            "AUTHOR_EMAIL" : "rune@opera.com",
+            "TOKENS" : "dom",
+            "ASSERTION" : "A preceeding !important declaration from a preceding rule wins over a non-important descriptor.",
+            "TEST_CSS" : "@viewport { width: 300px !important; } @viewport { width: 500px; }",
+            "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, 300);"
+        }]
     }]
 }

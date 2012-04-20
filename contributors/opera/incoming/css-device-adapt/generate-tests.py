@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import re
 
 class TestGenerator:
     """Class used for generating an .xht file for each test defined by entries
@@ -34,6 +35,12 @@ class TestGenerator:
         test["SPEC_SECTION"] = self.getSpecSectionURL(spec_section)
         test["VENDOR_PREFIX"] = self.getVendorPrefix()
         test["HARNESS_URL"] = self.getHarnessURL()
+
+        if "VIEWPORT_DESC" in test:
+            test["TEST_CSS"] = "@{VENDOR_PREFIX}viewport {{ {VIEWPORT_DESC} }}".format(**test)
+        else:
+            test["TEST_CSS"] = re.sub("viewport", self.getVendorPrefix()+"viewport", test["TEST_CSS"])
+
         file = open(file_name, "w")
         file.write(self.test_file_template.format(**test))
         file.close()
@@ -78,9 +85,7 @@ class TestGenerator:
   ]]></style>
   <style type="text/css"><![CDATA[
    /* CSS for the test below. */
-   @{VENDOR_PREFIX}viewport {{
-    {VIEWPORT_DESC}
-   }}
+   {TEST_CSS}
    /* Set root element font-size to something different from the initial
       font-size to make sure 'rem' and 'em' for @viewport is based on the
       initial font-size, not the root element font-size. */

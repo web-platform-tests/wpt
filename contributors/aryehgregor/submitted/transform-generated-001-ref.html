@@ -3,9 +3,17 @@
   <head>
     <title>CSS Reftest Reference</title>
     <link rel="author" title="Aryeh Gregor" href="http://aryeh.name/">
+    <style>
+      div {
+        float: left;
+      }
+      div:first-child {
+        transform: rotate(180deg);
+      }
+    </style>
   </head>
   <body>
-    <div style="transform:rotate(180deg);transform-origin:left">abc</div>
-    <span>def</span>
+    <div>abc</div>
+    <div>def</div>
   </body>
 </html>

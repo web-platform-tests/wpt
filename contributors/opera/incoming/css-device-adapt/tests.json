@@ -1,0 +1,245 @@
+{
+    "SPEC_URL" : "http://www.w3.org/TR/css-device-adapt/",
+    "GROUPS" : [{
+        "FILE_PREFIX" : "constrain-",
+        "SPEC_SECTION" : "#constraining-procedure",
+        "TESTS" : [{
+            "DESCRIPTION" : "@viewport constrained - max-width 200px",
+            "AUTHOR_NAME" : "Rune Lillesveen",
+            "AUTHOR_EMAIL" : "rune@opera.com",
+            "TOKENS" : "dom",
+            "ASSERTION" : "Setting max-width in @viewport to a length smaller than the initial viewport width will set the actual viewport width to that length",
+            "VIEWPORT_DESC" : "max-width: 200px",
+            "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, 200);"
+        },
+        {
+            "DESCRIPTION" : "@viewport constrained - max-width 10000px",
+            "AUTHOR_NAME" : "Rune Lillesveen",
+            "AUTHOR_EMAIL" : "rune@opera.com",
+            "TOKENS" : "dom",
+            "ASSERTION" : "Setting max-width in @viewport to a length larger than the initial viewport width will not change the actual viewport width.",
+            "VIEWPORT_DESC" : "max-width: 10000px",
+            "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, viewport.initialWidth);"
+        },
+        {
+            "DESCRIPTION" : "@viewport constrained - min-width 10px",
+            "AUTHOR_NAME" : "Rune Lillesveen",
+            "AUTHOR_EMAIL" : "rune@opera.com",
+            "TOKENS" : "dom",
+            "ASSERTION" : "Setting min-width in @viewport to a length smaller than the initial viewport width will not change the actual viewport width.",
+            "VIEWPORT_DESC" : "min-width: 10px",
+            "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, viewport.initialWidth);"
+        },
+        {
+            "DESCRIPTION" : "@viewport constrained - min-width 10000px",
+            "AUTHOR_NAME" : "Rune Lillesveen",
+            "AUTHOR_EMAIL" : "rune@opera.com",
+            "TOKENS" : "dom",
+            "ASSERTION" : "Setting min-width in @viewport to a length larger than the initial viewport width will set the actual viewport width to that length.",
+            "VIEWPORT_DESC" : "min-width: 10000px",
+            "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, 10000);"
+        },
+        {
+            "DESCRIPTION" : "@viewport constrained - min-width greater than max-width.",
+            "AUTHOR_NAME" : "Rune Lillesveen",
+            "AUTHOR_EMAIL" : "rune@opera.com",
+            "TOKENS" : "dom",
+            "ASSERTION" : "If min-width is greater than max-width, min-width will overrule max-width.",
+            "VIEWPORT_DESC" : "min-width: 10000px; max-width: 200px",
+            "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, 10000);"
+        },
+        {
+            "DESCRIPTION" : "@viewport constrained - width 200%",
+            "AUTHOR_NAME" : "Rune Lillesveen",
+            "AUTHOR_EMAIL" : "rune@opera.com",
+            "TOKENS" : "dom",
+            "ASSERTION" : "Setting width in @viewport to 200% will set the actual viewport width to twice the initial-width.",
+            "VIEWPORT_DESC" : "width: 200%",
+            "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, 2*viewport.initialWidth);"
+        },
+        {
+            "DESCRIPTION" : "@viewport constrained - width 50%",
+            "AUTHOR_NAME" : "Rune Lillesveen",
+            "AUTHOR_EMAIL" : "rune@opera.com",
+            "TOKENS" : "dom",
+            "ASSERTION" : "Setting width in @viewport to 50% will set the actual viewport width to half the initial-width.",
+            "VIEWPORT_DESC" : "width: 50%",
+            "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, Math.round(viewport.initialWidth/2));"
+        },
+        {
+            "DESCRIPTION" : "@viewport constrained - min-zoom greater than max-zoom",
+            "AUTHOR_NAME" : "Rune Lillesveen",
+            "AUTHOR_EMAIL" : "rune@opera.com",
+            "TOKENS" : "dom",
+            "ASSERTION" : "If min-zoom is greater than max-zoom, min-zoom will overrule max-zoom.",
+            "VIEWPORT_DESC" : "zoom: 100%; min-zoom: 200%; max-zoom: 50%",
+            "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, Math.round(viewport.initialWidth/2));"
+        },
+        {
+            "DESCRIPTION" : "@viewport constrained - width 20em",
+            "AUTHOR_NAME" : "Rune Lillesveen",
+            "AUTHOR_EMAIL" : "rune@opera.com",
+            "TOKENS" : "dom",
+            "ASSERTION" : "Setting width in @viewport to 20em will set the actual viewport width to 20 times the initial font-size.",
+            "VIEWPORT_DESC" : "width: 20em",
+            "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, 20*viewport.fontSize);"
+        },
+        {
+            "DESCRIPTION" : "@viewport constrained - width 20rem",
+            "AUTHOR_NAME" : "Rune Lillesveen",
+            "AUTHOR_EMAIL" : "rune@opera.com",
+            "TOKENS" : "dom",
+            "ASSERTION" : "Setting width in @viewport to 20rem will set the actual viewport width to 20 times the initial font-size.",
+            "VIEWPORT_DESC" : "width: 20rem",
+            "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, 20*viewport.fontSize);"
+        },
+        {
+            "DESCRIPTION" : "@viewport constrained - width from zoom: 200%",
+            "AUTHOR_NAME" : "Rune Lillesveen",
+            "AUTHOR_EMAIL" : "rune@opera.com",
+            "TOKENS" : "dom",
+            "ASSERTION" : "Setting zoom in @viewport to 200% will set the actual viewport width to half the initial-width.",
+            "VIEWPORT_DESC" : "zoom: 200%",
+            "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, Math.round(viewport.initialWidth/2));"
+        },
+        {
+            "DESCRIPTION" : "@viewport constrained - min-zoom not affecting width.",
+            "AUTHOR_NAME" : "Rune Lillesveen",
+            "AUTHOR_EMAIL" : "rune@opera.com",
+            "TOKENS" : "dom",
+            "ASSERTION" : "Setting min-zoom in @viewport to 200% will not affect width if zoom is auto.",
+            "VIEWPORT_DESC" : "min-zoom: 200%",
+            "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, viewport.initialWidth);"
+        },
+        {
+            "DESCRIPTION" : "@viewport constrained - max-zoom affecting width.",
+            "AUTHOR_NAME" : "Rune Lillesveen",
+            "AUTHOR_EMAIL" : "rune@opera.com",
+            "TOKENS" : "dom",
+            "ASSERTION" : "Setting max-zoom in @viewport to 50% affect width if zoom is auto because of step 10 in the constraining procedure.",
+            "VIEWPORT_DESC" : "max-zoom: 50%",
+            "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, 2*viewport.initialWidth);"
+        },
+        {
+            "DESCRIPTION" : "@viewport constrained - zoom greater than max-zoom.",
+            "AUTHOR_NAME" : "Rune Lillesveen",
+            "AUTHOR_EMAIL" : "rune@opera.com",
+            "TOKENS" : "dom",
+            "ASSERTION" : "Setting zoom greater than max-zoom will set zoom to max-zoom.",
+            "VIEWPORT_DESC" : "max-zoom: 50%; zoom: 150%",
+            "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, 2*viewport.initialWidth);"
+        },
+        {
+            "DESCRIPTION" : "@viewport constrained - zoom less than min-zoom.",
+            "AUTHOR_NAME" : "Rune Lillesveen",
+            "AUTHOR_EMAIL" : "rune@opera.com",
+            "TOKENS" : "dom",
+            "ASSERTION" : "Setting zoom less than min-zoom will set zoom to min-zoom.",
+            "VIEWPORT_DESC" : "min-zoom: 200%; zoom: 50%",
+            "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, Math.round(viewport.initialWidth/2));"
+        },
+        {
+            "DESCRIPTION" : "@viewport constrained - height deduced from width and aspect ratio.",
+            "AUTHOR_NAME" : "Rune Lillesveen",
+            "AUTHOR_EMAIL" : "rune@opera.com",
+            "TOKENS" : "dom",
+            "ASSERTION" : "Setting width and not height will set a height that makes the actual width/height and initial width/height have the same aspect ratio.",
+            "VIEWPORT_DESC" : "width: 10000px",
+            "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, 10000); assert_equals(viewport.actualHeight, Math.round(10000*viewport.initialHeight/viewport.initialWidth));"
+        },
+        {
+            "DESCRIPTION" : "@viewport constrained - Large non-auto height not affecting width.",
+            "AUTHOR_NAME" : "Rune Lillesveen",
+            "AUTHOR_EMAIL" : "rune@opera.com",
+            "TOKENS" : "dom",
+            "ASSERTION" : "Non-auto height does not affect width if zoom is auto.",
+            "VIEWPORT_DESC" : "height: 10000px",
+            "TEST_FUNCTION" : "assert_equals(viewport.actualHeight, 10000); assert_equals(viewport.actualWidth, viewport.initialWidth);"
+        },
+        {
+            "DESCRIPTION" : "@viewport constrained - Small non-auto height not affecting width.",
+            "AUTHOR_NAME" : "Rune Lillesveen",
+            "AUTHOR_EMAIL" : "rune@opera.com",
+            "TOKENS" : "dom",
+            "ASSERTION" : "Non-auto height does not affect width if zoom is auto.",
+            "VIEWPORT_DESC" : "height: 1px",
+            "TEST_FUNCTION" : "assert_equals(viewport.actualHeight, 1); assert_equals(viewport.actualWidth, viewport.initialWidth);"
+        },
+        {
+            "DESCRIPTION" : "@viewport constrained - Auto width from height and non-auto zoom.",
+            "AUTHOR_NAME" : "Rune Lillesveen",
+            "AUTHOR_EMAIL" : "rune@opera.com",
+            "TOKENS" : "dom",
+            "ASSERTION" : "Non-auto height affects width if zoom is not auto.",
+            "VIEWPORT_DESC" : "height: 10000px; zoom: 100%",
+            "TEST_FUNCTION" : "assert_equals(viewport.actualHeight, 10000); assert_equals(viewport.actualWidth, Math.round(10000*viewport.initialWidth/viewport.initialHeight));"
+        },
+        {
+            "DESCRIPTION" : "@viewport constrained - extended width and height for non-auto zoom.",
+            "AUTHOR_NAME" : "Rune Lillesveen",
+            "AUTHOR_EMAIL" : "rune@opera.com",
+            "TOKENS" : "dom",
+            "ASSERTION" : "When zoom is non-auto, and the constrained width does not fill the viewport for the constrained zoom value, the width is extended to fill the viewport. Likewise for height.",
+            "VIEWPORT_DESC" : "width: 1px; height: 1px; zoom: 50%",
+            "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, 2*viewport.initialWidth); assert_equals(viewport.actualHeight, 2*viewport.initialHeight);"
+        },
+        {
+            "DESCRIPTION" : "@viewport constrained - width is device-width.",
+            "AUTHOR_NAME" : "Rune Lillesveen",
+            "AUTHOR_EMAIL" : "rune@opera.com",
+            "TOKENS" : "dom",
+            "ASSERTION" : "When width is set to device-width, the device-width media feature will match when the actual viewport width is the value.",
+            "VIEWPORT_DESC" : "width: device-width",
+            "TEST_FUNCTION" : "var mq = window.matchMedia(\"(device-width: \"+viewport.actualWidth+\")\"); assert_true(mq.matches);"
+        },
+        {
+            "DESCRIPTION" : "@viewport constrained - height is device-height.",
+            "AUTHOR_NAME" : "Rune Lillesveen",
+            "AUTHOR_EMAIL" : "rune@opera.com",
+            "TOKENS" : "dom",
+            "ASSERTION" : "When height is set to device-height, the device-height media feature will match when the actual viewport height is the value.",
+            "VIEWPORT_DESC" : "width: device-height",
+            "TEST_FUNCTION" : "var mq = window.matchMedia(\"(device-height: \"+viewport.actualHeight+\")\"); assert_true(mq.matches);"
+        },
+        {
+            "DESCRIPTION" : "@viewport constrained - used width is positive.",
+            "AUTHOR_NAME" : "Rune Lillesveen",
+            "AUTHOR_EMAIL" : "rune@opera.com",
+            "TOKENS" : "dom",
+            "ASSERTION" : "When constrained width is lower than 0.5px, rounding would make it 0px. Make sure the used width is then set to 1px.",
+            "VIEWPORT_DESC" : "width: 0.01em",
+            "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, 1);"
+        },
+        {
+            "DESCRIPTION" : "@viewport constrained - used height is positive.",
+            "AUTHOR_NAME" : "Rune Lillesveen",
+            "AUTHOR_EMAIL" : "rune@opera.com",
+            "TOKENS" : "dom",
+            "ASSERTION" : "When constrained height is lower than 0.5px, rounding would make it 0px. Make sure the used height is then set to 1px.",
+            "VIEWPORT_DESC" : "height: 0.01em",
+            "TEST_FUNCTION" : "assert_equals(viewport.actualHeight, 1);"
+        }]
+    },
+    {
+        "FILE_PREFIX" : "orientation-",
+        "SPEC_SECTION" : "#the-lsquoorientationrsquo-property",
+        "TESTS" : [{
+            "DESCRIPTION" : "@viewport orientation - portrait",
+            "AUTHOR_NAME" : "Rune Lillesveen",
+            "AUTHOR_EMAIL" : "rune@opera.com",
+            "TOKENS" : "dom should",
+            "ASSERTION" : "Forced portrait orientation of the viewport.",
+            "VIEWPORT_DESC" : "orientation: portrait",
+            "TEST_FUNCTION" : "assert_true(viewport.actualWidth <= viewport.actualHeight);"
+        },
+        {
+            "DESCRIPTION" : "@viewport orientation - landscape",
+            "AUTHOR_NAME" : "Rune Lillesveen",
+            "AUTHOR_EMAIL" : "rune@opera.com",
+            "TOKENS" : "dom should",
+            "ASSERTION" : "Forced portrait orientation of the viewport.",
+            "VIEWPORT_DESC" : "orientation: portrait",
+            "TEST_FUNCTION" : "assert_true(viewport.actualWidth >= viewport.actualHeight);"
+        }]
+    }]
+}

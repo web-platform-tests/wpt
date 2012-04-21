@@ -9,17 +9,28 @@
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
 
   <style type="text/css"><![CDATA[
-  html { color: black; height: 100%; }
-  html, body { margin: 0; border: 0; padding: 0; }
-  p { margin: 0; padding: 2em; }
-  img { position: absolute; bottom: 0; right: 0; }
+  body {margin: 0;}
+
+  p
+  {
+  margin: 0;
+  padding: 2em 0 0 0;
+  position: relative;
+  }
+
+  img
+  {
+  bottom: 0;
+  position: absolute;
+  right: 0;
+  }
   ]]></style>
 
  </head>
 
  <body>
 
-  <p>There should be a single fuchsia diamond at the bottom right of the viewport. <img src="support/diamond.png" alt="Image download support must be enabled" /></p>
+  <p><img src="support/diamond.png" alt="Image download support must be enabled" />There should be a single fuchsia diamond at the right of the viewport at the end of this line. </p>
   
  </body>
 </html>

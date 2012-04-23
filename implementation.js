@@ -137,7 +137,7 @@ function convertProperty(property) {
 // is none.
 function cssSizeToLegacy(cssVal) {
 	return {
-		"xx-small": 1,
+		"x-small": 1,
 		"small": 2,
 		"medium": 3,
 		"large": 4,
@@ -150,7 +150,7 @@ function cssSizeToLegacy(cssVal) {
 // Return the CSS size given a legacy size.
 function legacySizeToCss(legacyVal) {
 	return {
-		1: "xx-small",
+		1: "x-small",
 		2: "small",
 		3: "medium",
 		4: "large",
@@ -2020,7 +2020,7 @@ function areEquivalentValues(command, val1, val2) {
 
 // "Two quantities are loosely equivalent values for a command if either they
 // are equivalent values for the command, or if the command is the fontSize
-// command; one of the quantities is one of "xx-small", "small", "medium",
+// command; one of the quantities is one of "x-small", "small", "medium",
 // "large", "x-large", "xx-large", or "xxx-large"; and the other quantity is
 // the resolved value of "font-size" on a font element whose size attribute has
 // the corresponding value set ("1" through "7" respectively)."
@@ -2041,7 +2041,7 @@ function areLooselyEquivalentValues(command, val1, val2) {
 		callee.sizeMap = {};
 		var font = document.createElement("font");
 		document.body.appendChild(font);
-		["xx-small", "small", "medium", "large", "x-large", "xx-large",
+		["x-small", "small", "medium", "large", "x-large", "xx-large",
 		"xxx-large"].forEach(function(keyword) {
 			font.size = cssSizeToLegacy(keyword);
 			callee.sizeMap[keyword] = getComputedStyle(font).fontSize;
@@ -2305,7 +2305,7 @@ function getSpecifiedCommandValue(element, command) {
 				size = 7;
 			}
 			return {
-				1: "xx-small",
+				1: "x-small",
 				2: "small",
 				3: "medium",
 				4: "large",
@@ -2842,14 +2842,14 @@ function forceValue(node, command, newValue) {
 		}
 	}
 
-	// "If command is "fontSize"; and new value is one of "xx-small", "small",
+	// "If command is "fontSize"; and new value is one of "x-small", "small",
 	// "medium", "large", "x-large", "xx-large", or "xxx-large"; and either the
 	// CSS styling flag is false, or new value is "xxx-large": let new parent
 	// be the result of calling createElement("font") on the ownerDocument of
 	// node, then set the size attribute of new parent to the number from the
 	// following table based on new value: [table omitted]"
 	if (command == "fontsize"
-	&& ["xx-small", "small", "medium", "large", "x-large", "xx-large", "xxx-large"].indexOf(newValue) != -1
+	&& ["x-small", "small", "medium", "large", "x-large", "xx-large", "xxx-large"].indexOf(newValue) != -1
 	&& (!cssStylingFlag || newValue == "xxx-large")) {
 		newParent = node.ownerDocument.createElement("font");
 		newParent.size = cssSizeToLegacy(newValue);
@@ -3232,7 +3232,7 @@ function normalizeFontSize(value) {
 
 	// "Set value to the string here corresponding to number:" [table omitted]
 	value = {
-		1: "xx-small",
+		1: "x-small",
 		2: "small",
 		3: "medium",
 		4: "large",
@@ -3301,7 +3301,7 @@ function getLegacyFontSize(size) {
 		return getLegacyFontSize.resultCache[size] = cssSizeToLegacy(normalizeFontSize(size));
 	}
 
-	if (["xx-small", "x-small", "small", "medium", "large", "x-large", "xx-large", "xxx-large"].indexOf(size) == -1
+	if (["x-small", "x-small", "small", "medium", "large", "x-large", "xx-large", "xxx-large"].indexOf(size) == -1
 	&& !/^[0-9]+(\.[0-9]+)?(cm|mm|in|pt|pc|px)$/.test(size)) {
 		// There is no sensible legacy size for things like "2em".
 		return getLegacyFontSize.resultCache[size] = null;

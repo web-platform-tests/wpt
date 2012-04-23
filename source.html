@@ -2674,7 +2674,7 @@ values</span> and they match the definition.
 <span>command</span> if either they are <span>equivalent values</span> for the
 <span>command</span>, or if the <span>command</span> is <span>the <code
 title>fontSize</code> command</span>; one of the quantities is one of
-"xx-small", "small", "medium", "large", "x-large", "xx-large", or "xxx-large";
+"x-small", "small", "medium", "large", "x-large", "xx-large", or "xxx-large";
 and the other quantity is the [[resval]] of "font-size" on a [[font]] element
 whose [[fontsize]] attribute has the corresponding value set ("1" through "7"
 respectively).
@@ -3461,7 +3461,7 @@ might still have a different value.
   We just output a font tag no matter what for size=7.
 
   <p>If <var>command</var> is "fontSize"; and <var>new value</var> is one of
-  "xx-small", "small", "medium", "large", "x-large", "xx-large", or
+  "x-small", "small", "medium", "large", "x-large", "xx-large", or
   "xxx-large"; and either the <span>CSS styling flag</span> is false, or
   <var>new value</var> is "xxx-large": let <var>new parent</var> be the result
   of calling <code data-anolis-spec=domcore
@@ -3471,7 +3471,7 @@ might still have a different value.
   <var>new value</var>:
 
   <ul>
-    <li>xx-small: 1
+    <li>x-small: 1
     <li>small: 2
     <li>normal: 3
     <li>large: 4
@@ -4085,6 +4085,9 @@ avoid it we'd really have to create a new command.  If nothing else, the value
 returned by {{code|queryCommandValue()}} has to be numeric, so authors can't
 really use the command sanely no matter what we do.  See <a
 href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=14251>bug 14251</a>.
+
+<p>Note that 1 is the same size as x-small in browsers, not xx-small, contrary
+to the CSS Fonts spec.
 </div>
 
 <p><span>Action</span>:
@@ -4131,7 +4134,7 @@ href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=14251>bug 14251</a>.
   not legacy sizes.
 
   <ul>
-    <li>1: xx-small
+    <li>1: x-small
     <li>2: small
     <li>3: medium
     <li>4: large

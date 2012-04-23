@@ -67,7 +67,7 @@ a code { text-decoration: underline }
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing APIs</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-12-march-2012>Work in Progress &mdash; Last Update 12 March 2012</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-23-april-2012>Work in Progress &mdash; Last Update 23 April 2012</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;<a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a>&gt;
@@ -2672,7 +2672,7 @@ values</a> and they match the definition.
 <p>Two quantities are <dfn id=loosely-equivalent-values>loosely equivalent values</dfn> for a
 <a href=#command>command</a> if either they are <a href=#equivalent-values>equivalent values</a> for the
 <a href=#command>command</a>, or if the <a href=#command>command</a> is <a href=#the-fontsize-command>the <code title="">fontSize</code> command</a>; one of the quantities is one of
-"xx-small", "small", "medium", "large", "x-large", "xx-large", or "xxx-large";
+"x-small", "small", "medium", "large", "x-large", "xx-large", or "xxx-large";
 and the other quantity is the <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved value</a> of "font-size" on a <code class=external data-anolis-spec=html title=font><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/obsolete.html#font>font</a></code> element
 whose <code class=external data-anolis-spec=html title=dom-font-size><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/obsolete.html#dom-font-size>size</a></code> attribute has the corresponding value set ("1" through "7"
 respectively).
@@ -3434,7 +3434,7 @@ might still have a different value.
   We just output a font tag no matter what for size=7.
 
   <p>If <var title="">command</var> is "fontSize"; and <var title="">new value</var> is one of
-  "xx-small", "small", "medium", "large", "x-large", "xx-large", or
+  "x-small", "small", "medium", "large", "x-large", "xx-large", or
   "xxx-large"; and either the <a href=#css-styling-flag>CSS styling flag</a> is false, or
   <var title="">new value</var> is "xxx-large": let <var title="">new parent</var> be the result
   of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("font")</a></code> on the
@@ -3443,7 +3443,7 @@ might still have a different value.
   <var title="">new value</var>:
 
   <ul>
-    <li>xx-small: 1
+    <li>x-small: 1
     <li>small: 2
     <li>normal: 3
     <li>large: 4
@@ -4051,6 +4051,9 @@ legacy font values and don't let them use CSS.  This is undesirable, but to
 avoid it we'd really have to create a new command.  If nothing else, the value
 returned by <code title="">queryCommandValue()</code> has to be numeric, so authors can't
 really use the command sanely no matter what we do.  See <a href="http://www.w3.org/Bugs/Public/show_bug.cgi?id=14251">bug 14251</a>.
+
+<p>Note that 1 is the same size as x-small in browsers, not xx-small, contrary
+to the CSS Fonts spec.
 </div>
 
 <p><a href=#action>Action</a>:
@@ -4097,7 +4100,7 @@ really use the command sanely no matter what we do.  See <a href="http://www.w3.
   not legacy sizes.
 
   <ul>
-    <li>1: xx-small
+    <li>1: x-small
     <li>2: small
     <li>3: medium
     <li>4: large

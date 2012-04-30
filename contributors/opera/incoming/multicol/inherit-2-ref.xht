@@ -10,55 +10,61 @@ body {
 }
 body>div {
 	color: black;
-	background: yellow;
+	background: blue;
 	margin: 1em;
-	width: 74em;
+	width: 46em;
 	height: 2em;
-	position: relative;
 }
-div div {
-	position: absolute;
-	top: 0;
-	left: 0;
+.a1 {
+	margin-left: 1em;
+	width: 12em;
+	height: 2em;
+	background: yellow;
+	float: left;
 }
-#two {left: 25em;}
-#three {left: 50em;}
-div div div {
-	font-family: ahem;
-	font-size: 1em;
-	line-height: 1em;
+.a2 {
+	margin-left: 4em;
+}
+.a3 {
+	margin-right: 1em;
+}
+.a1 div {
+	background: black;
+	margin-left: 1em;
 	width: 2em;
 	height: 2em;
-	color: black;
-	position: absolute;
-	left: 1em;
+	float: left;
 }
-.a2 {left: 4em;}
-.a3 {left: 8.6em;}
-.a4 {left: 11.6em;}
+.a1 .one {
+	background: black;
+	margin-left: 0;
+}
+.a1 .three {
+	margin-left: 2em;
+}
 ]]></style>
 </head>
 
 <body>
 
 <div>
-	<div>
-		<div>xx xx</div>
-		<div class="a2">xx xx</div>
-		<div class="a3">xx xx</div>
-		<div class="a4">xx xx</div>
+	<div class="a1">
+		<div class="one"></div>
+		<div></div>
+		<div class="three"></div>
+		<div></div>
 	</div>
-	<div id="two">
-		<div>xx xx</div>
-		<div class="a2">xx xx</div>
-		<div class="a3">xx xx</div>
-		<div class="a4">xx xx</div>
+	<div class="a1 a2">
+		<div class="one"></div>
+		<div></div>
+		<div class="three"></div>
+		<div></div>
 	</div>
-	<div id="three">
-		<div>xx xx</div>
-		<div class="a2">xx xx</div>
-		<div class="a3">xx xx</div>
-		<div class="a4">xx xx</div>
+	<div class="a1 a2 a3">
+		<div class="one"></div>
+		<div></div>
+		<div class="three"></div>
+		<div></div>
 	</div>
 </div>
 

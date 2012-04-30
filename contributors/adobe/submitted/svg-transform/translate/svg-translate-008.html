@@ -2,11 +2,11 @@
 <html>
 <head>
     <title>CSS Transforms Test: SVG presentation attribute and translation-value arguments with em units on translate</title>
-    <link rel="author" title="Rebecca Hauck" href="rhauck@adobe.com">
+    <link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-transform">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions">
     <link rel="match" href="reftest/svg-translate-ref.html">
-    <meta name="flags" content="svg">
+    <meta name="flags" content="svg ahem">
     <meta name="assert" content="The translate transform function must support the relative length unit 'em' on translation-value arguments. The rect in the test should be moved 50 pixels in the X direction and 50 pixels in the Y direction">
     <style type="text/css">
     svg {
@@ -18,9 +18,10 @@
     </style>
 </head>
 <body>
-    <p>The test passes if there is an orange square at 50,50</p>
+    <p>The test passes if there is a green square and no red.</p>
     <svg>
-        <rect width="100" height="100" fill="orange" transform="translate(2.5em 2.5em)"/>
+        <rect x="51" y="51" width="98" height="98" fill="red"/>
+        <rect width="100" height="100" fill="green" transform="translate(2.5em 2.5em)"/>
     </svg>
 </body>
 </html>

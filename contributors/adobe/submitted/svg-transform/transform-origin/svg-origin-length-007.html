@@ -2,7 +2,7 @@
 <html>
  <head>
   <title>CSS Transforms Test: SVG presentation attribute transform-origin with length values - 0 100</title>
-  <link rel="author" title="Dirk Schulze" href="dschulze@adobe.com">
+  <link rel="author" title="Dirk Schulze" href="mailto:dschulze@adobe.com">
   <link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-origin-property">
   <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-transform-value">
   <link rel="match" href="reftest/svg-origin-length-ref.html">
@@ -16,7 +16,7 @@
   </style>
  </head>
  <body>
-   <p>The test passes if there is a vertical fuchsia stripe next to an orange stripe.</p>
+   <p>The test passes if there is a vertical fuchsia stripe to the left of an orange stripe. You should see no red.</p>
    <svg>
      <!-- Fill with Gradient to avoid false positive. -->
      <defs>
@@ -25,6 +25,7 @@
          <stop offset="50%" stop-color="fuchsia"/>
        </linearGradient>
      </defs>
+     <rect x="1" y="1" width="98" height="98" fill="red"/>
      <rect width="100" height="100" fill="url(#grad)" transform="rotate(90deg) translateX(-100px)" transform-origin="0 100"/>
    </svg>
  </body>

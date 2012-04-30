@@ -1,12 +1,22 @@
-<!doctype html>
-<link rel=match href=table-4-ref.html>
-<style>table, tbody, tr, td { margin: 0; padding: 0; border-spacing: 0 }</style>
-<!-- preserve-3d is on every intervening element, so this shouldn't vanish -->
-<div style="transform: rotatex(90deg); transform-style: preserve-3d">
-	<table style="transform-style: preserve-3d">
-		<tbody style="transform-style: preserve-3d">
-			<tr style="transform-style: preserve-3d">
-				<td style="transform-style: preserve-3d">
-					<div style="transform: rotatex(90deg)">Some text</div>
-	</table>
-</div>
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CSS Test (Transforms): </title>
+    <link rel="author" title="Aryeh Gregor" href="http://aryeh.name/">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#">
+    <meta name="assert" content=''>
+    <link rel="match" href="table-4-ref.html">
+    <style>table, tbody, tr, td { margin: 0; padding: 0; border-spacing: 0 }</style>
+    <!-- preserve-3d is on every intervening element, so this shouldn't vanish -->
+  </head>
+  <body>
+    <div style="transform: rotatex(90deg); transform-style: preserve-3d">
+      <table style="transform-style: preserve-3d">
+        <tbody style="transform-style: preserve-3d">
+          <tr style="transform-style: preserve-3d">
+            <td style="transform-style: preserve-3d">
+              <div style="transform: rotatex(90deg)">Some text</div>
+            </table>
+          </div>
+        </body>
+      </html>

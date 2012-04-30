@@ -1,10 +1,20 @@
-<!doctype html>
-<link rel=match href=stacking-1-ref.html>
-<!-- "In the HTML namespace, any value other than ‘none’ for the transform
-results in the creation of . . . a stacking context . . ." -->
-<div style="transform:none">
-	<div style="height:100px;width:100px;background:orange;
-	z-index:1;position:relative"></div>
-</div>
-<div style="height:100px;width:100px;background:blue;
-position:relative;bottom:100px"></div>
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CSS Test (Transforms): </title>
+    <link rel="author" title="Aryeh Gregor" href="http://aryeh.name/">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#">
+    <meta name="assert" content=''>
+    <link rel="match" href="stacking-1-ref.html">
+    <!-- "In the HTML namespace, any value other than ‘none’ for the transform
+    results in the creation of . . . a stacking context . . ." -->
+  </head>
+  <body>
+    <div style="transform:none">
+      <div style="height:100px;width:100px;background:orange;
+        z-index:1;position:relative"></div>
+    </div>
+    <div style="height:100px;width:100px;background:blue;
+      position:relative;bottom:100px"></div>
+  </body>
+</html>

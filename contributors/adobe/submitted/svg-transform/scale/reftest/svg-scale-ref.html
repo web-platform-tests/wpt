@@ -2,19 +2,20 @@
 <html>
 <head>
     <title>CSS Reftest Reference</title>
-    <link rel="author" title="Rebecca Hauck" href="rhauck@adobe.com">
+    <link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
     <meta name="flags" content="svg">
     <style type="text/css">
     svg {
-        width: 300px;
-        height: 300px;
+        width: 500px;
+        height: 500px;
     }
     </style>
 </head>
 <body>
-    <p>The test passes if there is a 150x150 blue square.</p>
+    <p>The test passes if you see two squares of the same size.</p>
     <svg>
         <rect width="150" height="150" fill="blue"/>
+        <rect x="200" width="150" height="150" fill="blue"/>
     </svg>
 </body>
 </html>

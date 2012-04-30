@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>CSS Transforms Test: SVG presentation attribute and scale 0.5 with only one parameter specified</title>
-    <link rel="author" title="Rebecca Hauck" href="rhauck@adobe.com">
+    <link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-transform">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions">
     <link rel="match" href="reftest/svg-scale-ref.html">
@@ -10,15 +10,16 @@
     <meta name="assert" content="The rect in the test should be scaled down 0.5 to 150x150 with only one parameter specified">
     <style type="text/css">
     svg {
-        width: 300px;
-        height: 300px;
+        width: 500px;
+        height: 500px;
     }
     </style>
 </head>
 <body>
-    <p>The test passes if there is a 150x150 blue square.</p>
+    <p>The test passes if you see two squares of the same size.</p>
     <svg>
         <rect width="300" height="300" fill="blue" transform="scale(0.5)"/>
+        <rect x="200" width="150" height="150" fill="blue"/>
     </svg>
 </body>
 </html>

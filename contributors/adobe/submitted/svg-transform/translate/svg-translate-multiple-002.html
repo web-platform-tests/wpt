@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>CSS Transforms Test: SVG presentation attribute and translation-value arguments with translate applied twice in both directions</title>
-    <link rel="author" title="Rebecca Hauck" href="rhauck@adobe.com">
+    <link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-transform">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions">
     <link rel="match" href="reftest/svg-translate-multiple-ref.html">
@@ -16,9 +16,10 @@
     </style>
 </head>
 <body>
-    <p>The test passes if there is an orange square at 50,75</p>
+    <p>The test passes if there is a green square and no red.</p>
     <svg>
-        <rect width="150" height="150" fill="orange" transform="translate(150 150) translate(-100 -75)"/>
+        <rect x="51" y="76" width="148" height="148" fill="red"/>
+        <rect width="150" height="150" fill="green" transform="translate(150 150) translate(-100 -75)"/>
     </svg>
 </body>
 </html>

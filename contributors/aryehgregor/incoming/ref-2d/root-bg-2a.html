@@ -1,5 +1,5 @@
-<!doctype html>
-<link rel=match href=root-bg-2-ref.html>
+<!DOCTYPE html>
+<link rel="match" href="root-bg-2-ref.html">
 <!-- The transform-origin here has to fall between two triangles, i.e., at a
 multiple of 100px.  Otherwise after the transform, the shrunken images won't
 line up with the left edge of the body, and it won't match the ref (since the
@@ -7,5 +7,13 @@ background here is positioned at the left).  We deliberately make it an odd
 multiple of the number of images so it catches an IE bug; it shouldn't matter
 per spec. -->
 <html style="background: url(background-1a.svg); transform: scale(0.5);
-transform-origin: 300px 0">
-<body style="margin: 0">
+  <head>
+    <title>CSS Test (Transforms): </title>
+    <link rel="author" title="Aryeh Gregor" href="http://aryeh.name/">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#">
+    <meta name="assert" content=''>
+    transform-origin: 300px 0">
+  </head>
+  <body style="margin: 0">
+  </body>
+</html>

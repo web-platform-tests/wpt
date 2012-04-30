@@ -1,8 +1,18 @@
-<!doctype html>
-<link rel=match href=green-rect.html>
-<style>div { width: 100px; height: 100px }</style>
-<div style="transform: rotateX(180deg); transform-style: preserve-3d;
-background: lime">
-	<div style="backface-visibility: hidden; background: red">
-	</div>
-</div>
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CSS Test (Transforms): </title>
+    <link rel="author" title="Aryeh Gregor" href="http://aryeh.name/">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#">
+    <meta name="assert" content=''>
+    <link rel="match" href="green-rect.html">
+    <style>div { width: 100px; height: 100px }</style>
+  </head>
+  <body>
+    <div style="transform: rotateX(180deg); transform-style: preserve-3d;
+      background: lime">
+      <div style="backface-visibility: hidden; background: red">
+      </div>
+    </div>
+  </body>
+</html>

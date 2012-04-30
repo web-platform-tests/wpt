@@ -1,7 +1,17 @@
-<!doctype html>
-<link rel=match href=perspective-3-ref.html>
-<link rel=mismatch href=perspective-3-fail.html>
-<div style="transform: perspective(200px); transform-style: preserve-3d">
-<div style="width: 100px; height: 50px; background: blue; display: table;
-transform: rotatey(45deg)">
-</div></div>
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CSS Test (Transforms): </title>
+    <link rel="author" title="Aryeh Gregor" href="http://aryeh.name/">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#">
+    <meta name="assert" content=''>
+    <link rel="match" href="perspective-3-ref.html">
+    <link rel="mismatch" href="perspective-3-fail.html">
+  </head>
+  <body>
+    <div style="transform: perspective(200px); transform-style: preserve-3d">
+      <div style="width: 100px; height: 50px; background: blue; display: table;
+        transform: rotatey(45deg)">
+    </div></div>
+  </body>
+</html>

@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>CSS Transforms Test: SVG presentation attribute and positive and negative translation-value arguments different absolute units on translate - x positive in px, y negative in cm</title>
-    <link rel="author" title="Rebecca Hauck" href="rhauck@adobe.com">
+    <link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-transform">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions">
     <link rel="match" href="reftest/svg-translate-abs-unit-combinations-ref.html">
@@ -16,9 +16,10 @@
     </style>
 </head>
 <body>
-    <p>The test passes if there is an orange square at 100,50</p>
+    <p>The test passes if there is a green square and no red.</p>
     <svg>
-        <rect y="100" width="75" height="75" fill="orange" transform="translate(100px -1.322916667cm)"/>
+        <rect x="101" y="51" width="73" height="73" fill="red"/>
+        <rect y="100" width="75" height="75" fill="green" transform="translate(100px -1.322916667cm)"/>
     </svg>
 </body>
 </html>

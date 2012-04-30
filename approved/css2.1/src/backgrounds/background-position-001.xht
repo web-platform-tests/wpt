@@ -10,6 +10,8 @@
   <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#background-properties" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#length-units" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/fonts.html#font-size-props" />
+  <link rel="match" href="background-position-001-ref.xht" />
+
   <meta content="ahem image" name="flags" />
   <meta content="ex unit is the 'x-height' of the relevant font. 'em' and 'ex' length values when defining 'font-size' property refer to the computed font size of the parent element." name="assert" />
 
@@ -20,16 +22,16 @@
   {
   background: url("support/1x1-lime.png") repeat-x 0 6.25ex;
   font-size: 2.5ex;
-  margin: 0px;
+  margin: 1px 0px 8px 75px;
   }
 
-  #vertical-ruler {margin-top: 1px;}
+  p#expected-results {font-family: serif;}
 
-  #expected-results
+  img
   {
-  font-family: serif;
-  margin-left: 3em;
-  margin-top: -3em;  
+  left: 0px;
+  position: absolute;
+  top: 1px;
   }
   ]]></style>
 
@@ -37,9 +39,7 @@
 
  <body>
 
-  <p id="vertical-ruler"><img src="support/ruler-v-100px-200px-300px.png" width="55" height="350" alt="FAIL" /></p>
-
-  <p id="expected-results">A thin green horizontal line should appear at exactly 200px</p>
+  <p id="expected-results">A thin green horizontal line should appear at exactly 200px<img src="support/ruler-v-100px-200px-300px.png" width="55" height="350" alt="Image download support must be enabled" /></p>
 
  </body>
 </html>

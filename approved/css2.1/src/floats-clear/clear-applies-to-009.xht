@@ -3,6 +3,7 @@
     <head>
         <title>CSS Test: Clear applied to element with 'display' set to block</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-05-01 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#propdef-clear" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#flow-control" />
         <link rel="match" href="clear-applies-to-009-ref.xht" />
@@ -10,6 +11,8 @@
         <meta name="flags" content="" />
         <meta name="assert" content="The 'clear' property applies to elements with a display of block." />
         <style type="text/css">
+            body {margin: 8px;}
+
             p
             {
                 float: left;

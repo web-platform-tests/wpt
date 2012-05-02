@@ -109,7 +109,7 @@ public class TestServer extends Server
 	        _wsHandler.setHandler(_rHandler);
 	        
 	        _connector2 = new SelectChannelConnector();
-	        _connector2.setPort(8081);
+	        _connector2.setPort(9081);
 	        addConnector(_connector2);
         }
     }

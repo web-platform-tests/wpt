@@ -1,0 +1,26 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD//XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Style attribute and specificity of selectors</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/css-style-attr/#interpret" />
+        <meta name="flags" content="" />
+        <meta name="assert" content="The style attribute has a higher specificity than all selectors." />
+        <style type="text/css">
+            #div1, .div1, div, div[style]
+            {
+                background: red;
+                color: yellow;
+            }
+            div
+            {
+                height: 1in;
+                width: 1in;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if there is a solid green box below and no red visible on the page.</p>
+        <div class="div1" id="div1" style="background: green; color: green;">Filler Text</div>
+    </body>
+</html>

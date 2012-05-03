@@ -15,6 +15,8 @@
   <style type="text/css"><![CDATA[
   div#table {display: table;}
 
+  div.col {display: table-column;}
+
   div#tested-col
   {
   background-image: url("support/60x60-red.png");
@@ -23,13 +25,11 @@
   display: table-column;
   }
 
-  div.col {display: table-column;}
-
   div#tbody {display: table-row-group;}
 
-  div.row {display: table-row;}
+  div.tr {display: table-row;}
 
-  div.cell
+  div.td
   {
   display: table-cell;
   height: 60px;
@@ -54,11 +54,11 @@
   <div id="table">
       <div class="col"></div><div id="tested-col"></div>
       <div id="tbody">
-          <div class="row">
-              <div class="cell"></div><div class="cell"></div>
+          <div class="tr">
+              <div class="td"></div><div class="td"></div>
           </div>
-          <div class="row">
-              <div class="cell"></div><div id="overlapping-green"></div>
+          <div class="tr">
+              <div class="td"></div><div id="overlapping-green"></div>
           </div>
       </div>
   </div>

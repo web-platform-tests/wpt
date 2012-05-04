@@ -1,6 +1,5 @@
-conformancetest/runtest.html
-conformancetest/event.html
-support css/reset.css
+dir css
+dir conformancetest
+dir selecttest
 support implementation.js
 support tests.js
-support conformancetest/data.js

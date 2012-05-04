@@ -1,0 +1,14 @@
+addRange.html
+collapse.html
+collapseToStartEnd.html
+deleteFromDocument.html
+Document-open.html
+extend.html
+getRangeAt.html
+getSelection.html
+interfaces.html
+isCollapsed.html
+removeAllRanges.html
+selectAllChildren.html
+support common.js
+support test-iframe.html

@@ -3,8 +3,11 @@
     <head>
         <title>CSS Test: Background-repeat set to 'repeat-y'</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-05-04 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#background-properties" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#propdef-background-repeat" />
+        <link rel="match" href="background-repeat-003-ref.xht" />
+
         <meta name="flags" content="image" />
         <meta name="assert" content="Background-repeat set to 'repeat-y' repeats the image vertically to fill the space." />
         <style type="text/css">
@@ -13,12 +16,12 @@
                 background-color: black;
                 background-image: url("support/blue15x15.png");
                 background-repeat: repeat-y;
-                height: 500px;
+                height: 200px;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if there is a blue box to the left of a black box. Also, both boxes are the same height.</p>
+        <p>Test passes if there is a vertical blue stripe to the left of a filled black rectangle. Also, the blue stripe and black rectangle have the same height.</p>
         <div></div>
     </body>
 </html>

@@ -68,6 +68,7 @@ Element-siblingElement-null.xhtml
 Element-tagName.html
 Event-constants.html
 Event-constructors.html
+Event-defaultPrevented.html
 EventTarget-dispatchEvent.html
 historical.html
 interfaces.html

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CSS Transforms Test: SVG presentation attribute, translate on group, scale on child</title>
+    <link rel="author" title="David Alcala" href="mailto:dalcala@adobe.com">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-transform">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions">
+    <link rel="match" href="reftest/svg-two-green-squares-horiz-x20-y20-ref.html">
+    <meta name="flags" content="svg">
+    <meta name="assert" content="The translate transform function must be supported in SVG groups with a child that has a scale transform function. The rect in the test should be moved 20 pixels in the X direction and 20 pixels in the Y direction when the translate is performed on the group and the rect should then be scaled down 0.5 to 100x100.">
+    <style type="text/css">
+    svg {
+        width: 300px;
+        height: 300px;
+    }
+    </style>
+</head>
+<body>
+    <p>The test passes if there are two identical green squares horizontally aligned and no red.</p>
+    <svg>
+        <rect x="21" y="21" width="98" height="98" fill="red"/>
+        <g transform="translate(20 20)">
+            <rect width="200" height="200" fill="green" transform="scale(0.5)"/>
+        </g>
+        <rect x="140" y="20" width="100" height="100" fill="green"/>
+    </svg>
+</body>
+</html>

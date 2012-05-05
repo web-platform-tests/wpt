@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CSS Transforms Test: SVG presentation attribute, skewX on group, scaleX on child</title>
+    <link rel="author" title="David Alcala" href="mailto:dalcala@adobe.com">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-transform">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions">
+    <link rel="match" href="reftest/svg-20x20-green-square-x70-y80-ref.html">
+    <meta name="flags" content="svg">
+    <meta name="assert" content="The skewX transform function must be supported in SVG groups with a child that has a scaleX transform function. The child rect in the test should be skewed horizontally 27 degrees when the skewX is performed on the group and then should be horizontally scaled down to 100x100 when the scaleX is performed on the child rect.">
+    <style type="text/css">
+    svg {
+        width: 300px;
+        height: 300px;
+    }
+    </style>
+</head>
+<body>
+    <p>The test passes if there is a green square and no red.</p>
+    <svg>
+        <defs>
+            <!-- Use a gradient so that clipping results in a different color after the skew -->
+            <linearGradient id="grad" x1="0%" y1="0%">
+                <stop offset="50%" stop-color="green"/>
+                <stop offset="50%" stop-color="red"/>
+            </linearGradient>
+            <clipPath id="clip">
+                <rect x="70" y="80" width="20" height="20"/>
+                <rect x="220" y="80" width="20" height="20"/>
+                <rect x="180" y="0" width="20" height="20"/>
+            </clipPath>
+        </defs>
+        <!-- Clip three small areas of the rect.  The first clip rect will shift to the other color area of the gradient with skewX. The second clip rect will appear in red if the scaleX fails. The third clip rect will appear in red if both the scaleX and the skewX fail. -->
+        <rect x="71" y="81" width="18" height="18" fill="red"/>
+        <g clip-path="url(#clip)">
+            <g transform="skewX(27)">
+                <rect width="200" height="100" fill="url(#grad)" transform="scaleX(0.5)"/>
+            </g>
+        </g>
+    </svg>
+</body>
+</html>

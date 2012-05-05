@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CSS Transforms Test: SVG presentation attribute, matrix on group, scaleX on child</title>
+    <link rel="author" title="David Alcala" href="mailto:dalcala@adobe.com">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-transform">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions">
+    <link rel="match" href="reftest/svg-four-color-two-squares-ref.html">
+    <meta name="flags" content="svg">
+    <meta name="assert" content="The matrix transform function must be supported in SVG groups with a child that has a scaleX transform function. The rect in the test should be flipped up and left and scaled down horizontally and vertically when the matrix is performed on the group, and then should be horizontally scaled up 2 to 100x100 when the scaleX is performed on the child rect.">
+    <style type="text/css">
+    svg {
+        width: 300px;
+        height: 300px;
+    }
+    </style>
+</head>
+<body>
+  <p>The test passes if there are two identical four-color squares, where the top left is a green square, the top right is a fuchsia square, the bottom left is a yellow square, and the bottom right is a blue square. There should be no red.</p>
+  <svg>
+      <defs>
+          <pattern id="coloredBoxes" patternUnits="userSpaceOnUse" x="0" y="0" width="200" height="200">
+              <rect x="0" y="0" width="100" height="100" fill="blue"/>
+              <rect x="100" y="0" width="100" height="100" fill="yellow"/>
+              <rect x="0" y="100" width="100" height="100" fill="fuchsia"/>
+              <rect x="100" y="100" width="100" height="100" fill="green"/>
+          </pattern>
+          <pattern id="coloredBoxesRef" patternUnits="userSpaceOnUse" x="0" y="0" width="100" height="100">
+              <rect x="0" y="0" width="50" height="50" fill="fuchsia"/>
+              <rect x="50" y="0" width="50" height="50" fill="green"/>
+              <rect x="0" y="50" width="50" height="50" fill="blue"/>
+              <rect x="50" y="50" width="50" height="50" fill="yellow"/>
+          </pattern>
+      </defs>
+      <rect x="1" y="1" width="98" height="98" fill="red"/>
+      <g transform="matrix(-0.25 0 0 -0.5 100 100)">
+          <rect width="200" height="200" fill="url(#coloredBoxes)" transform="scaleX(2)"/>
+      </g>
+      <rect x="150" y="0" width="100" height="100" fill="url(#coloredBoxesRef)"/>
+  </svg>
+</body>
+</html>

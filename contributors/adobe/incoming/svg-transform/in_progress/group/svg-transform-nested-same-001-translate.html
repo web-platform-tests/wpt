@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CSS Transforms Test: SVG presentation attribute and translate on group, translate on child</title>
+    <link rel="author" title="David Alcala" href="mailto:dalcala@adobe.com">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-transform">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions">
+    <link rel="match" href="reftest/svg-green-square-x50-y50-ref.html">
+    <meta name="flags" content="svg">
+    <meta name="assert" content="The translate transform function must be supported in SVG groups with a child that also has a translate transform function. The rect in the test should be moved 50 pixels in the X direction and 50 pixels in the Y direction when the translate is performed on the group and on the child.">
+    <style type="text/css">
+    svg {
+        width: 300px;
+        height: 300px;
+    }
+    </style>
+</head>
+<body>
+    <p>The test passes if there is a green square and no red.</p>
+    <svg>
+        <rect x="51" y="51" width="98" height="98" fill="red"/>
+        <g transform="translate(25 25)">
+            <rect width="100" height="100" fill="green" transform="translate(25 25)"/>
+        </g>
+    </svg>
+</body>
+</html>

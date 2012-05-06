@@ -142,8 +142,11 @@ function setQueryResult(arr, idx, callback, command, range) {
  *   [input HTML,
  *    array of commands,
  *    expected output HTML,
+ *    array of expected execCommand() return values,
  *    object of expected indeterm/state/value].
  * The array of commands is [[command, value], [command, value], ...].  The
+ * array of expected execCommand() return values is [true|false, true|false,
+ * ...], where the indices match those in the array of commands.  The
  * indeterm/state/value object is of the form
  *   {command: [expected indeterm before, expected state before,
  *     expected value before, expected indeterm after,
@@ -195,8 +198,10 @@ function generateTest(test) {
 		expectedQueryResults[test[i][0]] = results;
 	}
 
+	var expectedExecCommandReturnValues = [];
 	for (var i = 1; i < test.length; i++) {
-		myExecCommand(test[i][0], false, test[i][1], range);
+		expectedExecCommandReturnValues.push(
+			myExecCommand(test[i][0], false, test[i][1], range));
 	}
 
 	for (var command in expectedQueryResults) {
@@ -263,6 +268,7 @@ function generateTest(test) {
 	testOutput += "[" + JSON.stringify(test[0]) + ",\n"
 		+ "\t" + JSON.stringify(test.slice(1)) + ",\n"
 		+ "\t" + JSON.stringify(testDiv.innerHTML) + ",\n"
+		+ "\t" + JSON.stringify(expectedExecCommandReturnValues) + ",\n"
 		+ "\t" + JSON.stringify(expectedQueryResults) + "],\n";
 }
 </script>

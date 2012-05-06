@@ -1312,11 +1312,21 @@ with it:
 <!-- @} -->
 <h3 id=supported-commands>Supported commands</h3>
 <!-- @{ -->
-<p class=comments>If you try doing anything with an unrecognized command, IE9
-throws an "Invalid argument" exception, and Firefox 6.0a2 throws
-NS_ERROR_NOT_IMPLEMENTED.  Chrome 14 dev and Opera 11.11 both just return a
-useless value.  I go with IE/Gecko, although of course with a standard
-exception type.
+<p class=comments>If you try doing anything with an unrecognized command
+(except queryCommandSupported), IE10 Developer Preview throws an "Invalid
+argument" exception.  Firefox 15.0a1 throws NS_ERROR_NOT_IMPLEMENTED on
+querying indeterm/state/value, and returns false from
+execCommand/queryCommandEnabled.  Chrome 19 dev returns false from everything.
+Opera Next 12.00 alpha throws NOT_SUPPORTED_ERR for execCommand and returns
+false for enabled/state/value.  Originally I went with IE, although of course
+with a standard exception type.  But after discussion (<a
+href=https://bugs.webkit.org/show_bug.cgi?id=83993>WebKit bug</a>, <a
+href=https://bugzilla.mozilla.org/show_bug.cgi?id=742240>Mozilla bug</a>), I
+changed to match WebKit (except that I return "" for value instead of false).
+The issue is that there are a whole bunch of IE commands that no one else
+supports or wants to support, and throwing on execCommand() would make lots of
+pages break.  WebKit was unwilling to take the compat risk, so we took the
+safer option.
 
 <p>Some <span title=command>commands</span> will be <dfn>supported</dfn> in a
 given user agent, and some will not.  All <span title=command>commands</span>
@@ -1470,20 +1480,19 @@ must run the following steps:
   empty string.
 
   <li>
-  <p class=comments>See comment before <a href=#supported-commands>Supported
+  <div class=comments>
+  <p>For supported: see comment before <a href=#supported-commands>Supported
   commands</a>.
 
-  <p>If <var>command</var> is not <span>supported</span>, [[throw]] a
-  [[NotSupportedError]] exception.
-
-  <li>
-  <p class=comments>I didn't research this closely, but at a first glance, this
+  <p>For enabled: I didn't research this closely, but at a first glance, this
   is possibly how Chrome 14 dev and Opera 11.11 behave.  Maybe also Firefox
   6.0a2, except it throws if the command isn't enabled, I think.  IE9 returns
   true in at least some cases even if the command is disabled.  TODO: Is this
   right?  Maybe we should be returning false in other cases too?
+  </div>
 
-  <p>If <var>command</var> is not <span>enabled</span>, return false.
+  <p>If <var>command</var> is not <span>supported</span> or not
+  <span>enabled</span>, return false.
 
   <li>
   <p>If <var>command</var> is not in the
@@ -1572,11 +1581,8 @@ invoked, the user agent must run the following steps:
   <p class=comments>See comment before <a href=#supported-commands>Supported
   commands</a>.
 
-  <p>If <var>command</var> is not <span>supported</span>, [[throw]] a
-  [[NotSupportedError]] exception.
-
-  <li>Return true if <var>command</var> is <span>enabled</span>, false
-  otherwise.
+  <li>Return true if <var>command</var> is both <span>supported</span> and
+  <span>enabled</span>, false otherwise.
 </ol>
 
 <p>When the <dfn
@@ -1586,14 +1592,10 @@ invoked, the user agent must run the following steps:
 
 <ol>
   <li>
-  <p class=comments>See comment before <a href=#supported-commands>Supported
+  <div class=comments>
+  <p>For supported: see comment before <a href=#supported-commands>Supported
   commands</a>.
 
-  <p>If <var>command</var> is not <span>supported</span>, [[throw]] a
-  [[NotSupportedError]] exception.
-
-  <li>
-  <div class=comments>
   <p>What happens if you call queryCommand(Indeterm|State|Value)() on a command
   where it makes no sense?
 
@@ -1624,7 +1626,7 @@ invoked, the user agent must run the following steps:
   behavior but made slightly more sane.
   </div>
 
-  <p>If <var>command</var> has no <span
+  <p>If <var>command</var> is not <span>supported</span> or has no <span
   title=indeterminate>indeterminacy</span>, return false.
 
   <li>Return true if <var>command</var> is <span>indeterminate</span>,
@@ -1638,17 +1640,11 @@ invoked, the user agent must run the following steps:
 
 <ol>
   <li>
-  <p class=comments>See comment before <a href=#supported-commands>Supported
-  commands</a>.
-
-  <p>If <var>command</var> is not <span>supported</span>, [[throw]] a
-  [[NotSupportedError]] exception.
-
-  <li>
   <p class=comments>See comment on the comparable line for
   <span>queryCommandIndeterm()</span>.
 
-  <p>If <var>command</var> has no <span>state</span>, return false.
+  <p>If <var>command</var> is not <span>supported</span> or has no
+  <span>state</span>, return false.
 
   <li>If the <span>state override</span> for <var>command</var> is set, return
   it.
@@ -1686,20 +1682,14 @@ invoked, the user agent must run the following steps:
 
 <ol>
   <li>
-  <p class=comments>See comment before <a href=#supported-commands>Supported
-  commands</a>.
-
-  <p>If <var>command</var> is not <span>supported</span>, [[throw]] a
-  [[NotSupportedError]] exception.
-
-  <li>
   <p class=comments>This is what Firefox 6.0a2 and Opera 11.11 seem to do when
   the command isn't enabled.  Chrome 14 dev seems to return the string "false",
   and IE9 seems to return boolean false.  For the case where there's no value,
-  see the comment on the comparable line for
+  or the command isn't supported, see the comment on the comparable line for
   <span>queryCommandIndeterm()</span>.
 
-  <p>If <var>command</var> has no <span>value</span>, return the empty string.
+  <p>If <var>command</var> is not <span>supported</span> or has no
+  <span>value</span>, return the empty string.
 
   <li>
   <p class=comments>Yuck.  This is incredibly messy, as are lots of other

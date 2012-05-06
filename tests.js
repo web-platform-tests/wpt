@@ -5366,7 +5366,8 @@ function runConformanceTest(browserTest) {
 	var testDiv = document.querySelector("div[contenteditable]");
 	var originalRootElement, newRootElement;
 	var exception = null;
-	var expectedQueryResults = browserTest[3];
+	var expectedExecCommandReturnValues = browserTest[3];
+	var expectedQueryResults = browserTest[4];
 	var actualQueryResults = {};
 	var actualQueryExceptions = {};
 
@@ -5409,8 +5410,9 @@ function runConformanceTest(browserTest) {
 		test(function() {
 			assert_equals(exception, null, "Setup must not throw an exception");
 
-			document.execCommand(browserTest[1][i][0], false, browserTest[1][i][1]);
-		}, testName + ": execCommand(" + format_value(browserTest[1][i][0]) + ", false, " + format_value(browserTest[1][i][1]) + ") must not throw an exception");
+			assert_equals(document.execCommand(browserTest[1][i][0], false, browserTest[1][i][1]),
+				expectedExecCommandReturnValues[i]);
+		}, testName + ": execCommand(" + format_value(browserTest[1][i][0]) + ", false, " + format_value(browserTest[1][i][1]) + ") return value");
 	}
 
 	if (exception === null) {

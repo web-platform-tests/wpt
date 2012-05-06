@@ -503,13 +503,6 @@ function editCommandMethod(command, range, callback) {
 		globalRange = getActiveRange();
 	}
 
-	// "If command is not supported, raise a NOT_SUPPORTED_ERR exception."
-	//
-	// We can't throw a real one, but a string will do for our purposes.
-	if (!(command in commands)) {
-		throw "NOT_SUPPORTED_ERR";
-	}
-
 	executionStackDepth++;
 	try {
 		var ret = callback();
@@ -542,10 +535,9 @@ function myExecCommand(command, showUi, value, range) {
 		value = "";
 	}
 
-	// "If command is not supported, raise a NOT_SUPPORTED_ERR exception."
 	return editCommandMethod(command, range, (function(command, showUi, value) { return function() {
-		// "If command is not enabled, return false."
-		if (!myQueryCommandEnabled(command)) {
+		// "If command is not supported or not enabled, return false."
+		if (!(command in commands) || !myQueryCommandEnabled(command)) {
 			return false;
 		}
 
@@ -563,8 +555,13 @@ function myQueryCommandEnabled(command, range) {
 	// case-insensitively."
 	command = command.toLowerCase();
 
-	// "If command is not supported, raise a NOT_SUPPORTED_ERR exception."
 	return editCommandMethod(command, range, (function(command) { return function() {
+		// "Return true if command is both supported and enabled, false
+		// otherwise."
+		if (!(command in commands)) {
+			return false;
+		}
+
 		// "Among commands defined in this specification, those listed in
 		// Miscellaneous commands are always enabled, except for the cut
 		// command and the paste command. The other commands defined here are
@@ -588,10 +585,9 @@ function myQueryCommandIndeterm(command, range) {
 	// case-insensitively."
 	command = command.toLowerCase();
 
-	// "If command is not supported, raise a NOT_SUPPORTED_ERR exception."
 	return editCommandMethod(command, range, (function(command) { return function() {
-		// "If command has no indeterminacy, return false."
-		if (!("indeterm" in commands[command])) {
+		// "If command is not supported or has no indeterminacy, return false."
+		if (!(command in commands) || !("indeterm" in commands[command])) {
 			return false;
 		}
 
@@ -605,10 +601,9 @@ function myQueryCommandState(command, range) {
 	// case-insensitively."
 	command = command.toLowerCase();
 
-	// "If command is not supported, raise a NOT_SUPPORTED_ERR exception."
 	return editCommandMethod(command, range, (function(command) { return function() {
-		// "If command has no state, return false."
-		if (!("state" in commands[command])) {
+		// "If command is not supported or has no state, return false."
+		if (!(command in commands) || !("state" in commands[command])) {
 			return false;
 		}
 
@@ -638,10 +633,9 @@ function myQueryCommandValue(command, range) {
 	// case-insensitively."
 	command = command.toLowerCase();
 
-	// "If command is not supported, raise a NOT_SUPPORTED_ERR exception."
 	return editCommandMethod(command, range, function() {
-		// "If command has no value, return the empty string."
-		if (!("value" in commands[command])) {
+		// "If command is not supported or has no value, return the empty string."
+		if (!(command in commands) || !("value" in commands[command])) {
 			return "";
 		}
 

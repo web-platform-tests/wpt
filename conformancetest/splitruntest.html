@@ -32,15 +32,21 @@ for documentation.
 
 	var groupedBrowserTests = {};
 	for (var i = 0; i < browserTests.length; i++) {
-		var commands = browserTests[i][1];
-		if (commands.length == 3
-		&& commands[0][0] == "stylewithcss"
-		&& commands[1][0] == "defaultparagraphseparator") {
+		var commands = browserTests[i][1]
+			.map(function(arr) { return arr[0] })
+			.filter(function(s) {
+				return s != "stylewithcss" && s != "defaultparagraphseparator";
+			});
+		if (commands.length == 0) {
+			// Test for stylewithcss or defaultparagraphseparator
+			commands = browserTests[i][1].map(function(arr) { return arr[0] });
+		}
+		if (commands.length == 1) {
 			// Regular test, not a multitest
-			if (!(commands[2][0] in groupedBrowserTests)) {
-				groupedBrowserTests[commands[2][0]] = [];
+			if (!(commands[0] in groupedBrowserTests)) {
+				groupedBrowserTests[commands[0]] = [];
 			}
-			groupedBrowserTests[commands[2][0]].push(browserTests[i]);
+			groupedBrowserTests[commands[0]].push(browserTests[i]);
 		} else {
 			// Multitest
 			if (!("multitest" in groupedBrowserTests)) {

@@ -1657,14 +1657,21 @@ invoked, the user agent must run the following steps:
   false.
 </ol>
 
-<p class=comments>Firefox 6.0a2 always throws an exception when this is
-called.  Opera 11.11 seems to return false if there's nothing editable on the
-page, which is unhelpful.  The spec follows IE9 and Chrome 14 dev.  The reason
-this is useful, compared to just running one of the other methods and seeing if
-you get a NOT_SUPPORTED_ERR, is that other methods might throw different
-exceptions for other reasons.  It's easier to check a boolean than to check
-exception types, especially since as of June 2011 UAs aren't remotely
-consistent on what they do with unsupported commands.
+<div class=comments>
+<p>Firefox 6.0a2 always throws an exception when this is called.  Opera 11.11
+seems to return false if there's nothing editable on the page, which is
+unhelpful.  The spec follows IE9 and Chrome 14 dev.  The reason this is useful,
+compared to just running one of the other methods and seeing if you get a
+NOT_SUPPORTED_ERR, is that other methods might throw different exceptions for
+other reasons.  It's easier to check a boolean than to check exception types,
+especially since as of June 2011 UAs aren't remotely consistent on what they do
+with unsupported commands.
+
+<p>Actually, correction: Firefox &lt; 15ish throws an exception if nothing
+editable is on the page.  Otherwise it behaves just like IE/Chrome.  See <a
+href=https://bugzilla.mozilla.org/show_bug.cgi?id=742240>Mozilla bug
+742240</a>.
+</div>
 
 <p>When the <dfn
 title=queryCommandSupported()><code>queryCommandSupported(<var>command</var>)</code></dfn>

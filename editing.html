@@ -68,7 +68,7 @@ a code { text-decoration: underline }
 <div class=head id=head>
 <p><a href=http://www.w3.org/><img alt=W3C height=48 src=http://www.w3.org/Icons/w3c_home width=72></a></p>
 <h1>HTML Editing APIs</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-30-april-2012>Work in Progress &mdash; Last Update 30 April 2012</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-6-may-2012>Work in Progress &mdash; Last Update 6 May 2012</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;<a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a>&gt;
@@ -1679,14 +1679,20 @@ invoked, the user agent must run the following steps:
   false.
 </ol>
 
-<p class=comments>Firefox 6.0a2 always throws an exception when this is
-called.  Opera 11.11 seems to return false if there's nothing editable on the
-page, which is unhelpful.  The spec follows IE9 and Chrome 14 dev.  The reason
-this is useful, compared to just running one of the other methods and seeing if
-you get a NOT_SUPPORTED_ERR, is that other methods might throw different
-exceptions for other reasons.  It's easier to check a boolean than to check
-exception types, especially since as of June 2011 UAs aren't remotely
-consistent on what they do with unsupported commands.
+<div class=comments>
+<p>Firefox 6.0a2 always throws an exception when this is called.  Opera 11.11
+seems to return false if there's nothing editable on the page, which is
+unhelpful.  The spec follows IE9 and Chrome 14 dev.  The reason this is useful,
+compared to just running one of the other methods and seeing if you get a
+NOT_SUPPORTED_ERR, is that other methods might throw different exceptions for
+other reasons.  It's easier to check a boolean than to check exception types,
+especially since as of June 2011 UAs aren't remotely consistent on what they do
+with unsupported commands.
+
+<p>Actually, correction: Firefox &lt; 15ish throws an exception if nothing
+editable is on the page.  Otherwise it behaves just like IE/Chrome.  See <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=742240">Mozilla bug
+742240</a>.
+</div>
 
 <p>When the <dfn id=querycommandsupported() title=queryCommandSupported()><code>queryCommandSupported(<var title="">command</var>)</code></dfn>
 method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#htmldocument>HTMLDocument</a></code> interface is

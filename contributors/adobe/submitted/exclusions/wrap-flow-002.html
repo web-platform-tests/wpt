@@ -3,7 +3,7 @@
     <head>
         <title>CSS Exclusions Test: wrap-flow property set to start</title>
         <link rel="author" title="Jacob Goldstein" href="mailto:jacobg@adobe.com">
-        <link rel="help" href="http://dev.w3.org/csswg/css3-exclusions/#wrap-flow-property">
+        <link rel="help" href="http://www.w3.org/TR/css3-exclusions/#wrap-flow-property">
         <meta name="flags" content="ahem dom">
         <meta name="assert" content="">
         <script src="/resources/testharness.js"></script>
@@ -43,10 +43,10 @@
         <div id="log"></div>
         
         <script type="text/javascript">       
-            test(function() {assert_equals(checkLinePos("lineLeft1",36,"top"), true)}, "Verify top of the first line to the left of the exclusion is positioned correctly");
-            test(function() {assert_equals(checkLinePos("lineLeft2",48,"top"), true)}, "Verify top of the second line to the left of the exclusion is positioned correctly");
-            test(function() {assert_equals(checkLinePos("lineLeft2",36,"right"), true)}, "Verify right of the second line to the left of the exclusion is positioned correctly");
-            test(function() {assert_equals(checkLinePos("linesBelow",65,"top"), true)}, "Verify top of the line below the exclusion is positioned correctly");
+            test(function() {assert_equals(checkLinePos("lineLeft1",36,"top"), true)}, "Verify top of the 'lineLeft1' span is positioned correctly");
+            test(function() {assert_equals(checkLinePos("lineLeft2",48,"top"), true)}, "Verify top of the 'lineLeft2' span is positioned correctly");
+            test(function() {assert_equals(checkLinePos("lineLeft2",36,"right"), true)}, "Verify right of the 'lineLeft2' span is positioned correctly");
+            test(function() {assert_equals(checkLinePos("linesBelow",65,"top"), true)}, "Verify top of the 'linesBelow' span is positioned correctly");
         </script>
     </body>
 </html>

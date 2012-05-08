@@ -1,0 +1,64 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>CSS Exclusions Test: wrap-flow property set to end</title>
+        <link rel="author" title="Jacob Goldstein" href="mailto:jacobg@adobe.com">
+        <link rel="help" href="http://dev.w3.org/csswg/css3-exclusions/#wrap-flow-property">
+        <meta name="flags" content="ahem dom">
+        <meta name="assert" content="">
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+        <script src="resources/helper.js"></script>
+        <style>
+            * {
+                margin: 0px;
+                padding: 0px;
+            }
+            .exclusion {
+                -webkit-wrap-flow: end;
+                position: absolute;
+                top: 15px;
+                left: 70px;
+                width: 60px;
+                height: 25px;
+                background: blue;
+            }    
+            #content {
+                width: 400px;
+                line-height: 12px;
+                font: 12px Ahem;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="exclusion"></div>
+
+        <div id="content">
+            <span id="line1">ethical beer craft</span><BR>
+            <span id="line2">jean</span><BR>
+            <span id="line3">fun</span><BR>
+            <span id="line4">swags</span><BR>
+            <span id="line5">american apparel squid</span>
+        </div>
+        
+        <div id="log"></div>
+        
+        <script type="text/javascript">       
+            /* Line 1 */
+            test(function() {assert_equals(checkLinePos("line1",0,"top"), true)}, "Verify top of the first line above the exclusion");
+            test(function() {assert_equals(checkLinePos("line1",0,"left"), true)}, "Verify left of the first line above the exclusion");           
+            /* Line 2 */
+            test(function() {assert_equals(checkLinePos("line2",12,"top"), true)}, "Verify top of the second line on the left of the exclusion");
+            test(function() {assert_equals(checkLinePos("line2",130,"left"), true)}, "Verify left of the second line on the right of the exclusion");
+            /* Line 3 */
+            test(function() {assert_equals(checkLinePos("line3",24,"top"), true)}, "Verify top of the third line on the left of the exclusion");
+            test(function() {assert_equals(checkLinePos("line3",130,"left"), true)}, "Verify left of the third line on the right of the exclusion");
+            /* Line 4 */
+            test(function() {assert_equals(checkLinePos("line4",36,"top"), true)}, "Verify top of the fourth line on the left of the exclusion");
+            test(function() {assert_equals(checkLinePos("line4",130,"left"), true)}, "Verify left of the fourth line on the right of the exclusion");
+            /* Line 5 */
+            test(function() {assert_equals(checkLinePos("line5",48,"top"), true)}, "Verify top of the fifth line below the exclusion");   
+            test(function() {assert_equals(checkLinePos("line5",0,"left"), true)}, "Verify left of the fifth line below the exclusion");
+        </script>
+    </body>
+</html>

@@ -2,35 +2,30 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>multicolumn | column-count, clip</title>
+<title>multicolumn | column-count</title>
 <link rel="author" title="Opera Software ASA" href="http://www.opera.com/"/>
+<link rel="help" href="http://t/core/standards/css3/multicolumn/"/>
+<link rel="match" href="columns-toolong-ref.xht"/>
+<meta name="flags" content="ahem invalid"/>
 <style type="text/css"><![CDATA[
 body>div {
 	font-family: ahem;
 	font-size: 1em;
 	line-height: 1em;
-	background: white;
+	color: black;
+	background: yellow;
 	margin: 1em;
 	border: 1em solid gray;
-	width: 11em;
-	height: 3em;
-	position: relative;
+	width: 12em;
 	orphans: 1;
 	widows: 1;
+
+	column-count: 4;
+	column-count: -1;
+	column-gap: 0;
 }
-div div {
-	color: black;
-	width: 2em;
-	position: absolute;
-	top: 0;
-}
-#test {
-	left: 5em;
-}
-#test2 {
+span {
 	color: blue;
-	left: 10em;
-	width: 1em;
 }
 ]]></style>
 </head>
@@ -38,9 +33,14 @@ div div {
 <body>
 
 <div>
-	<div>xx xx xx</div>
-	<div id="test">xx xx xx</div>
-	<div id="test2">x x</div>
+	xx xx 
+<span>
+	xx xx
+</span>
+<span>
+	xx xx 
+</span>
+	xx xx
 </div>
 
 </body>

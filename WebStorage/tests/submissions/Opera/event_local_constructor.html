@@ -7,12 +7,12 @@
 
 <script>
 
-	async_test("storageeventinit test").step(function() {
+    async_test("storageeventinit test").step(function() {
         window.addEventListener('storage', this.step_func(
             function() { this.done(); }), false);
 
-		var event = new StorageEvent('storage');
-		window.dispatchEvent(event);
+        var event = new StorageEvent('storage');
+        window.dispatchEvent(event);
     });
 
 </script>

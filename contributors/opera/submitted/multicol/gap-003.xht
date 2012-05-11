@@ -2,11 +2,11 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>multicolumn | column-count</title>
+<title>multicolumn | column-gap</title>
 <link rel="author" title="Opera Software ASA" href="http://www.opera.com/"/>
-<link rel="help" href="http://t/core/standards/css3/multicolumn/"/>
-<link rel="match" href="columns-toolong-ref.xht"/>
-<meta name="flags" content="ahem invalid"/>
+<link rel="help" href="http://www.w3.org/TR/css3-multicol/#column-gaps-and-rules"/>
+<link rel="match" href="gap-2-ref.xht"/>
+<meta name="flags" content="ahem should"/>
 <style type="text/css"><![CDATA[
 body>div {
 	font-family: ahem;
@@ -16,23 +16,15 @@ body>div {
 	background: yellow;
 	margin: 1em;
 	border: 1em solid gray;
-	width: 12em;
+	width: 11em;
 	orphans: 1;
 	widows: 1;
 
 	column-count: 4;
-	column-count: -1;
-	column-gap: 0;
+	column-gap: normal;
 }
 span {
 	color: blue;
-}
-#two {
-	column-count: 4;
-	column-count: 0;
-}
-#three {
-	column-count: 4;
 }
 ]]></style>
 </head>

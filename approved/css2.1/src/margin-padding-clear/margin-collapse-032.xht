@@ -4,7 +4,7 @@
 
  <head>
 
-  <title>CSS Test: margin collapsing</title>
+  <title>CSS Test: margin collapsing - resolving vertical padding percentage</title>
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#collapsing-margins" />
@@ -21,7 +21,8 @@
 
   div#parent-block-container
   {
-  background-color: lime;
+  background-color: green;
+  color: white;
   padding: 2%;
   }
 
@@ -47,7 +48,7 @@
   <div id="grand-parent-block-container">
    <div id="parent-block-container">
     <div id="child-block">
-     There should be <strong>no red</strong> in this page
+     Test passes if there is <strong>no red</strong>.
     </div>
    </div>
   </div>

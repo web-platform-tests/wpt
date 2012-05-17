@@ -4752,6 +4752,9 @@ overrides</a>.  After taking the <a href=#action>action</a>, if the <a href=#act
 range</a> is <code class=external data-anolis-spec=dom title=dom-Range-collapsed><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-range-collapsed>collapsed</a></code>, it must <a href=#restore-states-and-values>restore states and
 values</a> from the recorded list.
 
+<p class=note>All block commands preserve overrides except <a href=#the-inserttext-command>the
+<code title="">insertText</code> command</a>, which treats overrides specially.
+
 
 <h3 id=assorted-block-formatting-command-algorithms>Assorted block formatting command algorithms</h3>
 
@@ -8879,6 +8882,8 @@ of ways.
 
 <h3 id=the-inserthorizontalrule-command><dfn>The <code title="">insertHorizontalRule</code> command</dfn></h3>
 
+<p><a href=#preserves-overrides>Preserves overrides</a>
+
 <p class=comments>You'd think interop here would be simple, right?  Nope: we
 have three different behaviors across four browsers.  Opera 11.00 is the only
 one that acts more or less like the spec.  IE9 and Chrome 12 dev treat the
@@ -8954,6 +8959,8 @@ behavior in splitting up parents to ensure validity . . .
 
 
 <h3 id=the-inserthtml-command><dfn>The <code title="">insertHTML</code> command</dfn></h3>
+
+<p><a href=#preserves-overrides>Preserves overrides</a>
 
 <div class=comments>
 <p>Not supported by IE9.  Handling of disallowed children is interesting:
@@ -9092,6 +9099,8 @@ behavior in splitting up parents to ensure validity . . .
 
 
 <h3 id=the-insertimage-command><dfn>The <code title="">insertImage</code> command</dfn></h3>
+
+<p><a href=#preserves-overrides>Preserves overrides</a>
 
 <p><a href=#action>Action</a>:
 

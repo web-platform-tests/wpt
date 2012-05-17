@@ -4804,6 +4804,9 @@ overrides</span>.  After taking the <span>action</span>, if the <span>active
 range</span> is [[rangecollapsed]], it must <span>restore states and
 values</span> from the recorded list.
 
+<p class=note>All block commands preserve overrides except <span>the
+<code title>insertText</code> command</span>, which treats overrides specially.
+
 <!-- @} -->
 <h3>Assorted block formatting command algorithms</h3>
 <!-- @{ -->
@@ -8978,6 +8981,8 @@ of ways.
 <!-- @} -->
 <h3><dfn>The <code title>insertHorizontalRule</code> command</dfn></h3>
 <!-- @{ -->
+<p><span>Preserves overrides</span>
+
 <p class=comments>You'd think interop here would be simple, right?  Nope: we
 have three different behaviors across four browsers.  Opera 11.00 is the only
 one that acts more or less like the spec.  IE9 and Chrome 12 dev treat the
@@ -9054,6 +9059,8 @@ behavior in splitting up parents to ensure validity . . .
 <!-- @} -->
 <h3><dfn>The <code title>insertHTML</code> command</dfn></h3>
 <!-- @{ -->
+<p><span>Preserves overrides</span>
+
 <div class=comments>
 <p>Not supported by IE9.  Handling of disallowed children is interesting:
 
@@ -9194,6 +9201,8 @@ behavior in splitting up parents to ensure validity . . .
 <!-- @} -->
 <h3><dfn>The <code title>insertImage</code> command</dfn></h3>
 <!-- @{ -->
+<p><span>Preserves overrides</span>
+
 <p><span>Action</span>:
 
 <ol>

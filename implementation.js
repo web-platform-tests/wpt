@@ -7080,6 +7080,7 @@ commands.indent = {
 ///// The insertHorizontalRule command /////
 //@{
 commands.inserthorizontalrule = {
+	preservesOverrides: true,
 	action: function() {
 		// "Let start node, start offset, end node, and end offset be the
 		// active range's start and end nodes and offsets."
@@ -7176,6 +7177,7 @@ commands.inserthorizontalrule = {
 ///// The insertHTML command /////
 //@{
 commands.inserthtml = {
+	preservesOverrides: true,
 	action: function(value) {
 		// "Delete the selection."
 		deleteSelection();
@@ -7247,6 +7249,7 @@ commands.inserthtml = {
 ///// The insertImage command /////
 //@{
 commands.insertimage = {
+	preservesOverrides: true,
 	action: function(value) {
 		// "If value is the empty string, abort these steps and do nothing."
 		if (value === "") {

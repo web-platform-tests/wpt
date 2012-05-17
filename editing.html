@@ -68,7 +68,7 @@ a code { text-decoration: underline }
 <div class=head id=head>
 <p><a href=http://www.w3.org/><img alt=W3C height=48 src=http://www.w3.org/Icons/w3c_home width=72></a></p>
 <h1>HTML Editing APIs</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-6-may-2012>Work in Progress &mdash; Last Update 6 May 2012</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-17-may-2012>Work in Progress &mdash; Last Update 17 May 2012</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;<a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a>&gt;
@@ -659,8 +659,6 @@ like this.  Feedback would be appreciated on all of them.
   <li>What happens if you do something like delete a selection or insert text or
   whatnot in the middle of a surrogate pair?  This could make the content not
   serialize through a character encoding change.
-
-  <li>Probably need to record and restore overrides in some more places.
 
   <li>Some more thought needs to go into what happens to the selection when you
   mutate the DOM.  In some cases the results are pretty arbitrary.  It might
@@ -2013,9 +2011,6 @@ they expect it to have the given style (bold or such).  Thus the commands like
 <a href=#the-bold-command><code title="">bold</code></a> set state and value
 overrides, and <a href=#the-inserttext-command><code title="">insertText</code></a> checks for them and applies them to the
 newly-inserted text.  Other commands like <a href=#the-delete-command><code title="">delete</code></a> also interact with overrides.
-
-<p class=XXX>Figure out exactly what commands need to preserve state/value
-overrides.
 
 <p class=comments>See
 <a href="https://www.w3.org/Bugs/Public/show_bug.cgi?id=16207">bug 16207</a>.
@@ -4747,6 +4742,16 @@ container</a>, or an <a href=#html-element>HTML element</a> with <a class=extern
   <li>Return <var title="">node</var>.
 </ol>
 
+<p class=comments><a href="http://www.w3.org/Bugs/Public/show_bug.cgi?id=14062">Bug 14062</a>.  See
+also <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=590640">Mozilla bug
+590640</a>, specifically comments 48 and on.
+
+<p>If a <a href=#command>command</a> <dfn id=preserves-overrides>preserves overrides</dfn>, then before taking
+its <a href=#action>action</a>, the user agent must <a href=#record-current-overrides>record current
+overrides</a>.  After taking the <a href=#action>action</a>, if the <a href=#active-range>active
+range</a> is <code class=external data-anolis-spec=dom title=dom-Range-collapsed><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-range-collapsed>collapsed</a></code>, it must <a href=#restore-states-and-values>restore states and
+values</a> from the recorded list.
+
 
 <h3 id=assorted-block-formatting-command-algorithms>Assorted block formatting command algorithms</h3>
 
@@ -7262,12 +7267,6 @@ block.
 or "ul"):
 
 <ol>
-  <li>
-  <p class=comments><a href="http://www.w3.org/Bugs/Public/show_bug.cgi?id=14062">Bug 14062</a>.
-
-  <p><a href=#record-current-overrides>Record current overrides</a>, and let <var title="">overrides</var> be the
-  result.
-
   <li>Let <var title="">mode</var> be "disable" if the <a href="#selection's-list-state">selection's list
   state</a> is <var title="">tag name</var>, and "enable" otherwise.
 
@@ -7521,8 +7520,6 @@ not &lt;ul&gt;&lt;li&gt;foo&lt;/ul&gt;&lt;ol&gt;&lt;li&gt;[bar&lt;/ol&gt;&lt;ul&
 
     <li><a href=#fix-disallowed-ancestors>Fix disallowed ancestors</a> of the previous step's result.
   </ol>
-
-  <li><a href=#restore-states-and-values>Restore states and values</a> from <var title="">overrides</var>.
 </ol>
 
 
@@ -7562,12 +7559,6 @@ would be worth the added complexity.
 "center", "justify", "left", or "right"):
 
 <ol>
-  <li>
-  <p class=comments><a href="http://www.w3.org/Bugs/Public/show_bug.cgi?id=14062">Bug 14062</a>.
-
-  <p><a href=#record-current-overrides>Record current overrides</a>, and let <var title="">overrides</var> be the
-  result.
-
   <li><a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>, and let <var title="">new
   range</var> be the result.
 
@@ -7655,8 +7646,6 @@ would be worth the added complexity.
     on the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>, then set its CSS property "text-align" to
     <var title="">alignment</var> and return the result.
   </ol>
-
-  <li><a href=#restore-states-and-values>Restore states and values</a> from <var title="">overrides</var>.
 </ol>
 
 
@@ -7822,6 +7811,8 @@ last character.  But some of the special cases we run into are:
   line.
 </ul>
 </div>
+
+<p><a href=#preserves-overrides>Preserves overrides</a>
 
 <p class=comments>For all the deletions here, Firefox 7.0a2 will remove wrapper
 elements like &lt;b&gt; only if they're selected, like {&lt;b&gt;foo&lt;/b&gt;}.  IE9,
@@ -8256,6 +8247,8 @@ in some cases.  This might make sense for &lt;address&gt;/&lt;h*&gt;/&lt;pre&gt;
 other browsers don't do it.
 </div>
 
+<p><a href=#preserves-overrides>Preserves overrides</a>
+
 <p><a href=#action>Action</a>:
 
 <ol>
@@ -8305,12 +8298,6 @@ other browsers don't do it.
 
   <p>If <var title="">value</var> is not a <a href=#formattable-block-name>formattable block name</a>, abort
   these steps and do nothing.
-
-  <li>
-  <p class=comments><a href="http://www.w3.org/Bugs/Public/show_bug.cgi?id=14062">Bug 14062</a>.
-
-  <p><a href=#record-current-overrides>Record current overrides</a>, and let <var title="">overrides</var> be the
-  result.
 
   <li><a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>, and let <var title="">new
   range</var> be the result.
@@ -8448,8 +8435,6 @@ other browsers don't do it.
     <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>.  Then <a href=#fix-disallowed-ancestors>fix disallowed ancestors</a> of the
     result.
   </ol>
-
-  <li><a href=#restore-states-and-values>Restore states and values</a> from <var title="">overrides</var>.
 </ol>
 
 <p class=comments>Firefox 6.0a2 throws, Chrome 14 dev always returns false,
@@ -8567,6 +8552,8 @@ but not backward is that if the cursor is before a grapheme cluster that
 consists of multiple characters, like a base character with combining
 diacritics, we delete the diacritics too.  (Backspacing just deletes the last
 diacritic, so you have to backspace several times to remove the whole cluster.)
+
+<p><a href=#preserves-overrides>Preserves overrides</a>
 
 <p class=comments>Copy-pasted from delete, see there for comments.
 
@@ -8828,15 +8815,11 @@ handling is more complicated and I wound up differing from all browsers in lots
 of ways.
 </div>
 
+<p><a href=#preserves-overrides>Preserves overrides</a>
+
 <p><a href=#action>Action</a>:
 
 <ol>
-  <li>
-  <p class=comments><a href="http://www.w3.org/Bugs/Public/show_bug.cgi?id=14062">Bug 14062</a>.
-
-  <p><a href=#record-current-overrides>Record current overrides</a>, and let <var title="">overrides</var> be the
-  result.
-
   <li>Let <var title="">items</var> be a list of all <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/grouping-content.html#the-li-element>li</a></code>s that are
   <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-inclusive-ancestor title=concept-tree-inclusive-ancestor>inclusive ancestors</a> of the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a>
   and/or <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>.
@@ -8891,8 +8874,6 @@ of ways.
 
     <li><a href=#indent>Indent</a> <var title="">sublist</var>.
   </ol>
-
-  <li><a href=#restore-states-and-values>Restore states and values</a> from <var title="">overrides</var>.
 </ol>
 
 
@@ -9198,6 +9179,8 @@ similar elements.  This doesn't seem very useful, so I don't bother.
 <p>Opera 11.11 isn't heedful of &lt;xmp&gt;, and treats &lt;pre&gt; somewhat oddly.
 </div>
 
+<p><a href=#preserves-overrides>Preserves overrides</a>
+
 <p><a href=#action>Action</a>:
 
 <ol>
@@ -9257,6 +9240,8 @@ similar elements.  This doesn't seem very useful, so I don't bother.
 
 <h3 id=the-insertorderedlist-command><dfn>The <code title="">insertOrderedList</code> command</dfn></h3>
 
+<p><a href=#preserves-overrides>Preserves overrides</a>
+
 <p><a href=#action>Action</a>: <a href=#toggle-lists>Toggle lists</a> with <var title="">tag name</var>
 "ol".
 
@@ -9310,6 +9295,8 @@ special cases:
   switch between entering terms and definitions.
 </ul>
 </div>
+
+<p><a href=#preserves-overrides>Preserves overrides</a>
 
 <div class=comments>
 <p>There are three major behaviors here.  Firefox 5.0a2 behaves identically to
@@ -9879,6 +9866,8 @@ unnecessarily.
 
 <h3 id=the-insertunorderedlist-command><dfn>The <code title="">insertUnorderedList</code> command</dfn></h3>
 
+<p><a href=#preserves-overrides>Preserves overrides</a>
+
 <p class=comments>See comments for <a href=#the-insertorderedlist-command>insertOrderedList</a>.
 
 <p><a href=#action>Action</a>: <a href=#toggle-lists>Toggle lists</a> with <var title="">tag name</var>
@@ -9892,6 +9881,8 @@ false otherwise.
 
 
 <h3 id=the-justifycenter-command><dfn>The <code title="">justifyCenter</code> command</dfn></h3>
+
+<p><a href=#preserves-overrides>Preserves overrides</a>
 
 <p><a href=#action>Action</a>: <a href=#justify-the-selection>Justify the selection</a> with
 <var title="">alignment</var> "center".
@@ -9963,6 +9954,8 @@ and return the <a href=#alignment-value>alignment value</a> of the first <a href
 
 <h3 id=the-justifyfull-command><dfn>The <code title="">justifyFull</code> command</dfn></h3>
 
+<p><a href=#preserves-overrides>Preserves overrides</a>
+
 <p><a href=#action>Action</a>: <a href=#justify-the-selection>Justify the selection</a> with
 <var title="">alignment</var> "justify".
 
@@ -9988,6 +9981,8 @@ and return the <a href=#alignment-value>alignment value</a> of the first <a href
 
 
 <h3 id=the-justifyleft-command><dfn>The <code title="">justifyLeft</code> command</dfn></h3>
+
+<p><a href=#preserves-overrides>Preserves overrides</a>
 
 <p><a href=#action>Action</a>: <a href=#justify-the-selection>Justify the selection</a> with
 <var title="">alignment</var> "left".
@@ -10015,6 +10010,8 @@ and return the <a href=#alignment-value>alignment value</a> of the first <a href
 
 <h3 id=the-justifyright-command><dfn>The <code title="">justifyRight</code> command</dfn></h3>
 
+<p><a href=#preserves-overrides>Preserves overrides</a>
+
 <p><a href=#action>Action</a>: <a href=#justify-the-selection>Justify the selection</a> with
 <var title="">alignment</var> "right".
 
@@ -10041,15 +10038,11 @@ and return the <a href=#alignment-value>alignment value</a> of the first <a href
 
 <h3 id=the-outdent-command><dfn>The <code title="">outdent</code> command</dfn></h3>
 
+<p><a href=#preserves-overrides>Preserves overrides</a>
+
 <p><a href=#action>Action</a>:
 
 <ol>
-  <li>
-  <p class=comments><a href="http://www.w3.org/Bugs/Public/show_bug.cgi?id=14062">Bug 14062</a>.
-
-  <p><a href=#record-current-overrides>Record current overrides</a>, and let <var title="">overrides</var> be the
-  result.
-
   <li>Let <var title="">items</var> be a list of all <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/grouping-content.html#the-li-element>li</a></code>s that are
   <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-inclusive-ancestor title=concept-tree-inclusive-ancestor>inclusive ancestors</a> of the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a>
   and/or <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>.
@@ -10125,8 +10118,6 @@ and return the <a href=#alignment-value>alignment value</a> of the first <a href
 
     <li><a href=#restore-the-values>Restore the values</a> from <var title="">values</var>.
   </ol>
-
-  <li><a href=#restore-states-and-values>Restore states and values</a> from <var title="">overrides</var>.
 </ol>
 
 

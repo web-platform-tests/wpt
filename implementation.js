@@ -5638,9 +5638,6 @@ function outdentNode(node) {
 //@{
 
 function toggleLists(tagName) {
-	// "Record current overrides, and let overrides be the result."
-	var overrides = recordCurrentOverrides();
-
 	// "Let mode be "disable" if the selection's list state is tag name, and
 	// "enable" otherwise."
 	var mode = getSelectionListState() == tagName ? "disable" : "enable";
@@ -5915,9 +5912,6 @@ function toggleLists(tagName) {
 			));
 		}
 	}
-
-	// "Restore states and values from overrides."
-	restoreStatesAndValues(overrides);
 }
 
 
@@ -5926,9 +5920,6 @@ function toggleLists(tagName) {
 //@{
 
 function justifySelection(alignment) {
-	// "Record current overrides, and let overrides be the result."
-	var overrides = recordCurrentOverrides();
-
 	// "Block-extend the active range, and let new range be the result."
 	var newRange = blockExtend(globalRange);
 
@@ -6037,9 +6028,6 @@ function justifySelection(alignment) {
 			}
 		);
 	}
-
-	// "Restore states and values from overrides."
-	restoreStatesAndValues(overrides);
 }
 
 
@@ -6153,6 +6141,7 @@ function autolink(node, endOffset) {
 ///// The delete command /////
 //@{
 commands["delete"] = {
+	preservesOverrides: true,
 	action: function() {
 		// "If the active range is not collapsed, delete the selection and
 		// abort these steps."
@@ -6538,6 +6527,7 @@ var formattableBlockNames = ["address", "dd", "div", "dt", "h1", "h2", "h3",
 	"h4", "h5", "h6", "p", "pre"];
 
 commands.formatblock = {
+	preservesOverrides: true,
 	action: function(value) {
 		// "If value begins with a "<" character and ends with a ">" character,
 		// remove the first and last characters from it."
@@ -6553,9 +6543,6 @@ commands.formatblock = {
 		if (formattableBlockNames.indexOf(value) == -1) {
 			return;
 		}
-
-		// "Record current overrides, and let overrides be the result."
-		var overrides = recordCurrentOverrides();
 
 		// "Block-extend the active range, and let new range be the result."
 		var newRange = blockExtend(getActiveRange());
@@ -6658,9 +6645,6 @@ commands.formatblock = {
 					: function() { return false },
 				function() { return document.createElement(value) }));
 		}
-
-		// "Restore states and values from overrides."
-		restoreStatesAndValues(overrides);
 	}, indeterm: function() {
 		// "If the active range is null, return false."
 		if (!getActiveRange()) {
@@ -6774,6 +6758,7 @@ commands.formatblock = {
 ///// The forwardDelete command /////
 //@{
 commands.forwarddelete = {
+	preservesOverrides: true,
 	action: function() {
 		// "If the active range is not collapsed, delete the selection and
 		// abort these steps."
@@ -7006,10 +6991,8 @@ commands.forwarddelete = {
 ///// The indent command /////
 //@{
 commands.indent = {
+	preservesOverrides: true,
 	action: function() {
-		// "Record current overrides, and let overrides be the result."
-		var overrides = recordCurrentOverrides();
-
 		// "Let items be a list of all lis that are ancestor containers of the
 		// active range's start and/or end node."
 		//
@@ -7090,9 +7073,6 @@ commands.indent = {
 			// "Indent sublist."
 			indentNodes(sublist);
 		}
-
-		// "Restore states and values from overrides."
-		restoreStatesAndValues(overrides);
 	}
 };
 
@@ -7328,6 +7308,7 @@ commands.insertimage = {
 ///// The insertLineBreak command /////
 //@{
 commands.insertlinebreak = {
+	preservesOverrides: true,
 	action: function(value) {
 		// "Delete the selection, with strip wrappers false."
 		deleteSelection({stripWrappers: false});
@@ -7413,6 +7394,7 @@ commands.insertlinebreak = {
 ///// The insertOrderedList command /////
 //@{
 commands.insertorderedlist = {
+	preservesOverrides: true,
 	// "Toggle lists with tag name "ol"."
 	action: function() { toggleLists("ol") },
 	// "True if the selection's list state is "mixed" or "mixed ol", false
@@ -7426,6 +7408,7 @@ commands.insertorderedlist = {
 ///// The insertParagraph command /////
 //@{
 commands.insertparagraph = {
+	preservesOverrides: true,
 	action: function() {
 		// "Delete the selection."
 		deleteSelection();
@@ -7914,6 +7897,7 @@ commands.inserttext = {
 ///// The insertUnorderedList command /////
 //@{
 commands.insertunorderedlist = {
+	preservesOverrides: true,
 	// "Toggle lists with tag name "ul"."
 	action: function() { toggleLists("ul") },
 	// "True if the selection's list state is "mixed" or "mixed ul", false
@@ -7927,6 +7911,7 @@ commands.insertunorderedlist = {
 ///// The justifyCenter command /////
 //@{
 commands.justifycenter = {
+	preservesOverrides: true,
 	// "Justify the selection with alignment "center"."
 	action: function() { justifySelection("center") },
 	indeterm: function() {
@@ -7980,6 +7965,7 @@ commands.justifycenter = {
 ///// The justifyFull command /////
 //@{
 commands.justifyfull = {
+	preservesOverrides: true,
 	// "Justify the selection with alignment "justify"."
 	action: function() { justifySelection("justify") },
 	indeterm: function() {
@@ -8033,6 +8019,7 @@ commands.justifyfull = {
 ///// The justifyLeft command /////
 //@{
 commands.justifyleft = {
+	preservesOverrides: true,
 	// "Justify the selection with alignment "left"."
 	action: function() { justifySelection("left") },
 	indeterm: function() {
@@ -8086,6 +8073,7 @@ commands.justifyleft = {
 ///// The justifyRight command /////
 //@{
 commands.justifyright = {
+	preservesOverrides: true,
 	// "Justify the selection with alignment "right"."
 	action: function() { justifySelection("right") },
 	indeterm: function() {
@@ -8139,10 +8127,8 @@ commands.justifyright = {
 ///// The outdent command /////
 //@{
 commands.outdent = {
+	preservesOverrides: true,
 	action: function() {
-		// "Record current overrides, and let overrides be the result."
-		var overrides = recordCurrentOverrides();
-
 		// "Let items be a list of all lis that are ancestor containers of the
 		// range's start and/or end node."
 		//
@@ -8234,9 +8220,6 @@ commands.outdent = {
 			// "Restore the values from values."
 			restoreValues(values);
 		}
-
-		// "Restore states and values from overrides."
-		restoreStatesAndValues(overrides);
 	}
 };
 
@@ -8425,6 +8408,22 @@ commandNames.forEach(function(command) {
 				return "";
 			}
 			return ret;
+		};
+	}
+
+	// "If a command preserves overrides, then before taking its action, the
+	// user agent must record current overrides. After taking the action, if
+	// the active range is collapsed, it must restore states and values from
+	// the recorded list."
+	if ("preservesOverrides" in commands[command]) {
+		var oldAction = commands[command].action;
+
+		commands[command].action = function(value) {
+			var overrides = recordCurrentOverrides();
+			oldAction(value);
+			if (getActiveRange().collapsed) {
+				restoreStatesAndValues(overrides);
+			}
 		};
 	}
 });

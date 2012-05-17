@@ -3,8 +3,11 @@
     <head>
         <title>CSS Test: Border set using border-color</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-05-16 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#propdef-border" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#border-shorthand-properties" />
+        <link rel="match" href="border-003-ref.xht" />
+
         <meta name="flags" content="" />
         <meta name="assert" content="The 'border' shorthand property properly accepts and sets border-color." />
         <style type="text/css">
@@ -13,13 +16,13 @@
                 border: blue;
                 border-style: solid;
                 border-width: 5px;
-                height: 1in;
-                width: 1in;
+                height: 100px;
+                width: 100px;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if there is a box with a blue border below.</p>
+        <p>Test passes if there is a hollow blue square.</p>
         <div></div>
     </body>
 </html>

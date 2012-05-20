@@ -1253,7 +1253,8 @@ with it:
   bold if the selection is already bold.  An editing toolbar might provide
   buttons that execute the <span>action</span> for a <span>command</span> if
   clicked, or a script might run an <span>action</span> without user
-  interaction to achieve some particular effect.
+  interaction to achieve some particular effect.  Actions return either true or
+  false, which can affect the return value of <code>execCommand()</code>.
 
   <li><dfn>Indeterminate</dfn>: A boolean value returned by
   <code>queryCommandIndeterm()</code>, depending on the current state of the
@@ -1551,6 +1552,8 @@ must run the following steps:
 
   <li>Take the <span>action</span> for <var>command</var>, passing
   <var>value</var> to the instructions as an argument.
+
+  <li>If the previous step returned false, return false.
 
   <li>If <var>command</var> is not in the
   <a href=#miscellaneous-commands>Miscellaneous commands</a> section, then
@@ -3866,9 +3869,11 @@ the document background color.  See hiliteColor for comments.
   <li>If <var>value</var> is not a valid CSS color, prepend "#" to it.
 
   <li>If <var>value</var> is still not a valid CSS color, or if it is
-  currentColor, abort these steps and do nothing.
+  currentColor, return false.
 
   <li><span>Set the selection's value</span> to <var>value</var>.
+
+  <li>Return true.
 </ol>
 
 <p><span>Standard inline value command</span>
@@ -3892,7 +3897,7 @@ know.
 <p><span>Action</span>: If <code
 title=queryCommandState()>queryCommandState("bold")</code> returns true,
 <span>set the selection's value</span> to "normal".  Otherwise <span>set the
-selection's value</span> to "bold".
+selection's value</span> to "bold".  Either way, return true.
 
 <div class=comments>
 <p>The cutoff of 600 matches Chrome 14 dev.  The cutoff used by IE9 and Firefox
@@ -3949,8 +3954,7 @@ string can occur as a link href, in principle.
   really want to, they can always specify "#" for the value, or the author can
   rewrite it, so it's not like this makes the API less useful.
 
-  <p>If <var>value</var> is the empty string, abort these steps and do
-  nothing.
+  <p>If <var>value</var> is the empty string, return false.
 
   <li>
   <div class=comments>
@@ -3983,6 +3987,8 @@ string can occur as a link href, in principle.
   [[href]] attribute to <var>value</var>.
 
   <li><span>Set the selection's value</span> to <var>value</var>.
+
+  <li>Return true.
 </ol>
 
 <!-- @} -->
@@ -4021,7 +4027,7 @@ apply.
 </div>
 
 <p><span>Action</span>: <span>Set the selection's value</span> to
-<var>value</var>.
+<var>value</var>, then return true.
 
 <div class=comments>
 <p>The value is complicated.
@@ -4109,7 +4115,7 @@ to the CSS Fonts spec.
   <li>If <var>value</var> is not a <span data-anolis-spec=html>valid floating
   point number</span>, and would not be a <span data-anolis-spec=html>valid
   floating point number</span> if a single leading "+" character were stripped,
-  abort these steps and do nothing.
+  return false.
 
   <li>If the first character of <var>value</var> is "+", delete the character
   and let <var>mode</var> be "relative-plus".
@@ -4154,6 +4160,8 @@ to the CSS Fonts spec.
   </ul>
 
   <li><span>Set the selection's value</span> to <var>value</var>.
+
+  <li>Return true.
 </ol>
 
 <p class=comments>This follows Firefox 6.0a2.  Chrome 14 dev always returns
@@ -4339,9 +4347,11 @@ disagrees with all browsers, but it's unlikely to hurt and it makes sense.
   sizes.  It will confuse the algorithm, and doesn't seem very useful anyway.
 
   <p>If <var>value</var> is still not a valid CSS color, or if it is
-  currentColor, abort these steps and do nothing.
+  currentColor, return false.
 
   <li><span>Set the selection's value</span> to <var>value</var>.
+
+  <li>Return true.
 </ol>
 
 <div class=comments>
@@ -4406,9 +4416,11 @@ sense; see the comment for backColor.
   confuse the algorithm, so ban it for now anyway.
 
   <p>If <var>value</var> is still not a valid CSS color, or if it is
-  currentColor, abort these steps and do nothing.
+  currentColor, return false.
 
   <li><span>Set the selection's value</span> to <var>value</var>.
+
+  <li>Return true.
 </ol>
 
 <p class=comments>For indeterminacy, this follows no one.  Firefox 6.0a2 and
@@ -4429,7 +4441,7 @@ valid CSS color.
 <p><span>Action</span>: If <code
 title=queryCommandState()>queryCommandState("italic")</code> returns true,
 <span>set the selection's value</span> to "normal".  Otherwise <span>set the
-selection's value</span> to "italic".
+selection's value</span> to "italic".  Either way, return true.
 
 <p><span>Inline command activated values</span>: "italic" or "oblique"
 
@@ -4579,6 +4591,8 @@ element</span> with [[localname]] "abbr", "acronym", "b", "bdi", "bdo", "big",
     <li>strikethrough
     <li>underline
   </ol>
+
+  <li>Return true.
 </ol>
 
 <!-- @} -->
@@ -4589,7 +4603,7 @@ element</span> with [[localname]] "abbr", "acronym", "b", "bdi", "bdo", "big",
 <p><span>Action</span>: If <code
 title=queryCommandState()>queryCommandState("strikethrough")</code> returns
 true, <span>set the selection's value</span> to null.  Otherwise <span>set the
-selection's value</span> to "line-through".
+selection's value</span> to "line-through".  Either way, return true.
 
 <p><span>Inline command activated values</span>: "line-through"
 
@@ -4607,6 +4621,8 @@ selection's value</span> to "line-through".
 
   <li>If <var>state</var> is false, <span>set the selection's value</span> to
   "subscript".
+
+  <li>Return true.
 </ol>
 
 <p><span>Indeterminate</span>: True if either among <span title="formattable
@@ -4644,6 +4660,8 @@ consider it indeterminate.
 
   <li>If <var>state</var> is false, <span>set the selection's value</span> to
   "superscript".
+
+  <li>Return true.
 </ol>
 
 <p><span>Indeterminate</span>: True if either among <span title="formattable
@@ -4711,7 +4729,7 @@ problems or working around them can be put off for now.
 <p><span>Action</span>: If <code
 title=queryCommandState()>queryCommandState("underline")</code> returns true,
 <span>set the selection's value</span> to null.  Otherwise <span>set the
-selection's value</span> to "underline".
+selection's value</span> to "underline".  Either way, return true.
 
 <p><span>Inline command activated values</span>: "underline"
 
@@ -4738,6 +4756,8 @@ indeterm/state/value.
   is an [[ancestor]] of one of its [[boundarypoints]].
 
   <li><span>Clear the value</span> of each member of <var>hyperlinks</var>.
+
+  <li>Return true.
 </ol>
 
 <!-- @} -->
@@ -7921,7 +7941,7 @@ leaves things like &lt;b>{}&lt;/b> in the DOM, which is unhelpful, so I don't.
 
 <ol>
   <li>If the <span>active range</span> is not [[rangecollapsed]], <span>delete
-  the selection</span> and abort these steps.
+  the selection</span> and return true.
 
   <li>
   <p class=comments>Needed so that if there are multiple consecutive spaces we
@@ -7972,7 +7992,7 @@ leaves things like &lt;b>{}&lt;/b> in the DOM, which is unhelpful, so I don't.
     <p>Otherwise, if <var>node</var> has a [[child]] with [[index]]
     <var>offset</var> &minus; 1 and that [[child]] is an <span>editable</span>
     [[a]], remove that [[child]] from <var>node</var>, <span>preserving its
-    descendants</span>.  Then abort these steps.
+    descendants</span>.  Then return true.
 
     <li>Otherwise, if <var>node</var> has a [[child]] with [[index]]
     <var>offset</var> &minus; 1 and that [[child]] is not a <span>block
@@ -8024,14 +8044,14 @@ leaves things like &lt;b>{}&lt;/b> in the DOM, which is unhelpful, so I don't.
 
     <li><span>Delete the selection</span>.
 
-    <li>Abort these steps.
+    <li>Return true.
   </ol>
 
   <li>
   <p class=comments>At the time of this writing, this should be impossible.
   Just being safe.
 
-  <p>If <var>node</var> is an <span>inline node</span>, abort these steps.
+  <p>If <var>node</var> is an <span>inline node</span>, return true.
 
   <li>
   <p class=comments> If we're at the beginning of a list, we want to outdent
@@ -8072,7 +8092,7 @@ leaves things like &lt;b>{}&lt;/b> in the DOM, which is unhelpful, so I don't.
 
     <li><span>Fix disallowed ancestors</span> of <var>node</var>.
 
-    <li>Abort these steps.
+    <li>Return true.
   </ol>
 
   <li>
@@ -8121,7 +8141,7 @@ leaves things like &lt;b>{}&lt;/b> in the DOM, which is unhelpful, so I don't.
 
     <li><span>Outdent</span> each [[node]] in <var>node list</var>.
 
-    <li>Abort these steps.
+    <li>Return true.
   </ol>
 
   <li>
@@ -8134,7 +8154,7 @@ leaves things like &lt;b>{}&lt;/b> in the DOM, which is unhelpful, so I don't.
   </div>
 
   <p>If the [[child]] of <var>start node</var> with [[index]] <var>start
-  offset</var> is a [[table]], abort these steps.
+  offset</var> is a [[table]], return true.
 
   <li>
   <p class=comments>If you try backspacing into a table, select it.  This
@@ -8152,7 +8172,7 @@ leaves things like &lt;b>{}&lt;/b> in the DOM, which is unhelpful, so I don't.
     <li>Call [[extend|<var>start node</var>, <var>start offset</var>]] on the
     [[contextobject]]'s [[selection]].
 
-    <li>Abort these steps.
+    <li>Return true.
   </ol>
 
   <li>
@@ -8190,7 +8210,7 @@ leaves things like &lt;b>{}&lt;/b> in the DOM, which is unhelpful, so I don't.
     <li>Call [[selcollapse|<var>node</var>, <var>offset</var>]] on the
     [[selection]].
 
-    <li>Abort these steps.
+    <li>Return true.
   </ol>
 
   <li>
@@ -8273,7 +8293,7 @@ leaves things like &lt;b>{}&lt;/b> in the DOM, which is unhelpful, so I don't.
     <li>Call [[addrange|<var>original range</var>]] on the [[contextobject]]'s
     [[selection]].
 
-    <li>Abort these steps.
+    <li>Return true.
   </ol>
 
   <li>
@@ -8300,6 +8320,8 @@ leaves things like &lt;b>{}&lt;/b> in the DOM, which is unhelpful, so I don't.
   [[contextobject]]'s [[selection]].
 
   <li><span>Delete the selection</span>, with <var>direction</var> "backward".
+
+  <li>Return true.
 </ol>
 
 <!-- @} -->
@@ -8396,8 +8418,8 @@ other browsers don't do it.
   list discussion</a> on the subject.
   </div>
 
-  <p>If <var>value</var> is not a <span>formattable block name</span>, abort
-  these steps and do nothing.
+  <p>If <var>value</var> is not a <span>formattable block name</span>, return
+  false.
 
   <li><span>Block-extend</span> the <span>active range</span>, and let <var>new
   range</var> be the result.
@@ -8535,6 +8557,8 @@ other browsers don't do it.
     [[contextobject]].  Then <span>fix disallowed ancestors</span> of the
     result.
   </ol>
+
+  <li>Return true.
 </ol>
 
 <p class=comments>Firefox 6.0a2 throws, Chrome 14 dev always returns false,
@@ -8663,7 +8687,7 @@ diacritic, so you have to backspace several times to remove the whole cluster.)
 
 <ol>
   <li>If the <span>active range</span> is not [[rangecollapsed]], <span>delete
-  the selection</span> and abort these steps.
+  the selection</span> and return true.
 
   <li><span>Canonicalize whitespace</span> at the <span>active range</span>'s
   [[rangestart]].
@@ -8744,10 +8768,10 @@ diacritic, so you have to backspace several times to remove the whole cluster.)
 
     <li><span>Delete the selection</span>.
 
-    <li>Abort these steps.
+    <li>Return true.
   </ol>
 
-  <li>If <var>node</var> is an <span>inline node</span>, abort these steps.
+  <li>If <var>node</var> is an <span>inline node</span>, return true.
 
   <li>If <var>node</var> has a [[child]] with [[index]] <var>offset</var> and
   that [[child]] is a [[br]] or [[hr]] or [[img]], but is not a
@@ -8762,7 +8786,7 @@ diacritic, so you have to backspace several times to remove the whole cluster.)
 
     <li><span>Delete the selection</span>.
 
-    <li>Abort these steps.
+    <li>Return true.
   </ol>
 
   <li>
@@ -8795,7 +8819,7 @@ diacritic, so you have to backspace several times to remove the whole cluster.)
   here, unlike delete.
 
   <p>If the [[child]] of <var>end node</var> with [[index]] <var>end
-  offset</var> minus one is a [[table]], abort these steps.
+  offset</var> minus one is a [[table]], return true.
 
   <li>If the [[child]] of <var>end node</var> with [[index]] <var>end
   offset</var> is a [[table]]:
@@ -8807,7 +8831,7 @@ diacritic, so you have to backspace several times to remove the whole cluster.)
     <li>Call [[extend|<var>end node</var>, <var>end offset</var> + 1]] on the
     [[contextobject]]'s [[selection]].
 
-    <li>Abort these steps.
+    <li>Return true.
   </ol>
 
   <li>
@@ -8830,7 +8854,7 @@ diacritic, so you have to backspace several times to remove the whole cluster.)
     <li>Call [[selcollapse|<var>node</var>, <var>offset</var>]] on the
     [[selection]].
 
-    <li>Abort these steps.
+    <li>Return true.
   </ol>
 
   <li>
@@ -9016,7 +9040,7 @@ behavior in splitting up parents to ensure validity . . .
   <li><span>Delete the selection</span>, with <var>block merging</var> false.
 
   <li>If the <span>active range</span>'s [[startnode]] is neither
-  <span>editable</span> nor an <span>editing host</span>, abort these steps.
+  <span>editable</span> nor an <span>editing host</span>, return true.
 
   <li>
   <p class=comments>We don't want to call insertNode at the start or end of a
@@ -9054,6 +9078,8 @@ behavior in splitting up parents to ensure validity . . .
   <li>Run [[selcollapse|]] on the [[contextobject]]'s [[selection]], with first
   argument <var>hr</var>'s [[parent]] and the second argument equal to one plus
   <var>hr</var>'s [[index]].
+
+  <li>Return true.
 </ol>
 
 <!-- @} -->
@@ -9113,7 +9139,7 @@ behavior in splitting up parents to ensure validity . . .
   <p><span>Delete the selection</span>.
 
   <li>If the <span>active range</span>'s [[startnode]] is neither
-  <span>editable</span> nor an <span>editing host</span>, abort these steps.
+  <span>editable</span> nor an <span>editing host</span>, return true.
 
   <li>
   <p class=comments>TODO: This has some interesting consequences.  For
@@ -9132,7 +9158,7 @@ behavior in splitting up parents to ensure validity . . .
   <p class=comments>Firefox 5.0a2 also seems to not add empty elements like
   &lt;b>&lt;/b>, but Chrome 13 dev and Opera 11.11 do.
 
-  <p>If <var>last child</var> is null, abort these steps.
+  <p>If <var>last child</var> is null, return true.
 
   <li>Let <var>descendants</var> be all [[descendants]] of <var>frag</var>.
 
@@ -9196,6 +9222,8 @@ behavior in splitting up parents to ensure validity . . .
 
   <p><span>Fix disallowed ancestors</span> of each member of
   <var>descendants</var>.
+
+  <li>Return true.
 </ol>
 
 <!-- @} -->
@@ -9214,8 +9242,7 @@ behavior in splitting up parents to ensure validity . . .
   nothing on an empty string, but the other three browsers I tested stick in
   the &lt;img> anyway.
 
-  <p>If <var>value</var> is the empty string, abort these steps and do
-  nothing.
+  <p>If <var>value</var> is the empty string, return false.
 
   <li>
   <p class=comments>Firefox 7.0a2 seems to strip the wrapper or not depending
@@ -9231,7 +9258,7 @@ behavior in splitting up parents to ensure validity . . .
   <li>Let <var>range</var> be the <span>active range</span>.
 
   <li>If the <span>active range</span>'s [[startnode]] is neither
-  <span>editable</span> nor an <span>editing host</span>, abort these steps.
+  <span>editable</span> nor an <span>editing host</span>, return true.
 
   <li>
   <p class=comments>Same logic as with insertHTML.
@@ -9263,6 +9290,8 @@ behavior in splitting up parents to ensure validity . . .
   <li>Run [[selcollapse|]] on <var>selection</var>, with first argument equal
   to the [[parent]] of <var>img</var> and the second argument equal to one plus
   the [[index]] of <var>img</var>.
+
+  <li>Return true.
 </ol>
 
 <!-- @} -->
@@ -9304,17 +9333,17 @@ similar elements.  This doesn't seem very useful, so I don't bother.
   <p><span>Delete the selection</span>, with <var>strip wrappers</var> false.
 
   <li>If the <span>active range</span>'s [[startnode]] is neither
-  <span>editable</span> nor an <span>editing host</span>, abort these steps.
+  <span>editable</span> nor an <span>editing host</span>, return true.
 
   <li>
   <p class=comments>script, xmp, table, . . .
 
   <p>If the <span>active range</span>'s [[startnode]] is an [[element]], and
-  "br" is not an <span>allowed child</span> of it, abort these steps.
+  "br" is not an <span>allowed child</span> of it, return true.
 
   <li>If the <span>active range</span>'s [[startnode]] is not an [[element]],
   and "br" is not an <span>allowed child</span> of the <span>active
-  range</span>'s [[startnode]]'s [[parent]], abort these steps.
+  range</span>'s [[startnode]]'s [[parent]], return true.
 
   <li>
   <p class=comments>We don't want to call insertNode at the start or end of a
@@ -9346,6 +9375,8 @@ similar elements.  This doesn't seem very useful, so I don't bother.
   [[createelement|"br"]] on the [[contextobject]] and let <var>extra br</var>
   be the result, then call [[insertnode|<var>extra br</var>]] on the
   <span>active range</span>.
+
+  <li>Return true.
 </ol>
 
 <!-- @} -->
@@ -9354,7 +9385,7 @@ similar elements.  This doesn't seem very useful, so I don't bother.
 <p><span>Preserves overrides</span>
 
 <p><span>Action</span>: <span>Toggle lists</span> with <var>tag name</var>
-"ol".
+"ol", then return true.
 
 <p class=comments>Firefox 6.0a2 sort of supports this, but it throws exceptions
 most of the time.  It has the quirk that even if there are no ol's around, it
@@ -9438,7 +9469,7 @@ whatwg thread</a>.
   <li><span>Delete the selection</span>.
 
   <li>If the <span>active range</span>'s [[startnode]] is neither
-  <span>editable</span> nor an <span>editing host</span>, abort these steps.
+  <span>editable</span> nor an <span>editing host</span>, return true.
 
   <li>Let <var>node</var> and <var>offset</var> be the <span>active
   range</span>'s [[rangestart]] [[node]] and [[bpoffset]].
@@ -9515,7 +9546,7 @@ whatwg thread</a>.
       case where deleting can leave the cursor inside a &lt;tr>.
 
       <p>If <var>tag</var> is not an <span>allowed child</span> of
-      the <span>active range</span>'s [[startnode]], abort these steps.
+      the <span>active range</span>'s [[startnode]], return true.
 
       <li>Set <var>container</var> to the result of calling
       [[createelement|<var>tag</var>]] on the [[contextobject]].
@@ -9529,7 +9560,7 @@ whatwg thread</a>.
       <li>Call [[selcollapse|<var>container</var>, 0]] on the
       [[contextobject]]'s [[selection]].
 
-      <li>Abort these steps.
+      <li>Return true.
     </ol>
 
     <li>
@@ -9591,7 +9622,7 @@ whatwg thread</a>.
     [[contextobject]], then call [[insertnode|<var>br</var>]] on
     the <span>active range</span>.
 
-    <li>Abort these steps.
+    <li>Return true.
   </ol>
 
   <li>
@@ -9624,7 +9655,7 @@ whatwg thread</a>.
 
     <li><span>Fix disallowed ancestors</span> of <var>container</var>.
 
-    <li>Abort these steps.
+    <li>Return true.
   </ol>
 
   <li>Let <var>new line range</var> be a new [[range]] whose [[rangestart]] is
@@ -9731,6 +9762,8 @@ whatwg thread</a>.
 
   <li>Call [[selcollapse|<var>new container</var>, 0]] on the
   [[contextobject]]'s [[selection]].
+
+  <li>Return true.
 </ol>
 
 <!-- @} -->
@@ -9876,7 +9909,7 @@ unnecessarily.
   <p><span>Delete the selection</span>, with <var>strip wrappers</var> false.
 
   <li>If the <span>active range</span>'s [[startnode]] is neither
-  <span>editable</span> nor an <span>editing host</span>, abort these steps.
+  <span>editable</span> nor an <span>editing host</span>, return true.
 
   <li>If <var>value</var>'s [[strlen]] is greater than one:
 
@@ -9885,18 +9918,18 @@ unnecessarily.
     <span>action</span> for <span>the <code title>insertText</code>
     command</span>, with <var>value</var> equal to <var>el</var>.
 
-    <li>Abort these steps.
+    <li>Return true.
   </ol>
 
-  <li>If <var>value</var> is the empty string, abort these steps.
+  <li>If <var>value</var> is the empty string, return true.
 
   <li>
   <p class=comments>TODO: WebKit also does magic for tabs, wrapping them in a
   whitespace-preserving span.  Should we?
 
   <p>If <var>value</var> is a newline (U+00A0), take the <span>action</span>
-  for <span>the <code title>insertParagraph</code> command</span> and abort
-  these steps.
+  for <span>the <code title>insertParagraph</code> command</span> and return
+  true.
 
   <li>Let <var>node</var> and <var>offset</var> be the <span>active
   range</span>'s [[startnode]] and [[bpoffset]].
@@ -9977,6 +10010,8 @@ unnecessarily.
   <span>active range</span>'s [[rangestart]].
 
   <li>Call [[collapsetoend]] on the [[contextobject]]'s [[selection]].
+
+  <li>Return true.
 </ol>
 
 <!-- @} -->
@@ -9988,7 +10023,7 @@ unnecessarily.
 href=#the-insertorderedlist-command>insertOrderedList</a>.
 
 <p><span>Action</span>: <span>Toggle lists</span> with <var>tag name</var>
-"ul".
+"ul", then return true.
 
 <p><span>Indeterminate</span>: True if the <span>selection's list state</span>
 is "mixed" or "mixed ul", false otherwise.
@@ -10002,7 +10037,7 @@ false otherwise.
 <p><span>Preserves overrides</span>
 
 <p><span>Action</span>: <span>Justify the selection</span> with
-<var>alignment</var> "center".
+<var>alignment</var> "center", then return true.
 
 <div class=comments>
 <p>This roughly matches Chrome 14 dev, although not exactly.  Firefox 6.0a2
@@ -10074,7 +10109,7 @@ and return the <span>alignment value</span> of the first <span>visible</span>
 <p><span>Preserves overrides</span>
 
 <p><span>Action</span>: <span>Justify the selection</span> with
-<var>alignment</var> "justify".
+<var>alignment</var> "justify", then return true.
 
 <p><span>Indeterminate</span>: Return false if the <span>active range</span> is
 null.  Otherwise, <span>block-extend</span> the <span>active range</span>.
@@ -10102,7 +10137,7 @@ and return the <span>alignment value</span> of the first <span>visible</span>
 <p><span>Preserves overrides</span>
 
 <p><span>Action</span>: <span>Justify the selection</span> with
-<var>alignment</var> "left".
+<var>alignment</var> "left", then return true.
 
 <p><span>Indeterminate</span>: Return false if the <span>active range</span> is
 null.  Otherwise, <span>block-extend</span> the <span>active range</span>.
@@ -10130,7 +10165,7 @@ and return the <span>alignment value</span> of the first <span>visible</span>
 <p><span>Preserves overrides</span>
 
 <p><span>Action</span>: <span>Justify the selection</span> with
-<var>alignment</var> "right".
+<var>alignment</var> "right", then return true.
 
 <p><span>Indeterminate</span>: Return false if the <span>active range</span> is
 null.  Otherwise, <span>block-extend</span> the <span>active range</span>.
@@ -10235,6 +10270,8 @@ and return the <span>alignment value</span> of the first <span>visible</span>
 
     <li><span>Restore the values</span> from <var>values</var>.
   </ol>
+
+  <li>Return true.
 </ol>
 <!-- @} -->
 
@@ -10308,8 +10345,8 @@ bugs. The spec is not finalized yet and can still be easily changed.</strong>
 <p><span>Action</span>: Let <var>value</var> be
 <span data-anolis-spec=dom>converted to ASCII lowercase</span>.  If
 <var>value</var> is then equal to "p" or "div", set the [[contextobject]]'s
-<span>default single-line container name</span> to <var>value</var>.
-Otherwise, do nothing.
+<span>default single-line container name</span> to <var>value</var>, then
+return true.  Otherwise, return false.
 
 <p><span>Value</span>: Return the [[contextobject]]'s
 <span>default single-line container name</span>.
@@ -10403,6 +10440,8 @@ href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=13840>bug</a>.
 
   <li>Otherwise, call [[getselection]] on the [[contextobject]], and call
   [[selectallchildren|<var>target</var>]] on the result.
+
+  <li>Return true.
 </ol>
 
 <!-- @} -->
@@ -10429,7 +10468,7 @@ styleWithCSS, in which case the two behaviors work the same.
 <p><span>Action</span>: If <var>value</var> is an <span
 data-anolis-spec=domcore>ASCII case-insensitive</span> match for the string
 "false", set the <span>CSS styling flag</span> to false.  Otherwise, set the
-<span>CSS styling flag</span> to true.
+<span>CSS styling flag</span> to true.  Either way, return true.
 
 <p class=comments>This follows Chrome 13 dev.  Firefox 5.0a2 doesn't support
 queryCommandState() for styleWithCSS.
@@ -10462,7 +10501,7 @@ command, so it can no longer be considered deprecated.
 <p><span>Action</span>: If <var>value</var> is an <span
 data-anolis-spec=domcore>ASCII case-insensitive</span> match for the string
 "false", set the <span>CSS styling flag</span> to true.  Otherwise, set the
-<span>CSS styling flag</span> to false.
+<span>CSS styling flag</span> to false.  Either way, return true.
 
 <p>Since the effect of this command is the opposite of what one would expect,
 user agents are encouraged to point authors to <code title="the stylewithcss

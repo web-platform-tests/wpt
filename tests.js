@@ -4031,6 +4031,8 @@ var tests = {
 		['P', 'foo[bar]baz'],
 		[' div ', 'foo[bar]baz'],
 		[' p ', 'foo[bar]baz'],
+		['<div>', 'foo[bar]baz'],
+		['<p>', 'foo[bar]baz'],
 		['li', 'foo[bar]baz'],
 		['blockquote', 'foo[bar]baz'],
 	],

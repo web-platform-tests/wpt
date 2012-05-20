@@ -68,7 +68,7 @@ a code { text-decoration: underline }
 <div class=head id=head>
 <p><a href=http://www.w3.org/><img alt=W3C height=48 src=http://www.w3.org/Icons/w3c_home width=72></a></p>
 <h1>HTML Editing APIs</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-17-may-2012>Work in Progress &mdash; Last Update 17 May 2012</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-20-may-2012>Work in Progress &mdash; Last Update 20 May 2012</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;<a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a>&gt;
@@ -1292,7 +1292,8 @@ with it:
   bold if the selection is already bold.  An editing toolbar might provide
   buttons that execute the <a href=#action>action</a> for a <a href=#command>command</a> if
   clicked, or a script might run an <a href=#action>action</a> without user
-  interaction to achieve some particular effect.
+  interaction to achieve some particular effect.  Actions return either true or
+  false, which can affect the return value of <code><a href=#execcommand()>execCommand()</a></code>.
 
   <li><dfn id=indeterminate>Indeterminate</dfn>: A boolean value returned by
   <code><a href=#querycommandindeterm()>queryCommandIndeterm()</a></code>, depending on the current state of the
@@ -1576,6 +1577,8 @@ must run the following steps:
 
   <li>Take the <a href=#action>action</a> for <var title="">command</var>, passing
   <var title="">value</var> to the instructions as an argument.
+
+  <li>If the previous step returned false, return false.
 
   <li>If <var title="">command</var> is not in the
   <a href=#miscellaneous-commands>Miscellaneous commands</a> section, then
@@ -3827,9 +3830,11 @@ the document background color.  See hiliteColor for comments.
   <li>If <var title="">value</var> is not a valid CSS color, prepend "#" to it.
 
   <li>If <var title="">value</var> is still not a valid CSS color, or if it is
-  currentColor, abort these steps and do nothing.
+  currentColor, return false.
 
   <li><a href="#set-the-selection's-value">Set the selection's value</a> to <var title="">value</var>.
+
+  <li>Return true.
 </ol>
 
 <p><a href=#standard-inline-value-command>Standard inline value command</a>
@@ -3852,7 +3857,7 @@ know.
 
 <p><a href=#action>Action</a>: If <code title=queryCommandState()><a href=#querycommandstate()>queryCommandState("bold")</a></code> returns true,
 <a href="#set-the-selection's-value">set the selection's value</a> to "normal".  Otherwise <a href="#set-the-selection's-value">set the
-selection's value</a> to "bold".
+selection's value</a> to "bold".  Either way, return true.
 
 <div class=comments>
 <p>The cutoff of 600 matches Chrome 14 dev.  The cutoff used by IE9 and Firefox
@@ -3908,8 +3913,7 @@ string can occur as a link href, in principle.
   really want to, they can always specify "#" for the value, or the author can
   rewrite it, so it's not like this makes the API less useful.
 
-  <p>If <var title="">value</var> is the empty string, abort these steps and do
-  nothing.
+  <p>If <var title="">value</var> is the empty string, return false.
 
   <li>
   <div class=comments>
@@ -3942,6 +3946,8 @@ string can occur as a link href, in principle.
   <code class=external data-anolis-spec=html title=attr-hyperlink-href><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/links.html#attr-hyperlink-href>href</a></code> attribute to <var title="">value</var>.
 
   <li><a href="#set-the-selection's-value">Set the selection's value</a> to <var title="">value</var>.
+
+  <li>Return true.
 </ol>
 
 
@@ -3980,7 +3986,7 @@ apply.
 </div>
 
 <p><a href=#action>Action</a>: <a href="#set-the-selection's-value">Set the selection's value</a> to
-<var title="">value</var>.
+<var title="">value</var>, then return true.
 
 <div class=comments>
 <p>The value is complicated.
@@ -4067,7 +4073,7 @@ to the CSS Fonts spec.
   <li>If <var title="">value</var> is not a <a class=external data-anolis-spec=html href=http://www.whatwg.org/specs/web-apps/current-work/multipage/common-microsyntaxes.html#valid-floating-point-number>valid floating
   point number</a>, and would not be a <a class=external data-anolis-spec=html href=http://www.whatwg.org/specs/web-apps/current-work/multipage/common-microsyntaxes.html#valid-floating-point-number>valid
   floating point number</a> if a single leading "+" character were stripped,
-  abort these steps and do nothing.
+  return false.
 
   <li>If the first character of <var title="">value</var> is "+", delete the character
   and let <var title="">mode</var> be "relative-plus".
@@ -4112,6 +4118,8 @@ to the CSS Fonts spec.
   </ul>
 
   <li><a href="#set-the-selection's-value">Set the selection's value</a> to <var title="">value</var>.
+
+  <li>Return true.
 </ol>
 
 <p class=comments>This follows Firefox 6.0a2.  Chrome 14 dev always returns
@@ -4295,9 +4303,11 @@ disagrees with all browsers, but it's unlikely to hurt and it makes sense.
   sizes.  It will confuse the algorithm, and doesn't seem very useful anyway.
 
   <p>If <var title="">value</var> is still not a valid CSS color, or if it is
-  currentColor, abort these steps and do nothing.
+  currentColor, return false.
 
   <li><a href="#set-the-selection's-value">Set the selection's value</a> to <var title="">value</var>.
+
+  <li>Return true.
 </ol>
 
 <div class=comments>
@@ -4362,9 +4372,11 @@ sense; see the comment for backColor.
   confuse the algorithm, so ban it for now anyway.
 
   <p>If <var title="">value</var> is still not a valid CSS color, or if it is
-  currentColor, abort these steps and do nothing.
+  currentColor, return false.
 
   <li><a href="#set-the-selection's-value">Set the selection's value</a> to <var title="">value</var>.
+
+  <li>Return true.
 </ol>
 
 <p class=comments>For indeterminacy, this follows no one.  Firefox 6.0a2 and
@@ -4384,7 +4396,7 @@ valid CSS color.
 
 <p><a href=#action>Action</a>: If <code title=queryCommandState()><a href=#querycommandstate()>queryCommandState("italic")</a></code> returns true,
 <a href="#set-the-selection's-value">set the selection's value</a> to "normal".  Otherwise <a href="#set-the-selection's-value">set the
-selection's value</a> to "italic".
+selection's value</a> to "italic".  Either way, return true.
 
 <p><a href=#inline-command-activated-values>Inline command activated values</a>: "italic" or "oblique"
 
@@ -4534,6 +4546,8 @@ element</a> with <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/
     <li>strikethrough
     <li>underline
   </ol>
+
+  <li>Return true.
 </ol>
 
 
@@ -4543,7 +4557,7 @@ element</a> with <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/
 
 <p><a href=#action>Action</a>: If <code title=queryCommandState()><a href=#querycommandstate()>queryCommandState("strikethrough")</a></code> returns
 true, <a href="#set-the-selection's-value">set the selection's value</a> to null.  Otherwise <a href="#set-the-selection's-value">set the
-selection's value</a> to "line-through".
+selection's value</a> to "line-through".  Either way, return true.
 
 <p><a href=#inline-command-activated-values>Inline command activated values</a>: "line-through"
 
@@ -4560,6 +4574,8 @@ selection's value</a> to "line-through".
 
   <li>If <var title="">state</var> is false, <a href="#set-the-selection's-value">set the selection's value</a> to
   "subscript".
+
+  <li>Return true.
 </ol>
 
 <p><a href=#indeterminate>Indeterminate</a>: True if either among <a href=#formattable-node title="formattable
@@ -4596,6 +4612,8 @@ consider it indeterminate.
 
   <li>If <var title="">state</var> is false, <a href="#set-the-selection's-value">set the selection's value</a> to
   "superscript".
+
+  <li>Return true.
 </ol>
 
 <p><a href=#indeterminate>Indeterminate</a>: True if either among <a href=#formattable-node title="formattable
@@ -4660,7 +4678,7 @@ problems or working around them can be put off for now.
 
 <p><a href=#action>Action</a>: If <code title=queryCommandState()><a href=#querycommandstate()>queryCommandState("underline")</a></code> returns true,
 <a href="#set-the-selection's-value">set the selection's value</a> to null.  Otherwise <a href="#set-the-selection's-value">set the
-selection's value</a> to "underline".
+selection's value</a> to "underline".  Either way, return true.
 
 <p><a href=#inline-command-activated-values>Inline command activated values</a>: "underline"
 
@@ -4687,6 +4705,8 @@ indeterm/state/value.
   is an <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of one of its <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp title=concept-range-bp>boundary points</a>.
 
   <li><a href=#clear-the-value>Clear the value</a> of each member of <var title="">hyperlinks</var>.
+
+  <li>Return true.
 </ol>
 
 
@@ -7827,7 +7847,7 @@ leaves things like &lt;b&gt;{}&lt;/b&gt; in the DOM, which is unhelpful, so I do
 
 <ol>
   <li>If the <a href=#active-range>active range</a> is not <code class=external data-anolis-spec=dom title=dom-Range-collapsed><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-range-collapsed>collapsed</a></code>, <a href=#delete-the-selection>delete
-  the selection</a> and abort these steps.
+  the selection</a> and return true.
 
   <li>
   <p class=comments>Needed so that if there are multiple consecutive spaces we
@@ -7878,7 +7898,7 @@ leaves things like &lt;b&gt;{}&lt;/b&gt; in the DOM, which is unhelpful, so I do
     <p>Otherwise, if <var title="">node</var> has a <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> with <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-index title=concept-tree-index>index</a>
     <var title="">offset</var> &minus; 1 and that <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is an <a href=#editable>editable</a>
     <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/text-level-semantics.html#the-a-element>a</a></code>, remove that <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> from <var title="">node</var>, <a href=#preserving-its-descendants>preserving its
-    descendants</a>.  Then abort these steps.
+    descendants</a>.  Then return true.
 
     <li>Otherwise, if <var title="">node</var> has a <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> with <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-index title=concept-tree-index>index</a>
     <var title="">offset</var> &minus; 1 and that <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is not a <a href=#block-node>block
@@ -7930,14 +7950,14 @@ leaves things like &lt;b&gt;{}&lt;/b&gt; in the DOM, which is unhelpful, so I do
 
     <li><a href=#delete-the-selection>Delete the selection</a>.
 
-    <li>Abort these steps.
+    <li>Return true.
   </ol>
 
   <li>
   <p class=comments>At the time of this writing, this should be impossible.
   Just being safe.
 
-  <p>If <var title="">node</var> is an <a href=#inline-node>inline node</a>, abort these steps.
+  <p>If <var title="">node</var> is an <a href=#inline-node>inline node</a>, return true.
 
   <li>
   <p class=comments> If we're at the beginning of a list, we want to outdent
@@ -7978,7 +7998,7 @@ leaves things like &lt;b&gt;{}&lt;/b&gt; in the DOM, which is unhelpful, so I do
 
     <li><a href=#fix-disallowed-ancestors>Fix disallowed ancestors</a> of <var title="">node</var>.
 
-    <li>Abort these steps.
+    <li>Return true.
   </ol>
 
   <li>
@@ -8027,7 +8047,7 @@ leaves things like &lt;b&gt;{}&lt;/b&gt; in the DOM, which is unhelpful, so I do
 
     <li><a href=#outdent>Outdent</a> each <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> in <var title="">node list</var>.
 
-    <li>Abort these steps.
+    <li>Return true.
   </ol>
 
   <li>
@@ -8040,7 +8060,7 @@ leaves things like &lt;b&gt;{}&lt;/b&gt; in the DOM, which is unhelpful, so I do
   </div>
 
   <p>If the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">start node</var> with <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-index title=concept-tree-index>index</a> <var title="">start
-  offset</var> is a <code class=external data-anolis-spec=html title="the table element"><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/tabular-data.html#the-table-element>table</a></code>, abort these steps.
+  offset</var> is a <code class=external data-anolis-spec=html title="the table element"><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/tabular-data.html#the-table-element>table</a></code>, return true.
 
   <li>
   <p class=comments>If you try backspacing into a table, select it.  This
@@ -8058,7 +8078,7 @@ leaves things like &lt;b&gt;{}&lt;/b&gt; in the DOM, which is unhelpful, so I do
     <li>Call <code title=dom-Selection-extend><a href=#dom-selection-extend>extend(<var title="">start node</var>, <var title="">start offset</var>)</a></code> on the
     <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a href=#concept-selection title=concept-selection>selection</a>.
 
-    <li>Abort these steps.
+    <li>Return true.
   </ol>
 
   <li>
@@ -8094,7 +8114,7 @@ leaves things like &lt;b&gt;{}&lt;/b&gt; in the DOM, which is unhelpful, so I do
     <li>Call <code title=dom-Selection-collapse><a href=#dom-selection-collapse>collapse(<var title="">node</var>, <var title="">offset</var>)</a></code> on the
     <a href=#concept-selection title=concept-selection>selection</a>.
 
-    <li>Abort these steps.
+    <li>Return true.
   </ol>
 
   <li>
@@ -8177,7 +8197,7 @@ leaves things like &lt;b&gt;{}&lt;/b&gt; in the DOM, which is unhelpful, so I do
     <li>Call <code title=dom-Selection-addRange><a href=#dom-selection-addrange>addRange(<var title="">original range</var>)</a></code> on the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s
     <a href=#concept-selection title=concept-selection>selection</a>.
 
-    <li>Abort these steps.
+    <li>Return true.
   </ol>
 
   <li>
@@ -8204,6 +8224,8 @@ leaves things like &lt;b&gt;{}&lt;/b&gt; in the DOM, which is unhelpful, so I do
   <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a href=#concept-selection title=concept-selection>selection</a>.
 
   <li><a href=#delete-the-selection>Delete the selection</a>, with <var title="">direction</var> "backward".
+
+  <li>Return true.
 </ol>
 
 
@@ -8299,8 +8321,8 @@ other browsers don't do it.
   list discussion</a> on the subject.
   </div>
 
-  <p>If <var title="">value</var> is not a <a href=#formattable-block-name>formattable block name</a>, abort
-  these steps and do nothing.
+  <p>If <var title="">value</var> is not a <a href=#formattable-block-name>formattable block name</a>, return
+  false.
 
   <li><a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>, and let <var title="">new
   range</var> be the result.
@@ -8438,6 +8460,8 @@ other browsers don't do it.
     <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>.  Then <a href=#fix-disallowed-ancestors>fix disallowed ancestors</a> of the
     result.
   </ol>
+
+  <li>Return true.
 </ol>
 
 <p class=comments>Firefox 6.0a2 throws, Chrome 14 dev always returns false,
@@ -8564,7 +8588,7 @@ diacritic, so you have to backspace several times to remove the whole cluster.)
 
 <ol>
   <li>If the <a href=#active-range>active range</a> is not <code class=external data-anolis-spec=dom title=dom-Range-collapsed><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-range-collapsed>collapsed</a></code>, <a href=#delete-the-selection>delete
-  the selection</a> and abort these steps.
+  the selection</a> and return true.
 
   <li><a href=#canonicalize-whitespace>Canonicalize whitespace</a> at the <a href=#active-range>active range</a>'s
   <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a>.
@@ -8645,10 +8669,10 @@ diacritic, so you have to backspace several times to remove the whole cluster.)
 
     <li><a href=#delete-the-selection>Delete the selection</a>.
 
-    <li>Abort these steps.
+    <li>Return true.
   </ol>
 
-  <li>If <var title="">node</var> is an <a href=#inline-node>inline node</a>, abort these steps.
+  <li>If <var title="">node</var> is an <a href=#inline-node>inline node</a>, return true.
 
   <li>If <var title="">node</var> has a <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> with <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-index title=concept-tree-index>index</a> <var title="">offset</var> and
   that <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/text-level-semantics.html#the-br-element>br</a></code> or <code class=external data-anolis-spec=html title="the hr element"><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/grouping-content.html#the-hr-element>hr</a></code> or <code class=external data-anolis-spec=html title="the img element"><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/embedded-content-1.html#the-img-element>img</a></code>, but is not a
@@ -8663,7 +8687,7 @@ diacritic, so you have to backspace several times to remove the whole cluster.)
 
     <li><a href=#delete-the-selection>Delete the selection</a>.
 
-    <li>Abort these steps.
+    <li>Return true.
   </ol>
 
   <li>
@@ -8696,7 +8720,7 @@ diacritic, so you have to backspace several times to remove the whole cluster.)
   here, unlike delete.
 
   <p>If the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">end node</var> with <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-index title=concept-tree-index>index</a> <var title="">end
-  offset</var> minus one is a <code class=external data-anolis-spec=html title="the table element"><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/tabular-data.html#the-table-element>table</a></code>, abort these steps.
+  offset</var> minus one is a <code class=external data-anolis-spec=html title="the table element"><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/tabular-data.html#the-table-element>table</a></code>, return true.
 
   <li>If the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">end node</var> with <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-index title=concept-tree-index>index</a> <var title="">end
   offset</var> is a <code class=external data-anolis-spec=html title="the table element"><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/tabular-data.html#the-table-element>table</a></code>:
@@ -8708,7 +8732,7 @@ diacritic, so you have to backspace several times to remove the whole cluster.)
     <li>Call <code title=dom-Selection-extend><a href=#dom-selection-extend>extend(<var title="">end node</var>, <var title="">end offset</var> + 1)</a></code> on the
     <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a href=#concept-selection title=concept-selection>selection</a>.
 
-    <li>Abort these steps.
+    <li>Return true.
   </ol>
 
   <li>
@@ -8731,7 +8755,7 @@ diacritic, so you have to backspace several times to remove the whole cluster.)
     <li>Call <code title=dom-Selection-collapse><a href=#dom-selection-collapse>collapse(<var title="">node</var>, <var title="">offset</var>)</a></code> on the
     <a href=#concept-selection title=concept-selection>selection</a>.
 
-    <li>Abort these steps.
+    <li>Return true.
   </ol>
 
   <li>
@@ -8917,7 +8941,7 @@ behavior in splitting up parents to ensure validity . . .
   <li><a href=#delete-the-selection>Delete the selection</a>, with <var title="">block merging</var> false.
 
   <li>If the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-node title=concept-range-start-node>start node</a> is neither
-  <a href=#editable>editable</a> nor an <a href=#editing-host>editing host</a>, abort these steps.
+  <a href=#editable>editable</a> nor an <a href=#editing-host>editing host</a>, return true.
 
   <li>
   <p class=comments>We don't want to call insertNode at the start or end of a
@@ -8955,6 +8979,8 @@ behavior in splitting up parents to ensure validity . . .
   <li>Run <code title=dom-Selection-collapse><a href=#dom-selection-collapse>collapse()</a></code> on the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a href=#concept-selection title=concept-selection>selection</a>, with first
   argument <var title="">hr</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> and the second argument equal to one plus
   <var title="">hr</var>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-index title=concept-tree-index>index</a>.
+
+  <li>Return true.
 </ol>
 
 
@@ -9014,7 +9040,7 @@ behavior in splitting up parents to ensure validity . . .
   <p><a href=#delete-the-selection>Delete the selection</a>.
 
   <li>If the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-node title=concept-range-start-node>start node</a> is neither
-  <a href=#editable>editable</a> nor an <a href=#editing-host>editing host</a>, abort these steps.
+  <a href=#editable>editable</a> nor an <a href=#editing-host>editing host</a>, return true.
 
   <li>
   <p class=comments>TODO: This has some interesting consequences.  For
@@ -9032,7 +9058,7 @@ behavior in splitting up parents to ensure validity . . .
   <p class=comments>Firefox 5.0a2 also seems to not add empty elements like
   &lt;b&gt;&lt;/b&gt;, but Chrome 13 dev and Opera 11.11 do.
 
-  <p>If <var title="">last child</var> is null, abort these steps.
+  <p>If <var title="">last child</var> is null, return true.
 
   <li>Let <var title="">descendants</var> be all <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendants</a> of <var title="">frag</var>.
 
@@ -9095,6 +9121,8 @@ behavior in splitting up parents to ensure validity . . .
 
   <p><a href=#fix-disallowed-ancestors>Fix disallowed ancestors</a> of each member of
   <var title="">descendants</var>.
+
+  <li>Return true.
 </ol>
 
 
@@ -9113,8 +9141,7 @@ behavior in splitting up parents to ensure validity . . .
   nothing on an empty string, but the other three browsers I tested stick in
   the &lt;img&gt; anyway.
 
-  <p>If <var title="">value</var> is the empty string, abort these steps and do
-  nothing.
+  <p>If <var title="">value</var> is the empty string, return false.
 
   <li>
   <p class=comments>Firefox 7.0a2 seems to strip the wrapper or not depending
@@ -9130,7 +9157,7 @@ behavior in splitting up parents to ensure validity . . .
   <li>Let <var title="">range</var> be the <a href=#active-range>active range</a>.
 
   <li>If the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-node title=concept-range-start-node>start node</a> is neither
-  <a href=#editable>editable</a> nor an <a href=#editing-host>editing host</a>, abort these steps.
+  <a href=#editable>editable</a> nor an <a href=#editing-host>editing host</a>, return true.
 
   <li>
   <p class=comments>Same logic as with insertHTML.
@@ -9162,6 +9189,8 @@ behavior in splitting up parents to ensure validity . . .
   <li>Run <code title=dom-Selection-collapse><a href=#dom-selection-collapse>collapse()</a></code> on <var title="">selection</var>, with first argument equal
   to the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">img</var> and the second argument equal to one plus
   the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-index title=concept-tree-index>index</a> of <var title="">img</var>.
+
+  <li>Return true.
 </ol>
 
 
@@ -9202,17 +9231,17 @@ similar elements.  This doesn't seem very useful, so I don't bother.
   <p><a href=#delete-the-selection>Delete the selection</a>, with <var title="">strip wrappers</var> false.
 
   <li>If the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-node title=concept-range-start-node>start node</a> is neither
-  <a href=#editable>editable</a> nor an <a href=#editing-host>editing host</a>, abort these steps.
+  <a href=#editable>editable</a> nor an <a href=#editing-host>editing host</a>, return true.
 
   <li>
   <p class=comments>script, xmp, table, . . .
 
   <p>If the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-node title=concept-range-start-node>start node</a> is an <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, and
-  "br" is not an <a href=#allowed-child>allowed child</a> of it, abort these steps.
+  "br" is not an <a href=#allowed-child>allowed child</a> of it, return true.
 
   <li>If the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-node title=concept-range-start-node>start node</a> is not an <code class=external data-anolis-spec=dom><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>,
   and "br" is not an <a href=#allowed-child>allowed child</a> of the <a href=#active-range>active
-  range</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-node title=concept-range-start-node>start node</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>, abort these steps.
+  range</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-node title=concept-range-start-node>start node</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>, return true.
 
   <li>
   <p class=comments>We don't want to call insertNode at the start or end of a
@@ -9244,6 +9273,8 @@ similar elements.  This doesn't seem very useful, so I don't bother.
   <code class=external data-anolis-spec=dom title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("br")</a></code> on the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a> and let <var title="">extra br</var>
   be the result, then call <code class=external data-anolis-spec=dom title=dom-Range-insertNode><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-range-insertnode>insertNode(<var title="">extra br</var>)</a></code> on the
   <a href=#active-range>active range</a>.
+
+  <li>Return true.
 </ol>
 
 
@@ -9252,7 +9283,7 @@ similar elements.  This doesn't seem very useful, so I don't bother.
 <p><a href=#preserves-overrides>Preserves overrides</a>
 
 <p><a href=#action>Action</a>: <a href=#toggle-lists>Toggle lists</a> with <var title="">tag name</var>
-"ol".
+"ol", then return true.
 
 <p class=comments>Firefox 6.0a2 sort of supports this, but it throws exceptions
 most of the time.  It has the quirk that even if there are no ol's around, it
@@ -9334,7 +9365,7 @@ whatwg thread</a>.
   <li><a href=#delete-the-selection>Delete the selection</a>.
 
   <li>If the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-node title=concept-range-start-node>start node</a> is neither
-  <a href=#editable>editable</a> nor an <a href=#editing-host>editing host</a>, abort these steps.
+  <a href=#editable>editable</a> nor an <a href=#editing-host>editing host</a>, return true.
 
   <li>Let <var title="">node</var> and <var title="">offset</var> be the <a href=#active-range>active
   range</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> and <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp-offset title=concept-range-bp-offset>offset</a>.
@@ -9410,7 +9441,7 @@ whatwg thread</a>.
       case where deleting can leave the cursor inside a &lt;tr&gt;.
 
       <p>If <var title="">tag</var> is not an <a href=#allowed-child>allowed child</a> of
-      the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-node title=concept-range-start-node>start node</a>, abort these steps.
+      the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-node title=concept-range-start-node>start node</a>, return true.
 
       <li>Set <var title="">container</var> to the result of calling
       <code class=external data-anolis-spec=dom title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement(<var title="">tag</var>)</a></code> on the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>.
@@ -9424,7 +9455,7 @@ whatwg thread</a>.
       <li>Call <code title=dom-Selection-collapse><a href=#dom-selection-collapse>collapse(<var title="">container</var>, 0)</a></code> on the
       <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a href=#concept-selection title=concept-selection>selection</a>.
 
-      <li>Abort these steps.
+      <li>Return true.
     </ol>
 
     <li>
@@ -9486,7 +9517,7 @@ whatwg thread</a>.
     <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>, then call <code class=external data-anolis-spec=dom title=dom-Range-insertNode><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-range-insertnode>insertNode(<var title="">br</var>)</a></code> on
     the <a href=#active-range>active range</a>.
 
-    <li>Abort these steps.
+    <li>Return true.
   </ol>
 
   <li>
@@ -9519,7 +9550,7 @@ whatwg thread</a>.
 
     <li><a href=#fix-disallowed-ancestors>Fix disallowed ancestors</a> of <var title="">container</var>.
 
-    <li>Abort these steps.
+    <li>Return true.
   </ol>
 
   <li>Let <var title="">new line range</var> be a new <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range title=concept-range>range</a> whose <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a> is
@@ -9626,6 +9657,8 @@ whatwg thread</a>.
 
   <li>Call <code title=dom-Selection-collapse><a href=#dom-selection-collapse>collapse(<var title="">new container</var>, 0)</a></code> on the
   <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a href=#concept-selection title=concept-selection>selection</a>.
+
+  <li>Return true.
 </ol>
 
 
@@ -9769,7 +9802,7 @@ unnecessarily.
   <p><a href=#delete-the-selection>Delete the selection</a>, with <var title="">strip wrappers</var> false.
 
   <li>If the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-node title=concept-range-start-node>start node</a> is neither
-  <a href=#editable>editable</a> nor an <a href=#editing-host>editing host</a>, abort these steps.
+  <a href=#editable>editable</a> nor an <a href=#editing-host>editing host</a>, return true.
 
   <li>If <var title="">value</var>'s <a href=http://es5.github.com/#x15.5.5.1>length</a> is greater than one:
 
@@ -9778,18 +9811,18 @@ unnecessarily.
     <a href=#action>action</a> for <a href=#the-inserttext-command>the <code title="">insertText</code>
     command</a>, with <var title="">value</var> equal to <var title="">el</var>.
 
-    <li>Abort these steps.
+    <li>Return true.
   </ol>
 
-  <li>If <var title="">value</var> is the empty string, abort these steps.
+  <li>If <var title="">value</var> is the empty string, return true.
 
   <li>
   <p class=comments>TODO: WebKit also does magic for tabs, wrapping them in a
   whitespace-preserving span.  Should we?
 
   <p>If <var title="">value</var> is a newline (U+00A0), take the <a href=#action>action</a>
-  for <a href=#the-insertparagraph-command>the <code title="">insertParagraph</code> command</a> and abort
-  these steps.
+  for <a href=#the-insertparagraph-command>the <code title="">insertParagraph</code> command</a> and return
+  true.
 
   <li>Let <var title="">node</var> and <var title="">offset</var> be the <a href=#active-range>active
   range</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start-node title=concept-range-start-node>start node</a> and <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp-offset title=concept-range-bp-offset>offset</a>.
@@ -9870,6 +9903,8 @@ unnecessarily.
   <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-start title=concept-range-start>start</a>.
 
   <li>Call <code title=dom-Selection-collapseToEnd><a href=#dom-selection-collapsetoend>collapseToEnd()</a></code> on the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s <a href=#concept-selection title=concept-selection>selection</a>.
+
+  <li>Return true.
 </ol>
 
 
@@ -9880,7 +9915,7 @@ unnecessarily.
 <p class=comments>See comments for <a href=#the-insertorderedlist-command>insertOrderedList</a>.
 
 <p><a href=#action>Action</a>: <a href=#toggle-lists>Toggle lists</a> with <var title="">tag name</var>
-"ul".
+"ul", then return true.
 
 <p><a href=#indeterminate>Indeterminate</a>: True if the <a href="#selection's-list-state">selection's list state</a>
 is "mixed" or "mixed ul", false otherwise.
@@ -9894,7 +9929,7 @@ false otherwise.
 <p><a href=#preserves-overrides>Preserves overrides</a>
 
 <p><a href=#action>Action</a>: <a href=#justify-the-selection>Justify the selection</a> with
-<var title="">alignment</var> "center".
+<var title="">alignment</var> "center", then return true.
 
 <div class=comments>
 <p>This roughly matches Chrome 14 dev, although not exactly.  Firefox 6.0a2
@@ -9966,7 +10001,7 @@ and return the <a href=#alignment-value>alignment value</a> of the first <a href
 <p><a href=#preserves-overrides>Preserves overrides</a>
 
 <p><a href=#action>Action</a>: <a href=#justify-the-selection>Justify the selection</a> with
-<var title="">alignment</var> "justify".
+<var title="">alignment</var> "justify", then return true.
 
 <p><a href=#indeterminate>Indeterminate</a>: Return false if the <a href=#active-range>active range</a> is
 null.  Otherwise, <a href=#block-extend>block-extend</a> the <a href=#active-range>active range</a>.
@@ -9994,7 +10029,7 @@ and return the <a href=#alignment-value>alignment value</a> of the first <a href
 <p><a href=#preserves-overrides>Preserves overrides</a>
 
 <p><a href=#action>Action</a>: <a href=#justify-the-selection>Justify the selection</a> with
-<var title="">alignment</var> "left".
+<var title="">alignment</var> "left", then return true.
 
 <p><a href=#indeterminate>Indeterminate</a>: Return false if the <a href=#active-range>active range</a> is
 null.  Otherwise, <a href=#block-extend>block-extend</a> the <a href=#active-range>active range</a>.
@@ -10022,7 +10057,7 @@ and return the <a href=#alignment-value>alignment value</a> of the first <a href
 <p><a href=#preserves-overrides>Preserves overrides</a>
 
 <p><a href=#action>Action</a>: <a href=#justify-the-selection>Justify the selection</a> with
-<var title="">alignment</var> "right".
+<var title="">alignment</var> "right", then return true.
 
 <p><a href=#indeterminate>Indeterminate</a>: Return false if the <a href=#active-range>active range</a> is
 null.  Otherwise, <a href=#block-extend>block-extend</a> the <a href=#active-range>active range</a>.
@@ -10127,6 +10162,8 @@ and return the <a href=#alignment-value>alignment value</a> of the first <a href
 
     <li><a href=#restore-the-values>Restore the values</a> from <var title="">values</var>.
   </ol>
+
+  <li>Return true.
 </ol>
 
 
@@ -10196,8 +10233,8 @@ bugs. The spec is not finalized yet and can still be easily changed.</strong>
 <p><a href=#action>Action</a>: Let <var title="">value</var> be
 <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#converted-to-ascii-lowercase>converted to ASCII lowercase</a>.  If
 <var title="">value</var> is then equal to "p" or "div", set the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s
-<a href=#default-single-line-container-name>default single-line container name</a> to <var title="">value</var>.
-Otherwise, do nothing.
+<a href=#default-single-line-container-name>default single-line container name</a> to <var title="">value</var>, then
+return true.  Otherwise, return false.
 
 <p><a href=#value>Value</a>: Return the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>'s
 <a href=#default-single-line-container-name>default single-line container name</a>.
@@ -10285,6 +10322,8 @@ to select the editing host contents, not the whole document.  See <a href="http:
 
   <li>Otherwise, call <code title=dom-Document-getSelection><a href=#dom-document-getselection>getSelection()</a></code> on the <a class=external data-anolis-spec=dom href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#context-object>context object</a>, and call
   <code title=dom-Selection-selectAllChildren><a href=#dom-selection-selectallchildren>selectAllChildren(<var title="">target</var>)</a></code> on the result.
+
+  <li>Return true.
 </ol>
 
 
@@ -10310,7 +10349,7 @@ styleWithCSS, in which case the two behaviors work the same.
 
 <p><a href=#action>Action</a>: If <var title="">value</var> is an <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#ascii-case-insensitive>ASCII case-insensitive</a> match for the string
 "false", set the <a href=#css-styling-flag>CSS styling flag</a> to false.  Otherwise, set the
-<a href=#css-styling-flag>CSS styling flag</a> to true.
+<a href=#css-styling-flag>CSS styling flag</a> to true.  Either way, return true.
 
 <p class=comments>This follows Chrome 13 dev.  Firefox 5.0a2 doesn't support
 queryCommandState() for styleWithCSS.
@@ -10340,7 +10379,7 @@ command, so it can no longer be considered deprecated.
 
 <p><a href=#action>Action</a>: If <var title="">value</var> is an <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#ascii-case-insensitive>ASCII case-insensitive</a> match for the string
 "false", set the <a href=#css-styling-flag>CSS styling flag</a> to true.  Otherwise, set the
-<a href=#css-styling-flag>CSS styling flag</a> to false.
+<a href=#css-styling-flag>CSS styling flag</a> to false.  Either way, return true.
 
 <p>Since the effect of this command is the opposite of what one would expect,
 user agents are encouraged to point authors to <code title="the stylewithcss

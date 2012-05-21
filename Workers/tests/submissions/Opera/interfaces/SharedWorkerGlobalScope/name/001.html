@@ -1,0 +1,41 @@
+<!--
+addEventListener('connect', function(e) {
+  var passed;
+  switch (location.hash) {
+    case '#1': passed = name == ''; break;
+    case '#2': passed = name == 'a'; break;
+    case '#3': passed = name == '0'; break;
+  }
+  e.ports[0].postMessage(passed);
+}, false);
+/*
+-->
+<!doctype html>
+<title>getting name</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var i = 0;
+  var w1 = new SharedWorker('#1', '');
+  w1.port.onmessage = function(e) {
+    i++;
+    test(function w1() { assertTrue(e.data); }, 'none');
+  }
+  var w2 = new SharedWorker('#2', 'a');
+  w2.port.onmessage = function(e) {
+    i++;
+    test(function w2() { assertTrue(e.data); }, 'none');
+  }
+  var w3 = new SharedWorker('#3', -0);
+  w3.port.onmessage = function(e) {
+    i++;
+    test(function w3() { assertTrue(e.data); }, 'none');
+  }
+  test(function() { assertEquals(i, 3); }, 500);
+});
+</script>
+<!--
+*/
+//-->
+
+

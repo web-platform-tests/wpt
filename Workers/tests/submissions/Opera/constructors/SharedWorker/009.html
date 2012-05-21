@@ -1,0 +1,41 @@
+<!--
+/*
+-->
+<!doctype html>
+<title>setting members of worker.port</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var worker = new SharedWorker('#', '');
+  test(function test_postMessage() {
+    worker.port.postMessage = 1;
+    assertEquals(worker.port.postMessage, 1);
+  }, 'none');
+  test(function test_start() {
+    worker.port.start = 1;
+    assertEquals(worker.port.start, 1);
+  }, 'none');
+  test(function test_close() {
+    worker.port.close = 1;
+    assertEquals(worker.port.close, 1);
+  }, 'none');
+  test(function test_onmessage() {
+    assertThrows(function(){ worker.port.onmessage = 1 }, [], TypeError, {});
+  }, 'none');
+  test(function test_addEventListener() {
+    worker.port.addEventListener = 1;
+    assertEquals(worker.port.addEventListener, 1);
+  }, 'none');
+  test(function test_removeEventListener() {
+    worker.port.removeEventListener = 1;
+    assertEquals(worker.port.removeEventListener, 1);
+  }, 'none');
+  test(function test_despatchEvent() {
+    worker.port.despatchEvent = 1;
+    assertEquals(worker.port.despatchEvent, 1);
+  }, 'none');
+});
+</script>
+<!--
+*/
+//-->

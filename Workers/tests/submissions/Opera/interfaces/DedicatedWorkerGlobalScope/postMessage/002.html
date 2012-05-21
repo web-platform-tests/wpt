@@ -1,0 +1,25 @@
+<!--
+onmessage = function(e) {
+  if (e.ports == null)
+    postMessage(true);
+  else
+    postMessage(false);
+}
+/*
+-->
+<!doctype html>
+<title>e.ports in dedicated worker</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var worker = new Worker('#');
+  worker.postMessage(1);
+  test(function(e) {
+    assertTrue(e.data);
+  }, worker, 'message');
+});
+</script>
+<!--
+*/
+//-->
+

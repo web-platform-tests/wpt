@@ -1,0 +1,23 @@
+<!--
+try {
+  postMessage(undefined, [null]);
+} catch(e) {
+  postMessage(''+e);
+}
+/*
+-->
+<!doctype html>
+<title>Using [null] in postMessage's second argument</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var worker = new Worker('#');
+  test(function(e) {
+    assertDefined(e.data);
+  }, worker, 'message');
+});
+</script>
+<!--
+*/
+//-->
+

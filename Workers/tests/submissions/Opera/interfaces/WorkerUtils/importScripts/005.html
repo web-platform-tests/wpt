@@ -1,0 +1,26 @@
+<!--
+var x;
+var y;
+try {
+  importScripts('data:text/javascript,x={','data:text/javascript,}');
+} catch(e) {
+  y = true;
+}
+postMessage([x, y]);
+/*
+-->
+<!doctype html>
+<title>importScripts separate scripts</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var worker = new Worker('#');
+  test(function(e) {
+    assertUndefined(e.data[0]);
+    assertTrue(e.data[1]);
+  }, worker, 'message');
+});
+</script>
+<!--
+*/
+//-->

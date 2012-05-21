@@ -1,0 +1,32 @@
+<!--
+if (location.hash == '#1') {
+  var w2 = new SharedWorker('#2');
+  w2.port.onmessage = function(e) {
+    postMessage('1'+e.data);
+  }
+} else if (location.hash == '#2') {
+  onconnect = function(e) {
+    var port = e.ports[0];
+    var w3 = new Worker('#3');
+    w3.onmessage = function(e) {
+      port.postMessage('2'+e.data);
+    }
+  }
+} else {
+  postMessage('3');
+}
+
+/*
+-->
+<!doctype html>
+<title>dedicated worker in shared worker in dedicated worker</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var w1 = new Worker('#1');
+  test(function(e) { assertEquals(e.data, '123') }, w1, 'message');
+});
+</script>
+<!--
+*/
+//-->

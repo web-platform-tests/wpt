@@ -1,0 +1,26 @@
+<!--
+var x = self;
+try {
+  self = 1;
+  postMessage(x === self);
+} catch(e) {
+  postMessage(''+e);
+}
+/*
+-->
+<!doctype html>
+<title>self = 1</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var worker = new Worker('#');
+  test(function(e) {
+    assertTrue(e.data);
+  }, worker, 'message');
+});
+</script>
+<!--
+*/
+//-->
+
+

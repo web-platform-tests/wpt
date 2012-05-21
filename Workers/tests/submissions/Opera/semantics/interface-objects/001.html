@@ -1,0 +1,26 @@
+<!--
+var expected = 'WorkerGlobalScope EventTarget ErrorEvent Event Worker DOMException SharedWorker MessagePort MessageEvent WorkerNavigator MessageChannel WorkerLocation Database ImageData CanvasPixelArray File Blob FileList XMLHttpRequest ProgressEvent FormData'.split(' ');
+var log = [];
+for (var i = 0; i < expected.length; ++i) {
+  if (!(expected[i] in self))
+    log.push(expected[i]);
+}
+postMessage(log.join(', '));
+
+/*
+-->
+<!doctype html>
+<title>available interface objects in dedicated worker</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var worker = new Worker('#');
+  test(function(e) {
+    assertEquals(e.data, '', 'these interface objects were missing');
+  }, worker, 'message');
+});
+</script>
+<!--
+*/
+//-->
+

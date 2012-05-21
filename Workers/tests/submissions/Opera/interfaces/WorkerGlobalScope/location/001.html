@@ -1,0 +1,18 @@
+<!--
+postMessage(location === location);
+/*
+-->
+<!doctype html>
+<title>location === location</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var worker = new Worker('#');
+  test(function(e) {
+    assertTrue(e.data);
+  }, worker, 'message');
+});
+</script>
+<!--
+*/
+//-->

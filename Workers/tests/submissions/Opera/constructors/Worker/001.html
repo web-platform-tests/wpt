@@ -1,0 +1,18 @@
+<!--
+postMessage('ok');
+/*
+-->
+<!doctype html>
+<title>resolve the empty string</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var worker = new Worker('');
+  test(function(e) {
+    assertEquals(e.data, 'ok');
+  }, worker, 'message');
+});
+</script>
+<!--
+*/
+//-->

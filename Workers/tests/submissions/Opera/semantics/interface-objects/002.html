@@ -1,0 +1,26 @@
+<!--
+var unexpected = 'AbstractView AbstractWorker ApplicationCache Location Navigator DOMImplementation Audio HTMLCanvasElement CanvasRenderingContext2D CanvasGradient CanvasPattern TextMetrics MouseEvent'.split(' ');
+var log = [];
+for (var i = 0; i < unexpected.length; ++i) {
+  if (unexpected[i] in self)
+    log.push(unexpected[i]);
+}
+postMessage(log.join(', '));
+
+/*
+-->
+<!doctype html>
+<title>unavailable interface objects in dedicated worker</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var worker = new Worker('#');
+  test(function(e) {
+    assertEquals(e.data, '', 'these interface objects were not expected');
+  }, worker, 'message');
+});
+</script>
+<!--
+*/
+//-->
+

@@ -1,0 +1,29 @@
+<!--
+var log = '';
+try {
+if (self !== self)
+  log += 'self !== self failed. ';
+if (!(self instanceof WorkerGlobalScope))
+  log += 'self instanceof WorkerGlobalScope failed. ';
+if (!('self' in self))
+  log += '"self" in self failed. ';
+} catch(e) {
+  log += e.message + '. ';
+}
+postMessage(log);
+/*
+-->
+<!doctype html>
+<title>self</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var worker = new Worker('#');
+  test(function(e) {
+    assertEquals(e.data, '');
+  }, worker, 'message');
+});
+</script>
+<!--
+*/
+//-->

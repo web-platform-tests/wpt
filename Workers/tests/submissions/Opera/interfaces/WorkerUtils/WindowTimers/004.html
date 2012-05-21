@@ -1,0 +1,21 @@
+<!--
+var t = setInterval(function() {
+  postMessage(1);
+}, 10);
+clearInterval(t);
+/*
+-->
+<!doctype html>
+<title>clearInterval</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var worker = new Worker('#');
+  var i = 0;
+  worker.onmessage = function() { i++; }
+  test(function() { assertEquals(i, 0); }, 500);
+});
+</script>
+<!--
+*/
+//-->

@@ -1,0 +1,28 @@
+<!--
+var log = postMessage;
+importScripts('data:text/javascript,function run() { for(var i = 0; i < 1000; ++i) { if (i == 500) log(true); } return 1; }');
+postMessage(run());
+/*
+-->
+<!doctype html>
+<title>variables and functions crossing importScripts boundary, take 2</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var worker = new Worker('#');
+  var i = 0;
+  worker.onmessage = function(e) {
+    i++;
+    test(function() {
+      if (i == 1)
+        assertTrue(e.data);
+      else
+        assertEquals(e.data, 1);
+    }, 'none');
+  }
+  test(function() { assertEquals(i, 2) }, 500);
+});
+</script>
+<!--
+*/
+//-->

@@ -1,0 +1,25 @@
+<!--
+onconnect = function(e) {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', '003-1.php?x=å', false);
+  xhr.send();
+  var passed = xhr.responseText == 'PASS';
+  e.ports[0].postMessage(passed)
+}
+/*
+-->
+<!doctype html>
+<title>encoding, shared worker</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var worker = new SharedWorker('#');
+  test(function(e) {
+    assertTrue(e.data);
+  }, worker.port, 'message');
+  worker.port.start();
+});
+</script>
+<!--
+*/
+//-->

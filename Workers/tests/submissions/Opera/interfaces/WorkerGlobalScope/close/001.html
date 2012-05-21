@@ -1,0 +1,24 @@
+<!--
+postMessage(1);
+close();
+postMessage(2);
+/*
+-->
+<!doctype html>
+<title>close()</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var worker = new Worker('#');
+  var messages = [];
+  worker.onmessage = function(e) {
+    messages.push(e.data);
+  }
+  test(function(e) {
+    assertArrayEquals(messages, []);
+  }, 200);
+});
+</script>
+<!--
+*/
+//-->

@@ -1,0 +1,36 @@
+<!--
+if ('onmessage' in self) { // dedicated worker
+  onmessage = function(e) {
+    postMessage(e.data);
+  }
+} else { // shared worker
+  onconnect = function(e) {
+    e.ports[0].onmessage = function(e) {
+      this.postMessage(e.data);
+    }
+  }
+}
+/*
+-->
+<!doctype html>
+<title>dedicated and shared worker in same page</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var worker = new Worker('#');
+  var shared = new SharedWorker('#', '');
+  test(function(e) {
+    assertEquals(e.data, 'dedicated');
+  }, worker, 'message');
+  worker.postMessage('dedicated');
+  test(function(e) {
+    assertEquals(e.data, 'shared');
+  }, shared.port, 'message');
+  shared.port.start();
+  shared.port.postMessage('shared');
+});
+</script>
+<!--
+*/
+//-->
+

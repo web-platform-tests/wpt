@@ -1,0 +1,18 @@
+<!--
+importScripts('data:text/javascript,postMessage(true)');
+/*
+-->
+<!doctype html>
+<title>postMessage in importScripts</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var worker = new Worker('#');
+  test(function(e) {
+    assertTrue(e.data);
+  }, worker, 'message');
+});
+</script>
+<!--
+*/
+//-->

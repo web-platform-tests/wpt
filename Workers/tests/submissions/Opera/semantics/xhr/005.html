@@ -1,0 +1,19 @@
+<!doctype html>
+<title>base url, dedicated worker</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+var i = 0;
+function runtest() {
+  i++;
+  if (i != 2)
+    return;
+  test(function() {
+    var worker = new Worker('support/005-1.js');
+    test(function(e) {
+      assertTrue(e.data);
+    }, worker, 'message');
+  }, 'none');
+}
+</script>
+<iframe src=001-1.xml onload=runtest()></iframe>
+<iframe src=support/001-1.xml onload=runtest()></iframe>

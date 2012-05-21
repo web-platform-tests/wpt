@@ -1,0 +1,26 @@
+<!--
+onmessage = function(e) {
+  importScripts('http://invalid url');
+}
+close();
+/*
+-->
+<!doctype html>
+<title>close() and disentangling ports</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var wasDisentangled = true;
+  var worker = new Worker('#');
+  worker.onerror = function(e) {
+    wasDisentangled = false;
+  }
+  worker.postMessage(1);
+  test(function() { assertFalse(wasDisentangled, 'port was disentangled'); }, 500);
+});
+</script>
+<!--
+*/
+//-->
+
+

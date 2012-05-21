@@ -1,0 +1,20 @@
+<!--
+postMessage('å');
+
+
+/*
+-->
+<!doctype html>
+<title>encoding, dedicated worker</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var worker = new Worker('#');
+  test(function(e) {
+    assertEquals(e.data, '\u00e5');
+  }, worker, 'message');
+});
+</script>
+<!--
+*/
+//-->

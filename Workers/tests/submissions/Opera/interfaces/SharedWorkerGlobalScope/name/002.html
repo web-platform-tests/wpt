@@ -1,0 +1,20 @@
+<!--
+addEventListener('connect', function(e) {
+  name = 1;
+  e.ports[0].postMessage(name);
+}, false);
+/*
+-->
+<!doctype html>
+<title>setting name</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var w1 = new SharedWorker('#1', 'x');
+  test(function(e) { assertEquals(e.data, 'x'); }, w1.port, 'message');
+  w1.port.start();
+});
+</script>
+<!--
+*/
+//-->

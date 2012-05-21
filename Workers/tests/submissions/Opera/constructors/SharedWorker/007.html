@@ -1,0 +1,22 @@
+<!--
+/*
+-->
+<!doctype html>
+<title>worker.port</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var worker = new SharedWorker('#', '');
+  test(function() { assertDefined(worker.port); }, 'none');
+  test(function() { assertDefined(worker.port.postMessage); }, 'none');
+  test(function() { assertDefined(worker.port.start); }, 'none');
+  test(function() { assertDefined(worker.port.close); }, 'none');
+  test(function() { assertDefined(worker.port.onmessage); }, 'none');
+  test(function() { assertDefined(worker.port.addEventListener); }, 'none');
+  test(function() { assertDefined(worker.port.removeEventListener); }, 'none');
+  test(function() { assertDefined(worker.port.dispatchEvent); }, 'none');
+});
+</script>
+<!--
+*/
+//-->

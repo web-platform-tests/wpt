@@ -1,0 +1,26 @@
+<!--
+var x = '';
+try {
+  importScripts('data:text/javascript,x+="first script successful. "',
+                'data:text/javascript,x+="FAIL (second script). "; for(;) break;', // doesn't compile
+                'data:text/javascript,x+="FAIL (third script)"');
+} catch(e) {
+  x += 'exception code: ' + e.code;
+}
+postMessage(x);
+/*
+-->
+<!doctype html>
+<title>importScripts broken script</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var worker = new Worker('#');
+  test(function(e) {
+    assertEquals(e.data, "first script successful. exception code: 12");
+  }, worker, 'message');
+});
+</script>
+<!--
+*/
+//-->

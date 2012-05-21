@@ -1,0 +1,25 @@
+<!--
+var x = 'a';
+try {
+  importScripts('data:text/javascript,x+="b"',
+                'data:text/javascript,x+="c"');
+} catch(e) {
+  x += "d"
+}
+postMessage(x);
+/*
+-->
+<!doctype html>
+<title>importScripts running scripts</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var worker = new Worker('#');
+  test(function(e) {
+    assertEquals(e.data, "abc");
+  }, worker, 'message');
+});
+</script>
+<!--
+*/
+//-->

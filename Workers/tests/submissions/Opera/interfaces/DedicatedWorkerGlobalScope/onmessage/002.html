@@ -1,0 +1,25 @@
+<!--
+var passed = false;
+try {
+  self.onmessage = 1
+} catch(e) {
+  passed = true;
+}
+postMessage(passed);
+
+/*
+-->
+<!doctype html>
+<title>setting onmessage</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var worker = new Worker('#');
+  test(function(e) {
+    assertTrue(e.data);
+  }, worker, 'message');
+});
+</script>
+<!--
+*/
+//-->

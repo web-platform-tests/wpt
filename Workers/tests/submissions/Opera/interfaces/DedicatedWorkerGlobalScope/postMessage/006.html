@@ -1,0 +1,27 @@
+<!--
+onmessage = function(e) {
+  var imagedata = e.data;
+  imagedata.data[0] = 128;
+  postMessage(imagedata);
+}
+
+/*
+-->
+<!doctype html>
+<title>structured clone of ImageData</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var worker = new Worker('#');
+  var ctx = document.createElement('canvas').getContext('2d');
+  var imagedata = ctx.getImageData(0, 0, 300, 150);
+  worker.postMessage(imagedata);
+  test(function(e) {
+    assertEquals(''+e.data, '[object ImageData]');
+    assertEquals(e.data.data[0], 128);
+  }, worker, 'message')
+});
+</script>
+<!--
+*/
+//-->

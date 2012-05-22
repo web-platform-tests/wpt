@@ -1874,8 +1874,8 @@ test(function () {
 	assert_equals( testEl.properties.namedItem('foo\fbar').length, 0, 'formfeed' );
 }, 'namedItem must not match property names containing whitespace');
 test(function () {
-	var testEl = makeEl('div',{itemscope:'itemscope'},'<div itemprop="|§!&quot;#¤%&/()=?`\\@£${[]}´€^¨~\'*,;.:-_&lt;&gt;åøæÅØÆ"></div>');
-	assert_equals( testEl.properties.namedItem('|§!"#¤%&/()=?`\\@£${[]}´€^¨~\'*,;.:-_<>åøæÅØÆ').length, 1 );
+	var testEl = makeEl('div',{itemscope:'itemscope'},'<div itemprop="|Â§!&quot;#Â¤%&/()=?`\\@Â£${[]}Â´â‚¬^Â¨~\'*,;.:-_&lt;&gt;Ã¥Ã¸Ã¦Ã…Ã˜Ã†"></div>');
+	assert_equals( testEl.properties.namedItem('|Â§!"#Â¤%&/()=?`\\@Â£${[]}Â´â‚¬^Â¨~\'*,;.:-_<>Ã¥Ã¸Ã¦Ã…Ã˜Ã†').length, 1 );
 }, 'namedItem must match property names containing other special characters');
 test(function () {
 	var testEl = makeEl('div',{itemscope:'itemscope'});
@@ -1891,6 +1891,7 @@ test(function () {
 	assert_equals( testEl.properties.namedItem('bar').length, 0, 'length of bar' );
 }, 'PropertyNodeList must ignore properties of nested items');
 test(function () {
+
 	//note, itemref ordering is reversed compared with the next test to catch failed sorting algorithms - not that that should make much difference here
 	var parEl = makeEl('div',{},'<div itemprop="foo" id="id1"></div><div itemscope itemref="id2 id1"><div itemprop="foo bar"></div></div><div itemprop="baz" id="id2"><div itemprop="qux"></div></div>');
 	var testEl = parEl.childNodes[1];
@@ -2434,8 +2435,8 @@ test(function () {
 	assert_equals( testEl.properties.names[0], 'baz', '[0]' );
 }, 'the names collection must be live');
 test(function () {
-	var testEl = makeEl('div',{itemscope:'itemscope'},'<div itemprop="|§!&quot;#¤%&/()=?`\\@£${[]}´€^¨~\'*,;.:-_&lt;&gt;åøæÅØÆ"></div>');
-	assert_equals( testEl.properties.names[0], '|§!"#¤%&/()=?`\\@£${[]}´€^¨~\'*,;.:-_<>åøæÅØÆ' );
+	var testEl = makeEl('div',{itemscope:'itemscope'},'<div itemprop="|Â§!&quot;#Â¤%&/()=?`\\@Â£${[]}Â´â‚¬^Â¨~\'*,;.:-_&lt;&gt;Ã¥Ã¸Ã¦Ã…Ã˜Ã†"></div>');
+	assert_equals( testEl.properties.names[0], '|Â§!"#Â¤%&/()=?`\\@Â£${[]}Â´â‚¬^Â¨~\'*,;.:-_<>Ã¥Ã¸Ã¦Ã…Ã˜Ã†' );
 }, 'names must reflect property names containing special characters');
 test(function () {
 	var testEl = makeEl('div',{itemscope:'itemscope'},'<div itemprop="foo"></div><div itemscope><div itemprop="bar"></div></div>');

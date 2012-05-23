@@ -3,8 +3,11 @@
     <head>
         <title>CSS Test: Border-bottom-width using points with a minimum minus one (negative) value, -1pt</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-05-22 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#propdef-border-bottom-width" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#border-width-properties" />
+        <link rel="match" href="border-bottom-width-012-ref.xht" />
+
         <meta name="flags" content="invalid" />
         <meta name="assert" content="The 'border-bottom-width' property does not support a negative length value in points and resets to the initial value." />
         <style type="text/css">
@@ -23,7 +26,7 @@
         </style>
     </head>
     <body>
-        <p>Test passes if all the "Filler Text" below is underlined and both lines are the same thickness.</p>
+        <p>Test passes if all the "Filler Text" are underlined with 2 black lines that have the <strong>same thickness</strong>.</p>
         <div>
             <span id="span1">Filler Text Filler Text Filler Text</span> <span id="span2">Filler Text Filler Text Filler Text</span>
         </div>

@@ -12,7 +12,6 @@ rawDirs = {'other-formats':'other'}
 import sys
 from os.path import join, exists, basename
 from w3ctestlib.Suite import TestSuite
-from w3ctestlib.OutputFormats import HTMLFormat, XHTMLFormat
 from w3ctestlib.Indexer import Indexer
 from w3ctestlib.Utils import listdirs, listfiles, basepath
 

@@ -1,0 +1,22 @@
+<!--
+var passed = this === self;
+onconnect = function(e) {
+  e.ports[0].postMessage(passed);
+}
+/*
+-->
+<!doctype html>
+<title>worker global scope, shared worker</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var worker = new SharedWorker('#');
+  test(function(e) {
+    assertTrue(e.data);
+  }, worker.port, 'message');
+  worker.port.start();
+});
+</script>
+<!--
+*/
+//-->

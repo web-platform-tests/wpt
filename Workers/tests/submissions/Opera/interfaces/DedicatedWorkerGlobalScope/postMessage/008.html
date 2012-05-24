@@ -1,0 +1,27 @@
+<!--
+var rv = postMessage(1);
+postMessage(rv);
+/*
+-->
+<!doctype html>
+<title>return value of postMessage</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var worker = new Worker('#');
+  var i = 0;
+  worker.onmessage = function(e) {
+    i++;
+    test(function() {
+      if (i == 1)
+        assertEquals(e.data, 1);
+      else
+        assertUndefined(e.data);
+    }, 'none');
+  }
+  test(function() { assertEquals(i, 2); }, 500);
+});
+</script>
+<!--
+*/
+//-->

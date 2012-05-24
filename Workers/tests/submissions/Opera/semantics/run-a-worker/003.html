@@ -1,0 +1,19 @@
+<!--
+/*
+-->
+<!doctype html>
+<title>handling for 404 response</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var worker = new Worker('404');
+  var shared = new SharedWorker('404');
+  test(function(e) { }, worker, 'error');
+  // NOTE: this handler will not fire, as runtime scripting errors 
+  // are not forwarded to SharedWorker objects, but instead reported to the user directly.
+  test(function(e) { }, shared, 'error');
+});
+</script>
+<!--
+*/
+//-->

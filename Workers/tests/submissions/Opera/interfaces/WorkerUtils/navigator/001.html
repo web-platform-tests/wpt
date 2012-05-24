@@ -1,0 +1,31 @@
+<!--
+var expected = ['appName','appVersion','platform','userAgent','onLine'];
+for (x in navigator) {
+  postMessage([x, expected.indexOf(x) != -1])
+}
+/*
+-->
+<!doctype html>
+<title>navigator</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var worker = new Worker('#');
+  var i = 0;
+  worker.onmessage = function(e) {
+    test(function() {
+      assertTrue(e.data[1], e.data[0]);
+    }, 'none');
+    i++;
+  }
+  worker.onerror = function(e) {
+    test(function() { assertUnreached('got error event') }, 'none');
+  }
+  test(function(e) { assertEquals(i, 5); }, 500);
+});
+</script>
+<!--
+*/
+//-->
+
+

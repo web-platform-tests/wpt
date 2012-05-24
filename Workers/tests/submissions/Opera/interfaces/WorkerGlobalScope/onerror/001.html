@@ -1,0 +1,32 @@
+<!--
+onerror = function(a, b, c) {
+  postMessage([a, b, c]);
+  return false; // the error is "handled"
+}
+function x() {
+  y();
+}
+x();
+/*
+-->
+<!doctype html>
+<title>onerror, "handled"</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var worker = new Worker('#');
+  test(function(e) {
+    assertEquals(typeof e.data[0], 'string', 'first argument');
+    assertEquals(typeof e.data[1], 'string', 'second argument');
+    assertEquals(typeof e.data[2], 'string', 'third argument');
+    assertEquals(e.data[1], document.URL+'#');
+  }, worker, 'message');
+  worker.onerror = function(e) {
+    test(function() { assertUnreached('error event fired on the Worker despite the error having been "handled"') }, 'none');
+  }
+  test(function() {}, 200);
+});
+</script>
+<!--
+*/
+//-->

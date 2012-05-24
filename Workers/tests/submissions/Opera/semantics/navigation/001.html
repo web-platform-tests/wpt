@@ -1,0 +1,34 @@
+<!--
+
+/*
+-->
+<!doctype html>
+<title>navigating</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+var date;
+var newDate;
+</script>
+<iframe src="001-1.html"></iframe>
+<script>
+test(function() {
+  var gotTest = false;
+  setTimeout(function() {
+    window[0].document.links[0].click();
+    document.querySelector('iframe').onload = function() {
+      this.onload = null;
+      history.back();
+      newDate = new Date();
+      test(function() {
+        gotTest = true;
+        assertTrue(date > newDate);
+      }, 150);
+    }
+  }, 150);
+  test(function() { assertTrue(gotTest); }, 500);
+});
+</script>
+<!--
+*/
+//-->
+

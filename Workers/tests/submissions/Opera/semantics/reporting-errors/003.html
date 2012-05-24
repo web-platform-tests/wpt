@@ -1,0 +1,31 @@
+<!--
+onconnect = function (e) {
+  y(); // will "report the error"
+  // onerror is null so it'll be "not handled", and the error should be
+  // reported to the user, although we don't test that here
+  // make sure we don't fire an error event on the message port or the
+  // SharedWorker object
+}
+
+
+/*
+-->
+<!doctype html>
+<title>shared worker, addEventListener</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var worker = new SharedWorker('#', '');
+  var i = 0;
+  worker.addEventListener('error', function(e) {
+    i++;
+  }, false);
+  worker.port.addEventListener('error', function(e) {
+    i++;
+  }, false);
+  test(function() { assertEquals(i, 0); }, 500);
+});
+</script>
+<!--
+*/
+//-->

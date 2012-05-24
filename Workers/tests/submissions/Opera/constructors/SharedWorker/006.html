@@ -1,0 +1,16 @@
+<!--
+/*
+-->
+<!doctype html>
+<title>no arguments</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  assertThrows(function() {
+    var worker = new SharedWorker();
+  }, [], TypeError, {});
+});
+</script>
+<!--
+*/
+//-->

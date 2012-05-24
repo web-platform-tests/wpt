@@ -1,0 +1,18 @@
+<!--
+postMessage(navigator.platform);
+/*
+-->
+<!doctype html>
+<title>navigator.platform</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var worker = new Worker('#');
+  test(function(e) {
+    assertEquals(e.data, navigator.platform);
+  }, worker, 'message');
+});
+</script>
+<!--
+*/
+//-->

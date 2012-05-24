@@ -1,0 +1,21 @@
+<!--
+var x = postMessage;
+postMessage = 1;
+x(postMessage == 1);
+
+/*
+-->
+<!doctype html>
+<title>setting postMessage</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var worker = new Worker('#');
+  test(function(e) {
+    assertTrue(e.data);
+  }, worker, 'message')
+});
+</script>
+<!--
+*/
+//-->

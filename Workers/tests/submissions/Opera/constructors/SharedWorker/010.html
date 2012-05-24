@@ -1,0 +1,32 @@
+<!--
+/*
+-->
+<!doctype html>
+<title>setting worker.port.onmessage</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var worker = new SharedWorker('#', '');
+  test(function test_1() {
+    assertThrows(function(){ worker.port.onmessage = 1 }, [], TypeError, {});
+  }, 'none');
+  worker.port.onmessage = null;
+  test(function test_string() {
+    assertThrows(function(){ worker.port.onmessage = "foo"; }, [], TypeError, {});
+  }, 'none');
+  worker.port.onmessage = null;
+  test(function test_undefined() {
+    worker.port.onmessage = undefined;
+    assertEquals(worker.port.onmessage, null);
+  }, 'none');
+  worker.port.onmessage = null;
+  test(function test_function() {
+    var x = function() {};
+    worker.port.onmessage = x;
+    assertEquals(worker.port.onmessage, x);
+  }, 'none');
+});
+</script>
+<!--
+*/
+//-->

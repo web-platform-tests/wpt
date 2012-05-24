@@ -1,0 +1,20 @@
+<!--
+var log = postMessage;
+importScripts('data:text/javascript,function run() { log(true) }');
+run();
+/*
+-->
+<!doctype html>
+<title>variables and functions crossing importScripts boundary</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var worker = new Worker('#');
+  test(function(e) {
+    assertTrue(e.data);
+  }, worker, 'message');
+});
+</script>
+<!--
+*/
+//-->

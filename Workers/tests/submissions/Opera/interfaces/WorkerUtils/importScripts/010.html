@@ -1,0 +1,33 @@
+<!--
+// prevent recursion
+if ('beenThere' in self) {
+  throw 'undefined stringified to the empty string';
+}
+beenThere = true;
+try {
+  importScripts(undefined);
+  postMessage(got);
+} catch(e) {
+  postMessage(''+e);
+}
+/*
+-->
+<!doctype html>
+<title>importScripts(undefined)</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var worker = new Worker('#');
+  var i = 0;
+  worker.onmessage = function(e) {
+    i++;
+    test(function() {
+      assertEquals(e.data, 'undefined');
+    }, 'none');
+  }
+  test(function() { assertEquals(i, 1) }, 500);
+});
+</script>
+<!--
+*/
+//-->

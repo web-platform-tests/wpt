@@ -1,0 +1,22 @@
+<!--
+try {
+  postMessage(1, null);
+} catch(e) {
+  postMessage(''+e);
+}
+/*
+-->
+<!doctype html>
+<title>Using null in postMessage's second argument</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var worker = new Worker('#');
+  test(function(e) {
+    assertEquals(e.data, 1);
+  }, worker, 'message');
+});
+</script>
+<!--
+*/
+//-->

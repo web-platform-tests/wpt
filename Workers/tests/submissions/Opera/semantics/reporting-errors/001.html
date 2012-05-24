@@ -1,0 +1,41 @@
+<!--
+var port;
+onerror = function(a,b,c) {
+  // will return undefined, thus the error is "not handled"
+  // so error should be reported to the user, but this test doesn't check
+  // that.
+  // just make sure that this method is invoked with three arguments
+  var log = '';
+  if (arguments.length != 3)
+    log += 'got ' + arguments.length + ' arguments, expected 3. ';
+  if (typeof a != 'string')
+    log += 'first argument wasn\'t a string. ';
+  if (b != location.href)
+    log += 'second argument was ' + b + ', expected ' + location.href + '. ';
+  if (typeof c != 'string')
+    log += 'third argument wasn\'t a string. ';
+  port.postMessage(log);
+}
+onconnect = function (e) {
+  port = e.ports[0];
+  y(); // will "report the error"
+}
+
+
+/*
+-->
+<!doctype html>
+<title>shared worker, not handled</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var worker = new SharedWorker('#', '');
+  test(function(e) {
+    assertEquals(e.data, '');
+  }, worker.port, 'message');
+  worker.port.start();
+});
+</script>
+<!--
+*/
+//-->

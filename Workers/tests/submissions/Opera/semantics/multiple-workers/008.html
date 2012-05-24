@@ -1,0 +1,29 @@
+<!--
+var channel = new MessageChannel();
+var i = 0;
+onconnect = function(e) {
+  i++;
+  e.ports[0].postMessage(1, [channel['port' + i]]);
+}
+
+/*
+-->
+<!doctype html>
+<title>messagechannel in shared worker</title>
+<script src="/resources/jsframework.js"></script>
+<iframe src=008-1.html></iframe>
+<script>
+test(function() {
+  var w1 = new SharedWorker('#');
+  test(function(e) {
+    test(function(e) {
+      assertEquals(e.data, 2);
+    }, e.ports[0], 'message', 1000);
+    e.ports[0].start();
+  }, w1.port, 'message');
+  w1.port.start();
+}, window, 'load', 1000);
+</script>
+<!--
+*/
+//-->

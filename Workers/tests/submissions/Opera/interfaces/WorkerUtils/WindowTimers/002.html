@@ -1,0 +1,19 @@
+<!--
+var t = setTimeout(function() { postMessage(1) }, 10);
+clearTimeout(t);
+/*
+-->
+<!doctype html>
+<title>clearTimeout</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var worker = new Worker('#');
+  var gotMessage = false;
+  worker.onmessage = function() { gotMessage = true }
+  test(function() { assertFalse(gotMessage) }, 500);
+});
+</script>
+<!--
+*/
+//-->

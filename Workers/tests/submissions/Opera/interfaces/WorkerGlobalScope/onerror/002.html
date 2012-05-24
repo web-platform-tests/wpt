@@ -1,0 +1,24 @@
+<!--
+onerror = function(a, b, c) {
+  return true; // the error is "not handled"
+}
+function x() {
+  y();
+}
+x();
+/*
+-->
+<!doctype html>
+<title>onerror, "not handled"</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var worker = new Worker('#');
+  test(function(e) {
+    assertEquals('' + e, '[object ErrorEvent]');
+  }, worker, 'error');  
+});
+</script>
+<!--
+*/
+//-->

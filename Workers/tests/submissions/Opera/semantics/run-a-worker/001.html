@@ -1,0 +1,19 @@
+<!--
+postMessage(this === self);
+
+/*
+-->
+<!doctype html>
+<title>worker global scope, dedicated worker</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var worker = new Worker('#');
+  test(function(e) {
+    assertTrue(e.data);
+  }, worker, 'message');
+});
+</script>
+<!--
+*/
+//-->

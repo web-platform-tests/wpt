@@ -1,0 +1,23 @@
+<!--
+onconnect = function(e) {
+  e.ports[0].postMessage([e.data === '', e instanceof MessageEvent, e.ports.length == 1]);
+};
+/*
+-->
+<!doctype html>
+<title>connect event compliance (CORE-37007)</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var worker = new SharedWorker('#');
+  test(function(e) {
+    assertTrue(e.data[0]);
+    assertTrue(e.data[1]);
+    assertTrue(e.data[2]);
+  }, worker.port, 'message');
+  worker.port.start();
+});
+</script>
+<!--
+*/
+//-->

@@ -1,0 +1,17 @@
+<!--
+setInterval(function() { postMessage(new Date()) }, 10)
+/*
+-->
+<!doctype html>
+<title></title>
+<script>
+var worker = new Worker('#');
+worker.onmessage = function(e) {
+  top.date = e.data;
+}
+</script>
+<a href='data:text/html,foo'>link</a>
+<!--
+*/
+//-->
+

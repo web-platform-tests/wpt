@@ -1,0 +1,14 @@
+<!doctype html>
+<title>same-origin checks; the script is in a script element</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function unsupported_scheme() { assertThrows(function() { new Worker('unsupported:'); }, [], DOMException, {code:18}); });
+test(function data_url() { new Worker('data:,'); }); // willfully violates spec
+test(function javascript_url() { assertThrows(function() { new Worker('javascript:""'); }, [], DOMException, {code:18}); });
+test(function about_blank() { assertThrows(function() { new Worker('about:blank'); }, [], DOMException, {code:18}); });
+test(function example_invalid() { assertThrows(function() { new Worker('http://www.example.invalid/'); }, [], DOMException, {code:18}); });
+test(function port_81() { assertThrows(function() { new Worker(location.protocol+'//'+location.hostname+':81/'); }, [], DOMException, {code:18}); });
+test(function https_port_80() { assertThrows(function() { new Worker('https://'+location.hostname+':80/'); }, [], DOMException, {code:18}); });
+test(function https_port_8000() { assertThrows(function() { new Worker('https://'+location.hostname+':8000/'); }, [], DOMException, {code:18}); });
+test(function http_post_8012() { assertThrows(function() { new Worker('http://'+location.hostname+':8012/'); }, [], DOMException, {code:18}); });
+</script>

@@ -1,0 +1,28 @@
+<!--
+postMessage([null, location.href, location.protocol, location.host,
+             location.hostname, location.port, location.pathname,
+             location.search, location.hash]);
+/*
+-->
+<!doctype html>
+<title>members of WorkerLocation</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var worker = new Worker('#');
+  test(function(e) {
+    assertNull(e.data[0]);
+    assertEquals(e.data[1], location.href + '#', 'href');
+    assertEquals(e.data[2], location.protocol, 'protocol');
+    assertEquals(e.data[3], location.host, 'host');
+    assertEquals(e.data[4], location.hostname, 'hostname');
+    assertEquals(e.data[5], location.port, 'port');
+    assertEquals(e.data[6], location.pathname, 'pathname');
+    assertEquals(e.data[7], location.search, 'search');
+    assertEquals(e.data[8], '', 'hash');
+  }, worker, 'message');
+});
+</script>
+<!--
+*/
+//-->

@@ -1,0 +1,28 @@
+<!--
+postMessage(1)
+/*
+-->
+<!doctype html>
+<title>creating 3 sibling dedicated workers</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var w1 = new Worker('#');
+  var w2 = new Worker('#');
+  var w3 = new Worker('#');
+  var gotW1 = false;
+  var gotW2 = false;
+  var gotW3 = false;
+  w1.onmessage = function(e) { gotW1 = true }
+  w2.onmessage = function(e) { gotW2 = true }
+  w3.onmessage = function(e) { gotW3 = true }
+  test(function() {
+    assertTrue(gotW1);
+    assertTrue(gotW2);
+    assertTrue(gotW3);
+  }, 500);
+});
+</script>
+<!--
+*/
+//-->

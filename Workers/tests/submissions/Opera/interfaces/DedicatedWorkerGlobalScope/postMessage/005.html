@@ -1,0 +1,50 @@
+<!--
+var err = new Error('foo');
+var date = new Date();
+// commented out bits are either tested elsewhere or not supported yet. or uncloneable.
+var tests = [undefined, null, false, true, 1, NaN, Infinity, 'foo', date, /foo/, /* ImageData, File, FileData, FileList,*/ null/*self*/,
+              [undefined, null, false, true, 1, NaN, Infinity, 'foo', /*date, /foo/,*/ null/*self*/, /*[], {},*/ null/*err*/],
+              {a:undefined, b:null, c:false, d:true, e:1, f:NaN, g:Infinity, h:'foo', /*i:date, j:/foo/,*/ k:null/*self*/, /*l:[], m:{},*/ n:null/*err*/},
+            null/*err*/];
+for (var i = 0; i < tests.length; ++i) {
+  try {
+    postMessage(tests[i]);
+  } catch(e) {
+    postMessage(''+e);
+  }
+}
+/*
+-->
+<!doctype html>
+<title>structured clone of message</title>
+<script src="/resources/jsframework.js"></script>
+<script>
+test(function() {
+  var worker = new Worker('#');
+  var i = 0;
+  worker.onmessage = function(e) {
+    switch (i) {
+      case 0: test(function test_undefined() { assertUndefined(e.data); }, 'none'); break;
+      case 1: test(function test_null() { assertEquals(e.data, null); }, 'none'); break;
+      case 2: test(function test_false() { assertFalse(e.data); }, 'none'); break;
+      case 3: test(function test_true() { assertTrue(e.data); }, 'none'); break;
+      case 4: test(function test_1() { assertEquals(e.data, 1); }, 'none'); break;
+      case 5: test(function test_NaN() { assertNaN(e.data); }, 'none'); break;
+      case 6: test(function test_Infinity() { assertEquals(e.data, Infinity); }, 'none'); break;
+      case 7: test(function test_string() { assertEquals(e.data, 'foo'); }, 'none'); break;
+      case 8: test(function test_date() { assertEquals(e.data instanceof Date, true); }, 'none'); break;
+      case 9: test(function test_regex() { assertEquals('' + e.data, '/foo/'); assertEquals(e.data instanceof RegExp, true, 'e.data instanceof RegExp'); }, 'none'); break;
+      case 10: test(function test_self() { assertEquals(e.data, null) ;}, 'none'); break;
+      case 11: test(function test_array() { assertArrayEquals(e.data, [undefined, null, false, true, 1, NaN, Infinity, 'foo', null, null], 'array'); }, 'none'); break;
+      case 12: test(function test_object() { assertObjectEquals(e.data, {a:undefined, b:null, c:false, d:true, e:1, f:NaN, g:Infinity, h:'foo', k:null, n:null}, 'object'); }, 'none'); break;
+      case 13: test(function test_error() { assertEquals(e.data, null, 'new Error()'); }, 'none'); break;
+      default: test(function test_unreached() { assertUnreached('got an unexpected message event ('+i+')'); }); 
+    };
+    i++;
+  }
+  test(function() { assertEquals(i, 14); }, 200);
+});
+</script>
+<!--
+*/
+//-->

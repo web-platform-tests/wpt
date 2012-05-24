@@ -1,16 +1,14 @@
-﻿
-_real_assert_throws = assert_throws;
+﻿_real_assert_throws = assert_throws;
 function assert_throws(d, func, desc) {
     try {
         func();
     } catch(e) {
         return true;
-/*        name = RegExp(d.name.replace("Error", ""), "i");
+        name = RegExp(d.name.replace("Error", ""), "i");
         if(name.test(e.name))
             return true;
         else
             assert_unreached("Expected: " + d.name + ", got: " + e.name);
-            */
     }
 //    _real_assert_throws(d, function() {}, desc);
     assert_unreached("Didn't throw!");

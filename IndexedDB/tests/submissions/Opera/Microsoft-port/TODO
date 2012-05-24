@@ -22,3 +22,7 @@ idbobjectstore_count.htm
 idbobjectstore_count2.htm
 idbobjectstore_delete5.htm
 idbobjectstore_get5.htm
+
+
+
+# TEST Putting state on the request, where it reuses the request

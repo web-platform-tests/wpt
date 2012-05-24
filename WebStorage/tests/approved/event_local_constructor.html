@@ -1,51 +1,18 @@
 <!DOCTYPE HTML>
-<html>
- <head>
-  <title>Web Storage</title>
-  <script src="/resources/testharness.js"></script>
-  <script src="/resources/testharnessreport.js"></script>
- </head>
- <body>
-	<p>
-		<h3>event_local_Constructor</h3>
-	</p>
-	
-	<hr>
+<title>Web Storage - event local constructor</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
 
-	<div id="log"></div>
+<div id="log"></div>
 
-	<script>
+<script>
 
-		var t = async_test("storageeventinit test");
+	async_test("storageeventinit test").step(function() {
+        window.addEventListener('storage', this.step_func(
+            function() { this.done(); }), false);
 
-		function onStorageEvent(event) {
-			t.step(function() {
-			   assert_true(true);
-			  });
-			t.done();
-		}
+		var event = new StorageEvent('storage');
+		window.dispatchEvent(event);
+    });
 
-		if (window.addEventListener) {
-            window.addEventListener('storage', onStorageEvent, false);
-        }
-
-        else {
-			test(function() {
-				assert_unreached("DOM event subscribtion is not supported.");
-			}, "existence of event listener")
-        }
-
-		if (('localStorage' in window) && window.localStorage !== null){
-
-			var event = new StorageEvent('storage');
-
-			window.dispatchEvent(event);
-		} else {
-			test(function() {
-				assert_unreached("localStorage is not supported.");
-			}, "localStorage interface test")
-		}	
-	</script>
-
- </body>
-</html>
+</script>

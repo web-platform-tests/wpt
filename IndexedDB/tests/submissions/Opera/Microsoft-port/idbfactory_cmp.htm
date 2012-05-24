@@ -2,10 +2,10 @@
 <html>
 <head>  
     <title>IDBFactory.cmp() - compared keys return correct value</title>
-    <script type="text/javascript" src="support.js"></script>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
-    <script type="text/javascript"> 
+    <script src="support.js"></script>
+    <script> 
         function RunTest() {
             var greater = window.indexedDB.cmp(2, 1);
             var equal = window.indexedDB.cmp(2, 2);

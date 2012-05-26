@@ -1,4 +1,5 @@
 event_constructor_js.html
+missing_arguments.html
 storage_local_clear_js.html
 storage_local_getitem_js.html
 storage_local_index_js.html

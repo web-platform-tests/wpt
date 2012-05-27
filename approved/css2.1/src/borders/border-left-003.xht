@@ -3,8 +3,11 @@
     <head>
         <title>CSS Test: Border-left set to border-color</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-05-26 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#propdef-border-left" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#border-shorthand-properties" />
+        <link rel="match" href="border-left-003-ref.xht" />
+
         <meta name="flags" content="" />
         <meta name="assert" content="The 'border-left' shorthand property properly sets the border-color for the left border." />
         <style type="text/css">
@@ -18,7 +21,7 @@
         </style>
     </head>
     <body>
-        <p>Test passes if there is a blue line below.</p>
+        <p>Test passes if there is a short vertical blue line.</p>
         <div></div>
     </body>
 </html>

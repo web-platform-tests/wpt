@@ -9,10 +9,10 @@
 	<body>
 		<noscript><p>Enable JavaScript and reload</p></noscript>
 		<div id="log">Running test...</div>
-		<div itemscope itemtype="http://example.com/foo" id="one"></div>
+		<div itemscope itemtype="http://example.com/bar data:text/plain, http://example.com/foo" id="one"></div>
 		<div itemscope itemtype="http://example.com/bar" id="two"></div>
-		<div itemscope itemtype="http://example.com/foo" id="three">
-			<div itemscope itemtype="data:text/plain," id="four"></div>
+		<div itemscope itemtype="http://example.com/foo http://example.com/bar" id="three">
+			<div itemscope itemtype="http://example.com/bar data:text/plain," id="four"></div>
 		</div>
 		<div itemscope id="five"></div>
 		<script type="text/javascript">
@@ -74,8 +74,8 @@ test(function () {
 	assert_equals( document.getItems('http://example.com/').length, 0, 'http://example.com/' );
 	assert_equals( document.getItems('example').length, 0, 'example' );
 	assert_equals( document.getItems('http://example.com/foo').length, 2, 'http://example.com/foo' );
-	assert_equals( document.getItems('http://example.com/bar').length, 1, 'http://example.com/bar' );
-	assert_equals( document.getItems('data:text/plain,').length, 1, 'data:text/plain,' );
+	assert_equals( document.getItems('http://example.com/bar').length, 4, 'http://example.com/bar' );
+	assert_equals( document.getItems('data:text/plain,').length, 2, 'data:text/plain,' );
 }, 'document.getItems must locate the right number of items for each itemtype');
 test(function () {
 	assert_equals( document.getItems('http://example.com/Foo').length, 0, 'http://example.com/Foo' );
@@ -94,26 +94,26 @@ test(function () {
 	var nlist = document.getItems('http://example.com/foo');
 	document.getElementById('one').removeAttribute('itemtype');
 	var templength = nlist.length;
-	document.getElementById('one').setAttribute('itemtype','http://example.com/foo');
+	document.getElementById('one').setAttribute('itemtype','http://example.com/bar data:text/plain, http://example.com/foo');
 	assert_equals( templength, 1 );
 	assert_equals( nlist.length, 2 );
 }, 'live NodeList must notice when itemtype changes');
 test(function () {
 	document.getElementById('one').removeAttribute('itemtype');
 	var templength = document.getItems('http://example.com/foo').length;
-	document.getElementById('one').setAttribute('itemtype','http://example.com/foo');
+	document.getElementById('one').setAttribute('itemtype','http://example.com/bar data:text/plain, http://example.com/foo');
 	assert_equals( templength, 1 );
 	assert_equals( document.getItems('http://example.com/foo').length, 2 );
 }, 'next request must notice when itemtype changes');
 test(function () {
-	assert_equals( document.getItems('http://example.com/foo data:text/plain,').length, 3, 'basic spaces' );
-	assert_equals( document.getItems('  http://example.com/foo  data:text/plain,  ').length, 3, 'extraneous spaces' );
+        assert_equals( document.getItems('http://example.com/foo data:text/plain,').length, 1, 'basic spaces' );
+	assert_equals( document.getItems('  http://example.com/foo  data:text/plain,  ').length, 1, 'extraneous spaces' );
 }, 'document.getItems must locate items when parameters are separated by spaces');
 test(function () {
-	assert_equals( document.getItems('http://example.com/foo data:text/plain, http://example.com/foo').length, 3 );
+	assert_equals( document.getItems('http://example.com/foo data:text/plain, http://example.com/foo').length, 1 );
 }, 'document.getItems must ignore duplicated tokens');
 test(function () {
-	var testitems = document.getItems('http://example.com/bar data:text/plain, http://example.com/foo');
+	var testitems = document.getItems('http://example.com/bar');
 	assert_equals( testitems[0].id, 'one' );
 	assert_equals( testitems[1].id, 'two' );
 	assert_equals( testitems[2].id, 'three' );
@@ -212,58 +212,295 @@ test(function () {
 	assert_equals(numFalse,5,'after setting the property to false');
 }, 'writing to the itemScope property must affect membership of live NodeLists');
 
-/* itemType property tests */
+/* itemType property tests (properties collection tests are done later) */
 test(function () {
-	assert_equals(makeEl('div',{}).itemType,'','no attribute');
-	assert_equals(makeEl('div',{itemtype:'http://example.com/foo#bar'}).itemType,'http://example.com/foo#bar','with URL');
-	var testEl = makeEl('div',{itemtype:'http://example.com/foo#bar'});
+	assert_equals(makeEl('div',{}).itemType.toString(),'','no attribute');
+	assert_equals(makeEl('div',{itemtype:' foo  bar '}).itemType.toString(),' foo  bar ','with simple tokens');
+	var testEl = makeEl('div',{itemtype:'foo'});
 	testEl.removeAttribute('itemtype');
-	assert_equals(testEl.itemType,'','removed attribute');
-	assert_equals(makeEl('div',{itemtype:'http://example.com/FOO'}).itemType,'http://example.com/FOO','case sensitive');
-}, 'the itemtype attribute must be reflected by the .itemType property');
+	assert_equals(testEl.itemType.toString(),'','removed attribute');
+}, 'the itemType attribute must be reflected by the .itemRef property');
 test(function () {
-	assert_equals( typeof makeEl('div',{itemtype:'http://example.com/foo#bar'}).itemType, 'string' );
-}, 'the itemType property must be a string');
+	assert_equals( typeof makeEl('div',{}).itemType, 'object' );
+}, 'the itemType property must be an object');
 test(function () {
-	assert_equals( makeEl('div',{itemtype:'foo'}).itemType, 'foo' );
-	assert_equals(makeEl('div',{itemtype:' foo '}).itemType,' foo ','whitespace');
-	assert_equals(makeEl('div',{itemtype:' foo\u0129 bar '}).itemType,' foo\u0129 bar ','foo\u0129 bar');
-}, 'the itemType property must not be a resolved URL');
+	assert_true( makeEl('div',{}).itemType instanceof DOMTokenList, 'instanceof test' );
+	DOMTokenList.prototype.customProperty = true;
+	assert_true( makeEl('div',{}).itemType.customProperty, 'inheritance test' );
+}, 'the itemType property must implement DOMTokenList');
 test(function () {
 	var testEl = makeEl('div',{});
-	testEl.itemType = 'http://example.com/foo#bar';
-	assert_equals(testEl.itemType,'http://example.com/foo#bar','writing a URL');
-	assert_equals(testEl.getAttribute('itemtype'),'http://example.com/foo#bar','writing a URL (reading HTML attribute)');
-	testEl.itemType = '';
-	assert_equals(testEl.itemType,'','writing an empty string');
-	assert_equals(testEl.getAttribute('itemtype'),'','writing an empty string (reading HTML attribute)');
-}, 'the itemType property must be read/write');
+	assert_equals( testEl.itemType, testEl.itemType );
+}, 'the itemType property must always reference the same object');
 test(function () {
-	var testEl = makeEl('div',{itemscope:'itemscope'});
-	document.body.appendChild(testEl);
-	var numAppend = document.getItems('http://example.com/foo#bar').length;
-	testEl.itemType = 'http://example.com/foo#bar';
-	var numTrue = document.getItems('http://example.com/foo#bar').length;
-	testEl.itemType = '';
-	var numFalse = document.getItems('http://example.com/foo#bar').length;
-	document.body.removeChild(testEl);
-	assert_equals(numAppend,0,'after appending the new item');
-	assert_equals(numTrue,1,'after setting the property to a URL');
-	assert_equals(numFalse,0,'after setting the property to an empty string');
-}, 'writing to the itemType property must affect whether the element is returned by getItems');
+	assert_equals( makeEl('div',{itemtype:'test test'}).itemType.length, 2, 'duplicates in initial string should be preserved' );
+	assert_equals( makeEl('div',{itemtype:'test test'}).itemType.item(0), 'test' );
+	assert_true( makeEl('div',{itemtype:'test test'}).itemType.contains('test') );
+}, 'itemType must be correct for an element that has itemtype tokens');
 test(function () {
-	var testEl = makeEl('div',{itemscope:'itemscope'}), nlist = document.getItems('http://example.com/foo#bar');
-	document.body.appendChild(testEl);
-	var numAppend = nlist.length;
-	testEl.itemType = 'http://example.com/foo#bar';
-	var numTrue = nlist.length;
-	testEl.itemType = '';
-	var numFalse = nlist.length;
-	document.body.removeChild(testEl);
-	assert_equals(numAppend,0,'after appending the new item');
-	assert_equals(numTrue,1,'after setting the property to a URL');
-	assert_equals(numFalse,0,'after setting the property to an empty string');
-}, 'writing to the itemType property must affect membership of live NodeLists');
+	assert_equals( makeEl('div',{itemtype:' '}).itemType.length, 0 );
+}, 'itemType.length must be 0 for an element that has no tokens');
+test(function () {
+	assert_false( makeEl('div',{itemtype:' '}).itemType.contains('foo') );
+}, 'itemType must not contain an undefined class');
+test(function () {
+	assert_equals( makeEl('div',{itemtype:' '}).itemType.item(0), null );
+}, 'itemType.item() must return null for out-of-range index');
+test(function () {
+	assert_equals( makeEl('div',{itemtype:' '}).itemType.item(-1), null );
+}, 'itemType.item() must return null for negative index');
+test(function () {
+	/* the normative part of the spec states that:
+	"unless the length is zero, in which case there are no supported property indices"
+	...
+	"The term[...] supported property indices [is] used as defined in the WebIDL specification."
+	WebIDL creates actual OwnProperties and then [] just acts as a normal property lookup */
+	assert_equals( makeEl('div',{itemtype:' '}).itemType[0], window.undefined );
+}, 'itemType[index] must be undefined for out-of-range index');
+test(function () {
+	assert_equals( makeEl('div',{itemtype:' '}).itemType[-1], window.undefined );
+}, 'itemType[index] must be undefined for negative index');
+test(function () {
+	assert_equals( makeEl('div',{itemType:' '}).itemType.toString(), ' ' );
+}, 'empty itemType should stringify to contain the attribute\'s whitespace');
+test(function () {
+	assert_throws( 'SYNTAX_ERR', function () { makeEl('div',{itemtype:' '}).itemType.contains(''); } );
+}, '.contains(empty_string) must throw a SYNTAX_ERR');
+test(function () {
+	assert_throws( 'SYNTAX_ERR', function () { makeEl('div',{itemtype:' '}).itemType.add(''); } );
+}, '.add(empty_string) must throw a SYNTAX_ERR');
+test(function () {
+	assert_throws( 'SYNTAX_ERR', function () { makeEl('div',{itemtype:' '}).itemType.remove(''); } );
+}, '.remove(empty_string) must throw a SYNTAX_ERR');
+test(function () {
+	assert_throws( 'SYNTAX_ERR', function () { makeEl('div',{itemtype:' '}).itemType.toggle(''); } );
+}, '.toggle(empty_string) must throw a SYNTAX_ERR');
+test(function () {
+	assert_throws( 'INVALID_CHARACTER_ERR', function () { makeEl('div',{itemtype:' '}).itemType.contains('a b'); } );
+}, '.contains(string_with_spaces) must throw an INVALID_CHARACTER_ERR');
+test(function () {
+	assert_throws( 'INVALID_CHARACTER_ERR', function () { makeEl('div',{itemtype:' '}).itemType.add('a b'); } );
+}, '.add(string_with_spaces) must throw an INVALID_CHARACTER_ERR');
+test(function () {
+	assert_throws( 'INVALID_CHARACTER_ERR', function () { makeEl('div',{itemtype:' '}).itemType.remove('a b'); } );
+}, '.remove(string_with_spaces) must throw an INVALID_CHARACTER_ERR');
+test(function () {
+	assert_throws( 'INVALID_CHARACTER_ERR', function () { makeEl('div',{itemtype:' '}).itemType.toggle('a b'); } );
+}, '.toggle(string_with_spaces) must throw an INVALID_CHARACTER_ERR');
+test(function () {
+	var testEl = makeEl('div',{itemtype:'foo'});
+	assert_true( testEl.itemType.contains('foo'), 'before change' );
+	testEl.setAttribute('itemtype','bar');
+	assert_true( testEl.itemType.contains('bar'), 'after change' );
+	assert_false( testEl.itemType.contains('foo'), 'after change' );
+}, 'itemType.contains must update when the underlying attribute is changed');
+test(function () {
+	assert_false( makeEl('div',{itemtype:'foo'}).itemType.contains('FOO') );
+}, 'itemType.contains must be case sensitive');
+test(function () {
+	assert_false( makeEl('div',{itemtype:'foo'}).itemType.contains('foo.') );
+	assert_false( makeEl('div',{itemtype:'foo'}).itemType.contains('foo)') );
+	assert_false( makeEl('div',{itemtype:'foo'}).itemType.contains('foo\'') );
+	assert_false( makeEl('div',{itemtype:'foo'}).itemType.contains('foo$') );
+	assert_false( makeEl('div',{itemtype:'foo'}).itemType.contains('foo~') );
+	assert_false( makeEl('div',{itemtype:'foo'}).itemType.contains('foo?') );
+	assert_false( makeEl('div',{itemtype:'foo'}).itemType.contains('foo\\') );
+}, 'itemType.contains must not match when punctuation characters are added');
+test(function () {
+	var elem = makeEl('div',{itemtype:'foo'});
+	elem.itemType.add('FOO');
+	assert_true( elem.itemType.contains('foo') );
+}, 'itemType.add must not remove existing tokens');
+test(function () {
+	assert_true( makeEl('div',{itemtype:'foo FOO'}).itemType.contains('FOO') );
+}, 'itemType.contains case sensitivity must match a case-specific string');
+test(function () {
+	assert_equals( makeEl('div',{itemtype:'foo FOO'}).itemType.length, 2 );
+}, 'itemType.length must correctly reflect the number of tokens');
+test(function () {
+	assert_equals( makeEl('div',{itemtype:'foo FOO'}).itemType.item(0), 'foo' );
+}, 'itemType.item(0) must return the first token');
+test(function () {
+	var elem = makeEl('div',{itemtype:'foo'});
+	elem.itemType.add('FOO');
+	assert_equals( elem.itemType.item(1), 'FOO' );
+}, 'itemType.item must return case-sensitive strings and preserve token order');
+test(function () {
+	assert_equals( makeEl('div',{itemtype:'foo FOO'}).itemType[0], 'foo' );
+}, 'itemType[0] must return the first token');
+test(function () {
+	assert_equals( makeEl('div',{itemtype:'foo FOO'}).itemType[1], 'FOO' );
+}, 'itemType[index] must return case-sensitive strings and preserve token order');
+test(function () {
+	/* the normative part of the spec states that:
+	"unless the length is zero, in which case there are no supported property indices"
+	...
+	"The term[...] supported property indices [is] used as defined in the WebIDL specification."
+	WebIDL creates actual OwnProperties and then [] just acts as a normal property lookup */
+	assert_equals( makeEl('div',{itemtype:'foo FOO'}).itemType[2], window.undefined );
+}, 'itemType[index] must still be undefined for out-of-range index when earlier indexes exist');
+test(function () {
+	var elem = makeEl('div',{});
+	elem.itemType.add('foo');
+	elem.itemType.add('FOO');
+	assert_equals( elem.getAttribute('itemtype'), 'foo FOO' );
+}, 'itemtype attribute must update correctly when items have been added through itemType');
+test(function () {
+	var elem = makeEl('div',{});
+	elem.itemType.add('foo');
+	elem.itemType.add('FOO');
+	assert_equals( elem.itemType + '', 'foo FOO' );
+}, 'itemType must stringify correctly when items have been added');
+test(function () {
+	var elem = makeEl('div',{itemtype:'foo FOO'});
+	elem.itemType.add('foo');
+	assert_equals( elem.itemType.length, 2 );
+	assert_equals( elem.itemType + '', 'foo FOO' );
+}, 'itemType.add must not make any changes if an existing token is added');
+test(function () {
+	var elem = makeEl('div',{itemtype:'foo FOO'});
+	elem.itemType.remove('bar');
+	assert_equals( elem.itemType.length, 2 );
+	assert_equals( elem.itemType + '', 'foo FOO' );
+}, 'itemType.remove must not make any changes if a non-existing token is removed');
+test(function () {
+	var elem = makeEl('div',{itemtype:'foo FOO'});
+	elem.itemType.remove('foo');
+	assert_equals( elem.itemType.length, 1 );
+	assert_equals( elem.itemType.toString(), 'FOO' );
+	assert_false( elem.itemType.contains('foo') );
+	assert_true( elem.itemType.contains('FOO') );
+}, 'itemType.remove must remove existing tokens');
+test(function () {
+        var elem = makeEl('div',{itemtype:'test test'});
+        elem.itemType.remove('test');
+        assert_equals( elem.itemType.length, 0 );
+        assert_false( elem.itemType.contains('test') );
+}, 'itemType.remove must remove duplicated tokens');
+test(function () {
+        var elem = makeEl('div',{itemtype:'token1 token2 token3'});
+        elem.itemType.remove('token2');
+        assert_equals( elem.itemType.toString(), 'token1 token3' );
+}, 'itemType.remove must collapse whitespace around removed tokens');
+test(function () {
+        var elem = makeEl('div',{itemtype:' token1 token2  '});
+        elem.itemType.remove('token2');
+        assert_equals( elem.itemType.toString(), ' token1' );
+}, 'itemType.remove must only remove whitespace around removed tokens');
+test(function () {
+        var elem = makeEl('div',{itemtype:'  token1  token2  token1  '});
+        elem.itemType.remove('token2');
+        assert_equals( elem.itemType.toString(), '  token1 token1  ' );
+}, 'itemType.remove must collapse multiple whitespace around removed tokens');
+test(function () {
+        var elem = makeEl('div',{itemtype:'  token1  token2  token1  '});
+        elem.itemType.remove('token1');
+        assert_equals( elem.itemType.toString(), 'token2' );
+}, 'itemType.remove must collapse whitespace when removing multiple tokens');
+test(function () {
+        var elem = makeEl('div',{itemtype:'  token1  token1  '});
+        elem.itemType.add('token1');
+        assert_equals( elem.itemType.toString(), '  token1  token1  ' );
+}, 'itemType.add must not affect whitespace when the token already exists');
+test(function () {
+        var elem = makeEl('div',{itemtype:'FOO'});
+        assert_true(elem.itemType.toggle('foo'));
+        assert_equals( elem.itemType.length, 2 );
+        assert_true( elem.itemType.contains('foo') );
+        assert_true( elem.itemType.contains('FOO') );
+}, 'itemType.toggle must toggle tokens case-sensitively when adding');
+test(function () {
+        var elem = makeEl('div',{itemtype:'foo FOO'});
+        assert_false(elem.itemType.toggle('foo'));
+        assert_false(elem.itemType.toggle('FOO'));
+        assert_false( elem.itemType.contains('foo') );
+        assert_false( elem.itemType.contains('FOO') );
+}, 'itemType.toggle must be able to remove tokens case-sensitively');
+test(function () {
+        var elem = makeEl('div',{itemtype:'foo FOO'});
+        elem.itemType.toggle('foo');
+        elem.itemType.toggle('FOO');
+        assert_equals( elem.getAttribute('itemtype'), '' );
+}, 'itemtype attribute must be empty when all classes have been removed');
+test(function () {
+        var elem = makeEl('div',{itemtype:'foo FOO'});
+        elem.itemType.toggle('foo');
+        elem.itemType.toggle('FOO');
+        assert_equals( elem.itemType.toString(), '' );
+}, 'itemType must stringify to an empty string when all classes have been removed');
+test(function () {
+        var elem = makeEl('div',{itemtype:'foo FOO'});
+        elem.itemType.toggle('foo');
+        elem.itemType.toggle('FOO');
+        assert_equals( elem.itemType.item(0), null );
+}, 'itemType.item(0) must return null when all classes have been removed');
+test(function () {
+        /* the normative part of the spec states that:
+        "unless the length is zero, in which case there are no supported property indices"
+        ...
+        "The term[...] supported property indices [is] used as defined in the WebIDL specification."
+        WebIDL creates actual OwnProperties and then [] just acts as a normal property lookup */
+        var elem = makeEl('div',{itemtype:'foo FOO'});
+        elem.itemType.toggle('foo');
+        elem.itemType.toggle('FOO');
+        assert_equals( elem.itemType[0], window.undefined );
+}, 'itemType[0] must be undefined when all classes have been removed');
+//if the last character of DOMTokenSting underlying character is not a space character, append U+0020", where "space character" is from " \t\r\n\f"
+test(function () {
+        var elem = makeEl('div',{itemtype:'a '});
+        elem.itemType.add('b');
+        assert_equals(elem.itemType.toString(),'a b');
+}, 'itemType.add should treat " " as a space');
+test(function () {
+        var elem = makeEl('div',{itemtype:'a\t'});
+        elem.itemType.add('b');
+        assert_equals(elem.itemType.toString(),'a\tb');
+}, 'itemType.add should treat \\t as a space');
+test(function () {
+        var elem = makeEl('div',{itemtype:'a\r'});
+        elem.itemType.add('b');
+        assert_equals(elem.itemType.toString(),'a\rb');
+}, 'itemType.add should treat \\r as a space');
+test(function () {
+        var elem = makeEl('div',{itemtype:'a\n'});
+        elem.itemType.add('b');
+        assert_equals(elem.itemType.toString(),'a\nb');
+}, 'itemType.add should treat \\n as a space');
+test(function () {
+        var elem = makeEl('div',{itemtype:'a\f'});
+        elem.itemType.add('b');
+        assert_equals(elem.itemType.toString(),'a\fb');
+}, 'itemType.add should treat \\f as a space');
+test(function () {
+        var elem = makeEl('div',{itemtype:'foo'});
+        elem.itemType.remove('foo');
+        elem.removeAttribute('itemtype');
+        assert_true( elem.itemType.toggle('foo') );
+}, 'itemType.toggle must work after removing the itemtype attribute');
+test(function () {
+        //WebIDL and ECMAScript 5 - a readonly property has a getter but not a setter
+        //ES5 makes [[Put]] fail but not throw
+        var failed = false;
+        var elem = makeEl('div',{itemtype:'token1'});
+        try {
+                elem.itemType.length = 0;
+        } catch(e) {
+                failed = e;
+        }
+        assert_equals(elem.itemType.length,1);
+        assert_false(failed,'an error was thrown');
+}, 'itemType.length must be read-only');
+test(function () {
+        var failed = false, elem = makeEl('div',{itemtype:'test'}), realList = elem.itemType;
+        try {
+                elem.itemType = 'dummy';
+        } catch(e) {
+                failed = e;
+        }
+        assert_equals(elem.itemType,realList);
+        assert_equals(elem.itemType.toString(),'dummy','attempting to write should modify the underlying string');
+        assert_false(failed,'an error was thrown');
+}, 'itemType must be read-only');
 
 /* itemProp property tests (properties collection tests are done later) */
 test(function () {
@@ -569,7 +806,7 @@ test(function () {
 	testEl.itemId = 'http://example.com/foo';
 	assert_equals(testEl.itemId,'http://example.com/foo','writing a URL');
 	testEl.itemId = '';
-	assert_equals(testEl.itemId,'','writing an empty string');
+	assert_equals(testEl.itemId,location.href,'writing an empty string');
 }, 'the itemId property must be read/write');
 test(function () {
 	var testEl = makeEl('div',{});
@@ -1247,23 +1484,24 @@ test(function () {
 	assert_equals( testEl.properties.length, 0, 'length' );
 	assert_true( !testEl.properties.item(0), 'item(0)' );
 	assert_true( !testEl.properties[0], '[0]' );
-	assert_true( !testEl.properties(0), '(0)' );
 	assert_equals( testEl.properties.namedItem('foo').length, 0, 'namedItem' );
 	assert_true( !testEl.properties['foo'], '[namedItem]' );
-	assert_equals( testEl.properties('foo').length, 0, '(namedItem)' );
 	assert_equals( testEl.properties.namedItem('foo').getValues().length, 0, 'namedItem' );
 	assert_equals( testEl.properties.names.length, 0, 'names' );
 }, 'the properties collection must be empty if the element does not have an itemscope property');
+test(function() {
+	var testEl = makeEl('div',{},'<div itemprop="foo">bar</div>');
+	assert_throws( new TypeError(), function() { testEl.properties('foo'); } );
+	assert_throws( new TypeError(), function() { testEl.properties(0); } );
+}, 'the properties collection must not support legacycaller');	
 test(function () {
 	var testEl = makeEl('div',{},'<div itemprop="foo">bar</div>');
 	testEl.itemScope = true;
 	assert_equals( testEl.properties.length, 1, 'length' );
 	assert_equals( testEl.properties.item(0), testEl.firstChild, 'item(0)' );
 	assert_equals( testEl.properties[0], testEl.firstChild, '[0]' );
-	assert_equals( testEl.properties(0), testEl.firstChild, '(0)' );
 	assert_equals( testEl.properties.namedItem('foo').length, 1, 'namedItem' );
 	assert_equals( testEl.properties['foo'].length, 1, '[namedItem]' );
-	assert_equals( testEl.properties('foo').length, 1, '(namedItem)' );
 	assert_equals( testEl.properties.namedItem('foo').getValues().length, 1, 'namedItem' );
 	assert_equals( testEl.properties.names.length, 1, 'names' );
 }, 'the properties collection must become populated if the element is given an itemscope property');
@@ -1273,10 +1511,8 @@ test(function () {
 	assert_equals( testEl.properties.length, 0, 'length' );
 	assert_true( !testEl.properties.item(0), 'item(0)' );
 	assert_true( !testEl.properties[0], '[0]' );
-	assert_true( !testEl.properties(0), '(0)' );
 	assert_equals( testEl.properties.namedItem('foo').length, 0, 'namedItem' );
 	assert_true( !testEl.properties['foo'], '[namedItem]' );
-	assert_equals( testEl.properties('foo').length, 0, '(namedItem)' );
 	assert_equals( testEl.properties.namedItem('foo').getValues().length, 0, 'namedItem' );
 	assert_equals( testEl.properties.names.length, 0, 'names' );
 }, 'the properties collection must become empty if the element\'s itemscope property is removed');
@@ -1299,18 +1535,6 @@ test(function () {
 }, 'properties.item must give null for out of range index');
 test(function () {
 	var testEl = makeEl('div',{itemscope:'itemscope'},'<div itemprop="foo"></div><div itemprop="bar"><div itemprop="foo"></div></div><div itemprop="baz qux"></div>');
-	assert_equals( testEl.properties(0), testEl.childNodes[0], '(0)' );
-	assert_equals( testEl.properties(1), testEl.childNodes[1], '(1)' );
-	assert_equals( testEl.properties(2), testEl.childNodes[1].childNodes[0], '(2)' );
-	assert_equals( testEl.properties(3), testEl.childNodes[2], '(3)' );
-}, 'properties(index) must give each property in tree order');
-test(function () {
-	var testEl = makeEl('div',{itemscope:'itemscope'},'<div itemprop="foo"></div><div itemprop="bar"><div itemprop="foo"></div></div><div itemprop="baz qux"></div>');
-	assert_equals( testEl.properties(4), null );
-	//assert_equals( testEl.properties(-1), null ); //not tested, as browsers do not agree, and it is not specced yet
-}, 'properties(index) must give null for out of range index');
-test(function () {
-	var testEl = makeEl('div',{itemscope:'itemscope'},'<div itemprop="foo"></div><div itemprop="bar"><div itemprop="foo"></div></div><div itemprop="baz qux"></div>');
 	assert_equals( testEl.properties[0], testEl.childNodes[0], '[0]' );
 	assert_equals( testEl.properties[1], testEl.childNodes[1], '[1]' );
 	assert_equals( testEl.properties[2], testEl.childNodes[1].childNodes[0], '[2]' );
@@ -1325,10 +1549,8 @@ test(function () {
 	var testEl = makeEl('div',{itemscope:'itemscope'},'<div itemscope itemprop="foo"><div itemprop="bar"></div></div><div><div itemprop="baz"></div></div>');
 	assert_equals( testEl.properties.length, 2, 'length' );
 	assert_equals( testEl.properties.item(0), testEl.firstChild, 'properties.item(0)' );
-	assert_equals( testEl.properties(0), testEl.firstChild, 'properties(0)' );
 	assert_equals( testEl.properties[0], testEl.firstChild, 'properties[0]' );
 	assert_equals( testEl.properties.item(1), testEl.childNodes[1].firstChild, 'properties.item(1)' );
-	assert_equals( testEl.properties(1), testEl.childNodes[1].firstChild, 'properties(1)' );
 	assert_equals( testEl.properties[1], testEl.childNodes[1].firstChild, 'properties[1]' );
 }, 'properties.item and length must ignore properties of nested items');
 test(function () {
@@ -1338,30 +1560,22 @@ test(function () {
 	document.body.appendChild(parEl);
 	var propLength = testEl.properties.length;
 	var item0 = testEl.properties.item(0);
-	var call0 = testEl.properties(0);
 	var square0 = testEl.properties[0];
 	var item1 = testEl.properties.item(1);
-	var call1 = testEl.properties(1);
 	var square1 = testEl.properties[1];
 	var item2 = testEl.properties.item(2);
-	var call2 = testEl.properties(2);
 	var square2 = testEl.properties[2];
 	var item3 = testEl.properties.item(3);
-	var call3 = testEl.properties(3);
 	var square3 = testEl.properties[3];
 	document.body.removeChild(parEl);
 	assert_equals( propLength, 4, 'length' );
 	assert_equals( item0, parEl.firstChild, 'properties.item(0)' );
-	assert_equals( call0, parEl.firstChild, 'properties(0)' );
 	assert_equals( square0, parEl.firstChild, 'properties[0]' );
 	assert_equals( item1, testEl.firstChild, 'properties.item(1)' );
-	assert_equals( call1, testEl.firstChild, 'properties(1)' );
 	assert_equals( square1, testEl.firstChild, 'properties[1]' );
 	assert_equals( item2, parEl.childNodes[2], 'properties.item(2)' );
-	assert_equals( call2, parEl.childNodes[2], 'properties(2)' );
 	assert_equals( square2, parEl.childNodes[2], 'properties[2]' );
 	assert_equals( item3, parEl.childNodes[2].firstChild, 'properties.item(3)' );
-	assert_equals( call3, parEl.childNodes[2].firstChild, 'properties(3)' );
 	assert_equals( square3, parEl.childNodes[2].firstChild, 'properties[3]' );
 }, 'properties.item and length must see items added with itemref when attached to the document\'s DOM');
 test(function () {
@@ -1369,16 +1583,12 @@ test(function () {
 	var testEl = parEl.childNodes[1];
 	assert_equals( testEl.properties.length, 4, 'length' );
 	assert_equals( testEl.properties.item(0), parEl.firstChild, 'properties.item(0)' );
-	assert_equals( testEl.properties(0), parEl.firstChild, 'properties(0)' );
 	assert_equals( testEl.properties[0], parEl.firstChild, 'properties[0]' );
 	assert_equals( testEl.properties.item(1), testEl.firstChild, 'properties.item(1)' );
-	assert_equals( testEl.properties(1), testEl.firstChild, 'properties(1)' );
 	assert_equals( testEl.properties[1], testEl.firstChild, 'properties[1]' );
 	assert_equals( testEl.properties.item(2), parEl.childNodes[2], 'properties.item(2)' );
-	assert_equals( testEl.properties(2), parEl.childNodes[2], 'properties(2)' );
 	assert_equals( testEl.properties[2], parEl.childNodes[2], 'properties[2]' );
 	assert_equals( testEl.properties.item(3), parEl.childNodes[2].firstChild, 'properties.item(3)' );
-	assert_equals( testEl.properties(3), parEl.childNodes[2].firstChild, 'properties(3)' );
 	assert_equals( testEl.properties[3], parEl.childNodes[2].firstChild, 'properties[3]' );
 }, 'properties.item and length must see items added with itemref');
 test(function () {
@@ -1451,63 +1661,49 @@ test(function () {
 	var testEl = makeEl('div',{itemscope:'itemscope'},'<div itemprop="foo"></div>');
 	assert_equals( testEl.properties.length, 1, 'length (before test)' );
 	assert_equals( testEl.properties.item(0), testEl.firstChild, 'properties.item(0) (before test)' );
-	assert_equals( testEl.properties(0), testEl.firstChild, 'properties(0) (before test)' );
 	assert_equals( testEl.properties[0], testEl.firstChild, 'properties[0] (before test)' );
 	testEl.appendChild(makeEl('div',{itemprop:'bar'}));
 	assert_equals( testEl.properties.length, 2, 'length after adding a child' );
 	assert_equals( testEl.properties.item(1), testEl.childNodes[1], 'properties.item(1) after adding a child' );
-	assert_equals( testEl.properties(1), testEl.childNodes[1], 'properties(1) after adding a child' );
 	assert_equals( testEl.properties[1], testEl.childNodes[1], 'properties[1] after adding a child' );
 	testEl.lastChild.appendChild(makeEl('div',{itemprop:'foo'}));
 	assert_equals( testEl.properties.length, 3, 'length after adding a child with duplicated name' );
 	assert_equals( testEl.properties.item(2), testEl.childNodes[1].firstChild, 'properties.item(2) after adding a child with duplicated name' );
-	assert_equals( testEl.properties(2), testEl.childNodes[1].firstChild, 'properties(2) after adding a child with duplicated name' );
 	assert_equals( testEl.properties[2], testEl.childNodes[1].firstChild, 'properties[2] after adding a child with duplicated name' );
 	testEl.lastChild.removeChild(testEl.lastChild.firstChild);
 	assert_equals( testEl.properties.length, 2, 'length after removing a child' );
 	assert_true( !testEl.properties.item(2), 'properties.item(1) after removing a child' );
-	assert_true( !testEl.properties(2), 'properties(1) after removing a child' );
 	assert_true( !testEl.properties[2], 'properties[1] after removing a child' );
 }, 'properties.item and length must update when adding property elements');
 test(function () {
 	var testEl = makeEl('div',{itemscope:'itemscope'},'<div itemprop="foo"></div><div itemprop="bar"></div>');
 	assert_equals( testEl.properties.length, 2, 'length (before test)' );
 	assert_equals( testEl.properties.item(0), testEl.firstChild, 'properties.item(0) (before test)' );
-	assert_equals( testEl.properties(0), testEl.firstChild, 'properties(0) (before test)' );
 	assert_equals( testEl.properties[0], testEl.firstChild, 'properties[0] (before test)' );
 	assert_equals( testEl.properties.item(1), testEl.childNodes[1], 'properties.item(1) (before test)' );
-	assert_equals( testEl.properties(1), testEl.childNodes[1], 'properties(1) (before test)' );
 	assert_equals( testEl.properties[1], testEl.childNodes[1], 'properties[1] (before test)' );
 	testEl.appendChild(testEl.firstChild);
 	assert_equals( testEl.properties.length, 2, 'length (after test)' );
 	assert_equals( testEl.properties.item(0), testEl.firstChild, 'properties.item(0) (after test)' );
-	assert_equals( testEl.properties(0), testEl.firstChild, 'properties(0) (after test)' );
 	assert_equals( testEl.properties[0], testEl.firstChild, 'properties[0] (after test)' );
 	assert_equals( testEl.properties.item(1), testEl.childNodes[1], 'properties.item(1) (after test)' );
-	assert_equals( testEl.properties(1), testEl.childNodes[1], 'properties(1) (after test)' );
 	assert_equals( testEl.properties[1], testEl.childNodes[1], 'properties[1] (after test)' );
 }, 'properties.item must update when re-ordering property elements, but length must not');
 test(function () {
 	var testEl = makeEl('div',{itemscope:'itemscope'},'<div itemprop="foo"></div><div></div>');
 	assert_equals( testEl.properties.length, 1, 'length (before test)' );
-	assert_equals( testEl.properties.item(0), testEl.firstChild, 'properties.item(0) (before test)' );
-	assert_equals( testEl.properties(0), testEl.firstChild, 'properties(0) (before test)' );
 	assert_equals( testEl.properties[0], testEl.firstChild, 'properties[0] (before test)' );
 	testEl.lastChild.itemProp.toggle('bar');
 	assert_equals( testEl.properties.length, 2, 'length (after test 1)' );
 	assert_equals( testEl.properties.item(0), testEl.firstChild, 'properties.item(0) after adding a token' );
-	assert_equals( testEl.properties(0), testEl.firstChild, 'properties(0) after adding a token' );
 	assert_equals( testEl.properties[0], testEl.firstChild, 'properties[0] after adding a token' );
 	assert_equals( testEl.properties.item(1), testEl.childNodes[1], 'properties.item(1) after adding a token' );
-	assert_equals( testEl.properties(1), testEl.childNodes[1], 'properties(1) after adding a token' );
 	assert_equals( testEl.properties[1], testEl.childNodes[1], 'properties[1] after adding a token' );
 	testEl.lastChild.removeAttribute('itemprop');
 	assert_equals( testEl.properties.length, 1, 'length after removing an attribute' );
 	assert_equals( testEl.properties.item(0), testEl.firstChild, 'properties.item(0) after removing an attribute' );
-	assert_equals( testEl.properties(0), testEl.firstChild, 'properties(0) after removing an attribute' );
 	assert_equals( testEl.properties[0], testEl.firstChild, 'properties[0] after removing an attribute' );
 	assert_true( !testEl.properties.item(1), 'properties.item(1) after removing an attribute' );
-	assert_true( !testEl.properties(1), 'properties(1) after removing an attribute' );
 	assert_true( !testEl.properties[1], 'properties[1] after removing an attribute' );
 }, 'properties.item and length must update when changing itemProp of children');
 test(function () {
@@ -1517,43 +1713,34 @@ test(function () {
 	parEl.firstChild.id = 'id1';
 	assert_equals( testEl.properties.length, 2, 'length after id is created' );
 	assert_equals( testEl.properties.item(0), parEl.firstChild, 'properties.item(0) after id is created' );
-	assert_equals( testEl.properties(0), parEl.firstChild, 'properties(0) after id is created' );
 	assert_equals( testEl.properties[0], parEl.firstChild, 'properties[0] after id is created' );
 	assert_equals( testEl.properties.item(1), parEl.firstChild.firstChild, 'properties.item(1) after id is created' );
-	assert_equals( testEl.properties(1), parEl.firstChild.firstChild, 'properties(1) after id is created' );
 	assert_equals( testEl.properties[1], parEl.firstChild.firstChild, 'properties[1] after id is created' );
 	parEl.firstChild.removeAttribute('id');
 	assert_equals( testEl.properties.length, 0, 'length after removing an attribute' );
 	assert_true( !testEl.properties.item(0), 'properties.item(0) after removing an attribute' );
-	assert_true( !testEl.properties(0), 'properties(0) after removing an attribute' );
 	assert_true( !testEl.properties[0], 'properties[0] after removing an attribute' );
 	document.body.appendChild(parEl);
 	var beflength = testEl.properties.length;
 	parEl.firstChild.id = 'id1';
 	var length1 = testEl.properties.length,
 	    item0 = testEl.properties.item(0),
-	    call0 = testEl.properties(0),
 	    prop0 = testEl.properties[0],
 	    item1 = testEl.properties.item(1),
-	    call1 = testEl.properties(1),
 	    prop1 = testEl.properties[1];
 	parEl.firstChild.removeAttribute('id');
 	var length2 = testEl.properties.length,
 	    bitem = !testEl.properties.item(0),
-	    bcall = !testEl.properties(0),
 	    bprop = !testEl.properties[0];
 	document.body.removeChild(parEl);
 	assert_equals( beflength, 0, 'length (before test) when appended to document' );
 	assert_equals( length1, 2, 'length after id is created when appended to document' );
 	assert_equals( item0, parEl.firstChild, 'properties.item(0) after id is created when appended to document' );
-	assert_equals( call0, parEl.firstChild, 'properties(0) after id is created when appended to document' );
 	assert_equals( prop0, parEl.firstChild, 'properties[0] after id is created when appended to document' );
 	assert_equals( item1, parEl.firstChild.firstChild, 'properties.item(1) after id is created when appended to document' );
-	assert_equals( call1, parEl.firstChild.firstChild, 'properties(1) after id is created when appended to document' );
 	assert_equals( prop1, parEl.firstChild.firstChild, 'properties[1] after id is created when appended to document' );
 	assert_equals( length2, 0, 'length after removing an attribute when appended to document' );
 	assert_true( bitem, 'properties.item(0) after removing an attribute when appended to document' );
-	assert_true( bcall, 'properties(0) after removing an attribute when appended to document' );
 	assert_true( bprop, 'properties[0] after removing an attribute when appended to document' );
 }, 'properties.item and length must update when changing id of referenced sibling');
 test(function () {
@@ -1561,54 +1748,42 @@ test(function () {
 	var testEl = parEl.childNodes[1];
 	assert_equals( testEl.properties.length, 1, 'length (before test)' );
 	assert_equals( testEl.properties.item(0), parEl.lastChild, 'properties.item(0) (before test)' );
-	assert_equals( testEl.properties(0), parEl.lastChild, 'properties(0) (before test)' );
 	assert_equals( testEl.properties[0], parEl.lastChild, 'properties[0] (before test)' );
 	parEl.firstChild.id = 'id1';
 	assert_equals( testEl.properties.length, 2, 'length after id is created' );
 	assert_equals( testEl.properties.item(0), parEl.firstChild, 'properties.item(0) after id is created' );
-	assert_equals( testEl.properties(0), parEl.firstChild, 'properties(0) after id is created' );
 	assert_equals( testEl.properties[0], parEl.firstChild, 'properties[0] after id is created' );
 	assert_equals( testEl.properties.item(1), parEl.firstChild.firstChild, 'properties.item(1) after id is created' );
-	assert_equals( testEl.properties(1), parEl.firstChild.firstChild, 'properties(1) after id is created' );
 	assert_equals( testEl.properties[1], parEl.firstChild.firstChild, 'properties[1] after id is created' );
 	parEl.firstChild.removeAttribute('id');
 	assert_equals( testEl.properties.length, 1, 'length after removing an attribute' );
 	assert_equals( testEl.properties.item(0), parEl.lastChild, 'properties.item(0) after removing an attribute' );
-	assert_equals( testEl.properties(0), parEl.lastChild, 'properties(0) after removing an attribute' );
 	assert_equals( testEl.properties[0], parEl.lastChild, 'properties[0] after removing an attribute' );
 	document.body.appendChild(parEl);
 	var beflength = testEl.properties.length,
 	    befitem = testEl.properties.item(0),
-	    befcall = testEl.properties(0),
 	    befprop = testEl.properties[0];
 	parEl.firstChild.id = 'id1';
 	var length1 = testEl.properties.length,
 	    item0 = testEl.properties.item(0),
-	    call0 = testEl.properties(0),
 	    prop0 = testEl.properties[0],
 	    item1 = testEl.properties.item(1),
-	    call1 = testEl.properties(1),
 	    prop1 = testEl.properties[1];
 	parEl.firstChild.removeAttribute('id');
 	var length2 = testEl.properties.length,
 	    afitem = testEl.properties.item(0),
-	    afcall = testEl.properties(0),
 	    afprop = testEl.properties[0];
 	document.body.removeChild(parEl);
 	assert_equals( beflength, 1, 'length (before test) when appended to document' );
 	assert_equals( befitem, parEl.lastChild, 'properties.item(0) (before test)' );
-	assert_equals( befcall, parEl.lastChild, 'properties(0) (before test)' );
 	assert_equals( befprop, parEl.lastChild, 'properties[0] (before test)' );
 	assert_equals( length1, 2, 'length after id is created when appended to document' );
 	assert_equals( item0, parEl.firstChild, 'properties.item(0) after id is created when appended to document' );
-	assert_equals( call0, parEl.firstChild, 'properties(0) after id is created when appended to document' );
 	assert_equals( prop0, parEl.firstChild, 'properties[0] after id is created when appended to document' );
 	assert_equals( item1, parEl.firstChild.firstChild, 'properties.item(1) after id is created when appended to document' );
-	assert_equals( call1, parEl.firstChild.firstChild, 'properties(1) after id is created when appended to document' );
 	assert_equals( prop1, parEl.firstChild.firstChild, 'properties[1] after id is created when appended to document' );
 	assert_equals( length2, 1, 'length after removing an attribute when appended to document' );
 	assert_equals( afitem, parEl.lastChild, 'properties.item(0) after removing an attribute when appended to document' );
-	assert_equals( afcall, parEl.lastChild, 'properties(0) after removing an attribute when appended to document' );
 	assert_equals( afprop, parEl.lastChild, 'properties[0] after removing an attribute when appended to document' );
 }, 'properties.item and length must update when changing duplicated id of referenced sibling');
 test(function () {
@@ -1618,34 +1793,28 @@ test(function () {
 	testEl.itemRef.toggle('id1');
 	assert_equals( testEl.properties.length, 1, 'length after itemref is changed' );
 	assert_equals( testEl.properties.item(0), parEl.firstChild, 'properties.item(0) after itemref is changed' );
-	assert_equals( testEl.properties(0), parEl.firstChild, 'properties(0) after itemref is changed' );
 	assert_equals( testEl.properties[0], parEl.firstChild, 'properties[0] after itemref is changed' );
 	testEl.removeAttribute('itemref');
 	assert_equals( testEl.properties.length, 0, 'length after itemref is removed' );
 	assert_true( !testEl.properties.item(0), 'properties.item(0) itemref is removed' );
-	assert_true( !testEl.properties(0), 'properties(0) itemref is removed' );
 	assert_true( !testEl.properties[0], 'properties[0] itemref is removed' );
 	document.body.appendChild(parEl);
 	var beflength = testEl.properties.length;
 	testEl.itemRef.toggle('id1');
 	var length1 = testEl.properties.length,
 	    item0 = testEl.properties.item(0),
-	    call0 = testEl.properties(0),
 	    prop0 = testEl.properties[0];
 	testEl.removeAttribute('itemref');
 	var length2 = testEl.properties.length,
 	    bitem = !testEl.properties.item(0),
-	    bcall = !testEl.properties(0),
 	    bprop = !testEl.properties[0];
 	document.body.removeChild(parEl);
 	assert_equals( beflength, 0, 'length (before test) when appended to document' );
 	assert_equals( length1, 1, 'length after itemref is changed when appended to document' );
 	assert_equals( item0, parEl.firstChild, 'properties.item(0) after itemref is changed when appended to document' );
-	assert_equals( call0, parEl.firstChild, 'properties(0) after itemref is changed when appended to document' );
 	assert_equals( prop0, parEl.firstChild, 'properties[0] after itemref is changed when appended to document' );
 	assert_equals( length2, 0, 'length after itemref is removed when appended to document' );
 	assert_true( bitem, 'properties.item(0) after itemref is removed when appended to document' );
-	assert_true( bcall, 'properties(0) after itemref is removed when appended to document' );
 	assert_true( bprop, 'properties[0] after itemref is removed when appended to document' );
 }, 'properties.item and length must update when changing itemref to point to an element');
 test(function () {
@@ -1655,23 +1824,18 @@ test(function () {
 	parEl.firstChild.appendChild(makeEl('div',{itemprop:'foo'}));
 	assert_equals( testEl.properties.length, 1, 'length after a referenced element is added' );
 	assert_equals( testEl.properties.item(0), parEl.firstChild.lastChild, 'properties.item(0) after a referenced element is added' );
-	assert_equals( testEl.properties(0), parEl.firstChild.lastChild, 'properties(0) after a referenced element is added' );
 	assert_equals( testEl.properties[0], parEl.firstChild.lastChild, 'properties[0] after a referenced element is added' );
 	parEl.firstChild.firstChild.itemProp.toggle('bar');
 	assert_equals( testEl.properties.length, 2, 'length after a referenced itemprop is changed' );
 	assert_equals( testEl.properties.item(0), parEl.firstChild.firstChild, 'properties.item(0) after a referenced itemprop is changed' );
-	assert_equals( testEl.properties(0), parEl.firstChild.firstChild, 'properties(0) after a referenced itemprop is changed' );
 	assert_equals( testEl.properties[0], parEl.firstChild.firstChild, 'properties[0] after a referenced itemprop is changed' );
 	assert_equals( testEl.properties.item(1), parEl.firstChild.lastChild, 'properties.item(1) after a referenced itemprop is changed' );
-	assert_equals( testEl.properties(1), parEl.firstChild.lastChild, 'properties(1) after a referenced itemprop is changed' );
 	assert_equals( testEl.properties[1], parEl.firstChild.lastChild, 'properties[1] after a referenced itemprop is changed' );
 	parEl.firstChild.removeChild(parEl.firstChild.firstChild);
 	assert_equals( testEl.properties.length, 1, 'length after a referenced element is removed' );
 	assert_equals( testEl.properties.item(0), parEl.firstChild.firstChild, 'properties.item(0) after a referenced element is removed' );
-	assert_equals( testEl.properties(0), parEl.firstChild.firstChild, 'properties(0) after a referenced element is removed' );
 	assert_equals( testEl.properties[0], parEl.firstChild.firstChild, 'properties[0] after a referenced element is removed' );
 	assert_true( !testEl.properties.item(1), 'properties.item(1) after a referenced element is removed' );
-	assert_true( !testEl.properties(1), 'properties(1) after a referenced element is removed' );
 	assert_true( !testEl.properties[1], 'properties[1] after a referenced element is removed' );
 	parEl.innerHTML = '<div id="id1"><div></div></div><div itemscope itemref="id1"></div>';
 	testEl = parEl.childNodes[1];
@@ -1680,47 +1844,37 @@ test(function () {
 	parEl.firstChild.appendChild(makeEl('div',{itemprop:'foo'}));
 	var length1 = testEl.properties.length,
 	    item0a = testEl.properties.item(0),
-	    call0a = testEl.properties(0),
 	    prop0a = testEl.properties[0],
 	    targ0a = parEl.firstChild.lastChild;
 	parEl.firstChild.firstChild.itemProp.toggle('bar');
 	var length2 = testEl.properties.length,
 	    item0b = testEl.properties.item(0),
-	    call0b = testEl.properties(0),
 	    prop0b = testEl.properties[0];
 	    item1b = testEl.properties.item(1),
-	    call1b = testEl.properties(1),
 	    prop1b = testEl.properties[1],
 	    targ0b = parEl.firstChild.firstChild,
 	    targ1b = parEl.firstChild.lastChild;
 	parEl.firstChild.removeChild(parEl.firstChild.firstChild);
 	var length3 = testEl.properties.length,
 	    item0c = testEl.properties.item(0),
-	    call0c = testEl.properties(0),
 	    prop0c = testEl.properties[0];
 	    item1c = testEl.properties.item(1),
-	    call1c = testEl.properties(1),
 	    prop1c = testEl.properties[1],
 	    targ0c = parEl.firstChild.firstChild;
 	document.body.removeChild(parEl);
 	assert_equals( beflength, 0, 'length (before test) when appended to document' );
 	assert_equals( length1, 1, 'length after a referenced element is added when appended to document' );
 	assert_equals( item0a, targ0a, 'properties.item(0) after a referenced element is added when appended to document' );
-	assert_equals( call0a, targ0a, 'properties(0) after a referenced element is added when appended to document' );
 	assert_equals( prop0a, targ0a, 'properties[0] after a referenced element is added when appended to document' );
 	assert_equals( length2, 2, 'length after a referenced itemprop is changed when appended to document' );
 	assert_equals( item0b, targ0b, 'properties.item(0) after a referenced itemprop is changed when appended to document' );
-	assert_equals( call0b, targ0b, 'properties(0) after a referenced itemprop is changed when appended to document' );
 	assert_equals( prop0b, targ0b, 'properties[0] after a referenced itemprop is changed when appended to document' );
 	assert_equals( item1b, targ1b, 'properties.item(1) after a referenced itemprop is changed when appended to document' );
-	assert_equals( call1b, targ1b, 'properties(1) after a referenced itemprop is changed when appended to document' );
 	assert_equals( prop1b, targ1b, 'properties[1] after a referenced itemprop is changed when appended to document' );
 	assert_equals( length3, 1, 'length after a referenced element is removed when appended to document' );
 	assert_equals( item0c, targ0c, 'properties.item(0) after a referenced element is removed when appended to document' );
-	assert_equals( call0c, targ0c, 'properties(0) after a referenced element is removed when appended to document' );
 	assert_equals( prop0c, targ0c, 'properties[0] after a referenced element is removed when appended to document' );
 	assert_true( !item1c, 'properties.item(1) after a referenced element is removed when appended to document' );
-	assert_true( !call1c, 'properties(1) after a referenced element is removed when appended to document' );
 	assert_true( !prop1c, 'properties[1] after a referenced element is removed when appended to document' );
 }, 'properties.item and length must update when changing children of elements referenced through itemref');
 test(function () {
@@ -1767,17 +1921,14 @@ test(function () {
 	var testEl = makeEl('div',{itemscope:'itemscope'},'<div><div itemprop="foo"></div></div>');
 	assert_equals( testEl.properties.length, 1, 'length (before test)' );
 	assert_equals( testEl.properties.item(0), testEl.firstChild.firstChild, 'properties.item(0) (before test)' );
-	assert_equals( testEl.properties(0), testEl.firstChild.firstChild, 'properties(0) (before test)' );
 	assert_equals( testEl.properties[0], testEl.firstChild.firstChild, 'properties[0] (before test)' );
 	testEl.firstChild.itemScope = true;
 	assert_equals( testEl.properties.length, 0, 'length after setting itemscope' );
 	assert_true( !testEl.properties.item(0), 'properties.item(0) after setting itemscope' );
-	assert_true( !testEl.properties(0), 'properties(0) after setting itemscope' );
 	assert_true( !testEl.properties[0], 'properties[0] after setting itemscope' );
 	testEl.firstChild.removeAttribute('itemscope');
 	assert_equals( testEl.properties.length, 1, 'length after removing itemscope attribute' );
 	assert_equals( testEl.properties.item(0), testEl.firstChild.firstChild, 'properties.item(0) after removing itemscope attribute' );
-	assert_equals( testEl.properties(0), testEl.firstChild.firstChild, 'properties(0) after removing itemscope attribute' );
 	assert_equals( testEl.properties[0], testEl.firstChild.firstChild, 'properties[0] after removing itemscope attribute' );
 }, 'properties.item and length must update when changing itemscope of children');
 //properties.namedItem
@@ -1785,17 +1936,11 @@ test(function () {
 	assert_equals( typeof makeEl('div',{itemscope:'itemscope'},'<div itemprop="foo"></div>').properties.namedItem('foo'), 'object' );
 }, 'the namedItem must return an object');
 test(function () {
-	assert_equals( typeof makeEl('div',{itemscope:'itemscope'},'<div itemprop="foo"></div>').properties('foo'), 'object' );
-}, '.properties() must also act as .properties.namedItem()');
-test(function () {
 	assert_equals( typeof makeEl('div',{itemscope:'itemscope'},'<div itemprop="foo"></div>').properties['foo'], 'object' );
 }, '.properties[] must also act as .properties.namedItem() when there are matching properties');
 test(function () {
 	assert_equals( typeof makeEl('div',{itemscope:'itemscope'},'').properties.namedItem('foo'), 'object' );
 }, 'the namedItem must return an object even if there are no matching properties');
-test(function () {
-	assert_equals( typeof makeEl('div',{itemscope:'itemscope'},'').properties('foo'), 'object' );
-}, '.properties() must also act as .properties.namedItem() even if there are no matching properties');
 test(function () {
 	assert_equals( typeof makeEl('div',{itemscope:'itemscope'},'').properties['foo'], 'undefined' );
 }, '.properties[] must return undefined when no property exists with the given name');
@@ -1815,9 +1960,8 @@ test(function () {
 }, 'namedItem must return a different object for different elements with the same property name');
 test(function () {
 	var testEl = makeEl('div',{itemscope:'itemscope'},'<div itemprop="foo"></div>');
-	assert_equals( testEl.properties.namedItem('foo'), testEl.properties('foo') );
 	assert_equals( testEl.properties.namedItem('foo'), testEl.properties['foo'] );
-}, 'namedItem() and properties() and properties[] must return the same object for the same property name');
+}, 'namedItem() and properties[] must return the same object for the same property name');
 test(function () {
 	var testEl = makeEl('div',{itemscope:'itemscope'},'<div itemprop="foo"></div>');
 	assert_true( testEl.properties.namedItem('foo') instanceof PropertyNodeList, 'instanceof PropertyNodeList' );
@@ -2865,13 +3009,6 @@ test(function () {
 	assert_equals( testEl.properties['2'], window.undefined, '2' );
 }, 'properties[integerString] should act as a numeric index');
 test(function () {
-	//WebIDL does not yet cover callers, but browsers implement callers so that they act like property lookup in terms of precedence
-	//the method should still return the same as .item for out-of-range indexes
-	var testEl = makeEl('div',{itemscope:'itemscope'},'<div itemprop="2"></div><div itemprop="0"></div>');
-	assert_equals( testEl.properties('0'), testEl.properties.item(0), '0' );
-	assert_equals( testEl.properties('2'), null, '2' );
-}, 'properties(integerString) should act as a numeric index');
-test(function () {
 	var testEl = makeEl('div',{itemscope:'itemscope'},'<div itemprop="0"></div>');
 	assert_equals( testEl.properties.namedItem(0), testEl.properties.namedItem('0'), '0' );
 	assert_true( testEl.properties.namedItem(0) instanceof PropertyNodeList , 'instanceof' );
@@ -2882,14 +3019,6 @@ test(function () {
 	assert_equals( testEl.properties[{ toString: function(){return '0';}, valueOf: function(){return 1;} }], testEl.firstChild, '0' );
 	assert_equals( testEl.properties[{ toString: function(){return '2';}, valueOf: function(){return 0;} }], window.undefined, '2' );
 }, 'properties[someObject] should cast toString before using whichever casting applies');
-test(function () {
-	//WebIDL does not yet cover callers, but browsers implement callers so that they act like property lookup in terms of precedence
-	//the method should still return the same as .item for out-of-range indexes
-	var testEl = makeEl('div',{itemscope:'itemscope'},'<div itemprop="2 foo"></div><div itemprop="0"></div>');
-	assert_equals( testEl.properties({ toString: function(){return 'foo';}, valueOf: function(){return 1;} })[0], testEl.firstChild, 'foo' );
-	assert_equals( testEl.properties({ toString: function(){return '0';}, valueOf: function(){return 1;} }), testEl.firstChild, '0' );
-	assert_equals( testEl.properties({ toString: function(){return '2';}, valueOf: function(){return 0;} }), null, '2' );
-}, 'properties(someObject) should cast toString before using whichever casting applies');
 
 /* loops and evil itemref */
 test(function () {
@@ -3421,6 +3550,20 @@ test(function () {
 	}
 	document.body.removeChild(testEl);
 }, 'itemref referencing parent without itemscope');
+test(function () {
+	var testDiv = makeEl('div', {itemprop:'bar', id:'foo'}, '');
+	var testSpan = makeEl('span', {itemscope:'itemscope', itemref: 'foo', id: 'foo'}, '');
+	document.body.appendChild(testDiv);
+	document.body.appendChild(testSpan);
+	assert_equals(testSpan.properties.length, 1, 'has one property');
+	assert_equals(testSpan.properties[0], testDiv, 'has first property');
+	assert_equals(testSpan.properties.item(0), testDiv, 'has first property');
+	assert_equals(testSpan.properties.namedItem('bar').length, 1, 'has 1 foo property');
+	assert_equals(testSpan.properties.namedItem('bar').item(0), testDiv, 'div is foo property');
+	assert_equals(testSpan.properties.names.length, 1, 'only has one property');
+	document.body.removeChild(testDiv);
+	document.body.removeChild(testSpan);
+}, 'itemref referencing element with same id');
 test(function () {
 	//Root has three properties, foo, bar and baz
 	//Foo has two properties, bar and baz

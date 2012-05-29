@@ -23,8 +23,8 @@
             function testComputedStyle(value) {
                 var div = document.createElement("div");
                 document.body.appendChild(div);
-                div.style.setProperty("-webkit-flow-into", value);
-                var webkitFlowComputedValue = getComputedStyle(div).getPropertyValue("-webkit-flow-into");
+                div.style.setProperty("flow-into", value);
+                var webkitFlowComputedValue = getComputedStyle(div).getPropertyValue("flow-into");
                 document.body.removeChild(div);
                 return webkitFlowComputedValue;
             }
@@ -32,24 +32,24 @@
             function testNotInherited(parentValue, childValue) {
                 var parentDiv = document.createElement("div");
                 document.body.appendChild(parentDiv);
-                parentDiv.style.setProperty("-webkit-flow-into", parentValue);
+                parentDiv.style.setProperty("flow-into", parentValue);
                 var childDiv = document.createElement("div");
                 parentDiv.appendChild(childDiv);
-                childDiv.style.setProperty("-webkit-flow-into", childValue);
-                var childWebKitFlowComputedValue = getComputedStyle(childDiv).getPropertyValue("-webkit-flow-into");
+                childDiv.style.setProperty("flow-into", childValue);
+                var childWebKitFlowComputedValue = getComputedStyle(childDiv).getPropertyValue("flow-into");
                 parentDiv.removeChild(childDiv);
                 document.body.removeChild(parentDiv);
                 return childWebKitFlowComputedValue;
             }
             
-            test(function() {assert_equals(testParse("-webkit-flow-into: none"), "none")}, "Test Parse none"); 
-            test(function() {assert_equals(testParse("-webkit-flow-into: first-flow"), "first-flow")}, "Test Parse first-flow");
-            test(function() {assert_equals(testParse("-webkit-flow-into: \'first flow\'"), "")}, "Test Parse 'first-flow'");
-            test(function() {assert_equals(testParse("-webkit-flow-into: ;"), "")}, "Test Parse ;");
-            test(function() {assert_equals(testParse("-webkit-flow-into: 1"), "")}, "Test Parse 1");
-            test(function() {assert_equals(testParse("-webkit-flow-into: 1.2"), "")}, "Test Parse 1.2");
-            test(function() {assert_equals(testParse("-webkit-flow-into: -1"), "")}, "Test Parse -1");
-            test(function() {assert_equals(testParse("-webkit-flow-into: 12px"), "")}, "Test Parse 12px");
+            test(function() {assert_equals(testParse("flow-into: none"), "none")}, "Test Parse none"); 
+            test(function() {assert_equals(testParse("flow-into: first-flow"), "first-flow")}, "Test Parse first-flow");
+            test(function() {assert_equals(testParse("flow-into: \'first flow\'"), "")}, "Test Parse 'first-flow'");
+            test(function() {assert_equals(testParse("flow-into: ;"), "")}, "Test Parse ;");
+            test(function() {assert_equals(testParse("flow-into: 1"), "")}, "Test Parse 1");
+            test(function() {assert_equals(testParse("flow-into: 1.2"), "")}, "Test Parse 1.2");
+            test(function() {assert_equals(testParse("flow-into: -1"), "")}, "Test Parse -1");
+            test(function() {assert_equals(testParse("flow-into: 12px"), "")}, "Test Parse 12px");
 
             test(function() {assert_equals(testComputedStyle("none"), "none")}, "Test Computed Style none");
             test(function() {assert_equals(testComputedStyle(""), "none")}, "Test Computed Style ''");

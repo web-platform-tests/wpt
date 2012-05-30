@@ -254,14 +254,16 @@ policies and contribution forms [3].
  *   assert that property property_name on object is readonly
  *
  * assert_throws(code, func, description)
- *   code - a DOMException/RangeException code as a string, e.g. "HIERARCHY_REQUEST_ERR"
+ *   code - either a DOMException code as a string, or an object
+ *          e.g. "HierarchyRequestError" or `new TypeError()`
  *   func - a function that should throw
  *
- *   assert that func throws a DOMException or RangeException (as appropriate)
- *   with the given code.  If an object is passed for code instead of a string,
- *   checks that the thrown exception has a property called "name" that matches
- *   the property of code called "name".  Note, this function will probably be
- *   rewritten sometime to make more sense.
+ *   asserts that /func/ throws an exception. If a string is passed for /code/,
+ *   it checks that the exception is a fitting DOMException. If an object is
+ *   passed for /code/ instead of a string, checks that the thrown exception has
+ *   a property called "name" that matches the property of code called "name".
+ *   Note, this function will probably be rewritten sometime to make more
+ *   sense.
  *
  * assert_unreached(description)
  *   asserts if called. Used to ensure that some codepath is *not* taken e.g.
@@ -761,40 +763,78 @@ policies and contribution forms [3].
                                      expected_name:code.name});
                 return;
             }
-            var required_props = {};
-            required_props.code = {
-                INDEX_SIZE_ERR: 1,
-                HIERARCHY_REQUEST_ERR: 3,
-                WRONG_DOCUMENT_ERR: 4,
-                INVALID_CHARACTER_ERR: 5,
-                NO_MODIFICATION_ALLOWED_ERR: 7,
-                NOT_FOUND_ERR: 8,
-                NOT_SUPPORTED_ERR: 9,
-                INVALID_STATE_ERR: 11,
-                SYNTAX_ERR: 12,
-                INVALID_MODIFICATION_ERR: 13,
-                NAMESPACE_ERR: 14,
-                INVALID_ACCESS_ERR: 15,
-                TYPE_MISMATCH_ERR: 17,
-                SECURITY_ERR: 18,
-                NETWORK_ERR: 19,
-                ABORT_ERR: 20,
-                URL_MISMATCH_ERR: 21,
-                QUOTA_EXCEEDED_ERR: 22,
-                TIMEOUT_ERR: 23,
-                INVALID_NODE_TYPE_ERR: 24,
-                DATA_CLONE_ERR: 25,
-            }[code];
-            if (required_props.code === undefined)
+
+            var code_name_map = {
+                INDEX_SIZE_ERR: 'IndexSizeError',
+                HIERARCHY_REQUEST_ERR: 'HierarchyRequestError',
+                WRONG_DOCUMENT_ERR: 'WrongDocumentError',
+                INVALID_CHARACTER_ERR: 'InvalidCharacterError',
+                NO_MODIFICATION_ALLOWED_ERR: 'NoModificationAllowedError',
+                NOT_FOUND_ERR: 'NotFoundError',
+                NOT_SUPPORTED_ERR: 'NotSupportedError',
+                INVALID_STATE_ERR: 'InvalidStateError',
+                SYNTAX_ERR: 'SyntaxError',
+                INVALID_MODIFICATION_ERR: 'InvalidModificationError',
+                NAMESPACE_ERR: 'NamespaceError',
+                INVALID_ACCESS_ERR: 'InvalidAccessError',
+                TYPE_MISMATCH_ERR: 'TypeMismatchError',
+                SECURITY_ERR: 'SecurityError',
+                NETWORK_ERR: 'NetworkError',
+                ABORT_ERR: 'AbortError',
+                URL_MISMATCH_ERR: 'URLMismatchError',
+                QUOTA_EXCEEDED_ERR: 'QuotaExceededError',
+                TIMEOUT_ERR: 'TimeoutError',
+                INVALID_NODE_TYPE_ERR: 'InvalidNodeTypeError',
+                DATA_CLONE_ERR: 'DataCloneError',
+            };
+
+            var name = code in code_name_map ? code_name_map[code] : code;
+
+            var name_code_map = {
+                IndexSizeError: 1,
+                HierarchyRequestError: 3,
+                WrongDocumentError: 4,
+                InvalidCharacterError: 5,
+                NoModificationAllowedError: 7,
+                NotFoundError: 8,
+                NotSupportedError: 9,
+                InvalidStateError: 11,
+                SyntaxError: 12,
+                InvalidModificationError: 13,
+                NamespaceError: 14,
+                InvalidAccessError: 15,
+                TypeMismatchError: 17,
+                SecurityError: 18,
+                NetworkError: 19,
+                AbortError: 20,
+                URLMismatchError: 21,
+                QuotaExceededError: 22,
+                TimeoutError: 23,
+                InvalidNodeTypeError: 24,
+                DataCloneError: 25,
+
+                UnknownError: 0,
+                ConstraintError: 0,
+                DataError: 0,
+                TransactionInactiveError: 0,
+                ReadOnlyError: 0,
+                VersionError: 0,
+            };
+
+            if (!(name in name_code_map))
             {
                 throw new AssertionError('Test bug: unrecognized DOMException code "' + code + '" passed to assert_throws()');
             }
-            required_props[code] = required_props.code;
-            //Uncomment this when the latest version of every browser
-            //actually implements the spec; otherwise it just creates
-            //zillions of failures.  Also do required_props.type.
-            //required_props.name = code;
-            //
+
+            var required_props = { code: name_code_map[name] };
+
+            if (required_props.code === 0
+            || ("name" in e && e.name !== e.name.toUpperCase() && e.name !== "DOMException"))
+            {
+                // New style exception: also test the name property.
+                required_props.name = name;
+            }
+
             //We'd like to test that e instanceof the appropriate interface,
             //but we can't, because we don't know what window it was created
             //in.  It might be an instanceof the appropriate interface on some

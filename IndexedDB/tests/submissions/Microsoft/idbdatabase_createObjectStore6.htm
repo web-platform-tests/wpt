@@ -20,7 +20,7 @@
                 try {
                     db.createObjectStore(objectStoreName, { keyPath: invalidKeyPath });
                 } catch (ex) {
-                    assert_equals(ex.code, IDBDatabaseException.NON_TRANSIENT_ERR, "ex.code");
+                    assert_equals(ex.name, "SyntaxError", "ex.name");
                     t.done();
                     return;
                 }

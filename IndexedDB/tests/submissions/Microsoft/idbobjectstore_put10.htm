@@ -23,7 +23,7 @@
                     var rqPut = objStore.put(record);
                     assert_expected_exception();
                 } catch (ex) {
-                    assert_equals(ex.code, IDBDatabaseException.DATA_ERR, 'ex.code');
+                    assert_equals(ex.name, "DataError", 'ex.name');
                     t.done();
                     return;
                 }

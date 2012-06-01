@@ -21,7 +21,7 @@
                     db.createObjectStore(objectStoreName);
                     db.createObjectStore(objectStoreName);
                 } catch (ex) {
-                    assert_equals(ex.code, IDBDatabaseException.CONSTRAINT_ERR, "ex.code");
+                    assert_equals(ex.name, "ConstraintError", "ex.name");
                     t.done();
                     return;
                 }

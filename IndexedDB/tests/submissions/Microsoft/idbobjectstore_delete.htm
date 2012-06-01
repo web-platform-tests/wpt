@@ -26,7 +26,7 @@
         }
         
         function DeleteRecord() {
-            var txn = db.transaction(objectStoreName, IDBTransaction.READ_WRITE);
+            var txn = db.transaction(objectStoreName, "readwrite");
             var objStore = txn.objectStore(objectStoreName);
             var rqDelete = objStore.delete(record.key);
             var rqGet = objStore.get(record.key);

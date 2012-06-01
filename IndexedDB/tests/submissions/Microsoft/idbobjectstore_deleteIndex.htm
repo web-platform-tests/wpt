@@ -44,13 +44,13 @@
         
         function VerifyIndexDoesNotExist() {
             try {
-                var txn = db.transaction(objectStoreName, IDBTransaction.READ_ONLY);
+                var txn = db.transaction(objectStoreName, "readonly");
                 var objStore = txn.objectStore(objectStoreName);
                 var index = objStore.index(indexName);
                 
                 assert_expected_exception();
             } catch (ex) {
-                assert_equals(ex.code, IDBDatabaseException.NOT_FOUND_ERR, 'ex.code');
+                assert_equals(ex.name, "NotFoundError", 'ex.name');
                 t.done();
             }
         }

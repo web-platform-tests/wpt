@@ -20,7 +20,7 @@
             
             rqOpen.onsuccess = t.step_func( function (event) {
                 var txn = db.transaction(objectStoreName);
-                assert_equals(txn.mode, IDBTransaction.READ_ONLY, "txn.mode") 
+                assert_equals(txn.mode, "readonly", "txn.mode") 
                 t.done();
             });
             

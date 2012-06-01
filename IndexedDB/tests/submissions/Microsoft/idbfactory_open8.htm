@@ -17,7 +17,7 @@
             });
             rqOpen.onerror = t.step_func(function (event) {
                 assert_true(bOnupgradeNeededFired, "Expected onupgradeneeded event to fire")
-                assert_equals(event.target.errorCode, IDBDatabaseException.ABORT_ERR, "error.code");
+                assert_equals(event.target.error.name, "AbortError", "error.code");
                 t.done();
             });
         }

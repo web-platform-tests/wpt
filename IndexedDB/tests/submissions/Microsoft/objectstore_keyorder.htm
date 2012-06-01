@@ -33,7 +33,7 @@
         }
         
         function VerifyKeyOrderIsCorrect() {
-            var txn = db.transaction(objectStoreName, IDBTransaction.READ_ONLY);
+            var txn = db.transaction(objectStoreName, "readonly");
             var objStore = txn.objectStore(objectStoreName);
             
             var count = 0;

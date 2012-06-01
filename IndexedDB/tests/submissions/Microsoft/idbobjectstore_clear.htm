@@ -28,7 +28,7 @@
         }
         
         function VerifyRecordsHaveBeenCleared() {
-            var txn = db.transaction(objectStoreName, IDBTransaction.READ_ONLY);
+            var txn = db.transaction(objectStoreName, "readonly");
             var objStore = txn.objectStore(objectStoreName);
             var rqCursor = objStore.openCursor();
             rqCursor.onsuccess = t.step_func(function(event) {

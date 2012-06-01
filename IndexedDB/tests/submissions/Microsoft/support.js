@@ -25,15 +25,15 @@ if (!window.indexedDB)
 }
 
 function assert_open_request_error(event) {
-    assert_unreached("Open request error: " + event.target.errorCode); 
+    assert_unreached("Open request error: " + event.target.error.name); 
 }
 
 function assert_deleteDatabase_request_error(event) {
-    assert_unreached("Delete database request error: " + event.target.errorCode); 
+    assert_unreached("Delete database request error: " + event.target.error.name); 
 }
 
 function assert_database_error(event) {
-    assert_unreached("Database error, error code: " + event.target.errorCode);
+    assert_unreached("Database error: " + event.target.error.name);
 }
 
 function assert_unexpected_success() {

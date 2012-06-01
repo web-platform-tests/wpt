@@ -18,7 +18,7 @@
                     db.onerror = t.step_func( assert_database_error );
                     db.transaction(objectStoreName);
                 } catch (ex) {
-                    assert_equals(ex.code, IDBDatabaseException.NOT_FOUND_ERR, "ex.code") 
+                    assert_equals(ex.name, "NotFoundError", "ex.name") 
                     t.done();
                     return;
                 }

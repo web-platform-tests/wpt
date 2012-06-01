@@ -32,7 +32,7 @@
         }
         
         function VerifyCursorIterates() {
-            var txn = db.transaction(objectStoreName, IDBTransaction.READ_ONLY);
+            var txn = db.transaction(objectStoreName, "readonly");
             var objStore = txn.objectStore(objectStoreName);
             var index = objStore.index(indexName);
             var rqCursor = index.openCursor();

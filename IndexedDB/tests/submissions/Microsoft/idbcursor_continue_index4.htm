@@ -30,17 +30,17 @@
         }
             
         function VerifyCursorThrowsException(event) {
-            var txn = db.transaction(objectStoreName, IDBTransaction.READ_ONLY);
+            var txn = db.transaction(objectStoreName, "readonly");
             var objStore = txn.objectStore(objectStoreName);
             var index = objStore.index(indexName);
-            var rqCursor = index.openCursor(IDBKeyRange.lowerBound(records[0].iKey), IDBCursor.PREV);
+            var rqCursor = index.openCursor(IDBKeyRange.lowerBound(records[0].iKey), "prev");
             rqCursor.onsuccess = t.step_func( function(event) {
                 var cursor = event.target.result;
                 assert_cursor_exists(cursor);
                 try {
                     cursor.continue(records[1].iKey);
                 } catch(ex) {
-                    assert_equals(ex.code, IDBDatabaseException.DATA_ERR, "ex.code");
+                    assert_equals(ex.name, "DataError", "ex.name");
                     t.done();
                     return;
                 }

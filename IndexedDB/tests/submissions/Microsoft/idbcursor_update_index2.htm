@@ -33,7 +33,7 @@
         }
         
         function CursorUpdateRecord(event) {
-            var txn = db.transaction(objectStoreName, IDBTransaction.READ_ONLY);
+            var txn = db.transaction(objectStoreName, "readonly");
             var objStore = txn.objectStore(objectStoreName);
             var index = objStore.index(indexName);
             var rqCursor = index.openCursor();
@@ -44,7 +44,7 @@
                     var record = cursor.value;
                     cursor.update(record);
                 } catch(ex) {
-                    assert_equals(ex.code, IDBDatabaseException.READ_ONLY_ERR, "ex.code");
+                    assert_equals(ex.name, "ReadOnlyError", "ex.name");
                     t.done();
                     return;
                 }

@@ -29,7 +29,7 @@
         }
         
         function VerifyKeysAreCorrect() {
-            var txn = db.transaction(objectStoreName, IDBTransaction.READ_ONLY);
+            var txn = db.transaction(objectStoreName, "readonly");
             var objStore = txn.objectStore(objectStoreName);
             
             var previousValue = null;

@@ -28,7 +28,7 @@
         }
         
         function GetRecordFromIndex() {
-            var txn = db.transaction(objectStoreName, IDBTransaction.READ_ONLY);
+            var txn = db.transaction(objectStoreName, "readonly");
             var objStore = txn.objectStore(objectStoreName);
             var index = objStore.index(indexName);
             var rqGet = index.getKey(record.indexedProperty);

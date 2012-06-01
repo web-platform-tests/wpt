@@ -34,7 +34,7 @@
                 try {
                     window.cursor.delete();
                 } catch(ex) {
-                    assert_equals(ex.code, IDBDatabaseException.TRANSACTION_INACTIVE_ERR, "ex.code");
+                    assert_equals(ex.name, "TransactionInactiveError", "ex.name");
                     t.done();
                     return;
                 }

@@ -2,7 +2,7 @@ self.addEventListener('message', MessageHandler, false);
 
 function MessageHandler(e)
 {
-	if( self.msIndexedDB ||
+    if( self.msIndexedDB ||
         self.webkitIndexedDB ||
         self.mozIndexedDB) 
     {

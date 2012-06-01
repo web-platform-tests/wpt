@@ -26,7 +26,7 @@
         }
         
         function VerifyRecordWasAdded() {
-            var txn = db.transaction(objectStoreName, IDBTransaction.READ_ONLY);
+            var txn = db.transaction(objectStoreName, "readonly");
             var objStore = txn.objectStore(objectStoreName);
             var rqGet = objStore.get(record.test.obj.key);
             rqGet.onsuccess = t.step_func(function(event) {

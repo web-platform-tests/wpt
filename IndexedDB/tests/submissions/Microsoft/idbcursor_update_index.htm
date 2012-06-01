@@ -30,7 +30,7 @@
         }
         
         function CursorUpdateRecord(event) {
-                var txn = db.transaction(objectStoreName, IDBTransaction.READ_WRITE);
+                var txn = db.transaction(objectStoreName, "readwrite");
                 var objStore = txn.objectStore(objectStoreName);
                 var index = objStore.index(indexName);
                 var rqCursor = index.openCursor();
@@ -48,7 +48,7 @@
         
         function VerifyRecordWasUpdated()
         {
-            var txn = db.transaction(objectStoreName, IDBTransaction.READ_ONLY);
+            var txn = db.transaction(objectStoreName, "readonly");
             var objStore = txn.objectStore(objectStoreName);
             var rqCursor = objStore.openCursor();
             rqCursor.onsuccess = t.step_func( function(event) {

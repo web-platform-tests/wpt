@@ -27,7 +27,7 @@
         }
         
         function VerifyCursorThrowsException(event) {
-            var txn = db.transaction(objectStoreName, IDBTransaction.READ_ONLY);
+            var txn = db.transaction(objectStoreName, "readonly");
             var objStore = txn.objectStore(objectStoreName);
             var rqCursor = objStore.openCursor();
             rqCursor.onsuccess = t.step_func( function(event) {
@@ -36,7 +36,7 @@
                 try {
                     cursor.continue(document);
                 } catch(ex) {
-                    assert_equals(ex.code, IDBDatabaseException.DATA_ERR, "ex.code");
+                    assert_equals(ex.name, "DataError", "ex.name");
                     t.done();
                     return;
                 }

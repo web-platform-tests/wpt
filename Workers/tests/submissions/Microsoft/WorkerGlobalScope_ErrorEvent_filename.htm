@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title> WorkerGlobalScope ErrorEvent.filename </title>
+<title> WorkerGlobalScope onerror event handler argument: location </title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 </head>
@@ -13,7 +13,7 @@
     var FileName = './support/ErrorEvent.js';
     var href = window.location.href;
     var ExpectedResult = href.substring(0, href.lastIndexOf('/')) + FileName.substring(1);
-    var description = "ErrorEvent filename attribute represents the absolute URL of the script in which the error originally occurred.";
+    var description = "WorkerGlobalScope onerror event handler 2nd argument: location";
     
     var t = async_test("Test Description: " + description);
                   

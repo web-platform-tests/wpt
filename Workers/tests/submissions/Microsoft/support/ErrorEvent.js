@@ -3,7 +3,8 @@ onmessage = function(evt)
     throw(evt.data);
 }
 
-onerror = function(err)
+onerror = function(message, location, line, col)
 {
-    postMessage( {event: err.toString(), type: err.type, message: err.message, filename: err.filename, lineno: err.lineno} );
+    postMessage( {"message": message, "filename": location, "lineno": line, "colno": col} );
+    return true;
 }

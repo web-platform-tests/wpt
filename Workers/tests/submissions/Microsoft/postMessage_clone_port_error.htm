@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title> postMessage(): cloning source port </title>
+<title> postMessage() DataCloneError: cloning source port </title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 </head>
@@ -9,14 +9,14 @@
 <div id=log></div>
 <script>
     setup({timeout:500});
-    var description = "Test Description: Throw an INVALID_STATE_ERR if the ports array in postMessage contains source port.";
+    var description = "Test Description: Throw a DataCloneError if transfer array in postMessage contains source port.";
    
     test(function()
     {
         var channel = new MessageChannel();
         channel.port1.start();
         
-        assert_throws("INVALID_STATE_ERR", function()
+        assert_throws("DATA_CLONE_ERR", function()
         {
             channel.port1.postMessage("ports", [channel.port1]);
         });

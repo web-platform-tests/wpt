@@ -7,14 +7,26 @@
   <title>CSS Reftest Reference</title>
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
+  
+  <style type="text/css"><![CDATA[
+  div
+  {
+  background-color: black;
+  height: 96px;
+  margin-bottom: 5px;
+  width: 1px;
+  }
+  ]]></style>
 
  </head>
 
  <body>
 
-  <p>Test passes if there is a filled black square.</p>
+  <p>Test passes if the 2 black lines have the <strong>same width</strong>.</p>
 
-  <div><img src="support/black15x15.png" width="96" height="96" alt="Image download support must be enabled" /></div>
+  <div></div>
+
+  <div></div>
 
  </body>
 </html>

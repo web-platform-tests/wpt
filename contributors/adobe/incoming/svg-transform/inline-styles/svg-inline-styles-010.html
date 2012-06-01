@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>CSS Transforms Test: Invalid inline style on SVG group with invalid presentation attribute on group and valid presentation on child</title>
+    <title>CSS Transforms Test: Invalid inline style on SVG group with valid presentation attribute styles on group and child elements</title>
     <link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-transform">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-attribute-specificity">
     <link rel="match" href="reftest/svg-inline-styles-ref.html">
     <meta name="flags" content="svg">
-    <meta name="assert" content="When both the inline styles and presentation attribute on a group are invalid, no transform should be applied. However, valid presentation attributes on the child should be applied. The rect in the test should be rotated by 90 degrees clockwise and not scaled down or flipped.">
+    <meta name="assert" content="Invalid inline styles on group elements should fall back to presentation attribute styles on the same element. Presentation attribute styles on the child should also be applied. The rect in the test should be rotated by 90 degrees clockwise, moved up 100 pixels and not scaled.">
     <style type="text/css">
     svg {
         width: 300px;
@@ -26,9 +26,8 @@
             </linearGradient>
         </defs>
         <rect x="1" y="1" width="98" height="98" fill="red"/>
-        <!-- Percentage values are not supported for scale function arguments thus invalidating both transforms here -->
-        <g  style="-webkit-transform: scale(50%)" transform="scale(-%100)">
-            <rect y="-100" width="100" height="100" fill="url(#grad)" transform="rotate(90)"/>
+        <g  style="-webkit-transform: scale(invalid)" transform="rotate(90)">
+            <rect width="100" height="100" fill="url(#grad)" transform="translateY(-100)"/>
         </g>
     </svg>
 </body>

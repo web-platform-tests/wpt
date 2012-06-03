@@ -3,35 +3,59 @@
     <head>
         <title>CSS Test: Absolutely positioned non-replaced elements with 'margin-left' and 'margin-right' set to 'auto'</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-06-02 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#abs-non-replaced-width" />
+		<link rel="match" href="absolute-non-replaced-width-003-ref.xht" />
+
         <meta name="flags" content="ahem" />
         <meta name="assert" content="When 'left', 'width' and 'right' are not 'auto', set 'margin-left' and 'margin-right' to equal values." />
         <style type="text/css">
             #containingblock
             {
                 border: solid black;
-                height: 2in;
+                height: 200px;
                 position: relative;
-                width: 4in;
+                width: 400px;
             }
             div div
             {
-                /* left + margin-left + border-left-width + padding-left + width + padding-right + border-right-width + margin-right + right = width of containing block */
-                /* 1in + solve       + 0                 + 0            + 1in   + 0             + 0                  + solve        + -2in   = 4in */
+                /* 
+                  left				:  100px
+                + 
+                  margin-left		:  solve 
+                + 
+                  border-left-width :    0px
+                + 
+                  padding-left		:    0px
+                + 
+                  width				:  100px
+                + 
+                  padding-right		:    0px
+                + 
+                  border-right-width:    0px
+                + 
+                  margin-right		:  solve
+                + 
+                  right				: -200px
+                =============================
+          width of containing block :  400px
+                
+                */
+
                 background: red;
                 color: blue;
-                font: 1in/1em Ahem;
-                left: 1in;
-                margin-left: auto; /* value is solved to 2in */
-                margin-right: auto; /* value is solved to 2in */
+                font: 100px/1em Ahem;
+                left: 100px;
+                margin-left: auto; /* value is solved to 200px */
+                margin-right: auto; /* value is solved to 200px */
                 position: absolute;
-                right: -2in;
-                width: 1in;
+                right: -200px;
+                width: 100px;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if the blue square in in the upper-right corner of the black rectangle and there is no red visible on the page.</p>
+        <p>Test passes if a filled blue square is in the <strong>upper-right corner</strong> of a hollow black rectangle and if there is no red.</p>
         <div id="containingblock">
             <div>X</div>
         </div>

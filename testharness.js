@@ -254,16 +254,15 @@ policies and contribution forms [3].
  *   assert that property property_name on object is readonly
  *
  * assert_throws(code, func, description)
- *   code - either a DOMException code as a string, or an object
- *          e.g. "HierarchyRequestError" or `new TypeError()`
+ *   code - the expected exception:
+ *     o string: the thrown exception must be a DOMException with the given
+ *               name, e.g., "TimeoutError" (for compatibility with existing
+ *               tests, a constant is also supported, e.g., "TIMEOUT_ERR")
+ *     o object: the thrown exception must have a property called "name" that
+ *               matches code.name
+ *     o null:   allow any exception (in general, one of the options above
+ *               should be used)
  *   func - a function that should throw
- *
- *   asserts that /func/ throws an exception. If a string is passed for /code/,
- *   it checks that the exception is a fitting DOMException. If an object is
- *   passed for /code/ instead of a string, checks that the thrown exception has
- *   a property called "name" that matches the property of code called "name".
- *   Note, this function will probably be rewritten sometime to make more
- *   sense.
  *
  * assert_unreached(description)
  *   asserts if called. Used to ensure that some codepath is *not* taken e.g.
@@ -752,6 +751,10 @@ policies and contribution forms [3].
         {
             if (e instanceof AssertionError) {
                 throw(e);
+            }
+            if (code === null)
+            {
+                return;
             }
             if (typeof code === "object")
             {

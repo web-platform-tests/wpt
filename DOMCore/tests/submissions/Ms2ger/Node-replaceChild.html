@@ -229,6 +229,32 @@ test(function() {
   });
 }, "If the context node is an element, inserting a document or a doctype should throw a HierarchyRequestError.")
 
+// Step 6.
+test(function() {
+  var a = document.createElement("div");
+  var b = document.createElement("div");
+  var c = document.createElement("div");
+  a.appendChild(b);
+  a.appendChild(c);
+  assert_array_equals(a.childNodes, [b, c]);
+  assert_equals(a.replaceChild(c, b), b);
+  assert_array_equals(a.childNodes, [c]);
+}, "Replacing a node with its next sibling should work (2 children)");
+test(function() {
+  var a = document.createElement("div");
+  var b = document.createElement("div");
+  var c = document.createElement("div");
+  var d = document.createElement("div");
+  var e = document.createElement("div");
+  a.appendChild(b);
+  a.appendChild(c);
+  a.appendChild(d);
+  a.appendChild(e);
+  assert_array_equals(a.childNodes, [b, c, d, e]);
+  assert_equals(a.replaceChild(d, c), c);
+  assert_array_equals(a.childNodes, [b, d, e]);
+}, "Replacing a node with its next sibling should work (4 children)");
+
 // Bugs.
 test(function() {
   var doc = document.implementation.createHTMLDocument("title");

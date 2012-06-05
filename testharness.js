@@ -138,10 +138,10 @@ policies and contribution forms [3].
  * 1) There are no Test objects that have been created but not completed
  * 2) The load event on the document has fired
  *
- * This behaviour can be overridden by setting the explicit_done property to true
- * in a call to setup(). If explicit_done is true, the test harness will not assume
- * it is done until the global done() function is called. Once done() is called, the
- * two conditions above apply like normal.
+ * This behaviour can be overridden by setting the explicit_done property to
+ * true in a call to setup(). If explicit_done is true, the test harness will
+ * not assume it is done until the global done() function is called. Once done()
+ * is called, the two conditions above apply like normal.
  *
  * == Generating tests ==
  *

@@ -46,6 +46,23 @@ test(function() {
     a.replaceChild(a, a);
   });
 }, "If child's parent is not the context node, a NotFoundError exception should be thrown")
+test(function() {
+  // TODO: https://www.w3.org/Bugs/Public/show_bug.cgi?id=17318
+  var nodes = [
+    document.implementation.createDocumentType("html", "", ""),
+    document.createTextNode("text"),
+    document.implementation.createDocument(null, "foo", null).createProcessingInstruction("foo", "bar"),
+    document.createComment("comment")
+  ];
+
+  var a = document.createElement("div");
+  var b = document.createElement("div");
+  nodes.forEach(function(node) {
+    assert_throws("NotFoundError", function() {
+      node.replaceChild(a, b);
+    });
+  });
+}, "If the context node is not a node that can contain children, a NotFoundError exception should be thrown")
 
 // Step 2.
 test(function() {

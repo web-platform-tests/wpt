@@ -6,5 +6,5 @@ CACHE MANIFEST
 ../js/clock.js
 ../css/result.css
 ../css/online.css
-../../resources/testharness.js
-../../resources/testharnessreport.js
+/resources/testharness.js
+/resources/testharnessreport.js

@@ -7,8 +7,8 @@ CACHE:
 ../js/clock.js
 ../css/result.css
 ../css/offline.css
-../../resources/testharness.js
-../../resources/testharnessreport.js
+/resources/testharness.js
+/resources/testharnessreport.js
 
 NETWORK:
 ../html/clock.html

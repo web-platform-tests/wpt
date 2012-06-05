@@ -124,12 +124,13 @@ policies and contribution forms [3].
  *           tests to complete (this is different to the per-test timeout
  *           because async tests do not start their timer until .step is called)
  *
- * explicit_done - Wait for an explicit call to done() before declaring all tests
- *                 complete (see below)
+ * explicit_done - Wait for an explicit call to done() before declaring all
+ *                 tests complete (see below)
  *
- * output_document - The document to which results should be logged. By default this is
- *                   the current document but could be an ancestor document in some cases
- *                   e.g. a SVG test loaded in an HTML wrapper
+ * output_document - The document to which results should be logged. By default
+ *                   this is the current document but could be an ancestor
+ *                   document in some cases e.g. a SVG test loaded in an HTML
+ *                   wrapper
  *
  * == Determining when all tests are complete ==
  *

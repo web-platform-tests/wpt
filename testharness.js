@@ -33,8 +33,8 @@ policies and contribution forms [3].
  * the tests have run.
  *
  * NOTE: By default tests must be created before the load event fires. For ways
- *       to create tests after the load event, see "Determining when all tests are
- *       complete", below
+ *       to create tests after the load event, see "Determining when all tests
+ *       are complete", below
  *
  * == Synchronous Tests ==
  *
@@ -49,8 +49,8 @@ policies and contribution forms [3].
  *
  * The function passed in is run in the test() call.
  *
- * properties is an object that overrides default test properties. The recognised properties
- * are:
+ * properties is an object that overrides default test properties. The
+ * recognised properties are:
  *    timeout - the test timeout in ms
  *
  * e.g.

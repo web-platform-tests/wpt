@@ -4,8 +4,6 @@
 
 use File::Path;
 
-rmtree('dist/css2.1');
-
 # approved/ directory is ready already and built automatically
 
 

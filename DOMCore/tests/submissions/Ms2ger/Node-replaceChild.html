@@ -191,7 +191,8 @@ test(function() {
 test(function() {
   var doc = document.implementation.createHTMLDocument("title");
   var comment = doc.appendChild(doc.createComment("foo"));
-  assert_array_equals(doc.childNodes, [doc.doctype, doc.documentElement, comment]);
+  doc.removeChild(doc.doctype);
+  assert_array_equals(doc.childNodes, [doc.documentElement, comment]);
 
   var doctype = document.implementation.createDocumentType("html", "", "");
   assert_throws("HierarchyRequestError", function() {

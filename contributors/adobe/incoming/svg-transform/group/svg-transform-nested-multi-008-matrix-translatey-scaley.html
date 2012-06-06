@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>CSS Transforms Test: SVG presentation attribute, matrix on group, translateY on child1, scaleY on child2</title>
+    <title>CSS Transforms Test: SVG presentation attribute, matrix on group, scaleY on child1, translateY on child2</title>
     <link rel="author" title="David Alcala" href="mailto:dalcala@adobe.com">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-transform">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions">
-    <link rel="match" href="reftest/svg-four-color-square-and-green-square-ref.html">
+    <link rel="match" href="reftest/svg-four-color-square-ref.html">
     <meta name="flags" content="svg">
-    <meta name="assert" content="The matrix transform function must be supported in SVG groups with multiple nested children, where one child has a translateY transform function and the other child has a scaleY transform function. Both rects in the test should be flipped up and left and scaled down horizontally and vertically when the matrix is performed on the group. Child rect 1 should then be moved 20 pixels in the Y direction when the translateY is performed on child rect 1. Child rect 2 should then be vertically scaled up 2 to 100x100 when the scaleY is performed on child rect 2.">
+    <meta name="assert" content="The matrix transform function must be supported in SVG groups with multiple nested children, where one child has a translateY transform function and the other child has a scaleY transform function. Both rects in the test should be flipped up and left, scaled down horizontally and vertically, and translated in the X and Y directions when the matrix is performed on the group. Child rect 1 should then be vertically scaled down by 0.5 to 98x98 when the scaleY is performed on child rect 1. Child rect 2 should then be moved 20 pixels in the Y direction when the translateY is performed on child rect 2.">
     <style type="text/css">
     svg {
         width: 300px;
@@ -16,7 +16,7 @@
     </style>
 </head>
 <body>
-    <p>The test passes if there is a four-color square and a green square of the same size, horizontally aligned.  For the four-color square, the top left is a green square, the top right is a fuchsia square, the bottom left is a yellow square, and the bottom right is a blue square. There should be no red.</p>
+    <p>The test passes if there is one four-color square, where the top left is a green square, the top right is a fuchsia square, the bottom left is a yellow square, and the bottom right is a blue square. There should be no red.</p>
     <svg>
         <defs>
             <pattern id="coloredBoxes" patternUnits="userSpaceOnUse" x="0" y="0" width="200" height="200">
@@ -26,11 +26,10 @@
                 <rect x="100" y="100" width="100" height="100" fill="green"/>
             </pattern>
         </defs>
-        <rect x="21" y="11" width="98" height="98" fill="red"/>
-        <rect x="161" y="11" width="98" height="98" fill="red"/>
-        <g transform="matrix(-0.5 0 0 -0.5 120 100)">
-            <rect width="200" height="200" fill="url(#coloredBoxes)" transform="translateY(-20)"/>   
-            <rect x="-280" y="-10" width="200" height="100" fill="green" transform="scaleY(2)"/>
+        <rect x="21" y="1" width="98" height="98" fill="red"/> <!-- this rect is outside the group to catch failures of the group transform -->
+        <g transform="matrix(-0.5 0 0 -0.5 120 90)">
+            <rect x="2" y="-36" width="196" height="392" fill="red" transform="scaleY(0.5)"/>
+            <rect width="200" height="200" fill="url(#coloredBoxes)" transform="translateY(-20)"/>
         </g>
     </svg>
 </body>

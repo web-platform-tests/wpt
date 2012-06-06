@@ -5,9 +5,9 @@
     <link rel="author" title="David Alcala" href="mailto:dalcala@adobe.com">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-transform">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions">
-    <link rel="match" href="reftest/svg-fuchsia-orange-two-squares-ref.html">
+    <link rel="match" href="reftest/svg-fuchsia-orange-square-ref.html">
     <meta name="flags" content="svg">
-    <meta name="assert" content="The scaleX transform function must be supported in SVG groups with a child that has a rotate transform function. The rect in the test should be horizontally scaled down to 100x100 when the scaleX is performed on the group and the rect should be rotated by 90 degrees clockwise when the rotate is performed on the child.">
+    <meta name="assert" content="The scaleX transform function must be supported in SVG groups with a child that has a rotate transform function. The rect in the test should be horizontally scaled down to 80x80 when the scaleX is performed on the group and the rect should be rotated by 90 degrees clockwise when the rotate is performed on the child.">
     <style type="text/css">
     svg {
         width: 300px;
@@ -16,7 +16,7 @@
     </style>
 </head>
 <body>
-    <p>The test passes if there are two identical squares horizontally aligned, each with a fuchsia left half and an orange right half, and no red.</p>
+    <p>The test passes if there is a square with a fuchsia left half and an orange right half, and no red.</p>
     <svg>
         <!-- Fill with gradient to avoid false positive. -->
         <defs>
@@ -29,12 +29,10 @@
                 <stop offset="50%" stop-color="orange"/>
             </linearGradient>
         </defs>
-        <rect x="21" y="21" width="98" height="98" fill="red"/>
-        <rect x="151" y="21" width="98" height="98" fill="red"/>
-        <g transform="scaleX(0.5)">
-            <rect x="20" y="-240" width="100" height="200" fill="url(#grad)" transform="rotate(90)"/>
+        <rect x="41" y="41" width="78" height="78" fill="red"/>
+        <g transform="scaleX(2)">
+            <rect x="40" y="-60" width="80" height="40" fill="url(#grad)" transform="rotate(90)"/>
         </g>
-        <rect x="150" y="20" width="100" height="100" fill="url(#grad2)"/>
     </svg>
 </body>
 </html>

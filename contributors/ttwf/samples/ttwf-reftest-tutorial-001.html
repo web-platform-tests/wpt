@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>CSS Transforms Test: translate function with one argument</title>
+    <title>CSS Transforms Test: translate function</title>
     <link rel="author" title="Your Name" href="mailto:youremail@address.com">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-property">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions">
     <link rel="match" href="reftest/ttwf-reftest-tutorial-ref.html">
-    <meta name="assert" content="The CSS transform property must support the translate function with just one argument. The div in this test must be moved 50 pixels on the X axis and not moved on the Y axis">
+    <meta name="assert" content="This transform moves the element by 100 pixels in both the X and Y directions.">
     <style type="text/css">
         .container {
             position: relative;
@@ -16,12 +16,12 @@
             width: 100px;
             height: 100px;
             background: green;
-            transform: translate(50px);
+            transform: translate(100px,100px);
         }
         .redSquare {
             position: absolute;
-            top: 1px;
-            left: 51px;
+            top: 101px;
+            left: 101px;
             width: 98px;
             height: 98px;
             background: red;

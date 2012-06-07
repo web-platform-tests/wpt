@@ -1,22 +1,45 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html>
-    <head>
-        <title>Test File</title>
-        <link rel="author" title="Your Name" href="mailto:youremail@address.com">
-        <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-transform">
-        <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions">
-        <meta name="flags" content="dom svg">
-        <meta name="assert" content="Description of what the test is asserting">
-        <style>
-            svg {
-                width: 300px;
-                height: 300px;
-            }
-        </style>
-    </head>
-    <body>
-        <svg>
-            <rect id="myRect" width="100" height="100" fill="green"/>
-        </svg>
-    </body>
+<head>
+    <title>CSS Transforms Test: translate function with one argument</title>
+    <link rel="author" title="Your Name" href="mailto:youremail@address.com">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-property">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions">
+    <meta name="flags" content="dom">
+    <meta name="assert" content="This transform moves the element by 100 pixels in both the X and Y directions."> 
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>    
+    <style type="text/css">
+        * {
+            margin: 0px;
+            padding: 0px;
+        }
+        .results {
+            position: absolute;
+            top: 225px;
+            width: 100%;
+        }
+        .greenSquare {
+            width: 100px;
+            height: 100px;
+            background: green;
+            -webkit-transform: translate(100px,100px);
+        }
+    </style>
+</head>
+<body>
+    <div id="myDiv" class="greenSquare"></div>    
+    <div class="results">
+        <p>The test passes if the coordinates of the green square are 100,100</p><br>
+        <div id="log"></div>
+    </div>
+    <script type="text/javascript">
+        function checkElementPosition(elemID) {
+            return document.getElementById(elemID).getBoundingClientRect().left + "," +
+                   document.getElementById(elemID).getBoundingClientRect().top;            
+        }    
+        test(function() {assert_equals(checkElementPosition("myDiv"), "100,100", "myDiv should be at 100,100")}, 
+                        "Transform_Translate_100px_100px");
+    </script>    
+</body>
 </html>

@@ -132,6 +132,11 @@ policies and contribution forms [3].
  *                   document in some cases e.g. a SVG test loaded in an HTML
  *                   wrapper
  *
+ * explicit_timeout - disable file timeout; only stop waiting for results 
+ *                    when the timeout() function is called (typically for 
+ *                    use when integrating with some existing test framework 
+ *                    that has its own timeout mechanism).
+ *
  * == Determining when all tests are complete ==
  *
  * By default the test harness will assume there are no more results to come
@@ -1017,6 +1022,8 @@ policies and contribution forms [3].
         };
         this.phase = this.phases.INITIAL;
 
+        this.properties = {};
+
         //All tests can't be done until the load event fires
         this.all_loaded = false;
         this.wait_for_finish = false;
@@ -1024,7 +1031,6 @@ policies and contribution forms [3].
 
         this.timeout_length = settings.timeout;
         this.timeout_id = null;
-        this.set_timeout();
 
         this.start_callbacks = [];
         this.test_done_callbacks = [];
@@ -1043,7 +1049,8 @@ policies and contribution forms [3].
                          this_obj.complete();
                      }
                  });
-        this.properties = {};
+
+        this.set_timeout();
     }
 
     Tests.prototype.setup = function(func, properties)
@@ -1068,11 +1075,13 @@ policies and contribution forms [3].
         if (properties.timeout)
         {
             this.timeout_length = properties.timeout;
-            this.set_timeout();
         }
         if (properties.explicit_done)
         {
             this.wait_for_finish = true;
+        }
+        if (properties.explicit_timeout) {
+            this.timeout_length = null;
         }
 
         if (func)
@@ -1086,15 +1095,20 @@ policies and contribution forms [3].
                 this.status.message = e;
             };
         }
+        this.set_timeout();
     };
 
     Tests.prototype.set_timeout = function()
     {
         var this_obj = this;
         clearTimeout(this.timeout_id);
-        this.timeout_id = setTimeout(function() {
-                                         this_obj.timeout();
-                                     }, this.timeout_length);
+        if (this.timeout_length !== null)
+        {
+           
+            this.timeout_id = setTimeout(function() {
+                                             this_obj.timeout();
+                                         }, this.timeout_length);
+        }
     };
 
     Tests.prototype.timeout = function() {
@@ -1113,7 +1127,7 @@ policies and contribution forms [3].
     Tests.prototype.push = function(test)
     {
         if (this.phase < this.phases.HAVE_TESTS) {
-            this.notify_start();
+            this.start();
         }
         this.num_pending++;
         this.tests.push(test);
@@ -1244,6 +1258,14 @@ policies and contribution forms [3].
     };
 
     var tests = new Tests();
+
+    function timeout() {
+        if (tests.timeout_length === null)
+        {
+            tests.timeout();
+        }
+    }
+    expose(timeout, 'timeout');
 
     function add_start_callback(callback) {
         tests.start_callbacks.push(callback);

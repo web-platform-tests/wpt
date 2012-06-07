@@ -2,6 +2,7 @@
 <html>
   <head>
     <title>CSS Reftest Reference</title>
+    <link rel="author" title="L. David Baron" href="http://dbaron.org/">
     <link rel="author" title="Aryeh Gregor" href="mailto:ayg@aryeh.name">
     <style>
       p {
@@ -11,13 +12,14 @@
         width: 100px;
         transform: translateX(80px);
       }
-      p#two {
+      p + p {
         font-size: 40px;
         transform: translateX(160px);
       }
     </style>
-    <p id="one">One</p>
-    <p id="two">Two</p>
-
+  </head>
+  <body>
+    <p>One</p>
+    <p>Two</p>
   </body>
 </html>

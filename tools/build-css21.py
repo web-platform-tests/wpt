@@ -53,6 +53,9 @@ for dir in dirs:
   suite.addTestsByExt(testroot, '.xht')
   if exists(join(testroot, reftestPath)):
     suite.addReftests(testroot, reftestPath)
+suite.addTestsByExt(root, '.xht')
+if exists(join(root, reftestPath)):
+  suite.addReftests(root, reftestPath)
 for src, dst in rawDirs.items():
   if exists(join(root,src)):
     suite.addRaw(join(root,src), dst)

@@ -28,6 +28,14 @@ test(function() {
         ["foo", "", "foo>", null]
      ]
 
+  var doc = document.implementation.createHTMLDocument("title");
+  var doTest = function(aDocument, aQualifiedName, aPublicId, aSystemId) {
+    var doctype = aDocument.implementation.createDocumentType(aQualifiedName, aPublicId, aSystemId);
+    assert_equals(doctype.name, aQualifiedName, "name")
+    assert_equals(doctype.publicId, aPublicId, "publicId")
+    assert_equals(doctype.systemId, aSystemId, "systemId")
+    assert_equals(doctype.ownerDocument, aDocument, "ownerDocument")
+  }
   tests.forEach(function(t) {
     var qualifiedName = t[0], publicId = t[1], systemId = t[2], expected = t[3]
     test(function() {
@@ -36,12 +44,11 @@ test(function() {
           document.implementation.createDocumentType(qualifiedName, publicId, systemId)
         })
       } else {
-        var doctype = document.implementation.createDocumentType(qualifiedName, publicId, systemId);
-        assert_equals(doctype.name, qualifiedName)
-        assert_equals(doctype.publicId, publicId)
-        assert_equals(doctype.systemId, systemId)
+        doTest(document, qualifiedName, publicId, systemId);
+        doTest(doc, qualifiedName, publicId, systemId);
       }
-    }, "createDocumentType(" + format_value(qualifiedName) + ", " + format_value(publicId) + ", " + format_value(systemId) + ")");
+    }, "createDocumentType(" + format_value(qualifiedName) + ", " + format_value(publicId) + ", " + format_value(systemId) + ") should " +
+       (expected ? "throw " + expected : "work"));
   });
 })
 </script>

@@ -132,9 +132,9 @@ policies and contribution forms [3].
  *                   document in some cases e.g. a SVG test loaded in an HTML
  *                   wrapper
  *
- * explicit_timeout - disable file timeout; only stop waiting for results 
- *                    when the timeout() function is called (typically for 
- *                    use when integrating with some existing test framework 
+ * explicit_timeout - disable file timeout; only stop waiting for results
+ *                    when the timeout() function is called (typically for
+ *                    use when integrating with some existing test framework
  *                    that has its own timeout mechanism).
  *
  * == Determining when all tests are complete ==
@@ -1104,7 +1104,6 @@ policies and contribution forms [3].
         clearTimeout(this.timeout_id);
         if (this.timeout_length !== null)
         {
-           
             this.timeout_id = setTimeout(function() {
                                              this_obj.timeout();
                                          }, this.timeout_length);

@@ -45,15 +45,15 @@ var wait = 2;
 function iframeLoaded() {
   if (!--wait) {
     internalSubset.step(function() {
-      var doc1 = document.getElementById("subset1").contentDocument.doctype
-      var doc2 = document.getElementById("subset2").contentDocument.doctype
-      assert_true(doc1.isEqualNode(doc2))
-      assert_true(doc1.doctype.isEqualNode(doc2.doctype))
+      var doc1 = document.getElementById("subset1").contentDocument
+      var doc2 = document.getElementById("subset2").contentDocument
+      assert_true(doc1.doctype.isEqualNode(doc2.doctype), "doc1.doctype.isEqualNode(doc2.doctype)")
+      assert_true(doc1.isEqualNode(doc2), "doc1.isEqualNode(doc2)")
     })
   }
 }
 </script>
-<iframe id="subset1" onload="iframeLoaded()" src="data:application/xml,&lt;!DOCTYPE foo [ &lt;!ELEMENT foo (#PCDATA)> ]>&lt;foo/>" />
+<iframe id="subset1" onload="iframeLoaded()" src="data:application/xml,&lt;!DOCTYPE foo [ &lt;!ELEMENT foo (%23PCDATA)> ]>&lt;foo/>" />
 <iframe id="subset2" onload="iframeLoaded()" src="data:application/xml,&lt;!DOCTYPE foo [ &lt;!ELEMENT foo EMPTY> ]>&lt;foo/>" />
 </body>
 </html>

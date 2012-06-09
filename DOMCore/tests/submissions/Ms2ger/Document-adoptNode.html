@@ -30,9 +30,12 @@ test(function() {
   assert_equals(x.ownerDocument, doc)
 }, "Adopting an Element called ':good:times:' should work.")
 test(function() {
-  assert_equals(document.doctype.ownerDocument, document)
-  document.adoptNode(document.doctype)
-  assert_equals(document.doctype.ownerDocument, document)
+  var doctype = document.doctype;
+  assert_equals(doctype.parentNode, document)
+  assert_equals(doctype.ownerDocument, document)
+  document.adoptNode(doctype)
+  assert_equals(doctype.parentNode, null)
+  assert_equals(doctype.ownerDocument, document)
 }, "Explicitly adopting a DocumentType should work.")
 test(function() {
   var doc = document.implementation.createDocument(null, null, null)

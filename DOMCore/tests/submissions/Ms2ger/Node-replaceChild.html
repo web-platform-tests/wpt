@@ -117,6 +117,17 @@ test(function() {
     doc.replaceChild(df, doc.documentElement);
   });
 }, "If the context node is a document, inserting a DocumentFragment that contains a text node or too many elements should throw a HierarchyRequestError.")
+test(function() {
+  var doc = document.implementation.createHTMLDocument("title");
+  doc.removeChild(doc.documentElement);
+
+  var df = doc.createDocumentFragment();
+  df.appendChild(doc.createElement("a"));
+  df.appendChild(doc.createElement("b"));
+  assert_throws("HierarchyRequestError", function() {
+    doc.replaceChild(df, doc.doctype);
+  });
+}, "If the context node is a document (without element children), inserting a DocumentFragment that contains multiple elements should throw a HierarchyRequestError.")
 
 // Step 3.2.2.
 test(function() {
@@ -256,6 +267,25 @@ test(function() {
   assert_array_equals(a.childNodes, [b, d, e]);
 }, "Replacing a node with its next sibling should work (4 children)");
 
+// Step 7.
+test(function() {
+  var doc = document.implementation.createHTMLDocument("title");
+  var doctype = doc.doctype;
+  assert_array_equals(doc.childNodes, [doctype, doc.documentElement]);
+
+  var doc2 = document.implementation.createHTMLDocument("title2");
+  var doctype2 = doc2.doctype;
+  assert_array_equals(doc2.childNodes, [doctype2, doc2.documentElement]);
+
+  doc.replaceChild(doc2.doctype, doc.doctype);
+  assert_array_equals(doc.childNodes, [doctype2, doc.documentElement]);
+  assert_array_equals(doc2.childNodes, [doc2.documentElement]);
+  assert_equals(doctype.parentNode, null);
+  assert_equals(doctype.ownerDocument, doc);
+  assert_equals(doctype2.parentNode, doc);
+  assert_equals(doctype2.ownerDocument, doc);
+}, "If the context node is a document, inserting a new doctype should work.")
+
 // Bugs.
 test(function() {
   var doc = document.implementation.createHTMLDocument("title");
@@ -264,6 +294,15 @@ test(function() {
   assert_equals(doc.documentElement, doc.replaceChild(df, doc.documentElement));
   assert_array_equals(doc.childNodes, [doc.doctype, a]);
 }, "Replacing the document element with a DocumentFragment containing a single element should work.");
+test(function() {
+  var doc = document.implementation.createHTMLDocument("title");
+  var df = doc.createDocumentFragment();
+  var a = df.appendChild(doc.createComment("a"));
+  var b = df.appendChild(doc.createElement("b"));
+  var c = df.appendChild(doc.createComment("c"));
+  assert_equals(doc.documentElement, doc.replaceChild(df, doc.documentElement));
+  assert_array_equals(doc.childNodes, [doc.doctype, a, b, c]);
+}, "Replacing the document element with a DocumentFragment containing a single element and comments should work.");
 test(function() {
   var doc = document.implementation.createHTMLDocument("title");
   var a = doc.createElement("a");

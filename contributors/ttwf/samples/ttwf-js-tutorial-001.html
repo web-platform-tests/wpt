@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>CSS Transforms Test: translate function with one argument</title>
+    <title>CSS Transforms Test: translate function</title>
     <link rel="author" title="Your Name" href="mailto:youremail@address.com">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-property">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions">
-    <meta name="flags" content="dom">
-    <meta name="assert" content="This transform moves the element by 100 pixels in both the X and Y directions."> 
+    <link rel="match" href="reftest/ttwf-reftest-tutorial-ref.html">
+    <meta name="assert" content="This transform moves the element by 100 pixels in both the X and Y directions.">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>    
     <style type="text/css">
@@ -18,20 +18,35 @@
             position: absolute;
             top: 225px;
             width: 100%;
+        }    
+        .container {
+            position: relative;
         }
         .greenSquare {
+            position: absolute;
             width: 100px;
             height: 100px;
             background: green;
             transform: translate(100px,100px);
         }
+        .redSquare {
+            position: absolute;
+            top: 101px;
+            left: 101px;
+            width: 98px;
+            height: 98px;
+            background: red;
+        }
     </style>
 </head>
 <body>
-    <div id="myDiv" class="greenSquare"></div>    
     <div class="results">
         <p>The test passes if the coordinates of the green square are 100,100</p><br>
         <div id="log"></div>
+    </div>
+    <div class="container">
+        <div class="redSquare"></div>
+        <div id="myDiv" class="greenSquare"></div>
     </div>
     <script type="text/javascript">
         function checkElementPosition(elemID) {

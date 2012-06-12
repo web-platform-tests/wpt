@@ -8,6 +8,9 @@
     <link rel="match" href="reftest/ttwf-reftest-tutorial-ref.html">
     <meta name="assert" content="This transform moves the element by 100 pixels in both the X and Y directions.">
     <style type="text/css">
+        .container {
+            position: absolute;
+        }
         .greenSquare {
             position: absolute; 
             top: 0;
@@ -29,7 +32,9 @@
 </head>
 <body>
     <p>The test passes if there is a green square and no red.</p>
-    <div class="redSquare"></div>
-    <div class="greenSquare"></div>
+    <div class="container">
+        <div class="redSquare"></div>
+        <div class="greenSquare"></div>
+    </div>
 </body>
 </html>

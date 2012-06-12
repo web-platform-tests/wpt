@@ -27,7 +27,7 @@
             width: 100px;
             height: 100px;
             background: green;
-            transform: translate(100px,100px);
+            -webkit-transform: translate(100px,100px);
         }
         .redSquare {
             position: absolute;
@@ -41,7 +41,7 @@
 </head>
 <body>
     <div class="results">
-        <p>The test passes if the coordinates of the green square are 100,100</p><br>
+        <p>The test passes if there is a green square at 100,100 and no red is visible</p><br>
         <div id="log"></div>
     </div>
     <div class="container">

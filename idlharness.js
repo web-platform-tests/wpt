@@ -569,12 +569,10 @@ IdlException.prototype.test_self = function()
         //ECMA-262 section 15.3.5.3, unless otherwise specified."
         //TODO
         //"Its [[Class]] internal property is “Function”."
-        //String() and {}.toString.call() should be equivalent, since nothing
-        //defines a stringifier.
+        //String() returns something implementation-dependent, because it calls
+        //Function#toString.
         assert_equals({}.toString.call(window[this.name]), "[object Function]",
                       "{}.toString.call(" + this.name + ")");
-        assert_equals(String(window[this.name]), "[object Function]",
-                      "String(" + this.name + ")");
 
         //TODO: Test 4.9.1.1. Exception interface object [[Call]] method (which
         //does not match browsers: //http://www.w3.org/Bugs/Public/show_bug.cgi?id=14885)
@@ -926,12 +924,10 @@ IdlInterface.prototype.test_self = function()
         //ECMA-262 section 15.3.5.3, unless otherwise specified."
         //TODO
         //"Its [[Class]] internal property is “Function”."
-        //String() and {}.toString.call() should be equivalent, since nothing
-        //defines a stringifier.
+        //String() returns something implementation-dependent, because it calls
+        //Function#toString.
         assert_equals({}.toString.call(window[this.name]), "[object Function]",
                       "{}.toString.call(" + this.name + ")");
-        assert_equals(String(window[this.name]), "[object Function]",
-                      "String(" + this.name + ")");
 
         if (!this.has_extended_attribute("Constructor"))
         {

@@ -970,7 +970,7 @@ IdlInterface.prototype.test_self = function()
             //support multiple operations with the same identifier).
             var expected_length = this.extAttrs
                 .filter(function(attr) { return attr.name == "Constructor" })
-                .map(function(attr) { return attr.arguments.length })
+                .map(function(attr) { return attr.arguments ? attr.arguments.length : 0 })
                 .reduce(function(m, n) { return Math.max(m, n) });
             assert_own_property(window[this.name], "length");
             assert_equals(window[this.name].length, expected_length, "wrong value for " + this.name + ".length");

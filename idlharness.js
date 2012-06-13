@@ -1014,19 +1014,21 @@ IdlInterface.prototype.test_self = function()
         //"Otherwise, A does inherit from another interface. The value of
         //the internal [[Prototype]] property of A is the interface
         //prototype object for the inherited interface."
-        var inherit_interface;
-        if (this.inheritance.length)
+        var inherit_interface = (function()
         {
-            inherit_interface = this.inheritance[0];
-        }
-        else if (this.has_extended_attribute("ArrayClass"))
-        {
-            inherit_interface = "Array";
-        }
-        else
-        {
-            inherit_interface = "Object";
-        }
+            for (var i = 0; i < this.inheritance.length; ++i)
+            {
+                if (!interfaces[this.inheritance[i]].has_extended_attribute("NoInterfaceObject"))
+                {
+                    return this.inheritance[i];
+                }
+            }
+            if (this.has_extended_attribute("ArrayClass"))
+            {
+                return "Array";
+            }
+            return "Object";
+        }).bind(this)();
         assert_own_property(window, inherit_interface,
                             'should inherit from ' + inherit_interface + ', but window has no such property');
         assert_own_property(window[inherit_interface], "prototype",

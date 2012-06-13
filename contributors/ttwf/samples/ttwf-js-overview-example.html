@@ -15,11 +15,13 @@
     <div id="log"></div>
     <script>
         // Set the transform 
-        document.getElementById("myDiv").style.transform = "translate(100px,100px)";
+        document.getElementById("myDiv").style.webkitTransform = "translate(100px,100px)";
  
         // Verify that the transform was set as expected
-        test(function() {assert_equals(document.getElementById("myDiv").style.transform, "translate(100px,100px)",
-                        "transform should be translate(100px,100px)")}, "Transform_Translate_100px_100px");    
+        test(function() {assert_equals(document.getElementById("myDiv").style.getPropertyCSSValue("-webkit-transform").cssText,
+                        "translate(100px, 100px)",
+                        "transform should be translate(100px,100px)")}, 
+                        "Transform_Translate_100px_100px");    
     </script>    
 </body>
 </html>

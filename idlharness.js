@@ -135,6 +135,8 @@ policies and contribution forms [3].
  */
 "use strict";
 (function(){
+var interfaces = {};
+
 /// IdlArray ///
 //Entry point
 window.IdlArray = function()
@@ -860,6 +862,7 @@ function IdlInterface(obj)
     this.extAttrs = obj.extAttrs ? obj.extAttrs : [];
     this.members = obj.members ? obj.members.map(function(m){return new IdlInterfaceMember(m)}) : [];
     this.inheritance = obj.inheritance ? obj.inheritance : [];
+    interfaces[this.name] = this;
 }
 
 //@}

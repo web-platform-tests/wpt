@@ -225,6 +225,10 @@ IdlArray.prototype.internal_add_idls = function(parsed_idls)
             //TODO
             break;
 
+        case "enum":
+            //TODO
+            break;
+
         default:
             throw parsed_idl.name + ": " + parsed_idl.type + " not yet supported";
         }

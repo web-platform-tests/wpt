@@ -1037,9 +1037,9 @@ IdlInterface.prototype.test_self = function()
         //String() and {}.toString.call() should be equivalent, since nothing
         //defines a stringifier.
         assert_equals({}.toString.call(window[this.name].prototype), "[object " + this.name + "Prototype]",
-                      "{}.toString.call(" + this.name + ")");
+                      "{}.toString.call(" + this.name + ".prototype)");
         assert_equals(String(window[this.name].prototype), "[object " + this.name + "Prototype]",
-                      "String(" + this.name + ")");
+                      "String(" + this.name + ".prototype)");
     }.bind(this), this.name + " interface: existence and properties of interface prototype object");
 
     test(function()

@@ -281,7 +281,9 @@ function run() {
 
     var is_monochrome = query_applies("all and (min-monochrome: 1)");
     var is_color = query_applies("all and (min-color: 1)");
-    assert_not_equals(is_monochrome, is_color, "should be either monochrome or color");
+    test(function() {
+      assert_not_equals(is_monochrome, is_color, "should be either monochrome or color");
+    }, "monochrome and color");
 
     function depth_query(prefix, depth) {
       return "all and (" + prefix + (is_color ? "color" : "monochrome") +
@@ -291,11 +293,15 @@ function run() {
     var depth = 0;
     do {
       if (depth > 50) {
-        assert_unreached("breaking from loop, depth > 50");
         break;
       }
     } while (query_applies(depth_query("min-", ++depth)));
     --depth;
+
+    test(function() {
+      assert_false(50 < depth);
+    }, "find_depth");
+
 
     should_apply(depth_query("", depth));
     should_not_apply(depth_query("", depth - 1));
@@ -353,10 +359,12 @@ function run() {
     do {
       ++resolution;
       if (resolution > 10000) {
-        assert_unreached("resolution greater than 10000dpi???");
         break;
       }
     } while (!query_applies("(max-resolution: " + resolution + "dpi)"));
+    test(function() {
+      assert_false(10000 < resolution);
+    }, "find_resolution");
 
     // resolution should now be Math.ceil() of the actual resolution.
     var dpi_high;

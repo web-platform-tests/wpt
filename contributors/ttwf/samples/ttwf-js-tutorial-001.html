@@ -1,60 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>CSS Transforms Test: translate function</title>
+    <title>CSS Transforms API Test: transform translate</title>
     <link rel="author" title="Your Name" href="mailto:youremail@address.com">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-property">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions">
-    <link rel="match" href="reftest/ttwf-reftest-tutorial-ref.html">
-    <meta name="assert" content="This transform moves the element by 100 pixels in both the X and Y directions.">
-    <script src="/resources/testharness.js"></script>
-    <script src="/resources/testharnessreport.js"></script>    
-    <style type="text/css">
-        * {
-            margin: 0px;
-            padding: 0px;
-        }
-        .results {
-            position: absolute;
-            top: 225px;
-            width: 100%;
-        }    
-        .container {
-            position: relative;
-        }
-        .greenSquare {
-            position: absolute;
-            width: 100px;
-            height: 100px;
-            background: green;
-            -webkit-transform: translate(100px,100px);
-        }
-        .redSquare {
-            position: absolute;
-            top: 101px;
-            left: 101px;
-            width: 98px;
-            height: 98px;
-            background: red;
-        }
-    </style>
+    <meta name="flags" content="dom">
+    <meta name="assert" content="The transform should be translate(100px,100px)"> 
 </head>
 <body>
-    <div class="results">
-        <p>The test passes if there is a green square at 100,100 and no red is visible</p><br>
-        <div id="log"></div>
-    </div>
-    <div class="container">
-        <div class="redSquare"></div>
-        <div id="myDiv" class="greenSquare"></div>
-    </div>
-    <script type="text/javascript">
-        function checkElementPosition(elemID) {
-            return document.getElementById(elemID).getBoundingClientRect().left + "," +
-                   document.getElementById(elemID).getBoundingClientRect().top;            
-        }    
-        test(function() {assert_equals(checkElementPosition("myDiv"), "100,100", "myDiv should be at 100,100")}, 
-                        "Transform_Translate_100px_100px");
-    </script>    
 </body>
 </html>

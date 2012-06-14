@@ -1194,9 +1194,12 @@ IdlInterface.prototype.test_members = function()
                 //". . .
                 //"Return the maximum argument list length of the functions
                 //in the entries of S."
+                //TODO: Does this work for overloads?
                 assert_equals(window[this.name].prototype[member.name].length, member.arguments.length,
                     "property has wrong .length");
-            }.bind(this), this.name + " interface: operation " + member.name);
+            }.bind(this), this.name + " interface: operation " + member.name +
+            "(" + member.arguments.map(function(m) { return m.type.idlType; }) +
+            ")");
         }
         //TODO: check more member types, like stringifier
     }
@@ -1342,7 +1345,7 @@ IdlInterface.prototype.test_interface_of = function(desc, obj, exception, expect
                 {
                     assert_equals(typeof obj[member.name], "function");
                 }
-            }.bind(this), this.name + " interface: " + desc + ' must inherit property "' + member.name + '" with the proper type');
+            }.bind(this), this.name + " interface: " + desc + ' must inherit property "' + member.name + '" with the proper type (' + i + ')');
         }
         //TODO: This is wrong if there are multiple operations with the same
         //identifier.
@@ -1368,7 +1371,9 @@ IdlInterface.prototype.test_interface_of = function(desc, obj, exception, expect
 
                     args.push(create_suitable_object(member.arguments[i].type));
                 }
-            }.bind(this), this.name + " interface: calling " + member.name + "() on " + desc + " with too few arguments must throw TypeError");
+            }.bind(this), this.name + " interface: calling " + member.name +
+            "(" + member.arguments.map(function(m) { return m.type.idlType; }) +
+            ") on " + desc + " with too few arguments must throw TypeError");
         }
     }
 }

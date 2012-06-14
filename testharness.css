@@ -39,6 +39,11 @@ table#results td:last-child {
     width:50%;
 }
 
+table#results.assertions th:last-child,
+table#results.assertions td:last-child {
+    width:35%;
+}
+
 table#results th {
     padding:0;
     padding-bottom:0.5em;

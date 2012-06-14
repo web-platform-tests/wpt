@@ -1499,9 +1499,33 @@ policies and contribution forms [3].
                 .replace(/'/g, "&#39;");
         }
 
+        function has_assertions()
+        {
+            for (var i = 0; i < tests.length; i++) {
+                if (tests[i].properties.hasOwnProperty("assert")) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        function get_assertion(test)
+        {
+            if (test.properties.hasOwnProperty("assert")) {
+                if (Array.isArray(test.properties.assert)) {
+                    return test.properties.assert.join(' ');
+                }
+                return test.properties.assert;
+            }
+            return '';
+        }
+        
         log.appendChild(document.createElement("section"));
-        var html = "<h2>Details</h2><table id='results'>"
-            + "<thead><tr><th>Result</th><th>Test Name</th><th>Message</th></tr></thead>"
+        var assertions = has_assertions();
+        var html = "<h2>Details</h2><table id='results' " + (assertions ? "class='assertions'" : "" ) + ">"
+            + "<thead><tr><th>Result</th><th>Test Name</th>"
+            + (assertions ? "<th>Assertion</th>" : "")
+            + "<th>Message</th></tr></thead>"
             + "<tbody>";
         for (var i = 0; i < tests.length; i++) {
             html += '<tr class="'
@@ -1511,6 +1535,7 @@ policies and contribution forms [3].
                 + "</td><td>"
                 + escape_html(tests[i].name)
                 + "</td><td>"
+                + (assertions ? escape_html(get_assertion(tests[i])) + "</td><td>" : "")
                 + escape_html(tests[i].message ? tests[i].message : " ")
                 + "</td></tr>";
         }

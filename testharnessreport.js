@@ -339,7 +339,7 @@ var metadata_generator = {
                 }
             }
             else if (1 < tests.length) {
-                message = 'Cached metdata not present. ';
+                message = 'Cached metadata not present. ';
                 showSource = true;
             }
         }

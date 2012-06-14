@@ -169,27 +169,44 @@ var metadata_generator = {
     jsonifyObject: function(objectValue, indent) {
         var output = '{';
         
-        var first = true;
+        var count = 0;
         for (var property in objectValue) {
-            if (! first) {
-                output += ',';
-            }
-            first = false;
-            output += '\n  ' + indent + '"' + property + '": ';
-            var value = objectValue[property];
-            if (Array.isArray(value)) {
-                output += this.jsonifyArray(value, indent + 
-                    '                '.substr(0, 5 + property.length));
-            }
-            else if ('object' == typeof(value)) {
-                output += this.jsonifyObject(value, indent + '  ');
-            }
-            else {
-                output += JSON.stringify(value);
+            ++count;
+            if (Array.isArray(objectValue[property]) || 
+                ('object' == typeof(value))) {
+                ++count;
             }
         }
-        if (1 < output.length) {
-            output += '\n' + indent;
+        if (1 == count) {
+            for (var property in objectValue) {
+                output += ' "' + property + '": '
+                          + JSON.stringify(objectValue[property])
+                          + ' ';
+            }
+        }
+        else {
+            var first = true;
+            for (var property in objectValue) {
+                if (! first) {
+                    output += ',';
+                }
+                first = false;
+                output += '\n  ' + indent + '"' + property + '": ';
+                var value = objectValue[property];
+                if (Array.isArray(value)) {
+                    output += this.jsonifyArray(value, indent + 
+                        '                '.substr(0, 5 + property.length));
+                }
+                else if ('object' == typeof(value)) {
+                    output += this.jsonifyObject(value, indent + '  ');
+                }
+                else {
+                    output += JSON.stringify(value);
+                }
+            }
+            if (1 < output.length) {
+                output += '\n' + indent;
+            }
         }
         output += '}';
         return output;

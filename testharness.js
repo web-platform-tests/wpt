@@ -949,7 +949,7 @@ policies and contribution forms [3].
                 return;
             }
             this.status = this.FAIL;
-            this.message = e.message;
+            this.message = (typeof e === "object" && e !== null) ? e.message : e;
             if (typeof e.stack != "undefined" && typeof e.message == "string") {
                 //Try to make it more informative for some exceptions, at least
                 //in Gecko and WebKit.  This results in a stack dump instead of

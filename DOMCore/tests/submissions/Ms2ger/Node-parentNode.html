@@ -20,4 +20,14 @@ test(function() {
   document.body.appendChild(el)
   assert_equals(el.parentNode, document.body)
 }, "Element")
+var t = async_test("Removed iframe");
+function testIframe(iframe) {
+  t.step(function() {
+    var doc = iframe.contentDocument;
+    iframe.parentNode.removeChild(iframe);
+    assert_equals(doc.firstChild.parentNode, doc);
+  });
+  t.done();
+}
 </script>
+<iframe id=a src="data:text/html,<a name='c'>c</a>" onload="testIframe(this)"></iframe>

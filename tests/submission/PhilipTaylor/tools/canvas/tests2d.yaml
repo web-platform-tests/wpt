@@ -1778,6 +1778,56 @@
     @assert pixel 21,21 == 0,255,0,255;
   expected: green
 
+- name: 2d.gradient.interpolate.zerosize.fillText
+  testing:
+    - 2d.gradient.linear.zerosize
+  code: |
+    ctx.fillStyle = '#0f0';
+    ctx.fillRect(0, 0, 100, 50);
+
+    var g = ctx.createLinearGradient(50, 25, 50, 25); // zero-length line (undefined direction)
+    g.addColorStop(0, '#f00');
+    g.addColorStop(1, '#f00');
+    ctx.fillStyle = g;
+    ctx.font = '100px sans-serif';
+    ctx.fillText("AA", 0, 50);
+    var imagedata = ctx.getImageData(0, 0, 100, 50);
+    var w = imagedata.width, h = imagedata.height, d = imagedata.data;
+    for (var i = 0; i < h; ++i) {
+      for (var j = 0; j < w; ++j) {
+        @assert d[4 * (w * i + j) + 0] == 0;
+        @assert d[4 * (w * i + j) + 1] == 255;
+        @assert d[4 * (w * i + j) + 2] == 0;
+        @assert d[4 * (w * i + j) + 3] == 255;
+      }
+    }
+  expected: green
+
+- name: 2d.gradient.interpolate.zerosize.strokeText
+  testing:
+    - 2d.gradient.linear.zerosize
+  code: |
+    ctx.fillStyle = '#0f0';
+    ctx.fillRect(0, 0, 100, 50);
+
+    var g = ctx.createLinearGradient(50, 25, 50, 25); // zero-length line (undefined direction)
+    g.addColorStop(0, '#f00');
+    g.addColorStop(1, '#f00');
+    ctx.strokeStyle = g;
+    ctx.font = '100px sans-serif';
+    ctx.strokeText("AA", 0, 50);
+    var imagedata = ctx.getImageData(0, 0, 100, 50);
+    var w = imagedata.width, h = imagedata.height, d = imagedata.data;
+    for (var i = 0; i < h; ++i) {
+      for (var j = 0; j < w; ++j) {
+        @assert d[4 * (w * i + j) + 0] == 0;
+        @assert d[4 * (w * i + j) + 1] == 255;
+        @assert d[4 * (w * i + j) + 2] == 0;
+        @assert d[4 * (w * i + j) + 3] == 255;
+      }
+    }
+  expected: green
+
 
 - name: 2d.gradient.interpolate.vertical
   testing:

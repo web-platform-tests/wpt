@@ -6,7 +6,7 @@
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-property">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions">
     <meta name="flags" content="dom">
-    <meta name="assert" content="Check if transform supports translate(INFINITE, INFINITE)"> 
+    <meta name="assert" content="Check if transform sets translate(INFINITE, INFINITE) that an expection is to be thrown"> 
     <script type="text/javascript" src="../../resources/testharness.js"></script>
     <script type="text/javascript" src="../../resources/testharnessreport.js"></script>    
 </head>
@@ -22,16 +22,23 @@
         document.getElementById("test").style.transform = "translate(INFINITE, INFINITE)"; */
  
         // Verify that the transform was set as expected
-        var value = document.getElementById("test").style.getPropertyCSSValue("-webkit-transform").cssText;
-        /* var value = document.getElementById("test").style.getPropertyCSSValue("-moz-transform").cssText;
-        var value = document.getElementById("test").style.getPropertyCSSValue("-ms-transform").cssText;
-        var value = document.getElementById("test").style.getPropertyCSSValue("-0-transform").cssText;
-        var value = document.getElementById("test").style.getPropertyCSSValue("transform").cssText; */
+        var result;
+        var value;
+        try {
+            value = document.getElementById("test").style.getPropertyCSSValue("-webkit-transform").cssText;
+            /* value = document.getElementById("test").style.getPropertyCSSValue("-moz-transform").cssText;
+            value = document.getElementById("test").style.getPropertyCSSValue("-ms-transform").cssText;
+            value = document.getElementById("test").style.getPropertyCSSValue("-0-transform").cssText;
+            value = document.getElementById("test").style.getPropertyCSSValue("transform").cssText; */
+            result = false;
+        } catch (e) {
+            result = true;
+            value = e.message;
+        }
         
-        test(function() {assert_equals(value,
-                        "translate(INFINITE, INFINITE)",
+        test(function() {assert_true(result,
                         "transform should be translate(INFINITE, INFINITE)")}, 
-                        "transform_translate_INFINITE_INFINITE");
+                        "transform_translate_max");
     </script>    
 </body>
 </html>

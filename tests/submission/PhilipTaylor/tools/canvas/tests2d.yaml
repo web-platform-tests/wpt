@@ -1700,7 +1700,47 @@
     @assert pixel 80,25 ==~ 0,255,0,255;
   expected: green
 
-- name: 2d.gradient.interpolate.zerosize
+- name: 2d.gradient.interpolate.zerosize.fill
+  testing:
+    - 2d.gradient.linear.zerosize
+  code: |
+    ctx.fillStyle = '#0f0';
+    ctx.fillRect(0, 0, 100, 50);
+
+    var g = ctx.createLinearGradient(50, 25, 50, 25); // zero-length line (undefined direction)
+    g.addColorStop(0, '#f00');
+    g.addColorStop(1, '#f00');
+    ctx.fillStyle = g;
+    ctx.rect(0, 0, 100, 50);
+    ctx.fill();
+    @assert pixel 40,20 == 0,255,0,255;
+  expected: green
+
+- name: 2d.gradient.interpolate.zerosize.stroke
+  testing:
+    - 2d.gradient.linear.zerosize
+  code: |
+    ctx.fillStyle = '#0f0';
+    ctx.fillRect(0, 0, 100, 50);
+
+    var g = ctx.createLinearGradient(50, 25, 50, 25); // zero-length line (undefined direction)
+    g.addColorStop(0, '#f00');
+    g.addColorStop(1, '#f00');
+    ctx.strokeStyle = g;
+    ctx.rect(20, 20, 60, 10);
+    ctx.stroke();
+    @assert pixel 19,19 == 0,255,0,255;
+    @assert pixel 20,19 == 0,255,0,255;
+    @assert pixel 21,19 == 0,255,0,255;
+    @assert pixel 19,20 == 0,255,0,255;
+    @assert pixel 20,20 == 0,255,0,255;
+    @assert pixel 21,20 == 0,255,0,255;
+    @assert pixel 19,21 == 0,255,0,255;
+    @assert pixel 20,21 == 0,255,0,255;
+    @assert pixel 21,21 == 0,255,0,255;
+  expected: green
+
+- name: 2d.gradient.interpolate.zerosize.fillRect
   testing:
     - 2d.gradient.linear.zerosize
   code: |
@@ -1712,7 +1752,30 @@
     g.addColorStop(1, '#f00');
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, 100, 50);
-    @assert pixel 40,20 ==~ 0,255,0,255;
+    @assert pixel 40,20 == 0,255,0,255;
+  expected: green
+
+- name: 2d.gradient.interpolate.zerosize.strokeRect
+  testing:
+    - 2d.gradient.linear.zerosize
+  code: |
+    ctx.fillStyle = '#0f0';
+    ctx.fillRect(0, 0, 100, 50);
+
+    var g = ctx.createLinearGradient(50, 25, 50, 25); // zero-length line (undefined direction)
+    g.addColorStop(0, '#f00');
+    g.addColorStop(1, '#f00');
+    ctx.strokeStyle = g;
+    ctx.strokeRect(20, 20, 60, 10);
+    @assert pixel 19,19 == 0,255,0,255;
+    @assert pixel 20,19 == 0,255,0,255;
+    @assert pixel 21,19 == 0,255,0,255;
+    @assert pixel 19,20 == 0,255,0,255;
+    @assert pixel 20,20 == 0,255,0,255;
+    @assert pixel 21,20 == 0,255,0,255;
+    @assert pixel 19,21 == 0,255,0,255;
+    @assert pixel 20,21 == 0,255,0,255;
+    @assert pixel 21,21 == 0,255,0,255;
   expected: green
 
 

@@ -6,47 +6,34 @@
       <link rel="help" href="http://dev.w3.org/csswg/css3-background/#background-repeat" />
       <style type="text/css">
         div {
-          border: 1px solid black;
-          height: 500px;
-          width: 500px;
-          line-height: 1px;
+          height: 210px;
+          width: 240px;
         }
-        img {
-          width: 100px;
-          height: 100px;
+        div img {
+          width: 120px;
+          height: 68px;
           display: block;
           float: left;
+        }
+        .pass {
+          color: green;
+        }
+        .fail {
+          color: red;
         }
       </style>
   </head>
   <body>
-      <p>Test passes if the background image of the rectangle repeats 25 times exactly; that is, there is not a partial cat at the right or bottom end of the rectangle.</p>
+      <img src='../../../support/rectangle-100x60.png'/>
+      <p class="pass">Test passes if the above image repeats in the below rectangle 6 times exactly: 2 columns, 3 rows. The top border should be red, the right border yellow, the bottom border green, and the left border blue.</p>
+      <p class="fail">Test fails if the above image repeats in below rectangle more than 6 times, with partial images lining the right and the bottom.</p>
       <div>
-        <img src="../../../support/cat.png"/>
-        <img src="../../../support/cat.png"/>
-        <img src="../../../support/cat.png"/>
-        <img src="../../../support/cat.png"/>
-        <img src="../../../support/cat.png"/>
-        <img src="../../../support/cat.png"/>
-        <img src="../../../support/cat.png"/>
-        <img src="../../../support/cat.png"/>
-        <img src="../../../support/cat.png"/>
-        <img src="../../../support/cat.png"/>
-        <img src="../../../support/cat.png"/>
-        <img src="../../../support/cat.png"/>
-        <img src="../../../support/cat.png"/>
-        <img src="../../../support/cat.png"/>
-        <img src="../../../support/cat.png"/>
-        <img src="../../../support/cat.png"/>
-        <img src="../../../support/cat.png"/>
-        <img src="../../../support/cat.png"/>
-        <img src="../../../support/cat.png"/>
-        <img src="../../../support/cat.png"/>
-        <img src="../../../support/cat.png"/>
-        <img src="../../../support/cat.png"/>
-        <img src="../../../support/cat.png"/>
-        <img src="../../../support/cat.png"/>
-        <img src="../../../support/cat.png"/>    
+        <img src="../../../support/rectangle-100x60.png"/>
+        <img src="../../../support/rectangle-100x60.png"/>
+        <img src="../../../support/rectangle-100x60.png"/>
+        <img src="../../../support/rectangle-100x60.png"/>
+        <img src="../../../support/rectangle-100x60.png"/>
+        <img src="../../../support/rectangle-100x60.png"/>
       </div>
   </body>
 </html>

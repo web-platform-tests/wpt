@@ -6,8 +6,8 @@
 	<link rel="help" href="http://www.w3.org/TR/css3-transforms/#perspective-origin">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#perspective">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-property">
-    <link rel="match" href="reference/perspective-reftest.html">
-    <meta name="assert" content="Asserts that origin-x 'x1' visually moves the objects '-x1*d/(d-1)' ">
+    <link rel="match" href="reference/perspective-origin-reftest.html">
+    <meta name="assert" content="Asserts that origin 'x1' visually moves the objects '-x1*d/(d-1)' ">
     <style type="text/css">
         .container {
             position: absolute;
@@ -15,8 +15,8 @@
             height: 150px;
             top: 100px;
             left: 100px;
-            -webkit-perspective: 3px;
-			-webkit-perspective-origin-x: 0px;
+            perspective: 3px;
+			perspective-origin: 0px 50%;
         }
         .redSquare {
             position: absolute;
@@ -25,7 +25,7 @@
             width: 150px;
             height: 150px;
             background: red;
-            -webkit-transform: translateZ(0px);
+            transform: translateZ(0px);
          }
         .greenSquare {
             position: absolute;
@@ -34,7 +34,7 @@
             width: 100px;
             height: 100px;
             background: green;
-            -webkit-transform: translateZ(1px);
+            transform: translateZ(1px);
          }
     </style>
 </head>

@@ -5,9 +5,9 @@
     <link rel="author" title="David Alcala" href="mailto:dalcala@adobe.com">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-transform">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions">
-    <link rel="match" href="reftest/svg-four-color-square-ref.html">
+    <link rel="match" href="reftest/svg-four-color-square-80x80-ref.html">
     <meta name="flags" content="svg">
-    <meta name="assert" content="The translateX transform function must be supported in SVG groups with multiple nested children, where one child has a scaleX transform function and the other child has a matrix transform function. Both rects in the test should be moved 20 pixels in the X direction when the translateX is performed on the group. Child rect 1 should then be scaled down 0.5 in the X direction to 98x98 when the scaleX is performed on the child.Child rect 2 should then be flipped up and left and scaled up horizontally and vertically when the matrix is performed on the child.">
+    <meta name="assert" content="The translateX transform function must be supported in SVG groups with multiple nested children, where one child has a scaleX transform function and the other child has a matrix transform function. Both rects in the test should be moved 20 pixels in the X direction when the translateX is performed on the group. Child rect 1 should then be scaled down 0.5 in the X direction to 78x78 when the scaleX is performed on the child. Child rect 2 should then be flipped up and left and scaled up horizontally and vertically when the matrix is performed on the child.">
     <style type="text/css">
     svg {
         width: 300px;
@@ -19,17 +19,17 @@
     <p>The test passes if there is one four-color square, where the top left is a green square, the top right is a fuchsia square, the bottom left is a yellow square, and the bottom right is a blue square. There should be no red.</p>
     <svg>
         <defs>
-            <pattern id="coloredBoxes" patternUnits="userSpaceOnUse" x="0" y="0" width="100" height="100">
-                <rect x="0" y="0" width="25" height="25" fill="blue"/>
-                <rect x="25" y="0" width="25" height="25" fill="yellow"/>
-                <rect x="0" y="25" width="25" height="25" fill="fuchsia"/>
-                <rect x="25" y="25" width="25" height="25" fill="green"/>
+            <pattern id="coloredBoxes" patternUnits="userSpaceOnUse" x="0" y="0" width="80" height="80">
+                <rect x="0" y="0" width="20" height="20" fill="blue"/>
+                <rect x="20" y="0" width="20" height="20" fill="yellow"/>
+                <rect x="0" y="20" width="20" height="20" fill="fuchsia"/>
+                <rect x="20" y="20" width="20" height="20" fill="green"/>
             </pattern>
         </defs>
-        <rect x="21" y="1" width="98" height="98" fill="red"/> <!-- this rect is outside the group to catch failures of the group transform -->
+        <rect x="41" y="41" width="78" height="78" fill="red"/> <!-- this rect is outside the group to catch failures of the group transform -->
         <g transform="translateX(20)">
-            <rect x="0.5" y="1" width="196" height="98" fill="red" transform="scaleX(0.5)"/>
-            <rect width="50" height="50" fill="url(#coloredBoxes)" transform="matrix(-2 0 0 -2 100 100)"/>
+            <rect x="42" y="41" width="156" height="78" fill="red" transform="scaleX(0.5)"/>
+            <rect width="40" height="40" fill="url(#coloredBoxes)" transform="matrix(-2 0 0 -2 100 120)"/>
         </g>
     </svg>
 </body>

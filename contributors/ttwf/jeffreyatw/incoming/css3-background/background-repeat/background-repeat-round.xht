@@ -1,0 +1,23 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+      <title>CSS Test: background-repeat:round</title>
+      <link rel="author" title="Jeffrey Carl Faden" href="http://www.jeffreyatw.com/" />
+      <link rel="help" href="http://dev.w3.org/csswg/css3-background/#background-repeat" />
+      <meta name="flags" content="" />
+      <meta name="assert" content="The background-repeat: round rule must scale an image in one or more dimensions so it fits a whole number of times in the background positioning area." />
+      <style type="text/css">
+        div {
+          background-image: url('../../support/cat.png');
+          background-repeat: round;
+          border: 1px solid black;
+          height: 500px;
+          width: 500px;
+        }
+      </style>
+  </head>
+  <body>
+      <p>Test passes if the background image of the rectangle repeats 25 times exactly; that is, there is not a partial cat at the right or bottom end of the rectangle.</p>
+      <div></div>
+  </body>
+</html>

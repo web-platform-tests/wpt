@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>CSS OM Parsing Test: getting cssText must return the result of serializing the CSS declaration block declarations.</title>
+        <link rel="author" title="Paul Irish" href="mailto:paul.irish@gmail.com">
+        <link rel="help" href="http://www.w3.org/TR/cssom/#the-cssstyledeclaration-interface">
+
+        <link rel="source" href="http://trac.webkit.org/export/120528/trunk/LayoutTests/fast/css/cssText-cache.html">
+        <meta name="flags" content="dom">
+
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+    </head>
+
+    <body>
+        <div id="log"></div>
+
+        <div id="box"></div>
+
+        <script>
+
+          function checkResult(property, expectedValue) {
+
+            var value = eval(property);
+            var result = ": " + property + " was " + value + ", expected " + expectedValue + "<br>";
+            // if (value == expectedValue)
+              // result = "<b style=\"color:green\">PASS</b>" + result;
+            // else
+              // result = "<b style=\"color:red\">FAIL</b>" + result;
+            // var results = document.getElementById('results');
+            //results.innerHTML += result;
+            test(function(){
+                assert_equals(value, expectedValue, result);
+            }, property + ' == ' + expectedValue);
+          }
+
+          var style = document.getElementById('box').style;
+
+          style.left = "10px";
+          checkResult("style.left", "10px");
+          style.left = "20px";
+          checkResult("style.left", "20px");
+
+        </script>
+
+
+    </body>
+</html>

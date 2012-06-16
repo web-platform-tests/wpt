@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Test File</title>
-    <link rel="author" title="Your Name" href="mailto:youremail@address.com">
+    <title>CSS Transforms Test: transform property with translateX function</title>
+    <link rel="author" title="Serena Wales" href="mailto:serena@codeforamerica.org">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-property">
-    <link rel="help" href="additional spec link">
-    <link rel="match" href="path to reference file">
-    <meta name="assert" content="Statement describing what the test case is asserting">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions">
+    <link rel="match" href="reference/transform-translateX-ref.html">
+    <meta name="assert" content="This tests that translateX(50px) translates a box by 50 pixels in the X direction.">
     <style type="text/css">
         /* Positioned container allows for the self-describing statement to still 
            be visible in the case of failure */
@@ -19,22 +19,24 @@
             left: 0;
             width: 100px;
             height: 100px;
-            /* Add fil color green here */
+            background-color: green;
+            -webkit-transform: translateX(50px);
             /* Add CSS transform here */
          }
          /* This div should only be visible if the test fails */
         .redSquare {
             position: absolute;
             /* It is approximately the same size as the test div, but with a 1px margin */
-            width: 98px;
-            height: 98px;
-            /* Add fill color red */
-            /* Add top and left to position the div so it is hidden behind the green square */
+            width: 100px;
+            height: 100px;
+            background-color: red;
+            top: 0px;
+            left: 50px;
         }
     </style>
 </head>
 <body>
-    <p>The test passes...</p>
+    <p>The test passes if there is a green square and no red.</p>
     <div class="container">
         <!-- This is the square that should not be visible if the test passes -->
         <div class="redSquare"></div>

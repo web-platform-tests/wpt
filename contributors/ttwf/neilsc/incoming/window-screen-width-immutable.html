@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CSSOM View - 5.1 - screen.width immutability</title>
+    <link rel="author" title="Neils Christoffersen" href="mailto:neils.christoffersen@gmail.com">
+    <link rel="help" href="http://www.w3.org/TR/2009/WD-cssom-view-20090804/#the-screen-interface">
+    <meta name="flags" content="dom">
+    <meta name="assert" content="window.screen.width is immutable"> 
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script> 
+</head>
+<body>
+    <div id="myDiv"></div>
+    <div id="log"></div>
+    <script>
+        test(function() {
+			assert_throws(null,	function() {
+				window.screen.width = 1;
+			}), "setting window.screen.width should throw an exception"
+		}, "immutability test");		
+    </script>    
+</body>
+</html>

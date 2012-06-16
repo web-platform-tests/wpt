@@ -3,10 +3,11 @@
 <head>
     <title>Test File</title>
     <link rel="author" title="LiMing Lu" href="mailto:llu@equilar.com">
-    <link rel="match" href="reference/ttwf-reftest-tutorial-starter-ref.html">
+    <link rel="match" href="reftest/ttwf-reftest-tutorial-starter-ref.html">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-property">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions">
     <meta name="assert" content="Statement describing what the test case is asserting">
+
     <style type="text/css">
         /* Positioned container allows for the self-describing statement to still
            be visible in the case of failure */
@@ -22,24 +23,28 @@
             /* Add fil color green here */
             background: green;
             /* Add CSS transform here */
-            transform: translate(100px,100px);
+
+            -webkit-transform: translate(100px,100px);
+			-moz-transform: translate(100px,100px);
+			-ms-transform: translate(100px,100px);
+            -o-transform: translate(100px,100px);
+
+
          }
          /* This div should only be visible if the test fails */
         .redSquare {
-            position: absolute;
-            /* It is approximately the same size as the test div, but with a 1px margin */
-            width: 98px;
-            height: 98px;
-            /* Add fill color red */
-            background: red;
-            /* Add top and left to position the div so it is hidden behind the green square */
-            top: 101;
-            left: 101;
+             position: absolute;
+			  width: 98px;
+			  height: 98px;
+			  top: 101px;
+			  left: 101px;
+              background: red;
         }
     </style>
+
 </head>
 <body>
-    <p>The test passes if there is a green square and no red.</p>
+    <p>The test passes if there is a green square and no red34245543.</p>
     <div class="container">
         <!-- This is the square that should not be visible if the test passes -->
         <div class="redSquare"></div>

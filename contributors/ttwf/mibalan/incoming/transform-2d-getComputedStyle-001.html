@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CSS Transforms API Test: transform translate</title>
+    <link rel="author" title="Your Name" href="mailto:youremail@address.com">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-property">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions">
+    <meta name="flags" content="dom">
+    <meta name="assert" content="CSS 2D transforms correctly report their matrix via getComputedStyle()"> 
+    <style type="text/css">
+    .block {
+    	display: block;
+    	width: 50px;
+    	height: 50px;
+    	background-color: green;
+    }
+    #translate {
+    	-moz-transform: translate(10px, 20px);
+    }
+    #translateX {
+    	-moz-transform: translateX(10px);
+    }
+    #translateY {
+    	-moz-transform: translateY(20px);
+    }
+    #rotate {
+    	-moz-transform: rotate(90deg);
+    }
+    #scale {
+    	-moz-transform: scale(2.0);
+    }
+    #scaleX {
+    	-moz-transform: scaleX(0.5);
+    }
+    #scaleY {
+    	-moz-transform: scaleY(1.5);
+    }
+    #skewX {
+    	-moz-transform: skewX(45deg);
+    }
+    #skewY {
+    	-moz-transform: skewY(45deg);
+    }
+    #matrix {
+    	-moz-transform: matrix(1, 2, 3, 4, 5, 6);
+    }
+    </style>
+    <script type="text/javascript" src="/resources/testharness.js"></script>
+    <script type="text/javascript" src="/resources/testharnessreport.js"></script> 
+    <script type="text/javascript">
+    function getTransformFor(id) {
+    	return window.getComputedStyle(document.getElementById(id)).getPropertyValue("-moz-transform");
+    }
+    function clear(id) {
+    	document.getElementById(id).style.display = 'none';
+    }
+
+    var t = async_test("getComputedStyle-individual-transforms");
+    document.addEventListener("DOMContentLoaded", t.step_func(function(e) {
+    	assert_equals(getTransformFor("translate"), "matrix(1, 0, 0, 1, 10, 20)", "Incorrect matrix for translate()");
+    	clear("translate");
+    	assert_equals(getTransformFor("translateX"), "matrix(1, 0, 0, 1, 10, 0)", "Incorrect matrix for translateX()");
+    	clear("translateX");
+    	assert_equals(getTransformFor("translateY"), "matrix(1, 0, 0, 1, 0, 20)", "Incorrect matrix for translateY()");
+    	clear("translateY");
+    	
+    	assert_equals(getTransformFor("rotate"), "matrix(0, 1, -1, 0, 0, 0)", "Incorrect matrix for rotate()");
+    	clear("rotate");
+
+    	assert_equals(getTransformFor("scale"), "matrix(2, 0, 0, 2, 0, 0)", "Incorrect matrix for scale()");
+    	clear("scale");
+    	assert_equals(getTransformFor("scaleX"), "matrix(0.5, 0, 0, 1, 0, 0)", "Incorrect matrix for scaleX()");
+    	clear("scaleX");
+    	assert_equals(getTransformFor("scaleY"), "matrix(1, 0, 0, 1.5, 0, 0)", "Incorrect matrix for scaleY()");
+    	clear("scaleY");
+
+    	assert_equals(getTransformFor("skewX"), "matrix(1, 0, 1, 1, 0, 0)", "Incorrect matrix for skewX()");
+    	clear("skewX");
+    	assert_equals(getTransformFor("skewY"), "matrix(1, 1, 0, 1, 0, 0)", "Incorrect matrix for skewY()");
+    	clear("skewY");
+    	assert_equals(getTransformFor("matrix"), "matrix(1, 2, 3, 4, 5, 6)", "Incorrect matrix for matrix()");
+    	clear("matrix");
+
+    	t.done();
+    }));
+    </script>
+</head>
+<body>
+	<div id="log"></div>
+
+	<div id="translate" class="block"></div>
+	<div id="translateX" class="block"></div>
+	<div id="translateY" class="block"></div>
+	<div id="rotate" class="block"></div>
+	<div id="scale" class="block"></div>
+	<div id="scaleX" class="block"></div>
+	<div id="scaleY" class="block"></div>
+	<div id="skewX" class="block"></div>
+	<div id="skewY" class="block"></div>
+	<div id="matrix" class="block"></div>
+</body>
+</html>

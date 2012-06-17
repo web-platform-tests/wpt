@@ -15,75 +15,47 @@
     	background-color: green;
     }
     #translate {
-    	-moz-transform: translate(10px, 20px);
+    	transform: translate(10px, 20px);
     }
     #translateX {
-    	-moz-transform: translateX(10px);
+    	transform: translateX(10px);
     }
     #translateY {
-    	-moz-transform: translateY(20px);
+    	transform: translateY(20px);
     }
     #rotate {
-    	-moz-transform: rotate(90deg);
+    	transform: rotate(90deg);
     }
     #scale {
-    	-moz-transform: scale(2.0);
+    	transform: scale(2.0);
     }
     #scaleX {
-    	-moz-transform: scaleX(0.5);
+    	transform: scaleX(0.5);
     }
     #scaleY {
-    	-moz-transform: scaleY(1.5);
+    	transform: scaleY(1.5);
     }
     #skewX {
-    	-moz-transform: skewX(45deg);
+    	transform: skewX(45deg);
     }
     #skewY {
-    	-moz-transform: skewY(45deg);
+    	transform: skewY(45deg);
     }
     #matrix {
-    	-moz-transform: matrix(1, 2, 3, 4, 5, 6);
+    	transform: matrix(1, 2, 3, 4, 5, 6);
     }
     </style>
+    <script id="metadata_cache">/*
+	{
+	  "Matrix for translation transforms": {},
+	  "Matrix for rotate": {},
+	  "Matrix for scaling": {},
+	  "Matrix for skew": {},
+	  "Matrix for general transform": {}
+	}
+	*/</script>
     <script type="text/javascript" src="/resources/testharness.js"></script>
     <script type="text/javascript" src="/resources/testharnessreport.js"></script> 
-    <script type="text/javascript">
-    function getTransformFor(id) {
-    	return window.getComputedStyle(document.getElementById(id)).getPropertyValue("-moz-transform");
-    }
-    function clear(id) {
-    	document.getElementById(id).style.display = 'none';
-    }
-
-    var t = async_test("getComputedStyle-individual-transforms");
-    document.addEventListener("DOMContentLoaded", t.step_func(function(e) {
-    	assert_equals(getTransformFor("translate"), "matrix(1, 0, 0, 1, 10, 20)", "Incorrect matrix for translate()");
-    	clear("translate");
-    	assert_equals(getTransformFor("translateX"), "matrix(1, 0, 0, 1, 10, 0)", "Incorrect matrix for translateX()");
-    	clear("translateX");
-    	assert_equals(getTransformFor("translateY"), "matrix(1, 0, 0, 1, 0, 20)", "Incorrect matrix for translateY()");
-    	clear("translateY");
-    	
-    	assert_equals(getTransformFor("rotate"), "matrix(0, 1, -1, 0, 0, 0)", "Incorrect matrix for rotate()");
-    	clear("rotate");
-
-    	assert_equals(getTransformFor("scale"), "matrix(2, 0, 0, 2, 0, 0)", "Incorrect matrix for scale()");
-    	clear("scale");
-    	assert_equals(getTransformFor("scaleX"), "matrix(0.5, 0, 0, 1, 0, 0)", "Incorrect matrix for scaleX()");
-    	clear("scaleX");
-    	assert_equals(getTransformFor("scaleY"), "matrix(1, 0, 0, 1.5, 0, 0)", "Incorrect matrix for scaleY()");
-    	clear("scaleY");
-
-    	assert_equals(getTransformFor("skewX"), "matrix(1, 0, 1, 1, 0, 0)", "Incorrect matrix for skewX()");
-    	clear("skewX");
-    	assert_equals(getTransformFor("skewY"), "matrix(1, 1, 0, 1, 0, 0)", "Incorrect matrix for skewY()");
-    	clear("skewY");
-    	assert_equals(getTransformFor("matrix"), "matrix(1, 2, 3, 4, 5, 6)", "Incorrect matrix for matrix()");
-    	clear("matrix");
-
-    	t.done();
-    }));
-    </script>
 </head>
 <body>
 	<div id="log"></div>
@@ -98,5 +70,48 @@
 	<div id="skewX" class="block"></div>
 	<div id="skewY" class="block"></div>
 	<div id="matrix" class="block"></div>
+    <script type="text/javascript">
+    function getTransformFor(id) {
+    	return window.getComputedStyle(document.getElementById(id)).getPropertyValue("transform");
+    }
+    function clear(id) {
+    	document.getElementById(id).style.display = 'none';
+    }
+
+    test(function() {
+    	assert_equals(getTransformFor("translate"), "matrix(1, 0, 0, 1, 10, 20)", "Incorrect matrix for translate()");
+    	clear("translate");
+    	assert_equals(getTransformFor("translateX"), "matrix(1, 0, 0, 1, 10, 0)", "Incorrect matrix for translateX()");
+    	clear("translateX");
+    	assert_equals(getTransformFor("translateY"), "matrix(1, 0, 0, 1, 0, 20)", "Incorrect matrix for translateY()");
+    	clear("translateY");
+    }, "Matrix for translation transforms");
+
+    test(function() {
+    	assert_equals(getTransformFor("rotate"), "matrix(0, 1, -1, 0, 0, 0)", "Incorrect matrix for rotate()");
+    	clear("rotate");
+    }, "Matrix for rotate");
+
+    test(function() {
+    	assert_equals(getTransformFor("scale"), "matrix(2, 0, 0, 2, 0, 0)", "Incorrect matrix for scale()");
+    	clear("scale");
+    	assert_equals(getTransformFor("scaleX"), "matrix(0.5, 0, 0, 1, 0, 0)", "Incorrect matrix for scaleX()");
+    	clear("scaleX");
+    	assert_equals(getTransformFor("scaleY"), "matrix(1, 0, 0, 1.5, 0, 0)", "Incorrect matrix for scaleY()");
+    	clear("scaleY");
+    }, "Matrix for scaling");
+
+    test(function() {
+    	assert_equals(getTransformFor("skewX"), "matrix(1, 0, 1, 1, 0, 0)", "Incorrect matrix for skewX()");
+    	clear("skewX");
+    	assert_equals(getTransformFor("skewY"), "matrix(1, 1, 0, 1, 0, 0)", "Incorrect matrix for skewY()");
+    	clear("skewY");
+    }, "Matrix for skew");
+
+    test(function() {
+    	assert_equals(getTransformFor("matrix"), "matrix(1, 2, 3, 4, 5, 6)", "Incorrect matrix for matrix()");
+    	clear("matrix");
+    }, "Matrix for general transform");
+    </script>
 </body>
 </html>

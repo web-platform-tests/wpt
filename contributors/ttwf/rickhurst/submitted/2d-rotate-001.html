@@ -2,9 +2,8 @@
 <html>
 	<head>
 	    <title>CSS Test: CSS Transform using 2d rotate()</title>
-	    <link rel="author" title="Rick Hurst" href="http://mrkn.co/axegs ">
-	    <link rel="help" href="http://www.w3.org/TR/css3-transforms">
-	    <link rel="help" href="http://www.w3.org/TR/css3-transforms">
+	    <link rel="author" title="Rick Hurst" href="http://mrkn.co/axegs">
+	    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-property">
 	    <link rel="match" href="2d-rotate-ref.html">
 	    <meta name="flags" content="css3, rotate, svg">
 	    <meta name="assert" content="asserting that you can rotate an element with CSS">
@@ -20,11 +19,10 @@
 				height: 100px;	
 				width: 100px;
 				z-index: 2;
-				cursor:pointer;
 			}
 			section article{
-				-moz-transform: rotate(30deg);
-				-moz-transform-origin: 19% 197%;
+				transform: rotate(30deg);
+				transform-origin: 19% 197%;
 			}
 		</style>
 	</head>
@@ -32,7 +30,7 @@
 		<p>You should only see one block with color green, and you should not see any red</p>
 		<section>
 		    <article></article>
-			<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="300" height="200" style="background-color: linen;">
+			<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="300" height="200">
 				<style type="text/css">
 				rect{
 					stroke-width: 10;

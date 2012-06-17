@@ -10,30 +10,36 @@
 		background-repeat: no-repeat;
 		border-style: solid;
 		border-width: 4px;
-		padding: 2em;
 	}
 	
 	#test-container {
 		border-color: magenta;
+		padding: 2em;
 	}
 	
-	#test-container #padding-box {
+	#test-block {
 		background-image: url("../support/cat.png");
 		background-position: -4px -4px;
-		border-color: blue;
+		border: 0;
+		min-height: 100px;
+		min-width: 100px;
+		padding: 0;
+		position: absolute;
+		top: 0;
+		z-index: -1;
 	}
 	
-	#test-container #content-box {
-		border-color: orange;
-	}  </style> 
+	#test-border {
+		border-color: blue;
+		position: relative;
+		height: 64px;
+	}</style> 
 	</head>
 	<body>
 		<div id="test-container">
-			<div id="padding-box">
-				<div id="content-box">
-					Cupcake ipsum dolor sit. Amet applicake bonbon chocolate cake ice cream. Bear claw tootsie roll cotton candy biscuit. Sweet roll chupa chups gingerbread sugar plum icing muffin biscuit. Chocolate cake wafer pastry tart macaroon danish topping ice cream. Jujubes liquorice candy canes faworki. Jujubes cake caramels faworki pie cake sweet roll. Tiramisu sesame snaps candy cheesecake brownie souffle biscuit. Danish chupa chups donut. Donut tart marshmallow biscuit lollipop chupa chups jelly beans faworki. Sugar plum wafer faworki marshmallow brownie ice cream cotton candy marshmallow marzipan. Cheesecake gummi bears cupcake sweet croissant cookie chocolate bar sweet roll. Halvah cupcake carrot cake souffle carrot cake chocolate cake pastry gummi bears muffin. Sweet roll candy gingerbread dessert tart. Pastry oat cake jelly beans. 
-				</div>
+		<div id="test-border">&nbsp;
+			<div id="test-block">&nbsp;
 			</div>
-		</div>
+		</div></div>
 	</body>
 </html>

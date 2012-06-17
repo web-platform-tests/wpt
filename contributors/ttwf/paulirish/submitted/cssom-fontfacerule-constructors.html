@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>CSSOM Parsing Test: @font-face rules parsed into CSSOM CSSFontFaceRules</title>
+        <title>CSSOM Parsing Test: @font-face rules toString() as valid interfaces</title>
         <link rel="author" title="Paul Irish" href="mailto:paul.irish@gmail.com">
         <link rel="help" href="http://www.w3.org/TR/cssom/#css-font-face-rule">
 
@@ -43,13 +43,17 @@
             var validRules = document.getElementById('teststyles').sheet.cssRules;
 
             test(function(){
+                for (var i = 0; i < validRules.length; ++i) {
+                    assert_equals(validRules.item(i).toString(), '[object CSSFontFaceRule]');
+                }
+            }, '@font-face declarations are instances of CSSFontFaceRule')
 
-                assert_equals(validRules[0].style.src, 'url(http://foo/bar/font.ttf)');
-                assert_equals(validRules[1].style.fontFamily, 'STIXGeneral');
 
-                /* unimplemented @font-face properties are not represented in CSSOM */
-
-            }, 'CSSStyleDeclaration values are represented within CSSFontFaceRule')
+            test(function(){
+                for (var i = 0; i < validRules.length; ++i) {
+                    assert_equals(validRules.item(i).style.toString(), '[object CSSStyleDeclaration]');
+                }
+            }, 'The style attribute must return a CSSStyleDeclaration block')
 
         </script>
 

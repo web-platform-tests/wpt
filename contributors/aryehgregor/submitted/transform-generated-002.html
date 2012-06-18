@@ -8,6 +8,7 @@
     content just as on any other boxes.  This file tests a generated inline
     box.">
     <link rel="match" href="transform-generated-002-ref.html">
+    <link rel="mismatch" href="transform-generated-002-notref.html">
     <style>
       span::before {
         transform: rotate(180deg);
@@ -16,6 +17,8 @@
         content: 'abc';
       }
     </style>
+  </head>
+  <body>
     <span>def</span>
   </body>
 </html>

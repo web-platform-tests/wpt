@@ -5,15 +5,15 @@
     <link rel="author" title="Aryeh Gregor" href="mailto:ayg@aryeh.name">
     <style>
       div {
-        height: 100px;
-        width: 100px;
-        position: relative;
-        top: 100px;
-        background: blue;
+        float: left;
+      }
+      div::before {
+        float: left;
+        content: 'abc';
       }
     </style>
   </head>
   <body>
-    <div></div>
+    <div>def</div>
   </body>
 </html>

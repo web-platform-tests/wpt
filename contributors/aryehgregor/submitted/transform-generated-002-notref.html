@@ -4,16 +4,13 @@
     <title>CSS Reftest Reference</title>
     <link rel="author" title="Aryeh Gregor" href="mailto:ayg@aryeh.name">
     <style>
-      div {
-        height: 100px;
-        width: 100px;
-        position: relative;
-        top: 100px;
-        background: blue;
+      span::before {
+        display: block;
+        content: 'abc';
       }
     </style>
   </head>
   <body>
-    <div></div>
+    <span>def</span>
   </body>
 </html>

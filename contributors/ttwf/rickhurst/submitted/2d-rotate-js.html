@@ -34,41 +34,12 @@
 					a_2 = "",
 					my_value = "",
 					test_function = {};
-	
-				/*set it to rotate 30 degrees*/
-				box.style.MozTransform = "rotate(30deg)";
-				
-				/*  All browsers return a matrix "currently" but I feel that
-					it may be more useful to to return the value that the user set, 
-					so they don't have to convert matrix to rotate values in their code.
-					
-					With something like the following:
-					
-				/**
-                 * Matrix To Rotation String
-                 *
-                 * @param (String) matrix_string // matrix(0.866025, 0.5, -0.5, 0.866025, 0, 0)
-                 * @return {Number} rotation in degrees 0.5
-                 */                      
-                 /*
-                 function matrixToRotationString(matrix_string){
-                     a_1 = matrix_string.replace("matrix(", "");
-                     a_2 = a_1.substring(0, a_1.length-1);
-                     my_value = a_2.split(",");
-                     return "rotate(" + Math.round(Math.asin(parseFloat(my_value[1])) * (180/Math.PI)) + "deg)";    
-                 }
-                 
-				 */
-					
-				
-				assertion = window.getComputedStyle(box).getPropertyValue("-moz-transform");
-			
+				box.style.Transform = "rotate(30deg)";
+				assertion = window.getComputedStyle(box).getPropertyValue("transform");
 				test_function = function(){
 					assert_equals(assertion, expectation);
-					//assert_equals(matrixToRotationString(assertion), expectation);	
 				}		
-				test(test_function, should_string);
-				
+				test(test_function, should_string);		
 			})();	
 		</script>
     </body>

@@ -585,6 +585,13 @@ policies and contribution forms [3].
           * Test if two primitives are equal or two objects
           * are the same object
           */
+        if (typeof actual != typeof expected)
+        {
+            assert(false, "assert_equals", description,
+                          "expected (" + typeof expected + ") ${expected} but got (" + typeof actual + ") ${actual}",
+                          {expected:expected, actual:actual});
+            return;
+        }
         assert(same_value(actual, expected), "assert_equals", description,
                                              "expected ${expected} but got ${actual}",
                                              {expected:expected, actual:actual});

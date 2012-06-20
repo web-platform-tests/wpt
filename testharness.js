@@ -442,6 +442,7 @@ policies and contribution forms [3].
         switch (typeof val)
         {
         case "string":
+            val = val.replace("\\", "\\\\");
             for (var i = 0; i < 32; i++)
             {
                 var replace = "\\";

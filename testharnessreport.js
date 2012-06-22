@@ -338,10 +338,6 @@ var metadata_generator = {
                     showSource = true;
                 }
             }
-            else if (1 < tests.length) {
-                message = 'Cached metadata not present. ';
-                showSource = true;
-            }
         }
         
         if (message) {

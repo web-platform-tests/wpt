@@ -3,7 +3,7 @@
 <title>Invalid key</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="../support.js"></script>
+<script src="support.js"></script>
 
 <script type="text/javascript">
     function invalid_key(desc, key) {
@@ -11,10 +11,16 @@
 
         createdb(t).onupgradeneeded = function(e) {
             var objStore = e.target.result.createObjectStore("store");
-
             assert_throws('DataError', function() {
                 objStore.add("value", key);
             });
+
+            var objStore2 = e.target.result.createObjectStore("store2", { keyPath: ["x", "keypath"] });
+            assert_throws('DataError', function() {
+                objStore2.add({ x: "value", keypath: key });
+            });
+
+            this.done();
         };
     }
 

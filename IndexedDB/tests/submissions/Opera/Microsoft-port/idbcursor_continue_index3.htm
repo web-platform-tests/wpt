@@ -26,12 +26,15 @@
         var cursor_rq = db.transaction("test")
                           .objectStore("test")
                           .index("index")
-                          .openCursor(undefined, IDBCursor.NEXT);
+                          .openCursor();
+        //                  .openCursor(undefined, IDBCursor.NEXT);
 
+        console.log("I'm here");
         cursor_rq.onsuccess = t.step_func(function(e) {
             var cursor = e.target.result;
 
             assert_true(cursor != null, "cursor exist");
+            console.log("fyrr throws");
             assert_throws("DataError",
                 function() { cursor.continue(records[0].iKey); });
 

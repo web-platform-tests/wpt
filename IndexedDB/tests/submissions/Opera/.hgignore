@@ -2,3 +2,4 @@ syntax: glob
 .git
 *.tmp
 *.swp
+.DS_Store

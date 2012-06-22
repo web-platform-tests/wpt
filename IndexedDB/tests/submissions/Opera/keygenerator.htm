@@ -1,0 +1,118 @@
+﻿<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Keygenerator</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="support.js"></script>
+
+<script>
+    function keygenerator(objects, expected_keys, desc, func) {
+        var db,
+          t = async_test(document.title + " - " + desc);
+
+        var open_rq = createdb(t);
+        open_rq.onupgradeneeded = function(e) {
+            db = e.target.result;
+            var objStore = db.createObjectStore("store", { keyPath: "id", autoIncrement: true });
+
+            for (var i = 0; i < objects.length; i++)
+            {
+                if (obj === null)
+                    objStore.add({});
+                else
+                    objStore.add({ id: obj });
+            }
+        };
+
+        open_rq.onsuccess = function(e) {
+            var actual_keys = [],
+              rq = db.transaction("store")
+                     .objectStore("store")
+                     .openCursor();
+
+            rq.onsuccess = t.step_func(function(e) {
+                var cursor = e.target.result;
+
+                if (cursor) {
+                    actual_keys.push(cursor.key.valueOf());
+                    cursor.continue();
+                }
+                else {
+                    assert_equals(actual_keys.length, expected_keys.length, "array length");
+                    assert_object_equals(actual_keys, expected_keys, "keygenerator array");
+
+                    t.done();
+                }
+            });
+        };
+    }
+
+
+    keygenerator([null, null, null, null],  [1, 2, 3, 4],
+        "starts at one, and increments by one");
+
+    keygenerator([2, null, 5, null, 6.66, 7],  [2, 3, 5, 6, 6.66, 7],
+        "increments by one from last set key");
+
+    keygenerator([-10, null, "6", 6.3, [10], -2, 4, null],   [-10, -2, 1, 4, 6.3, 7, "6", [10]],
+        "don't increment when new key is not bigger than current");
+
+
+    keygenerator([9007199254740991, null, "error", ],
+        [9007199254740991, 9007199254740992,],
+        "ConstraintError",
+        function(objStore, obj) {
+            console.log(obj)
+            if (obj === null)
+                objStore.add({});
+            else if (obj === "error")
+            {
+                objStore.add({}).onerror = this.step_func(function(e) {
+                    assert_
+                    e.preventDefault()
+                });
+//                assert_throws('ConstraintError', function () { objStore.add({ id: 2 }); });
+objStore.add({id:2});
+            else
+                objStore.add({ id: obj });
+        }
+        );
+
+    /*function invalid_keypath(keypath) {
+        createdb(async_test("Invalid keyPath - " + keypath)).onupgradeneeded = function(e) {
+            var db = e.target.result;
+            assert_throws('SyntaxError', function() {
+                    db.createObjectStore("store", { keyPath: keypath });
+                });
+
+            var store = db.createObjectStore("store");
+            assert_throws('SyntaxError', function() {
+                    store.createIndex('index', keypath);
+                });
+
+            db.close();
+
+            this.done();
+        };
+    }
+
+    invalid_keypath(['empty array', '']);
+    invalid_keypath('3m');
+    invalid_keypath('my.1337');
+    invalid_keypath('.yo');
+/*  invalid_keypath('y..o');
+    invalid_keypath('y.o.');
+    invalid_keypath('m.*');
+    invalid_keypath('"m"');
+    invalid_keypath('m%');
+    invalid_keypath('m/');
+    invalid_keypath('m&');
+    invalid_keypath('m!');
+    invalid_keypath('*');
+    invalid_keypath('*.*');
+    invalid_keypath('^m');
+    invalid_keypath('/m/');*/
+
+</script>
+
+<div id="log"></div>

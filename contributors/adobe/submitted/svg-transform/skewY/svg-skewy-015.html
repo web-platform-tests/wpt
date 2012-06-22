@@ -7,31 +7,20 @@
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions">
     <link rel="match" href="reference/svg-skewy-ref.html">
     <meta name="flags" content="svg">
-    <meta name="assert" content="The skewY transform function must support 'modulo whole circle' for arguments in turn. The rect in the test should be skewed vertically 27 degrees">
+    <meta name="assert" content="The skewY transform function must support 'modulo whole circle' for arguments in turn. The green rect in this test should be skewed vertically 45 degrees to completely cover the red path">
     <style type="text/css">
-    svg {
-        width: 300px;
-        height: 300px;
-    }
+        svg {
+            width: 250px;
+            height: 250px;
+            background: green;
+        }
     </style>
 </head>
 <body>
     <p>The test passes if there is a green square and no red.</p>
     <svg>
-        <defs>
-            <!-- Use a gradient so that clipping results in a different color after the skew -->
-            <linearGradient id="grad" x2="0%" y2="100%">
-                <stop offset="50%" stop-color="green"/>
-                <stop offset="50%" stop-color="red"/>
-            </linearGradient>
-            <clipPath id="clip">
-                <rect x="75" y="60" width="20" height="20"/>
-            </clipPath>
-        </defs>
-        <!-- Clip a small area of the rect that will shift to the other color area of the gradient with skewY -->
-        <g clip-path="url(#clip)">
-            <rect width="100" height="100" fill="url(#grad)" transform="skewY(1.075turn)"/> 
-        </g>
+        <path d="M 1,2 2,99 99,197 99,101 Z" fill="red"/>
+        <rect width="100" height="100" fill="green" transform="skewY(1.125turn)"/> 
     </svg>
 </body>
 </html>

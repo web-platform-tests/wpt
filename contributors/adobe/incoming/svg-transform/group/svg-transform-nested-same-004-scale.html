@@ -5,9 +5,9 @@
     <link rel="author" title="David Alcala" href="mailto:dalcala@adobe.com">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-transform">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions">
-    <link rel="match" href="reftest/svg-two-green-squares-horiz-x0-y0-ref.html">
+    <link rel="match" href="reftest/svg-green-square-ref.html">
     <meta name="flags" content="svg">
-    <meta name="assert" content="The scale transform function must be supported in SVG groups with a child that also has a scale transform function. The rect in the test should be scaled down 0.5 to 100x100 when the scale is performed on the group and on the child.">
+    <meta name="assert" content="The scale transform function must be supported in SVG groups with a child that also has a scale transform function. The rect in the test should be scaled up by 2 to 80x80 when the scale is performed on the group and on the child.">
     <style type="text/css">
     svg {
         width: 300px;
@@ -16,12 +16,12 @@
     </style>
 </head>
 <body>
-    <p>The test passes if there are two identical green squares horizontally aligned.</p>
+    <p>The test passes if there is a green square and no red.</p>
     <svg>
-        <g transform="scale(0.5)">
-            <rect width="400" height="400" fill="green" transform="scale(0.5)"/>
+        <rect x="41" y="41" width="78" height="78" fill="red"/>
+        <g transform="scale(2)">
+            <rect x="10" y="10" width="20" height="20" fill="green" transform="scale(2)"/>
         </g>
-        <rect x="140" width="100" height="100" fill="green"/>
     </svg>
 </body>
 </html>

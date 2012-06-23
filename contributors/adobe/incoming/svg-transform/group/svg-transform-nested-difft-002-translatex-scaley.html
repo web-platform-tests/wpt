@@ -5,9 +5,9 @@
     <link rel="author" title="David Alcala" href="mailto:dalcala@adobe.com">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-transform">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions">
-    <link rel="match" href="reftest/svg-two-green-squares-horiz-x20-y0-ref.html">
+    <link rel="match" href="reftest/svg-green-square-ref.html">
     <meta name="flags" content="svg">
-    <meta name="assert" content="The translateX transform function must be supported in SVG groups with a child that has a scaleY transform function. The rect in the test should be moved 20 pixels in the X direction when the translateX is performed on the group and the rect should then be vertically scaled down 0.5 in the Y direction to 100x100 when the scaleY is performed on the child.">
+    <meta name="assert" content="The translateX transform function must be supported in SVG groups with a child that has a scaleY transform function. The rect in the test should be moved 40 pixels in the X direction when the translateX is performed on the group and the rect should then be vertically scaled up by 2 in the Y direction to 80x80 when the scaleY is performed on the child.">
     <style type="text/css">
     svg {
         width: 300px;
@@ -18,11 +18,10 @@
 <body>
     <p>The test passes if there are two identical green squares horizontally aligned and no red.</p>
     <svg>
-        <rect x="21" y="1" width="98" height="98" fill="red"/>
-        <g transform="translateX(20px)">
-            <rect width="100" height="200" fill="green" transform="scaleY(0.5)"/>
+        <rect x="41" y="41" width="78" height="78" fill="red"/>
+        <g transform="translateX(40px)">
+            <rect y="20" width="80" height="40" fill="green" transform="scaleY(2)"/>
         </g>
-        <rect x="140" width="100" height="100" fill="green"/>
     </svg>
 </body>
 </html>

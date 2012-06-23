@@ -7,7 +7,7 @@
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions">
     <link rel="match" href="reftest/svg-green-square-ref.html">
     <meta name="flags" content="svg">
-    <meta name="assert" content="The translateY transform function must be supported in SVG groups with a child that also has a translateY transform function. The rect in the test should be moved 50 pixels in the Y direction when the translateY is performed on the group and the child.">
+    <meta name="assert" content="The translateY transform function must be supported in SVG groups with a child that also has a translateY transform function. The rect in the test should be moved 40 pixels in the Y direction when the translateY is performed on the group and the child.">
     <style type="text/css">
     svg {
         width: 300px;
@@ -18,9 +18,9 @@
 <body>
     <p>The test passes if there is a green square and no red.</p>
     <svg>
-        <rect x="51" y="51" width="98" height="98" fill="red"/>
-        <g transform="translateY(25)">
-            <rect width="100" height="100" x="50" fill="green" transform="translateY(25)"/>
+        <rect x="41" y="41" width="78" height="78" fill="red"/>
+        <g transform="translateY(20)">
+            <rect x="40" width="80" height="80" fill="green" transform="translateY(20)"/>
         </g>
     </svg>
 </body>

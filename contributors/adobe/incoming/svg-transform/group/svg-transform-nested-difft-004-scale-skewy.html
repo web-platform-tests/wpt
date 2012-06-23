@@ -16,7 +16,7 @@
     </style>
 </head>
 <body>
-    <p>The test passes if there are two identical green squares horizontally aligned and no red.</p>
+    <p>The test passes if there is a green square and no red.</p>
     <svg>
         <defs>
             <!-- Use a gradient so that clipping results in a different color after the skew -->
@@ -29,12 +29,10 @@
             </clipPath>
         </defs>
         <rect x="38" y="31" width="8" height="8" fill="red"/>
-        <rect x="81" y="31" width="8" height="8" fill="red"/>
         <!-- Clip a small area of the rect that will shift to the other color area of the gradient with skewY -->
         <g transform="scale(0.5)" clip-path="url(#clip)">
             <rect width="100" height="100" fill="url(#grad)" transform="skewY(27)"/>
         </g>
-        <rect x="80" y="30" width="10" height="10" fill="green"/>
     </svg>
 </body>
 </html>

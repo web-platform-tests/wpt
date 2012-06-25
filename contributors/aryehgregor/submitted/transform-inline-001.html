@@ -10,13 +10,15 @@
     only applies to transformable elements, so it should have no effect on a
     span.'>
     <link rel="match" href="transform-inline-ref.html">
+    <link rel="mismatch" href="transform-inline-notref.html">
     <style>
-      span {
+      span, p + p {
         transform: rotate(180deg);
       }
     </style>
   </head>
   <body>
-    This is some <span>text<br>that is</span> not transformed
+    <p>This is some <span>text<br>that is</span> not transformed</p>
+    <p>This is some text that is transformed</p>
   </body>
 </html>

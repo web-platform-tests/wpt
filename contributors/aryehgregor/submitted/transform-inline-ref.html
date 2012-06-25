@@ -3,8 +3,14 @@
   <head>
     <title>CSS Reftest Reference</title>
     <link rel="author" title="Aryeh Gregor" href="mailto:ayg@aryeh.name">
+    <style>
+      p + p {
+        transform: rotate(180deg);
+      }
+    </style>
   </head>
   <body>
-    This is some text<br>that is not transformed
+    <p>This is some text<br>that is not transformed</p>
+    <p>This is some text that is transformed</p>
   </body>
 </html>

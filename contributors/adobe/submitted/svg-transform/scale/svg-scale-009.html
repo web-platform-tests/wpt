@@ -9,11 +9,11 @@
     <meta name="flags" content="svg">
     <meta name="assert" content="The group containing the red rect in this test should be scaled down 0.5 and the red rect should be scaled down again 0.5 to be completely hidden behind the green rect.">
     <style type="text/css">
-    svg {
-        width: 200px;
-        height: 200px;
-        background: green;
-    }
+        svg {
+            width: 200px;
+            height: 200px;
+            background: green;
+        }
     </style>
 </head>
 <body>
@@ -22,7 +22,7 @@
         <g transform="scale(0.5)">
             <rect x="1" y="1" width="592" height="592" fill="red" transform="scale(0.5)"/>
         </g>
-        <rect width="150" height="150" fill="green">
+        <rect width="150" height="150" fill="green"/>
     </svg>
 </body>
 </html>

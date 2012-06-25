@@ -21,7 +21,7 @@
 
 <ul id="d"></ul>
 <script>
-var t = async_test("Context name "2D" is unrecognised; matching is case sensitive");
+var t = async_test("Context name \"2D\" is unrecognised; matching is case sensitive");
 _addTest(function(canvas, ctx) {
 
 _assertSame(canvas.getContext('2D'), null, "canvas.getContext('2D')", "null");

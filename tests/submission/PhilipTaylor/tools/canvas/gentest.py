@@ -65,8 +65,11 @@ SPECOUTPUTDIR = '../../annotated-spec'
 
 SPECOUTPUTPATH = '../annotated-spec' # relative to TESTOUTPUTDIR
 
+def simpleEscapeJS(str):
+    return str.replace('\\', '\\\\').replace('"', '\\"')
+
 def escapeJS(str):
-    str = str.replace('\\', '\\\\').replace('"', '\\"')
+    str = simpleEscapeJS(str)
     str = re.sub(r'\[(\w+)\]', r'[\\""+(\1)+"\\"]', str) # kind of an ugly hack, for nicer failure-message output
     return str
 
@@ -430,9 +433,10 @@ for i in range(len(tests)):
     fallback = test.get('fallback', '<p class="fallback">FAIL (fallback content)</p>')
 
     desc = test.get('desc', '')
-
+    escaped_desc = simpleEscapeJS(desc)
     template_params = {
-        'name':name, 'name_wrapped':name_wrapped, 'backrefs':backref_html(name), 'desc':desc,
+        'name':name, 'name_wrapped':name_wrapped, 'backrefs':backref_html(name),
+        'desc':desc, 'escaped_desc':escaped_desc,
         'prev':prev, 'next':next, 'refs':refs, 'notes':notes, 'images':images,
         'fonts':fonts, 'fonthack':fonthack,
         'canvas':canvas, 'expected':expectation_html, 'code':code,

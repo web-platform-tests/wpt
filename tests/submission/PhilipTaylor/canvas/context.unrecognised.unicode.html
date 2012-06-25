@@ -21,7 +21,7 @@
 
 <ul id="d"></ul>
 <script>
-var t = async_test("Context name which kind of looks like "2d" is unrecognised");
+var t = async_test("Context name which kind of looks like \"2d\" is unrecognised");
 _addTest(function(canvas, ctx) {
 
 _assertSame(canvas.getContext("2\uFF44"), null, "canvas.getContext(\"2\\uFF44\")", "null"); // Fullwidth Latin Small Letter D

@@ -105,7 +105,7 @@ w3c: |
     %(expected)s
     <ul id="d"></ul>
     <script>
-    var t = async_test("%(desc)s");
+    var t = async_test("%(escaped_desc)s");
     _addTest(function(canvas, ctx) {
 
     %(code)s

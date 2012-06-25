@@ -21,7 +21,7 @@
 
 <ul id="d"></ul>
 <script>
-var t = async_test("Context name "2d" plus a suffix is unrecognised");
+var t = async_test("Context name \"2d\" plus a suffix is unrecognised");
 _addTest(function(canvas, ctx) {
 
 _assertSame(canvas.getContext("2d#"), null, "canvas.getContext(\"2d#\")", "null");

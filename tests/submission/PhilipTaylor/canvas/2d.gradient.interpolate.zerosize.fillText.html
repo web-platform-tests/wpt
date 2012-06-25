@@ -33,16 +33,7 @@ g.addColorStop(1, '#f00');
 ctx.fillStyle = g;
 ctx.font = '100px sans-serif';
 ctx.fillText("AA", 0, 50);
-var imagedata = ctx.getImageData(0, 0, 100, 50);
-var w = imagedata.width, h = imagedata.height, d = imagedata.data;
-for (var i = 0; i < h; ++i) {
-  for (var j = 0; j < w; ++j) {
-    _assertEqual(d[4 * (w * i + j) + 0], 0, "d[4 * (w * i + j) + 0]", "0");
-    _assertEqual(d[4 * (w * i + j) + 1], 255, "d[4 * (w * i + j) + 1]", "255");
-    _assertEqual(d[4 * (w * i + j) + 2], 0, "d[4 * (w * i + j) + 2]", "0");
-    _assertEqual(d[4 * (w * i + j) + 3], 255, "d[4 * (w * i + j) + 3]", "255");
-  }
-}
+_assertGreen(ctx, 100, 50);
 
 
 });

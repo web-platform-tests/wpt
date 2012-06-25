@@ -27,8 +27,8 @@ var t = async_test("drawImage of different-origin image makes the canvas origin-
 _addTest(function(canvas, ctx) {
 
 ctx.drawImage(document.getElementById('yellow.png'), 0, 0);
-try { var _thrown = false; canvas.toDataURL(); } catch (e) { _thrown = true; } finally { _assert(_thrown, "should throw exception: canvas.toDataURL()"); }
-try { var _thrown = false; ctx.getImageData(0, 0, 1, 1); } catch (e) { _thrown = true; } finally { _assert(_thrown, "should throw exception: ctx.getImageData(0, 0, 1, 1)"); }
+assert_throws(null, function() { canvas.toDataURL(); });
+assert_throws(null, function() { ctx.getImageData(0, 0, 1, 1); });
 
 
 });

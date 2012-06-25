@@ -25,15 +25,9 @@ var t = async_test("createImageData(imgdata) should throw when called with the w
 _addTest(function(canvas, ctx) {
 
 var imgdata = ctx.createImageData(1, 1);
-try { var _thrown = false;
-  CanvasRenderingContext2D.prototype.createImageData.call(null, imgdata);
-} catch (e) { if (!(e instanceof TypeError)) _fail("Failed assertion: expected exception of type TypeError, got: "+e); _thrown = true; } finally { _assert(_thrown, "should throw exception of type TypeError: CanvasRenderingContext2D.prototype.createImageData.call(null, imgdata)"); }
-try { var _thrown = false;
-  CanvasRenderingContext2D.prototype.createImageData.call(undefined, imgdata);
-} catch (e) { if (!(e instanceof TypeError)) _fail("Failed assertion: expected exception of type TypeError, got: "+e); _thrown = true; } finally { _assert(_thrown, "should throw exception of type TypeError: CanvasRenderingContext2D.prototype.createImageData.call(undefined, imgdata)"); }
-try { var _thrown = false;
-  CanvasRenderingContext2D.prototype.createImageData.call({}, imgdata);
-} catch (e) { if (!(e instanceof TypeError)) _fail("Failed assertion: expected exception of type TypeError, got: "+e); _thrown = true; } finally { _assert(_thrown, "should throw exception of type TypeError: CanvasRenderingContext2D.prototype.createImageData.call({}, imgdata)"); }
+assert_throws(new TypeError(), function() { CanvasRenderingContext2D.prototype.createImageData.call(null, imgdata); });
+assert_throws(new TypeError(), function() { CanvasRenderingContext2D.prototype.createImageData.call(undefined, imgdata); });
+assert_throws(new TypeError(), function() { CanvasRenderingContext2D.prototype.createImageData.call({}, imgdata); });
 
 
 });

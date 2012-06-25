@@ -24,9 +24,7 @@
 var t = async_test("");
 _addTest(function(canvas, ctx) {
 
-try { var _thrown = false;
-  ctx.createPattern(undefined, 'repeat');
-} catch (e) { if (!(e instanceof TypeError)) _fail("Failed assertion: expected exception of type TypeError, got: "+e); _thrown = true; } finally { _assert(_thrown, "should throw exception of type TypeError: ctx.createPattern(undefined, 'repeat')"); }
+assert_throws(new TypeError(), function() { ctx.createPattern(undefined, 'repeat'); });
 
 
 });

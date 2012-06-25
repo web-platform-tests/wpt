@@ -24,9 +24,7 @@
 var t = async_test("putImageData() with null imagedata throws TypeError");
 _addTest(function(canvas, ctx) {
 
-try { var _thrown = false;
-  ctx.putImageData(null, 0, 0);
-} catch (e) { if (!(e instanceof TypeError)) _fail("Failed assertion: expected exception of type TypeError, got: "+e); _thrown = true; } finally { _assert(_thrown, "should throw exception of type TypeError: ctx.putImageData(null, 0, 0)"); }
+assert_throws(new TypeError(), function() { ctx.putImageData(null, 0, 0); });
 
 
 });

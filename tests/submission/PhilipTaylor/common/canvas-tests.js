@@ -8,6 +8,12 @@ function _valToString(val)
 var _failed = false;
 var _asserted = false;
 
+add_result_callback(function(test) {
+    if (test.status !== test.PASS) {
+        _fail(test.message);
+    }
+});
+
 function _warn(text)
 {
     document.getElementById('d').appendChild(document.createElement('li')).appendChild(document.createTextNode(text));

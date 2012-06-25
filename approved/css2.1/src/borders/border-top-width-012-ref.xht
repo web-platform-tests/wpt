@@ -9,20 +9,16 @@
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   
   <style type="text/css"><![CDATA[
-  div
-  {
-  border-bottom: black solid medium;
-  height: 1in;
-  }
+  span {border-top: black solid medium;}
   ]]></style>
 
  </head>
 
  <body>
 
-  <p>Test passes if there is a wide horizontal black line.</p>
+  <p>Test passes if all the "Filler Text" have 2 black lines over them with the <strong>same thickness</strong>.</p>
 
-  <div></div>
+  <div><span>Filler Text Filler Text Filler Text</span> <span>Filler Text Filler Text Filler Text</span></div>
 
  </body>
 </html>

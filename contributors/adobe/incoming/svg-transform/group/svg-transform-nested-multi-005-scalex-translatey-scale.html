@@ -7,7 +7,7 @@
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions">
     <link rel="match" href="reference/svg-green-square-ref.html">
     <meta name="flags" content="svg">
-    <meta name="assert" content="The scaleX transform function must be supported in SVG groups with multiple nested children, where one child has a translateY transform function and the other child has a scale transform function. The first child rect in the test should be horizontally scaled down 0.5 to 78x78 when the scaleX is performed on the group, and then should be moved 20 pixels in the Y direction when the translateY is performed on the first child. The second child rect in the test should be horizontally scaled down 0.5 to 160x160 when the scaleX is performed on the group, and then should be scaled down 0.5 to 80x80 when the scale is performed on the second child.">
+    <meta name="assert" content="Transforms on parent elements should be pre-multiplied to transforms on child elements.  The group of elements should be scaled horizontally.  Additionally, the first rect should be translated vertically and the second rect should be scaled.">
     <style type="text/css">
     svg {
         width: 300px;

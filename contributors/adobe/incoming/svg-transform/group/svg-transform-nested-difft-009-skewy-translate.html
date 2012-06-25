@@ -7,7 +7,7 @@
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions">
     <link rel="match" href="reference/svg-20x20-green-square-x75-y85-ref.html">
     <meta name="flags" content="svg">
-    <meta name="assert" content="The skewY transform function must be supported in SVG groups with a child that has a translate transform function. The child rect in the test should be skewed vertically 27 degrees, and then should be moved 20 pixels in the X direction and 20 pixels in the Y direction when the translate is performed on the child.">
+    <meta name="assert" content="Transforms on a parent element should be pre-multiplied to transforms on a child element.  The group of elements should be skewed vertically.  Additionally, the child rect should be translated.">
     <style type="text/css">
     svg {
         width: 300px;

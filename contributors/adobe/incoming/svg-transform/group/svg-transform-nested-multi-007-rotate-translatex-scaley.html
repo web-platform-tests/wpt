@@ -9,7 +9,7 @@
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-transform-value">
     <link rel="match" href="reference/svg-fuchsia-orange-square-ref.html">
     <meta name="flags" content="svg">
-    <meta name="assert" content="The rotate transform function must be supported in SVG groups with multiple nested children, where one child has a translateX transform function and the other child has a scaleY transform function. The first child rect in the test should be rotated by 90 degrees clockwise when the rotate is performed on the group, and then should be moved 20 pixels in the X direction when the translateX is performed on the first child. The second child rect in the test should be rotated by 90 degrees clockwise when the rotate is performed on the group, and then should be vertically scaled down 0.5 to 80x80 when the scaleY is performed on the second child.">
+    <meta name="assert" content="Transforms on parent elements should be pre-multiplied to transforms on child elements.  The group of elements should be rotated.  Additionally, the first rect should be translated horizontally and the second rect should be scaled vertically.">
     <style type="text/css">
     svg {
         width: 300px;

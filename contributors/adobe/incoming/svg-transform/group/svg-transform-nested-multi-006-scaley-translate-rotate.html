@@ -7,7 +7,7 @@
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions">
     <link rel="match" href="reference/svg-fuchsia-orange-square-ref.html">
     <meta name="flags" content="svg">
-    <meta name="assert" content="The scaleY transform function must be supported in SVG groups with multiple nested children, where one child has a translate transform function and the other child has a rotate transform function. The first child rect in the test should be vertically scaled down 0.5 to 78x78 when the scaleY is performed on the group, and then should be moved 20 pixels in both the X and Y directions when the translate is performed on the first child rect. The second child rect in the test should be vertically scaled down 0.5 to 80x80 when the scaleY is performed on the group, and then should be rotated 90 degrees clockwise when the rotate is performed on the second child rect.">
+    <meta name="assert" content="Transforms on parent elements should be pre-multiplied to transforms on child elements.  The group of elements should be scaled vertically.  Additionally, the first rect should be translated and the second rect should be rotated.">
     <style type="text/css">
     svg {
         width: 300px;

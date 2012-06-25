@@ -7,7 +7,7 @@
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions">
     <link rel="match" href="reference/svg-four-color-square-ref.html">
     <meta name="flags" content="svg">
-    <meta name="assert" content="The matrix transform function must be supported in SVG groups with multiple nested children, where one child has a translateY transform function and the other child has a scaleY transform function. Both rects in the test should be flipped up and left, scaled down horizontally and vertically, and translated in the X and Y directions when the matrix is performed on the group. Child rect 1 should then be vertically scaled down by 0.5 to 78x78 when the scaleY is performed on child rect 1. Child rect 2 should then be moved 40 pixels in the Y direction when the translateY is performed on child rect 2.">
+    <meta name="assert" content="Transforms on parent elements should be pre-multiplied to transforms on child elements.  The group of elements should be scaled and translated.  Additionally, the first rect should be translated vertically and the second rect should be scaled vertically.">
     <style type="text/css">
     svg {
         width: 300px;

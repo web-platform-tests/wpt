@@ -9,7 +9,7 @@
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-transform-value">
     <link rel="match" href="reference/svg-fuchsia-orange-square-ref.html">
     <meta name="flags" content="svg">
-    <meta name="assert" content="The rotate transform function must be supported in SVG groups with a child that also has a rotate transform function. The rectangle in the test should be rotated by 90 degrees clockwise when the rotate is performed on the group and on the child.">
+    <meta name="assert" content="Transforms on a parent element should be pre-multiplied to transforms on a child element.  The group of elements should be rotated.  Additionally, the child rect should be rotated.">
     <style type="text/css">
     svg {
         width: 300px;

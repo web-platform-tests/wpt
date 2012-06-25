@@ -7,7 +7,7 @@
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions">
     <link rel="match" href="reference/svg-green-square-ref.html">
     <meta name="flags" content="svg">
-    <meta name="assert" content="The scaleY transform function must be supported in SVG groups. The rect in the test should be vertically scaled up by 2 to 80x80 when the scaleY is performed on the group">
+    <meta name="assert" content="Transforms on a parent element should be pre-multiplied to a child element.  The group of elements should be scaled vertically, therefore the child element should be scaled vertically.">
     <style type="text/css">
     svg {
         width: 300px;

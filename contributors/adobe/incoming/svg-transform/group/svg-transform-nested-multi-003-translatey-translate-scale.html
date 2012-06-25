@@ -7,7 +7,7 @@
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions">
     <link rel="match" href="reference/svg-green-square-ref.html">
     <meta name="flags" content="svg">
-    <meta name="assert" content="The translateY transform function must be supported in SVG groups with multiple nested children, where one child has a translate transform function and the other child has a scale transform function. Both rects in the test should be moved down 25 pixels in the Y direction when the translateY is performed on the group. Child rect 1 should then be moved 40 pixels in the X direction and 15 pixels in the Y direction when the translate is performed on the child. Child rect 2 should then be scaled down 0.5 to 80x80 when the scale is performed on the child.">
+    <meta name="assert" content="Transforms on parent elements should be pre-multiplied to transforms on child elements.  The group of elements should be translated vertically.  Additionally, the first rect should be translated and the second rect should be scaled.">
     <style type="text/css">
     svg {
         width: 300px;

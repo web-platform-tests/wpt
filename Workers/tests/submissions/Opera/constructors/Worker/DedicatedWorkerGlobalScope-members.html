@@ -20,17 +20,13 @@ postMessage('done');
 <link rel=help href="http://www.whatwg.org/html/#dom-worker">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="../../workers.js"></script>
 <div id="log"></div>
 <script>
 var t = async_test();
 test(function() {
   var worker = new Worker('#');
-  worker.addEventListener('message', t.step_func(function(e) {
-    if (e.data === 'done') {
-      t.done();
-    }
-    assert_unreached(e.data);
-  }), false);
+  listenForMessages(t, worker);
 });
 </script>
 <!--

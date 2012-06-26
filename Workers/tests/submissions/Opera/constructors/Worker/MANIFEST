@@ -3,5 +3,6 @@ expected-self-properties.html
 no-arguments-ctor.html
 resolve-empty-string.html
 same-origin.html
+terminate.html
 unexpected-self-properties.html
 unresolvable-url.html

@@ -9556,8 +9556,8 @@
   testing:
     - 2d.imageData.type
   code: |
-    @assert window.ImageData !== undefined; @moz-todo
-    @assert throws new window.ImageData(1,1);
+    @assert window.ImageData !== undefined;
+    @assert throws TypeError new window.ImageData(1,1);
 
 - name: 2d.imageData.object.set
   desc: ImageData.data can be modified

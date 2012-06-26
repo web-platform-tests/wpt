@@ -4,10 +4,8 @@
     <title>CSS Transforms Test: SVG presentation attribute, rotate on group, rotate on child</title>
     <link rel="author" title="David Alcala" href="mailto:dalcala@adobe.com">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-transform">
-    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-angle">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions">
-    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-transform-value">
-    <link rel="match" href="reference/svg-fuchsia-orange-square-ref.html">
+    <link rel="match" href="reference/svg-green-square-ref.html">
     <meta name="flags" content="svg">
     <meta name="assert" content="Transforms on a parent element should be pre-multiplied to transforms on a child element.  The group of elements should be rotated.  Additionally, the child rect should be rotated.">
     <style type="text/css">
@@ -18,18 +16,11 @@
     </style>
 </head>
 <body>
-    <p>The test passes if there is a square with a fuchsia left half and an orange right half, and no red.</p>
+    <p>The test passes if there is a green square and no red.</p>
     <svg>
-        <!-- Fill with gradient to avoid false positive. -->
-        <defs>
-            <linearGradient id="grad" x2="0%" y2="100%">
-                <stop offset="50%" stop-color="orange"/>
-                <stop offset="50%" stop-color="fuchsia"/>
-            </linearGradient>
-        </defs>
         <rect x="41" y="41" width="78" height="78" fill="red"/>
         <g transform="rotate(45)">
-            <rect x="40" y="-120" width="80" height="80" fill="url(#grad)" transform="rotate(45)"/>
+            <rect x="40" y="-120" width="80" height="80" fill="green" transform="rotate(45)"/>
         </g>
     </svg>
 </body>

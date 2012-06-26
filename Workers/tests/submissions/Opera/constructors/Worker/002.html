@@ -1,9 +1,0 @@
-<!doctype html>
-<title>without arguments</title>
-<script src="/resources/jsframework.js"></script>
-<p>This test might be invalid. WebIDL doesn't define behavior for missing arguments yet.</p>
-<script>
-test(function() {
-  assertThrows(function() { new Worker(); }, [], DOMException, {code: 9});
-});
-</script>

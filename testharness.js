@@ -988,6 +988,23 @@ policies and contribution forms [3].
         };
     };
 
+    Test.prototype.step_func_done = function(func, this_obj)
+    {
+        var test_this = this;
+
+        if (arguments.length === 1)
+        {
+            this_obj = test_this;
+        }
+
+        return function()
+        {
+            test_this.step.apply(test_this, [func, this_obj].concat(
+                Array.prototype.slice.call(arguments)));
+            test_this.done();
+        };
+    };
+
     Test.prototype.set_timeout = function()
     {
         var this_obj = this;

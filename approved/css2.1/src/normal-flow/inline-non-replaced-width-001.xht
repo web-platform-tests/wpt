@@ -3,6 +3,7 @@
     <head>
         <title>CSS Test: Inline non-replaced elements with 'auto' value for 'left', 'right', and 'margin-left'</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-06-26 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#inline-width" />
         <meta name="flags" content="ahem" />
         <meta name="assert" content="Computed value of 'auto' for 'left', 'right', and 'margin-left' becomes a used value of '0'." />
@@ -10,13 +11,13 @@
             div
             {
                 border: solid black;
-                height: 2in;
-                width: 2in;
+                height: 200px;
+                width: 200px;
             }
             span
             {
                 color: blue;
-                font: 1in/1em Ahem;
+                font: 100px/1 Ahem;
                 left: auto;
                 margin-left: auto;
                 position: relative;
@@ -25,7 +26,7 @@
         </style>
     </head>
     <body>
-        <p>Test passes if the blue box below is in the upper-left corner of the black box.</p>
+        <p>Test passes if the blue square is in the <strong>upper-left corner</strong> of the hollow black square.</p>
         <div>
             <span>X</span>
         </div>

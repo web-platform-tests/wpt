@@ -3,6 +3,7 @@
     <head>
         <title>CSS Test: Solved for 'right' when absolutely positioned non-replaced elements has 'right' and 'width' as 'auto'</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-06-26 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#abs-non-replaced-width" />
         <meta name="flags" content="ahem" />
         <meta name="assert" content="When 'right' and 'width' are 'auto' and 'left' is not 'auto', then the width is shrink-to-fit and then solve for 'right'." />
@@ -10,16 +11,16 @@
             #div1
             {
                 border: solid black;
-                height: 2in;
+                height: 200px;
                 position: relative;
-                width: 2in;
+                width: 200px;
             }
             div div
             {
                 background: red;
                 color: blue;
-                font: 1in/1em Ahem;
-                left: 1in;
+                font: 100px/1 Ahem;
+                left: 100px;
                 margin-left: auto;
                 margin-right: auto;
                 position: absolute;
@@ -29,7 +30,7 @@
         </style>
     </head>
     <body>
-        <p>Test passes if the blue box is in the upper-right corner of the black box and there is no red visible on the page.</p>
+        <p>Test passes if the blue square is in the <strong>upper-right corner</strong> of the hollow black square and there is <strong>no red</strong>.</p>
         <div id="div1">
             <div>X</div>
         </div>

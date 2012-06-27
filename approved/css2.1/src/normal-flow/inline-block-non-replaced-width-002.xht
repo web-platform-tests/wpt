@@ -3,6 +3,7 @@
     <head>
         <title>CSS Test: Inline-block non-replaced elements with 'margin-left' and 'margin-right' set to 'auto'</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-06-26 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#inlineblock-width" />
         <meta name="flags" content="ahem" />
         <meta name="assert" content="When 'margin-left' and 'margin-right' are set to 'auto' the used value becomes '0'." />
@@ -10,22 +11,22 @@
             #div1
             {
                 border: solid black;
-                height: 2in;
-                width: 2in;
+                height: 200px;
+                width: 200px;
             }
             div div
             {
                 background-color: red;
                 color: blue;
                 display: inline-block;
-                font: 1in/1em Ahem;
+                font: 100px/1 Ahem;
                 margin-left: auto;
                 margin-right: auto;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if the blue box is in the upper-left corner of the black box and there is no red visible on the page.</p>
+        <p>Test passes if the blue square is in the <strong>upper-left corner</strong> of the hollow black square and there is <strong>no red</strong>.</p>
         <div id="div1">
             <div>X</div>
         </div>

@@ -5,34 +5,23 @@
     <link rel="author" title="David Alcala" href="mailto:dalcala@adobe.com">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-transform">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions">
-    <link rel="match" href="reference/svg-20x20-green-square-x55-y80-ref.html">
+    <link rel="match" href="reference/svg-green-square-250x250-ref.html">
     <meta name="flags" content="svg">
     <meta name="assert" content="Transforms on a parent element should be pre-multiplied to transforms on a child element.  The group of elements should be skewed horizontally.  Additionally, the child rect should be skewed horizontally.">
     <style type="text/css">
     svg {
-        width: 300px;
-        height: 300px;
+        width: 250px;
+        height: 250px;
+        background: green;
     }
     </style>
 </head>
 <body>
     <p>The test passes if there is a green square and no red.</p>
     <svg>
-        <defs>
-            <!-- Use a gradient so that clipping results in a different color after the skew -->
-            <linearGradient id="grad" x1="0%" y1="0%">
-                <stop offset="50%" stop-color="green"/>
-                <stop offset="50%" stop-color="red"/>
-            </linearGradient>
-            <clipPath id = "clip">
-                <rect x="55" y="80" width="20" height="20"/>
-            </clipPath>
-        </defs>
-        <!-- Clip a small area of the rect that will shift to the other color area of the gradient with skewX -->
-        <g clip-path="url(#clip)">
-            <g transform="skewX(14)">
-                <rect width="100" height="100" fill="url(#grad)" transform="skewX(13)"/>
-            </g>
+        <path d="M 2,1 100,1 198,99 101,99 Z" fill="red"/>
+        <g transform="skewX(27)">
+            <rect width="100" height="100" fill="green" transform="skewX(26)"/>
         </g>
     </svg>
 </body>

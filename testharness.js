@@ -290,6 +290,14 @@ policies and contribution forms [3].
  *   asserts if called. Used to ensure that some codepath is *not* taken e.g.
  *   an event does not fire.
  *
+ * assert_any(assert_func, actual, expected_array, extra_arg_1, ... extra_arg_N)
+ *   asserts that one assert_func(actual, expected_array_N, extra_arg1, ..., extra_arg_N)
+ *   is true for some expected_array_N in expected_array. This only works for assert_func
+ *   with signature assert_func(actual, expected, args_1, ..., args_N). Note that tests
+ *   with multiple allowed pass conditions are bad practice unless the spec specifically
+ *   allows multiple behaviours. Test authors should not use this method simply to hide 
+ *   UA bugs.
+ *
  * assert_exists(object, property_name, description)
  *   *** deprecated ***
  *   asserts that object has an own property property_name
@@ -896,6 +904,27 @@ policies and contribution forms [3].
                 "Reached unreachable code");
     }
     expose(assert_unreached, "assert_unreached");
+
+    function assert_any(assert_func, actual, expected_array) 
+    {
+        var args = [].slice.call(arguments, 3)
+        var errors = []
+        var passed = false;
+        forEach(expected_array, 
+                function(expected)
+                {
+                    try {
+                        assert_func.apply(this, [actual, expected].concat(args))
+                        passed = true;
+                    } catch(e) {
+                        errors.push(e.message);
+                    }
+                });
+        if (!passed) {
+            throw new AssertionError(errors.join("\n\n"));
+        }
+    }
+    expose(assert_any, "assert_any");
 
     function Test(name, properties)
     {

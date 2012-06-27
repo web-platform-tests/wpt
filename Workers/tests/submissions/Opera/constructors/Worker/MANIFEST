@@ -1,3 +1,4 @@
+AbstractWorker.onerror.html
 DedicatedWorkerGlobalScope-members.html
 expected-self-properties.html
 no-arguments-ctor.html

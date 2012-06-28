@@ -3,11 +3,15 @@
  <head>
   <title>CSS Test: vertical-align: length on :first-line</title>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-06-27 -->
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/block/first-line/012.html" type="text/html"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-line-pseudo" />
+  <link rel="match" href="first-line-pseudo-012-ref.xht" />
+
+  <meta name="flags" content="ahem" />
+
   <style type="text/css">
-  .ahem { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
-  .container { font-size: 3em; }
+  .container { font-size: 3.125em; }
   .test, .control, .reference { border: solid black; width: 1em; }
   .test, .control { font: 1em/1 Ahem; color: aqua; background: yellow; }
   .a { background: fuchsia; }
@@ -19,7 +23,6 @@
   </style>
  </head>
  <body>
-  <div class="ahem">Ahem_font_required_for_this_test.</div>
   <p>The next three boxes should be pixel-perfect identical.</p>
   <div class="container">
    <p class="test">

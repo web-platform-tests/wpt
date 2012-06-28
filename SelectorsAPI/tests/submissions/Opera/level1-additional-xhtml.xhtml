@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Selectors-API Test Suite: HTML with Selectors Level 3 using TestHarness</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+iframe { visibility: hidden; position: absolute; }
+/*iframe { display: none; }*/
+/* Note: display: none; causes Firefox to fail/not run a significant number of tests */
+</style>
+</head>
+<body>
+<div id="log"></div>
+<iframe src="level1-additional-xhtml-frame.xhtml#target" id="testframe"></iframe>
+
+<script>//<![CDATA[
+setup(null, {explicit_done: true});
+
+var frame = document.getElementById("testframe"),
+    doc;
+frame.onload = function() {
+
+	// Setup variables
+	doc = frame.contentDocument;             // Document
+	var root1 = doc.getElementById("root1"); // Element, Inside Element, part of Document
+	var root2 = doc.getElementById("root2"); // Outside Element, part of Document
+	var root3 = doc.getElementById("root3"); // JQuery Tests - Element
+	var root3clone = root3.cloneNode(true);  // JQuery Tests - Disconnected Element
+	var root4 = root2.cloneNode(true); // Disconnected Element
+
+	// Fragment
+	var root5 = root2.cloneNode(true);
+	var fragment = doc.createDocumentFragment();
+	fragment.appendChild(root5);
+
+	var cssElem = doc.getElementById("test");
+	var css = (cssElem.innerHTML || cssElem.textContent || cssElem.innerText).split("\n");
+	for ( var i = 0; i < css.length; i++ ) {
+		css[i] = css[i].replace(/\/\*.*?\*\//g, "")
+			.replace(/^\s*|\s*$/g, "").split(/\s*{/);
+	}
+
+	var ecssElem = doc.getElementById("error");
+	var ecss = (ecssElem.innerHTML || ecssElem.textContent || ecssElem.innerText).split("\n");
+	for ( var i = 0; i < ecss.length; i++ ) {
+		ecss[i] = ecss[i].replace(/\/\*.*?\*\//g, "")
+			.replace(/^\s*|\s*$/g, "").split(/\s*{/);
+	}
+
+	// Setup null and undefined tests
+	var elementNull = doc.createElement("null")
+	var elementUndefined = doc.createElement("undefined")
+
+	testFragment = doc.createDocumentFragment();
+	testFragment.appendChild(elementNull);
+	testFragment.appendChild(elementUndefined);
+
+	root1.appendChild(testFragment.cloneNode(true));
+	root4.appendChild(testFragment.cloneNode(true));
+	root5.appendChild(testFragment);
+
+	// Setup namespace tests
+	var anyNS = doc.createElement("div");
+	anyNS.className = "test any-namespace";
+	var noNS = doc.createElement("div");
+	noNS.className = "test no-namespace";
+
+	var testFragment = doc.createDocumentFragment();
+	testFragment.appendChild(anyNS);
+	testFragment.appendChild(noNS);
+
+	var div1 = doc.createElement("div");
+	var div2 = doc.createElementNS("http://www.w3.org/1999/xhtml", "div");
+	var div3 = doc.createElementNS("", "div");
+	var div4 = doc.createElementNS("http://www.example.org/ns", "div");
+
+	div1.setAttribute("title", "Any namespace selector, HTML element");
+	div2.setAttribute("title", "Any namespace selector, XHTML element");
+	div3.setAttribute("title", "Any namespace selector, element in no namespace");
+	div4.setAttribute("title", "Any namespace selector, element in other namespace");
+
+	// Append extra HTMLElement elements to ensure that the .style property is available
+	div1.appendChild(doc.createElement("p"));
+	div2.appendChild(doc.createElement("p"));
+	div3.appendChild(doc.createElement("p"));
+	div4.appendChild(doc.createElement("p"));
+
+	anyNS.appendChild(div1);
+	anyNS.appendChild(div2);
+	anyNS.appendChild(div3);
+	anyNS.appendChild(div4);
+
+	div1 = doc.createElement("div");
+	div2 = doc.createElementNS("http://www.w3.org/1999/xhtml", "div");
+	div3 = doc.createElementNS("", "div");
+	div4 = doc.createElementNS("http://www.example.org/ns", "div");
+
+	div1.setAttribute("title", "No namespace selector, HTML element");
+	div2.setAttribute("title", "No namespace selector, XHTML element");
+	div3.setAttribute("title", "No namespace selector, element in no namespace");
+	div4.setAttribute("title", "No namespace selector, element in other namespace");
+
+	// Append extra HTMLElement elements to ensure that the .style property is available
+	div1.appendChild(doc.createElement("p"));
+	div2.appendChild(doc.createElement("p"));
+	div3.appendChild(doc.createElement("p"));
+	div4.appendChild(doc.createElement("p"));
+
+	noNS.appendChild(div1);
+	noNS.appendChild(div2);
+	noNS.appendChild(div3);
+	noNS.appendChild(div4);
+
+	root1.appendChild(testFragment.cloneNode(true));
+	root2.appendChild(testFragment);
+
+	// Run tests
+	interfaceCheck(root1, "Element");
+	runQuerySelectorTest(css, "Element", root1, true);
+	runQuerySelectorTest(ecss, "Syntax Error: Element", root1, false);
+	cacheCheck("Element", root1);
+	check("Inside Element", root1, true, false);
+	check( "Outside Element", root2, false, false);
+	jqTests("Element", root3, "querySelectorAll");
+
+	interfaceCheck(root4, "Disconnected Element");
+	runQuerySelectorTest(css, "Disconnected Element", root4, true);
+	runQuerySelectorTest(ecss, "Syntax Error: Disconnected Element", root4, false);
+	cacheCheck("Disconnected Element", root4);
+	check("Disconnected Element", root4, true, true);
+	jqTests("Disconnected Element", root3.cloneNode(true), "querySelectorAll");
+
+	interfaceCheck(fragment, "Fragment");
+	runQuerySelectorTest(css, "Fragment", fragment, true);
+	runQuerySelectorTest(ecss, "Syntax Error: Fragment", fragment, false);
+	cacheCheck( "Fragment", fragment);
+	check("Fragment", fragment, true, true);
+
+	interfaceCheck(doc, "Document");
+	runQuerySelectorTest(css, "Document", doc, true);
+	runQuerySelectorTest(ecss, "Syntax Error: Document", doc, false);
+	cacheCheck("Document", doc);
+	check( "Document", doc, true, false);
+	jqTests("Document", doc, "querySelectorAll");
+
+	done();
+}
+
+function check(type, root, expect, fragment){
+	traverse(root, function(div) {
+		if ((div.getAttribute("class") || "").toString().indexOf("unitTest") > -1
+		 && (!fragment || div.getAttribute("id") !== "nofragment") ) {
+			var bg;
+
+			if (doc.defaultView) {
+				var view = doc.defaultView.getComputedStyle(div, null);
+				bg = view.getPropertyValue("background-color") || div.style.backgroundColor;
+			} else if (div.currentStyle) {
+				bg = div.currentStyle.backgroundColor || div.style.backgroundColor;
+			}
+
+			test(function() {
+				var pass = bg && bg.indexOf("(255, 0, 0") == -1 && bg.indexOf("#ff0000") == -1 && bg.indexOf("red") == -1;
+				assert_equals(pass, expect, "The color should be " + (expect ? "green" : "red") + " (actual: " + bg + ")");
+			}, type + ": " + (div.title || div.parentNode.title));
+		}
+	});
+}
+
+function traverse( elem, fn ) {
+	if ( elem.nodeType === 1 ) {
+		fn( elem);
+
+		elem = elem.firstChild;
+		while ( elem ) {
+			traverse( elem, fn);
+			elem = elem.nextSibling;
+		}
+	}
+}
+
+function cacheCheck(type, root) {
+	var pre, post, preLength;
+ 
+	test(function() {
+		pre = root.querySelectorAll("div");
+	    preLength = pre.length;
+
+		assert_equals(pre.length, preLength, "The length of the NodeList should not change.")
+	}, type + ": static NodeList")
+
+	test(function() {
+		var div = doc.createElement("div");
+		(root.body || root).appendChild(div);
+
+		post = root.querySelectorAll( "div" ),
+	    postLength = post.length;
+		assert_not_equals(post.length, preLength, "The length of the new NodeList should not equal the previous.")
+	}, type + ": new NodeList")
+}
+
+function interfaceCheck(obj, type){
+	test(function() {
+		var q = typeof obj.querySelector === "function";
+		assert_true(q, type + " supports querySelector");
+	}, type + " supports querySelector")
+
+	test(function() {
+		var qa = typeof obj.querySelectorAll === "function";
+		assert_true( qa, type + " supports querySelectorAll");
+	}, type + " supports querySelectorAll")
+}
+
+function runQuerySelectorTest(css, type, root, expect) {
+	test(function() { // 1
+		assert_throws("SYNTAX_ERR", function() {
+			root.querySelectorAll("");
+		}, "This should throw a SyntaxError")
+	}, type + ".querySelectorAll Empty String")
+
+	test(function() { // 2
+		assert_equals(root.querySelectorAll(null).length, 1, "This should find one element with the tag name 'NULL'.");
+	}, type + ".querySelectorAll null")
+
+	test(function() { // 3
+		assert_equals(root.querySelectorAll(null).length, 1, "This should find one elements with the tag name 'UNDEFINED'.");
+	}, type + ".querySelectorAll undefined")
+
+	test(function() { // 4
+		assert_throws(TypeError(), function() {
+			root.querySelectorAll();
+		}, "This should throw a TypeError")
+	}, type + ".querySelectorAll no parameter")
+
+	test(function() { // 5
+		assert_throws("SYNTAX_ERR", function() {
+			root.querySelector("");		
+		}, "This should throw a SyntaxError")
+	}, type + ".querySelector Empty String")
+	
+	test(function() { // 6
+		var elm = root.querySelector(null)
+		assert_not_equals(elm, null, "This should find an element.");
+		assert_equals(elm.tagName.toUpperCase(), "NULL", "The tag name should be 'NULL'")
+	}, type + ".querySelector null")
+
+	test(function() { // 7
+		var elm = root.querySelector(undefined)
+		assert_not_equals(elm, undefined, "This should find an element.");
+		assert_equals(elm.tagName.toUpperCase(), "UNDEFINED", "The tag name should be 'UNDEFINED'")
+	}, type + ".querySelector undefined")
+
+	test(function() { // 8
+		assert_throws(TypeError(), function() {
+			root.querySelector();		
+		}, "This should throw a TypeError")
+	}, type + ".querySelector no parameter")
+
+	for (var i = 0; i < css.length; i++) {
+		if (css[i].length === 2) {
+			var query = css[i][0],
+			    color = css[i][1].match(/: ([^\s;]+)/)[1];
+
+			if (expect) { // Only run these tests when results are expected. Don't run for syntax error tests.
+				var found, found2, single;
+
+				// This test only checks to see that no unexpected matches are found.
+				// Verifying that the expected elements were found is handled separately.
+				test(function() { // 9
+					found = root.querySelectorAll(query);
+					
+					for (var f = 0; f < found.length; f++) {
+						// This will break if the matched elements are not HTMLElements.
+						// When adding tests, ensure that the subject of the selector is an HTMLElement.
+						// Other ancestor elements may be non-HTML elements for namespace tests.
+						// This sets the background colour. which is later verified within the check() function.
+						found[f].style.backgroundColor = color;
+					}
+
+					if (color === "red") {
+						assert_equals(found.length, 0, "There should be zero results found.")
+					}
+				}, type + ".querySelectorAll: " + query)
+
+				test(function() { // 10
+					found2 = root.querySelectorAll("  \t\r\n  " + query + "  \t\r\n  ");
+					assert_equals(found2.length, found.length, "The query with added whitespace should return the same number of results.")
+				}, type + ".querySelectorAll Whitespace Trim: " + query)
+
+				test(function() { // 11
+					single = root.querySelector(query);
+					if (color === "red" || found.length === 0) {
+						assert_equals(single, null, "The method should return null when there are no matches.")
+					} else {
+						assert_not_equals(single, null, "The method should return a match.")
+						assert_equals(single, found[0], "The method should return the first match.")
+					}
+				}, type + ".querySelector: " + query)
+
+			} else { // Run these when errors are expected.
+				test(function() { // 12
+					assert_throws("SYNTAX_ERR", function() {
+						root.querySelectorAll(query)
+					})
+				}, type + ".querySelectorAll: " + query)
+
+				test(function() { // 13
+					assert_throws("SYNTAX_ERR", function() {
+						root.querySelector(query)
+					})
+				}, type + ".querySelector: " + query)
+			}
+		}
+	}
+}
+
+function jqTests(type, root, select) {
+
+	function query(q){
+		return root[select](q);
+	}
+
+	function t(name, q, ids, restrict, ids2) {
+		var pass = true;
+
+		if (restrict === false && root != doc)
+			return;
+
+		var prepend = "#root3 ";
+		q = (restrict === false || restrict === ":root" ? "" : prepend) + q.replace(/,/g, ", " + prepend);
+
+		test(function() {
+			if (ids) {
+				var results = query(q)
+				if (results) {
+					var found = []
+					for (var i = 0; i < results.length; i++) {
+						found.push(results[i].getAttribute("id"))
+					}
+					assert_array_equals(found, ids, "The IDs of the result elements should be as expected. (Expected: [" + ids + "], Found: [" + found + "])")
+				} else {
+					assert_unreached("Missing results.")
+				}
+			} else {
+				assert_throws("SYNTAX_ERR", function() {
+					query(q)
+				})
+			}
+		}, type + ": " + name + " (" + q + ")")
+	}
+
+	var all = query("*");
+	test(function() {
+		// The actual number depends on the root being queried.
+		// Assume all are present in there are at least 30 elements.
+		// This is not an ideal test, but it works well enough.
+		assert_true(all && all.length > 30, "All elements should be selected");
+	}, type + ": Select all")
+
+	test(function() {
+		for (var i = 0; all && i < all.length; i++) {
+			assert_equals(all[i].nodeType, 1, "The node should be an Element node (" + all[i] +")")
+		}
+	}, type + ": Select all elements, no comment nodes")
+
+	if (root == doc) {
+		t(":root Selector", ":root", ["html"], false);
+	} else {
+		t(":root Selector", ":root", [], ":root");
+
+		if (!root.parentNode) {
+			t(":root All Selector", ":root *", [], ":root");
+		}
+	}
+
+	if (root.parentNode || root == doc ) {
+		test(function() {
+			var rootQuery = query(":root *");
+			assert_equals(rootQuery.length, query("*").length - (root == doc ? 1 : 0), "The correct number of elements should be found.");
+		}, type + ": :root All Selector")
+	}
+
+	t("Element Selector", "p", ["firstp","ap","sndp","en","sap","first"]);
+	t("Element Selector", "body", ["body"], false);
+	t("Element Selector", "html", ["html"], false);
+	t("Parent Element", "div p", ["firstp","ap","sndp","en","sap","first"]);
+
+	test(function() {
+		var param = query("#object1 param");
+		assert_equals(param.length, 2, "There should be two elements found.");
+	}, type + ": Object/param as context")
+
+	test(function() {
+		var l = query("#length");	
+		assert_equals( l && l.length, 1, "There should be one element found.");		
+	}, type + ': <input name="length"> cannot be found under IE')
+
+	test(function() {
+		var lin = query("#lengthtest input");
+		assert_equals(lin.length, 2, "There should be two element found.");
+	}, type + ': <input name="length"> cannot be found under IE')
+
+	t("Broken Selector", "[");
+	t("Broken Selector", "(");
+	t("Broken Selector", "{");
+	t("Broken Selector", "<");
+	t("Broken Selector", "()");
+	t("Broken Selector", "<>");
+	t("Broken Selector", "{}");
+
+	t("ID Selector", "#body", ["body"], false);
+	t("ID Selector w/ Element", "body#body", ["body"], false);
+	t("ID Selector w/ Element", "ul#first", []);
+	t("ID selector with existing ID descendant", "#firstp #simon1", ["simon1"]);
+	t("ID selector with non-existent descendant", "#firstp #foobar", []);
+
+	t("ID selector using UTF8", "#台北Táiběi", ["台北Táiběi"]);
+	t("Multiple ID selectors using UTF8", "#台北Táiběi, #台北", ["台北Táiběi","台北"]);
+	t("Descendant ID selector using UTF8", "div #台北", ["台北"]);
+	t("Child ID selector using UTF8", "form > #台北", ["台北"]);
+
+	t("Escaped ID", "#foo\\:bar", ["foo:bar"]);
+	t("Escaped ID", "#test\\.foo\\[5\\]bar", ["test.foo[5]bar"]);
+	t("Descendant escaped ID", "div #foo\\:bar", ["foo:bar"]);
+	t("Descendant escaped ID", "div #test\\.foo\\[5\\]bar", ["test.foo[5]bar"]);
+	t("Child escaped ID", "form > #foo\\:bar", ["foo:bar"]);
+	t("Child escaped ID", "form > #test\\.foo\\[5\\]bar", ["test.foo[5]bar"]);
+
+	t("ID Selector, child ID present", "#form > #radio1", ["radio1"]); // bug #267
+	t("ID Selector, not an ancestor ID", "#form #first", []);
+	t("ID Selector, not a child ID", "#form > #option1a", []);
+	
+	t("All Children of ID", "#foo > *", ["sndp", "en", "sap"]);
+	t("All Children of ID with no children", "#firstUL > *", []);
+
+	t("ID selector with non-existent ancestor", "#asdfasdf #foobar", []); // bug #986
+
+	t("ID selector within the context of another element", "body div#form", []);
+
+	t("Class Selector", ".blog", ["mark","simon"]);
+	t("Class Selector", ".blog.link", ["simon"]);
+	t("Class Selector w/ Element", "a.blog", ["mark","simon"]);
+	t("Parent Class Selector", "p .blog", ["mark","simon"]);
+
+	t("Class selector using UTF8", ".台北Táiběi", ["utf8class1"]);
+	t("Class selector using UTF8", ".台北", ["utf8class1","utf8class2"]);
+	t("Class selector using UTF8", ".台北Táiběi.台北", ["utf8class1"]);
+	t("Class selector using UTF8", ".台北Táiběi, .台北", ["utf8class1","utf8class2"]);
+	t("Descendant class selector using UTF8", "div .台北Táiběi", ["utf8class1"]);
+	t("Child class selector using UTF8", "form > .台北Táiběi", ["utf8class1"]);
+
+	t("Escaped Class", ".foo\\:bar", ["foo:bar"]);
+	t("Escaped Class", ".test\\.foo\\[5\\]bar", ["test.foo[5]bar"]);
+	t("Descendant scaped Class", "div .foo\\:bar", ["foo:bar"]);
+	t("Descendant scaped Class", "div .test\\.foo\\[5\\]bar", ["test.foo[5]bar"]);
+	t("Child escaped Class", "form > .foo\\:bar", ["foo:bar"]);
+	t("Child escaped Class", "form > .test\\.foo\\[5\\]bar", ["test.foo[5]bar"]);
+
+	t("Comma Support", "a.blog, p", ['firstp','ap','mark','sndp','en','sap','simon','first']);
+	t("Comma Support", "a.blog , p", ['firstp','ap','mark','sndp','en','sap','simon','first']);
+	t("Comma Support", "a.blog ,p", ['firstp','ap','mark','sndp','en','sap','simon','first']);
+	t("Comma Support", "a.blog,p", ['firstp','ap','mark','sndp','en','sap','simon','first']);
+
+	t("Child", "p > a", ["simon1","google","groups","mark","yahoo","simon"]);
+	t("Child", "p> a", ["simon1","google","groups","mark","yahoo","simon"]);
+	t("Child", "p >a", ["simon1","google","groups","mark","yahoo","simon"]);
+	t("Child", "p>a", ["simon1","google","groups","mark","yahoo","simon"]);
+	t("Child w/ Class", "p > a.blog", ["mark","simon"]);
+	t("All Children", "code > *", ["anchor1","anchor2"]);
+	t("All Grandchildren", "p > * > *", ["anchor1","anchor2"]);
+	t("Adjacent", "a + a", ["groups"]);
+	t("Adjacent", "a +a", ["groups"]);
+	t("Adjacent", "a+ a", ["groups"]);
+	t("Adjacent", "a+a", ["groups"]);
+	t("Adjacent", "p + p", ["ap","en","sap"]);
+	t("Comma, Child, and Adjacent", "a + a, code > a", ["groups","anchor1","anchor2"]);
+	
+	t("First Child", "p:first-child", ["firstp","sndp"]);
+	t("Nth Child", "p:nth-child(1)", ["firstp","sndp"]);
+	
+	t("Last Child", "p:last-child", ["sap"]);
+	t("Last Child", "a:last-child", ["simon1","anchor1","mark","yahoo","anchor2","simon"]);
+
+	t("Nth-child", "#main form#form > *:nth-child(2)", ["text2"]);
+	t("Nth-child", "#main form#form > :nth-child(2)", ["text2"]);
+
+	t("Nth-child", "#form #select1 option:nth-child(3)", ["option1c"]);
+	t("Nth-child", "#form #select1 option:nth-child(0n+3)", ["option1c"]);
+	t("Nth-child", "#form #select1 option:nth-child(1n+0)", ["option1a", "option1b", "option1c", "option1d"]);
+	t("Nth-child", "#form #select1 option:nth-child(1n)", ["option1a", "option1b", "option1c", "option1d"]);
+	t("Nth-child", "#form #select1 option:nth-child(n)", ["option1a", "option1b", "option1c", "option1d"]);
+	t("Nth-child", "#form #select1 option:nth-child(even)", ["option1b", "option1d"]);
+	t("Nth-child", "#form #select1 option:nth-child(odd)", ["option1a", "option1c"]);
+	t("Nth-child", "#form #select1 option:nth-child(2n)", ["option1b", "option1d"]);
+	t("Nth-child", "#form #select1 option:nth-child(2n+1)", ["option1a", "option1c"]);
+	t("Nth-child", "#form #select1 option:nth-child(3n)", ["option1c"]);
+	t("Nth-child", "#form #select1 option:nth-child(3n+1)", ["option1a", "option1d"]);
+	t("Nth-child", "#form #select1 option:nth-child(3n+2)", ["option1b"]);
+	t("Nth-child", "#form #select1 option:nth-child(3n+3)", ["option1c"]);
+	t("Nth-child", "#form #select1 option:nth-child(3n-1)", ["option1b"]);
+	t("Nth-child", "#form #select1 option:nth-child(3n-2)", ["option1a", "option1d"]);
+	t("Nth-child", "#form #select1 option:nth-child(3n-3)", ["option1c"]);
+	t("Nth-child", "#form #select1 option:nth-child(3n+0)", ["option1c"]);
+	t("Nth-child", "#form #select1 option:nth-child(-n+3)", ["option1a", "option1b", "option1c"]);
+
+	t("Attribute Exists", "a[title]", ["google"]);
+	t("Attribute Exists", "*[title]", ["google"]);
+	t("Attribute Exists", "[title]", ["google"]);
+	
+	t("Attribute Equals", "a[rel='bookmark']", ["simon1"]);
+	t("Attribute Equals", 'a[rel="bookmark"]', ["simon1"]);
+	t("Attribute Equals", "a[rel=bookmark]", ["simon1"]);
+	t("Multiple Attribute Equals", "#form input[type='hidden'],#form input[type='radio']", ['radio1','radio2','hidden1','hidden3']);
+	t("Multiple Attribute Equals", "#form input[type=\"hidden\"],#form input[type='radio']", ['radio1','radio2','hidden1','hidden3']);
+	t("Multiple Attribute Equals", "#form input[type=hidden],#form input[type=radio]", ['radio1','radio2','hidden1','hidden3']);
+
+	t("Attribute selector using UTF8", "span[lang=中文]", ["台北"]);
+
+	t("Attribute Begins With", "a[href ^= 'http://www']", ["google","yahoo"]);
+	t("Attribute Ends With", "a[href $= 'org/']", ["mark"]);
+	t("Attribute Contains", "a[href *= 'google']", ["google","groups"]);
+
+	//t("Select options via [selected]", "#select1 option[selected]", ["option1a"]); // XXX Need to investigate this test
+	t("Select options via [selected]", "#select1 option[selected]", []);
+	t("Select options via [selected]", "#select2 option[selected]", ["option2d"]);
+	t("Select options via [selected]", "#select3 option[selected]", ["option3b", "option3c"]);
+
+	t("Grouped Form Elements", "input[name='foo[bar]']", ["hidden2"]);
+
+	t(":not() Existing attribute", "#form select:not([multiple])", ["select1", "select2"]);
+	t(":not() Equals attribute", "#form select:not([name=select1])", ["select2", "select3"]);
+	t(":not() Equals quoted attribute", "#form select:not([name='select1'])", ["select2", "select3"]);
+
+	t("First Child", "p:first-child", ["firstp","sndp"]);
+	t("Last Child", "p:last-child", ["sap"]);
+	t("Only Child", "a:only-child", ["simon1","anchor1","yahoo","anchor2"]);
+	t("Empty", "ul:empty", ["firstUL"]);
+	t("Enabled UI Element", "#form input:enabled", ["text1","radio1","radio2","check1","check2","hidden2","name"]); // "hidden1" omitted due to HTML spec requirement - :enabled doesn't match type=hidden controls
+	t("Disabled UI Element", "#form input:disabled", ["text2"]); // "hidden3" omitted due to HTML spec requirement - :disabled doesn't match type=hidden controls
+	t("Checked UI Element", "#form input:checked", ["radio2","check1"]);
+	t("Element Preceded By", "p ~ div", ["foo","fx-queue","fx-tests", "moretests"]);
+	t("Not", "a.blog:not(.link)", ["mark"]);
+	t( "Descendent selector on svg:use", "use g", [] );
+	t( "Child selector on svg:use", "g > use", [] );
+ 	t( "Empty svg:use", "use:empty", ["use1", "use2", "use3"] );
+	t( "Element selector on SVG", "svg#svg4 circle", ["circle4"] );
+}
+//]]></script>
+
+</body>
+</html>

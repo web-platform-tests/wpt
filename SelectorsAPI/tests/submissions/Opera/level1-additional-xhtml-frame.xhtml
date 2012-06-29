@@ -223,8 +223,8 @@
   <div class="test attributeExistence">
     <div class="blox2 unitTest" align="center" title="attribute existence selector"></div>
     <div class="blox3 unitTest" align="" title="attribute existence selector with empty string value"></div>
-    <div class="blox4 unitTest" valign="center" title="attribute existence selector with almost identical attribute"></div>
-    <div class="blox5 unitTest" alignv="center" title="attribute existence selector with almost identical attribute"></div>
+    <div class="blox4 unitTest" valign="center" title="attribute existence selector with almost identical attribute (valign)"></div>
+    <div class="blox5 unitTest" alignv="center" title="attribute existence selector with almost identical attribute (alignv)"></div>
   </div>
 
   <div class="test attributeValue">
@@ -241,30 +241,30 @@
   </div>
 
   <div class="test attrStart">
-    <div class="unitTest t1" title="[^=] attribute selector"></div>
-    <div class="unitTest t2" title="[^=] attribute selector"></div>
+    <div class="unitTest t1" title="[^=] attribute selector 1"></div>
+    <div class="unitTest t2" title="[^=] attribute selector 2"></div>
     <div class="unitTest t3" align="center" title="[^=] attribute selector looking for empty string"></div>
     <div class="unitTest t4" foo="&#233;tagada" title="[^=] attribute selector looking for &#233;"></div>
   </div>
 
   <div class="test attrEnd">
-    <div class="unitTest t1" title="[$=] attribute selector"></div>
-    <div class="unitTest t2" title="[$=] attribute selector"></div>
+    <div class="unitTest t1" title="[$=] attribute selector 1"></div>
+    <div class="unitTest t2" title="[$=] attribute selector 2"></div>
     <div class="unitTest t3" align="center" title="[$=] attribute selector looking for empty string"></div>
     <div class="unitTest t4" foo="tagada&#233;" title="[$=] attribute selector looking for &#233;"></div>
   </div>
 
   <div class="test attrMiddle">
-    <div class="unitTest t1" title="[*=] attribute selector"></div>
-    <div class="unitTest t2" title="[*=] attribute selector"></div>
+    <div class="unitTest t1" title="[*=] attribute selector 1"></div>
+    <div class="unitTest t2" title="[*=] attribute selector 2"></div>
     <div class="unitTest t3" align="center" title="[*=] attribute selector looking for empty string"></div>
     <div class="unitTest t4" foo="tagada&#233;foo" title="[*=] attribute selector looking for &#233;"></div>
   </div>
 
   <div class="test firstChild">
     <div class="unitTest" title=":first-child selector"></div>
-    <div class="blox12 unitTest" title=":first-child selector should not match non first child"></div>
-    <div class="blox13 unitTest" title=":first-child selector should not match non first child"></div>
+    <div class="blox12 unitTest" title=":first-child selector should not match non first child 1"></div>
+    <div class="blox13 unitTest" title=":first-child selector should not match non first child 2"></div>
   </div>
 
   <div class="test not">
@@ -275,64 +275,64 @@
 
   <div class="test onlyOfType">
     <div class="blox17 unitTest" title=":only-of-type selector"></div>
-    <p class="blox18 unitTest" title="negated :only-of-type selector"></p>
-    <p class="blox18 unitTest" title="negated :only-of-type selector"></p>
+    <p class="blox18 unitTest" title="negated :only-of-type selector 1"></p>
+    <p class="blox18 unitTest" title="negated :only-of-type selector 2"></p>
   </div>
 
   <div class="test nthchild1">
-    <div class="unitTest" title=":nth-child(odd) selector"></div>
-    <div class="unitTest" title=":nth-last-child(odd) selector"></div>
-    <div class="unitTest" title=":nth-child(odd) selector"></div>
-    <div class="unitTest" title=":nth-last-child(odd) selector"></div>
-    <div class="unitTest" title=":nth-child(odd) selector"></div>
-    <div class="unitTest" title=":nth-last-child(odd) selector"></div>
+    <div class="unitTest" title=":nth-child(odd) selector 1"></div>
+    <div class="unitTest" title=":nth-last-child(odd) selector 1"></div>
+    <div class="unitTest" title=":nth-child(odd) selector 2"></div>
+    <div class="unitTest" title=":nth-last-child(odd) selector 2"></div>
+    <div class="unitTest" title=":nth-child(odd) selector 3"></div>
+    <div class="unitTest" title=":nth-last-child(odd) selector 3"></div>
   </div>
   <div class="test nthchild2">
-    <div class="unitTest" title=":nth-last-child(even) selector"></div>
-    <div class="unitTest" title=":nth-child(even) selector"></div>
-    <div class="unitTest" title=":nth-last-child(even) selector"></div>
-    <div class="unitTest" title=":nth-child(even) selector"></div>
-    <div class="unitTest" title=":nth-last-child(even) selector"></div>
-    <div class="unitTest" title=":nth-child(even) selector"></div>
+    <div class="unitTest" title=":nth-last-child(even) selector 1"></div>
+    <div class="unitTest" title=":nth-child(even) selector 1"></div>
+    <div class="unitTest" title=":nth-last-child(even) selector 2"></div>
+    <div class="unitTest" title=":nth-child(even) selector 2"></div>
+    <div class="unitTest" title=":nth-last-child(even) selector 3"></div>
+    <div class="unitTest" title=":nth-child(even) selector 3"></div>
   </div>
   <div class="test nthchild3">
-    <div class="unitTest no" title=":nth-last-child(3n+3) selector"></div>
-    <div class="unitTest" title=":nth-child(3n+2) selector"></div>
-    <div class="unitTest no" title=":nth-last-child(3n+1) selector"></div>
-    <div class="unitTest no" title=":nth-last-child(3n+3) selector"></div>
-    <div class="unitTest" title=":nth-child(3n+2) selector"></div>
-    <div class="unitTest no" title=":nth-last-child(3n+1) selector"></div>
+    <div class="unitTest no" title=":nth-last-child(3n+3) selector 1"></div>
+    <div class="unitTest" title=":nth-child(3n+2) selector 1"></div>
+    <div class="unitTest no" title=":nth-last-child(3n+1) selector 1"></div>
+    <div class="unitTest no" title=":nth-last-child(3n+3) selector 2"></div>
+    <div class="unitTest" title=":nth-child(3n+2) selector 2"></div>
+    <div class="unitTest no" title=":nth-last-child(3n+1) selector 2"></div>
   </div>
 
   <div class="test nthoftype1">
-    <div class="unitTest" title=":nth-of-type(odd) selector"></div>
-    <p class="unitTest" title=":nth-* selector"></p>
-    <p class="unitTest" title=":nth-* selector"></p>
-    <div class="unitTest" title=":nth-last-of-type(odd) selector"></div>
-    <p class="unitTest" title=":nth-* selector"></p>
-    <div class="unitTest" title=":nth-of-type(odd) selector"></div>
-    <div class="unitTest" title=":nth-last-of-type(odd) selector"></div>
+    <div class="unitTest" title=".nthoftype1 :nth-of-type(odd) selector 1"></div>
+    <p class="unitTest" title=".nthoftype1 :nth-of-* selector 1"></p>
+    <p class="unitTest" title=".nthoftype1 :nth-of-* selector 2"></p>
+    <div class="unitTest" title=".nthoftype1 :nth-last-of-type(odd) selector 1"></div>
+    <p class="unitTest" title=".nthoftype1 :nth-of-* selector 3"></p>
+    <div class="unitTest" title=".nthoftype1 :nth-of-type(odd) selector 2"></div>
+    <div class="unitTest" title=".nthoftype1 :nth-last-of-type(odd) selector 2"></div>
   </div>
   <div class="test nthoftype2">
-    <div class="unitTest" title=":nth-last-of-type(even) selector"></div>
-    <p class="unitTest" title=":nth-* selector"></p>
-    <p class="unitTest" title=":nth-* selector"></p>
-    <div class="unitTest" title=":nth-of-type(even) selector"></div>
-    <p class="unitTest" title=":nth-* selector"></p>
-    <div class="unitTest" title=":nth-last-of-type(even) selector"></div>
-    <div class="unitTest" title=":nth-of-type(even) selector"></div>
+    <div class="unitTest" title=".nthoftype2 :nth-last-of-type(even) selector 1"></div>
+    <p class="unitTest" title=".nthoftype2 :nth-of-* selector 1"></p>
+    <p class="unitTest" title=".nthoftype2 :nth-of-* selector 2"></p>
+    <div class="unitTest" title=".nthoftype2 :nth-of-type(even) selector 1"></div>
+    <p class="unitTest" title=".nthoftype2 :nth-of-* selector 3"></p>
+    <div class="unitTest" title=".nthoftype2 :nth-last-of-type(even) selector 2"></div>
+    <div class="unitTest" title=".nthoftype2 :nth-of-type(even) selector 2"></div>
   </div>
   <div class="test nthoftype3">
-    <div class="unitTest" title=":nth-of-type(3n+1) selector"></div>
-    <p class="unitTest" title=":nth-* selector"></p>
-    <p class="unitTest" title=":nth-* selector"></p>
-    <div class="unitTest" title=":nth-last-of-type(3n+2) selector"></div>
-    <p class="unitTest" title=":nth-* selector"></p>
-    <div class="unitTest" title=":nth-last-of-type(3n+1) selector"></div>
-    <div class="unitTest" title=":nth-of-type(3n+1) selector"></div>
-    <p class="unitTest" title=":nth-* selector"></p>
-    <div class="unitTest" title=":nth-last-of-type(3n+2) selector"></div>
-    <div class="unitTest" title=":nth-last-of-type(3n+1) selector"></div>
+    <div class="unitTest" title=".nthoftype3 :nth-of-type(3n+1) selector 1"></div>
+    <p class="unitTest" title=".nthoftype3 :nth-of-* selector 1"></p>
+    <p class="unitTest" title=".nthoftype3 :nth-of-* selector 2"></p>
+    <div class="unitTest" title=".nthoftype3 :nth-last-of-type(3n+2) selector 1"></div>
+    <p class="unitTest" title=".nthoftype3 :nth-of-* selector 3"></p>
+    <div class="unitTest" title=".nthoftype3 :nth-last-of-type(3n+1) selector 1"></div>
+    <div class="unitTest" title=".nthoftype3 :nth-of-type(3n+1) selector 2"></div>
+    <p class="unitTest" title=".nthoftype3 :nth-of-* selector 4"></p>
+    <div class="unitTest" title=".nthoftype3 :nth-last-of-type(3n+2) selector 2"></div>
+    <div class="unitTest" title=".nthoftype3 :nth-last-of-type(3n+1) selector 2"></div>
   </div>
 
   <div class="test lastChild">
@@ -341,23 +341,23 @@
   </div>
 
   <div class="test firstOfType">
-    <p class="unitTest" title=":first-of-type selector"></p>
-    <div class="unitTest" title=":first-of-type selector"></div>
-    <p class="unitTest" title=":not(:first-of-type)"></p>
-    <div class="unitTest" title=":not(:first-of-type)"></div>
+    <p class="unitTest" title=":first-of-type selector 1"></p>
+    <div class="unitTest" title=":first-of-type selector 2"></div>
+    <p class="unitTest" title=":not(:first-of-type) 1"></p>
+    <div class="unitTest" title=":not(:first-of-type) 2"></div>
   </div>
 
   <div class="test lastOfType">
-    <p class="unitTest" title=":not(:last-of-type)"></p>
-    <div class="unitTest" title=":not(:last-of-type)"></div>
-    <p class="unitTest" title=":last-of-type selector"></p>
-    <div class="unitTest" title=":last-of-type selector"></div>
+    <p class="unitTest" title=":not(:last-of-type) 1"></p>
+    <div class="unitTest" title=":not(:last-of-type) 2"></div>
+    <p class="unitTest" title=":last-of-type selector 1"></p>
+    <div class="unitTest" title=":last-of-type selector 2"></div>
   </div>
 
   <div class="test onlyChild">
     <div class="unitTest" title=":only-child where the element is NOT the only child"></div>
-    <div class="unitTest" title=":only-child where the element is the only child">
-      <div class="unitTest" title=":only-child where the element is the only child"></div>
+    <div class="unitTest" title=":only-child where the element is the only child 1">
+      <div class="unitTest" title=":only-child where the element is the only child 2"></div>
     </div>
   </div>
 
@@ -392,8 +392,8 @@
   </div>
 
   <div class="test UI">
-    <button name="submit" type="submit" value="submit" class="t1"  title=":enabled pseudo-class"><div class="unitTest"></div></button>
-    <button name="submit" type="submit" value="submit" class="t2" disabled="true"  title=":enabled pseudo-class"><div class="unitTest"></div></button>
+    <button name="submit" type="submit" value="submit" class="t1"  title=":enabled pseudo-class 1"><div class="unitTest"></div></button>
+    <button name="submit" type="submit" value="submit" class="t2" disabled="true"  title=":enabled pseudo-class 2"><div class="unitTest"></div></button>
   </div>
   <div class="test UI">
     <input class="t3" type="checkbox" checked="true"/><div class="unitTest" title=":checked"></div>
@@ -405,16 +405,16 @@
   </div>
 
   <div class="test tilda">
-    <div class="unitTest t1" title="~ combinator"></div>
-    <div class="unitTest" title="~ combinator"></div>
-    <div class="unitTest" title="~ combinator"></div>
-    <div class="unitTest" title="~ combinator"></div>
+    <div class="unitTest t1" title="~ combinator 1"></div>
+    <div class="unitTest" title="~ combinator 2"></div>
+    <div class="unitTest" title="~ combinator 3"></div>
+    <div class="unitTest" title="~ combinator 4"></div>
     <span style="float:left">the three last squares should be green and become red when the pointer hovers over the white square</span>
   </div>
   <div class="test plus">
-    <div class="unitTest t1" title="+ combinator"></div>
-    <div class="unitTest t2" title="+ combinator"></div>
-    <div class="unitTest" title="+ combinator"></div>
+    <div class="unitTest t1" title="+ combinator 1"></div>
+    <div class="unitTest t2" title="+ combinator 2"></div>
+    <div class="unitTest" title="+ combinator 3"></div>
     <span style="float:left">the last square should be green and become red when the pointer hovers over the FIRST white square</span>
   </div>
 </div>
@@ -431,8 +431,8 @@
   <div class="test attributeExistence">
     <div class="blox2 unitTest" align="center" title="attribute existence selector"></div>
     <div class="blox3 unitTest" align="" title="attribute existence selector with empty string value"></div>
-    <div class="blox4 unitTest" valign="center" title="attribute existence selector with almost identical attribute"></div>
-    <div class="blox5 unitTest" alignv="center" title="attribute existence selector with almost identical attribute"></div>
+    <div class="blox4 unitTest" valign="center" title="attribute existence selector with almost identical attribute (valign)"></div>
+    <div class="blox5 unitTest" alignv="center" title="attribute existence selector with almost identical attribute (alignv)"></div>
   </div>
 
   <div class="test attributeValue">
@@ -449,30 +449,30 @@
   </div>
 
   <div class="test attrStart">
-    <div class="unitTest t1" title="[^=] attribute selector"></div>
-    <div class="unitTest t2" title="[^=] attribute selector"></div>
+    <div class="unitTest t1" title="[^=] attribute selector 1"></div>
+    <div class="unitTest t2" title="[^=] attribute selector 2"></div>
     <div class="unitTest t3" align="center" title="[^=] attribute selector looking for empty string"></div>
     <div class="unitTest t4" foo="&#233;tagada" title="[^=] attribute selector looking for &#233;"></div>
   </div>
 
   <div class="test attrEnd">
-    <div class="unitTest t1" title="[$=] attribute selector"></div>
-    <div class="unitTest t2" title="[$=] attribute selector"></div>
+    <div class="unitTest t1" title="[$=] attribute selector 1"></div>
+    <div class="unitTest t2" title="[$=] attribute selector 2"></div>
     <div class="unitTest t3" align="center" title="[$=] attribute selector looking for empty string"></div>
     <div class="unitTest t4" foo="tagada&#233;" title="[$=] attribute selector looking for &#233;"></div>
   </div>
 
   <div class="test attrMiddle">
-    <div class="unitTest t1" title="[*=] attribute selector"></div>
-    <div class="unitTest t2" title="[*=] attribute selector"></div>
+    <div class="unitTest t1" title="[*=] attribute selector 1"></div>
+    <div class="unitTest t2" title="[*=] attribute selector 2"></div>
     <div class="unitTest t3" align="center" title="[*=] attribute selector looking for empty string"></div>
     <div class="unitTest t4" foo="tagada&#233;foo" title="[*=] attribute selector looking for &#233;"></div>
   </div>
 
   <div class="test firstChild">
     <div class="unitTest" title=":first-child selector"></div>
-    <div class="blox12 unitTest" title=":first-child selector should not match non first child"></div>
-    <div class="blox13 unitTest" title=":first-child selector should not match non first child"></div>
+    <div class="blox12 unitTest" title=":first-child selector should not match non first child 1"></div>
+    <div class="blox13 unitTest" title=":first-child selector should not match non first child 2"></div>
   </div>
 
   <div class="test not">
@@ -483,64 +483,64 @@
 
   <div class="test onlyOfType">
     <div class="blox17 unitTest" title=":only-of-type selector"></div>
-    <p class="blox18 unitTest" title="negated :only-of-type selector"></p>
-    <p class="blox18 unitTest" title="negated :only-of-type selector"></p>
+    <p class="blox18 unitTest" title="negated :only-of-type selector 1"></p>
+    <p class="blox18 unitTest" title="negated :only-of-type selector 2"></p>
   </div>
 
   <div class="test nthchild1">
-    <div class="unitTest" title=":nth-child(odd) selector"></div>
-    <div class="unitTest" title=":nth-last-child(odd) selector"></div>
-    <div class="unitTest" title=":nth-child(odd) selector"></div>
-    <div class="unitTest" title=":nth-last-child(odd) selector"></div>
-    <div class="unitTest" title=":nth-child(odd) selector"></div>
-    <div class="unitTest" title=":nth-last-child(odd) selector"></div>
+    <div class="unitTest" title=":nth-child(odd) selector 1"></div>
+    <div class="unitTest" title=":nth-last-child(odd) selector 1"></div>
+    <div class="unitTest" title=":nth-child(odd) selector 2"></div>
+    <div class="unitTest" title=":nth-last-child(odd) selector 2"></div>
+    <div class="unitTest" title=":nth-child(odd) selector 3"></div>
+    <div class="unitTest" title=":nth-last-child(odd) selector 3"></div>
   </div>
   <div class="test nthchild2">
-    <div class="unitTest" title=":nth-last-child(even) selector"></div>
-    <div class="unitTest" title=":nth-child(even) selector"></div>
-    <div class="unitTest" title=":nth-last-child(even) selector"></div>
-    <div class="unitTest" title=":nth-child(even) selector"></div>
-    <div class="unitTest" title=":nth-last-child(even) selector"></div>
-    <div class="unitTest" title=":nth-child(even) selector"></div>
+    <div class="unitTest" title=":nth-last-child(even) selector 1"></div>
+    <div class="unitTest" title=":nth-child(even) selector 1"></div>
+    <div class="unitTest" title=":nth-last-child(even) selector 2"></div>
+    <div class="unitTest" title=":nth-child(even) selector 2"></div>
+    <div class="unitTest" title=":nth-last-child(even) selector 3"></div>
+    <div class="unitTest" title=":nth-child(even) selector 3"></div>
   </div>
   <div class="test nthchild3">
-    <div class="unitTest no" title=":nth-last-child(3n+3) selector"></div>
-    <div class="unitTest" title=":nth-child(3n+2) selector"></div>
-    <div class="unitTest no" title=":nth-last-child(3n+1) selector"></div>
-    <div class="unitTest no" title=":nth-last-child(3n+3) selector"></div>
-    <div class="unitTest" title=":nth-child(3n+2) selector"></div>
-    <div class="unitTest no" title=":nth-last-child(3n+1) selector"></div>
+    <div class="unitTest no" title=":nth-last-child(3n+3) selector 1"></div>
+    <div class="unitTest" title=":nth-child(3n+2) selector 1"></div>
+    <div class="unitTest no" title=":nth-last-child(3n+1) selector 1"></div>
+    <div class="unitTest no" title=":nth-last-child(3n+3) selector 2"></div>
+    <div class="unitTest" title=":nth-child(3n+2) selector 2"></div>
+    <div class="unitTest no" title=":nth-last-child(3n+1) selector 2"></div>
   </div>
 
   <div class="test nthoftype1">
-    <div class="unitTest" title=":nth-of-type(odd) selector"></div>
-    <p class="unitTest" title=":nth-of-* selector"></p>
-    <p class="unitTest" title=":nth-of-* selector"></p>
-    <div class="unitTest" title=":nth-last-of-type(odd) selector"></div>
-    <p class="unitTest" title=":nth-of-* selector"></p>
-    <div class="unitTest" title=":nth-of-type(odd) selector"></div>
-    <div class="unitTest" title=":nth-last-of-type(odd) selector"></div>
+    <div class="unitTest" title=".nthoftype1 :nth-of-type(odd) selector 1"></div>
+    <p class="unitTest" title=".nthoftype1 :nth-of-* selector 1"></p>
+    <p class="unitTest" title=".nthoftype1 :nth-of-* selector 2"></p>
+    <div class="unitTest" title=".nthoftype1 :nth-last-of-type(odd) selector 1"></div>
+    <p class="unitTest" title=".nthoftype1 :nth-of-* selector 3"></p>
+    <div class="unitTest" title=".nthoftype1 :nth-of-type(odd) selector 2"></div>
+    <div class="unitTest" title=".nthoftype1 :nth-last-of-type(odd) selector 2"></div>
   </div>
   <div class="test nthoftype2">
-    <div class="unitTest" title=":nth-last-of-type(even) selector"></div>
-    <p class="unitTest" title=":nth-of-* selector"></p>
-    <p class="unitTest" title=":nth-of-* selector"></p>
-    <div class="unitTest" title=":nth-of-type(even) selector"></div>
-    <p class="unitTest" title=":nth-of-* selector"></p>
-    <div class="unitTest" title=":nth-last-of-type(even) selector"></div>
-    <div class="unitTest" title=":nth-of-type(even) selector"></div>
+    <div class="unitTest" title=".nthoftype2 :nth-last-of-type(even) selector 1"></div>
+    <p class="unitTest" title=".nthoftype2 :nth-of-* selector 1"></p>
+    <p class="unitTest" title=".nthoftype2 :nth-of-* selector 2"></p>
+    <div class="unitTest" title=".nthoftype2 :nth-of-type(even) selector 1"></div>
+    <p class="unitTest" title=".nthoftype2 :nth-of-* selector 3"></p>
+    <div class="unitTest" title=".nthoftype2 :nth-last-of-type(even) selector 2"></div>
+    <div class="unitTest" title=".nthoftype2 :nth-of-type(even) selector 2"></div>
   </div>
   <div class="test nthoftype3">
-    <div class="unitTest" title=":nth-of-type(3n+1) selector"></div>
-    <p class="unitTest" title=":nth-of-* selector"></p>
-    <p class="unitTest" title=":nth-of-* selector"></p>
-    <div class="unitTest" title=":nth-last-of-type(3n+2) selector"></div>
-    <p class="unitTest" title=":nth-of-* selector"></p>
-    <div class="unitTest" title=":nth-last-of-type(3n+1) selector"></div>
-    <div class="unitTest" title=":nth-of-type(3n+1) selector"></div>
-    <p class="unitTest" title=":nth-of-* selector"></p>
-    <div class="unitTest" title=":nth-last-of-type(3n+2) selector"></div>
-    <div class="unitTest" title=":nth-last-of-type(3n+1) selector"></div>
+    <div class="unitTest" title=".nthoftype3 :nth-of-type(3n+1) selector 1"></div>
+    <p class="unitTest" title=".nthoftype3 :nth-of-* selector 1"></p>
+    <p class="unitTest" title=".nthoftype3 :nth-of-* selector 2"></p>
+    <div class="unitTest" title=".nthoftype3 :nth-last-of-type(3n+2) selector 1"></div>
+    <p class="unitTest" title=".nthoftype3 :nth-of-* selector 3"></p>
+    <div class="unitTest" title=".nthoftype3 :nth-last-of-type(3n+1) selector 1"></div>
+    <div class="unitTest" title=".nthoftype3 :nth-of-type(3n+1) selector 2"></div>
+    <p class="unitTest" title=".nthoftype3 :nth-of-* selector 4"></p>
+    <div class="unitTest" title=".nthoftype3 :nth-last-of-type(3n+2) selector 2"></div>
+    <div class="unitTest" title=".nthoftype3 :nth-last-of-type(3n+1) selector 2"></div>
   </div>
 
   <div class="test lastChild">
@@ -549,23 +549,23 @@
   </div>
 
   <div class="test firstOfType">
-    <p class="unitTest" title=":first-of-type selector"></p>
-    <div class="unitTest" title=":first-of-type selector"></div>
-    <p class="unitTest" title=":not(:first-of-type)"></p>
-    <div class="unitTest" title=":not(:first-of-type)"></div>
+    <p class="unitTest" title=":first-of-type selector 1"></p>
+    <div class="unitTest" title=":first-of-type selector 2"></div>
+    <p class="unitTest" title=":not(:first-of-type) 1"></p>
+    <div class="unitTest" title=":not(:first-of-type) 2"></div>
   </div>
 
   <div class="test lastOfType">
-    <p class="unitTest" title=":not(:last-of-type)"></p>
-    <div class="unitTest" title=":not(:last-of-type)"></div>
-    <p class="unitTest" title=":last-of-type selector"></p>
-    <div class="unitTest" title=":last-of-type selector"></div>
+    <p class="unitTest" title=":not(:last-of-type) 1"></p>
+    <div class="unitTest" title=":not(:last-of-type) 2"></div>
+    <p class="unitTest" title=":last-of-type selector 1"></p>
+    <div class="unitTest" title=":last-of-type selector 2"></div>
   </div>
 
   <div class="test onlyChild">
     <div class="unitTest" title=":only-child where the element is NOT the only child"></div>
-    <div class="unitTest" title=":only-child where the element is the only child">
-      <div class="unitTest" title=":only-child where the element is the only child"></div>
+    <div class="unitTest" title=":only-child where the element is the only child 1">
+      <div class="unitTest" title=":only-child where the element is the only child 2"></div>
     </div>
   </div>
 
@@ -600,8 +600,8 @@
   </div>
 
   <div class="test UI">
-    <button name="submit" type="submit" value="submit" class="t1"  title=":enabled pseudo-class"><div class="unitTest"></div></button>
-    <button name="submit" type="submit" value="submit" class="t2" disabled="true"  title=":enabled pseudo-class"><div class="unitTest"></div></button>
+    <button name="submit" type="submit" value="submit" class="t1"  title=":enabled pseudo-class 1"><div class="unitTest"></div></button>
+    <button name="submit" type="submit" value="submit" class="t2" disabled="true"  title=":enabled pseudo-class 2"><div class="unitTest"></div></button>
   </div>
   <div class="test UI">
     <input class="t3" type="checkbox" checked="true"/><div class="unitTest" title=":checked"></div>
@@ -613,16 +613,16 @@
   </div>
 
   <div class="test tilda">
-    <div class="unitTest t1" title="~ combinator"></div>
-    <div class="unitTest" title="~ combinator"></div>
-    <div class="unitTest" title="~ combinator"></div>
-    <div class="unitTest" title="~ combinator"></div>
+    <div class="unitTest t1" title="~ combinator 1"></div>
+    <div class="unitTest" title="~ combinator 2"></div>
+    <div class="unitTest" title="~ combinator 3"></div>
+    <div class="unitTest" title="~ combinator 4"></div>
     <span style="float:left">the three last squares should be green and become red when the pointer hovers over the white square</span>
   </div>
   <div class="test plus">
-    <div class="unitTest t1" title="+ combinator"></div>
-    <div class="unitTest t2" title="+ combinator"></div>
-    <div class="unitTest" title="+ combinator"></div>
+    <div class="unitTest t1" title="+ combinator 1"></div>
+    <div class="unitTest t2" title="+ combinator 2"></div>
+    <div class="unitTest" title="+ combinator 3"></div>
     <span style="float:left">the last square should be green and become red when the pointer hovers over the FIRST white square</span>
   </div>
 </div>

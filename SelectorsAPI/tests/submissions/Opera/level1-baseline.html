@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <meta charset="UTF-8">
 <title>Selectors-API Test Suite: HTML with Selectors Level 2 using TestHarness</title>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
 <style>
 iframe { visibility: hidden; position: absolute; }
 /*iframe { display: none; }*/
@@ -119,7 +119,7 @@ frame.onload = function() {
 	runQuerySelectorTest(ecss, "Syntax Error: Element", root1, false);
 	cacheCheck("Element", root1);
 	check("Inside Element", root1, true, false);
-	check( "Outside Element", root2, false, false);
+	check("Outside Element", root2, false, false);
 	jqTests("Element", root3, "querySelectorAll");
 
 	interfaceCheck(root4, "Disconnected Element");
@@ -373,12 +373,12 @@ function jqTests(type, root, select) {
 	test(function() {
 		var l = query("#length");	
 		assert_equals( l && l.length, 1, "There should be one element found.");		
-	}, type + ': <input name="length"> cannot be found under IE')
+	}, type + ': input element with id="length" 1')
 
 	test(function() {
 		var lin = query("#lengthtest input");
 		assert_equals(lin.length, 2, "There should be two element found.");
-	}, type + ': <input name="length"> cannot be found under IE')
+	}, type + ': input element with id="length" 2')
 
 	t("Broken Selector", "[");
 	t("Broken Selector", "(");
@@ -477,7 +477,6 @@ function jqTests(type, root, select) {
 
 	t("Grouped Form Elements", "input[name='foo[bar]']", ["hidden2"]);
 
-	t("First Child", "p:first-child", ["firstp","sndp"]);
 }
 </script>
 

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<title>Selectors-API Test Suite: HTML with Selectors Level 3 using TestHarness</title>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
+<title>Selectors-API Test Suite: HTML with Selectors Level 3 using TestHarness</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
 <style>
 iframe { visibility: hidden; position: absolute; }
 /*iframe { display: none; }*/
@@ -394,12 +394,12 @@ function jqTests(type, root, select) {
 	test(function() {
 		var l = query("#length");	
 		assert_equals( l && l.length, 1, "There should be one element found.");		
-	}, type + ': <input name="length"> cannot be found under IE')
+	}, type + ': input element with id="length" 1')
 
 	test(function() {
 		var lin = query("#lengthtest input");
 		assert_equals(lin.length, 2, "There should be two element found.");
-	}, type + ': <input name="length"> cannot be found under IE')
+	}, type + ': input element with id="length" 2')
 
 	t("Broken Selector", "[");
 	t("Broken Selector", "(");
@@ -532,8 +532,6 @@ function jqTests(type, root, select) {
 	t(":not() Equals attribute", "#form select:not([name=select1])", ["select2", "select3"]);
 	t(":not() Equals quoted attribute", "#form select:not([name='select1'])", ["select2", "select3"]);
 
-	t("First Child", "p:first-child", ["firstp","sndp"]);
-	t("Last Child", "p:last-child", ["sap"]);
 	t("Only Child", "a:only-child", ["simon1","anchor1","yahoo","anchor2"]);
 	t("Empty", "ul:empty", ["firstUL"]);
 	t("Enabled UI Element", "#form input:enabled", ["text1","radio1","radio2","check1","check2","hidden2","name"]); // "hidden1" omitted due to HTML spec requirement - :enabled doesn't match type=hidden controls

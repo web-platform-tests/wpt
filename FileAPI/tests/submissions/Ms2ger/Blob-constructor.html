@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Blob constructor</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+test(function() {
+  var blob = new Blob();
+  assert_true(blob instanceof Blob);
+}, "no-argument Blob constructor");
+
+test(function() {
+  assert_throws(new TypeError(), function() {
+    new Blob({});
+  });
+  assert_throws(new TypeError(), function() {
+    new Blob({ 0: "FAIL", length: 1 });
+  });
+}, "Passing non-arrays for blobParts should throw a TypeError.");
+
+var test_error = { name: "test" };
+test(function() {
+  assert_throws(test_error, function() {
+    new Blob([{ toString: function() { throw test_error; } }]);
+  });
+  assert_throws(test_error, function() {
+    new Blob([{ toString: undefined, valueOf: function() { throw test_error; } }]);
+  });
+  assert_throws(test_error, function() {
+    new Blob([{
+      toString: function() { throw test_error; },
+      valueOf: function() { assert_unreached("Should not call valueOf if toString is present."); }
+    }]);
+  });
+}, "ToString should be called on elements of the blobParts array and any exceptions should be propagated.");
+
+test(function() {
+  var arr = [
+    { toString: function() { arr.pop(); return "PASS"; } },
+    { toString: function() { assert_unreached("Should have removed the second element of the array rather than called toString() on it."); } }
+  ];
+  new Blob(arr);
+  // Expected: "PASSundefined"
+});
+
+test(function() {
+  var blob = new Blob([], { type: "" });
+  assert_true(blob instanceof Blob);
+  assert_equals(blob.size, 0);
+  assert_equals(blob.type, "");
+}, "Passing the empty string for type should not throw.");
+</script>

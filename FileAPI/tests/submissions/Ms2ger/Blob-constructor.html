@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Blob constructor</title>
+<link rel=help href="http://dev.w3.org/2006/webapi/FileAPI/#constructorBlob">
+<link rel=help href="http://dev.w3.org/2006/webapi/WebIDL/#es-union">
+<link rel=help href="http://dev.w3.org/2006/webapi/WebIDL/#es-dictionary">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+function assert_blob(fn, expectations) {
+  var expected = expectations.expected,
+      type = expectations.type,
+      desc = expectations.desc;
+
+  var t = async_test(desc);
+  t.step(function() {
+    var blob = fn();
+    assert_true(blob instanceof Blob);
+    assert_equals(blob.type, type);
+    assert_equals(blob.size, expected.length);
+
+    var fr = new FileReader();
+    fr.onload = t.step_func_done(function(event) {
+      assert_equals(this.result, expected);
+    }, fr);
+    fr.readAsText(blob, "UTF-8");
+  });
+}
+
+test(function() {
+  assert_true("Blob" in window, "window should have a Blob property.");
+  assert_equals(Blob.length, 2, "Blob.length should be 2.");
+  assert_true(Blob instanceof Function, "Blob should be a function.");
+}, "Blob interface object");
+
+// Step 1.
+test(function() {
+  var blob = new Blob();
+  assert_true(blob instanceof Blob);
+  assert_equals(blob.size, 0);
+  assert_equals(blob.type, "");
+}, "no-argument Blob constructor");
+
+// blobParts argument.
+test(function() {
+  var args = [
+    null,
+    undefined,
+    true,
+    false,
+    0,
+    1,
+    {},
+    { 0: "FAIL", length: 1 },
+    "FAIL"
+  ];
+  args.forEach(function(arg) {
+    assert_throws(new TypeError(), function() {
+      new Blob(arg);
+    }, "Should throw for argument " + format_value(arg) + ".");
+  });
+}, "Passing non-arrays for blobParts should throw a TypeError.");
+
+var test_error = { name: "test" };
+test(function() {
+  assert_throws(test_error, function() {
+    new Blob([{ toString: function() { throw test_error; } }]);
+  });
+  assert_throws(test_error, function() {
+    new Blob([{ toString: undefined, valueOf: function() { throw test_error; } }]);
+  });
+  assert_throws(test_error, function() {
+    new Blob([{
+      toString: function() { throw test_error; },
+      valueOf: function() { assert_unreached("Should not call valueOf if toString is present."); }
+    }]);
+  });
+}, "ToString should be called on elements of the blobParts array and any exceptions should be propagated.");
+
+assert_blob(function() {
+  var arr = [
+    { toString: function() { arr.pop(); return "PASS"; } },
+    { toString: function() { assert_unreached("Should have removed the second element of the array rather than called toString() on it."); } }
+  ];
+  return new Blob(arr);
+}, {
+  expected: "PASSundefined",
+  type: "",
+  desc: "Changes to the blobParts array should be reflected in the returned Blob."
+});
+
+assert_blob(function() {
+  // https://www.w3.org/Bugs/Public/show_bug.cgi?id=17652
+  return new Blob([
+    null,
+    undefined,
+    true,
+    false,
+    0,
+    1,
+    {},
+    { 0: "FAIL", length: 1 }
+  ]);
+}, {
+  expected: "nullundefinedtruefalse01[object Object][object Object]",
+  type: "",
+  desc: "ToString should be called on elements of the blobParts array."
+});
+
+// options argument
+test(function() {
+  assert_throws(test_error, function() {
+    new Blob([], {
+      get type() { throw test_error; }
+    });
+  });
+  assert_throws(test_error, function() {
+    new Blob([], {
+      get endings() { throw test_error; },
+      get type() { assert_unreached("endings getter should be called before type getter."); }
+    });
+  });
+  assert_throws(test_error, function() {
+    new Blob([], {
+      type: { toString: function() { throw test_error; } }
+    });
+  });
+  assert_throws(test_error, function() {
+    new Blob([], {
+      endings: { toString: function() { throw test_error; } },
+      type: { toString: function() { assert_unreached("endings toString should be called before type toString."); } }
+    });
+  });
+}, "options properties should be accessed in lexicographic order.");
+
+test(function() {
+  assert_throws(new TypeError(), function() {
+    new Blob([], {
+      endings: "invalidEnumValue",
+      get type() { assert_unreached("endings should be validated before calling the type getter."); }
+    });
+  });
+}, "options properties should be converted to the IDL type before accessing the next property.");
+
+test(function() {
+  assert_throws(test_error, function() {
+    new Blob(
+      [{ toString: function() { throw test_error } }],
+      {
+        get endings() { assert_unreached("endings getter should not be called."); },
+        get type() { assert_unreached("type getter should not be called."); }
+      }
+    );
+  });
+}, "Arguments should be evaluated from left to right.");
+
+assert_blob(function() {
+  return new Blob([], null);
+}, {
+  expected: "",
+  type: "",
+  desc: "Passing null for options should use the defaults."
+});
+assert_blob(function() {
+  return new Blob([], undefined);
+}, {
+  expected: "",
+  type: "",
+  desc: "Passing undefined for options should use the defaults."
+});
+assert_blob(function() {
+  return new Blob([], { type: "" });
+}, {
+  expected: "",
+  type: "",
+  desc: "Passing the empty string for type should not throw."
+});
+</script>

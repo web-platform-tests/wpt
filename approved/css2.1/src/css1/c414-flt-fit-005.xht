@@ -2,11 +2,16 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS Test: Non-Replaced Float Not Fitting Beside Opposite Float</title>
-  <link rel="help" href="http://www.w3.org/TR/REC-CSS1#floating-elements"/>
+
   <link rel="author" title="CSS1 Test Suite Contributors" href="http://www.w3.org/Style/CSS/Test/CSS1/current/tsack.html"/>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-06-30 -->
+  <link rel="help" href="http://www.w3.org/TR/REC-CSS1#floating-elements"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#floats" title="9.5 Floats"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/text.html#alignment-prop" title="16.2 Alignment: the 'text-align' property"/>
+  <link rel="match" href="c414-flt-fit-005-ref.xht" />
+
   <style type="text/css"><![CDATA[
-   p { color: navy; }
    .control { padding: 1em; }
    .control div { width: 10em; background: navy; color: yellow; }
    .control div.right { margin-left: 5em; text-align: right; }
@@ -16,11 +21,9 @@
    .test p.left { float: left; text-align: left; }
    .test p.right { float: right; text-align: right; }
   ]]></style>
-  <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#floats" title="9.5 Floats"/>
-  <link rel="help" href="http://www.w3.org/TR/CSS21/text.html#alignment-prop" title="16.2 Alignment: the 'text-align' property"/>
  </head>
  <body>
-  <p>The two patterns below should be identical, with no red present.</p>
+  <p>Test pass if the 2 patterns are identical with <strong>no red</strong>.</p>
   <div class="control">
    <div class="left"> &#x00A0;&#x262E; </div>
    <div class="right"> &#x262E;&#x00A0; </div>

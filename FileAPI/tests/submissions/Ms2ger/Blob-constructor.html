@@ -41,6 +41,18 @@ test(function() {
   assert_equals(blob.size, 0);
   assert_equals(blob.type, "");
 }, "no-argument Blob constructor");
+test(function() {
+  var blob = Blob();
+  assert_true(blob instanceof Blob);
+  assert_equals(blob.size, 0);
+  assert_equals(blob.type, "");
+}, "no-argument Blob constructor without 'new'");
+test(function() {
+  var blob = new Blob;
+  assert_true(blob instanceof Blob);
+  assert_equals(blob.size, 0);
+  assert_equals(blob.type, "");
+}, "no-argument Blob constructor without brackets");
 
 // blobParts argument.
 test(function() {
@@ -51,9 +63,11 @@ test(function() {
     false,
     0,
     1,
+    1.5,
     {},
     { 0: "FAIL", length: 1 },
-    "FAIL"
+    "FAIL",
+    new Uint8Array(8)
   ];
   args.forEach(function(arg) {
     assert_throws(new TypeError(), function() {
@@ -87,7 +101,35 @@ assert_blob(function() {
 }, {
   expected: "PASSundefined",
   type: "",
-  desc: "Changes to the blobParts array should be reflected in the returned Blob."
+  desc: "Changes to the blobParts array should be reflected in the returned Blob (pop)."
+});
+
+assert_blob(function() {
+  var arr = [
+    {
+      toString: function() {
+        if (arr.length === 3) {
+          return "SS";
+        }
+        arr.unshift({
+          toString: function() {
+            assert_unreached("Should only access index 0 once.");
+          }
+        });
+        return "PA";
+      }
+    },
+    {
+      toString: function() {
+        assert_unreached("Should not access the final element.");
+      }
+    }
+  ];
+  return new Blob(arr);
+}, {
+  expected: "PASS",
+  type: "",
+  desc: "Changes to the blobParts array should be reflected in the returned Blob (unshift)."
 });
 
 assert_blob(function() {
@@ -99,16 +141,76 @@ assert_blob(function() {
     false,
     0,
     1,
+    new String("stringobject"),
+    [],
+    ['x', 'y'],
     {},
-    { 0: "FAIL", length: 1 }
+    { 0: "FAIL", length: 1 },
+    { toString: function() { return "stringA"; } },
+    { toString: undefined, valueOf: function() { return "stringB"; } },
+    { valueOf: function() { assert_unreached("Should not call valueOf if toString is present on the prototype."); } }
   ]);
 }, {
-  expected: "nullundefinedtruefalse01[object Object][object Object]",
+  expected: "nullundefinedtruefalse01stringobjectx,y[object Object][object Object]stringAstringB[object Object]",
   type: "",
   desc: "ToString should be called on elements of the blobParts array."
 });
 
+assert_blob(function() {
+  return new Blob([
+    new ArrayBuffer(8)
+  ]);
+}, {
+  expected: "[object ArrayBuffer]",
+  type: "",
+  desc: "ToString should be called on ArrayBuffer elements of the blobParts array."
+});
+
+assert_blob(function() {
+  return new Blob([
+    new Uint8Array([0x50, 0x41, 0x53, 0x53]),
+    new Int8Array([0x50, 0x41, 0x53, 0x53]),
+    new Uint16Array([0x4150, 0x5353]),
+    new Int16Array([0x4150, 0x5353]),
+    new Uint32Array([0x53534150]),
+    new Int32Array([0x53534150]),
+    new Float32Array([0xD341500000])
+  ]);
+}, {
+  expected: "PASSPASSPASSPASSPASSPASSPASS",
+  type: "",
+  desc: "Passing typed arrays as elements of the blobParts array should work."
+});
+assert_blob(function() {
+  return new Blob([
+    // 0x535 3415053534150
+    // 0x535 = 0b010100110101 -> Sign = +, Exponent = 1333 - 1023 = 310
+    // 0x13415053534150 * 2**(-52)
+    // ==> 0x13415053534150 * 2**258 = 2510297372767036725005267563121821874921913208671273727396467555337665343087229079989707079680
+    new Float64Array([2510297372767036725005267563121821874921913208671273727396467555337665343087229079989707079680])
+  ]);
+}, {
+  expected: "PASSPASS",
+  type: "",
+  desc: "Passing a Float64Array as element of the blobParts array should work."
+});
+
 // options argument
+test(function() {
+  assert_throws(new TypeError(), function() {
+    new Blob([], { endings: "invalidEnumValue" });
+  });
+  assert_throws(new TypeError(), function() {
+    new Blob([], { endings: null });
+  });
+  assert_throws(new TypeError(), function() {
+    new Blob([], { endings: undefined });
+  });
+  assert_throws(new TypeError(), function() {
+    new Blob([], { endings: 0 });
+  });
+}, "Should throw TypeError for invalid enum values.");
+
 test(function() {
   assert_throws(test_error, function() {
     new Blob([], {
@@ -155,25 +257,81 @@ test(function() {
   });
 }, "Arguments should be evaluated from left to right.");
 
-assert_blob(function() {
-  return new Blob([], null);
-}, {
-  expected: "",
-  type: "",
-  desc: "Passing null for options should use the defaults."
+[
+  null,
+  undefined,
+  {},
+  { unrecognized: true },
+  /regex/,
+  function() {}
+].forEach(function(arg, idx) {
+  assert_blob(function() {
+    return new Blob([], arg);
+  }, {
+    expected: "",
+    type: "",
+    desc: "Passing " + format_value(arg) + " (index " + idx + ") for options should use the defaults."
+  });
+  assert_blob(function() {
+    return new Blob(["\na\r\nb\n\rc\r"], arg);
+  }, {
+    expected: "\na\r\nb\n\rc\r",
+    type: "",
+    desc: "Passing " + format_value(arg) + " (index " + idx + ") for options should use the defaults (with newlines)."
+  });
 });
-assert_blob(function() {
-  return new Blob([], undefined);
-}, {
-  expected: "",
-  type: "",
-  desc: "Passing undefined for options should use the defaults."
-});
+
 assert_blob(function() {
   return new Blob([], { type: "" });
 }, {
   expected: "",
   type: "",
   desc: "Passing the empty string for type should not throw."
+});
+
+assert_blob(function() {
+  return new Blob([], { type: "text/html" });
+}, {
+  expected: "",
+  type: "text/html",
+  desc: "Passing 'text/html' for type should not throw."
+});
+
+assert_blob(function() {
+  return new Blob([], { endings: "native" });
+}, {
+  expected: "",
+  type: "",
+  desc: "Endings can be 'native'."
+});
+assert_blob(function() {
+  return new Blob([], { endings: "transparent" });
+}, {
+  expected: "",
+  type: "",
+  desc: "Endings can be 'transparent'."
+});
+
+assert_blob(function() {
+  return new Blob([], { endings: { toString: function() { return "native"; } } });
+}, {
+  expected: "",
+  type: "",
+  desc: "Endings can be 'native' (toString)."
+});
+assert_blob(function() {
+  return new Blob([], { endings: { toString: function() { return "transparent" } } });
+}, {
+  expected: "",
+  type: "",
+  desc: "Endings can be 'transparent' (toString)."
+});
+
+assert_blob(function() {
+  return new Blob(["\na\r\nb\n\rc\r"], { endings: "transparent" });
+}, {
+  expected: "\na\r\nb\n\rc\r",
+  type: "",
+  desc: "Newlines should not change when endings is 'transparent'."
 });
 </script>

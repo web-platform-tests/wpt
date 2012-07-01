@@ -169,7 +169,7 @@ function runMatchesSelectorTest(css, type, root) {
 	}
 
 	test(function() {
-		assert_throws("SYNTAX_ERR", function() {
+		assert_throws("SyntaxError", function() {
 			root[ma]("");
 		}, "This should throw a SyntaxError")
 	}, type + "." + ma + " Empty String")	

@@ -212,7 +212,7 @@ function interfaceCheck(obj, type){
 
 function runQuerySelectorTest(css, type, root, expect) {
 	test(function() { // 1
-		assert_throws("SYNTAX_ERR", function() {
+		assert_throws("SyntaxError", function() {
 			root.querySelectorAll("");
 		}, "This should throw a SyntaxError")
 	}, type + ".querySelectorAll Empty String")
@@ -232,7 +232,7 @@ function runQuerySelectorTest(css, type, root, expect) {
 	}, type + ".querySelectorAll no parameter")
 
 	test(function() { // 5
-		assert_throws("SYNTAX_ERR", function() {
+		assert_throws("SyntaxError", function() {
 			root.querySelector("");		
 		}, "This should throw a SyntaxError")
 	}, type + ".querySelector Empty String")
@@ -298,13 +298,13 @@ function runQuerySelectorTest(css, type, root, expect) {
 
 			} else { // Run these when errors are expected.
 				test(function() { // 12
-					assert_throws("SYNTAX_ERR", function() {
+					assert_throws("SyntaxError", function() {
 						root.querySelectorAll(query)
 					})
 				}, type + ".querySelectorAll: " + query)
 
 				test(function() { // 13
-					assert_throws("SYNTAX_ERR", function() {
+					assert_throws("SyntaxError", function() {
 						root.querySelector(query)
 					})
 				}, type + ".querySelector: " + query)
@@ -341,7 +341,7 @@ function jqTests(type, root, select) {
 					assert_unreached("Missing results.")
 				}
 			} else {
-				assert_throws("SYNTAX_ERR", function() {
+				assert_throws("SyntaxError", function() {
 					query(q)
 				})
 			}

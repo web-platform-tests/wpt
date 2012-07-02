@@ -1,4 +1,8 @@
+dummy-name.html
 dummy-shared-worker.html
 empty-name.html
+no-arguments-ctor.html
+port-properties.html
+port-readonly.html
 same-origin.html
 unresolvable-url.html

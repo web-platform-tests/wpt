@@ -2,11 +2,11 @@
 <title>Test events opening a second database when one connection is open already</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script type="text/javascript" src="../support.js"></script>
+<script src="support.js"></script>
 
 <div id="log"></div>
 
-<script type="text/javascript">
+<script>
 
     var db, db_got_versionchange, db2,
         events = [],

@@ -9,16 +9,33 @@
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
 
   <style type="text/css"><![CDATA[
-  div {color: green;}
+  table
+  {
+  border-spacing: 0px;
+  table-layout: fixed;
+  width: 100%;  
+  }
+  
+  td
+  {
+  padding: 0px;
+  vertical-align: top;
+  width: 50%;
+  }  
+  
+  div {background-color: green;}
   ]]></style>
 
  </head>
 
  <body>
-
-  <p>Test passes if the "Filler Text" below is green.</p>
-
-  <div>Filler Text</div>
+ 
+  <table>
+    <tr>
+      <td>There should be a green bar to the right: &#x21E8;</td>
+      <td><div>&nbsp;</div></td>
+    </tr>
+  </table>
 
  </body>
 </html>

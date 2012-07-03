@@ -1574,7 +1574,7 @@ policies and contribution forms [3].
             return '';
         }
         
-        log.appendChild(document.createElement("section"));
+        log.appendChild(document.createElementNS(xhtml_ns, "section"));
         var assertions = has_assertions();
         var html = "<h2>Details</h2><table id='results' " + (assertions ? "class='assertions'" : "" ) + ">"
             + "<thead><tr><th>Result</th><th>Test Name</th>"

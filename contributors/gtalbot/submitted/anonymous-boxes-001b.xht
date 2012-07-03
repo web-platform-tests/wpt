@@ -31,15 +31,19 @@
   height: 100px; 
   left: 8px; 
   position: absolute;
-  top: 120px; 
+  top: 122px; 
   /* 
-    16px (max(body's margin-top, p's margin-top)) 
-  + 20px (p's 1st line box height) 
-  + 20px (p's 2nd line box height)
-  + 16px (p's margin-bottom)
-  + 48px (div#closest-non-anonymous-ancestor line box height)
+    16px : max(body's margin-top, p's margin-top) 
+  + 
+    20px : p's 1st line box height 
+  + 
+    20px : p's 2nd line box height
+  + 
+    16px : p's margin-bottom
+  + 
+    50px : div#closest-non-anonymous-ancestor line box height
   -----------------------------------------------------------  
-   120px
+   122px
   */
   right: 8px; 
   z-index: -1;
@@ -48,7 +52,7 @@
   div#closest-non-anonymous-ancestor
   {
   color: white;
-  font: 2.5em/1.2 Ahem;  /* equivalent to 40px/48px in absolute units */
+  font: 2.5em/1.25 Ahem;  /* equivalent to 40px/50px in absolute units */
   height: 200px;
   }
 

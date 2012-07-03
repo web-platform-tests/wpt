@@ -4,6 +4,8 @@
         <title>CSS Test: Clear floats handled after margin collapsing</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#flow-control" />
+		<link rel="match" href="clear-float-003-ref.xht" />
+
         <meta name="flags" content="" />
         <meta name="assert" content="Clearance is introduced as spacing above the top margin after margin collapsing occurs." />
         <style type="text/css">
@@ -36,7 +38,7 @@
         </style>
     </head>
     <body>
-        <p>Test passes if there is no red.</p>
+        <p>Test passes if there is <strong>no red</strong>.</p>
         <div id="div1">
             <div id="div2"></div>
             <div id="div3"></div>

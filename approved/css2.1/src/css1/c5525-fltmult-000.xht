@@ -2,26 +2,30 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS Test: float</title>
-  <meta name="flags" content="image" />
-  <link rel="help" href="http://www.w3.org/TR/REC-CSS1#float"/>
   <link rel="author" title="CSS1 Test Suite Contributors" href="http://www.w3.org/Style/CSS/Test/CSS1/current/tsack.html"/>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-07-03 -->
+  <link rel="help" href="http://www.w3.org/TR/REC-CSS1#float"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#floats" title="9.5 Floats"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#float-position" title="9.5.1 Positioning the float: the 'float' property"/>
   <link rel="match" href="c5525-fltmult-000-ref.xht" />
 
+  <meta name="flags" content="image" />
+
   <style type="text/css"><![CDATA[
-   div.yellow, div.blue, div.red, div.green {
+   div.yellow, div.blue, div.silver, div.green {
     width: 60px; padding: 20px; margin: 10px;
     border: 20px solid black; float: left; text-align: center;
    }
    div.yellow {margin-left: 0px; background: yellow; color: black;}
    div.blue {background: blue; color: white;}
-   div.red {background: red; color: black;}
+   div.silver {background: silver; color: black;}
    div.green {background: green; color: white;}
    div.below {clear: both;}
-   table {margin: 10px 0px;}
+   table {border-spacing: 0px; margin: 10px 0px; table-layout: fixed;}
+   td {padding: 0px; width: 20px;}
+   td.onehundred {width: 100px;}
   ]]></style>
-  <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#floats" title="9.5 Floats"/>
-  <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#float-position" title="9.5.1 Positioning the float: the 'float' property"/>
  </head>
  <body>
   <p class="a">
@@ -38,9 +42,9 @@
     Blue
    </p>
   </div>
-  <div class="red">
+  <div class="silver">
    <p>
-    Red
+    Silver
    </p>
   </div>
   <div class="green">
@@ -49,52 +53,52 @@
    </p>
   </div>
   <div class="below">
-   <table cellspacing="0" cellpadding="0">
+   <table>
     <tr>
-     <td width="20" style="background: black">
-      &#160;
+     <td style="background: black">
+      &nbsp;
      </td>
-     <td width="100" style="background: yellow">
-      &#160;
+     <td class="onehundred" style="background: yellow">
+      &nbsp;
      </td>
-     <td width="20" style="background: black">
-      &#160;
+     <td style="background: black">
+      &nbsp;
      </td>
-     <td width="20" style="background: white">
-      &#160;
+     <td style="background: white">
+      &nbsp;
      </td>
-     <td width="20" style="background: black">
-      &#160;
+     <td style="background: black">
+      &nbsp;
      </td>
-     <td width="100" style="background: blue">
-      &#160;
+     <td class="onehundred" style="background: blue">
+      &nbsp;
      </td>
-     <td width="20" style="background: black">
-      &#160;
+     <td style="background: black">
+      &nbsp;
      </td>
-     <td width="20" style="background: white">
-      &#160;
+     <td style="background: white">
+      &nbsp;
      </td>
-     <td width="20" style="background: black">
-      &#160;
+     <td style="background: black">
+      &nbsp;
      </td>
-     <td width="100" style="background: red">
-      &#160;
+     <td class="onehundred" style="background: silver">
+      &nbsp;
      </td>
-     <td width="20" style="background: black">
-      &#160;
+     <td style="background: black">
+      &nbsp;
      </td>
-     <td width="20" style="background: white">
-      &#160;
+     <td style="background: white">
+      &nbsp;
      </td>
-     <td width="20" style="background: black">
-      &#160;
+     <td style="background: black">
+      &nbsp;
      </td>
-     <td width="100" style="background: green">
-      &#160;
+     <td class="onehundred" style="background: green">
+      &nbsp;
      </td>
-     <td width="20" style="background: black">
-      &#160;
+     <td style="background: black">
+      &nbsp;
      </td>
     </tr>
    </table>

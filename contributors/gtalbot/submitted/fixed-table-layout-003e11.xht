@@ -76,18 +76,18 @@
       ====== 
       236px  
       
-      So the each of the 2 remaining columns must be 
+      So, each of the 2 remaining columns must be 
       half of such extra horizontal table space, 
       which is 236px divided by 2 == 118px.
   
   1st column width calculations
   -----------------------------
   
-    38px    : padding left of cell in 1st column
+    38px    : padding-left of cell in 1st column
   +
     (solve) : width of cell in 1st column
   +
-    10px    : padding right of cell in 1st column
+    10px    : padding-right of cell in 1st column
   +
     10px    : border-right of cell in 1st column
               which is half of border-left of cell in middle column
@@ -100,7 +100,7 @@
   3rd column width calculations
   -----------------------------
   
-    26px    : half of border-rigth of cell in middle column 
+    26px    : half of border-right of cell in middle column 
               since such border must be split with the cell in 3rd column
   +
     24px    : padding-left of cell in 3rd column 
@@ -117,11 +117,11 @@
   Finally, the precise horizontal point where the border-right of cell
   in first column begins to be drawn, painted is:
   
-    24px    : padding left of cell in 1st column
+    24px    : padding-left of cell in 1st column
   +
     60px    : width of cell in 1st column
   +
-    24px    : padding right of cell in 1st column
+    24px    : padding-right of cell in 1st column
   ======= 
    108px  
   

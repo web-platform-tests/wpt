@@ -30,6 +30,9 @@
  p.status { position:absolute; margin:-2em 0 0 -125px; width:100px; padding:5px; border:thin solid; font-size:smaller; background:papayawhip; color:black; border-radius:5px }
  p.status::after { content:'\25BA'; position:absolute; top:5px; right:3px; width:0; color:papayawhip; text-shadow:black 2px 0 0; cursor:default }
 
+ .bug-link { position:fixed; bottom:0; left:0; background:rgba(255,255,255,0.8) !important; width:115px; font-size:smaller; padding:0 10px; z-index:1; visibility:hidden }
+ .bug-link[href] { visibility:visible }
+
  @media print { [data-anolis-spec]::after { content:"[" attr(data-anolis-spec) "]"; font-size:.6em; vertical-align:super; text-transform:uppercase } }
 </style>
 <link class="dontpublish" href="http://www.whatwg.org/style/specification" rel="stylesheet">
@@ -57,6 +60,48 @@
  <dt class="dontpublish">Participate:</dt>
  <dd class="dontpublish">Send feedback to <a href="http://www.whatwg.org/mailing-list">whatwg@whatwg.org</a>
  or <a href="https://www.w3.org/Bugs/Public/enter_bug.cgi?product=Web%20Platform%20%28other%29&amp;component=Quirks%20Mode">file a bug</a> (<a href="https://www.w3.org/Bugs/Public/buglist.cgi?query_format=advanced&amp;short_desc_type=allwordssubstr&amp;short_desc=&amp;product=Web+Platform+%28other%29&amp;component=Quirks+Mode&amp;longdesc_type=allwordssubstr&amp;longdesc=&amp;bug_file_loc_type=allwordssubstr&amp;bug_file_loc=&amp;status_whiteboard_type=allwordssubstr&amp;status_whiteboard=&amp;keywords_type=allwords&amp;keywords=&amp;bug_status=UNCONFIRMED&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED&amp;emailtype1=substring&amp;email1=&amp;emailtype2=substring&amp;email2=&amp;bug_id_type=anyexact&amp;bug_id=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;cmdtype=doit&amp;order=Reuse+same+sort+as+last+time&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=">open bugs</a>)
+ <script>
+    (function(){
+        var prevSelection='';
+        var bugLink = document.createElement('a');
+        bugLink.className = 'bug-link';
+        bugLink.accessKey = '1';
+        var link = document.querySelector('a[href^="https://www.w3.org/Bugs/Public/enter_bug.cgi?"]');
+        link.parentNode.appendChild(bugLink);
+        var originalHref = link.href;
+        bugLink.textContent = 'File a bug about the selected text';
+        onmouseup=onkeyup=function(e){
+            var selectionObj = getSelection();
+            var selection = String(selectionObj);
+            if (selection == prevSelection)
+                return;
+            prevSelection = selection;
+            var node = e.target;
+            if (selectionObj.anchorNode) {
+                node = selectionObj.anchorNode;
+                if (selectionObj.focusNode && selectionObj.anchorNode.compareDocumentPosition) {
+                    var compare = selectionObj.anchorNode.compareDocumentPosition(selectionObj.focusNode);
+                    if (compare == 20 || compare == 4) // descendant or following
+                        node = selectionObj.focusNode;
+                }
+            }
+            while (node && !node.id) {
+                node = node.previousSibling || node.parentNode;
+            }
+            if (selection == '') {
+                bugLink.removeAttribute('href');
+                return;
+            }
+            var summary = selection;
+            if (selection.length > 50)
+                summary = selection.substr(0,47)+'...';
+            if (selection.length > 1000)
+                selection = selection.substr(0,997)+'...';
+            var url = location.protocol+'//'+location.host+location.pathname+(node ? '#'+node.id : '');
+            bugLink.href = originalHref + '&short_desc='+encodeURIComponent('"'+summary+'" ')+'&comment='+encodeURIComponent(url+'\n\n[[\n'+selection+'\n]]\n\n');
+        };
+    })();
+ </script>
  <dd class="dontpublish"><a href="http://wiki.whatwg.org/wiki/IRC">IRC: #whatwg on Freenode</a>
  
  <dt>Version History:

@@ -51,7 +51,6 @@
         var prevSelection='';
         var bugLink = document.createElement('a');
         bugLink.className = 'bug-link';
-        bugLink.accessKey = '1';
         var link = document.querySelector('a[href^="https://www.w3.org/Bugs/Public/enter_bug.cgi?"]');
         link.parentNode.appendChild(bugLink);
         var originalHref = link.href;
@@ -76,6 +75,7 @@
             }
             if (selection == '') {
                 bugLink.removeAttribute('href');
+                bugLink.removeAttribute('accesskey');
                 return;
             }
             var summary = selection;
@@ -85,6 +85,7 @@
                 selection = selection.substr(0,997)+'...';
             var url = location.protocol+'//'+location.host+location.pathname+(node ? '#'+node.id : '');
             bugLink.href = originalHref + '&short_desc='+encodeURIComponent('"'+summary+'" ')+'&comment='+encodeURIComponent(url+'\n\n[[\n'+selection+'\n]]\n\n');
+            bugLink.accessKey = '1';
         };
     })();
  </script>

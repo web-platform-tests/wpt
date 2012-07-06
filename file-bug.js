@@ -23,12 +23,12 @@
         var selection = String(selectionObj);
         if (selection == prevSelection)
             return;
+        prevSelection = selection;
         if (selection == '') {
             bugLink.removeAttribute('href');
             bugLink.removeAttribute('accesskey');
             return;
         }
-        prevSelection = selection;
         var node = e.target;
         if (selectionObj.anchorNode) {
             node = selectionObj.anchorNode;

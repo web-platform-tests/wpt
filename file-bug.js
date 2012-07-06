@@ -23,6 +23,11 @@
         var selection = String(selectionObj);
         if (selection == prevSelection)
             return;
+        if (selection == '') {
+            bugLink.removeAttribute('href');
+            bugLink.removeAttribute('accesskey');
+            return;
+        }
         prevSelection = selection;
         var node = e.target;
         if (selectionObj.anchorNode) {
@@ -35,11 +40,6 @@
         }
         while (node && !node.id) {
             node = node.previousSibling || node.parentNode;
-        }
-        if (selection == '') {
-            bugLink.removeAttribute('href');
-            bugLink.removeAttribute('accesskey');
-            return;
         }
         var summary = selection.replace(/\n/g, ' ');
         if (summary.length > 50)

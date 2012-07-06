@@ -41,9 +41,9 @@
             bugLink.removeAttribute('accesskey');
             return;
         }
-        var summary = selection;
-        if (selection.length > 50)
-            summary = selection.substr(0,47)+'...';
+        var summary = selection.replace(/\n/g, ' ');
+        if (summary.length > 50)
+            summary = summary.substr(0,47)+'...';
         if (selection.length > 1000)
             selection = selection.substr(0,997)+'...';
         var url = location.protocol+'//'+location.host+location.pathname+(node ? '#'+node.id : '');

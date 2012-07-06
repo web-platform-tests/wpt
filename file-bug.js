@@ -2,8 +2,8 @@
  * <a href="https://www.w3.org/Bugs/Public/enter_bug.cgi?...">file a bug</a>
  * and somewhere after that, include the following:
  * <script src=/hg/quirks-mode/raw-file/tip/file-bug.js async></script>
- * If you don't want the script to inject styles, use an element with
- * id="bug-link-style" before the script.
+ * If you don't want the script to inject styles, use a data-no-style=""
+ * attribute on the script element.
  */
 (function(){
     var prevSelection='';
@@ -13,9 +13,8 @@
     var link = document.querySelector('a[href^="https://www.w3.org/Bugs/Public/enter_bug.cgi?"]');
     link.parentNode.appendChild(bugLink);
     var originalHref = link.href;
-    if (!document.getElementById('bug-link-style')) {
+    if (!document.querySelector('script[data-no-style]')) {
         var style = document.createElement('style');
-        style.id = 'bug-link-style';
         style.textContent = '.bug-link { position:fixed; bottom:0; left:0; background:rgba(255,255,255,0.8) !important; width:115px; font-size:smaller; padding:0 10px; z-index:1; visibility:hidden } .bug-link[href] { visibility:visible }';
         document.head.appendChild(style);
     }

@@ -8,6 +8,8 @@
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#separated-borders" title="17.6.1 The separated borders model" />
+  <link rel="match" href="reference/separated-border-model-004d-ref.xht" />
+
   <meta content="" name="flags" />
   <meta content="The width of a CSS table is the distance from the left inner padding edge to the right inner padding edge (including the table border-spacing but excluding table padding and table borders)." name="assert" />
  
@@ -27,14 +29,17 @@
   border spacing
 
    17px   (left-most border-spacing)
+ +
    16px   (div#td's width)
+ +
    17px   (right-most border-spacing)
-  -----
+  ======
    50px : sum of columns plus border spacing
 
   100px (width of table)
- - 50px (sum of columns plus border spacing)
-  ------
+ -
+   50px (sum of columns plus border spacing)
+  ======
    50px : such extra (exceeding) 50px width will be distributed 
    over the columns, therefore given to the unique cell of such 
    div#table-width-set .
@@ -71,10 +76,12 @@
   The set width (9px) is smaller than sum of columns (plus border spacing)
 
    42px   (left-most border-spacing)
- + 16px   (div.td's width)
- + 42px   (right-most border-spacing)
-  -----
-   100px : sum of columns plus border spacing
+ + 
+   16px   (div.td's width)
+ + 
+   42px   (right-most border-spacing)
+  ======
+  100px : sum of columns plus border spacing
   */
   }
 
@@ -96,15 +103,15 @@
   <p>Test passes if there are 3 filled green squares with the <strong>same width</strong>.</p>
 
   <div id="table-width-set">
-   <div class="tr">
-    <div class="td"></div>
-   </div>
+    <div class="tr">
+      <div class="td"></div>
+    </div>
   </div>
 
   <div id="table-sum-of-columns">
-   <div class="tr">
-    <div class="td"></div>
-   </div>
+    <div class="tr">
+      <div class="td"></div>
+    </div>
   </div>
 
   <div id="reference"></div> 

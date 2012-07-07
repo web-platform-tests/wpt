@@ -8,6 +8,8 @@
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#separated-borders" title="17.6.1 The separated borders model" />
+  <link rel="match" href="reference/separated-border-model-004e-ref.xht" />
+
   <meta content="" name="flags" />
   <meta content="The width of a CSS table is the distance from the left inner padding edge to the right inner padding edge (including the table border-spacing but excluding table padding and table borders)." name="assert" />
 
@@ -41,14 +43,17 @@
   The sums of columns' width plus border spacing is given by:
   
    52px   (left-most border-spacing)
+ + 
     0px   (div#td's width)
+ +
    52px   (right-most border-spacing)
-  -----
+  ======
   104px : sum of columns plus border spacing   
 
   200px (set width of table)
- -104px (sum of columns plus border spacing)
-  ------
+ -
+  104px (sum of columns plus border spacing)
+  =====
    96px : such extra (exceeding) 96px width will be distributed over 
   the columns, therefore given to the unique cell of such div#table 
    
@@ -90,9 +95,9 @@
   <p>Test passes if the black and blue stripes have the <strong>same width</strong>.</p>
 
   <div id="table">
-   <div id="tr">
-    <div id="td"></div>
-   </div>
+    <div id="tr">
+      <div id="td"></div>
+    </div>
   </div>
 
   <div id="reference"></div>

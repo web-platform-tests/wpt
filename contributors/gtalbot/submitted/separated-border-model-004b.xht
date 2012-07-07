@@ -8,6 +8,8 @@
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> 
   <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#separated-borders" title="17.6.1 The separated borders model" />
+  <link rel="match" href="reference/separated-border-model-004b-ref.xht" />
+
   <meta content="" name="flags" />
   <meta content="The width of a CSS table is the distance from the left inner padding edge to the right inner padding edge (including the table border spacing but excluding table padding and table borders)." name="assert" />
  
@@ -49,14 +51,17 @@
   border spacing
 
    0px   (left-most border-spacing)
+ +
    0px   (div#td's width)
+ +
    0px   (right-most border-spacing)
-  -----
+  =====
    0px : sum of columns width plus border spacing
 
    100px (width of table)
-  -  0px (sum of columns plus border spacing)
-  ------
+  -
+     0px (sum of columns plus border spacing)
+  ======
    100px : the extra (exceeding) 100px width will be distributed over 
    the columns, therefore given to the unique cell of the table.
   */
@@ -75,14 +80,14 @@
 
  <body>
 
-  <p>Test passes if there is a large filled green square and <strong>no red</strong>.</p>
+  <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
 
   <div id="overlapped-red"></div>
 
   <div id="overlapping-green-table">
-   <div id="tr">
-    <div id="td"></div>
-   </div>
+    <div id="tr">
+      <div id="td"></div>
+    </div>
   </div> 
  
  </body>

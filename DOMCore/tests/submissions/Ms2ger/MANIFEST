@@ -69,6 +69,7 @@ Element-tagName.html
 Event-constants.html
 Event-constructors.html
 Event-defaultPrevented.html
+Event-initEvent.html
 EventTarget-dispatchEvent.html
 historical.html
 interfaces.html

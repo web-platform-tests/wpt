@@ -3,11 +3,14 @@
  <head>
   <title>CSS Test: CSS Inline Box Model: Empty inlines near the top of the document</title>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-07-07 -->
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/inline/020.html" type="text/html"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#inline-boxes" />
+  <link rel="match" href="inlines-020-ref.xht" />
+
   <style type="text/css">
    p, body, html { margin: 0; padding: 0; color: green; font: 20px/1 serif; }
-   div { display: inline; border-left: solid lime; }
+   div { display: inline; border-left: 3px solid lime; }
    .fail { background: red; color: yellow; width: 4em; }
    .pass { background: white; color: green; position: absolute; top: 1em; }
   </style>

@@ -30,21 +30,21 @@
 
  @media print { [data-anolis-spec]::after { content:"[" attr(data-anolis-spec) "]"; font-size:.6em; vertical-align:super; text-transform:uppercase } }
 </style>
-<link class="dontpublish" href="http://www.whatwg.org/style/specification" rel="stylesheet">
+<link class="not-tr" href="http://www.whatwg.org/style/specification" rel="stylesheet">
 <div class="head">
 
 <p><a href="http://www.w3.org/"><img alt="W3C" height="48" src="http://www.w3.org/Icons/w3c_home" width="72"></a>
 
 <h1>Quirks Mode</h1>
-<h2 class="no-num no-toc dontpublish" id="living-specification-—-9-july-2012">Living Specification — 9 July 2012</h2>
+<h2 class="no-num no-toc not-tr not-fs" id="living-specification-—-9-july-2012">Living Specification — 9 July 2012</h2>
 <dl>
  <dt>This Version:
- <dd class="dontpublish"><a href="http://dvcs.w3.org/hg/quirks-mode/raw-file/tip/Overview.html">http://dvcs.w3.org/hg/quirks-mode/raw-file/tip/Overview.html</a>
- <dt class="dontpublish">Participate:</dt>
- <dd class="dontpublish">Send feedback to <a href="http://www.whatwg.org/mailing-list">whatwg@whatwg.org</a>
+ <dd class="not-tr not-fs"><a href="http://dvcs.w3.org/hg/quirks-mode/raw-file/tip/Overview.html">http://dvcs.w3.org/hg/quirks-mode/raw-file/tip/Overview.html</a>
+ <dt class="not-tr">Participate:</dt>
+ <dd class="not-tr">Send feedback to <a href="http://www.whatwg.org/mailing-list">whatwg@whatwg.org</a>
  or <a href="https://www.w3.org/Bugs/Public/enter_bug.cgi?product=Web%20Platform%20%28other%29&amp;component=Quirks%20Mode">file a bug</a> (<a href="https://www.w3.org/Bugs/Public/buglist.cgi?query_format=advanced&amp;short_desc_type=allwordssubstr&amp;short_desc=&amp;product=Web+Platform+%28other%29&amp;component=Quirks+Mode&amp;longdesc_type=allwordssubstr&amp;longdesc=&amp;bug_file_loc_type=allwordssubstr&amp;bug_file_loc=&amp;status_whiteboard_type=allwordssubstr&amp;status_whiteboard=&amp;keywords_type=allwords&amp;keywords=&amp;bug_status=UNCONFIRMED&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED&amp;emailtype1=substring&amp;email1=&amp;emailtype2=substring&amp;email2=&amp;bug_id_type=anyexact&amp;bug_id=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;cmdtype=doit&amp;order=Reuse+same+sort+as+last+time&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=">open bugs</a>)
  <script async="" src="/hg/quirks-mode/raw-file/tip/file-bug.js"></script>
- <dd class="dontpublish"><a href="http://wiki.whatwg.org/wiki/IRC">IRC: #whatwg on Freenode</a>
+ <dd class="no-tr"><a href="http://wiki.whatwg.org/wiki/IRC">IRC: #whatwg on Freenode</a>
  
  <dt>Version History:
  <dd><a href="http://dvcs.w3.org/hg/quirks-mode/shortlog">http://dvcs.w3.org/hg/quirks-mode/shortlog</a></dd>
@@ -55,10 +55,9 @@
   &lt;<a href="mailto:simonp@opera.com">simonp@opera.com</a>&gt;
 </dl>
 
-<p class="copyright dontpublish">Copyright © 2012 the Contributors to the Quirks Mode Specification, and when published by the <a href="http://www.w3.org/community/whatwg/">WHATCG</a> under the <a href="https://www.w3.org/community/about/agreements/cla/">W3C Community Contributor License Agreement (CLA)</a>. A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/">summary</a> is available.
+<p class="copyright not-tr not-fs">Copyright © 2012 the Contributors to the Quirks Mode Specification, and when published by the <a href="http://www.w3.org/community/whatwg/">WHATCG</a> under the <a href="https://www.w3.org/community/about/agreements/cla/">W3C Community Contributor License Agreement (CLA)</a>. A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/">summary</a> is available.
 
-
-<p class="copyright dontpublish">This living specification may also be used under the terms of
+<p class="copyright not-tr">This living specification may also be used under the terms of
 <a href="http://creativecommons.org/publicdomain/zero/1.0/" rel="license">CC0 1.0 Universal</a>.
 To the extent possible under law, the editors has waived all copyright and
 related or neighboring rights to this work. In addition, as of
@@ -72,10 +71,11 @@ http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0.
 
 <hr class="top">
 
-<div class="dontpublish">
+<div class="not-tr">
 <h2 class="no-num no-toc" id="disclaimer">Disclaimer</h2>
 
-<p>This specification was published by the <a href="http://www.w3.org/community/whatwg/">WHATCG</a>. It is not a W3C Standard nor is it on the W3C Standards Track. Please note that under the <a href="http://www.w3.org/community/about/agreements/cla/">W3C Community Contributor License Agreement (CLA)</a> there is a limited opt-out and other conditions apply. Learn more about <a href="http://www.w3.org/community/">W3C Community and Business Groups</a>.</p>
+<p class="not-fs">This specification was published by the <a href="http://www.w3.org/community/whatwg/">WHATCG</a>. It is not a W3C Standard nor is it on the W3C Standards Track. Please note that under the <a href="http://www.w3.org/community/about/agreements/cla/">W3C Community Contributor License Agreement (CLA)</a> there is a limited opt-out and other conditions apply. Learn more about <a href="http://www.w3.org/community/">W3C Community and Business Groups</a>.</p>
+
 </div>
 
 <h2 class="no-num no-toc" id="table-of-contents">Table of Contents</h2>
@@ -155,7 +155,7 @@ http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0.
 
 <h3 id="the-hashless-hex-color-quirk"><span class="secno">6.1 </span>The hashless hex color quirk</h3>
 
-<p class="status dontpublish">Status: Awaiting implementation feedback. Has <a href="http://simon.html5.org/test/quirks-mode/js/hashless-hex-color.html">tests</a>.
+<p class="status not-tr">Status: Awaiting implementation feedback. Has <a href="http://simon.html5.org/test/quirks-mode/js/hashless-hex-color.html">tests</a>.
 
 <p>When a property is said to <dfn id="support-hashless-hex-colors">support hashless hex colors</dfn>, all tokens in the property's value <var>tokens</var> must be replaced with the return value of following algorithm prior to interpretation:
 
@@ -242,7 +242,7 @@ In particular, outline-color did not show up at all.
 
 <h3 id="the-unitless-length-quirk"><span class="secno">6.2 </span>The unitless length quirk</h3>
 
-<p class="status dontpublish">Status: Awaiting implementation feedback. Has <a href="http://simon.html5.org/test/quirks-mode/js/unitless-length.html">tests</a>.
+<p class="status not-tr">Status: Awaiting implementation feedback. Has <a href="http://simon.html5.org/test/quirks-mode/js/unitless-length.html">tests</a>.
 
 <p>When a property is said to <dfn id="support-unitless-lengths">support unitless lengths</dfn>, all tokens in the property's value <var>tokens</var> must be replaced with the return value of following algorithm prior to interpretation:
 
@@ -509,7 +509,7 @@ Opera supported this quirk (copied from IE), but then dropped it because it brok
 
 <h3 id="the-line-height-calculation-quirk"><span class="secno">6.3 </span>The line height calculation quirk</h3>
 
-<p class="status dontpublish">Status: Awaiting implementation feedback. Has <a href="http://simon.html5.org/test/quirks-mode/js/line-height-calculation.html">tests</a>.
+<p class="status not-tr">Status: Awaiting implementation feedback. Has <a href="http://simon.html5.org/test/quirks-mode/js/line-height-calculation.html">tests</a>.
 
 <p>In <a href="#quirks-mode">quirks mode</a> and <a href="#almost-standards-mode">almost standards mode</a>, an inline box that matches the following conditions, must, for the purpose of line height calculation, act as if the box had a height of zero.
 
@@ -520,13 +520,13 @@ Opera supported this quirk (copied from IE), but then dropped it because it brok
 
 <h3 id="the-blocks-ignore-line-height-quirk"><span class="secno">6.4 </span>The blocks ignore line-height quirk</h3>
 
-<p class="status dontpublish">Status: Awaiting implementation feedback. Has <a href="http://simon.html5.org/test/quirks-mode/js/blocks-ignore-line-height.html">tests</a>.
+<p class="status not-tr">Status: Awaiting implementation feedback. Has <a href="http://simon.html5.org/test/quirks-mode/js/blocks-ignore-line-height.html">tests</a>.
 
 <p>In <a href="#quirks-mode">quirks mode</a> and <a href="#almost-standards-mode">almost standards mode</a>, a <a href="#block-container-element">block container element</a> whose content is composed of <a href="#inline-level">inline-level</a> elements, the element's 'line-height' must be ignored for the purpose of calculating the minimal height of line boxes within the element. 
 
 <h3 id="the-percentage-height-calculation-quirk"><span class="secno">6.5 </span>The percentage height calculation quirk</h3>
 
-<p class="status dontpublish">Status: Awaiting implementation feedback. Has <a href="http://simon.html5.org/test/quirks-mode/js/percentage-height-calculation.html">tests</a>.
+<p class="status not-tr">Status: Awaiting implementation feedback. Has <a href="http://simon.html5.org/test/quirks-mode/js/percentage-height-calculation.html">tests</a>.
 
 <p>In <a href="#quirks-mode">quirks mode</a>, for the purpose of calculating the 'height' of an element <var>element</var>, if the computed value of the 'position' property of <var>element</var> is 'relative' or 'static', the specified value for the 'height' property of <var>element</var> is a &lt;percentage&gt;, and <var>element</var> does not have a computed value of the 'display' property that is 'table-row', 'table-row-group', 'table-header-group', 'table-footer-group', 'table-cell' or 'table-caption', the <a href="#containing-block">containing block</a> of <var>element</var> must be calculated using the following algorithm, aborting on the first step that returns a value:
 
@@ -555,7 +555,7 @@ Opera supported this quirk (copied from IE), but then dropped it because it brok
 
 <h3 id="the-table-cell-width-calculation-quirk"><span class="secno">6.6 </span>The table cell width calculation quirk</h3>
 
-<p class="status dontpublish">Status: Awaiting implementation feedback. Has <a href="http://simon.html5.org/test/quirks-mode/js/table-cell-width-calculation.html">tests</a>.
+<p class="status not-tr">Status: Awaiting implementation feedback. Has <a href="http://simon.html5.org/test/quirks-mode/js/table-cell-width-calculation.html">tests</a>.
 
 <p>In <a href="#quirks-mode">quirks mode</a>, for the purpose of calculating the <a href="#minimum-intrinsic-width-of-an-inline-formatting-context">minimum intrinsic width of an inline formatting context</a> for which a table cell <var>cell</var> is the <a href="#containing-block">containing block</a>, if <var>cell</var> has a computed value of the 'width' property that is 'auto', <code>img</code> elements that are inline replaced elements or inline-block replaced elements in that inline formatting context must not have a line breaking opportunity before or after them.
 
@@ -563,7 +563,7 @@ Opera supported this quirk (copied from IE), but then dropped it because it brok
 
 <h3 id="the-table-cell-nowrap-minimum-width-calculation-quirk"><span class="secno">6.7 </span>The table cell nowrap minimum width calculation quirk</h3>
 
-<p class="status dontpublish">Status: Awaiting implementation feedback.
+<p class="status not-tr">Status: Awaiting implementation feedback.
 
 <p>In <a href="#quirks-mode">quirks mode</a>, an element <var>cell</var> that matches the following conditions must act as if it had an <a href="#outer-intrinsic-minimum-width-of-a-table-cell">outer intrinsic minimum width of a table cell</a> in the automatic table layout algorithm that is the bigger value of <var>cell</var>'s computed value of the 'width' property and the <a href="#outer-intrinsic-minimum-width-of-a-table-cell">outer intrinsic minimum width of a table cell</a>.
 
@@ -575,7 +575,7 @@ Opera supported this quirk (copied from IE), but then dropped it because it brok
 
 <h3 id="the-collapsing-table-quirk"><span class="secno">6.8 </span>The collapsing table quirk</h3>
 
-<p class="status dontpublish">Status: Awaiting implementation feedback.
+<p class="status not-tr">Status: Awaiting implementation feedback.
 
 <p>In <a href="#quirks-mode">quirks mode</a>, an element <var>table</var> that matches the following conditions must have a used value of the 'height' property of '0' and a used value of the 'border-style' property of 'none'.
 
@@ -587,7 +587,7 @@ Opera supported this quirk (copied from IE), but then dropped it because it brok
 
 <h3 id="the-text-decoration-doesn't-propagate-into-tables-quirk"><span class="secno">6.9 </span>The text decoration doesn't propagate into tables quirk</h3>
 
-<p class="status dontpublish">Status: Awaiting implementation feedback.
+<p class="status not-tr">Status: Awaiting implementation feedback.
 
 <p>In <a href="#quirks-mode">quirks mode</a>, text decoration must not propagate into <code>table</code> elements.
 
@@ -595,7 +595,7 @@ Opera supported this quirk (copied from IE), but then dropped it because it brok
 
 <h3 id="the-font-element-text-decoration-color-quirk"><span class="secno">6.10 </span>The font element text decoration color quirk</h3>
 
-<p class="status dontpublish">Status: Awaiting implementation feedback. Has <a href="http://simon.html5.org/test/quirks-mode/reftest/font-element-text-decoration-color/">tests</a>.
+<p class="status not-tr">Status: Awaiting implementation feedback. Has <a href="http://simon.html5.org/test/quirks-mode/reftest/font-element-text-decoration-color/">tests</a>.
 
 <p><!--In <span>quirks mode</span>, t-->The <code>font</code> element must override the color of any text decoration that spans the text of the element to the used value of the element's 'color' property.
 
@@ -603,7 +603,7 @@ Opera supported this quirk (copied from IE), but then dropped it because it brok
 
 <h3 id="the-tables-inherit-color-from-body-quirk"><span class="secno">6.11 </span>The tables inherit color from body quirk</h3>
 
-<p class="status dontpublish">Status: Awaiting implementation feedback.
+<p class="status not-tr">Status: Awaiting implementation feedback.
 
 <p>In <a href="#quirks-mode">quirks mode</a>, the initial value of the 'color' property must be 'quirk-inherit', a special value that has no keyword mapping to it.
 
@@ -622,7 +622,7 @@ Opera supported this quirk (copied from IE), but then dropped it because it brok
 <!--
 <h3>The font size calculation quirk</h3>
 
-<p class="status dontpublish">Status: Needs research.
+<p class="status not-tr">Status: Needs research.
 
 <pre class=XXX>http://mxr.mozilla.org/mozilla-central/source/layout/style/nsStyleUtil.cpp#64
 http://trac.webkit.org/browser/trunk/Source/WebCore/css/CSSStyleSelector.cpp?rev=113922#L4920</pre>
@@ -635,7 +635,7 @@ https://bugs.webkit.org/show_bug.cgi?id=84469
 
 <h3 id="the-table-cell-height-box-sizing-quirk"><span class="secno">6.12 </span>The table cell height box sizing quirk</h3>
 
-<p class="status dontpublish">Status: Awaiting implementation feedback.
+<p class="status not-tr">Status: Awaiting implementation feedback.
 
 <p>In <a href="#quirks-mode">quirks mode</a>, elements that have a computed value of the 'display' property of 'table-cell' must act as they have used value of the 'box-sizing' property of 'border-box', but only for the purpose of the 'height', 'min-height' and 'max-height' properties.
 
@@ -643,7 +643,7 @@ https://bugs.webkit.org/show_bug.cgi?id=84469
 
 <h3 id="the-:active-and-:hover-quirk"><span class="secno">7.1 </span>The :active and :hover quirk</h3>
 
-<p class="status dontpublish">Status: Awaiting implementation feedback.
+<p class="status not-tr">Status: Awaiting implementation feedback.
 
 <p>In <a href="#quirks-mode">quirks mode</a>, a compound selector <var>selector</var> that matches the following conditions must not match elements that would not also match the ':any-link' selector. <a data-anolis-ref="" href="#refsSELECTORS">[SELECTORS]</a>
 
@@ -662,7 +662,7 @@ https://bugs.webkit.org/show_bug.cgi?id=84469
 <!-- (uncomment "HTML elements" in Dependencies when uncommenting this)
 <h3>The braces in style attribute quirk</h3>
 
-<p class="status dontpublish">Status: Needs research.
+<p class="status not-tr">Status: Needs research.
 
 <p>In <span>quirks mode</span>, when parsing the <code>style</code> attribute on <span>HTML elements</span>, if the first token is "{" (U+007B), that token must be ignored. If it was present, and a later matching token "}" (U+0079) is found, that token, and all tokens after it, must also be ignored.</p>
 
@@ -676,7 +676,7 @@ grep -iaPo "<[a-z]+\s[^>]*style\s*=\s*[\"']{[^\"'>]+" web200904 > style-braces.t
 
 <h3 id="the-table-cell-width-resets-nowrap-quirk"><span class="secno">8.1 </span>The table cell width resets nowrap quirk</h3>
 
-<p class="status dontpublish">Status: Awaiting implementation feedback.
+<p class="status not-tr">Status: Awaiting implementation feedback.
 
 <p>In <a href="#almost-standards-mode">almost standards mode</a> and <a href="#standards-mode">standards mode</a>, the following style rule is expected to apply, as a <span>presentational hint</span>: [HTML]
 

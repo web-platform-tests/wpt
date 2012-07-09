@@ -142,15 +142,11 @@ http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0.
 
 <h2>Dependencies</h2>
 
-<p>The terms <dfn>standards mode</dfn>, <dfn>almost standards mode</dfn> and <dfn>quirks mode</dfn> refer to the DOM4 definitions of "no-quirks mode", "limited quirks mode" and "quirks mode", respectively. <span data-anolis-ref>DOM</span>
-
 <p>The terms <dfn>block container element</dfn>, <dfn>inline-level</dfn>, <dfn>containing block</dfn>, <dfn>initial containing block</dfn> and <dfn>block container box</dfn> are defined in CSS 2.1. <span data-anolis-ref>CSS</span>
 
 <p>The terms <dfn>identifier</dfn>, <dfn>function</dfn>, <!--<dfn>at-keyword</dfn>,--> <dfn>hash</dfn>, <!--<dfn>string</dfn>, <dfn>bad-string</dfn>, <dfn>url</dfn>, <dfn>bad-url</dfn>, <dfn>delim</dfn>,--> <dfn>number</dfn>, <!--<dfn>percentage</dfn>,--> <dfn>dimension</dfn>, <!--<dfn>unicode-range</dfn>, <dfn>whitespace</dfn>, <dfn>cdo</dfn>, <dfn>cdc</dfn>, <dfn>colon</dfn>, <dfn>semicolon</dfn>, <dfn>open-brace</dfn>, <dfn>close-brace</dfn>,--> <dfn>open-paren</dfn> and <dfn>close-paren</dfn> <!--<dfn>open-bracket</dfn>, <dfn>close-bracket</dfn>--> are defined in CSS Syntax Module Level 3. <span data-anolis-ref>CSSSYNTAX</span>
 
 <p>The terms <dfn>minimum intrinsic width of an inline formatting context</dfn> and <dfn>outer intrinsic minimum width of a table cell</dfn> are defined in More Precise Definitions of Intrinsic Widths and Table Layout (Proposal). <span data-anolis-ref>CSSINTRINSIC</span>
-
-<p>The term <dfn>ASCII case-insensitive</dfn><!--<dfn>HTML elements</dfn>--> is defined in HTML. <span data-anolis-ref>HTML</span> <!--(the braces in style attribute quirk uses the HTML elements dfn)-->
 
 <h2>CSS</h2>
 
@@ -180,7 +176,7 @@ http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0.
  <li><p>Return <var>output</var>.
 </ol>
 
-<p>In <span>quirks mode</span>, the following properties <span>support hashless hex colors</span>:
+<p>In <span data-anolis-spec=dom title=concept-document-quirks>quirks mode</span>, the following properties <span>support hashless hex colors</span>:
 
 <ul class=brief>
 <li>'background-color'
@@ -253,14 +249,14 @@ In particular, outline-color did not show up at all.
  <li><p>For each token <var>token</var> in <var>tokens</var>:
   <ol>
    <li><p>If <var>token</var> is a <span>close-paren</span> and <var>func</var> is greater than zero, decrement <var>func</var> by one and jump to the step labeled <var>append</var>.
-   <li><p>If <var>token</var> is a <span>function</span> or <span>open-paren</span>, and <var>token</var>'s value does not <span title="ASCII case-insensitive">ASCII-case-insensitively</span> consist of the characters "<code title>rect</code>" (U+0072 U+0065 U+0063 U+0074), increment <var>func</var> by one and jump to the step labeled <var>append</var>.
+   <li><p>If <var>token</var> is a <span>function</span> or <span>open-paren</span>, and <var>token</var>'s value does not <span data-anolis-spec=html title="ASCII case-insensitive">ASCII-case-insensitively</span> consist of the characters "<code title>rect</code>" (U+0072 U+0065 U+0063 U+0074), increment <var>func</var> by one and jump to the step labeled <var>append</var>.
    <li><p>If <var>func</var> is zero and <var>token</var> is a <span>number</span>, let <var>token</var> be a new <span>dimension</span> token with the representation set to <var>token</var>'s representation, the value set to <var>token</var>'s value, and the unit set to "<code title>px</code>" (U+0070 U+0078).
    <li><p><i>Append:</i> Append <var>token</var> to <var>output</var>.
   </ol>
  <li><p>Return <var>output</var>.
 </ol>
 
-<p>In <span>quirks mode</span>, the following properties <span>support unitless lengths</span>:
+<p>In <span data-anolis-spec=dom title=concept-document-quirks>quirks mode</span>, the following properties <span>support unitless lengths</span>:
 
 <ul class=brief>
 <!--<li>'background-position'-->
@@ -512,7 +508,7 @@ Opera supported this quirk (copied from IE), but then dropped it because it brok
 
 <p class="status not-tr">Status: Awaiting implementation feedback. Has <a href="http://simon.html5.org/test/quirks-mode/js/line-height-calculation.html">tests</a>.
 
-<p>In <span>quirks mode</span> and <span>almost standards mode</span>, an inline box that matches the following conditions, must, for the purpose of line height calculation, act as if the box had a height of zero.
+<p>In <span data-anolis-spec=dom title=concept-document-quirks>quirks mode</span> and <span data-anolis-spec=dom title=concept-document-limited-quirks>almost standards mode</span>, an inline box that matches the following conditions, must, for the purpose of line height calculation, act as if the box had a height of zero.
 
 <ul>
  <li><p>The 'border-right-width', 'border-left-width', 'padding-right' and 'padding-left' properties have a used value of zero. <!-- This matches WebKit. Opera and IE9 don't have this [Opera has now implemented this (CORE-19183)]. Gecko has this rule for all margins, paddings and borders. -->
@@ -523,13 +519,13 @@ Opera supported this quirk (copied from IE), but then dropped it because it brok
 
 <p class="status not-tr">Status: Awaiting implementation feedback. Has <a href="http://simon.html5.org/test/quirks-mode/js/blocks-ignore-line-height.html">tests</a>.
 
-<p>In <span>quirks mode</span> and <span>almost standards mode</span>, a <span>block container element</span> whose content is composed of <span>inline-level</span> elements, the element's 'line-height' must be ignored for the purpose of calculating the minimal height of line boxes within the element. 
+<p>In <span data-anolis-spec=dom title=concept-document-quirks>quirks mode</span> and <span data-anolis-spec=dom title=concept-document-limited-quirks>almost standards mode</span>, a <span>block container element</span> whose content is composed of <span>inline-level</span> elements, the element's 'line-height' must be ignored for the purpose of calculating the minimal height of line boxes within the element. 
 
 <h3>The percentage height calculation quirk</h3>
 
 <p class="status not-tr">Status: Awaiting implementation feedback. Has <a href="http://simon.html5.org/test/quirks-mode/js/percentage-height-calculation.html">tests</a>.
 
-<p>In <span>quirks mode</span>, for the purpose of calculating the 'height' of an element <var>element</var>, if the computed value of the 'position' property of <var>element</var> is 'relative' or 'static', the specified value for the 'height' property of <var>element</var> is a &lt;percentage>, and <var>element</var> does not have a computed value of the 'display' property that is 'table-row', 'table-row-group', 'table-header-group', 'table-footer-group', 'table-cell' or 'table-caption', the <span>containing block</span> of <var>element</var> must be calculated using the following algorithm, aborting on the first step that returns a value:
+<p>In <span data-anolis-spec=dom title=concept-document-quirks>quirks mode</span>, for the purpose of calculating the 'height' of an element <var>element</var>, if the computed value of the 'position' property of <var>element</var> is 'relative' or 'static', the specified value for the 'height' property of <var>element</var> is a &lt;percentage>, and <var>element</var> does not have a computed value of the 'display' property that is 'table-row', 'table-row-group', 'table-header-group', 'table-footer-group', 'table-cell' or 'table-caption', the <span>containing block</span> of <var>element</var> must be calculated using the following algorithm, aborting on the first step that returns a value:
 
 <ol>
   <li><p>Let <var>element</var> be the nearest ancestor <span>block container box</span> of <var>element</var>, if there is one. Otherwise, return the <span>initial containing block</span>.
@@ -558,7 +554,7 @@ Opera supported this quirk (copied from IE), but then dropped it because it brok
 
 <p class="status not-tr">Status: Awaiting implementation feedback. Has <a href="http://simon.html5.org/test/quirks-mode/js/table-cell-width-calculation.html">tests</a>.
 
-<p>In <span>quirks mode</span>, for the purpose of calculating the <span>minimum intrinsic width of an inline formatting context</span> for which a table cell <var>cell</var> is the <span>containing block</span>, if <var>cell</var> has a computed value of the 'width' property that is 'auto', <code>img</code> elements that are inline replaced elements or inline-block replaced elements in that inline formatting context must not have a line breaking opportunity before or after them.
+<p>In <span data-anolis-spec=dom title=concept-document-quirks>quirks mode</span>, for the purpose of calculating the <span>minimum intrinsic width of an inline formatting context</span> for which a table cell <var>cell</var> is the <span>containing block</span>, if <var>cell</var> has a computed value of the 'width' property that is 'auto', <code>img</code> elements that are inline replaced elements or inline-block replaced elements in that inline formatting context must not have a line breaking opportunity before or after them.
 
 <!-- http://mxr.mozilla.org/mozilla-central/source/layout/generic/nsImageFrame.cpp#2053 -->
 
@@ -566,7 +562,7 @@ Opera supported this quirk (copied from IE), but then dropped it because it brok
 
 <p class="status not-tr">Status: Awaiting implementation feedback.
 
-<p>In <span>quirks mode</span>, an element <var>cell</var> that matches the following conditions must act as if it had an <span>outer intrinsic minimum width of a table cell</span> in the automatic table layout algorithm that is the bigger value of <var>cell</var>'s computed value of the 'width' property and the <span>outer intrinsic minimum width of a table cell</span>.
+<p>In <span data-anolis-spec=dom title=concept-document-quirks>quirks mode</span>, an element <var>cell</var> that matches the following conditions must act as if it had an <span>outer intrinsic minimum width of a table cell</span> in the automatic table layout algorithm that is the bigger value of <var>cell</var>'s computed value of the 'width' property and the <span>outer intrinsic minimum width of a table cell</span>.
 
 <ul>
   <li><p><var>cell</var> is a <code>td</code> element or a <code>th</code> element.
@@ -578,7 +574,7 @@ Opera supported this quirk (copied from IE), but then dropped it because it brok
 
 <p class="status not-tr">Status: Awaiting implementation feedback.
 
-<p>In <span>quirks mode</span>, an element <var>table</var> that matches the following conditions must have a used value of the 'height' property of '0' and a used value of the 'border-style' property of 'none'.
+<p>In <span data-anolis-spec=dom title=concept-document-quirks>quirks mode</span>, an element <var>table</var> that matches the following conditions must have a used value of the 'height' property of '0' and a used value of the 'border-style' property of 'none'.
 
 <ul>
   <li><p><var>table</var> has a computed value of the 'display' property that is 'table'.
@@ -590,7 +586,7 @@ Opera supported this quirk (copied from IE), but then dropped it because it brok
 
 <p class="status not-tr">Status: Awaiting implementation feedback.
 
-<p>In <span>quirks mode</span>, text decoration must not propagate into <code>table</code> elements.
+<p>In <span data-anolis-spec=dom title=concept-document-quirks>quirks mode</span>, text decoration must not propagate into <code>table</code> elements.
 
 <!-- http://mxr.mozilla.org/mozilla-central/source/layout/generic/nsTextFrameThebes.cpp#4582 -->
 
@@ -598,7 +594,7 @@ Opera supported this quirk (copied from IE), but then dropped it because it brok
 
 <p class="status not-tr">Status: Awaiting implementation feedback. Has <a href="http://simon.html5.org/test/quirks-mode/reftest/font-element-text-decoration-color/">tests</a>.
 
-<p><!--In <span>quirks mode</span>, t-->The <code>font</code> element must override the color of any text decoration that spans the text of the element to the used value of the element's 'color' property.
+<p><!--In <span data-anolis-spec=dom title=concept-document-quirks>quirks mode</span>, t-->The <code>font</code> element must override the color of any text decoration that spans the text of the element to the used value of the element's 'color' property.
 
 <p class=note>This applies in all modes.
 
@@ -606,7 +602,7 @@ Opera supported this quirk (copied from IE), but then dropped it because it brok
 
 <p class="status not-tr">Status: Awaiting implementation feedback.
 
-<p>In <span>quirks mode</span>, the initial value of the 'color' property must be 'quirk-inherit', a special value that has no keyword mapping to it.
+<p>In <span data-anolis-spec=dom title=concept-document-quirks>quirks mode</span>, the initial value of the 'color' property must be 'quirk-inherit', a special value that has no keyword mapping to it.
 
 <p>The computed value of the 'color' property of an element <var>element</var> must be calculated using the following algorithm:
 
@@ -638,7 +634,7 @@ https://bugs.webkit.org/show_bug.cgi?id=84469
 
 <p class="status not-tr">Status: Awaiting implementation feedback.
 
-<p>In <span>quirks mode</span>, elements that have a computed value of the 'display' property of 'table-cell' must act as they have used value of the 'box-sizing' property of 'border-box', but only for the purpose of the 'height', 'min-height' and 'max-height' properties.
+<p>In <span data-anolis-spec=dom title=concept-document-quirks>quirks mode</span>, elements that have a computed value of the 'display' property of 'table-cell' must act as they have used value of the 'box-sizing' property of 'border-box', but only for the purpose of the 'height', 'min-height' and 'max-height' properties.
 
 <h2>Selectors</h2>
 
@@ -646,7 +642,7 @@ https://bugs.webkit.org/show_bug.cgi?id=84469
 
 <p class="status not-tr">Status: Awaiting implementation feedback.
 
-<p>In <span>quirks mode</span>, a compound selector <var>selector</var> that matches the following conditions must not match elements that would not also match the ':any-link' selector. <span data-anolis-ref>SELECTORS</span>
+<p>In <span data-anolis-spec=dom title=concept-document-quirks>quirks mode</span>, a compound selector <var>selector</var> that matches the following conditions must not match elements that would not also match the ':any-link' selector. <span data-anolis-ref>SELECTORS</span>
 
 <ul>
  <li><var>selector</var> uses the ':active' or ':hover' pseudo-classes.
@@ -660,12 +656,12 @@ https://bugs.webkit.org/show_bug.cgi?id=84469
 </ul>
 
 <h2>HTML</h2>
-<!-- (uncomment "HTML elements" in Dependencies when uncommenting this)
+<!--
 <h3>The braces in style attribute quirk</h3>
 
 <p class="status not-tr">Status: Needs research.
 
-<p>In <span>quirks mode</span>, when parsing the <code>style</code> attribute on <span>HTML elements</span>, if the first token is "<code title>{</code>" (U+007B), that token must be ignored. If it was present, and a later matching token "<code title>}</code>" (U+0079) is found, that token, and all tokens after it, must also be ignored.</p>
+<p>In <span data-anolis-spec=dom title=concept-document-quirks>quirks mode</span>, when parsing the <code>style</code> attribute on <span>HTML elements</span>, if the first token is "<code title>{</code>" (U+007B), that token must be ignored. If it was present, and a later matching token "<code title>}</code>" (U+0079) is found, that token, and all tokens after it, must also be ignored.</p>
 
 <p class="XXX">Can we drop this quirk? WebKit and IE9 in non-compat view don't support it. Its usage in the wild is on the same order as the "space before unit" quirk<!- - see unitless length section - ->, which Firefox doesn't support, and which Opera has dropped support for.
 -->
@@ -679,11 +675,11 @@ grep -iaPo "<[a-z]+\s[^>]*style\s*=\s*[\"']{[^\"'>]+" web200904 > style-braces.t
 
 <p class="status not-tr">Status: Awaiting implementation feedback.
 
-<p>In <span>almost standards mode</span> and <span>standards mode</span>, the following style rule is expected to apply, as a <span>presentational hint</span>: [HTML]
+<p>In <span data-anolis-spec=dom title=concept-document-limited-quirks>almost standards mode</span> and <span data-anolis-spec=dom title=concept-document-no-quirks>standards mode</span>, the following style rule is expected to apply, as a <span>presentational hint</span>: [HTML]
 
 <pre>td[nowrap], th[nowrap] { white-space: nowrap; }</pre>
 
-<p>In <span>quirks mode</span>, a <code>td</code> element or a <code>th</code> element that has a <code>nowrap</code> attribute and either does not have a <code>width</code> attribute or has a <code>width</code> attribute that, when parsed using the <span>rules for parsing dimension values</span>, is found to have a value of zero or a percentage, or to generate an error, is expected to treat the attribute as a <span>presentational hint</span> setting the element's 'white-space' property to 'nowrap'. [HTML]
+<p>In <span data-anolis-spec=dom title=concept-document-quirks>quirks mode</span>, a <code>td</code> element or a <code>th</code> element that has a <code>nowrap</code> attribute and either does not have a <code>width</code> attribute or has a <code>width</code> attribute that, when parsed using the <span>rules for parsing dimension values</span>, is found to have a value of zero or a percentage, or to generate an error, is expected to treat the attribute as a <span>presentational hint</span> setting the element's 'white-space' property to 'nowrap'. [HTML]
 
 <!--
 <h2>Quirks that maybe can be removed from implementations</h2>

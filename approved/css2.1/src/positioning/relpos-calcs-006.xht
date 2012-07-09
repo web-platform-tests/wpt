@@ -4,6 +4,8 @@
     <title>CSS Test: Relative Positioning - overconstrained left = -right (RTL)</title>
     <link rel="author" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact"/>
     <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#relative-positioning" />
+	<!-- <link rel="match" href="relpos-calcs-001-ref.xht" /> -->
+
     <meta name="flags" content="" />
     <meta name="assert" content="For a relatively positioned element in an RTL
       containing block, if neither 'left' nor 'right' is 'auto', used value of
@@ -33,7 +35,7 @@
     </style>
   </head>
   <body>
-    <p>There must be a green box below and no red.</p>
+    <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
     <div class="control"></div>
     <div class="container" dir="rtl">
       <div class="outer">

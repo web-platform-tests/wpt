@@ -108,7 +108,7 @@ http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0.
 
 <h2>Introduction</h2>
 
-<p>Browsers have several rendering modes to render HTML documents. The reason for this is basically a historical accident. The CSS specification was incompatible with the behavior of existing browsers which existing Web content relied on. Instead of changing the specification to be compatible with what Web content relied on and providing opt-ins to different behavior, browsers implemented two rendering modes, one that was compatible (quirks mode) and one that followed the CSS specification (standards mode). Later a third mode was introduced (almost standards mode), because there were sites that triggered standards mode but expected quirks mode behavior for images in table cells. The different modes have since gained a few differences outside of CSS.
+<p>Browsers have several rendering modes to render HTML documents. The reason for this is basically a historical accident. The CSS specification was incompatible with the behavior of existing browsers which existing Web content relied on. In order to comply with the specification while not breaking existing content, browsers introduced a new rendering mode (standards mode). Some browsers still had the shrink-wrapping behavior for images in table cells in their standards mode, and sites started relying on that, so browsers that implemented the specification's behavior introduced a third mode (almost standards mode). In hindsight, it would have been better to make the default CSS behavior be compatible with what the existing content relied on and providing opt-ins to different behavior. The different modes have since gained a few differences outside of CSS.
 
 <h2>Goals</h2>
 

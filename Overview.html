@@ -120,8 +120,8 @@ http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0.
 
 <ul>
 <li>Create a specification for rendering old (or indeed new, if they happen to have a particular pragma) HTML documents.
-<li>Remove quirks from implementations that are not needed for Web compat.
-<li>Get interoperability on quirks that <em>are</em> needed for Web compat.
+<li>Remove quirks from implementations that are not needed for Web compatibility.
+<li>Get interoperability on quirks that <em>are</em> needed for Web compatibility.
 <li>Where possible, limit quirks to a fixed set of legacy features so they don't propagate into new features.
 </ul>
 
@@ -167,7 +167,7 @@ http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0.
    <li><p>If <var>token</var> is a <a href="#close-paren">close-paren</a> and <var>func</var> is greater than zero, decrement <var>func</var> by one and jump to the step labeled <var>append</var>.
    <li><p>If <var>token</var> is a <a href="#function">function</a> or <a href="#open-paren">open-paren</a>, increment <var>func</var> by one and jump to the step labeled <var>append</var>.
    <li><p>Let <var>value</var> be the representation of <var>token</var> if <var>token</var> is a <a href="#number">number</a>, the representation of <var>token</var> followed by the unit of <var>token</var> if <var>token</var> is a <a href="#dimension">dimension</a>, or the value of <var>token</var> otherwise.
-   <li><p>If the following contitions are true, let <var>token</var> be a new <a href="#hash">hash</a> token with its value set to <var>value</var>.
+   <li><p>If the following conditions are true, let <var>token</var> be a new <a href="#hash">hash</a> token with its value set to <var>value</var>.
     <ul>
      <li><p><var>func</var> is zero.
      <li><p><var>token</var> is a <a href="#number">number</a>, <a href="#dimension">dimension</a> or <a href="#identifier">identifier</a>.

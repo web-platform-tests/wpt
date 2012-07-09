@@ -32,8 +32,8 @@
         var node = e.target;
         if (selectionObj.anchorNode) {
             node = selectionObj.anchorNode;
-            if (selectionObj.focusNode && selectionObj.anchorNode.compareDocumentPosition) {
-                var compare = selectionObj.anchorNode.compareDocumentPosition(selectionObj.focusNode);
+            if (selectionObj.focusNode && selectionObj.focusNode.compareDocumentPosition) {
+                var compare = selectionObj.focusNode.compareDocumentPosition(selectionObj.anchorNode);
                 if (compare == 20 || compare == 4) // descendant or following
                     node = selectionObj.focusNode;
             }

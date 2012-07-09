@@ -252,8 +252,8 @@ In particular, outline-color did not show up at all.
  <li><p>For each token <var>token</var> in <var>tokens</var>:
   <ol>
    <li><p>If <var>token</var> is a <span>close-paren</span> and <var>func</var> is greater than zero, decrement <var>func</var> by one and jump to the step labeled <var>append</var>.
-   <li><p>If <var>token</var> is a <span>function</span> or <span>open-paren</span>, and <var>token</var>'s value does not <span title="ASCII case-insensitive">ASCII-case-insensitively</span> consist of the characters "rect" (U+0072 U+0065 U+0063 U+0074), increment <var>func</var> by one and jump to the step labeled <var>append</var>.
-   <li><p>If <var>func</var> is zero and <var>token</var> is a <span>number</span>, let <var>token</var> be a new <span>dimension</span> token with the representation set to <var>token</var>'s representation, the value set to <var>token</var>'s value, and the unit set to "px" (U+0070 U+0078).
+   <li><p>If <var>token</var> is a <span>function</span> or <span>open-paren</span>, and <var>token</var>'s value does not <span title="ASCII case-insensitive">ASCII-case-insensitively</span> consist of the characters "<code title>rect</code>" (U+0072 U+0065 U+0063 U+0074), increment <var>func</var> by one and jump to the step labeled <var>append</var>.
+   <li><p>If <var>func</var> is zero and <var>token</var> is a <span>number</span>, let <var>token</var> be a new <span>dimension</span> token with the representation set to <var>token</var>'s representation, the value set to <var>token</var>'s value, and the unit set to "<code title>px</code>" (U+0070 U+0078).
    <li><p><i>Append:</i> Append <var>token</var> to <var>output</var>.
   </ol>
  <li><p>Return <var>output</var>.
@@ -664,7 +664,7 @@ https://bugs.webkit.org/show_bug.cgi?id=84469
 
 <p class="status not-tr">Status: Needs research.
 
-<p>In <span>quirks mode</span>, when parsing the <code>style</code> attribute on <span>HTML elements</span>, if the first token is "{" (U+007B), that token must be ignored. If it was present, and a later matching token "}" (U+0079) is found, that token, and all tokens after it, must also be ignored.</p>
+<p>In <span>quirks mode</span>, when parsing the <code>style</code> attribute on <span>HTML elements</span>, if the first token is "<code title>{</code>" (U+007B), that token must be ignored. If it was present, and a later matching token "<code title>}</code>" (U+0079) is found, that token, and all tokens after it, must also be ignored.</p>
 
 <p class="XXX">Can we drop this quirk? WebKit and IE9 in non-compat view don't support it. Its usage in the wild is on the same order as the "space before unit" quirk<!- - see unitless length section - ->, which Firefox doesn't support, and which Opera has dropped support for.
 -->

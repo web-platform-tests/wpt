@@ -1,7 +1,7 @@
 /* Usage: include a link like:
  * <a href="https://www.w3.org/Bugs/Public/enter_bug.cgi?...">file a bug</a>
  * and somewhere after that, include the following:
- * <script src=/hg/quirks-mode/raw-file/tip/file-bug.js async></script>
+ * <script src=http://dvcs.w3.org/hg/quirks-mode/raw-file/tip/file-bug.js async></script>
  * If you don't want the script to inject styles, use a data-no-style=""
  * attribute on the script element.
  */

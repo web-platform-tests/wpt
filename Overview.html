@@ -143,7 +143,7 @@ http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0.
 
 <p>The terms <dfn id="block-container-element">block container element</dfn>, <dfn id="inline-level">inline-level</dfn>, <dfn id="containing-block">containing block</dfn>, <dfn id="initial-containing-block">initial containing block</dfn> and <dfn id="block-container-box">block container box</dfn> are defined in CSS 2.1. <a data-anolis-ref="" href="#refsCSS">[CSS]</a>
 
-<p>The terms <dfn id="identifier">identifier</dfn>, <dfn id="function">function</dfn>, <!--<dfn>at-keyword</dfn>,--> <dfn id="hash">hash</dfn>, <!--<dfn>string</dfn>, <dfn>bad-string</dfn>, <dfn>url</dfn>, <dfn>bad-url</dfn>, <dfn>delim</dfn>,--> <dfn id="number">number</dfn>, <!--<dfn>percentage</dfn>,--> <dfn id="dimension">dimension</dfn>, <!--<dfn>unicode-range</dfn>, <dfn>whitespace</dfn>, <dfn>cdo</dfn>, <dfn>cdc</dfn>, <dfn>colon</dfn>, <dfn>semicolon</dfn>, <dfn>open-brace</dfn>, <dfn>close-brace</dfn>,--> <dfn id="open-paren">open-paren</dfn> and <dfn id="close-paren">close-paren</dfn> <!--<dfn>open-bracket</dfn>, <dfn>close-bracket</dfn>--> are defined in CSS Syntax Module Level 3. <a data-anolis-ref="" href="#refsCSSSYNTAX">[CSSSYNTAX]</a>
+<p>The terms <dfn id="identifier">identifier</dfn>, <dfn id="function">function</dfn>, <dfn id="at-keyword">at-keyword</dfn>, <dfn id="hash">hash</dfn>, <dfn id="string">string</dfn>, <dfn id="bad-string">bad-string</dfn>, <dfn id="url">url</dfn>, <dfn id="bad-url">bad-url</dfn>, <dfn id="delim">delim</dfn>, <dfn id="number">number</dfn>, <dfn id="percentage">percentage</dfn>, <dfn id="dimension">dimension</dfn>, <dfn id="unicode-range">unicode-range</dfn>, <dfn id="whitespace">whitespace</dfn>, <dfn id="cdo">cdo</dfn>, <dfn id="cdc">cdc</dfn>, <dfn id="colon">colon</dfn>, <dfn id="semicolon">semicolon</dfn>, <dfn id="generatedID">[</dfn>, <dfn id="generatedID-0">]</dfn>, <dfn id="(">(</dfn>, <dfn id=")">)</dfn>, <dfn id="generatedID-1">{</dfn> and <dfn id="generatedID-2">}</dfn> are defined in CSS Syntax Module Level 3. <a data-anolis-ref="" href="#refsCSSSYNTAX">[CSSSYNTAX]</a>
 
 <p>The terms <dfn id="minimum-intrinsic-width-of-an-inline-formatting-context">minimum intrinsic width of an inline formatting context</dfn> and <dfn id="outer-intrinsic-minimum-width-of-a-table-cell">outer intrinsic minimum width of a table cell</dfn> are defined in More Precise Definitions of Intrinsic Widths and Table Layout (Proposal). <a data-anolis-ref="" href="#refsCSSINTRINSIC">[CSSINTRINSIC]</a>
 
@@ -162,8 +162,8 @@ http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0.
  <li><p>Let <var>func</var> be zero.
  <li><p>For each token <var>token</var> in <var>tokens</var>:
   <ol>
-   <li><p>If <var>token</var> is a <a href="#close-paren">close-paren</a> and <var>func</var> is greater than zero, decrement <var>func</var> by one and jump to the step labeled <var>append</var>.
-   <li><p>If <var>token</var> is a <a href="#function">function</a> or <a href="#open-paren">open-paren</a>, increment <var>func</var> by one and jump to the step labeled <var>append</var>.
+   <li><p>If <var>token</var> is a <a href="#)">)</a> and <var>func</var> is greater than zero, decrement <var>func</var> by one and jump to the step labeled <var>append</var>.
+   <li><p>If <var>token</var> is a <a href="#function">function</a> or <a href="#(">(</a>, increment <var>func</var> by one and jump to the step labeled <var>append</var>.
    <li><p>Let <var>value</var> be the representation of <var>token</var> if <var>token</var> is a <a href="#number">number</a>, the representation of <var>token</var> followed by the unit of <var>token</var> if <var>token</var> is a <a href="#dimension">dimension</a>, or the value of <var>token</var> otherwise.
    <li><p>If the following conditions are true, let <var>token</var> be a new <a href="#hash">hash</a> token with its value set to <var>value</var>.
     <ul>
@@ -249,8 +249,8 @@ In particular, outline-color did not show up at all.
  <li><p>Let <var>func</var> be zero.
  <li><p>For each token <var>token</var> in <var>tokens</var>:
   <ol>
-   <li><p>If <var>token</var> is a <a href="#close-paren">close-paren</a> and <var>func</var> is greater than zero, decrement <var>func</var> by one and jump to the step labeled <var>append</var>.
-   <li><p>If <var>token</var> is a <a href="#function">function</a> or <a href="#open-paren">open-paren</a>, and <var>token</var>'s value does not <a class="external" data-anolis-spec="html" href="http://www.whatwg.org/specs/web-apps/current-work/multipage/infrastructure.html#ascii-case-insensitive" title="ASCII case-insensitive">ASCII-case-insensitively</a> consist of the characters "<code title="">rect</code>" (U+0072 U+0065 U+0063 U+0074), increment <var>func</var> by one and jump to the step labeled <var>append</var>.
+   <li><p>If <var>token</var> is a <a href="#)">)</a> and <var>func</var> is greater than zero, decrement <var>func</var> by one and jump to the step labeled <var>append</var>.
+   <li><p>If <var>token</var> is a <a href="#function">function</a> or <a href="#(">(</a>, and <var>token</var>'s value does not <a class="external" data-anolis-spec="html" href="http://www.whatwg.org/specs/web-apps/current-work/multipage/infrastructure.html#ascii-case-insensitive" title="ASCII case-insensitive">ASCII-case-insensitively</a> consist of the characters "<code title="">rect</code>" (U+0072 U+0065 U+0063 U+0074), increment <var>func</var> by one and jump to the step labeled <var>append</var>.
    <li><p>If <var>func</var> is zero and <var>token</var> is a <a href="#number">number</a>, let <var>token</var> be a new <a href="#dimension">dimension</a> token with the representation set to <var>token</var>'s representation, the value set to <var>token</var>'s value, and the unit set to "<code title="">px</code>" (U+0070 U+0078).
    <li><p><i>Append:</i> Append <var>token</var> to <var>output</var>.
   </ol>

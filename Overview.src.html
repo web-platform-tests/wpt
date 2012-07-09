@@ -144,7 +144,7 @@ http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0.
 
 <p>The terms <dfn>block container element</dfn>, <dfn>inline-level</dfn>, <dfn>containing block</dfn>, <dfn>initial containing block</dfn> and <dfn>block container box</dfn> are defined in CSS 2.1. <span data-anolis-ref>CSS</span>
 
-<p>The terms <dfn>identifier</dfn>, <dfn>function</dfn>, <!--<dfn>at-keyword</dfn>,--> <dfn>hash</dfn>, <!--<dfn>string</dfn>, <dfn>bad-string</dfn>, <dfn>url</dfn>, <dfn>bad-url</dfn>, <dfn>delim</dfn>,--> <dfn>number</dfn>, <!--<dfn>percentage</dfn>,--> <dfn>dimension</dfn>, <!--<dfn>unicode-range</dfn>, <dfn>whitespace</dfn>, <dfn>cdo</dfn>, <dfn>cdc</dfn>, <dfn>colon</dfn>, <dfn>semicolon</dfn>, <dfn>open-brace</dfn>, <dfn>close-brace</dfn>,--> <dfn>open-paren</dfn> and <dfn>close-paren</dfn> <!--<dfn>open-bracket</dfn>, <dfn>close-bracket</dfn>--> are defined in CSS Syntax Module Level 3. <span data-anolis-ref>CSSSYNTAX</span>
+<p>The terms <dfn>identifier</dfn>, <dfn>function</dfn>, <dfn>at-keyword</dfn>, <dfn>hash</dfn>, <dfn>string</dfn>, <dfn>bad-string</dfn>, <dfn>url</dfn>, <dfn>bad-url</dfn>, <dfn>delim</dfn>, <dfn>number</dfn>, <dfn>percentage</dfn>, <dfn>dimension</dfn>, <dfn>unicode-range</dfn>, <dfn>whitespace</dfn>, <dfn>cdo</dfn>, <dfn>cdc</dfn>, <dfn>colon</dfn>, <dfn>semicolon</dfn>, <dfn>[</dfn>, <dfn>]</dfn>, <dfn>(</dfn>, <dfn>)</dfn>, <dfn>{</dfn> and <dfn>}</dfn> are defined in CSS Syntax Module Level 3. <span data-anolis-ref>CSSSYNTAX</span>
 
 <p>The terms <dfn>minimum intrinsic width of an inline formatting context</dfn> and <dfn>outer intrinsic minimum width of a table cell</dfn> are defined in More Precise Definitions of Intrinsic Widths and Table Layout (Proposal). <span data-anolis-ref>CSSINTRINSIC</span>
 
@@ -163,8 +163,8 @@ http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0.
  <li><p>Let <var>func</var> be zero.
  <li><p>For each token <var>token</var> in <var>tokens</var>:
   <ol>
-   <li><p>If <var>token</var> is a <span>close-paren</span> and <var>func</var> is greater than zero, decrement <var>func</var> by one and jump to the step labeled <var>append</var>.
-   <li><p>If <var>token</var> is a <span>function</span> or <span>open-paren</span>, increment <var>func</var> by one and jump to the step labeled <var>append</var>.
+   <li><p>If <var>token</var> is a <span>)</span> and <var>func</var> is greater than zero, decrement <var>func</var> by one and jump to the step labeled <var>append</var>.
+   <li><p>If <var>token</var> is a <span>function</span> or <span>(</span>, increment <var>func</var> by one and jump to the step labeled <var>append</var>.
    <li><p>Let <var>value</var> be the representation of <var>token</var> if <var>token</var> is a <span>number</span>, the representation of <var>token</var> followed by the unit of <var>token</var> if <var>token</var> is a <span>dimension</span>, or the value of <var>token</var> otherwise.
    <li><p>If the following conditions are true, let <var>token</var> be a new <span>hash</span> token with its value set to <var>value</var>.
     <ul>
@@ -250,8 +250,8 @@ In particular, outline-color did not show up at all.
  <li><p>Let <var>func</var> be zero.
  <li><p>For each token <var>token</var> in <var>tokens</var>:
   <ol>
-   <li><p>If <var>token</var> is a <span>close-paren</span> and <var>func</var> is greater than zero, decrement <var>func</var> by one and jump to the step labeled <var>append</var>.
-   <li><p>If <var>token</var> is a <span>function</span> or <span>open-paren</span>, and <var>token</var>'s value does not <span data-anolis-spec=html title="ASCII case-insensitive">ASCII-case-insensitively</span> consist of the characters "<code title>rect</code>" (U+0072 U+0065 U+0063 U+0074), increment <var>func</var> by one and jump to the step labeled <var>append</var>.
+   <li><p>If <var>token</var> is a <span>)</span> and <var>func</var> is greater than zero, decrement <var>func</var> by one and jump to the step labeled <var>append</var>.
+   <li><p>If <var>token</var> is a <span>function</span> or <span>(</span>, and <var>token</var>'s value does not <span data-anolis-spec=html title="ASCII case-insensitive">ASCII-case-insensitively</span> consist of the characters "<code title>rect</code>" (U+0072 U+0065 U+0063 U+0074), increment <var>func</var> by one and jump to the step labeled <var>append</var>.
    <li><p>If <var>func</var> is zero and <var>token</var> is a <span>number</span>, let <var>token</var> be a new <span>dimension</span> token with the representation set to <var>token</var>'s representation, the value set to <var>token</var>'s value, and the unit set to "<code title>px</code>" (U+0070 U+0078).
    <li><p><i>Append:</i> Append <var>token</var> to <var>output</var>.
   </ol>

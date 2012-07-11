@@ -14,12 +14,22 @@
   <meta content="The width of an HTML/XHTML table is the distance between the left and right table border edges. The width of a table with 'table-layout' set to 'fixed' is the greater of the value of the 'width' property for the &lt;table&gt; element and the sum of the columns width (plus cell spacing and cell borders). If the table is wider than the sum of columns' width, then the extra (exceeding) space should be distributed over the columns." name="assert" />
 
   <style type="text/css"><![CDATA[
+  div#overlapped-red
+  {
+  background-color: red;
+  height: 100px;
+  left: auto;
+  position: absolute;
+  top: auto;
+  width: 100px;
+  z-index: -1; 
+  }  
+  
   table
   {
   background-color: red;                
   border-collapse: separate;
   border-spacing: 0px;
-  height: 100px;
   table-layout: fixed;
   width: 100px;
   }
@@ -27,7 +37,9 @@
   td
   {
   background-color: green;
-  width: 0px;
+  color: green;
+  font: 20px/1 Ahem;
+  padding: 15px 1px;
   }
   ]]></style>
 
@@ -37,10 +49,15 @@
 
   <p>Test passes if there is a filled green square and <strong>no red</strong></p>
 
+  <div id="overlapped-red"></div>
+
   <table>
-   <tr>
-    <td></td>
-   </tr>
+    <tr>
+      <td>1</td><td>2</td>
+    </tr>
+    <tr>
+      <td>3</td><td>4</td>
+    </tr>
   </table>
 
  </body>

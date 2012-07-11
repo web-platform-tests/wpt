@@ -8,74 +8,79 @@
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#separated-borders" title="17.6.1 The separated borders model" />
-  <link rel="match" href="reference/separated-border-model-004a-ref.xht" />
+  <link rel="match" href="reference/ref-filled-green-100px-square.xht" />
 
   <meta content="" name="flags" />
   <meta content="The width of a CSS table is the distance from the left inner padding edge to the right inner padding edge (including the table border-spacing but excluding table padding and table borders)." name="assert" />
 
   <style type="text/css"><![CDATA[
+  div#overlapped-red
+  {
+  background-color: red;
+  height: 100px;
+  left: auto;
+  position: absolute;
+  top: auto;
+  width: 100px;
+  z-index: -1; 
+  }  
+
   div#table
   {
   background-color: green;
-  border: white solid 25px;
-  border-spacing: 17px 0;
+  border-spacing: 2px 5px;
+  color: green;
   display: table;
-  padding: 0px;
+  font: 20px/1 Ahem;
+  padding-top: 5px;
   table-layout: fixed;
   width: 100px; 
   /* 
   The set width (100px) is larger than sum of columns' width plus cell spacing 
 
-   17px   (left-most border-spacing)
+    2px : left-most border-spacing
  +
-   16px   (div#td's width)
+   40px : div.td's width: leftmost cell width in first row)
  +
-   17px   (right-most border-spacing)
+    2px : middle border-spacing
+ + 
+   40px : div.td's width: rightmost cell width in first row)
+ +
+    2px : right-most border-spacing 
   ======
-   50px : sum of columns plus cell spacing
+   86px : sum of columns plus cell spacing
 
-   100px (width of table)
-  - 
-    50px (sum of columns plus cell spacing)
+
+  100px : set width of table
+ - 
+   86px : sum of columns plus cell spacing
   ======
-    50px : such extra (exceeding) 50px width will be distributed over 
-    the columns, therefore given to the unique cell of the table.
+   14px : such extra (exceeding) 14px width will be distributed over 
+    the columns.
   */
   }
 
-  div#tr {display: table-row;}
+  div.tr {display: table-row;}
 
-  div#td
-  {
-  display: table-cell;
-  height: 100px;
-  width: 16px;
-  }
-
-  div#reference
-  {
-  background-color: green;
-  height: 100px;
-  left: 25px;
-  position: relative;
-  top: -21px;  /* To make both squares' width easy to compare visually */
-  width: 100px;
-  }
+  div.td {display: table-cell;}
   ]]></style>
 
  </head>
 
  <body>
 
-  <p>Test passes if there are 2 filled green squares with the <strong>same width</strong>.</p>
+  <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
+
+  <div id="overlapped-red"></div>
 
   <div id="table">
-    <div id="tr">
-      <div id="td"></div>
-    </div>
+     <div class="tr">
+       <div class="td">11<br />11</div><div class="td">22<br />22</div>
+     </div>
+     <div class="tr">
+       <div class="td">33<br />33</div><div class="td">44<br />44</div>
+     </div>
   </div>
-
-  <div id="reference"></div>
 
  </body>
 </html>

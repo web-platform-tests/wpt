@@ -8,7 +8,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
 <script>
-function assert_blob(fn, expectations) {
+function test_blob(fn, expectations) {
   var expected = expectations.expected,
       type = expectations.type,
       desc = expectations.desc;
@@ -93,7 +93,7 @@ test(function() {
   });
 }, "ToString should be called on elements of the blobParts array and any exceptions should be propagated.");
 
-assert_blob(function() {
+test_blob(function() {
   var arr = [
     { toString: function() { arr.pop(); return "PASS"; } },
     { toString: function() { assert_unreached("Should have removed the second element of the array rather than called toString() on it."); } }
@@ -105,7 +105,7 @@ assert_blob(function() {
   desc: "Changes to the blobParts array should be reflected in the returned Blob (pop)."
 });
 
-assert_blob(function() {
+test_blob(function() {
   var arr = [
     {
       toString: function() {
@@ -133,7 +133,7 @@ assert_blob(function() {
   desc: "Changes to the blobParts array should be reflected in the returned Blob (unshift)."
 });
 
-assert_blob(function() {
+test_blob(function() {
   // https://www.w3.org/Bugs/Public/show_bug.cgi?id=17652
   return new Blob([
     null,
@@ -157,7 +157,7 @@ assert_blob(function() {
   desc: "ToString should be called on elements of the blobParts array."
 });
 
-assert_blob(function() {
+test_blob(function() {
   return new Blob([
     new ArrayBuffer(8)
   ]);
@@ -167,7 +167,7 @@ assert_blob(function() {
   desc: "ToString should be called on ArrayBuffer elements of the blobParts array."
 });
 
-assert_blob(function() {
+test_blob(function() {
   return new Blob([
     new Uint8Array([0x50, 0x41, 0x53, 0x53]),
     new Int8Array([0x50, 0x41, 0x53, 0x53]),
@@ -182,7 +182,7 @@ assert_blob(function() {
   type: "",
   desc: "Passing typed arrays as elements of the blobParts array should work."
 });
-assert_blob(function() {
+test_blob(function() {
   return new Blob([
     // 0x535 3415053534150
     // 0x535 = 0b010100110101 -> Sign = +, Exponent = 1333 - 1023 = 310
@@ -266,14 +266,14 @@ test(function() {
   /regex/,
   function() {}
 ].forEach(function(arg, idx) {
-  assert_blob(function() {
+  test_blob(function() {
     return new Blob([], arg);
   }, {
     expected: "",
     type: "",
     desc: "Passing " + format_value(arg) + " (index " + idx + ") for options should use the defaults."
   });
-  assert_blob(function() {
+  test_blob(function() {
     return new Blob(["\na\r\nb\n\rc\r"], arg);
   }, {
     expected: "\na\r\nb\n\rc\r",
@@ -282,7 +282,7 @@ test(function() {
   });
 });
 
-assert_blob(function() {
+test_blob(function() {
   return new Blob([], { type: "" });
 }, {
   expected: "",
@@ -290,7 +290,7 @@ assert_blob(function() {
   desc: "Passing the empty string for type should not throw."
 });
 
-assert_blob(function() {
+test_blob(function() {
   return new Blob([], { type: "text/html" });
 }, {
   expected: "",
@@ -298,14 +298,14 @@ assert_blob(function() {
   desc: "Passing 'text/html' for type should not throw."
 });
 
-assert_blob(function() {
+test_blob(function() {
   return new Blob([], { endings: "native" });
 }, {
   expected: "",
   type: "",
   desc: "Endings can be 'native'."
 });
-assert_blob(function() {
+test_blob(function() {
   return new Blob([], { endings: "transparent" });
 }, {
   expected: "",
@@ -313,14 +313,14 @@ assert_blob(function() {
   desc: "Endings can be 'transparent'."
 });
 
-assert_blob(function() {
+test_blob(function() {
   return new Blob([], { endings: { toString: function() { return "native"; } } });
 }, {
   expected: "",
   type: "",
   desc: "Endings can be 'native' (toString)."
 });
-assert_blob(function() {
+test_blob(function() {
   return new Blob([], { endings: { toString: function() { return "transparent" } } });
 }, {
   expected: "",
@@ -328,7 +328,7 @@ assert_blob(function() {
   desc: "Endings can be 'transparent' (toString)."
 });
 
-assert_blob(function() {
+test_blob(function() {
   return new Blob(["\na\r\nb\n\rc\r"], { endings: "transparent" });
 }, {
   expected: "\na\r\nb\n\rc\r",
@@ -339,7 +339,7 @@ assert_blob(function() {
 test(function() {
   var blob1, blob2;
 
-  assert_blob(function() {
+  test_blob(function() {
     return blob1 = new Blob(["squiggle"]);
   }, {
     expected: "squiggle",
@@ -347,7 +347,7 @@ test(function() {
     desc: "blob1."
   });
 
-  assert_blob(function() {
+  test_blob(function() {
     return blob2 = new Blob(["steak"], {type: "content/type"});
   }, {
     expected: "steak",
@@ -460,7 +460,7 @@ test(function() {
         assert_true(blob instanceof Blob);
         assert_false(blob instanceof File);
 
-        assert_blob(function() {
+        test_blob(function() {
           return blob.slice(expectations.start, expectations.start + expectations.length);
         }, {
           expected: expectations.contents,

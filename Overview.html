@@ -36,7 +36,7 @@
 <p><a href="http://www.w3.org/"><img alt="W3C" height="48" src="http://www.w3.org/Icons/w3c_home" width="72"></a>
 
 <h1>Quirks Mode</h1>
-<h2 class="no-num no-toc not-tr not-fs" id="living-specification-—-11-july-2012">Living Specification — 11 July 2012</h2>
+<h2 class="no-num no-toc not-tr not-fs" id="living-specification-—-12-july-2012">Living Specification — 12 July 2012</h2>
 <dl>
  <dt>This Version:
  <dd class="not-tr not-fs"><a href="http://dvcs.w3.org/hg/quirks-mode/raw-file/tip/Overview.html">http://dvcs.w3.org/hg/quirks-mode/raw-file/tip/Overview.html</a>
@@ -61,7 +61,7 @@
 <a href="http://creativecommons.org/publicdomain/zero/1.0/" rel="license">CC0 1.0 Universal</a>.
 To the extent possible under law, the editors has waived all copyright and
 related or neighboring rights to this work. In addition, as of
-11 July 2012, the editors have made this specification available
+12 July 2012, the editors have made this specification available
 under the
 <a href="http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0" rel="license">Open Web Foundation Agreement Version 1.0</a>,
 which is available at
@@ -105,9 +105,6 @@ http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0.
  <li><a href="#selectors"><span class="secno">7 </span>Selectors</a>
   <ol>
    <li><a href="#the-:active-and-:hover-quirk"><span class="secno">7.1 </span>The :active and :hover quirk</a></ol></li>
- <li><a href="#html"><span class="secno">8 </span>HTML</a>
-  <ol>
-   <li><a href="#the-table-cell-width-resets-nowrap-quirk"><span class="secno">8.1 </span>The table cell width resets nowrap quirk</a></ol></li>
  <li><a class="no-num" href="#references">References</a></li>
  <li><a class="no-num" href="#acknowledgments">Acknowledgments</a></ol>
 <!--end-toc-->
@@ -656,7 +653,7 @@ https://bugs.webkit.org/show_bug.cgi?id=84469
  <li><var>selector</var> is not part of an argument to a functional pseudo-class or pseudo-element.
 </ul>
 
-<h2 id="html"><span class="secno">8 </span>HTML</h2>
+<!--<h2>HTML</h2>-->
 <!--
 <h3>The braces in style attribute quirk</h3>
 
@@ -671,16 +668,6 @@ https://bugs.webkit.org/show_bug.cgi?id=84469
 grep -iaPo "<[a-z]+\s[^>]*style\s*=\s*[\"']{[^\"'>]+" web200904 > style-braces.txt
 6556 matches
 -->
-
-<h3 id="the-table-cell-width-resets-nowrap-quirk"><span class="secno">8.1 </span>The table cell width resets nowrap quirk</h3>
-
-<p class="status not-tr">Status: Awaiting implementation feedback.
-
-<p>In <a class="external" data-anolis-spec="dom" href="http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document-limited-quirks" title="concept-document-limited-quirks">almost standards mode</a> and <a class="external" data-anolis-spec="dom" href="http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document-no-quirks" title="concept-document-no-quirks">standards mode</a>, the following style rule is expected to apply, as a <span>presentational hint</span>: [HTML]
-
-<pre>td[nowrap], th[nowrap] { white-space: nowrap; }</pre>
-
-<p>In <a class="external" data-anolis-spec="dom" href="http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document-quirks" title="concept-document-quirks">quirks mode</a>, a <code>td</code> element or a <code>th</code> element that has a <code>nowrap</code> attribute and either does not have a <code>width</code> attribute or has a <code>width</code> attribute that, when parsed using the <span>rules for parsing dimension values</span>, is found to have a value of zero or a percentage, or to generate an error, is expected to treat the attribute as a <span>presentational hint</span> setting the element's 'white-space' property to 'nowrap'. [HTML]
 
 <!--
 <h2>Quirks that maybe can be removed from implementations</h2>

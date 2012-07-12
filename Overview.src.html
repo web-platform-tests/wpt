@@ -657,7 +657,7 @@ https://bugs.webkit.org/show_bug.cgi?id=84469
  <li><var>selector</var> is not part of an argument to a functional pseudo-class or pseudo-element.
 </ul>
 
-<h2>HTML</h2>
+<!--<h2>HTML</h2>-->
 <!--
 <h3>The braces in style attribute quirk</h3>
 
@@ -672,16 +672,6 @@ https://bugs.webkit.org/show_bug.cgi?id=84469
 grep -iaPo "<[a-z]+\s[^>]*style\s*=\s*[\"']{[^\"'>]+" web200904 > style-braces.txt
 6556 matches
 -->
-
-<h3>The table cell width resets nowrap quirk</h3>
-
-<p class="status not-tr">Status: Awaiting implementation feedback.
-
-<p>In <span data-anolis-spec=dom title=concept-document-limited-quirks>almost standards mode</span> and <span data-anolis-spec=dom title=concept-document-no-quirks>standards mode</span>, the following style rule is expected to apply, as a <span>presentational hint</span>: [HTML]
-
-<pre>td[nowrap], th[nowrap] { white-space: nowrap; }</pre>
-
-<p>In <span data-anolis-spec=dom title=concept-document-quirks>quirks mode</span>, a <code>td</code> element or a <code>th</code> element that has a <code>nowrap</code> attribute and either does not have a <code>width</code> attribute or has a <code>width</code> attribute that, when parsed using the <span>rules for parsing dimension values</span>, is found to have a value of zero or a percentage, or to generate an error, is expected to treat the attribute as a <span>presentational hint</span> setting the element's 'white-space' property to 'nowrap'. [HTML]
 
 <!--
 <h2>Quirks that maybe can be removed from implementations</h2>

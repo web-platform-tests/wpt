@@ -7,21 +7,22 @@
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions">
     <link rel="match" href="reference/svg-scale-ref.html">
     <meta name="flags" content="svg">
-    <meta name="assert" content="The rect in the test should be scaled down 0.5 on the g element then scaled down again 0.5 to 150x150">
+    <meta name="assert" content="The group containing the red rect in this test should be scaled down 0.5 and the red rect should be scaled down again 0.5 to be completely hidden behind the green rect.">
     <style type="text/css">
-    svg {
-        width: 500px;
-        height: 500px;
-    }
+        svg {
+            width: 200px;
+            height: 200px;
+            background: green;
+        }
     </style>
 </head>
 <body>
-    <p>The test passes if you see two squares of the same size.</p>
+    <p>The test passes if you see a green square and no red.</p>
     <svg>
         <g transform="scale(0.5)">
-            <rect width="600" height="600" fill="blue" transform="scale(0.5)"/>
+            <rect x="1" y="1" width="592" height="592" fill="red" transform="scale(0.5)"/>
         </g>
-        <rect x="200" width="150" height="150" fill="blue"/>
+        <rect width="150" height="150" fill="green"/>
     </svg>
 </body>
 </html>

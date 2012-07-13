@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CSS Transforms Test: SVG rotate with three arguments with transform-origin with first value '50%' and missing second argument</title>
+    <link rel="author" title="David Alcala" href="mailto:dalcala@adobe.com">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-transform">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-transform-functions">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-origin-property">
+    <link rel="match" href="reference/green-square-ref.html">
+    <meta name="flags" content="svg">
+    <meta name="assert" content="The rotate transform function must support three arguments in combination with transform-origin using one percentage value. The green rect in this test should be rotated by 90 degrees clockwise and translated by 20 pixels in both the vertical and horizontal directions, and the transform-origin value of '50%' should cause the rect to be rotated around its center point, to completely cover the red rect.">
+    <style type="text/css">
+    svg {
+        width: 200px;
+        height: 200px;
+    }
+    </style>
+</head>
+<body>
+    <p>The test passes if there is a green square and no red.</p>
+    <svg>
+        <rect x="1" y="1" width="98" height="98" fill="red"/>
+        <rect x="-40" y="0" width="100" height="100" fill="green" transform="rotate(90deg,20px,20px)" transform-origin="50%"/>
+    </svg>
+</body>
+</html>

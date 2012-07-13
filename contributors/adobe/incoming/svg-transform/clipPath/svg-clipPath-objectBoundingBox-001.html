@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CSS Transforms Test: SVG presentation attribute with translate on clipPath with objectBoundingBox clipPathUnits</title>
+    <link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-transform">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-user-coordinate-space">
+    <link rel="match" href="reference/svg-clipPath-objectBoundingBox-ref.html">
+    <meta name="flags" content="svg">
+    <meta name="assert" content="For the clipPath element the transform presentation attribute represents values in the current user coordinate system in place at the time when the clipPath’ element is referenced despite the objectBoundingBox units being applied to the clipPath itself. The clipPath in this test should be translated horizontally so that neither of the two red rects appear.">
+    <style type="text/css">
+        svg {
+            width: 500px;
+            height: 500px;
+        }
+    </style>
+</head>
+<body>
+    <p>The test passes if there is a green square and no red.</p>
+    <svg>
+        <defs>
+            <!-- Should the clipPathUnit also be used by transform element on a clipPath? 
+                 The current version (7/10/2012) of the editors draft of the spec explicitly 
+                 mentions pattern, gradient, and mask units are used for the transform elements, but for
+                 clipPath, it just says the transform attribute uses the current user coordinate space and
+                 makes no mention of clipPathUnits.  Thus, the following test uses the current user
+                 coordinate space for the transform translation values, but uses the objectBoundingBox units
+                 for the clipPaths position and size.  It only passes this way on FF, and fails (slightly
+                 differently) on Opera, Chrome, and Safari -->
+            <clipPath id="clip" clipPathUnits="objectBoundingBox" transform="translate(-100,0)">
+                <rect x="0.5" width="0.5" height="1"/> 
+            </clipPath>
+        </defs>
+        <rect width="200" height="200" fill="green"/>
+        <rect x="100" width="100" height="100" fill="red"/>
+        <g clip-path="url(#clip)">
+            <rect x="100" width="200" height="100" fill="green"/>
+            <rect x="200" width="100" height="100" fill="red"/>
+         </g>
+    </svg>
+</body>
+</html>

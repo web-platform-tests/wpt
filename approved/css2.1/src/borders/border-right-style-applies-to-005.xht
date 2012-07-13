@@ -3,6 +3,7 @@
     <head>
         <title>CSS Test: Border-right-style applied to element with display table-column-group</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-06-23 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#propdef-border-right-style" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#border-style-properties" />
         <meta name="flags" content="" />
@@ -17,7 +18,6 @@
             {
                 border-collapse: collapse;
                 display: table;
-                table-layout: fixed;
             }
             #row
             {
@@ -27,12 +27,11 @@
             {
                 display: table-cell;
                 height: 1in;
-                width: 0;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if the line below is dashed.</p>
+        <p>Test passes if there is a short vertical dashed line.</p>
         <div id="table">
             <div id="test"></div>
             <div id="row">

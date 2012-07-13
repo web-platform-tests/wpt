@@ -188,17 +188,17 @@ section = "parsing";
 	[["skewY(0)"], "skewY(0deg)", 1, 0, 0, 1, 0, 0],
 ].forEach(function(arr) {
 	arr[0].forEach(function(transform, i) {
-		var transformKeyword = {0: "TRANSFORM", 1: "tRAnSFoRM", 2: "transform"}[i%3];
 		div.setAttribute("style", "");
 		div.removeAttribute("style");
-		div.style[prefixProp("transform").replace("transform", transformKeyword)] = transform;
+		div.style[prefixProp("transform")] = transform;
 		test(function() {
 			testInlineTransform(arr[1]);
-		}, 'div.style.cssText and .transform '
-		+ 'with "' + transformKeyword + ": " + transform + '" set via CSSOM');
+		}, 'div.style.cssText and .transform ' + 'with "transform: ' + transform
+		+ '" set via CSSOM');
 		test(function() {
 			testComputedTransform(arr.slice(2));
-		}, 'getComputedStyle(div).transform with "' + transformKeyword + ": " + transform + '" set via CSSOM');
+		}, 'getComputedStyle(div).transform with "transform: ' + transform
+		+ '" set via CSSOM');
 	});
 });
 

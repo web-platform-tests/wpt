@@ -7,19 +7,19 @@
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions">
     <link rel="match" href="reference/svg-scale-ref.html">
     <meta name="flags" content="svg">
-    <meta name="assert" content="Scaling by a negative value should flip the rect. In this test, it should be flipped down into view and vertically scaled down 0.5 to 150x150">
+    <meta name="assert" content="Scaling by a negative value should flip the element. The green in this test should be flipped downward into view and vertically scaled down to completely cover the red background.">
     <style type="text/css">
-    svg {
-        width: 500px;
-        height: 500px;
-    }
+        svg {
+            width: 200px;
+            height: 200px;
+            background: red;
+        }
     </style>
 </head>
 <body>
-    <p>The test passes if you see two squares of the same size.</p>
+    <p>The test passes if you see a green square and no red.</p>
     <svg>
-        <rect x="0" y="-300" width="150" height="300" fill="blue" transform="scaleY(-0.5)"/>
-        <rect x="200" width="150" height="150" fill="blue"/>
+        <rect x="0" y="-400" width="200" height="400" fill="green" transform="scaleY(-0.5)"/>
     </svg>
 </body>
 </html>

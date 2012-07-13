@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CSS Transforms Test: SVG presentation attribute with translate on mask with objectBoundingBox maskContentUnits</title>
+    <link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-transform">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-user-coordinate-space">
+    <link rel="match" href="reference/svg-mask-objectBoundingBox-ref.html">
+    <meta name="flags" content="svg">
+    <meta name="assert" content="If the maskUnit attribute is set to objectBoundingBox the user coordinate system for the transform’ presentation attribute is established using the bounding box of the element to which the mask is applied. The mask in this test should be translated horizontally so that neither of the two red rects appear.">
+    <style type="text/css">
+        svg {
+            width: 300px;
+            height: 300px;
+        }
+    </style>
+</head>
+<body>
+    <svg>
+        <defs>
+            <!-- maskUnit appears to have no affect in any browser, but maskContentUnits works. The current
+                 version (7/10/2012) of the editors draft of the spec refers to maskUnit - is it correct and
+                 just not yet implemented yet? Also, the transform on the mask does not seem to be happening 
+                 at all in any browser, regardless of maskContentUnits, or whether it's a presentation
+                 attribute or a style. I assume the equivalent rendering for this test is to apply the
+                 transform to the rect in the mask. This works on all browsers.-->
+              <mask id="mask" maskContentUnits="objectBoundingBox" transform="translate(-0.5,0)">
+                  <rect x="0.5" width="0.5" height="1" fill="white"/>
+              </mask>
+         </defs>
+         <rect width="200" height="200" fill="green"/>
+         <rect x="100" width="100" height="100" fill="red"/>
+         <g mask="url(#mask)">
+             <rect x="100" width="100" height="100" fill="green"/>
+             <rect x="200" width="100" height="100" fill="red"/>
+         </g>
+    </svg>
+</body>
+</html>

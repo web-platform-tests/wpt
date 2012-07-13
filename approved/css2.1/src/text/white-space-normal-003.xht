@@ -3,12 +3,17 @@
  <head>
   <title>CSS Test: white-space normal: UNICODE space characters</title>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-06-29 -->
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/text/white-space/normal/003.html" type="text/html"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/text.html#white-space-model" />
+  <link rel="match" href="white-space-normal-003-ref.xht" />
+
+  <meta name="flags" content="ahem" />
+
   <style type="text/css">
    /* setup */
-   .control { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
    * { white-space: normal; font: inherit; }
+   strong {font-weight: bold;}
    div { display: block; }
    span { display: inline; }
 
@@ -18,8 +23,7 @@
   </style>
  </head>
  <body>
-  <div class="control">Ahem_font_required_for_this_test.</div>
-  <p>There should be no red below, only the word "PASS" in green.</p>
+  <p>Test passes if there is only the word "PASS" in green and <strong>no red</strong>.</p>
   <table>
    <tr>
     <td>

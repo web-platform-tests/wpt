@@ -7,19 +7,19 @@
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions">
     <link rel="match" href="reference/svg-scale-ref.html">
     <meta name="flags" content="svg">
-    <meta name="assert" content="The scaleX tranform function is not supported. The rect in the test should not be scaled and should be 150x150">
+    <meta name="assert" content="The scaleX transform function does not support percentage values. The green rect in this test should not be scaled so the red background is not visible.">
     <style type="text/css">
-    svg {
-        width: 500px;
-        height: 500px;
-    }
+        svg {
+            width: 200px;
+            height: 200px;
+            background: red;
+        }
     </style>
 </head>
 <body>
-    <p>The test passes if you see two squares of the same size.</p>
+    <p>The test passes if you see a green square and no red.</p>
     <svg>
-        <rect width="150" height="150" fill="blue" transform="scaleX(50%)"/>
-        <rect x="200" width="150" height="150" fill="blue"/>
+        <rect width="200" height="200" fill="green" transform="scaleX(50%)"/>
     </svg>
 </body>
 </html>

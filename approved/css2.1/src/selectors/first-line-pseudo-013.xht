@@ -3,19 +3,23 @@
  <head>
   <title>CSS Test: vertical-align: top on :first-line</title>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-06-27 -->
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/block/first-line/013.html" type="text/html"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-line-pseudo" />
+  <link rel="match" href="first-line-pseudo-013-ref.xht" />
+
+  <meta name="flags" content="ahem" />
+
   <style type="text/css">
-  .ahem { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
+  p#expected-results {margin: 3px;}
   p { margin: 0.2em; }
-  .control, .test { font: 4em/1 Ahem; color: green; }
+  .control, .test { font: 3.75em/1 Ahem; color: green; }
   .first-line, .test:first-line { background: red; vertical-align: top; }
   .inner { font-size: 1.25em; vertical-align: bottom; }
   </style>
  </head>
  <body>
-  <div class="ahem">Ahem_font_required_for_this_test.</div>
-  <p>There should be two unbroken lines of green below.</p>
+  <p id="expected-results">Test passes if there are 2 green filled green rectangles and <strong>no red</strong>.</p>
   <p class="control"><span class="first-line">X<span class="inner">&Eacute;</span>X</span></p>
   <p class="test">X<span class="inner">&Eacute;</span>X</p>
  </body>

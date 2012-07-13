@@ -3,9 +3,9 @@
  <head>
   <title>CSS Test: Table Caption Margin Collapsing</title>
   <link rel="author" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/"/>
-  <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#tokenization"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#model" title="17.4 Tables in the visual formatting model" />
   <meta name="assert" content="The table caption's margins do not collapse
-    with the margins applied to the outer table box."/>
+    with the margins applied to the table wrapper box."/>
   <style type="text/css">
     .control {
       margin: 15px;
@@ -37,7 +37,7 @@
 
  </head>
  <body>
-   <p>There must be four evenly-spaced blue bars below and no red.</p>
+   <p>There must be four evenly-spaced blue bars and no red.</p>
    <div class="control">
      <div class="container">
        <div class="table">

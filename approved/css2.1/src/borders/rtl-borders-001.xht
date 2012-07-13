@@ -3,6 +3,7 @@
     <head>
         <title>CSS Test: Borders drawn in visual order even when direction set to right-to-left</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-06-26 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#bidi-box-model" />
         <meta name="flags" content="" />
         <meta name="assert" content="Borders are drawn in visual order depending on the direction of content." />
@@ -20,7 +21,7 @@
         </style>
     </head>
     <body>
-        <p>Test passes if the first line of "Filler Text" below has an orange border on the right, and the last line of "Filler Text" has a blue border on the left.</p>
+        <p>Test passes if the first line of "Filler Text" has an orange border on its right, and the last line of "Filler Text" has a blue border on its left.</p>
         <div>
             <span>Filler Text Filler Text Filler Text</span>
         </div>

@@ -8,11 +8,14 @@
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#fixed-table-layout" title="17.5.2.1 Fixed table layout" />
+  <link rel="match" href="reference/fixed-table-layout-017-ref.xht" />
 
   <meta content="" name="flags" />
   <meta content="A column with a percentage width in a 'table-layout: fixed' table can be calculated and predicted when in 'border-collapse: separate' model." name="assert" />
 
   <style type="text/css"><![CDATA[
+  table, div {font: 1.25em/1 serif;}
+
   table
   {
   border: white solid;
@@ -30,6 +33,8 @@
   }
 
   td#third-cell {color: orange;}
+
+  div, td {padding: 1px 0px;}
   
   div#reference
   {

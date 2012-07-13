@@ -29,6 +29,12 @@
  p.status::after { content:'\25BA'; position:absolute; top:5px; right:3px; width:0; color:papayawhip; text-shadow:black 2px 0 0; cursor:default }
 
  @media print { [data-anolis-spec]::after { content:"[" attr(data-anolis-spec) "]"; font-size:.6em; vertical-align:super; text-transform:uppercase } }
+
+ @media (max-width:500px) {
+  html body { padding-left:8px }
+  p.status { position:static; margin:-1em 0; width:auto; display:table }
+  p.status::after { content:none }
+ }
 </style>
 <link class="not-tr" href="http://www.whatwg.org/style/specification" rel="stylesheet">
 <div class="head">
@@ -36,7 +42,7 @@
 <p><a href="http://www.w3.org/"><img alt="W3C" height="48" src="http://www.w3.org/Icons/w3c_home" width="72"></a>
 
 <h1>Quirks Mode</h1>
-<h2 class="no-num no-toc not-tr not-fs" id="living-specification-—-12-july-2012">Living Specification — 12 July 2012</h2>
+<h2 class="no-num no-toc not-tr not-fs" id="living-specification-—-13-july-2012">Living Specification — 13 July 2012</h2>
 <dl>
  <dt>This Version:
  <dd class="not-tr not-fs"><a href="http://dvcs.w3.org/hg/quirks-mode/raw-file/tip/Overview.html">http://dvcs.w3.org/hg/quirks-mode/raw-file/tip/Overview.html</a>
@@ -61,7 +67,7 @@
 <a href="http://creativecommons.org/publicdomain/zero/1.0/" rel="license">CC0 1.0 Universal</a>.
 To the extent possible under law, the editors has waived all copyright and
 related or neighboring rights to this work. In addition, as of
-12 July 2012, the editors have made this specification available
+13 July 2012, the editors have made this specification available
 under the
 <a href="http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0" rel="license">Open Web Foundation Agreement Version 1.0</a>,
 which is available at

@@ -149,9 +149,11 @@ function removeStatusWarning(store) {
 
 <h2>Introduction</h2>
 
+<h3>History</h3>
+
 <p>Browsers have several rendering modes to render HTML documents. The reason for this is basically a historical accident. The CSS specification was incompatible with the behavior of existing browsers which existing Web content relied on. In order to comply with the specification while not breaking existing content, browsers introduced a new rendering mode (standards mode). Some browsers still had the shrink-wrapping behavior for images in table cells in their standards mode, and sites started relying on that, so browsers that implemented the specification's behavior introduced a third mode (almost standards mode). In hindsight, it would have been better to make the default CSS behavior be compatible with what the existing content relied on and providing opt-ins to different behavior. The different modes have since gained a few differences outside of CSS.
 
-<h2>Goals</h2>
+<h3>Goals</h3>
 
 <ul>
 <li>Create a specification for rendering old (or indeed new, if they happen to have a particular pragma) HTML documents.
@@ -162,19 +164,21 @@ function removeStatusWarning(store) {
 
 <p class=note>This specification does not enumerate all quirks that currently exist in browsers. The HTML specification specifies a number of quirks. <span data-anolis-ref>HTML</span> If a quirk is missing from both specifications, it is probably due to the second bullet point above.
 
-<h2>Conformance</h2>
+<h2>Common infrastructure</h2>
+
+<h3>Conformance</h3>
 
 <p>All diagrams, examples, and notes in this specification are non-normative, as are all sections explicitly marked non-normative. Everything else in this specification is normative.
 
 <p>The key words "MUST", "MUST NOT", "REQUIRED", <!--"SHALL", "SHALL NOT",--> "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in the normative parts of this specification are to be interpreted as described in RFC2119. For readability, these words do not appear in all uppercase letters in this specification. <span data-anolis-ref>RFC2119</span>
 
-<h2>Terminology</h2>
+<h3>Terminology</h3>
 
 <p>When this specification refers to a "<code><var>foo</var></code> element", it means an element with the local name <code><var>foo</var></code> and having the namespace <code>http://www.w3.org/1999/xhtml</code>.
 
 <p>When this specification refers to a "<code><var>foo</var></code> attribute", it means an attribute with the local name <code><var>foo</var></code> and having no namespace.
 
-<h2>Dependencies</h2>
+<h3>Dependencies</h3>
 
 <p>The terms <dfn>block container element</dfn>, <dfn>inline-level</dfn>, <dfn>containing block</dfn>, <dfn>initial containing block</dfn> and <dfn>block container box</dfn> are defined in CSS 2.1. <span data-anolis-ref>CSS</span>
 

@@ -4,23 +4,20 @@
         <title>CSS Test: Style attribute and specificity of selectors</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/css-style-attr/#interpret" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/cascade.html#specificity" />
+        <link rel="match" href="reference/ref-green-on-green.xht" />
         <meta name="flags" content="" />
         <meta name="assert" content="The style attribute has a higher specificity than all selectors." />
+        <meta http-equiv="Content-Style-Type" content="text/css" /> 
         <style type="text/css">
-            #div1, .div1, div, div[style]
+            #p1, .p1, p, p[style]
             {
                 background: red;
                 color: yellow;
             }
-            div
-            {
-                height: 1in;
-                width: 1in;
-            }
         </style>
     </head>
     <body>
-        <p>Test passes if there is a solid green box below and no red visible on the page.</p>
-        <div class="div1" id="div1" style="background: green; color: green;">Filler Text</div>
+        <p class="p1" id="p1" style="background: lime; color: green;">This sentence must be green on a green background.</p>
     </body>
 </html>

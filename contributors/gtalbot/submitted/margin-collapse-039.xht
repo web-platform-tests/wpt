@@ -14,26 +14,22 @@
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="bookmark" href="http://lists.w3.org/Archives/Public/public-css-testsuite/2012Jan/0022.html" title="[RC6] c5525-fltmult-000 imprecise and failed by several browsers" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#collapsing-margins" title="8.3.1 Collapsing margins" />
-  <link rel="match" href="reference/margin-collapse-039-ref.xht" />
+  <link rel="match" href="reference/ref-filled-green-100px-square.xht" />
 
   <meta name="flags" content="" />
   <meta name="assert" content="An element on which 'clear' is set to a value other than 'none' can have its own margin-top collapse with its first inflow block-level child as long as no line boxes, no clearance, no padding and no border separate them." />
 
   <style type="text/css"><![CDATA[
-  body
-  {
-  font: 1.25em/1.4 serif; /* Equivalent to 20px/28px */
-  margin: 8px;
-  }  
+  body {margin: 8px;}  
 
   p {margin: 1em 0em;}
 
   div#overlapped-red
   {
   background-color: red;
-  height: 200px;
+  height: 100px;
   position: absolute;
-  width: 200px;
+  width: 100px;
   z-index: -1;
   }
 
@@ -42,19 +38,20 @@
   background-color: green;
   color: green;
   float: left;
-  padding: 36px;
+  font: 1em/1.25 serif;
+  padding: 15px;
   /* 
     
-    36px (padding-top)  
+    15px : padding-top  
   +
-    28px (line box height)
+    20px : line box height
   + 
-    36px (padding-bottom)
+    15px : padding-bottom
    =====
-   100px   
+    50px   
 
   */
-  width: 128px; 
+  width: 70px;
   }
 
   div#cleared-left {clear: left;}
@@ -63,9 +60,9 @@
   {
   background-color: green;
   color: green;
-  height: 100px;
-  margin-top: 100px;
-  width: 200px;
+  height: 50px;
+  margin-top: 50px;
+  width: 100px;
   }
   
   /* 
@@ -83,10 +80,10 @@
 
   <div id="overlapped-red"></div>
 
-  <div id="floated-left">floated left</div>
+  <div id="floated-left">flt lef</div>
   
   <div id="cleared-left">
-    <div id="child-of-cleared-left">child cleared left</div>
+    <div id="child-of-cleared-left">chld clr</div>
   </div>
 
  </body>

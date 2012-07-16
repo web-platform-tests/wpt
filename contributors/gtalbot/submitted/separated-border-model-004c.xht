@@ -8,7 +8,7 @@
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> 
   <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#separated-borders" title="17.6.1 The separated borders model" />
-  <link rel="match" href="reference/separated-border-model-004b-ref.xht" />
+  <link rel="match" href="reference/ref-filled-green-100px-square.xht" />
 
   <meta content="" name="flags" />
   <meta content="The width of a CSS table is the distance from the left inner padding edge to the right inner padding edge (including the table border-spacing but excluding table padding and table borders)." name="assert" />
@@ -17,22 +17,22 @@
   div#overlapped-red
   {
   background-color: red;
-  height: 200px;
+  height: 100px;
   position: absolute;
-  width: 200px;
+  width: 100px;
   z-index: -1;
   }
 
   div#overlapping-green-table
   {
   background-color: green;
-  border: none 0px;
   border-collapse: separate;
-  border-spacing: 100px;
+  border-spacing: 1em;
+  color: green;
   display: table;
-  padding: 0px;
+  font: 20px/1 serif;
   table-layout: fixed;
-  width: 100px; 
+  width: 70px; 
   /* 
   The width of a CSS table is given by the greater of the value of 
   the 'width' property as set for the CSS table and the sum of the columns 
@@ -40,22 +40,30 @@
 
   max(set width, sum of columns width plus border spacing)
 
-  The set width (100px) is smaller than sum of columns width plus border 
+  The set width (70px) is smaller than sum of columns width plus border 
   spacing
 
-   100px   (left-most border-spacing)
+    20px  : left-most border-spacing
  +
-     0px   (div#td's width)
+    20px  : div.td's width
  +
-   100px   (right-most border-spacing)
+    20px  : middle border-spacing between 1st and 2nd cell
+ +
+    20px  : div.td's width
+ +
+    20px  : right-most border-spacing
   =======
-   200px : sum of columns plus border spacing
+   100px  : sum of columns plus border spacing
   */
   }
 
-  div#tr {display: table-row;}
+  div.tr {display: table-row;}
 
-  div#td {display: table-cell;}
+  div.td
+  {
+  display: table-cell;
+  width: 1em;
+  }
   ]]></style>
 
  </head>
@@ -67,9 +75,12 @@
   <div id="overlapped-red"></div>
 
   <div id="overlapping-green-table">
-    <div id="tr">
-      <div id="td"></div>
-    </div>
+     <div class="tr">
+       <div class="td">1</div><div class="td">2</div>
+     </div>
+     <div class="tr">
+       <div class="td">3</div><div class="td">4</div>
+     </div>
   </div>
  
  </body>

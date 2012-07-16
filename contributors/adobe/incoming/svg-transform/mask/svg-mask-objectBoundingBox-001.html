@@ -24,16 +24,21 @@
                  at all in any browser, regardless of maskContentUnits, or whether it's a presentation
                  attribute or a style. I assume the equivalent rendering for this test is to apply the
                  transform to the rect in the mask. This works on all browsers.-->
-              <mask id="mask" maskContentUnits="objectBoundingBox" transform="translate(-0.5,0)">
-                  <rect x="0.5" width="0.5" height="1" fill="white"/>
+              <mask id="mask" maskUnits="userSpaceOnUse" x="200" width="100" height="100"> <!-- transform="translate(-100,0)">-->
+                  <rect x="200" width="100" height="100" fill="red"/> 
               </mask>
          </defs>
          <rect width="200" height="200" fill="green"/>
          <rect x="100" width="100" height="100" fill="red"/>
+         
+         <!--
+         <rect x="100" width="200" height="100" fill="red" mask="url(#mask)"/>
+         -->
          <g mask="url(#mask)">
              <rect x="100" width="100" height="100" fill="green"/>
              <rect x="200" width="100" height="100" fill="red"/>
          </g>
+         
     </svg>
 </body>
 </html>

@@ -4,8 +4,8 @@
         <title>CSS Test: Negative 'border-spacing' values are ignored</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#separated-borders" />
-        <meta name="flags" content="" />
-        <meta name="assert" content="The 'border-spacing' property ignores a negative value." />
+        <meta name="flags" content="invalid" />
+        <meta name="assert" content="The 'border-spacing' property ignores a negative value. In which case, the default 'border-spacing' value as specified in the user agent stylesheet will apply." />
         <style type="text/css">
             #table1
             {
@@ -24,7 +24,7 @@
         </style>
     </head>
     <body>
-        <p>Test passes if the blue and orange squares below are the same size.</p>
+        <p>Test passes if the blue and orange squares have the same size.</p>
         <table id="table1">
             <tr>
                 <td></td>

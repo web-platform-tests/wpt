@@ -27,7 +27,7 @@
  .warning p:last-child { margin-bottom: 0; }
  .warning:before { font-style: normal; }
  p.warning:before { content: '\26A0 Warning! '; }
- 
+
  p.status { position:absolute; margin:-2em 0 0 -125px; width:100px; padding:5px; border:thin solid; font-size:smaller; background:papayawhip; color:black; border-radius:5px }
  p.status::after { content:'\25BA'; position:absolute; top:5px; right:3px; width:0; color:papayawhip; text-shadow:black 2px 0 0; cursor:default }
 
@@ -60,19 +60,19 @@
  <dd class="not-tr not-fs"><a href="http://dvcs.w3.org/hg/quirks-mode/raw-file/tip/Overview.html">http://dvcs.w3.org/hg/quirks-mode/raw-file/tip/Overview.html</a>
  <dd class="not-draft not-fs"><a href="[VERSION]">[VERSION]</a>
  <dd class="not-draft not-tr">XXX
- 
+
  <dt class="not-draft not-fs">Latest Version:
  <dd class="not-draft not-fs"><a href="[LATEST]">[LATEST]</a>
 
  <dt class="not-draft">Latest Editors Draft:
  <dd class="not-draft"><a href="http://dvcs.w3.org/hg/quirks-mode/raw-file/tip/Overview.html">http://dvcs.w3.org/hg/quirks-mode/raw-file/tip/Overview.html</a>
- 
+
  <dt class="not-tr">Participate:</dt>
  <dd class="not-tr">Send feedback to <a href="http://www.whatwg.org/mailing-list">whatwg@whatwg.org</a>
- or <a href="https://www.w3.org/Bugs/Public/enter_bug.cgi?product=Web%20Platform%20%28other%29&amp;component=Quirks%20Mode">file a bug</a> (<a href="https://www.w3.org/Bugs/Public/buglist.cgi?query_format=advanced&amp;short_desc_type=allwordssubstr&amp;short_desc=&amp;product=Web+Platform+%28other%29&amp;component=Quirks+Mode&amp;longdesc_type=allwordssubstr&amp;longdesc=&amp;bug_file_loc_type=allwordssubstr&amp;bug_file_loc=&amp;status_whiteboard_type=allwordssubstr&amp;status_whiteboard=&amp;keywords_type=allwords&amp;keywords=&amp;bug_status=UNCONFIRMED&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED&amp;emailtype1=substring&amp;email1=&amp;emailtype2=substring&amp;email2=&amp;bug_id_type=anyexact&amp;bug_id=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;cmdtype=doit&amp;order=Reuse+same+sort+as+last+time&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=">open bugs</a>)
+ or <a href="https://www.w3.org/Bugs/Public/enter_bug.cgi?product=WHATWG&amp;component=Quirks%20Mode">file a bug</a> (<a href="https://www.w3.org/Bugs/Public/buglist.cgi?product=WHATWG&amp;component=Quirks%20Mode&amp;resolution=---">open bugs</a>)
  <script src=http://dvcs.w3.org/hg/quirks-mode/raw-file/tip/file-bug.js async></script>
  <dd class="no-tr"><a href="http://wiki.whatwg.org/wiki/IRC">IRC: #whatwg on Freenode</a>
- 
+
  <dt>Version History:
  <dd><a href="http://dvcs.w3.org/hg/quirks-mode/shortlog">http://dvcs.w3.org/hg/quirks-mode/shortlog</a></dd>
  <dt>Editor:
@@ -136,7 +136,7 @@ function removeStatusWarning(store) {
     var date;
     if (localStorage && (date = localStorage[document.querySelector('h1').textContent+' status warning closed'])) {
         if (new Date() - parseInt(date, 10) < 1000 * 60 * 60 * 24)
-            removeStatusWarning(); 
+            removeStatusWarning();
     }
 })();
 </script>
@@ -240,9 +240,9 @@ $ grep -iaPo "([a-z]+-)?color\s*:\s*[0-9a-f]{3}([0-9a-f]{3})?(\s|\"|\'|;|$)" web
 >>> 		props[prop] += 1
 >>> 	else:
 >>> 		props[prop] = 1
->>> 
+>>>
 >>> f.close()
->>> 
+>>>
 >>> for prop in props:
 >>> 	print prop + ':' + str(props[prop])
 :28
@@ -468,7 +468,7 @@ left:16
 
 'clip'
 
-$ grep -iaPo "clip\s*:\s*rect\([^\)]+\)" web200904 > clip.txt 
+$ grep -iaPo "clip\s*:\s*rect\([^\)]+\)" web200904 > clip.txt
 ^C
 
 Looks like 'clip' is used with and without commas, with and without units.
@@ -510,7 +510,7 @@ To be exact, they don't apply inside the following shorthands:
 and also don't apply inside the following complex properties:
   box-shadow
   text-shadow
-  
+
 
 simonp:
 
@@ -559,7 +559,7 @@ Opera supported this quirk (copied from IE), but then dropped it because it brok
 
 <p class="status not-tr">Status: Awaiting implementation feedback. Has <a href="http://simon.html5.org/test/quirks-mode/js/blocks-ignore-line-height.html">tests</a>.
 
-<p>In <span data-anolis-spec=dom title=concept-document-quirks>quirks mode</span> and <span data-anolis-spec=dom title=concept-document-limited-quirks>almost standards mode</span>, a <span>block container element</span> whose content is composed of <span>inline-level</span> elements, the element's 'line-height' must be ignored for the purpose of calculating the minimal height of line boxes within the element. 
+<p>In <span data-anolis-spec=dom title=concept-document-quirks>quirks mode</span> and <span data-anolis-spec=dom title=concept-document-limited-quirks>almost standards mode</span>, a <span>block container element</span> whose content is composed of <span>inline-level</span> elements, the element's 'line-height' must be ignored for the purpose of calculating the minimal height of line boxes within the element.
 
 <h3>The percentage height calculation quirk</h3>
 

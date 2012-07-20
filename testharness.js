@@ -629,7 +629,7 @@ policies and contribution forms [3].
     function assert_object_equals(actual, expected, description)
     {
          //This needs to be improved a great deal
-         function check_equal(expected, actual, stack)
+         function check_equal(actual, expected, stack)
          {
              stack.push(actual);
 

@@ -6,6 +6,7 @@ dir elements-in-the-dom
 dir events
 dir general
 dir global-attributes
+dir loading-web-pages
 dir obsolete-features
 dir parsing
 dir rendering

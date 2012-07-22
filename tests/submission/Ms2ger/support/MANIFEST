@@ -1,2 +1,3 @@
 dir css
+support stringifiers.js
 dir text

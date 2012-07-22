@@ -361,16 +361,16 @@ IdlArray.prototype.assert_type_is = function(value, type)
     if (type.sequence)
     {
         assert_true(Array.isArray(value), "is not array");
-        if (!type.idlType.length)
+        if (!value.length)
         {
+            // Nothing we can do.
             return;
         }
-        type = type.idlType[0];
+        this.assert_type_is(value[0], type.idlType.idlType);
+        return;
     }
-    else
-    {
-        type = type.idlType;
-    }
+
+    type = type.idlType;
 
     switch(type)
     {

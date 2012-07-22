@@ -1533,7 +1533,7 @@ policies and contribution forms [3].
                                  if (!style_element && !input_element.checked) {
                                      style_element = output_document.createElementNS(xhtml_ns, "style");
                                      style_element.id = "hide-" + result_class;
-                                     style_element.innerHTML = "table#results > tbody > tr."+result_class+"{display:none}";
+                                     style_element.textContent = "table#results > tbody > tr."+result_class+"{display:none}";
                                      output_document.body.appendChild(style_element);
                                  } else if (style_element && input_element.checked) {
                                      style_element.parentNode.removeChild(style_element);
@@ -1593,7 +1593,15 @@ policies and contribution forms [3].
                 + escape_html(tests[i].message ? tests[i].message : " ")
                 + "</td></tr>";
         }
-        log.lastChild.innerHTML = html + "</tbody></table>";
+        html += "</tbody></table>";
+        try {
+            log.lastChild.innerHTML = html;
+        } catch (e) {
+            log.appendChild(document.createElementNS(xhtml_ns, "p"))
+               .textContent = "Setting innerHTML for the log threw an exception.";
+            log.appendChild(document.createElementNS(xhtml_ns, "pre"))
+               .textContent = html;
+        }
     };
 
     var output = new Output();

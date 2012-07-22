@@ -16,85 +16,22 @@ test(function() {
     " title.text  and space normalization  ");
   assert_equals(document.getElementsByTagName("title")[0].firstChild.nodeValue,
     " title.text  and space normalization  ");
-})
-test(function() {
-  document.title = "one space";
-  assert_equals(document.getElementsByTagName("title")[0].text, "one space");
-  assert_equals(document.getElementsByTagName("title")[0].textContent, "one space");
-  assert_equals(document.getElementsByTagName("title")[0].firstChild.nodeValue,
-    "one space");
-})
-test(function() {
-  document.title = "two  spaces";
-  assert_equals(document.getElementsByTagName("title")[0].text, "two  spaces");
-  assert_equals(document.getElementsByTagName("title")[0].textContent, "two  spaces");
-  assert_equals(document.getElementsByTagName("title")[0].firstChild.nodeValue,
-    "two  spaces");
-})
-test(function() {
-  document.title = "one\ttab";
-  assert_equals(document.getElementsByTagName("title")[0].text, "one\ttab");
-  assert_equals(document.getElementsByTagName("title")[0].textContent, "one\ttab");
-  assert_equals(document.getElementsByTagName("title")[0].firstChild.nodeValue,
-    "one\ttab");
-})
-test(function() {
-  document.title = "two\t\ttabs";
-  assert_equals(document.getElementsByTagName("title")[0].text, "two\t\ttabs");
-  assert_equals(document.getElementsByTagName("title")[0].textContent, "two\t\ttabs");
-  assert_equals(document.getElementsByTagName("title")[0].firstChild.nodeValue,
-    "two\t\ttabs");
-})
-test(function() {
-  document.title = "one\nnewline";
-  assert_equals(document.getElementsByTagName("title")[0].text, "one\nnewline");
-  assert_equals(document.getElementsByTagName("title")[0].textContent,
-    "one\nnewline");
-  assert_equals(document.getElementsByTagName("title")[0].firstChild.nodeValue,
-   "one\nnewline");
-})
-test(function() {
-  document.title = "two\n\nnewlines";
-  assert_equals(document.getElementsByTagName("title")[0].text, "two\n\nnewlines");
-  assert_equals(document.getElementsByTagName("title")[0].textContent,
-    "two\n\nnewlines");
-  assert_equals(document.getElementsByTagName("title")[0].firstChild.nodeValue,
-    "two\n\nnewlines");
-})
-test(function() {
-  document.title = "one\fform feed";
-  assert_equals(document.getElementsByTagName("title")[0].text, "one\fform feed");
-  assert_equals(document.getElementsByTagName("title")[0].textContent,
-    "one\fform feed");
-  assert_equals(document.getElementsByTagName("title")[0].firstChild.nodeValue,
-    "one\fform feed");
-})
-test(function() {
-  document.title = "two\f\fform feeds";
-  assert_equals(document.getElementsByTagName("title")[0].text, "two\f\fform feeds");
-  assert_equals(document.getElementsByTagName("title")[0].textContent,
-    "two\f\fform feeds");
-  assert_equals(document.getElementsByTagName("title")[0].firstChild.nodeValue,
-    "two\f\fform feeds");
-})
-test(function() {
-  document.title = "one\rcarriage return";
-  assert_equals(document.getElementsByTagName("title")[0].text,
-    "one\rcarriage return");
-  assert_equals(document.getElementsByTagName("title")[0].textContent,
-    "one\rcarriage return");
-  assert_equals(document.getElementsByTagName("title")[0].firstChild.nodeValue,
-    "one\rcarriage return");
-})
-test(function() {
-  document.title = "two\r\rcarriage returns";
-  assert_equals(document.getElementsByTagName("title")[0].text,
-    "two\r\rcarriage returns");
-  assert_equals(document.getElementsByTagName("title")[0].textContent,
-    "two\r\rcarriage returns");
-  assert_equals(document.getElementsByTagName("title")[0].firstChild.nodeValue,
-    "two\r\rcarriage returns");
-})
+}, "title.text and space normalization (markup)");
+[
+  "one space", "two  spaces",
+  "one\ttab", "two\t\ttabs",
+  "one\nnewline", "two\n\nnewlines",
+  "one\fform feed", "two\f\fform feeds",
+  "one\rcarriage return", "two\r\rcarriage returns"
+].forEach(function(str) {
+  test(function() {
+    document.title = str;
+    var title = document.getElementsByTagName("title")[0];
+    assert_equals(title.text, str);
+    assert_equals(title.textContent, str);
+    assert_equals(title.firstChild.nodeValue, str);
+  }, "title.text and space normalization: " + format_value(str))
+});
 </script>
 </body>
 </html>

@@ -8455,6 +8455,18 @@
     @assert ctx.isPointInPath(69, 10) === true;
     @assert ctx.isPointInPath(71, 10) === false;
 
+- name: 2d.path.isPointInPath.transform.4
+  desc: isPointInPath() handles transformations correctly
+  testing:
+    - 2d.path.isPointInPath
+  code: |
+    ctx.translate(50, 0);
+    ctx.rect(50, 0, 20, 20);
+    ctx.translate(0, 50);
+    @assert ctx.isPointInPath(60, 10) === false;
+    @assert ctx.isPointInPath(110, 10) === true;
+    @assert ctx.isPointInPath(110, 60) === false;
+
 - name: 2d.path.isPointInPath.nonfinite
   desc: isPointInPath() returns false for non-finite arguments
   testing:

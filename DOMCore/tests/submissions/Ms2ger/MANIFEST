@@ -76,6 +76,7 @@ interfaces.html
 Node-appendChild.html
 Node-cloneNode.html
 Node-constants.html
+Node-contains.xml
 Node-insertBefore.html
 Node-isEqualNode.xhtml
 Node-lookupPrefix.xhtml

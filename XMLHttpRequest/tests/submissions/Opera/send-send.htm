@@ -9,7 +9,7 @@
     <script>
       test(function() {
         var client = new XMLHttpRequest()
-        client.open("GET", "../resources/delay.php?ms=0")
+        client.open("GET", "resources/delay.php?ms=0")
         client.send(null)
         assert_throws("INVALID_STATE_ERR", function() { client.send(null) })
         client.abort()

@@ -19,11 +19,11 @@
             result.push(client.readyState)
           })
         }
-        client.open("GET", "../resources/delay.php?ms=2000", true)
+        client.open("GET", "resources/delay.php?ms=2000", true)
         client.send(null)
         client.abort()
         assert_equals(client.readyState, 0)
-        client.open("GET", "../resources/delay.php?ms=2000", true)
+        client.open("GET", "resources/delay.php?ms=2000", true)
         assert_array_equals(result, expected)
       })
       test.done()

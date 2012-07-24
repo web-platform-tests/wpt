@@ -18,7 +18,7 @@
             result.push(client.readyState)
           })
         }
-        client.open("GET", "../resources/delay.php?ms=200", false)
+        client.open("GET", "resources/delay.php?ms=200", false)
         client.send(null)
         assert_equals(client.readyState, 4)
         client.abort()

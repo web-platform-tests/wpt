@@ -17,11 +17,16 @@
               assert_equals(headers, "")
             }
             if(client.readyState > 1) {
-              assert_true(headers.indexOf("\r\n") != -1)
-              assert_true(headers.indexOf("content-type") != -1)
-              assert_true(headers.indexOf("x-custom-header") != -1)
-              assert_false(headers.indexOf("set-cookie") != -1)
-              assert_false(headers.indexOf("set-cookie2") != -1)
+              assert_true(headers.indexOf("\r\n") != -1,
+                          "Headers should include a CRLF pair.")
+              assert_true(headers.indexOf("content-type") != -1,
+                          "Headers should include content-type.")
+              assert_true(headers.indexOf("x-custom-header") != -1,
+                          "Headers should include the custom header.")
+              assert_false(headers.indexOf("set-cookie") != -1,
+                           "Headers should not include set-cookie.")
+              assert_false(headers.indexOf("set-cookie2") != -1,
+                           "Headers should not include set-cookie2.")
             }
             if(client.readyState == 4)
               test.done()

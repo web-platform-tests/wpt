@@ -1,18 +1,18 @@
 <!doctype html>
 <html>
  <head>
-  <title>video events - pause</title>
+  <title>audio events - pause</title>
   <script src="/resources/testharness.js"></script>
   <script src="../../resources/testharnessreport.js"></script>
   <script src="../common/media.js"></script>
  </head>
  <body>
   <p><a href="http://dev.w3.org/html5/spec/Overview.html#mediaevents">spec reference</a></p>
-  <video id="a" autoplay controls>
-  </video>
+  <audio id="a" autoplay controls>
+  </audio>
   <div id="log"></div>
   <script>
-var t = async_test("calling pause() on autoplay video should trigger pause event", {timeout:30000});
+var t = async_test("calling pause() on autoplay audio should trigger pause event", {timeout:30000});
 var a = document.getElementById("a");
 a.addEventListener("pause", function() {
   t.step(function() {

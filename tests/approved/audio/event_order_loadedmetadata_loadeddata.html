@@ -1,18 +1,18 @@
 <!doctype html>
 <html>
  <head>
-  <title>video events - loadedmetadata, then loadeddata</title>
+  <title>audio events - loadedmetadata, then loadeddata</title>
   <script src="/resources/testharness.js"></script>
   <script src="../../resources/testharnessreport.js"></script>
   <script src="../common/media.js"></script>
  </head>
  <body>
   <p><a href="http://dev.w3.org/html5/spec/Overview.html#mediaevents">spec reference</a></p>
-  <video id="a" autoplay controls>
-  </video>
+  <audio id="a" autoplay controls>
+  </audio>
   <div id="log"></div>
   <script>
-var t = async_test("setting src attribute on autoplay video should trigger loadedmetadata then loadeddata event", {timeout:30000});
+var t = async_test("setting src attribute on autoplay audio should trigger loadedmetadata then loadeddata event", {timeout:30000});
 var a = document.getElementById("a");
 var found_loadedmetadata = false;
 a.addEventListener("loadedmetadata", function() {

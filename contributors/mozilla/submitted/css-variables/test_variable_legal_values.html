@@ -52,9 +52,9 @@ function run() {
   style.appendChild(styleText);
   var body_cs = iframe.contentWindow.getComputedStyle(idoc.body, "");
 
-  styleText = "body { background-color: green }";
+  styleText.data = "body { background-color: green }";
   var green_cs = body_cs.backgroundColor;
-  styleText = "body { background-color: red }";
+  styleText.data = "body { background-color: red }";
   var red_cs = body_cs.backgroundColor;
 
   function description_to_name(description) {
@@ -63,14 +63,14 @@ function run() {
 
   function assert_allowed_variable_value(value, description) {
     test(function() {
-           styleText = "body { \n" +
-                       "  var-good: green;\n" +
-                       "  var-test: red;\n" +
-                       "  var-test: " + value + ";\n" +
-                       "  background-color: red;\n" +
-                       "  background-color: $good;\n" +
-                       "  background-color: $test;\n" +
-                       "}";
+           styleText.data = "body { \n" +
+                            "  var-good: green;\n" +
+                            "  var-test: red;\n" +
+                            "  var-test: " + value + ";\n" +
+                            "  background-color: red;\n" +
+                            "  background-color: $good;\n" +
+                            "  background-color: $test;\n" +
+                            "}";
            assert_true(green_cs != red_cs &&
                        green_cs == body_cs.backgroundColor);
          },
@@ -80,12 +80,12 @@ function run() {
 
   function assert_disallowed_balanced_variable_value(value, description) {
     test(function() {
-           styleText = "body { \n" +
-                       "  var-test: green;\n" +
-                       "  var-test: " + value + ";\n" +
-                       "  background-color: red;\n" +
-                       "  background-color: $test;\n" +
-                       "}";
+           styleText.data = "body { \n" +
+                            "  var-test: green;\n" +
+                            "  var-test: " + value + ";\n" +
+                            "  background-color: red;\n" +
+                            "  background-color: $test;\n" +
+                            "}";
            assert_true(green_cs != red_cs &&
                        green_cs == body_cs.backgroundColor);
          },

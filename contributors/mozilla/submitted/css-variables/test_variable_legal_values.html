@@ -52,6 +52,7 @@ function run() {
   style.appendChild(styleText);
   var body_cs = iframe.contentWindow.getComputedStyle(idoc.body, "");
 
+  var initial_cs = body_cs.backgroundColor;
   styleText.data = "body { background-color: green }";
   var green_cs = body_cs.backgroundColor;
   styleText.data = "body { background-color: red }";
@@ -64,15 +65,13 @@ function run() {
   function assert_allowed_variable_value(value, description) {
     test(function() {
            styleText.data = "body { \n" +
-                            "  var-good: green;\n" +
                             "  var-test: red;\n" +
                             "  var-test: " + value + ";\n" +
                             "  background-color: red;\n" +
-                            "  background-color: $good;\n" +
                             "  background-color: $test;\n" +
                             "}";
-           assert_true(green_cs != red_cs &&
-                       green_cs == body_cs.backgroundColor);
+           assert_true(initial_cs != red_cs &&
+                       initial_cs == body_cs.backgroundColor);
          },
          description_to_name(description),
          { assert: "Value allowed within variable: " + description });

@@ -8,6 +8,7 @@
   <meta name="assert" content='The <value> type used in the syntax above is defined as anything matching the "value" production in CSS 2.1 Chapter 4.1 [CSS21].'>
   <script src="http://w3c-test.org/resources/testharness.js"></script>
   <script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<style id="style"></style>
 <script id="metadata_cache">/*
 {
   "percentage": { "assert": "Value allowed within variable: percentage" },
@@ -38,25 +39,22 @@
 </head>
 <body onload="run()">
 <div id=log></div>
-<iframe src="about:blank" id="iframe"></iframe>
+<div id="test"></div>
 <script>
 setup({ "explicit_done": true });
 
 function run() {
   // Setup the iframe
-  var iframe = document.getElementById("iframe");
-  var idoc = iframe.contentDocument;
-  var style = idoc.createElement("style");
-  idoc.head.appendChild(style);
-  var styleText = idoc.createTextNode("");
+  var style = document.getElementById("style");
+  var styleText = document.createTextNode("");
   style.appendChild(styleText);
-  var body_cs = iframe.contentWindow.getComputedStyle(idoc.body, "");
+  var test_cs = window.getComputedStyle(document.getElementById("test"), "");
 
-  var initial_cs = body_cs.backgroundColor;
-  styleText.data = "body { background-color: green }";
-  var green_cs = body_cs.backgroundColor;
-  styleText.data = "body { background-color: red }";
-  var red_cs = body_cs.backgroundColor;
+  var initial_cs = test_cs.backgroundColor;
+  styleText.data = "#test { background-color: green }";
+  var green_cs = test_cs.backgroundColor;
+  styleText.data = "#test { background-color: red }";
+  var red_cs = test_cs.backgroundColor;
 
   function description_to_name(description) {
     return description.replace(/\W+/g, "_").replace(/^_/, "").replace(/_$/, "");
@@ -64,14 +62,14 @@ function run() {
 
   function assert_allowed_variable_value(value, description) {
     test(function() {
-           styleText.data = "body { \n" +
+           styleText.data = "#test { \n" +
                             "  var-test: red;\n" +
                             "  var-test: " + value + ";\n" +
                             "  background-color: red;\n" +
                             "  background-color: $test;\n" +
                             "}";
            assert_true(initial_cs != red_cs &&
-                       initial_cs == body_cs.backgroundColor);
+                       initial_cs == test_cs.backgroundColor);
          },
          description_to_name(description),
          { assert: "Value allowed within variable: " + description });
@@ -79,14 +77,14 @@ function run() {
 
   function assert_disallowed_balanced_variable_value(value, description) {
     test(function() {
-           styleText.data = "body { \n" +
+           styleText.data = "#test { \n" +
                             "  var-test: green;\n" +
                             "  var-test: " + value + ";\n" +
                             "  background-color: red;\n" +
                             "  background-color: $test;\n" +
                             "}";
            assert_true(green_cs != red_cs &&
-                       green_cs == body_cs.backgroundColor);
+                       green_cs == test_cs.backgroundColor);
          },
          description_to_name(description),
          { assert: "Value not allowed within variable: " + description });

@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Bizare syntax that still conforms to the core grammar should succesfully parse in @supports</title>
+		<link rel="author" title="Florian Rivoal" href="mailto:florianr@opera.com">
+		<link rel="help" href="http://dev.w3.org/csswg/css3-conditional/#at-supports">
+		<meta name="flags" content="">
+		<link ref="match" href="at_supports_001-ref.html">
+		<style>
+			div {
+				width:100px;
+				height:100px;
+				background-color:red;
+			}
+			@supports (not (foo: baz !unrelated $ ,/[&])) {
+				div { background-color:green; }
+			}
+		</style>
+	</head>
+	<body>
+		<p>There should be a green square below and no red.</p>
+		<div></div>
+	</body>
+</html>

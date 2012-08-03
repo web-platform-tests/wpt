@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Negations in @supports should work even if "not" isn't follow by a space</title>
+		<link rel="author" title="Florian Rivoal" href="mailto:florianr@opera.com">
+		<link rel="help" href="http://www.w3.org/TR/css3-conditional/#at-supports">
+		<meta name="flags" content="">
+		<link ref="match" href="at-supports-001-ref.html">
+		<style>
+			div {
+				width:100px;
+				height:100px;
+				background-color:red;
+			}
+			@supports (not(foo: baz)) {
+				div { background-color:green; }
+			}
+		</style>
+	</head>
+	<body>
+		<p>There should be a green square below and no red.</p>
+		<div></div>
+	</body>
+</html>

@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD//XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <title>CSSOM - CSSStyleDeclaration.cssText - Delimiter Serialization.</title>
+    <title>CSSOM - Inline Style - Serialization - Color</title>
     <link rel="author" title="Glenn Adams" href="mailto:glenn@skynav.com"/>
     <link rel="help" href="http://www.w3.org/TR/cssom/#the-cssstyledeclaration-interface"/>
     <meta name="flags" content="dom"/>
@@ -11,23 +11,32 @@
   <body>
     <div id="log"></div>
     <div id="box"></div>
-    <script>
+    <script><![CDATA[
       var style = document.getElementById('box').style;
 
+      function trimFinalDelimiter(s) {
+        s = s.trim();
+        if ( ( s.length > 0 ) && ( s.lastIndexOf(";") == ( s.length - 1 ) ) ) {
+          s = s.substring(0,s.length - 1);
+        }
+        return s;
+      }
+
       test(function(){
 
-        style.left = "10px";
-        assert_equals(style.cssText, "left: 10px;");
+        style.color = "red";
+        assert_equals(trimFinalDelimiter(style.cssText), "color: red");
 
-      }, 'CSSStyleDeclaration.cssText - delimiters - one declaration.');
+      }, 'elt.style.cssText - color - \'red\'.');
+
 
       test(function(){
 
-        style.left = "10px";
-        style.right = "20px";
-        assert_equals(style.cssText, "left: 10px; right: 20px;");
+        style.color = "rgb(255,0,0)";
+        assert_equals(trimFinalDelimiter(style.cssText), "color: red");
 
-      }, 'CSSStyleDeclaration.cssText - delimiters - two declarations.');
+      }, 'elt.style.cssText - color - \'rgb(255,0,0)\'.');
+    ]]>
     </script>
   </body>
 </html>

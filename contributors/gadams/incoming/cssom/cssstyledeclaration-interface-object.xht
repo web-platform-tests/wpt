@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD//XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>CSSOM - Interface Object - CSSStyleDeclaration</title>
+    <link rel="author" title="Glenn Adams" href="mailto:glenn@skynav.com"/>
+    <link rel="help" href="http://www.w3.org/TR/cssom/#the-cssstyledeclaration-interface"/>
+    <meta name="flags" content="dom"/>
+    <script src="/resources/testharness.js"/>
+    <script src="/resources/testharnessreport.js"/>
+  </head>
+  <body>
+    <div id="log"></div>
+    <div id="box"></div>
+    <script><![CDATA[
+
+      test(function(){
+
+        assert_true(CSSStyleDeclaration !== undefined);
+
+      }, 'CSSStyleDeclaration !== undefined');
+
+      test(function(){
+
+        assert_true(CSSStyleDeclaration instanceof Object);
+
+      }, 'CSSStyleDeclaration instanceof Object');
+
+      test(function(){
+
+        assert_true(CSSStyleDeclaration instanceof Function);
+
+      }, 'CSSStyleDeclaration instanceof Function');
+
+      test(function(){
+
+        assert_true(CSSStyleDeclaration.prototype.getPropertyValue instanceof Function);
+
+      }, 'CSSStyleDeclaration.prototype.getPropertyValue instanceof Function');
+
+      test(function(){
+
+        assert_true(CSSStyleDeclaration.prototype.getPropertyPriority instanceof Function);
+
+      }, 'CSSStyleDeclaration.prototype.getPropertyPriority instanceof Function');
+
+      test(function(){
+
+        assert_true(CSSStyleDeclaration.prototype.setProperty instanceof Function);
+
+      }, 'CSSStyleDeclaration.prototype.setProperty instanceof Function');
+
+      test(function(){
+
+        assert_true(CSSStyleDeclaration.prototype.removeProperty instanceof Function);
+
+      }, 'CSSStyleDeclaration.prototype.removeProperty instanceof Function');
+
+    ]]>
+    </script>
+  </body>
+</html>

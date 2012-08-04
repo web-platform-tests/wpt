@@ -1,0 +1,43 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD//XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>CSSOM - Interface Object - CSSFontFaceRule</title>
+    <link rel="author" title="Glenn Adams" href="mailto:glenn@skynav.com"/>
+    <link rel="help" href="http://www.w3.org/TR/cssom/#the-cssfontfacerule-interface"/>
+    <meta name="flags" content="dom"/>
+    <script src="/resources/testharness.js"/>
+    <script src="/resources/testharnessreport.js"/>
+  </head>
+  <body>
+    <div id="log"></div>
+    <div id="box"></div>
+    <script><![CDATA[
+
+      test(function(){
+
+        assert_true(CSSFontFaceRule !== undefined);
+
+      }, 'CSSFontFaceRule !== undefined');
+
+      test(function(){
+
+        assert_true(CSSFontFaceRule instanceof Object);
+
+      }, 'CSSFontFaceRule instanceof Object');
+
+      test(function(){
+
+        assert_true(CSSFontFaceRule instanceof Function);
+
+      }, 'CSSFontFaceRule instanceof Function');
+
+      test(function(){
+
+        assert_true(CSSFontFaceRule instanceof CSSRule);
+
+      }, 'CSSFontFaceRule instanceof CSSRule');
+
+    ]]>
+    </script>
+  </body>
+</html>

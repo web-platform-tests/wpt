@@ -1,0 +1,81 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD//XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>CSSOM - Instance Object - CSSStyleDeclaration - Inline Style</title>
+    <link rel="author" title="Glenn Adams" href="mailto:glenn@skynav.com"/>
+    <link rel="help" href="http://www.w3.org/TR/cssom/#the-cssstyledeclaration-interface"/>
+    <meta name="flags" content="dom"/>
+    <script src="/resources/testharness.js"/>
+    <script src="/resources/testharnessreport.js"/>
+  </head>
+  <body>
+    <div id="log"></div>
+    <div id="box"></div>
+    <script><![CDATA[
+
+      var elt = document.getElementById('box');
+
+      test(function(){
+
+        assert_true(elt.style !== undefined);
+
+      }, 'elt.style !== undefined');
+
+      test(function(){
+
+        assert_true(elt.style instanceof Object);
+
+      }, 'elt.style instanceof Object');
+
+      test(function(){
+
+        assert_true(!(elt.style instanceof Function));
+
+      }, '! elt.style instanceof Function');
+
+      test(function(){
+
+        assert_equals(elt.style.toString(), '[object CSSStyleDeclaration]');
+
+      }, 'elt.style.toString() == \'[object CSSStyleDeclaration]\'');
+
+      test(function(){
+
+        assert_true(elt.style.length !== undefined);
+
+      }, 'elt.style.length !== undefined');
+
+      test(function(){
+
+        assert_equals(typeof(elt.style.length),'number');
+
+      }, 'typeof(elt.style.length) == \'number\'');
+
+      test(function(){
+
+        assert_true(elt.style.cssText !== undefined);
+
+      }, 'elt.style.cssText !== undefined');
+
+      test(function(){
+
+        assert_equals(typeof(elt.style.cssText),'string');
+
+      }, 'typeof(elt.style.cssText) == \'string\'');
+
+      test(function(){
+
+        assert_true(elt.style.parentRule !== undefined);
+
+      }, 'elt.style.parentRule !== undefined');
+
+      test(function(){
+
+        assert_equals(typeof(elt.style.parentRule),'object');
+
+      }, 'typeof(elt.style.parentRule) == \'object\'');
+
+    ]]>
+    </script>
+  </body>
+</html>

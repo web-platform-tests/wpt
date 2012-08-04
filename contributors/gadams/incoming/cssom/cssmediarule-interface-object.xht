@@ -15,9 +15,9 @@
 
       test(function(){
 
-        assert_true(CSSMediaRule !== undefined);
+        assert_true('CSSMediaRule' in window);
 
-      }, 'CSSMediaRule !== undefined');
+      }, '\'CSSMediaRule\' in window');
 
       test(function(){
 
@@ -33,9 +33,21 @@
 
       test(function(){
 
-        assert_true(CSSMediaRule instanceof CSSRule);
+        assert_true('prototype' in CSSMediaRule);
 
-      }, 'CSSMediaRule instanceof CSSRule');
+      }, '\'prototype\' in CSSMediaRule');
+
+      test(function(){
+
+        assert_true('constructor' in CSSMediaRule.prototype);
+
+      }, '\'constructor\' in CSSMediaRule.prototype');
+
+      test(function(){
+
+        assert_equals(CSSMediaRule.prototype.constructor,CSSMediaRule);
+
+      }, 'CSSMediaRule.prototype.constructor === CSSMediaRule');
 
     ]]>
     </script>

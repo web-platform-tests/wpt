@@ -15,9 +15,9 @@
 
       test(function(){
 
-        assert_true(CSSRule !== undefined);
+        assert_true('CSSRule' in window);
 
-      }, 'CSSRule !== undefined');
+      }, '\'CSSRule\' in window');
 
       test(function(){
 
@@ -33,10 +33,99 @@
 
       test(function(){
 
+        assert_equals(typeof CSSRule.STYLE_RULE,'number');
+
+      }, 'typeof CSSRule.STYLE_RULE == \'number\'');
+
+      test(function(){
+
+        assert_equals(CSSRule.STYLE_RULE,1);
+
+      }, 'CSSRule.STYLE_RULE == 1');
+
+      test(function(){
+
+        assert_equals(typeof CSSRule.IMPORT_RULE,'number');
+
+      }, 'typeof CSSRule.IMPORT_RULE == \'number\'');
+
+      test(function(){
+
+        assert_equals(CSSRule.IMPORT_RULE,3);
+
+      }, 'CSSRule.IMPORT_RULE == 3');
+
+      test(function(){
+
+        assert_equals(typeof CSSRule.MEDIA_RULE,'number');
+
+      }, 'typeof CSSRule.MEDIA_RULE == \'number\'');
+
+      test(function(){
+
+        assert_equals(CSSRule.MEDIA_RULE,4);
+
+      }, 'CSSRule.MEDIA_RULE == 4');
+
+      test(function(){
+
+        assert_equals(typeof CSSRule.FONT_FACE_RULE,'number');
+
+      }, 'typeof CSSRule.FONT_FACE_RULE == \'number\'');
+
+      test(function(){
+
+        assert_equals(CSSRule.FONT_FACE_RULE,5);
+
+      }, 'CSSRule.FONT_FACE_RULE == 5');
+
+      test(function(){
+
+        assert_equals(typeof CSSRule.PAGE_RULE,'number');
+
+      }, 'typeof CSSRule.PAGE_RULE == \'number\'');
+
+      test(function(){
+
+        assert_equals(CSSRule.PAGE_RULE,6);
+
+      }, 'CSSRule.PAGE_RULE == 6');
+
+      test(function(){
+
+        assert_equals(typeof CSSRule.NAMESPACE_RULE,'number');
+
+      }, 'typeof CSSRule.NAMESPACE_RULE == \'number\'');
+
+      test(function(){
+
+        assert_equals(CSSRule.NAMESPACE_RULE,10);
+
+      }, 'CSSRule.NAMESPACE_RULE == 10');
+
+      test(function(){
+
+        assert_true('prototype' in CSSRule);
+
+      }, '\'prototype\' in CSSRule');
+
+      test(function(){
+
+        assert_true('constructor' in CSSRule.prototype);
+
+      }, '\'constructor\' in CSSRule.prototype');
+
+      test(function(){
+
+        assert_equals(CSSRule.prototype.constructor,CSSRule);
+
+      }, 'CSSRule.prototype.constructor === CSSRule');
+
+      test(function(){
+
         assert_equals(typeof CSSRule.prototype.STYLE_RULE,'number');
 
       }, 'typeof CSSRule.prototype.STYLE_RULE == \'number\'');
-
 
       test(function(){
 
@@ -50,7 +139,6 @@
 
       }, 'typeof CSSRule.prototype.IMPORT_RULE == \'number\'');
 
-
       test(function(){
 
         assert_equals(CSSRule.prototype.IMPORT_RULE,3);
@@ -62,7 +150,6 @@
         assert_equals(typeof CSSRule.prototype.MEDIA_RULE,'number');
 
       }, 'typeof CSSRule.prototype.MEDIA_RULE == \'number\'');
-
 
       test(function(){
 
@@ -76,7 +163,6 @@
 
       }, 'typeof CSSRule.prototype.FONT_FACE_RULE == \'number\'');
 
-
       test(function(){
 
         assert_equals(CSSRule.prototype.FONT_FACE_RULE,5);
@@ -89,7 +175,6 @@
 
       }, 'typeof CSSRule.prototype.PAGE_RULE == \'number\'');
 
-
       test(function(){
 
         assert_equals(CSSRule.prototype.PAGE_RULE,6);
@@ -101,7 +186,6 @@
         assert_equals(typeof CSSRule.prototype.NAMESPACE_RULE,'number');
 
       }, 'typeof CSSRule.prototype.NAMESPACE_RULE == \'number\'');
-
 
       test(function(){
 

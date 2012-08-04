@@ -15,9 +15,9 @@
 
       test(function(){
 
-        assert_true(CSSNamespaceRule !== undefined);
+        assert_true('CSSNamespaceRule' in window);
 
-      }, 'CSSNamespaceRule !== undefined');
+      }, '\'CSSNamespaceRule\' in window');
 
       test(function(){
 
@@ -33,9 +33,21 @@
 
       test(function(){
 
-        assert_true(CSSNamespaceRule instanceof CSSRule);
+        assert_true('prototype' in CSSNamespaceRule);
 
-      }, 'CSSNamespaceRule instanceof CSSRule');
+      }, '\'prototype\' in CSSNamespaceRule');
+
+      test(function(){
+
+        assert_true('constructor' in CSSNamespaceRule.prototype);
+
+      }, '\'constructor\' in CSSNamespaceRule.prototype');
+
+      test(function(){
+
+        assert_equals(CSSNamespaceRule.prototype.constructor,CSSNamespaceRule);
+
+      }, 'CSSNamespaceRule.prototype.constructor === CSSNamespaceRule');
 
     ]]>
     </script>

@@ -17,9 +17,9 @@
 
       test(function(){
 
-        assert_true(elt.style !== undefined);
+        assert_true('style' in elt);
 
-      }, 'elt.style !== undefined');
+      }, '\'style\' in elt');
 
       test(function(){
 
@@ -41,9 +41,9 @@
 
       test(function(){
 
-        assert_true(elt.style.length !== undefined);
+        assert_true('length' in elt.style);
 
-      }, 'elt.style.length !== undefined');
+      }, '\'length\' in elt.style');
 
       test(function(){
 
@@ -53,9 +53,9 @@
 
       test(function(){
 
-        assert_true(elt.style.cssText !== undefined);
+        assert_true('cssText' in elt.style);
 
-      }, 'elt.style.cssText !== undefined');
+      }, '\'cssText\' in elt.style');
 
       test(function(){
 
@@ -65,9 +65,9 @@
 
       test(function(){
 
-        assert_true(elt.style.parentRule !== undefined);
+        assert_true('parentRule' in elt.style);
 
-      }, 'elt.style.parentRule !== undefined');
+      }, '\'parentRule\' in elt.style');
 
       test(function(){
 

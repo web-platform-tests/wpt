@@ -15,9 +15,9 @@
 
       test(function(){
 
-        assert_true(CSSFontFaceRule !== undefined);
+        assert_true('CSSFontFaceRule' in window);
 
-      }, 'CSSFontFaceRule !== undefined');
+      }, '\'CSSFontFaceRule\' in window');
 
       test(function(){
 
@@ -33,9 +33,21 @@
 
       test(function(){
 
-        assert_true(CSSFontFaceRule instanceof CSSRule);
+        assert_true('prototype' in CSSFontFaceRule);
 
-      }, 'CSSFontFaceRule instanceof CSSRule');
+      }, '\'prototype\' in CSSFontFaceRule');
+
+      test(function(){
+
+        assert_true('constructor' in CSSFontFaceRule.prototype);
+
+      }, '\'constructor\' in CSSFontFaceRule.prototype');
+
+      test(function(){
+
+        assert_equals(CSSFontFaceRule.prototype.constructor,CSSFontFaceRule);
+
+      }, 'CSSFontFaceRule.prototype.constructor === CSSFontFaceRule');
 
     ]]>
     </script>

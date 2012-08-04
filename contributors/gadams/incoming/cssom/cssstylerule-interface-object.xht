@@ -15,9 +15,9 @@
 
       test(function(){
 
-        assert_true(CSSStyleRule !== undefined);
+        assert_true('CSSStyleRule' in window);
 
-      }, 'CSSStyleRule !== undefined');
+      }, '\'CSSStyleRule\' in window');
 
       test(function(){
 
@@ -33,9 +33,21 @@
 
       test(function(){
 
-        assert_true(CSSStyleRule instanceof CSSRule);
+        assert_true('prototype' in CSSStyleRule);
 
-      }, 'CSSStyleRule instanceof CSSRule');
+      }, '\'prototype\' in CSSStyleRule');
+
+      test(function(){
+
+        assert_true('constructor' in CSSStyleRule.prototype);
+
+      }, '\'constructor\' in CSSStyleRule.prototype');
+
+      test(function(){
+
+        assert_equals(CSSStyleRule.prototype.constructor,CSSStyleRule);
+
+      }, 'CSSStyleRule.prototype.constructor === CSSStyleRule');
 
     ]]>
     </script>

@@ -15,9 +15,9 @@
 
       test(function(){
 
-        assert_true(StyleSheet !== undefined);
+        assert_true('StyleSheet' in window);
 
-      }, 'StyleSheet !== undefined');
+      }, '\'StyleSheet\' in window');
 
       test(function(){
 
@@ -30,6 +30,24 @@
         assert_true(StyleSheet instanceof Function);
 
       }, 'StyleSheet instanceof Function');
+
+      test(function(){
+
+        assert_true('prototype' in StyleSheet);
+
+      }, '\'prototype\' in StyleSheet');
+
+      test(function(){
+
+        assert_true('constructor' in StyleSheet.prototype);
+
+      }, '\'constructor\' in StyleSheet.prototype');
+
+      test(function(){
+
+        assert_equals(StyleSheet.prototype.constructor,StyleSheet);
+
+      }, 'StyleSheet.prototype.constructor === StyleSheet');
 
     ]]>
     </script>

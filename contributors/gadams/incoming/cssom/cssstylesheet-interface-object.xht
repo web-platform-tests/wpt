@@ -15,9 +15,9 @@
 
       test(function(){
 
-        assert_true(CSSStyleSheet !== undefined);
+        assert_true('CSSStyleSheet' in window);
 
-      }, 'CSSStyleSheet !== undefined');
+      }, '\'CSSStyleSheet\' in window');
 
       test(function(){
 
@@ -33,9 +33,45 @@
 
       test(function(){
 
-        assert_true(CSSStyleSheet instanceof StyleSheet);
+        assert_true('prototype' in CSSStyleSheet);
 
-      }, 'CSSStyleSheet instanceof StyleSheet');
+      }, '\'prototype\' in CSSStyleSheet');
+
+      test(function(){
+
+        assert_true('constructor' in CSSStyleSheet.prototype);
+
+      }, '\'constructor\' in CSSStyleSheet.prototype');
+
+      test(function(){
+
+        assert_equals(CSSStyleSheet.prototype.constructor,CSSStyleSheet);
+
+      }, 'CSSStyleSheet.prototype.constructor === CSSStyleSheet');
+
+      test(function(){
+
+        assert_true('insertRule' in CSSStyleSheet.prototype);
+
+      }, '\'insertRule\' in CSSStyleSheet.prototype');
+
+      test(function(){
+
+        assert_true(CSSStyleSheet.prototype.insertRule instanceof Function);
+
+      }, 'CSSStyleSheet.prototype.insertRule instanceof Function');
+
+      test(function(){
+
+        assert_true('deleteRule' in CSSStyleSheet.prototype);
+
+      }, '\'deleteRule\' in CSSStyleSheet.prototype');
+
+      test(function(){
+
+        assert_true(CSSStyleSheet.prototype.deleteRule instanceof Function);
+
+      }, 'CSSStyleSheet.prototype.deleteRule instanceof Function');
 
     ]]>
     </script>

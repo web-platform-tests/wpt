@@ -27,15 +27,15 @@
         style.color = "red";
         assert_equals(trimFinalDelimiter(style.cssText), "color: red");
 
-      }, 'elt.style.cssText - color - \'red\'.');
+      }, 'set color \'red\', get inline text \'red\'');
 
 
       test(function(){
 
         style.color = "rgb(255,0,0)";
-        assert_equals(trimFinalDelimiter(style.cssText), "color: red");
+        assert_equals(trimFinalDelimiter(style.cssText), "color: rgb(255, 0, 0)");
 
-      }, 'elt.style.cssText - color - \'rgb(255,0,0)\'.');
+      }, 'set color \'rgb(255,0,0)\', get inline text \'rgb(255, 0, 0)\'');
     ]]>
     </script>
   </body>

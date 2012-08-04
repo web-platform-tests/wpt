@@ -15,9 +15,9 @@
 
       test(function(){
 
-        assert_true(CSSStyleDeclaration !== undefined);
+        assert_true('CSSStyleDeclaration' in window);
 
-      }, 'CSSStyleDeclaration !== undefined');
+      }, '\'CSSStyleDeclaration\' in window');
 
       test(function(){
 
@@ -33,9 +33,39 @@
 
       test(function(){
 
+        assert_true('prototype' in CSSStyleDeclaration);
+
+      }, '\'prototype\' in CSSStyleDeclaration');
+
+      test(function(){
+
+        assert_true('constructor' in CSSStyleDeclaration.prototype);
+
+      }, '\'constructor\' in CSSStyleDeclaration.prototype');
+
+      test(function(){
+
+        assert_equals(CSSStyleDeclaration.prototype.constructor,CSSStyleDeclaration);
+
+      }, 'CSSStyleDeclaration.prototype.constructor === CSSStyleDeclaration');
+
+      test(function(){
+
+        assert_true('getPropertyValue' in CSSStyleDeclaration.prototype);
+
+      }, '\'getPropertyValue\' in CSSStyleDeclaration.prototype');
+
+      test(function(){
+
         assert_true(CSSStyleDeclaration.prototype.getPropertyValue instanceof Function);
 
       }, 'CSSStyleDeclaration.prototype.getPropertyValue instanceof Function');
+
+      test(function(){
+
+        assert_true('getPropertyPriority' in CSSStyleDeclaration.prototype);
+
+      }, '\'getPropertyPriority\' in CSSStyleDeclaration.prototype');
 
       test(function(){
 
@@ -45,9 +75,21 @@
 
       test(function(){
 
+        assert_true('setProperty' in CSSStyleDeclaration.prototype);
+
+      }, '\'setProperty\' in CSSStyleDeclaration.prototype');
+
+      test(function(){
+
         assert_true(CSSStyleDeclaration.prototype.setProperty instanceof Function);
 
       }, 'CSSStyleDeclaration.prototype.setProperty instanceof Function');
+
+      test(function(){
+
+        assert_true('removeProperty' in CSSStyleDeclaration.prototype);
+
+      }, '\'removeProperty\' in CSSStyleDeclaration.prototype');
 
       test(function(){
 

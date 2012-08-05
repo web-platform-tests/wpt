@@ -17,6 +17,9 @@ tests. statusText is tested together with status.
 NOTE: open-url-base* have absolute paths in them. They need to be adjusted
 on a per location basis.
 
+NOTE: open-url-base-inserted-after-open.htm, open-url-base-inserted.htm,
+send-authentication.htm and open-url-base.htm refer to localhost.
+
 
 TESTS THAT ARE UNSTABLE AND (PROBABLY) NEED CHANGES
   responsexml-basic (see email WHATWG)

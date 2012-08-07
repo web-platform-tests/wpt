@@ -1,5 +1,4 @@
 dir apis-in-html-documents
-dir browsing-the-web
 dir dom-tree-accessors
 dir dynamic-markup-insertion
 dir elements-in-the-dom

@@ -8,13 +8,14 @@
 		<meta name="flags" content="invalid">
 		<style>
 			div {
+				background-color:red;
 				height:100px;
 				width:100px;
 			}
 			@supports ((margin:0) and [padding:0]) {
-				div { background-color:red; }
+				div { background-color:red !important; }
 			}
-			div { background-color:green; }
+			@supports (margin:0) { div { background-color:green; } }
 		</style>
 	</head>
 	<body>

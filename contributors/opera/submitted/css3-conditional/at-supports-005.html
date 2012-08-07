@@ -8,10 +8,11 @@
 		<meta name="flags" content="">
 		<style>
 			div {
-				background-color:green;
+				background-color:red;
 				height:100px;
 				width:100px;
 			}
+			@supports (margin:0) { div { background-color:green; } }
 			@supports (margin: 0) {
 				@media not all {
 					div { background-color:red; }

@@ -4,11 +4,11 @@
 		<title>CSS Test (Conditional Rules): Incorrect syntax in @supports recovers properly</title>
 		<link rel="author" title="Florian Rivoal" href="mailto:florianr@opera.com">
 		<link rel="help" href="http://www.w3.org/TR/css3-conditional/#at-supports">
-		<link rel="match" href="at-supports-001-ref.html">
+		<link rel="match" href="at-supports-027-ref.html">
 		<meta name="flags" content="invalid">
 		<style>
+			@supports (margin:0) { div { background-color:green; } }
 			div {
-				background-color:green;
 				height:100px;
 				width:100px;
 			}
@@ -16,7 +16,7 @@
 		</style>
 	</head>
 	<body>
-		<p>Test passes if there is a <strong>filled green square</strong> and <strong>no red</strong>.</p>
+		<p>Test passes if there is a <strong>filled green square</strong>.</p>
 		<div></div>
 	</body>
 </html>

@@ -291,7 +291,7 @@ var metadata_generator = {
     process: function(tests, harness_status) {
         for (var index = 0; index < tests.length; index++) {
             var test = tests[index];
-            if (this.currentMetadata[test.name]) {
+            if (this.currentMetadata.hasOwnProperty(test.name)) {
                 this.error('Duplicate test name: ' + test.name);
             }
             else {

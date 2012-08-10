@@ -5,6 +5,7 @@
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visufx.html#propdef-overflow" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visufx.html#overflow" />
+
         <meta name="flags" content="ahem" />
         <meta name="assert" content="The 'overflow' property applies to elements with 'display' set to 'table-cell'." />
         <style type="text/css">
@@ -14,7 +15,6 @@
                 color: white;
                 display: table;
                 font: 20px/1em Ahem;
-                height: 5em;
                 table-layout: fixed;
                 width: 5em;
             }
@@ -35,7 +35,7 @@
         </style>
     </head>
     <body>
-        <p>Test passes if there is no red visible on the page.</p>
+        <p>Test passes if there is <strong>no red</strong>.</p>
         <div id="table">
             <div id="row">
                 <div id="cell"><span>XXXXX</span><span id="span2">XXXXX</span></div>

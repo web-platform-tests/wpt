@@ -3,13 +3,16 @@
     <head>
         <title>CSS Test: White space processing model with 'ideographic space' character</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-08-11 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/text.html#white-space-model" />
+		<link rel="match" href="white-space-processing-056-ref.xht" />
+
         <meta name="flags" content="ahem" />
         <meta name="assert" content="The 'ideographic space' character is not collapsed by the white space processing model." />
         <style type="text/css">
             div
             {
-                font: 16px/1em Ahem;
+                font: 1.25em/1 Ahem;
             }
             #div1
             {
@@ -29,7 +32,7 @@
         </style>
     </head>
     <body>
-        <p>Test passes if there are only two boxes below.</p>
+        <p>Test passes if there are 2 small filled black squares.</p>
         <div id="div1">XX&#12288;&#12288;&#12288;XX</div>
         <div id="div2"></div><div id="div3"></div>
     </body>

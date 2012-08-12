@@ -50,8 +50,8 @@
   code: |
     var canvas2 = document.createElement('canvas');
     var ctx2 = canvas2.getContext('2d');
-    ctx.font = '1000% serif';
-    @assert ctx.font === '100px serif'; @moz-todo
+    ctx2.font = '1000% serif';
+    @assert ctx2.font === '100px serif'; @moz-todo
 
 - name: 2d.text.font.parse.system
   desc: System fonts must be computed to explicit values

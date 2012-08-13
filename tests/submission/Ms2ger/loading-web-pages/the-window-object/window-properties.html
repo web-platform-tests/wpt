@@ -16,7 +16,7 @@ function assert_accessor_propdesc(pd, hasSetter, Enumerable, Configurable) {
   assert_equals(typeof pd, "object");
   assert_equals(typeof pd.get, "function");
   assert_equals("set" in pd, hasSetter,
-                "Should not have a setter for readonly attributes");
+                "Should have a setter for writable and replaceable attributes");
   assert_equals(typeof pd.set, hasSetter ? "function" : "undefined");
   assert_equals(pd.enumerable, Enumerable);
   assert_equals(pd.configurable, Configurable);
@@ -52,7 +52,29 @@ var methods = [
   "prompt",
   "print",
   "showModalDialog",
-  "postMessage"
+  "postMessage",
+
+  // WindowBase64
+  "btoa",
+  "atob",
+
+  // WindowTimers
+  "setTimeout",
+  "clearTimeout",
+  "setInterval",
+  "clearInterval",
+
+  // HTML Editing APIs
+  "getSelection",
+
+  // CSSOM
+  "getComputedStyle",
+
+  // CSSOM-View
+  "matchMedia",
+  "scroll",
+  "scrollTo",
+  "scrollBy"
 ];
 
 var readonlyAttributes = [
@@ -62,6 +84,25 @@ var readonlyAttributes = [
   "navigator",
   "external",
   "applicationCache",
+
+  // WindowSessionStorage
+  "sessionStorage",
+
+  // WindowLocalStorage
+  "localStorage",
+
+  // CSSOM-View
+  "screen",
+  "innerWidth",
+  "innerHeight",
+  "scrollX",
+  "pageXOffset",
+  "scrollY",
+  "pageYOffset",
+  "screenX",
+  "screenY",
+  "outerWidth",
+  "outerHeight"
 ];
 
 var writableAttributes = [

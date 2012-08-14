@@ -21,59 +21,55 @@
 
       }, '\'style\' in elt');
 
-      test(function(){
-
-        assert_true(elt.style instanceof Object);
-
-      }, 'elt.style instanceof Object');
+      var style = elt.style;
 
       test(function(){
 
-        assert_true(!(elt.style instanceof Function));
+        assert_true(style instanceof CSSStyleDeclaration);
 
-      }, '! elt.style instanceof Function');
+      }, 'elt.style instanceof CSSStyleDeclaration);
 
       test(function(){
 
-        assert_equals(elt.style.toString(), '[object CSSStyleDeclaration]');
+        assert_equals(style.toString(), '[object CSSStyleDeclaration]');
 
       }, 'elt.style.toString() == \'[object CSSStyleDeclaration]\'');
 
       test(function(){
 
-        assert_true('length' in elt.style);
+        assert_true('length' in style);
 
       }, '\'length\' in elt.style');
 
       test(function(){
 
-        assert_equals(typeof(elt.style.length),'number');
+        assert_equals(typeof(style.length),'number');
 
       }, 'typeof(elt.style.length) == \'number\'');
 
       test(function(){
 
-        assert_true('cssText' in elt.style);
+        assert_true('cssText' in style);
 
       }, '\'cssText\' in elt.style');
 
       test(function(){
 
-        assert_equals(typeof(elt.style.cssText),'string');
+        assert_equals(typeof(style.cssText),'string');
 
       }, 'typeof(elt.style.cssText) == \'string\'');
 
       test(function(){
 
-        assert_true('parentRule' in elt.style);
+        assert_true('parentRule' in style);
 
       }, '\'parentRule\' in elt.style');
 
       test(function(){
 
-        assert_equals(typeof(elt.style.parentRule),'object');
+        assert_true(style.parentRule === null || style.parentRule instanceof CSSRule);
 
-      }, 'typeof(elt.style.parentRule) == \'object\'');
+      }, 'elt.style.parentRule is null or instanceof CSSRule');
 
     ]]>
     </script>

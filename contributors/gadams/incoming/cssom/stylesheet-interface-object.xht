@@ -21,12 +21,6 @@
 
       test(function(){
 
-        assert_true(StyleSheet instanceof Object);
-
-      }, 'StyleSheet instanceof Object');
-
-      test(function(){
-
         assert_true(StyleSheet instanceof Function);
 
       }, 'StyleSheet instanceof Function');
@@ -39,6 +33,12 @@
 
       test(function(){
 
+        assert_equals(StyleSheet.prototype.toString(), '[object StyleSheetPrototype]');
+
+      }, 'StyleSheet.prototype.toString() == \'[object StyleSheetPrototype]\'');
+
+      test(function(){
+
         assert_true('constructor' in StyleSheet.prototype);
 
       }, '\'constructor\' in StyleSheet.prototype');
@@ -48,6 +48,108 @@
         assert_equals(StyleSheet.prototype.constructor,StyleSheet);
 
       }, 'StyleSheet.prototype.constructor === StyleSheet');
+
+      test(function(){
+
+        assert_true('type' in StyleSheet.prototype);
+
+      }, '\'type\' in StyleSheet.prototype');
+
+      test(function(){
+
+        assert_equals(typeof(StyleSheet.prototype.type),'string');
+
+      }, 'typeof(StyleSheet.prototype.type) == \'string\'');
+
+      test(function(){
+
+        assert_true('href' in StyleSheet.prototype);
+
+      }, '\'href\' in StyleSheet.prototype');
+
+      test(function(){
+
+        assert_equals(typeof(StyleSheet.prototype.href),'string');
+
+      }, 'typeof(StyleSheet.prototype.href) == \'string\'');
+
+      test(function(){
+
+        assert_true('ownerNode' in StyleSheet.prototype);
+
+      }, '\'ownerNode\' in StyleSheet.prototype');
+
+      test(function(){
+
+        assert_equals(typeof(StyleSheet.prototype.ownerNode),'object');
+
+      }, 'typeof(StyleSheet.prototype.ownerNode) == \'object\'');
+
+      test(function(){
+
+        assert_true(StyleSheet.prototype.ownerNode instanceof Node);
+
+      }, 'StyleSheet.prototype.ownerNode instanceof Node');
+
+      test(function(){
+
+        assert_true('parentStyleSheet' in StyleSheet.prototype);
+
+      }, '\'parentStyleSheet\' in StyleSheet.prototype');
+
+      test(function(){
+
+        assert_equals(typeof(StyleSheet.prototype.parentStyleSheet),'object');
+
+      }, 'typeof(StyleSheet.prototype.parentStyleSheet) == \'object\'');
+
+      test(function(){
+
+        assert_true(StyleSheet.prototype.parentStyleSheet instanceof StyleSheet);
+
+      }, 'StyleSheet.prototype.parentStyleSheet instanceof StyleSheet');
+
+      test(function(){
+
+        assert_true('title' in StyleSheet.prototype);
+
+      }, '\'title\' in StyleSheet.prototype');
+
+      test(function(){
+
+        assert_equals(typeof(StyleSheet.prototype.title),'string');
+
+      }, 'typeof(StyleSheet.prototype.title) == \'string\'');
+
+      test(function(){
+
+        assert_true('media' in StyleSheet.prototype);
+
+      }, '\'media\' in StyleSheet.prototype');
+
+      test(function(){
+
+        assert_equals(typeof(StyleSheet.prototype.media),'object');
+
+      }, 'typeof(StyleSheet.prototype.media) == \'object\'');
+
+      test(function(){
+
+        assert_true(StyleSheet.prototype.media instanceof MediaList);
+
+      }, 'StyleSheet.prototype.media instanceof MediaList');
+
+      test(function(){
+
+        assert_true('disabled' in StyleSheet.prototype);
+
+      }, '\'disabled\' in StyleSheet.prototype');
+
+      test(function(){
+
+        assert_equals(typeof(StyleSheet.prototype.disabled),'boolean');
+
+      }, 'typeof(StyleSheet.prototype.disabled) == \'boolean\'');
 
     ]]>
     </script>

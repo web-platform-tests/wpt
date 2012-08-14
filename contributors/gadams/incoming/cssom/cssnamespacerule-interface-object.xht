@@ -21,12 +21,6 @@
 
       test(function(){
 
-        assert_true(CSSNamespaceRule instanceof Object);
-
-      }, 'CSSNamespaceRule instanceof Object');
-
-      test(function(){
-
         assert_true(CSSNamespaceRule instanceof Function);
 
       }, 'CSSNamespaceRule instanceof Function');
@@ -36,6 +30,12 @@
         assert_true('prototype' in CSSNamespaceRule);
 
       }, '\'prototype\' in CSSNamespaceRule');
+
+      test(function(){
+
+        assert_equals(CSSNamespaceRule.prototype.toString(), '[object CSSNamespaceRulePrototype]');
+
+      }, 'CSSNamespaceRule.prototype.toString() == \'[object CSSNamespaceRulePrototype]\'');
 
       test(function(){
 

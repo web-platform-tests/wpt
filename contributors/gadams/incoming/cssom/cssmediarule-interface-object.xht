@@ -21,12 +21,6 @@
 
       test(function(){
 
-        assert_true(CSSMediaRule instanceof Object);
-
-      }, 'CSSMediaRule instanceof Object');
-
-      test(function(){
-
         assert_true(CSSMediaRule instanceof Function);
 
       }, 'CSSMediaRule instanceof Function');
@@ -36,6 +30,12 @@
         assert_true('prototype' in CSSMediaRule);
 
       }, '\'prototype\' in CSSMediaRule');
+
+      test(function(){
+
+        assert_equals(CSSMediaRule.prototype.toString(), '[object CSSMediaRulePrototype]');
+
+      }, 'CSSMediaRule.prototype.toString() == \'[object CSSMediaRulePrototype]\'');
 
       test(function(){
 

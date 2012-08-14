@@ -21,12 +21,6 @@
 
       test(function(){
 
-        assert_true(CSSStyleRule instanceof Object);
-
-      }, 'CSSStyleRule instanceof Object');
-
-      test(function(){
-
         assert_true(CSSStyleRule instanceof Function);
 
       }, 'CSSStyleRule instanceof Function');
@@ -36,6 +30,12 @@
         assert_true('prototype' in CSSStyleRule);
 
       }, '\'prototype\' in CSSStyleRule');
+
+      test(function(){
+
+        assert_equals(CSSStyleRule.prototype.toString(), '[object CSSStyleRulePrototype]');
+
+      }, 'CSSStyleRule.prototype.toString() == \'[object CSSStyleRulePrototype]\'');
 
       test(function(){
 

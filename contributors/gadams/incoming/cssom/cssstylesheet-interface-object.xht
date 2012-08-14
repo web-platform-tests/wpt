@@ -21,12 +21,6 @@
 
       test(function(){
 
-        assert_true(CSSStyleSheet instanceof Object);
-
-      }, 'CSSStyleSheet instanceof Object');
-
-      test(function(){
-
         assert_true(CSSStyleSheet instanceof Function);
 
       }, 'CSSStyleSheet instanceof Function');
@@ -36,6 +30,12 @@
         assert_true('prototype' in CSSStyleSheet);
 
       }, '\'prototype\' in CSSStyleSheet');
+
+      test(function(){
+
+        assert_equals(CSSStyleSheet.prototype.toString(), '[object CSSStyleSheetPrototype]');
+
+      }, 'CSSStyleSheet.prototype.toString() == \'[object CSSStyleSheetPrototype]\'');
 
       test(function(){
 

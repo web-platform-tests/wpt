@@ -21,12 +21,6 @@
 
       test(function(){
 
-        assert_true(CSSFontFaceRule instanceof Object);
-
-      }, 'CSSFontFaceRule instanceof Object');
-
-      test(function(){
-
         assert_true(CSSFontFaceRule instanceof Function);
 
       }, 'CSSFontFaceRule instanceof Function');
@@ -36,6 +30,12 @@
         assert_true('prototype' in CSSFontFaceRule);
 
       }, '\'prototype\' in CSSFontFaceRule');
+
+      test(function(){
+
+        assert_equals(CSSFontFaceRule.prototype.toString(), '[object CSSFontFaceRulePrototype]');
+
+      }, 'CSSFontFaceRule.prototype.toString() == \'[object CSSFontFaceRulePrototype]\'');
 
       test(function(){
 

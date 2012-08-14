@@ -12,9 +12,13 @@ test(function() {
   assert_equals(window[-1], undefined);
   window[-1] = "foo";
   assert_equals(window[-1], "foo");
+});
+test(function() {
   window[0] = "foo";
   assert_equals(window[0],
                 document.getElementsByTagName("iframe")[0].contentWindow);
+});
+test(function() {
   window[1] = "foo";
   assert_equals(window[1], undefined);
 });

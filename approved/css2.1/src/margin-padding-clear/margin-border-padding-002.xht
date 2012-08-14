@@ -3,13 +3,16 @@
     <head>
         <title>CSS Test: Margin, border, padding all display outside the image area</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-08-13 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#box-dimensions" />
+        <link rel="match" href="margin-border-padding-001-ref.xht" />
+
         <meta name="flags" content="ahem image" />
         <meta name="assert" content="Margin, border, padding render outside the image area." />
         <style type="text/css">
             div
             {
-                font: 1em Ahem;
+                font: 1em/1 Ahem;
                 margin: 1em;
                 left: 0;
                 padding: 1em;
@@ -33,12 +36,12 @@
             }
             img
             {
-                vertical-align: text-bottom;
+                vertical-align: top;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if there is no red visible on the page.</p>
+        <p>Test passes if there is <strong>no red</strong>.</p>
         <div id="div1">
             <div id="div2">XXX</div>
             <div id="div3"><img alt="1x3 'em' unit box" src="support/margin-border-padding-002.png" /></div>

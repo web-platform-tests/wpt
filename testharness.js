@@ -1410,11 +1410,22 @@ policies and contribution forms [3].
 
     Output.prototype.resolve_log = function()
     {
-        if (!this.output_document) {
+        var output_document;
+        if (typeof this.output_document === "function")
+        {
+            output_document = this.output_document.apply(undefined);
+        } else
+        {
+            output_document = this.output_document;
+        }
+        if (!output_document)
+        {
             return;
         }
-        var node = this.output_document.getElementById("log");
-        if (node) {
+        var node = output_document.getElementById("log");
+        if (node)
+        {
+            this.output_document = output_document;
             this.output_node = node;
         }
     };

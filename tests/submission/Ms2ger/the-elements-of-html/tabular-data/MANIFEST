@@ -1,2 +1,3 @@
 dir attributes-common-to-td-and-th-elements
 dir the-table-element
+dir the-tr-element

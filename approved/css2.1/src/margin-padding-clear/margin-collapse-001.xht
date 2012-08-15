@@ -3,7 +3,10 @@
     <head>
         <title>CSS Test: Margin collapsing - horizontal margins do not collapse</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-08-14 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#collapsing-margins" />
+		<link rel="match" href="margin-collapse-001-ref.xht" />
+
         <meta name="flags" content="ahem" />
         <meta name="assert" content="Horizontal margins of element do not collapse." />
         <style type="text/css">
@@ -27,7 +30,7 @@
         </style>
     </head>
     <body>
-        <p>Test passes if the blue and orange boxes have the same horizontal spacing between them.</p>
+        <p>Test passes if the blue and orange stripes have the same horizontal spacing between them.</p>
         <div id="test">
             <span>XXXXX</span><span>XXXXX</span>
         </div>

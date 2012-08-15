@@ -10,6 +10,8 @@
   <link rel="author" title="Bruno Fassino" href="fassino[at]gmail.com" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/changes.html#q313" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#collapsing-margins" />
+  <link rel="match" href="margin-collapse-038-ref.xht" />
+
   <meta content="" name="flags" />
   <meta content="The 'max-height' of a parent block element should have no influence over whether such parent block element's bottom margin is adjoining to its last child's bottom margin. In such situation, the bottom margin of the parent block element and the bottom margin of its last child should collapse as long as such parent block element has no bottom padding and has no bottom border." name="assert" />
 
@@ -42,7 +44,11 @@
 
   div#last-child
   {
-  height: 300px; /* the height of parent-with-max-height is constrained by its max-height which is smaller than this last-child height */
+  height: 300px; 
+  /* 
+  The height of parent-with-max-height is constrained by 
+  its max-height which is smaller than this last-child height 
+  */
   margin-bottom: 100px;
   }
   ]]></style>
@@ -51,7 +57,7 @@
 
  <body>
 
-  <p>There should be a tall filled green rectangle across the page and <strong>no red</strong>.</p>
+  <p>Test passes if there is a tall filled green rectangle across the page and <strong>no red</strong>.</p>
 
   <div id="reference-overlapped-red"></div>
 

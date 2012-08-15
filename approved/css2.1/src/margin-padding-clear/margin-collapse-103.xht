@@ -3,8 +3,11 @@
 <head>
   <title>CSS Test: Margin Collapsing: fixed positioned</title>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-08-15 -->
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/block/margin-collapse/003.html" type="text/html"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#collapsing-margins"/>
+  <link rel="match" href="margin-collapse-103-ref.xht" />
+
   <style type="text/css">
    div.test { background: green; position: fixed; top: 4em; }
    div.test div { background: red; margin: 5em 2.5em; }
@@ -12,7 +15,7 @@
   </style>
  </head>
  <body>
-  <p>This page should have one square green block and no red.</p>
+  <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
   <div class="control"></div>
   <div class="test">
    <div></div>

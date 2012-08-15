@@ -3,7 +3,10 @@
     <head>
         <title>CSS Test: Margin collapsing - in-flow block-level margins with an element 'height' of 'auto' and 'max-height' and 'min-height'</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-08-15 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#collapsing-margins" />
+		<link rel="match" href="margin-collapse-002-ref.xht" />
+
         <meta name="flags" content="ahem image" />
         <meta name="assert" content="The bottom margin of an in-flow block-level element(#div2) with a 'height' of 'auto' will adjoin to its last in-flow block-level child's (#div3) bottom margin if such auto-height in-flow block-level element has no bottom padding and no bottom border. The bottom margins will then collapse." />
         <style type="text/css">
@@ -36,7 +39,7 @@
         </style>
     </head>
     <body>
-        <p>Test passes if there is no red visible on the page.</p>
+        <p>Test passes if there is <strong>no red</strong>.</p>
         <div id="div1">
             <div id="div2">
                 <div id="div3"></div>

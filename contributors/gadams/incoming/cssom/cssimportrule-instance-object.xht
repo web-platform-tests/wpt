@@ -50,6 +50,12 @@
 
       test(function(){
 
+        assert_true(rules instanceof CSSRuleList);
+
+      }, 'doc.styleSheets[0].cssRules instanceof CSSRuleList');
+
+      test(function(){
+
         assert_true(rules.length > 0);
 
       }, 'doc.styleSheets[0].cssRules.length > 0');
@@ -85,6 +91,42 @@
         assert_equals(rule.type, 3);
 
       }, 'doc.styleSheets[0].cssRules[0].type == 3');
+
+      test(function(){
+
+        assert_true('cssText' in rule);
+
+      }, '\'cssText\' in doc.styleSheets[0].cssRules[0]');
+
+      test(function(){
+
+        assert_equals(rule.cssText, '@import url(\"resources/import.css\");');
+
+      }, 'doc.styleSheets[0].cssRules[0].cssText == \'@import url(\"resources/import.css\");\'');
+
+      test(function(){
+
+        assert_true('parentRule' in rule);
+
+      }, '\'parentRule\' in doc.styleSheets[0].cssRules[0]');
+
+      test(function(){
+
+        assert_true(rule.parentRule === null);
+
+      }, 'doc.styleSheets[0].cssRules[0].parentRule === null');
+
+      test(function(){
+
+        assert_true('parentStyleSheet' in rule);
+
+      }, '\'parentStyleSheet\' in doc.styleSheets[0].cssRules[0]');
+
+      test(function(){
+
+        assert_true(rule.parentStyleSheet === sheet);
+
+      }, 'doc.styleSheets[0].cssRules[0].parentStyleSheet === doc.styleSheets[0]');
 
       test(function(){
 
@@ -146,9 +188,43 @@
 
       test(function(){
 
-        assert_equals(rule.cssText, '@import url(\"resources/import.css\");');
+        assert_true('cssRules' in sheetImported);
 
-      }, 'doc.styleSheets[0].cssRules[0].cssText == \'@import url(\"resources/import.css\");\'');
+      }, '\'cssRules\' in doc.styleSheets[0].cssRules[0].styleSheet');
+
+      var rulesImported = sheetImported.cssRules;
+
+      test(function(){
+
+        assert_true(rulesImported instanceof CSSRuleList);
+
+      }, 'doc.styleSheets[0].cssRules[0].styleSheet.cssRules instanceof CSSRuleList');
+
+      test(function(){
+
+        assert_true(rulesImported.length > 0);
+
+      }, 'doc.styleSheets[0].cssRules[0].styleSheet.cssRules.length > 0');
+
+      var ruleImported = rulesImported[0];
+
+      test(function(){
+
+        assert_true(ruleImported instanceof CSSStyleRule);
+
+      }, 'doc.styleSheets[0].cssRules[0].styleSheet.cssRules[0] instanceof CSSStyleRule');
+
+      test(function(){
+
+        assert_true(ruleImported.parentRule === null);
+
+      }, 'doc.styleSheets[0].cssRules[0].styleSheet.cssRules[0].parentRule === null');
+
+      test(function(){
+
+        assert_true(ruleImported.parentStyleSheet === sheetImported);
+
+      }, 'doc.styleSheets[0].cssRules[0].styleSheet.cssRules[0].parentStyleSheet === doc.styleSheets[0].cssRules[0].styleSheet');
 
     ]]>
     </script>

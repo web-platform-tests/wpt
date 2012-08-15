@@ -51,6 +51,12 @@
 
       test(function(){
 
+        assert_true(rules instanceof CSSRuleList);
+
+      }, 'doc.styleSheets[0].cssRules instanceof CSSRuleList');
+
+      test(function(){
+
         assert_true(rules.length > 0);
 
       }, 'doc.styleSheets[0].cssRules.length > 0');
@@ -86,6 +92,42 @@
         assert_equals(rule.type, 1);
 
       }, 'doc.styleSheets[0].cssRules[0].type == 1');
+
+      test(function(){
+
+        assert_true('cssText' in rule);
+
+      }, '\'cssText\' in doc.styleSheets[0].cssRules[0]');
+
+      test(function(){
+
+        assert_equals(rule.cssText, '* { }');
+
+      }, 'doc.styleSheets[0].cssRules[0].cssText == \'* { }\'');
+
+      test(function(){
+
+        assert_true('parentRule' in rule);
+
+      }, '\'parentRule\' in doc.styleSheets[0].cssRules[0]');
+
+      test(function(){
+
+        assert_true(rule.parentRule === null);
+
+      }, 'doc.styleSheets[0].cssRules[0].parentRule === null');
+
+      test(function(){
+
+        assert_true('parentStyleSheet' in rule);
+
+      }, '\'parentStyleSheet\' in doc.styleSheets[0].cssRules[0]');
+
+      test(function(){
+
+        assert_true(rule.parentStyleSheet === sheet);
+
+      }, 'doc.styleSheets[0].cssRules[0].parentStyleSheet === doc.styleSheets[0]');
 
       test(function(){
 
@@ -130,12 +172,6 @@
         assert_equals(style.cssText, '');
 
       }, 'doc.styleSheets[0].cssRules[0].style.cssText == \'\'');
-
-      test(function(){
-
-        assert_equals(rule.cssText, '* { }');
-
-      }, 'doc.styleSheets[0].cssRules[0].cssText == \'* { }\'');
 
     ]]>
     </script>

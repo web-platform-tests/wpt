@@ -51,6 +51,12 @@
 
       test(function(){
 
+        assert_true(sheet1.cssRules instanceof CSSRuleList);
+
+      }, 'doc.styleSheets[0].cssRules instanceof CSSRuleList');
+
+      test(function(){
+
         assert_true(sheet1.cssRules.length > 0);
 
       }, 'doc.styleSheets[0].cssRules.length > 0');

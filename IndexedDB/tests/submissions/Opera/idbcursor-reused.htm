@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html>
+<title>IDBCursor is reused</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="support.js"></script>
+
+<script>
+
+        var db,
+          t = async_test();
+
+        var open_rq = createdb(t);
+        open_rq.onupgradeneeded = function(e) {
+            db = e.target.result;
+            var objStore = db.createObjectStore("test");
+
+            objStore.add("data", "k");
+        };
+
+        open_rq.onsuccess = t.step_func(function(e) {
+            var cursor_rq = db.transaction("test")
+                              .objectStore("test")
+                              .openCursor();
+
+            cursor_rq.onsuccess = t.step_func(function(e) {
+                var cursor = e.target.result;
+                assert_equals(cursor.value, "data", "prequisite cursor.value");
+
+                assert_unreached("XXX This is not made");
+                t.done();
+            });
+        });
+
+</script>
+
+<div id="log"></div>

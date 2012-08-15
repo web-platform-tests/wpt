@@ -1,0 +1,39 @@
+﻿<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Valid keys</title>
+<script src="http://t/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="support.js"></script>
+
+<script>
+function key(key, _instanceof) {
+    var t = async_test(document.title + " - " + _instanceof.name);
+    t.step(function() {
+        assert_true(key instanceof _instanceof, "TEST ERROR, instanceof");
+    });
+
+    createdb(t).onupgradeneeded = function(e) {
+        e.target.result
+                .createObjectStore("store")
+                .add('1', key);
+
+        e.target.onsuccess = t.step_func(function(e) {
+            e.target.result
+                    .transaction("store")
+                    .objectStore("store")
+                    .openCursor()
+                    .onsuccess = t.step_func(function(e)
+            {
+                assert_true(e.target.result.key instanceof _instanceof, "instanceof")
+                t.done();
+            });
+        });
+    };
+}
+
+key(new Date(), Date);
+key(['a', 'b'], Array);
+
+</script>
+
+<div id="log"></div>

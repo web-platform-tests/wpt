@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>Test events opening a second database when one connection is open already</title>
+<title>Blocked event</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="support.js"></script>
@@ -34,8 +34,8 @@
                 events.push("db." + e.type);
                 console.log("versionchange " + events);
                 assert_equals(e.oldVersion, 3, "old version");
-                assert_equals(e.oldVersion, 4, "new version");
-                db.close();
+                assert_equals(e.newVersion, 4, "new version");
+                // Do not close db here (as we should)
             });
 
             // Errors
@@ -60,6 +60,13 @@
         var openrq2 = indexedDB.open('db', 4);
 
         // 4
+        openrq2.onblocked = t.step_func(function(e) {
+            events.push("open2." + e.type);
+            // We're closing connection from the other open()
+            db.close();
+        });
+
+        // 5
         openrq2.onupgradeneeded = t.step_func(function(e) {
             db2 = e.target.result;
 
@@ -74,7 +81,7 @@
             db2.abort = fail(t, "db2.abort");
         });
 
-        // 5
+        // 6
         openrq2.onsuccess = t.step_func(function(e) {
             events.push("open2." + e.type);
             console.log("success 2 " + events);
@@ -83,6 +90,7 @@
                 [ "open.upgradeneeded",
                   "open.success",
                   "db.versionchange",
+                  "open2.blocked",
                   "open2.upgradeneeded",
                   "open2.success",
                 ]);
@@ -92,13 +100,12 @@
 
         // Errors
         openrq2.onerror = fail(t, "open2.error");
-        openrq2.onblocked = fail(t, "open2.blocked");
     }
 
 
     // Cleanup
     add_completion_callback(function(tests) {
-        if (db) db.close();
+        if (db2) db2.close();
         indexedDB.deleteDatabase('db');
         console.log("delete... " + events);
     })

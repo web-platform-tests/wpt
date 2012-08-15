@@ -26,3 +26,4 @@ idbobjectstore_get5.htm
 
 
 # TEST Putting state on the request, where it reuses the request
+# TEST [EnforceRange] rounds to 0, so advance(-0.9) would be advance(0) but advance(-1) will throw

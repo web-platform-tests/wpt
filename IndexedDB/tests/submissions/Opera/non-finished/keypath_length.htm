@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Find keyPath length</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="support.js"></script>
+
+<script>
+// XXX For some strange reason this doesn't work (anymore!) in IE10 and Fx
+var open_rq = indexedDB.open('test');
+open_rq.onsuccess = success;
+
+function success(e) {
+    if (e.target.result.version > 2)
+    {
+        var rq = e.target.result.transaction(e.target.result.version).objectStore(e.target.result.version).get(1);
+        rq.onsuccess = function(e2) { console.info(""+e.target.result.version, e.target.result); }
+        rq.onerror = function(e2) { console.log(e.target.error.name); }
+    }
+    var new_version = e.target.result.version << 1;
+    e.target.result.close();
+    if (new_version > 0x1000000)
+    {
+        console.log("At maximum, close");
+        indexedDB.deleteDatabase('test');
+        return;
+    }
+
+    var open_rq = indexedDB.open('test', new_version);
+    open_rq.onupgradeneeded = function(e) {
+        console.log("creating keyPath with length " + new_version);
+        var os = e.target.result.createObjectStore(""+new_version, { keyPath: new Array(new_version).join('a'), autoIncrement: true });
+        console.log("created " + new_version);
+
+        var rq = os.add({})
+            rq.onsuccess = function(e) { console.log("add.success for " + new_version); myvar = e.target.result; };
+        rq.onerror = function() { console.error("add.error for " + new_version); };
+    }
+    open_rq.onsuccess = success;
+}
+</script>
+
+<div id="log"></div>

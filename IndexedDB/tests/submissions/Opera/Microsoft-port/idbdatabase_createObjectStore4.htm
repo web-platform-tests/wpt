@@ -15,6 +15,9 @@ open_rq.onupgradeneeded = function(e) {
     assert_throws(
         'ConstraintError',
         function() { db.createObjectStore("dupe") })
+
+    // Bonus test creating a new objectstore after the exception
+    db.createObjectStore("dupe ")
     t.done()
 }
 

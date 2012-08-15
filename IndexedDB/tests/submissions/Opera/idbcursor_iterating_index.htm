@@ -37,10 +37,9 @@
                 assert_equals(count, 2, "cursor run count");
                 t.done();
             }
-            console.log(cursor.key, cursor.primaryKey);
 
             if (count === 0) {
-                e.target.source.objectStore.delete("primaryKey_1");
+                e.target.source.objectStore.delete(["primaryKey_1", "iKey_1"]);
             }
             assert_array_equals(cursor.key, expected[count], "primary key");
 

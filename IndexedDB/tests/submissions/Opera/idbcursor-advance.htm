@@ -133,7 +133,7 @@
             rq.onerror = fail(this, "unexpected error")
         });
 
-        async_test(document.title + " - advance skip far forward").step(function(e) {
+        async_test(document.title + " - advance skip to Infinity").step(function(e) {
             var count = 0;
             var rq = db.transaction("test").objectStore("test").index("index")
                        .openCursor("taco");
@@ -146,7 +146,7 @@
                 }
                 var cursor = e.target.result;
 
-                cursor.advance(100000);
+                cursor.advance(Infinity);
 
                 switch(count) {
                     case 0:

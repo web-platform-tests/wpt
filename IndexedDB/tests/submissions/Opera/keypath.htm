@@ -7,10 +7,12 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="support.js"></script>
 
-<script type="text/javascript">
+<script>
+    setup({ timeout: 10000 });
+
     function keypath(keypath, objects, expected_keys, desc) {
         var db,
-          t = async_test(document.title + " - " + (desc ? desc : keypath));
+          t = async_test(document.title + " - " + (desc ? desc : keypath), { timeout: 10000 });
 
         var open_rq = createdb(t);
         open_rq.onupgradeneeded = function(e) {
@@ -44,7 +46,7 @@
         };
     }
 
-/*    keypath('my.key',
+    keypath('my.key',
         [ { my: { key: 10 } } ],
         [ 10 ]);
 
@@ -74,7 +76,7 @@
 
     keypath('p.p.p.p.p.p.p.p.p.p.p.p.p.p',
         [ {p:{p:{p:{p:{p:{p:{p:{p:{p:{p:{p:{p:{p:{p:10}}}}}}}}}}}}}} ],
-        [ 10 ]);*/
+        [ 10 ]);
 
     keypath('str.length',
         [ { str: "pony" }, { str: "my" }, { str: "little" }, { str: "" } ],
@@ -93,26 +95,28 @@
         [ 10, "bean", ["bags"] ],
         "'' uses value as key");
 
-    keypath(['', ''],
-        [ ["bags"], "bean", 10 ],
-        [ [10, 10], ["bean", "bean"], [["bags"], ["bags"]] ],
-        "['',''] duplicates value as key");
-
     keypath(['x', 'y'],
         [ {x:10, y:20}, {y:1.337, x:100} ],
         [ [10, 20], [100, 1.337] ],
         "['x', 'y']");
 
-    keypath(['', 'length'],
-        [ [1], [1, 2] ],
-        [ [[1], 1], [[1,2], 2] ],
-        "['', Array.length]");
+    keypath([['x'], ['y']],
+        [ {x:10, y:20}, {y:1.337, x:100} ],
+        [ [10, 20], [100, 1.337] ],
+        "[['x'], 'y'] (stringifies)");
 
-    var myblob = Blob(["Yoda"], {type:'suprawsum'})
-    keypath(['', 'length', 'type'],
-        [ myblob ],
-        [ ["Yoda"], 4, 'suprawsum' ],
-        "[Blob, Blob.length, Blob.type]");
+    keypath(['x', {toString:function(){return 'y'}}],
+        [ {x:10, y:20}, {y:1.337, x:100} ],
+        [ [10, 20], [100, 1.337] ],
+        "['x', {toString->'y'}] (stringifies)");
+
+    // if (false) {
+        var myblob = Blob(["Yoda"], {type:'suprawsum'});
+        keypath(['length', 'type'],
+            [ myblob ],
+            [ 4, 'suprawsum' ],
+            "[Blob.length, Blob.type]");
+    // }
 
     // File.name and File.lastModifiedDate is not testable automatically
 
@@ -124,41 +128,6 @@
         [ { name: "orange", type: { name: "fruit" }}, { name: "orange", type: { name: "telecom" }} ],
         [ ["orange", "fruit"], ["orange", "telecom" ] ]);
 
-    function invalid_keypath(keypath) {
-        createdb(async_test("Invalid keyPath - " + keypath)).onupgradeneeded = function(e) {
-            var db = e.target.result;
-            assert_throws('SyntaxError', function() {
-                    db.createObjectStore("store", { keyPath: keypath });
-                });
-
-            var store = db.createObjectStore("store");
-            assert_throws('SyntaxError', function() {
-                    store.createIndex('index', keypath);
-                });
-
-            db.close();
-
-            this.done();
-        };
-    }
-
-    invalid_keypath(['empty array', '']);
-    invalid_keypath('3m');
-    invalid_keypath('my.1337');
-    invalid_keypath('.yo');
-/*  invalid_keypath('y..o');
-    invalid_keypath('y.o.');
-    invalid_keypath('m.*');
-    invalid_keypath('"m"');
-    invalid_keypath('m%');
-    invalid_keypath('m/');
-    invalid_keypath('m&');
-    invalid_keypath('m!');
-    invalid_keypath('*');
-    invalid_keypath('*.*');
-    invalid_keypath('^m');
-    invalid_keypath('/m/');*/
-
 </script>
 
-<div id="log"></div>
+<div id=log></div>

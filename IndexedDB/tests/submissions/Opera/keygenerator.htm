@@ -21,10 +21,10 @@
 
             for (var i = 0; i < objects.length; i++)
             {
-                if (obj === null)
+                if (objects[i] === null)
                     objStore.add({});
                 else
-                    objStore.add({ id: obj });
+                    objStore.add({ id: objects[i] });
             }
         };
 
@@ -60,62 +60,6 @@
 
     keygenerator([-10, null, "6", 6.3, [10], -2, 4, null],   [-10, -2, 1, 4, 6.3, 7, "6", [10]],
         "don't increment when new key is not bigger than current");
-
-
-    keygenerator([9007199254740991, null, "error", ],
-        [9007199254740991, 9007199254740992,],
-        "ConstraintError",
-        function(objStore, obj) {
-            console.log(obj)
-            if (obj === null)
-                objStore.add({});
-            else if (obj === "error")
-            {
-                objStore.add({}).onerror = this.step_func(function(e) {
-                    assert_
-                    e.preventDefault()
-                });
-//                assert_throws('ConstraintError', function () { objStore.add({ id: 2 }); });
-objStore.add({id:2});
-            else
-                objStore.add({ id: obj });
-        }
-        );
-
-    /*function invalid_keypath(keypath) {
-        createdb(async_test("Invalid keyPath - " + keypath)).onupgradeneeded = function(e) {
-            var db = e.target.result;
-            assert_throws('SyntaxError', function() {
-                    db.createObjectStore("store", { keyPath: keypath });
-                });
-
-            var store = db.createObjectStore("store");
-            assert_throws('SyntaxError', function() {
-                    store.createIndex('index', keypath);
-                });
-
-            db.close();
-
-            this.done();
-        };
-    }
-
-    invalid_keypath(['empty array', '']);
-    invalid_keypath('3m');
-    invalid_keypath('my.1337');
-    invalid_keypath('.yo');
-/*  invalid_keypath('y..o');
-    invalid_keypath('y.o.');
-    invalid_keypath('m.*');
-    invalid_keypath('"m"');
-    invalid_keypath('m%');
-    invalid_keypath('m/');
-    invalid_keypath('m&');
-    invalid_keypath('m!');
-    invalid_keypath('*');
-    invalid_keypath('*.*');
-    invalid_keypath('^m');
-    invalid_keypath('/m/');*/
 
 </script>
 

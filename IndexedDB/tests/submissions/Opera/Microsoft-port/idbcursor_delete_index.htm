@@ -27,7 +27,7 @@
 
 
     function CursorDeleteRecord(e) {
-        var txn = db.transaction("test", IDBTransaction.READ_WRITE),
+        var txn = db.transaction("test", "readwrite"),
           cursor_rq = txn.objectStore("test")
                          .index("index")
                          .openCursor();
@@ -48,7 +48,7 @@
                           .objectStore("test")
                           .openCursor();
 
-        cursor_rq.onsuccess = t.step(function(e) {
+        cursor_rq.onsuccess = t.step_func(function(e) {
             console.log(e);
             var cursor = e.target.result;
 

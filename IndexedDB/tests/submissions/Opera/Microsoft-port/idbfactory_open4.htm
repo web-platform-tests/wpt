@@ -10,7 +10,7 @@
         var t = async_test(); 
         
         function RunTest() {
-            var rqOpen = window.indexedDB.open(databaseName);
+            var rqOpen = window.indexedDB.open(databaseName + "4");
             rqOpen.onsuccess = t.step_func( function(event) {
                 db = event.target.result;
                 assert_equals(db.version, 1, "db.version");

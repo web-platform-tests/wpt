@@ -1,4 +1,4 @@
-﻿_real_assert_throws = assert_throws;
+﻿/*_real_assert_throws = assert_throws;
 function assert_throws(d, func, desc) {
     try {
         func();
@@ -12,7 +12,7 @@ function assert_throws(d, func, desc) {
     }
 //    _real_assert_throws(d, function() {}, desc);
     assert_unreached("Didn't throw!");
-}
+}*/
 
 if (!window.indexedDB)
 {
@@ -114,8 +114,12 @@ function fail(test, desc) {
     return test.step_func(function(e) {
         console.log(desc, e);
 
-        if (e && e.message)
-            assert_unreached(desc + " " + e.message);
+        if (e && e.message && e.target.error)
+            assert_unreached(desc + " (" + e.target.error.name + ": " + e.message + ")");
+        else if (e && e.message)
+            assert_unreached(desc + " (" + e.message + ")");
+        else if (e && e.target.error)
+            assert_unreached(desc + " (" + e.target.error.name + ")");
         else
             assert_unreached(desc);
     });

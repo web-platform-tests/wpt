@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<title>IDBCursor.continue() - index - iterate using NEXT_NO_DUPLICATE</title>
+<title>IDBCursor.continue() - index - iterate using nextunique</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="support.js"></script>
@@ -33,7 +33,7 @@
           cursor_rq = db.transaction("test")
                         .objectStore("test")
                         .index("index")
-                        .openCursor(undefined, IDBCursor.NEXT_NO_DUPLICATE);
+                        .openCursor(undefined, "nextunique");
 
         cursor_rq.onsuccess = t.step_func(function(e) {
             if (!e.target.result) {

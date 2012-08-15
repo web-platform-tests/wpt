@@ -18,7 +18,7 @@
     };
 
     open_rq.onsuccess = t.step_func(function(e) {
-        var txn = db.transaction("test", IDBTransaction.READ_WRITE),
+        var txn = db.transaction("test", "readwrite"),
           cursor_rq = txn.objectStore("test")
                          .openCursor();
 

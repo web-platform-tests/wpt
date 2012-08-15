@@ -1,5 +1,7 @@
 ﻿<!DOCTYPE html>
 <title>IDBCursor.continue() - objectstore - delete next element, and iterate to it</title>
+<link rel=help href=>
+<link rel=assert title="">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="support.js"></script>
@@ -28,7 +30,7 @@
     };
 
     open_rq.onsuccess = function(e) {
-        var cursor_rq = db.transaction("test", IDBTransaction.READ_WRITE)
+        var cursor_rq = db.transaction("test", "readwrite")
                           .objectStore("test")
                           .openCursor();
 

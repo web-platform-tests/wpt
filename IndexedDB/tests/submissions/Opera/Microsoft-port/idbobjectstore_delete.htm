@@ -19,7 +19,7 @@
     };
 
     open_rq.onsuccess = function(e) {
-        var delete_rq = db.transaction("test", IDBTransaction.READ_WRITE)
+        var delete_rq = db.transaction("test", "readwrite")
                           .objectStore("test")
                           .delete(record.key);
 

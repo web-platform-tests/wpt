@@ -21,6 +21,7 @@
 
     open_rq.onsuccess = function(e) {
         var rq = db.transaction("store")
+                   .objectStore("store")
                    .index("index")
                    .get(record.indexedProperty);
 

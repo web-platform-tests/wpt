@@ -30,7 +30,7 @@
 
 
     function CursorUpdateRecord(e) {
-        var txn = db.transaction("test", 1), // XXX: Don't hardcode
+        var txn = db.transaction("test", "readwrite"),
           cursor_rq = txn.objectStore("test")
                          .index("index")
                          .openCursor();

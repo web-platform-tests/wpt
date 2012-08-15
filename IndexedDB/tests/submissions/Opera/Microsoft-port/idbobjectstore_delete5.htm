@@ -27,7 +27,7 @@
         }
         
         function DeleteRecordsAndVerifyCount() {
-            var txn = db.transaction(objectStoreName, IDBTransaction.READ_WRITE);
+            var txn = db.transaction(objectStoreName, "readwrite");
             var objStore = txn.objectStore(objectStoreName);
             objStore.delete(IDBKeyRange.bound(3,6));
             var rqCount = objStore.count();

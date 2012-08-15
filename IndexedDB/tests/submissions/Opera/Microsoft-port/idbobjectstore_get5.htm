@@ -27,7 +27,7 @@
         }
         
         function GetRecordFromObjectStore() {
-            var txn = db.transaction(objectStoreName, IDBTransaction.READ_ONLY);
+            var txn = db.transaction(objectStoreName, "readonly");
             var objStore = txn.objectStore(objectStoreName);
             var rqGet = objStore.get(IDBKeyRange.bound(3,6));
             rqGet.onsuccess = t.step_func(function(event) {

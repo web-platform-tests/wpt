@@ -21,7 +21,10 @@
         rq.onsuccess = fail(t, "success on putting duplicate indexed record")
 
         rq.onerror = t.step_func(function(e) {
-            assert_equals(e.type, "ConstraintError");
+            assert_equals(rq.error.name, "ConstraintError");
+            assert_equals(e.target.error.name, "ConstraintError");
+
+            assert_equals(e.type, "error");
 
             e.stopPropagation();
         });

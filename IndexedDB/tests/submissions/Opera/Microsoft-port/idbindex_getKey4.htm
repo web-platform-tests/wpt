@@ -29,7 +29,7 @@
         }
         
         function GetRecordFromIndex() {
-            var txn = db.transaction(objectStoreName, IDBTransaction.READ_WRITE);
+            var txn = db.transaction(objectStoreName, "readwrite");
             var objStore = txn.objectStore(objectStoreName);
             var index = objStore.index(indexName);
             var rqGet = index.getKey(IDBKeyRange.bound("data4","data7"));

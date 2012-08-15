@@ -1291,6 +1291,16 @@ policies and contribution forms [3].
             return;
         }
         this.phase = this.phases.COMPLETE;
+        var this_obj = this;
+        this.tests.forEach(
+            function(x)
+            {
+                if(x.status === x.NOTRUN)
+                {
+                    this_obj.notify_result(x);
+                }
+            }
+        );
         this.notify_complete();
     };
 

@@ -3,8 +3,11 @@
     <head>
         <title>CSS Test: Margin-bottom applied to element with display inline</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-08-14 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#propdef-margin-bottom" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#margin-properties" />
+		<link rel="match" href="margin-bottom-applies-to-008-ref.xht" />
+
         <meta name="flags" content="ahem" />
         <meta name="assert" content="The 'margin-bottom' property applies to elements with a display of inline. However, vertical margins do not have any affect on non-replaced inline elements." />
         <style type="text/css">
@@ -23,7 +26,7 @@
         </style>
     </head>
     <body>
-        <p>Test passes if there is no red visible on the page.</p>
+        <p>Test passes if there is <strong>no red</strong>.</p>
         <div>
             <div>XXXXXXXXXX</div>
         </div>

@@ -168,3 +168,19 @@ function _addTest(test)
     };
 }
 
+function _assertGreen(ctx, canvasWidth, canvasHeight)
+{
+    var testColor = function(d, idx, expected) {
+        _assertEqual(d[idx], expected, "d[" + idx + "]", String(expected));
+    };
+    var imagedata = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
+    var w = imagedata.width, h = imagedata.height, d = imagedata.data;
+    for (var i = 0; i < h; ++i) {
+        for (var j = 0; j < w; ++j) {
+            testColor(d, 4 * (w * i + j) + 0, 0);
+            testColor(d, 4 * (w * i + j) + 1, 255);
+            testColor(d, 4 * (w * i + j) + 2, 0);
+            testColor(d, 4 * (w * i + j) + 3, 255);
+        }
+    }
+}

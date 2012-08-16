@@ -14,6 +14,11 @@
    test(function() {
     assert_equals(testElement.contentEditable,"inherit", "check for testElement.contentEditable value");
    });
+   testElement.setAttribute("contentEditable", "");
+   test(function() {
+    assert_true(testElement.isContentEditable, "check for testElement.contentEditable value");
+    assert_equals(testElement.contentEditable,"true", "check for testElement.contentEditable value");
+   });
    testElement.contentEditable="true";
    test(function() {
     assert_true(testElement.isContentEditable, "check for testElement.contentEditable value");

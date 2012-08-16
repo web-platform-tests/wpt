@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title>Editing: contentEditable attribute test</title>
+  <link rel="author" title="Baidu" href="mailto: guopengcheng@baidu.com"/>
+  <link rel="help" href="http://www.w3.org/TR/html5/editing.html#contenteditable"/>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <div id="log"></div>
+ </head>
+ <body>
+  <script type="text/javascript">
+   var testElement = document.createElement("testElement");
+   test(function() {
+    assert_equals(testElement.contentEditable,"inherit", "check for testElement.contentEditable value");
+   });
+   testElement.contentEditable="true";
+   test(function() {
+    assert_true(testElement.isContentEditable, "check for testElement.contentEditable value");
+    assert_equals(testElement.contentEditable,"true", "check for testElement.contentEditable value");
+   });
+   testElement.contentEditable="false";
+   test(function() {
+    assert_false(testElement.isContentEditable, "check for testElement.contentEditable value");
+    assert_equals(testElement.contentEditable,"false", "check for testElement.contentEditable value");
+   });
+   testElement.contentEditable="inherit";
+   test(function() {
+    assert_equals(testElement.contentEditable,"inherit", "check for testElement.contentEditable value");
+   });
+   var childElement = document.createElement("childElement");
+   testElement.appendChild(childElement);
+   testElement.contentEditable="true";
+   test(function() {
+    assert_true(testElement.isContentEditable, "check for testElement.contentEditable value");
+    assert_equals(testElement.contentEditable,"true", "check for testElement.contentEditable value");
+    assert_true(childElement.isContentEditable, "check for childElement.contentEditable value");
+    assert_equals(childElement.contentEditable,"inherit", "check for childElement.contentEditable value");
+   });
+   testElement.contentEditable="false";
+   test(function() {
+    assert_false(testElement.isContentEditable, "check for testElement.contentEditable value");
+    assert_equals(testElement.contentEditable,"false", "check for testElement.contentEditable value");
+    assert_false(childElement.isContentEditable, "check for childElement.contentEditable value");
+    assert_equals(childElement.contentEditable,"inherit", "check for childElement.contentEditable value");
+   });
+  </script>
+ </body>
+</html>

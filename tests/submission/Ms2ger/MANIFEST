@@ -1,4 +1,3 @@
-dir apis-in-html-documents
 dir dom-tree-accessors
 dir dynamic-markup-insertion
 dir elements-in-the-dom
@@ -10,7 +9,8 @@ dir obsolete-features
 dir parsing
 dir rendering
 dir resource-metadata-management
-dir timers
 dir support
 dir the-elements-of-html
 dir the-hidden-attribute
+dir the-html-syntax
+dir timers

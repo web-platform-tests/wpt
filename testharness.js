@@ -261,6 +261,10 @@ policies and contribution forms [3].
  * assert_regexp_match(actual, expected, description)
  *   asserts that /actual/ matches the regexp /expected/
  *
+ * assert_class_string(object, class_name, description)
+ *   asserts that the class string of /object/ as returned in
+ *   Object.prototype.toString is equal to /class_name/.
+ *
  * assert_own_property(object, property_name, description)
  *   assert that object has own property property_name
  *
@@ -714,6 +718,12 @@ policies and contribution forms [3].
                {expected:expected, actual:actual});
     }
     expose(assert_regexp_match, "assert_regexp_match");
+
+    function assert_class_string(object, class_string, description) {
+        assert_equals({}.toString.call(object), "[object " + class_string + "]",
+                      description);
+    }
+    expose(assert_class_string, "assert_class_string");
 
 
     function _assert_own_property(name) {

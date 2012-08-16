@@ -25,7 +25,7 @@
  .warning p:last-child { margin-bottom: 0; }
  .warning:before { font-style: normal; }
  p.warning:before { content: '\26A0 Warning! '; }
-
+ 
  p.status { position:absolute; margin:-2em 0 0 -125px; width:100px; padding:5px; border:thin solid; font-size:smaller; background:papayawhip; color:black; border-radius:5px }
  p.status::after { content:'\25BA'; position:absolute; top:5px; right:3px; width:0; color:papayawhip; text-shadow:black 2px 0 0; cursor:default }
 
@@ -46,16 +46,16 @@
 <p><a href="http://www.w3.org/"><img alt="W3C" height="48" src="http://www.w3.org/Icons/w3c_home" width="72"></a>
 
 <h1>Quirks Mode</h1>
-<h2 class="no-num no-toc not-tr not-fs" id="living-specification-—-18-july-2012">Living Specification — 18 July 2012</h2>
+<h2 class="no-num no-toc not-tr not-fs" id="living-specification-—-16-august-2012">Living Specification — 16 August 2012</h2>
 <dl>
  <dt>This Version:
  <dd class="not-tr not-fs"><a href="http://dvcs.w3.org/hg/quirks-mode/raw-file/tip/Overview.html">http://dvcs.w3.org/hg/quirks-mode/raw-file/tip/Overview.html</a>
  <dt class="not-tr">Participate:</dt>
  <dd class="not-tr">Send feedback to <a href="http://www.whatwg.org/mailing-list">whatwg@whatwg.org</a>
- or <a href="https://www.w3.org/Bugs/Public/enter_bug.cgi?product=WHATWG&amp;component=Quirks%20Mode">file a bug</a> (<a href="https://www.w3.org/Bugs/Public/buglist.cgi?product=WHATWG&amp;component=Quirks%20Mode&amp;resolution=---">open bugs</a>)
+ or <a href="https://www.w3.org/Bugs/Public/enter_bug.cgi?product=Web%20Platform%20%28other%29&amp;component=Quirks%20Mode">file a bug</a> (<a href="https://www.w3.org/Bugs/Public/buglist.cgi?query_format=advanced&amp;short_desc_type=allwordssubstr&amp;short_desc=&amp;product=Web+Platform+%28other%29&amp;component=Quirks+Mode&amp;longdesc_type=allwordssubstr&amp;longdesc=&amp;bug_file_loc_type=allwordssubstr&amp;bug_file_loc=&amp;status_whiteboard_type=allwordssubstr&amp;status_whiteboard=&amp;keywords_type=allwords&amp;keywords=&amp;bug_status=UNCONFIRMED&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED&amp;emailtype1=substring&amp;email1=&amp;emailtype2=substring&amp;email2=&amp;bug_id_type=anyexact&amp;bug_id=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;cmdtype=doit&amp;order=Reuse+same+sort+as+last+time&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=">open bugs</a>)
  <script async="" src="http://dvcs.w3.org/hg/quirks-mode/raw-file/tip/file-bug.js"></script>
  <dd class="no-tr"><a href="http://wiki.whatwg.org/wiki/IRC">IRC: #whatwg on Freenode</a>
-
+ 
  <dt>Version History:
  <dd><a href="http://dvcs.w3.org/hg/quirks-mode/shortlog">http://dvcs.w3.org/hg/quirks-mode/shortlog</a></dd>
  <dt>Editor:
@@ -71,7 +71,7 @@
 <a href="http://creativecommons.org/publicdomain/zero/1.0/" rel="license">CC0 1.0 Universal</a>.
 To the extent possible under law, the editors has waived all copyright and
 related or neighboring rights to this work. In addition, as of
-18 July 2012, the editors have made this specification available
+16 August 2012, the editors have made this specification available
 under the
 <a href="http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0" rel="license">Open Web Foundation Agreement Version 1.0</a>,
 which is available at
@@ -138,7 +138,7 @@ http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0.
 <li>Where possible, limit quirks to a fixed set of legacy features so they don't propagate into new features.
 </ul>
 
-<p class="note">This specification does not enumerate all quirks that currently exist in browsers. The HTML specification specifies a number of quirks. <a href="#refsHTML">[HTML]</a> If a quirk is missing from both specifications, it is probably due to the second bullet point above.
+<p class="note">This specification does not enumerate all quirks that currently exist in browsers. The HTML specification specifies a number of quirks. <a data-anolis-ref="" href="#refsHTML">[HTML]</a> If a quirk is missing from both specifications, it is probably due to the second bullet point above.
 
 <h2 id="common-infrastructure"><span class="secno">2 </span>Common infrastructure</h2>
 
@@ -146,7 +146,7 @@ http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0.
 
 <p>All diagrams, examples, and notes in this specification are non-normative, as are all sections explicitly marked non-normative. Everything else in this specification is normative.
 
-<p>The key words "MUST", "MUST NOT", "REQUIRED", <!--"SHALL", "SHALL NOT",--> "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in the normative parts of this specification are to be interpreted as described in RFC2119. For readability, these words do not appear in all uppercase letters in this specification. <a href="#refsRFC2119">[RFC2119]</a>
+<p>The key words "MUST", "MUST NOT", "REQUIRED", <!--"SHALL", "SHALL NOT",--> "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in the normative parts of this specification are to be interpreted as described in RFC2119. For readability, these words do not appear in all uppercase letters in this specification. <a data-anolis-ref="" href="#refsRFC2119">[RFC2119]</a>
 
 <h3 id="terminology"><span class="secno">2.2 </span>Terminology</h3>
 
@@ -156,13 +156,13 @@ http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0.
 
 <h3 id="dependencies"><span class="secno">2.3 </span>Dependencies</h3>
 
-<p>The terms <dfn id="block-container-element">block container element</dfn>, <dfn id="inline-level">inline-level</dfn>, <dfn id="containing-block">containing block</dfn>, <dfn id="initial-containing-block">initial containing block</dfn> and <dfn id="block-container-box">block container box</dfn> are defined in CSS 2.1. <a href="#refsCSS">[CSS]</a>
+<p>The terms <dfn id="block-container-element">block container element</dfn>, <dfn id="inline-level">inline-level</dfn>, <dfn id="containing-block">containing block</dfn>, <dfn id="initial-containing-block">initial containing block</dfn> and <dfn id="block-container-box">block container box</dfn> are defined in CSS 2.1. <a data-anolis-ref="" href="#refsCSS">[CSS]</a>
 
-<p>The terms <dfn id="identifier-token">identifier token</dfn>, <dfn id="function-token">function token</dfn>, <dfn id="at-keyword-token">at-keyword token</dfn>, <dfn id="hash-token">hash token</dfn>, <dfn id="string-token">string token</dfn>, <dfn id="bad-string-token">bad-string token</dfn>, <dfn id="url-token">url token</dfn>, <dfn id="bad-url-token">bad-url token</dfn>, <dfn id="delim-token">delim token</dfn>, <dfn id="number-token">number token</dfn>, <dfn id="percentage-token">percentage token</dfn>, <dfn id="dimension-token">dimension token</dfn>, <dfn id="unicode-range-token">unicode-range token</dfn>, <dfn id="whitespace-token">whitespace token</dfn>, <dfn id="cdo-token">cdo token</dfn>, <dfn id="cdc-token">cdc token</dfn>, <dfn id="colon-token">colon token</dfn>, <dfn id="semicolon-token">semicolon token</dfn>, <dfn id="token">[ token</dfn>, <dfn id="token-0">] token</dfn>, <dfn id="(-token">( token</dfn>, <dfn id=")-token">) token</dfn>, <dfn id="token-1">{ token</dfn> and <dfn id="token-2">} token</dfn> are defined in CSS Syntax Module Level 3. <a href="#refsCSSSYNTAX">[CSSSYNTAX]</a>
+<p>The terms <dfn id="identifier-token">identifier token</dfn>, <dfn id="function-token">function token</dfn>, <dfn id="at-keyword-token">at-keyword token</dfn>, <dfn id="hash-token">hash token</dfn>, <dfn id="string-token">string token</dfn>, <dfn id="bad-string-token">bad-string token</dfn>, <dfn id="url-token">url token</dfn>, <dfn id="bad-url-token">bad-url token</dfn>, <dfn id="delim-token">delim token</dfn>, <dfn id="number-token">number token</dfn>, <dfn id="percentage-token">percentage token</dfn>, <dfn id="dimension-token">dimension token</dfn>, <dfn id="unicode-range-token">unicode-range token</dfn>, <dfn id="whitespace-token">whitespace token</dfn>, <dfn id="cdo-token">cdo token</dfn>, <dfn id="cdc-token">cdc token</dfn>, <dfn id="colon-token">colon token</dfn>, <dfn id="semicolon-token">semicolon token</dfn>, <dfn id="token">[ token</dfn>, <dfn id="token-0">] token</dfn>, <dfn id="(-token">( token</dfn>, <dfn id=")-token">) token</dfn>, <dfn id="token-1">{ token</dfn> and <dfn id="token-2">} token</dfn> are defined in CSS Syntax Module Level 3. <a data-anolis-ref="" href="#refsCSSSYNTAX">[CSSSYNTAX]</a>
 
-<p>The terms <dfn id="minimum-intrinsic-width-of-an-inline-formatting-context">minimum intrinsic width of an inline formatting context</dfn> and <dfn id="outer-intrinsic-minimum-width-of-a-table-cell">outer intrinsic minimum width of a table cell</dfn> are defined in More Precise Definitions of Intrinsic Widths and Table Layout (Proposal). <a href="#refsCSSINTRINSIC">[CSSINTRINSIC]</a>
+<p>The terms <dfn id="minimum-intrinsic-width-of-an-inline-formatting-context">minimum intrinsic width of an inline formatting context</dfn> and <dfn id="outer-intrinsic-minimum-width-of-a-table-cell">outer intrinsic minimum width of a table cell</dfn> are defined in More Precise Definitions of Intrinsic Widths and Table Layout (Proposal). <a data-anolis-ref="" href="#refsCSSINTRINSIC">[CSSINTRINSIC]</a>
 
-<p>Some terms are defined in DOM and HTML. <a href="#refsDOM">[DOM]</a> <a href="#refsHTML">[HTML]</a>
+<p>Some terms are defined in DOM and HTML. <a data-anolis-ref="" href="#refsDOM">[DOM]</a> <a data-anolis-ref="" href="#refsHTML">[HTML]</a>
 
 <h2 id="css"><span class="secno">3 </span>CSS</h2>
 
@@ -216,9 +216,9 @@ $ grep -iaPo "([a-z]+-)?color\s*:\s*[0-9a-f]{3}([0-9a-f]{3})?(\s|\"|\'|;|$)" web
 >>> 		props[prop] += 1
 >>> 	else:
 >>> 		props[prop] = 1
->>>
+>>> 
 >>> f.close()
->>>
+>>> 
 >>> for prop in props:
 >>> 	print prop + ':' + str(props[prop])
 :28
@@ -282,7 +282,7 @@ In particular, outline-color did not show up at all.
 <li>'border-bottom-width'
 <li>'border-left-width'
 <li>'border-width'
-<!--<li>'bottom'-->
+<li>'bottom'
 <li>'clip'
 <li>'font-size'
 <!--<li class=XXX>'font'-->
@@ -444,7 +444,7 @@ left:16
 
 'clip'
 
-$ grep -iaPo "clip\s*:\s*rect\([^\)]+\)" web200904 > clip.txt
+$ grep -iaPo "clip\s*:\s*rect\([^\)]+\)" web200904 > clip.txt 
 ^C
 
 Looks like 'clip' is used with and without commas, with and without units.
@@ -486,7 +486,7 @@ To be exact, they don't apply inside the following shorthands:
 and also don't apply inside the following complex properties:
   box-shadow
   text-shadow
-
+  
 
 simonp:
 
@@ -535,7 +535,7 @@ Opera supported this quirk (copied from IE), but then dropped it because it brok
 
 <p class="status not-tr">Status: Awaiting implementation feedback. Has <a href="http://simon.html5.org/test/quirks-mode/js/blocks-ignore-line-height.html">tests</a>.
 
-<p>In <a class="external" data-anolis-spec="dom" href="http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document-quirks" title="concept-document-quirks">quirks mode</a> and <a class="external" data-anolis-spec="dom" href="http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document-limited-quirks" title="concept-document-limited-quirks">almost standards mode</a>, a <a href="#block-container-element">block container element</a> whose content is composed of <a href="#inline-level">inline-level</a> elements, the element's 'line-height' must be ignored for the purpose of calculating the minimal height of line boxes within the element.
+<p>In <a class="external" data-anolis-spec="dom" href="http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document-quirks" title="concept-document-quirks">quirks mode</a> and <a class="external" data-anolis-spec="dom" href="http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document-limited-quirks" title="concept-document-limited-quirks">almost standards mode</a>, a <a href="#block-container-element">block container element</a> whose content is composed of <a href="#inline-level">inline-level</a> elements, the element's 'line-height' must be ignored for the purpose of calculating the minimal height of line boxes within the element. 
 
 <h3 id="the-percentage-height-calculation-quirk"><span class="secno">3.5 </span>The percentage height calculation quirk</h3>
 
@@ -658,7 +658,7 @@ https://bugs.webkit.org/show_bug.cgi?id=84469
 
 <p class="status not-tr">Status: Awaiting implementation feedback.
 
-<p>In <a class="external" data-anolis-spec="dom" href="http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document-quirks" title="concept-document-quirks">quirks mode</a>, a compound selector <var>selector</var> that matches the following conditions must not match elements that would not also match the ':any-link' selector. <a href="#refsSELECTORS">[SELECTORS]</a>
+<p>In <a class="external" data-anolis-spec="dom" href="http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document-quirks" title="concept-document-quirks">quirks mode</a>, a compound selector <var>selector</var> that matches the following conditions must not match elements that would not also match the ':any-link' selector. <a data-anolis-ref="" href="#refsSELECTORS">[SELECTORS]</a>
 
 <ul>
  <li><var>selector</var> uses the ':active' or ':hover' pseudo-classes.

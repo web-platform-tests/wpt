@@ -3,11 +3,15 @@
 <head>
   <title>CSS Test: Margin Collapsing: in flow (simple)</title>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-08-15 -->
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/block/margin-collapse/006.html" type="text/html"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#collapsing-margins"/>
+  <link rel="match" href="margin-collapse-106-ref.xht" />
+
+  <meta name="flags" content="ahem" />
+
   <style type="text/css">
-   .ahem { display: inline; font: 1.25em/1 Ahem, sans-serif; background: red; color: white; }
-   table { border-spacing: 0; font: 50px/1 Ahem; border: solid; background: red; }
+   table { border-spacing: 0; font: 50px/1 Ahem; border: solid 3px; background: red; }
    td { padding: 0; }
    /* test */
    .test { background: orange; }
@@ -25,8 +29,7 @@
   </style>
  </head>
  <body>
-  <div class="ahem">Ahem_font_required_for_this_test.</div>
-  <p>The pattern below should be a stack of horizontal bars with no red.</p>
+  <p>Test passes if there is a stack of multi-colored horizontal bars with no red.</p>
   <table>
    <tr>
     <td class="test">
@@ -42,11 +45,6 @@
     </td>
    </tr>
   </table>
-  <p>Control: This test is meaningless if you see any red below. (You should only see orange.)</p>
-  <div class="red">
-   <div class="orange"></div>
-  </div>
- 
 
 </body>
 </html>

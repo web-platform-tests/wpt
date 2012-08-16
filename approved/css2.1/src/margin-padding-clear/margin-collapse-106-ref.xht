@@ -13,7 +13,7 @@
   {
   border: solid 3px;
   border-spacing: 0;
-  font-size: 50px;
+  font: 50px/1 Ahem;
   }
 
   td
@@ -22,15 +22,13 @@
   padding: 0;
   }
 
-  div {margin: 1em 0;}
+  div {width: 2em;}
 
-  .a {background-color: yellow;}
+  .c {border-top: orange solid 1em;}
 
-  .b {background-color: lime;}
+  .a {border-top: yellow solid 1em;}
 
-  .c {background-color: aqua;}
-
-  .d {background-color: blue;}
+  .b {border-top: lime solid 1em;}
   ]]></style>
 
  </head>
@@ -42,18 +40,11 @@
   <table>
    <tr>
     <td>
-     <div class="d">
-      <div class="a">A</div>
-      <div class="b">B</div>
-      <div class="c">C</div>
-     </div>
-    </td>
-    <td>
-     <div class="d">
-      <div class="a">A</div>
-      <div class="b">B</div>
-      <div class="c">C</div>
-     </div>
+     <div class="c"></div>
+     <div class="a"></div>
+     <div class="c"></div>
+     <div class="b"></div>   
+     <div class="c"></div>
     </td>
    </tr>
   </table>

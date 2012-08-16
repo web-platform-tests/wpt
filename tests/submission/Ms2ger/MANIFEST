@@ -1,4 +1,3 @@
-dir dom-tree-accessors
 dir dynamic-markup-insertion
 dir elements-in-the-dom
 dir events

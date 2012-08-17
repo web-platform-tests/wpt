@@ -3,8 +3,11 @@
 <head>
   <title>CSS Test: Margin Collapsing: in flow (height, control) - not really margin collapsing</title>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-08-17 -->
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/block/margin-collapse/056.html" type="text/html"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#collapsing-margins"/>
+  <link rel="match" href="margin-collapse-156-ref.xht" />
+
   <style type="text/css">
    table { border-spacing: 0; font-size: 50px; border: solid; background: red; }
    td { padding: 0; width: 1em; background: red; }
@@ -20,7 +23,7 @@
   </style>
  </head>
  <body>
-  <p>The pattern below should be a stack of horizontal bars with no red.</p>
+  <p>Test passes if there is a stack of 3 horizontal bands which are <strong>from top to bottom: aqua, yellow, aqua</strong> with no red.</p>
   <table>
    <tr>
     <td class="a">
@@ -36,8 +39,6 @@
     </td>
    </tr>
   </table>
-  <p>See also <a href="019.html">test 019</a>, <a href="020.html">test 020</a>.</p>
- 
 
 </body>
 </html>

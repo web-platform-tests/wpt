@@ -6,7 +6,6 @@
 <script src="support.js"></script>
 
 <script>
-// XXX I think this should not be allowed...
     var db, aborted,
       t = async_test()
 
@@ -28,7 +27,7 @@
                 .onsuccess = t.step_func(function(e) {
             assert_equals(e.target.result, 'object_4', 'result');
         });
-        alert(objStore.indexNames[0]);
+        console.log(objStore.indexNames[0]);
     }
 
     open_rq.onsuccess = function() {

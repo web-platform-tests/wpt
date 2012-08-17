@@ -12,15 +12,15 @@
   <script type="text/javascript">
    test(function() {
     assert_equals(document.designMode, "off", "check for designMode value");
-   });
+   }, "initial designMode attribute");
    document.designMode="on";
    test(function() {
     assert_equals(document.designMode, "on", "check for designMode value");
-   });
+   }, "set designMode = \"on\"");
    document.designMode="off";
    test(function() {
     assert_equals(document.designMode,"off", "check for designMode value");
-   });
+   }, "set designMode = \"off\"");
   </script>
  </body>
 </html>

@@ -20,27 +20,28 @@
 
   div {width: 2em;}
 
-  .c {border-top: orange solid 1em;}
-
   .a {border-top: yellow solid 1em;}
 
-  .b {border-top: lime solid 1em;}
+  .b {border-top: orange solid 2em;}
+
+  .c {border-top: lime solid 1em;}
+
+  .d {border-top: aqua solid 1em;}
   ]]></style>
 
  </head>
 
  <body>
 
-  <p>Test passes if there is a stack of 5 bands which are <strong>from top to bottom: orange, yellow, orange, lime, orange</strong> and with no red.</p>
+  <p>Test passes if there is a stack of 4 bands which are <strong>from top to bottom: yellow, orange, lime, aqua</strong> and with no red.</p>
 
   <table>
    <tr>
     <td>
-     <div class="c"></div>
      <div class="a"></div>
-     <div class="c"></div>
      <div class="b"></div>   
      <div class="c"></div>
+     <div class="d"></div>
     </td>
    </tr>
   </table>

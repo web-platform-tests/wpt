@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>CSS Transforms: SVG DOM API - baseVal</title>
+    <title>CSS Transforms: SVG DOM API - patternTransform basic tests</title>
     <link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-transform">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-attribute-dom">
@@ -20,9 +20,16 @@
 </head>
 <body>
     <svg id="svg">
-        <rect id="testRect" width="100" height="100" fill="green" />
+        <defs>
+             <pattern id="greenRects" patternUnits="userSpaceOnUse" x="0" y="0" width="50" height="50">
+                 <rect x="0" y="0" width="25" height="25" fill="green"/>
+                 <rect x="0" y="25" width="25" height="25" fill="green"/>
+             </pattern>
+        </defs>
+        <rect fill="url(#greenRects)" x="0" y="0" width="100" height="100"/>
     </svg>
     <div id="log"></div>
-    <script src="js/SVGDomTransformAPIBasicTests.js"></script>
+    <script src="js/SVGTransformListBasicCommon.js"></script>
+    <script src="js/SVGPatternTransformListBasicTests.js"></script>
 </body>
 </html>

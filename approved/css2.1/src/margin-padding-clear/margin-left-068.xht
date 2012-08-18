@@ -3,19 +3,21 @@
     <head>
         <title>CSS Test: Margin-left using inches with a nominal value with a plus sign, +1in</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+		<link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-08-17 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#propdef-margin-left" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#margin-properties" />
+		<link rel="match" href="margin-left-067-ref.xht" />
+
         <meta name="flags" content="" />
         <meta name="assert" content="The 'margin-left' property sets a nominal length value in inches with a plus sign." />
         <style type="text/css">
             div
             {
                 height: 1in;
-                width: 0;
             }
             #wrapper
             {
-                border-left: 0.2in solid red;
+                border-left: 0.25in solid red;
             }
             #div1
             {
@@ -23,13 +25,13 @@
             }
             #div2
             {
-                border-left: 0.2in solid black;
-                margin-left: -1.2in;
+                border-left: 0.25in solid black;
+                margin-left: -1.25in;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if there is no red visible on the page.</p>
+        <p>Test passes if there is <strong>no red</strong>.</p>
         <div id="wrapper">
             <div id="div1">
                 <div id="div2"></div>

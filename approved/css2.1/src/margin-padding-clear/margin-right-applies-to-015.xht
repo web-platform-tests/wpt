@@ -3,33 +3,28 @@
     <head>
         <title>CSS Test: Margin-right applied to element with display table-caption</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+		<link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-08-19 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#propdef-margin-right" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#margin-properties" />
+		<link rel="match" href="margin-left-applies-to-009-ref.xht" />
+
         <meta name="flags" content="" />
         <meta name="assert" content="The 'margin-right' property applies to elements with a display of table-caption." />
         <style type="text/css">
-            div
-            {
-                direction: rtl;
-            }
             #wrapper
             {
-                border-right: 10px solid blue;
-            }
-            #wrapper, #test
-            {
-                height: 200px;
-                width: 200px;
+                border-right: 10px solid orange;
+				float: left;
             }
             #test
             {
-                border-right: 10px solid orange;
+                border-right: 10px solid blue;
                 display: table-caption;
+                height: 200px;
                 margin-right: 50px;
             }
             #table
             {
-                border-collapse: collapse;
                 display: table;
             }
             #row
@@ -43,7 +38,7 @@
         </style>
     </head>
     <body>
-        <p>Test passes if there is space between the blue and orange lines below.</p>
+        <p>Test passes if there is space between the blue and orange lines.</p>
         <div id="wrapper">
             <div id="table">
                 <div id="test"></div>

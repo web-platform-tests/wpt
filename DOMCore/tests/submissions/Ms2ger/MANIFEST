@@ -93,4 +93,4 @@ Range-attributes.html
 Range-commonAncestorContainer.html
 Range-comparePoint.html
 Range-detach.html
-Range-intersectsNode.html
+Range-intersectsNode-binding.html

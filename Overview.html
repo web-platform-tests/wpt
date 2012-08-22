@@ -47,7 +47,7 @@
 
 </p><hgroup>
 <h1>Quirks Mode</h1>
-<h2 class="no-num no-toc not-tr not-fs">Living Specification — 17 August 2012</h2>
+<h2 class="no-num no-toc not-tr not-fs">Living Specification — 22 August 2012</h2>
 </hgroup>
 
 <dl>
@@ -74,7 +74,7 @@
 <a href="http://creativecommons.org/publicdomain/zero/1.0/" rel="license">CC0 1.0 Universal</a>.
 To the extent possible under law, the editors has waived all copyright and
 related or neighboring rights to this work. In addition, as of
-17 August 2012, the editors have made this specification available
+22 August 2012, the editors have made this specification available
 under the
 <a href="http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0" rel="license">Open Web Foundation Agreement Version 1.0</a>,
 which is available at
@@ -107,21 +107,20 @@ http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0.
    <li><a href="#dependencies"><span class="secno">2.3 </span>Dependencies</a></ol></li>
  <li><a href="#css"><span class="secno">3 </span>CSS</a>
   <ol>
-   <li><a href="#the-hashless-hex-color-quirk"><span class="secno">3.1 </span>The hashless hex color quirk</a></li>
-   <li><a href="#the-unitless-length-quirk"><span class="secno">3.2 </span>The unitless length quirk</a></li>
-   <li><a href="#the-line-height-calculation-quirk"><span class="secno">3.3 </span>The line height calculation quirk</a></li>
-   <li><a href="#the-blocks-ignore-line-height-quirk"><span class="secno">3.4 </span>The blocks ignore line-height quirk</a></li>
-   <li><a href="#the-percentage-height-calculation-quirk"><span class="secno">3.5 </span>The percentage height calculation quirk</a></li>
-   <li><a href="#the-table-cell-width-calculation-quirk"><span class="secno">3.6 </span>The table cell width calculation quirk</a></li>
-   <li><a href="#the-table-cell-nowrap-minimum-width-calculation-quirk"><span class="secno">3.7 </span>The table cell nowrap minimum width calculation quirk</a></li>
-   <li><a href="#the-collapsing-table-quirk"><span class="secno">3.8 </span>The collapsing table quirk</a></li>
-   <li><a href="#the-text-decoration-doesn't-propagate-into-tables-quirk"><span class="secno">3.9 </span>The text decoration doesn't propagate into tables quirk</a></li>
-   <li><a href="#the-font-element-text-decoration-color-quirk"><span class="secno">3.10 </span>The font element text decoration color quirk</a></li>
-   <li><a href="#the-tables-inherit-color-from-body-quirk"><span class="secno">3.11 </span>The tables inherit color from body quirk</a></li>
-   <li><a href="#the-table-cell-height-box-sizing-quirk"><span class="secno">3.12 </span>The table cell height box sizing quirk</a></ol></li>
+   <li><a href="#the-line-height-calculation-quirk"><span class="secno">3.1 </span>The line height calculation quirk</a></li>
+   <li><a href="#the-blocks-ignore-line-height-quirk"><span class="secno">3.2 </span>The blocks ignore line-height quirk</a></li>
+   <li><a href="#the-percentage-height-calculation-quirk"><span class="secno">3.3 </span>The percentage height calculation quirk</a></li>
+   <li><a href="#the-table-cell-width-calculation-quirk"><span class="secno">3.4 </span>The table cell width calculation quirk</a></li>
+   <li><a href="#the-table-cell-nowrap-minimum-width-calculation-quirk"><span class="secno">3.5 </span>The table cell nowrap minimum width calculation quirk</a></li>
+   <li><a href="#the-collapsing-table-quirk"><span class="secno">3.6 </span>The collapsing table quirk</a></li>
+   <li><a href="#the-text-decoration-doesn't-propagate-into-tables-quirk"><span class="secno">3.7 </span>The text decoration doesn't propagate into tables quirk</a></li>
+   <li><a href="#the-font-element-text-decoration-color-quirk"><span class="secno">3.8 </span>The font element text decoration color quirk</a></li>
+   <li><a href="#the-tables-inherit-color-from-body-quirk"><span class="secno">3.9 </span>The tables inherit color from body quirk</a></li>
+   <li><a href="#the-table-cell-height-box-sizing-quirk"><span class="secno">3.10 </span>The table cell height box sizing quirk</a></ol></li>
  <li><a href="#selectors"><span class="secno">4 </span>Selectors</a>
   <ol>
    <li><a href="#the-:active-and-:hover-quirk"><span class="secno">4.1 </span>The :active and :hover quirk</a></ol></li>
+ <li><a href="#quirks-that-have-moved-to-other-specifications"><span class="secno">5 </span>Quirks that have moved to other specifications</a></li>
  <li><a class="no-num" href="#references">References</a></li>
  <li><a class="no-num" href="#acknowledgments">Acknowledgments</a></ol>
 <!--end-toc-->
@@ -161,32 +160,30 @@ http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0.
 
 <p>The terms <dfn id="block-container-element">block container element</dfn>, <dfn id="inline-level">inline-level</dfn>, <dfn id="containing-block">containing block</dfn>, <dfn id="initial-containing-block">initial containing block</dfn> and <dfn id="block-container-box">block container box</dfn> are defined in CSS 2.1. <a data-anolis-ref="" href="#refsCSS">[CSS]</a>
 
-<p>The terms <dfn id="identifier-token">identifier token</dfn>, <dfn id="function-token">function token</dfn>, <dfn id="at-keyword-token">at-keyword token</dfn>, <dfn id="hash-token">hash token</dfn>, <dfn id="string-token">string token</dfn>, <dfn id="bad-string-token">bad-string token</dfn>, <dfn id="url-token">url token</dfn>, <dfn id="bad-url-token">bad-url token</dfn>, <dfn id="delim-token">delim token</dfn>, <dfn id="number-token">number token</dfn>, <dfn id="percentage-token">percentage token</dfn>, <dfn id="dimension-token">dimension token</dfn>, <dfn id="unicode-range-token">unicode-range token</dfn>, <dfn id="whitespace-token">whitespace token</dfn>, <dfn id="cdo-token">cdo token</dfn>, <dfn id="cdc-token">cdc token</dfn>, <dfn id="colon-token">colon token</dfn>, <dfn id="semicolon-token">semicolon token</dfn>, <dfn id="token">[ token</dfn>, <dfn id="token-0">] token</dfn>, <dfn id="(-token">( token</dfn>, <dfn id=")-token">) token</dfn>, <dfn id="token-1">{ token</dfn> and <dfn id="token-2">} token</dfn> are defined in CSS Syntax Module Level 3. <a data-anolis-ref="" href="#refsCSSSYNTAX">[CSSSYNTAX]</a>
-
 <p>The terms <dfn id="minimum-intrinsic-width-of-an-inline-formatting-context">minimum intrinsic width of an inline formatting context</dfn> and <dfn id="outer-intrinsic-minimum-width-of-a-table-cell">outer intrinsic minimum width of a table cell</dfn> are defined in More Precise Definitions of Intrinsic Widths and Table Layout (Proposal). <a data-anolis-ref="" href="#refsCSSINTRINSIC">[CSSINTRINSIC]</a>
 
 <p>Some terms are defined in DOM and HTML. <a data-anolis-ref="" href="#refsDOM">[DOM]</a> <a data-anolis-ref="" href="#refsHTML">[HTML]</a>
 
 <h2 id="css"><span class="secno">3 </span>CSS</h2>
-
-<h3 id="the-hashless-hex-color-quirk"><span class="secno">3.1 </span>The hashless hex color quirk</h3>
+<!--
+<h3>The hashless hex color quirk</h3>
 
 <p class="status not-tr">Status: Awaiting implementation feedback. Has <a href="http://simon.html5.org/test/quirks-mode/js/hashless-hex-color.html">tests</a>.
 
-<p>When a property is said to <dfn id="support-hashless-hex-colors">support hashless hex colors</dfn>, all tokens in the property's value <var>tokens</var> must be replaced with the return value of following algorithm prior to interpretation:
+<p>When a property is said to <dfn>support hashless hex colors</dfn>, all tokens in the property's value <var>tokens</var> must be replaced with the return value of following algorithm prior to interpretation:
 
 <ol>
  <li><p>Let <var>output</var> be an empty array.
  <li><p>Let <var>func</var> be zero.
  <li><p>For each token <var>token</var> in <var>tokens</var>:
   <ol>
-   <li><p>If <var>token</var> is a <a href="#)-token">) token</a> and <var>func</var> is greater than zero, decrement <var>func</var> by one and jump to the step labeled <var>append</var>.
-   <li><p>If <var>token</var> is a <a href="#function-token">function token</a> or <a href="#(-token">( token</a>, increment <var>func</var> by one and jump to the step labeled <var>append</var>.
-   <li><p>Let <var>value</var> be the representation of <var>token</var> if <var>token</var> is a <a href="#number-token">number token</a>, the representation of <var>token</var> followed by the unit of <var>token</var> if <var>token</var> is a <a href="#dimension-token">dimension token</a>, or the value of <var>token</var> otherwise.
-   <li><p>If the following conditions are true, let <var>token</var> be a new <a href="#hash-token">hash token</a> token with its value set to <var>value</var>.
+   <li><p>If <var>token</var> is a <span>) token</span> and <var>func</var> is greater than zero, decrement <var>func</var> by one and jump to the step labeled <var>append</var>.
+   <li><p>If <var>token</var> is a <span>function token</span> or <span>( token</span>, increment <var>func</var> by one and jump to the step labeled <var>append</var>.
+   <li><p>Let <var>value</var> be the representation of <var>token</var> if <var>token</var> is a <span>number token</span>, the representation of <var>token</var> followed by the unit of <var>token</var> if <var>token</var> is a <span>dimension token</span>, or the value of <var>token</var> otherwise.
+   <li><p>If the following conditions are true, let <var>token</var> be a new <span>hash token</span> token with its value set to <var>value</var>.
     <ul>
      <li><p><var>func</var> is zero.
-     <li><p><var>token</var> is a <a href="#number-token">number token</a>, <a href="#dimension-token">dimension token</a> or <a href="#identifier-token">identifier token</a>.
+     <li><p><var>token</var> is a <span>number token</span>, <span>dimension token</span> or <span>identifier token</span>.
      <li><p><var>value</var> has a length that is 3 or 6.
      <li><p><var>value</var> consists of only characters in the range [0-9A-Fa-f] (U+0030 to U+0039, U+0041 to U+0046, U+0061 to U+0066).
     </ul>
@@ -195,9 +192,9 @@ http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0.
  <li><p>Return <var>output</var>.
 </ol>
 
-<p>In <a class="external" data-anolis-spec="dom" href="http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document-quirks" title="concept-document-quirks">quirks mode</a>, the following properties <a href="#support-hashless-hex-colors">support hashless hex colors</a>:
+<p>In <span data-anolis-spec=dom title=concept-document-quirks>quirks mode</span>, the following properties <span>support hashless hex colors</span>:
 
-<ul class="brief">
+<ul class=brief>
 <li>'background-color'
 <li>'border-color'
 <li>'border-top-color'
@@ -206,7 +203,7 @@ http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0.
 <li>'border-left-color'
 <li>'color'
 </ul>
-
+-->
 <!-- research 2012-02-17 using dotnetdotcom's web200904:
 
 $ grep -iaPo "([a-z]+-)?color\s*:\s*[0-9a-f]{3}([0-9a-f]{3})?(\s|\"|\'|;|$)" web200904 > color.txt
@@ -255,31 +252,31 @@ Other than typos and scrollbar-* properties, the ones that are used are the ones
 In particular, outline-color did not show up at all.
 
 -->
-
-<h3 id="the-unitless-length-quirk"><span class="secno">3.2 </span>The unitless length quirk</h3>
+<!--
+<h3>The unitless length quirk</h3>
 
 <p class="status not-tr">Status: Awaiting implementation feedback. Has <a href="http://simon.html5.org/test/quirks-mode/js/unitless-length.html">tests</a>.
 
-<p>When a property is said to <dfn id="support-unitless-lengths">support unitless lengths</dfn>, all tokens in the property's value <var>tokens</var> must be replaced with the return value of following algorithm prior to interpretation:
+<p>When a property is said to <dfn>support unitless lengths</dfn>, all tokens in the property's value <var>tokens</var> must be replaced with the return value of following algorithm prior to interpretation:
 
 <ol>
  <li><p>Let <var>output</var> be an empty array.
  <li><p>Let <var>func</var> be zero.
  <li><p>For each token <var>token</var> in <var>tokens</var>:
   <ol>
-   <li><p>If <var>token</var> is a <a href="#)-token">) token</a> and <var>func</var> is greater than zero, decrement <var>func</var> by one and jump to the step labeled <var>append</var>.
-   <li><p>If <var>token</var> is a <a href="#function-token">function token</a> or <a href="#(-token">( token</a>, and <var>token</var>'s value does not <a class="external" data-anolis-spec="html" href="http://www.whatwg.org/specs/web-apps/current-work/multipage/infrastructure.html#ascii-case-insensitive" title="ASCII case-insensitive">ASCII-case-insensitively</a> consist of the characters "<code title="">rect</code>" (U+0072 U+0065 U+0063 U+0074), increment <var>func</var> by one and jump to the step labeled <var>append</var>.
-   <li><p>If <var>func</var> is zero and <var>token</var> is a <a href="#number-token">number token</a>, let <var>token</var> be a new <a href="#dimension-token">dimension token</a> token with the representation set to <var>token</var>'s representation, the value set to <var>token</var>'s value, and the unit set to "<code title="">px</code>" (U+0070 U+0078).
+   <li><p>If <var>token</var> is a <span>) token</span> and <var>func</var> is greater than zero, decrement <var>func</var> by one and jump to the step labeled <var>append</var>.
+   <li><p>If <var>token</var> is a <span>function token</span> or <span>( token</span>, and <var>token</var>'s value does not <span data-anolis-spec=html title="ASCII case-insensitive">ASCII-case-insensitively</span> consist of the characters "<code title>rect</code>" (U+0072 U+0065 U+0063 U+0074), increment <var>func</var> by one and jump to the step labeled <var>append</var>.
+   <li><p>If <var>func</var> is zero and <var>token</var> is a <span>number token</span>, let <var>token</var> be a new <span>dimension token</span> token with the representation set to <var>token</var>'s representation, the value set to <var>token</var>'s value, and the unit set to "<code title>px</code>" (U+0070 U+0078).
    <li><p><i>Append:</i> Append <var>token</var> to <var>output</var>.
   </ol>
  <li><p>Return <var>output</var>.
 </ol>
 
-<p>In <a class="external" data-anolis-spec="dom" href="http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document-quirks" title="concept-document-quirks">quirks mode</a>, the following properties <a href="#support-unitless-lengths">support unitless lengths</a>:
+<p>In <span data-anolis-spec=dom title=concept-document-quirks>quirks mode</span>, the following properties <span>support unitless lengths</span>:
 
-<ul class="brief">
-<!--<li>'background-position'-->
-<!--<li>'border-spacing'-->
+<ul class=brief>
+<!- -<li>'background-position'- ->
+<!- -<li>'border-spacing'- ->
 <li>'border-top-width'
 <li>'border-right-width'
 <li>'border-bottom-width'
@@ -288,7 +285,7 @@ In particular, outline-color did not show up at all.
 <li>'bottom'
 <li>'clip'
 <li>'font-size'
-<!--<li class=XXX>'font'-->
+<!- -<li class=XXX>'font'- ->
 <li>'height'
 <li>'left'
 <li>'letter-spacing'
@@ -297,23 +294,23 @@ In particular, outline-color did not show up at all.
 <li>'margin-top'
 <li>'margin-bottom'
 <li>'margin'
-<!--<li>'max-height'-->
-<!--<li>'max-width'-->
-<!--<li>'min-height'-->
-<!--<li>'min-width'-->
+<!- -<li>'max-height'- ->
+<!- -<li>'max-width'- ->
+<!- -<li>'min-height'- ->
+<!- -<li>'min-width'- ->
 <li>'padding-top'
 <li>'padding-right'
 <li>'padding-bottom'
 <li>'padding-left'
 <li>'padding'
 <li>'right'
-<!--<li>'text-indent'-->
+<!- -<li>'text-indent'- ->
 <li>'top'
-<!--<li>'vertical-align'-->
+<!- -<li>'vertical-align'- ->
 <li>'width'
 <li>'word-spacing'
 </ul>
-
+-->
 <!-- research 2012-02-17 using dotnetdotcom's web200904:
 
 $ grep -iaPo "([a-z]+-)*(position|spacing|width|bottom|clip|size|height|left|right|top|bottom|margin|padding|indent|align|width|end|start|columns|border|shadow)\s*:\s*([1-9][0-9]*(\.[0-9]+)?|[0-9]?\.[0-9]+)(\s|\"|\'|;|$|\/|>)" web200904 > lengths.txt
@@ -523,7 +520,7 @@ Opera supported this quirk (copied from IE), but then dropped it because it brok
 
 -->
 
-<h3 id="the-line-height-calculation-quirk"><span class="secno">3.3 </span>The line height calculation quirk</h3>
+<h3 id="the-line-height-calculation-quirk"><span class="secno">3.1 </span>The line height calculation quirk</h3>
 
 <p class="status not-tr">Status: Awaiting implementation feedback. Has <a href="http://simon.html5.org/test/quirks-mode/js/line-height-calculation.html">tests</a>.
 
@@ -534,13 +531,13 @@ Opera supported this quirk (copied from IE), but then dropped it because it brok
  <li><p>It either contains no text or it contains only collapsed whitespace. <!-- This matches Gecko and WebKit. IE still uses the quirk in "<pre><img> ". Opera still uses the quirk in "<p><img> <img>". --> <!-- For the purpose of this bullet point, the 'white-space' processing model must not remove a space (U+0020) at the end of a line has 'white-space' set to 'normal', 'nowrap', or 'pre-line' as each line is laid out. (This matches Firefox but not WebKit. Opera had a bug about a site that relied on the Firefox behavior.)-->
 </ul>
 
-<h3 id="the-blocks-ignore-line-height-quirk"><span class="secno">3.4 </span>The blocks ignore line-height quirk</h3>
+<h3 id="the-blocks-ignore-line-height-quirk"><span class="secno">3.2 </span>The blocks ignore line-height quirk</h3>
 
 <p class="status not-tr">Status: Awaiting implementation feedback. Has <a href="http://simon.html5.org/test/quirks-mode/js/blocks-ignore-line-height.html">tests</a>.
 
 <p>In <a class="external" data-anolis-spec="dom" href="http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document-quirks" title="concept-document-quirks">quirks mode</a> and <a class="external" data-anolis-spec="dom" href="http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document-limited-quirks" title="concept-document-limited-quirks">almost standards mode</a>, a <a href="#block-container-element">block container element</a> whose content is composed of <a href="#inline-level">inline-level</a> elements, the element's 'line-height' must be ignored for the purpose of calculating the minimal height of line boxes within the element.
 
-<h3 id="the-percentage-height-calculation-quirk"><span class="secno">3.5 </span>The percentage height calculation quirk</h3>
+<h3 id="the-percentage-height-calculation-quirk"><span class="secno">3.3 </span>The percentage height calculation quirk</h3>
 
 <p class="status not-tr">Status: Awaiting implementation feedback. Has <a href="http://simon.html5.org/test/quirks-mode/js/percentage-height-calculation.html">tests</a>.
 
@@ -569,7 +566,7 @@ Opera supported this quirk (copied from IE), but then dropped it because it brok
 
 <p class="note">It is at the time or writing undefined how percentage heights inside tables work in CSS. This specification does not try to specify what to use as the containing block for calculating percentage heights in tables. Godspeed!
 
-<h3 id="the-table-cell-width-calculation-quirk"><span class="secno">3.6 </span>The table cell width calculation quirk</h3>
+<h3 id="the-table-cell-width-calculation-quirk"><span class="secno">3.4 </span>The table cell width calculation quirk</h3>
 
 <p class="status not-tr">Status: Awaiting implementation feedback. Has <a href="http://simon.html5.org/test/quirks-mode/js/table-cell-width-calculation.html">tests</a>.
 
@@ -577,7 +574,7 @@ Opera supported this quirk (copied from IE), but then dropped it because it brok
 
 <!-- http://mxr.mozilla.org/mozilla-central/source/layout/generic/nsImageFrame.cpp#2053 -->
 
-<h3 id="the-table-cell-nowrap-minimum-width-calculation-quirk"><span class="secno">3.7 </span>The table cell nowrap minimum width calculation quirk</h3>
+<h3 id="the-table-cell-nowrap-minimum-width-calculation-quirk"><span class="secno">3.5 </span>The table cell nowrap minimum width calculation quirk</h3>
 
 <p class="status not-tr">Status: Awaiting implementation feedback.
 
@@ -589,7 +586,7 @@ Opera supported this quirk (copied from IE), but then dropped it because it brok
   <li><p>The computed value of the 'width' property of <var>cell</var> is a &lt;length&gt; that is not zero.
 </ul>
 
-<h3 id="the-collapsing-table-quirk"><span class="secno">3.8 </span>The collapsing table quirk</h3>
+<h3 id="the-collapsing-table-quirk"><span class="secno">3.6 </span>The collapsing table quirk</h3>
 
 <p class="status not-tr">Status: Awaiting implementation feedback.
 
@@ -601,7 +598,7 @@ Opera supported this quirk (copied from IE), but then dropped it because it brok
   <li><p><var>table</var> has no child 'table-column-group' box that itself has a child 'table-column' box.
 </ul>
 
-<h3 id="the-text-decoration-doesn't-propagate-into-tables-quirk"><span class="secno">3.9 </span>The text decoration doesn't propagate into tables quirk</h3>
+<h3 id="the-text-decoration-doesn't-propagate-into-tables-quirk"><span class="secno">3.7 </span>The text decoration doesn't propagate into tables quirk</h3>
 
 <p class="status not-tr">Status: Awaiting implementation feedback.
 
@@ -609,7 +606,7 @@ Opera supported this quirk (copied from IE), but then dropped it because it brok
 
 <!-- http://mxr.mozilla.org/mozilla-central/source/layout/generic/nsTextFrameThebes.cpp#4582 -->
 
-<h3 id="the-font-element-text-decoration-color-quirk"><span class="secno">3.10 </span>The font element text decoration color quirk</h3>
+<h3 id="the-font-element-text-decoration-color-quirk"><span class="secno">3.8 </span>The font element text decoration color quirk</h3>
 
 <p class="status not-tr">Status: Awaiting implementation feedback. Has <a href="http://simon.html5.org/test/quirks-mode/reftest/font-element-text-decoration-color/">tests</a>.
 
@@ -617,7 +614,7 @@ Opera supported this quirk (copied from IE), but then dropped it because it brok
 
 <p class="note">This applies in all modes.
 
-<h3 id="the-tables-inherit-color-from-body-quirk"><span class="secno">3.11 </span>The tables inherit color from body quirk</h3>
+<h3 id="the-tables-inherit-color-from-body-quirk"><span class="secno">3.9 </span>The tables inherit color from body quirk</h3>
 
 <p class="status not-tr">Status: Awaiting implementation feedback.
 
@@ -649,7 +646,7 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=747464
 https://bugs.webkit.org/show_bug.cgi?id=84469
 -->
 
-<h3 id="the-table-cell-height-box-sizing-quirk"><span class="secno">3.12 </span>The table cell height box sizing quirk</h3>
+<h3 id="the-table-cell-height-box-sizing-quirk"><span class="secno">3.10 </span>The table cell height box sizing quirk</h3>
 
 <p class="status not-tr">Status: Awaiting implementation feedback.
 
@@ -723,7 +720,9 @@ http://mxr.mozilla.org/mozilla-central/source/layout/style/nsStyleUtil.cpp#172
 http://mxr.mozilla.org/mozilla-central/source/layout/base/nsCSSRendering.cpp#573
 http://mxr.mozilla.org/mozilla-central/source/content/base/src/nsGenericElement.cpp#2110
 -->
+<h2 id="quirks-that-have-moved-to-other-specifications"><span class="secno">5 </span>Quirks that have moved to other specifications</h2>
 
+<p><dfn id="the-hashless-hex-color-quirk">The hashless hex color quirk</dfn> and <dfn id="the-unitless-length-quirk">the unitless length quirk</dfn> are now defined in CSS Syntax Module Level 3. <a data-anolis-ref="" href="#refsCSSSYNTAX">[CSSSYNTAX]</a>
 
 <h2 class="no-num" id="references">References</h2>
 

@@ -184,14 +184,12 @@ function removeStatusWarning(store) {
 
 <p>The terms <dfn>block container element</dfn>, <dfn>inline-level</dfn>, <dfn>containing block</dfn>, <dfn>initial containing block</dfn> and <dfn>block container box</dfn> are defined in CSS 2.1. <span data-anolis-ref>CSS</span>
 
-<p>The terms <dfn>identifier token</dfn>, <dfn>function token</dfn>, <dfn>at-keyword token</dfn>, <dfn>hash token</dfn>, <dfn>string token</dfn>, <dfn>bad-string token</dfn>, <dfn>url token</dfn>, <dfn>bad-url token</dfn>, <dfn>delim token</dfn>, <dfn>number token</dfn>, <dfn>percentage token</dfn>, <dfn>dimension token</dfn>, <dfn>unicode-range token</dfn>, <dfn>whitespace token</dfn>, <dfn>cdo token</dfn>, <dfn>cdc token</dfn>, <dfn>colon token</dfn>, <dfn>semicolon token</dfn>, <dfn>[ token</dfn>, <dfn>] token</dfn>, <dfn>( token</dfn>, <dfn>) token</dfn>, <dfn>{ token</dfn> and <dfn>} token</dfn> are defined in CSS Syntax Module Level 3. <span data-anolis-ref>CSSSYNTAX</span>
-
 <p>The terms <dfn>minimum intrinsic width of an inline formatting context</dfn> and <dfn>outer intrinsic minimum width of a table cell</dfn> are defined in More Precise Definitions of Intrinsic Widths and Table Layout (Proposal). <span data-anolis-ref>CSSINTRINSIC</span>
 
 <p>Some terms are defined in DOM and HTML. <span data-anolis-ref>DOM</span> <span data-anolis-ref>HTML</span>
 
 <h2>CSS</h2>
-
+<!--
 <h3>The hashless hex color quirk</h3>
 
 <p class="status not-tr">Status: Awaiting implementation feedback. Has <a href="http://simon.html5.org/test/quirks-mode/js/hashless-hex-color.html">tests</a>.
@@ -229,7 +227,7 @@ function removeStatusWarning(store) {
 <li>'border-left-color'
 <li>'color'
 </ul>
-
+-->
 <!-- research 2012-02-17 using dotnetdotcom's web200904:
 
 $ grep -iaPo "([a-z]+-)?color\s*:\s*[0-9a-f]{3}([0-9a-f]{3})?(\s|\"|\'|;|$)" web200904 > color.txt
@@ -278,7 +276,7 @@ Other than typos and scrollbar-* properties, the ones that are used are the ones
 In particular, outline-color did not show up at all.
 
 -->
-
+<!--
 <h3>The unitless length quirk</h3>
 
 <p class="status not-tr">Status: Awaiting implementation feedback. Has <a href="http://simon.html5.org/test/quirks-mode/js/unitless-length.html">tests</a>.
@@ -301,8 +299,8 @@ In particular, outline-color did not show up at all.
 <p>In <span data-anolis-spec=dom title=concept-document-quirks>quirks mode</span>, the following properties <span>support unitless lengths</span>:
 
 <ul class=brief>
-<!--<li>'background-position'-->
-<!--<li>'border-spacing'-->
+<!- -<li>'background-position'- ->
+<!- -<li>'border-spacing'- ->
 <li>'border-top-width'
 <li>'border-right-width'
 <li>'border-bottom-width'
@@ -311,7 +309,7 @@ In particular, outline-color did not show up at all.
 <li>'bottom'
 <li>'clip'
 <li>'font-size'
-<!--<li class=XXX>'font'-->
+<!- -<li class=XXX>'font'- ->
 <li>'height'
 <li>'left'
 <li>'letter-spacing'
@@ -320,23 +318,23 @@ In particular, outline-color did not show up at all.
 <li>'margin-top'
 <li>'margin-bottom'
 <li>'margin'
-<!--<li>'max-height'-->
-<!--<li>'max-width'-->
-<!--<li>'min-height'-->
-<!--<li>'min-width'-->
+<!- -<li>'max-height'- ->
+<!- -<li>'max-width'- ->
+<!- -<li>'min-height'- ->
+<!- -<li>'min-width'- ->
 <li>'padding-top'
 <li>'padding-right'
 <li>'padding-bottom'
 <li>'padding-left'
 <li>'padding'
 <li>'right'
-<!--<li>'text-indent'-->
+<!- -<li>'text-indent'- ->
 <li>'top'
-<!--<li>'vertical-align'-->
+<!- -<li>'vertical-align'- ->
 <li>'width'
 <li>'word-spacing'
 </ul>
-
+-->
 <!-- research 2012-02-17 using dotnetdotcom's web200904:
 
 $ grep -iaPo "([a-z]+-)*(position|spacing|width|bottom|clip|size|height|left|right|top|bottom|margin|padding|indent|align|width|end|start|columns|border|shadow)\s*:\s*([1-9][0-9]*(\.[0-9]+)?|[0-9]?\.[0-9]+)(\s|\"|\'|;|$|\/|>)" web200904 > lengths.txt
@@ -746,7 +744,9 @@ http://mxr.mozilla.org/mozilla-central/source/layout/style/nsStyleUtil.cpp#172
 http://mxr.mozilla.org/mozilla-central/source/layout/base/nsCSSRendering.cpp#573
 http://mxr.mozilla.org/mozilla-central/source/content/base/src/nsGenericElement.cpp#2110
 -->
+<h2>Quirks that have moved to other specifications</h2>
 
+<p><dfn>The hashless hex color quirk</dfn> and <dfn>the unitless length quirk</dfn> are now defined in CSS Syntax Module Level 3. <span data-anolis-ref>CSSSYNTAX</span>
 
 <h2 class=no-num>References</h2>
 

@@ -277,8 +277,9 @@ test(function() {
     test(function() {
       var WindowProto = Window.prototype;
       assert_true(id in window, id + " in window");
+      // location has a [PutForwards] extended attribute.
       assert_accessor_propdesc(Object.getOwnPropertyDescriptor(window, id),
-                               false, true, false);
+                               id === "location", true, false);
       assert_false(id in WindowProto, id + " in Window.prototype");
     }, "Window unforgeable attribute: " + id);
   });

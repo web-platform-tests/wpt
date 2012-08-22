@@ -5,14 +5,14 @@
  <head>
 
   <title>CSS Reftest Reference</title>
-
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
-
+  
   <style type="text/css"><![CDATA[
   div#parent
   {
   border: blue solid 10px;
   float: left;
+  padding: 50px;
   }
   
   div#child
@@ -21,14 +21,13 @@
   height: 200px;
   width: 200px;
   }
-
   ]]></style>
 
  </head>
 
  <body>
 
-  <p>Test passes if there is <strong>no space between</strong> the blue and orange lines.</p>
+  <p>Test passes if there is space between the blue and orange lines on all four sides.</p>
 
   <div id="parent">
     <div id="child"></div>

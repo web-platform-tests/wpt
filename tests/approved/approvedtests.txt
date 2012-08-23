@@ -925,7 +925,6 @@ dom-tree-accessors/document.body-setter-01.html
 dom-tree-accessors/document.embeds-document.plugins-01.html
 dom-tree-accessors/Document.getElementsByClassName-null-undef.html
 dom-tree-accessors/document.getElementsByClassName-same.html
-dom-tree-accessors/document.getElementsByName
 dom-tree-accessors/document.head-01.html
 dom-tree-accessors/document.head-02.html
 dom-tree-accessors/document.title-01.html

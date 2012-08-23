@@ -11,15 +11,15 @@ test( testReplaceItemAlreadyOnList, "transformReplaceItemAlreadyOnList", {assert
 test( testAppendItemRemovesItem, "transformAppendItemRemovesItem", {assert: 'If the item being appended is previously on a list, it is removed its previous list before being appended'} );  
 test( testAppendItemAlreadyOnList, "transformAppendItemAlreadyOnList", {assert: 'If the item being appended is already on that list, it is removed from the list before being appended'} );  
 test( testCreateTransformFromMatrix, "transformCreateTransformFromMatrix", {assert: 'Matrix is created with transform type = SVG_TRANSFORM_MATRIX and the values from matrix parameter are copied'} );  
-test( testConsolidateAllTypes, "transformConsolidateAllTypes", {assert: 'All types of transforms can be consolidated into a single matrix'} );  
-test( testModifyConsolidated, "transformModifyConsolidated", {assert: 'Modifications can be made to a consolidated matrix'} );  
-test( testConsolidateConsolidated, "transformConsolidateConsolidated", {assert: 'Consolidated matrix can be consolidated again'} );  
 test( testSetMatrix, "transformSetMatrix", {assert: 'setMatrix() modifications update the list correctly'} );  
 test( testSetTranslate, "transformSetTranslate", {assert: 'setTranslate() modifications update the list correctly'} );  
 test( testSetRotate, "transformSetRotate", {assert: 'setRotate() modifications update the list correctly'} );  
 test( testSetScale, "transformSetScale", {assert: 'setScale() modifications update the list correctly'} );  
 test( testSetSkewX, "transformSetSkewX", {assert: 'setSkewX() modifications update the list correctly'} );  
 test( testSetSkewY, "transformSetSkewY", {assert: 'setSkewY() modifications update the list correctly'} );  
+test( testConsolidateAllTypes, "transformConsolidateAllTypes", {assert: 'All types of transforms can be consolidated into a single matrix'} );  
+test( testModifyConsolidated, "transformModifyConsolidated", {assert: 'Modifications can be made to a consolidated matrix'} );  
+test( testConsolidateConsolidated, "transformConsolidateConsolidated", {assert: 'Consolidated matrix can be consolidated again'} );  
 
 
 
@@ -40,10 +40,10 @@ function initTransform() {
 	rotate.setRotate(90,0,0);
 	
 	var scale = document.getElementById("svg").createSVGTransform()
-	rotate.setScale(0.5,0.5);
+	scale.setScale(0.5,0.5);
 	
 	var translate = document.getElementById("svg").createSVGTransform()
-	rotate.setTranslate(50,50);
+	translate.setTranslate(50,50);
 	
 	tList2.baseVal.initialize(rotate);
 	tList2.baseVal.appendItem(scale);

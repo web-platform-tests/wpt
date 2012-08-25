@@ -1,0 +1,33 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Indexed properties of the window object (non-strict mode)</title>
+<link rel="author" title="Ms2ger" href="ms2ger@gmail.com">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<iframe name="bar"></iframe>
+<script>
+test(function() {
+  assert_true("bar" in window, "bar not in window");
+  assert_equals(window["bar"],
+                document.getElementsByTagName("iframe")[0].contentWindow);
+}, "Static name");
+var t = async_test("Dynamic name")
+var t2 = async_test("Ghost name")
+t.step(function() {
+  var iframe = document.getElementsByTagName("iframe")[0];
+  iframe.setAttribute("src", "data:text/html,<script>window.name='foo'<\/script>");
+  iframe.onload = function() {
+    t.step(function() {
+      assert_true("foo" in window, "foo not in window");
+      assert_equals(window["foo"], iframe.contentWindow);
+    });
+    t.done();
+    t2.step(function() {
+      assert_false("bar" in window, "bar still in window");
+      assert_equals(window["bar"], undefined);
+    });
+    t2.done();
+  };
+});
+</script>

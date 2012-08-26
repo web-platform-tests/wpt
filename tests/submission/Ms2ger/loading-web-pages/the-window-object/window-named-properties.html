@@ -5,8 +5,7 @@
 <link rel="author" title="Boris Zbarsky" href="bzbarsky@mit.edu">
 <link rel="help" href="http://www.whatwg.org/html/#window">
 <link rel="help" href="http://www.whatwg.org/html/#dom-window-nameditem">
-<link rel="help" href="http://dev.w3.org/2006/webapi/WebIDL/#getownproperty">
-<link rel="help" href="http://dev.w3.org/2006/webapi/WebIDL/#defineownproperty">
+<link rel="help" href="http://dev.w3.org/2006/webapi/WebIDL/#named-properties-object">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id=log></div>
@@ -17,6 +16,18 @@ test(function() {
   assert_equals(window["bar"],
                 document.getElementsByTagName("iframe")[0].contentWindow);
 }, "Static name");
+test(function() {
+  assert_true("bar" in Window.prototype, "bar not in Window.prototype");
+  assert_false(Window.prototype.hasOwnProperty("bar"), "Window.prototype.hasOwnProperty(\"bar\")");
+  var gsp = Object.getPrototypeOf(Object.getPrototypeOf(window));
+  assert_true("bar" in gsp, "bar not in gsp");
+  assert_true(gsp.hasOwnProperty("bar"), "gsp.hasOwnProperty(\"bar\")");
+  var pd = Object.getOwnPropertyDescriptor(gsp, "bar");
+  assert_equals(typeof pd, "object");
+  assert_equals(pd.writable, false, "Named property should not be writable");
+  assert_equals(pd.enumerable, true, "Named property should be enumerable");
+  assert_equals(pd.configurable, true, "Named property should be configurable");
+}, "Static name on the prototype");
 var t = async_test("Dynamic name")
 var t2 = async_test("Ghost name")
 t.step(function() {

@@ -3,6 +3,7 @@
     <head>
         <title>CSS Test: Padding-top using millimeters with a minimum plus one value, 1mm</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-08-25 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#propdef-padding-top" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#padding-properties" />
         <meta name="flags" content="" />
@@ -10,7 +11,6 @@
         <style type="text/css">
             div
             {
-                height: 0;
                 width: 50px;
             }
             .parent1
@@ -39,7 +39,7 @@
         </style>
     </head>
     <body>
-        <p>Test passes if there is no red visible on the page.</p>
+        <p>Test passes if there is <strong>no red</strong>.</p>
         <div class="parent1">
             <div class="test1"></div>
         </div>

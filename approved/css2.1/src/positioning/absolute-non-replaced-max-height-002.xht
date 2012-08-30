@@ -3,8 +3,10 @@
     <head>
         <title>CSS Test: Max-height on absolutely positioned, non-replaced elements</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
-        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-06-27 -->
+        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-08-29 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#abs-non-replaced-height" />
+		<link rel="match" href="absolute-non-replaced-max-height-002-ref.xht" />
+
         <meta name="flags" content="ahem" />
         <meta name="assert" content="When 'top', 'height', and 'bottom' of an absolutely positioned element are 'auto', then set 'top' to the static position and make 'height' based on the content; such height may be constrained by a given 'max-height' value." />
         <style type="text/css">
@@ -31,7 +33,7 @@
         </style>
     </head>
     <body>
-        <p>Test passes if there is a blue rectangle, and not a square, in the upper-right corner of an hollow black square.</p>
+        <p>Test passes if there is a blue rectangle in the <strong>upper-right corner</strong> of an hollow black square.</p>
         <div id="div1">
             <div>&nbsp;</div>
         </div>

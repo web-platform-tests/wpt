@@ -1,0 +1,57 @@
+idbcursor-advance-invalid.htm							
+idbcursor-advance.htm							
+idbcursor-continue.htm							
+idbcursor-direction-objectstore.htm							
+idbcursor-direction.htm							
+idbcursor-key.htm							
+idbcursor-primarykey.htm							
+idbcursor-reused.htm							
+idbcursor-source.htm							
+idbcursor_advance_index.htm				http://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#widl-IDBCursor-advance-void-unsigned-long-count			
+idbcursor_advance_index2.htm				http://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#widl-IDBCursor-advance-void-unsigned-long-count			
+idbcursor_advance_index3.htm				http://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#widl-IDBCursor-advance-void-unsigned-long-count			
+idbcursor_advance_index4.htm							
+idbcursor_continue_index5.htm							
+idbcursor_continue_index6.htm							
+idbcursor_continue_invalid.htm							
+idbcursor_continue_objectstore-tests.htm							
+idbcursor_iterating.htm				href			
+idbcursor_iterating_index.htm							
+idbcursor_iterating_index2.htm							
+idbcursor_iterating_objectstore.htm							
+idbcursor_iterating_objectstore2.htm							
+idbcursor_update_objectstore4.htm							
+idbdatabase_createObjectStore7.htm							
+idbdatabase_createObjectStore8-parameters.htm							
+idbdatabase_createObjectStore9-invalidparameters.htm							
+idbdatabase_deleteObjectStore4-not_reused.htm							
+idbdatabase_transaction4.htm							
+idbfactory_deleteDatabase.htm							
+idbindex-multientry-arraykeypath.htm				http://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#key-construct			
+idbindex-multientry.htm				http://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#key-construct			
+idbindex_indexNames.htm							
+idbobjectstore_createIndex3-usable-right-away.htm							
+idbobjectstore_createIndex4-nullbyte.htm							
+idbobjectstore_createIndex5-emptykeypath.htm							
+idbobjectstore_createIndex6-event_order.htm							
+idbobjectstore_createIndex7-event_order.htm							
+idbobjectstore_createIndex8-deleteIndex-event_order.htm							
+idbobjectstore_deleted.htm				http://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#idl-def-IDBObjectStore		Odin Hørthe Omdal <mailto:odinho@opera.com>	
+idbobjectstore_openCursor_invalid.htm							
+idbtransaction-oncomplete.htm							
+idbtransaction.htm							
+idbtransaction_abort.htm							
+idbversionchangeevent.htm							
+key_invalid.htm				http://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#key-construct			
+key_valid.htm							
+keygenerator-constrainterror.htm							
+keygenerator-overflow.htm				http://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#key-generator-concept			
+keygenerator.htm				http://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#key-generator-concept			
+keyorder.htm							
+keypath.htm				http://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#key-path-construct			
+keypath_invalid.htm				http://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#key-path-construct			
+list_ordering.htm				http://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#widl-IDBDatabase-objectStoreNames			
+transaction-lifetime-blocked.htm							
+transaction-lifetime.htm							
+value.htm							
+value_recursive.htm							

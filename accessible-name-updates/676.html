@@ -1,0 +1,37 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"> 
+<html>
+  <head>
+    <title>ARIA 1.0 Test Case 676</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  </head>
+  <body>
+    <h1>ARIA 1.0 Test Case 676</h1>
+    
+    <div id="TEST_ID" aria-live="assertive" >
+      <span>Text in markup</span>
+    </div>
+    
+    <h2>Description</h2>
+    <p>An element with an aria-live attribute is defined in markup with the 
+      value="assertive". After the onload event completes a child DOM element 
+      node is added to the element with the aria-live attribute.</p>
+    
+    <script type="text/javascript">  
+  
+      function addElement() {
+        var node = document.getElementById('TEST_ID');  
+        var element_node = document.createElement('span');
+        var text_node = document.createTextNode('Text added in a span element on load');
+        element_node.appendChild(text_node);
+        node.appendChild(element_node);
+      }
+     
+      function onload() {
+        setTimeout(addElement,1000);
+      }
+     
+      window.addEventListener('load', onload);
+    </script>
+  </body>
+  
+</html>

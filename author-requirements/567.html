@@ -1,0 +1,21 @@
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>A &lt;div&gt; with role "button" ﻿followed by a modification to the value of "checkbox".</title>
+    <script type="text/javascript">
+      function changeRole (/* Element */ element, /* String */ newRole) {
+          element.setAttribute ('role', newRole);
+          element.innerHTML = "This &lt;div&gt; has role '" + newRole + "'";
+      }
+      function doOnload() {
+          document.getElementById('test').focus();
+          window.setTimeout ("changeRole (document.getElementById('test'), 'checkbox')", 1000);
+      }
+    </script>
+  </head>
+  <body onload="doOnload();">
+    <div role="button" id="test" tabindex="0" onclick="changeRole (this, 'checkbox');" onkeydown="changeRole (this, 'checkbox');">This &lt;div&gt; has role 'button'</div>
+  </body>
+</html>

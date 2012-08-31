@@ -1,0 +1,35 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"> 
+<html>
+  <head>
+    <title>ARIA 1.0 Test Case 675</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  </head>
+  <body>
+    <h1>ARIA 1.0 Test Case 675</h1>
+    
+    <div id="TEST_ID" aria-live="polite" >
+    </div>
+    
+    <h2>Description</h2>
+    <p>An element with an aria-live attribute is defined in markup with the value="polite". 
+      After the onload event completes a child DOM element node is added to the element 
+      with the aria-live attribute.</p>
+    
+    <script type="text/javascript">  
+  
+     function addLiveRegion() {
+       var node = document.getElementById('TEST_ID');  
+       var live_node = document.createElement('div');
+       live_node.setAttribute('aria-live', 'assertive');
+       node.appendChild(live_node);
+     }
+     
+     function onload() {
+       setTimeout(addLiveRegion,1000);
+     }
+     
+     window.addEventListener('load', onload);
+    </script>
+  </body>
+  
+</html>

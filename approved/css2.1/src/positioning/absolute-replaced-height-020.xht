@@ -4,6 +4,8 @@
         <title>CSS Test: Absolutely positioned inline replaced elements with percentage based intrinsic height set to 'auto' and 'top', 'bottom' are not 'auto'</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#abs-replaced-height" />
+		<link rel="match" href="absolute-replaced-height-013-ref.xht" />
+
         <meta name="flags" content="nonHTML svg" />
         <meta name="assert" content="An absolutely positioned replaced element with percentage intrinsic height resolves based on the containing block when the replaced element is absolutely positioned." />
         <style type="text/css">
@@ -32,7 +34,7 @@
         </style>
     </head>
     <body>
-        <p>Test passes if the blue and orange boxes are next to each other, the same height, and neither are touching the black line.</p>
+        <p>Test passes if the blue and orange rectangles are next to each other, have the same height and are not touching the black line.</p>
         <div id="div1">
             <svg:svg version="1.1" height="50%" baseProfile="full">
                 <svg:rect x="0" y="0" width="200" height="100" fill="blue" />

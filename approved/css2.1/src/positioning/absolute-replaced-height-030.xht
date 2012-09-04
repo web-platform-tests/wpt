@@ -1,11 +1,13 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <title>CSS Test: Absolute replaced elements relying on intrinsic height dimensions and over-constrained values</title>
+        <title>CSS Test: Absolutely positioned inline replaced element relying on intrinsic height dimensions and over-constrained values</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#abs-replaced-height" />
+		<link rel="match" href="absolute-replaced-height-008-ref.xht" />
+
         <meta name="flags" content="image" />
-        <meta name="assert" content="The 'height' is the intrinsic height when an absolutely positioned replaced element with an intrinsic height with over-constrained values solves for 'bottom'." />
+        <meta name="assert" content="The 'height' is the intrinsic height when an absolutely positioned inline replaced element with an intrinsic height with over-constrained values solves for 'bottom'." />
         <style type="text/css">
             #div1
             {

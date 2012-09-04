@@ -3,7 +3,6 @@
     <head>
         <title>CSS Test: Absolutely positioned inline-block replaced elements with percentage based intrinsic height that cannot be resolved</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
-        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-08-31 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#abs-replaced-height" />
 		<link rel="match" href="absolute-replaced-height-007-ref.xht" />
 
@@ -26,6 +25,18 @@
                 position: absolute;
                 width: auto;
             }
+
+			/*
+			"
+			(...)
+			the height of the containing block of an absolutely positioned 
+			element is independent of the size of the element itself, and thus 
+			a percentage height on such an element *_can always be resolved_*. 
+			However, it may be that the height is not known until elements 
+			that come later in the document have been processed. "
+			http://www.w3.org/TR/CSS21/visudet.html#the-height-property 
+			"
+			*/
         </style>
     </head>
     <body>

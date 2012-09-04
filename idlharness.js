@@ -1044,7 +1044,7 @@ IdlInterface.prototype.test_self = function()
         //“Prototype”."
         //String() should end up calling {}.toString, since nothing
         //defines a stringifier.
-        assert_class_string(window[this.name].prototype, this.name + "Prototype,
+        assert_class_string(window[this.name].prototype, this.name + "Prototype",
                             "class string of " + this.name + ".prototype");
         assert_equals(String(window[this.name].prototype), "[object " + this.name + "Prototype]",
                       "String(" + this.name + ".prototype)");

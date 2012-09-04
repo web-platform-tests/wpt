@@ -9,6 +9,3 @@ ref reversed-1b.html == reversed-1-ref.html
 ref reversed-1c.html == reversed-1-ref.html
 ref reversed-2.html == reversed-2-ref.html
 script-for-onload.html
-window-onerror-parse-error.html
-window-onerror-runtime-error.html
-window-onerror-runtime-error-throw.html

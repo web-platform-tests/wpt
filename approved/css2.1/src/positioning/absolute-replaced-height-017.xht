@@ -8,7 +8,7 @@
 		<link rel="match" href="absolute-replaced-height-010-ref.xht" />
 
         <meta name="flags" content="image" />
-        <meta name="assert" content="The 'height' is the used width divided by the ratio when an absolutely positioned inline replaced element has an intrinsic ratio, 'height' is set to 'auto', 'width' is specified and 'top', 'bottom' are not 'auto'." />
+        <meta name="assert" content="The 'height' is the used width divided by the intrinsic ratio when an absolutely positioned inline replaced element has an intrinsic ratio, 'height' is set to 'auto', 'width' is specified and 'top', 'bottom' are not 'auto'." />
         <style type="text/css">
             #div1
             {
@@ -26,6 +26,12 @@
             img
             {
                 bottom: 1in;
+                /*
+                The equation gets overconstrained; and so, the used value for
+                bottom in that test will be ignored and will be solved 
+                as minus (1in + 1in)  (-192px) because the height of 
+                containing block is 0.
+                */
                 height: auto;
                 position: absolute;
                 top: 1in;

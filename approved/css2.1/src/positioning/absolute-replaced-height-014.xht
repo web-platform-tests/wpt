@@ -3,7 +3,6 @@
     <head>
         <title>CSS Test: Absolutely positioned inline-block replaced elements with percentage based intrinsic height that cannot be resolved and 'top' specified</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
-        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-09-01 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#abs-replaced-height" />
 		<link rel="match" href="absolute-replaced-height-014-ref.xht" />
 
@@ -21,7 +20,7 @@
 		-->        
         
         <style type="text/css">
-            #div1
+            div#containing-block
             {
                 position: relative;
             }
@@ -44,8 +43,8 @@
     </head>
     <body>
         <p>Test passes if there is <strong>no red</strong>.</p>
-        <div id="div1">
-            <iframe height="50%"></iframe>
+        <div id="containing-block">
+        <iframe height="50%"></iframe>
             <div></div>
         </div>
     </body>

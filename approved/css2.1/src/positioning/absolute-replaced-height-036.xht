@@ -4,6 +4,8 @@
   <title>CSS Test: Absolute Replaced Elements: specified 'top' and 'bottom' with auto margins</title>
   <link rel="author" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/visufx.html#clipping"/>
+  <link rel="match" href="../reference/ref-if-there-is-no-red.xht" />
+
   <meta name="flags" content="image"/>
   <meta name="assert" content="If 'top' and 'bottom' are specified on an
     absolutely-positioned replaced element, then any remaining space is
@@ -50,7 +52,7 @@
   </style>
  </head>
  <body>
-    <p>There must be no red.</p>
+    <p>Test passes if there is <strong>no red</strong>.</p>
     <div class="container">
       <img class="abspos one" src="support/swatch-white.png" alt="FAIL: image support required"/>
       <img class="abspos two" src="support/swatch-white.png" alt="FAIL: image support required"/>

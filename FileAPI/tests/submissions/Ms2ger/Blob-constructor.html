@@ -142,9 +142,9 @@ test_blob(function() {
     new ArrayBuffer(8)
   ]);
 }, {
-  expected: "[object ArrayBuffer]",
+  expected: "\0\0\0\0\0\0\0\0",
   type: "",
-  desc: "ToString should be called on ArrayBuffer elements of the blobParts array."
+  desc: "ArrayBuffer elements of the blobParts array should be supported."
 });
 
 test_blob(function() {

@@ -956,6 +956,8 @@ dynamic-markup-insertion/document.write-01.xhtml
 dynamic-markup-insertion/document.write-02.html
 dynamic-markup-insertion/document.writeln-01.xhtml
 dynamic-markup-insertion/document.writeln-02.html
+editing/user-interaction-editing-contenteditable.html
+editing/user-interaction-editing-designMode.html
 events/event-handler-javascript.html
 foreigncontent/foreign_content_001.html
 foreigncontent/foreign_content_003.html
@@ -1044,6 +1046,9 @@ video/video_010.htm
 video/video_011.htm
 video/video_012.htm
 video/video_013.htm
+window-onerror/window-onerror-parse-error.html
+window-onerror/window-onerror-runtime-error-throw.html
+window-onerror/window-onerror-runtime-error.html
 xhtml5/area_noref.xhtml
 xhtml5/body_link.xhtml
 xhtml5/body_text_00ffff.xhtml

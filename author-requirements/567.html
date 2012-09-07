@@ -9,13 +9,13 @@
           element.setAttribute ('role', newRole);
           element.innerHTML = "This &lt;div&gt; has role '" + newRole + "'";
       }
-      function doOnload() {
-          document.getElementById('test').focus();
-          window.setTimeout ("changeRole (document.getElementById('test'), 'checkbox')", 1000);
-      }
     </script>
   </head>
-  <body onload="doOnload();">
+  <body>
     <div role="button" id="test" tabindex="0" onclick="changeRole (this, 'checkbox');" onkeydown="changeRole (this, 'checkbox');">This &lt;div&gt; has role 'button'</div>
+    <p>
+      <button onclick="changeRole (document.getElementById ('test'), 'checkbox')" type="button">Change Role</button>
+      <button onclick="window.location.reload()" type="button">Reload Page</button>
+    </p>
   </body>
 </html>

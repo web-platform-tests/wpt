@@ -1,11 +1,14 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN" "http://www.w3.org/2002/04/xhtml-math-svg/xhtml-math-svg.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <title>CSS Test: Absolute replaced elements with 'direction' as left-to-right, 'height' and over-constrained situation</title>
+        <title>CSS Test: Absolutely positioned inline replaced element with 'direction' as left-to-right, 'height' and over-constrained situation</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+		<link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-09-08 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#abs-replaced-width" />
+        <link rel="match" href="absolute-replaced-width-038-ref.xht" />
+
         <meta name="flags" content="nonHTML svg" />
-        <meta name="assert" content="Computed value of 'auto' for 'margin-left' or margin-right' on absolute replaced elements becomes a used value of '0'. The 'width' is (used height) * (intrinsic ratio) if there is no intrinsic width but there is intrinsic height and ratio." />
+        <meta name="assert" content="Computed value of 'auto' for 'margin-left' or margin-right' on absolutely positioned inline replaced element becomes a used value of '0'." />
         <style type="text/css">
             #div1
             {
@@ -17,25 +20,25 @@
             svg
             {
                 height: 100px;
-                left: 0.25in;
-                margin-left: 0.25in;
-                margin-right: 0.5in;
+                left: 22px;
+                margin-left: 22px;
+                margin-right: 44px;
                 position: absolute;
-                right: 0.5in;
+                right: 44px;
             }
             div div
             {
                 background: orange;
                 height: 100px;
-                margin-left: 0.5in;
-                margin-right: 0.5in;
+                margin-left: 44px;
+                margin-right: 44px;
                 margin-top: 100px;
                 width: 200px;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if the blue and orange boxes below are the same width, and the boxes are horizontally centered inside the black box.</p>
+        <p>Test passes if the blue and orange rectangles have the same width and are <strong>horizontally centered</strong> in an hollow black square.</p>
         <div id="div1">
             <svg:svg version="1.1" xmlns:svg="http://www.w3.org/2000/svg" height="50" baseProfile="full">
                 <svg:rect x="0" y="0" width="200" height="100" fill="blue" />

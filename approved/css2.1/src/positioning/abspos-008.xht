@@ -6,7 +6,9 @@
   <link rel="reviewer" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact"/>
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/absolute/011.html" type="text/html"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#abs-non-replaced-width"/>
-  <style> 
+  <link rel="match" href="abspos-008-ref.xht" />
+
+  <style type="text/css"> 
    .container { font-size: 100px; position: relative; border-top: 10px solid white; }
    .outer { position: absolute; top: 0; left: 0; z-index: 1; }
    .inner { background: green; color: white; float: left; }
@@ -14,7 +16,7 @@
   </style> 
  </head>
 <body>
-  <p>There should be no red below.</p>
+  <p>Test passes if there is <strong>no red</strong>.</p>
   <div class="container">
    <div class="outer">
     <div class="inner">

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Video Test: video_loop_attribute_exists</title>
+    <link rel="author" title="Intel" href="http://www.intel.com" />
+    <link rel="help" href="http://dev.w3.org/html5/spec/single-page.html#dom-media-loop" />
+    <meta name="flags" content="" />
+    <meta name="assert" content="Check if video.loop exists" />
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="support/mediaelement.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <video id="m">The user agent doesn't support media element.</video>
+    <script type="text/javascript">
+        media_attribute_exists('loop');
+    </script>
+  </body>
+</html>

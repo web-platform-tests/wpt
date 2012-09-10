@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Video Test: video_loop_reflects_false</title>
+    <link rel="author" title="Intel" href="http://www.intel.com" />
+    <link rel="help" href="http://dev.w3.org/html5/spec/single-page.html#dom-media-loop" />
+    <meta name="flags" content="" />
+    <meta name="assert" content="Check if video.loop returns false after the loop attribute is set to false" />
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="support/mediaelement.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <video id="m" controls loop>The user agent doesn't support media element.</video>
+    <script type="text/javascript">
+        loop_reflects_false();
+    </script>
+  </body>
+</html>

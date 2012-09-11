@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf8">
+    <title>HTML 5 Parser tests tests/test_tokenizer_pendingSpecChanges.html</title>
+  </head>
+  <body>
+    <h1>html5lib Parser Test</h1>
+    <div id="log"></div>
+    <script src="common.js"></script>
+    <script src="test.js"></script>
+    <script src="template.js"></script>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script>
+      var num_iframes = 8;
+      var order = ['3ac1dea498662aee30649c01eb0a104071ae0dba',];
+      var tests = {
+          "3ac1dea498662aee30649c01eb0a104071ae0dba":[async_test('tests/test_tokenizer_pendingSpecChanges.html 3ac1dea498662aee30649c01eb0a104071ae0dba', {'timeout':1000}), "%3C%21----%20%3E", "%23document%0A%7C%20%3C%21--%20--%20%3E%20--%3E%0A%7C%20%3Chtml%3E%0A%7C%20%20%20%3Chead%3E%0A%7C%20%20%20%3Cbody%3E"],
+      }
+      init_tests("write", 1000);
+    </script>
+  </body>
+</html>

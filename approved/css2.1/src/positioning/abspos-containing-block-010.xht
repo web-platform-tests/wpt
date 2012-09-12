@@ -5,6 +5,8 @@
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
   <link rel="reviewer" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#containing-block-details" />
+  <link rel="match" href="abspos-containing-block-010-ref.xht" />
+
      <style type="text/css">
    html { margin: 0; border: 0; padding: 0; background: white; color: yellow; }
    body { margin: 1em; border: 1em solid red; padding: 1em; background: red; color: yellow; }
@@ -15,7 +17,7 @@
  <body>
   <p>FAIL</p>
   <p>This page should be completely green.</p>
-  <div>There should be no red on this page.</div>
+  <div>Test passes if there is <strong>no red</strong>.</div>
   <!-- the <div> element should exactly overlap the <html> element,
   since they have the same dimensions and the same containing block
   and the same origin. -->

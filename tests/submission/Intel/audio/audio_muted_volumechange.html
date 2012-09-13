@@ -8,13 +8,13 @@
     <meta name="assert" content="Check if audio.muted is changed that expecting a simple event named volumechange is fired at the media element" />
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
-    <script src="support/mediaelement.js"></script>
   </head>
   <body>
     <div id="log"></div>
     <audio id="m">The user agent doesn't support media element.</audio>
     <script type="text/javascript">
-        getmedia();
+        var media = document.getElementById("m");
+        var name = document.getElementsByName("assert")[0].content;
         var t = async_test(name);
 
         function startTest() {

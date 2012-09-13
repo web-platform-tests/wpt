@@ -8,13 +8,14 @@
     <meta name="assert" content="Check if video.loop is set to true that expecting the seeking event is fired more than once" />
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
-    <script src="support/mediaelement.js"></script>
+    <script src="../common/media.js"></script>
   </head>
   <body>
     <div id="log"></div>
     <video id="m" controls>The user agent doesn't support media element.</video>
     <script type="text/javascript">
-        getmedia();
+        var media = document.getElementById("m");
+        var name = document.getElementsByName("assert")[0].content;
         var t = async_test(name);
         setup({timeout:300000});
         
@@ -34,7 +35,7 @@
 
         media.addEventListener("seeking", startTest, false);
         media.loop = true;
-        media.src = "http://media.w3.org/2010/05/video/movie_5.ogv";
+        media.src = getVideoURI("http://media.w3.org/2010/05/video/movie_5") + "?" + new Date() + Math.random();
         media.play();
     </script>
   </body>

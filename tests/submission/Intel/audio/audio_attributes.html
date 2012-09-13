@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Audio Test: audio_attributes</title>
+    <link rel="author" title="Intel" href="http://www.intel.com" />
+    <link rel="help" href="http://dev.w3.org/html5/spec/single-page.html#the-audio-element" />
+    <link rel="help" href="http://dev.w3.org/html5/spec/single-page.html#htmlmediaelement" />
+    <link rel="help" href="http://dev.w3.org/2006/webapi/WebIDL/#idl-types" />
+    <meta name="flags" content="" />
+    <meta name="assert" content="Check that the audio attributes are implemented as specified for existence, type and default value" />
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <audio id="m">The user agent doesn't support media element.</audio>
+    <script type="text/javascript">
+        var media = document.getElementById("m");
+        [
+            // error state
+            ["object", "error"],
+
+            // network state
+            ["DOMString", "src"],
+            ["DOMString", "currentSrc"],
+            // ["DOMString", "crossOrigin"],
+            ["const unsigned short", "NETWORK_EMPTY", 0],
+            ["const unsigned short", "NETWORK_IDLE", 1],
+            ["const unsigned short", "NETWORK_LOADING", 2],
+            ["const unsigned short", "NETWORK_NO_SOURCE", 3],
+            ["unsigned short", "networkState"],
+            ["DOMString", "preload"],
+            ["object", "buffered"],
+
+            // ready state
+            ["const unsigned short", "HAVE_NOTHING", 0],
+            ["const unsigned short", "HAVE_METADATA", 1],
+            ["const unsigned short", "HAVE_CURRENT_DATA", 2],
+            ["const unsigned short", "HAVE_FUTURE_DATA", 3],
+            ["const unsigned short", "HAVE_ENOUGH_DATA", 4],
+            ["unsigned short", "readyState"],
+            ["boolean", "seeking", false],
+
+            // playback state
+            ["double", "currentTime"],
+            ["unrestricted double", "duration"],
+            // ["object", "startDate"],
+            ["boolean", "paused", true],
+            ["double", "defaultPlaybackRate"],
+            ["double", "playbackRate"],
+            ["object", "played"],
+            ["object", "seekable"],
+            ["boolean", "ended", false],
+            ["boolean", "autoplay", false],
+            ["boolean", "loop", false],
+
+            // media controller
+            ["DOMString", "mediaGroup"],
+            ["object", "controller"],
+
+            // controls
+            ["boolean", "controls", false],
+            ["double", "volume"],
+            ["boolean", "muted", false],
+            ["boolean", "defaultMuted", false],
+
+            // tracks
+            // ["object", "audioTracks"],
+            // ["object", "videoTracks"],
+            // ["object", "textTracks"],
+        ].forEach(function(attr) {
+            var type = attr[0];
+            var name = attr[1];
+            
+            // existence check
+            test(function() {
+                assert_true(name in media, name + " attribute in audio element");
+            }, "Check if audio." + name + " exists");
+            
+            // type and/or default value check
+            switch(type) {
+            case "boolean":
+                test(function() {
+                    assert_equals(typeof media[name], "boolean", name + " attribute of type");
+                }, "Check if audio." + name + " is of type boolean");
+                test(function() {
+                    assert_equals(media[name], attr[2], name + " attribute of value");
+                }, "Check if audio." + name + " initial value is " + attr[2]);
+                break;
+            
+            case "object":
+                test(function() {
+                    assert_equals(typeof media[name], "object", name + " attribute of type");
+                }, "Check if audio." + name + " is of type object");
+                break;
+            
+            case "DOMString":
+                test(function() {
+                    assert_equals(typeof media[name], "string", name + " attribute of type");
+                }, "Check if audio." + name + " is of type string");
+                break;
+            
+            case "const unsigned short":
+                test(function() {
+                    assert_equals(typeof media[name], "number", name + " attribute of type");
+                }, "Check if audio." + name + " is of type number");
+                test(function() {
+                    assert_equals(media[name], attr[2], name + " attribute of value");
+                }, "Check if audio." + name + " is of default value " + attr[2]);
+                break;
+            
+            case "unsigned short":
+                test(function() {
+                    assert_equals(typeof media[name], "number", name + " attribute of type");
+                }, "Check if audio." + name + " is of type number");
+                test(function() {
+                    var value = media[name];
+                    assert_true(0 <= value && value <= 65535, "unsigned short " + value + " not in range [0, 65535]");
+                }, "Check if audio." + name + " initial value is in range [0, 65535]");
+                break;
+            
+            case "double":
+                test(function() {
+                    assert_equals(typeof media[name], "number", name + " attribute of type");
+                }, "Check if audio." + name + " is of type number");
+                break;
+            
+            case "unrestricted double":
+                test(function() {
+                    assert_equals(typeof media[name], "number", name + " attribute of type");
+                }, "Check if audio." + name + " is of type number");
+                break;
+            
+            default:
+                break;
+            }
+        });
+    </script>
+  </body>
+</html>

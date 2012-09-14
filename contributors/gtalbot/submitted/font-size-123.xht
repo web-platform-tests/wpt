@@ -17,30 +17,25 @@
   <link rel="help" href="http://www.w3.org/TR/CSS21/fonts.html#font-size-props" />
   <link rel="match" href="reference/ref-filled-green-100px-square.xht" />
 
-  <meta content="ahem image" name="flags" />
+  <meta content="ahem" name="flags" />
   <meta content="ex unit is the 'x-height' of the relevant font. 'em' and 'ex' length values when defining 'font-size' property refer to the computed font size of the parent element." name="assert" />
 
   <style type="text/css"><![CDATA[
-  html {font: 25px/1 Ahem;}
-  /*
-  To download Ahem font:
-  http://www.w3.org/Style/CSS/Test/Fonts/Ahem/
-  */
-
-  body {font-size: 5ex;} /* The Ahem font has an x-height of 0.8em. */
-
-  p#expected-results {font: 16px/normal UnknownFont;}
-  /*
-  An unknown or uninstalled font on an operating system
-  will make the user agent fallback to its default font.
-  */
-
   div#overlapped-red
   {
   background-color: red;
   height: 100px;
   width: 100px;  
   }
+
+  div#grand-parent {font: 25px/1 Ahem;}
+  /*
+  To download Ahem font:
+  http://www.w3.org/Style/CSS/Test/Fonts/Ahem/
+  */
+
+  div#parent {font-size: 5ex;} 
+  /* The Ahem font has an x-height of 0.8em. */
 
   div#overlapping-green
   {
@@ -62,11 +57,15 @@
 
  <body>
 
-  <p id="expected-results">Test passes if there is a filled green square and <strong>no red</strong>.</p>
+  <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
 
   <div id="overlapped-red"></div>
 
-  <div id="overlapping-green">&nbsp;</div>
+  <div id="grand-parent">
+  		<div id="parent">  
+  			<div id="overlapping-green">&nbsp;</div>
+		</div>
+  </div>
 
  </body>
 </html>

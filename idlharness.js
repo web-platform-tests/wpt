@@ -1201,6 +1201,30 @@ IdlInterface.prototype.test_members = function()
                 //TODO: Does this work for overloads?
                 assert_equals(window[this.name].prototype[member.name].length, member.arguments.length,
                     "property has wrong .length");
+
+                //Make some suitable arguments
+                var args = member.arguments.map(function(arg) {
+                    return create_suitable_object(arg.type);
+                });
+
+                //"Let O be a value determined as follows:
+                //". . .
+                //"Otherwise, throw a TypeError."
+                //This should be hit if the operation is not static, there is
+                //no [ImplicitThis] attribute, and the this value is null.
+                //TODO: We currently ignore the static and [ImplicitThis]
+                //cases.
+                assert_throws(new TypeError(), function() {
+                    window[this.name].prototype[member.name].apply(null, args);
+                }, "calling operation with this = null didn't throw TypeError");
+
+                //". . . If O is not null and is also not a platform object
+                //that implements interface I, throw a TypeError."
+                //TODO: Test a platform object that implements some other
+                //interface.  (Have to be sure to get inheritance right.)
+                assert_throws(new TypeError(), function() {
+                    window[this.name].prototype[member.name].apply({}, args);
+                }, "calling operation with this = {} didn't throw TypeError");
             }.bind(this), this.name + " interface: operation " + member.name +
             "(" + member.arguments.map(function(m) { return m.type.idlType; }) +
             ")");

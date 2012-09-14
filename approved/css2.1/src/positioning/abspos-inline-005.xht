@@ -3,8 +3,12 @@
  <head>
   <title>CSS Test: Absolutely positioned boxes in inlines: positioning at bottom left</title>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-09-14 -->
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/absolute/inline/005.html" type="text/html"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#comp-abspos" />
+
+  <meta name="flags" content="interact" />
+
   <style type="text/css">
    p { font: 1em monospace; }
    .filler { color: silver; }
@@ -19,6 +23,9 @@
    The test has <span class="test"><span class="absolute">PASSED</span><span class="fail">FAILED</span></span>.
    <span class="filler"> This is filler text. This is filler text. This is filler text. </span>
   </p>
+
+  <p>There should be no red after resizing viewport.</p>
+
   <!-- the exception mentioned in tests 001 and 002 DOES NOT APPLY to this test. -->
  </body>
 </html>

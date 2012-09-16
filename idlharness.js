@@ -1450,6 +1450,11 @@ function do_interface_attribute_asserts(obj, member)
     //the Number value 0."
     assert_equals(typeof desc.get, "function", "getter must be Function");
     assert_equals(desc.get.length, 0, "getter length must be 0");
+    //TODO: Account for LenientThis
+    assert_throws(new TypeError(), function()
+    {
+        desc.get.call({});
+    }.bind(this), "calling getter on wrong object type must throw TypeError");
 
     //TODO: Test calling setter on the interface prototype (should throw
     //TypeError in most cases).

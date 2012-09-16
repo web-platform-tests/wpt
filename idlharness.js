@@ -563,8 +563,8 @@ IdlException.prototype.test_self = function()
         //object."
         //Note: This doesn't match browsers as of December 2011, see
         //http://www.w3.org/Bugs/Public/show_bug.cgi?id=14813
-        assert_true(Function.prototype.isPrototypeOf(window[this.name]),
-                    "prototype of window's property " + format_value(this.name) + " is not Function.prototype");
+        assert_equals(Object.getPrototypeOf(window[this.name]), Function.prototype,
+                      "prototype of window's property " + format_value(this.name) + " is not Function.prototype");
         //"Its [[Get]] internal property is set as described in ECMA-262
         //section 15.3.5.4."
         //Not much to test for this.
@@ -619,8 +619,9 @@ IdlException.prototype.test_self = function()
                             'should inherit from ' + inherit_exception + ', but window has no such property');
         assert_own_property(window[inherit_exception], "prototype",
                             'should inherit from ' + inherit_exception + ', but that object has no "prototype" property');
-        assert_true(window[inherit_exception].prototype.isPrototypeOf(window[this.name].prototype),
-                    'prototype of ' + this.name + '.prototype is not ' + inherit_exception + '.prototype');
+        assert_equals(Object.getPrototypeOf(window[this.name].prototype),
+                      window[inherit_exception].prototype,
+                      'prototype of ' + this.name + '.prototype is not ' + inherit_exception + '.prototype');
 
         //"The class string of an exception interface prototype object is the
         //concatenation of the exception’s identifier and the string
@@ -824,8 +825,9 @@ IdlException.prototype.test_object = function(desc)
             //exception object must be the exception interface prototype object
             //from the global environment the exception object is associated
             //with."
-            assert_true(window[this.name].prototype.isPrototypeOf(obj),
-                desc + "'s prototype is not " + this.name + ".prototype");
+            assert_equals(Object.getPrototypeOf(obj),
+                          window[this.name].prototype,
+                          desc + "'s prototype is not " + this.name + ".prototype");
         }
 
         //"The class string of the exception object must be the identifier of
@@ -918,8 +920,8 @@ IdlInterface.prototype.test_self = function()
         //object."
         //Note: This doesn't match browsers as of December 2011, see
         //http://www.w3.org/Bugs/Public/show_bug.cgi?id=14813
-        assert_true(Function.prototype.isPrototypeOf(window[this.name]),
-                    "prototype of window's property " + format_value(this.name) + " is not Function.prototype");
+        assert_equals(Object.getPrototypeOf(window[this.name]), Function.prototype,
+                      "prototype of window's property " + format_value(this.name) + " is not Function.prototype");
         //"Its [[Get]] internal property is set as described in ECMA-262
         //section 15.3.5.4."
         //Not much to test for this.
@@ -1036,8 +1038,9 @@ IdlInterface.prototype.test_self = function()
                             'should inherit from ' + inherit_interface + ', but window has no such property');
         assert_own_property(window[inherit_interface], "prototype",
                             'should inherit from ' + inherit_interface + ', but that object has no "prototype" property');
-        assert_true(window[inherit_interface].prototype.isPrototypeOf(window[this.name].prototype),
-                    'prototype of ' + this.name + '.prototype is not ' + inherit_interface + '.prototype');
+        assert_equals(Object.getPrototypeOf(window[this.name].prototype),
+                      window[inherit_interface].prototype,
+                      'prototype of ' + this.name + '.prototype is not ' + inherit_interface + '.prototype');
 
         //"The class string of an interface prototype object is the
         //concatenation of the interface’s identifier and the string
@@ -1297,8 +1300,9 @@ IdlInterface.prototype.test_primary_interface_of = function(desc, obj, exception
             //"The value of the internal [[Prototype]] property of the platform
             //object is the interface prototype object of the primary interface
             //from the platform object’s associated global environment."
-            assert_true(window[this.name].prototype.isPrototypeOf(obj),
-                desc + "'s prototype is not " + this.name + ".prototype");
+            assert_equals(Object.getPrototypeOf(obj),
+                          window[this.name].prototype,
+                          desc + "'s prototype is not " + this.name + ".prototype");
         }.bind(this), this.name + " must be primary interface of " + desc);
     }
 

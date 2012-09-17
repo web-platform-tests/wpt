@@ -7,9 +7,13 @@
         <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#propdef-bottom" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#dis-pos-flo" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#position-props" />
+		<link rel="match" href="bottom-applies-to-001-ref.xht" />
+
         <meta name="flags" content="" />
         <meta name="assert" content="The 'bottom' property applies to elements with a display of 'table-footer-group'." />
         <style type="text/css">
+			body {margin: 8px;}
+
             #test
             {
                 background: green;
@@ -29,8 +33,8 @@
             #cell
             {
                 display: table-cell;
-                height: 1in;
-                width: 1in;
+                height: 100px;
+                width: 100px;
             }
         </style>
     </head>

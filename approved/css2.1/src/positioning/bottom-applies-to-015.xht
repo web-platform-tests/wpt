@@ -7,17 +7,21 @@
         <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#propdef-bottom" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#dis-pos-flo" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#position-props" />
+		<link rel="match" href="bottom-applies-to-001-ref.xht" />
+
         <meta name="flags" content="" />
         <meta name="assert" content="The 'bottom' property applies to elements with a display of 'table-caption'." />
         <style type="text/css">
+			body {margin: 8px;}
+
             #caption
             {
                 background: green;
                 bottom: 0;
                 display: table-caption;
-                height: 1in;
+                height: 100px;
                 position: absolute;
-                width: 1in;
+                width: 100px;
             }
             #table
             {

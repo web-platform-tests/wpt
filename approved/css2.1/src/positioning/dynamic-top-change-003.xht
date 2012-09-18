@@ -7,9 +7,19 @@
   <link rel="help" href="http://www.w3.org/TR/CSS21/cascade.html#value-def-inherit"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#position-props"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#propdef-position"/>
+  <link rel="match" href="dynamic-top-change-002-ref.xht" />
+
   <meta name="flags" content="dom" />
   <meta name="assert" content="The position of a positioned element which inherits its 'top' value from its parent changes when the parent's 'top' value is changed even if the parent is display:table."/>
   <style type="text/css"><![CDATA[
+    p
+    {
+    line-height: 1.25;
+    margin: 1em 0;
+    }
+
+    strong {line-height: 1;}
+
     .testDiv { width: 100px; height: 100px; }
     #green { top: 4em; background: green; position: absolute; }
     #red { top: inherit; background: red; position: relative; }
@@ -24,7 +34,7 @@
   ]]></script>
  </head>
  <body>
-   <p>There should be no red.</p>
+   <p>Test passes if there is <strong>no red</strong>.</p>
    <div id="parent">
      <div id="intermediate">
        <div id="red" class="testDiv"></div>

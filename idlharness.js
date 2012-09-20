@@ -967,15 +967,20 @@ IdlInterface.prototype.test_self = function()
             //attributes { [[Writable]]: false, [[Enumerable]]: false,
             //[[Configurable]]: false } whose value is a Number determined as
             //follows: . . .
-            //"Return the maximum argument list length of the constructors in
-            //the entries of S."
+            //"Return the length of the shortest argument list of the entries
+            //in S."
             //TODO: Variadic constructors.  Should generalize this so that it
             //works for testing operation length too (currently we just don't
             //support multiple operations with the same identifier).
             var expected_length = this.extAttrs
                 .filter(function(attr) { return attr.name == "Constructor" })
-                .map(function(attr) { return attr.arguments ? attr.arguments.length : 0 })
-                .reduce(function(m, n) { return Math.max(m, n) });
+                .map(function(attr) {
+                    return attr.arguments ? attr.arguments.filter(
+                        function(arg) {
+                            return !arg.optional;
+                        }).length : 0
+                })
+                .reduce(function(m, n) { return Math.min(m, n) });
             assert_own_property(window[this.name], "length");
             assert_equals(window[this.name].length, expected_length, "wrong value for " + this.name + ".length");
             var desc = Object.getOwnPropertyDescriptor(window[this.name], "length");
@@ -1199,10 +1204,13 @@ IdlInterface.prototype.test_members = function()
                 //"The value of the Function object’s “length” property is
                 //a Number determined as follows:
                 //". . .
-                //"Return the maximum argument list length of the functions
-                //in the entries of S."
-                //TODO: Does this work for overloads?
-                assert_equals(window[this.name].prototype[member.name].length, member.arguments.length,
+                //"Return the length of the shortest argument list of the
+                //entries in S."
+                //TODO: Doesn't handle overloading or variadic arguments.
+                assert_equals(window[this.name].prototype[member.name].length,
+                    member.arguments.filter(function(arg) {
+                        return !arg.optional;
+                    }).length,
                     "property has wrong .length");
 
                 //Make some suitable arguments

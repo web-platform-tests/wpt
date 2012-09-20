@@ -4,6 +4,8 @@
         <title>CSS Test: Absolutely positioned elements establishes a new containing block for absolutely positioned children</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#absolute-positioning" />
+		<link rel="match" href="position-absolute-004-ref.xht" />
+
         <meta name="flags" content="" />
         <meta name="assert" content="An absolutely positioned box establishes a new containing block for absolutely positioned children." />
         <style type="text/css">
@@ -33,7 +35,7 @@
         </style>
     </head>
     <body>
-        <p>Test passes if the blue box is directly below the orange box.</p>
+        <p>Test passes if the blue square is directly below the orange square.</p>
         <div id="div1">
             <div id="div2">
                 <div id="div3"></div>

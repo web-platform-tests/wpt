@@ -22,16 +22,19 @@
             {
                 #div1
                 {
-                    background: lime;
-                    height: 25px;
                     position: fixed;
                     top: 50px;
+                }
+                #prerequisite
+                {
+                    display: none;
                 }
             }
         </style>
     </head>
     <body>
-        <p>Test passes if the "Filler Text" appears on all the pages when printed.</p>
+        <p id="prerequisite">PREREQUISITE: Switch to print preview or a paged view.</p>
+        <p>Test passes if the "Filler Text" is on all five pages when paginated or printed.</p>
         <div id="div1">Filler Text</div>
         <div id="filler"></div>
     </body>

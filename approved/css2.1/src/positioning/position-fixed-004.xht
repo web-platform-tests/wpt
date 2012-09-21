@@ -3,22 +3,26 @@
     <head>
         <title>CSS Test: Position fixed and print media</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
-		<link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-09-20 -->
+        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-09-20 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#propdef-position" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#choose-position" />
         <meta name="flags" content="paged" />
         <meta name="assert" content="Fixed position elements are positioned with respect to the page box when printed." />
         <style type="text/css">
+            html, body
+            {
+                height: 100%;
+            }
             #filler
             {
-                height: 3000px;
+                height: 400%;
                 margin: 10px;
             }
             @media print
             {
                 #div1
                 {
-                    background: blue;
+                    background: lime;
                     height: 25px;
                     position: fixed;
                     top: 50px;
@@ -27,7 +31,7 @@
         </style>
     </head>
     <body>
-        <p>Test passes if the "Filler Text" appears on all the pages when printed on a standard letter sized sheet of paper.</p>
+        <p>Test passes if the "Filler Text" appears on all the pages when printed.</p>
         <div id="div1">Filler Text</div>
         <div id="filler"></div>
     </body>

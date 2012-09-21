@@ -14,19 +14,29 @@
         <style type="text/css">
 			body {margin: 8px;}
 
-            div
+            span#inline-block
             {
                 background: green;
                 bottom: 0;
                 display: inline-block;
-                height: 100px;
                 position: absolute;
-                width: 100px;
             }
+
+			span.block-descendant
+			{
+				display: block;
+                height: 50px;
+                width: 100px;
+			}
         </style>
     </head>
     <body>
         <p>Test passes if there is a filled green square at the bottom of the page.</p>
-        <div></div>
+        <div>
+	        <span id="inline-block">
+				<span class="block-descendant"></span>        
+				<span class="block-descendant"></span>
+        	</span>        
+        </div>
     </body>
 </html>

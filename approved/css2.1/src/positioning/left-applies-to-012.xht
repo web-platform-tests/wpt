@@ -21,13 +21,13 @@
                 position: absolute;
             }
 
-			div.block-descendant
+			span.block-descendant
 			{
 	            background: green;
-    	        height: 0.5in;
+				display: block;
+       	        height: 0.5in;
         	    width: 1in;
 			}
-
         </style>
     </head>
     <body>
@@ -35,8 +35,8 @@
 
         <div>
 	        <span id="inline-block">
-				<div class="block-descendant"></div>        
-				<div class="block-descendant"></div>
+				<span class="block-descendant"></span>        
+				<span class="block-descendant"></span>
         	</span>
         </div>
 

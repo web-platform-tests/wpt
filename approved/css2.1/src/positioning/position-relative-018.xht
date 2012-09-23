@@ -3,7 +3,9 @@
     <head>
         <title>CSS Test: Relative positioning and computed values when 'bottom' is set to 'auto'</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
-        <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#positioning-scheme" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#relative-positioning" />
+		<link rel="match" href="position-relative-018-ref.xht" />
+
         <meta name="flags" content="" />
         <meta name="assert" content="Computed value of 'bottom' set to 'auto' is equal to negative 'top'." />
         <style type="text/css">
@@ -32,7 +34,7 @@
         </style>
     </head>
     <body>
-        <p>Test passes if there is one square on the page.</p>
+        <p>Test passes if there is only one filled black square.</p>
         <div class="parent">
             <div id="div1"></div>
         </div>

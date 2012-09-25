@@ -13,7 +13,7 @@
     var link = document.querySelector('a[href^="https://www.w3.org/Bugs/Public/enter_bug.cgi?"]');
     link.parentNode.appendChild(bugLink);
     var originalHref = link.href;
-    if (!document.querySelector('script[data-no-style]')) {
+    if (!document.querySelector('script[data-no-style][src$="/file-bug.js"]')) {
         var style = document.createElement('style');
         style.textContent = '.bug-link { position:fixed; bottom:0; left:0; background:rgba(255,255,255,0.8) !important; width:115px; font-size:smaller; padding:0 10px; z-index:1; visibility:hidden; opacity:0; transition:0.3s; text-decoration:underline } .bug-link[href] { visibility:visible; opacity:1 } .bug-link:not([href]) { color:gray }';
         document.head.appendChild(style);

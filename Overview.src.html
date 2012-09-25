@@ -131,12 +131,12 @@ http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0.
 function removeStatusWarning(store) {
     var elm = document.getElementById('status-warning');
     elm.parentNode.removeChild(elm);
-    if (store && localStorage)
+    if (store && 'localStorage' in window)
         localStorage[document.querySelector('h1').textContent+' status warning closed'] = String(new Date()-0);
 }
 (function() {
     var date;
-    if (localStorage && (date = localStorage[document.querySelector('h1').textContent+' status warning closed'])) {
+    if ('localStorage' in window && (date = localStorage[document.querySelector('h1').textContent+' status warning closed'])) {
         if (new Date() - parseInt(date, 10) < 1000 * 60 * 60 * 24)
             removeStatusWarning();
     }

@@ -1,0 +1,12 @@
+<html>
+<body>
+<pre>
+<script>
+window.location.__proto__.__defineGetter__("toString", function () {
+  return function() { return "haxored"; }
+});
+document.writeln(window.location + "__unique__");
+</script>
+</pre>
+</body>
+</html>

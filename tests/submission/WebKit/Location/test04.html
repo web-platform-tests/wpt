@@ -1,0 +1,12 @@
+<html>
+<body>
+<pre>
+<script>
+__defineGetter__("window", function() {
+  return { location: "haxored" };
+});
+document.writeln(window.location + "__unique__");
+</script>
+</pre>
+</body>
+</html>

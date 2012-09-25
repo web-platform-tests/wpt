@@ -1,0 +1,12 @@
+<html>
+<body>
+<pre>
+<script>
+with(window.location.__proto__) {
+  var valueOf = function() { return "haxored"; }
+}
+document.writeln(window.location + "__unique__");
+</script>
+</pre>
+</body>
+</html>

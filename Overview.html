@@ -47,7 +47,7 @@
 
 </p><hgroup>
 <h1>Quirks Mode</h1>
-<h2 class="no-num no-toc not-tr not-fs">Living Specification — 11 September 2012</h2>
+<h2 class="no-num no-toc not-tr not-fs">Living Specification — 25 September 2012</h2>
 </hgroup>
 
 <dl>
@@ -74,7 +74,7 @@
 <a href="http://creativecommons.org/publicdomain/zero/1.0/" rel="license">CC0 1.0 Universal</a>.
 To the extent possible under law, the editors has waived all copyright and
 related or neighboring rights to this work. In addition, as of
-11 September 2012, the editors have made this specification available
+25 September 2012, the editors have made this specification available
 under the
 <a href="http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0" rel="license">Open Web Foundation Agreement Version 1.0</a>,
 which is available at
@@ -524,7 +524,7 @@ Opera supported this quirk (copied from IE), but then dropped it because it brok
 
 <p class="status not-tr">Status: Awaiting implementation feedback. Has <a href="http://simon.html5.org/test/quirks-mode/js/line-height-calculation.html">tests</a>.
 
-<p>In <a class="external" data-anolis-spec="dom" href="http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document-quirks" title="concept-document-quirks">quirks mode</a> and <a class="external" data-anolis-spec="dom" href="http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document-limited-quirks" title="concept-document-limited-quirks">almost standards mode</a>, an inline box that matches the following conditions, must, for the purpose of line height calculation, act as if the box had a height of zero.
+<p>In <a class="external" data-anolis-spec="dom" href="http://dom.spec.whatwg.org/#concept-document-quirks" title="concept-document-quirks">quirks mode</a> and <a class="external" data-anolis-spec="dom" href="http://dom.spec.whatwg.org/#concept-document-limited-quirks" title="concept-document-limited-quirks">almost standards mode</a>, an inline box that matches the following conditions, must, for the purpose of line height calculation, act as if the box had a height of zero.
 
 <ul>
  <li><p>The 'border-right-width', 'border-left-width', 'padding-right' and 'padding-left' properties have a used value of zero. <!-- This matches WebKit. Opera and IE9 don't have this [Opera has now implemented this (CORE-19183)]. Gecko has this rule for all margins, paddings and borders. -->
@@ -535,13 +535,13 @@ Opera supported this quirk (copied from IE), but then dropped it because it brok
 
 <p class="status not-tr">Status: Awaiting implementation feedback. Has <a href="http://simon.html5.org/test/quirks-mode/js/blocks-ignore-line-height.html">tests</a>.
 
-<p>In <a class="external" data-anolis-spec="dom" href="http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document-quirks" title="concept-document-quirks">quirks mode</a> and <a class="external" data-anolis-spec="dom" href="http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document-limited-quirks" title="concept-document-limited-quirks">almost standards mode</a>, a <a href="#block-container-element">block container element</a> whose content is composed of <a href="#inline-level">inline-level</a> elements, the element's 'line-height' must be ignored for the purpose of calculating the minimal height of line boxes within the element.
+<p>In <a class="external" data-anolis-spec="dom" href="http://dom.spec.whatwg.org/#concept-document-quirks" title="concept-document-quirks">quirks mode</a> and <a class="external" data-anolis-spec="dom" href="http://dom.spec.whatwg.org/#concept-document-limited-quirks" title="concept-document-limited-quirks">almost standards mode</a>, a <a href="#block-container-element">block container element</a> whose content is composed of <a href="#inline-level">inline-level</a> elements, the element's 'line-height' must be ignored for the purpose of calculating the minimal height of line boxes within the element.
 
 <h3 id="the-percentage-height-calculation-quirk"><span class="secno">3.3 </span>The percentage height calculation quirk</h3>
 
 <p class="status not-tr">Status: Awaiting implementation feedback. Has <a href="http://simon.html5.org/test/quirks-mode/js/percentage-height-calculation.html">tests</a>.
 
-<p>In <a class="external" data-anolis-spec="dom" href="http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document-quirks" title="concept-document-quirks">quirks mode</a>, for the purpose of calculating the 'height' of an element <var>element</var>, if the computed value of the 'position' property of <var>element</var> is 'relative' or 'static', the specified value for the 'height' property of <var>element</var> is a &lt;percentage&gt;, and <var>element</var> does not have a computed value of the 'display' property that is 'table-row', 'table-row-group', 'table-header-group', 'table-footer-group', 'table-cell' or 'table-caption', the <a href="#containing-block">containing block</a> of <var>element</var> must be calculated using the following algorithm, aborting on the first step that returns a value:
+<p>In <a class="external" data-anolis-spec="dom" href="http://dom.spec.whatwg.org/#concept-document-quirks" title="concept-document-quirks">quirks mode</a>, for the purpose of calculating the 'height' of an element <var>element</var>, if the computed value of the 'position' property of <var>element</var> is 'relative' or 'static', the specified value for the 'height' property of <var>element</var> is a &lt;percentage&gt;, and <var>element</var> does not have a computed value of the 'display' property that is 'table-row', 'table-row-group', 'table-header-group', 'table-footer-group', 'table-cell' or 'table-caption', the <a href="#containing-block">containing block</a> of <var>element</var> must be calculated using the following algorithm, aborting on the first step that returns a value:
 
 <ol>
   <li><p>Let <var>element</var> be the nearest ancestor <a href="#block-container-box">block container box</a> of <var>element</var>, if there is one. Otherwise, return the <a href="#initial-containing-block">initial containing block</a>.
@@ -570,7 +570,7 @@ Opera supported this quirk (copied from IE), but then dropped it because it brok
 
 <p class="status not-tr">Status: Awaiting implementation feedback. Has <a href="http://simon.html5.org/test/quirks-mode/js/table-cell-width-calculation.html">tests</a>.
 
-<p>In <a class="external" data-anolis-spec="dom" href="http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document-quirks" title="concept-document-quirks">quirks mode</a>, for the purpose of calculating the <a href="#minimum-intrinsic-width-of-an-inline-formatting-context">minimum intrinsic width of an inline formatting context</a> for which a table cell <var>cell</var> is the <a href="#containing-block">containing block</a>, if <var>cell</var> has a computed value of the 'width' property that is 'auto', <code>img</code> elements that are inline replaced elements or inline-block replaced elements in that inline formatting context must not have a line breaking opportunity before or after them.
+<p>In <a class="external" data-anolis-spec="dom" href="http://dom.spec.whatwg.org/#concept-document-quirks" title="concept-document-quirks">quirks mode</a>, for the purpose of calculating the <a href="#minimum-intrinsic-width-of-an-inline-formatting-context">minimum intrinsic width of an inline formatting context</a> for which a table cell <var>cell</var> is the <a href="#containing-block">containing block</a>, if <var>cell</var> has a computed value of the 'width' property that is 'auto', <code>img</code> elements that are inline replaced elements or inline-block replaced elements in that inline formatting context must not have a line breaking opportunity before or after them.
 
 <!-- http://mxr.mozilla.org/mozilla-central/source/layout/generic/nsImageFrame.cpp#2053 -->
 
@@ -578,7 +578,7 @@ Opera supported this quirk (copied from IE), but then dropped it because it brok
 
 <p class="status not-tr">Status: Awaiting implementation feedback.
 
-<p>In <a class="external" data-anolis-spec="dom" href="http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document-quirks" title="concept-document-quirks">quirks mode</a>, an element <var>cell</var> that matches the following conditions must act as if it had an <a href="#outer-intrinsic-minimum-width-of-a-table-cell">outer intrinsic minimum width of a table cell</a> in the automatic table layout algorithm that is the bigger value of <var>cell</var>'s computed value of the 'width' property and the <a href="#outer-intrinsic-minimum-width-of-a-table-cell">outer intrinsic minimum width of a table cell</a>.
+<p>In <a class="external" data-anolis-spec="dom" href="http://dom.spec.whatwg.org/#concept-document-quirks" title="concept-document-quirks">quirks mode</a>, an element <var>cell</var> that matches the following conditions must act as if it had an <a href="#outer-intrinsic-minimum-width-of-a-table-cell">outer intrinsic minimum width of a table cell</a> in the automatic table layout algorithm that is the bigger value of <var>cell</var>'s computed value of the 'width' property and the <a href="#outer-intrinsic-minimum-width-of-a-table-cell">outer intrinsic minimum width of a table cell</a>.
 
 <ul>
   <li><p><var>cell</var> is a <code>td</code> element or a <code>th</code> element.
@@ -590,7 +590,7 @@ Opera supported this quirk (copied from IE), but then dropped it because it brok
 
 <p class="status not-tr">Status: Awaiting implementation feedback.
 
-<p>In <a class="external" data-anolis-spec="dom" href="http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document-quirks" title="concept-document-quirks">quirks mode</a>, an element <var>table</var> that matches the following conditions must have a used value of the 'height' property of '0' and a used value of the 'border-style' property of 'none'.
+<p>In <a class="external" data-anolis-spec="dom" href="http://dom.spec.whatwg.org/#concept-document-quirks" title="concept-document-quirks">quirks mode</a>, an element <var>table</var> that matches the following conditions must have a used value of the 'height' property of '0' and a used value of the 'border-style' property of 'none'.
 
 <ul>
   <li><p><var>table</var> has a computed value of the 'display' property that is 'table'.
@@ -602,7 +602,7 @@ Opera supported this quirk (copied from IE), but then dropped it because it brok
 
 <p class="status not-tr">Status: Awaiting implementation feedback.
 
-<p>In <a class="external" data-anolis-spec="dom" href="http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document-quirks" title="concept-document-quirks">quirks mode</a>, text decoration must not propagate into <code>table</code> elements.
+<p>In <a class="external" data-anolis-spec="dom" href="http://dom.spec.whatwg.org/#concept-document-quirks" title="concept-document-quirks">quirks mode</a>, text decoration must not propagate into <code>table</code> elements.
 
 <!-- http://mxr.mozilla.org/mozilla-central/source/layout/generic/nsTextFrameThebes.cpp#4582 -->
 
@@ -618,7 +618,7 @@ Opera supported this quirk (copied from IE), but then dropped it because it brok
 
 <p class="status not-tr">Status: Awaiting implementation feedback.
 
-<p>In <a class="external" data-anolis-spec="dom" href="http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document-quirks" title="concept-document-quirks">quirks mode</a>, the initial value of the 'color' property must be 'quirk-inherit', a special value that has no keyword mapping to it.
+<p>In <a class="external" data-anolis-spec="dom" href="http://dom.spec.whatwg.org/#concept-document-quirks" title="concept-document-quirks">quirks mode</a>, the initial value of the 'color' property must be 'quirk-inherit', a special value that has no keyword mapping to it.
 
 <p>The computed value of the 'color' property of an element <var>element</var> must be calculated using the following algorithm:
 
@@ -650,7 +650,7 @@ https://bugs.webkit.org/show_bug.cgi?id=84469
 
 <p class="status not-tr">Status: Awaiting implementation feedback.
 
-<p>In <a class="external" data-anolis-spec="dom" href="http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document-quirks" title="concept-document-quirks">quirks mode</a>, elements that have a computed value of the 'display' property of 'table-cell' must act as they have used value of the 'box-sizing' property of 'border-box', but only for the purpose of the 'height', 'min-height' and 'max-height' properties.
+<p>In <a class="external" data-anolis-spec="dom" href="http://dom.spec.whatwg.org/#concept-document-quirks" title="concept-document-quirks">quirks mode</a>, elements that have a computed value of the 'display' property of 'table-cell' must act as they have used value of the 'box-sizing' property of 'border-box', but only for the purpose of the 'height', 'min-height' and 'max-height' properties.
 
 <h2 id="selectors"><span class="secno">4 </span>Selectors</h2>
 
@@ -658,7 +658,7 @@ https://bugs.webkit.org/show_bug.cgi?id=84469
 
 <p class="status not-tr">Status: Awaiting implementation feedback.
 
-<p>In <a class="external" data-anolis-spec="dom" href="http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-document-quirks" title="concept-document-quirks">quirks mode</a>, a compound selector <var>selector</var> that matches the following conditions must not match elements that would not also match the ':any-link' selector. <a data-anolis-ref="" href="#refsSELECTORS">[SELECTORS]</a>
+<p>In <a class="external" data-anolis-spec="dom" href="http://dom.spec.whatwg.org/#concept-document-quirks" title="concept-document-quirks">quirks mode</a>, a compound selector <var>selector</var> that matches the following conditions must not match elements that would not also match the ':any-link' selector. <a data-anolis-ref="" href="#refsSELECTORS">[SELECTORS]</a>
 
 <ul>
  <li><var>selector</var> uses the ':active' or ':hover' pseudo-classes.
@@ -736,7 +736,7 @@ http://mxr.mozilla.org/mozilla-central/source/content/base/src/nsGenericElement.
 <dd><cite><a href="http://dev.w3.org/csswg/css3-syntax/">CSS Syntax Module Level 3</a></cite>, Tab Atkins Jr. W3C.
 
 <dt id="refsDOM">[DOM]
-<dd><cite><a href="http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html">DOM4</a></cite>, Anne van Kesteren, Aryeh Gregor and Ms2ger. W3C.
+<dd><cite><a href="http://dom.spec.whatwg.org/">DOM</a></cite>, Anne van Kesteren, Aryeh Gregor and Ms2ger. WHATWG.
 
 <dt id="refsHTML">[HTML]
 <dd><cite><a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/">HTML</a></cite>, Ian Hickson. WHATWG.

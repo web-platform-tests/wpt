@@ -3,8 +3,9 @@
   <head>
     <title>CSS Test: Relative Positioning - overconstrained top = -bottom</title>
     <link rel="author" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact"/>
+    <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-09-25 -->
     <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#relative-positioning" />
-	<!-- <link rel="match" href="relpos-calcs-001-ref.xht" /> -->
+	<link rel="match" href="relpos-calcs-001-ref.xht" />
 
     <meta name="flags" content="" />
     <meta name="assert" content="For a relatively positioned element, if
@@ -20,11 +21,20 @@
             position: relative;
             top: 50%;
             bottom: 50%;
+
+            /*
+            div.outer's used top value is 40px
+            div.outer's used bottom value is -40px
+            div.outer's computed top value is 50%
+            div.outer's computed bottom value is 50%
+            */
+
         }
         .inner {
             background: green;
             position: relative;
             bottom: inherit; /* using inheritance to test computed vs. used */
+            /* div.inner's bottom inherits div.outer's computed bottom value */
         }
         .control {
           background: red;

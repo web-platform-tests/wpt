@@ -1,0 +1,5 @@
+  <its:rules version="1.0" xmlns:its="http://www.w3.org/2005/11/its">
+      <its:rubyRule selector="/text/body/img[1]/@alt">
+          <its:rubyText>World Wide Web Consortium</its:rubyText>
+      </its:rubyRule>
+  </its:rules><!-- timestamp $Id: EX-ruby-legacy-2_LinkedRules.xml,v 1.2 2007/02/02 16:55:05 srahtz3 Exp $ -->

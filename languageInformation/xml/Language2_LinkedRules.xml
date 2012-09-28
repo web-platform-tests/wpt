@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<its:rules version="1.0" xmlns:its="http://www.w3.org/2005/11/its">
+ <its:langRule selector="/text" langPointer="@language"/>
+</its:rules><!-- timestamp $Id: Language2_LinkedRules.xml,v 1.4 2007/02/02 16:55:05 srahtz3 Exp $ -->

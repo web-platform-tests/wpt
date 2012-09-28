@@ -1,0 +1,5 @@
+ <its:rules version="2.0" xmlns:its="http://www.w3.org/2005/11/its">
+  <its:translateRule selector="/h:html" translate="no"/>
+  <its:translateRule selector="//h:h4" translate="yes"/>
+  <its:targetPointerRule selector="//h:h4" targetPointer="../h:b"/>
+ </its:rules>

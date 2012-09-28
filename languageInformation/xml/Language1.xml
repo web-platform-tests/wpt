@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<text language="en">
+ <head>
+  <its:rules version="1.0" xmlns:its="http://www.w3.org/2005/11/its">
+   <its:langRule selector="//*" langPointer="@language"/>
+  </its:rules>
+ </head>
+ <content>
+  <par>The motto of Québec is: <q language="fr-CA">Je me souviens</q>.</par>
+  <par>The one of Canada: <q language="la">A mari usque ad mare</q>.</par>
+ </content>
+</text><!-- timestamp $Id: Language1.xml,v 1.4 2007/02/02 16:55:05 srahtz3 Exp $ -->

@@ -1,0 +1,10 @@
+﻿<book xmlns:its="http://www.w3.org/2005/11/its" its:version="1.0">
+ <head>
+  <title>The Life of a Simple Man</title>
+ </head>
+ <body>
+  <p>Everything started when Zebulon discovered that he had 
+   a <fexp its:translate="no">doppelgänger</fexp> who was a
+   serious baseball <fexp its:translate="no">aficionado</fexp>.</p>
+ </body>
+</book><!-- timestamp $Id: Translate4.xml,v 1.4 2007/02/02 19:29:30 ysavoure Exp $ -->

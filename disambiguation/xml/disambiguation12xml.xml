@@ -1,0 +1,15 @@
+<text
+  xmlns:its="http://www.w3.org/2005/11/its" >
+ <its:rules version="2.0">
+  <its:disambiguationRule
+    selector="/text/body/p/span[1]"
+    disambigIdentPointer="../span[1]"/>
+  <its:disambiguationRule
+    selector="/text/body/p/span[2]"
+    disambigIdentPointer="../span[2]"/>
+ </its:rules>
+ <body>
+  <p>
+   <span id="http://dbpedia.org/resource/Dublin">Dublin</span> is the <span id="http://www.w3.org/2006/03/wn/wn20/instances/worsense-capital-noun-3">capital of Ireland</span>.</p>
+ </body>
+</text>

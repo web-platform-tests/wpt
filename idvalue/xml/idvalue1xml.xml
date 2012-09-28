@@ -1,0 +1,12 @@
+<doc
+  xmlns:its="http://www.w3.org/2005/11/its" >
+ <its:rules version="2.0">
+  <its:idValueRule selector="//text" idValue="concat(../@name, '_t')"/>
+  <its:idValueRule selector="//desc" idValue="concat(../@name, '_d')"/>
+ </its:rules>
+ <msg name="settingsMissing">
+  <text>Can't find settings file.</text>
+  <desc>The module cannot find the default settings file.
+     You need to re-initialize the system.</desc>
+ </msg>
+</doc>

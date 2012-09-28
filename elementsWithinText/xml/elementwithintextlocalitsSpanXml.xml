@@ -1,0 +1,8 @@
+<text
+  xmlns:its="http://www.w3.org/2005/11/its" 
+  its:version="2.0">
+ <body>
+  <par>Text with <its:span
+     withinText="yes">bold</its:span>.</par>
+ </body>
+</text>

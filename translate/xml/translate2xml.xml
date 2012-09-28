@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<myDoc>
+ <head>
+  <its:rules xmlns:its="http://www.w3.org/2005/11/its" version="1.0"
+   xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="Translate2_LinkedRules.xml"/>
+ </head>
+ <body>
+  <par id="100" title="Text">This is the first paragraph. It has some <code>un-translatable code</code>.</par>
+ </body>
+</myDoc><!-- timestamp $Id: Translate2.xml,v 1.4 2007/02/02 16:55:05 srahtz3 Exp $ -->

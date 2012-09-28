@@ -1,0 +1,5 @@
+<its:rules xmlns:its="http://www.w3.org/2005/11/its"  its:version="2.0">
+  <its:idValueRule selector="//h:b" idValue="concat(../@id, '_t')"/>
+  <its:idValueRule selector="//h:var" idValue="concat(../@id, '_d')"/>
+</its:rules>
+

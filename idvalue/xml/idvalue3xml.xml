@@ -1,0 +1,11 @@
+<doc
+  xmlns:its="http://www.w3.org/2005/11/its" >
+  <its:rules xmlns:its="http://www.w3.org/2005/11/its" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0" xlink:type="simple" xlink:href="idvalue3XmlRule.xml"/>
+ <msg name="settingsMissing">
+  <text>Can't find settings file.</text>
+  <desc>The module cannot find the default settings file.
+     You need to re-initialize the system.</desc>
+ </msg>
+</doc>
+
+

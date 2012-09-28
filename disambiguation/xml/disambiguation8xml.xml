@@ -1,0 +1,15 @@
+<text
+  xmlns:its="http://www.w3.org/2005/11/its" >
+ <its:rules version="2.0">
+  <its:disambiguationRule
+    selector="/text/body/p/*[@id='dublin']"
+    disambigSourceRef="http://dbpedia.org/"/>
+  <its:disambiguationRule
+    selector="/text/body/p/*[@id='capital']"
+    disambigSourceRef="http://www.w3.org/2006/03/wn/wn20/rdf/wordnet-synset.rdf"/>
+ </its:rules>
+ <body>
+  <p>
+   <span id="dublin">Dublin</span> is the <span id="capital">capital of Ireland</span>.</p>
+ </body>
+</text>

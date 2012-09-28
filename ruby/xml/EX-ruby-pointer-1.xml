@@ -1,0 +1,36 @@
+ <ex:text xmlns:its="http://www.w3.org/2005/11/its" xmlns:ex="http://example.com">
+  <ex:head> ... 
+   <its:rules version="1.0" >
+    <its:rubyRule selector="//ex:p[1]//ex:rb" 
+     rubyPointer="ancestor::ex:ruby" rbcPointer="parent::ex:rbc"
+     rtcPointer="../following-sibling::ex:rtc"
+     rbspanPointer="../following-sibling::ex:rtc/ex:rt/@rbspan"
+     rtPointer="../following-sibling::ex:rtc/ex:rt"/>
+    <its:rubyRule selector="//ex:p[2]//ex:rb" 
+     rubyPointer="ancestor::ex:ruby" rpPointer="following-sibling::ex:rp" rtPointer="following-sibling::ex:rt"/>
+   </its:rules>
+  </ex:head>
+  <ex:body>
+   <ex:p>A ruby example: <ex:ruby>
+     <ex:rbc>
+      <ex:rb>10</ex:rb>
+      <ex:rb>31</ex:rb>
+      <ex:rb>2002</ex:rb>
+     </ex:rbc>
+     <ex:rtc>
+      <ex:rt>Month</ex:rt>
+      <ex:rt>Day</ex:rt>
+      <ex:rt>Year</ex:rt>
+     </ex:rtc>
+     <ex:rtc>
+      <ex:rt rbspan="3">Expiration Date</ex:rt>
+     </ex:rtc>
+    </ex:ruby></ex:p>
+   <ex:p>Another ruby example:
+    <ex:ruby>
+     <ex:rb>WWW</ex:rb>
+     <ex:rp>(</ex:rp><ex:rt>World Wide Web</ex:rt><ex:rp>)</ex:rp>
+    </ex:ruby>
+   </ex:p>
+  </ex:body>
+ </ex:text><!-- timestamp $Id: EX-ruby-pointer-1.xml,v 1.2 2007/02/02 16:55:05 srahtz3 Exp $ -->

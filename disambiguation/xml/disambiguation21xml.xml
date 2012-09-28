@@ -1,0 +1,7 @@
+<text
+  xmlns:its="http://www.w3.org/2005/11/its" >
+ <body>
+  <p>
+   <span its:entityTypeSourceRef="http:/nerd.eurecom.fr/ontology" its:entityTypeRef="http:/nerd.eurecom.fr/ontology#Place" its:disambigType="entity" its:disambigSourceRef="http://dbpedia.org/" its:disambigIdentRef="http://dbpedia.org/resource/Dublin" id="dublin">Dublin</span> is the <span its:disambigType="lexicalConcept" its:disambigSourceRef="http://www.w3.org/2006/03/wn/wn20/rdf/wordnet-synset.rdf" its:disambigIdentRef="http://www.w3.org/2006/03/wn/wn20/instances/worsense-capital-noun-3" id="capital">capital of Ireland</span>.</p>
+ </body>
+</text>

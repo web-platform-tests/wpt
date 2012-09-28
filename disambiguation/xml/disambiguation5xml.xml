@@ -1,0 +1,10 @@
+<text
+  xmlns:its="http://www.w3.org/2005/11/its" >
+ <its:rules version="2.0">
+  <its:disambiguationRule selector="//span" entityTypeRefPointer="../span"/>
+ </its:rules>
+ <body>
+  <p>
+   <span id="http:/nerd.eurecom.fr/ontology#Place">Dublin</span> is the capital of Ireland.</p>
+ </body>
+</text>

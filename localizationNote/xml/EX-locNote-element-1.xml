@@ -1,0 +1,14 @@
+<myRes>
+ <head>
+  <its:rules xmlns:its="http://www.w3.org/2005/11/its"
+  version="1.0" its:translate="no">
+   <its:locNoteRule locNoteType="alert" selector="//msg[@id='DisableInfo']">
+    <its:locNote>The variable {0} has three possible values: 'printer', 
+    'stacker' and 'stapler options'.</its:locNote>
+   </its:locNoteRule>
+  </its:rules>
+ </head>
+ <body>
+  <msg id="DisableInfo">The {0} has been disabled.</msg>
+ </body>
+</myRes><!-- timestamp $Id: EX-locNote-element-1.xml,v 1.3 2007/02/02 16:55:05 srahtz3 Exp $ -->

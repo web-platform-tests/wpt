@@ -4,8 +4,9 @@
         <title>CSS Test: Height determination for block-level non-replaced elements in normal flow when 'overflow' computes to 'visible' and elements' margins do not collapse</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#normal-block" />
+
         <meta name="flags" content="" />
-        <meta name="assert" content="When a block-level non-replaced element is in normal flow, 'overflow' computes to 'visible', the 'height' is 'auto' and top and bottom margins do not collapse. The 'height' is the sized from the top of the topmost margin edge of the content to the bottom of the bottom most margin edge of the content." />
+        <meta name="assert" content="When a block-level non-replaced element is in normal flow, 'overflow' computes to 'visible', the 'height' is 'auto' and top and bottom margins do not collapse. The 'height' is the distance from the top of the topmost margin edge of the content to the bottom edge of the bottom (possibly collapsed) margin of its last in-flow child, if the child's bottom margin does not collapse with the element's bottom margin." />
         <style type="text/css">
             #div1
             {
@@ -47,7 +48,7 @@
         </style>
     </head>
     <body>
-        <p>Test passes if there is a blue square below.</p>
+        <p>Test passes if there is a blue square.</p>
         <div id="div1">
             <div id="div2">
                 <div id="div3"></div>

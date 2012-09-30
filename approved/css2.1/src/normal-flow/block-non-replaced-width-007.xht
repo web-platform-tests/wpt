@@ -3,10 +3,12 @@
     <head>
         <title>CSS Test: Box centering with 'margin-left' and 'margin-right' set to auto</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
-        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-06-26 -->
+        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-09-29 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#blockwidth" />
+		<link rel="match" href="block-non-replaced-width-007-ref.xht" />
+
         <meta name="flags" content="ahem" />
-        <meta name="assert" content="When 'margin-left' and 'margin-right' are set to auto and the element has a 'width' then the box will be centered." />
+        <meta name="assert" content="When 'margin-left' and 'margin-right' are set to 'auto' and the element has a 'width', then the box will be centered within the edges of its containing block." />
         <style type="text/css">
             #div1
             {
@@ -34,7 +36,7 @@
         </style>
     </head>
     <body>
-        <p>Test passes if the blue and orange boxes are the same width and the blue box is directly below the orange box.</p>
+        <p>Test passes if the blue and orange squares have the same width and the blue square is directly below the orange square.</p>
         <div id="div1">
             <div id="div2"></div>
             <div id="div3">X</div>

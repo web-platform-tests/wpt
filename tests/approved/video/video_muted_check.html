@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Video Test: video_muted_check</title>
+    <link rel="author" title="Intel" href="http://www.intel.com" />
+    <link rel="help" href="http://dev.w3.org/html5/spec/single-page.html#dom-media-muted" />
+    <meta name="flags" content="" />
+    <meta name="assert" content="Check that video.muted returns the value of the muted content attribute" />
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <video id="m" muted>The user agent doesn't support media element.</video>
+    <script type="text/javascript">
+        var media = document.getElementById("m");
+        
+        test(function() {
+            assert_true(media.muted, "media.muted of value");
+        }, "Check if video.muted returns true when the muted attribute is present in the video element");
+        
+        test(function() {
+            media.muted = false;
+            assert_false(media.muted, "media.muted of value");
+        }, "Check if video.muted returns false after the muted attribute is set to false");
+        
+        test(function() {
+            media.muted = true;
+            assert_true(media.muted, "media.muted of value");
+        }, "Check if video.muted returns true after the muted attribute is set to true");
+    </script>
+  </body>
+</html>

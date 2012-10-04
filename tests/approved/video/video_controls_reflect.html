@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Video Test: video_controls_reflect</title>
+    <link rel="author" title="Intel" href="http://www.intel.com" />
+    <link rel="help" href="http://dev.w3.org/html5/spec/single-page.html#dom-media-controls" />
+    <meta name="flags" content="" />
+    <meta name="assert" content="Check that the controls attribute reflects the controls content attribute in the video element" />
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <video id="m" controls>The user agent doesn't support media element.</video>
+    <script type="text/javascript">
+        var media = document.getElementById("m");
+        
+        test(function() {
+            assert_true(media.controls, "media.controls of value");
+        }, "Check if video.controls returns true when the controls attribute is present in the video element");
+        
+        test(function() {
+            media.controls = false;
+            assert_false(media.controls, "media.controls of value");
+        }, "Check if video.controls returns false after the controls attribute is set to false");
+        
+        test(function() {
+            media.controls = true;
+            assert_true(media.controls, "media.controls of value");
+        }, "Check if video.controls returns true after the controls attribute is set to true");
+    </script>
+  </body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+ <head>
+
+  <title>CSS Reftest Reference</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
+
+  <style type="text/css"><![CDATA[
+  table
+  {
+  border: blue solid medium;
+  border-spacing: 0em 1em;
+  color: black;
+  font: 1.25em/1 Ahem;
+  width: 100%;
+  }
+
+  td {padding: 0em 0em 0em 1em;}
+  ]]></style>
+
+ </head>
+
+ <body>
+  
+  <p>The black bars should not overflow the blue box.</p>
+
+  <table>
+      <tr><td>1111</td></tr>
+      <tr><td>2222</td></tr>
+      <tr><td>3333</td></tr>
+      <tr><td>4444</td></tr>
+  </table>
+
+  <p>Test passes if the black bars are evenly distributed (vertically) in the blue box.</p>
+
+ </body>
+</html>

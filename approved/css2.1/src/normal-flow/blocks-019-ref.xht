@@ -9,11 +9,16 @@
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
 
   <style type="text/css"><![CDATA[
-  div 
+  div
   {
-  background-color: blue;
-  height: 2em;
-  width: 5em;
+  line-height: 1;
+  margin-top: 12em;
+  }
+  
+  span
+  {
+  background-color: green;
+  color: white;
   }
   ]]></style>
 
@@ -21,9 +26,7 @@
 
  <body>
   
-  <p>Test passes if there is a short filled blue rectangle.</p>
-
-  <div></div>
+  <div><span>Test passes if there is no red.</span></div>
 
  </body>
 </html>

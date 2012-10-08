@@ -1,14 +1,14 @@
 ﻿<!DOCTYPE html>
-<meta charset="utf-8">
-<title>IDBObjectStore.createIndex() - attempt to create an index that requires unique values on an object store already contains duplicates </title>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="support.js"></script>
+<meta charset=utf-8>
+<title>IDBTransaction - abort</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=support.js></script>
 
 <script>
     // TODO XXX DO THE IDBTransaction abort test here here
     var db, aborted,
-      t = async_test(),
+      t = async_test(document.title, {timeout: 10000}),
       record = { indexedProperty: "bar" };
 
     var open_rq = createdb(t);
@@ -38,4 +38,4 @@
 
 </script>
 
-<div id="log"></div>
+<div id=log></div>

@@ -41,7 +41,7 @@ if (!window.indexedDB)
  *
  * Go through each finished test, see if it has an associated database. Close
  * that and delete the database. */
-/*add_completion_callback(function(tests)
+add_completion_callback(function(tests)
 {
     for (var i in tests)
     {
@@ -51,7 +51,7 @@ if (!window.indexedDB)
             window.indexedDB.deleteDatabase(tests[i].db.name);
         }
     }
-})*/
+});
 
 function set_fail_handlers(test, db) {
     if (!test.db) {

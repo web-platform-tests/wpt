@@ -2,7 +2,7 @@
 <title>Test events opening a second database when one connection is open already</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="support.js"></script>
+<script src="../support.js"></script>
 
 <div id=log></div>
 
@@ -26,6 +26,7 @@
 
         openrq.onupgradeneeded = function(e) {
             log("openrq.upgradeneeded");
+            db = e.target.result;
             var s = e.target.result.createObjectStore('store');
             s.put('open1-data', 1);
         };
@@ -51,9 +52,8 @@
         var openrq2 = indexedDB.open('db', 2);
 
         openrq2.onupgradeneeded = function(e) {
+            db = e.target.result;
             log("openrq2.upgradeneeded");
-            e.target.result.createObjectStore('store');
-            s.put('open2-data', 1);
         };
 
         openrq2.onsuccess = function(e) {

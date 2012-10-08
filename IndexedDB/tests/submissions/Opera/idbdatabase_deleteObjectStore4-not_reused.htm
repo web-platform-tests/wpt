@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <meta charset=utf-8>
-<title>IDBDatabase.deleteObjectStore() - object store's name is removed from database's list </title>
+<title>IDBDatabase.deleteObjectStore() - the object store is not reused</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script src=support.js></script>
 
 <script>
 
-var t = async_test(),
+var t = async_test(document.title, {timeout: 10000}),
     keys = [],
-    keys2 = [],
     open_rq = createdb(t)
 
 open_rq.onupgradeneeded = function(e) {
@@ -25,7 +24,7 @@ open_rq.onupgradeneeded = function(e) {
     db.deleteObjectStore("resurrected");
 
     var objStore2 = db.createObjectStore("resurrected", { autoIncrement: true });
-    objStore2.add("Unicorns'R'us").onsuccess = function(e) { keys2.push(e.target.result); };
+    objStore2.add("Unicorns'R'us").onsuccess = function(e) { keys.push(e.target.result); };
     assert_false(objStore2.indexNames.contains("idx"), "index exist on new objstore");
     assert_equals(objStore2.keyPath, null, "keyPath");
 
@@ -33,8 +32,7 @@ open_rq.onupgradeneeded = function(e) {
 }
 
 open_rq.onsuccess = function(e) {
-    assert_object_equals(keys, [5, 6], "keys");
-    assert_object_equals(keys2, [1], "keys");
+    assert_object_equals(keys, [5, 6, 1], "keys");
     t.done();
 }
 

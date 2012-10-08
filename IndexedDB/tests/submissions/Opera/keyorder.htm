@@ -65,9 +65,9 @@
         [ [0], "yo", "", [] ],
         [ "", "yo", [], [0] ]);
 
-    keysort('Date < String',
-        [ "yo", now, "" ],
-        [ now.valueOf(), "", "yo" ]);
+    keysort('float < String',
+        [ Infinity, "yo", 0, "", 100 ],
+        [ 0, 100, Infinity, "", "yo" ]);
 
     keysort('float < Date',
         [ now, 0, 9999999999999, -0.22 ],

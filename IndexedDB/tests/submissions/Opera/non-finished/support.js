@@ -1,1 +1,1 @@
-../Microsoft-port/support.js
+../support.js

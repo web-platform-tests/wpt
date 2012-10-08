@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <title>IDBIndex.multiEntry - adding keys</title>
 <link rel=help href="http://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#key-construct">
-<link rel=assert title="">
+<link rel=assert title="XXX">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="support.js"></script>
@@ -11,7 +11,7 @@
     var db,
         expected_keys = [1, 2, 2, 3, 3];
 
-    var open_rq = createdb(async_test())
+    var open_rq = createdb(async_test(document.title, {timeout: 10000}))
 
     open_rq.onupgradeneeded = function(e) {
         db = e.target.result;

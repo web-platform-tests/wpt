@@ -24,10 +24,13 @@
         };
 
         open_rq.onsuccess = t.step_func(function(e) {
-            var count = 0;
-            var cursor_rq = db.transaction("test")
-                              .objectStore("test")
-                              .openCursor(undefined, dir);
+            var cursor_rq, count = 0;
+            var os = db.transaction("test")
+                       .objectStore("test");
+            if (dir)
+                cursor_rq = os.openCursor(undefined, dir);
+            else
+                cursor_rq = os.openCursor();
 
             console.log("succ");
             cursor_rq.onsuccess = t.step_func(function(e) {

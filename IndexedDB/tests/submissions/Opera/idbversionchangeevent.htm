@@ -1,5 +1,8 @@
 <!DOCTYPE html>
 <title>IDBVersionChangeEvent fired in upgradeneeded, versionchange and deleteDatabase</title>
+<link rel=help href="http://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#versionchange--transaction-steps">
+<link rel=assert title="Fire a versionchange event at each object in openDatabases that is open. The event must not be fired on objects which has the closePending flag set. The event must use the IDBVersionChangeEvent interface and have the oldVersion property set to db's version and have the newVersion property set to version.">
+<link rel=assert title="Fire a upgradeneeded event targeted at request. The event must use the IDBVersionChangeEvent interface and have the oldVersion property set to old version and have the newVersion property set to version.">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="support.js"></script>
@@ -9,7 +12,7 @@
 <script>
 
     var db,
-        t = async_test();
+        t = async_test(document.title, {timeout: 10000});
 
     t.step(function() {
         var openrq = indexedDB.open('db', 3);
@@ -47,9 +50,9 @@
         var deleterq = indexedDB.deleteDatabase('db');
 
         deleterq.onsuccess = t.step_func(function(e) {
-            assert_true(e instanceof IDBVersionChangeEvent, "delete.success instanceof IDBVersionChangeEvent");
             assert_equals(e.oldVersion, 3, "old version (delete.success)");
             assert_equals(e.newVersion, null, "new version (delete.success)");
+            assert_true(e instanceof IDBVersionChangeEvent, "delete.success instanceof IDBVersionChangeEvent");
 
             setTimeout(function() { t.done(); }, 10);
         });

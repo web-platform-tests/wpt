@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <meta charset=utf-8>
 <title>Attempting to use deleted IDBObjectStore</title>
-<link rel=help href="http://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#idl-def-IDBObjectStore">
+<link rel=help href="http://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#object-store">
 <link rel=assert title="InvalidStateError Occurs if a request is made on a source object that has been deleted or removed.">
 <link rel=author href="mailto:odinho@opera.com" title="Odin Hørthe Omdal">
 <script src=/resources/testharness.js></script>
@@ -11,7 +11,7 @@
 <script>
     var db,
       add_success = false,
-      t = async_test()
+      t = async_test(document.title, {timeout: 10000})
 
     var open_rq = createdb(t);
     open_rq.onupgradeneeded = function(e) {

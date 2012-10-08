@@ -27,6 +27,8 @@
         };
     }
 
+    invalid_key('true', true);
+    invalid_key('false', false);
     invalid_key('null', null);
     invalid_key('NaN', NaN);
     invalid_key('function()', function() {});

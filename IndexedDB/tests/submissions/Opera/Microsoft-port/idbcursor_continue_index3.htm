@@ -1,5 +1,7 @@
 ﻿<!DOCTYPE html>
 <title>IDBCursor.continue() - index - attempt to iterate to the previous record when the direction is set for the next record </title>
+<link rel=help href="http://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#widl-IDBCursor-continue-void-any-key">
+<link rel=assert title="The parameter is less than or equal to this cursor's position and this cursor's direction is 'next' or 'nextunique'.">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="../support.js"></script>
@@ -23,6 +25,7 @@
     };
 
     open_rq.onsuccess = function(e) {
+        var count = 0;
         var cursor_rq = db.transaction("test")
                           .objectStore("test")
                           .index("index")
@@ -30,12 +33,18 @@
 
         cursor_rq.onsuccess = t.step_func(function(e) {
             var cursor = e.target.result;
+            if (!cursor) {
+                assert_equals(count, 2, "ran number of times");
+                t.done();
+            }
 
-            assert_true(cursor != null, "cursor exist");
+            // First time checks key equal, second time checks key less than
             assert_throws("DataError",
                 function() { cursor.continue(records[0].iKey); });
 
-            t.done();
+            cursor.continue();
+
+            count++;
         });
     };
 

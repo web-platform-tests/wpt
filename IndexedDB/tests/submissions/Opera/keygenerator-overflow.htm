@@ -10,7 +10,7 @@
 <script>
 
     var db,
-      t = async_test(),
+      t = async_test(document.title, {timeout: 10000}),
       overflow_error_fired = false,
       objects =  [9007199254740991, null, "error", 2, "error" ],
       expected_keys = [2, 9007199254740991, 9007199254740992];
@@ -28,9 +28,14 @@
             }
             else if (objects[i] === "error")
             {
-                 var rq = objStore.add({});
-                 rq.onsuccess = fail(t, 'When "current number" overflows, error event is expected');
-                 rq.onerror = function(e) { overflow_error_fired = true; e.preventDefault(); e.stopPropagation(); }
+                var rq = objStore.add({});
+                rq.onsuccess = fail(t, 'When "current number" overflows, error event is expected');
+                rq.onerror = t.step_func(function(e) {
+                    overflow_error_fired = true;
+                    assert_equals(e.target.error.name, "ConstraintError", "error name");
+                    e.preventDefault();
+                    e.stopPropagation();
+                });
             }
             else
                 objStore.add({ id: objects[i] });
@@ -52,7 +57,7 @@
             }
             else {
                 assert_true(overflow_error_fired, "error fired on 'current number' overflow");
-                assert_equals(actual_keys.length, expected_keys.length, "array length");
+                console.log(actual_keys);
                 assert_object_equals(actual_keys, expected_keys, "keygenerator array");
 
                 t.done();

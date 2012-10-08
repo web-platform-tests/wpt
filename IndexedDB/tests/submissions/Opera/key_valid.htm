@@ -7,32 +7,44 @@
 
 <script>
 function key(key, _instanceof) {
-    var t = async_test(document.title + " - " + _instanceof.name);
-    t.step(function() {
-        assert_true(key instanceof _instanceof, "TEST ERROR, instanceof");
-    });
+    var _typeof, t;
+    if (typeof _instanceof == "string")
+        _typeof = _instanceof;
+
+    if (_typeof)
+    {
+        t = async_test(document.title + " - " + _typeof);
+        t.step(function() {
+            assert_equals(typeof key, _typeof, "TEST ERROR, typeof");
+        });
+    }
+    else
+    {
+        t = async_test(document.title + " - " + _instanceof.name);
+        t.step(function() {
+            assert_true(key instanceof _instanceof, "TEST ERROR, instanceof");
+        });
+    }
 
     createdb(t).onupgradeneeded = function(e) {
-        e.target.result
-                .createObjectStore("store")
-                .add('1', key);
-
-        e.target.onsuccess = t.step_func(function(e) {
-            e.target.result
-                    .transaction("store")
-                    .objectStore("store")
-                    .openCursor()
-                    .onsuccess = t.step_func(function(e)
-            {
+        var store = e.target.result.createObjectStore("store")
+        store.add('1', key)
+        store.openCursor().onsuccess = t.step_func(function(e)
+        {
+            if(_typeof)
+                assert_equals(typeof e.target.result.key, _typeof, "typeof")
+            else
                 assert_true(e.target.result.key instanceof _instanceof, "instanceof")
-                t.done();
-            });
-        });
-    };
+
+            t.done()
+        })
+    }
 }
 
 key(new Date(), Date);
 key(['a', 'b'], Array);
+key("hey", "string");
+key(-Infinity, "number");
 
 </script>
 

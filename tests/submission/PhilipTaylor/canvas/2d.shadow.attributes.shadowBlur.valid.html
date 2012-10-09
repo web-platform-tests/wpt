@@ -1,11 +1,12 @@
 <!DOCTYPE html>
+<html><head><meta charset="utf-8">
 <title>Canvas test: 2d.shadow.attributes.shadowBlur.valid</title>
-<meta name="author" content="Philip Taylor">
+<meta content="Philip Taylor" name="author">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="../common/canvas-tests.js"></script>
-<link rel="stylesheet" href="../common/canvas-tests.css">
-<body class="show_output">
+<link href="../common/canvas-tests.css" rel="stylesheet">
+</head><body class="show_output">
 
 <h1><a href="index.2d.html">2d</a>.<a href="index.2d.shadow.html">shadow</a>.<a href="index.2d.shadow.attributes.html">attributes</a>.<a href="index.2d.shadow.attributes.shadowBlur.html">shadowBlur</a>.valid</h1>
 <p class="desc"></p>
@@ -13,12 +14,12 @@
 <div class="refs">Spec references:
 <ul>
 <li><a href="../annotated-spec/canvas.html#testrefs.2d.shadow.blur.get">2d.shadow.blur.get</a>
-<li><a href="../annotated-spec/canvas.html#testrefs.2d.shadow.blur.set">2d.shadow.blur.set</a>
-</ul>
+</li><li><a href="../annotated-spec/canvas.html#testrefs.2d.shadow.blur.set">2d.shadow.blur.set</a>
+</li></ul>
 </div>
 
 <p class="output">Actual output:</p>
-<canvas id="c" class="output" width="100" height="50"><p class="fallback">FAIL (fallback content)</p></canvas>
+<canvas class="output" height="50" id="c" width="100"><p class="fallback">FAIL (fallback content)</p></canvas>
 
 <ul id="d"></ul>
 <script>
@@ -41,3 +42,5 @@ _assertSame(ctx.shadowBlur, 0, "ctx.shadowBlur", "0");
 });
 </script>
 
+<div id="log"></div>
+</body></html>

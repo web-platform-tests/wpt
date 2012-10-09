@@ -1,11 +1,12 @@
 <!DOCTYPE html>
+<html><head><meta charset="utf-8">
 <title>Canvas test: size.attributes.parse.hex</title>
-<meta name="author" content="Philip Taylor">
+<meta content="Philip Taylor" name="author">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="../common/canvas-tests.js"></script>
-<link rel="stylesheet" href="../common/canvas-tests.css">
-<body class="show_output">
+<link href="../common/canvas-tests.css" rel="stylesheet">
+</head><body class="show_output">
 
 <h1><a href="index.size.html">size</a>.<a href="index.size.attributes.html">attributes</a>.<a href="index.size.attributes.parse.html">parse</a>.hex</h1>
 <p class="desc">Parsing of non-negative integers</p>
@@ -13,11 +14,11 @@
 <div class="refs">Spec references:
 <ul>
 <li><a href="../annotated-spec/canvas.html#testrefs.size.nonnegativeinteger">size.nonnegativeinteger</a>
-</ul>
+</li></ul>
 </div>
 
 <p class="output">Actual output:</p>
-<canvas id="c" class="output" width="0x100" height="0x100"><p class="fallback">FAIL (fallback content)</p></canvas>
+<canvas class="output" height="0x100" id="c" width="0x100"><p class="fallback">FAIL (fallback content)</p></canvas>
 
 <ul id="d"></ul>
 <script>
@@ -32,3 +33,5 @@ _assertEqual(window.getComputedStyle(canvas, null).getPropertyValue("width"), "0
 });
 </script>
 
+<div id="log"></div>
+</body></html>

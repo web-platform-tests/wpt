@@ -1,11 +1,12 @@
 <!DOCTYPE html>
+<html><head><meta charset="utf-8">
 <title>Canvas test: toDataURL.zerosize</title>
-<meta name="author" content="Philip Taylor">
+<meta content="Philip Taylor" name="author">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="../common/canvas-tests.js"></script>
-<link rel="stylesheet" href="../common/canvas-tests.css">
-<body class="show_output">
+<link href="../common/canvas-tests.css" rel="stylesheet">
+</head><body class="show_output">
 
 <h1><a href="index.toDataURL.html">toDataURL</a>.zerosize</h1>
 <p class="desc">toDataURL on zero-size canvas returns 'data:,'</p>
@@ -13,11 +14,11 @@
 <div class="refs">Spec references:
 <ul>
 <li><a href="../annotated-spec/canvas.html#testrefs.toDataURL.zerosize">toDataURL.zerosize</a>
-</ul>
+</li></ul>
 </div>
 
 <p class="output">Actual output:</p>
-<canvas id="c" class="output" width="0" height="0"><p class="fallback">FAIL (fallback content)</p></canvas>
+<canvas class="output" height="0" id="c" width="0"><p class="fallback">FAIL (fallback content)</p></canvas>
 
 <ul id="d"></ul>
 <script>
@@ -31,3 +32,5 @@ _assertSame(data, 'data:,', "data", "'data:,'");
 });
 </script>
 
+<div id="log"></div>
+</body></html>

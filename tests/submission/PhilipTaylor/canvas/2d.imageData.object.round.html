@@ -1,11 +1,12 @@
 <!DOCTYPE html>
+<html><head><meta charset="utf-8">
 <title>Canvas test: 2d.imageData.object.round</title>
-<meta name="author" content="Philip Taylor">
+<meta content="Philip Taylor" name="author">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="../common/canvas-tests.js"></script>
-<link rel="stylesheet" href="../common/canvas-tests.css">
-<body class="show_output">
+<link href="../common/canvas-tests.css" rel="stylesheet">
+</head><body class="show_output">
 
 <h1><a href="index.2d.html">2d</a>.<a href="index.2d.imageData.html">imageData</a>.<a href="index.2d.imageData.object.html">object</a>.round</h1>
 <p class="desc">ImageData.data rounds numbers with round-to-zero</p>
@@ -13,11 +14,11 @@
 <div class="refs">Spec references:
 <ul>
 <li><a href="../annotated-spec/canvas.html#testrefs.2d.pixelarray.modify">2d.pixelarray.modify</a>
-</ul>
+</li></ul>
 </div>
 
 <p class="output">Actual output:</p>
-<canvas id="c" class="output" width="100" height="50"><p class="fallback">FAIL (fallback content)</p></canvas>
+<canvas class="output" height="50" id="c" width="100"><p class="fallback">FAIL (fallback content)</p></canvas>
 
 <ul id="d"></ul>
 <script>
@@ -58,3 +59,5 @@ _assertSame(imgdata.data[0], 0, "imgdata.data[\""+(0)+"\"]", "0");
 });
 </script>
 
+<div id="log"></div>
+</body></html>

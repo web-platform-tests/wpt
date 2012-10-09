@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html><head>
+	<title> scheduler: defer script and slow-loading non-async external script</title>
+	<script src="/resources/testharness.js"></script>
+	<script src="/resources/testharnessreport.js"></script>
+	<script src="testlib/testlib.js"></script>
+</head>
+<body>
+
+	<div id="log">FAILED (This TC requires JavaScript enabled)</div>
+
+	<script>
+          setup(function(){}, {timeout:4000})
+          var t = async_test(undefined, {timeout:3500});
+          
+          var script = document.createElement("script");
+          script.src = "scripts/delay.php?time=2&url=include-2.js";
+          script.async = false;
+          document.head.appendChild(script);
+
+	  onload = t.step_func(function() {
+                                 assert_array_equals(eventOrder, ['external script #1', 'external script #2']);
+                                 t.done();
+                             });
+        </script>
+        <script defer src="scripts/include-1.js"></script>
+</body></html>

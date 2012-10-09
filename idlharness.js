@@ -135,6 +135,7 @@ policies and contribution forms [3].
  */
 "use strict";
 (function(){
+var exceptions = {};
 var interfaces = {};
 
 /// IdlArray ///
@@ -510,6 +511,7 @@ function IdlException(obj)
     this.extAttrs = obj.extAttrs ? obj.extAttrs : [];
     this.members = obj.members ? obj.members.map(function(m){return new IdlInterfaceMember(m)}) : [];
     this.inheritance = obj.inheritance ? obj.inheritance : [];
+    exceptions[this.name] = this;
 }
 
 //@}
@@ -626,12 +628,14 @@ IdlException.prototype.test_self = function()
         //"The class string of an exception interface prototype object is the
         //concatenation of the exception’s identifier and the string
         //“Prototype”."
-        //String() should end up calling {}.toString, since nothing
-        //defines a stringifier.
         assert_class_string(window[this.name].prototype, this.name + "Prototype",
                             "class string of " + this.name + ".prototype");
-        assert_equals(String(window[this.name].prototype), "[object " + this.name + "Prototype]",
-                      "String(" + this.name + ".prototype)");
+        //String() should end up calling {}.toString if nothing defines a
+        //stringifier.
+        if (!this.has_stringifier()) {
+            assert_equals(String(window[this.name].prototype), "[object " + this.name + "Prototype]",
+                    "String(" + this.name + ".prototype)");
+        }
     }.bind(this), this.name + " exception: existence and properties of exception interface prototype object");
 
     test(function()
@@ -857,6 +861,23 @@ IdlException.prototype.test_object = function(desc)
     }
 }
 //@}
+IdlException.prototype.has_stringifier = function()
+//@{
+{
+    if (this.members.some(function(member)
+    {
+        return member.stringifier || member.type == "stringifier";
+    })) {
+        return true;
+    }
+    for (var i = 0; i < this.inheritance.length; i++) {
+        if (exceptions[this.inheritance[i]].has_stringifier()) {
+            return true;
+        }
+    }
+    return false;
+}
+//@}
 
 /// IdlInterface ///
 function IdlInterface(obj)
@@ -1050,12 +1071,14 @@ IdlInterface.prototype.test_self = function()
         //"The class string of an interface prototype object is the
         //concatenation of the interface’s identifier and the string
         //“Prototype”."
-        //String() should end up calling {}.toString, since nothing
-        //defines a stringifier.
         assert_class_string(window[this.name].prototype, this.name + "Prototype",
                             "class string of " + this.name + ".prototype");
-        assert_equals(String(window[this.name].prototype), "[object " + this.name + "Prototype]",
-                      "String(" + this.name + ".prototype)");
+        //String() should end up calling {}.toString if nothing defines a
+        //stringifier.
+        if (!this.has_stringifier()) {
+            assert_equals(String(window[this.name].prototype), "[object " + this.name + "Prototype]",
+                    "String(" + this.name + ".prototype)");
+        }
     }.bind(this), this.name + " interface: existence and properties of interface prototype object");
 
     test(function()
@@ -1322,7 +1345,7 @@ IdlInterface.prototype.test_primary_interface_of = function(desc, obj, exception
         assert_equals(exception, null, "Unexpected exception when evaluating object");
         assert_equals(typeof obj, expected_typeof, "wrong typeof object");
         assert_class_string(obj, this.name, "class string of " + desc);
-        if (!this.members.some(function(member) { return member.stringifier || member.type == "stringifier"}))
+        if (!this.has_stringifier())
         {
             assert_equals(String(obj), "[object " + this.name + "]", "String(" + desc + ")");
         }
@@ -1418,6 +1441,25 @@ IdlInterface.prototype.test_interface_of = function(desc, obj, exception, expect
     }
 }
 
+//@}
+IdlInterface.prototype.has_stringifier = function()
+//@{
+{
+    // Copy-pasted except for changing "exceptions" to "interfaces" near the
+    // end, sigh
+    if (this.members.some(function(member)
+    {
+        return member.stringifier || member.type == "stringifier";
+    })) {
+        return true;
+    }
+    for (var i = 0; i < this.inheritance.length; i++) {
+        if (interfaces[this.inheritance[i]].has_stringifier()) {
+            return true;
+        }
+    }
+    return false;
+}
 //@}
 function do_interface_attribute_asserts(obj, member)
 //@{

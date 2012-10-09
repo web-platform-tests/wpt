@@ -208,3 +208,10 @@ function _assertGreen(ctx, canvasWidth, canvasHeight)
         }
     }
 }
+
+
+function _assert_throws(code, func, desc)
+{
+    _asserted = true;
+    assert_throws(code, func, desc);
+}

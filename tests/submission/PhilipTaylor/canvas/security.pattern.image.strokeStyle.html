@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<title>Canvas test: security.pattern.image.strokeStyle</title>
-<meta name="author" content="Philip Taylor">
+<html><head><title>Canvas test: security.pattern.image.strokeStyle</title>
+<meta content="Philip Taylor" name="author">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="../common/canvas-tests.js"></script>
-<link rel="stylesheet" href="../common/canvas-tests.css">
-<body class="show_output">
+<link href="../common/canvas-tests.css" rel="stylesheet">
+</head><body class="show_output">
 
 <h1><a href="index.security.html">security</a>.<a href="index.security.pattern.html">pattern</a>.<a href="index.security.pattern.image.html">image</a>.strokeStyle</h1>
 <p class="desc">Setting strokeStyle to a pattern of a different-origin image makes the canvas origin-unclean</p>
@@ -13,11 +13,11 @@
 <div class="refs">Spec references:
 <ul>
 <li><a href="../annotated-spec/canvas.html#testrefs.security.strokeStyle.image">security.strokeStyle.image</a>
-</ul>
+</li></ul>
 </div>
 
 <p class="output">Actual output:</p>
-<canvas id="c" class="output" width="100" height="50"><p class="fallback">FAIL (fallback content)</p></canvas>
+<canvas class="output" height="50" id="c" width="100"><p class="fallback">FAIL (fallback content)</p></canvas>
 
 <ul id="d"></ul>
 <script>
@@ -27,11 +27,13 @@ _addTest(function(canvas, ctx) {
 var p = ctx.createPattern(document.getElementById('yellow.png'), 'repeat');
 ctx.strokeStyle = p;
 ctx.strokeStyle = 'red';
-assert_throws("SECURITY_ERR", function() { canvas.toDataURL(); });
-assert_throws("SECURITY_ERR", function() { ctx.getImageData(0, 0, 1, 1); });
+_assert_throws("SECURITY_ERR", function() { canvas.toDataURL(); });
+_assert_throws("SECURITY_ERR", function() { ctx.getImageData(0, 0, 1, 1); });
 
 
 });
 </script>
-<img src="http://www2.w3c-test.org/html/tests/approved/images/yellow.png" id="yellow.png" class="resource">
+<img class="resource" id="yellow.png" src="http://www2.w3c-test.org/html/tests/approved/images/yellow.png">
 
+<div id="log"></div>
+</body></html>

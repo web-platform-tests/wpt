@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<title>Canvas test: 2d.imageData.put.nonfinite</title>
-<meta name="author" content="Philip Taylor">
+<html><head><title>Canvas test: 2d.imageData.put.nonfinite</title>
+<meta content="Philip Taylor" name="author">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="../common/canvas-tests.js"></script>
-<link rel="stylesheet" href="../common/canvas-tests.css">
-<body class="show_output">
+<link href="../common/canvas-tests.css" rel="stylesheet">
+</head><body class="show_output">
 
 <h1><a href="index.2d.html">2d</a>.<a href="index.2d.imageData.html">imageData</a>.<a href="index.2d.imageData.put.html">put</a>.nonfinite</h1>
 <p class="desc">putImageData() throws NOT_SUPPORTED_ERR if arguments are not finite</p>
@@ -13,11 +13,11 @@
 <div class="refs">Spec references:
 <ul>
 <li><a href="../annotated-spec/canvas.html#testrefs.2d.imageData.put.nonfinite">2d.imageData.put.nonfinite</a>
-</ul>
+</li></ul>
 </div>
 
 <p class="output">Actual output:</p>
-<canvas id="c" class="output" width="100" height="50"><p class="fallback">FAIL (fallback content)</p></canvas>
+<canvas class="output" height="50" id="c" width="100"><p class="fallback">FAIL (fallback content)</p></canvas>
 
 <ul id="d"></ul>
 <script>
@@ -25,90 +25,92 @@ var t = async_test("putImageData() throws NOT_SUPPORTED_ERR if arguments are not
 _addTest(function(canvas, ctx) {
 
 var imgdata = ctx.getImageData(0, 0, 10, 10);
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, 10); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, -Infinity, 10); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, NaN, 10); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, Infinity); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, -Infinity); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, NaN); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, Infinity); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, 10, 10, 10, 10, 10); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, -Infinity, 10, 10, 10, 10, 10); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, NaN, 10, 10, 10, 10, 10); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, Infinity, 10, 10, 10, 10); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, -Infinity, 10, 10, 10, 10); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, NaN, 10, 10, 10, 10); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, Infinity, 10, 10, 10); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, -Infinity, 10, 10, 10); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, NaN, 10, 10, 10); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, 10, Infinity, 10, 10); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, 10, -Infinity, 10, 10); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, 10, NaN, 10, 10); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, 10, 10, Infinity, 10); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, 10, 10, -Infinity, 10); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, 10, 10, NaN, 10); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, 10, 10, 10, Infinity); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, 10, 10, 10, -Infinity); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, 10, 10, 10, NaN); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, Infinity, 10, 10, 10, 10); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, Infinity, Infinity, 10, 10, 10); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, Infinity, Infinity, Infinity, 10, 10); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, Infinity, Infinity, Infinity, Infinity, 10); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, Infinity, Infinity, Infinity, Infinity, Infinity); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, Infinity, Infinity, Infinity, 10, Infinity); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, Infinity, Infinity, 10, Infinity, 10); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, Infinity, Infinity, 10, Infinity, Infinity); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, Infinity, Infinity, 10, 10, Infinity); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, Infinity, 10, Infinity, 10, 10); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, Infinity, 10, Infinity, Infinity, 10); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, Infinity, 10, Infinity, Infinity, Infinity); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, Infinity, 10, Infinity, 10, Infinity); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, Infinity, 10, 10, Infinity, 10); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, Infinity, 10, 10, Infinity, Infinity); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, Infinity, 10, 10, 10, Infinity); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, 10, Infinity, 10, 10, 10); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, 10, Infinity, Infinity, 10, 10); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, 10, Infinity, Infinity, Infinity, 10); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, 10, Infinity, Infinity, Infinity, Infinity); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, 10, Infinity, Infinity, 10, Infinity); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, 10, Infinity, 10, Infinity, 10); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, 10, Infinity, 10, Infinity, Infinity); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, 10, Infinity, 10, 10, Infinity); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, 10, 10, Infinity, 10, 10); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, 10, 10, Infinity, Infinity, 10); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, 10, 10, Infinity, Infinity, Infinity); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, 10, 10, Infinity, 10, Infinity); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, 10, 10, 10, Infinity, 10); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, 10, 10, 10, Infinity, Infinity); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, 10, 10, 10, 10, Infinity); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, Infinity, Infinity, 10, 10, 10); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, Infinity, Infinity, Infinity, 10, 10); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, Infinity, Infinity, Infinity, Infinity, 10); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, Infinity, Infinity, Infinity, Infinity, Infinity); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, Infinity, Infinity, Infinity, 10, Infinity); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, Infinity, Infinity, 10, Infinity, 10); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, Infinity, Infinity, 10, Infinity, Infinity); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, Infinity, Infinity, 10, 10, Infinity); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, Infinity, 10, Infinity, 10, 10); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, Infinity, 10, Infinity, Infinity, 10); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, Infinity, 10, Infinity, Infinity, Infinity); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, Infinity, 10, Infinity, 10, Infinity); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, Infinity, 10, 10, Infinity, 10); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, Infinity, 10, 10, Infinity, Infinity); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, Infinity, 10, 10, 10, Infinity); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, Infinity, Infinity, 10, 10); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, Infinity, Infinity, Infinity, 10); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, Infinity, Infinity, Infinity, Infinity); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, Infinity, Infinity, 10, Infinity); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, Infinity, 10, Infinity, 10); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, Infinity, 10, Infinity, Infinity); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, Infinity, 10, 10, Infinity); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, 10, Infinity, Infinity, 10); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, 10, Infinity, Infinity, Infinity); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, 10, Infinity, 10, Infinity); });
-assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, 10, 10, Infinity, Infinity); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, 10); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, -Infinity, 10); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, NaN, 10); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, Infinity); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, -Infinity); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, NaN); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, Infinity); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, 10, 10, 10, 10, 10); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, -Infinity, 10, 10, 10, 10, 10); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, NaN, 10, 10, 10, 10, 10); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, Infinity, 10, 10, 10, 10); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, -Infinity, 10, 10, 10, 10); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, NaN, 10, 10, 10, 10); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, Infinity, 10, 10, 10); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, -Infinity, 10, 10, 10); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, NaN, 10, 10, 10); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, 10, Infinity, 10, 10); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, 10, -Infinity, 10, 10); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, 10, NaN, 10, 10); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, 10, 10, Infinity, 10); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, 10, 10, -Infinity, 10); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, 10, 10, NaN, 10); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, 10, 10, 10, Infinity); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, 10, 10, 10, -Infinity); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, 10, 10, 10, NaN); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, Infinity, 10, 10, 10, 10); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, Infinity, Infinity, 10, 10, 10); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, Infinity, Infinity, Infinity, 10, 10); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, Infinity, Infinity, Infinity, Infinity, 10); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, Infinity, Infinity, Infinity, Infinity, Infinity); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, Infinity, Infinity, Infinity, 10, Infinity); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, Infinity, Infinity, 10, Infinity, 10); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, Infinity, Infinity, 10, Infinity, Infinity); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, Infinity, Infinity, 10, 10, Infinity); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, Infinity, 10, Infinity, 10, 10); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, Infinity, 10, Infinity, Infinity, 10); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, Infinity, 10, Infinity, Infinity, Infinity); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, Infinity, 10, Infinity, 10, Infinity); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, Infinity, 10, 10, Infinity, 10); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, Infinity, 10, 10, Infinity, Infinity); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, Infinity, 10, 10, 10, Infinity); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, 10, Infinity, 10, 10, 10); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, 10, Infinity, Infinity, 10, 10); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, 10, Infinity, Infinity, Infinity, 10); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, 10, Infinity, Infinity, Infinity, Infinity); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, 10, Infinity, Infinity, 10, Infinity); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, 10, Infinity, 10, Infinity, 10); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, 10, Infinity, 10, Infinity, Infinity); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, 10, Infinity, 10, 10, Infinity); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, 10, 10, Infinity, 10, 10); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, 10, 10, Infinity, Infinity, 10); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, 10, 10, Infinity, Infinity, Infinity); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, 10, 10, Infinity, 10, Infinity); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, 10, 10, 10, Infinity, 10); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, 10, 10, 10, Infinity, Infinity); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, Infinity, 10, 10, 10, 10, Infinity); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, Infinity, Infinity, 10, 10, 10); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, Infinity, Infinity, Infinity, 10, 10); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, Infinity, Infinity, Infinity, Infinity, 10); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, Infinity, Infinity, Infinity, Infinity, Infinity); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, Infinity, Infinity, Infinity, 10, Infinity); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, Infinity, Infinity, 10, Infinity, 10); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, Infinity, Infinity, 10, Infinity, Infinity); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, Infinity, Infinity, 10, 10, Infinity); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, Infinity, 10, Infinity, 10, 10); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, Infinity, 10, Infinity, Infinity, 10); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, Infinity, 10, Infinity, Infinity, Infinity); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, Infinity, 10, Infinity, 10, Infinity); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, Infinity, 10, 10, Infinity, 10); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, Infinity, 10, 10, Infinity, Infinity); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, Infinity, 10, 10, 10, Infinity); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, Infinity, Infinity, 10, 10); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, Infinity, Infinity, Infinity, 10); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, Infinity, Infinity, Infinity, Infinity); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, Infinity, Infinity, 10, Infinity); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, Infinity, 10, Infinity, 10); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, Infinity, 10, Infinity, Infinity); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, Infinity, 10, 10, Infinity); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, 10, Infinity, Infinity, 10); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, 10, Infinity, Infinity, Infinity); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, 10, Infinity, 10, Infinity); });
+_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.putImageData(imgdata, 10, 10, 10, 10, Infinity, Infinity); });
 
 
 });
 </script>
 
+<div id="log"></div>
+</body></html>

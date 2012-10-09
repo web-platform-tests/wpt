@@ -612,10 +612,10 @@ function IdlDictionary(obj)
     this.name = obj.name;
 
     /** An array of objects produced by the "dictionaryMember" production. */
-    this.members = obj.members ? obj.members : [];
+    this.members = obj.members;
 
     /** An array of names of dictionary types we inherit from. */
-    this.inheritance = obj.inheritance ? obj.inheritance: [];
+    this.inheritance = obj.inheritance;
 }
 
 //@}
@@ -645,13 +645,13 @@ function IdlExceptionOrInterface(obj)
     this.untested = obj.untested;
 
     /** An array of objects produced by the "ExtAttr" production. */
-    this.extAttrs = obj.extAttrs ? obj.extAttrs : [];
+    this.extAttrs = obj.extAttrs;
 
     /** An array of IdlInterfaceMembers. */
-    this.members = obj.members ? obj.members.map(function(m){return new IdlInterfaceMember(m)}) : [];
+    this.members = obj.members.map(function(m){return new IdlInterfaceMember(m)});
 
     /** An array of names of types we inherit from. */
-    this.inheritance = obj.inheritance ? obj.inheritance : [];
+    this.inheritance = obj.inheritance;
 }
  
 //@}
@@ -1556,10 +1556,7 @@ IdlInterface.prototype.test_interface_of = function(desc, obj, exception, expect
 IdlInterface.prototype.has_stringifier = function()
 //@{
 {
-    if (this.members.some(function(member)
-    {
-        return member.stringifier || member.type == "stringifier";
-    })) {
+    if (this.members.some(function(member) { return member.stringifier })) {
         return true;
     }
     for (var i = 0; i < this.inheritance.length; i++) {
@@ -1651,14 +1648,7 @@ function IdlInterfaceMember(obj)
      */
     for (var k in obj)
     {
-        if (k == "extAttrs")
-        {
-            this.extAttrs = obj.extAttrs ? obj.extAttrs : [];
-        }
-        else
-        {
-            this[k] = obj[k];
-        }
+        this[k] = obj[k];
     }
     if (!("extAttrs" in this))
     {

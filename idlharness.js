@@ -172,9 +172,6 @@ policies and contribution forms [3].
  */
 "use strict";
 (function(){
-var exceptions = {};
-var interfaces = {};
-
 /// IdlArray ///
 // Entry point
 window.IdlArray = function()
@@ -584,6 +581,7 @@ IdlObject.prototype.test = function()
      * that don't define any (e.g., IdlDictionary at the time of this writing).
      */
 };
+
 //@}
 IdlObject.prototype.has_extended_attribute = function(name)
 //@{
@@ -625,7 +623,38 @@ IdlDictionary.prototype = Object.create(IdlObject.prototype);
 
 /// IdlExceptionOrInterface ///
 // Code sharing!
-function IdlExceptionOrInterface(obj) {}
+function IdlExceptionOrInterface(obj)
+//@{
+{
+    /**
+     * obj is an object produced by the WebIDLParser.js "exception" or
+     * "interface" production, as appropriate.
+     */
+
+    /** Self-explanatory. */
+    this.name = obj.name;
+
+    /** A back-reference to our IdlArray. */
+    this.array = obj.array;
+
+    /**
+     * An indicator of whether we should run tests on the (exception) interface
+     * object and (exception) interface prototype object.  Tests on members are
+     * controlled by .untested on each member, not this.
+     */
+    this.untested = obj.untested;
+
+    /** An array of objects produced by the "ExtAttr" production. */
+    this.extAttrs = obj.extAttrs ? obj.extAttrs : [];
+
+    /** An array of IdlInterfaceMembers. */
+    this.members = obj.members ? obj.members.map(function(m){return new IdlInterfaceMember(m)}) : [];
+
+    /** An array of names of types we inherit from. */
+    this.inheritance = obj.inheritance ? obj.inheritance : [];
+}
+ 
+//@}
 IdlExceptionOrInterface.prototype = Object.create(IdlObject.prototype);
 IdlExceptionOrInterface.prototype.test = function()
 //@{
@@ -657,43 +686,7 @@ IdlExceptionOrInterface.prototype.test = function()
 //@}
 
 /// IdlException ///
-function IdlException(obj)
-//@{
-{
-    /**
-     * obj is an object produced by the WebIDLParser.js "exception" production.
-     */
-
-    /** Self-explanatory. */
-    this.name = obj.name;
-
-    /** A back-reference to our IdlArray. */
-    this.array = obj.array;
-
-    /**
-     * An indicator of whether we should run tests on the exception interface
-     * object and exception interface prototype object.  (Tests on members are
-     * controlled by .untested on each member.)
-     */
-    this.untested = obj.untested;
-
-    /** An array of objects produced by the "ExtAttr" production. */
-    this.extAttrs = obj.extAttrs ? obj.extAttrs : [];
-
-    /** An array of IdlInterfaceMembers. */
-    this.members = obj.members ? obj.members.map(function(m){return new IdlInterfaceMember(m)}) : [];
-
-    /** An array of names of exception types we inherit from. */
-    this.inheritance = obj.inheritance ? obj.inheritance : [];
-
-    /**
-     * Add this to the global list of known exception types.  TODO: Why don't
-     * we just use this.array.members?
-     * */
-    exceptions[this.name] = this;
-}
-
-//@}
+function IdlException(obj) { IdlExceptionOrInterface.call(this, obj); }
 IdlException.prototype = Object.create(IdlExceptionOrInterface.prototype);
 IdlException.prototype.test_self = function()
 //@{
@@ -1020,66 +1013,9 @@ IdlException.prototype.test_object = function(desc)
     }
 }
 //@}
-IdlException.prototype.has_stringifier = function()
-//@{
-{
-    /**
-     * Returns true if this exception has a stringifier, either directly or
-     * through inheritance.  Otherwise returns false.
-     */
-    if (this.members.some(function(member)
-    {
-        return member.stringifier || member.type == "stringifier";
-    })) {
-        return true;
-    }
-    for (var i = 0; i < this.inheritance.length; i++) {
-        if (exceptions[this.inheritance[i]].has_stringifier()) {
-            return true;
-        }
-    }
-    return false;
-}
-//@}
 
 /// IdlInterface ///
-function IdlInterface(obj)
-//@{
-{
-    /**
-     * obj is an object produced by the WebIDLParser.js "interface" production.
-     */
-
-    /** Self-explanatory. */
-    this.name = obj.name;
-
-    /** A back-reference to our IdlArray. */
-    this.array = obj.array;
-
-    /**
-     * An indicator of whether we should run tests on the interface object and
-     * interface prototype object.  (Tests on members are controlled by
-     * .untested on each member.)
-     */
-    this.untested = obj.untested;
-
-    /** An array of objects produced by the "ExtAttr" production. */
-    this.extAttrs = obj.extAttrs ? obj.extAttrs : [];
-
-    /** An array of IdlInterfaceMembers. */
-    this.members = obj.members ? obj.members.map(function(m){return new IdlInterfaceMember(m)}) : [];
-
-    /** An array of names of interfaces we inherit from. */
-    this.inheritance = obj.inheritance ? obj.inheritance : [];
-
-    /**
-     * Add this to the global list of known interface types.  TODO: Why don't
-     * we just use this.array.members?
-     * */
-    interfaces[this.name] = this;
-}
-
-//@}
+function IdlInterface(obj) { IdlExceptionOrInterface.call(this, obj); }
 IdlInterface.prototype = Object.create(IdlExceptionOrInterface.prototype);
 IdlInterface.prototype.test_self = function()
 //@{
@@ -1219,7 +1155,8 @@ IdlInterface.prototype.test_self = function()
         {
             for (var i = 0; i < this.inheritance.length; ++i)
             {
-                if (!interfaces[this.inheritance[i]].has_extended_attribute("NoInterfaceObject"))
+                if (!this.array.members[this.inheritance[i]]
+                         .has_extended_attribute("NoInterfaceObject"))
                 {
                     return this.inheritance[i];
                 }
@@ -1626,12 +1563,13 @@ IdlInterface.prototype.has_stringifier = function()
         return true;
     }
     for (var i = 0; i < this.inheritance.length; i++) {
-        if (interfaces[this.inheritance[i]].has_stringifier()) {
+        if (this.array.members[this.inheritance[i]].has_stringifier()) {
             return true;
         }
     }
     return false;
 }
+
 //@}
 function do_interface_attribute_asserts(obj, member)
 //@{

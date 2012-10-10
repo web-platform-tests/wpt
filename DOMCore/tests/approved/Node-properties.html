@@ -12,6 +12,8 @@
  * This tests various properties like parentNode, nodeName, etc. for each of
  * the hardcoded nodes in common.js.
  */
+// TODO: Test paras (it's an array, so I need to use eval() or parse it or
+// something).  Also things like document.body, document.documentElement, etc.
 var expected = {
 	testDiv: {
 		// Node
@@ -238,6 +240,414 @@ var expected = {
 		contentType: "application/xml",
 		//doctype: ,
 		//documentElement: ,
+	},
+	xmlElement: {
+		// Node
+		nodeType: Node.ELEMENT_NODE,
+		nodeName: "igiveuponcreativenames",
+		ownerDocument: xmlDoc,
+		parentNode: xmlDoc,
+		parentElement: null,
+		firstChild: xmlTextNode,
+		lastChild: xmlTextNode,
+		previousSibling: xmlDoctype,
+		nextSibling: processingInstruction,
+		nodeValue: null,
+		textContent: "do re mi fa so la ti",
+
+		// Element
+		// XXX The spec says this should be the HTML namespace, but it matches
+		// no browser.  https://www.w3.org/Bugs/Public/show_bug.cgi?id=19431
+		namespaceURI: null,
+		prefix: null,
+		localName: "igiveuponcreativenames",
+		tagName: "igiveuponcreativenames",
+		firstElementChild: null,
+		lastElementChild: null,
+		previousElementSibling: null,
+		nextElementSibling: null,
+		childElementCount: 0,
+	},
+	detachedXmlElement: {
+		// Node
+		nodeType: Node.ELEMENT_NODE,
+		nodeName: "everyone-hates-hyphenated-element-names",
+		ownerDocument: xmlDoc,
+		parentNode: null,
+		parentElement: null,
+		firstChild: null,
+		lastChild: null,
+		previousSibling: null,
+		nextSibling: null,
+		nodeValue: null,
+		textContent: "",
+
+		// Element
+		// XXX The spec says this should be the HTML namespace, but it matches
+		// no browser.  https://www.w3.org/Bugs/Public/show_bug.cgi?id=19431
+		namespaceURI: null,
+		prefix: null,
+		localName: "everyone-hates-hyphenated-element-names",
+		tagName: "everyone-hates-hyphenated-element-names",
+		firstElementChild: null,
+		lastElementChild: null,
+		previousElementSibling: null,
+		nextElementSibling: null,
+		childElementCount: 0,
+	},
+	detachedTextNode: {
+		// Node
+		nodeType: Node.TEXT_NODE,
+		nodeName: "#text",
+		ownerDocument: document,
+		parentNode: null,
+		parentElement: null,
+		firstChild: null,
+		lastChild: null,
+		previousSibling: null,
+		nextSibling: null,
+		nodeValue: "Uvwxyzab",
+		textContent: "Uvwxyzab",
+
+		// CharacterData
+		data: "Uvwxyzab",
+		length: 8,
+
+		// Text
+		wholeText: "Uvwxyzab",
+	},
+	foreignTextNode: {
+		// Node
+		nodeType: Node.TEXT_NODE,
+		nodeName: "#text",
+		ownerDocument: foreignDoc,
+		parentNode: foreignDoc.body,
+		parentElement: foreignDoc.body,
+		firstChild: null,
+		lastChild: null,
+		previousSibling: foreignPara2,
+		nextSibling: null,
+		nodeValue: "I admit that I harbor doubts about whether we really need so many things to test, but it's too late to stop now.",
+		textContent: "I admit that I harbor doubts about whether we really need so many things to test, but it's too late to stop now.",
+
+		// CharacterData
+		data: "I admit that I harbor doubts about whether we really need so many things to test, but it's too late to stop now.",
+		length: 112,
+
+		// Text
+		wholeText: "I admit that I harbor doubts about whether we really need so many things to test, but it's too late to stop now.",
+	},
+	detachedForeignTextNode: {
+		// Node
+		nodeType: Node.TEXT_NODE,
+		nodeName: "#text",
+		ownerDocument: foreignDoc,
+		parentNode: null,
+		parentElement: null,
+		firstChild: null,
+		lastChild: null,
+		previousSibling: null,
+		nextSibling: null,
+		nodeValue: "Cdefghij",
+		textContent: "Cdefghij",
+
+		// CharacterData
+		data: "Cdefghij",
+		length: 8,
+
+		// Text
+		wholeText: "Cdefghij",
+	},
+	xmlTextNode: {
+		// Node
+		nodeType: Node.TEXT_NODE,
+		nodeName: "#text",
+		ownerDocument: xmlDoc,
+		parentNode: xmlElement,
+		parentElement: xmlElement,
+		firstChild: null,
+		lastChild: null,
+		previousSibling: null,
+		nextSibling: null,
+		nodeValue: "do re mi fa so la ti",
+		textContent: "do re mi fa so la ti",
+
+		// CharacterData
+		data: "do re mi fa so la ti",
+		length: 20,
+
+		// Text
+		wholeText: "do re mi fa so la ti",
+	},
+	detachedXmlTextNode: {
+		// Node
+		nodeType: Node.TEXT_NODE,
+		nodeName: "#text",
+		ownerDocument: xmlDoc,
+		parentNode: null,
+		parentElement: null,
+		firstChild: null,
+		lastChild: null,
+		previousSibling: null,
+		nextSibling: null,
+		nodeValue: "Klmnopqr",
+		textContent: "Klmnopqr",
+
+		// CharacterData
+		data: "Klmnopqr",
+		length: 8,
+
+		// Text
+		wholeText: "Klmnopqr",
+	},
+	processingInstruction: {
+		// Node
+		nodeType: Node.PROCESSING_INSTRUCTION_NODE,
+		nodeName: "somePI",
+		ownerDocument: xmlDoc,
+		parentNode: xmlDoc,
+		parentElement: null,
+		firstChild: null,
+		lastChild: null,
+		previousSibling: xmlElement,
+		nextSibling: xmlComment,
+		nodeValue: 'Did you know that ":syn sync fromstart" is very useful when using vim to edit large amounts of JavaScript embedded in HTML?',
+		textContent: 'Did you know that ":syn sync fromstart" is very useful when using vim to edit large amounts of JavaScript embedded in HTML?',
+
+		// CharacterData
+		data: 'Did you know that ":syn sync fromstart" is very useful when using vim to edit large amounts of JavaScript embedded in HTML?',
+		length: 123,
+
+		// ProcessingInstruction
+		target: "somePI",
+	},
+	detachedProcessingInstruction: {
+		// Node
+		nodeType: Node.PROCESSING_INSTRUCTION_NODE,
+		nodeName: "whippoorwill",
+		ownerDocument: xmlDoc,
+		parentNode: null,
+		parentElement: null,
+		firstChild: null,
+		lastChild: null,
+		previousSibling: null,
+		nextSibling: null,
+		nodeValue: "chirp chirp chirp",
+		textContent: "chirp chirp chirp",
+
+		// CharacterData
+		data: "chirp chirp chirp",
+		length: 17,
+
+		// ProcessingInstruction
+		target: "whippoorwill",
+	},
+	comment: {
+		// Node
+		nodeType: Node.COMMENT_NODE,
+		nodeName: "#comment",
+		ownerDocument: document,
+		parentNode: testDiv,
+		parentElement: testDiv,
+		firstChild: null,
+		lastChild: null,
+		previousSibling: paras[4],
+		nextSibling: null,
+		nodeValue: "Alphabet soup?",
+		textContent: "Alphabet soup?",
+
+		// CharacterData
+		data: "Alphabet soup?",
+		length: 14,
+	},
+	detachedComment: {
+		// Node
+		nodeType: Node.COMMENT_NODE,
+		nodeName: "#comment",
+		ownerDocument: document,
+		parentNode: null,
+		parentElement: null,
+		firstChild: null,
+		lastChild: null,
+		previousSibling: null,
+		nextSibling: null,
+		nodeValue: "Stuvwxyz",
+		textContent: "Stuvwxyz",
+
+		// CharacterData
+		data: "Stuvwxyz",
+		length: 8,
+	},
+	foreignComment: {
+		// Node
+		nodeType: Node.COMMENT_NODE,
+		nodeName: "#comment",
+		ownerDocument: foreignDoc,
+		parentNode: foreignDoc,
+		parentElement: null,
+		firstChild: null,
+		lastChild: null,
+		previousSibling: foreignDoc.documentElement,
+		nextSibling: null,
+		nodeValue: '"Commenter" and "commentator" mean different things.  I\'ve seen non-native speakers trip up on this.',
+		textContent: '"Commenter" and "commentator" mean different things.  I\'ve seen non-native speakers trip up on this.',
+
+		// CharacterData
+		data: '"Commenter" and "commentator" mean different things.  I\'ve seen non-native speakers trip up on this.',
+		length: 100,
+	},
+	detachedForeignComment: {
+		// Node
+		nodeType: Node.COMMENT_NODE,
+		nodeName: "#comment",
+		ownerDocument: foreignDoc,
+		parentNode: null,
+		parentElement: null,
+		firstChild: null,
+		lastChild: null,
+		previousSibling: null,
+		nextSibling: null,
+		nodeValue: "אריה יהודה",
+		textContent: "אריה יהודה",
+
+		// CharacterData
+		data: "אריה יהודה",
+		length: 10,
+	},
+	xmlComment: {
+		// Node
+		nodeType: Node.COMMENT_NODE,
+		nodeName: "#comment",
+		ownerDocument: xmlDoc,
+		parentNode: xmlDoc,
+		parentElement: null,
+		firstChild: null,
+		lastChild: null,
+		previousSibling: processingInstruction,
+		nextSibling: null,
+		nodeValue: "I maliciously created a comment that will break incautious XML serializers, but Firefox threw an exception, so all I got was this lousy T-shirt",
+		textContent: "I maliciously created a comment that will break incautious XML serializers, but Firefox threw an exception, so all I got was this lousy T-shirt",
+
+		// CharacterData
+		data: "I maliciously created a comment that will break incautious XML serializers, but Firefox threw an exception, so all I got was this lousy T-shirt",
+		length: 143,
+	},
+	detachedXmlComment: {
+		// Node
+		nodeType: Node.COMMENT_NODE,
+		nodeName: "#comment",
+		ownerDocument: xmlDoc,
+		parentNode: null,
+		parentElement: null,
+		firstChild: null,
+		lastChild: null,
+		previousSibling: null,
+		nextSibling: null,
+		nodeValue: "בן חיים אליעזר",
+		textContent: "בן חיים אליעזר",
+
+		// CharacterData
+		data: "בן חיים אליעזר",
+		length: 14,
+	},
+	docfrag: {
+		// Node
+		nodeType: Node.DOCUMENT_FRAGMENT_NODE,
+		nodeName: "#document-fragment",
+		ownerDocument: document,
+		parentNode: null,
+		parentElement: null,
+		firstChild: null,
+		lastChild: null,
+		previousSibling: null,
+		nextSibling: null,
+		nodeValue: null,
+		textContent: "",
+	},
+	foreignDocfrag: {
+		// Node
+		nodeType: Node.DOCUMENT_FRAGMENT_NODE,
+		nodeName: "#document-fragment",
+		ownerDocument: foreignDoc,
+		parentNode: null,
+		parentElement: null,
+		firstChild: null,
+		lastChild: null,
+		previousSibling: null,
+		nextSibling: null,
+		nodeValue: null,
+		textContent: "",
+	},
+	xmlDocfrag: {
+		// Node
+		nodeType: Node.DOCUMENT_FRAGMENT_NODE,
+		nodeName: "#document-fragment",
+		ownerDocument: xmlDoc,
+		parentNode: null,
+		parentElement: null,
+		firstChild: null,
+		lastChild: null,
+		previousSibling: null,
+		nextSibling: null,
+		nodeValue: null,
+		textContent: "",
+	},
+	doctype: {
+		// Node
+		nodeType: Node.DOCUMENT_TYPE_NODE,
+		nodeName: "html",
+		ownerDocument: document,
+		parentNode: document,
+		parentElement: null,
+		firstChild: null,
+		lastChild: null,
+		previousSibling: null,
+		nextSibling: document.documentElement,
+		nodeValue: null,
+		textContent: "",
+
+		// DocumentType
+		name: "html",
+		publicId: "",
+		systemId: "",
+	},
+	foreignDoctype: {
+		// Node
+		nodeType: Node.DOCUMENT_TYPE_NODE,
+		nodeName: "html",
+		ownerDocument: foreignDoc,
+		parentNode: foreignDoc,
+		parentElement: null,
+		firstChild: null,
+		lastChild: null,
+		previousSibling: null,
+		nextSibling: foreignDoc.documentElement,
+		nodeValue: null,
+		textContent: "",
+
+		// DocumentType
+		name: "html",
+		publicId: "",
+		systemId: "",
+	},
+	xmlDoctype: {
+		// Node
+		nodeType: Node.DOCUMENT_TYPE_NODE,
+		nodeName: "qorflesnorf",
+		ownerDocument: xmlDoc,
+		parentNode: xmlDoc,
+		parentElement: null,
+		firstChild: null,
+		lastChild: null,
+		previousSibling: null,
+		nextSibling: xmlElement,
+		nodeValue: null,
+		textContent: "",
+
+		// DocumentType
+		name: "qorflesnorf",
+		publicId: "abcde",
+		systemId: "x\"'y",
 	},
 };
 

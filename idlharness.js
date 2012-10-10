@@ -1153,6 +1153,13 @@ IdlInterface.prototype.test_self = function()
         assert_false(desc.enumerable, this.name + ".prototype is enumerable");
         assert_false(desc.configurable, this.name + ".prototype is configurable");
 
+        // Next, test that the [[Prototype]] of the interface prototype object
+        // is correct. (This is made somewhat difficult by the existence of
+        // [NoInterfaceObject].)
+        // TODO: Aryeh thinks there's at least other place in this file where
+        //       we try to figure out if an interface prototype object is
+        //       correct. Consolidate that code.
+
         // "The interface prototype object for a given interface A must have an
         // internal [[Prototype]] property whose value is as follows:
         // "If A is not declared to inherit from another interface, then the
@@ -1163,27 +1170,37 @@ IdlInterface.prototype.test_self = function()
         // "Otherwise, A does inherit from another interface. The value of the
         // internal [[Prototype]] property of A is the interface prototype
         // object for the inherited interface."
-        var inherit_interface = (function()
-        {
-            if (this.base &&
-                !this.array.members[this.base]
-                     .has_extended_attribute("NoInterfaceObject"))
-            {
-                return this.base;
-            }
-            if (this.has_extended_attribute("ArrayClass"))
-            {
-                return "Array";
-            }
-            return "Object";
-        }).bind(this)();
-        assert_own_property(window, inherit_interface,
-                            'should inherit from ' + inherit_interface + ', but window has no such property');
-        assert_own_property(window[inherit_interface], "prototype",
-                            'should inherit from ' + inherit_interface + ', but that object has no "prototype" property');
-        assert_equals(Object.getPrototypeOf(window[this.name].prototype),
-                      window[inherit_interface].prototype,
-                      'prototype of ' + this.name + '.prototype is not ' + inherit_interface + '.prototype');
+        var inherit_interface, inherit_interface_has_interface_object;
+        if (this.base) {
+            inherit_interface = this.base;
+            inherit_interface_has_interface_object =
+                !this.array
+                     .members[inherit_interface]
+                     .has_extended_attribute("NoInterfaceObject");
+        } else if (this.has_extended_attribute('ArrayClass')) {
+            inherit_interface = 'Array';
+            inherit_interface_has_interface_object = true;
+        } else {
+            inherit_interface = 'Object';
+            inherit_interface_has_interface_object = true;
+        }
+        if (inherit_interface_has_interface_object) {
+            assert_own_property(window, inherit_interface,
+                                'should inherit from ' + inherit_interface + ', but window has no such property');
+            assert_own_property(window[inherit_interface], 'prototype',
+                                'should inherit from ' + inherit_interface + ', but that object has no "prototype" property');
+            assert_equals(Object.getPrototypeOf(window[this.name].prototype),
+                          window[inherit_interface].prototype,
+                          'prototype of ' + this.name + '.prototype is not ' + inherit_interface + '.prototype');
+        } else {
+            // We can't test that we get the correct object, because this is the
+            // only way to get our hands on it. We only test that its class
+            // string, at least, is correct.
+            assert_class_string(Object.getPrototypeOf(window[this.name].prototype),
+                                inherit_interface + 'Prototype',
+                                'Class name for prototype of ' + this.name +
+                                '.prototype is not "' + inherit_interface + 'Prototype"');
+        }
 
         // "The class string of an interface prototype object is the
         // concatenation of the interface’s identifier and the string

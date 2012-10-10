@@ -1,0 +1,253 @@
+<!doctype html>
+<title>Node assorted property tests</title>
+<link rel=author title="Aryeh Gregor" href=ayg@aryeh.name>
+<meta charset=utf-8>
+<div id=log></div>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=common.js></script>
+<script>
+"use strict";
+/**
+ * This tests various properties like parentNode, nodeName, etc. for each of
+ * the hardcoded nodes in common.js.
+ */
+var expected = {
+	testDiv: {
+		// Node
+		nodeType: Node.ELEMENT_NODE,
+		nodeName: "DIV",
+		ownerDocument: document,
+		parentNode: document.body,
+		parentElement: document.body,
+		firstChild: paras[0],
+		lastChild: comment,
+		previousSibling: null,
+		// nextSibling isn't explicitly set
+		//nextSibling: ,
+		nodeValue: null,
+		// textContent here really depends on innerHTML behavior.  TODO: Fix.
+		//textContent: ,
+
+		// Element
+		namespaceURI: "http://www.w3.org/1999/xhtml",
+		prefix: null,
+		localName: "div",
+		tagName: "DIV",
+		firstElementChild: paras[0],
+		lastElementChild: paras[4],
+		previousElementSibling: null,
+		// nextSibling isn't explicitly set
+		//nextElementSibling: ,
+		childElementCount: 5,
+	},
+	detachedDiv: {
+		// Node
+		nodeType: Node.ELEMENT_NODE,
+		nodeName: "DIV",
+		ownerDocument: document,
+		parentNode: null,
+		parentElement: null,
+		firstChild: detachedPara1,
+		lastChild: detachedPara2,
+		previousSibling: null,
+		nextSibling: null,
+		nodeValue: null,
+		textContent: "OpqrstuvWxyzabcd",
+
+		// Element
+		namespaceURI: "http://www.w3.org/1999/xhtml",
+		prefix: null,
+		localName: "div",
+		tagName: "DIV",
+		firstElementChild: detachedPara1,
+		lastElementChild: detachedPara2,
+		previousElementSibling: null,
+		nextElementSibling: null,
+		childElementCount: 2,
+	},
+	detachedPara1: {
+		// Node
+		nodeType: Node.ELEMENT_NODE,
+		nodeName: "P",
+		ownerDocument: document,
+		parentNode: detachedDiv,
+		parentElement: detachedDiv,
+		// No independent reference to the child
+		//firstChild: ,
+		//lastChild: ,
+		previousSibling: null,
+		nextSibling: detachedPara2,
+		nodeValue: null,
+		textContent: "Opqrstuv",
+
+		// Element
+		namespaceURI: "http://www.w3.org/1999/xhtml",
+		prefix: null,
+		localName: "p",
+		tagName: "P",
+		firstElementChild: null,
+		lastElementChild: null,
+		previousElementSibling: null,
+		nextElementSibling: detachedPara2,
+		childElementCount: 0,
+	},
+	detachedPara2: {
+		// Node
+		nodeType: Node.ELEMENT_NODE,
+		nodeName: "P",
+		ownerDocument: document,
+		parentNode: detachedDiv,
+		parentElement: detachedDiv,
+		// No independent reference to the child
+		//firstChild: ,
+		//lastChild: ,
+		previousSibling: detachedPara1,
+		nextSibling: null,
+		nodeValue: null,
+		textContent: "Wxyzabcd",
+
+		// Element
+		namespaceURI: "http://www.w3.org/1999/xhtml",
+		prefix: null,
+		localName: "p",
+		tagName: "P",
+		firstElementChild: null,
+		lastElementChild: null,
+		previousElementSibling: detachedPara1,
+		nextElementSibling: null,
+		childElementCount: 0,
+	},
+	document: {
+		// Node
+		nodeType: Node.DOCUMENT_NODE,
+		nodeName: "#document",
+		ownerDocument: null,
+		parentNode: null,
+		parentElement: null,
+		firstChild: document.doctype,
+		lastChild: document.documentElement,
+		previousSibling: null,
+		nextSibling: null,
+		nodeValue: null,
+		textContent: null,
+
+		// Document
+		URL: String(location),
+		documentURI: String(location),
+		compatMode: "CSS1Compat",
+		characterSet: "utf-8",
+		contentType: "text/html",
+		doctype: doctype,
+		//documentElement: ,
+	},
+	foreignDoc: {
+		// Node
+		nodeType: Node.DOCUMENT_NODE,
+		nodeName: "#document",
+		ownerDocument: null,
+		parentNode: null,
+		parentElement: null,
+		firstChild: foreignDoc.doctype,
+		lastChild: foreignComment,
+		previousSibling: null,
+		nextSibling: null,
+		nodeValue: null,
+		textContent: null,
+
+		// Document
+		URL: "about:blank",
+		documentURI: "about:blank",
+		compatMode: "CSS1Compat",
+		characterSet: "utf-8",
+		contentType: "text/html",
+		//doctype: ,
+		//documentElement: ,
+	},
+	foreignPara1: {
+		// Node
+		nodeType: Node.ELEMENT_NODE,
+		nodeName: "P",
+		ownerDocument: foreignDoc,
+		parentNode: foreignDoc.body,
+		parentElement: foreignDoc.body,
+		// No independent reference to the child
+		//firstChild: ,
+		//lastChild: ,
+		previousSibling: null,
+		nextSibling: foreignPara2,
+		nodeValue: null,
+		textContent: "Efghijkl",
+
+		// Element
+		namespaceURI: "http://www.w3.org/1999/xhtml",
+		prefix: null,
+		localName: "p",
+		tagName: "P",
+		firstElementChild: null,
+		lastElementChild: null,
+		previousElementSibling: null,
+		nextElementSibling: foreignPara2,
+		childElementCount: 0,
+	},
+	foreignPara2: {
+		// Node
+		nodeType: Node.ELEMENT_NODE,
+		nodeName: "P",
+		ownerDocument: foreignDoc,
+		parentNode: foreignDoc.body,
+		parentElement: foreignDoc.body,
+		// No independent reference to the child
+		//firstChild: ,
+		//lastChild: ,
+		previousSibling: foreignPara1,
+		nextSibling: foreignTextNode,
+		nodeValue: null,
+		textContent: "Mnopqrst",
+
+		// Element
+		namespaceURI: "http://www.w3.org/1999/xhtml",
+		prefix: null,
+		localName: "p",
+		tagName: "P",
+		firstElementChild: null,
+		lastElementChild: null,
+		previousElementSibling: foreignPara1,
+		nextElementSibling: null,
+		childElementCount: 0,
+	},
+	xmlDoc: {
+		// Node
+		nodeType: Node.DOCUMENT_NODE,
+		nodeName: "#document",
+		ownerDocument: null,
+		parentNode: null,
+		parentElement: null,
+		firstChild: xmlDoctype,
+		lastChild: xmlComment,
+		previousSibling: null,
+		nextSibling: null,
+		nodeValue: null,
+		textContent: null,
+
+		// Document
+		URL: "about:blank",
+		documentURI: "about:blank",
+		compatMode: "CSS1Compat",
+		characterSet: "utf-8",
+		contentType: "application/xml",
+		//doctype: ,
+		//documentElement: ,
+	},
+};
+
+for (var node in expected) {
+	for (var prop in expected[node]) {
+		test(function() {
+			assert_equals(window[node][prop], expected[node][prop]);
+		}, node + "." + prop);
+	}
+}
+
+testDiv.parentNode.removeChild(testDiv);
+</script>

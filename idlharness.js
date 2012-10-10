@@ -614,8 +614,14 @@ function IdlDictionary(obj)
     /** An array of objects produced by the "dictionaryMember" production. */
     this.members = obj.members;
 
-    /** An array of names of dictionary types we inherit from. */
-    this.inheritance = obj.inheritance;
+    /**
+     * The name (as a string) of the dictionary type we inherit from, or null
+     * if there is none.
+     */
+    if (obj.inheritance.length > 1) {
+        throw "Multiple inheritance is no longer supported in WebIDL";
+    }
+    this.base = obj.inheritance.length ? obj.inheritance[0] : null;
 }
 
 //@}
@@ -650,8 +656,14 @@ function IdlExceptionOrInterface(obj)
     /** An array of IdlInterfaceMembers. */
     this.members = obj.members.map(function(m){return new IdlInterfaceMember(m)});
 
-    /** An array of names of types we inherit from. */
-    this.inheritance = obj.inheritance;
+    /**
+     * The name (as a string) of the type we inherit from, or null if there is
+     * none.
+     */
+    if (obj.inheritance.length > 1) {
+        throw "Multiple inheritance is no longer supported in WebIDL";
+    }
+    this.base = obj.inheritance.length ? obj.inheritance[0] : null;
 }
  
 //@}
@@ -771,7 +783,7 @@ IdlException.prototype.test_self = function()
         //
         // Note: This doesn't match browsers as of December 2011, see
         // https://www.w3.org/Bugs/Public/show_bug.cgi?id=14887.
-        var inherit_exception = this.inheritance.length ? this.inheritance[0] : "Error";
+        var inherit_exception = this.base ? this.base : "Error";
         assert_own_property(window, inherit_exception,
                             'should inherit from ' + inherit_exception + ', but window has no such property');
         assert_own_property(window[inherit_exception], "prototype",
@@ -1153,13 +1165,11 @@ IdlInterface.prototype.test_self = function()
         // object for the inherited interface."
         var inherit_interface = (function()
         {
-            for (var i = 0; i < this.inheritance.length; ++i)
+            if (this.base &&
+                !this.array.members[this.base]
+                     .has_extended_attribute("NoInterfaceObject"))
             {
-                if (!this.array.members[this.inheritance[i]]
-                         .has_extended_attribute("NoInterfaceObject"))
-                {
-                    return this.inheritance[i];
-                }
+                return this.base;
             }
             if (this.has_extended_attribute("ArrayClass"))
             {
@@ -1414,7 +1424,7 @@ IdlInterface.prototype.test_object = function(desc)
             return;
         }
         current_interface.test_interface_of(desc, obj, exception, expected_typeof);
-        current_interface = this.array.members[current_interface.inheritance[0]];
+        current_interface = this.array.members[current_interface.base];
     }
 }
 
@@ -1559,10 +1569,9 @@ IdlInterface.prototype.has_stringifier = function()
     if (this.members.some(function(member) { return member.stringifier })) {
         return true;
     }
-    for (var i = 0; i < this.inheritance.length; i++) {
-        if (this.array.members[this.inheritance[i]].has_stringifier()) {
-            return true;
-        }
+    if (this.base &&
+        this.array.members[this.base].has_stringifier()) {
+        return true;
     }
     return false;
 }

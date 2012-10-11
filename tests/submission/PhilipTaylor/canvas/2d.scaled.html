@@ -2,37 +2,24 @@
 <html><head><meta charset="utf-8">
 <title>Canvas test: 2d.scaled</title>
 <meta content="Philip Taylor" name="author">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="../common/canvas-tests.js"></script>
-<link href="../common/canvas-tests.css" rel="stylesheet">
-</head><body class="show_output">
+<link rel="match" href="2d.scaled-ref.html">
+</head><body>
 
 <h1><a href="index.2d.html">2d</a>.scaled</h1>
 <p class="desc">CSS-scaled canvases get drawn correctly</p>
 
-<div class="refs">Spec references:
-<ul>
-</ul>
-</div>
-
-<p class="output">Actual output:</p>
 <canvas class="output" height="25" id="c" style="width: 100px; height: 50px" width="50"><p class="fallback">FAIL (fallback content)</p></canvas>
-<p class="output expectedtext">Expected output:</p><p><img alt="" class="output expected" id="expected" src="2d.scaled.png">
-</p><ul id="d"></ul>
+
 <script>
-var t = async_test("CSS-scaled canvases get drawn correctly");
-_addTest(function(canvas, ctx) {
+
+var canvas = document.getElementById('c');
+var ctx = canvas.getContext('2d');
 
 ctx.fillStyle = '#00f';
 ctx.fillRect(0, 0, 50, 25);
 ctx.fillStyle = '#0ff';
 ctx.fillRect(0, 0, 25, 10);
-_requireManualCheck();
 
-
-});
 </script>
 
-<div id="log"></div>
 </body></html>

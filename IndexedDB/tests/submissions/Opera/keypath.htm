@@ -95,6 +95,11 @@
         [ 10, "bean", ["bags"] ],
         "'' uses value as key");
 
+    keypath([''],
+        [ ["bags"], "bean", 10 ],
+        [ [10], ["bags"], ["bean"] ],
+        "[''] uses value as [key]");
+
     keypath(['x', 'y'],
         [ {x:10, y:20}, {y:1.337, x:100} ],
         [ [10, 20], [100, 1.337] ],
@@ -128,6 +133,12 @@
         [ { name: "orange", type: { name: "fruit" }}, { name: "orange", type: { name: "telecom" }} ],
         [ ["orange", "fruit"], ["orange", "telecom" ] ]);
 
+    loop_array = [];
+    loop_array.push(loop_array);
+    keypath(loop_array,
+        [ "a", 1, ["k"] ],
+        [ 1, "a", ["k"] ],
+        "array loop -> stringify becomes ''");
 </script>
 
 <div id=log></div>

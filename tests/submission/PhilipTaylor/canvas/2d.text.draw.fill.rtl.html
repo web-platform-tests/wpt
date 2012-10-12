@@ -2,9 +2,6 @@
 <html><head><meta charset="utf-8">
 <title>Canvas test: 2d.text.draw.fill.rtl</title>
 <meta content="Philip Taylor" name="author">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="../common/canvas-tests.js"></script>
 <link href="../common/canvas-tests.css" rel="stylesheet">
 </head><body class="show_output">
 
@@ -20,10 +17,11 @@
 <p class="output">Actual output:</p>
 <canvas class="output" height="50" id="c" width="100"><p class="fallback">FAIL (fallback content)</p></canvas>
 <p class="output expectedtext">Expected output:</p><p><img alt="" class="output expected" id="expected" src="2d.text.draw.fill.rtl.png">
-</p><ul id="d"></ul>
+</p>
 <script>
-var t = async_test("fillText respects Right-To-Left Override characters");
-_addTest(function(canvas, ctx) {
+
+var canvas = document.getElementById('c');
+var ctx = canvas.getContext('2d');
 
 ctx.fillStyle = '#000';
 ctx.fillRect(0, 0, 100, 50);
@@ -31,11 +29,7 @@ ctx.fillStyle = '#0f0';
 ctx.strokeStyle = '#f00';
 ctx.font = '35px Arial, sans-serif';
 ctx.fillText('\u202eFAIL \xa0 \xa0 SSAP', 5, 35);
-_requireManualCheck();
 
-
-});
 </script>
 
-<div id="log"></div>
 </body></html>

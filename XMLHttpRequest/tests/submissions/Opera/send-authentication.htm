@@ -18,13 +18,18 @@
             urlstart = "http://" + user1
             if(pass1)
               urlstart += ":" + pass1
-            urlstart += "@localhost/xhr/"
+            urlstart += "@" + location.host + location.pathname.replace(/\/[^\/]*$/, '/')
           }
           client.open("GET", urlstart + "resources/authentication.php", false, user2, pass2)
           client.setRequestHeader("x-user", userwin)
           client.setRequestHeader("x-pass", passwin)
           client.send(null)
           assert_equals(client.responseText, userwin + "\n" + passwin)
+
+          // Log out
+          client.open("GET", "resources/authentication.php?logout="+userwin, false)
+          client.send()
+
         }, document.title)
       }
       var ident = Math.random()
@@ -34,6 +39,7 @@
       request(ident+7, ident+8, null, null)
       request(ident+9, null, null, ident+10)
       request("1", ident+11, ident+12, null)
+      request("5", "6", ident+13, ident+14)
     </script>
   </body>
 </html>

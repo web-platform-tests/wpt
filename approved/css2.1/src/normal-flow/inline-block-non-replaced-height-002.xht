@@ -3,6 +3,7 @@
     <head>
         <title>CSS Test: Inline-block non-replaced elements' margin box is used for the height of the line box</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+		<link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-10-12 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#block-root-margin" />
 		<link rel="match" href="height-percentage-001-ref.xht" />
 
@@ -18,6 +19,15 @@
             {
                 background: blue;
             }
+            
+			/*
+			The test relies and assumes that div#div2's 
+			computed height will be and should be
+			equal to the its used line box height since it has
+			only 1 inline-level element which is contributing to
+			determine its line box height. 
+			*/            
+            
             #div2 div
             {
                 display: inline-block;

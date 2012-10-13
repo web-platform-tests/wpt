@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <title>W3C WebSocket API - Close Secure WebSocket - Reason with unpaired surrogates</title>
+    <title>W3C WebSocket API - Close WebSocket - Reason with unpaired surrogates</title>
     <script type="text/javascript" src="http://w3c-test.org/resources/testharness.js"></script>
     <script type="text/javascript" src="http://w3c-test.org/resources/testharnessreport.js"></script>
     <script type="text/javascript" src="websocket.js"></script>
@@ -10,17 +10,27 @@
     <div id="log"></div>
     <script type="text/javascript">
 
-        var test = async_test("W3C WebSocket API - Create Secure WebSocket - Close the Connection - close(code, 'reason with unpaired surrogates') - SYNTAX_ERR is thrown");
+        var testOpen = async_test("W3C WebSocket API - Create WebSocket - Close the Connection - close(reason with unpaired surrogates) - connection should get opened");
+        var testClose = async_test("W3C WebSocket API - Create WebSocket - Close the Connection - close(reason with unpaired surrogates) - connection should get closed");
 
-        var wsocket = CreateWebSocket(true, false, false);
+        var wsocket = CreateWebSocket(false, false, false);
         var isOpenCalled = false;
+        var replacementChar = "\uFFFD";
+        var reason = "\uD807";
 
-        wsocket.addEventListener('open', test.step_func(function (evt) {
-            var reason = "\uD807";
-            assert_throws("SYNTAX_ERR", function () { wsocket.close(1000, reason) });
-            clearTimeout(timeOut);
-            test.done();
+        wsocket.addEventListener('open', testOpen.step_func(function (evt) {
+            wsocket.close(1000, reason);
+            isOpenCalled = true;
+            testOpen.done();
         }), true);
+
+        wsocket.addEventListener('close', testClose.step_func(function (evt) {
+            assert_true(isOpenCalled, "WebSocket connection should be opened");
+            assert_equals(evt.reason, replacementChar, "reason replaced with replacement character");
+            clearTimeout(timeOut);
+            testClose.done();
+        }), true);
+
     </script>
 
 </body>

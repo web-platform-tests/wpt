@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CSS3 Background Test: background-origin-clip-position</title>
+    <link rel="author" title="Intel" href="http://www.intel.com" />
+    <link rel="help" href="http://dev.w3.org/csswg/css3-background/#the-background-origin" />
+    <meta name="flags" content="image" />
+    <meta name="assert" content="Check if 'background-clip' is 'padding-box', 'background-origin' is 'border-box', 'background-position' is 'top left' (the initial value), and the element has a non-zero border, that expecting the top and left of the background image will be clipped" />
+    <style type="text/css">
+        #container {
+            position: absolute;
+        }
+        #ref {
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            width: 53px;
+            height: 53px;
+            background: red;
+        }
+        #test {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            width: 100px;
+            height: 100px;
+            padding: 25px;
+            border: 5px dotted #000000;
+            background-image: url("support/60x60-green.png");
+            background-repeat: no-repeat;
+            background-origin: border-box;
+            background-clip: padding-box;
+            background-position: top left;
+        }
+    </style>
+  </head>
+  <body>
+    <p>Test passes if there is a filled green square immediately inside the top-left dotted borders and <strong>no red</strong>.</p>
+    <div id="container">
+      <div id="ref"></div>
+      <div id="test"></div>
+    </div>
+  </body>
+</html>

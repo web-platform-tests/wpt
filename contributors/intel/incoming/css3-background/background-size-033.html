@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CSS3 Background Test: background-size_first-line</title>
+    <link rel="author" title="Intel" href="http://www.intel.com" />
+    <link rel="help" href="http://dev.w3.org/csswg/css3-background/#the-background-size" />
+    <link rel="help" href="http://dev.w3.org/csswg/css3-background/#placement" />
+    <meta name="flags" content="" />
+    <meta name="assert" content="Check if background-size is able to apply to the ::first-line pseudo-element" />
+    <style type="text/css">
+        div:first-line {
+            position: absolute;
+            background-size: 100% 50%;
+            background-repeat: repeat no-repeat;
+            background-image: url(support/60x60-green.png);
+        }
+    </style>
+  </head>
+  <body>
+    <p>Test passes if the <strong>top half of the first line</strong> of below paragraph is in <strong>green background</strong>.</p>
+    <div>All properties in this module apply to the ::first-letter pseudo-element. The background properties and border-radius properties also apply to the ::first-line pseudo-element.</div>
+  </body>
+</html>

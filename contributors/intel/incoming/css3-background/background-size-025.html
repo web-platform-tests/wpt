@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CSS3 Background Test: background-size-repeat_auto_length_round</title>
+    <link rel="author" title="Intel" href="http://www.intel.com" />
+    <link rel="help" href="http://dev.w3.org/csswg/css3-background/#the-background-size" />
+    <link rel="help" href="http://dev.w3.org/csswg/css3-background/#the-background-repeat" />
+    <meta name="flags" content="image" />
+    <meta name="assert" content="Check if 'background-size' is 'auto 80px' and 'background-repeat' is 'round', that the background image is shown with a height of approximately 80px, scaled slightly so that it fits a whole number of times in the background height, and the width is the approximately the width that correspond to a 80px height at the original aspect ratio, scaled slightly so that it fits a whole number of times in the background width" />
+    <style type="text/css">
+        #container {
+            position: absolute;
+        }
+        #ref {
+            position: absolute;
+            top: 1px;
+            left: 1px;
+            width: 198px;
+            height: 198px;
+            background: red;
+        }
+        #test {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            width: 200px;
+            height: 200px;
+
+            background-image: url(support/cat.png);
+            background-repeat: round;
+            background-size: auto 80px;
+        }
+    </style>
+  </head>
+  <body>
+    <p>Test passes if there is a 3x3 cat image and <strong>no red</strong>.</p>
+    <div id="container">
+      <div id="ref"></div>
+      <div id="test"></div>
+    </div>
+  </body>
+</html>

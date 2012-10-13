@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CSS3 Background Test: background-clip_padding-box</title>
+    <link rel="author" title="Intel" href="http://www.intel.com" />
+    <link rel="help" href="http://dev.w3.org/csswg/css3-background/#the-background-clip" />
+    <meta name="flags" content="" />
+    <meta name="assert" content="Check if background-clip supports value padding-box" />
+    <style type="text/css">
+        #container {
+            position: absolute;
+        }
+        #ref {
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            width: 148px;
+            height: 148px;
+            background: red;
+        }
+        #test {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            width: 100px;
+            height: 100px;
+            background: green;
+            padding: 25px;
+            border: 5px dotted #000000;
+            background-clip: padding-box;
+        }
+    </style>
+  </head>
+  <body>
+    <p>Test passes if there is a filled green square immediately inside the dotted borders and <strong>no red</strong>.</p>
+    <div id="container">
+      <div id="ref"></div>
+      <div id="test"></div>
+    </div>
+  </body>
+</html>

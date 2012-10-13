@@ -5,7 +5,7 @@
     <link rel="author" title="Intel" href="http://www.intel.com" />
     <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background" />
     <meta name="flags" content="" />
-    <meta name="assert" content="Check that given a valid declaration, for each layer the shorthand 'backgound' first sets the corresponding layer of each of ‘background-image’, ‘background-position’, ‘background-size’, ‘background-repeat’, ‘background-origin’, ‘background-clip’ and ‘background-attachment’ to that property's initial value, then assigns any explicit values specified for this layer in the declaration, and finally ‘background-color’ is set to the specified color, if any, else set to its initial value" />
+    <meta name="assert" content="Check that given a valid declaration, for each layer the shorthand 'backgound' first sets the corresponding layer of each of 'background-image', 'background-position', 'background-size', 'background-repeat', 'background-origin', 'background-clip' and 'background-attachment' to that property's initial value, then assigns any explicit values specified for this layer in the declaration, and finally 'background-color' is set to the specified color, if any, else set to its initial value" />
     <style type="text/css">
         #test {
             background: red;
@@ -18,7 +18,7 @@
     <div id="log"></div>
     <div id="test"></div>
     <script>
-        var cs = window.getComputedStyle(document.getElementById("test"), null);
+        var cs = getComputedStyle(document.getElementById("test"), null);
 
         test(function() {
             assert_equals(cs.getPropertyValue("background-image"),

@@ -5,7 +5,7 @@
     <link rel="author" title="Intel" href="http://www.intel.com" />
     <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background" />
     <meta name="flags" content="" />
-    <meta name="assert" content="Check if two <box> values are present, then the first sets ‘background-origin’ and the second ‘background-clip’" />
+    <meta name="assert" content="Check if two <box> values are present, then the first sets 'background-origin' and the second 'background-clip'" />
     <style type="text/css">
         #test {
             background: border-box padding-box;
@@ -18,7 +18,7 @@
     <div id="log"></div>
     <div id="test"></div>
     <script>
-        var cs = window.getComputedStyle(document.getElementById("test"), null);
+        var cs = getComputedStyle(document.getElementById("test"), null);
         
         test(function() {
             assert_equals(cs.getPropertyValue("background-origin"),

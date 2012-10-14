@@ -4,6 +4,10 @@ import sys
 
 THIS_NAME = "generate.py"
 
+# Note: these lists must be kept in sync with the lists in
+# Document-createElement-namespace.html, and this script must be run whenever
+# the lists are updated.  (We could keep the lists in a shared JSON file, but
+# seems like too much effort.)
 FILES = (
     ("empty", ""),
     ("minimal_html", "<!doctype html><title></title>"),
@@ -36,7 +40,14 @@ FILES = (
 """),
 )
 
-EXTENSIONS = ("html", "xhtml", "xml", "svg", "mml")
+EXTENSIONS = (
+    "html",
+    "xhtml",
+    "xml",
+    "svg",
+    # Was not able to get server MIME type working properly :(
+    #"mml",
+)
 
 def __main__():
     if len(sys.argv) > 1:

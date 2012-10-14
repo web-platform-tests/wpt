@@ -51,8 +51,11 @@ var expected = {
 		localName: "div",
 		tagName: "DIV",
 		id: "test",
-		firstElementChild: paras[0],
-		lastElementChild: paras[4],
+		"children[0]": paras[0],
+		"children[1]": paras[1],
+		"children[2]": paras[2],
+		"children[3]": paras[3],
+		"children[4]": paras[4],
 		previousElementSibling: null,
 		// nextSibling isn't explicitly set
 		//nextElementSibling: ,
@@ -76,8 +79,8 @@ var expected = {
 		prefix: null,
 		localName: "div",
 		tagName: "DIV",
-		firstElementChild: detachedPara1,
-		lastElementChild: detachedPara2,
+		"children[0]": detachedPara1,
+		"children[1]": detachedPara2,
 		previousElementSibling: null,
 		nextElementSibling: null,
 		childElementCount: 2,
@@ -98,8 +101,6 @@ var expected = {
 		prefix: null,
 		localName: "p",
 		tagName: "P",
-		firstElementChild: null,
-		lastElementChild: null,
 		previousElementSibling: null,
 		nextElementSibling: detachedPara2,
 		childElementCount: 0,
@@ -120,8 +121,6 @@ var expected = {
 		prefix: null,
 		localName: "p",
 		tagName: "P",
-		firstElementChild: null,
-		lastElementChild: null,
 		previousElementSibling: detachedPara1,
 		nextElementSibling: null,
 		childElementCount: 0,
@@ -173,8 +172,6 @@ var expected = {
 		prefix: null,
 		localName: "p",
 		tagName: "P",
-		firstElementChild: null,
-		lastElementChild: null,
 		previousElementSibling: null,
 		nextElementSibling: foreignPara2,
 		childElementCount: 0,
@@ -195,8 +192,6 @@ var expected = {
 		prefix: null,
 		localName: "p",
 		tagName: "P",
-		firstElementChild: null,
-		lastElementChild: null,
 		previousElementSibling: foreignPara1,
 		nextElementSibling: null,
 		childElementCount: 0,
@@ -235,8 +230,6 @@ var expected = {
 		prefix: null,
 		localName: "igiveuponcreativenames",
 		tagName: "igiveuponcreativenames",
-		firstElementChild: null,
-		lastElementChild: null,
 		previousElementSibling: null,
 		nextElementSibling: null,
 		childElementCount: 0,
@@ -257,8 +250,6 @@ var expected = {
 		prefix: null,
 		localName: "everyone-hates-hyphenated-element-names",
 		tagName: "everyone-hates-hyphenated-element-names",
-		firstElementChild: null,
-		lastElementChild: null,
 		previousElementSibling: null,
 		nextElementSibling: null,
 		childElementCount: 0,
@@ -491,8 +482,6 @@ var expected = {
 		localName: "p",
 		tagName: "P",
 		id: "a",
-		firstElementChild: null,
-		lastElementChild: null,
 		previousElementSibling: null,
 		nextElementSibling: paras[1],
 		childElementCount: 0,
@@ -514,8 +503,6 @@ var expected = {
 		localName: "p",
 		tagName: "P",
 		id: "b",
-		firstElementChild: null,
-		lastElementChild: null,
 		previousElementSibling: paras[0],
 		nextElementSibling: paras[2],
 		childElementCount: 0,
@@ -537,8 +524,6 @@ var expected = {
 		localName: "p",
 		tagName: "P",
 		id: "c",
-		firstElementChild: null,
-		lastElementChild: null,
 		previousElementSibling: paras[1],
 		nextElementSibling: paras[3],
 		childElementCount: 0,
@@ -560,8 +545,6 @@ var expected = {
 		localName: "p",
 		tagName: "P",
 		id: "d",
-		firstElementChild: null,
-		lastElementChild: null,
 		previousElementSibling: paras[2],
 		nextElementSibling: paras[4],
 		childElementCount: 0,
@@ -583,8 +566,6 @@ var expected = {
 		localName: "p",
 		tagName: "P",
 		id: "e",
-		firstElementChild: null,
-		lastElementChild: null,
 		previousElementSibling: paras[3],
 		nextElementSibling: null,
 		childElementCount: 0,
@@ -597,12 +578,31 @@ for (var node in expected) {
 	case Node.ELEMENT_NODE:
 		expected[node].nodeName = expected[node].tagName;
 		expected[node].nodeValue = null;
+		expected[node]["children.length"] = expected[node].childElementCount;
 
 		if (expected[node].id === undefined) {
 			expected[node].id = "";
 		}
 		if (expected[node].className === undefined) {
 			expected[node].className = "";
+		}
+
+		var len = expected[node].childElementCount;
+		if (len === 0) {
+			expected[node].firstElementChild =
+			expected[node].lastElementChild = null;
+		} else {
+			// If we have expectations for the first/last child in children,
+			// use those.  Otherwise, at least check that .firstElementChild ==
+			// .children[0] and .lastElementChild == .children[len - 1], even
+			// if we aren't sure what they should be.
+			expected[node].firstElementChild = expected[node]["children[0]"]
+				? expected[node]["children[0]"]
+				: eval(node).children[0];
+			expected[node].lastElementChild =
+				expected[node]["children[" + (len - 1) + "]"]
+				? expected[node]["children[" + (len - 1) + "]"]
+				: eval(node).children[len - 1];
 		}
 		break;
 
@@ -659,7 +659,7 @@ for (var node in expected) {
 	var len = expected[node]["childNodes.length"];
 	if (len === 0) {
 		expected[node].firstChild = expected[node].lastChild = null;
-	} else if (len !== undefined) {
+	} else {
 		// If we have expectations for the first/last child in childNodes, use
 		// those.  Otherwise, at least check that .firstChild == .childNodes[0]
 		// and .lastChild == .childNodes[len - 1], even if we aren't sure what

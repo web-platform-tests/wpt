@@ -1,2 +1,4 @@
 dir Document-createElement-namespace-tests
+Document-characterSet-normalization.html
 Document-createElement-namespace.html
+support encoding.php

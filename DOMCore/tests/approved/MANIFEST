@@ -1,6 +1,7 @@
 support common.js
 exceptions.html
 interfaces.html
+Node-compareDocumentPosition.html
 Node-properties.html
 Range-cloneContents.html
 Range-cloneRange.html

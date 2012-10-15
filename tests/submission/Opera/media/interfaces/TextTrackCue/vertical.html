@@ -1,0 +1,30 @@
+<!doctype html>
+<title>TextTrackCue.vertical</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<p>Note: This test currently checks for <em>non-support</em> for <code>vertical</code>.</p>
+<div id=log></div>
+<script>
+setup(function(){
+    window.video = document.createElement('video');
+    window.t1 = video.addTextTrack('subtitles');
+    document.body.appendChild(video);
+});
+test(function(){
+    var c1 = new TextTrackCue(0, 1, 'text1');
+    assert_false('vertical' in c1);
+}, document.title+', script-created cue');
+
+var t_parsed = async_test(document.title+', parsed cue');
+t_parsed.step(function(){
+    var t = document.createElement('track');
+    t.onload = this.step_func(function(){
+        var c1 = t.track.cues[0];
+        assert_false('vertical' in c1);
+        this.done();
+    });
+    t.src = 'data:text/vtt,'+encodeURIComponent('WEBVTT\n\n00:00:00.000 --> 00:00:00.001\ntest');
+    t.track.mode = 'showing';
+    video.appendChild(t);
+});
+</script>

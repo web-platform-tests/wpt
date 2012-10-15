@@ -1,0 +1,13 @@
+<!doctype html>
+<title>HTMLMediaElement.crossOrigin</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<p>Note: this test expects that crossOrigin is NOT supported.</p>
+<div id=log></div>
+<script>
+var video = document.createElement('video');
+test(function(){
+    assert_false('crossOrigin' in video);
+});
+
+</script>

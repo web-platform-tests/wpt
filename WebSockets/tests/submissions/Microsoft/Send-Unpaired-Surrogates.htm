@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <title>W3C WebSocket API - Send unpaired surrogates - Secure WebSocket</title>
+    <title>W3C WebSocket API - Send unpaired surrogates - WebSocket</title>
     <script type="text/javascript" src="http://w3c-test.org/resources/testharness.js"></script>
     <script type="text/javascript" src="http://w3c-test.org/resources/testharnessreport.js"></script>
     <script type="text/javascript" src="websocket.js"></script>
@@ -10,13 +10,13 @@
     <div id="log"></div>
     <script type="text/javascript">
 
-        var testOpen = async_test("W3C WebSocket API - Send unpaired surrogates on a Secure WebSocket - Connection should be opened");
-        var testMessage = async_test("W3C WebSocket API - Send unpaired surrogates on a Secure WebSocket - Message should be received");
-        var testClose = async_test("W3C WebSocket API - Send unpaired surrogates on a Secure WebSocket - Connection should be closed");
+        var testOpen = async_test("W3C WebSocket API - Send unpaired surrogates on a WebSocket - Connection should be opened");
+        var testMessage = async_test("W3C WebSocket API - Send unpaired surrogates on a WebSocket - Message should be received");
+        var testClose = async_test("W3C WebSocket API - Send unpaired surrogates on a WebSocket - Connection should be closed");
 
         var data = "\uD807";
         var replacementChar = "\uFFFD";
-        var wsocket = CreateWebSocket(true, false, false);
+        var wsocket = CreateWebSocket(false, false, false);
         var isOpenCalled = false;
 
         wsocket.addEventListener('open', testOpen.step_func(function (evt) {

@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <title>W3C WebSocket API - Close Secure WebSocket - Reason with unpaired surrogates</title>
+    <title>W3C WebSocket API - Close WebSocket - Reason with unpaired surrogates</title>
     <script type="text/javascript" src="http://w3c-test.org/resources/testharness.js"></script>
     <script type="text/javascript" src="http://w3c-test.org/resources/testharnessreport.js"></script>
     <script type="text/javascript" src="websocket.js"></script>
@@ -10,10 +10,10 @@
     <div id="log"></div>
     <script type="text/javascript">
 
-        var testOpen = async_test("W3C WebSocket API - Create Secure WebSocket - Close the Connection - close(reason with unpaired surrogates) - connection should get opened");
-        var testClose = async_test("W3C WebSocket API - Create Secure WebSocket - Close the Connection - close(reason with unpaired surrogates) - connection should get closed");
+        var testOpen = async_test("W3C WebSocket API - Create WebSocket - Close the Connection - close(reason with unpaired surrogates) - connection should get opened");
+        var testClose = async_test("W3C WebSocket API - Create WebSocket - Close the Connection - close(reason with unpaired surrogates) - connection should get closed");
 
-        var wsocket = CreateWebSocket(true, false, false);
+        var wsocket = CreateWebSocket(false, false, false);
         var isOpenCalled = false;
         var replacementChar = "\uFFFD";
         var reason = "\uD807";
@@ -35,4 +35,3 @@
 
 </body>
 </html>
-

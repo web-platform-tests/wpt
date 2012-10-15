@@ -8,37 +8,32 @@
     <meta name="flags" content="image" />
     <meta name="assert" content="Check if 'background-size' is '50% auto' and 'background-clip is 'padding-box' that it stretches the image so that exactly two copies fit horizontally" />
     <style>
-        #container {
+        div {
             position: absolute;
         }
         #ref {
-            position: absolute;
-            top: 6px;
-            left: 6px;
-            width: 148px;
-            height: 138px;
             background: red;
+            height: 148px;
+            left: 6px;
+            top: 6px;
+            width: 148px;
         }
         #test {
-            position: absolute;
-            top: 0px;
-            left: 0px;
-            width: 100px;
-            height: 90px;
-            padding: 25px;
-            border: 5px dotted #000000;
-
-            background-image: url(support/60x60-green.png);
-            background-size: 50% auto;
             background-clip: padding-box;
+            background-image: url(support/cat.png);
+            background-size: 50% auto;
+            border: blue dotted 5px;
+            height: 100px;
+            left: 0px;
+            padding: 25px;
+            top: 0px;
+            width: 100px;
         }
     </style>
   </head>
   <body>
-    <p>Test passes if there is a filled green rectangle immediately inside the dotted borders and <strong>no red</strong>.</p>
-    <div id="container">
-      <div id="ref"></div>
-      <div id="test"></div>
-    </div>
+    <p>Test passes if there is a 2x2 cat image with blue dotted borders and <strong>no red</strong>.</p>
+    <div id="ref"></div>
+    <div id="test"></div>
   </body>
 </html>

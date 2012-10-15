@@ -8,16 +8,17 @@
     <meta name="flags" content="" />
     <meta name="assert" content="Check if background-size is able to apply to the ::first-letter pseudo-element" />
     <style>
-        div:first-letter {
-            position: absolute;
-            background-size: 100% 50%;
+        div::first-letter {
+            background-image: url(support/blue96x96.png);
             background-repeat: repeat no-repeat;
-            background-image: url(support/60x60-green.png);
+            background-size: 100% 50%;
+            font-size: 80px;
+            position: absolute;
         }
     </style>
   </head>
   <body>
-    <p>Test passes if the <strong>top half of the first letter</strong> of below paragraph is in <strong>green background</strong>.</p>
-    <div>All properties in this module apply to the ::first-letter pseudo-element. The background properties and border-radius properties also apply to the ::first-line pseudo-element.</div>
+    <p>Test passes if the <strong>top half</strong> of the <strong>first letter</strong> of below word is in <strong>blue background</strong>.</p>
+    <div>All</div>
   </body>
 </html>

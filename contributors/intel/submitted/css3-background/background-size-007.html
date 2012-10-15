@@ -1,32 +1,26 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>CSS Backgrounds and Borders Test: background-size_length_zero</title>
+    <title>CSS Backgrounds and Borders Test: background-size_length_min</title>
     <link rel="author" title="Intel" href="http://www.intel.com" />
     <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-size" />
     <meta name="flags" content="image" />
     <meta name="assert" content="Check if 'background-size' is '0px' that the background image is not to be displayed" />
     <style>
-        #container {
+        div {
             position: absolute;
         }
         #ref {
-            position: absolute;
-            top: 0px;
-            left: 0px;
-            width: 100px;
+            background-color: green;
             height: 100px;
-            background: green;
+            width: 100px;
         }
         #test {
-            position: absolute;
-            top: 0px;
-            left: 0px;
-            width: 100px;
-            height: 100px;
-
             background-image: url(support/60x60-red.png);
             background-size: 0px;
+            background-repeat: no-repeat;
+            height: 100px;
+            width: 100px;
         }
     </style>
   </head>

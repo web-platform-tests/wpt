@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<title>NIST DOM HTML Test - DIV</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<link href="http://www.w3.org/TR/html5/obsolete.html#dom-div-align" rel="help">
+<link rel="author" title="NIST">
+</head>
+<body>
+<div align="center">The DIV element is a generic block container.  This text should be centered.</div>
+
+
+<script>
+var domtest = async_test("The align IDL attribute of the div element must reflect the content attribute of the same name.");
+
+on_event(window, "load", domtest.step_func(function (dom_event) {
+    var nodeList;
+      var testNode;
+      var valign;
+      var doc;
+      doc = window.document;
+      nodeList = doc.getElementsByTagName("div");
+      assert_equals(nodeList.length,2);
+testNode = nodeList.item(0);
+      valign = testNode.align;
+
+      assert_equals(valign,"center");
+       
+    domtest.done();
+}));
+
+</script>
+<p>The align IDL attribute of the div element must reflect the content attribute of the same name.</p>
+<div id="log"></div>
+</body></html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<title>NIST DOM HTML Test - PRE</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../common/domtests-common.js"></script>
+<link href="http://www.w3.org/TR/html5/obsolete.html#dom-pre-width" rel="help">
+<link rel="author" title="NIST">
+</head>
+<body>
+<pre width="277">The PRE is used to indicate pre-formatted text.  Visual agents may:
+
+                leave white space intact.
+                May render text with a fixed-pitch font.
+                May disable automatic word wrap.
+                Must not disable bidirectional processing.
+</pre>
+
+
+
+<script>
+var domtest = async_test("The width IDL attribute of the pre element must reflect the content attribute of the same name.");
+
+on_event(window, "load", domtest.step_func(function (dom_event) {
+    var nodeList;
+      var testNode;
+      var vwidth;
+      var doc;
+      doc = window.document;
+      nodeList = doc.getElementsByTagName("pre");
+      assert_equals(nodeList.length,1);
+testNode = nodeList.item(0);
+      vwidth = testNode.width;
+
+      assert_equals(vwidth,277);
+       
+    domtest.done();
+}));
+
+</script>
+<p>The width IDL attribute of the pre element must reflect the content attribute of the same name.</p>
+<div id="log"></div>
+</body></html>

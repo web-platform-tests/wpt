@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>NIST DOM HTML Test - META</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<link href="http://www.w3.org/TR/html5/the-meta-element.html#dom-meta-content" rel="help">
+<link rel="author" title="NIST">
+</head>
+<body>
+<p>
+<br>
+</p>
+
+
+
+<script>
+var domtest = async_test("The content attribute specifies associated information.");
+
+on_event(window, "load", domtest.step_func(function (dom_event) {
+    var nodeList;
+      var testNode;
+      var vcontent;
+      var doc;
+      doc = window.document;
+      nodeList = doc.getElementsByTagName("meta");
+      assert_equals(nodeList.length,1);
+testNode = nodeList.item(0);
+      vcontent = testNode.content;
+
+      assert_equals(vcontent,"text/html; charset=utf-8");
+       
+    domtest.done();
+}));
+
+</script>
+<p>The content attribute specifies associated information. 
+
+    Retrieve the content attribute and examine its value.</p>
+<div id="log"></div>
+</body></html>

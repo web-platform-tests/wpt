@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<title>NIST DOM HTML Test - TEXTAREA</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../common/domtests-common.js"></script>
+<link href="http://www.w3.org/TR/html5/the-textarea-element.html#dom-textarea-rows" rel="help">
+<link rel="author" title="NIST">
+</head>
+<body>
+<form accept-charset="US-ASCII" action="./files/getData.pl" id="form1" method="post">
+<p>
+<textarea accesskey="c" cols="20" name="text1" rows="7" tabindex="5">TEXTAREA1</textarea>
+<input name="submit1" type="submit" value="Submit1">
+<input name="reset1" type="reset" value="Reset1">
+</p>
+</form>
+<p>
+<textarea cols="50" disabled="disabled" name="text2" rows="2">TEXTAREA2</textarea>
+<input name="submit2" type="submit" value="Submit2">
+<input name="reset2" type="reset" value="Reset2">
+<textarea cols="50" name="text2" readonly="readonly" rows="2">TEXTAREA3</textarea>
+<input name="submit2" type="submit" value="Submit2">
+<input name="reset3" type="reset" value="Reset3">
+</p>
+
+
+
+
+<script>
+var domtest = async_test("The rows attribute specifies the number of text rowns.");
+
+on_event(window, "load", domtest.step_func(function (dom_event) {
+    var nodeList;
+      var testNode;
+      var vrows;
+      var doc;
+      doc = window.document;
+      nodeList = doc.getElementsByTagName("textarea");
+      assert_equals(nodeList.length,3);
+testNode = nodeList.item(0);
+      vrows = testNode.rows;
+
+      assert_equals(vrows,7);
+       
+    domtest.done();
+}));
+
+</script>
+<p>The rows attribute specifies the number of text rowns.
+
+    Retrieve the rows attribute of the 1st TEXTAREA element and examine
+    its value.</p>
+<div id="log"></div>
+</body></html>

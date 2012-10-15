@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<title>NIST DOM HTML Test - Area</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../common/domtests-common.js"></script>
+<link href="http://www.w3.org/TR/html5/editing.html#dom-accesskey" rel="help">
+<link rel="author" title="NIST">
+</head>
+<body>
+<p>
+<map id="mapid" name="mapid">
+<area accesskey="a" alt="Domain" coords="0,2,45,45" href="./files/dletter.html" shape="rect" tabindex="10" title="Domain"></area>
+</map>
+</p>
+
+
+<script>
+var domtest = async_test("The accessKey attribute specifies a single character access key to     give access to the control form.");
+
+on_event(window, "load", domtest.step_func(function (dom_event) {
+    var nodeList;
+      var testNode;
+      var vaccesskey;
+      var doc;
+      doc = window.document;
+      nodeList = doc.getElementsByTagName("area");
+      assert_equals(nodeList.length,1);
+testNode = nodeList.item(0);
+      vaccesskey = testNode.accessKey;
+
+      assert_equals(vaccesskey,"a");
+       
+    domtest.done();
+}));
+
+</script>
+<p>The accessKey attribute specifies a single character access key to
+    give access to the control form. 
+
+    Retrieve the accessKey attribute and examine its value.</p>
+<div id="log"></div>
+</body></html>

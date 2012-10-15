@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<title>NIST DOM HTML Test - TABLE</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../common/domtests-common.js"></script>
+<link href="http://www.w3.org/TR/html5/the-table-element.html#dom-table-caption" rel="help">
+<link rel="author" title="Netscape">
+</head>
+<body>
+<table summary="Empty Table">
+<tbody><tr><td>HTML can't abide empty table</td></tr>
+</tbody></table>
+
+
+<script>
+var domtest = async_test("Returns the table's CAPTION, or void if none exists.");
+
+on_event(window, "load", domtest.step_func(function (dom_event) {
+    var nodeList;
+      var testNode;
+      var vcaption;
+      var doc;
+      doc = window.document;
+      nodeList = doc.getElementsByTagName("table");
+      assert_equals(nodeList.length,1);
+testNode = nodeList.item(0);
+      vcaption = testNode.caption;
+
+      assert_equals(vcaption, null);
+    
+    domtest.done();
+}));
+
+</script>
+<p>Returns the table's CAPTION, or void if none exists. 
+The value of attribute caption of the table element is read and checked against the expected value.</p>
+<div id="log"></div>
+</body></html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<title>NIST DOM HTML Test - OPTIONSCOLLECTION</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../common/domtests-common.js"></script>
+<link href="http://www.w3.org/TR/html5/common-dom-interfaces.html#dom-htmloptionscollection-nameditem" rel="help">
+<link rel="author" title="NIST">
+</head>
+<body>
+<form action="./files/getData.pl" id="form1" method="post" name="form1">
+<p>
+<select dir="ltr" id="selectId" multiple="multiple" name="select1" size="1" tabindex="7">
+<option selected="selected" value="10001">EMP10001</option>
+<option label="l1">EMP10002</option>
+<option>EMP10003</option>
+<option>EMP10004</option>
+<option>EMP10005</option>
+</select>
+</p>
+</form>
+<p>
+<select disabled="disabled" name="select2">
+<option>EMP20001</option>
+<option>EMP20002</option>
+<option>EMP20003</option>
+<option>EMP20004</option>
+<option disabled="disabled">EMP20005</option>
+</select>
+</p>
+
+
+
+
+
+
+
+
+
+<script>
+var domtest = async_test("An HTMLOptionsCollection is a list of nodes representing HTML option     element.     An individual node may be accessed by either ordinal index, the node's     name or id attributes.");
+
+on_event(window, "load", domtest.step_func(function (dom_event) {
+    var nodeList;
+      var testNode;
+      var optionsNode;
+      var formsnodeList;
+      var vname;
+      var doc;
+      doc = window.document;
+      nodeList = doc.getElementsByTagName("form");
+      assert_equals(nodeList.length,1);
+testNode = nodeList.item(0);
+      formsnodeList = testNode.elements;
+
+      optionsNode = formsnodeList.namedItem("select9");
+      assert_equals(optionsNode, null);
+    
+    domtest.done();
+}));
+
+</script>
+<p>An HTMLOptionsCollection is a list of nodes representing HTML option
+    element.
+    An individual node may be accessed by either ordinal index, the node's
+    name or id attributes.  (Test node name).
+    The namedItem method retrieves a Node using a name.  It first searches
+    for a node with a matching id attribute.  If it doesn't find one, it
+    then searches for a Node with a matching name attribute, but only
+    those elements that are allowed a name attribute.  Upon failure(e.q., no
+    node with this name exists), returns null.
+
+    Retrieve the first FORM element.  Create a HTMLCollection of the elements.
+    Search for an element that has select9 as the value for the name attribute.
+    Null should be returned since there is not any name or id attribute with
+    select9 as a value.</p>
+<div id="log"></div>
+</body></html>

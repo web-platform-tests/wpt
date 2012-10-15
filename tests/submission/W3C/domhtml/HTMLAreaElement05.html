@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<title>NIST DOM HTML Test - Area</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../common/domtests-common.js"></script>
+<link href="http://www.w3.org/TR/html5/obsolete.html#dom-area-nohref" rel="help">
+<link rel="author" title="NIST">
+</head>
+<body>
+<p>
+<map id="mapid" name="mapid">
+<area accesskey="a" alt="Domain" coords="0,2,45,45" href="./files/dletter.html" shape="rect" tabindex="10" title="Domain"></area>
+</map>
+</p>
+
+
+<script>
+var domtest = async_test("The noHref IDL attribute of the area element must reflect the element's nohref content attribute.");
+
+on_event(window, "load", domtest.step_func(function (dom_event) {
+    var nodeList;
+      var testNode;
+      var vnohref;
+      var doc;
+      doc = window.document;
+      nodeList = doc.getElementsByTagName("area");
+      assert_equals(nodeList.length,1);
+testNode = nodeList.item(0);
+      vnohref = testNode.noHref;
+
+      assert_false(vnohref);
+
+    domtest.done();
+}));
+
+</script>
+<p>The noHref IDL attribute of the area element must reflect the element's nohref content attribute.</p>
+<div id="log"></div>
+</body></html>

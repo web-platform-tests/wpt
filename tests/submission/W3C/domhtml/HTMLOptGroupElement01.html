@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<title>NIST DOM HTML Test - OPTGROUP</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../common/domtests-common.js"></script>
+<link href="http://www.w3.org/TR/html5/the-optgroup-element.html#dom-optgroup-disabled" rel="help">
+<link rel="author" title="NIST">
+</head>
+<body>
+<form action="test.pl" id="Form1" method="post">
+<p>
+<select name="select2">
+<optgroup label="Regular Employees">
+<option>EMP0001</option>
+<option>EMP0002</option>
+<option>EMP0003A</option>
+</optgroup>
+<optgroup disabled="disabled" label="Temporary Employees">
+<option>EMP0004</option>
+<option>EMP0005</option>
+</optgroup>
+</select>
+</p>
+</form>
+
+
+
+<script>
+var domtest = async_test("The disabled attribute indicates that the control is unavailable in     this context.");
+
+on_event(window, "load", domtest.step_func(function (dom_event) {
+    var nodeList;
+      var testNode;
+      var vdisabled;
+      var doc;
+      doc = window.document;
+      nodeList = doc.getElementsByTagName("optgroup");
+      assert_equals(nodeList.length,2);
+testNode = nodeList.item(1);
+      vdisabled = testNode.disabled;
+
+      assert_true(vdisabled);
+
+    domtest.done();
+}));
+
+</script>
+<p>The disabled attribute indicates that the control is unavailable in
+    this context.
+
+    Retrieve the disabled attribute and examine its value.</p>
+<div id="log"></div>
+</body></html>

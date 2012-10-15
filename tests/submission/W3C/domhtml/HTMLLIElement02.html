@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<title>NIST DOM HTML Test - LI</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../common/domtests-common.js"></script>
+<link href="http://www.w3.org/TR/html5/the-li-element.html#dom-li-value" rel="help">
+<link rel="author" title="NIST">
+</head>
+<body>
+<ol>
+<li type="square" value="2">EMP0001
+<ul>
+<li>Margaret Martin
+<dl>
+<dd>Accountant</dd>
+<dd>56,000</dd>
+<dd>Female</dd>
+</dl>
+</li>
+</ul>
+</li>
+</ol>
+
+
+
+<script>
+var domtest = async_test("The value attribute is a reset sequence number when used in OL.");
+
+on_event(window, "load", domtest.step_func(function (dom_event) {
+    var nodeList;
+      var testNode;
+      var vvalue;
+      var doc;
+      doc = window.document;
+      nodeList = doc.getElementsByTagName("li");
+      assert_equals(nodeList.length,2);
+testNode = nodeList.item(0);
+      vvalue = testNode.value;
+
+      assert_equals(vvalue,2);
+       
+    domtest.done();
+}));
+
+</script>
+<p>The value attribute is a reset sequence number when used in OL. 
+
+    Retrieve the value attribute and examine its value.</p>
+<div id="log"></div>
+</body></html>

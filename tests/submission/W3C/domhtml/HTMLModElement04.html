@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<title>NIST DOM HTML Test - MOD</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../common/domtests-common.js"></script>
+<link href="http://www.w3.org/TR/html5/attributes-common-to-ins-and-del-elements.html#dom-mod-datetime" rel="help">
+<link rel="author" title="NIST">
+</head>
+<body>
+<p>
+<ins cite="./files/ins-reasons.html" datetime="January 1, 2002">The INS element is used to indicate that a section of a document had been inserted.</ins>
+<br>
+<del cite="./files/del-reasons.html" datetime="January 2, 2002">The DEL element is used to indicate that a section of a document had been removed.</del>
+</p>
+
+
+
+<script>
+var domtest = async_test("The dateTime attribute specifies the date and time of the change.");
+
+on_event(window, "load", domtest.step_func(function (dom_event) {
+    var nodeList;
+      var testNode;
+      var vdatetime;
+      var doc;
+      doc = window.document;
+      nodeList = doc.getElementsByTagName("del");
+      assert_equals(nodeList.length,1);
+testNode = nodeList.item(0);
+      vdatetime = testNode.dateTime;
+
+      assert_equals(vdatetime,"January 2, 2002");
+       
+    domtest.done();
+}));
+
+</script>
+<p>The dateTime attribute specifies the date and time of the change. 
+
+    Retrieve the dateTime attribute of the DEL element and examine its value.</p>
+<div id="log"></div>
+</body></html>

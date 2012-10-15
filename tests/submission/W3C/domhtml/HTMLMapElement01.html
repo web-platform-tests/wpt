@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<title>NIST DOM HTML Test - MAP</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../common/domtests-common.js"></script>
+<link href="http://www.w3.org/TR/html5/the-map-element.html#dom-map-areas" rel="help">
+<link rel="author" title="NIST">
+</head>
+<body>
+<p>
+<map id="mapid" name="mapid">
+<area alt="Domain1" href="./files/dletter1.html" title="Domain1"></area>
+<area alt="Domain2" href="./files/dletter2.html" title="Domain2"></area>
+<area alt="Domain3" href="./files/dletter3.html" title="Domain3"></area>
+</map>
+</p>
+
+
+<script>
+var domtest = async_test("The  areas attribute is a list of areas defined for the image map.");
+
+on_event(window, "load", domtest.step_func(function (dom_event) {
+    var nodeList;
+      var areasnodeList;
+      var testNode;
+      var vareas;
+      var doc;
+      doc = window.document;
+      nodeList = doc.getElementsByTagName("map");
+      assert_equals(nodeList.length,1);
+testNode = nodeList.item(0);
+      areasnodeList = testNode.areas;
+
+      vareas = areasnodeList.length;
+
+      assert_equals(vareas,3);
+       
+    domtest.done();
+}));
+
+</script>
+<p>The  areas attribute is a list of areas defined for the image map.
+
+    Retrieve the areas attribute and find the number of areas defined.</p>
+<div id="log"></div>
+</body></html>

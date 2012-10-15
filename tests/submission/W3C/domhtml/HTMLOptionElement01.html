@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<title>NIST DOM HTML Test - OPTION</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../common/domtests-common.js"></script>
+<link href="http://www.w3.org/TR/html5/the-option-element.html#dom-option-form" rel="help">
+<link rel="author" title="NIST">
+</head>
+<body>
+<form action="./files/getData.pl" id="form1" method="post" name="form1">
+<p>
+<select dir="ltr" id="selectId" multiple="multiple" name="select1" size="1" tabindex="7">
+<option selected="selected" value="10001">EMP10001</option>
+<option label="l1">EMP10002</option>
+<option>EMP10003</option>
+<option>EMP10004</option>
+<option>EMP10005</option>
+</select>
+</p>
+</form>
+<p>
+<select disabled="disabled" name="select2">
+<option>EMP20001</option>
+<option>EMP20002</option>
+<option>EMP20003</option>
+<option>EMP20004</option>
+<option disabled="disabled">EMP20005</option>
+</select>
+</p>
+
+
+
+
+
+
+
+
+
+<script>
+var domtest = async_test("The form attribute returns the FORM element containing this control.");
+
+on_event(window, "load", domtest.step_func(function (dom_event) {
+    var nodeList;
+      var testNode;
+      var vform;
+      var fNode;
+      var doc;
+      doc = window.document;
+      nodeList = doc.getElementsByTagName("option");
+      assert_equals(nodeList.length,10);
+testNode = nodeList.item(0);
+      fNode = testNode.form;
+
+      vform = fNode.id;
+
+      assert_equals(vform,"form1");
+       
+    domtest.done();
+}));
+
+</script>
+<p>The form attribute returns the FORM element containing this control. 
+
+    Retrieve the form attribute from the first SELECT element
+    and examine its value.</p>
+<div id="log"></div>
+</body></html>

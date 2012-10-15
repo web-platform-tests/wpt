@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<title>NIST DOM HTML Test - SELECT</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../common/domtests-common.js"></script>
+<link href="http://www.w3.org/TR/html5/the-form-element.html#dom-form-elements" rel="help">
+<link rel="author" title="NIST">
+</head>
+<body>
+<table border="4" cellpadding="2" cellspacing="2" frame="border" id="table-1" rules="all" summary="HTML Control Table">
+<caption>Table Caption</caption>
+<thead align="center" valign="middle">
+<tr align="center" char="*" charoff="1" valign="middle">
+<th id="header-1">Employee Id</th>
+<th abbr="maiden" align="center" axis="center" colspan="1" headers="header-1" id="header-2" rowspan="1" scope="col" valign="middle">Employee Name</th>
+<th>Position</th>
+<th>Salary</th>
+<th>Gender</th>
+<th>Address</th>
+</tr>
+</thead>
+<tfoot align="center" valign="middle">
+<tr>
+<th>next page ...</th>
+<th>next page ...</th>
+<th>next page ...</th>
+<th>next page ...</th>
+<th>next page ...</th>
+<th>next page ...</th>
+</tr>
+</tfoot>
+<tbody align="center" valign="middle">
+<tr>
+<td abbr="maiden2" axis="center" colspan="1" headers="header-2" id="Table-3" rowspan="1" scope="col" valign="middle">EMP0001</td>
+<td headers="header-2">Margaret Martin</td>
+<td>Accountant</td>
+<td>56,000</td>
+<td>Female</td>
+<td>1230 North Ave. Dallas, Texas 98551</td>
+</tr>
+<tr>
+<td>EMP0002</td>
+<td>Martha Raynolds</td>
+<td>Secretary</td>
+<td>35,000</td>
+<td>Female</td>
+<td>1900 Dallas Road Dallas, Texas 98554</td>
+</tr>
+</tbody>
+</table>
+<form action="./files/getData.pl" id="form1" method="post">
+<p>
+<select dir="ltr" id="selectId" multiple="multiple" name="select1" size="1" tabindex="7">
+<option selected="selected" value="EMP1">EMP10001</option>
+<option>EMP10002</option>
+<option>EMP10003</option>
+<option>EMP10004</option>
+<option>EMP10005</option>
+</select>
+</p>
+</form>
+<p>
+<select name="select2">
+<option>EMP20001</option>
+<option>EMP20002</option>
+<option>EMP20003</option>
+<option>EMP20004</option>
+<option>EMP20005</option>
+</select>
+</p>
+<p>
+<select disabled="disabled" name="select3" tabindex="1">
+<option>EMP30001</option>
+<option>EMP30002</option>
+<option>EMP30003</option>
+<option>EMP30004</option>
+<option>EMP30005</option>
+</select>
+</p>
+
+
+<script>
+var domtest = async_test("The namedItem(name) method retrieves a node using a name.");
+
+on_event(window, "load", domtest.step_func(function (dom_event) {
+    var nodeList;
+      var testNode;
+      var formNode;
+      var formsnodeList;
+      var vname;
+      var doc;
+      doc = window.document;
+      nodeList = doc.getElementsByTagName("form");
+      assert_equals(nodeList.length,1);
+testNode = nodeList.item(0);
+      formsnodeList = testNode.elements;
+
+      formNode = formsnodeList.namedItem("selectId");
+      vname = formNode.nodeName;
+
+      assert_equals_autocase("element", vname,"select");
+       
+    domtest.done();
+}));
+
+</script>
+<p>The namedItem(name) method retrieves a node using a name.  It first   
+    searches for a node with a matching id attribute.  If it doesn't find
+    one, it then searches for a Node with a matching name attribute, but only
+    on those elements that are allowed a name attribute.
+
+    Retrieve the first FORM element and create a HTMLCollection by invoking
+    the elements attribute.  The first SELECT element is further retrieved 
+    using the elements id attribute.</p>
+<div id="log"></div>
+</body></html>

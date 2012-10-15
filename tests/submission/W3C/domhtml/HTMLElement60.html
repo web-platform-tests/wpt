@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html><head class="HEAD-class" dir="ltr" id="Test-HEAD" lang="en" title="HEAD Element">
+<meta charset="utf-8">
+<title>NIST DOM HTML Test - Element</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../common/domtests-common.js"></script>
+<link href="http://www.w3.org/TR/html5/global-attributes.html#dom-lang" rel="help">
+<link rel="author" title="NIST">
+</head>
+<body>
+<center class="CENTER-class" dir="ltr" id="Test-CENTER" lang="en" title="CENTER Element">
+<object align="middle"></object>
+</center>
+<center>
+<p align="center">Test Lists</p>
+</center>
+<br>
+<ol compact="compact" start="1" type="1">
+  <li type="square" value="2">EMP0001
+  <ul compact="" type="disc">
+    <li>Margaret Martin
+    <dl>
+      <dd class="DD-class" dir="ltr" id="Test-DD" lang="en" title="DD Element">Accountant</dd>
+      <dd>56,000</dd>
+      <dd>Female</dd>
+      <dd>1230 North Ave. Dallas, Texas 98551</dd>
+    </dl>
+    </li>
+  </ul>
+  </li>
+</ol>
+<br>
+<b class="B-class" dir="ltr" id="Test-B" lang="en" title="B Element">Bold</b>
+<br>
+<dl>
+  <dt class="DT-class" dir="ltr" id="Test-DT" lang="en" title="DT Element">DT element</dt>
+</dl>
+<br>
+<bdo class="BDO-class" dir="ltr" id="Test-BDO" lang="en" title="BDO Element">Bidirectional algorithm overide
+</bdo>
+<br>
+<i class="I-class" dir="ltr" id="Test-I" lang="en" title="I Element">Italicized</i>
+<br>
+<span class="SPAN-class" dir="ltr" id="Test-SPAN" lang="en" title="SPAN Element"></span>
+<br>
+<tt class="TT-class" dir="ltr" id="Test-TT" lang="en" title="TT Element">Teletype</tt>
+<br>
+<sub class="SUB-class" dir="ltr" id="Test-SUB" lang="en" title="SUB Element">Subscript</sub>
+<br>
+<sup class="SUP-class" dir="ltr" id="Test-SUP" lang="en" title="SUP Element">SuperScript</sup>
+<br>
+<s class="S-class" dir="ltr" id="Test-S" lang="en" title="S Element">Strike Through (S)</s>
+<br>
+<strike class="STRIKE-class" dir="ltr" id="Test-STRIKE" lang="en" title="STRIKE Element">Strike Through (STRIKE)</strike>
+<br>
+<small class="SMALL-class" dir="ltr" id="Test-SMALL" lang="en" title="SMALL Element">Small</small>
+<br>
+<big class="BIG-class" dir="ltr" id="Test-BIG" lang="en" title="BIG Element">Big</big>
+<br>
+<em class="EM-class" dir="ltr" id="Test-EM" lang="en" title="EM Element">Emphasis</em>
+<br>
+<strong class="STRONG-class" dir="ltr" id="Test-STRONG" lang="en" title="STRONG Element">Strong</strong>
+<br>
+<dfn class="DFN-class" dir="ltr" id="Test-DFN" lang="en" title="DFN Element">
+        <code class="CODE-class" dir="ltr" id="Test-CODE" lang="en" title="CODE Element">10  Computer Code Fragment 20  Temp = 10</code>
+        <samp class="SAMP-class" dir="ltr" id="Test-SAMP" lang="en" title="SAMP Element">Temp = 20</samp>
+        <kbd class="KBD-class" dir="ltr" id="Test-KBD" lang="en" title="KBD Element">*2</kbd>
+        <var class="VAR-class" dir="ltr" id="Test-VAR" lang="en" title="VAR Element">Temp</var>
+        <cite class="CITE-class" dir="ltr" id="Test-CITE" lang="en" title="CITE Element">Citation</cite>
+</dfn>
+<br>
+<abbr class="ABBR-class" dir="ltr" id="Test-ABBR" lang="en" title="ABBR Element">Temp</abbr>
+<br>
+<acronym class="ACRONYM-class" dir="ltr" id="Test-ACRONYM" lang="en" title="ACRONYM Element">NIST</acronym>
+<br>
+<address class="ADDRESS-class" dir="ltr" id="Test-ADDRESS" lang="en" title="ADDRESS Element">Gaithersburg, MD 20899</address>
+<br>
+<noframes class="NOFRAMES-class" dir="ltr" id="Test-NOFRAMES" lang="en" title="NOFRAMES Element">Not</noframes>
+<br>
+<noscript class="NOSCRIPT-class" dir="ltr" id="Test-NOSCRIPT" lang="en" title="NOSCRIPT Element">Not</noscript>
+<br>
+<u class="U-class" dir="ltr" id="Test-U" lang="en" title="U Element">Underlined</u>
+
+
+<script>
+var domtest = async_test("The lang attribute specifies the language code defined in RFC 1766.");
+
+on_event(window, "load", domtest.step_func(function (dom_event) {
+    var nodeList;
+      var testNode;
+      var vlang;
+      var doc;
+      doc = window.document;
+      nodeList = doc.getElementsByTagName("sub");
+      assert_equals(nodeList.length,1);
+testNode = nodeList.item(0);
+      vlang = testNode.lang;
+
+      assert_equals(vlang,"en");
+       
+    domtest.done();
+}));
+
+</script>
+<p>The lang attribute specifies the language code defined in RFC 1766. 
+
+    Retrieve the lang attribute of the SUB element and examine its value.</p>
+<div id="log"></div>
+</body></html>

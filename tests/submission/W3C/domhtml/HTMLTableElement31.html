@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<title>NIST DOM HTML Test - TABLE</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../common/domtests-common.js"></script>
+<link href="http://www.w3.org/TR/html5/the-table-element.html#dom-table-insertrow" rel="help">
+<link rel="author" title="NIST">
+</head>
+<body>
+<table summary="Empty Table">
+<tbody><tr><td>HTML can't abide empty table</td></tr>
+</tbody></table>
+
+
+<script>
+var domtest = async_test("The insertRow() method inserts a new empty table row.");
+
+on_event(window, "load", domtest.step_func(function (dom_event) {
+    var nodeList;
+      var testNode;
+      var tableNode;
+      var tbodiesnodeList;
+      var newRow;
+      var doc;
+      var table;
+      var tbodiesLength;
+      doc = window.document;
+      nodeList = doc.getElementsByTagName("body");
+      assert_equals(nodeList.length,1);
+testNode = nodeList.item(0);
+      table = doc.createElement("table");
+      tableNode = testNode.appendChild(table);
+      nodeList = doc.getElementsByTagName("table");
+      assert_equals(nodeList.length,2);
+tbodiesnodeList = tableNode.tBodies;
+
+      tbodiesLength = tbodiesnodeList.length;
+
+      assert_equals(tbodiesLength,0);
+       newRow = tableNode.insertRow(0);
+      tbodiesnodeList = tableNode.tBodies;
+
+      tbodiesLength = tbodiesnodeList.length;
+
+      assert_equals(tbodiesLength,1);
+       
+    domtest.done();
+}));
+
+</script>
+<p>The insertRow() method inserts a new empty table row.  In addition, when
+    the table is empty the row is inserted into a TBODY which is created
+    and inserted into the table.
+    
+    Load the table1 file which has a non-empty table element.
+    Create an empty TABLE element and append to the document.
+    Check to make sure that the empty TABLE element doesn't
+    have a TBODY element.  Insert a new row into the empty
+    TABLE element.  Check for existence of the a TBODY element
+    in the table.</p>
+<div id="log"></div>
+</body></html>

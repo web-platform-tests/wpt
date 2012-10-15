@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<title>NIST DOM HTML Test - Area</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../common/domtests-common.js"></script>
+<link href="http://www.w3.org/TR/html5/the-area-element.html#dom-area-coords" rel="help">
+<link rel="author" title="NIST">
+</head>
+<body>
+<p>
+<map id="mapid" name="mapid">
+<area accesskey="a" alt="Domain" coords="0,2,45,45" href="./files/dletter.html" shape="rect" tabindex="10" title="Domain"></area>
+</map>
+</p>
+
+
+<script>
+var domtest = async_test("The coords attribute specifies a comma-seperated list of lengths,      defining an active region geometry.");
+
+on_event(window, "load", domtest.step_func(function (dom_event) {
+    var nodeList;
+      var testNode;
+      var vcoords;
+      var doc;
+      doc = window.document;
+      nodeList = doc.getElementsByTagName("area");
+      assert_equals(nodeList.length,1);
+testNode = nodeList.item(0);
+      vcoords = testNode.coords;
+
+      assert_equals(vcoords,"0,2,45,45");
+       
+    domtest.done();
+}));
+
+</script>
+<p>The coords attribute specifies a comma-seperated list of lengths, 
+    defining an active region geometry.
+
+    Retrieve the coords attribute and examine its value.</p>
+<div id="log"></div>
+</body></html>

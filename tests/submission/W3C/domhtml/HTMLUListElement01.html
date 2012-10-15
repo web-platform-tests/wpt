@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<title>NIST DOM HTML Test - ULIST</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../common/domtests-common.js"></script>
+<link href="http://www.w3.org/TR/html5/obsolete.html#dom-ul-compact" rel="help">
+<link rel="author" title="NIST">
+</head>
+<body>
+<ol>
+<li>EMP0001
+<ul compact="compact" type="disc">
+<li>Margaret Martin
+<dl>
+<dd>Accountant</dd>
+<dd>56,000</dd>
+<dd>Female</dd>
+<dd>1230 North Ave. Dallas, Texas 98551</dd>
+</dl>
+</li>
+</ul>
+</li>
+<li>EMP0002
+<ul>
+<li>Martha Raynolds
+<dl>
+<dd>Secretary</dd>
+<dd>35,000</dd>
+<dd>Female</dd>
+<dd>1900 Dallas Road. Dallas, Texas 98554</dd>
+</dl>
+</li>
+</ul>
+</li>
+</ol>
+
+
+
+<script>
+var domtest = async_test("The compact and type IDL attributes of the ul element must reflect the respective content attributes of the same name.");
+
+on_event(window, "load", domtest.step_func(function (dom_event) {
+    var nodeList;
+      var testNode;
+      var vcompact;
+      var doc;
+      doc = window.document;
+      nodeList = doc.getElementsByTagName("ul");
+      assert_equals(nodeList.length,2);
+testNode = nodeList.item(0);
+      vcompact = testNode.compact;
+
+      assert_true(vcompact);
+
+    domtest.done();
+}));
+
+</script>
+<p>The compact and type IDL attributes of the ul element must reflect the respective content attributes of the same name.</p>
+<div id="log"></div>
+</body></html>

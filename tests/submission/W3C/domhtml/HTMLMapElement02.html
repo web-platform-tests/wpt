@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<title>NIST DOM HTML Test - MAP</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../common/domtests-common.js"></script>
+<link href="http://www.w3.org/TR/html5/the-map-element.html#dom-map-name" rel="help">
+<link rel="author" title="NIST">
+</head>
+<body>
+<p>
+<map id="mapid" name="mapid">
+<area alt="Domain1" href="./files/dletter1.html" title="Domain1"></area>
+<area alt="Domain2" href="./files/dletter2.html" title="Domain2"></area>
+<area alt="Domain3" href="./files/dletter3.html" title="Domain3"></area>
+</map>
+</p>
+
+
+<script>
+var domtest = async_test("The name attribute names the map(for use with usemap).");
+
+on_event(window, "load", domtest.step_func(function (dom_event) {
+    var nodeList;
+      var testNode;
+      var vname;
+      var doc;
+      doc = window.document;
+      nodeList = doc.getElementsByTagName("map");
+      assert_equals(nodeList.length,1);
+testNode = nodeList.item(0);
+      vname = testNode.name;
+
+      assert_equals(vname,"mapid");
+       
+    domtest.done();
+}));
+
+</script>
+<p>The name attribute names the map(for use with usemap). 
+
+    Retrieve the name attribute and examine its value.</p>
+<div id="log"></div>
+</body></html>

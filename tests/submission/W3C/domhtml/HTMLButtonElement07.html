@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<title>NIST DOM HTML Test - Button</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../common/domtests-common.js"></script>
+<link href="http://www.w3.org/TR/html5/the-button-element.html#dom-button-type" rel="help">
+<link rel="author" title="NIST">
+</head>
+<body>
+<form action="..." id="form2" method="POST">
+<p>
+   <button accesskey="f" disabled="disabled" name="disabledButton" tabindex="20" type="reset" value="Reset Disabled Button">Reset</button>
+</p>
+</form>
+<table summary="Extra Button Table">
+<tbody><tr>
+<td>
+<button>Extra Button</button>
+</td>
+</tr>
+</tbody></table>
+
+
+<script>
+var domtest = async_test("The type attribute specifies the type of button.");
+
+on_event(window, "load", domtest.step_func(function (dom_event) {
+    var nodeList;
+      var testNode;
+      var vtype;
+      var doc;
+      doc = window.document;
+      nodeList = doc.getElementsByTagName("button");
+      assert_equals(nodeList.length,2);
+testNode = nodeList.item(0);
+      vtype = testNode.type;
+
+      assert_equals(vtype,"reset");
+       
+    domtest.done();
+}));
+
+</script>
+<p>The type attribute specifies the type of button. 
+
+    Retrieve the type attribute and examine its value.</p>
+<div id="log"></div>
+</body></html>

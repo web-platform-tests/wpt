@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html><head>
+<meta name='Meta-Name' charset="utf-8">
+<title>NIST DOM HTML Test - META</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<link href="http://www.w3.org/TR/html5/the-meta-element.html#dom-meta-name" rel="help">
+<link rel="author" title="NIST">
+</head>
+<body>
+<p>
+<br>
+</p>
+
+
+
+<script>
+var domtest = async_test("The name attribute specifies the meta information name.");
+
+on_event(window, "load", domtest.step_func(function (dom_event) {
+    var nodeList;
+      var testNode;
+      var vname;
+      var doc;
+      doc = window.document;
+      nodeList = doc.getElementsByTagName("meta");
+      assert_equals(nodeList.length,1);
+testNode = nodeList.item(0);
+      vname = testNode.name;
+
+      assert_equals(vname,"Meta-Name");
+       
+    domtest.done();
+}));
+
+</script>
+<p>The name attribute specifies the meta information name. 
+
+    Retrieve the name attribute and examine its value.</p>
+<div id="log"></div>
+</body></html>

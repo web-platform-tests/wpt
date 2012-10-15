@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<title>NIST DOM HTML Test - PARAM</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../common/domtests-common.js"></script>
+<link href="http://www.w3.org/TR/html5/obsolete.html#dom-param-type" rel="help">
+<link rel="author" title="NIST">
+</head>
+<body>
+<p>
+<object>
+<param name="image3" type="image/gif" value="image/file.gif" valuetype="ref">
+</object>
+</p>
+
+
+<script>
+var domtest = async_test("The type IDL attribute of the param element must reflect the content attribute of the same name.");
+
+on_event(window, "load", domtest.step_func(function (dom_event) {
+    var nodeList;
+      var testNode;
+      var vtype;
+      var doc;
+      doc = window.document;
+      nodeList = doc.getElementsByTagName("param");
+      assert_equals(nodeList.length,1);
+testNode = nodeList.item(0);
+      vtype = testNode.type;
+
+      assert_equals(vtype,"image/gif");
+       
+    domtest.done();
+}));
+
+</script>
+<p>The type IDL attribute of the param element must reflect the content attribute of the same name.</p>
+<div id="log"></div>
+</body></html>

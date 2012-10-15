@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<title>NIST DOM HTML Test - FORM</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../common/domtests-common.js"></script>
+<link href="http://www.w3.org/TR/html5/the-form-element.html#dom-form-reset" rel="help">
+<link rel="author" title="Curt Arnold">
+</head>
+<body>
+<form accept-charset="US-ASCII" action="./files/getData.pl" enctype="application/x-www-form-urlencoded" id="form1" method="post" target="dynamic">
+<p>
+<textarea cols="20" name="text1" rows="7"></textarea>
+<input name="submit1" type="submit" value="Submit">
+<input name="submit2" type="reset" value="Reset">
+</p>
+</form>
+
+
+<script>
+var domtest = async_test("HTMLFormElement.reset restores the forms default values.");
+
+on_event(window, "load", domtest.step_func(function (dom_event) {
+    var nodeList;
+      var testNode;
+      var doc;
+      doc = window.document;
+      nodeList = doc.getElementsByTagName("form");
+      assert_equals(nodeList.length,1);
+testNode = nodeList.item(0);
+      testNode.reset();
+      
+    domtest.done();
+}));
+
+</script>
+<p>HTMLFormElement.reset restores the forms default values.</p>
+<div id="log"></div>
+</body></html>

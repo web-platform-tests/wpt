@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<title>NIST DOM HTML Test - SELECT</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../common/domtests-common.js"></script>
+<link href="http://www.w3.org/TR/html5/editing.html#dom-focus" rel="help">
+<link rel="author" title="Curt Arnold">
+</head>
+<body>
+<form action="./files/getData.pl" id="form1" method="post">
+<p>
+<select dir="ltr" id="selectId" multiple="multiple" name="select1" size="1" tabindex="7">
+<option selected="selected" value="EMP1">EMP10001</option>
+<option>EMP10002</option>
+<option>EMP10003</option>
+<option>EMP10004</option>
+<option>EMP10005</option>
+</select>
+</p>
+</form>
+<p>
+<select name="select2">
+<option>EMP20001</option>
+<option>EMP20002</option>
+<option>EMP20003</option>
+<option>EMP20004</option>
+<option>EMP20005</option>
+</select>
+</p>
+<p>
+<select disabled="disabled" name="select3" tabindex="1">
+<option>EMP30001</option>
+<option>EMP30002</option>
+<option>EMP30003</option>
+<option>EMP30004</option>
+<option>EMP30005</option>
+</select>
+</p>
+
+
+
+
+
+
+
+
+<script>
+var domtest = async_test("focus should give the select element input focus.");
+
+on_event(window, "load", domtest.step_func(function (dom_event) {
+    var nodeList;
+      var testNode;
+      var doc;
+      doc = window.document;
+      nodeList = doc.getElementsByTagName("select");
+      assert_equals(nodeList.length,3);
+testNode = nodeList.item(0);
+      testNode.focus();
+      
+    domtest.done();
+}));
+
+</script>
+<p>focus should give the select element input focus.</p>
+<div id="log"></div>
+</body></html>

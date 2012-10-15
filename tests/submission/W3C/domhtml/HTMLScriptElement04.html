@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<title>script</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../common/domtests-common.js"></script>
+<link href="http://www.w3.org/TR/html5/the-script-element.html#dom-script-src" rel="help">
+<link rel="author" title="W3C">
+</head>
+<body>
+<script>
+var domtest = async_test("The IDL attributes src, type, charset, and defer, each must reflect the respective content attributes of the same name.");
+
+on_event(window, "load", domtest.step_func(function (dom_event) {
+    var nodeList;
+      var testNode;
+      var vsrc;
+      var doc;
+      doc = window.document;
+      nodeList = doc.getElementsByTagName("script");
+      assert_equals(nodeList.length,4);
+      testNode = nodeList.item(0);
+      vsrc = testNode.src;
+
+     assert_uri_equals(null,null,null,"testharness.js",null,null,null,null,vsrc);
+     // is this correct?
+     assert_equals(vsrc, testNode.getAttribute("src"));
+    domtest.done();
+}));
+
+</script>
+<p>The IDL attributes src, type, charset, and defer, each must reflect the respective content attributes of the same name.</p>
+<div id="log"></div>
+</body></html>

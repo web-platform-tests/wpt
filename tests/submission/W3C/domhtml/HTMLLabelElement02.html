@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<title>NIST DOM HTML Test - LABEL</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../common/domtests-common.js"></script>
+<link href="http://www.w3.org/TR/html5/association-of-controls-and-forms.html#dom-fae-form" rel="help">
+<link rel="author" title="NIST">
+</head>
+<body>
+<form action="./files/getData.pl" id="form1" method="post">
+<p>
+<label accesskey="b" for="input1">Enter Your First Password:</label>
+<input id="input1" name="Password1" type="password">
+</p>
+</form>
+<p>
+<label accesskey="c" for="input2">Enter Your Second Password:</label>
+<input id="input2" name="Password2" type="password">
+</p>
+
+
+
+
+<script>
+var domtest = async_test("The form attribute returns null if control in not within the context of      form.");
+
+on_event(window, "load", domtest.step_func(function (dom_event) {
+    var nodeList;
+      var testNode;
+      var vform;
+      var doc;
+      doc = window.document;
+      nodeList = doc.getElementsByTagName("label");
+      assert_equals(nodeList.length,2);
+testNode = nodeList.item(1);
+      vform = testNode.form;
+
+      assert_equals(vform, null);
+    
+    domtest.done();
+}));
+
+</script>
+<p>The form attribute returns null if control in not within the context of 
+    form. 
+
+    Retrieve the form attribute and examine its value.</p>
+<div id="log"></div>
+</body></html>

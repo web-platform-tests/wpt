@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<title>NIST DOM HTML Test - LEGEND</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../common/domtests-common.js"></script>
+<link href="http://www.w3.org/TR/html5/the-legend-element.html#dom-legend-form" rel="help">
+<link rel="author" title="NIST">
+</head>
+<body>
+<form action="./files/getData.pl" id="form1" method="post">
+<fieldset>
+<legend accesskey="b" align="top">Enter Password1:</legend>
+<input id="input1" name="Password1" type="password">
+</fieldset>
+</form>
+<fieldset>
+<legend accesskey="c" align="bottom">Enter Password2:</legend>
+<input id="input2" name="Password2" type="password">
+</fieldset>
+
+
+
+
+
+<script>
+var domtest = async_test("The form attribute returns the FORM element containing this control.");
+
+on_event(window, "load", domtest.step_func(function (dom_event) {
+    var nodeList;
+      var testNode;
+      var vform;
+      var fNode;
+      var doc;
+      doc = window.document;
+      nodeList = doc.getElementsByTagName("legend");
+      assert_equals(nodeList.length,2);
+testNode = nodeList.item(0);
+      fNode = testNode.form;
+
+      vform = fNode.id;
+
+      assert_equals(vform,"form1");
+       
+    domtest.done();
+}));
+
+</script>
+<p>The form attribute returns the FORM element containing this control. 
+
+    Retrieve the form attribute from the first LEGEND element
+    and examine its value.</p>
+<div id="log"></div>
+</body></html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<title>NIST DOM HTML Test - DOCUMENT</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../common/domtests-common.js"></script>
+<link href="http://www.w3.org/TR/html5/obsolete.html#dom-document-applets" rel="help">
+<link rel="author" title="NIST">
+</head>
+<body id="TEST-BODY"> 
+<applet align="bottom" alt="Applet Number 1" archive="" code="org/w3c/domts/DOMTSApplet.class" codebase="applets" height="306" hspace="0" name="applet1" vspace="0" width="301"></applet>
+
+<script>
+var domtest = async_test("The applets attribute must return an HTMLCollection rooted at the Document node, whose filter matches only applet elements.");
+
+on_event(window, "load", domtest.step_func(function (dom_event) {
+    var nodeList;
+      var testNode;
+      var vapplets;
+      var vlength;
+      var doc;
+      doc = window.document;
+      vapplets = doc.applets;
+
+      vlength = vapplets.length;
+
+      assert_equals(vlength,1);
+       
+    domtest.done();
+}));
+
+</script>
+<p>The applets attribute must return an HTMLCollection rooted at the Document node, whose filter matches only applet elements.</p>
+<div id="log"></div>
+</body></html>

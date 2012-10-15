@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<title>NIST DOM HTML Test - OLIST</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../common/domtests-common.js"></script>
+<link href="http://www.w3.org/TR/html5/obsolete.html#dom-ol-compact" rel="help">
+<link rel="author" title="NIST">
+</head>
+<body>
+<ol compact="compact" start="1" type="1">
+<li>EMP0001
+<ul>
+<li>Margaret Martin
+<dl>
+<dd>Accountant</dd>
+<dd>56,000</dd>
+</dl>
+</li>
+</ul>
+</li>
+<li>EMP0002
+<ul>
+<li>Martha Raynolds
+<dl>
+<dd>Secretary</dd>
+<dd>35,000</dd>
+</dl>
+</li>
+</ul>
+</li>
+</ol>
+
+
+
+<script>
+var domtest = async_test("The compact IDL attribute of the ol element must reflect the content attribute of the same name.");
+
+on_event(window, "load", domtest.step_func(function (dom_event) {
+    var nodeList;
+      var testNode;
+      var vcompact;
+      var doc;
+      doc = window.document;
+      nodeList = doc.getElementsByTagName("ol");
+      assert_equals(nodeList.length,1);
+testNode = nodeList.item(0);
+      vcompact = testNode.compact;
+
+      assert_true(vcompact);
+
+    domtest.done();
+}));
+
+</script>
+<p>The compact IDL attribute of the ol element must reflect the content attribute of the same name.</p>
+<div id="log"></div>
+</body></html>

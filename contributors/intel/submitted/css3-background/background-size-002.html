@@ -5,29 +5,28 @@
     <link rel="author" title="Intel" href="http://www.intel.com" />
     <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-size" />
     <meta name="flags" content="image" />
-    <meta name="assert" content="Check if background-size's initial value is auto" />
+    <meta name="assert" content="Check if background-size's initial value is auto that the intrinsic width and/or height of the image should be used" />
     <style>
-        #container {
+        div {
             position: absolute;
         }
         #ref {
-            position: absolute;
-            top: 6px;
-            left: 6px;
-            width: 58px;
+            background-color: red;
             height: 58px;
-            background: red;
+            left: 6px;
+            top: 6px;
+            width: 58px;
         }
         #test {
-            position: absolute;
-            top: 0px;
-            left: 0px;
-            width: 100px;
-            height: 100px;
-            padding: 25px;
-            border: 5px dotted #000000;
-            background-image: url("support/60x60-green.png");
+            background-image: url(support/60x60-green.png);
             background-repeat: no-repeat;
+            background-size: contain;
+            border: black dotted 5px;
+            padding: 25px;
+            height: 100px;
+            left: 0px;
+            top: 0px;
+            width: 100px;
         }
     </style>
   </head>

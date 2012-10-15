@@ -5,29 +5,26 @@
     <link rel="author" title="Intel" href="http://www.intel.com" />
     <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-size" />
     <meta name="flags" content="image" />
-    <meta name="assert" content="Check if 'background-size' is 'auto 45px' and 'background-repeat' is 'no-repeat' that the background is shown with a height of 100px and its width is scaled proportionally to keep the original aspect ratio" />
+    <meta name="assert" content="Check if 'background-size' is 'auto 100px' and 'background-repeat' is 'no-repeat' that the background is shown with a height of 100px and its width is scaled proportionally to keep the original aspect ratio" />
     <style>
-        #container {
+        div {
             position: absolute;
         }
         #ref {
-            position: absolute;
-            top: 1px;
+            background-color: red;
+            height: 98px;
             left: 1px;
-            width: 43px;
-            height: 43px;
-            background: red;
+            top: 1px;
+            width: 98px;
         }
         #test {
-            position: absolute;
-            top: 0px;
-            left: 0px;
-            width: 100px;
-            height: 100px;
-
             background-image: url(support/60x60-green.png);
-            background-size: auto 45px;
             background-repeat: no-repeat;
+            background-size: auto 100px;
+            height: 200px;
+            left: 0px;
+            top: 0px;
+            width: 200px;
         }
     </style>
   </head>

@@ -1,7 +1,7 @@
 <text xml:lang="en">
  <head>
   <its:rules xmlns:its="http://www.w3.org/2005/11/its" version="1.0"
-   xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="Dir2_LinkedRules.xml" />
+   xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="Dir2_LinkedRules.xml" />
  </head>
  <body>
   <par>In Hebrew, the title <quote xml:lang="he"

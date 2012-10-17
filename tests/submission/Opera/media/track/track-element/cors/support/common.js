@@ -9,7 +9,7 @@ setup(function(){
     window.origin = location.protocol+'//'+location.host;
     window.escapedOrigin = encodeURIComponent(origin);
     window.sameOriginURL = location.href.replace(/\/[^\/]+$/, '/');
-    window.otherOriginURL = location.href.replace('://', '://crosssite.').replace(/\/[^\/]+$/, '/');
+    window.otherOriginURL = location.href.replace(/:\/\/(www\.)?/, '://www1.').replace(/\/[^\/]+$/, '/');
 }, {timeout:10000, explicit_done:true});
 
 onload = function() {

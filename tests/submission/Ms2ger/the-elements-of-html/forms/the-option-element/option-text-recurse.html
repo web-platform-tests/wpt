@@ -47,4 +47,13 @@ test(function() {
   option.appendChild(document.createTextNode(" after "));
   assert_equals(option.text, "before script after");
 }, "option.text should recurse into null script elements");
+test(function() {
+  var option = document.createElement("option");
+  var span = option.appendChild(document.createElement("span"));
+  span.appendChild(document.createTextNode(" Some "));
+  span.appendChild(document.createElement("script"))
+      .appendChild(document.createTextNode(" script "));
+  option.appendChild(document.createTextNode(" Text "));
+  assert_equals(option.text, "Some Text");
+}, "option.text should work if a child of the option ends with a script");
 </script>

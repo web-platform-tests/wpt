@@ -47,7 +47,7 @@
 
 </p><hgroup>
 <h1>Quirks Mode</h1>
-<h2 class="no-num no-toc not-tr not-fs">Living Specification — 12 October 2012</h2>
+<h2 class="no-num no-toc not-tr not-fs">Living Specification — 18 October 2012</h2>
 </hgroup>
 
 <dl>
@@ -74,7 +74,7 @@
 <a href="http://creativecommons.org/publicdomain/zero/1.0/" rel="license">CC0 1.0 Universal</a>.
 To the extent possible under law, the editors has waived all copyright and
 related or neighboring rights to this work. In addition, as of
-12 October 2012, the editors have made this specification available
+18 October 2012, the editors have made this specification available
 under the
 <a href="http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0" rel="license">Open Web Foundation Agreement Version 1.0</a>,
 which is available at
@@ -168,7 +168,7 @@ http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0.
 <!--
 <h3>The hashless hex color quirk</h3>
 
-<p class="status not-tr">Status: Awaiting implementation feedback. Has <a href="tests/js/hashless-hex-color.html">tests</a>.
+<p class="status not-tr">Status: Awaiting implementation feedback. Has <a href="http://w3c-test.org/quirks-mode/tests/js/hashless-hex-color.html">tests</a>.
 
 <p>When a property is said to <dfn>support hashless hex colors</dfn>, all tokens in the property's value <var>tokens</var> must be replaced with the return value of following algorithm prior to interpretation:
 
@@ -255,7 +255,7 @@ In particular, outline-color did not show up at all.
 <!--
 <h3>The unitless length quirk</h3>
 
-<p class="status not-tr">Status: Awaiting implementation feedback. Has <a href="tests/js/unitless-length.html">tests</a>.
+<p class="status not-tr">Status: Awaiting implementation feedback. Has <a href="http://w3c-test.org/quirks-mode/tests/js/unitless-length.html">tests</a>.
 
 <p>When a property is said to <dfn>support unitless lengths</dfn>, all tokens in the property's value <var>tokens</var> must be replaced with the return value of following algorithm prior to interpretation:
 
@@ -522,7 +522,7 @@ Opera supported this quirk (copied from IE), but then dropped it because it brok
 
 <h3 id="the-line-height-calculation-quirk"><span class="secno">3.1 </span>The line height calculation quirk</h3>
 
-<p class="status not-tr">Status: Awaiting implementation feedback. Has <a href="tests/js/line-height-calculation.html">tests</a>.
+<p class="status not-tr">Status: Awaiting implementation feedback. Has <a href="http://w3c-test.org/quirks-mode/tests/js/line-height-calculation.html">tests</a>.
 
 <p>In <a class="external" data-anolis-spec="dom" href="http://dom.spec.whatwg.org/#concept-document-quirks" title="concept-document-quirks">quirks mode</a> and <a class="external" data-anolis-spec="dom" href="http://dom.spec.whatwg.org/#concept-document-limited-quirks" title="concept-document-limited-quirks">almost standards mode</a>, an inline box that matches the following conditions, must, for the purpose of line height calculation, act as if the box had a height of zero.
 
@@ -533,13 +533,13 @@ Opera supported this quirk (copied from IE), but then dropped it because it brok
 
 <h3 id="the-blocks-ignore-line-height-quirk"><span class="secno">3.2 </span>The blocks ignore line-height quirk</h3>
 
-<p class="status not-tr">Status: Awaiting implementation feedback. Has <a href="tests/js/blocks-ignore-line-height.html">tests</a>.
+<p class="status not-tr">Status: Awaiting implementation feedback. Has <a href="http://w3c-test.org/quirks-mode/tests/js/blocks-ignore-line-height.html">tests</a>.
 
 <p>In <a class="external" data-anolis-spec="dom" href="http://dom.spec.whatwg.org/#concept-document-quirks" title="concept-document-quirks">quirks mode</a> and <a class="external" data-anolis-spec="dom" href="http://dom.spec.whatwg.org/#concept-document-limited-quirks" title="concept-document-limited-quirks">almost standards mode</a>, a <a href="#block-container-element">block container element</a> whose content is composed of <a href="#inline-level">inline-level</a> elements, the element's 'line-height' must be ignored for the purpose of calculating the minimal height of line boxes within the element.
 
 <h3 id="the-percentage-height-calculation-quirk"><span class="secno">3.3 </span>The percentage height calculation quirk</h3>
 
-<p class="status not-tr">Status: Awaiting implementation feedback. Has <a href="tests/js/percentage-height-calculation.html">tests</a>.
+<p class="status not-tr">Status: Awaiting implementation feedback. Has <a href="http://w3c-test.org/quirks-mode/tests/js/percentage-height-calculation.html">tests</a>.
 
 <p>In <a class="external" data-anolis-spec="dom" href="http://dom.spec.whatwg.org/#concept-document-quirks" title="concept-document-quirks">quirks mode</a>, for the purpose of calculating the 'height' of an element <var>element</var>, if the computed value of the 'position' property of <var>element</var> is 'relative' or 'static', the specified value for the 'height' property of <var>element</var> is a &lt;percentage&gt;, and <var>element</var> does not have a computed value of the 'display' property that is 'table-row', 'table-row-group', 'table-header-group', 'table-footer-group', 'table-cell' or 'table-caption', the <a href="#containing-block">containing block</a> of <var>element</var> must be calculated using the following algorithm, aborting on the first step that returns a value:
 
@@ -568,7 +568,7 @@ Opera supported this quirk (copied from IE), but then dropped it because it brok
 
 <h3 id="the-table-cell-width-calculation-quirk"><span class="secno">3.4 </span>The table cell width calculation quirk</h3>
 
-<p class="status not-tr">Status: Awaiting implementation feedback. Has <a href="tests/js/table-cell-width-calculation.html">tests</a>.
+<p class="status not-tr">Status: Awaiting implementation feedback. Has <a href="http://w3c-test.org/quirks-mode/tests/js/table-cell-width-calculation.html">tests</a>.
 
 <p>In <a class="external" data-anolis-spec="dom" href="http://dom.spec.whatwg.org/#concept-document-quirks" title="concept-document-quirks">quirks mode</a>, for the purpose of calculating the <a href="#minimum-intrinsic-width-of-an-inline-formatting-context">minimum intrinsic width of an inline formatting context</a> for which a table cell <var>cell</var> is the <a href="#containing-block">containing block</a>, if <var>cell</var> has a computed value of the 'width' property that is 'auto', <code>img</code> elements that are inline replaced elements or inline-block replaced elements in that inline formatting context must not have a line breaking opportunity before or after them.
 
@@ -608,7 +608,7 @@ Opera supported this quirk (copied from IE), but then dropped it because it brok
 
 <h3 id="the-font-element-text-decoration-color-quirk"><span class="secno">3.8 </span>The font element text decoration color quirk</h3>
 
-<p class="status not-tr">Status: Awaiting implementation feedback. Has <a href="tests/reftest/font-element-text-decoration-color/">tests</a>.
+<p class="status not-tr">Status: Awaiting implementation feedback. Has <a href="http://w3c-test.org/quirks-mode/tests/reftest/font-element-text-decoration-color/">tests</a>.
 
 <p><!--In <span data-anolis-spec=dom title=concept-document-quirks>quirks mode</span>, t-->The <code>font</code> element must override the color of any text decoration that spans the text of the element to the used value of the element's 'color' property.
 

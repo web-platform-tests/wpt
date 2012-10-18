@@ -53,16 +53,6 @@ add_completion_callback(function(tests)
     }
 });
 
-function set_fail_handlers(test, db) {
-    if (!test.db) {
-        test.db = db;
-
-        db.onerror = fail(test, "unexpected db.error");
-        db.onabort = fail(test, "unexpected db.abort");
-        db.onversionchange = fail(test, "unexpected db.versionchange");
-    }
-}
-
 function createdb(test, dbname, version)
 {
     var rq_open,
@@ -75,39 +65,41 @@ function createdb(test, dbname, version)
     else
         rq_open = window.indexedDB.open(dbname);
 
-    rq_open.onupgradeneeded = test.step_func(function(e) {
-        set_fail_handlers(test, e.target.result);
+    function auto_fail(evt) {
+        /* Fail handlers, if we haven't set on/whatever/, don't
+         * expect to get event whatever. */
+        rq_open.manually_handled = {}
 
-        if (fake_open.onupgradeneeded)
-            fake_open.onupgradeneeded.apply(test, [ e, test.db ]);
-        else
-            assert_unreached('upgradeneeded event');
-    })
+        rq_open.addEventListener(evt,
+            test.step_func(function(e) {
+                if (!rq_open.manually_handled[evt])
+                    assert_unreached("unexpected open." + evt + " event")
 
-    rq_open.onsuccess = test.step_func(function(e) {
-        set_fail_handlers(test, e.target.result);
+                if (e.target.result + "" == "[object IDBDatabase]" && !this.db)
+                {
+                    this.db = e.target.result;
 
-        if (fake_open.onsuccess)
-            fake_open.onsuccess.apply(test, [ e, test.db ]);
-        else
-            assert_unreached('success event');
-    })
+                    this.db.onerror = fail(test, "unexpected db.error");
+                    this.db.onabort = fail(test, "unexpected db.abort");
+                    this.db.onversionchange = fail(test, "unexpected db.versionchange");
+                }
+            })
+        )
+        rq_open.__defineSetter__("on" + evt, function(h) {
+            rq_open.manually_handled[evt] = true
+            if (!h)
+                rq_open.addEventListener(evt, function() {})
+            else
+                rq_open.addEventListener(evt, test.step_func(h))
+        })
+    }
 
-    rq_open.onblocked = test.step_func(function(e) {
-        if (fake_open.onblocked)
-            fake_open.onblocked.apply(test, [ e ]);
-        else
-            assert_unreached('blocked event');
-    })
+    auto_fail("upgradeneeded")
+    auto_fail("success")
+    auto_fail("blocked")
+    auto_fail("error")
 
-    rq_open.onerror = test.step_func(function(e) {
-        if (fake_open.onerror)
-            fake_open.onerror.apply(test, [ e ]);
-        else
-            assert_unreached('error event');
-    });
-
-    return fake_open;
+    return rq_open
 }
 
 function fail(test, desc) {

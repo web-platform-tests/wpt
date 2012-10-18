@@ -58,20 +58,20 @@
         [ { my: { key_ya: 10 } } ],
         [ 10 ]);
 
-    keypath('my.key$ya',
-        [ { my: { key$ya: 10 } } ],
+    keypath('public.key$ya',
+        [ { public: { key$ya: 10 } } ],
         [ 10 ]);
 
-    keypath('my.$',
-        [ { my: { $: 10 } } ],
+    keypath('true.$',
+        [ { true: { $: 10 } } ],
         [ 10 ]);
 
     keypath('my._',
         [ { my: { _: 10 } } ],
         [ 10 ]);
 
-    keypath('my.a7',
-        [ { my: { a7: 10 } } ],
+    keypath('delete.a7',
+        [ { delete: { a7: 10 } } ],
         [ 10 ]);
 
     keypath('p.p.p.p.p.p.p.p.p.p.p.p.p.p',

@@ -1,0 +1,2 @@
+# http://www.w3.org/TR/2010/CR-XMLHttpRequest-20100803/ has a broken link:
+Redirect 301 /webapps/tests/XMLHttpRequest/info.htm /webapps/XMLHttpRequest/tests/submissions/Opera/info.htm

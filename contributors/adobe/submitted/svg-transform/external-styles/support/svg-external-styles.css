@@ -13,3 +13,7 @@
 .invalid {
     transform: scale(invalid);
 }
+
+.rotate-3-args {
+    transform: rotate(90deg,20px,20px);
+}

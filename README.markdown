@@ -2,4 +2,4 @@ The repository for [Quirks Mode](http://dvcs.w3.org/hg/quirks-mode/raw-file/tip/
 
 For make details see [setting up Anolis with cross-specification cross-references](http://wiki.whatwg.org/wiki/Anolis).
 
-See also [http://w3c-test.org/quirks-mode](http://w3c-test.org/quirks-mode).
+Test cases are available at [http://w3c-test.org/quirks-mode/tests/](http://w3c-test.org/quirks-mode/tests/).

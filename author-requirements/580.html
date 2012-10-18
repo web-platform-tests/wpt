@@ -7,13 +7,19 @@
     <script type="text/javascript">
       function replaceStyle (/* Element */ element, /* String */ selector, /* String */ newValue) {
           element.setAttribute ('style', selector + ':' + newValue);
-      }
-      function doOnload() {
-          window.setTimeout ("replaceStyle (document.getElementById('test'), 'display', 'block')", 1000);
+          if (newValue == 'block')
+            element.setAttribute ('aria-hidden', 'false');
+          else if (newValue == 'none')
+            element.setAttribute ('aria-hidden', 'true');            
       }
     </script>
   </head>
-  <body onload="doOnload();">
-    <div id="test" aria-hidden="true" style="display:none;">This &lt;div&gt;'s style switched from 'display:none' to 'display:block'.  It has <code>aria-hidden='true'</code>, regardless.</div>
+  <body>
+    <div id="test" aria-hidden="true" style="display:none;">This &lt;div&gt;'s style switched from 'display:none' to 'display:block'.  It's <code>aria-hidden</code> was simultaneously switched to 'false'.</div>
+    <p>
+      <button onclick="replaceStyle (document.getElementById ('test'), 'display', 'block')" type="button">Change to 'display:block'</button>
+      <button onclick="replaceStyle (document.getElementById ('test'), 'display', 'none')" type="button">Change to 'display:none'</button>
+      <button onclick="window.location.reload()" type="button">Reload Page</button>
+    </p>
   </body>
 </html>

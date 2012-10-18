@@ -53,7 +53,7 @@
         {style:'#foo { height:100px } #test { height:100%; position:relative }', body:'<div id=foo><div><div id=test></div></div></div>', q:100, s:0},
         {style:'#foo { height:100px } #test { height:calc(100% + 1px) }', body:'<div id=foo><div id=test></div></div>', q:101, s:101},
         {style:'#foo { height:100px } #test { height:5px; height:calc(100% + 1px) }', body:'<div id=foo><div><div id=test></div></div></div>', q:0, s:0},
-        {style:'html { display:inline } #test { height:100% }', body:'<div id=test></div>', q:200, s:0},
+        {style:'html { display:inline } #test { height:100% }', body:'<div id=test></div>', q:184, s:0}, // display:inline on root has no effect
         {style:'html { margin:10px } body { display:inline } #test { height:100% }', body:'<div id=test></div>', q:200, s:0},
         {style:'body { margin:0 } #test { height:100% }', body:'<div id=test></div>', q:200, s:0},
         {style:'body { margin:0; padding:10px } #test { height:100% }', body:'<div id=test></div>', q:180, s:0},

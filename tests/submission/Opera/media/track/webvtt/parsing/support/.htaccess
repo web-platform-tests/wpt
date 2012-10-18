@@ -2,6 +2,3 @@
   Header set Cache-Control: "no-cache"
 </FilesMatch>
 
-<FilesMatch "\.(vtt)$">
-  ForceType "text/vtt"
-</FilesMatch>

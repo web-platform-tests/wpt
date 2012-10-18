@@ -8,11 +8,11 @@
 <script src="support.js"></script>
 
 <script>
-    setup({ timeout: 10000 });
+    setup({ timeout: 20000 });
 
     function keypath(keypath, objects, expected_keys, desc) {
         var db,
-          t = async_test(document.title + " - " + (desc ? desc : keypath), { timeout: 10000 });
+          t = async_test(document.title + " - " + (desc ? desc : keypath), { timeout: 20000 });
 
         var open_rq = createdb(t);
         open_rq.onupgradeneeded = function(e) {
@@ -97,7 +97,7 @@
 
     keypath([''],
         [ ["bags"], "bean", 10 ],
-        [ [10], ["bags"], ["bean"] ],
+        [ [10], ["bean"] , [["bags"]] ],
         "[''] uses value as [key]");
 
     keypath(['x', 'y'],
@@ -115,13 +115,13 @@
         [ [10, 20], [100, 1.337] ],
         "['x', {toString->'y'}] (stringifies)");
 
-    // if (false) {
+    if (false) {
         var myblob = Blob(["Yoda"], {type:'suprawsum'});
         keypath(['length', 'type'],
             [ myblob ],
             [ 4, 'suprawsum' ],
             "[Blob.length, Blob.type]");
-    // }
+    }
 
     // File.name and File.lastModifiedDate is not testable automatically
 
@@ -137,8 +137,8 @@
     loop_array.push(loop_array);
     keypath(loop_array,
         [ "a", 1, ["k"] ],
-        [ 1, "a", ["k"] ],
-        "array loop -> stringify becomes ''");
+        [ [1], ["a"], [["k"]] ],
+        "array loop -> stringify becomes ['']");
 </script>
 
 <div id=log></div>

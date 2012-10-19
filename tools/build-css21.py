@@ -91,5 +91,7 @@ suite.buildInto(buildPath, indexer)
 
 print "Moving output to " + distPath
 shutil.rmtree(distPath, True)
+os.makedirs(distPath) # ensure parent directories exist
+shutil.rmtree(distPath)
 os.rename(buildPath, distPath)
 

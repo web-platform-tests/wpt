@@ -46,10 +46,18 @@ push @dirs, 'contributors/mozilla/submitted/css3-background/box-shadow';
 # Gérard Talbot
 
 ###############################################################################
+# Google
+push @dirs, 'contributors/google/submitted/';
+
+###############################################################################
 # Ian Hickson
 
 ###############################################################################
 # i18n WG (Richard Ishida)
+
+###############################################################################
+# Intel
+push @dirs, 'contributors/intel/submitted/css3-background';
 
 ###############################################################################
 # James Hopkins
@@ -68,11 +76,23 @@ push @dirs, 'contributors/fantasai/submitted/css2.1/backgrounds';
 # Microsoft
 
 ###############################################################################
+# Nokia
+push @dirs, 'contributors/nokia/submitted/css3-backgrounds';
+
+###############################################################################
 # Opera
 
 ###############################################################################
-# Nokia
-push @dirs, 'contributors/nokia/submitted/css3-backgrounds';
+# rwalker
+# push @dirs, 'contributors/rwalker/submitted'; - build error
+
+###############################################################################
+# TTWF
+push @dirs, 'contributors/ttwf/emalasky/submitted/css3-background';
+push @dirs, 'contributors/ttwf/jeffreyatw/submitted/css3-background/background-repeat';
+push @dirs, 'contributors/ttwf/jeffreyatw/submitted/css3-background/background-size';
+push @dirs, 'contributors/ttwf/mejarc/submitted';
+push @dirs, 'contributors/ttwf/silverma/submitted';
 
 ###############################################################################
 

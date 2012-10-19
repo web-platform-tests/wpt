@@ -2,24 +2,18 @@
 <html>
 <head>
     <title>Reference File</title>
-    <link rel="author" title="Your Name" href="mailto:youremail@address.com">
+    <link rel="author" title="Jinlong Zhang" href="mailto:jinlongz@oupeng.com">
     <style type="text/css">
-        .container {
-            position: absolute;
-        }
-        .greenSquare {
-            position: absolute;
-            width: 100px;
-            height: 100px;
-            /* Position the div so its identical to the div in the test file */
-            /* Add fill color to match the test file */
-        }
+        #testCon{border: 4px solid green; border-collapse: collapse;}
+        #testCon td{width: 60px; height: 60px; border: 4px solid green;}
     </style>
 </head>
 <body>
-    <p>The test passes if...</p>
-    <div class="container">
-        <div class="greenSquare"></div>
-    </div>
+    <p>The test passes if table's 'border-radius' style don't work.</p>
+    <table id="testCon">
+        <tr><td></td><td></td><td></td></tr>
+        <tr><td></td><td></td><td></td></tr>
+        <tr><td></td><td></td><td></td></tr>
+    </table>
 </body>
 </html>

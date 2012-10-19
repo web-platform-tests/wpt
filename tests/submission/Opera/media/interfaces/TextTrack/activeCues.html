@@ -17,8 +17,13 @@ setup(function(){
     document.body.appendChild(video);
     if (!t1)
         throw new Error('t1 was undefined')
-}, {timeout:5000});
+}, {timeout:25000});
+function smoke_test() {
+  assert_true('HTMLTrackElement' in window, 'track not supported');
+}
+
 test(function(){
+    smoke_test();
     assert_equals(t1.activeCues, t1_cues, 't1.activeCues should return same object');
     assert_equals(t2.activeCues, t2_cues, 't2.activeCues should return same object');
     assert_not_equals(t1.activeCues, t2.activeCues, 't1.activeCues and t2.activeCues should be different objects');
@@ -28,6 +33,7 @@ test(function(){
     assert_equals(t2.activeCues.length, 0, 't2.activeCues should have length 0');
 }, document.title+', empty list');
 test(function(){
+    smoke_test();
     var c = new TextTrackCue(0, 1, "text");
     t1.addCue(c);
     assert_equals(t1.activeCues, t1_cues, "t1.activeCues should return same object");
@@ -38,6 +44,7 @@ test(function(){
     assert_equals(t1.activeCues.length, 0, "t1.activeCues.length after adding a second cue");
 }, document.title+', after addCue()');
 test(function(){
+    smoke_test();
     t1.mode = 'showing';
     assert_equals(t1.activeCues, t1_cues, "t1.activeCues should return the same object after setting mode to showing");
     t1.mode = 'hidden';
@@ -48,9 +55,12 @@ test(function(){
 }, document.title+', different modes');
 
 // ok now let's load in a video
-var test1 = async_test(document.title+', video loading');
-var test2 = async_test(document.title+', video playing');
-var test3 = async_test(document.title+', adding cue during playback');
+var test1 = async_test(document.title+', video loading', {timeout:20000});
+var test2 = async_test(document.title+', video playing', {timeout:20000});
+var test3 = async_test(document.title+', adding cue during playback', {timeout:20000});
+test1.step(smoke_test);
+test2.step(smoke_test);
+test3.step(smoke_test);
 test1.step(function(){
     t1.mode = 'showing';
     video.onloadeddata = test1.step_func(function(e) {

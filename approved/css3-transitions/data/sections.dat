@@ -1,15 +1,16 @@
 http://www.w3.org/TR/css3-transitions/#introduction	1	Introduction
-http://www.w3.org/TR/css3-transitions/#transitions-	2	 Transitions 
-http://www.w3.org/TR/css3-transitions/#the-transition-property-property-	2.1	 The &lsquo;transition-property&rsquo; Property 
-http://www.w3.org/TR/css3-transitions/#the-transition-duration-property-	2.2	 The &lsquo;transition-duration&rsquo; Property 
-http://www.w3.org/TR/css3-transitions/#transition-timing-function_tag	2.3	 The &lsquo;transition-timing-function&rsquo; Property 
-http://www.w3.org/TR/css3-transitions/#the-transition-delay-property-	2.4	 The &lsquo;transition-delay&rsquo; Property 
-http://www.w3.org/TR/css3-transitions/#the-transition-shorthand-property-	2.5	 The &lsquo;transition&rsquo; Shorthand Property 
+http://www.w3.org/TR/css3-transitions/#transitions	2	Transitions
+http://www.w3.org/TR/css3-transitions/#transition-property-property	2.1	 The 'transition-property' Property 
+http://www.w3.org/TR/css3-transitions/#transition-duration-property	2.2	 The 'transition-duration' Property 
+http://www.w3.org/TR/css3-transitions/#transition-timing-function-property	2.3	 The 'transition-timing-function' Property 
+http://www.w3.org/TR/css3-transitions/#transition-delay-property	2.4	 The 'transition-delay' Property 
+http://www.w3.org/TR/css3-transitions/#transition-shorthand-property	2.5	 The 'transition' Shorthand Property 
 http://www.w3.org/TR/css3-transitions/#starting	3	 Starting of transitions 
-http://www.w3.org/TR/css3-transitions/#reversing	4	 Automatically reversing transitions 
-http://www.w3.org/TR/css3-transitions/#transition-events-	5	 Transition Events 
-http://www.w3.org/TR/css3-transitions/#animation-of-property-types-	6	 Animation of property types 
-http://www.w3.org/TR/css3-transitions/#animatable-properties-	7	 Animatable properties 
-http://www.w3.org/TR/css3-transitions/#properties-from-css-	7.1	 Properties from CSS 
-http://www.w3.org/TR/css3-transitions/#properties-from-svg-	7.2	 Properties from SVG 
-http://www.w3.org/TR/css3-transitions/#references	8	References
+http://www.w3.org/TR/css3-transitions/#reversing	4	 Automatically reversing interrupted transitions 
+http://www.w3.org/TR/css3-transitions/#transition-events	5	 Transition Events 
+http://www.w3.org/TR/css3-transitions/#animatable-types	6	 Animation of property types 
+http://www.w3.org/TR/css3-transitions/#animatable-properties	7	 Animatable properties 
+http://www.w3.org/TR/css3-transitions/#animatable-css	7.1	 Properties from CSS 
+http://www.w3.org/TR/css3-transitions/#animatable-svg	7.2	 Properties from SVG 
+http://www.w3.org/TR/css3-transitions/#acknowledgments	8	Acknowledgments
+http://www.w3.org/TR/css3-transitions/#references	9	References

@@ -15,6 +15,7 @@ onconnect = function(e) {
   worker.port.addEventListener('message', this.step_func(function(e) {
     assert_equals(e.data[0], 'undefined', 'first arg');
     assert_equals(e.data[1], 'undefined', 'second arg');
+    this.done();
   }), false);
   worker.port.start();
 });

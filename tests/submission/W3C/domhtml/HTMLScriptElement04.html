@@ -10,7 +10,7 @@
 </head>
 <body>
 <script>
-var domtest = async_test("The IDL attributes src, type, charset, and defer, each must reflect the respective content attributes of the same name.");
+var domtest = async_test("The IDL attribute src must reflect the respective content attribute of the same name.");
 
 on_event(window, "load", domtest.step_func(function (dom_event) {
     var nodeList;
@@ -24,12 +24,10 @@ on_event(window, "load", domtest.step_func(function (dom_event) {
       vsrc = testNode.src;
 
      assert_uri_equals(null,null,null,"testharness.js",null,null,null,null,vsrc);
-     // is this correct?
-     assert_equals(vsrc, testNode.getAttribute("src"));
     domtest.done();
 }));
 
 </script>
-<p>The IDL attributes src, type, charset, and defer, each must reflect the respective content attributes of the same name.</p>
+<p>The IDL attribute src must reflect the respective content attribute of the same name.</p>
 <div id="log"></div>
 </body></html>

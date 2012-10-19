@@ -76,7 +76,8 @@ on_event(window, "load", domtest.step_func(function (dom_event) {
 testNode = nodeList.item(7);
       vsrc = testNode.src;
 
-      assert_equals(vsrc,"../images/yellow.png");
+      assert_uri_equals(null,null,null,"yellow.png",null,null,null,null,vsrc);
+
 
     domtest.done();
 }));

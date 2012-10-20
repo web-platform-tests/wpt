@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>Test File</title>
-    <link rel="author" title="Ping Huang" href="mailto:youremail@address.com">
+    <link rel="author" title="Your Name" href="mailto:youremail@address.com">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-property">
     <link rel="help" href="additional spec link">
-    <link rel="match" href="reference/ttwf-reftest-tutorial-starter-ref.html">
+    <link rel="match" href="path to reference file">
     <meta name="assert" content="Statement describing what the test case is asserting">
     <style type="text/css">
         /* Positioned container allows for the self-describing statement to still 
@@ -19,8 +19,6 @@
             left: 0;
             width: 100px;
             height: 100px;
-            background: green;
-            -webkit-transform: translate(100px,100px);
             /* Add fil color green here */
             /* Add CSS transform here */
          }
@@ -30,23 +28,18 @@
             /* It is approximately the same size as the test div, but with a 1px margin */
             width: 98px;
             height: 98px;
-            top:101px;
-            left:101px;
-            background: red;
-
             /* Add fill color red */
             /* Add top and left to position the div so it is hidden behind the green square */
         }
     </style>
 </head>
 <body>
-    <p>The test passes if there is a green square and no red. Really? </p>
+    <p>The test passes if...</p>
     <div class="container">
         <!-- This is the square that should not be visible if the test passes -->
         <div class="redSquare"></div>
         <!-- This is the square being tested with the transform -->
         <div class="greenSquare"></div>
-
     </div>
 </body>
 </html>

@@ -10,7 +10,7 @@
 </head>
 <body>
 <p>
-<applet align="bottom" alt="Applet Number 1" archive="" codebase="applets" height="306" hspace="0" name="applet1" object="DOMTSApplet.dat" vspace="0" width="301"></applet>
+<applet align="bottom" alt="Applet Number 1" archive="" codebase="applets" height="306" hspace="0" name="applet1" object="./DOMTSApplet.dat" vspace="0" width="301"></applet>
 </p>
 
 
@@ -28,7 +28,7 @@ on_event(window, "load", domtest.step_func(function (dom_event) {
 testNode = nodeList.item(0);
       vobject = testNode.object;
 
-      assert_equals(vobject,"DOMTSApplet.dat");
+      assert_uri_equals(null,null,null,"DOMTSApplet.dat",null,null,null,null,vobject);
        
     domtest.done();
 }));

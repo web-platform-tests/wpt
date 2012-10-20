@@ -40,7 +40,8 @@ on_event(window, "load", domtest.step_func(function (dom_event) {
 
       vfaction = formNode.action;
 
-      assert_equals(vfaction,"../common/text-html.html");
+      assert_uri_equals(null,null,null,"text-html.html",null,null,null,null,vfaction);
+
        
     domtest.done();
 }));

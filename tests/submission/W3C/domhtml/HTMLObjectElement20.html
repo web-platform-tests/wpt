@@ -24,6 +24,7 @@ test(function () {
 
 test(function () {
  var testNode = window.document.getElementsByTagName("object").item(0);
+ assert_not_equals(testNode.contentDocument, null);
  assert_equals(testNode.contentDocument.nodeName, "#document");
 }, "object.contentDocument is not null");
 

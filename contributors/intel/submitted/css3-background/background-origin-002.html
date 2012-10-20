@@ -5,33 +5,30 @@
     <link rel="author" title="Intel" href="http://www.intel.com" />
     <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-origin" />
     <meta name="flags" content="image" />
-    <meta name="assert" content="Check if background-origin's initial value is padding-box" />
+    <meta name="assert" content="Background-origin with initial value implies to position the background relative to the padding box" />
     <style>
-        #container {
+        div {
             position: absolute;
         }
         #ref {
-            position: absolute;
-            top: 6px;
-            left: 6px;
-            width: 58px;
-            height: 58px;
-            background: red;
+            background-color: red;
+            height: 60px;
+            left: 5px;
+            top: 5px;
+            width: 60px;
         }
         #test {
-            position: absolute;
-            top: 0px;
-            left: 0px;
-            width: 100px;
+            background-image: url(support/60x60-green.png);
+            background-repeat: no-repeat;
+            border: transparent dotted 5px;
             height: 100px;
-            background: url("support/60x60-green.png") no-repeat;
             padding: 25px;
-            border: 5px dotted #000000;
+            width: 100px;
         }
     </style>
   </head>
   <body>
-    <p>Test passes if there is a filled green square immediately inside the top-left dotted borders and <strong>no red</strong>.</p>
+    <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
     <div id="container">
       <div id="ref"></div>
       <div id="test"></div>

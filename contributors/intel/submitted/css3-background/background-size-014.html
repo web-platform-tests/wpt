@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CSS Backgrounds and Borders Test: background-size_auto_percentage</title>
+    <link rel="author" title="Intel" href="http://www.intel.com" />
+    <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-size" />
+    <meta name="flags" content="image" />
+    <meta name="assert" content="Check if 'background-size' is 'auto 45%' and 'background-repeat' is 'no-repeat' that the background is shown with a height is scaled by the percentage relative to the background positioning area and its width is resolved by using the image's intrinsic ratio and the size of the height" />
+    <style>
+        div {
+            position: absolute;
+        }
+        #ref {
+            background-color: green;
+            height: 46px;
+            width: 46px;
+        }
+        #test {
+            background-image: url(support/60x60-red.png);
+            background-repeat: no-repeat;
+            background-size: auto 45%;
+            height: 100px;
+            width: 100px;
+        }
+    </style>
+  </head>
+  <body>
+    <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
+    <div id="container">
+      <div id="test"></div>
+      <div id="ref"></div>
+    </div>
+  </body>
+</html>

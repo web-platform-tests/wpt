@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CSS Backgrounds and Borders Test: background-size_auto</title>
+    <link rel="author" title="Intel" href="http://www.intel.com" />
+    <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-size" />
+    <meta name="flags" content="image" />
+    <meta name="assert" content="Check if background-size supports value auto" />
+    <style>
+        #container {
+            position: absolute;
+        }
+        #ref {
+            position: absolute;
+            top: 1px;
+            left: 1px;
+            width: 58px;
+            height: 58px;
+            background: red;
+        }
+        #test {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            width: 100px;
+            height: 100px;
+
+            background-image: url(support/60x60-green.png);
+            background-size: auto;
+            background-repeat: no-repeat;
+        }
+    </style>
+  </head>
+  <body>
+    <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
+    <div id="container">
+      <div id="ref"></div>
+      <div id="test"></div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CSS Backgrounds and Borders Test: background-size_contain</title>
+    <link rel="author" title="Intel" href="http://www.intel.com" />
+    <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-size" />
+    <meta name="flags" content="image" />
+    <meta name="assert" content="Check if 'background-size' is 'contain' that it scale the image, while preserving its intrinsic aspect ratio (if any), to the largest size such that both its width and its height can fit inside the background positioning area" />
+    <style>
+        div {
+            position: absolute;
+        }
+        #ref {
+            background-color: red;
+            height: 138px;
+            left: 6px;
+            top: 6px;
+            width: 138px;
+        }
+        #test {
+            background-image: url(support/60x60-green.png);
+            background-repeat: no-repeat;
+            background-size: contain;
+            border: black dotted 5px;
+            padding: 25px;
+            height: 90px;
+            left: 0px;
+            top: 0px;
+            width: 100px;
+        }
+    </style>
+  </head>
+  <body>
+    <p>Test passes if there is a green rectangle with black dotted borders and <strong>no red</strong>.</p>
+    <div id="container">
+      <div id="ref"></div>
+      <div id="test"></div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CSS Backgrounds and Borders Test: background-size-clip_padding-box</title>
+    <link rel="author" title="Intel" href="http://www.intel.com" />
+    <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-size" />
+    <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-clip" />
+    <meta name="flags" content="image" />
+    <meta name="assert" content="Check if 'background-size' is '50% auto' and 'background-clip is 'padding-box' that it stretches the image so that exactly two copies fit horizontally" />
+    <style>
+        div {
+            position: absolute;
+        }
+        #ref {
+            background-color: red;
+            height: 148px;
+            left: 6px;
+            top: 6px;
+            width: 148px;
+        }
+        #test {
+            background-clip: padding-box;
+            background-image: url(support/cat.png);
+            background-size: 50% auto;
+            border: blue dotted 5px;
+            height: 100px;
+            left: 0px;
+            padding: 25px;
+            top: 0px;
+            width: 100px;
+        }
+    </style>
+  </head>
+  <body>
+    <p>Test passes if there is a 2x2 cat image with blue dotted borders and <strong>no red</strong>.</p>
+    <div id="container">
+      <div id="ref"></div>
+      <div id="test"></div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CSS Backgrounds and Borders Test: background-size-repeat_percentage_repeat</title>
+    <link rel="author" title="Intel" href="http://www.intel.com" />
+    <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-size" />
+    <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-repeat" />
+    <meta name="flags" content="image" />
+    <meta name="assert" content="Check if 'background-size' is '30%' and 'background-repeat' is 'repeat', that the background image is shown at its intrinsic size to cover the background painting area" />
+    <style>
+        #container {
+            position: absolute;
+        }
+        #ref {
+            position: absolute;
+            top: 1px;
+            left: 1px;
+            width: 198px;
+            height: 198px;
+            background: red;
+        }
+        #test {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            width: 200px;
+            height: 200px;
+
+            background-image: url(support/cat.png);
+            background-repeat: repeat;
+            background-size: 25%;
+        }
+    </style>
+  </head>
+  <body>
+    <p>Test passes if there is a 4x4 cat image and <strong>no red</strong>.</p>
+    <div id="container">
+      <div id="ref"></div>
+      <div id="test"></div>
+    </div>
+  </body>
+</html>

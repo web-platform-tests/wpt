@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CSS Backgrounds and Borders Test: background-size_length_normal</title>
+    <link rel="author" title="Intel" href="http://www.intel.com" />
+    <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-size" />
+    <meta name="flags" content="image" />
+    <meta name="assert" content="Check if 'background-size' is '45px' and 'background-repeat' is 'no-repeat' that the background is shown with a width of 45px and its height is resolved as 'auto' scaled proportionally to keep the original aspect ratio" />
+    <style>
+        div {
+            position: absolute;
+        }
+        #ref {
+            background-color: green;
+            height: 45px;
+            width: 45px;
+        }
+        #test {
+            background-image: url(support/60x60-red.png);
+            background-size: 45px;
+            background-repeat: no-repeat;
+            height: 100px;
+            width: 100px;
+        }
+    </style>
+  </head>
+  <body>
+    <p>Test passes if there is a filled green square immediately inside the top-left dotted borders and <strong>no red</strong>.</p>
+    <div id="container">
+      <div id="test"></div>
+      <div id="ref"></div>
+    </div>
+  </body>
+</html>

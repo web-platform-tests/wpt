@@ -26,22 +26,22 @@
             height: 100px;
             background: red;
             z-index: 1;
-            transform: rotateY(180deg);
+            -webkit-transform: rotateY(180deg);
         }
 
         .face {
-            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
         }
 
         .card {
-            transform-style: preserve-3d;
+            -webkit-transform-style: preserve-3d;
         }
 
         .container {
             width: 200px;
             height: 200px;
             perspective: 1000;
-            transform: rotateY(45deg);
+            -webkit-transform: rotateY(45deg);
         }
 
     </style>

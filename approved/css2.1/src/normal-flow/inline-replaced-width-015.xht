@@ -3,32 +3,37 @@
  <head>
   <title>CSS Test: Replaced inline elements wrapping around floats (% widths)</title>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-10-20 -->
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/replaced/005.html" type="text/html"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#inline-replaced-width" />
+  <link rel="match" href="inline-replaced-width-014-ref.xht" />
+
+  <meta name="flags" content="image" />
+
   <style type="text/css">
-   div.test { width: 300px; height: 200px; background: red; position: relative; }
-   div.inner { width: 300px; height: 100px; background: lime; }
-   div p { width: 125%; height: 100px; } /* 375px */
+   div.test { width: 300px; height: 100px; background: red; position: relative; }
+   div.inner { width: 300px; height: 50px; background: green; }
+   div p { width: 125%; height: 50px; } /* 375px */
    img { vertical-align: bottom; }
-   img.float { float: left; height: 100px; width: 100px; }
-   img.flow { width: 80%; height: 100px; } /* 300px */
-   span { position: absolute; bottom: 0; left: 0; background: lime; height: 100px; width: 300px; }
+   img.float { float: left; height: 50px; width: 100px; }
+   img.flow { width: 80%; height: 50px; } /* 300px */
+   span { position: absolute; bottom: 0; left: 0; background: green; height: 50px; width: 300px; }
   </style>
  </head>
  <body>
-  <p>There should be no red below, just two 300x200 pixel lime rectangles.</p>
+  <p>Test passes if there are 2 identical filled green rectangles and <strong>no red</strong>.</p>
   <div class="test a">
    <div class="inner">
     <p>
-     <img src="support/1x1-lime.png" alt="Image download support must be enabled" class="float"/>
-     <img src="support/1x1-lime.png" alt="Image support required for this test" class="flow"/>
+     <img src="support/1x1-green.png" alt="Image download support must be enabled" class="float"/>
+     <img src="support/1x1-green.png" alt="Image support required for this test" class="flow"/>
     </p>
    </div>
   </div>
   <div class="test b">
    <div class="inner">
     <p>
-     <img src="support/1x1-lime.png" alt="Image download support must be enabled" class="float"/>
+     <img src="support/1x1-green.png" alt="Image download support must be enabled" class="float"/>
      <img src="support/1x1-red.png" alt="Image support required for this test" class="flow"/>
      <span></span>
     </p>

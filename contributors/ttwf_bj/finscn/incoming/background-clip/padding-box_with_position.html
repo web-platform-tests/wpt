@@ -1,0 +1,73 @@
+
+<!doctype html>
+<html>
+<head>
+  <title>CSS Backgrounds and Borders Test: background-clip</title>
+  <link rel="author" title="finscn" href="mail:finscn@gmail.com" >
+  <link rel="help" href="http://dev.w3.org/csswg/css3-background/#the-background-clip" >
+  <meta name="flags" content="dom" >
+  <meta name="assert" content="padding-box : The background is painted within (clipped to) the padding box" >
+
+  <meta charset="utf-8">
+  <title>CSS Test</title>
+
+<style type="text/css">
+
+  .infomation {
+    padding : 10px;
+    font-size : 16pt;
+    margin : 5px;
+  }
+
+  .test-case {
+  	padding : 5px;
+    margin : 5px;
+  }
+
+  .view {
+    border : 30px solid rgba(60,150,255,0.4);
+    width : 320px;
+    height : 240px;
+    padding : 30px;
+    margin : 10px;
+    font-size : 16pt;
+    color : #ff9933;
+    background-image : url("../resource/css3.png");
+  }
+  
+  .no-repeat {
+    background-repeat : no-repeat;
+  }
+
+  .case {
+    background-clip : padding-box;
+    background-position: -15px -15px;
+  }
+
+ </style>
+
+</head>
+<body>
+
+<div class="infomation">
+When background-position is enabled, whether the browser could clip the background correctly.
+The background will be clipped. The clip area is the area covered by border(includes padding-area ).<br>
+当设置背景位置(background-position)时,浏览器能否正确的剪切背景.
+背景会被剪切.剪切范围是边框以内的区域(含padding区域).
+</div>
+
+<div class="test-case">
+
+  <div class="view case no-repeat" >
+      Test background-clip
+  </div>
+
+  <div class="view case" >
+      Test background-clip
+  </div>
+  
+</div>
+
+</body>
+
+</html>

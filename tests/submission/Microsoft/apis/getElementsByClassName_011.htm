@@ -1,10 +1,13 @@
-<!DOCTYPE HTML>
-<html>
-    <head>
-        <title>getElementsByClassName</title>
-        <meta name="description" content="get class from children of element" />
-    </head>
+<!DOCTYPE html>
+<html><head>
+    <title>getElementsByClassName</title>
+    <meta content="get class from children of element" name="description">
+    <link href="http://www.w3.org/TR/domcore/#dom-document-getelementsbyclassname" rel="help">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+</head>
     <body>
+        <div id='log'></div>
         <div>
             <div>
                 <a class="text link" href="#foo">test link #foo</a>
@@ -37,21 +40,13 @@
         </table>
         <div class="xt te">xt te</div>
         
-        <div id="testresult">Fail</div>
         <script type="text/javascript">
-            try
+            test(function()
             {
                 var collection = document.getElementsByTagName("table")[0].getElementsByClassName("te xt");
-                if( (collection.length == 1) &&
-                    (collection[0].parentNode.nodeName == "TR") )
-                {
-                    document.getElementById("testresult").innerHTML = "Pass";
-                }
-            }
-            catch (ex)
-            {
-                document.getElementById("testresult").innerHTML = "Fail : method may not be supported";
-            }
+                assert_equals(collection.length, 1);
+                assert_equals(collection[0].parentNode.nodeName, "TR");
+            }, "get class from children of element");
         </script>
-    </body>
-</html>
+    
+</body></html>

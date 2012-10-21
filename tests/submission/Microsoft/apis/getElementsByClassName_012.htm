@@ -1,14 +1,17 @@
-<!DOCTYPE HTML>
-<html>
-    <head class="foo">
+<!DOCTYPE html>
+<html><head class="foo">
         <title class="foo">getElementsByClassName</title>
-        <meta class="foo" name="description" content="big element listing" />
-        <link class="foo" />
-        <base class="foo" />
+        <meta class="foo" content="big element listing" name="description">
+        <link class="foo">
+        <base class="foo">
         <script class="foo"></script>
         <style class="foo"></style>
-    </head>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <link href="http://www.w3.org/TR/domcore/#dom-document-getelementsbyclassname" rel="help">
+</head>
     <body class="foo">
+    <div id='log'></div>
         <a class="foo">a</a>
         <abbr class="foo">abbr</abbr>
         <acronym class="foo">acronym</acronym>
@@ -18,7 +21,7 @@
         <bdo class="foo">bdo</bdo>
         <big class="foo">big</big>
         <blockquote class="foo">blockquote</blockquote>
-        <br class="foo" />
+        <br class="foo">
         <button class="foo">button</button>
         <center class="foo">center</center>
         <cite class="foo">cite</cite>
@@ -31,8 +34,8 @@
         <div class="foo">div</div>
         <dl class="foo">
             <dt class="foo">
-                <dd class="foo">dd</dd>
-            </dt>
+                </dt><dd class="foo">dd</dd>
+            
         </dl>
         <em class="foo">em</em>
         <font class="foo">font</font>
@@ -43,20 +46,20 @@
             </fieldset>
         </form>
         <h1 class="foo">h1</h1>
-        <hr class="foo" />
+        <hr class="foo">
         <i class="foo">i</i>
         <iframe class="foo">iframe</iframe>
-        <img class="foo" />
-        <input class="foo" />
+        <img class="foo">
+        <input class="foo">
         <ins class="foo">ins</ins>
         <kbd class="foo">kbd</kbd>
         <map class="foo">
-            <area class="foo" />
+            <area class="foo"></area>
         </map>                                  
         <menu class="foo">menu</menu>
         <noscript class="foo">noscript</noscript>
         <object class="foo">
-            <param class="foo" />
+            <param class="foo">
         </object>
         <ol class="foo">ol</ol>
         <p class="foo">p</p>
@@ -74,13 +77,13 @@
         <strong class="foo">strong</strong>
         <sub class="foo">sub</sub>
         <sup class="foo">sup</sup>
-        <table class="foo">
+        colgroup<table class="foo">
             <caption class="foo">caption</caption>
-            <col class="foo" />
-            <colgroup class="foo">colgroup</colgroup>
+            <colgroup><col class="foo">
+            </colgroup><colgroup class="foo"></colgroup>
             <thead class="foo">
-                <th class="foo">th</th>
-            </thead>
+                <tr><th class="foo">th</th>
+            </tr></thead>
             <tbody class="foo">
                 <tr class="foo">
                     <td class="foo">td</td>
@@ -93,9 +96,10 @@
         <u class="foo">u</u>
         <ul class="foo">ul</ul>
         <var class="foo">var</var>
-        <div id="testresult">Fail</div>
         <script type="text/javascript">
-            var arrElements = new Array();
+ 	  test(function ()
+          {
+           var arrElements = new Array();
                 arrElements[0] = "HEAD";
                 arrElements[1] = "TITLE";
                 arrElements[2] = "META";
@@ -178,29 +182,16 @@
                 arrElements[79] = "VAR";
             var bResult = true;
 
-            try
-            {
                 var collection = document.getElementsByClassName("foo");
                 
                 if (collection.length == 80)
                 {
                     for (var x = 0; x < collection.length; x++)
                     {
-                        if (collection[x].nodeName != arrElements[x])
-                        {
-                            bResult = false;
-                        }
-                    }
-                    if (bResult != false)
-                    {
-                        document.getElementById("testresult").innerHTML = "Pass";
+                        assert_equals(collection[x].nodeName, arrElements[x]);
                     }
                 }
-            }
-            catch (ex)
-            {
-                document.getElementById("testresult").innerHTML = "Fail : method may not be supported";
-            }
+}, "big element listing");
         </script>
-    </body>
-</html>
+    
+</body></html>

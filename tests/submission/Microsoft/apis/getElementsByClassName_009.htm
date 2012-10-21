@@ -1,13 +1,16 @@
-<!DOCTYPE HTML>
-<html>
-    <head>
+<!DOCTYPE html>
+<html><head>
         <title>getElementsByClassName</title>
-        <meta name="description" content="generic element listed" />
-    </head>
+        <meta content="generic element listed" name="description">
+    <link href="http://www.w3.org/TR/domcore/#dom-document-getelementsbyclassname" rel="help">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+</head>
     <body>
-        <div class="te xt">
+      <div id="log"></div>
+         <div class="te xt">
             te xt
-            <div class="te" class="xt">
+            <div class="te">
                 te; xt
                 <a class="text link" href="#foo">test link #foo</a>
                 <foo class="te xt">dummy tag</foo>
@@ -15,24 +18,16 @@
             <b class="text">text</b>
         </div>
         <div class="xt te">xt te</div>
-        <div id="testresult">Fail</div>
         <script type="text/javascript">
-            try
+            test(function()
             {
                 var collection = document.getElementsByClassName("te xt");
                 
-                if( (collection.length == 3) &&
-                    (collection[0].parentNode.nodeName == "BODY") &&
-                    (collection[1].parentNode.nodeName == "DIV") &&
-                    (collection[2].parentNode.nodeName == "BODY"))
-                {
-                    document.getElementById("testresult").innerHTML = "Pass";
-                }
-            }
-            catch (ex)
-            {
-                document.getElementById("testresult").innerHTML = "Fail : method may not be supported";
-            }
+                assert_equals(collection.length, 3);
+                assert_equals(collection[0].parentNode.nodeName, "BODY");
+                assert_equals(collection[1].parentNode.nodeName, "DIV");
+                assert_equals(collection[2].parentNode.nodeName, "BODY");
+            }, "generic element listed");
         </script>
-    </body>
-</html>
+    
+</body></html>

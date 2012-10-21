@@ -6,14 +6,17 @@
   <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
   <link rel="help" href="http://www.w3.org/TR/html5/video.html#attr-media-autoplay" />
   <meta name="assert" content="Media plays automatically when 'autoplay' is true. (audio)" />
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
   <script type="text/javascript" src="../common/media.js"></script>
   <script type="text/javascript">
 
-setFailTimeout(30000);
+ setup({timeout:30000});
 
+ audiotest = async_test("Media plays automatically when 'autoplay' is true."); 
 function do_playing(event)
 {
-    passTest();
+    audiotest.done();
 }
 
 </script>
@@ -22,13 +25,12 @@ function do_playing(event)
 <pre>
 Media plays automatically when 'autoplay' is true. (audio)
 </pre>
+
 <table id='testtable' border='1'>
   <tr>
-    <td>Test Result</td>
     <td>Test Assertion</td>
   </tr>
   <tr>
-    <td id='test_0_result'>Waiting ...</td>
     <td id='test_0_assertion'>Test passes if the text 'PASS' appears to the left and the text 'Your browser does not support media elements.' does not appear anywhere on this page.</td>
   </tr>
 </table>
@@ -42,7 +44,7 @@ automatically begin playback of the media resource as soon as it can do
 so without stopping. 
 
 </pre>
-<div id='testcontent'>
+<div id='log'></div>
 
 <script type="text/javascript">
 

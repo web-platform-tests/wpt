@@ -1,10 +1,13 @@
-<!DOCTYPE HTML>
-<html>
-    <head>
+<!DOCTYPE html>
+<html><head>
         <title>getElementsByClassName</title>
-        <meta name="description" content="get elements in document then add element to collection" />
-    </head>
+        <meta content="get elements in document then add element to collection" name="description">
+    <link href="http://www.w3.org/TR/domcore/#dom-document-getelementsbyclassname" rel="help">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+</head>
     <body>
+        <div id="log"></div>
         <div>
             <div>
                 <a class="text link" href="#foo">test link #foo</a>
@@ -37,33 +40,23 @@
         </table>
         <div class="xt te">xt te</div>
         
-        <div id="testresult">Fail</div>
         <script type="text/javascript">
-            try
+            test(function()
             {
                 var collection = document.getElementsByClassName("text");
-                if(4 == collection.length)
-                {
-                    var newDiv = document.createElement("div");
-                    newDiv.setAttribute("class", "text");
-                    newDiv.innerHTML = "text newDiv";
-                    document.getElementsByTagName("table")[0].tBodies[0].rows[0].cells[0].appendChild(newDiv);
+                assert_equals(collection.length, 4);
+                var newDiv = document.createElement("div");
+                newDiv.setAttribute("class", "text");
+                newDiv.innerHTML = "text newDiv";
+                document.getElementsByTagName("table")[0].tBodies[0].rows[0].cells[0].appendChild(newDiv);
                     
-                    if( (collection.length == 5) &&
-                        (collection[0].parentNode.nodeName == "DIV") &&
-                        (collection[1].parentNode.nodeName == "DIV") &&
-                        (collection[2].parentNode.nodeName == "TABLE") &&
-                        (collection[3].parentNode.nodeName == "TD") &&
-                        (collection[4].parentNode.nodeName == "TR") )
-                    {
-                        document.getElementById("testresult").innerHTML = "Pass";
-                    }
-                }
-            }
-            catch (ex)
-            {
-                document.getElementById("testresult").innerHTML = "Fail : method may not be supported";
-            }
+                assert_equals(collection.length, 5);
+                assert_equals(collection[0].parentNode.nodeName, "DIV");
+                assert_equals(collection[1].parentNode.nodeName, "DIV");
+                assert_equals(collection[2].parentNode.nodeName, "TABLE");
+                assert_equals(collection[3].parentNode.nodeName, "TD");
+                assert_equals(collection[4].parentNode.nodeName, "TR");
+            }, "get elements in document then add element to collection");
         </script>
-    </body>
-</html>
+    
+</body></html>

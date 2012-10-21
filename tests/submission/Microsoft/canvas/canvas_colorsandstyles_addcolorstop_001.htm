@@ -5,34 +5,29 @@
         <link rel="author" title="Microsoft" href="http://www.microsoft.com" />
         <link rel="help" href="http://www.w3.org/TR/2dcontext/#dom-canvasgradient-addcolorstop" />
         <meta name="assert" content="addColorStop(offset, color) must throw a SYNTAX_ERR exception if the color passed cannot be parsed" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
         <script type="text/javascript">
+            setup({explicit_done: true});
             function runTest() 
             {
+              test(function()
+              {
                 var canvas = document.getElementById("canvas1");
                 var ctx = canvas.getContext("2d");
 
                 var lingrad = ctx.createLinearGradient(0, 0, 100, 0);
 
-                try 
-                {
-                    lingrad.addColorStop(0, "invalidColor");
-                }
-                catch (e) 
-                {
-                    // SYNTAX_ERR exception should be thrown if color cannot be parsed.
-                    if (e.code == DOMException.SYNTAX_ERR) 
-                    {
-                        document.getElementById("testresult").firstChild.data = "PASS";
-                    }
-                }
-
+                // SyntaxError exception should be thrown if color cannot be parsed.
+                assert_throws(new SyntaxError(), function() { lingrad.addColorStop(0, "invalidColor"); });
+              }, "addColorStop(offset, undefined)");
+              done();
             }
         </script>
     </head>
     <body onload="runTest()">
-        <p>Description: addColorStop(offset, color) must throw a SYNTAX_ERR exception if the color passed cannot be parsed.</p>
-        <p>Test passes if the word "PASS" appears below.</p>
-        <div id="testresult">FAIL</div>
+        <p>Description: addColorStop(offset, color) must throw a SyntaxError exception if the color passed cannot be parsed.</p>
+        <div id="log"></div>
         <canvas id="canvas1" width="300" height="150">Browser does not support HTML5 Canvas.</canvas>
     </body>
 </html>

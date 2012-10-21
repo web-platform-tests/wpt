@@ -5,9 +5,15 @@
         <link rel="author" title="Microsoft" href="http://www.microsoft.com" />
         <link rel="help" href="http://www.w3.org/TR/2dcontext/#imagedata" />
         <meta name="assert" content="CanvasPixelArray is a readonly attribute of ImageData." />
-        <script type="text/javascript">
-            function runTest() 
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+      <script type="text/javascript">
+           "use strict";
+           setup({explicit_done: true});
+           function runTest() 
             {
+                test(function ()
+                {
                 var canvas = document.getElementById("canvas1");
                 var ctx = canvas.getContext("2d");
 
@@ -16,19 +22,16 @@
                 var pixelArray = imgData.data;
                 imgData.data[0] = 10;
                 pixelArray[0] = 20;
-                try 
-                {
-                    imgData.data = pixelArray;
-                }
-                // Should throw TypeError
-                catch (ex) { document.getElementById("testresult").firstChild.data = "PASS"; }
+                assert_readonly(imgData, "data");
+                assert_throws(new TypeError(), function() { imgData.data = pixelArray; });
+                }, "CanvasPixelArray is a readonly attribute of ImageData.");
+                done();
             }
         </script>
     </head>
     <body onload="runTest()">
         <p>Description: CanvasPixelArray is a readonly attribute of ImageData.</p>
-        <p>Test passes if the word "PASS" appears below.</p>
-        <div id="testresult">FAIL</div>
+	<div id='log'></div>
         <canvas id="canvas1" width="300" height="150">Browser does not support HTML5 Canvas.</canvas>
     </body>
 </html>

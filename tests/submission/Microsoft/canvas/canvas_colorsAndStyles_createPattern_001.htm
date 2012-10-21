@@ -5,35 +5,31 @@
         <link rel="author" title="Microsoft" href="http://www.microsoft.com" />
         <link rel="help" href="http://www.w3.org/TR/2dcontext/#dom-context-2d-createpattern" />
         <meta name="assert" content="If the repetition argument in createPattern(image, repetition) is unrecognized, SYNTAX_ERR exception must be raised."/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
         <script type="text/javascript">
+            setup({explicit_done: true});
             function runTest() 
             {
+              test(function()
+              {
                 var canvas = document.getElementById("canvas1");
                 var ctx = canvas.getContext("2d");
 
                 var x;
                 var img = document.getElementById("imgBlackRect");
 
-                try 
-                {
-                    ctx.createPattern(img, x);
-                }
-                catch (ex) 
-                {
-                    // SYNTAX_ERR exception should be thrown if repetition argument is unrecognized.
-                    if (ex.code == DOMException.SYNTAX_ERR) 
-                    {
-                        document.getElementById("testresult").firstChild.data = "PASS";
-                    }
-                }
+                // SyntaxError exception should be thrown if repetition argument is unrecognized.
+                assert_throws(new SyntaxError(), function () { ctx.createPattern(img, x); } );
+              }, "repetition argument");
+              done();
             }
         </script>
     </head>
     <body onload="runTest()">
-        <p>Description:  If the repetition argument in createPattern(image, repetition) is unrecognized, SYNTAX_ERR exception must be raised.</p>
-        <p>Test passes if the word "PASS" appears below.</p>
-        <div id="testresult">FAIL</div>
+        <p>Description:  If the repetition argument in createPattern(image, repetition) is unrecognized, SyntaxError exception must be raised.</p>
+        <div id="log"></div>
         <canvas id="canvas1" width="300" height="150">Browser does not support HTML5 Canvas.</canvas>
-        <img id="imgBlackRect" style="display:none" src="../support/blackRect.png">
+        <img id="imgBlackRect" style="display:none" src="../images/blackRect.png">
     </body>
 </html>

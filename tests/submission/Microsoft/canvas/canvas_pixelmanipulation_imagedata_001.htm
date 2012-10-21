@@ -5,14 +5,20 @@
         <link rel="author" title="Microsoft" href="http://www.microsoft.com" />
         <link rel="help" href="http://www.w3.org/TR/2dcontext/#imagedata" />
         <meta name="assert" content="ImageData height and width cannot be set." />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
         <script type="text/javascript">
+            setup({explicit_done: true});
             function runTest() 
             {
+              test(function()
+              {
                 var canvas = document.getElementById("canvas1");
                 var ctx = canvas.getContext("2d");
 
                 // Get a one pixel of data.
                 var imgdata = ctx.getImageData(0, 0, 1, 1);
+                assert_readonly(imgdata, "width");
                 try 
                 {
                     // Attempt to set the width of the ImageData object to something else.
@@ -23,17 +29,37 @@
                 }
 
                 // The width of the ImageData object must not change after the above.
-                if (imgdata.width == 1) 
+                assert_equals(imgdata.width, 1);
+
+              }, "ImageData.width cannot be set.");
+              test(function()
+              {
+                var canvas = document.getElementById("canvas1");
+                var ctx = canvas.getContext("2d");
+
+                // Get a one pixel of data.
+                var imgdata = ctx.getImageData(0, 0, 1, 1);
+                assert_readonly(imgdata, "height");
+                try 
                 {
-                    document.getElementById("testresult").firstChild.data = "PASS";
+                    // Attempt to set the height of the ImageData object to something else.
+                    imgdata.height = 2;
                 }
+                catch (ex) 
+                {
+                }
+
+                // The height of the ImageData object must not change after the above.
+                assert_equals(imgdata.height, 1);
+
+              }, "ImageData.height cannot be set.");
+              done();
             }
         </script>
     </head>
     <body onload="runTest()">
         <p>Description: ImageData height and width cannot be set.</p>
-        <p>Test passes if the word "PASS" appears below.</p>
-        <div id="testresult">FAIL</div>
+        <div id="log"></div>
         <canvas id="canvas1" width="300" height="150">Browser does not support HTML5 Canvas.</canvas>
     </body>
 </html>

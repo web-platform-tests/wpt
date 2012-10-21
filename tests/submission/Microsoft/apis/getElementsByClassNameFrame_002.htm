@@ -1,33 +1,22 @@
-<!DOCTYPE HTML>
-<html>
-    <head>
+<!DOCTYPE html>
+<html><head>
         <title>getElementsByClassName</title>
-        <meta name="description" content="get class from frameset" />
-    
-    </head>
-        bar
-        <div id="testresult">Fail</div>
+        <meta content="get class from frameset" name="description">    
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+</head>
+        <div id="log"></div>
+        <body>bar
         <script type="text/javascript">
-            try
+            test(function()
             {
                 var collection = parent.document.getElementsByClassName("foo");
-                if( (collection.length == 3) &&
-                    (collection[0].parentNode.nodeName == "HTML") &&
-                    (collection[1].parentNode.nodeName == "FRAMESET") &&
-                    (collection[2].parentNode.nodeName == "FRAMESET") )
-                {
-                    document.getElementById("testresult").innerHTML = "Pass";
-                }
-                else
-                {
-                    document.getElementById("testresult").innerHTML = "Fail";
-                }
-            }
-            catch (ex)
-            {
-                document.getElementById("testresult").innerHTML = "Fail : method may not be supported";
-            }
+                assert_equals(collection.length, 3);
+                assert_equals(collection[0].parentNode.nodeName, "HTML");
+                assert_equals(collection[1].parentNode.nodeName, "FRAMESET");
+                assert_equals(collection[2].parentNode.nodeName, "FRAMESET");
+            }, "get class from frameset");
         </script>
     
        
-</html>
+</body></html>

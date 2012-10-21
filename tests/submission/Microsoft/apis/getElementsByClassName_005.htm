@@ -1,10 +1,13 @@
-<!DOCTYPE HTML>
-<html>
-    <head>
+<!DOCTYPE html>
+<html><head>
         <title>getElementsByClassName</title>
-        <meta name="description" content="multiple defined classes" />
-    </head>
+        <meta content="multiple defined classes" name="description">
+    <link href="http://www.w3.org/TR/domcore/#dom-document-getelementsbyclassname" rel="help">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+</head>
     <body>
+        <div id="log"></div>
         <div>
             <div>
                 <a class="text link" href="#foo">test link #foo</a>
@@ -37,22 +40,14 @@
         </table>
         <div class="xt te">xt te</div>
 
-        <div id="testresult">Fail</div>
         <script type="text/javascript">
-            try
+            test(function()
             {
                 var collection = document.getElementsByClassName("te xt");
-                if( (collection.length == 2) &&
-                    (collection[0].parentNode.nodeName == "TR") &&
-                    (collection[1].parentNode.nodeName == "BODY") )
-                {
-                    document.getElementById("testresult").innerHTML = "Pass";
-                }
-            }
-            catch (ex)
-            {
-                document.getElementById("testresult").innerHTML = "Fail : method may not be supported";
-            }
+                assert_equals(collection.length, 2);
+                assert_equals(collection[0].parentNode.nodeName, "TR");
+                assert_equals(collection[1].parentNode.nodeName, "BODY");
+            }, "multiple defined classes");
         </script>
-    </body>
-</html>
+    
+</body></html>

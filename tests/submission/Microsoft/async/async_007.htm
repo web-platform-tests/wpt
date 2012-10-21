@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
     <head>
         <title>Ordered async script execution when script.async == false</title>
@@ -6,11 +6,11 @@
         <meta description="This test ensures Ordered async script execution when script.async == false" />
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://dev.w3.org/html5/spec/scripting-1.html#script-processing-src-sync"/>
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
     </head>
     <body>
         <div id=log></div>
-        <script src="/resources/testharness.js"></script>
-        <script src="http://w3c-test.org/resources/testharnessreport.js"></script>
         <script type="text/javascript">        
         setup({timeout:10000});
   

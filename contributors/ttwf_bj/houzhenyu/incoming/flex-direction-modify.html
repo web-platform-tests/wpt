@@ -3,9 +3,9 @@
 <head>
 <title>CSS Test: flex flow direction</title>
 <link rel="author" title="houzhenyu" href="http://www.github.com/sskyy" />
-<link rel="help" href="http://dev.w3.org/csswg/css3-flexbox/#flex-direction">
+<link rel="help" href="http://www.w3.org/TR/css3-flexbox/#flex-direction">
 <link rel="match" href="reference/flex-flow-direction.html">
-<meta name="assert" content="The direction of flex items in the the flex container should what the flex-direction property directives." />
+<meta name="assert" content="The flow of flex items in the the flex container should observe the flex-direction property." />
 <style>
     .flex-container{
         display: flex;
@@ -25,9 +25,11 @@
     .flex-container.flex-direction-row{
         flex-direction : row;
     }
+    
     .flex-container.flex-direction-row-reverse{
         flex-direction : row-reverse;
     }
+    
     .flex-container.flex-direction-column{
         flex-direction : column;
     }
@@ -40,13 +42,8 @@
     <h1>flex-direction:row</h1>
     <div class="flex-container flex-direction-row"><div class="flex-item">1</div><div class="flex-item">2</div><div class="flex-item">3</div></div>
     
-    <h1>flex-direction:row-reverse</h1>
-    <div class="flex-container flex-direction-row-reverse"><div class="flex-item">1</div><div class="flex-item">2</div><div class="flex-item">3</div></div>
-    
-    <h1>flex-direction:column</h1>
-    <div class="flex-container flex-direction-column"><div class="flex-item">1</div><div class="flex-item">2</div><div class="flex-item">3</div></div>
-    
-    <h1>flex-direction:column-reverse</h1>
-    <div class="flex-container flex-direction-column-reverse"><div class="flex-item">1</div><div class="flex-item">2</div><div class="flex-item">3</div></div>
+    <script>
+        
+    </script>
 </body>
 </html>

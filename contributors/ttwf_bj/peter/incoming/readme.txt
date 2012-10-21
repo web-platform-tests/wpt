@@ -40,3 +40,4 @@ hg commit -m "Commit message here" (Commit to local repo)
 hg push (pushes locally committed changes to CSSWG Test repo)
 2012-10-21
 ttwfbj@gmail.com
+public-html-testsuite@w3.org

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CSS Masking: Test clip-path property and external clipPath ref with userSpaceOnUse - 1</title>
+    <link rel="author" title="Dirk Schulze" href="mailto:dschulze@adobe.com">
+    <link rel="help" href="http://www.w3.org/TR/css-masking/#clipping-paths">
+    <link rel="help" href="http://www.w3.org/TR/css-masking/#clip-path-property">
+    <link rel="help" href="http://www.w3.org/TR/css-masking/#ClipPathElement">
+    <link rel="match" href="reference/clip-path-rect-ref.html">
+    <meta name="assert" content="The clip-path property takes an external reference to a clipPath element for clipping.
+        On pass you should see a green box.">
+</head>
+<body>
+    <p>The test passes if there is a green box.</p>
+    <div style="width: 150px; height: 100px; border: solid red 50px; background-color: green; clip-path: url(svg-clipPath.svg#clip-path-ref-userSpaceOnUse-001);"></div>
+</body>
+</html>

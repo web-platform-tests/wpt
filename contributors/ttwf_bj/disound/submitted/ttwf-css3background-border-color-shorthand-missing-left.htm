@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>CSS Backgrounds and Borders Test: border_color</title>
+    <title>CSS Backgrounds and Borders Test: border_color_shorthand_missing_left</title>
     <link rel="author" title="disound" href="mailto:disound@gmail.com" />
     <link rel="help" href="http://www.w3.org/TR/css3-background/#the-border-color" />
     <meta name="flags" content="image" />
@@ -14,10 +14,7 @@
         }
         #test {
             border: black solid 5px;
-            border-top-color: yellow;
-            border-right-color: black;
-            border-bottom-color: blue;
-            border-left-color: green;
+            border-color: yellow black blue;
             bottom: 160px;
             height: 100px;
             padding: 25px;
@@ -27,7 +24,7 @@
     </style>
   </head>
   <body>
-    <p>Test passes if there is a white square, left border is green, bottom border is blue, right border is black, top border is yellow.</p>
+    <p>Test passes if there is a white square, <strong>left border is black</strong>, bottom border is blue, right border is black, top border is yellow.</p>
     <div id="ref"></div>
     <div id="test"></div>
   </body>

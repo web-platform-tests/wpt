@@ -9,26 +9,22 @@
 <link rel="author" title="NIST">
 </head>
 <body id="TEST-BODY"> 
-<h1>This is a Document</h1>
-<p>This is a paragraph.</p>
-<img alt="Yellow image" height="50" src="../images/yellow.png" width="100">
-<p class="copyright"><a href="http://www.csail.mit.edu/"><acronym title="Massachusetts Institute of Technology">MIT</acronym></a>, <a href="http://www.ercim.eu/"><acronym title="European Research Consortium for Informatics and Mathematics">ERCIM</acronym></a>,
-<a href="http://www.keio.ac.jp/">Keio</a></p>
-
+<iframe id='iframe' src="../common/text-html.html">
+</iframe>
 
 <script>
-var domtest = async_test("The referrer attribute returns the URI of the page that linked to this     page.");
+var domtest = async_test("The referrer attribute returns the URI of the page that linked to this page.");
 
 on_event(window, "load", domtest.step_func(function (dom_event) {
     var nodeList;
       var testNode;
       var vreferrer;
       var doc;
-      doc = window.document;
+      doc = window.document.getElementById("iframe").contentDocument;
+      assert_not_equals(doc,null);
       vreferrer = doc.referrer;
 
-      assert_equals(vreferrer,"");
-       
+      assert_uri_equals(document.protocol,null,document.host,"HTMLDocument02.html",null,null,null,true,vreferrer);
     domtest.done();
 }));
 

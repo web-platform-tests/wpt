@@ -5,18 +5,11 @@
 <title>CSSOM View —— offsetParent element test</title>
 <link rel="author" title="neo_and_rayi" href="mailto:1988wangxiao@gmail.com">
 <link rel="help" href="http://dev.w3.org/csswg/cssom-view/#widl-HTMLElement-offsetParent">
-    
-    <script src="/resources/testharness.js"></script>
-    <script src="/resources/testharnessreport.js"></script>
-
-
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
 <style>
 #fixed {
     position: fixed;
-    width:200px;
-    height:100px;
-    right:0;
-    bottom:0;
 }
 
 #none-element {
@@ -35,22 +28,14 @@
 </head>
 <body>
 
-<div>
-    <div>
-        <div id="body-element-child"></div>
-    </div>
+<div id="body-element-child"></div>
+
+<div id="relative-element">
+    <div id="relative-element-child"></div>
 </div>
 
-<div>
-    <div id="relative-element">
-        <div id="relative-element-child"></div>
-    </div>
-</div>
-
-<div>
-    <div id="absolute-element">
-        <div id="absolute-element-child"></div>
-    </div>
+<div id="absolute-element">
+    <div id="absolute-element-child"></div>
 </div>
 
 <table>

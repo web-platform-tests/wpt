@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CSS Test: flex-container-margin-not-collapse-with-content-margin</title>
+<link rel="author" title="houzhenyu" href="http://www.github.com/sskyy" />
+<link rel="match" href="reference/flex-container-margin.html">
+<meta name="flags" content="margin" />
+<meta name="assert" content="The margins of adjacent flex items do not collapse." />
+<style>
+    .flex-container{
+        display: flex;
+        -webkit-disply:flex;
+        -ms-disply:flex;
+        margin:20px;
+        background: #333;
+    }
+    .flex-item{
+        width:50px;
+        height:50px;
+        margin:20px;
+        background: #eee;
+    }
+</style>
+</head>
+<body>
+    <div class="flex-container">
+        <div class="flex-item"></div>
+        <div class="flex-item"></div>
+        <div class="flex-item"></div>
+    </div>
+</body>
+</html>

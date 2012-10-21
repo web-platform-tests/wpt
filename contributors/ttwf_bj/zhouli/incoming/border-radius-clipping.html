@@ -19,11 +19,20 @@
         	width: 300px;
             height: 30px;
         }
+        #dummy {
+        	border-radius: 5000em;
+			height: 10000em;
+			overflow: hidden;
+			width: 10000em;
+        }
     </style>
 </head>
 <body>
 <div id="parent">
     <div id="son"></div>
+</div>
+<div id="dummy">
+	This should not appear if browser supports border-radius
 </div>
 <script>
 </script>

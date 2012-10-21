@@ -3,17 +3,17 @@
 <head>
 <title>CSS Test: flex flow direction</title>
 <link rel="author" title="houzhenyu" href="http://www.github.com/sskyy" />
-<link rel="help" href="http://www.w3.org/TR/css3-flexbox/#flex-direction">
+<link rel="help" href="http://www.w3.org/TR/css3-flexbox/#painting">
 <link rel="match" href="reference/flex-direction.html">
-<meta name="assert" content="The flow of flex items in the the flex container should observe the flex-direction property." />
+<meta name="assert" content="using javascript to change the first flex item should not effect the others flex item." />
 <style>
     .flex-container{
         display: flex;
+        display:-webkit-flex;
         margin:20px;
         background: #333;
     }
     .flex-item{
-        width:50px;
         height:50px;
         margin:20px;
         background: #eee;
@@ -36,14 +36,24 @@
     .flex-container.flex-direction-column-reverse{
         flex-direction : column-reverse;
     }
+    .width{
+        width:50px;
+    }
 </style>
 </head>
 <body>
     <h1>flex-direction:row</h1>
-    <div class="flex-container flex-direction-row"><div class="flex-item">1</div><div class="flex-item">2</div><div class="flex-item">3</div></div>
-   
-    <div style="writing-mode: vertical-lr">
-        123456789
+    <div class="flex-container flex-direction-row">
+        <div id="flex-item-1" class="flex-item">1</div>
+        <div class="flex-item">2</div>
+        <div class="flex-item">3</div>
     </div>
+
+    <script>
+        var div = document.getElementById("flex-item-1");
+        window.setTimeout(function(){
+            div.className='flex-item width';
+        }, 1000)
+    </script>
 </body>
 </html>

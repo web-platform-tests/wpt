@@ -5,8 +5,7 @@
   <title>CSS Backgrounds and Borders Test: background-origin</title>
   <link rel="author" title="finscn" href="mail:finscn@gmail.com" >
   <link rel="help" href="http://dev.w3.org/csswg/css3-background/#the-background-origin" >
-  <meta name="flags" content="dom" >
-  <meta name="assert" content="The background will be painted. The paint area is the content-area(excludes padding-area ) of the DIV." >
+  <meta name="assert" content="content-box : The position is relative to the content box." >
 
   <meta charset="utf-8">
   <title>CSS Test</title>
@@ -20,22 +19,27 @@
   }
 
   .test-case {
-  	padding : 5px;
+    padding : 5px;
     margin : 5px;
   }
 
   .view {
-    border : 30px solid rgba(0,0,255,0.4);
-    width : 520px;
-    height : 400px;
+    border : 30px solid rgba(60,150,255,0.4);
+    width : 320px;
+    height : 240px;
     padding : 30px;
+    margin : 10px;
+    font-size : 16pt;
     color : #ff9933;
+    background-image : url("../resource/css3.png");
+  }
+  
+  .no-repeat {
+    background-repeat : no-repeat;
   }
 
   .case {
-  		background-repeat : no-repeat;
-  		background-image : url("../resource/css3.png");
-  		background-origin : content-box;
+    background-origin : content-box;
   }
 
 
@@ -52,9 +56,14 @@ The background will be painted. The paint area is the content-area(excludes padd
 
 <div class="test-case">
 
-	<div class="view case" >
+  <div class="view case no-repeat" >
       Test background-origin
-	</div>
+  </div>
+
+  <div class="view case" >
+      Test background-origin
+  </div>
+
 </div>
 
 </body>

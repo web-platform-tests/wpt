@@ -1,40 +1,31 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>CSS Backgrounds and Borders Test: background_shorthand_specified_color_image</title>
+    <title>CSS Backgrounds and Borders Test: background_shorthand_background-size_percentage_auto</title>
     <link rel="author" title="Intel" href="http://www.intel.com" />
     <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background" />
     <meta name="flags" content="image" />
-    <meta name="assert" content="Check if background is specified with a color and an image that the image is rescaled to the full width of the element" />
+    <meta name="assert" content="Background-size with '100% auto' implies to rescale the image horizontally so that it fills the background area width and to rescale the image vertically so that it fills the background area height" />
     <style>
-        #container {
-            position: absolute;
-        }
         #ref {
-            position: absolute;
-            top: 1px;
-            left: 1px;
-            width: 158px;
-            height: 158px;
-            background: red;
+            background-color: red;
+            height: 160px;
+            width: 160px;
         }
         #test {
-            position: absolute;
-            top: 0px;
-            left: 0px;
-            width: 100px;
+            background: #CCC url(support/60x60-green.png) top left / 100% auto no-repeat;
+            border: black dotted 5px;
+            bottom: 160px;
             height: 100px;
             padding: 25px;
-            border: 5px dotted #000000;
-            background: #CCC url("support/60x60-green.png") top left / 100% auto no-repeat;
+            position: relative;
+            width: 100px;
         }
     </style>
   </head>
   <body>
-    <p>Test passes if there is a filled green square with gray background black dotted borders and <strong>no red</strong>.</p>
-    <div id="container">
-      <div id="ref"></div>
-      <div id="test"></div>
-    </div>
+    <p>Test passes if there is a filled green square with gray background, black dotted borders and <strong>no red</strong>.</p>
+    <div id="ref"></div>
+    <div id="test"></div>
   </body>
 </html>

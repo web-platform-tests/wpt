@@ -3,11 +3,14 @@
 	<head>
 		<title>CSS Flex-basis Test</title>
 		<link rel="author" title="Chunsheng Zhang" href="mailto:zhangcs_423@163.com" />
+		<link rel="help" href="http://dev.w3.org/csswg/css3-flexbox/" />
+		<link rel="match" href="reference/flex-items-flexibility-ref.html" />
+		<meta name="assert" content="flex items flexibility" />
 		<style type="text/css">
 			#container {
-				display: -webkit-flex;
-				-webkit-justify-content: center;
-				-webkit-align-items: center;
+				display: flex;
+				justify-content: center;
+				align-items: center;
 				border: 5px solid green;
 				width: 600px;
 				height: 200px;
@@ -17,33 +20,37 @@
 				top: 70px;
 				left: 10px;
 			}
-			#container > div {
-				border: 2px dotted blue;
-				background: green;
-				border-radius: 3px;
+			div {
 				padding: 10px;
 				width: 30px;
 				height: 40px;
 				text-align: center;
-				-webkit-flex: none;
+				flex: 1 0 auto;
+			}
+			#flex {
+				border: 2px dotted blue;
+				background: green;
+				border-radius: 3px;
+				flex: 2 0 auto;
 			}
 			#fail-flag {
 				position: absolute;
-				top: 162px;
-				left: 272px;
-				width: 100px;
+				padding: 10px;
+				top: 150px;
+				left: 183px;
+				width: 254px;
 				height: 40px;
 				background: red;
 			}
 		</style>
 	</head>
 	<body>
-		<p>This case tests that flex items center</p>
+		<p>This case tests that flex items flexibility</p>
 		<p>The test passes if there is no red</p>
 		<div id="fail-flag"></div>
 		<section id="container">
 			<div></div>
-			<div></div>
+			<div id="flex"></div>
 			<div></div>
 		</section>
 	</body>

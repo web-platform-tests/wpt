@@ -5,9 +5,9 @@
 		<link rel="author" title="Chunsheng Zhang" href="mailto:zhangcs_423@163.com" />
 		<style type="text/css">
 			#container {
-				display: -webkit-flex;
-				-webkit-justify-content: center;
-				-webkit-align-items: center;
+				display: flex;
+				justify-content: center;
+				align-items: center;
 				border: 5px solid green;
 				width: 600px;
 				height: 200px;
@@ -17,7 +17,9 @@
 				top: 70px;
 				left: 10px;
 			}
-			#container > div {
+			#a {
+				top: 150px;
+				left: 230px;
 				border: 2px dotted blue;
 				background: green;
 				border-radius: 3px;
@@ -25,26 +27,41 @@
 				width: 30px;
 				height: 40px;
 				text-align: center;
-				-webkit-flex: none;
+				flex: none;
 			}
-			#fail-flag {
-				position: absolute;
-				top: 162px;
-				left: 272px;
-				width: 100px;
+			#b {
+				top: 150px;
+				left: 283px;
+				border: 2px dotted blue;
+				background: green;
+				border-radius: 3px;
+				padding: 10px;
+				width: 30px;
 				height: 40px;
-				background: red;
+				text-align: center;
+				flex: none;
+			}
+			#c {
+				top: 150px;
+				left: 336px;
+				border: 2px dotted blue;
+				background: green;
+				border-radius: 3px;
+				padding: 10px;
+				width: 30px;
+				height: 40px;
+				text-align: center;
+				flex: none;
 			}
 		</style>
 	</head>
 	<body>
 		<p>This case tests that flex items center</p>
 		<p>The test passes if there is no red</p>
-		<div id="fail-flag"></div>
 		<section id="container">
-			<div></div>
-			<div></div>
-			<div></div>
 		</section>
+		<div id="a" style="position:absolute"></div>
+		<div id="b" style="position:absolute"></div>
+		<div id="c" style="position:absolute"></div>
 	</body>
 </html>

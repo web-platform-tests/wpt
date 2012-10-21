@@ -5,29 +5,22 @@
     <link rel="author" title="Zhang Xiaochong" href="mailto:joy.xczhang@gmail.com">
     <style type="text/css">
         .container {
-            background: #FFAA00;
-            border: 4px solid #0000FF;
-            height: 144px;
-            left: 15px;
-            position: absolute;
-            top: 50px;
-            width: 144px;
-            z-index: 2;
+            position: relative;
         }
-        .fakeShadow {
-            background: #999;
-            height: 152px;
-            left: 25px;
+        .ref {
+            background-color: green;
+            height: 150px;
+            left: 10px;
             position: absolute;
-            top: 60px;
-            width: 152px;
-            z-index: 1;
+            top: 10px;
+            width: 150px;
         }
     </style>
 </head>
 <body>
-    <p>The test passes if default border shadow displays and no red color displays.</p>
-    <div class="container"></div>
-    <div class="fakeShadow"></div>
+    <p>The test passes if there is a filled green square and no red.</p>
+    <div class="container">
+        <div class="ref"></div>
+    </div>
 </body>
 </html>

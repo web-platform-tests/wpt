@@ -6,38 +6,36 @@
     <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-clip" />
     <link rel="help" href="http://www.w3.org/TR/css3-background/#values" />
     <meta name="flags" content="" />
-    <meta name="assert" content="Check if background-clip supports inherit keyword as its property value" />
+    <meta name="assert" content="Background-clip with 'inherit' implies to inherit its parent element value to paint the background area" />
     <style>
-        #container {
+        div {
             position: absolute;
+        }
+        #container {
             background-clip: content-box;
         }
         #ref {
-            position: absolute;
-            top: 31px;
-            left: 31px;
-            width: 98px;
-            height: 98px;
-            background: red;
+            background-color: green;
+            height: 100px;
+            left: 30px;
+            top: 30px;
+            width: 100px;
         }
         #test {
-            position: absolute;
-            top: 0px;
-            left: 0px;
-            width: 100px;
-            height: 100px;
-            background: green;
-            padding: 25px;
-            border: 5px dotted #000000;
             background-clip: inherit;
+            background-color: red;
+            border: transparent dotted 5px;
+            height: 100px;
+            padding: 25px;
+            width: 100px;
         }
     </style>
   </head>
   <body>
-    <p>Test passes if there is a filled green square inside the dotted borders and <strong>no red</strong>.</p>
+    <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
     <div id="container">
-      <div id="ref"></div>
       <div id="test"></div>
+      <div id="ref"></div>
     </div>
   </body>
 </html>

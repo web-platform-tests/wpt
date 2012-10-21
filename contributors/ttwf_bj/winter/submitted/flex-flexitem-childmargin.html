@@ -1,50 +1,48 @@
-﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
 <head>
-<title>flexbox | flex item with percentage size</title>
-<link rel="author" href="http://shaofei.name" title="winter">
-<link rel="help" href="http://www.w3.org/TR/css3-flexbox/#flex-items">
-<style>
-#test 
-{
-    background: blue;
-    display: -webkit-flex;
-    display: flex;
-    height:300px;
-}
-#test>div.flex {
-    width: 100px;  
-    background:red;
-}
-#test>div.fixed 
-{  
-    height: 300px;
-    -webkit-flex:1;
-    flex:1;
-    background:red;
-}
-#test p 
-{
-    margin:200px 0 0 0;
-}
-
-</style>
+	<title>flex item child margin</title>
+	<link rel="author" title="shaofeic" href="csf178@gmail.com" />
+	<link rel="help" href="http://www.w3.org/TR/css3-flexbox/#flex-items">
+	<link rel="match" href="reference/flex-flexitem-childmargin-ref.html">
+	<meta name="flags" content="" />
+	<meta name="assert" content="margin should effect the orange box and green box need to align to bottom." />
+    <style type="text/css">
+    #test 
+    {
+        background: blue;
+        display: flex;
+        height:300px;
+    }
+    #test>div.flex {
+        width: 100px;  
+        background:red;
+    }
+    #test>div.fixed 
+    {  
+        height: 300px;
+        flex:1;
+        background:red;
+    }
+    #test p 
+    {
+        margin:200px 0 0 0;
+    }
+    </style>
 </head>
 <body>
-
-<div id="test">
-    <div class="fixed">
-        <p style="width:100px;height:100px;background:orange;">
-        a
-        </p>
+	<div id="test">
+        <div class="fixed">
+            <p style="width:100px;height:100px;background:orange;">
+            a
+            </p>
+        </div>
+        <div class="flex">
+            <p style="width:100px;height:100px;background:green;">
+            b
+            </p>
+        </div>
     </div>
-    <div class="flex">
-        <p style="width:100px;height:100px;background:green;">
-        b
-        </p>
-    </div>
-</div>
-
 </body>
 </html>
+

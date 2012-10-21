@@ -2,9 +2,8 @@
 <html>
 <head>
 	<title>CSSOM View Module test:Screen-pixelDepth,Screen-colorDepth</title>
-	<link rel="author" title="unbug" href="mailto:tidelgl@gmail.com" />
-	<link rel="help" href="http://dev.w3.org/csswg/cssom-view/#widl-Screen-colorDepth">
-	<link rel="help" href="http://dev.w3.org/csswg/cssom-view/#widl-Screen-pixelDepth">
+    <link rel="author" title="unbug" href="mailto:tidelgl@gmail.com" />
+    <link rel="help" href="http://www.w3.org/TR/cssom-view/#the-screen-interface">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>	
 	<style type="text/css">
@@ -12,14 +11,14 @@
 </head>
 <body>
 	<p>This case tests the Screen pixelDepth and colorDepth</p>
-	<p>The test passes if the value is 32</p>
+	<p>The test passes if the value is 24</p>
 	<div id="log"></div>
 	<script>
         test(function(){
-            assert_equals(testColorDepth(), 32, "Expected value for colorDepth is 32");
+            assert_equals(testColorDepth(), 24, "Expected value for colorDepth is 24");
         },'testColorDepth');
         test(function(){
-            assert_equals(testPixelDepth(), 32, "Expected value for pixelDepth is 32");
+            assert_equals(testPixelDepth(), 24, "Expected value for pixelDepth is 24");
         },'testPixelDepth');
 	    function testColorDepth(){
 	        var  colorDepth = window.screen.colorDepth;

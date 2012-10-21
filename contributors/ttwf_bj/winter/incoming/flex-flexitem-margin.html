@@ -12,22 +12,32 @@
     display: -webkit-flex;
     display: flex;
     height:300px;
-    width:101px;
 }
-p {
-    width: 50%;
+#test>div.flex {
+    width: 100px;  
     background:red;
-    -webkit-flex-direction:row;
-    flex-direction:row;
-    magin:0 0 0 0;
+    magin-right:30px;
 }
+#test>div.fixed 
+{  
+    height: 300px;
+    -webkit-flex:1;
+    margin-left:30px;
+    flex:1;
+    background:red;
+}
+
+
 </style>
 </head>
 <body>
 
 <div id="test">
-    <p style="background:green;">damer</p>
-    <p>damer</p>
+    <div class="fixed">
+
+    </div>
+    <div class="flex">
+    </div>
 </div>
 
 </body>

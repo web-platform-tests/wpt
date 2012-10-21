@@ -6,35 +6,34 @@
     <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-origin" />
     <link rel="help" href="http://www.w3.org/TR/css3-background/#values" />
     <meta name="flags" content="" />
-    <meta name="assert" content="Check if background-origin supports inherit keyword as its property value" />
+    <meta name="assert" content="Background-origin with 'inherit' implies to inherit its parent element value to position the background area" />
     <style>
-        #container {
+        div {
             position: absolute;
+        }
+        #container {
             background-origin: content-box;
         }
         #ref {
-            position: absolute;
-            top: 31px;
-            left: 31px;
-            width: 58px;
-            height: 58px;
-            background: red;
+            background-color: red;
+            height: 60px;
+            left: 30px;
+            top: 30px;
+            width: 60px;
         }
         #test {
-            position: absolute;
-            top: 0px;
-            left: 0px;
-            width: 100px;
-            height: 100px;
-            background: url("support/60x60-green.png") no-repeat;
-            padding: 25px;
-            border: 5px dotted #000000;
+            background-image: url(support/60x60-green.png);
             background-origin: inherit;
+            background-repeat: no-repeat;
+            border: transparent dotted 5px;
+            height: 100px;
+            padding: 25px;
+            width: 100px;
         }
     </style>
   </head>
   <body>
-    <p>Test passes if there is a filled green square inside the dotted borders and <strong>no red</strong>.</p>
+    <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
     <div id="container">
       <div id="ref"></div>
       <div id="test"></div>

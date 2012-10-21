@@ -38,3 +38,5 @@ hg add fileName (stages file for commit, repeat for each file)
 hg status (confirm all files are stages for commit)
 hg commit -m "Commit message here" (Commit to local repo)
 hg push (pushes locally committed changes to CSSWG Test repo)
+2012-10-21
+ttwfbj@gmail.com

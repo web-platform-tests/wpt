@@ -53,36 +53,35 @@
         test( function () {
             assert_true( document.elementFromPoint instanceof Function );
         }, 'document.elementFromPoint is a Function');
-
-        test( function () {
+        (function(){
             var wrap = [
                 // 左上角.
-                {x: 10, y: 10, r: true},
+                {x: 10, y: 10, r: 'top left corner'},
                 // 上边线
-                {x: 50, y: 10, r: true},
+                {x: 50, y: 10, r: 'top line'},
                 // 右上角
-                {x: 110, y: 10, r: false},
+                {x: 110, y: 10, r: 'top right corner'},
                 // 左边线
-                {x: 10, y: 50, r: true},
+                {x: 10, y: 50, r: 'left line'},
                 // 元素范围内
-                {x: 50, y: 50, r: true},
+                {x: 50, y: 50, r: 'inside'},
                 // 右边线
-                {x: 110, y: 10, r: false},
+                {x: 110, y: 10, r: 'right line'},
                 // 左下角
-                {x: 10, y: 110, r: false},
+                {x: 10, y: 110, r: 'bottom left corner'},
                 // 下边线
-                {x: 50, y: 110, r: false},
+                {x: 50, y: 110, r: 'bottom line'},
                 // 右下角
-                {x: 110, y: 110, r: false}
+                {x: 110, y: 110, r: 'botom right corner'}
             ];
-
             var i = 0, len = wrap.length, item;
             for ( ; i < len; i++ ) {
-                item = wrap[ i ];
-                assert_equals( document.elementFromPoint( item.x, item.y).id == 'dom-1', item.r );
+                item = wrap[ i ];  
+                test( function () {                    
+                    assert_equals( document.elementFromPoint( item.x, item.y).id == 'dom-1', true );
+                }, 'test some point of the element: ' + item.r);
             }
-        }, 'test some point of the element');
-
+        })();
         test( function () {
             var elem = document.elementFromPoint( 0, 0 );
             assert_true( elem.nodeName == 'HTML' );
@@ -118,8 +117,6 @@
             var elem2 = document.elementFromPoint( 10, 10 );
             assert_equals( elem.id, elem2.id );
         }, 'test the top of layer');
-
-
     </script>
 </body>
 </html>

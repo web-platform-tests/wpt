@@ -6,7 +6,7 @@
   <link rel="author" title="finscn" href="mail:finscn@gmail.com" >
   <link rel="help" href="http://dev.w3.org/csswg/css3-background/#the-background-clip" >
   <meta name="flags" content="dom" >
-  <meta name="assert" content="border-box : The background is painted within (clipped to) the border box." >
+  <meta name="assert" content="When border-radius is enabled, whether the browser could clip the background correctly." >
 
   <meta charset="utf-8">
   <title>CSS Test</title>
@@ -40,19 +40,21 @@
   }
 
   .case {
-    background-clip : border-box;
+    background-clip : content-box;
+    background-position: -15px -15px;
   }
 
 
-</style>
-  
+ </style>
 
 </head>
 <body>
 
 <div class="infomation">
-The background will be clipped. the clip area includes the area covered by border , and the area surrounded by border.<br>
-背景会被剪切.剪切范围包括边框所覆盖的区域,以及边框所包围的区域.
+When background-position is enabled, whether the browser could clip the background correctly.
+The background will be clipped. the clip area is the content-area(excludes padding-area ) of the DIV.<br>
+当设置背景位置(background-position)时,浏览器能否正确的剪切背景.
+背景会被剪切.剪切范围是DIV的content(内容)区域,也就是div内部,但是不包含padding区域.
 </div>
 
 <div class="test-case">
@@ -64,8 +66,7 @@ The background will be clipped. the clip area includes the area covered by borde
   <div class="view case" >
       Test background-clip
   </div>
-
-
+  
 </div>
 
 </body>

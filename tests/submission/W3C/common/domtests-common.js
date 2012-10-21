@@ -115,10 +115,10 @@ function assert_same(actual, expected) {
     }
 }
 
-function assert_uri_equals(scheme, path, host, file, name, query, fragment, isAbsolute, actual) {
+function assert_uri_equals(protocol, path, host, file, name, query, fragment, isAbsolute, actual) {
     //
     //  URI must be non-null
-    assert_not_equals(actual, null);
+    assert_not_equals(actual, null, "address is defined");
 
     var uri = actual;
 
@@ -131,7 +131,7 @@ function assert_uri_equals(scheme, path, host, file, name, query, fragment, isAb
         uri = actual.substring(0,lastPound);
         actualFragment = actual.substring(lastPound+1);
     }
-    if(fragment != null) assert_equals(actualFragment, fragment);
+    if(fragment != null) assert_equals(actualFragment, fragment, "proper fragment");
 
     var lastQuestion = uri.lastIndexOf("?");
     var actualQuery = "";
@@ -142,32 +142,32 @@ function assert_uri_equals(scheme, path, host, file, name, query, fragment, isAb
         uri = actual.substring(0,lastQuestion);
         actualQuery = actual.substring(lastQuestion+1);
     }
-    if(query != null) assert_equals(actualQuery, query);
+    if(query != null) assert_equals(actualQuery, query, "proper query");
 
     var firstColon = uri.indexOf(":");
     var firstSlash = uri.indexOf("/");
     var actualPath = uri;
-    var actualScheme = "";
+    var actualProtocol = "";
     if(firstColon != -1 && firstColon < firstSlash) {
-        actualScheme = uri.substring(0,firstColon);
+        actualProtocol = uri.substring(0,firstColon+1);
         actualPath = uri.substring(firstColon + 1);
     }
 
-    if(scheme != null) {
-        assert_equals(actualScheme, scheme);
+    if(protocol != null) {
+        assert_equals(actualProtocol, protocol, "proper protocol");
     }
 
     if(path != null) {
-        assert_equals(actualPath, path);
+        assert_equals(actualPath, path, "proper path");
     }
 
     if(host != null) {
         var actualHost = "";
         if(actualPath.substring(0,2) == "//") {
             var termSlash = actualPath.substring(2).indexOf("/") + 2;
-            actualHost = actualPath.substring(0,termSlash);
+            actualHost = actualPath.substring(2,termSlash);
         }
-        assert_equals(actualHost, host);
+        assert_equals(actualHost, host, "proper host");
     }
 
     if(file != null || name != null) {
@@ -177,7 +177,7 @@ function assert_uri_equals(scheme, path, host, file, name, query, fragment, isAb
             actualFile = actualPath.substring(finalSlash+1);
         }
         if (file != null) {
-            assert_equals(actualFile, file);
+            assert_equals(actualFile, file, "proper file");
         }
         if (name != null) {
             var actualName = actualFile;
@@ -185,12 +185,15 @@ function assert_uri_equals(scheme, path, host, file, name, query, fragment, isAb
             if (finalDot != -1) {
                 actualName = actualName.substring(0, finalDot);
             }
-            assert_equals(actualName, name);
+            assert_equals(actualName, name, "proper name");
         }
     }
 
     if(isAbsolute != null) {
-        assert_equals(actualPath.substring(0,1) == "/", isAbsolute);
+	if (isAbsolute)
+	    assert_equals(actualPath.substring(0,1), "/", "absolute uri");
+	else
+	    assert_not_equals(actualPath.substring(0,1), "/", "not absolute uri");
     }
 }
 

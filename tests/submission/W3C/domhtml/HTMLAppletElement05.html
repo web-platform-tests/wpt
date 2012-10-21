@@ -28,7 +28,8 @@ on_event(window, "load", domtest.step_func(function (dom_event) {
 testNode = nodeList.item(0);
       vcodebase = testNode.codeBase;
 
-      assert_equals(vcodebase,"applets");
+      assert_uri_equals(document.location.protocol,null,document.location.host,"applets",null,null,null,true,vcodebase);
+
        
     domtest.done();
 }));

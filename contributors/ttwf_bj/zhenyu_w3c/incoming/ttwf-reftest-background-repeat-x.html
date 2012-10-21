@@ -27,11 +27,11 @@
  function switch_filter(){
 	if(filter){
 		for(i=0;i<obj_array.length;i++){
-			obj_array[i].style.filter="";
+			obj_array[i].style.filter="has use the pure repeat-x.click here to cancel repeat-x,to use filter!!!";
 			obj_array[i].style.background="url(table-head.jpg) repeat-x";
 		} 
 		var button=document.getElementById("switch-button");
-		button.value="has used the filter.click here to cancel filter,to use pure repeat-x!!!";
+		button.value="";
 		filter=false;
 	}
 	else{
@@ -40,7 +40,7 @@
 			obj_array[i].style.filter="progid:DXImageTransform.Microsoft.AlphaImageLoader(src='table-head.jpg',sizingMethod='scale'); background-repeat: repeat-x";
 		} 
 		var button=document.getElementById("switch-button");
-		button.value="has use the pure repeat-x.click here to cancel repeat-x,to use filter!!!";
+		button.value="has used the filter.click here to cancel filter,to use pure repeat-x!!!";
 		filter=true;
 	}
  }

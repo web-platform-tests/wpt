@@ -29,7 +29,7 @@ on_event(window, "load", domtest.step_func(function (dom_event) {
 testNode = nodeList.item(0);
       vlongdesc = testNode.longDesc;
 
-      assert_uri_equals(null,null,null,"desc.html",null,null,null,null,vlongdesc);
+      assert_uri_equals(document.protocol,null,document.host,"desc.html",null,null,null,true,vlongdesc);
 
     domtest.done();
 }));

@@ -28,7 +28,7 @@ on_event(window, "load", domtest.step_func(function (dom_event) {
       assert_equals(nodeList.length,3);
       testNode = nodeList.item(0);
 
-      assert_uri_equals(null,null,null,"text-html.html",null,null,null,null,testNode.href);
+      assert_uri_equals(document.protocol,null,document.host,"text-html.html",null,null,null,true,testNode.href);
 
     domtest.done();
 }));

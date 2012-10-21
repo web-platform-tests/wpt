@@ -10,15 +10,15 @@
 </head>
 <body>
 <p>
-<ins cite="./files/ins-reasons.html" datetime="January 1, 2002">The INS element is used to indicate that a section of a document had been inserted.</ins>
+<ins cite="../common/text-html.html" datetime="January 1, 2002">The INS element is used to indicate that a section of a document had been inserted.</ins>
 <br>
-<del cite="./files/del-reasons.html" datetime="January 2, 2002">The DEL element is used to indicate that a section of a document had been removed.</del>
+<del cite="../common/text-html.html" datetime="January 2, 2002">The DEL element is used to indicate that a section of a document had been removed.</del>
 </p>
 
 
 
 <script>
-var domtest = async_test("The cite attribute specifies an URI designating a document that describes     the reason for the change.");
+var domtest = async_test("The cite IDL attribute must reflect the element's cite content attribute.");
 
 on_event(window, "load", domtest.step_func(function (dom_event) {
     var nodeList;
@@ -31,15 +31,12 @@ on_event(window, "load", domtest.step_func(function (dom_event) {
 testNode = nodeList.item(0);
       vcite = testNode.cite;
 
-      assert_uri_equals(null,null,null,"ins-reasons.html",null,null,null,null,vcite);
+      assert_uri_equals(document.protocol,null,document.host,"text-html.html",null,null,null,true,vcite);
 
     domtest.done();
 }));
 
 </script>
-<p>The cite attribute specifies an URI designating a document that describes
-    the reason for the change.
-
-    Retrieve the cite attribute of the INS element and examine its value.</p>
+<p>The cite IDL attribute must reflect the element's cite content attribute.</p>
 <div id="log"></div>
 </body></html>

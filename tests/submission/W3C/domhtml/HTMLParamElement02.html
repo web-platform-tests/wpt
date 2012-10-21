@@ -4,20 +4,19 @@
 <title>NIST DOM HTML Test - PARAM</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="../common/domtests-common.js"></script>
 <link href="http://www.w3.org/TR/html5/the-param-element.html#dom-param-value" rel="help">
 <link rel="author" title="NIST">
 </head>
 <body>
 <p>
 <object>
-<param name="image3" type="image/gif" value="image/file.gif" valuetype="ref">
+<param name="image3" type="image/gif" value="../images/yellow.png" valuetype="ref">
 </object>
 </p>
 
 
 <script>
-var domtest = async_test("The value attribute specifies the value of the run-time parameter.");
+var domtest = async_test("The IDL attribute value must reflect the respective content attribute of the same name.");
 
 on_event(window, "load", domtest.step_func(function (dom_event) {
     var nodeList;
@@ -27,17 +26,15 @@ on_event(window, "load", domtest.step_func(function (dom_event) {
       doc = window.document;
       nodeList = doc.getElementsByTagName("param");
       assert_equals(nodeList.length,1);
-testNode = nodeList.item(0);
+      testNode = nodeList.item(0);
       vvalue = testNode.value;
 
-      assert_uri_equals(null,null,null,"file.gif",null,null,null,null,vvalue);
+      assert_equals(vvalue, "../images/yellow.png");
 
     domtest.done();
 }));
 
 </script>
-<p>The value attribute specifies the value of the run-time parameter.
-
-    Retrieve the value attribute and examine its value.</p>
+<p>The IDL attribute value must reflect the respective content attribute of the same name.</p>
 <div id="log"></div>
 </body></html>

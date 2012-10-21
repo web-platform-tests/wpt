@@ -28,7 +28,7 @@ on_event(window, "load", domtest.step_func(function (dom_event) {
 testNode = nodeList.item(0);
       vhref = testNode.href;
 
-      assert_uri_equals(null,null,null,"yellow.png",null,null,null,null,vhref);
+      assert_uri_equals(document.protocol,null,document.host,"yellow.png",null,null,null,true,vhref);
 
     domtest.done();
 }));

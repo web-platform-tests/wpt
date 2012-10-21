@@ -10,16 +10,16 @@
 </head>
 <body>
 <p>
-<q cite="./files/Q.html">The Q element is intended for short quotations</q>
+<q cite="../common/text-html.html">The Q element is intended for short quotations</q>
 </p>
-<blockquote cite="./files/BLOCKQUOTE.html">
+<blockquote cite="../common/text-html.html">
 <p>The BLOCKQUOTE element is used for long quotations.</p>
 </blockquote>
 
 
 
 <script>
-var domtest = async_test("The cite attribute specifies a URI designating a source document      or message.");
+var domtest = async_test("The cite IDL attribute must reflect the element's cite content attribute.");
 
 on_event(window, "load", domtest.step_func(function (dom_event) {
     var nodeList;
@@ -32,16 +32,12 @@ on_event(window, "load", domtest.step_func(function (dom_event) {
 testNode = nodeList.item(0);
       vcite = testNode.cite;
 
-      assert_uri_equals(null,null,null,"BLOCKQUOTE.html",null,null,null,null,vcite);
+      assert_uri_equals(document.protocol,null,document.host,"text-html.html",null,null,null,true,vcite);
 
     domtest.done();
 }));
 
 </script>
-<p>The cite attribute specifies a URI designating a source document 
-    or message. 
-
-    Retrieve the cite attribute from the BLOCKQUOTE element and 
-    examine its value.</p>
+<p>The cite IDL attribute must reflect the element's cite content attribute.</p>
 <div id="log"></div>
 </body></html>

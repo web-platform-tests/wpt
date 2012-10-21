@@ -11,7 +11,7 @@
 <body>
 <object data="../common/text-html.html" height="80" type="text/html" width="550"></object>
 <script>
-var domtest = async_test("A URI specifying the location of the object's data.");
+var domtest = async_test("The IDL attribute data must reflect the respective content attribute of the same name.");
 
 on_event(window, "load", domtest.step_func(function (dom_event) {
     var nodeList;
@@ -24,13 +24,12 @@ on_event(window, "load", domtest.step_func(function (dom_event) {
       testNode = nodeList.item(0);
       vdata = testNode.data;
 
-      assert_uri_equals(null,null,null,"text-html.html",null,null,null,null,vdata);
+      assert_uri_equals(document.protocol,null,document.host,"text-html.html",null,null,null,true,vdata);
        
     domtest.done();
 }));
 
 </script>
-<p>A URI specifying the location of the object's data. 
-The value of attribute data of the object element is read and checked against the expected value.</p>
+<p>The IDL attribute data must reflect the respective content attribute of the same name.</p>
 <div id="log"></div>
 </body></html>

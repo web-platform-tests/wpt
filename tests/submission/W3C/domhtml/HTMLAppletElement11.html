@@ -15,7 +15,7 @@
 
 
 <script>
-var domtest = async_test("The align, alt, archive, code, height, hspace, name, object, vspace, and width IDL attributes must reflect the respective content attributes of the same name. For the purposes of reflection, the applet element's object content attribute is defined as containing a URL.");
+var domtest = async_test("The object IDL attribute must reflect the respective content attribute of the same name.");
 
 on_event(window, "load", domtest.step_func(function (dom_event) {
     var nodeList;
@@ -28,12 +28,12 @@ on_event(window, "load", domtest.step_func(function (dom_event) {
 testNode = nodeList.item(0);
       vobject = testNode.object;
 
-      assert_uri_equals(null,null,null,"DOMTSApplet.dat",null,null,null,null,vobject);
+      assert_uri_equals(document.protocol,null,document.host,"DOMTSApplet.dat",null,null,null,true,vobject);
        
     domtest.done();
 }));
 
 </script>
-<p>The align, alt, archive, code, height, hspace, name, object, vspace, and width IDL attributes must reflect the respective content attributes of the same name. For the purposes of reflection, the applet element's object content attribute is defined as containing a URL.</p>
+<p>The object IDL attribute must reflect the respective content attribute of the same name. For the purposes of reflection, the applet element's object content attribute is defined as containing a URL.</p>
 <div id="log"></div>
 </body></html>

@@ -4,7 +4,6 @@
 <title>NIST DOM HTML Test - HEAD</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="../common/domtests-common.js"></script>
 <link href="http://www.w3.org/TR/html5/obsolete.html#dom-head-profile" rel="help">
 <link rel="author" title="NIST">
 <meta name="flags" content="may">
@@ -28,7 +27,7 @@ on_event(window, "load", domtest.step_func(function (dom_event) {
 testNode = nodeList.item(0);
       vprofile = testNode.profile;
 
-      assert_uri_equals(null,null,null,"profile",null,null,null,null,vprofile);
+      assert_equals(vprofile, "http://www.w3.org/2004/07/profile");
 
     domtest.done();
 }));

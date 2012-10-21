@@ -2,11 +2,10 @@
 <!doctype html>
 <html>
 <head>
-  <title>CSS Backgrounds and Borders Test: background-clip</title>
+  <title>CSS Backgrounds and Borders Test: background-origin</title>
   <link rel="author" title="finscn" href="mail:finscn@gmail.com" >
-  <link rel="help" href="http://dev.w3.org/csswg/css3-background/#the-background-clip" >
-  <meta name="flags" content="dom" >
-  <meta name="assert" content="border-box : The background is painted within (clipped to) the border box." >
+  <link rel="help" href="http://dev.w3.org/csswg/css3-background/#the-background-origin" >
+  <meta name="assert" content="border-box : The position is relative to the border box." >
 
   <meta charset="utf-8">
   <title>CSS Test</title>
@@ -40,29 +39,31 @@
   }
 
   .case {
-    background-clip : border-box;
+    background-origin : border-box;
+    background-position: -15px -15px;
   }
 
 
-</style>
-  
+ </style>
 
 </head>
 <body>
 
 <div class="infomation">
-The background will be clipped. the clip area includes the area covered by border , and the area surrounded by border.<br>
-背景会被剪切.剪切范围包括边框所覆盖的区域,以及边框所包围的区域.
+When background-position is enabled, whether the browser could paint the background correctly.
+The background will be painted. The paint area includes the area covered by border , and the area surrounded by border.<br>
+当设置背景位置(background-position)时,浏览器能否正确的绘制背景.
+绘制背景.绘制范围包括边框所覆盖的区域,以及边框所包围的区域.
 </div>
 
 <div class="test-case">
 
   <div class="view case no-repeat" >
-      Test background-clip
+      Test background-origin:
   </div>
 
   <div class="view case" >
-      Test background-clip
+      Test background-origin:
   </div>
 
 

@@ -6,7 +6,7 @@
   <link rel="author" title="finscn" href="mail:finscn@gmail.com" >
   <link rel="help" href="http://dev.w3.org/csswg/css3-background/#the-background-clip" >
   <meta name="flags" content="dom" >
-  <meta name="assert" content="The background will be clipped. The clip area is the area covered by border(includes padding-area )." >
+  <meta name="assert" content="padding-box : The background is painted within (clipped to) the padding box" >
 
   <meta charset="utf-8">
   <title>CSS Test</title>
@@ -25,16 +25,21 @@
   }
 
   .view {
-    border : 30px solid rgba(0,0,255,0.4);
-    width : 300px;
-    height : 200px;
+    border : 30px solid rgba(60,150,255,0.4);
+    width : 320px;
+    height : 240px;
     padding : 30px;
+    margin : 10px;
+    font-size : 16pt;
     color : #ff9933;
+    background-image : url("../resource/css3.png");
+  }
+  
+  .no-repeat {
+    background-repeat : no-repeat;
   }
 
   .case {
-    background-repeat : no-repeat;
-    background-image : url("../resource/css3.jpg");
     background-clip : padding-box;
   }
 
@@ -52,9 +57,15 @@ The background will be clipped. The clip area is the area covered by border(incl
 
 <div class="test-case">
 
+
+  <div class="view case no-repeat" >
+      Test background-clip
+  </div>
+
   <div class="view case" >
       Test background-clip
   </div>
+  
 </div>
 
 </body>

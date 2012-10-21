@@ -41,28 +41,30 @@
 
   .case {
     background-clip : border-box;
+    border-radius: 60px;
   }
 
 
-</style>
-  
+ </style>
 
 </head>
 <body>
 
 <div class="infomation">
+When border-radius is enabled, whether the browser could clip the background correctly.
 The background will be clipped. the clip area includes the area covered by border , and the area surrounded by border.<br>
+当使用圆角边框(border-radius)时,浏览器能否正确的剪切背景.
 背景会被剪切.剪切范围包括边框所覆盖的区域,以及边框所包围的区域.
 </div>
 
 <div class="test-case">
 
-  <div class="view case no-repeat" >
-      Test background-clip
+  <div id="border-box" class="view case no-repeat" >
+      Test background-clip:
   </div>
 
-  <div class="view case" >
-      Test background-clip
+  <div id="border-box" class="view case" >
+      Test background-clip:
   </div>
 
 

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<meta charset="UTF-8">
+<html id="html" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head id="head">
 <title>Selectors-API Test Suite: HTML with Selectors Level 2 using TestHarness</title>
 <!-- Selectors API Test Suite Version 3 -->
 <script src="/resources/testharness.js"></script>
@@ -7,18 +8,19 @@
 <script src="selectors.js"></script>
 <script src="level1-lib.js"></script>
 <style>iframe { visibility: hidden; position: absolute; }</style>
-
+</head>
+<body>
 <div id="log">This test requires JavaScript.</div>
 
-<script>
-var testType = TEST_LEVEL1_BASELINE; // Only run baseline tests.
-var docType  = "html"; // Only run tests suitable for HTML
+<script><![CDATA[
+var testType = TEST_LEVEL1_BASELINE | TEST_LEVEL1_ADDITIONAL; // Only run baseline tests.
+var docType  = "xhtml"; // Only run tests suitable for XHTML
 
 var frame = document.createElement("iframe"),
     doc;
 
 frame.onload = init;
-frame.src = "level1-content.html#target";
+frame.src = "level1-content.xht#target";
 document.body.appendChild(frame);
 
 function init() {
@@ -115,4 +117,6 @@ function init() {
 	                                  // None of these elements should match
 	runValidSelectorTest("In-document Element", testRoot, validSelectors, testType, docType);
 }
-</script>
+]]></script>
+</body>
+</html>

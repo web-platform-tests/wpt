@@ -9,7 +9,7 @@ iframe { visibility: hidden; position: absolute; }
 /* Note: display: none; causes Firefox to fail/not run a significant number of tests */
 </style>
 
-<div id="log"></div>
+<div id="log">This test requires javascript.</div>
 <iframe src="level2-baseline-frame.html#target" id="testframe"></iframe>
 
 <script>
@@ -25,7 +25,7 @@ frame.onload = function() {
 	var root2 = doc.getElementById("root2"); // Outside Element, part of Document
 	var root3 = doc.getElementById("root3"); // JQuery Tests - Element
 	var root3clone = root3.cloneNode(true);  // JQuery Tests - Disconnected Element
-	var root4 = root2.cloneNode(true); // Disconnected Element
+	var root4 = root2.cloneNode(true);       // Disconnected Element
 
 	// Fragment
 	var root5 = root2.cloneNode(true);
@@ -50,7 +50,7 @@ frame.onload = function() {
 	var elementNull = doc.createElement("null")
 	var elementUndefined = doc.createElement("undefined")
 
-	testFragment = doc.createDocumentFragment();
+	var testFragment = doc.createDocumentFragment();
 	testFragment.appendChild(elementNull);
 	testFragment.appendChild(elementUndefined);
 
@@ -64,7 +64,7 @@ frame.onload = function() {
 	var noNS = doc.createElement("div");
 	noNS.className = "test no-namespace";
 
-	var testFragment = doc.createDocumentFragment();
+	testFragment = doc.createDocumentFragment();
 	testFragment.appendChild(anyNS);
 	testFragment.appendChild(noNS);
 

@@ -12,6 +12,7 @@
 
 <script>
 var testType = TEST_LEVEL1_ADDITIONAL; // Only run additional tests
+var docType  = "html"; // Only run tests suitable for HTML
 
 var frame = document.createElement("iframe"),
     doc;
@@ -68,13 +69,13 @@ function init() {
 	fragment.appendChild(testRoot.cloneNode(true));
 
 	// Setup Tests
-	runValidSelectorTest("Document", doc, validSelectors, testType);
-	runValidSelectorTest("Detached Element", detached, validSelectors, testType);
-	runValidSelectorTest("Fragment", fragment, validSelectors, testType);
+	runValidSelectorTest("Document", doc, validSelectors, testType, docType);
+	runValidSelectorTest("Detached Element", detached, validSelectors, testType, docType);
+	runValidSelectorTest("Fragment", fragment, validSelectors, testType, docType);
 
 	doc.body.appendChild(outOfScope); // Append before in-document Element tests.
 	                                  // None of these elements should match
-	runValidSelectorTest("In-document Element", testRoot, validSelectors, testType);
+	runValidSelectorTest("In-document Element", testRoot, validSelectors, testType, docType);
 }
 </script>
 

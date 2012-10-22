@@ -5,7 +5,9 @@
   <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
   <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
   <link rel="help" href="http://www.w3.org/TR/html5/video.html#attr-media-src" />
-  <meta name="assert" content="The 'src' IDL attribute of media elements reflects the content attribute (relative URI)." />
+  <meta name="assert" content="The 'src' IDL attribute of media elements reflects the content attribute." />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
   <script type="text/javascript" src="../common/media.js"></script>
   
 </head>
@@ -13,16 +15,6 @@
 <pre>
 The 'src' IDL attribute of media elements reflects the content attribute (relative URI).
 </pre>
-<table id='testtable' border='1'>
-  <tr>
-    <td>Test Result</td>
-    <td>Test Assertion</td>
-  </tr>
-  <tr>
-    <td id='test_0_result'>FAIL</td>
-    <td id='test_0_assertion'>Test passes if the text 'PASS' appears to the left and the text 'Your browser does not support media elements.' does not appear anywhere on this page.</td>
-  </tr>
-</table>
 <pre>
 
 http://www.w3.org/TR/html5/video.html#attr-media-src
@@ -40,24 +32,14 @@ successful, or the empty string otherwise; and on setting, must set the
 content attribute to the specified literal value. 
 
 </pre>
-<div id='testcontent'>
+<div id='log'></div>
 
 <video id="video0" src="broken-uri">Your browser does not support media elements.</video>
 <script type="text/javascript">    
-        try
+        test(function()
         {
-if (document.getElementById("video0").src.match(/\/broken-uri$/))
-{
-    passTest();
-}
-        }
-        catch(ex)
-        {
-
-        }
+           assert_not_equals(document.getElementById("video0").src.match(/\/broken-uri$/), null);
+        }, "The 'src' IDL attribute of media elements reflects the content attribute.");
     </script>
-
-
-</div>
 </body>
 </html>

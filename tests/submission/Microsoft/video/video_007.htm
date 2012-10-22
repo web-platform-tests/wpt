@@ -5,9 +5,13 @@
   <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
   <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
   <link rel="help" href="http://www.w3.org/TR/html5/video.html#dom-media-seeking" />
-  <meta name="assert" content="Seeking to a value less than 'startTime' seeks to 'startTime'." />
+  <meta name="assert" content="Seeking to a value less than 'initialTime' seeks to 'initialTime'." />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
   <script type="text/javascript" src="../common/media.js"></script>
   <script type="text/javascript">
+            setup({timeout: 30000});
+	    var videotest = async_test("Seeking to a value less than 'initialTime' seeks to 'initialTime'.");
 
 function getTestVideoElement()
 {
@@ -23,34 +27,20 @@ function do_play(event)
 
 function do_seeked(event)
 {
-    var vid = getTestVideoElement();
+    videotest.step(function() {
+      var vid = getTestVideoElement();
     
-    if (vid.currentTime == vid.startTime)
-    {
-        passTest();
-    }
-    else
-    {
-        failTest();
-    }
+      assert_equals(vid.currentTime, vid.initialTime);
+    });
+    videotest.done();
 }
 
 </script>
 </head>
 <body>
 <pre>
-Seeking to a value less than 'startTime' seeks to 'startTime'.
+Seeking to a value less than 'initialTime' seeks to 'initialTime'.
 </pre>
-<table id='testtable' border='1'>
-  <tr>
-    <td>Test Result</td>
-    <td>Test Assertion</td>
-  </tr>
-  <tr>
-    <td id='test_0_result'>Waiting ...</td>
-    <td id='test_0_assertion'>Test passes if the text 'PASS' appears to the left and the text 'Your browser does not support media elements.' does not appear anywhere on this page.</td>
-  </tr>
-</table>
 <pre>
 
 http://www.w3.org/TR/html5/video.html#dom-media-seeking
@@ -65,7 +55,7 @@ the following steps:
 position, let it be that position instead. 
 
 </pre>
-<div id='testcontent'>
+<div id='log'></div>
 
 <script type="text/javascript">
 
@@ -79,18 +69,6 @@ document.write(
 </script>
 Your browser does not support media elements.
 </video>
-<script type="text/javascript">    
-        try
-        {
-setFailTimeout(30000);
-        }
-        catch(ex)
-        {
 
-        }
-    </script>
-
-
-</div>
 </body>
 </html>

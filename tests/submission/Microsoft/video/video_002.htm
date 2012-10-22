@@ -6,6 +6,8 @@
   <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
   <link rel="help" href="http://www.w3.org/TR/html5/video.html#dom-media-buffered" />
   <meta name="assert" content="'buffered' returns a TimeRanges object." />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
   <script type="text/javascript" src="../common/media.js"></script>
   
 </head>
@@ -13,16 +15,6 @@
 <pre>
 'buffered' returns a TimeRanges object.
 </pre>
-<table id='testtable' border='1'>
-  <tr>
-    <td>Test Result</td>
-    <td>Test Assertion</td>
-  </tr>
-  <tr>
-    <td id='test_0_result'>FAIL</td>
-    <td id='test_0_assertion'>Test passes if the text 'PASS' appears to the left and the text 'Your browser does not support media elements.' does not appear anywhere on this page.</td>
-  </tr>
-</table>
 <pre>
 
 http://www.w3.org/TR/html5/video.html#dom-media-buffered
@@ -32,21 +24,14 @@ object that represents the ranges of the media resource, if any, that
 the user agent has buffered, at the time the attribute is evaluated. 
 
 </pre>
-<div id='testcontent'>
+<div id='log'></div>
 
 <video id="video0">Your browser does not support media elements.</video>
 <script type="text/javascript">    
-        try
+        test(function()
         {
-if (document.getElementById("video0").buffered instanceof TimeRanges)
-{
-    passTest();
-}
-        }
-        catch(ex)
-        {
-
-        }
+	  assert_true(document.getElementById("video0").buffered instanceof TimeRanges, "isInstanceOf(TimeRanges)");
+        }, "'buffered' returns a TimeRanges object.");
     </script>
 
 

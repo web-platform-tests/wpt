@@ -1,16 +1,15 @@
-﻿<!doctype html>
-<html>
- <head>
-  <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+<!DOCTYPE html>
+<html><head>
+  <meta content="text/html; charset=utf-8" http-equiv="content-type">
   <title>verify MARK is a HTMLElement</title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
- </head>
+ <link href="http://www.w3.org/TR/html5/the-mark-element.html#the-mark-element" rel="help">
+</head>
 <body>
 <div id="log"></div>
 <p>This is just an example of what MARK can do:</p>
-<pre>
- <code>
+<pre> <code>
  var i: Integer;
  begin
   i := <mark id="mark">1.1</mark>;
@@ -24,5 +23,6 @@
                          document.getElementById("mark").toString() )
  })
 </script>
-</body>
-</html>
+
+
+</body></html>

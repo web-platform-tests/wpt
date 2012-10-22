@@ -30,7 +30,7 @@
 <script>
     test(function () {
         assert_equals(document.getElementById('table1').caption.innerHTML, "first caption");
-    }, "first caption element child of the table element")
+    }, "first caption element child of the first table element")
 
     function captionElement() {
         var caption = document.createElement("caption");
@@ -47,7 +47,7 @@
 
     test(function () {
         assert_equals(document.getElementById('table3').caption.innerHTML, "non-child caption");
-    }, "first caption element child of the table element")
+    }, "first caption element child of the third table element")
 
     function removeCaptionElement() {
         var parent = document.getElementById('table4').caption.parentNode;

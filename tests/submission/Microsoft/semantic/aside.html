@@ -1,10 +1,10 @@
-﻿<!doctype html>
-<html>
-<head>
- <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+<!DOCTYPE html>
+<html><head>
+ <meta content="text/html; charset=utf-8" http-equiv="content-type">
  <title>verify ASIDE is a HTMLElement</title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
+<link href="http://www.w3.org/TR/html5/the-aside-element.html#the-aside-element" rel="help">
 </head>
 <body>
 <div id="log"></div>
@@ -13,8 +13,8 @@
  <nav>
  <ul>
   <li><a href="#">some test link</a>
-  <li><a href="#">another test link</a>
- </ul>
+  </li><li><a href="#">another test link</a>
+ </li></ul>
  </nav>
 </aside>
 <script type="text/javascript">
@@ -24,5 +24,6 @@
                          document.getElementById("aside").toString() )
  })
 </script>
-</body>
-</html>
+
+
+</body></html>

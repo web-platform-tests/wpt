@@ -1,16 +1,16 @@
-﻿<!DOCTYPE HTML>
-<html>
-    <head>
+<!DOCTYPE html>
+<html><head>
         <title>datalist element</title>
-        <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-        <meta name="description" content="datalist element" />
-    </head>
+        <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+        <meta content="datalist element" name="description">
+    <link href="http://www.w3.org/TR/html5/the-datalist-element#the-datalist-element" rel="help">
+</head>
     <body>
-        <script src="/resources/testharness.js" ></script>
-        <script src="/resources/testharnessreport.js" ></script>
-        <div id=log></div>
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+        <div id="log"></div>
     
-        <datalist style="display: none" id="datalist1">
+        <datalist id="datalist1" style="display: none">
           <option>1</option>
           <option>2</option>
           <option>3</option>
@@ -22,5 +22,5 @@
         test(function() {assert_true(HTMLDataListElement && document.getElementsByTagName("datalist")[0] instanceof HTMLDataListElement)}, "HTMLDataListElement support");
         test(function() {assert_equals(document.getElementsByTagName("datalist")[0].options.item(0), document.getElementsByTagName("option")[0])}, "HTMLDataListElement options item collection support");
         </script>
-    </body>
-</html>
+    
+</body></html>

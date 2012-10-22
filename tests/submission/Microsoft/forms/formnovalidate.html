@@ -1,26 +1,26 @@
-﻿<!DOCTYPE HTML>
-<html>
-    <head>
+<!DOCTYPE html>
+<html><head>
         <title>formnovalidate on button element</title>
-        <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-        <meta name="description" content="formnovalidate" />
-    </head>
+        <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+        <meta content="formnovalidate" name="description">
+    <link href="http://www.w3.org/TR/html5/attributes-common-to-form-controls.html#dom-fs-formnovalidate" rel="help">
+</head>
     <body>
-        <script src="/resources/testharness.js" ></script>
-        <script src="/resources/testharnessreport.js" ></script>
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
 
-        <div id=log></div>
+        <div id="log"></div>
     
         <form style="display : none">
-          <label for="input1">Required<input type="text" name="input1" id="input1" required></input></label>
-          <br/>
-          <button type="submit" formnovalidate>Submit No Validate</button>
-          <br/>
+          <label for="input1">Required<input id="input1" name="input1" required="" type="text"></label>
+          <br>
+          <button formnovalidate="" type="submit">Submit No Validate</button>
+          <br>
           <button type="submit">Submit Validate</button>
-          <br/>
-          <input type="submit" value="Submit No Validate" formnovalidate></input>
-          <br/>
-          <input type="submit" value="Submit Validate"></input>
+          <br>
+          <input formnovalidate="" type="submit" value="Submit No Validate">
+          <br>
+          <input type="submit" value="Submit Validate">
         </form>
 
         <script type="text/javascript">
@@ -56,5 +56,5 @@
             test(function() {assert_equals(nInvalidEventCalled, 1)}, "click input element without formnovalidate attribute");
             
         </script>
-    </body>
-</html>
+    
+</body></html>

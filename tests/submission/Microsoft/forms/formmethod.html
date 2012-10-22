@@ -1,18 +1,18 @@
-﻿<!DOCTYPE HTML>
-<html>
-    <head>
+<!DOCTYPE html>
+<html><head>
         <title>formmethod on button element</title>
-        <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-        <meta name="description" content="formmethod" />
-    </head>
+        <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+        <meta content="formmethod" name="description">
+    <link href="http://www.w3.org/TR/html5/attributes-common-to-form-controls.html#dom-fs-formmethod" rel="help">
+</head>
     <body>
-        <script src="/resources/testharness.js" ></script>
-        <script src="/resources/testharnessreport.js" ></script>
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
 
-        <div id=log></div>
-        <button style="display: none" type="submit" formmethod="post">Submit</button>
-        <input style="display: none" type="submit" formmethod="post" value="submit"></input>
-        <input style="display: none" type="submit" formmethod="get" value="submit"></input>
+        <div id="log"></div>
+        <button formmethod="post" style="display: none" type="submit">Submit</button>
+        <input formmethod="post" style="display: none" type="submit" value="submit">
+        <input formmethod="get" style="display: none" type="submit" value="submit">
         
         
         <script type="text/javascript">
@@ -30,5 +30,5 @@
             test(function() {assert_equals(document.getElementsByTagName("input")[1].formMethod.toLowerCase(), "post")}, "formMethod returns correct value after being changed by the DOM");
             
         </script>
-    </body>
-</html>
+    
+</body></html>

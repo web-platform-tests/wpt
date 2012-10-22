@@ -1,20 +1,20 @@
-﻿<!DOCTYPE HTML>
-<html>
-    <head>
+<!DOCTYPE html>
+<html><head>
         <title>placeholder on input element</title>
-        <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-        <meta name="description" content="placeholder atrribute on elements" />
-    </head>
+        <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+        <meta content="placeholder atrribute on elements" name="description">
+    <link href="http://www.w3.org/TR/html5/the-input-element.html#dom-input-placeholder" rel="help">
+</head>
     <body>
-        <script src="/resources/testharness.js" ></script>
-        <script src="/resources/testharnessreport.js" ></script>
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
 
-        <div id=log></div>
+        <div id="log"></div>
     
         <div style="display : none">
-        <input type="text" placeholder="placeholder text"></input>
-        <input type="text" placeholder></input>
-        <textarea type="text" placeholder="placeholder text"></textarea>
+        <input placeholder="placeholder text" type="text">
+        <input placeholder="" type="text">
+        <textarea placeholder="placeholder text" type="text"></textarea>
         </div>
         
         <script type="text/javascript">
@@ -25,5 +25,5 @@
         test(function() {assert_equals(document.getElementsByTagName("textarea")[0].placeholder, "placeholder text")}, "placeholder support on textarea element");
         
         </script>
-    </body>
-</html>
+    
+</body></html>

@@ -5,7 +5,7 @@
     <title> IDBIndex.getKey() - returns the key of the first record within the range </title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
-    <script src="support.js"></script>
+    <script src="../support.js"></script>
     <script>
         var objectStoreName = "objectstore";
         var indexName = "index";
@@ -29,7 +29,7 @@
         }
         
         function GetRecordFromIndex() {
-            var txn = db.transaction(objectStoreName, IDBTransaction.READ_WRITE);
+            var txn = db.transaction(objectStoreName, "readwrite");
             var objStore = txn.objectStore(objectStoreName);
             var index = objStore.index(indexName);
             var rqGet = index.getKey(IDBKeyRange.bound("data4","data7"));

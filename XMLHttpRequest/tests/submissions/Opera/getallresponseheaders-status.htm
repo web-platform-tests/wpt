@@ -3,6 +3,7 @@
   <head>
     <title>XMLHttpRequest: getAllResponseHeaders() excludes status</title>
     <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
   </head>
   <body>
     <div id="log"></div>
@@ -24,7 +25,7 @@
               test.done()
           })
         }
-        client.open("GET", "../resources/headers.php")
+        client.open("GET", "resources/headers.php")
         client.send(null)
       })
   </script>

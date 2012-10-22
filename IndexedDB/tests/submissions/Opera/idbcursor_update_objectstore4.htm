@@ -7,7 +7,7 @@
 <script>
 
     var db,
-      t = async_test()
+      t = async_test(document.title, {timeout: 10000})
 
     var open_rq = createdb(t);
     open_rq.onupgradeneeded = function(e) {
@@ -18,7 +18,7 @@
     };
 
     open_rq.onsuccess = t.step_func(function(e) {
-        var txn = db.transaction("test", IDBTransaction.READ_WRITE),
+        var txn = db.transaction("test", "readwrite"),
           cursor_rq = txn.objectStore("test")
                          .openCursor();
 

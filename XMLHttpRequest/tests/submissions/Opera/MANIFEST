@@ -1,0 +1,74 @@
+http abort-after-send.htm
+http abort-during-done.htm
+http abort-during-open.htm
+abort-during-unsent.htm
+http abort-event-listeners.htm
+support folder.txt
+http getallresponseheaders-cookies.htm
+http getallresponseheaders-status.htm
+http getresponseheader-case-insensitive.htm
+http getresponseheader-cookies-and-more.htm
+http getresponseheader-server-date.htm
+http getresponseheader-special-characters.htm
+support info.htm
+http open-after-abort.htm
+open-method-bogus.htm
+http open-method-case-insensitive.htm
+http open-method-case-sensitive.htm
+open-method-insecure.htm
+http open-open-send.htm
+http open-open-sync-send.htm
+http open-send-open.htm
+http open-sync-open-send.htm
+http open-url-about-blank-window.htm
+http open-url-base.htm
+http open-url-base-inserted-after-open.htm
+http open-url-base-inserted.htm
+open-url-bogus.htm
+http open-url-encoding.htm
+http open-url-fragment.htm
+http open-url-javascript-window-2.htm
+http open-url-javascript-window.htm
+http open-url-multi-window-2.htm
+http open-url-multi-window-3.htm
+http open-url-multi-window-4.htm
+http open-url-multi-window-5.htm
+http open-url-multi-window.htm
+http open-user-password-non-same-origin.htm
+support readme.txt
+dir resources
+http responsetext-decoding.htm
+http responsexml-basic.htm
+http responsexml-media-type.htm
+http responsexml-non-well-formed.htm
+http send-accept.htm
+http send-accept-language.htm
+http send-authentication.htm
+http send-conditional.htm
+http send-content-type-charset.htm
+http send-content-type-string.htm
+http send-entity-body-basic.htm
+http send-entity-body-document-bogus.htm
+http send-entity-body-document.htm
+http send-entity-body-empty.htm
+http send-entity-body-get-head.htm
+http send-entity-body-none.htm
+http send-non-same-origin.htm
+http send-redirect-bogus.htm
+http send-redirect-bogus-sync.htm
+http send-redirect.htm
+http send-redirect-no-location.htm
+http send-send.htm
+http send-sync-timeout.htm
+http setrequestheader-after-send.htm
+http setrequestheader-bogus-header.htm
+http setrequestheader-bogus-value.htm
+http setrequestheader-case-insensitive.htm
+http setrequestheader-header-allowed.htm
+http setrequestheader-header-forbidden.htm
+http status-basic.htm
+xmlhttprequest-basic.htm
+http xmlhttprequest-eventtarget.htm
+http xmlhttprequest-network-error.htm
+http xmlhttprequest-network-error-sync.htm
+xmlhttprequest-unsent.htm

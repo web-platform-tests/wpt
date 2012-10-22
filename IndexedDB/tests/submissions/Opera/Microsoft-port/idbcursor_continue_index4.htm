@@ -1,8 +1,10 @@
 ﻿<!DOCTYPE html>
 <title>IDBCursor.continue() - index - attempt to iterate to the next record when the direction is set for the previous record</title>
+<link rel=help href="http://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#widl-IDBCursor-continue-void-any-key">
+<link rel=assert title="The parameter is greater than or equal to this cursor's position and this cursor's direction is 'prev' or 'prevunique'.">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="support.js"></script>
+<script src="../support.js"></script>
 
 <script>
 
@@ -28,7 +30,7 @@
           cursor_rq = db.transaction("test")
                         .objectStore("test")
                         .index("index")
-                        .openCursor(undefined, IDBCursor.PREV);
+                        .openCursor(undefined, "prev"); // XXX Fx issues w undefined
 
         cursor_rq.onsuccess = t.step_func(function(e) {
             var cursor = e.target.result,

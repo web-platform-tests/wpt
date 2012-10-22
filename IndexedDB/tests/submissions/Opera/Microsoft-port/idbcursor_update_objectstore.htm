@@ -1,15 +1,15 @@
 ﻿<!DOCTYPE html>
-<title>IDBCursor.update() - index - modify a record in the object store </title>
+<title>IDBCursor.update() - objectstore - modify a record in the object store </title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="support.js"></script>
+<script src="../support.js"></script>
 
 <script>
 
     var db,
       t = async_test(),
-      records = [ { pKey: "primaryKey_0", iKey: "indexKey_0" },
-                  { pKey: "primaryKey_1", iKey: "indexKey_1" } ];
+      records = [ { pKey: "primaryKey_0" },
+                  { pKey: "primaryKey_1" } ];
 
     var open_rq = createdb(t);
     open_rq.onupgradeneeded = function(e) {
@@ -27,7 +27,7 @@
 
 
     function CursorUpdateRecord(e) {
-        var txn = db.transaction("test", 1), // XXX: don't hardcode
+        var txn = db.transaction("test", "readwrite"),
           cursor_rq = txn.objectStore("test")
                          .openCursor();
         cursor_rq.onsuccess = t.step_func(function(e) {

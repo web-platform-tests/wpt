@@ -3,7 +3,7 @@
 <title>IDBObjectStore.clear() - Verify clear removes all records </title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="support.js"></script>
+<script src="../support.js"></script>
 
 <script>
     var db,
@@ -19,7 +19,9 @@
         objStore.add(1234);
         objStore.add([1, 2, 1234]);
 
-        objStore.clear();
+        objStore.clear().onsuccess = t.step_func(function(e) {
+            assert_equals(e.target.result, undefined);
+        });
     };
 
 
@@ -29,7 +31,7 @@
                    .openCursor();
 
         rq.onsuccess = t.step_func(function(e) {
-            assert_equals(e.target.result, undefined, 'cursor');
+            assert_equals(e.target.result, null, 'cursor');
             t.done();
         });
     };

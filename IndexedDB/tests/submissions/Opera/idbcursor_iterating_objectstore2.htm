@@ -2,12 +2,12 @@
 <title>IDBCursor.continue() - objectstore - add next element, and iterate to it</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="../support.js"></script>
+<script src="support.js"></script>
 
 <script>
     var db,
       count = 0,
-      t = async_test(),
+      t = async_test(document.title, {timeout: 10000}),
       records = [ { pKey: "primaryKey_0" },
                   { pKey: "primaryKey_2" } ],
       expected_records = [ { pKey: "primaryKey_0" },
@@ -24,7 +24,7 @@
     };
 
     open_rq.onsuccess = function(e) {
-        var cursor_rq = db.transaction("test", IDBTransaction.READ_WRITE)
+        var cursor_rq = db.transaction("test", "readwrite")
                           .objectStore("test")
                           .openCursor();
 

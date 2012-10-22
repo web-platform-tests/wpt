@@ -2,12 +2,12 @@
 <title>IDBCursor.continue() - attempt to call continue two times</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="../support.js"></script>
+<script src="support.js"></script>
 
 <script>
 
     var db,
-      t = async_test();
+      t = async_test(document.title, {timeout: 10000});
 
     var open_rq = createdb(t);
     open_rq.onupgradeneeded = function(e) {

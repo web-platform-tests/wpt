@@ -3,7 +3,7 @@
 <title>IDBObjectStore.add() - Attempt to call 'add' without an key parameter when the object store uses out-of-line keys </title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="support.js"></script>
+<script src="../support.js"></script>
 
 <script>
     var db,
@@ -15,7 +15,7 @@
         db = e.target.result;
 
         var rq,
-          objStore = db.createObjectStore("store", { keyPath: "key" });
+          objStore = db.createObjectStore("store");
 
         assert_throws("DataError",
             function() { rq = objStore.add(record); });

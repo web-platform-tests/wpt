@@ -3,7 +3,7 @@
 <title>IDBObjectStore.delete() - object store's key path is an object attribute </title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="support.js"></script>
+<script src="../support.js"></script>
 
 <script>
     var db,
@@ -19,7 +19,7 @@
     };
 
     open_rq.onsuccess = function(e) {
-        var delete_rq = db.transaction("test", IDBTransaction.READ_WRITE)
+        var delete_rq = db.transaction("test", "readwrite")
                           .objectStore("test")
                           .delete(record.test.obj.key);
 

@@ -7,14 +7,14 @@
 function testLeafNode(node) {
   test(function() {
     assert_throws(new TypeError(), function() { node.insertBefore(null, null) })
-  }, "Calling insertBefore with a non-Node first argument on a leaf node " + node + " must throw TypeError.")
+  }, "Calling insertBefore with a non-Node first argument on a leaf node " + format_value(node) + " must throw TypeError.")
   test(function() {
     assert_throws("HIERARCHY_REQUEST_ERR", function() { node.insertBefore(document.createTextNode("fail"), null) })
     // Would be step 2.
     assert_throws("HIERARCHY_REQUEST_ERR", function() { node.insertBefore(node, null) })
     // Would be step 3.
     assert_throws("HIERARCHY_REQUEST_ERR", function() { node.insertBefore(node, document.createTextNode("child")) })
-  }, "Calling insertBefore an a leaf node " + node + " must throw HIERARCHY_REQUEST_ERR.")
+  }, "Calling insertBefore an a leaf node " + format_value(node) + " must throw HIERARCHY_REQUEST_ERR.")
 }
 
 test(function() {

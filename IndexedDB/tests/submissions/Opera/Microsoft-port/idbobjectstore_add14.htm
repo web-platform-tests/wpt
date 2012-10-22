@@ -1,9 +1,9 @@
 ﻿<!DOCTYPE html>
 <meta charset="utf-8">
-<title>IDBObjectStore.add() - Attempt to add a record where a value being indexed does not meet the constraints of a valid key </title>
+<title>IDBObjectStore.add() - Add a record where a value being indexed does not meet the constraints of a valid key </title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="support.js"></script>
+<script src="../support.js"></script>
 
 <script>
     var db,
@@ -19,11 +19,12 @@
 
         objStore.createIndex("index", "indexedProperty");
 
-        assert_throws("DataError",
-            function() { rq = objStore.add(record); });
+        rq = objStore.add(record);
 
-        assert_equals(rq, undefined);
-        t.done();
+        assert_true(rq instanceof IDBRequest);
+        rq.onsuccess = function() {
+            t.done();
+        }
     };
 </script>
 

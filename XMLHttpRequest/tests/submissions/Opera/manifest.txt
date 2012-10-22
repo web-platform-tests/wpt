@@ -1,0 +1,71 @@
+abort-after-send.htm		XMLHttpRequest: abort() after send()					
+abort-during-done.htm		XMLHttpRequest: abort() during DONE					
+abort-during-open.htm		XMLHttpRequest: abort() during OPEN					
+abort-during-unsent.htm		XMLHttpRequest: abort() during UNSENT					
+abort-event-listeners.htm		XMLHttpRequest: abort() should not reset event listeners					
+getallresponseheaders-cookies.htm		XMLHttpRequest: getAllResponseHeaders() excludes cookies					
+getallresponseheaders-status.htm		XMLHttpRequest: getAllResponseHeaders() excludes status					
+getresponseheader-case-insensitive.htm		XMLHttpRequest: getResponseHeader() case-insensitive matching					
+getresponseheader-cookies-and-more.htm		XMLHttpRequest: getResponseHeader() custom/non-existent headers and cookies					
+getresponseheader-server-date.htm		XMLHttpRequest: getResponseHeader() server and date					
+getresponseheader-special-characters.htm		XMLHttpRequest: getResponseHeader() funny characters					
+info.htm							
+open-after-abort.htm		XMLHttpRequest: open() after abort()					
+open-method-bogus.htm		XMLHttpRequest: open() - bogus methods					
+open-method-case-insensitive.htm		XMLHttpRequest: open() - case-insensitive methods test					
+open-method-case-sensitive.htm		XMLHttpRequest: open() - case-sensitive methods test					
+open-method-insecure.htm		XMLHttpRequest: open() - "insecure" methods					
+open-open-send.htm		XMLHttpRequest: open() - open() - send()					
+open-open-sync-send.htm		XMLHttpRequest: open() - open() (sync) - send()					
+open-send-open.htm		XMLHttpRequest: open() - send() - open()					
+open-sync-open-send.htm		XMLHttpRequest: open() (sync) - send() - open()					
+open-url-about-blank-window.htm		XMLHttpRequest: open() resolving URLs (about:blank iframe)					
+open-url-base-inserted-after-open.htm		XMLHttpRequest: open() resolving URLs - insert <base after open()					
+open-url-base-inserted.htm		XMLHttpRequest: open() resolving URLs - insert <base					
+open-url-base.htm		XMLHttpRequest: open() resolving URLs - <base					
+open-url-bogus.htm		XMLHttpRequest: open() - bogus URLs					
+open-url-encoding.htm		XMLHttpRequest: open() - URL encoding					
+open-url-fragment.htm		XMLHttpRequest: open() resolving URLs - fragment identifier					
+open-url-javascript-window-2.htm		XMLHttpRequest: open() - resolving URLs (javascript: <iframe; 2)					
+open-url-javascript-window.htm		XMLHttpRequest: open() - resolving URLs (javascript: <iframe; 1)					
+open-url-multi-window-2.htm		XMLHttpRequest: open() resolving URLs (multi-Window; 2; evil)					
+open-url-multi-window-3.htm		XMLHttpRequest: open() resolving URLs (multi-Window; 3; evil)					
+open-url-multi-window-4.htm		XMLHttpRequest: open() resolving URLs (multi-Window; 4; evil)					
+open-url-multi-window-5.htm		XMLHttpRequest: open() resolving URLs (multi-Window; 5)					
+open-url-multi-window.htm		XMLHttpRequest: open() resolving URLs (multi-Window; 1)					
+open-user-password-non-same-origin.htm		XMLHttpRequest: open() - user/pass argument and non same-origin URL					
+responsetext-decoding.htm		XMLHttpRequest: responseText decoding					
+responsexml-basic.htm		XMLHttpRequest: responseXML basic test					
+responsexml-media-type.htm		XMLHttpRequest: responseXML MIME type tests					
+responsexml-non-well-formed.htm		XMLHttpRequest: responseXML non well-formed tests					
+send-accept-language.htm		XMLHttpRequest: send() - Accept-Language					
+send-accept.htm		XMLHttpRequest: send() - Accept					
+send-authentication.htm		XMLHttpRequest: send() - "Basic" authenticated requests					
+send-conditional.htm		XMLHttpRequest: send() - conditional requests					
+send-content-type-charset.htm		XMLHttpRequest: send() - charset parameter of Content-Type					
+send-content-type-string.htm		XMLHttpRequest: send() - Content-Type					
+send-entity-body-basic.htm		XMLHttpRequest: send() - data argument					
+send-entity-body-document-bogus.htm		XMLHttpRequest: send() - unserializable Document					
+send-entity-body-document.htm		XMLHttpRequest: send() - Document					
+send-entity-body-empty.htm		XMLHttpRequest: send("") - empty entity body					
+send-entity-body-get-head.htm		XMLHttpRequest: send() - non-empty data argument and GET/HEAD					
+send-entity-body-none.htm		XMLHttpRequest: send(null) - no entity body					
+send-non-same-origin.htm		XMLHttpRequest: send() - non same-origin					
+send-redirect-bogus-sync.htm		XMLHttpRequest: send() - Redirects (bogus Location header; sync)					
+send-redirect-bogus.htm		XMLHttpRequest: send() - Redirects (bogus Location header)					
+send-redirect-no-location.htm		XMLHttpRequest: send() - Redirects (no Location header)					
+send-redirect.htm		XMLHttpRequest: send() - Redirects (basics)					
+send-send.htm		XMLHttpRequest: send() - send()					
+send-sync-timeout.htm		XMLHttpRequest: timeout during sync send() should not run					
+setrequestheader-after-send.htm		XMLHttpRequest: setRequestHeader() after send()					
+setrequestheader-bogus-header.htm		XMLHttpRequest: setRequestHeader() header argument checks					
+setrequestheader-bogus-value.htm		XMLHttpRequest: setRequestHeader() value argument checks					
+setrequestheader-case-insensitive.htm		XMLHttpRequest: setRequestHeader() - headers that differ in case					
+setrequestheader-header-allowed.htm		XMLHttpRequest: setRequestHeader() - headers that are allowed					
+setrequestheader-header-forbidden.htm		XMLHttpRequest: setRequestHeader() - headers that are forbidden					
+status-basic.htm		XMLHttpRequest: status/statusText - various responses					
+xmlhttprequest-basic.htm		XMLHttpRequest: prototype and members					
+xmlhttprequest-eventtarget.htm		XMLHttpRequest: implements EventTarget					
+xmlhttprequest-network-error-sync.htm		XMLHttpRequest: members during network errors (sync)					
+xmlhttprequest-network-error.htm		XMLHttpRequest: members during network errors					
+xmlhttprequest-unsent.htm		XMLHttpRequest: members during UNSENT					

@@ -1,19 +1,22 @@
 ﻿<!DOCTYPE html>
-<title>IDBCursor.continue() - index - iterate using NEXT_NO_DUPLICATE</title>
+<title>IDBCursor.continue() - index - iterate using nextunique</title>
+<link rel=help href="http://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#cursor-iteration-operation">
+<link rel=assert title='If direction is "nextunique", let found record be the first record in records which satisfy all of the following requirements:'>
+<link rel=assert title="If position is defined, the record's key is greater than position.">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="../support.js"></script>
+<script src="support.js"></script>
 
 <script>
 
     var db,
-      t = async_test(),
+      t = async_test(document.title, {timeout: 10000}),
       records = [ { pKey: "primaryKey_0",   iKey: "indexKey_0" },
                   { pKey: "primaryKey_1",   iKey: "indexKey_1" },
                   { pKey: "primaryKey_1-2", iKey: "indexKey_1" },
                   { pKey: "primaryKey_2",   iKey: "indexKey_2" } ],
 
-      actual = [ { pKey: "primaryKey_0",   iKey: "indexKey_0" },
+      expected = [ { pKey: "primaryKey_0",   iKey: "indexKey_0" },
                  { pKey: "primaryKey_1",   iKey: "indexKey_1" },
                  { pKey: "primaryKey_2",   iKey: "indexKey_2" } ];
 
@@ -33,25 +36,25 @@
           cursor_rq = db.transaction("test")
                         .objectStore("test")
                         .index("index")
-                        .openCursor(undefined, IDBCursor.NEXT_NO_DUPLICATE);
+                        .openCursor(undefined, "nextunique");
 
         cursor_rq.onsuccess = t.step_func(function(e) {
             if (!e.target.result) {
-                assert_equals(count, actual.length, 'count');
+                assert_equals(count, expected.length, 'count');
                 t.done();
                 return;
             }
             var cursor = e.target.result,
               record = cursor.value;
 
-            assert_equals(record.pKey, actual[count].pKey, "pKey #" + count);
-            assert_equals(record.iKey, actual[count].iKey, "iKey #" + count);
+            assert_equals(record.pKey, expected[count].pKey, "pKey #" + count);
+            assert_equals(record.iKey, expected[count].iKey, "iKey #" + count);
 
-            assert_equals(cursor.key,  actual[count].iKey, "cursor.key #" + count);
-            assert_equals(cursor.primaryKey, actual[count].pKey, "cursor.primaryKey #" + count);
+            assert_equals(cursor.key,  expected[count].iKey, "cursor.key #" + count);
+            assert_equals(cursor.primaryKey, expected[count].pKey, "cursor.primaryKey #" + count);
 
             count++;
-            cursor.continue(actual[count] ? actual[count].iKey : undefined);
+            cursor.continue(expected[count] ? expected[count].iKey : undefined);
         });
     };
 

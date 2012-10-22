@@ -1,0 +1,2 @@
+interfaces.html							
+setrequestheader-invalid-arguments.htm		XMLHttpRequest: setRequestHeader() with invalid arguments					

@@ -2,7 +2,7 @@
 <title>IDBCursor.continue() - object store - attempt to iterate to the next record when the direction is set for the previous record </title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="support.js"></script>
+<script src="../support.js"></script>
 
 <script>
     var db,
@@ -24,7 +24,7 @@
         var count = 0,
           cursor_rq = db.transaction("test")
                         .objectStore("test")
-                        .openCursor(undefined, IDBCursor.PREV);
+                        .openCursor(null, "prev");
 
         cursor_rq.onsuccess = t.step_func(function(e) {
             var cursor = e.target.result;
@@ -40,7 +40,7 @@
             case 1:
                 assert_equals(cursor.value.pKey, records[1].pKey, "second cursor pkey");
                 assert_throws("DataError",
-                    function() { cursor.continue(records[2].pkey); });
+                    function() { cursor.continue(records[2].pKey); });
                 t.done();
                 break;
 

@@ -1,26 +1,25 @@
 ﻿<!DOCTYPE html>
 <meta charset="utf-8">
 <title>Recursive value</title>
-<script src="http://t/resources/testharness.js"></script>
+<script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="support.js"></script>
 
 <script>
 function recursive_value(desc, value) {
-    var t = async_test(document.title + " - " + desc);
+    var db, t = async_test(document.title + " - " + desc);
 
     createdb(t).onupgradeneeded = function(e) {
-        e.target.result
-                .createObjectStore("store")
-                .add(value, 1);
+        db = e.target.result
+        db.createObjectStore("store")
+          .add(value, 1);
 
         e.target.onsuccess = t.step_func(function(e) {
-            e.target.transaction
-                    .db.transaction('store')
-                    .objectStore('store')
-                    .get(1)
-                    .onsuccess = t.step_func(function(e)
-           {
+            db.transaction('store')
+              .objectStore('store')
+              .get(1)
+              .onsuccess = t.step_func(function(e)
+            {
 
                 try
                 {

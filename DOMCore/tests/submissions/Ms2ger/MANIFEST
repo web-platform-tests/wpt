@@ -7,7 +7,9 @@ support constants.js
 CharacterData-appendData.html
 CharacterData-deleteData.html
 CharacterData-insertData.html
+CharacterData-remove.html
 CharacterData-replaceData.html
+ChildNode-remove.js
 Document-adoptNode.html
 Document-createComment.html
 Document-createElement.html
@@ -22,6 +24,7 @@ Document-getElementById.html
 Document-getElementsByTagName.html
 Document-getElementsByTagNameNS.html
 Document-importNode.html
+DocumentType-remove.html
 DOMException-constants.html
 DOMImplementation-createDocument.html
 DOMImplementation-createDocumentType.html
@@ -61,6 +64,7 @@ Element-nextElementSibling.xhtml
 Element-previousElementSibling.html
 Element-previousElementSibling.svg
 Element-previousElementSibling.xhtml
+Element-remove.html
 Element-removeAttributeNS.html
 Element-siblingElement-null.html
 Element-siblingElement-null.svg
@@ -69,12 +73,14 @@ Element-tagName.html
 Event-constants.html
 Event-constructors.html
 Event-defaultPrevented.html
+Event-initEvent.html
 EventTarget-dispatchEvent.html
 historical.html
 interfaces.html
 Node-appendChild.html
 Node-cloneNode.html
 Node-constants.html
+Node-contains.xml
 Node-insertBefore.html
 Node-isEqualNode.xhtml
 Node-lookupPrefix.xhtml
@@ -91,4 +97,4 @@ Range-attributes.html
 Range-commonAncestorContainer.html
 Range-comparePoint.html
 Range-detach.html
-Range-intersectsNode.html
+Range-intersectsNode-binding.html

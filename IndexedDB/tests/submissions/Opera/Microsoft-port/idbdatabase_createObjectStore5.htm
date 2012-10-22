@@ -2,7 +2,7 @@
 <title>IDBDatabase.createObjectStore() - object store's name appears in database's list </title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="support.js"></script>
+<script src="../support.js"></script>
 
 <script>
 
@@ -16,6 +16,14 @@ open_rq.onupgradeneeded = function(e) {
     assert_true(
         db.objectStoreNames.contains("My cool object store name"),
         'objectStoreNames.contains')
+}
+
+open_rq.onsuccess = function(e) {
+    var db = e.target.result
+
+    assert_true(
+        db.objectStoreNames.contains("My cool object store name"),
+        'objectStoreNames.contains (in success)')
     t.done()
 }
 

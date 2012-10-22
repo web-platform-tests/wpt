@@ -4,7 +4,7 @@
     <title> IDBCursor.advance() - object store - iterate cursor number of times specified by count </title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
-    <script src="support.js"></script>
+    <script src="../support.js"></script>
     <script>
         var objectStoreName = "objectstore";
         var records = [ { pKey: "primaryKey_0" },
@@ -30,7 +30,7 @@
         }
         
         function VerifyCursorIterates() {
-            var txn = db.transaction(objectStoreName, IDBTransaction.READ_ONLY);
+            var txn = db.transaction(objectStoreName, "readonly");
             var objStore = txn.objectStore(objectStoreName);
             var rqCursor = objStore.openCursor();
             rqCursor.onsuccess = t.step_func( function(event) {

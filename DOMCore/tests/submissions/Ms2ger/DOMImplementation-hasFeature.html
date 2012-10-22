@@ -1,5 +1,7 @@
 <!doctype html>
+<meta charset=utf-8>
 <title>DOMImplementation.hasFeature(feature, version)</title>
+<link rel=help href="http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domimplementation-hasfeature">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
@@ -129,10 +131,11 @@ test(function() {
         ["This is filler text.", "", false],
         [null, "", false],
         [undefined, "", false],
-      ]
-  for (var i in tests) {
-    var test = tests[i]
-    assert_equals(document.implementation.hasFeature(test[0], test[1]), test[2], test[0] + " " + test[1])
-  }
+      ];
+  tests.forEach(function(data) {
+    test(function() {
+      assert_equals(document.implementation.hasFeature(data[0], data[1]), data[2])
+    }, "hasFeature(" + format_value(data[0]) + ", " + format_value(data[1]) + ")")
+  })
 })
 </script>

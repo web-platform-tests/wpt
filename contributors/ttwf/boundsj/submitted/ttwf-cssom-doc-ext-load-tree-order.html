@@ -4,8 +4,8 @@
     <title>CSSOM -  Extensions to the Document Interface: Stylesheet header load order</title>
     <link rel="author" title="Jesse Bounds" href="mailto:jesse@codeforamerica.org">
     <link rel="help" href="http://www.w3.org/TR/cssom/#extensions-to-the-document-interface">
-    <link rel="help" href="http://www.w3.org/TR/cssom/#stylesheetlist">
-    <link rel="help" href="http://www.w3.org/TR/cssom/#add-a-style-sheet">
+    <link rel="help" href="http://www.w3.org/TR/cssom/#the-stylesheetlist-sequence">
+    <link rel="help" href="http://www.w3.org/TR/cssom/#style-sheet-collections">
     <style title="aaa" type="text/css">
       H1 {border-width: 1; border: solid; text-align: center}
     </style>
@@ -13,10 +13,10 @@
     <link title="kilo" rel="stylesheet" href="kilo.css"  type="text/css">
     <link title="alpha" rel="stylesheet" href="alpha.css" type="text/css">
     <link title="zebra" rel="stylesheet" href="/directory01/zebra.css" type="text/css">
-    <meta name="flags" content="cssom">
-    <meta name="assert" content="Document's style sheets created from HTTP Link headers are first in list and loaded in header order"> 
+    <meta name="flags" content="dom">
+    <meta name="assert" content="Document's style sheets created from HTTP Link headers are first in list and loaded in header order">
     <script src="/resources/testharness.js"></script>
-    <script src="/resources/testharnessreport.js"></script>    
+    <script src="/resources/testharnessreport.js"></script>
 </head>
 <body>
     <div id="log"></div>
@@ -25,7 +25,7 @@
       // Get the Document's styleSheets attribute
       var styleSheets = document.styleSheets;
 
-      // Verify that the styleSheets list length is 5 
+      // Verify that the styleSheets list length is 5
       test(function() {
         assert_equals(styleSheets.length, 5, "styleSheets.length is incorrect:");
       }, "styleSheets.length must be 5");
@@ -51,6 +51,6 @@
         assert_equals(styleSheets.item(4).title, "zebra", "title for item 1 is incorrect:");
       }, "styleSheets item 0 title must be zebra");
 
-    </script>    
+    </script>
 </body>
 </html>

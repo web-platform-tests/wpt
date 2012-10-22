@@ -1,18 +1,18 @@
 <!doctype html>
 <head>
-  	<title>CSS OM: CSS Values</title>
-  	<link rel="author" title="Divya Manian" href="mailto:manian@adobe.com">
-  	<link rel="help" href="http://www.w3.org/TR/cssom/#css-values">  
-  	<meta name="flags" content="cssom">
-  	<meta name="assert" content="The style value should be serialized to margin: 20px;">	
-  	<script src="/resources/testharness.js"></script>
-	<script src="/resources/testharnessreport.js"></script>
+  <title>CSS OM: CSS Values</title>
+  <link rel="author" title="Divya Manian" href="mailto:manian@adobe.com">
+  <link rel="help" href="http://www.w3.org/TR/cssom/#css-values">
+  <meta name="flags" content="dom">
+  <meta name="assert" content="The style value should be serialized to margin: 20px;">
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
 </head>         
 <body>
     <div id="cssomtestElm"></div>
     <div id="log"></div>    
     <script>
-    	var testElm = document.getElementById('cssomtestElm');
+        var testElm = document.getElementById('cssomtestElm');
         // Set the transform 
         document.getElementById('cssomtestElm').style.margin = "20px 20px 20px 20px";
 

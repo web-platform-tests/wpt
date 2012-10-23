@@ -19,15 +19,15 @@
                 var x;
                 var img = document.getElementById("imgBlackRect");
 
-                // SyntaxError exception should be thrown if repetition argument is unrecognized.
-                assert_throws(new SyntaxError(), function () { ctx.createPattern(img, x); } );
-              }, "repetition argument");
+                // SYNTAX_ERR exception should be thrown if repetition argument is unrecognized.
+                assert_throws("SYNTAX_ERR", function () { ctx.createPattern(img, x); } );
+              }, "unrecognized repetition argument");
               done();
             }
         </script>
     </head>
     <body onload="runTest()">
-        <p>Description:  If the repetition argument in createPattern(image, repetition) is unrecognized, SyntaxError exception must be raised.</p>
+        <p>Description:  If the repetition argument in createPattern(image, repetition) is unrecognized, SYNTAX_ERR exception must be raised.</p>
         <div id="log"></div>
         <canvas id="canvas1" width="300" height="150">Browser does not support HTML5 Canvas.</canvas>
         <img id="imgBlackRect" style="display:none" src="../images/blackRect.png">

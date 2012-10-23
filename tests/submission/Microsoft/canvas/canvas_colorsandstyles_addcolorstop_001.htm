@@ -18,15 +18,15 @@
 
                 var lingrad = ctx.createLinearGradient(0, 0, 100, 0);
 
-                // SyntaxError exception should be thrown if color cannot be parsed.
-                assert_throws(new SyntaxError(), function() { lingrad.addColorStop(0, "invalidColor"); });
+                // SYNTAX_ERR exception should be thrown if color cannot be parsed.
+                assert_throws("SYNTAX_ERR", function() { lingrad.addColorStop(0, "invalidColor"); });
               }, "addColorStop(offset, undefined)");
               done();
             }
         </script>
     </head>
     <body onload="runTest()">
-        <p>Description: addColorStop(offset, color) must throw a SyntaxError exception if the color passed cannot be parsed.</p>
+        <p>Description: addColorStop(offset, color) must throw a SYNTAX_ERR exception if the color passed cannot be parsed.</p>
         <div id="log"></div>
         <canvas id="canvas1" width="300" height="150">Browser does not support HTML5 Canvas.</canvas>
     </body>

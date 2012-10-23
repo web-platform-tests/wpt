@@ -48,15 +48,6 @@ function setupSpecialElements(parent) {
 }
 
 /*
- * Check that the implementation correctly declares support for Selectors API
- */
-function checkHasFeature() {
-	test(function() {
-		assert_true(document.implementation.hasFeature("Selectors-API", "1.0"), "This should declare support for the API.");
-	}, "Feature check: Selectors-API 1.0")
-}
-
-/*
  * Check that the querySelector and querySelectorAll methods exist on the given Node
  */
 function interfaceCheck(type, obj, testType) {

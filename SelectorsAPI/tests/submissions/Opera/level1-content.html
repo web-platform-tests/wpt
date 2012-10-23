@@ -220,15 +220,15 @@
 		<p id="pseudo-empty-p5"><span id="pseudo-empty-span1"></span></p>
 	</div>
 
-<div id="pseudo-link">
-	<a id="pseudo-link-a1" href="">with href</a>
-	<a id="pseudo-link-a2" href="http://example.org/">with href</a>
-	<a id="pseudo-link-a3">without href</a>
-	<map name="pseudo-link-map1" id="pseudo-link-map1">
-		<area id="pseudo-link-area1" href="">
-		<area id="pseudo-link-area2">
-	</map>
-</div>
+	<div id="pseudo-link">
+		<a id="pseudo-link-a1" href="">with href</a>
+		<a id="pseudo-link-a2" href="http://example.org/">with href</a>
+		<a id="pseudo-link-a3">without href</a>
+		<map name="pseudo-link-map1" id="pseudo-link-map1">
+			<area id="pseudo-link-area1" href="">
+			<area id="pseudo-link-area2">
+		</map>
+	</div>
 
 	<div id="pseudo-lang">
 		<div id="pseudo-lang-div1"></div>
@@ -261,6 +261,16 @@
 		<input id="pseudo-ui-input18" disabled="disabled" type="hidden">
 		<textarea id="pseudo-ui-textarea2" disabled="disabled"></textarea>
 		<button id="pseudo-ui-button2" disabled="disabled">Disabled</button>
+	</div>
+
+	<div id="not">
+		<div id="not-div1"></div>
+		<div id="not-div2"></div>
+		<div id="not-div3"></div>
+
+		<p id="not-p1"><span id="not-span1"></span><em id="not-em1"></em></p>
+		<p id="not-p2"><span id="not-span2"></span><em id="not-em2"></em></p>
+		<p id="not-p3"><span id="not-span3"></span><em id="not-em3"></em></p>
 	</div>
 
 	<div id="pseudo-element">All pseudo-element tests</div>
@@ -327,16 +337,31 @@
 	</div>
 
 	<div id="adjacent">
-		<div id="adjacent-div1" class="adjacent-div1">
-			<div id="adjacent-div2" class="adjacent-div2"></div>
+		<div id="adjacent-div1" class="adjacent-div1"></div>
+		<div id="adjacent-div2" class="adjacent-div2">
+			<div id="adjacent-div3" class="adjacent-div3"></div>
 		</div>
-		<div id="adjacent-div3" class="adjacent-div3">
+		<div id="adjacent-div4" class="adjacent-div4">
 			<p id="adjacent-p1" class="adjacent-p1"></p>
-			<div id="adjacent-div4" class="adjacent-div4"></div>
+			<div id="adjacent-div5" class="adjacent-div5"></div>
 		</div>
-		<div id="adjacent-div5" class="adjacent-div2"></div>
-		<p id="adjacent-p2" class="adjacent-p1"></p>
-		<p id="adjacent-p3" class="adjacent-p2"></p>
+		<div id="adjacent-div6" class="adjacent-div6"></div>
+		<p id="adjacent-p2" class="adjacent-p2"></p>
+		<p id="adjacent-p3" class="adjacent-p3"></p>
+	</div>
+
+	<div id="sibling">
+		<div id="sibling-div1" class="sibling-div"></div>
+		<div id="sibling-div2" class="sibling-div">
+			<div id="sibling-div3" class="sibling-div"></div>
+		</div>
+		<div id="sibling-div4" class="sibling-div">
+			<p id="sibling-p1" class="sibling-p"></p>
+			<div id="sibling-div5" class="sibling-div"></div>
+		</div>
+		<div id="sibling-div6" class="sibling-div"></div>
+		<p id="sibling-p2" class="sibling-p"></p>
+		<p id="sibling-p3" class="sibling-p"></p>
 	</div>
 
 	<div id="group">

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="UTF-8">
-<title>Selectors-API Test Suite: HTML with Selectors Level 2 using TestHarness</title>
+<title>Selectors-API Test Suite: HTML with CSS Level 2 Selectors using TestHarness</title>
 <!-- Selectors API Test Suite Version 3 -->
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -11,7 +11,7 @@
 <div id="log">This test requires JavaScript.</div>
 
 <script>
-var testType = TEST_LEVEL1_BASELINE; // Only run baseline tests.
+var testType = TEST_QSA_BASELINE; // Only run baseline tests.
 var docType  = "html"; // Only run tests suitable for HTML
 
 var frame = document.createElement("iframe"),
@@ -85,12 +85,10 @@ function init() {
 	fragment.appendChild(testRoot.cloneNode(true));
 
 	// Setup Tests
-	checkHasFeature();
-
-	interfaceCheck("Document", doc);
-	interfaceCheck("Detached Element", detached);
-	interfaceCheck("Fragment", fragment);
-	interfaceCheck("In-document Element", testRoot);
+	interfaceCheck("Document", doc, testType);
+	interfaceCheck("Detached Element", detached, testType);
+	interfaceCheck("Fragment", fragment, testType);
+	interfaceCheck("In-document Element", testRoot, testType);
 
 	runSpecialSelectorTests("Document", doc);
 	runSpecialSelectorTests("Detached Element", detached);

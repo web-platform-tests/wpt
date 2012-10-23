@@ -59,16 +59,56 @@ function checkHasFeature() {
 /*
  * Check that the querySelector and querySelectorAll methods exist on the given Node
  */
-function interfaceCheck(type, obj){
-	test(function() {
-		var q = typeof obj.querySelector === "function";
-		assert_true(q, type + " supports querySelector.");
-	}, type + " supports querySelector")
+function interfaceCheck(type, obj, testType) {
+	if (testType & (TEST_QSA_BASELINE|TEST_QSA_ADDITIONAL)) {
+		test(function() {
+			var q = typeof obj.querySelector === "function";
+			assert_true(q, type + " supports querySelector.");
+		}, type + " supports querySelector")
 
-	test(function() {
-		var qa = typeof obj.querySelectorAll === "function";
-		assert_true( qa, type + " supports querySelectorAll.");
-	}, type + " supports querySelectorAll")
+		test(function() {
+			var qa = typeof obj.querySelectorAll === "function";
+			assert_true( qa, type + " supports querySelectorAll.");
+		}, type + " supports querySelectorAll")
+	}
+	
+	if (testType & (TEST_FIND_BASELINE|TEST_FIND_ADDITIONAL)) {
+		test(function() {
+			var q = typeof obj.find === "function";
+			assert_true(q, type + " supports find.");
+		}, type + " supports querySelector")
+
+		test(function() {
+			var qa = typeof obj.findAll === "function";
+			assert_true( qa, type + " supports findAll.");
+		}, type + " supports findAll")
+	}
+
+	if (testType & (TEST_MATCH_BASELINE|TEST_MATCH_ADDITIONAL)) {
+		if (obj.nodeType === obj.ELEMENT_NODE) {
+			var ma = "matches";
+			if (!obj.matches) { // If unprefixed method is not supported, test prefixed implementations.
+				if (obj.mozMatchesSelector) {
+					ma = "mozMatchesSelector"
+				} else if (obj.webkitMatchesSelector) {
+					ma = "webkitMatchesSelector"
+				} else if (obj.oMatchesSelector) {
+					ma = "oMatchesSelector"
+				} else if (obj.msMatchesSelector) {
+					ma = "msMatchesSelector"
+				}
+			}
+
+			test(function() {
+				assert_idl_attribute(obj, ma, type + " supports " + ma);
+			}, type + " supports " + ma)
+
+			test(function() {
+				assert_idl_attribute(obj, ma, type + " supports matches");
+				assert_equals(ma, "matches", "The matches method should be supported without a prefix.")
+			}, type + " unprefixed matches method.")
+		}
+	}
 }
 
 /*

@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <myDocument xmlns="http://my.DocumentURI/" xml:lang="en">
  <prolog>
-<its:rules xmlns:its="http://www.w3.org/2005/11/its" version="1.0"
- xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="WithinText2_LinkedRules.xml"
+<its:rules xmlns:its="http://www.w3.org/2005/11/its" version="2.0"
+ xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="withintext2xmlrules.xml"
  xmlns:d="http://my.DocumentURI/">
  <its:withinTextRule selector="//d:keywords/d:kw" withinText="no"/>
 </its:rules>
@@ -22,4 +22,4 @@
   </section>
   <footer><p>Copyright: <em>Zebulon Inc.</em></p></footer>
  </content>
-</myDocument><!-- timestamp $Id: WithinText2.xml,v 1.8 2007/02/02 16:55:05 srahtz3 Exp $ -->
+</myDocument>

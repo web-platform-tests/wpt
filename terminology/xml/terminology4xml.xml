@@ -1,8 +1,8 @@
 <text>
  <head>
-  <its:rules version="1.0" xmlns:its="http://www.w3.org/2005/11/its"
+  <its:rules version="2.0" xmlns:its="http://www.w3.org/2005/11/its"
    xmlns:xlink="http://www.w3.org/1999/xlink"
-   xlink:href="Terminology2_LinkedRules.xml" xlink:type="simple">
+   xlink:href="terminology4xmlrules.xml">
    <its:termRule selector="//p[2]/term" term="yes"
     termInfoPointer="../gloss"/>
    <its:termRule selector="//p[3]/term" term="no"/>

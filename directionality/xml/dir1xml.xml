@@ -1,6 +1,6 @@
 <text xml:lang="en">
  <head>
-  <its:rules xmlns:its="http://www.w3.org/2005/11/its" version="1.0">
+  <its:rules xmlns:its="http://www.w3.org/2005/11/its" version="2.0">
    <its:dirRule dir="rtl" selector="//*[@direction='rtlText']"/>
   </its:rules>
  </head>
@@ -9,4 +9,4 @@
    direction="rtlText">פעילות הבינאום, W3C</quote>
    means <quote>Internationalization Activity, W3C</quote>.</par>
  </body>
-</text><!-- timestamp $Id: Dir1.xml,v 1.3 2007/02/02 16:55:05 srahtz3 Exp $ -->
+</text>

@@ -1,5 +1,5 @@
 <book
-  xmlns:its="http://www.w3.org/2005/11/its" >
+  xmlns:its="http://www.w3.org/2005/11/its" its:version="2.0">
  <info>
   <legalnotice
     its:localeFilterList="en-CA, fr-CA">

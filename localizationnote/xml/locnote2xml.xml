@@ -1,6 +1,6 @@
 <Res>
  <prolog>
-  <its:rules xmlns:its="http://www.w3.org/2005/11/its" version="1.0">
+  <its:rules xmlns:its="http://www.w3.org/2005/11/its" version="2.0">
    <its:translateRule selector="//msg/notes" translate="no"/>
    <its:locNoteRule locNoteType="description" selector="//msg/data"
     locNotePointer="../notes"/>
@@ -16,4 +16,4 @@
    <data>Invalid parameter.</data>
   </msg>
  </body>
-</Res><!-- timestamp $Id: EX-locNotePointer-attribute-1.xml,v 1.4 2007/02/02 16:55:05 srahtz3 Exp $ -->
+</Res>

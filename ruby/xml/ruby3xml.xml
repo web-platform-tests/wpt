@@ -1,6 +1,6 @@
  <ex:text xmlns:its="http://www.w3.org/2005/11/its" xmlns:ex="http://example.com">
   <ex:head> ... 
-   <its:rules version="1.0" >
+   <its:rules version="2.0" >
     <its:rubyRule selector="//ex:p[1]//ex:rb" 
      rubyPointer="ancestor::ex:ruby" rbcPointer="parent::ex:rbc"
      rtcPointer="../following-sibling::ex:rtc"
@@ -33,4 +33,4 @@
     </ex:ruby>
    </ex:p>
   </ex:body>
- </ex:text><!-- timestamp $Id: EX-ruby-pointer-1.xml,v 1.2 2007/02/02 16:55:05 srahtz3 Exp $ -->
+ </ex:text>

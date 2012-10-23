@@ -1,6 +1,6 @@
 <dataFile>
  <prolog>
-  <its:rules xmlns:its="http://www.w3.org/2005/11/its" version="1.0">
+  <its:rules xmlns:its="http://www.w3.org/2005/11/its" version="2.0">
    <its:locNoteRule locNoteType="description" selector="//body/string/data"
     locNoteRefPointer="../@noteFile" />
   </its:rules>

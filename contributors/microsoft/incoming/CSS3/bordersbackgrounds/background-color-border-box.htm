@@ -4,10 +4,10 @@
         <title>CSS Test: Background color clipped to 'border-box'</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-color" />
-        <meta name="flags" content="" />
+        <meta name="flags" content="image" />
         <meta name="assert" content="Background color is clipped according to the 'background-clip' value associated with the bottom-most background image." />
         <style type="text/css">
-            #test
+            div div
             {
                 width: 250px;
                 height: 250px;
@@ -19,7 +19,7 @@
                 background-position: 30px 30px, 60px 60px, 90px 90px;
                 background-color: black;
             }
-            #parent 
+            #parent
             {
                 width: 290px;
                 background: red;
@@ -29,7 +29,7 @@
     <body>
         <p>Test passes if green is visible on the page and there is no red is visible on the page.</p>
         <div id="parent">
-            <div id="test"></div>
+            <div></div>
         </div>
     </body>
 </html>

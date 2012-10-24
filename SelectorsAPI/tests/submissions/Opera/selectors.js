@@ -1,10 +1,10 @@
 // Bit-mapped flags to indicate which tests the selector is suitable for
-const TEST_QSA_BASELINE     = 0x01; // querySelector() and querySelectorAll() baseline tests
-const TEST_QSA_ADDITIONAL   = 0x02; // querySelector() and querySelectorAll() additional tests, also suitable for matchesSelector
-const TEST_FIND_BASELINE    = 0x04; // find() and findAll() baseline tests, may be unsuitable for querySelector[All]
-const TEST_FIND_ADDITIONAL  = 0x08; // find() and findAll() additional tests, may be unsuitable for querySelector[All]
-const TEST_MATCH_BASELINE   = 0x10; // matches() baseline tests
-const TEST_MATCH_ADDITIONAL = 0x20; // matches() additional tests
+var TEST_QSA_BASELINE     = 0x01; // querySelector() and querySelectorAll() baseline tests
+var TEST_QSA_ADDITIONAL   = 0x02; // querySelector() and querySelectorAll() additional tests
+var TEST_FIND_BASELINE    = 0x04; // find() and findAll() baseline tests, may be unsuitable for querySelector[All]
+var TEST_FIND_ADDITIONAL  = 0x08; // find() and findAll() additional tests, may be unsuitable for querySelector[All]
+var TEST_MATCH_BASELINE   = 0x10; // matches() baseline tests
+var TEST_MATCH_ADDITIONAL = 0x20; // matches() additional tests
 
 /*
  * All of these invalid selectors should result in a SyntaxError being thrown by the APIs.
@@ -82,7 +82,8 @@ var validSelectors = [
 	// - presence                  [att]
 	{name: "Attribute presence selector, matching align attribute with value",                    selector: ".attr-presence-div1[align]",                             expect: ["attr-presence-div1"],                                             level: 2, testType: TEST_QSA_BASELINE | TEST_MATCH_BASELINE},
 	{name: "Attribute presence selector, matching align attribute with empty value",              selector: ".attr-presence-div2[align]",                             expect: ["attr-presence-div2"],                                             level: 2, testType: TEST_QSA_BASELINE | TEST_MATCH_BASELINE},
-	{name: "Attribute presence selector, matching title attribute case insensitively",            selector: "#attr-presence [TiTlE]",                                 expect: ["attr-presence-a1", "attr-presence-span1"], exclude: ["xhtml"],    level: 2, testType: TEST_QSA_BASELINE | TEST_MATCH_BASELINE},
+	{name: "Attribute presence selector, matching title attribute, case insensitivity",           selector: "#attr-presence [TiTlE]",                                 expect: ["attr-presence-a1", "attr-presence-span1"], exclude: ["xhtml"],    level: 2, testType: TEST_QSA_BASELINE | TEST_MATCH_BASELINE},
+	{name: "Attribute presence selector, not matching title attribute, case sensitivity",         selector: "#attr-presence [TiTlE]",                                 expect: [],                                          exclude: ["html"],     level: 2, testType: TEST_QSA_BASELINE | TEST_MATCH_BASELINE},
 	{name: "Attribute presence selector, matching custom data-* attribute",                       selector: "[data-attr-presence]",                                   expect: ["attr-presence-pre1", "attr-presence-blockquote1"],                level: 2, testType: TEST_QSA_BASELINE | TEST_MATCH_BASELINE},
 	{name: "Attribute presence selector, not matching attribute with similar name",               selector: ".attr-presence-div3[align], .attr-presence-div4[align]", expect: [] /*no matches*/,                                                  level: 2, testType: TEST_QSA_BASELINE | TEST_MATCH_BASELINE},
 	{name: "Attribute presence selector, matching attribute with non-ASCII characters",           selector: "ul[data-中文]",                                            expect: ["attr-presence-ul1"],                                              level: 2, testType: TEST_QSA_BASELINE | TEST_MATCH_BASELINE},

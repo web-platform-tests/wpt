@@ -34,10 +34,8 @@ function init() {
 	 * The valid selector tests check the result from querying many different types of selectors, with a
 	 * list of expected elements. This checks that querySelector() always returns the first result from
 	 * querySelectorAll(), and that all matching elements are correctly returned in tree-order. The tests
-	 * can be limited by the CSS or Selector level in which the specific selector was introduced by modifying
-	 * the LEVEL constant. Only Selectors introduced in that level or below will be tested.  That is,
-	 * if LEVEL is set to 2, then only Selectors introduced in CSS levels 1 and 2 will be tested, and levels
-	 * 3 and above will be excluded.
+	 * can be limited by specifying the test types to run, using the testType variable. The constants for this
+	 * can be found in selectors.js.
 	 *
 	 * All the selectors tested for the valid selector tests are found in selectors.js.
 	 * See comments in that file for documentation of the format used.

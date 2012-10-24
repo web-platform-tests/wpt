@@ -31,7 +31,7 @@ function init() {
 	 * 3. Detached Element node (an element with no parent, not in the document)
 	 * 4. Document Fragment node
 	 *
-	 * Then, for each context, a number of different types of tests are run:
+	 * For each context, the following tests are run:
 	 *
 	 * The interface check tests ensure that each type of node exposes the Selectors API methods
 	 * 
@@ -49,15 +49,13 @@ function init() {
 	 * The valid selector tests check the result from querying many different types of selectors, with a
 	 * list of expected elements. This checks that querySelector() always returns the first result from
 	 * querySelectorAll(), and that all matching elements are correctly returned in tree-order. The tests
-	 * can be limited by the CSS or Selector level in which the specific selector was introduced by modifying
-	 * the LEVEL constant. Only Selectors introduced in that level or below will be tested.  That is,
-	 * if LEVEL is set to 2, then only Selectors introduced in CSS levels 1 and 2 will be tested, and levels
-	 * 3 and above will be excluded.
+	 * can be limited by specifying the test types to run, using the testType variable. The constants for this
+	 * can be found in selectors.js.
 	 *
 	 * All the selectors tested for both the valid and invalid selector tests are found in selectors.js.
 	 * See comments in that file for documentation of the format used.
 	 *
-	 * The lib.js file contains all the common test functions for running each of the aforementioned tests
+	 * The level1-lib.js file contains all the common test functions for running each of the aforementioned tests
 	 */
 
 	// Prepare the nodes for testing

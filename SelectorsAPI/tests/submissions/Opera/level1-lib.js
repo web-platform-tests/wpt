@@ -237,7 +237,7 @@ function runValidSelectorTest(type, root, selectors, testType, docType) {
 
 /*
  * Execute queries with the specified invalid selectors for both querySelector() and querySelectorAll()
- * Only run these tests when results are expected. Don't run for syntax error tests.
+ * Only run these tests when errors are expected. Don't run for valid selector tests.
  */
 function runInvalidSelectorTest(type, root, selectors) {
 	for (var i = 0; i < selectors.length; i++) {

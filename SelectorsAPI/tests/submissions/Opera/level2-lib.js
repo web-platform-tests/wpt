@@ -1,5 +1,19 @@
 // Require selectors.js to be included before this.
 
+// Determine the name of the matches method
+var matches = "matches";
+if (!document.documentElement.matches) { // If unprefixed method is not supported, test prefixed implementations.
+	if (document.documentElement.mozMatchesSelector) {
+		matches = "mozMatchesSelector"
+	} else if (document.documentElement.webkitMatchesSelector) {
+		matches = "webkitMatchesSelector"
+	} else if (document.documentElement.oMatchesSelector) {
+		matches = "oMatchesSelector"
+	} else if (document.documentElement.msMatchesSelector) {
+		matches = "msMatchesSelector"
+	}
+}
+
 /*
  * Create and append special elements that cannot be created correctly with HTML markup alone.
  */
@@ -48,29 +62,41 @@ function setupSpecialElements(parent) {
 }
 
 /*
- * Check that the querySelector and querySelectorAll methods exist on the given Node
+ * Check that the find, findAll and matches() methods exist on the given Node
  */
 function interfaceCheck(type, obj, testType) {
 	test(function() {
-		var q = typeof obj.querySelector === "function";
-		assert_true(q, type + " supports querySelector.");
-	}, type + " supports querySelector")
+		var q = typeof obj.find === "function";
+		assert_true(q, type + " supports find.");
+	}, type + " supports find")
 
 	test(function() {
-		var qa = typeof obj.querySelectorAll === "function";
-		assert_true( qa, type + " supports querySelectorAll.");
-	}, type + " supports querySelectorAll")
+		var qa = typeof obj.findAll === "function";
+		assert_true( qa, type + " supports findAll.");
+	}, type + " supports findAll")
+
+
+	if (obj.nodeType === obj.ELEMENT_NODE) {
+		test(function() {
+			assert_idl_attribute(obj, matches, type + " supports " + matches);
+		}, type + " supports " + matches)
+
+		test(function() {
+			assert_idl_attribute(obj, matches, type + " supports matches");
+			assert_equals(matches, "matches", "The matches method should be supported without a prefix.")
+		}, type + " unprefixed matches method.")
+	}
 }
 
 /*
- * Verify that the NodeList returned by querySelectorAll is static and and that a new list is created after
+ * Verify that the NodeList returned by findAll is static and and that a new list is created after
  * each call. A static list should not be affected by subsequent changes to the DOM.
  */
 function verifyStaticList(type, root) {
 	var pre, post, preLength;
 
 	test(function() {
-		pre = root.querySelectorAll("div");
+		pre = root.findAll("div");
 		preLength = pre.length;
 
 		var div = doc.createElement("div");
@@ -80,7 +106,7 @@ function verifyStaticList(type, root) {
 	}, type + ": static NodeList")
 
 	test(function() {
-		post = root.querySelectorAll("div"),
+		post = root.findAll("div"),
 		assert_equals(post.length, preLength + 1, "The length of the new NodeList should be 1 more than the previous list.")
 	}, type + ": new NodeList")
 }
@@ -91,50 +117,75 @@ function verifyStaticList(type, root) {
  */
 function runSpecialSelectorTests(type, root) {
 	test(function() { // 1
-		assert_equals(root.querySelectorAll(null).length, 1, "This should find one element with the tag name 'NULL'.");
-	}, type + ".querySelectorAll null")
+		assert_equals(root.findAll(null).length, 1, "This should find one element with the tag name 'NULL'.");
+	}, type + ".findAll null")
 
 	test(function() { // 2
-		assert_equals(root.querySelectorAll(undefined).length, 1, "This should find one elements with the tag name 'UNDEFINED'.");
-	}, type + ".querySelectorAll undefined")
+		assert_equals(root.findAll(undefined).length, 1, "This should find one elements with the tag name 'UNDEFINED'.");
+	}, type + ".findAll undefined")
 
 	test(function() { // 3
 		assert_throws(TypeError(), function() {
-			root.querySelectorAll();
+			root.findAll();
 		}, "This should throw a TypeError.")
-	}, type + ".querySelectorAll no parameter")
+	}, type + ".findAll no parameter")
 
 	test(function() { // 4
-		var elm = root.querySelector(null)
+		var elm = root.find(null)
 		assert_not_equals(elm, null, "This should find an element.");
 		assert_equals(elm.tagName.toUpperCase(), "NULL", "The tag name should be 'NULL'.")
-	}, type + ".querySelector null")
+	}, type + ".find null")
 
 	test(function() { // 5
-		var elm = root.querySelector(undefined)
+		var elm = root.find(undefined)
 		assert_not_equals(elm, undefined, "This should find an element.");
 		assert_equals(elm.tagName.toUpperCase(), "UNDEFINED", "The tag name should be 'UNDEFINED'.")
-	}, type + ".querySelector undefined")
+	}, type + ".find undefined")
 
 	test(function() { // 6
 		assert_throws(TypeError(), function() {
-			root.querySelector();
+			root.find();
 		}, "This should throw a TypeError.")
-	}, type + ".querySelector no parameter")
+	}, type + ".find no parameter.")
 
 	test(function() { // 7
-		result = root.querySelectorAll("*");
+		result = root.findAll("*");
 		var i = 0;
 		traverse(root, function(elem) {
 			if (elem !== root) {
 				assert_equals(elem, result[i++], "The result in index " + i + " should be in tree order.")
 			}
 		})
-	}, type + ".querySelectorAll tree order");
+	}, type + ".findAll tree order");
+}
+
+function runSpecialMatchesTests(type, element) {
+	test(function() { // 1
+		if (element.tagName.toLowerCase() === "null") {
+			console.log("Matches method: " + matches)
+			assert_true(element[matches](null), "An element with the tag name '" + element.tagName.toLowerCase() + "' should match.");
+		} else {
+			assert_false(element[matches](null), "An element with the tag name '" + element.tagName.toLowerCase() + "' should not match.");
+		}
+	}, type + "." + matches + "(null)")
+
+	test(function() { // 2
+		if (element.tagName.toLowerCase() === "undefined") {
+			assert_true(element[matches](undefined), "An element with the tag name '" + element.tagName.toLowerCase() + "' should match.");
+		} else {
+			assert_false(element[matches](undefined), "An element with the tag name '" + element.tagName.toLowerCase() + "' should not match.");
+		}
+	}, type + "." + matches + "(undefined)")
+
+	test(function() { // 3
+		assert_throws(TypeError(), function() {
+			element[matches]();
+		}, "This should throw a TypeError.")
+	}, type + "." + matches + " no parameter")
 }
 
 /*
- * Execute queries with the specified valid selectors for both querySelector() and querySelectorAll()
+ * Execute queries with the specified valid selectors for both find() and findAll()
  * Only run these tests when results are expected. Don't run for syntax error tests.
  */
 function runValidSelectorTest(type, root, selectors, testType, docType) {
@@ -166,7 +217,7 @@ function runValidSelectorTest(type, root, selectors, testType, docType) {
 			var foundall, found;
 
 			test(function() {
-				foundall = root.querySelectorAll(q);
+				foundall = root.findAll(q);
 				assert_not_equals(foundall, null, "The method should not return null.")
 				assert_equals(foundall.length, e.length, "The method should return the expected number of matches.")
 
@@ -175,20 +226,20 @@ function runValidSelectorTest(type, root, selectors, testType, docType) {
 					assert_equals(foundall[i].getAttribute("id"), e[i], "The item in index " + i + " should have the expected ID.");
 					assert_false(foundall[i].hasAttribute("data-clone"), "This should not be a cloned element.");
 				}
-			}, type + ".querySelectorAll: " + n + ": " + q);
+			}, type + ".findAll: " + n + ": " + q);
 
 			test(function() {
-				found = root.querySelector(q);
+				found = root.find(q);
 
 				if (e.length > 0) {
 					assert_not_equals(found, null, "The method should return a match.")
 					assert_equals(found.getAttribute("id"), e[0], "The method should return the first match.");
-					assert_equals(found, foundall[0], "The result should match the first item from querySelectorAll.");
+					assert_equals(found, foundall[0], "The result should match the first item from findAll.");
 					assert_false(found.hasAttribute("data-clone"), "This should not be annotated as a cloned element.");
 				} else {
 					assert_equals(found, null, "The method should not match anything.");
 				}
-			}, type + ".querySelector: " + n + ": " + q);
+			}, type + ".find: " + n + ": " + q);
 		} else {
 			//console.log("Excluding for " + nodeType + ": " + s["testType"] + "&" + testType + "=" + (s["testType"] & testType) + ": " + JSON.stringify(s))
 		}
@@ -196,7 +247,7 @@ function runValidSelectorTest(type, root, selectors, testType, docType) {
 }
 
 /*
- * Execute queries with the specified invalid selectors for both querySelector() and querySelectorAll()
+ * Execute queries with the specified invalid selectors for both find() and findAll()
  * Only run these tests when errors are expected. Don't run for valid selector tests.
  */
 function runInvalidSelectorTest(type, root, selectors) {
@@ -208,17 +259,48 @@ function runInvalidSelectorTest(type, root, selectors) {
 
 		test(function() {
 			assert_throws("SyntaxError", function() {
-				root.querySelector(q)
+				root.find(q)
 			})
-		}, type + ".querySelector: " + n + ": " + q);
+		}, type + ".find: " + n + ": " + q);
 
 		test(function() {
 			assert_throws("SyntaxError", function() {
-				root.querySelectorAll(q)
+				root.findAll(q)
 			})
-		}, type + ".querySelectorAll: " + n + ": " + q);
+		}, type + ".findAll: " + n + ": " + q);
+
+		if (root.nodeType === root.ELEMENT_NODE) {
+			test(function() {
+				assert_throws("SyntaxError", function() {
+					root[matches](q)
+				})
+			}, type + "." + matches + ": " + n + ": " + q);
+		}
 	}
 }
+
+function runMatchesTest(css, type, root) {
+	test(function() {
+		assert_throws("SyntaxError", function() {
+			root[matches]("");
+		}, "This should throw a SyntaxError")
+	}, type + "." + matches + " Empty String")	
+
+	test(function() {
+		root[matches](null);
+	}, type + "." + matches + " null")
+
+	test(function() {
+		root[matches](undefined);
+	}, type + "." + matches + " undefined")	
+
+	test(function() {
+		assert_throws(TypeError(), function() {
+			root[matches]();
+		}, "This should throw a TypeError")
+	}, type + "." + matches + " no parameter")	
+}
+
 
 function traverse(elem, fn) {
 	if (elem.nodeType === elem.ELEMENT_NODE) {

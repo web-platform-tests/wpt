@@ -46,14 +46,14 @@ function init() {
 	// Prepare the nodes for testing
 	doc = frame.contentDocument;                 // Document Node tests
 
-	var testRoot = doc.getElementById("root");   // In-document Element Node tests
+	var element = doc.getElementById("root");   // In-document Element Node tests
 
 	//Setup the namespace tests
-	setupSpecialElements(testRoot);
+	setupSpecialElements(element);
 
-	var outOfScope = testRoot.cloneNode(true);   // Append this to the body before running the in-document
+	var outOfScope = element.cloneNode(true);   // Append this to the body before running the in-document
 	                                             // Element tests, but after running the Document tests. This
-	                                             // tests that no elements that are not descendants of testRoot
+	                                             // tests that no elements that are not descendants of element
 	                                             // are selected.
 
 	traverse(outOfScope, function(elem) {        // Annotate each element as being a clone; used for verifying
@@ -61,10 +61,10 @@ function init() {
 	});
 
 
-	var detached = testRoot.cloneNode(true);     // Detached Element Node tests
+	var detached = element.cloneNode(true);     // Detached Element Node tests
 
 	var fragment = doc.createDocumentFragment(); // Fragment Node tests
-	fragment.appendChild(testRoot.cloneNode(true));
+	fragment.appendChild(element.cloneNode(true));
 
 	// Setup Tests
 	runValidSelectorTest("Document", doc, validSelectors, testType, docType);
@@ -73,7 +73,7 @@ function init() {
 
 	doc.body.appendChild(outOfScope); // Append before in-document Element tests.
 	                                  // None of these elements should match
-	runValidSelectorTest("In-document Element", testRoot, validSelectors, testType, docType);
+	runValidSelectorTest("In-document Element", element, validSelectors, testType, docType);
 }
 </script>
 

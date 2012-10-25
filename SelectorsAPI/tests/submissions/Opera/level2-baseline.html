@@ -1,217 +1,91 @@
 <!DOCTYPE html>
 <meta charset="UTF-8">
-<title>Selectors-API Test Suite: HTML with Selectors Level 3 using TestHarness</title>
+<title>Selectors-API Test Suite: HTML with CSS Level 2 Selectors using TestHarness</title>
+<!-- Selectors API Test Suite Version 3 -->
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<style>
-iframe { visibility: hidden; position: absolute; }
-/*iframe { display: none; }*/
-/* Note: display: none; causes Firefox to fail/not run a significant number of tests */
-</style>
+<script src="selectors.js"></script>
+<script src="level2-lib.js"></script>
+<style>iframe { visibility: hidden; position: absolute; }</style>
 
-<div id="log">This test requires javascript.</div>
-<iframe src="level2-baseline-frame.html#target" id="testframe"></iframe>
+<div id="log">This test requires JavaScript.</div>
 
 <script>
-setup(null, {explicit_done: true});
+var testType = TEST_QSA_BASELINE; // Only run baseline tests.
+var docType  = "html"; // Only run tests suitable for HTML
 
-var frame = document.getElementById("testframe"),
+var frame = document.createElement("iframe"),
     doc;
-frame.onload = function() {
 
-	// Setup variables
-	doc = frame.contentDocument;             // Document
-	var root1 = doc.getElementById("root1"); // Element, Inside Element, part of Document
-	var root2 = doc.getElementById("root2"); // Outside Element, part of Document
-	var root3 = doc.getElementById("root3"); // JQuery Tests - Element
-	var root3clone = root3.cloneNode(true);  // JQuery Tests - Disconnected Element
-	var root4 = root2.cloneNode(true);       // Disconnected Element
+frame.onload = init;
+frame.src = "level2-content.html#target";
+document.body.appendChild(frame);
 
-	// Fragment
-	var root5 = root2.cloneNode(true);
-	var fragment = doc.createDocumentFragment();
-	fragment.appendChild(root5);
+function init() {
+	/*
+	 * This test suite tests Selectors API methods in 4 different contexts:
+	 * 1. Document node
+	 * 2. In-document Element node
+	 * 3. Detached Element node (an element with no parent, not in the document)
+	 * 4. Document Fragment node
+	 *
+	 * For each context, the following tests are run:
+	 *
+	 * The interface check tests ensure that each type of node exposes the Selectors API methods.
+	 * 
+	 * The matches() tests are run
+	 * All the selectors tested for both the valid and invalid selector tests are found in selectors.js.
+	 * See comments in that file for documentation of the format used.
+	 *
+	 * The level2-lib.js file contains all the common test functions for running each of the aforementioned tests
+	 */
 
-	var cssElem = doc.getElementById("test");
-	var css = (cssElem.innerHTML || cssElem.textContent || cssElem.innerText).split("\n");
-	for ( var i = 0; i < css.length; i++ ) {
-		css[i] = css[i].replace(/\/\*.*?\*\//g, "")
-			.replace(/^\s*|\s*$/g, "").split(/\s*{/);
-	}
+	// Prepare the nodes for testing
+	doc = frame.contentDocument;                 // Document Node tests
 
-	var ecssElem = doc.getElementById("error");
-	var ecss = (ecssElem.innerHTML || ecssElem.textContent || ecssElem.innerText).split("\n");
-	for ( var i = 0; i < ecss.length; i++ ) {
-		ecss[i] = ecss[i].replace(/\/\*.*?\*\//g, "")
-			.replace(/^\s*|\s*$/g, "").split(/\s*{/);
-	}
+	var element = doc.getElementById("root");   // In-document Element Node tests
 
-	// Setup null and undefined tests
-	var elementNull = doc.createElement("null")
-	var elementUndefined = doc.createElement("undefined")
+	//Setup the namespace tests
+	setupSpecialElements(element);
 
-	var testFragment = doc.createDocumentFragment();
-	testFragment.appendChild(elementNull);
-	testFragment.appendChild(elementUndefined);
+	var outOfScope = element.cloneNode(true);   // Append this to the body before running the in-document
+	                                             // Element tests, but after running the Document tests. This
+	                                             // tests that no elements that are not descendants of element
+	                                             // are selected.
 
-	root1.appendChild(testFragment.cloneNode(true));
-	root4.appendChild(testFragment.cloneNode(true));
-	root5.appendChild(testFragment);
+	traverse(outOfScope, function(elem) {        // Annotate each element as being a clone; used for verifying
+		elem.setAttribute("data-clone", "");     // that none of these elements ever match.
+	});
 
-	// Setup namespace tests
-	var anyNS = doc.createElement("div");
-	anyNS.className = "test any-namespace";
-	var noNS = doc.createElement("div");
-	noNS.className = "test no-namespace";
 
-	testFragment = doc.createDocumentFragment();
-	testFragment.appendChild(anyNS);
-	testFragment.appendChild(noNS);
+	var detached = element.cloneNode(true);     // Detached Element Node tests
 
-	var div1 = doc.createElement("div");
-	var div2 = doc.createElementNS("http://www.w3.org/1999/xhtml", "div");
-	var div3 = doc.createElementNS("", "div");
-	var div4 = doc.createElementNS("http://www.example.org/ns", "div");
+	var fragment = doc.createDocumentFragment(); // Fragment Node tests
+	fragment.appendChild(element.cloneNode(true));
 
-	div1.setAttribute("title", "Any namespace selector, HTML element");
-	div2.setAttribute("title", "Any namespace selector, XHTML element");
-	div3.setAttribute("title", "Any namespace selector, element in no namespace");
-	div4.setAttribute("title", "Any namespace selector, element in other namespace");
+	// Setup Tests
+	interfaceCheck("Document", doc, testType);
+	interfaceCheck("Detached Element", detached, testType);
+	interfaceCheck("Fragment", fragment, testType);
+	interfaceCheck("In-document Element", element, testType);
 
-	// Append extra HTMLElement elements to ensure that the .style property is available
-	div1.appendChild(doc.createElement("p"));
-	div2.appendChild(doc.createElement("p"));
-	div3.appendChild(doc.createElement("p"));
-	div4.appendChild(doc.createElement("p"));
+	runSpecialSelectorTests("Document", doc);
+	runSpecialSelectorTests("Detached Element", detached);
+	runSpecialSelectorTests("Fragment", fragment);
+	runSpecialSelectorTests("In-document Element", element);
 
-	anyNS.appendChild(div1);
-	anyNS.appendChild(div2);
-	anyNS.appendChild(div3);
-	anyNS.appendChild(div4);
+	runSpecialMatchesTests("DIV Element", element);
+	runSpecialMatchesTests("NULL Element", document.createElement("null"));
+	runSpecialMatchesTests("UNDEFINED Element", document.createElement("undefined"));
 
-	div1 = doc.createElement("div");
-	div2 = doc.createElementNS("http://www.w3.org/1999/xhtml", "div");
-	div3 = doc.createElementNS("", "div");
-	div4 = doc.createElementNS("http://www.example.org/ns", "div");
+	verifyStaticList("Document", doc);
+	verifyStaticList("Detached Element", detached);
+	verifyStaticList("Fragment", fragment);
+	verifyStaticList("In-document Element", element);
 
-	div1.setAttribute("title", "No namespace selector, HTML element");
-	div2.setAttribute("title", "No namespace selector, XHTML element");
-	div3.setAttribute("title", "No namespace selector, element in no namespace");
-	div4.setAttribute("title", "No namespace selector, element in other namespace");
-
-	// Append extra HTMLElement elements to ensure that the .style property is available
-	div1.appendChild(doc.createElement("p"));
-	div2.appendChild(doc.createElement("p"));
-	div3.appendChild(doc.createElement("p"));
-	div4.appendChild(doc.createElement("p"));
-
-	noNS.appendChild(div1);
-	noNS.appendChild(div2);
-	noNS.appendChild(div3);
-	noNS.appendChild(div4);
-
-	root1.appendChild(testFragment.cloneNode(true));
-	root2.appendChild(testFragment);
-
-	// Run tests
-	interfaceCheck(root1, "Element");
-	runMatchesSelectorTest(css, "Element", root1)
-	runMatchesSelectorTest(ecss, "Syntax Error: Element", root1)
-
-	interfaceCheck(root4, "Disconnected Element");
-	runMatchesSelectorTest(css, "Disconnected Element", root4)
-	runMatchesSelectorTest(ecss, "Syntax Error: Disconnected Element", root4, false);
-
-	interfaceCheck(fragment, "Fragment");
-
-	interfaceCheck(doc, "Document");
-
-	done();
+	runInvalidSelectorTest("Document", doc, invalidSelectors);
+	runInvalidSelectorTest("Detached Element", detached, invalidSelectors);
+	runInvalidSelectorTest("Fragment", fragment, invalidSelectors);
+	runInvalidSelectorTest("In-document Element", element, invalidSelectors);
 }
-
-function interfaceCheck(obj, type){
-	if (obj.nodeType === 1) {
-		if (!obj.matchesSelector) { // If unprefixed method is not supported, test prefixed implementations.
-			if (obj.mozMatchesSelector) {
-				ma = "mozMatchesSelector"
-			} else if (obj.webkitMatchesSelector) {
-				ma = "webkitMatchesSelector"
-			} else if (obj.oMatchesSelector) {
-				ma = "oMatchesSelector"
-			} else if (obj.msMatchesSelector) {
-				ma = "msMatchesSelector"
-			}
-		}
-
-		test(function() {
-			assert_idl_attribute(obj, ma, type + " supports " + ma);
-		}, type + " supports " + ma)
-
-		test(function() {
-			assert_idl_attribute(obj, ma, type + " supports matchesSelector");
-			assert_equals(ma, "matchesSelector", "The matchesSelector method should be supported without a prefix.")
-		}, type + " unprefixed matchesSelector method.")
-	}
-}
-
-function runMatchesSelectorTest(css, type, root) {
-	var ma = "matchesSelector";
-	if (!root.matchesSelector) { // If unprefixed method is not supported, test prefixed implementations.
-		if (root.mozMatchesSelector) {
-			ma = "mozMatchesSelector"
-		} else if (root.webkitMatchesSelector) {
-			ma = "webkitMatchesSelector"
-		} else if (root.oMatchesSelector) {
-			ma = "oMatchesSelector"
-		} else if (root.msMatchesSelector) {
-			ma = "msMatchesSelector"
-		}
-	}
-
-	test(function() {
-		assert_throws("SyntaxError", function() {
-			root[ma]("");
-		}, "This should throw a SyntaxError")
-	}, type + "." + ma + " Empty String")	
-
-	test(function() {
-		root[ma](null);
-	}, type + "." + ma + " null")
-
-	test(function() {
-		root[ma](undefined);
-	}, type + "." + ma + " undefined")	
-
-	test(function() {
-		assert_throws(TypeError(), function() {
-			root[ma]();
-		}, "This should throw a TypeError")
-	}, type + "." + ma + " no parameter")	
-}
-
-// XXX Need to rewrite this and incorporate more effective tests into the framework
-function runTestOld( css, type, root, expect ) {
-	for ( var i = 0; i < css.length; i++ ) {
-		var test = css[i];
-		if ( test.length == 2 ) {
-			var query = test[0], color = test[1].match(/: ([^\s;]+)/)[1];
-
-			if ( root.nodeType === 1 ) {
-				try {
-					var single = root.oMatchesSelector(query);
-
-					var pass = found.length === 0 && single === false ||
-						found.length && found === true;
-
-					assert(expect, type + ".oMatchesSelector: " + query);
-				} catch(e){
-					var pass = !expect && typeof DOMException !== "undefined" && e.code == DOMException.SYNTAX_ERR || false;
-					assert(pass, type + ".oMatchesSelector: " + query);
-				}
-			}
-		}
-	}
-}
-
 </script>
-

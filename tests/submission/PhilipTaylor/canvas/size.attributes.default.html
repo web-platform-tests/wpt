@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html><head><meta charset="utf-8">
 <title>Canvas test: size.attributes.default</title>
-<meta content="Philip Taylor" name="author">
+<meta name="author" content="Philip Taylor">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="../common/canvas-tests.js"></script>
-<link href="../common/canvas-tests.css" rel="stylesheet">
-</head><body class="show_output">
+<link rel="stylesheet" href="../common/canvas-tests.css">
+<body class="show_output">
 
 <h1><a href="index.size.html">size</a>.<a href="index.size.attributes.html">attributes</a>.default</h1>
 <p class="desc">Default width/height when attributes are missing</p>
@@ -14,14 +13,14 @@
 <div class="refs">Spec references:
 <ul>
 <li><a href="../annotated-spec/canvas.html#testrefs.size.default">size.default</a>
-</li><li><a href="../annotated-spec/canvas.html#testrefs.size.missing">size.missing</a>
-</li></ul>
+<li><a href="../annotated-spec/canvas.html#testrefs.size.missing">size.missing</a>
+</ul>
 </div>
 
 <p class="output">Actual output:</p>
-<canvas class="output" id="c"><p class="fallback">FAIL (fallback content)</p></canvas>
-<p class="output expectedtext">Expected output:</p><p><img alt="" class="output expected" id="expected" src="size.attributes.default.png">
-</p><ul id="d"></ul>
+<canvas id="c" class="output" ><p class="fallback">FAIL (fallback content)</p></canvas>
+<p class="output expectedtext">Expected output:<p><img src="size.attributes.default.png" class="output expected" id="expected" alt="">
+<ul id="d"></ul>
 <script>
 var t = async_test("Default width/height when attributes are missing");
 _addTest(function(canvas, ctx) {
@@ -35,5 +34,3 @@ _assert(!canvas.hasAttribute('height'), "!canvas.hasAttribute('height')");
 });
 </script>
 
-<div id="log"></div>
-</body></html>

@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method" />
+    <script src="/resources/testharness.js"></script>
+    <title>XMLHttpRequest L2: The send() method: Fire a progress event named loadend on the XMLHttpRequestUpload (synchronous flag is unset)</title>
+</head>
+
+<body>
+    <div id="log"></div>
+
+    <script type="text/javascript">
+        var test = async_test();
+
+        test.step(function() 
+        {
+            var xhr = new XMLHttpRequest();
+
+            xhr.upload.onloadend = function(e) 
+            {
+                test.step(function() 
+                {
+                    assert_true(e instanceof ProgressEvent);
+                    assert_equals(e.type, "loadend");
+                    assert_equals(e.target, xhr.upload);
+                    test.done(); 
+                });
+            };
+
+            xhr.open("POST", "./support/echo.php", true);
+            xhr.send("Test Message");
+        });
+    </script>
+</body>
+</html>

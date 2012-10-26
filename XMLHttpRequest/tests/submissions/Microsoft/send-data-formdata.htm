@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method" />
+    <script src="/resources/testharness.js"></script>
+    <title>XmlHttpRequest L2: The send() method: FormData data</title>
+</head>
+
+<body>
+    <div id="log"></div>
+
+    <script type="text/javascript">
+        var test = async_test();
+
+        test.step(function() 
+        {
+            var xhr = new XMLHttpRequest();
+            var form = new FormData();
+            form.append("id", "0");
+            form.append("value", "zero");
+
+            xhr.onreadystatechange = function() 
+            {
+                test.step(function () 
+                {
+                    if (xhr.readyState == 4) 
+                    {
+                        assert_equals(xhr.status, 200);
+                        assert_equals(xhr.response, "id:0;value:zero;");
+                        test.done();
+                    }
+                });
+            };
+
+            xhr.open("POST", "./support/form.php", true);
+            xhr.send(form);
+        });
+    </script>
+</body>
+</html>

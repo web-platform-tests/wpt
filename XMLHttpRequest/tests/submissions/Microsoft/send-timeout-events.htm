@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method" />
+    <script src="/resources/testharness.js"></script>
+    <title>XMLHttpRequest L2: The send() method: timeout is not 0 </title>
+</head>
+
+<body>
+    <div id="log"></div>
+
+    <script type="text/javascript">
+        setup({timeout:2000});
+        
+        var test = async_test();
+
+        test.step(function()
+        {
+            var xhr = new XMLHttpRequest();
+            var expect = [4, "", "upload.timeout", "upload.loadend", "timeout", "loadend"];
+            var actual = [];
+
+            xhr.onreadystatechange = function()
+            {
+                test.step(function()
+                {
+                    if (xhr.readyState == 4) 
+                    {
+                        actual.push(xhr.readyState, xhr.response);
+                    }
+                });
+            };
+
+            xhr.onloadend          = function(e){ actual.push(e.type); VerifyResult()};
+            xhr.ontimeout          = function(e){ actual.push(e.type); };
+            
+            xhr.upload.onloadend   = function(e){ actual.push("upload." + e.type);};
+            xhr.upload.ontimeout   = function(e){ actual.push("upload." + e.type); };
+
+            function VerifyResult()
+            {
+                test.step(function()
+                {
+                    assert_array_equals(actual, expect);
+                    test.done();
+                });
+            };
+            
+            var content = "";
+            for (var i = 0; i < 121026; i++) 
+            {
+                content += "[" + i + "]";
+            }
+            
+            xhr.open("POST", "./support/echo.php", true);
+            xhr.timeout = 1;
+            xhr.send(content);
+        });
+    </script>
+</body>
+</html>

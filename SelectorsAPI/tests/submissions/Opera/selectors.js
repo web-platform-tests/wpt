@@ -289,13 +289,16 @@ var validSelectors = [
 	{name: "ID selector, matching id value using non-ASCII characters",    selector: "#台北Táiběi",           expect: ["台北Táiběi"],       level: 1, testType: TEST_QSA_BASELINE | TEST_MATCH_BASELINE},
 	{name: "ID selector, matching id value using non-ASCII characters",    selector: "#台北",                   expect: ["台北"],               level: 1, testType: TEST_QSA_BASELINE | TEST_MATCH_BASELINE},
 	{name: "ID selector, matching id values using non-ASCII characters",   selector: "#台北Táiběi, #台北",      expect: ["台北Táiběi", "台北"], level: 1, testType: TEST_QSA_BASELINE | TEST_MATCH_BASELINE},
-	{name: "ID selector, matching element with id with escaped character", selector: "#\\#foo\\:bar",         expect: ["#foo:bar"],         level: 1, testType: TEST_QSA_BASELINE | TEST_MATCH_BASELINE},
-	{name: "ID selector, matching element with id with escaped character", selector: "#test\\.foo\\[5\\]bar", expect: ["test.foo[5]bar"],   level: 1, testType: TEST_QSA_BASELINE | TEST_MATCH_BASELINE},
+
+	// XXX runMatchesTest() in level2-lib.js can't handle this because obtaining the expected nodes requires escaping characters when generating the selector from 'expect' values
+	{name: "ID selector, matching element with id with escaped character", selector: "#\\#foo\\:bar",         expect: ["#foo:bar"],         level: 1, testType: TEST_QSA_BASELINE},
+	{name: "ID selector, matching element with id with escaped character", selector: "#test\\.foo\\[5\\]bar", expect: ["test.foo[5]bar"],   level: 1, testType: TEST_QSA_BASELINE},
 
 	// Namespaces
-	{name: "Namespace selector, matching element with any namespace",        selector: "#any-namespace *|div", expect: ["any-namespace-div1", "any-namespace-div2", "any-namespace-div3", "any-namespace-div4"], level: 3, testType: TEST_QSA_BASELINE | TEST_MATCH_BASELINE},
-	{name: "Namespace selector, matching div elements in no namespace only", selector: "#no-namespace |div",   expect: ["no-namespace-div3"], level: 3, testType: TEST_QSA_BASELINE | TEST_MATCH_BASELINE},
-	{name: "Namespace selector, matching any elements in no namespace only", selector: "#no-namespace |*",     expect: ["no-namespace-div3"], level: 3, testType: TEST_QSA_BASELINE | TEST_MATCH_BASELINE},
+	// XXX runMatchesTest() in level2-lib.js can't handle these because non-HTML elements don't have a recognised id
+	{name: "Namespace selector, matching element with any namespace",        selector: "#any-namespace *|div", expect: ["any-namespace-div1", "any-namespace-div2", "any-namespace-div3", "any-namespace-div4"], level: 3, testType: TEST_QSA_BASELINE},
+	{name: "Namespace selector, matching div elements in no namespace only", selector: "#no-namespace |div",   expect: ["no-namespace-div3"], level: 3, testType: TEST_QSA_BASELINE},
+	{name: "Namespace selector, matching any elements in no namespace only", selector: "#no-namespace |*",     expect: ["no-namespace-div3"], level: 3, testType: TEST_QSA_BASELINE},
 
 	// Combinators
 	// - Descendant combinator ' '
@@ -354,3 +357,108 @@ var validSelectors = [
 	{name: "Syntax, group of selectors separator, whitespace before",        selector: "#group em\t\r\n,#group strong",         expect: ["group-em1", "group-strong1"], level: 1, testType: TEST_QSA_BASELINE | TEST_MATCH_BASELINE},
 	{name: "Syntax, group of selectors separator, no whitespace",            selector: "#group em,#group strong",               expect: ["group-em1", "group-strong1"], level: 1, testType: TEST_QSA_BASELINE | TEST_MATCH_BASELINE},
 ];
+
+
+/*
+ * These selectors are intended to be used with the find() and findAll() methods.  Expected results should
+ * be determined under the assumption that :scope will be prepended to the selector where appropriate, in
+ * accordance with the specification.
+ *
+ * All of these should be valid selectors, expected to match zero or more elements in the document.
+ * None should throw any errors.
+ *
+ *   name:      A descriptive name of the selector being tested
+ *
+ *   selector:  The selector to test
+ *
+ *   ctx:       A selector to obtain the context object to use for tests invoking context.find(),
+ *              and to use as a single reference node for tests invoking document.find().
+ *              Note: context = root.querySelector(ctx);
+ *
+ *   ref:       A selector to obtain the reference nodes to be used for the selector.
+ *              Note: If root is the document or an in-document element:
+ *                      refNodes = document.querySelectorAll(ref);
+ *                    Otherwise, if root is a fragment or detached element:
+ *                      refNodes = root.querySelectorAll(ref);
+ *
+ *   expect:    A list of IDs of the elements expected to be matched. List must be given in tree order.
+ *
+ *   exclude:   An array of contexts to exclude from testing. The valid values are:
+ *              ["document", "element", "fragment", "detached", "html", "xhtml"]
+ *              The "html" and "xhtml" values represent the type of document being queried. These are useful
+ *              for tests that are affected by differences between HTML and XML, such as case sensitivity.
+ *
+ *   level:     An integer indicating the CSS or Selectors level in which the selector being tested was introduced.
+ *
+ *   testType:  A bit-mapped flag indicating the type of test.
+ *
+ * The test function for these tests accepts a specified root node, on which the methods will be invoked during the tests.
+ *
+ * Based on whether either 'context' or 'refNodes', or both, are specified the tests will execute the following methods:
+ *
+ * Where testType is TEST_FIND_BASELINE or TEST_FIND_ADDITIONAL:
+ *
+ * context.findAll(selector)
+ * context.findAll(selector, refNodes)
+ *
+ * root.findAll(selector, context)  // Only if refNodes is not specified
+ * root.findAll(selector, refNodes) // Only if context is not specified
+ * root.findAll(selector)           // Only if neither context nor refNodes is specified
+ *
+ * Equivalent tests will be run for .find() as well.
+ *
+ * Where testType is TEST_MATCH_BASELINE or TEST_MATCH_ADDITIONAL
+ * For each expected result given, within the specified root, individually:
+ *
+ * expect.matches(selector, context)    // Only where refNodes is not specified
+ * expect.matches(selector, refNodes)
+ * expect.matches(selector)             // Only if neither context nor refNodes is specified
+ *
+ * Where testType is TEST_QSA_BASELINE or TEST_QSA_ADDITIONAL
+ *
+ * context.querySelectorAll(selector)
+ *
+ * root.querySelectorAll(selector)  // Only if neither context nor refNodes is specified
+ *
+ * Equivalent tests will be run for .find() as well.
+ * Note: Do not specify a testType of TEST_QSA_ADDITIONAL where either implied :scope or explicit refNodes
+ * are required.
+ *
+ * The tests involving refNodes for both find(), findAll() and matches() will each be run by passing the
+ * collection as a NodeList, an Array and, if there is only a single element, an Element node.
+ * 
+ * Note: Interactive pseudo-classes (:active :hover and :focus) have not been tested in this test suite.
+ */
+var scopedSelectors = [
+//	{name: "", selector: "", ctx: "", ref: "", expect: [], level: 1, testType: TEST_FIND_BASELINE | TEST_MATCH_BASELINE},
+];
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

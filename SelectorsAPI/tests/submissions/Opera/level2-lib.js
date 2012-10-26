@@ -189,21 +189,7 @@ function runSpecialMatchesTests(type, element) {
  * Only run these tests when results are expected. Don't run for syntax error tests.
  */
 function runValidSelectorTest(type, root, selectors, testType, docType) {
-	var nodeType = "";
-	switch (root.nodeType) {
-		case Node.DOCUMENT_NODE:
-			nodeType = "document";
-			break;
-		case Node.ELEMENT_NODE:
-			nodeType = root.parentNode ? "element" : "detached";
-			break;
-		case Node.DOCUMENT_FRAGMENT_NODE:
-			nodeType = "fragment";
-			break;
-		default:
-			console.log("Reached unreachable code path.");
-			nodeType = "unknown"; // This should never happen.
-	}
+	var nodeType = getNodeType(root);
 
 	for (var i = 0; i < selectors.length; i++) {
 		var s = selectors[i];
@@ -279,26 +265,52 @@ function runInvalidSelectorTest(type, root, selectors) {
 	}
 }
 
-function runMatchesTest(css, type, root) {
-	test(function() {
-		assert_throws("SyntaxError", function() {
-			root[matches]("");
-		}, "This should throw a SyntaxError")
-	}, type + "." + matches + " Empty String")	
+function runMatchesTest(type, root, selectors, testType, docType) {
+	var nodeType = getNodeType(root);
 
-	test(function() {
-		root[matches](null);
-	}, type + "." + matches + " null")
+	for (var i = 0; i < selectors.length; i++) {
+		var s = selectors[i];
+		var n = s["name"];
+		var q = s["selector"];
+		var e = s["expect"];
 
-	test(function() {
-		root[matches](undefined);
-	}, type + "." + matches + " undefined")	
+		var ctx = s["ctx"];
+		var ref = s["ref"];
 
-	test(function() {
-		assert_throws(TypeError(), function() {
-			root[matches]();
-		}, "This should throw a TypeError")
-	}, type + "." + matches + " no parameter")	
+		if ((!s["exclude"] || (s["exclude"].indexOf(nodeType) === -1 && s["exclude"].indexOf(docType) === -1))
+		 && (s["testType"] & testType) ) {
+			if (ctx && !ref) {
+
+				test(function() {
+					for (var j = 0; j < e.length; j++) {
+						var context = root.querySelector("#" + e[j]);
+						var refNode = root.querySelector(ctx);
+						assert_true(context[matches](q, refNode), "The element " + e[j] + " should match the selector.")
+					}
+				}, type + " Element." + matches + ": " + n + " (with refNode Element): " + q);
+			}
+
+			if (ref) {
+				test(function() {
+					for (var j = 0; j < e.length; j++) {
+						var context = root.querySelector("#" + e[j]);
+						var refNode = root.querySelectorAll(ref);
+						assert_true(context[matches](q, refNode), "The element " + e[j] + " should match the selector.")
+					}
+				}, type + " Element." + matches + ": " + n + " (with refNodes NodeList): " + q);
+			}
+
+			if (!ctx && !ref) {
+				test(function() {
+					for (var j = 0; j < e.length; j++) {
+						var context = root.querySelector("#" + e[j]);
+						var refNode = root.querySelectorAll(ref);
+						assert_true(context[matches](q, refNode), "The element " + e[j] + " should match the selector.")
+					}
+				}, type + " Element." + matches + ": " + n + " (with no refNodes): " + q);
+			}
+		}			
+	}
 }
 
 
@@ -311,5 +323,19 @@ function traverse(elem, fn) {
 			traverse(elem, fn);
 			elem = elem.nextSibling;
 		}
+	}
+}
+
+function getNodeType(node) {
+	switch (node.nodeType) {
+		case Node.DOCUMENT_NODE:
+			return "document";
+		case Node.ELEMENT_NODE:
+			return node.parentNode ? "element" : "detached";
+		case Node.DOCUMENT_FRAGMENT_NODE:
+			return "fragment";
+		default:
+			console.log("Reached unreachable code path.");
+			return "unknown"; // This should never happen.
 	}
 }

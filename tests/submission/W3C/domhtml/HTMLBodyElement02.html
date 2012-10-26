@@ -7,7 +7,7 @@
 <link href="http://www.w3.org/TR/html5/obsolete.html#dom-body-background" rel="help">
 <link rel="author" title="NIST">
 </head>
-<body background="../images/yellow.png"> 
+<body background="/support/images/yellow-rectangle.png"> 
 <p>Hello, World</p>
 
 
@@ -25,7 +25,7 @@ on_event(window, "load", domtest.step_func(function (dom_event) {
 testNode = nodeList.item(0);
       vbackground = testNode.background;
 
-      assert_equals(vbackground,"../images/yellow.png");
+      assert_equals(vbackground,"/support/images/yellow-rectangle.png");
        
     domtest.done();
 }));

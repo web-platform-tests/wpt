@@ -10,7 +10,7 @@
 </head>
 <body>
 <p>
-<img src="../images/yellow.png">
+<img src="/support/images/yellow-rectangle.png">
 </p>
 
 
@@ -29,7 +29,7 @@ on_event(window, "load", domtest.step_func(function (dom_event) {
 testNode = nodeList.item(0);
       vsrc = testNode.src;
 
-      assert_uri_equals(document.location.protocol,null,document.location.host,"yellow.png",null,null,null,true,vsrc);
+      assert_uri_equals(document.location.protocol,null,document.location.host,"yellow-rectangle.png",null,null,null,true,vsrc);
 
     domtest.done();
 }));

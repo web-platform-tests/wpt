@@ -1,0 +1,7 @@
+<res xmlns:its="http://www.w3.org/2005/11/its">
+  <head>
+    <link href="allowedcharacters4xmlrules.xml" rel="its-rules"/> 
+  </head>
+  <record id="a1" set="[ &#xFF01;–&#xFF5E;]">ＦＵＬＬ ＷＩＤＴＨ ＯＮＬＹ</record>
+</res>
+

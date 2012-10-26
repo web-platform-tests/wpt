@@ -1,0 +1,10 @@
+<text xmlns:its="http://www.w3.org/2005/11/its">
+  <body>
+    <p>
+      <span its:mtProducer="Bing Translator" its:mtEngine="en-t-cs" its:mtConfidenceScore="0.9982">Dublin is the capital city of Ireland.</span>
+      <span its:mtProducer="Google Translator" its:mtEngine="en-t-cs" its:mtConfidenceScore="0.8982">Madrid is the capital of Spain.</span>
+      <span its:mtProducer="vanilla Moses" its:mtEngine="en-t-cs" its:mtConfidenceScore="0.7982">Berlin is the captial of Germany.</span>
+      <span its:mtProducer="Bing Translator" its:mtEngine="en-t-cs" its:mtConfidenceScore="0.6982">London is the captial of England</span>
+    </p>
+  </body>
+</text>

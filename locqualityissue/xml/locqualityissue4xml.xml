@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<doc>
+  <header>
+    <its:rules xmlns:its="http://www.w3.org/2005/11/its" version="2.0">
+      <its:locQualityIssueRule selector="//issue"
+	locQualityIssuesRefPointer=".@issueref"
+        locQualityIssueTypePointer="./@type"
+        locQualityIssueCommentPointer="./@note"/>
+    </its:rules>
+  </header>
+  <para>
+<issue issueref="#l1234" type="typographical" note="Sentence without capitalization">transport</issue> or transportation is the movement of people, animals and goods from one location to another.Modes of <issue issueref="#l1235" type="spelling" note="should be 'transport include'">tranport inc.</issue> air, rail, road, water, cable, pipeline, and space.
+</para>
+</doc>

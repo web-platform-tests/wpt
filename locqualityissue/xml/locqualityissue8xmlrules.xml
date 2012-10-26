@@ -1,0 +1,8 @@
+    <its:rules xmlns:its="http://www.w3.org/2005/11/its" version="2.0">
+      <its:locQualityIssueRule selector="//issue"
+	locQualityIssuesRef=".@issueref"
+        locQualityIssueTypePointer="./@type"
+        locQualityIssueCommentPointer="./@note"
+        locQualityIssueSeverityPointer="./@value"
+        locQualityIssueProfileRefPointer="./@profile"/>
+    </its:rules>

@@ -34,12 +34,10 @@
     @assert window.CanvasRenderingContext2D === undefined;
 
 - name: 2d.type.prototype
-  DISABLED: need to check with WebIDL
-  desc: window.CanvasRenderingContext2D.prototype is { DontDelete, ReadOnly }, and its methods are not
+  desc: window.CanvasRenderingContext2D.prototype are not [[Writable]] and not [[Configurable]], and its methods are [[Configurable]].
   notes: *bindings
   testing:
     - context.2d.type
-  #mozilla: { bug: TODO }
   code: |
     @assert window.CanvasRenderingContext2D.prototype;
     @assert window.CanvasRenderingContext2D.prototype.fill;
@@ -50,10 +48,9 @@
     window.CanvasRenderingContext2D.prototype.fill = 1;
     @assert window.CanvasRenderingContext2D.prototype.fill === 1;
     delete window.CanvasRenderingContext2D.prototype.fill;
-    @assert window.CanvasRenderingContext2D.prototype.fill === undefined; @moz-todo
+    @assert window.CanvasRenderingContext2D.prototype.fill === undefined;
 
 - name: 2d.type.replace
-  DISABLED: need to check with WebIDL
   desc: Interface methods can be overridden
   notes: *bindings
   testing:

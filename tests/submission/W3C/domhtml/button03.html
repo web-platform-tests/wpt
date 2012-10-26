@@ -9,7 +9,7 @@
 <link rel="author" title="Netscape">
 </head>
 <body>
-<form action="../common/text-html.html" id="form2" method="POST">
+<form action="/support/html/sample.html" id="form2" method="POST">
 <p>
    <button disabled="disabled" name="disabledButton" type="reset" value="Reset Disabled Button">Reset</button>
 </p>
@@ -40,7 +40,7 @@ on_event(window, "load", domtest.step_func(function (dom_event) {
 
       vfaction = formNode.action;
 
-      assert_uri_equals(document.location.protocol,null,document.location.host,"text-html.html",null,null,null,true,vfaction);
+      assert_uri_equals(document.location.protocol,null,document.location.host,"sample.html",null,null,null,true,vfaction);
 
        
     domtest.done();

@@ -10,9 +10,9 @@
 </head>
 <body>
 <p>
-<ins cite="../common/text-html.html" datetime="January 1, 2002">The INS element is used to indicate that a section of a document had been inserted.</ins>
+<ins cite="/support/html/sample.html" datetime="January 1, 2002">The INS element is used to indicate that a section of a document had been inserted.</ins>
 <br>
-<del cite="../common/text-html.html" datetime="January 2, 2002">The DEL element is used to indicate that a section of a document had been removed.</del>
+<del cite="/support/html/sample.html" datetime="January 2, 2002">The DEL element is used to indicate that a section of a document had been removed.</del>
 </p>
 
 
@@ -31,7 +31,7 @@ on_event(window, "load", domtest.step_func(function (dom_event) {
 testNode = nodeList.item(0);
       vcite = testNode.cite;
 
-      assert_uri_equals(document.location.protocol,null,document.location.host,"text-html.html",null,null,null,true,vcite);
+      assert_uri_equals(document.location.protocol,null,document.location.host,"sample.html",null,null,null,true,vcite);
 
     domtest.done();
 }));

@@ -2,7 +2,7 @@
 <html><head>
 <meta charset="utf-8">
 <title>W3C</title>
-<link href="../common/text-html.html" hreflang="en" media="screen" rel="Glossary" type="text/html">
+<link href="/support/html/sample.html" hreflang="en" media="screen" rel="Glossary" type="text/html">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="../common/domtests-common.js"></script>
@@ -28,7 +28,7 @@ on_event(window, "load", domtest.step_func(function (dom_event) {
       assert_equals(nodeList.length,3);
       testNode = nodeList.item(0);
 
-      assert_uri_equals(document.location.protocol,null,document.location.host,"text-html.html",null,null,null,true,testNode.href);
+      assert_uri_equals(document.location.protocol,null,document.location.host,"sample.html",null,null,null,true,testNode.href);
 
     domtest.done();
 }));

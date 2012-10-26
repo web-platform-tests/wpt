@@ -10,9 +10,9 @@
 </head>
 <body>
 <p>
-<q cite="../common/text-html.html">The Q element is intended for short quotations</q>
+<q cite="/support/html/sample.html">The Q element is intended for short quotations</q>
 </p>
-<blockquote cite="../common/text-html.html">
+<blockquote cite="/support/html/sample.html">
 <p>The BLOCKQUOTE element is used for long quotations.</p>
 </blockquote>
 
@@ -32,7 +32,7 @@ on_event(window, "load", domtest.step_func(function (dom_event) {
 testNode = nodeList.item(0);
       vcite = testNode.cite;
 
-      assert_uri_equals(document.location.protocol,null,document.location.host,"text-html.html",null,null,null,true,vcite);
+      assert_uri_equals(document.location.protocol,null,document.location.host,"sample.html",null,null,null,true,vcite);
 
     domtest.done();
 }));

@@ -9,7 +9,7 @@
 <link rel="author" title="Netscape">
 </head>
 <body>
-<object data="../common/text-html.html" height="80" type="text/html" width="550"></object>
+<object data="/support/html/sample.html" height="80" type="text/html" width="550"></object>
 <script>
 var domtest = async_test("The IDL attribute data must reflect the respective content attribute of the same name.");
 
@@ -24,7 +24,7 @@ on_event(window, "load", domtest.step_func(function (dom_event) {
       testNode = nodeList.item(0);
       vdata = testNode.data;
 
-      assert_uri_equals(document.location.protocol,null,document.location.host,"text-html.html",null,null,null,true,vdata);
+      assert_uri_equals(document.location.protocol,null,document.location.host,"sample.html",null,null,null,true,vdata);
        
     domtest.done();
 }));

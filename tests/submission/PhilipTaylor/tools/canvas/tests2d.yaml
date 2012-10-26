@@ -8933,7 +8933,7 @@
     deferTest();
     setTimeout(wrapFunction(function () {
         ctx.drawImage(document.getElementById('anim-gr.gif'), 0, 0);
-        @assert pixel 50,25 ==~ 0,255,0,255; @moz-todo
+        @assert pixel 50,25 ==~ 0,255,0,255;
     }), 500);
   expected: green
 

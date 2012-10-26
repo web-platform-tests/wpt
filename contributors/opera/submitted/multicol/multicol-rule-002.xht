@@ -2,42 +2,59 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>multicolumn | column-count, clip</title>
+<title>multicolumn | column-rule</title>
 <link rel="author" title="Opera Software ASA" href="http://www.opera.com/"/>
-<link rel="help" href="http://www.w3.org/TR/css3-multicol/#overflow"/>
-<link rel="match" href="multicol-multicol-clip-2-ref.xht"/>
+<link rel="help" href="http://www.w3.org/TR/css3-multicol/#column-gaps-and-rules"/>
+<link rel="match" href="multicol-rule-ref.xht"/>
 <meta name="flags" content="ahem"/>
 <style type="text/css"><![CDATA[
+body {
+	margin: 0;
+}
 body>div {
 	font-family: ahem;
 	font-size: 1em;
 	line-height: 1em;
-	color: blue;
-	background: white;
+	color: black;
+	background: yellow;
 	margin: 1em;
 	border: 1em solid gray;
-	width: 11em;
-	overflow: hidden;
+	width: 15em;
+	position: relative;
 	orphans: 1;
 	widows: 1;
 
-	column-count: 3;
-	column-gap: 4em;
+	column-count: 4;
+	column-gap: 1em;
 }
 span {
-	color: black;
+	background: blue;
+	position: absolute;
+	top: 0;
+	left: 3em;
+	height: 2em;
+	width: 1em;
+}
+span+span {
+	left: 7em;
+}
+span+span+span {
+	left: 11em;
 }
 ]]></style>
 </head>
 
 <body>
+
 <div>
-<span>
 	xx xx 
-	xx xx
+<span>
 </span>
+	xx xx
 <span>
+</span>
 	xx xx 
+<span>
 </span>
 	xx xx
 </div>

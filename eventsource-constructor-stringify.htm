@@ -8,17 +8,19 @@
   <body>
     <div id="log"></div>
     <script>
-      var test1 = async_test(document.title + ', object')
-      test1.step(function() {
-        var source = new EventSource({toString:function(){return "resources/message.php";}})
-        source.onopen = function(e) {
-          test.step(function() {
-            assert_not_exists(e, "data")
-            this.close()
-          }, this)
-        }
-        test1.done()
-      });
+      async_test(function (test) {
+        test.step(function() {
+          var source = new EventSource({toString:function(){return "resources/message.php";}})
+          source.onopen = function(e) {
+            test.step(function() {
+              assert_not_exists(e, "data")
+              source.close()
+              test.done()
+            })
+          }
+        });
+      }, document.title + ', object');
+
       test(function(){
         var source = new EventSource(1);
         assert_regexp_match(source.url, /\/1$/);

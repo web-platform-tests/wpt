@@ -8,32 +8,37 @@
   <meta name="assert" content="background-clip: border-box properly clips the background color to the border box.">
   <link rel="match" href="reference/background-clip-003-ref.html">
   <style>
-   .borderBoxBackgroundClip {
+   .borderBoxBackgroundClip
+   {
     background-clip: border-box;
     height: 80px;
     width: 80px;
     padding: 10px;
     border: 10px solid transparent;
+    margin: 10px;
     background-color: green;
    }
-
-   .placeholder {
+   .placeholder
+   {
     height: 120px;
     width: 120px;
-    top: 0px;
-    left: 0px;
+    top: 8px;
+    left: 8px;
     position: absolute;
     z-index: -1;
     background-color: red;
+    border: 2px solid blue;
    }
-
-   .container {
+   .container
+   {
     position: relative;
+    /* Prevent the margin from collapsing here. */
+    border: 1px solid transparent;
    }
   </style>
  </head>
  <body>
-  <p>There should be a green rectangle with a 2px purple border below and no red.</p>
+  <p>There should be a green rectangle with a blue border below and no red.</p>
   <div class="container">
    <div class="borderBoxBackgroundClip"></div>
    <div class="placeholder"></div>

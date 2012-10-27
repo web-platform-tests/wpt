@@ -5,16 +5,20 @@
   <link rel="author" title="Julien Chaffraix" href="mailto:jchaffraix@webkit.org">
   <meta name="flags" content="">
   <style>
-   div {
+   div
+   {
+    position: relative;
+    top: 8px;
+    left: 8px;
     height: 100px;
     width: 100px;
-    background-color: red;
-    border: 10px solid purple;
+    background-color: green;
+    border: 2px solid blue;
    }
   </style>
  </head>
  <body>
-  <p>There should be a green rectangle with a 10px purple border below and no red.</p>
+  <p>There should be a green rectangle with a blue border below and no red.</p>
   <div class="container"></div>
  </body>
 </html>

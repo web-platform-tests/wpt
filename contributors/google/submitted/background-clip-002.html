@@ -8,7 +8,8 @@
   <meta name="assert" content="background-clip: padding-box properly clips the background color to the padding box.">
   <link rel="match" href="reference/background-clip-002-ref.html">
   <style>
-   .paddingBoxBackgroundClip {
+   .paddingBoxBackgroundClip
+   {
     background-clip: padding-box;
     height: 80px;
     width: 80px;
@@ -16,25 +17,25 @@
     border: 10px solid transparent;
     background-color: green;
    }
-
-   .placeholder {
+   .placeholder
+   {
     height: 100px;
     width: 100px;
-    top: 0px;
-    left: 0px;
+    top: 8px;
+    left: 8px;
     position: absolute;
     z-index: -1;
     background-color: red;
-    border: 10px solid purple;
+    border: 2px solid blue;
    }
-
-   .container {
+   .container
+   {
     position: relative;
    }
   </style>
  </head>
  <body>
-  <p>There should be a green rectangle with a 10px purple border below and no red.</p>
+  <p>There should be a green rectangle with a blue border below and no red.</p>
   <div class="container">
    <div class="paddingBoxBackgroundClip"></div>
    <div class="placeholder"></div>

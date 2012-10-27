@@ -5,16 +5,26 @@
   <link rel="author" title="Julien Chaffraix" href="mailto:jchaffraix@webkit.org">
   <meta name="flags" content="">
   <style>
-   div {
+   .container
+   {
+    border: 1px solid transparent;
+   }
+   .reference
+   {
     position: relative;
     height: 120px;
     width: 120px;
+    top: 8px;
+    left: 8px;
+    border: 2px solid blue;
     background-color: green;
    }
   </style>
  </head>
  <body>
-  <p>There should be a green rectangle with a 2px purple border below and no red.</p>
-  <div></div>
+  <p>There should be a green rectangle with a blue border below and no red.</p>
+  <div class="container">
+   <div class="reference"></div>
+  </div>
  </body>
 </html>

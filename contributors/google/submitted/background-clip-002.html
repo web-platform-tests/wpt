@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title>CSS Test: Background clip: padding-box with background-color</title>
+  <link rel="author" title="Julien Chaffraix" href="mailto:jchaffraix@webkit.org">
+  <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-clip">
+  <meta name="flags" content="">
+  <meta name="assert" content="background-clip: padding-box properly clips the background color to the padding box.">
+  <link rel="match" href="reference/background-clip-002-ref.html">
+  <style>
+   .paddingBoxBackgroundClip {
+    background-clip: padding-box;
+    height: 80px;
+    width: 80px;
+    padding: 10px;
+    border: 10px solid transparent;
+    background-color: green;
+   }
+
+   .placeholder {
+    height: 100px;
+    width: 100px;
+    top: 0px;
+    left: 0px;
+    position: absolute;
+    z-index: -1;
+    background-color: red;
+    border: 10px solid purple;
+   }
+
+   .container {
+    position: relative;
+   }
+  </style>
+ </head>
+ <body>
+  <p>There should be a green rectangle with a 10px purple border below and no red.</p>
+  <div class="container">
+   <div class="paddingBoxBackgroundClip"></div>
+   <div class="placeholder"></div>
+  </div>
+ </body>
+</html>

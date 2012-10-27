@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title>CSS Test: Background clip: border-box with background-color</title>
+  <link rel="author" title="Julien Chaffraix" href="mailto:jchaffraix@webkit.org">
+  <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-clip">
+  <meta name="flags" content="">
+  <meta name="assert" content="background-clip: border-box properly clips the background color to the border box.">
+  <link rel="match" href="reference/background-clip-003-ref.html">
+  <style>
+   .borderBoxBackgroundClip {
+    background-clip: border-box;
+    height: 80px;
+    width: 80px;
+    padding: 10px;
+    border: 10px solid transparent;
+    background-color: green;
+   }
+
+   .placeholder {
+    height: 120px;
+    width: 120px;
+    top: 0px;
+    left: 0px;
+    position: absolute;
+    z-index: -1;
+    background-color: red;
+   }
+
+   .container {
+    position: relative;
+   }
+  </style>
+ </head>
+ <body>
+  <p>There should be a green rectangle with a 2px purple border below and no red.</p>
+  <div class="container">
+   <div class="borderBoxBackgroundClip"></div>
+   <div class="placeholder"></div>
+  </div>
+ </body>
+</html>

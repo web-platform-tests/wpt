@@ -668,7 +668,7 @@ policies and contribution forms [3].
                  }
                  else
                  {
-                     assert(actual[p] === expected[p], "assert_object_equals", description,
+                     assert(same_value(actual[p], expected[p]), "assert_object_equals", description,
                                                        "property ${p} expected ${expected} got ${actual}",
                                                        {p:p, expected:expected, actual:actual});
                  }
@@ -699,7 +699,7 @@ policies and contribution forms [3].
                    "property ${i}, property expected to be $expected but was $actual",
                    {i:i, expected:expected.hasOwnProperty(i) ? "present" : "missing",
                    actual:actual.hasOwnProperty(i) ? "present" : "missing"});
-            assert(expected[i] === actual[i],
+            assert(same_value(expected[i], actual[i]),
                    "assert_array_equals", description,
                    "property ${i}, expected ${expected} but got ${actual}",
                    {i:i, expected:expected[i], actual:actual[i]});
@@ -793,7 +793,7 @@ policies and contribution forms [3].
              //Note that this can have side effects in the case where
              //the property has PutForwards
              object[property_name] = initial_value + "a"; //XXX use some other value here?
-             assert(object[property_name] === initial_value,
+             assert(same_value(object[property_name], initial_value),
                     "assert_readonly", description,
                     "changing property ${p} succeeded",
                     {p:property_name});

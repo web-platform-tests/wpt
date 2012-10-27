@@ -61,6 +61,12 @@
         assert_true(false, "false should not be true");
     }
     test(testAssertFalse, "assert_true expected to fail");
+    
+    function basicAssertArrayEquals()
+    {
+        assert_array_equals([1, NaN], [1, NaN], "[1, NaN] is equal to [1, NaN]");
+    }
+    test(basicAssertArrayEquals, "basic assert_array_equals test");
 
     function basicAssertObjectEquals()
     {

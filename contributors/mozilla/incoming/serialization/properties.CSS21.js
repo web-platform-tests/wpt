@@ -23,6 +23,9 @@ const CSS_TYPE_SHORTHAND_AND_LONGHAND = 2;
 //	   may not be the same as for the property's initial value.
 //	 invalid_values: Things that are not values for the property and
 //	   should be rejected.
+//	 FIXME: Add field for spec link.
+
+// FIXME: use array.concat more rather than repeating myself.
 
 // Helper functions used to construct gCSSProperties.
 

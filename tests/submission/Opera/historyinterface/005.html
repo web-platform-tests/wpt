@@ -9,7 +9,7 @@
 //this test checks that onpopstate works on the body element
 
 var readyForPop = false, bodypop = false, inlinepop = false;
-setup(function () {},{explicit_done:true});
+setup({explicit_done:true});
 
 //use a timeout to avoid "popstate fires onload" from setting the variables too early
 setTimeout(step1,1000);

@@ -13,7 +13,7 @@
 
 //spec (25 March 2011 draft) states that popstate must fire before onload if there is a pushed/replaced state that is navigated
 var popfired = false;
-setup(function () {},{explicit_done:true,timeout:30000});
+setup({explicit_done:true,timeout:30000});
 test(function () {
 	assert_equals( history.state, null );
 }, 'history.state should initially be null');

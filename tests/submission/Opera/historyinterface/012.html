@@ -11,7 +11,7 @@
 		<div id="log"></div>
 		<script type="text/javascript">
 var newUrl = location.href.replace(/\/[^\/]*$/,'\/011-1.html');
-setup(function () {},{explicit_done:true});
+setup({explicit_done:true});
 test(function () {
 	history.replaceState('','','011-1.html');
 }, 'replaceState should be able to set the location state');

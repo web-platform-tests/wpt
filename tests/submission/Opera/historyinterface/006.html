@@ -8,7 +8,7 @@
 
 //spec (25 March 2011 draft) states that popstate must not fire after onload unless there is a pushed/replaced state that is navigated
 var popfired = false;
-setup(function () {},{explicit_done:true});
+setup({explicit_done:true});
 window.addEventListener('popstate',function (e) { popfired = true; },false);
 test(function () {
 	assert_equals( history.state, null );

@@ -5,21 +5,21 @@ postMessage(rv);
 -->
 <!doctype html>
 <title>return value of postMessage</title>
-<script src="/resources/jsframework.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
 <script>
-test(function() {
+(async_test()).step(function() {
   var worker = new Worker('#');
   var i = 0;
-  worker.onmessage = function(e) {
+  worker.onmessage = this.step_func(function(e) {
     i++;
-    test(function() {
-      if (i == 1)
-        assertEquals(e.data, 1);
-      else
-        assertUndefined(e.data);
-    }, 'none');
-  }
-  test(function() { assertEquals(i, 2); }, 500);
+    if (i == 1)
+      assert_equals(e.data, 1);
+    else
+      assert_equals(e.data, undefined);
+  });
+  setTimeout(this.step_func(function() { assert_equals(i, 2); this.done(); }), 500);
 });
 </script>
 <!--

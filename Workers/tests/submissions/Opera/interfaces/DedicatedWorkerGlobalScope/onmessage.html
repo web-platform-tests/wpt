@@ -31,6 +31,7 @@ results.push(typeof onmessage);
   worker.postMessage(1);
   worker.onmessage = this.step_func(function(e) {
     assert_array_equals(e.data, [null, null, 'function', 1]);
+    this.done();
   });
 });
 </script>

@@ -36,7 +36,7 @@ $page =~ s/\x{D}\x{A}|\x{A}\{D}|\x{D}|\x{A}/\n/gos; # normalize newlines
 # remove everything except the toc
 $page =~ s/.*<!--begin-toc-->//gos;
 $page =~ s/<!--end-toc-->.*//os;
-print "$page\n";
+# print "$page\n";
 
 while ($page =~ m/<a[\s]+href=[\'\"]?([^\"\']+)[\'\"]?><span[\s]+class=[\'\"]?secno[\'\"]?>([A-Z]?[0-9.]+)\.[\s]+<\/span>(.+?)<\/a>/gos) {
     my $uri = "$specURI$1";

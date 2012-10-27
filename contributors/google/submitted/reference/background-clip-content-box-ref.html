@@ -3,23 +3,26 @@
  <head>
   <title>CSS Test: Background clip: content-box with background-color</title>
   <link rel="author" title="Julien Chaffraix" href="mailto:jchaffraix@webkit.org">
-  <meta name="flags" content="HTMLonly">
-  <meta name="assert" content="background-clip: content-box properly clips the background color to the content box.">
+  <meta name="flags" content="">
   <style>
+   .container {
+    position: relative;
+   }
+
    .borderBoxBackgroundClip {
     height: 80px;
     width: 80px;
-    padding: 10px;
     position: relative;
-    top: 10px;
-    left: 10px;
+    top: 8px;
+    left: 8px;
+    border: 2px solid purple;
     background-color: green;
    }
   </style>
  </head>
  <body>
-  <p>There should be a green rectangle below and no red.</p>
-  <div style="position: absolute">
+  <p>There should be a green rectangle with a 2px purple border below and no red.</p>
+  <div class="container">
    <div class="borderBoxBackgroundClip"></div>
   </div>
  </body>

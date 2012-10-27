@@ -3,19 +3,17 @@
  <head>
   <title>CSS Test: Background clip and border painting order</title>
   <link rel="author" title="Julien Chaffraix" href="mailto:jchaffraix@webkit.org">
-  <meta name="flags" content="HTMLonly">
-  <meta name="assert" content="The background is painted behind the border.">
+  <meta name="flags" content="">
   <style>
-   .reference {
+   div {
     height: 100px;
     width: 100px;
     background-color: green;
    }
-
   </style>
  </head>
  <body>
   <p>There should be a green rectangle below and no red.</p>
-  <div class="reference"></div>
+  <div></div>
  </body>
 </html>

@@ -2,13 +2,13 @@
 var results = [];
 try {
   self.onmessage = 1;
-  results.push(onmessage);
+  results.push(String(onmessage));
 } catch(e) {
   results.push(''+e);
 }
 try {
   self.onmessage = {handleEvent:function(){}};
-  results.push(onmessage);
+  results.push(String(onmessage));
 } catch(e) {
   results.push(''+e);
 }
@@ -30,7 +30,7 @@ results.push(typeof onmessage);
   var worker = new Worker('#');
   worker.postMessage(1);
   worker.onmessage = this.step_func(function(e) {
-    assert_array_equals(e.data, [null, null, 'function', 1]);
+    assert_array_equals(e.data, ['null', 'null', 'function', 1]);
     this.done();
   });
 });

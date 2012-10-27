@@ -99,7 +99,15 @@
     }, "Test assert_throws with non-DOM-exception expected to Fail");
 
     var t = async_test("Test step_func")
-    setTimeout(t.step_func(function (){assert_true(true); t.done();}, 0));
+    setTimeout(t.step_func(function (){assert_true(true); t.done();}), 0);
+
+    async_test(function(t) {
+        setTimeout(t.step_func(function (){assert_true(true); t.done();}), 0);
+    }, "Test async test with callback");
+
+    async_test(function() {
+        setTimeout(this.step_func(function (){assert_true(true); this.done();}), 0);
+    }, "Test async test with callback and `this` obj.");
 
     async_test("test should timeout (fail) with the default of 2 seconds").step(function(){});
 

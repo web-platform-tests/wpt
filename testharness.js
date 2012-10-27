@@ -94,6 +94,19 @@ policies and contribution forms [3].
  *
  * t.done();
  *
+ * As a convenience, async_test can also takes a function as first argument.
+ * This function is called with the test object as both its `this` object and
+ * first argument. The above example can be rewritten as:
+ *
+ * async_test(function(t) {
+ *     object.some_event = function() {
+ *         t.step(function (){assert_true(true); t.done();});
+ *     };
+ * }, "Simple async test");
+ *
+ * which avoids cluttering the global scope with references to async
+ * tests instances.
+ *
  * The properties argument is identical to that for test().
  *
  * In many cases it is convenient to run a step in response to an event or a
@@ -392,11 +405,19 @@ policies and contribution forms [3].
         }
     }
 
-    function async_test(name, properties)
+    function async_test(func, name, properties)
     {
+        if (typeof func !== "function") {
+            properties = name;
+            name = func;
+            func = null;
+        }
         var test_name = name ? name : next_default_name();
         properties = properties ? properties : {};
         var test_obj = new Test(test_name, properties);
+        if (func) {
+            test_obj.step(func, test_obj, test_obj);
+        }
         return test_obj;
     }
 

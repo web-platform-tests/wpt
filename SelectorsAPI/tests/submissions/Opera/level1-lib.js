@@ -51,15 +51,24 @@ function setupSpecialElements(parent) {
  * Check that the querySelector and querySelectorAll methods exist on the given Node
  */
 function interfaceCheck(type, obj, testType) {
-	test(function() {
-		var q = typeof obj.querySelector === "function";
-		assert_true(q, type + " supports querySelector.");
-	}, type + " supports querySelector")
+	if (testType & TEST_QSA_BASELINE) {
+		test(function() {
+			var q = typeof obj.querySelector === "function";
+			assert_true(q, type + " supports querySelector.");
+		}, type + " supports querySelector")
 
-	test(function() {
-		var qa = typeof obj.querySelectorAll === "function";
-		assert_true( qa, type + " supports querySelectorAll.");
-	}, type + " supports querySelectorAll")
+		test(function() {
+			var qa = typeof obj.querySelectorAll === "function";
+			assert_true( qa, type + " supports querySelectorAll.");
+		}, type + " supports querySelectorAll")
+	}
+
+	if (testType & TEST_QSA_ADDITIONAL) {
+		test(function() {
+			var list = obj.querySelectorAll("div");
+			assert_true(list instanceof NodeList, "The result should be an instance of a NodeList")
+		}, type + ".querySelectorAll returns NodeList instance")		
+	}
 }
 
 /*

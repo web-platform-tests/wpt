@@ -61,12 +61,14 @@ function interfaceCheck(type, obj, testType) {
 			var qa = typeof obj.querySelectorAll === "function";
 			assert_true( qa, type + " supports querySelectorAll.");
 		}, type + " supports querySelectorAll")
-	}
 
-	if (testType & TEST_QSA_ADDITIONAL) {
 		test(function() {
 			var list = obj.querySelectorAll("div");
-			assert_true(list instanceof NodeList, "The result should be an instance of a NodeList")
+			if (obj.ownerDocument) { // The object is a Node	
+				assert_true(list instanceof obj.ownerDocument.defaultView.NodeList, "The result should be an instance of a NodeList")
+			} else { // The object is a Document
+				assert_true(list instanceof obj.defaultView.NodeList, "The result should be an instance of a NodeList")
+			}
 		}, type + ".querySelectorAll returns NodeList instance")		
 	}
 }

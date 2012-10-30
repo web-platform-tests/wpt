@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html><head><meta charset="utf-8">
 <title>Canvas test: 2d.gradient.radial.nonfinite</title>
-<meta content="Philip Taylor" name="author">
+<meta name="author" content="Philip Taylor">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="../common/canvas-tests.js"></script>
-<link href="../common/canvas-tests.css" rel="stylesheet">
-</head><body class="show_output">
+<link rel="stylesheet" href="../common/canvas-tests.css">
+<body class="show_output">
 
 <h1><a href="index.2d.html">2d</a>.<a href="index.2d.gradient.html">gradient</a>.<a href="index.2d.gradient.radial.html">radial</a>.nonfinite</h1>
 <p class="desc">createRadialGradient() throws NOT_SUPPORTED_ERR if arguments are not finite</p>
@@ -14,96 +13,94 @@
 <div class="refs">Spec references:
 <ul>
 <li><a href="../annotated-spec/canvas.html#testrefs.2d.gradient.radial.nonfinite">2d.gradient.radial.nonfinite</a>
-</li></ul>
+</ul>
 </div>
 
 <p class="output">Actual output:</p>
-<canvas class="output" height="50" id="c" width="100"><p class="fallback">FAIL (fallback content)</p></canvas>
+<canvas id="c" class="output" width="100" height="50"><p class="fallback">FAIL (fallback content)</p></canvas>
 
 <ul id="d"></ul>
 <script>
 var t = async_test("createRadialGradient() throws NOT_SUPPORTED_ERR if arguments are not finite");
 _addTest(function(canvas, ctx) {
 
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, 0, 1, 0, 0, 1); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(-Infinity, 0, 1, 0, 0, 1); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(NaN, 0, 1, 0, 0, 1); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, Infinity, 1, 0, 0, 1); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, -Infinity, 1, 0, 0, 1); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, NaN, 1, 0, 0, 1); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, Infinity, 0, 0, 1); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, -Infinity, 0, 0, 1); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, NaN, 0, 0, 1); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, 1, Infinity, 0, 1); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, 1, -Infinity, 0, 1); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, 1, NaN, 0, 1); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, 1, 0, Infinity, 1); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, 1, 0, -Infinity, 1); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, 1, 0, NaN, 1); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, 1, 0, 0, Infinity); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, 1, 0, 0, -Infinity); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, 1, 0, 0, NaN); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, Infinity, 1, 0, 0, 1); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, Infinity, Infinity, 0, 0, 1); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, Infinity, Infinity, Infinity, 0, 1); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, Infinity, Infinity, Infinity, Infinity, 1); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, Infinity, Infinity, Infinity, Infinity, Infinity); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, Infinity, Infinity, Infinity, 0, Infinity); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, Infinity, Infinity, 0, Infinity, 1); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, Infinity, Infinity, 0, Infinity, Infinity); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, Infinity, Infinity, 0, 0, Infinity); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, Infinity, 1, Infinity, 0, 1); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, Infinity, 1, Infinity, Infinity, 1); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, Infinity, 1, Infinity, Infinity, Infinity); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, Infinity, 1, Infinity, 0, Infinity); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, Infinity, 1, 0, Infinity, 1); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, Infinity, 1, 0, Infinity, Infinity); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, Infinity, 1, 0, 0, Infinity); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, 0, Infinity, 0, 0, 1); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, 0, Infinity, Infinity, 0, 1); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, 0, Infinity, Infinity, Infinity, 1); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, 0, Infinity, Infinity, Infinity, Infinity); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, 0, Infinity, Infinity, 0, Infinity); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, 0, Infinity, 0, Infinity, 1); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, 0, Infinity, 0, Infinity, Infinity); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, 0, Infinity, 0, 0, Infinity); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, 0, 1, Infinity, 0, 1); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, 0, 1, Infinity, Infinity, 1); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, 0, 1, Infinity, Infinity, Infinity); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, 0, 1, Infinity, 0, Infinity); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, 0, 1, 0, Infinity, 1); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, 0, 1, 0, Infinity, Infinity); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, 0, 1, 0, 0, Infinity); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, Infinity, Infinity, 0, 0, 1); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, Infinity, Infinity, Infinity, 0, 1); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, Infinity, Infinity, Infinity, Infinity, 1); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, Infinity, Infinity, Infinity, Infinity, Infinity); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, Infinity, Infinity, Infinity, 0, Infinity); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, Infinity, Infinity, 0, Infinity, 1); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, Infinity, Infinity, 0, Infinity, Infinity); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, Infinity, Infinity, 0, 0, Infinity); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, Infinity, 1, Infinity, 0, 1); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, Infinity, 1, Infinity, Infinity, 1); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, Infinity, 1, Infinity, Infinity, Infinity); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, Infinity, 1, Infinity, 0, Infinity); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, Infinity, 1, 0, Infinity, 1); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, Infinity, 1, 0, Infinity, Infinity); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, Infinity, 1, 0, 0, Infinity); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, Infinity, Infinity, 0, 1); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, Infinity, Infinity, Infinity, 1); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, Infinity, Infinity, Infinity, Infinity); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, Infinity, Infinity, 0, Infinity); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, Infinity, 0, Infinity, 1); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, Infinity, 0, Infinity, Infinity); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, Infinity, 0, 0, Infinity); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, 1, Infinity, Infinity, 1); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, 1, Infinity, Infinity, Infinity); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, 1, Infinity, 0, Infinity); });
-_assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, 1, 0, Infinity, Infinity); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, 0, 1, 0, 0, 1); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(-Infinity, 0, 1, 0, 0, 1); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(NaN, 0, 1, 0, 0, 1); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, Infinity, 1, 0, 0, 1); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, -Infinity, 1, 0, 0, 1); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, NaN, 1, 0, 0, 1); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, Infinity, 0, 0, 1); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, -Infinity, 0, 0, 1); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, NaN, 0, 0, 1); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, 1, Infinity, 0, 1); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, 1, -Infinity, 0, 1); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, 1, NaN, 0, 1); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, 1, 0, Infinity, 1); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, 1, 0, -Infinity, 1); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, 1, 0, NaN, 1); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, 1, 0, 0, Infinity); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, 1, 0, 0, -Infinity); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, 1, 0, 0, NaN); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, Infinity, 1, 0, 0, 1); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, Infinity, Infinity, 0, 0, 1); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, Infinity, Infinity, Infinity, 0, 1); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, Infinity, Infinity, Infinity, Infinity, 1); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, Infinity, Infinity, Infinity, Infinity, Infinity); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, Infinity, Infinity, Infinity, 0, Infinity); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, Infinity, Infinity, 0, Infinity, 1); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, Infinity, Infinity, 0, Infinity, Infinity); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, Infinity, Infinity, 0, 0, Infinity); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, Infinity, 1, Infinity, 0, 1); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, Infinity, 1, Infinity, Infinity, 1); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, Infinity, 1, Infinity, Infinity, Infinity); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, Infinity, 1, Infinity, 0, Infinity); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, Infinity, 1, 0, Infinity, 1); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, Infinity, 1, 0, Infinity, Infinity); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, Infinity, 1, 0, 0, Infinity); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, 0, Infinity, 0, 0, 1); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, 0, Infinity, Infinity, 0, 1); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, 0, Infinity, Infinity, Infinity, 1); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, 0, Infinity, Infinity, Infinity, Infinity); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, 0, Infinity, Infinity, 0, Infinity); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, 0, Infinity, 0, Infinity, 1); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, 0, Infinity, 0, Infinity, Infinity); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, 0, Infinity, 0, 0, Infinity); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, 0, 1, Infinity, 0, 1); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, 0, 1, Infinity, Infinity, 1); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, 0, 1, Infinity, Infinity, Infinity); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, 0, 1, Infinity, 0, Infinity); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, 0, 1, 0, Infinity, 1); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, 0, 1, 0, Infinity, Infinity); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(Infinity, 0, 1, 0, 0, Infinity); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, Infinity, Infinity, 0, 0, 1); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, Infinity, Infinity, Infinity, 0, 1); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, Infinity, Infinity, Infinity, Infinity, 1); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, Infinity, Infinity, Infinity, Infinity, Infinity); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, Infinity, Infinity, Infinity, 0, Infinity); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, Infinity, Infinity, 0, Infinity, 1); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, Infinity, Infinity, 0, Infinity, Infinity); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, Infinity, Infinity, 0, 0, Infinity); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, Infinity, 1, Infinity, 0, 1); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, Infinity, 1, Infinity, Infinity, 1); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, Infinity, 1, Infinity, Infinity, Infinity); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, Infinity, 1, Infinity, 0, Infinity); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, Infinity, 1, 0, Infinity, 1); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, Infinity, 1, 0, Infinity, Infinity); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, Infinity, 1, 0, 0, Infinity); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, Infinity, Infinity, 0, 1); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, Infinity, Infinity, Infinity, 1); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, Infinity, Infinity, Infinity, Infinity); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, Infinity, Infinity, 0, Infinity); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, Infinity, 0, Infinity, 1); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, Infinity, 0, Infinity, Infinity); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, Infinity, 0, 0, Infinity); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, 1, Infinity, Infinity, 1); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, 1, Infinity, Infinity, Infinity); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, 1, Infinity, 0, Infinity); });
+assert_throws("NOT_SUPPORTED_ERR", function() { ctx.createRadialGradient(0, 0, 1, 0, Infinity, Infinity); });
 
 
 });
 </script>
 
-<div id="log"></div>
-</body></html>

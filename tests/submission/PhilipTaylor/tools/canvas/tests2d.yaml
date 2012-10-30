@@ -34,12 +34,10 @@
     @assert window.CanvasRenderingContext2D === undefined;
 
 - name: 2d.type.prototype
-  DISABLED: need to check with WebIDL
-  desc: window.CanvasRenderingContext2D.prototype is { DontDelete, ReadOnly }, and its methods are not
+  desc: window.CanvasRenderingContext2D.prototype are not [[Writable]] and not [[Configurable]], and its methods are [[Configurable]].
   notes: *bindings
   testing:
     - context.2d.type
-  #mozilla: { bug: TODO }
   code: |
     @assert window.CanvasRenderingContext2D.prototype;
     @assert window.CanvasRenderingContext2D.prototype.fill;
@@ -50,10 +48,9 @@
     window.CanvasRenderingContext2D.prototype.fill = 1;
     @assert window.CanvasRenderingContext2D.prototype.fill === 1;
     delete window.CanvasRenderingContext2D.prototype.fill;
-    @assert window.CanvasRenderingContext2D.prototype.fill === undefined; @moz-todo
+    @assert window.CanvasRenderingContext2D.prototype.fill === undefined;
 
 - name: 2d.type.replace
-  DISABLED: need to check with WebIDL
   desc: Interface methods can be overridden
   notes: *bindings
   testing:
@@ -8712,6 +8709,23 @@
     @assert pixel 50,25 ==~ 0,255,0,255;
   expected: green
 
+- name: 2d.drawImage.zerosource.image
+  desc: drawImage with zero-sized source rectangle from image throws INDEX_SIZE_ERR
+  testing:
+    - 2d.drawImage.zerosource
+  images:
+    - red-zerowidth.svg
+    - red-zeroheight.svg
+    - red-zerosize.svg
+  code: |
+    ctx.fillStyle = '#0f0';
+    ctx.fillRect(0, 0, 100, 50);
+    @assert throws INDEX_SIZE_ERR ctx.drawImage(document.getElementById('red-zerowidth.svg'), 0, 0, 100, 50); @moz-todo
+    @assert throws INDEX_SIZE_ERR ctx.drawImage(document.getElementById('red-zeroheight.svg'), 0, 0, 100, 50); @moz-todo
+    @assert throws INDEX_SIZE_ERR ctx.drawImage(document.getElementById('red-zerosize.svg'), 0, 0, 100, 50); @moz-todo
+    @assert pixel 50,25 == 0,255,0,255;
+  expected: green
+
 - name: 2d.drawImage.negativesource
   desc: Negative source width/height represents the correct rectangle
   testing:
@@ -8933,7 +8947,7 @@
     deferTest();
     setTimeout(wrapFunction(function () {
         ctx.drawImage(document.getElementById('anim-gr.gif'), 0, 0);
-        @assert pixel 50,25 ==~ 0,255,0,255; @moz-todo
+        @assert pixel 50,25 ==~ 0,255,0,255;
     }), 500);
   expected: green
 

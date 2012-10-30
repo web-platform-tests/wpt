@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html><head><meta charset="utf-8">
 <title>Canvas test: 2d.text.font.parse.size.percentage</title>
-<meta content="Philip Taylor" name="author">
+<meta name="author" content="Philip Taylor">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="../common/canvas-tests.js"></script>
-<link href="../common/canvas-tests.css" rel="stylesheet">
-</head><body class="show_output">
+<link rel="stylesheet" href="../common/canvas-tests.css">
+<body class="show_output">
 
 <h1><a href="index.2d.html">2d</a>.<a href="index.2d.text.html">text</a>.<a href="index.2d.text.font.html">font</a>.<a href="index.2d.text.font.parse.html">parse</a>.<a href="index.2d.text.font.parse.size.html">size</a>.percentage</h1>
 <p class="desc"></p>
@@ -14,14 +13,14 @@
 <div class="refs">Spec references:
 <ul>
 <li><a href="../annotated-spec/canvas.html#testrefs.2d.text.font.parse">2d.text.font.parse</a>
-</li><li><a href="../annotated-spec/canvas.html#testrefs.2d.text.font.get">2d.text.font.get</a>
-</li><li><a href="../annotated-spec/canvas.html#testrefs.2d.text.font.fontsize">2d.text.font.fontsize</a>
-</li><li><a href="../annotated-spec/canvas.html#testrefs.2d.text.font.size">2d.text.font.size</a>
-</li></ul>
+<li><a href="../annotated-spec/canvas.html#testrefs.2d.text.font.get">2d.text.font.get</a>
+<li><a href="../annotated-spec/canvas.html#testrefs.2d.text.font.fontsize">2d.text.font.fontsize</a>
+<li><a href="../annotated-spec/canvas.html#testrefs.2d.text.font.size">2d.text.font.size</a>
+</ul>
 </div>
 
 <p class="output">Actual output:</p>
-<canvas class="output" height="50" id="c" style="font-size: 144px" width="100"><p class="fallback">FAIL (fallback content)</p></canvas>
+<canvas id="c" class="output" style="font-size: 144px" width="100" height="50"><p class="fallback">FAIL (fallback content)</p></canvas>
 
 <ul id="d"></ul>
 <script>
@@ -37,5 +36,3 @@ _assertSame(ctx.font, '72px serif', "ctx.font", "'72px serif'");
 });
 </script>
 
-<div id="log"></div>
-</body></html>

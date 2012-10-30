@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html><head><meta charset="utf-8">
 <title>Canvas test: 2d.fillStyle.parse.hex6</title>
-<meta content="Philip Taylor" name="author">
+<meta name="author" content="Philip Taylor">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="../common/canvas-tests.js"></script>
-<link href="../common/canvas-tests.css" rel="stylesheet">
-</head><body class="show_output">
+<link rel="stylesheet" href="../common/canvas-tests.css">
+<body class="show_output">
 
 <h1><a href="index.2d.html">2d</a>.<a href="index.2d.fillStyle.html">fillStyle</a>.<a href="index.2d.fillStyle.parse.html">parse</a>.hex6</h1>
 <p class="desc"></p>
@@ -14,13 +13,13 @@
 <div class="refs">Spec references:
 <ul>
 <li><a href="../annotated-spec/canvas.html#testrefs.2d.colours.parse">2d.colours.parse</a>
-</li></ul>
+</ul>
 </div>
 <p class="notes">
-</p><p class="output">Actual output:</p>
-<canvas class="output" height="50" id="c" width="100"><p class="fallback">FAIL (fallback content)</p></canvas>
-<p class="output expectedtext">Expected output:</p><p><img alt="" class="output expected" id="expected" src="2d.fillStyle.parse.hex6.png">
-</p><ul id="d"></ul>
+<p class="output">Actual output:</p>
+<canvas id="c" class="output" width="100" height="50"><p class="fallback">FAIL (fallback content)</p></canvas>
+<p class="output expectedtext">Expected output:<p><img src="2d.fillStyle.parse.hex6.png" class="output expected" id="expected" alt="">
+<ul id="d"></ul>
 <script>
 var t = async_test("");
 _addTest(function(canvas, ctx) {
@@ -35,5 +34,3 @@ _assertPixel(canvas, 50,25, 0,255,0,255, "50,25", "0,255,0,255");
 });
 </script>
 
-<div id="log"></div>
-</body></html>

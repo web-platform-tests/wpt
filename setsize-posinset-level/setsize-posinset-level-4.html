@@ -1,0 +1,45 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"> 
+<html>
+  <head>
+    <title>ARIA 1.0 Test Case D</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  </head>
+  <body>
+    <h1>ARIA 1.0 Test Case D</h1>
+    
+    <ul role="listbox" id="ID_LISTBOX">
+      <li id="ID_OPTION_1" role="option" tabindex="-1" aria-setsize="12" aria-level="1" aria-posinset="7">Option 7</li> 
+      <li id="ID_OPTION_2" role="option" tabindex="-1" aria-setsize="12" aria-level="1" aria-posinset="8">Option 8</li> 
+      <li id="ID_OPTION_3" role="option" tabindex="-1" aria-setsize="12" aria-level="1" aria-posinset="9">Option 9</li> 
+    </ul>
+    
+    <h2>Description</h2>
+    <p>A ul element with the role='listbox' has three child li elements each with role='option'.
+      Each of the li elements with the role='option' have aria-setsize='12' attribute, aria-level='1' 
+      attribute and aria-posinset attribute numbered consecuatively from 7 to 9. When focus is on the 
+      second li element, the structure of the accessibility tree will be represented in the 
+      accessibility tree using the following table:</p>
+    
+    <p><a href="http://www.w3.org/TR/2012/WD-wai-aria-implementation-20120110/#mapping_state-property_table">http://www.w3.org/TR/2012/WD-wai-aria-implementation-20120110/#mapping_state-property_table</a></p>
+
+    <h2>Accessibility API Information</h2>
+    <ul>
+      <li>set size: 12</li>
+      <li>position in set: 8</li>
+      <li>level of set in the hierarchy: 1</li>
+    </ul>
+    
+    <script type="text/javascript">  
+      
+     function setFocus() {
+       var node = document.getElementById('ID_OPTION_2');  
+       node.focus();
+     }
+     
+     window.addEventListener('load', setFocus);
+    </script>
+  </body>
+  
+</html>
+
+

@@ -1,10 +1,9 @@
 <html>
 <head>
-<title>Test 496 Image element with role="presentation" but controlled by an button </title>
+<title>Test 496 Button element with role="presentation" that 'controls' an image.</title>
 </head>
 <body>
-<img src="foo.jpg" alt="test1" width="40" height="40" role="presentation" id="foo"/>
-<input type="button" value="I control the Image" aria-controls="foo"/>
+<img src="foo.jpg" alt="test1" width="40" height="40" id="foo">
+<input role="presentation" type="button" value="I control the Image" aria-controls="foo">
 </body>
 </html>
-

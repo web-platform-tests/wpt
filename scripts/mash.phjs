@@ -1,0 +1,168 @@
+/*
+
+    mash.phjs: $distribution_URI
+
+    Copyright © 2012 World Wide Web Consortium, (Massachusetts
+    Institute of Technology, European Research Consortium for
+    Informatics and Mathematics, Keio University). All Rights
+    Reserved. This work is distributed under the W3C® Software License
+    [1] in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+    without even the implied warranty of MERCHANTABILITY or FITNESS
+    FOR A PARTICULAR PURPOSE.
+
+    [1] http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231
+
+    This program is intended to be executed using phantomjs [2].
+ 
+    syntax: phantomjs mash.phjs <spectableofcontent.json> <manifest.json> <caniuse data.json> <caniuse mapping.json>
+
+    [2] http://phantomjs.org/
+
+*/
+
+var system = require('system');
+var fs     = require('fs');
+
+if (system.args.length !== 5) {
+    console.error('[error] phantomjs : mash.phjs: Missing arguments: use phantomjs mash.phjs <spectableofcontent.json> <manifest.json> <caniuse data.json> <caniuse mapping.json>');    
+    phantom.exit(1);
+    foo.bar();
+}
+
+var debug    = false;
+
+var data     = [];
+
+if (debug) console.debug("[debug] start");
+
+for (var i = 1;i<system.args.length; i++) {
+    var name = system.args[i];
+    var file = fs.read(name);
+    if (debug) console.debug("[debug] read " + name);
+    try {
+	data.push(JSON.parse(file));
+    } catch (e) {
+	console.error(e);
+    }
+}
+
+var toc      = data[0];
+var manifest = data[1];
+var caniuse_data  = data[2];
+var caniuse_map  = data[3];
+
+// first, let's figure out the test information
+
+// associate all the tests per their ids
+var tests_per_id = new Object();
+
+function add_test_to_id(help, location, name) {
+    if (debug) console.debug("[debug] add_test_to_id " + help + " " + name);
+    var index = help.indexOf('#');
+    if ((help.indexOf("html5") != -1 || help.indexOf("/html/") != -1) && index != -1) {
+        var key = help.substring(index+1);
+	var n = tests_per_id[key];
+	if (typeof n === "undefined") {
+	    tests_per_id[key] = [];
+	}
+	var obj = new Object();
+	obj.location = location;
+	obj.name     = name;
+	tests_per_id[key].push(obj);
+    }
+}
+
+// for each id, add the test to it
+for (var i = 0; i < manifest.length; i++) {
+    var file = manifest[i];
+
+    if (typeof file.type === "string" && file.type != "support") {
+	var tests = file.tests;
+	for (var name in tests) {
+	    var test = tests[name];
+	    if (typeof test.help !== "undefined") {
+		for (var j = 0; j < test.help.length; j++) {
+		    add_test_to_id(test.help[j], file.location, name);
+		}
+	    }		
+	}
+    }
+}
+
+/// now, let's dive into caniuse data
+
+// associate all the tests per their ids
+var caniuse_per_id = new Object();
+
+function add_caniuse_to_id(ckey, spec, data) {
+    if (debug) console.debug("[debug] add_caniuse_to_id" + help + " " + name);
+    var index = spec.indexOf('#');
+    var mapping = [];
+
+    if ((spec.indexOf("/html5/") != -1 
+	 || spec.indexOf('http://www.whatwg.org/specs/web-apps/current-work/') !== -1
+	 || spec.indexOf("/html/") != -1) 
+	&& index != -1) {
+	mapping[0] = spec.substring(index+1);
+    }
+    if (mapping.length === 0) {
+	mapping = caniuse_map[ckey];
+    } 
+    if (mapping.length > 0) {
+	for (var i = 0; i < mapping.length; i++) {
+	    var key = spec.substring(index+1);
+	    var n = caniuse_per_id[key];
+	    if (typeof n !== "undefined") {
+		throw new Error(key + "  already contains caniuse data");
+	    }
+	    data.feat = ckey;
+	    // clone object. @@is there an easier way?!?
+	    caniuse_per_id[key]= JSON.parse(JSON.stringify(data));
+	}
+    }
+}
+
+for (var area in caniuse_data.data) {
+    var data = caniuse_data.data[area];
+    var spec = data.spec;
+    var stats = data.stats;
+    add_caniuse_to_id(area, data.spec, data);
+}
+
+/// now, let's populate our table of contents with the test and caniuse information
+
+function attachData2TOC(section) {
+    var id = section.id;
+    var total = 0;
+    var tests  = tests_per_id[id];
+    if (typeof tests !== "undefined") {
+	section.tests = tests;
+	total = tests.length;	
+    }
+    var caniuse  = caniuse_per_id[id];
+    if (typeof caniuse !== "undefined") {
+	section.caniuse = caniuse;
+    }
+    var sections = section.sections;
+    if (typeof sections !== "undefined") {
+	for (var i = 0; i < sections.length; i++) {
+	    total += attachData2TOC(sections[i]);
+	}
+    }
+    if (total != 0) {
+	section.total = total;
+    }
+    return total;
+}
+
+attachData2TOC(toc);
+
+// in case this is useful
+toc.agents = caniuse_data.agents;
+
+// output the new decorated table of content
+console.log(JSON.stringify(toc, undefined, 2));
+
+if (debug) console.debug("[debug] end");
+phantom.exit(0);
+

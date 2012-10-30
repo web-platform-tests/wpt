@@ -3,6 +3,7 @@
     <head>
         <title>CSS Test: Max-width using millimeters with a minimum plus one value, 1mm</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-10-29 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#propdef-max-width" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#min-max-widths" />
         <meta name="flags" content="" />
@@ -13,12 +14,12 @@
                 background: black;
                 height: 1in;
                 max-width: 1mm;
-                width: 2mm;
+                width: 25.4mm;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if there is a line below.</p>
+        <p>Test passes if there is a vertical line.</p>
         <div></div>
     </body>
 </html>

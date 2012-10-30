@@ -1,0 +1,59 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"> 
+<html>
+  <head>
+    <title>ARIA 1.0 Test Case C</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  </head>
+  <body>
+    <h1>ARIA 1.0 Test Case C</h1>
+    
+    <ul role="tree" id="ID_LISTBOX">
+      <li id="ID_TREEITEM_1" role="treeitem" tabindex="-1">Tree item 1
+        <ul role="tree">
+          <li id="ID_TREEITEM_11" role="treeitem" tabindex="-1">Tree item 11</li> 
+          <li id="ID_TREEITEM_12" role="treeitem" tabindex="-1">Tree item 12</li>           
+        </ul>
+      </li> 
+      <li id="ID_TREEITEM_2" role="treeitem" tabindex="-1">Tree item 2
+        <ul role="tree">
+          <li id="ID_TREEITEM_21" role="treeitem" tabindex="-1">Tree item 21</li> 
+          <li id="ID_TREEITEM_22" role="treeitem" tabindex="-1">Tree item 22</li>           
+        </ul>
+      </li> 
+      <li id="ID_TREEITEM_3" role="treeitem" tabindex="-1">Tree item 3
+        <ul role="tree">
+          <li id="ID_TREEITEM_31" role="treeitem" tabindex="-1">Tree item 31</li> 
+          <li id="ID_TREEITEM_32" role="treeitem" tabindex="-1">Tree item 32</li>           
+        </ul>
+      </li> 
+    </ul>
+    
+    <h2>Description</h2>
+    <p>A div element with the role='tree' has three child div elements with role='treeitem'.
+      Each of the child div elements contains a div element with the role of tree with two child div elements with the role='treeitem'. 
+      When focus is on the fifth div element with a role of "treeitem" in document order 
+      will be represented in the accessibility tree using the following table:</p>
+    
+    <p><a href="http://www.w3.org/TR/2012/WD-wai-aria-implementation-20120110/#mapping_state-property_table">http://www.w3.org/TR/2012/WD-wai-aria-implementation-20120110/#mapping_state-property_table</a></p>
+
+    <h2>Accessibility API Information</h2>
+    <ul>
+      <li>set size: 2</li>
+      <li>position in set: 1</li>
+      <li>level of set in the hierarchy: 2</li>
+    </ul>
+    
+    <script type="text/javascript">  
+      
+     function setFocus() {
+       var node = document.getElementById('ID_TREEITEM_21');  
+       node.focus();
+     }
+     
+     window.addEventListener('load', setFocus);
+    </script>
+  </body>
+  
+</html>
+
+

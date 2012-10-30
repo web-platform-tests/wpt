@@ -1,0 +1,45 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"> 
+<html>
+  <head>
+    <title>ARIA 1.0 Test Case E</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  </head>
+  <body>
+    <h1>ARIA 1.0 Test Case E</h1>
+    
+    <ul role="tree" id="ID_LISTBOX">
+      <li id="ID_TREEITEM_1" role="treeitem" tabindex="-1" aria-setsize="10" aria-level="2" aria-posinset="5">Tree item 5</li> 
+      <li id="ID_TREEITEM_2" role="treeitem" tabindex="-1" aria-setsize="10" aria-level="2" aria-posinset="6">Tree item 6</li> 
+      <li id="ID_TREEITEM_3" role="treeitem" tabindex="-1" aria-setsize="10" aria-level="2" aria-posinset="7">Tree item 7</li> 
+    </ul>
+    
+    <h2>Description</h2>
+    <p>A ul element with the role='tree' has three child li elements each with role='option'.
+      Each of the li elements with the role='treeitem' have aria-setsize='10' attribute, aria-level='2' atrribute and aria-posinset attribute 
+      numbered consecuatively from 5 to 7.
+      When focus is on the third li element, the structure of the accessibility tree will 
+      be represented in the accessibility tree using the following table:</p>
+    
+    <p><a href="http://www.w3.org/TR/2012/WD-wai-aria-implementation-20120110/#mapping_state-property_table">http://www.w3.org/TR/2012/WD-wai-aria-implementation-20120110/#mapping_state-property_table</a></p>
+
+    <h2>Accessibility API Information</h2>
+    <ul>
+      <li>set size: 10</li>
+      <li>position in set: 7</li>
+      <li>level of set in the hierarchy: 2</li>
+    </ul>
+    
+    <script type="text/javascript">  
+      
+     function setFocus() {
+       var node = document.getElementById('ID_TREEITEM_3');  
+       node.focus();
+     }
+     
+     window.addEventListener('load', setFocus);
+    </script>
+  </body>
+  
+</html>
+
+

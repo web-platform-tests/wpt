@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"> 
+<html>
+  <head>
+    <title>ARIA 1.0 Test Case F</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  </head>
+  <body>
+    <h1>ARIA 1.0 Test Case F</h1>
+    
+    <ul role="tree" id="ID_LISTBOX">
+      <li role="treeitem" tabindex="-1" aria-setsize="10" aria-level="2" aria-posinset="5">Tree item 5
+        <ul role="tree">
+          <li role="treeitem" tabindex="-1" aria-setsize="8" aria-level="3" aria-posinset="3">Tree item 53</li>
+          <li role="treeitem" tabindex="-1" aria-setsize="8" aria-level="3" aria-posinset="4">Tree item 54</li>
+          <li role="treeitem" tabindex="-1" aria-setsize="8" aria-level="3" aria-posinset="5">Tree item 55</li>
+        </ul>
+      </li> 
+      <li role="treeitem" tabindex="-1" aria-setsize="10" aria-level="2" aria-posinset="6">Tree item 6
+        <ul role="tree">
+          <li role="treeitem" tabindex="-1" aria-setsize="7" aria-level="3" aria-posinset="2">Tree item 62</li>
+          <li role="treeitem" tabindex="-1" aria-setsize="7" aria-level="3" aria-posinset="3">Tree item 63</li>
+          <li id="ID_TREEITEM_TARGET" role="treeitem" tabindex="-1" aria-setsize="7" aria-level="3" aria-posinset="4">Tree item 64</li>
+        </ul>
+      </li> 
+      <li role="treeitem" tabindex="-1" aria-setsize="10" aria-level="2" aria-posinset="7">Tree item 7
+        <ul role="tree">
+          <li role="treeitem" tabindex="-1" aria-setsize="9" aria-level="3" aria-posinset="6">Tree item 76</li>
+          <li role="treeitem" tabindex="-1" aria-setsize="9" aria-level="3" aria-posinset="7">Tree item 77</li>
+          <li role="treeitem" tabindex="-1" aria-setsize="9" aria-level="3" aria-posinset="8">Tree item 78</li>
+        </ul>
+      </li> 
+    </ul>
+    
+    <h2>Description</h2>
+    <p>A ul element with the role='tree' has three child li elements each with role='option'.
+      Each of the li elements with the role='treeitem' have aria-setsize='10' attribute, aria-level='2' 
+      atrribute and aria-posinset attribute numbered consecuatively from 5 to 7.
+      Each of the li elements also contains a nested tree widget using ul and li elements with each nested tree 
+      containing three li elements with aria-setsize and aria-posinset to values that are greater than the 3 elements 
+      in the list and aria-level='3' attribute. The eighth li element in the document will have aria-sertzie='7', aria-posinset='4'.
+      When focus is on the eighth li element, the structure of the accessibility tree will 
+      be represented in the accessibility tree using the following table:</p>
+    
+    <p><a href="http://www.w3.org/TR/2012/WD-wai-aria-implementation-20120110/#mapping_state-property_table">http://www.w3.org/TR/2012/WD-wai-aria-implementation-20120110/#mapping_state-property_table</a></p>
+
+    <h2>Accessibility API Information</h2>
+    <ul>
+      <li>set size: 7</li>
+      <li>position in set: 4</li>
+      <li>level of set in the hierarchy: 3</li>
+    </ul>
+    
+    <script type="text/javascript">  
+      
+     function setFocus() {
+       var node = document.getElementById('ID_TREEITEM_TARGET');  
+       node.focus();
+     }
+     
+     window.addEventListener('load', setFocus);
+    </script>
+  </body>
+  
+</html>
+
+

@@ -1,0 +1,19 @@
+It goes as follows:
+
+1. generate json/manifest.json
+  phantomjs scripts/foreach.phjs scripts/manifest.js <uri_to_manifest.txt> >json/manifest.json
+
+  with manifest.txt the list of the tests
+
+2. generate json/toc.json
+  phantomjs scripts/wrapper.phjs scripts/toc.js >json/toc.json
+
+3. get json/data.json 
+  from the caniuse github repository
+    https://github.com/fyrd/caniuse
+
+4. generate json/report.json
+   phantomjs scripts/mash.phjs json/toc.json json/manifest.json json/data.json json/caniuse.json >json/report.json
+
+5. generate the html/*html reports
+   phantomjs scripts/report-to-html.phjs --max-level 2 --report json/report.json

@@ -7205,7 +7205,7 @@
     ctx.moveTo(0, 25);
     ctx.arc(200, 25, 0, 0, Math.PI, true);
     ctx.stroke();
-    @assert pixel 50,25 == 0,255,0,255; @moz-todo
+    @assert pixel 50,25 == 0,255,0,255;
   expected: green
 
 - name: 2d.path.arc.scale.1

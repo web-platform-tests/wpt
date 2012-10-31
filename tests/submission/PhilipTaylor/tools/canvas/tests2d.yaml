@@ -148,118 +148,118 @@
 - name: 2d.missingargs
   desc: Missing arguments cause TypeError
   code: |
-    @assert throws TypeError ctx.scale(); @moz-todo
-    @assert throws TypeError ctx.scale(1); @moz-todo
-    @assert throws TypeError ctx.rotate(); @moz-todo
-    @assert throws TypeError ctx.translate(); @moz-todo
-    @assert throws TypeError ctx.translate(0); @moz-todo
+    @assert throws TypeError ctx.scale();
+    @assert throws TypeError ctx.scale(1);
+    @assert throws TypeError ctx.rotate();
+    @assert throws TypeError ctx.translate();
+    @assert throws TypeError ctx.translate(0);
     if (ctx.transform) { // (avoid spurious failures, since the aim here is not to test that all features are supported)
-        @assert throws TypeError ctx.transform(); @moz-todo
-        @assert throws TypeError ctx.transform(1); @moz-todo
-        @assert throws TypeError ctx.transform(1, 0); @moz-todo
-        @assert throws TypeError ctx.transform(1, 0, 0); @moz-todo
-        @assert throws TypeError ctx.transform(1, 0, 0, 1); @moz-todo
-        @assert throws TypeError ctx.transform(1, 0, 0, 1, 0); @moz-todo
+        @assert throws TypeError ctx.transform();
+        @assert throws TypeError ctx.transform(1);
+        @assert throws TypeError ctx.transform(1, 0);
+        @assert throws TypeError ctx.transform(1, 0, 0);
+        @assert throws TypeError ctx.transform(1, 0, 0, 1);
+        @assert throws TypeError ctx.transform(1, 0, 0, 1, 0);
     }
     if (ctx.setTransform) {
-        @assert throws TypeError ctx.setTransform(); @moz-todo
-        @assert throws TypeError ctx.setTransform(1); @moz-todo
-        @assert throws TypeError ctx.setTransform(1, 0); @moz-todo
-        @assert throws TypeError ctx.setTransform(1, 0, 0); @moz-todo
-        @assert throws TypeError ctx.setTransform(1, 0, 0, 1); @moz-todo
-        @assert throws TypeError ctx.setTransform(1, 0, 0, 1, 0); @moz-todo
+        @assert throws TypeError ctx.setTransform();
+        @assert throws TypeError ctx.setTransform(1);
+        @assert throws TypeError ctx.setTransform(1, 0);
+        @assert throws TypeError ctx.setTransform(1, 0, 0);
+        @assert throws TypeError ctx.setTransform(1, 0, 0, 1);
+        @assert throws TypeError ctx.setTransform(1, 0, 0, 1, 0);
     }
-    @assert throws TypeError ctx.createLinearGradient(); @moz-todo
-    @assert throws TypeError ctx.createLinearGradient(0); @moz-todo
-    @assert throws TypeError ctx.createLinearGradient(0, 0); @moz-todo
-    @assert throws TypeError ctx.createLinearGradient(0, 0, 1); @moz-todo
-    @assert throws TypeError ctx.createRadialGradient(); @moz-todo
-    @assert throws TypeError ctx.createRadialGradient(0); @moz-todo
-    @assert throws TypeError ctx.createRadialGradient(0, 0); @moz-todo
-    @assert throws TypeError ctx.createRadialGradient(0, 0, 1); @moz-todo
-    @assert throws TypeError ctx.createRadialGradient(0, 0, 1, 0); @moz-todo
-    @assert throws TypeError ctx.createRadialGradient(0, 0, 1, 0, 0); @moz-todo
-    @assert throws TypeError ctx.createPattern(canvas); @moz-todo
-    @assert throws TypeError ctx.clearRect(); @moz-todo
-    @assert throws TypeError ctx.clearRect(0); @moz-todo
-    @assert throws TypeError ctx.clearRect(0, 0); @moz-todo
-    @assert throws TypeError ctx.clearRect(0, 0, 0); @moz-todo
-    @assert throws TypeError ctx.fillRect(); @moz-todo
-    @assert throws TypeError ctx.fillRect(0); @moz-todo
-    @assert throws TypeError ctx.fillRect(0, 0); @moz-todo
-    @assert throws TypeError ctx.fillRect(0, 0, 0); @moz-todo
-    @assert throws TypeError ctx.strokeRect(); @moz-todo
-    @assert throws TypeError ctx.strokeRect(0); @moz-todo
-    @assert throws TypeError ctx.strokeRect(0, 0); @moz-todo
-    @assert throws TypeError ctx.strokeRect(0, 0, 0); @moz-todo
-    @assert throws TypeError ctx.moveTo(); @moz-todo
-    @assert throws TypeError ctx.moveTo(0); @moz-todo
-    @assert throws TypeError ctx.lineTo(); @moz-todo
-    @assert throws TypeError ctx.lineTo(0); @moz-todo
-    @assert throws TypeError ctx.quadraticCurveTo(); @moz-todo
-    @assert throws TypeError ctx.quadraticCurveTo(0); @moz-todo
-    @assert throws TypeError ctx.quadraticCurveTo(0, 0); @moz-todo
-    @assert throws TypeError ctx.quadraticCurveTo(0, 0, 0); @moz-todo
-    @assert throws TypeError ctx.bezierCurveTo(); @moz-todo
-    @assert throws TypeError ctx.bezierCurveTo(0); @moz-todo
-    @assert throws TypeError ctx.bezierCurveTo(0, 0); @moz-todo
-    @assert throws TypeError ctx.bezierCurveTo(0, 0, 0); @moz-todo
-    @assert throws TypeError ctx.bezierCurveTo(0, 0, 0, 0); @moz-todo
-    @assert throws TypeError ctx.bezierCurveTo(0, 0, 0, 0, 0); @moz-todo
-    @assert throws TypeError ctx.arcTo(); @moz-todo
-    @assert throws TypeError ctx.arcTo(0); @moz-todo
-    @assert throws TypeError ctx.arcTo(0, 0); @moz-todo
-    @assert throws TypeError ctx.arcTo(0, 0, 0); @moz-todo
-    @assert throws TypeError ctx.arcTo(0, 0, 0, 0); @moz-todo
-    @assert throws TypeError ctx.rect(); @moz-todo
-    @assert throws TypeError ctx.rect(0); @moz-todo
-    @assert throws TypeError ctx.rect(0, 0); @moz-todo
-    @assert throws TypeError ctx.rect(0, 0, 0); @moz-todo
-    @assert throws TypeError ctx.arc(); @moz-todo
-    @assert throws TypeError ctx.arc(0); @moz-todo
-    @assert throws TypeError ctx.arc(0, 0); @moz-todo
-    @assert throws TypeError ctx.arc(0, 0, 1); @moz-todo
-    @assert throws TypeError ctx.arc(0, 0, 1, 0); @moz-todo
+    @assert throws TypeError ctx.createLinearGradient();
+    @assert throws TypeError ctx.createLinearGradient(0);
+    @assert throws TypeError ctx.createLinearGradient(0, 0);
+    @assert throws TypeError ctx.createLinearGradient(0, 0, 1);
+    @assert throws TypeError ctx.createRadialGradient();
+    @assert throws TypeError ctx.createRadialGradient(0);
+    @assert throws TypeError ctx.createRadialGradient(0, 0);
+    @assert throws TypeError ctx.createRadialGradient(0, 0, 1);
+    @assert throws TypeError ctx.createRadialGradient(0, 0, 1, 0);
+    @assert throws TypeError ctx.createRadialGradient(0, 0, 1, 0, 0);
+    @assert throws TypeError ctx.createPattern(canvas);
+    @assert throws TypeError ctx.clearRect();
+    @assert throws TypeError ctx.clearRect(0);
+    @assert throws TypeError ctx.clearRect(0, 0);
+    @assert throws TypeError ctx.clearRect(0, 0, 0);
+    @assert throws TypeError ctx.fillRect();
+    @assert throws TypeError ctx.fillRect(0);
+    @assert throws TypeError ctx.fillRect(0, 0);
+    @assert throws TypeError ctx.fillRect(0, 0, 0);
+    @assert throws TypeError ctx.strokeRect();
+    @assert throws TypeError ctx.strokeRect(0);
+    @assert throws TypeError ctx.strokeRect(0, 0);
+    @assert throws TypeError ctx.strokeRect(0, 0, 0);
+    @assert throws TypeError ctx.moveTo();
+    @assert throws TypeError ctx.moveTo(0);
+    @assert throws TypeError ctx.lineTo();
+    @assert throws TypeError ctx.lineTo(0);
+    @assert throws TypeError ctx.quadraticCurveTo();
+    @assert throws TypeError ctx.quadraticCurveTo(0);
+    @assert throws TypeError ctx.quadraticCurveTo(0, 0);
+    @assert throws TypeError ctx.quadraticCurveTo(0, 0, 0);
+    @assert throws TypeError ctx.bezierCurveTo();
+    @assert throws TypeError ctx.bezierCurveTo(0);
+    @assert throws TypeError ctx.bezierCurveTo(0, 0);
+    @assert throws TypeError ctx.bezierCurveTo(0, 0, 0);
+    @assert throws TypeError ctx.bezierCurveTo(0, 0, 0, 0);
+    @assert throws TypeError ctx.bezierCurveTo(0, 0, 0, 0, 0);
+    @assert throws TypeError ctx.arcTo();
+    @assert throws TypeError ctx.arcTo(0);
+    @assert throws TypeError ctx.arcTo(0, 0);
+    @assert throws TypeError ctx.arcTo(0, 0, 0);
+    @assert throws TypeError ctx.arcTo(0, 0, 0, 0);
+    @assert throws TypeError ctx.rect();
+    @assert throws TypeError ctx.rect(0);
+    @assert throws TypeError ctx.rect(0, 0);
+    @assert throws TypeError ctx.rect(0, 0, 0);
+    @assert throws TypeError ctx.arc();
+    @assert throws TypeError ctx.arc(0);
+    @assert throws TypeError ctx.arc(0, 0);
+    @assert throws TypeError ctx.arc(0, 0, 1);
+    @assert throws TypeError ctx.arc(0, 0, 1, 0);
     // (5th argument to arc is optional)
     if (ctx.isPointInPath) {
-        @assert throws TypeError ctx.isPointInPath(); @moz-todo
-        @assert throws TypeError ctx.isPointInPath(0); @moz-todo
+        @assert throws TypeError ctx.isPointInPath();
+        @assert throws TypeError ctx.isPointInPath(0);
     }
     if (ctx.drawFocusRing) {
-        @assert throws TypeError ctx.drawFocusRing(); @moz-todo
-        @assert throws TypeError ctx.drawFocusRing(canvas); @moz-todo
-        @assert throws TypeError ctx.drawFocusRing(canvas, 0); @moz-todo
+        @assert throws TypeError ctx.drawFocusRing();
+        @assert throws TypeError ctx.drawFocusRing(canvas);
+        @assert throws TypeError ctx.drawFocusRing(canvas, 0);
     }
     if (ctx.fillText) {
-        @assert throws TypeError ctx.fillText(); @moz-todo
-        @assert throws TypeError ctx.fillText('test'); @moz-todo
-        @assert throws TypeError ctx.fillText('test', 0); @moz-todo
-        @assert throws TypeError ctx.strokeText(); @moz-todo
-        @assert throws TypeError ctx.strokeText('test'); @moz-todo
-        @assert throws TypeError ctx.strokeText('test', 0); @moz-todo
-        @assert throws TypeError ctx.measureText(); @moz-todo
+        @assert throws TypeError ctx.fillText();
+        @assert throws TypeError ctx.fillText('test');
+        @assert throws TypeError ctx.fillText('test', 0);
+        @assert throws TypeError ctx.strokeText();
+        @assert throws TypeError ctx.strokeText('test');
+        @assert throws TypeError ctx.strokeText('test', 0);
+        @assert throws TypeError ctx.measureText();
     }
-    @assert throws TypeError ctx.drawImage(); @moz-todo
-    @assert throws TypeError ctx.drawImage(canvas); @moz-todo
-    @assert throws TypeError ctx.drawImage(canvas, 0); @moz-todo
+    @assert throws TypeError ctx.drawImage();
+    @assert throws TypeError ctx.drawImage(canvas);
+    @assert throws TypeError ctx.drawImage(canvas, 0);
     // TODO: n >= 3 args on drawImage could be either a valid overload,
     // or too few for another overload, or too many for another
     // overload - what should happen?
     if (ctx.createImageData) {
-        @assert throws TypeError ctx.createImageData(); @moz-todo
-        @assert throws TypeError ctx.createImageData(1); @moz-todo
+        @assert throws TypeError ctx.createImageData();
+        @assert throws TypeError ctx.createImageData(1);
     }
     if (ctx.getImageData) {
-        @assert throws TypeError ctx.getImageData(); @moz-todo
-        @assert throws TypeError ctx.getImageData(0); @moz-todo
-        @assert throws TypeError ctx.getImageData(0, 0); @moz-todo
-        @assert throws TypeError ctx.getImageData(0, 0, 1); @moz-todo
+        @assert throws TypeError ctx.getImageData();
+        @assert throws TypeError ctx.getImageData(0);
+        @assert throws TypeError ctx.getImageData(0, 0);
+        @assert throws TypeError ctx.getImageData(0, 0, 1);
     }
     if (ctx.putImageData) {
         var imgdata = ctx.getImageData(0, 0, 1, 1);
-        @assert throws TypeError ctx.putImageData(); @moz-todo
-        @assert throws TypeError ctx.putImageData(imgdata); @moz-todo
-        @assert throws TypeError ctx.putImageData(imgdata, 0); @moz-todo
+        @assert throws TypeError ctx.putImageData();
+        @assert throws TypeError ctx.putImageData(imgdata);
+        @assert throws TypeError ctx.putImageData(imgdata, 0);
     }
     var g = ctx.createLinearGradient(0, 0, 0, 0);
     @assert throws TypeError g.addColorStop(); @moz-todo
@@ -2733,25 +2733,22 @@
   testing:
     - 2d.pattern.IDL
   notes: *bindings
-  #mozilla: { bug: TODO }
   code: |
-    @assert throws TypeError ctx.createPattern(undefined, 'repeat'); @moz-todo
+    @assert throws TypeError ctx.createPattern(undefined, 'repeat');
 
 - name: 2d.pattern.image.null
   testing:
     - 2d.pattern.IDL
   notes: *bindings
-  #mozilla: { bug: TODO }
   code: |
-    @assert throws TypeError ctx.createPattern(null, 'repeat'); @moz-todo
+    @assert throws TypeError ctx.createPattern(null, 'repeat');
 
 - name: 2d.pattern.image.string
   testing:
     - 2d.pattern.IDL
   notes: *bindings
-  #mozilla: { bug: TODO }
   code: |
-    @assert throws TypeError ctx.createPattern('../images/red.png', 'repeat'); @moz-todo
+    @assert throws TypeError ctx.createPattern('../images/red.png', 'repeat');
 
 - name: 2d.pattern.image.incomplete.nosrc
   testing:
@@ -8665,23 +8662,21 @@
   expected: green
 
 - name: 2d.drawImage.null
-  #mozilla: { bug: TODO }
   testing:
     - 2d.drawImage.IDL
   code: |
-    @assert throws TypeError ctx.drawImage(null, 0, 0); @moz-todo
+    @assert throws TypeError ctx.drawImage(null, 0, 0);
 
 - name: 2d.drawImage.wrongtype
-  #mozilla: { bug: TODO }
   desc: Incorrect image types in drawImage do not match any defined overloads, so WebIDL throws a TypeError
   notes: *bindings
   testing:
     - 2d.drawImage.IDL
   code: |
-    @assert throws TypeError ctx.drawImage(undefined, 0, 0); @moz-todo
-    @assert throws TypeError ctx.drawImage(0, 0, 0); @moz-todo
-    @assert throws TypeError ctx.drawImage("", 0, 0); @moz-todo
-    @assert throws TypeError ctx.drawImage(document.createElement('p'), 0, 0); @moz-todo
+    @assert throws TypeError ctx.drawImage(undefined, 0, 0);
+    @assert throws TypeError ctx.drawImage(0, 0, 0);
+    @assert throws TypeError ctx.drawImage("", 0, 0);
+    @assert throws TypeError ctx.drawImage(document.createElement('p'), 0, 0);
 
 - name: 2d.drawImage.floatsource
   testing:

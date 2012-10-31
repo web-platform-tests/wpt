@@ -84,31 +84,6 @@
     @assert canvas.getZero() === 0;
 
 
-- name: size.attributes.get
-  desc: Getting width/height IDL/content attributes
-  testing:
-    - size.width
-    - size.height
-  canvas: width="120" height="60"
-  code: |
-    @assert canvas.width === 120;
-    @assert canvas.height === 60;
-    @assert canvas.getAttribute('width') === '120';
-    @assert canvas.getAttribute('height') === '60';
-  expected: size 120 60
-
-- name: size.attributes.set
-  desc: Setting width/height IDL attributes
-  testing:
-    - size.width
-    - size.height
-  code: |
-    canvas.width = 120;
-    canvas.height = 60;
-    @assert canvas.width === 120;
-    @assert canvas.height === 60;
-  expected: size 120 60
-
 - name: size.attributes.idl.set.zero
   desc: Setting width/height IDL attributes to 0
   testing:

@@ -40,7 +40,6 @@ deferTest();
 img.onload = wrapFunction(function ()
 {
     ctx.drawImage(img, 0, 0);
-    
     _assertPixelApprox(canvas, 12,20, 255,255,0,255, "12,20", "255,255,0,255", 8);
     _assertPixelApprox(canvas, 50,20, 0,255,255,255, "50,20", "0,255,255,255", 8);
     _assertPixelApprox(canvas, 87,20, 0,0,255,255, "87,20", "0,0,255,255", 8);

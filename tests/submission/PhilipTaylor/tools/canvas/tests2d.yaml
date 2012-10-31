@@ -9087,10 +9087,9 @@
   desc: createImageData(sw, sh) returns an ImageData object containing a Uint8ClampedArray object
   testing:
     - 2d.imageData.create2.object
-  mozilla: { throws }
   code: |
-    @assert window.ImageData !== undefined; @moz-todo
-    @assert window.Uint8ClampedArray !== undefined; @moz-todo
+    @assert window.ImageData !== undefined;
+    @assert window.Uint8ClampedArray !== undefined;
     window.ImageData.prototype.thisImplementsImageData = true;
     window.Uint8ClampedArray.prototype.thisImplementsUint8ClampedArray = true;
     var imgdata = ctx.createImageData(1, 1);
@@ -9101,15 +9100,14 @@
   desc: createImageData(imgdata) returns an ImageData object containing a Uint8ClampedArray object
   testing:
     - 2d.imageData.create1.object
-  mozilla: { throws }
   code: |
-    @assert window.ImageData !== undefined; @moz-todo
-    @assert window.Uint8ClampedArray !== undefined; @moz-todo
+    @assert window.ImageData !== undefined;
+    @assert window.Uint8ClampedArray !== undefined;
     window.ImageData.prototype.thisImplementsImageData = true;
     window.Uint8ClampedArray.prototype.thisImplementsUint8ClampedArray = true;
     var imgdata = ctx.createImageData(ctx.createImageData(1, 1));
-    @assert imgdata.thisImplementsImageData; @moz-todo
-    @assert imgdata.data.thisImplementsUint8ClampedArray; @moz-todo
+    @assert imgdata.thisImplementsImageData;
+    @assert imgdata.data.thisImplementsUint8ClampedArray;
 
 - name: 2d.imageData.create2.this
   desc: createImageData(sw, sh) should throw when called with the wrong |this|
@@ -9238,7 +9236,7 @@
   testing:
     - 2d.imageData.create.null
   code: |
-    @assert throws TypeError ctx.createImageData(null); @moz-todo
+    @assert throws TypeError ctx.createImageData(null);
 
 - name: 2d.imageData.create2.round
   desc: createImageData(w, h) is rounded the same as getImageData(0, 0, w, h)
@@ -9261,10 +9259,9 @@
   desc: getImageData() returns an ImageData object containing a Uint8ClampedArray object
   testing:
     - 2d.imageData.get.object
-  mozilla: { throws }
   code: |
-    @assert window.ImageData !== undefined; @moz-todo
-    @assert window.Uint8ClampedArray !== undefined; @moz-todo
+    @assert window.ImageData !== undefined;
+    @assert window.Uint8ClampedArray !== undefined;
     window.ImageData.prototype.thisImplementsImageData = true;
     window.Uint8ClampedArray.prototype.thisImplementsUint8ClampedArray = true;
     var imgdata = ctx.getImageData(0, 0, 1, 1);
@@ -9716,7 +9713,7 @@
   testing:
     - 2d.imageData.put.wrongtype
   code: |
-    @assert throws TypeError ctx.putImageData(null, 0, 0); @moz-todo
+    @assert throws TypeError ctx.putImageData(null, 0, 0);
 
 - name: 2d.imageData.put.nonfinite
   desc: putImageData() throws NOT_SUPPORTED_ERR if arguments are not finite
@@ -9766,9 +9763,9 @@
     - 2d.imageData.put.wrongtype
   code: |
     var imgdata = { width: 1, height: 1, data: [255, 0, 0, 255] };
-    @assert throws TypeError ctx.putImageData(imgdata, 0, 0); @moz-todo
-    @assert throws TypeError ctx.putImageData("cheese", 0, 0); @moz-todo
-    @assert throws TypeError ctx.putImageData(42, 0, 0); @moz-todo
+    @assert throws TypeError ctx.putImageData(imgdata, 0, 0);
+    @assert throws TypeError ctx.putImageData("cheese", 0, 0);
+    @assert throws TypeError ctx.putImageData(42, 0, 0);
   expected: green
 
 - name: 2d.imageData.put.cross

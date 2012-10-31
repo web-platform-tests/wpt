@@ -507,10 +507,10 @@
         ctx.fillRect(0, 0, 100, 50);
         ctx.fillStyle = '#0f0';
         ctx.fillText('AA', 0, 50);
-        @assert pixel 5,5 ==~ 0,255,0,255;
-        @assert pixel 95,5 ==~ 0,255,0,255;
-        @assert pixel 25,25 ==~ 0,255,0,255;
-        @assert pixel 75,25 ==~ 0,255,0,255;
+        @assert pixel 5,5 ==~ 0,255,0,255; @moz-todo
+        @assert pixel 95,5 ==~ 0,255,0,255; @moz-todo
+        @assert pixel 25,25 ==~ 0,255,0,255; @moz-todo
+        @assert pixel 75,25 ==~ 0,255,0,255; @moz-todo
     }), 500);
   expected: green
 
@@ -627,8 +627,8 @@
         @assert pixel 95,5 ==~ 0,255,0,255;
         @assert pixel 25,25 ==~ 0,255,0,255;
         @assert pixel 75,25 ==~ 0,255,0,255;
-        @assert pixel 5,45 ==~ 0,255,0,255;
-        @assert pixel 95,45 ==~ 0,255,0,255;
+        @assert pixel 5,45 ==~ 0,255,0,255; @moz-todo
+        @assert pixel 95,45 ==~ 0,255,0,255; @moz-todo
     }), 500);
   expected: green
 
@@ -646,8 +646,8 @@
         ctx.fillStyle = '#0f0';
         ctx.textBaseline = 'hanging';
         ctx.fillText('CC', 0, 12.5);
-        @assert pixel 5,5 ==~ 0,255,0,255;
-        @assert pixel 95,5 ==~ 0,255,0,255;
+        @assert pixel 5,5 ==~ 0,255,0,255; @moz-todo
+        @assert pixel 95,5 ==~ 0,255,0,255; @moz-todo
         @assert pixel 25,25 ==~ 0,255,0,255;
         @assert pixel 75,25 ==~ 0,255,0,255;
         @assert pixel 5,45 ==~ 0,255,0,255;
@@ -863,7 +863,7 @@
         ctx.fillRect(0, 0, 100, 50);
         ctx.fillStyle = '#0f0';
         ctx.fillText('E  EE', -100, 37.5);
-        @assert pixel 25,25 ==~ 0,255,0,255;
+        @assert pixel 25,25 ==~ 0,255,0,255; @moz-todo
         @assert pixel 75,25 ==~ 0,255,0,255;
     }), 500);
   expected: green
@@ -882,8 +882,8 @@
         ctx.fillRect(0, 0, 100, 50);
         ctx.fillStyle = '#0f0';
         ctx.fillText('E \x09\x0a\x0c\x0d  \x09\x0a\x0c\x0dEE', -100, 37.5);
-        @assert pixel 25,25 ==~ 0,255,0,255;
-        @assert pixel 75,25 ==~ 0,255,0,255;
+        @assert pixel 25,25 ==~ 0,255,0,255; @moz-todo
+        @assert pixel 75,25 ==~ 0,255,0,255; @moz-todo
     }), 500);
   expected: green
 
@@ -920,7 +920,7 @@
         ctx.fillRect(0, 0, 100, 50);
         ctx.fillStyle = '#0f0';
         ctx.fillText(' EE', 0, 37.5);
-        @assert pixel 25,25 ==~ 0,255,0,255;
+        @assert pixel 25,25 ==~ 0,255,0,255; @moz-todo
         @assert pixel 75,25 ==~ 0,255,0,255;
     }), 500);
   expected: green
@@ -941,7 +941,7 @@
         ctx.textAlign = 'right';
         ctx.fillText('EE ', 100, 37.5);
         @assert pixel 25,25 ==~ 0,255,0,255;
-        @assert pixel 75,25 ==~ 0,255,0,255;
+        @assert pixel 75,25 ==~ 0,255,0,255; @moz-todo
     }), 500);
   expected: green
 
@@ -989,12 +989,12 @@
     setTimeout(wrapFunction(function () {
         ctx.font = '50px CanvasTest';
         @assert ctx.measureText('A B').width === 150;
-        @assert ctx.measureText('A  B').width === 150;
-        @assert ctx.measureText('A \x09\x0a\x0c\x0d  \x09\x0a\x0c\x0dB').width === 150;
+        @assert ctx.measureText('A  B').width === 150; @moz-todo
+        @assert ctx.measureText('A \x09\x0a\x0c\x0d  \x09\x0a\x0c\x0dB').width === 150; @moz-todo
         @assert ctx.measureText('A \x0b B').width >= 200;
 
-        @assert ctx.measureText(' AB').width === 100;
-        @assert ctx.measureText('AB ').width === 100;
+        @assert ctx.measureText(' AB').width === 100; @moz-todo
+        @assert ctx.measureText('AB ').width === 100; @moz-todo
     }), 500);
 
 # TODO: shadows, alpha, composite, clip

@@ -3186,7 +3186,6 @@
 - name: 2d.pattern.paint.repeat.coord3
   testing:
     - 2d.pattern.painting
-  #mozilla: { bug: TODO }
   images:
     - rgrg-256x256.png
   code: |
@@ -3198,10 +3197,10 @@
     ctx.translate(-128, -78);
     ctx.fillRect(128, 78, 100, 50);
 
-    @assert pixel 1,1 == 0,255,0,255; @moz-todo
-    @assert pixel 98,1 == 0,255,0,255; @moz-todo
-    @assert pixel 1,48 == 0,255,0,255; @moz-todo
-    @assert pixel 98,48 == 0,255,0,255; @moz-todo
+    @assert pixel 1,1 == 0,255,0,255;
+    @assert pixel 98,1 == 0,255,0,255;
+    @assert pixel 1,48 == 0,255,0,255;
+    @assert pixel 98,48 == 0,255,0,255;
   expected: green
 
 - name: 2d.pattern.paint.repeatx.basic
@@ -3229,7 +3228,6 @@
 - name: 2d.pattern.paint.repeatx.outside
   testing:
     - 2d.pattern.painting
-  #mozilla: { bug: TODO }
   images:
     - red-16x16.png
   code: |
@@ -3246,14 +3244,13 @@
 
     @assert pixel 1,1 == 0,255,0,255;
     @assert pixel 98,1 == 0,255,0,255;
-    @assert pixel 1,48 == 0,255,0,255; @moz-todo
-    @assert pixel 98,48 == 0,255,0,255; @moz-todo
+    @assert pixel 1,48 == 0,255,0,255;
+    @assert pixel 98,48 == 0,255,0,255;
   expected: green
 
 - name: 2d.pattern.paint.repeatx.coord1
   testing:
     - 2d.pattern.painting
-  #mozilla: { bug: TODO }
   images:
     - red-16x16.png
   code: |
@@ -3269,12 +3266,12 @@
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 0, 100, 16);
 
-    @assert pixel 1,1 == 0,255,0,255; @moz-todo
-    @assert pixel 98,1 == 0,255,0,255; @moz-todo
+    @assert pixel 1,1 == 0,255,0,255;
+    @assert pixel 98,1 == 0,255,0,255;
     @assert pixel 1,25 == 0,255,0,255;
     @assert pixel 98,25 == 0,255,0,255;
-    @assert pixel 1,48 == 0,255,0,255; @moz-todo
-    @assert pixel 98,48 == 0,255,0,255; @moz-todo
+    @assert pixel 1,48 == 0,255,0,255;
+    @assert pixel 98,48 == 0,255,0,255;
   expected: green
 
 - name: 2d.pattern.paint.repeaty.basic
@@ -3302,7 +3299,6 @@
 - name: 2d.pattern.paint.repeaty.outside
   testing:
     - 2d.pattern.painting
-  #mozilla: { bug: TODO }
   images:
     - red-16x16.png
   code: |
@@ -3318,15 +3314,14 @@
     ctx.fillRect(0, 0, 16, 50);
 
     @assert pixel 1,1 == 0,255,0,255;
-    @assert pixel 98,1 == 0,255,0,255; @moz-todo
+    @assert pixel 98,1 == 0,255,0,255;
     @assert pixel 1,48 == 0,255,0,255;
-    @assert pixel 98,48 == 0,255,0,255; @moz-todo
+    @assert pixel 98,48 == 0,255,0,255;
   expected: green
 
 - name: 2d.pattern.paint.repeaty.coord1
   testing:
     - 2d.pattern.painting
-  #mozilla: { bug: TODO }
   images:
     - red-16x16.png
   code: |
@@ -3342,12 +3337,12 @@
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 0, 16, 50);
 
-    @assert pixel 1,1 == 0,255,0,255; @moz-todo
+    @assert pixel 1,1 == 0,255,0,255;
     @assert pixel 50,1 == 0,255,0,255;
-    @assert pixel 98,1 == 0,255,0,255; @moz-todo
-    @assert pixel 1,48 == 0,255,0,255; @moz-todo
+    @assert pixel 98,1 == 0,255,0,255;
+    @assert pixel 1,48 == 0,255,0,255;
     @assert pixel 50,48 == 0,255,0,255;
-    @assert pixel 98,48 == 0,255,0,255; @moz-todo
+    @assert pixel 98,48 == 0,255,0,255;
   expected: green
 
 - name: 2d.pattern.paint.orientation.image

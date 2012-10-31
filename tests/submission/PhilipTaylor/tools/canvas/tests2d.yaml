@@ -2085,7 +2085,7 @@
     ctx.fillRect(0, 0, 100, 50);
     ctx.translate(-50, 0);
     ctx.fillRect(50, 0, 100, 50);
-    @assert pixel 25,25 == 0,255,0,255; @moz-todo
+    @assert pixel 25,25 == 0,255,0,255;
     @assert pixel 50,25 == 0,255,0,255;
     @assert pixel 75,25 == 0,255,0,255;
   expected: green
@@ -2614,9 +2614,9 @@
     ctx.translate(50, 25);
     ctx.scale(10, 10);
     ctx.fillRect(-5, -2.5, 10, 5);
-    @assert pixel 25,25 == 0,255,0,255; @moz-todo
-    @assert pixel 50,25 == 0,255,0,255; @moz-todo
-    @assert pixel 75,25 == 0,255,0,255; @moz-todo
+    @assert pixel 25,25 == 0,255,0,255;
+    @assert pixel 50,25 == 0,255,0,255;
+    @assert pixel 75,25 == 0,255,0,255;
   expected: green
 
 

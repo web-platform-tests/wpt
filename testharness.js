@@ -1479,7 +1479,7 @@ policies and contribution forms [3].
     */
 
     function Output() {
-      this.output_document = null;
+      this.output_document = document;
       this.output_node = null;
       this.done_count = 0;
       this.enabled = settings.output;

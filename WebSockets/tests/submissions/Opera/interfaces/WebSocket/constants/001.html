@@ -1,15 +1,15 @@
 <!doctype html>
 <title>WebSockets: getting constants on constructor</title>
-<pre>FAIL (script didn't run)</pre>
-<script src=/resources/jsframework2.js></script>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
 <script src=../../../../constants.js></script>
+<div id=log></div>
 <script>
-assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
-assertNotThrows(function(){
+test(function(){
   var ws = new WebSocket(SCHEME_AND_DOMAIN+'/');
   var constants = ['CONNECTING', 'OPEN', 'CLOSING', 'CLOSED'];
   for (var i = 0; i < constants.length; ++i) {
-    assertEquals(WebSocket[constants[i]], i, 'WebSocket.'+constants[i]);
+    assert_equals(WebSocket[constants[i]], i, 'WebSocket.'+constants[i]);
   }
 });
 end();

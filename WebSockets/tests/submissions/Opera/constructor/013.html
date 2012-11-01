@@ -1,11 +1,11 @@
 <!doctype html>
 <title>WebSockets: multiple WebSocket objects</title>
-<pre>FAIL (script didn't run)</pre>
-<script src=/resources/jsframework2.js></script>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
 <script src=../../constants.js></script>
+<div id=log></div>
 <script>
-assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
-assertNotThrows(function(){
+test(function(){
   // test that the events are fired as they should when opening 25 websockets and
   // sending a message on each and then closing when getting the message back
   var ws = [];
@@ -23,7 +23,7 @@ assertNotThrows(function(){
     ws[i].onmessage = function(e) {
       debug(e.type+' '+this.id);
       events++;
-      assertEquals(e.data, ''+this.id);
+      assert_equals(e.data, ''+this.id);
       this.close();
       this.onmessage = assertUnreached;
     }

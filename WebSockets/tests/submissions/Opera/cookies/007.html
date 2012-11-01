@@ -1,12 +1,12 @@
 <!doctype html>
 <title>WebSockets: when to process set-cookie fields in ws response</title>
-<pre>FAIL (script didn't run)</pre>
-<script src=/resources/jsframework2.js></script>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
 <script src=../../constants.js></script>
+<div id=log></div>
 <script>
-assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
 setTestTimeout(12000);
-assertNotThrows(function() {
+test(function() {
   var ws = new WebSocket(SCHEME_AND_DOMAIN+':8007/set-cookie?'+encodeURIComponent('ws_test=test; Path=/'));
   ws.onopen = function(e) {
     debug(e);

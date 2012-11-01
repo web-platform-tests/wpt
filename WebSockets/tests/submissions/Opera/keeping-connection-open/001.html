@@ -1,12 +1,12 @@
 <!doctype html>
 <title>WebSockets: 20s inactivity after handshake</title>
 <p>Note: This test takes 20 seconds to run.</p>
-<pre>FAIL (script didn't run)</pre>
-<script src=/resources/jsframework2.js></script>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
 <script src=../../constants.js></script>
+<div id=log></div>
 <script>
-assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
-assertNotThrows(function(){
+test(function(){
   var ws = new WebSocket(SCHEME_AND_DOMAIN+':8007/echo');
   ws.onclose = ws.onerror = ws.onmessage = assertUnreached;
   ws.onopen = function(e) {
@@ -16,7 +16,7 @@ assertNotThrows(function(){
       ws.send('test');
       ws.onmessage = function(e) {
         debug(e);
-        assertEquals(e.data, 'test');
+        assert_equals(e.data, 'test');
         ws.onclose = function(e) {
           debug(e);
           setTestTimeout(null);

@@ -1,12 +1,12 @@
 <!doctype html>
 <title>WebSockets: instanceof on events</title>
-<pre>FAIL (script didn't run)</pre>
-<script src=/resources/jsframework2.js></script>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
 <script src=../../../../constants.js></script>
+<div id=log></div>
 <script>
-assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
-assertNotThrows(function(){
-  var ws = new WebSocket(SCHEME_AND_DOMAIN+':8007/echo_raw');
+test(function(){
+  var ws = new WebSocket(SCHEME_AND_DOMAIN+':80/ws/echo_raw');
   ws.onopen = function(e) {
     assertInstanceOf(e, Event);
     // first a text frame, then a frame with reserved opcode 3
@@ -16,11 +16,11 @@ assertNotThrows(function(){
   ws.onmessage = function(e) {
     assertInstanceOf(e, Event);
     assertInstanceOf(e, MessageEvent);
-    assertEquals(ws.readyState, ws.OPEN);
+    assert_equals(ws.readyState, ws.OPEN);
   }
   ws.onerror = function(e) {
     assertInstanceOf(e, Event);
-    assertEquals(ws.readyState, ws.CLOSED);
+    assert_equals(ws.readyState, ws.CLOSED);
   }
   ws.onclose = function(e) {
     assertInstanceOf(e, Event);

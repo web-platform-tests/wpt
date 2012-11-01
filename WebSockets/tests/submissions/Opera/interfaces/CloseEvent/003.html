@@ -1,19 +1,19 @@
 <!doctype html>
 <title>WebSockets: dispatching a CloseEvent</title>
-<pre>FAIL (script didn't run)</pre>
-<script src=/resources/jsframework2.js></script>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
 <script src=../../../constants.js></script>
+<div id=log></div>
 <script>
-assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
 setTestTimeout(2000);
-assertNotThrows(function(){
+test(function(){
   var e = document.createEvent('CloseEvent');
   e.initCloseEvent('foo', true, true, true);
   var div = document.createElement('div');
   div.addEventListener('foo', function(ev) {
-    assertEquals(ev.bubbles, true);
-    assertEquals(ev.cancelable, true);
-    assertEquals(ev.wasClean, true);
+    assert_equals(ev.bubbles, true);
+    assert_equals(ev.cancelable, true);
+    assert_equals(ev.wasClean, true);
     end();
   }, false);
   div.dispatchEvent(e);

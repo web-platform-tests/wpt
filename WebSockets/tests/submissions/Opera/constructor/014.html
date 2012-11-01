@@ -1,12 +1,12 @@
 <!doctype html>
 <title>WebSockets: serialize establish a connection</title>
-<pre>FAIL (script didn't run)</pre>
-<script src=/resources/jsframework2.js></script>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
 <script src=../../constants.js></script>
+<div id=log></div>
 <script>
-assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
 setTestTimeout(10000);
-assertNotThrows(function(){
+test(function(){
   var ws = [];
   var events = 0;
   var prevDate;

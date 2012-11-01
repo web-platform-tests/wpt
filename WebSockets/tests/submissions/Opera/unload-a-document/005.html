@@ -1,10 +1,10 @@
 <!doctype html>
 <title>WebSockets: navigating nested browsing context with a websocket in top-level</title>
-<pre>FAIL (script didn't run)</pre>
-<script src=/resources/jsframework2.js></script>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
 <script src=../../constants.js></script>
+<div id=log></div>
 <script>
-assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
 var hasRun = false;
 function run(){
   var ws = new WebSocket(SCHEME_AND_DOMAIN+':8007/echo');

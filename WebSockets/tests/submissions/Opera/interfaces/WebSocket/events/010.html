@@ -1,19 +1,19 @@
 <!doctype html>
 <title>WebSockets: setting event handlers to undefined</title>
-<pre>FAIL (script didn't run)</pre>
-<script src=/resources/jsframework2.js></script>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
 <script src=../../../../constants.js></script>
+<div id=log></div>
 <script>
-assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
-assertNotThrows(function(){
+test(function(){
   var ws = new WebSocket(SCHEME_AND_DOMAIN+'/');
   var events = ['onclose', 'onopen', 'onerror', 'onmessage'];
   var foo = function() {}
   for (var i = 0; i < events.length; ++i) {
     ws[events[i]] = foo;
-    assertEquals(ws[events[i]], foo, events[i]);
+    assert_equals(ws[events[i]], foo, events[i]);
     ws[events[i]] = undefined;
-    assertEquals(ws[events[i]], null, events[i]);
+    assert_equals(ws[events[i]], null, events[i]);
   }
 });
 end();

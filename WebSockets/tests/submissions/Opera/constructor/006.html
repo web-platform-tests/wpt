@@ -1,22 +1,22 @@
 <!doctype html>
 <title>WebSockets: converting first arguments</title>
-<pre>FAIL (script didn't run)</pre>
-<script src=/resources/jsframework2.js></script>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
 <script src=../../constants.js></script>
+<div id=log></div>
 <script>
-assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
-assertNotThrows(function(){
+test(function(){
   var a = document.createElement('a');
   a.href = SCHEME_AND_DOMAIN+':8007/echo';
   var ws = new WebSocket(a); // should stringify arguments; <a> stringifies to its .href
-  assertEquals(ws.url, a.href);
+  assert_equals(ws.url, a.href);
   ws.onopen = function(e) {
     debug(e);
     ws.send('test');
   }
   ws.onmessage = function(e) {
     debug(e);
-    assertEquals(e.data, 'test');
+    assert_equals(e.data, 'test');
     ws.onclose = function(e) {
       debug(e);
       ws.onclose = assertUnreached;

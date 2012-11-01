@@ -1,15 +1,15 @@
 <!doctype html>
 <title>WebSockets: invalid handshake</title>
-<pre>FAIL (script didn't run)</pre>
-<script src=/resources/jsframework2.js></script>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
 <script src=../../constants.js></script>
+<div id=log></div>
 <script>
-assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
 setTestTimeout(10000, 'got no close event');
-assertNotThrows(function(){
+test(function(){
   var ws = new WebSocket(SCHEME_AND_DOMAIN+':8007/invalid');
   ws.onclose = function(e) {
-    assertEquals(e.wasClean, false);
+    assert_equals(e.wasClean, false);
     debug(e);
     ws.onclose = assertUnreached;
     setTestTimeout(null);

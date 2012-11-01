@@ -1,12 +1,12 @@
 <!doctype html>
 <title>WebSockets: removeEventListener</title>
-<pre>FAIL (script didn't run)</pre>
-<script src=/resources/jsframework2.js></script>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
 <script src=../../../../constants.js></script>
+<div id=log></div>
 <script>
-assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
-assertNotThrows(function(){
-  var ws = new WebSocket(SCHEME_AND_DOMAIN+':8007/echo');
+test(function(){
+  var ws = new WebSocket(SCHEME_AND_DOMAIN+':80/ws/echo');
   ws.close();
   var events = ['open', 'message', 'error', 'close'];
   var got = [];
@@ -21,7 +21,7 @@ assertNotThrows(function(){
     event.initEvent(events[i], false, false);
     ws.dispatchEvent(event);
   }
-  assertEquals(got.length, 0);
+  assert_equals(got.length, 0);
   if (got.length) {
     debug('Got: '+got);
   }

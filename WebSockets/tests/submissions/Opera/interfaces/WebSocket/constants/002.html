@@ -1,11 +1,11 @@
 <!doctype html>
 <title>WebSockets: setting constants</title>
-<pre>FAIL (script didn't run)</pre>
-<script src=/resources/jsframework2.js></script>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
 <script src=../../../../constants.js></script>
+<div id=log></div>
 <script>
-assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
-assertNotThrows(function(){
+test(function(){
   // this test is testing WebIDL stuff
   var ws = new WebSocket(SCHEME_AND_DOMAIN+'/');
   var constants = ['CONNECTING', 'OPEN', 'CLOSING', 'CLOSED'];
@@ -13,9 +13,9 @@ assertNotThrows(function(){
     WebSocket[constants[i]] = 5; // should be ignored, has { ReadOnly }
     WebSocket.prototype[constants[i]] = 5; // should be ignored, has { ReadOnly }
     ws[constants[i]] = 5; // should be ignored, { ReadOnly } is inherited from prototype
-    assertEquals(WebSocket[constants[i]], i, 'WebSocket.'+constants[i]);
-    assertEquals(WebSocket.prototype[constants[i]], i, 'WebSocket.prototype.'+constants[i]);
-    assertEquals(ws[constants[i]], i, 'ws.'+constants[i]);
+    assert_equals(WebSocket[constants[i]], i, 'WebSocket.'+constants[i]);
+    assert_equals(WebSocket.prototype[constants[i]], i, 'WebSocket.prototype.'+constants[i]);
+    assert_equals(ws[constants[i]], i, 'ws.'+constants[i]);
   }
 });
 end();

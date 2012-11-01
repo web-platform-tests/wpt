@@ -1,25 +1,24 @@
 <!doctype html>
 <title>WebSockets: close()</title>
-<pre>FAIL (script didn't run)</pre>
-<script src=/resources/jsframework2.js></script>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
 <script src=../../../../constants.js></script>
+<div id=log></div>
 <script>
-assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
-setTestTimeout(10000, 'got no close event');
-assertNotThrows(function(){
+setup({timeout:10100});
+async_test(function(t){
   var ws = new WebSocket(SCHEME_AND_DOMAIN+'/');
-  ws.onclose = function(e) {
-    assertNotThrows(function() {
-      assertEquals(e instanceof CloseEvent, true, 'e instanceof CloseEvent');
-      assertEquals(e.wasClean, false, 'e.wasClean');
+  ws.onclose = t.step_func(
+    function(e) {
+      assert_equals(e instanceof CloseEvent, true, 'e instanceof CloseEvent');
+      assert_equals(e.wasClean, false, 'e.wasClean');
       e.wasClean = true;
-      assertEquals(e.wasClean, false, 'e.wasClean = true');
+      assert_equals(e.wasClean, false, 'e.wasClean = true');
       delete e.wasClean;
-      assertEquals(e.wasClean, false, 'delete e.wasClean');
+      assert_equals(e.wasClean, false, 'delete e.wasClean');
+      t.done();
     });
-    end();
-  }
   ws.close();
-  assertEquals(ws.readyState, ws.CLOSING);
-});
+  assert_equals(ws.readyState, ws.CLOSING);
+}), undefined, {timeout:10000});
 </script>

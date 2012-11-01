@@ -1,17 +1,17 @@
 <!doctype html>
 <title>WebSockets: addEventListener</title>
-<pre>FAIL (script didn't run)</pre>
-<script src=/resources/jsframework2.js></script>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
 <script src=../../../../constants.js></script>
+<div id=log></div>
 <script>
-assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
-assertNotThrows(function(){
-  var ws = new WebSocket(SCHEME_AND_DOMAIN+':8007/echo');
+test(function(){
+  var ws = new WebSocket(SCHEME_AND_DOMAIN+':80/ws/echo');
   var count = 0;
   function checkCount(c, e) {
     count++;
     debug(e.type + ', '+c);
-    assertEquals(count, c);
+    assert_equals(count, c);
   }
   // no spec requires this order for event listeners but the web does
   ws.addEventListener('open', function(e) {

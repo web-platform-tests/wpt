@@ -7,7 +7,7 @@
 <div id=log></div>
 <script>
 async_test(function(outer) {
-  var ws = new WebSocket(SCHEME_AND_DOMAIN+':8007/echo');
+  var ws = new WebSocket(SCHEME_AND_DOMAIN+':80/ws/echo');
   var stuffToSend = [null, undefined, 1, window, document.body, {}, [], ws, function(){}, new Error()]
   var tests = [];
 

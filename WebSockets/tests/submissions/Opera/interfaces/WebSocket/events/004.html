@@ -1,15 +1,15 @@
 <!doctype html>
 <title>WebSockets: members of EventTarget</title>
-<pre>FAIL (script didn't run)</pre>
-<script src=/resources/jsframework2.js></script>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
 <script src=../../../../constants.js></script>
+<div id=log></div>
 <script>
-assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
-assertNotThrows(function(){
+test(function(){
   var ws = new WebSocket(SCHEME_AND_DOMAIN+'/');
-  assertEquals(typeof ws.addEventListener, 'function');
-  assertEquals(typeof ws.removeEventListener, 'function');
-  assertEquals(typeof ws.dispatchEvent, 'function');
+  assert_equals(typeof ws.addEventListener, 'function');
+  assert_equals(typeof ws.removeEventListener, 'function');
+  assert_equals(typeof ws.dispatchEvent, 'function');
 });
 end();
 </script>

@@ -1,19 +1,19 @@
 <!doctype html>
 <title>WebSockets: bufferedAmount for unicode data</title>
-<pre>FAIL (script didn't run)</pre>
-<script src=/resources/jsframework2.js></script>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
 <script src=../../../../constants.js></script>
+<div id=log></div>
 <script>
-assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
-assertNotThrows(function(){
-  var ws = new WebSocket(SCHEME_AND_DOMAIN+':8007/echo');
+test(function(){
+  var ws = new WebSocket(SCHEME_AND_DOMAIN+':80/ws/echo');
   var data = "¥¥¥¥¥¥";
    ws.onopen = function(e) {
     ws.send(data);
-    assertEquals(data.length * 2, ws.bufferedAmount);
+    assert_equals(data.length * 2, ws.bufferedAmount);
   }
   ws.onmessage = function(e) {
-    assertEquals(e.data, data);
+    assert_equals(e.data, data);
     end();
   }
   

@@ -1,10 +1,10 @@
 <!doctype html>
 <title>WebSockets: sending HttpOnly cookies in ws request</title>
-<pre>FAIL (script didn't run)</pre>
-<script src=/resources/jsframework2.js></script>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
 <script src=../../constants.js></script>
+<div id=log></div>
 <script>
-assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
 setTestTimeout(null);
 var timeout = setTimeout(function() {
   deleteCookie(false, 'timed out');
@@ -35,7 +35,7 @@ function deleteCookie(testPassed, msg) {
   // remove cookie
   iframe.src = 'support/set-cookie.php?'+encodeURIComponent('ws_test=; Path=/; HttpOnly; Expires=Sun, 06 Nov 1994 08:49:37 GMT');
   iframe.onload = function() {
-    assertEquals(testPassed, true, msg);
+    assert_equals(testPassed, true, msg);
     end();
   }
 }

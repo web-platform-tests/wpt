@@ -1,24 +1,23 @@
 <!doctype html>
 <title>WebSockets: close() when connecting</title>
-<pre>FAIL (script didn't run)</pre>
-<script src=/resources/jsframework2.js></script>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
 <script src=../../../../constants.js></script>
+<div id=log></div>
 <script>
-assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
-setTestTimeout(12000);
-assertNotThrows(function(){
-  var ws = new WebSocket(SCHEME_AND_DOMAIN+':8007/sleep_10_v13');
-  setTimeout(function(){
-    assertEquals(ws.readyState, ws.CONNECTING);
+setup({timeout:12000});
+async_test(function(t){
+  var ws = new WebSocket(SCHEME_AND_DOMAIN+':80/ws/ws/sleep_10_v13');
+  setTimeout(t.step_func(function(){
+    assert_equals(ws.readyState, ws.CONNECTING);
     ws.close();
-    assertEquals(ws.readyState, ws.CLOSING);
+    assert_equals(ws.readyState, ws.CLOSING);
     ws.onclose = function(e) {
-      debug(e);
-      assertEquals(ws.readyState, ws.CLOSED);
-      assertEquals(e.wasClean, false);
-      end();
+      assert_equals(ws.readyState, ws.CLOSED);
+      assert_equals(e.wasClean, false);
+      t.done();
     }
-  }, 6000);
-  ws.onopen = ws.onclose = assertUnreached;
-});
+  }), 6000);
+  ws.onopen = ws.onclose = t.step_func(assert_unreached);
+}, undefined, {timeout:12000});
 </script>

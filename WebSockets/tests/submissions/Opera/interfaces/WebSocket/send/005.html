@@ -7,7 +7,7 @@
 <div id=log></div>
 <script>
 async_test(function(t){
-  var ws = new WebSocket(SCHEME_AND_DOMAIN+':8007/echo');
+  var ws = new WebSocket(SCHEME_AND_DOMAIN+':80/ws/echo');
   ws.onopen = t.step_func(function(e) {
     assert_equals(ws.send('test'), undefined);
     t.done();

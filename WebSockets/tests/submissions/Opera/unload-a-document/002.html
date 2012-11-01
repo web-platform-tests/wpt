@@ -1,12 +1,12 @@
 <!doctype html>
 <title>WebSockets: navigating top-level browsing context with closed websocket</title>
-<pre>FAIL (script didn't run)</pre>
-<script src=/resources/jsframework2.js></script>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
 <script src=../../constants.js></script>
+<div id=log></div>
 <script>
-assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
 setTestTimeout(15000);
-assertNotThrows(function(){
+test(function(){
   // this test can fail if the document is unloaded on navigation e.g. due to OOM
   if (sessionStorage.second_run) {
     delete sessionStorage.second_run;
@@ -18,7 +18,7 @@ assertNotThrows(function(){
       debug(e);
       setTimeout(function() {
         delete sessionStorage.second_run;
-        assertEquals(ws.readyState, ws.CLOSED, 'ws.readyState');
+        assert_equals(ws.readyState, ws.CLOSED, 'ws.readyState');
         end();
       }, 4000);
       ws.close();

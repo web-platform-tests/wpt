@@ -1,11 +1,12 @@
-<its:rules xmlns:its="http://www.w3.org/2005/11/its" xmlns:h="http://www.w3.org/1999/xhtml" version="2.0">
+<its:rules xmlns:its="http://www.w3.org/2005/11/its" version="2.0">
+<its:param name="DisableInfoParam">DisableInfo</its:param>
 <its:locNoteRule selector="//@alt" locNoteType="description">
 <its:locNote>This text will be displayed over the image.</its:locNote>
 </its:locNoteRule>
-<its:locNoteRule selector="//h:span[@id='1']/img/@alt" locNoteType="alert">
+<its:locNoteRule selector="//msg[@id='1']/img/@alt" locNoteType="alert">
 <its:locNote>Do not translate the word "Chobe"</its:locNote>
 </its:locNoteRule>
-<its:locNoteRule locNoteType="alert" selector="//h:span[@id='DisableInfo']">
+<its:locNoteRule locNoteType="alert" selector="//msg[@id=$DisableInfoParam]">
 <its:locNote>
 The variable
 <code>{0}</code>

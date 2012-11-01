@@ -1,0 +1,27 @@
+<!doctype html>
+<title>WebSockets: navigating nested browsing context with a websocket in top-level</title>
+<pre>FAIL (script didn't run)</pre>
+<script src=/resources/jsframework2.js></script>
+<script src=../../constants.js></script>
+<script>
+assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
+var hasRun = false;
+function run(){
+  var ws = new WebSocket(SCHEME_AND_DOMAIN+':8007/echo');
+  ws.onopen = function(e) {
+    debug(e);
+    setTimeout(function() {
+      ws.send('test');
+    }, 1000);
+    window[0].location = 'data:text/html,<body onload="history.back()">';
+    ws.onmessage = function(e) {
+      debug(e);
+      ws.close();
+      ws.onclose = debug;
+      end();
+    }
+  }
+  ws.onerror = ws.onmessage = ws.onclose = assertUnreached;
+}
+</script>
+<iframe src='data:text/html,foo' onload='if (hasRun) return; hasRun = true; assertNotThrows(run)'></iframe>

@@ -1,0 +1,26 @@
+<!doctype html>
+<title>WebSockets: navigating top-level browsing context</title>
+<pre>FAIL (script didn't run)</pre>
+<script src=/resources/jsframework2.js></script>
+<script src=../../constants.js></script>
+<script>
+assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
+assertNotThrows(function(){
+  if (sessionStorage.second_run) {
+    delete sessionStorage.second_run;
+    end();
+  } else {
+    sessionStorage.second_run = 'true';
+    var ws = new WebSocket(SCHEME_AND_DOMAIN+':8007/echo');
+    ws.onopen = function(e) {
+      debug(e);
+      setTimeout(function() {
+        delete sessionStorage.second_run;
+        assertUnreached('document was not discarded');
+      }, 1000);
+      location = 'data:text/html,<body onload="history.back()">';
+    }
+    ws.onerror = ws.onmessage = ws.onclose = assertUnreached;
+  }
+});
+</script>

@@ -1,0 +1,40 @@
+<!doctype html>
+<title>WebSockets: setting HttpOnly cookies in ws response, checking document.cookie</title>
+<pre>FAIL (script didn't run)</pre>
+<script src=/resources/jsframework2.js></script>
+<script src=../../constants.js></script>
+<script>
+assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
+setTestTimeout(null);
+var timeout = setTimeout(function() {
+  deleteCookie(false, 'timed out');
+}, 10000);
+var iframe = document.createElement('iframe');
+try {
+  var ws = new WebSocket(SCHEME_AND_DOMAIN+':8007/set-cookie_http');
+  ws.onopen = function(e) {
+    debug(e);
+    ws.onclose = debug;
+    ws.close();
+    deleteCookie(!(/ws_test=test/.test(document.cookie)), document.cookie);
+  }
+  ws.onclose = assertUnreached;
+} catch(e) {
+  assertUnreached(e);
+}
+
+function deleteCookie(testPassed, msg) {
+  if (arguments.callee.done)
+    return;
+  arguments.callee.done = true;
+  clearTimeout(timeout);
+  setTestTimeout(10000);
+  // remove cookie
+  iframe.src = 'support/set-cookie.php?'+encodeURIComponent('ws_test=; Path=/; HttpOnly; Expires=Sun, 06 Nov 1994 08:49:37 GMT');
+  iframe.onload = function() {
+    assertEquals(testPassed, true, msg);
+    end();
+  }
+}
+document.body.appendChild(iframe);
+</script>

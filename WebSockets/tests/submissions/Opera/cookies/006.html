@@ -1,0 +1,28 @@
+<!doctype html>
+<title>WebSockets: setting Secure cookie with document.cookie, checking ws request</title>
+<pre>FAIL (script didn't run)</pre>
+<script src=/resources/jsframework2.js></script>
+<script src=../../constants.js></script>
+<script>
+assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
+assertNotThrows(function(){
+  if (window.WebSocket)
+    document.cookie = 'ws_test=test; Path=/; Secure';
+  var ws = new WebSocket(SCHEME_AND_DOMAIN+':8007/echo-cookie');
+  ws.onmessage = function(e) {
+    debug(e);
+    ws.onclose = debug;
+    ws.close();
+    if (SCHEME_AND_DOMAIN.substr(0,3) == 'wss') {
+      assertMatches(e.data, /ws_test=test/);
+    } else {
+      assertNotMatches(e.data, /ws_test=test/);
+    }
+    end();
+  }
+  ws.onopen = debug;
+  ws.onclose = assertUnreached;
+});
+// remove cookie
+document.cookie = 'ws_test=; Path=/; Secure; Expires=Sun, 06 Nov 1994 08:49:37 GMT';
+</script>

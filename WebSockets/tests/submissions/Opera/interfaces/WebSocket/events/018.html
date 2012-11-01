@@ -1,0 +1,39 @@
+<!doctype html>
+<title>WebSockets: toString(), bubbles, cancelable</title>
+<pre>FAIL (script didn't run)</pre>
+<script src=/resources/jsframework2.js></script>
+<script src=../../../../constants.js></script>
+<script>
+assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
+assertNotThrows(function(){
+  var ws = new WebSocket(SCHEME_AND_DOMAIN+':8007/echo_raw');
+  ws.addEventListener('open', function(e) {
+    debug(e);
+    // first a text frame, then a frame with reserved opcode 3
+    // which should fail the connection
+    ws.send('\\x81\\x04test\\x83\\x03LOL');
+    assertEquals(e.toString(), '[object Event]', "open e.toString()");
+    assertEquals(e.bubbles, false, 'open e.bubbles');
+    assertEquals(e.cancelable, false, 'open e.cancelable');
+  }, false);
+  ws.addEventListener('message', function(e) {
+    debug(e);
+    assertEquals(e.toString(), '[object MessageEvent]', "message e.toString()");
+    assertEquals(e.bubbles, false, 'message e.bubbles');
+    assertEquals(e.cancelable, false, 'message e.cancelable');
+  }, false);
+  ws.addEventListener('error', function(e) {
+    debug(e);
+    assertEquals(e.toString(), '[object Event]', "error e.toString()");
+    assertEquals(e.bubbles, false, 'error e.bubbles');
+    assertEquals(e.cancelable, false, 'error e.cancelable');
+  }, false);
+  ws.addEventListener('close', function(e) {
+    debug(e);
+    assertEquals(e.toString(), '[object CloseEvent]', "close e.toString()");
+    assertEquals(e.bubbles, false, 'close e.bubbles');
+    assertEquals(e.cancelable, false, 'close e.cancelable');
+    end();
+  }, false);  
+});
+</script>

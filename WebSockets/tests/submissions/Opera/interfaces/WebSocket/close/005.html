@@ -1,0 +1,30 @@
+<!doctype html>
+<title>WebSockets: close() in close event handler</title>
+<pre>FAIL (script didn't run)</pre>
+<script src=/resources/jsframework2.js></script>
+<script src=../../../../constants.js></script>
+<script>
+assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
+setTestTimeout(10000, 'got no close event');
+assertNotThrows(function(){
+  var ws = new WebSocket(SCHEME_AND_DOMAIN+'/');
+  var i = 0;
+  ws.onclose = function(e) {
+    i++;
+    if (i == 1) {
+      assertNotThrows(function() {
+        assertEquals(ws.readyState, ws.CLOSED);
+        ws.close();
+        assertEquals(ws.readyState, ws.CLOSED);
+      });
+      setTestTimeout(null);
+      setTimeout(function() {
+        assertEquals(i, 1);
+        end();
+      }, 500);
+    }
+  }
+  ws.close();
+  assertEquals(ws.readyState, ws.CLOSING);
+});
+</script>

@@ -1,0 +1,43 @@
+<!doctype html>
+<title>WebSockets: this, e.target, e.currentTarget, e.eventPhase</title>
+<pre>FAIL (script didn't run)</pre>
+<script src=/resources/jsframework2.js></script>
+<script src=../../../../constants.js></script>
+<script>
+assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
+assertNotThrows(function(){
+  var ws = new WebSocket(SCHEME_AND_DOMAIN+':8007/echo_raw');
+  ws.addEventListener('open', function(e) {
+    debug(e);
+    // first a text frame, then a frame with reserved opcode 3
+    // which should fail the connection
+    ws.send('\\x81\\x04test\\x83\\x03LOL');
+    assertEquals(this, ws);
+    assertEquals(e.target, ws);
+    assertEquals(e.currentTarget, ws);
+    assertEquals(e.eventPhase, 2);
+  }, false);
+  ws.addEventListener('message', function(e) {
+    debug(e);
+    assertEquals(this, ws);
+    assertEquals(e.target, ws);
+    assertEquals(e.currentTarget, ws);
+    assertEquals(e.eventPhase, 2);
+  }, false);
+  ws.addEventListener('error', function(e) {
+    debug(e);
+    assertEquals(this, ws);
+    assertEquals(e.target, ws);
+    assertEquals(e.currentTarget, ws);
+    assertEquals(e.eventPhase, 2);
+  }, false);
+  ws.addEventListener('close', function(e) {
+    debug(e);
+    assertEquals(this, ws);
+    assertEquals(e.target, ws);
+    assertEquals(e.currentTarget, ws);
+    assertEquals(e.eventPhase, 2);
+    end();
+  }, false);  
+});
+</script>

@@ -1,0 +1,21 @@
+<!doctype html>
+<title>WebSockets: dispatching a CloseEvent</title>
+<pre>FAIL (script didn't run)</pre>
+<script src=/resources/jsframework2.js></script>
+<script src=../../../constants.js></script>
+<script>
+assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
+setTestTimeout(2000);
+assertNotThrows(function(){
+  var e = document.createEvent('CloseEvent');
+  e.initCloseEvent('foo', false, false, false);
+  var div = document.createElement('div');
+  div.addEventListener('foo', function(ev) {
+    assertEquals(ev.bubbles, false);
+    assertEquals(ev.cancelable, false);
+    assertEquals(ev.wasClean, false);
+    end();
+  }, false);
+  div.dispatchEvent(e);
+});
+</script>

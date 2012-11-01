@@ -1,0 +1,24 @@
+<!doctype html>
+<title>WebSockets: Send/Receive blob, blob size greater than network array buffer</title>
+<pre>FAIL (script didn't run)</pre>
+<script src=/resources/jsframework2.js></script>
+<script src=../../constants.js></script>
+<script>
+assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
+assertNotThrows(function(){
+  var ws = new WebSocket(SCHEME_AND_DOMAIN+':8007/echo');
+  var data = "";
+  var datasize = 100000;  
+  ws.onopen = function(e) {
+   ws.binaryType = "blob";
+   data = new ArrayBuffer(datasize);
+   ws.send(data);
+  }
+  ws.onmessage = function(e) {
+    assertInstanceOf(e.data,Blob);
+    assertEquals(e.data.size, datasize);
+    end();
+  }
+  
+});
+</script>

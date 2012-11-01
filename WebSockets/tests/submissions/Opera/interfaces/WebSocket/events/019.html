@@ -1,0 +1,30 @@
+<!doctype html>
+<title>WebSockets: removeEventListener</title>
+<pre>FAIL (script didn't run)</pre>
+<script src=/resources/jsframework2.js></script>
+<script src=../../../../constants.js></script>
+<script>
+assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
+assertNotThrows(function(){
+  var ws = new WebSocket(SCHEME_AND_DOMAIN+':8007/echo');
+  ws.close();
+  var events = ['open', 'message', 'error', 'close'];
+  var got = [];
+  var event;
+  function addThis(e) {
+    got.push(e.type);
+  }
+  for (var i = 0; i < events.length; ++i) {
+    ws.addEventListener(events[i], addThis, false);
+    ws.removeEventListener(events[i], addThis, false);
+    event = document.createEvent('Event');
+    event.initEvent(events[i], false, false);
+    ws.dispatchEvent(event);
+  }
+  assertEquals(got.length, 0);
+  if (got.length) {
+    debug('Got: '+got);
+  }
+  end();
+});
+</script>

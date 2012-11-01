@@ -1,0 +1,12 @@
+<!doctype html>
+<title>WebSockets: getting url</title>
+<pre>FAIL (script didn't run)</pre>
+<script src=/resources/jsframework2.js></script>
+<script src=../../../../constants.js></script>
+<script>
+assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
+assertNotThrows(function(){
+  assertEquals((new WebSocket(SCHEME_AND_DOMAIN)).url, SCHEME_AND_DOMAIN+'/');
+});
+end();
+</script>

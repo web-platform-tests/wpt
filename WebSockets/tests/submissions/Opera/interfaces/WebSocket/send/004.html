@@ -1,0 +1,19 @@
+<!doctype html>
+<title>WebSockets: send() with unpaired surrogate when readyState is CONNECTING</title>
+
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=../../../../constants.js></script>
+<div id=log></div>
+<script>
+test(function(){
+  var ws = new WebSocket(SCHEME_AND_DOMAIN+'/');
+
+  // lone low surrogate
+  assert_throws("INVALID_STATE_ERR", function(){ws.send('a\uDC00x')});
+  // lone high surrogate
+  assert_throws("INVALID_STATE_ERR", function(){ws.send('a\uD800x')});
+  // surrogates in wrong order
+  assert_throws("INVALID_STATE_ERR", function(){ws.send('a\uDC00\uD800x')});
+});
+</script>

@@ -1,0 +1,12 @@
+<!doctype html>
+<title>WebSockets: return value</title>
+<pre>FAIL (script didn't run)</pre>
+<script src=/resources/jsframework2.js></script>
+<script src=../../constants.js></script>
+<script>
+assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
+assertNotThrows(function(){
+  assertInstanceOf(new WebSocket("ws://"+location.hostname+"/"), WebSocket);
+});
+end();
+</script>

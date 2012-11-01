@@ -1,0 +1,18 @@
+<!doctype html>
+<title>WebSockets: check Sec-WebSocket-Key</title>
+<pre>FAIL (script didn't run)</pre>
+<script src=/resources/jsframework2.js></script>
+<script src=../../constants.js></script>
+<script>
+assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
+assertNotThrows(function(){
+  var xhr = new XMLHttpRequest();
+	 xhr.onload = function()	{
+		 	assertEquals(xhr.responseText, 'PASS');
+		 	end();
+	 }
+  xhr.open("GET", "check.php", true);
+  xhr.setRequestHeader('Sec-WebSocket-Key', 'jW7qmdXj5Kk5jTClF1BN3');
+  xhr.send(null);
+});
+</script>

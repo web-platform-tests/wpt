@@ -1,0 +1,43 @@
+<!doctype html>
+<title>WebSockets: sending HttpOnly cookies in ws request</title>
+<pre>FAIL (script didn't run)</pre>
+<script src=/resources/jsframework2.js></script>
+<script src=../../constants.js></script>
+<script>
+assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
+setTestTimeout(null);
+var timeout = setTimeout(function() {
+  deleteCookie(false, 'timed out');
+}, 10000);
+var iframe = document.createElement('iframe');
+iframe.src = 'support/set-cookie.php?'+encodeURIComponent('ws_test=test; Path=/; HttpOnly');
+iframe.onload = runTest;
+function runTest() {
+  try {
+    var ws = new WebSocket(SCHEME_AND_DOMAIN+':8007/echo-cookie');
+    ws.onmessage = function(e) {
+      ws.onclose = debug;
+      ws.close();
+      deleteCookie(/ws_test=test/.test(e.data), e.data);
+    }
+    ws.onopen = debug;
+    ws.onclose = function() { deleteCookie(false, e.type); }
+  } catch(e) {
+    deleteCookie(false, e);
+  }
+}
+function deleteCookie(testPassed, msg) {
+  if (arguments.callee.done)
+    return;
+  arguments.callee.done = true;
+  clearTimeout(timeout);
+  setTestTimeout(10000);
+  // remove cookie
+  iframe.src = 'support/set-cookie.php?'+encodeURIComponent('ws_test=; Path=/; HttpOnly; Expires=Sun, 06 Nov 1994 08:49:37 GMT');
+  iframe.onload = function() {
+    assertEquals(testPassed, true, msg);
+    end();
+  }
+}
+document.body.appendChild(iframe);
+</script>

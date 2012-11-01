@@ -1,0 +1,24 @@
+<!doctype html>
+<title>WebSockets: client sends closing handshake</title>
+<pre>FAIL (script didn't run)</pre>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=../../constants.js></script>
+<script>
+assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
+assertNotThrows(function(){
+  var ws = new WebSocket(SCHEME_AND_DOMAIN+':8007/echo');
+  ws.onmessage = ws.onerror = assertUnreached;
+  ws.onopen = function(e) {
+    debug(e);
+    ws.close();
+  }
+  ws.onclose = function(e) {
+    debug(e);
+    assertEquals(e.wasClean, true, 'e.wasClean');
+    ws.onclose = assertUnreached;
+    setTestTimeout(null);
+    setTimeout(end, 50);
+  }
+});
+</script>

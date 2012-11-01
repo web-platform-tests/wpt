@@ -1,0 +1,16 @@
+<!doctype html>
+<title>WebSockets: 'on*' in ws</title>
+<pre>FAIL (script didn't run)</pre>
+<script src=/resources/jsframework2.js></script>
+<script src=../../../../constants.js></script>
+<script>
+assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
+assertNotThrows(function(){
+  var ws = new WebSocket(SCHEME_AND_DOMAIN+'/');
+  assertEquals('onopen' in ws, true, 'onopen');
+  assertEquals('onmessage' in ws, true, 'onmessage');
+  assertEquals('onerror' in ws, true, 'onerror');
+  assertEquals('onclose' in ws, true, 'onclose');
+});
+end();
+</script>

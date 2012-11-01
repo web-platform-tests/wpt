@@ -1,0 +1,24 @@
+<!doctype html>
+<title>WebSockets: Cookie in request</title>
+<pre>FAIL (script didn't run)</pre>
+<script src=/resources/jsframework2.js></script>
+<script src=../../constants.js></script>
+<script>
+assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
+assertNotThrows(function(){
+  if (window.WebSocket)
+    document.cookie = 'ws_test=test; Path=/';
+  var ws = new WebSocket(SCHEME_AND_DOMAIN+':8007/echo-cookie');
+  ws.onopen = debug;
+  ws.onmessage = function(e) {
+    debug(e);
+    assertMatches(e.data, /ws_test=test/);
+    ws.onclose = debug;
+    ws.close();
+    end();
+  }
+  ws.onerror = ws.onclose = assertUnreached;
+});
+// remove cookie
+document.cookie = 'ws_test=; Path=/; Expires=Sun, 06 Nov 1994 08:49:37 GMT';
+</script>

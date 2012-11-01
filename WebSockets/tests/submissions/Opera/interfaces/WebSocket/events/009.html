@@ -1,0 +1,20 @@
+<!doctype html>
+<title>WebSockets: listening for events with onclose</title>
+<pre>FAIL (script didn't run)</pre>
+<script src=/resources/jsframework2.js></script>
+<script src=../../../../constants.js></script>
+<script>
+assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
+setTestTimeout(2000);
+assertNotThrows(function(){
+  var ws = new WebSocket(SCHEME_AND_DOMAIN+'/');
+  function foo(e) {
+    if (e.detail == 5)
+      end();
+  }
+  ws.onclose = foo;
+  var ev = document.createEvent('UIEvents');
+  ev.initUIEvent('close', false, false, window, 5);
+  ws.dispatchEvent(ev);
+});
+</script>

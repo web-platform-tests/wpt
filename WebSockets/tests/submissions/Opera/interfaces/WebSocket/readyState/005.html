@@ -1,0 +1,17 @@
+<!doctype html>
+<title>WebSockets: defineProperty setter for readyState</title>
+<pre>FAIL (script didn't run)</pre>
+<script src=/resources/jsframework2.js></script>
+<script src=../../../../constants.js></script>
+<script>
+assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
+assertNotEquals(Object.defineProperty, undefined, 'defineProperty not supported');
+assertThrows(function(){
+  Object.defineProperty(WebSocket.prototype, 'readyState', {
+    set: function() { return 'foo'; }
+  });
+}, function(e) {
+  assertInstanceOf(e, TypeError);
+});
+end();
+</script>

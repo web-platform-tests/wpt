@@ -1,0 +1,22 @@
+<!doctype html>
+<title>WebSockets: close() several times</title>
+<pre>FAIL (script didn't run)</pre>
+<script src=/resources/jsframework2.js></script>
+<script src=../../../../constants.js></script>
+<script>
+assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
+var i = 0;
+assertNotThrows(function(){
+  var ws = new WebSocket(SCHEME_AND_DOMAIN+'/');
+  ws.onclose = function(e) {
+    i++;
+  }
+  ws.close();
+  ws.close();
+  ws.close();
+});
+setTimeout(function(){
+  assertEquals(i, 1);
+  end();
+}, 500);
+</script>

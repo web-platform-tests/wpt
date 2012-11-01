@@ -1,0 +1,37 @@
+<!doctype html>
+<title>WebSockets: serialize establish a connection</title>
+<pre>FAIL (script didn't run)</pre>
+<script src=/resources/jsframework2.js></script>
+<script src=../../constants.js></script>
+<script>
+assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
+setTestTimeout(10000);
+assertNotThrows(function(){
+  var ws = [];
+  var events = 0;
+  var prevDate;
+  var date;
+  for (var i = 0; i < 4; ++i) {
+    ws[i] = new WebSocket(SCHEME_AND_DOMAIN+':8007/handshake_sleep_1');
+    ws[i].id = i;
+    ws[i].onopen = function(e) {
+      debug(e.type+' '+this.id);
+      events++;
+      date = new Date();
+      if (prevDate)
+        assertGreaterThan(date-prevDate, 998);
+      prevDate = date;
+      this.onopen = assertUnreached;
+    }
+    ws[i].onclose = function(e) {
+      debug(e.type+' '+this.id);
+      events++;
+      if (events == 8) {
+        end();
+      }
+      this.onclose = assertUnreached;
+    }
+    ws[i].onerror = ws[i].onmessage = assertUnreached;
+  }
+});
+</script>

@@ -1,0 +1,24 @@
+<!doctype html>
+<title>WebSockets: close() when connecting</title>
+<pre>FAIL (script didn't run)</pre>
+<script src=/resources/jsframework2.js></script>
+<script src=../../../../constants.js></script>
+<script>
+assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
+setTestTimeout(12000);
+assertNotThrows(function(){
+  var ws = new WebSocket(SCHEME_AND_DOMAIN+':8007/sleep_10_v13');
+  setTimeout(function(){
+    assertEquals(ws.readyState, ws.CONNECTING);
+    ws.close();
+    assertEquals(ws.readyState, ws.CLOSING);
+    ws.onclose = function(e) {
+      debug(e);
+      assertEquals(ws.readyState, ws.CLOSED);
+      assertEquals(e.wasClean, false);
+      end();
+    }
+  }, 6000);
+  ws.onopen = ws.onclose = assertUnreached;
+});
+</script>

@@ -1,0 +1,21 @@
+<!doctype html>
+<title>WebSockets: getting readyState in closed</title>
+<pre>FAIL (script didn't run)</pre>
+<script src=/resources/jsframework2.js></script>
+<script src=../../../../constants.js></script>
+<script>
+assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
+assertNotThrows(function(){
+  var ws = new WebSocket(SCHEME_AND_DOMAIN+':8007/echo');
+  ws.onopen = function(e) {
+    debug(e);
+    ws.onclose = function(e) {
+      debug(e);
+      assertEquals(ws.readyState, ws.CLOSED);
+      end();
+    }
+    ws.close();
+  }
+  ws.onerror = ws.onmessage = ws.onclose = assertUnreached;
+});
+</script>

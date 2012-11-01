@@ -1,0 +1,12 @@
+<!doctype html>
+<title>WebSockets: new WebSocket() with no args</title>
+<pre>FAIL (script didn't run)</pre>
+<script src=/resources/jsframework2.js></script>
+<script src=../../constants.js></script>
+<script>
+assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
+assertThrows(function(){new WebSocket()}, function(e) {
+  assertInstanceOf(e, TypeError);
+});
+end();
+</script>

@@ -1,0 +1,31 @@
+<!doctype html>
+<title>WebSockets: instanceof on events</title>
+<pre>FAIL (script didn't run)</pre>
+<script src=/resources/jsframework2.js></script>
+<script src=../../../../constants.js></script>
+<script>
+assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
+assertNotThrows(function(){
+  var ws = new WebSocket(SCHEME_AND_DOMAIN+':8007/echo_raw');
+  ws.onopen = function(e) {
+    assertInstanceOf(e, Event);
+    // first a text frame, then a frame with reserved opcode 3
+    // which should fail the connection
+    ws.send('\\x81\\x04test\\x83\\x03LOL');
+  }
+  ws.onmessage = function(e) {
+    assertInstanceOf(e, Event);
+    assertInstanceOf(e, MessageEvent);
+    assertEquals(ws.readyState, ws.OPEN);
+  }
+  ws.onerror = function(e) {
+    assertInstanceOf(e, Event);
+    assertEquals(ws.readyState, ws.CLOSED);
+  }
+  ws.onclose = function(e) {
+    assertInstanceOf(e, Event);
+    assertInstanceOf(e, CloseEvent);
+    end();
+  }
+});
+</script>

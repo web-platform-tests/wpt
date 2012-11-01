@@ -1,0 +1,13 @@
+<!doctype html>
+<title>WebSockets: too few slashes after ws: and wss:</title>
+<pre>FAIL (script didn't run)</pre>
+<script src=/resources/jsframework2.js></script>
+<script src=../../constants.js></script>
+<script>
+assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
+var tests = ['ws:', 'ws:/', 'wss:', 'wss:/'];
+for (var i = 0; i < tests.length; ++i) {
+  assertNotThrows(function(){new WebSocket(tests[i]+location.hostname+':8007/echo')}, tests[i]);
+}
+end();
+</script>

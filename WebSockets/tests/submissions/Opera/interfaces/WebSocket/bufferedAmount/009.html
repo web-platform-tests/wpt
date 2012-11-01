@@ -1,0 +1,24 @@
+<!doctype html>
+<title>WebSockets: bufferedAmount for 65K data</title>
+<pre>FAIL (script didn't run)</pre>
+<script src=/resources/jsframework2.js></script>
+<script src=../../../../constants.js></script>
+<script>
+assertNotEquals(window.WebSocket, undefined, 'WebSocket not supported');
+assertNotThrows(function(){
+  var ws = new WebSocket(SCHEME_AND_DOMAIN+':8007/echo');
+  var data = "";
+  ws.onopen = function(e) {
+   for (var i = 0; i < 65000; i++) {
+      data = data + "x";
+    }
+   ws.send(data);
+   assertEquals(data.length, ws.bufferedAmount);
+  }
+  ws.onmessage = function(e) {
+    assertEquals(e.data, data);
+    end();
+  }
+  
+});
+</script>

@@ -101,13 +101,6 @@ function assert_equals_list(actual, expected) {
     assert_equals(actual.length, expected.length);
 }
 
-function assert_instance_of(type, obj) {
-    if(type == "Attr") {
-        assert_equals(2,obj.nodeType);
-        var specd = obj.specified;
-    }
-}
-
 function assert_same(actual, expected) {
     if(expected != actual) {
         assert_equals(actual.nodeType, expected.nodeType);

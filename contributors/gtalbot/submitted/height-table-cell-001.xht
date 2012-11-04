@@ -8,7 +8,7 @@
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#height-layout" title="17.5.3 Table height algorithms" />
-  <link rel="match" href="reference/height-table-cell-001-ref.xht" />
+  <link rel="match" href="reference/ref-filled-green-100px-square.xht" />
 
   <meta content="" name="flags" />
   <meta content="The height of a 'table-row' element's box is the maximum of the row's computed 'height', the computed 'height' of each cell in such row and the minimum height required by the content of the cells. The height of a cell is the maximum between its specified 'height' and the minimum height required by its content." name="assert" />
@@ -17,9 +17,9 @@
   div#overlapped-red-reference
   {
   background-color: red;
-  height: 200px;
+  height: 100px;
   position: absolute;
-  width: 200px;
+  width: 100px;
   z-index: -1;
   }
 
@@ -29,9 +29,9 @@
   {
   background-color: green;
   border: green solid 10px;
-  height: 100px;
-  padding: 40px;
-  width: 100px;
+  height: 50px;
+  padding: 15px;
+  width: 50px;
   }
   ]]></style>
  
@@ -44,16 +44,16 @@
   <div id="overlapped-red-reference"></div>
 
   <table id="overlapping-green-test">
-   <tr>
-    <td></td>
-   </tr>
+    <tr>
+      <td></td>
+    </tr>
   </table>
 
   <!--
   In this testcase, the content of the unique cell is empty; therefore the 
   minimum height required by the cell content is 0. So, the height of such 
   single cell is given by
-  max(specified 'height', minimum height required by its content) == 100px
+  max(specified 'height', minimum height required by its content) == 50px
   Such height refers to the cell's content box, not to the cell's border box.
   -->
 

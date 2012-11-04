@@ -8,22 +8,26 @@
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="help" title="6.4.1 Cascading order" href="http://www.w3.org/TR/CSS21/cascade.html#cascading-order" />
-  <link rel="match" href="reference/sort-by-order-001-ref.xht" />
+  <link rel="match" href="reference/ref-filled-green-100px-square.xht" />
 
   <meta content="" name="flags" />
   <meta content="If 2 declarations have the same media, the same importance (normal or !important), the same origin (author, user or user agent) and the same specificity, then the latter specified wins." name="assert" />
 
   <style type="text/css"><![CDATA[
-  div#hgroup > h1  /* a=0 b=1 c=0 d=2 -> specificity = 0,1,0,2 */
+  div
+  {
+  height: 100px;
+  width: 100px;  
+  }  
+  
+  div#parent > div  /* a=0 b=1 c=0 d=2 -> specificity = 0,1,0,2 */
   {
   background-color: red;
-  color: white;
   }
   
-  div > h1#heading /* a=0 b=1 c=0 d=2 -> specificity = 0,1,0,2 */ 
+  div > div#child /* a=0 b=1 c=0 d=2 -> specificity = 0,1,0,2 */ 
   {
   background-color: green;
-  color: white;
   }
   ]]></style>
 
@@ -31,10 +35,10 @@
 
  <body>
 
-  <p>Test passes if the sentence has a green background and <strong>no red</strong>.</p>
+  <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
 
-  <div id="hgroup">
-    <h1 id="heading">This sentence should have a green background.</h1>
+  <div id="parent">
+      <div id="child"></div>
   </div>
 
  </body>

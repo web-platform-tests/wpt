@@ -1,40 +1,31 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>CSS Backgrounds and Borders Test: background-size_cover</title>
+    <title>CSS Backgrounds and Borders Test: background-size - cover value</title>
     <link rel="author" title="Intel" href="http://www.intel.com" />
     <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-size" />
     <meta name="flags" content="image" />
-    <meta name="assert" content="Check if 'background-size' is 'cover' that it scales the image, while preserving its intrinsic aspect ratio (if any), to the smallest size such that both its width and its height can completely cover the background positioning area" />
+    <meta name="assert" content="Check if 'background-size' is 'cover' that it scales the image, while preserving its intrinsic aspect ratio (in this test, the image's intrinsic ratio is 1:1), to the smallest size such that both its width and its height can completely cover the background positioning area. Therefore the used width and height of the background-size in this test should be 150px and 100px." />
     <style>
-        div {
-            position: absolute;
-        }
-        #ref {
+        #ref-overlapped-red {
+            height: 100px;
             background-color: red;
-            height: 138px;
-            left: 6px;
-            top: 6px;
-            width: 148px;
+            width: 150px;
         }
-        #test {
+        #test-overlapping-green {
             background-image: url(support/60x60-green.png);
             background-repeat: no-repeat;
             background-size: cover;
-            border: black dotted 5px;
-            padding: 25px;
-            height: 90px;
-            left: 0px;
-            top: 0px;
-            width: 100px;
+            bottom: 100px;
+            height: 100px;
+            position: relative;
+            width: 150px;
         }
     </style>
   </head>
   <body>
-    <p>Test passes if there is a green square rectangle inside black dotted borders and <strong>no red</strong>.</p>
-    <div id="container">
-      <div id="ref"></div>
-      <div id="test"></div>
-    </div>
+    <p>Test passes if there is a green rectangle and <strong>no red</strong>.</p>
+    <div id="ref-overlapped-red"></div>
+    <div id="test-overlapping-green"></div>
   </body>
 </html>

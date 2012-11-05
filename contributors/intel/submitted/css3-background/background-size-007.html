@@ -1,34 +1,31 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>CSS Backgrounds and Borders Test: background-size_length_min</title>
+    <title>CSS Backgrounds and Borders Test: background-size - one length value at minimum</title>
     <link rel="author" title="Intel" href="http://www.intel.com" />
     <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-size" />
     <meta name="flags" content="image" />
-    <meta name="assert" content="Check if 'background-size' is '0px' that the background image is not to be displayed" />
+    <meta name="assert" content="Check if 'background-size' is '0px', minimum width of the positioning area in length, then such value is the width of the corresponding image and therefore the background image is not to be displayed." />
     <style>
         div {
-            position: absolute;
+            height: 100px;
+            width: 100px;
         }
-        #ref {
+        #ref-overlapped-green {
             background-color: green;
-            height: 100px;
-            width: 100px;
         }
-        #test {
+        #test-overlapped-red {
             background-image: url(support/60x60-red.png);
-            background-size: 0px;
             background-repeat: no-repeat;
-            height: 100px;
-            width: 100px;
+            background-size: 0px;
+            bottom: 100px;
+            position: relative;
         }
     </style>
   </head>
   <body>
     <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
-    <div id="container">
-      <div id="ref"></div>
-      <div id="test"></div>
-    </div>
+    <div id="ref-overlapped-green"></div>
+    <div id="test-overlapped-red"></div>
   </body>
 </html>

@@ -1,40 +1,30 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>CSS Backgrounds and Borders Test: background-size_initial</title>
+    <title>CSS Backgrounds and Borders Test: background-size - initial value</title>
     <link rel="author" title="Intel" href="http://www.intel.com" />
     <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-size" />
     <meta name="flags" content="image" />
-    <meta name="assert" content="Check if background-size's initial value is auto that the intrinsic width and/or height of the image should be used" />
+    <meta name="assert" content="Check if 'background-size' with initial value implies to the intrinsic width and height of the image are to be used. Therefore the used width and height of the background-size in this test should be 60px and 60px." />
     <style>
-        div {
-            position: absolute;
-        }
-        #ref {
+        #ref-overlapped-red {
+            height: 60px;
             background-color: red;
-            height: 58px;
-            left: 6px;
-            top: 6px;
-            width: 58px;
+            width: 60px;
         }
-        #test {
+        #test-overlapping-green {
             background-image: url(support/60x60-green.png);
             background-repeat: no-repeat;
-            background-size: contain;
-            border: black dotted 5px;
-            padding: 25px;
+            bottom: 60px;
             height: 100px;
-            left: 0px;
-            top: 0px;
+            position: relative;
             width: 100px;
         }
     </style>
   </head>
   <body>
-    <p>Test passes if there is a filled green square immediately inside the top-left dotted borders and <strong>no red</strong>.</p>
-    <div id="container">
-      <div id="ref"></div>
-      <div id="test"></div>
-    </div>
+    <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
+    <div id="ref-overlapped-red"></div>
+    <div id="test-overlapping-green"></div>
   </body>
 </html>

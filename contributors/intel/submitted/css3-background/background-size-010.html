@@ -1,40 +1,31 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>CSS Backgrounds and Borders Test: background-size_percentage_min</title>
+    <title>CSS Backgrounds and Borders Test: background-size - one percentage value at minimum</title>
     <link rel="author" title="Intel" href="http://www.intel.com" />
     <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-size" />
     <meta name="flags" content="image" />
-    <meta name="assert" content="Check if 'background-size' is '0%' that the background image is not to be displayed" />
+    <meta name="assert" content="Check if 'background-size' is '0%', minimum width of the positioning area in percentage, then such value is the width of the corresponding image and therefore the background image is not to be displayed." />
     <style>
-        #container {
-            position: absolute;
-        }
-        #ref {
-            position: absolute;
-            top: 0px;
-            left: 0px;
-            width: 100px;
+        div {
             height: 100px;
-            background: green;
-        }
-        #test {
-            position: absolute;
-            top: 0px;
-            left: 0px;
             width: 100px;
-            height: 100px;
-
+        }
+        #ref-overlapped-green {
+            background-color: green;
+        }
+        #test-overlapped-red {
             background-image: url(support/60x60-red.png);
+            background-repeat: no-repeat;
             background-size: 0%;
+            bottom: 100px;
+            position: relative;
         }
     </style>
   </head>
   <body>
     <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
-    <div id="container">
-      <div id="ref"></div>
-      <div id="test"></div>
-    </div>
+    <div id="ref-overlapped-green"></div>
+    <div id="test-overlapped-red"></div>
   </body>
 </html>

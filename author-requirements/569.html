@@ -3,14 +3,10 @@
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>A &lt;div&gt; with role role="listbox" but no "option" children with aria-busy="true"</title>
+    <title>A &lt;div&gt; with role role="listbox" aria-busy="true", but no "option" descendants.</title>
   </head>
   <body>
-    <div id="test" role="listbox">
-      <span role="option" id="option1">List box option one</span><br>
-      <span role="option" id="option2">List box option two</span><br>
-      <span role="option" id="option3">List box option three</span><br>
-      <span role="option" id="option4">List box option four</span><br>
+    <div id="test" role="listbox" aria-busy="true">
     </div>
   </body>
 </html>

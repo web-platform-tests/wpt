@@ -1,34 +1,31 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>CSS Backgrounds and Borders Test: background-size_auto_percentage</title>
+    <title>CSS Backgrounds and Borders Test: background-size - one auto and one percentage values</title>
     <link rel="author" title="Intel" href="http://www.intel.com" />
     <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-size" />
     <meta name="flags" content="image" />
-    <meta name="assert" content="Check if 'background-size' is 'auto 45%' and 'background-repeat' is 'no-repeat' that the background is shown with a height is scaled by the percentage relative to the background positioning area and its width is resolved by using the image's intrinsic ratio and the size of the height" />
+    <meta name="assert" content="Check if 'background-size' has one auto and one percentage values, then the second value is the height of the corresponding background image and the first value (corresponding to the width of the background image) is resolved by using the image's intrinsic ratio (in this test, the image's intrinsic ratio is 1:1) and (multiplied by) the size of the other dimension. Therefore the used width of the background-size in this test should be 45px." />
     <style>
-        div {
-            position: absolute;
+        #ref-overlapped-red {
+            height: 45px;
+            background-color: red;
+            width: 45px;
         }
-        #ref {
-            background-color: green;
-            height: 46px;
-            width: 46px;
-        }
-        #test {
-            background-image: url(support/60x60-red.png);
+        #test-overlapping-green {
+            background-image: url(support/60x60-green.png);
             background-repeat: no-repeat;
             background-size: auto 45%;
+            bottom: 45px;
             height: 100px;
-            width: 100px;
+            position: relative;
+            width: 200px;
         }
     </style>
   </head>
   <body>
     <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
-    <div id="container">
-      <div id="test"></div>
-      <div id="ref"></div>
-    </div>
+    <div id="ref-overlapped-red"></div>
+    <div id="test-overlapping-green"></div>
   </body>
 </html>

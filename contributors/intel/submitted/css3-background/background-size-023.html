@@ -1,41 +1,43 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>CSS Backgrounds and Borders Test: background-size-clip_padding-box</title>
+    <title>CSS Backgrounds and Borders Test: background-size '50% auto' with background-clip 'padding-box'</title>
     <link rel="author" title="Intel" href="http://www.intel.com" />
     <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-size" />
     <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-clip" />
     <meta name="flags" content="image" />
-    <meta name="assert" content="Check if 'background-size' is '50% auto' and 'background-clip is 'padding-box' that it stretches the image so that exactly two copies fit horizontally" />
+    <meta name="assert" content="Check if 'background-size' is '50% auto', then it rescales the background image so that exactly two copies fit the background positioning area (it is 150px by 150px in this test) horizontally. Therefore the used width of the background-size in this test should be 75px." />
     <style>
-        div {
-            position: absolute;
-        }
-        #ref {
+        #ref-overlapped-red {
             background-color: red;
-            height: 148px;
-            left: 6px;
-            top: 6px;
-            width: 148px;
+            left: 5px;
+            height: 150px;
+            position: relative;
+            top: 5px;
+            width: 150px;
         }
-        #test {
+        #test-overlapping-cat {
             background-clip: padding-box;
             background-image: url(support/cat.png);
             background-size: 50% auto;
-            border: blue dotted 5px;
+            border: transparent dotted 5px;
+            bottom: 150px;
             height: 100px;
-            left: 0px;
             padding: 25px;
-            top: 0px;
+            position: relative;
             width: 100px;
+            
+            /* 
+            background painting area is 150px wide by 150px tall.
+            So, the image should be scaled to 75px by 75px (near),
+            and repeated once in both horizontally and vertically.
+            */
         }
     </style>
   </head>
   <body>
-    <p>Test passes if there is a 2x2 cat image with blue dotted borders and <strong>no red</strong>.</p>
-    <div id="container">
-      <div id="ref"></div>
-      <div id="test"></div>
-    </div>
+    <p>Test passes if there is a 2x2 cat image and <strong>no red</strong>.</p>
+    <div id="ref-overlapped-red"></div>
+    <div id="test-overlapping-cat"></div>
   </body>
 </html>

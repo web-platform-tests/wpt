@@ -1,45 +1,43 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>CSS Backgrounds and Borders Test: background-size-origin_content-box</title>
+    <title>CSS Backgrounds and Borders Test: background-size '100% 100%' with background-origin 'content-box'</title>
     <link rel="author" title="Intel" href="http://www.intel.com" />
     <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-size" />
     <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-origin" />
     <meta name="flags" content="image" />
-    <meta name="assert" content="Check if 'background-repeat' is 'no-repeat', 'background-size' is '100% 100%' and 'background-origin is 'content-box' that it stretches the background image independently in both dimensions to completely cover the content area" />
+    <meta name="assert" content="Check if 'background-size' is '100% 100%' that it rescales the background image independently in both dimensions to completely cover the background positioning area (it is 100px by 100px as background-origin is 'content-box'). In this test, the background-image should be scaled to become 100px by 100px." />
     <style>
-        #container {
-            position: absolute;
-        }
-        #ref {
-            position: absolute;
-            top: 31px;
-            left: 31px;
-            width: 98px;
-            height: 88px;
-            background: red;
-        }
-        #test {
-            position: absolute;
-            top: 0px;
-            left: 0px;
+        #ref-overlapped-red {
+            background-color: red;
+            left: 30px;
+            height: 100px;
+            position: relative;
+            top: 30px;
             width: 100px;
-            height: 90px;
-            padding: 25px;
-            border: 5px dotted #000000;
-
-            background-image: url(support/60x60-green.png);
+        }
+        #test-overlapping-cat {
+            background-image: url(support/cat.png);
+            background-origin: content-box;
             background-repeat: no-repeat;
             background-size: 100% 100%;
-            background-origin: content-box;
+            border: transparent dotted 5px;
+            bottom: 100px;
+            height: 100px;
+            padding: 25px;
+            position: relative;
+            width: 100px;
+            
+            /* 
+            background positioning area is 100px wide by 100px tall.
+            So, the image should be scaled to 100px by 100px.
+            */
         }
     </style>
   </head>
   <body>
-    <p>Test passes if there is a filled green rectangle inside the dotted borders and <strong>no red</strong>.</p>
-    <div id="container">
-      <div id="ref"></div>
-      <div id="test"></div>
-    </div>
+    <p>Test passes if there is a cat image and <strong>no red</strong>.</p>
+    <div id="ref-overlapped-red"></div>
+    <div id="test-overlapping-cat"></div>
   </body>
 </html>

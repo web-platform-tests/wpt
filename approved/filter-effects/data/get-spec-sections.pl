@@ -29,7 +29,7 @@ use utf8;
 use LWP::Simple;
 
 # read the page in from the web
-my $specURI = 'http://www.w3.org/TR/filter-effects/Overview.html';
+my $specURI = 'http://www.w3.org/TR/filter-effects/';
 my $page = get($specURI);
 $page =~ s/\x{D}\x{A}|\x{A}\{D}|\x{D}|\x{A}/\n/gos; # normalize newlines
 

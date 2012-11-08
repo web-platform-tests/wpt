@@ -3,7 +3,7 @@
     <head>
         <title>CSS Test: Width applied to elements with 'display' set to 'table-column'</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
-        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-11-06 -->
+        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-11-07 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#propdef-width" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#the-width-property" />
         <link rel="match" href="../reference/ref-filled-black-96px-square.xht" />
@@ -19,7 +19,7 @@
             {
                 display: table;
                 table-layout: fixed;
-                width: 1in;
+                width: 2in;
             }
             .row
             {
@@ -38,14 +38,14 @@
         <div id="table">
 
             <div class="test"></div>
-            <div class="test"></div> 
+            <div class="test"></div>
 
             <div class="row">
-                <div class="cell">a</div><div class="cell">b</div>
+                <div class="cell">a</div><div class="cell">b</div><div class="cell"></div>
             </div>
 
             <div class="row">
-                <div class="cell">c</div><div class="cell">d</div>
+                <div class="cell">c</div><div class="cell">d</div><div class="cell"></div>
             </div>
 
         </div>

@@ -1,0 +1,108 @@
+http://www.w3.org/TR/filter-effects/Overview.html#introduction	1	Introduction
+http://www.w3.org/TR/filter-effects/Overview.html#about	2	Reading This Document
+http://www.w3.org/TR/filter-effects/Overview.html#definitions	3	Definitions
+http://www.w3.org/TR/filter-effects/Overview.html#FilterProperty	4	 The ‘filter’ property 
+http://www.w3.org/TR/filter-effects/Overview.html#filter-margin-property	5	 The ‘filter-margin-top’, ‘filter-margin-bottom’, ‘filter-margin-left’, ‘filter-margin-right’, and ‘filter-margin’ properties 
+http://www.w3.org/TR/filter-effects/Overview.html#ColorInterpolationFiltersProperty	6	 The ‘color-interpolation-filters’ property 
+http://www.w3.org/TR/filter-effects/Overview.html#FilterFunction	7	Filter Functions
+http://www.w3.org/TR/filter-effects/Overview.html#FilterElement	8	The ‘filter’ element
+http://www.w3.org/TR/filter-effects/Overview.html#FilterEffectsRegion	9	Filter effects region
+http://www.w3.org/TR/filter-effects/Overview.html#AccessBackgroundImage	10	Accessing the background image
+http://www.w3.org/TR/filter-effects/Overview.html#AccessBackgroundImageSVG	10.1	Accessing the background image in SVG
+http://www.w3.org/TR/filter-effects/Overview.html#FilterPrimitivesOverview	11	Filter primitives overview
+http://www.w3.org/TR/filter-effects/Overview.html#FilterPrimitivesOverviewIntro	11.1	Overview
+http://www.w3.org/TR/filter-effects/Overview.html#CommonAttributes	11.2	Common attributes
+http://www.w3.org/TR/filter-effects/Overview.html#FilterPrimitiveSubRegion	11.3	Filter primitive subregion
+http://www.w3.org/TR/filter-effects/Overview.html#LightSourceDefinitions	12	Light source elements and properties
+http://www.w3.org/TR/filter-effects/Overview.html#LightSourceIntro	12.1	Introduction
+http://www.w3.org/TR/filter-effects/Overview.html#feDistantLightElement	12.2	Light source ‘feDistantLight’
+http://www.w3.org/TR/filter-effects/Overview.html#fePointLightElement	12.3	Light source ‘fePointLight’
+http://www.w3.org/TR/filter-effects/Overview.html#feSpotLightElement	12.4	Light source ‘feSpotLight’
+http://www.w3.org/TR/filter-effects/Overview.html#LightingColorProperty	12.5	The ‘lighting-color’ property
+http://www.w3.org/TR/filter-effects/Overview.html#feBlendElement	13	Filter primitive ‘feBlend’
+http://www.w3.org/TR/filter-effects/Overview.html#feColorMatrixElement	14	Filter primitive ‘feColorMatrix’
+http://www.w3.org/TR/filter-effects/Overview.html#feComponentTransferElement	15	Filter primitive ‘feComponentTransfer’
+http://www.w3.org/TR/filter-effects/Overview.html#feCompositeElement	16	Filter primitive ‘feComposite’
+http://www.w3.org/TR/filter-effects/Overview.html#feConvolveMatrixElement	17	Filter primitive ‘feConvolveMatrix’
+http://www.w3.org/TR/filter-effects/Overview.html#feDiffuseLightingElement	18	Filter primitive ‘feDiffuseLighting’
+http://www.w3.org/TR/filter-effects/Overview.html#feDisplacementMapElement	19	Filter primitive ‘feDisplacementMap’
+http://www.w3.org/TR/filter-effects/Overview.html#feFloodElement	20	Filter primitive ‘feFlood’
+http://www.w3.org/TR/filter-effects/Overview.html#FloodColorProperty	20.1	 The ‘flood-color’ property
+http://www.w3.org/TR/filter-effects/Overview.html#FloodOpacityProperty	20.2	The ‘flood-opacity’ property
+http://www.w3.org/TR/filter-effects/Overview.html#feGaussianBlurElement	21	Filter primitive ‘feGaussianBlur’
+http://www.w3.org/TR/filter-effects/Overview.html#feUnsharpMaskElement	22	Filter primitive ‘feUnsharpMask’
+http://www.w3.org/TR/filter-effects/Overview.html#feImageElement	23	Filter primitive ‘feImage’
+http://www.w3.org/TR/filter-effects/Overview.html#feMergeElement	24	Filter primitive ‘feMerge’
+http://www.w3.org/TR/filter-effects/Overview.html#feMorphologyElement	25	Filter primitive ‘feMorphology’
+http://www.w3.org/TR/filter-effects/Overview.html#feOffsetElement	26	Filter primitive ‘feOffset’
+http://www.w3.org/TR/filter-effects/Overview.html#feSpecularLightingElement	27	Filter primitive ‘feSpecularLighting’
+http://www.w3.org/TR/filter-effects/Overview.html#feTileElement	28	Filter primitive ‘feTile’
+http://www.w3.org/TR/filter-effects/Overview.html#feTurbulenceElement	29	Filter primitive ‘feTurbulence’
+http://www.w3.org/TR/filter-effects/Overview.html#feDropShadowElement	30	Filter primitive ‘feDropShadow’
+http://www.w3.org/TR/filter-effects/Overview.html#feDiffuseSpecularElement	31	Filter primitive ‘feDiffuseSpecular’
+http://www.w3.org/TR/filter-effects/Overview.html#feCustomElement	32	Filter primitive ‘feCustom’
+http://www.w3.org/TR/filter-effects/Overview.html#fragmentShader-attribute	32.1	The ‘fragmentShader’ attribute
+http://www.w3.org/TR/filter-effects/Overview.html#vertexMesh-attribute	32.2	The ‘vertexMesh’ attribute
+http://www.w3.org/TR/filter-effects/Overview.html#shader-inputs	32.3	Shader inputs in filter graph
+http://www.w3.org/TR/filter-effects/Overview.html#shader-processing-model	33	Shader Processing Model
+http://www.w3.org/TR/filter-effects/Overview.html#FilterCSSImageValue	34	The filter CSS &lt;image&gt; value
+http://www.w3.org/TR/filter-effects/Overview.html#security	35	Security
+http://www.w3.org/TR/filter-effects/Overview.html#rendered-content-access-from-fragment-shaders	35.1	Rendered Content Access in custom filter primitives
+http://www.w3.org/TR/filter-effects/Overview.html#origin-restrictions	35.2	Origin Restrictions
+http://www.w3.org/TR/filter-effects/Overview.html#RelaxNG	36	RelaxNG Schema for Filter Effects 1.0
+http://www.w3.org/TR/filter-effects/Overview.html#ShorthandEquivalents	37	Shorthands defined in terms of the ‘filter’ element
+http://www.w3.org/TR/filter-effects/Overview.html#grayscaleEquivalent	37.1	grayscale
+http://www.w3.org/TR/filter-effects/Overview.html#sepiaEquivalent	37.2	sepia
+http://www.w3.org/TR/filter-effects/Overview.html#saturateEquivalent	37.3	saturate
+http://www.w3.org/TR/filter-effects/Overview.html#huerotateEquivalent	37.4	hue-rotate
+http://www.w3.org/TR/filter-effects/Overview.html#invertEquivalent	37.5	invert
+http://www.w3.org/TR/filter-effects/Overview.html#opacityEquivalent	37.6	opacity
+http://www.w3.org/TR/filter-effects/Overview.html#brightnessEquivalent	37.7	brightness
+http://www.w3.org/TR/filter-effects/Overview.html#contrastEquivalent	37.8	contrast
+http://www.w3.org/TR/filter-effects/Overview.html#blurEquivalent	37.9	blur
+http://www.w3.org/TR/filter-effects/Overview.html#dropshadowEquivalent	37.10	drop-shadow
+http://www.w3.org/TR/filter-effects/Overview.html#customEquivalent	37.11	custom
+http://www.w3.org/TR/filter-effects/Overview.html#shading-language	38	Shading language
+http://www.w3.org/TR/filter-effects/Overview.html#precedents	38.1	Precedents
+http://www.w3.org/TR/filter-effects/Overview.html#recommendation	38.2	Recommended shading language
+http://www.w3.org/TR/filter-effects/Overview.html#fragment-shaders-differences-with-glsl	38.2.1	Fragment Shaders Differences with GLSL
+http://www.w3.org/TR/filter-effects/Overview.html#vertex-attribute-variables	38.2.2	Vertex attribute variables
+http://www.w3.org/TR/filter-effects/Overview.html#shader-uniform-variables	38.2.3	Shader uniform variables
+http://www.w3.org/TR/filter-effects/Overview.html#varyings	38.2.4	Varyings
+http://www.w3.org/TR/filter-effects/Overview.html#other-uniform-variables-the-css-shaders-	38.2.5	Other uniform variables: the CSS shaders parameters
+http://www.w3.org/TR/filter-effects/Overview.html#default-shaders	38.2.6	Default shaders
+http://www.w3.org/TR/filter-effects/Overview.html#texture-access	38.2.7	Texture access
+http://www.w3.org/TR/filter-effects/Overview.html#integration-with-css-animations-transitions	39	Integration with CSS Animations and CSS Transitions
+http://www.w3.org/TR/filter-effects/Overview.html#filter-params-interpolation	39.1	Interpolating filter function parameters
+http://www.w3.org/TR/filter-effects/Overview.html#shader-params-interpolation	39.2	Interpolating the shader-params component in the custom() function.
+http://www.w3.org/TR/filter-effects/Overview.html#DOMInterfaces	40	DOM interfaces
+http://www.w3.org/TR/filter-effects/Overview.html#InterfaceImageData	40.1	Interface ImageData
+http://www.w3.org/TR/filter-effects/Overview.html#InterfaceSVGFilterElement	40.2	Interface SVGFilterElement
+http://www.w3.org/TR/filter-effects/Overview.html#InterfaceSVGFilterPrimitiveStandardAttributes	40.3	Interface SVGFilterPrimitiveStandardAttributes
+http://www.w3.org/TR/filter-effects/Overview.html#InterfaceSVGFEBlendElement	40.4	Interface SVGFEBlendElement
+http://www.w3.org/TR/filter-effects/Overview.html#InterfaceSVGFEColorMatrixElement	40.5	Interface SVGFEColorMatrixElement
+http://www.w3.org/TR/filter-effects/Overview.html#InterfaceSVGFEComponentTransferElement	40.6	Interface SVGFEComponentTransferElement
+http://www.w3.org/TR/filter-effects/Overview.html#InterfaceSVGComponentTransferFunctionElement	40.7	Interface SVGComponentTransferFunctionElement
+http://www.w3.org/TR/filter-effects/Overview.html#InterfaceSVGFEFuncRElement	40.8	Interface SVGFEFuncRElement
+http://www.w3.org/TR/filter-effects/Overview.html#InterfaceSVGFEFuncGElement	40.9	Interface SVGFEFuncGElement
+http://www.w3.org/TR/filter-effects/Overview.html#InterfaceSVGFEFuncBElement	40.10	Interface SVGFEFuncBElement
+http://www.w3.org/TR/filter-effects/Overview.html#InterfaceSVGFEFuncAElement	40.11	Interface SVGFEFuncAElement
+http://www.w3.org/TR/filter-effects/Overview.html#InterfaceSVGFECompositeElement	40.12	Interface SVGFECompositeElement
+http://www.w3.org/TR/filter-effects/Overview.html#InterfaceSVGFEConvolveMatrixElement	40.13	Interface SVGFEConvolveMatrixElement
+http://www.w3.org/TR/filter-effects/Overview.html#InterfaceSVGFEDiffuseLightingElement	40.14	Interface SVGFEDiffuseLightingElement
+http://www.w3.org/TR/filter-effects/Overview.html#InterfaceSVGFEDistantLightElement	40.15	Interface SVGFEDistantLightElement
+http://www.w3.org/TR/filter-effects/Overview.html#InterfaceSVGFEPointLightElement	40.16	Interface SVGFEPointLightElement
+http://www.w3.org/TR/filter-effects/Overview.html#InterfaceSVGFESpotLightElement	40.17	Interface SVGFESpotLightElement
+http://www.w3.org/TR/filter-effects/Overview.html#InterfaceSVGFEDisplacementMapElement	40.18	Interface SVGFEDisplacementMapElement
+http://www.w3.org/TR/filter-effects/Overview.html#InterfaceSVGFEFloodElement	40.19	Interface SVGFEFloodElement
+http://www.w3.org/TR/filter-effects/Overview.html#InterfaceSVGFEGaussianBlurElement	40.20	Interface SVGFEGaussianBlurElement
+http://www.w3.org/TR/filter-effects/Overview.html#InterfaceSVGFEImageElement	40.21	Interface SVGFEImageElement
+http://www.w3.org/TR/filter-effects/Overview.html#InterfaceSVGFEMergeElement	40.22	Interface SVGFEMergeElement
+http://www.w3.org/TR/filter-effects/Overview.html#InterfaceSVGFEMergeNodeElement	40.23	Interface SVGFEMergeNodeElement
+http://www.w3.org/TR/filter-effects/Overview.html#InterfaceSVGFEMorphologyElement	40.24	Interface SVGFEMorphologyElement
+http://www.w3.org/TR/filter-effects/Overview.html#InterfaceSVGFEOffsetElement	40.25	Interface SVGFEOffsetElement
+http://www.w3.org/TR/filter-effects/Overview.html#InterfaceSVGFESpecularLightingElement	40.26	Interface SVGFESpecularLightingElement
+http://www.w3.org/TR/filter-effects/Overview.html#InterfaceSVGFETileElement	40.27	Interface SVGFETileElement
+http://www.w3.org/TR/filter-effects/Overview.html#InterfaceSVGFETurbulenceElement	40.28	Interface SVGFETurbulenceElement
+http://www.w3.org/TR/filter-effects/Overview.html#InterfaceSVGFEDropShadowElement	40.29	Interface SVGFEDropShadowElement
+http://www.w3.org/TR/filter-effects/Overview.html#references	41	References

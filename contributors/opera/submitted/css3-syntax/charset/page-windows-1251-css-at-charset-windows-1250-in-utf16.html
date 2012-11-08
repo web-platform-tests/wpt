@@ -15,7 +15,7 @@ var elm_010c = document.getElementById('\u010c');
 var t = async_test();
 onload = t.step_func(function(){
   assert_equals(getComputedStyle(elm_fffd, '').visibility, 'visible', 'selector U+FFFD matched (utf-8)');
-  assert_equals(getComputedStyle(elm_0418, '').visibility, 'visible', 'selector U+0418 matched (windows-1251)');
+  assert_equals(getComputedStyle(elm_0418, '').visibility, 'hidden', 'selector U+0418 did not match (windows-1251)');
   assert_equals(getComputedStyle(elm_010c, '').visibility, 'visible', 'selector U+010C matched (windows-1250)');
   this.done();
 });

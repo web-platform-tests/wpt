@@ -1,42 +1,30 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>CSS Backgrounds and Borders Test: background-size-repeat_auto_repeat</title>
+    <title>CSS Backgrounds and Borders Test: background-size 'auto' with background-repeat 'repeat'</title>
     <link rel="author" title="Intel" href="http://www.intel.com" />
     <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-size" />
     <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-repeat" />
     <meta name="flags" content="image" />
-    <meta name="assert" content="Check if 'background-size' is 'auto' and 'background-repeat' is 'repeat', that the background image is shown at its intrinsic size to cover the background painting area" />
+    <meta name="assert" content="Check if 'background-size' is 'auto' and 'background-repeat' is 'repeat', that the background image is shown at its intrinsic size (98px wide by 99px tall in this test) and repeats in both horizontal and vertical to cover the background painting area (the same as background positioning area in this test)." />
     <style>
-        #container {
-            position: absolute;
-        }
-        #ref {
-            position: absolute;
-            top: 1px;
-            left: 1px;
-            width: 198px;
-            height: 198px;
-            background: red;
-        }
         #test {
-            position: absolute;
-            top: 0px;
-            left: 0px;
-            width: 200px;
-            height: 200px;
-
-            background-image: url(support/cat.png);
-            background-repeat: repeat;
-            background-size: auto;
+            background-color: red;
+            background-image: url(support/cat.png);  /* 98px by 99px */
+            background-repeat: repeat;  /* default */
+            background-size: auto;  /* default */
+            height: 198px;
+            width: 196px;
+            
+            /* 
+            Background positioning area is 196px wide by 198px tall.
+            So, the image should be repeated twice in horizontal and vertical.
+            */
         }
     </style>
   </head>
   <body>
     <p>Test passes if there is a 2x2 cat image and <strong>no red</strong>.</p>
-    <div id="container">
-      <div id="ref"></div>
-      <div id="test"></div>
-    </div>
+    <div id="test"></div>
   </body>
 </html>

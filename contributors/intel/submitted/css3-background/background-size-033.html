@@ -1,19 +1,18 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>CSS Backgrounds and Borders Test: background-size_first-line</title>
+    <title>CSS Backgrounds and Borders Test: background-size - applies to ::first-line pseudo-element</title>
     <link rel="author" title="Intel" href="http://www.intel.com" />
     <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-size" />
     <link rel="help" href="http://www.w3.org/TR/css3-background/#values" />
     <meta name="flags" content="" />
-    <meta name="assert" content="Check if background-size is able to apply to the ::first-line pseudo-element" />
+    <meta name="assert" content="Check if background-size is able to apply to the ::first-line pseudo-element." />
     <style>
         div::first-line {
             background-image: url(support/blue96x96.png);
             background-repeat: repeat no-repeat;
             background-size: 100% 50%;
             font-size: 80px;
-            position: absolute;
         }
     </style>
   </head>

@@ -1,42 +1,32 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>CSS Backgrounds and Borders Test: background-size-repeat_auto_round</title>
+    <title>CSS Backgrounds and Borders Test: background-size '60px auto' with background-repeat 'repeat round'</title>
     <link rel="author" title="Intel" href="http://www.intel.com" />
     <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-size" />
     <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-repeat" />
     <meta name="flags" content="image" />
-    <meta name="assert" content="Check if 'background-size' is '50px auto' and 'background-repeat' is 'repeat round', that the background image is shown with a width of 50px and a height that is either the height corresponding to that width at the original aspect ratio or slightly less" />
+    <meta name="assert" content="Check if 'background-size' is '60px auto' and 'background-repeat' is 'repeat round', then the width of the corresponding background image is 60px, and the height is rescaled to approximately 60px to keep the original aspect ratio or slightly less." />
     <style>
-        #container {
-            position: absolute;
-        }
-        #ref {
-            position: absolute;
-            top: 1px;
-            left: 1px;
-            width: 198px;
-            height: 198px;
-            background: red;
-        }
         #test {
-            position: absolute;
-            top: 0px;
-            left: 0px;
-            width: 200px;
-            height: 200px;
-
-            background-image: url(support/cat.png);
+            background-color: red;
+            background-image: url(support/cat.png);  /* 98px by 99px */
             background-repeat: repeat round;
-            background-size: 50px auto;
+            background-size: 60px auto;
+            height: 180px;
+            width: 180px;
+            
+            /* 
+            Background positioning area is 180px wide by 180px tall.
+            The width of the background image is 60px.
+            So, the height is rescaled to approximately 60px 
+            to keep the original aspect ratio or slightly less.
+            */
         }
     </style>
   </head>
   <body>
-    <p>Test passes if there is a 4x4 cat image and <strong>no red</strong>.</p>
-    <div id="container">
-      <div id="ref"></div>
-      <div id="test"></div>
-    </div>
+    <p>Test passes if there is a 3x3 cat image and <strong>no red</strong>.</p>
+    <div id="test"></div>
   </body>
 </html>

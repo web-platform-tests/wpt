@@ -8,7 +8,7 @@
     <meta name="flags" content="image" />
     <meta name="assert" content="Check if 'background-size' is 'auto 60px' and 'background-repeat' is 'round', then the height of the corresponding background image is rounded (66.6px in this test) so that it fits a whole number of times (3 in this test) in the background positioning area, and the width of the background image is rescaled (66.0px in this test) to keep the original aspect ratio." />
     <style>
-        #test {
+        div {
             background-color: red;
             background-image: url(support/cat.png);  /* 98px by 99px */
             background-repeat: round;  /* round round */
@@ -25,7 +25,7 @@
     </style>
   </head>
   <body>
-    <p>Test passes if there is a 3x3 cat image and <strong>no red</strong>.</p>
-    <div id="test"></div>
+    <p>Test passes if there is 3 rows of 3 cats and if there is <strong>no partially</strong> displayed cat and <strong>no red</strong>.</p>
+    <div></div>
   </body>
 </html>

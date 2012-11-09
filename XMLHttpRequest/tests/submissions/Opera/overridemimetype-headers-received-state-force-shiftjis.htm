@@ -11,17 +11,21 @@
     <div id="log"></div>
     <script>
       var test = async_test();
-      test.step(function() {
-        var client = new XMLHttpRequest();
-        client.onreadystatechange = function() {
-          if(client.readyState===2)client.overrideMimeType('text/plain;charset=Shift-JIS');
-          if (client.readyState !== 4) return;
-          assert_equals( client.responseText, 'テスト', 'overrideMimeType() in HEADERS RECEIVED state set encoding' );
-          test.done();
-        };
-        client.open("GET", "resources/status.php?type="+encodeURIComponent('text/html;charset=UTF-8')+'&content=%83%65%83%58%83%67');
-        client.send( '' );
+      var client = new XMLHttpRequest();
+      client.onreadystatechange = test.step_func( function() {
+        if(client.readyState===2){
+          try{
+            client.overrideMimeType('text/plain;charset=Shift-JIS');
+          }catch(e){
+            assert_unreached('overrideMimeType should not throw in state 2');
+          }
+        }
+        if (client.readyState !== 4) return;
+        assert_equals( client.responseText, 'テスト', 'overrideMimeType() in HEADERS RECEIVED state set encoding' );
+        test.done();
       });
+      client.open("GET", "resources/status.php?type="+encodeURIComponent('text/html;charset=UTF-8')+'&content=%83%65%83%58%83%67');
+      client.send( '' );
     </script>
   </body>
 </html>

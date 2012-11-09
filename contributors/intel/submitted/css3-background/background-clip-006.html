@@ -1,27 +1,17 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>CSS Backgrounds and Borders Test: background-clip_inherit</title>
+    <title>CSS Backgrounds and Borders Test: background-clip - inherit keyword value</title>
     <link rel="author" title="Intel" href="http://www.intel.com" />
     <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-clip" />
     <link rel="help" href="http://www.w3.org/TR/css3-background/#values" />
     <meta name="flags" content="" />
     <meta name="assert" content="Background-clip with 'inherit' implies to inherit its parent element value to paint the background area" />
     <style>
-        div {
-            position: absolute;
-        }
         #container {
             background-clip: content-box;
         }
-        #ref {
-            background-color: green;
-            height: 100px;
-            left: 30px;
-            top: 30px;
-            width: 100px;
-        }
-        #test {
+        #test-overlapped-red {
             background-clip: inherit;
             background-color: red;
             border: transparent dotted 5px;
@@ -29,13 +19,21 @@
             padding: 25px;
             width: 100px;
         }
+        #ref-overlapping-green {
+            background-color: green;
+            bottom: 130px;
+            height: 100px;
+            left: 30px;
+            position: relative;
+            width: 100px;
+        }
     </style>
   </head>
   <body>
     <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
     <div id="container">
-      <div id="test"></div>
-      <div id="ref"></div>
+      <div id="test-overlapped-red"></div>
+      <div id="ref-overlapping-green"></div>
     </div>
   </body>
 </html>

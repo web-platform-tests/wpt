@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>CSS Backgrounds and Borders Test: background-origin-attachment</title>
+    <title>CSS Backgrounds and Borders Test: background-origin 'content-box' with background-attachment 'fixed'</title>
     <link rel="author" title="Intel" href="http://www.intel.com" />
     <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-origin" />
     <meta name="flags" content="image" />
@@ -15,12 +15,12 @@
             position: absolute;
             top: 0px;
         }
-        #ref {
+        #ref-overlapped-red {
             background-color: red;
             height: 60px;
             width: 60px;
         }
-        #test {
+        #test-overlapping-green {
             background-attachment: fixed;
             background-image: url(support/60x60-green.png);
             background-origin: content-box;
@@ -34,8 +34,8 @@
   </head>
   <body>
     <p>Test passes if there is a filled green square at the left of the page and <strong>no red</strong>.</p>
-    <div id="ref">
-      <div id="test"></div>
+    <div id="ref-overlapped-red">
+      <div id="test-overlapping-green"></div>
     </div>
   </body>
 </html>

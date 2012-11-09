@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>CSS Backgrounds and Borders Test: background-origin_padding-box</title>
+    <title>CSS Backgrounds and Borders Test: background-origin - padding-box keyword value</title>
     <link rel="author" title="Intel" href="http://www.intel.com" />
     <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-origin" />
     <meta name="flags" content="image" />
@@ -10,14 +10,14 @@
         div {
             position: absolute;
         }
-        #ref {
+        #ref-overlapped-red {
             background-color: red;
             height: 60px;
             left: 5px;
             top: 5px;
             width: 60px;
         }
-        #test {
+        #test-overlapping-green {
             background-image: url(support/60x60-green.png);
             background-origin: padding-box;
             background-repeat: no-repeat;
@@ -31,8 +31,8 @@
   <body>
     <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
     <div id="container">
-      <div id="ref"></div>
-      <div id="test"></div>
+      <div id="ref-overlapped-red"></div>
+      <div id="test-overlapping-green"></div>
     </div>
   </body>
 </html>

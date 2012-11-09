@@ -1,23 +1,13 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>CSS Backgrounds and Borders Test: background-clip_padding-box</title>
+    <title>CSS Backgrounds and Borders Test: background-clip - padding-box keyword value</title>
     <link rel="author" title="Intel" href="http://www.intel.com" />
     <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-clip" />
     <meta name="flags" content="" />
     <meta name="assert" content="Background-clip with 'padding-box' implies to paint the background within (clipped to) the padding box" />
     <style>
-        div {
-            position: absolute;
-        }
-        #ref {
-            background-color: green;
-            height: 150px;
-            left: 5px;
-            top: 5px;
-            width: 150px;
-        }
-        #test {
+        #test-overlapped-red {
             background-clip: padding-box;
             background-color: red;
             border: transparent dotted 5px;
@@ -25,13 +15,19 @@
             padding: 25px;
             width: 100px;
         }
+        #ref-overlapping-green {
+            background-color: green;
+            bottom: 155px;
+            height: 150px;
+            left: 5px;
+            position: relative;
+            width: 150px;
+        }
     </style>
   </head>
   <body>
     <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
-    <div id="container">
-      <div id="test"></div>
-      <div id="ref"></div>
-    </div>
+    <div id="test-overlapped-red"></div>
+    <div id="ref-overlapping-green"></div>
   </body>
 </html>

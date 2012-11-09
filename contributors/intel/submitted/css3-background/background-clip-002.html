@@ -1,34 +1,31 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>CSS Backgrounds and Borders Test: background-clip_initial</title>
+    <title>CSS Backgrounds and Borders Test: background-clip - initial value</title>
     <link rel="author" title="Intel" href="http://www.intel.com" />
     <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-clip" />
     <meta name="flags" content="" />
     <meta name="assert" content="Background-clip with initial value implies to paint the background within (clipped to) the border box" />
     <style>
-        div {
-            position: absolute;
-        }
-        #ref {
+        #ref-overlapped-red {
             background-color: red;
             height: 160px;
             width: 160px;
         }
-        #test {
+        #test-overlapping-green {
             background-color: green;
             border: transparent dotted 5px;
+            bottom: 160px;
             height: 100px;
             padding: 25px;
+            position: relative;
             width: 100px;
         }
     </style>
   </head>
   <body>
     <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
-    <div id="container">
-      <div id="ref"></div>
-      <div id="test"></div>
-    </div>
+    <div id="ref-overlapped-red"></div>
+    <div id="test-overlapping-green"></div>
   </body>
 </html>

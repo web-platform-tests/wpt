@@ -13,20 +13,30 @@
     <div id="log"></div>
     <script>
       function statusRequest(method, code, text, content, type) {
-        test(function() {
+        var test = async_test(document.title + " (" + method + " " + code + ")")
+        test.step(function() {
           var client = new XMLHttpRequest()
-          client.open(method, "resources/status.php?code=" + code + "&text=" + text + "&content=" + content + "&type=" + type, false)
-          client.send(null)
-          assert_equals(client.status, code)
-          assert_equals(client.statusText, text)
-          assert_equals(client.getResponseHeader("X-Request-Method"), method)
-          if(method != "HEAD") {
-            if(type == "text/xml") {
-              assert_equals(client.responseXML.documentElement.localName, "x")
-            }
-            assert_equals(client.responseText, content)
+          client.onreadystatechange = function(e) {
+            test.step(function() {
+              if(client.readyState > 1) {
+                assert_equals(client.status, code)
+                assert_equals(client.statusText, text)
+                assert_equals(client.getResponseHeader("X-Request-Method"), method)
+                if(client.readyState == 4) {
+                  if(method != "HEAD") {
+                    if(type == "text/xml") {
+                      assert_equals(client.responseXML.documentElement.localName, "x")
+                    }
+                    assert_equals(client.responseText, content)
+                  }
+                  test.done()
+                }
+              }
+            }, this)
           }
-        }, document.title + " (" + method + " " + code + ")")
+          client.open(method, "resources/status.php?code=" + code + "&text=" + text + "&content=" + content + "&type=" + type)
+          client.send(null)
+        })
       }
       function status(code, text, content, type) {
         statusRequest("GET", code, text, content, type)

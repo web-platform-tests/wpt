@@ -4,6 +4,8 @@
     <title>XMLHttpRequest: setRequestHeader() - headers that are forbidden</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-setrequestheader()-method" data-tested-assertations="/following::ol/li[5]" />  
+
   </head>
   <body>
     <div id="log"></div>
@@ -17,8 +19,8 @@
         client.setRequestHeader("Content-Length", "TEST")
         client.setRequestHeader("Cookie", "TEST")
         client.setRequestHeader("Cookie2", "TEST")
-        client.setRequestHeader("Content-Transfer-Encoding", "TEST")
         client.setRequestHeader("Date", "TEST")
+        client.setRequestHeader("DNT", "TEST")
         client.setRequestHeader("Expect", "TEST")
         client.setRequestHeader("Host", "TEST")
         client.setRequestHeader("Keep-Alive", "TEST")

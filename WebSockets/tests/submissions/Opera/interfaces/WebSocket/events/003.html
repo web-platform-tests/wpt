@@ -1,0 +1,20 @@
+<!doctype html>
+<title>WebSockets: listening for events with onopen</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=../../../constants.js></script>
+<div id=log></div>
+<script>
+setTestTimeout(2000);
+test(function(){
+  var ws = new WebSocket(SCHEME_AND_DOMAIN+'/');
+  function foo(e) {
+    if (e.detail == 5)
+      end();
+  }
+  ws.onopen = foo;
+  var ev = document.createEvent('UIEvents');
+  ev.initUIEvent('open', false, false, window, 5);
+  ws.dispatchEvent(ev);
+});
+</script>

@@ -1,0 +1,30 @@
+<!doctype html>
+<title>WebSockets: converting first arguments</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=../constants.js></script>
+<div id=log></div>
+<script>
+test(function(){
+  var a = document.createElement('a');
+  a.href = SCHEME_AND_DOMAIN+':8007/echo';
+  var ws = new WebSocket(a); // should stringify arguments; <a> stringifies to its .href
+  assert_equals(ws.url, a.href);
+  ws.onopen = function(e) {
+    debug(e);
+    ws.send('test');
+  }
+  ws.onmessage = function(e) {
+    debug(e);
+    assert_equals(e.data, 'test');
+    ws.onclose = function(e) {
+      debug(e);
+      ws.onclose = assertUnreached;
+      setTestTimeout(null);
+      setTimeout(end, 50);
+    }
+    ws.close();
+  }
+  ws.onerror = ws.onclose = assertUnreached;
+});
+</script>

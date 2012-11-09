@@ -1,0 +1,23 @@
+<!doctype html>
+<title>WebSockets: protocol in response but no requested protocol</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=../constants.js></script>
+<div id=log></div>
+<script>
+test(function(){
+  var ws = new WebSocket(SCHEME_AND_DOMAIN+':8007/handshake_protocol');
+  ws.onerror = ws.onmessage = ws.onclose = assertUnreached;
+  ws.onopen = function(e) {
+    debug(e);
+    ws.onclose = function(e) {
+      debug(e);
+      ws.onclose = assertUnreached;
+      setTestTimeout(null);
+      setTimeout(end, 50);
+    }
+    ws.close();
+  }
+});
+</script>
+

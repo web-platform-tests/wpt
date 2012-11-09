@@ -187,6 +187,23 @@ function runSpecialMatchesTests(type, element) {
 /*
  * Execute queries with the specified valid selectors for both find() and findAll()
  * Only run these tests when results are expected. Don't run for syntax error tests.
+ *
+ * Where testType is TEST_FIND_BASELINE or TEST_FIND_ADDITIONAL:
+ *
+ * context.findAll(selector, refNodes)
+ * context.findAll(selector)        // Only if refNodes is not specified
+ * root.findAll(selector, context)  // Only if refNodes is not specified
+ * root.findAll(selector, refNodes) // Only if context is not specified
+ * root.findAll(selector)           // Only if neither context nor refNodes is specified
+ *
+ * Where testType is TEST_QSA_BASELINE or TEST_QSA_ADDITIONAL
+ *
+ * context.querySelectorAll(selector) // Only if refNodes is not specified
+ * root.querySelectorAll(selector)    // Only if neither context nor refNodes is specified
+ *
+ * Equivalent tests will be run for .find() as well.
+ * Note: Do not specify a testType of TEST_QSA_* where either implied :scope or explicit refNodes
+ * are required.
  */
 function runValidSelectorTest(type, root, selectors, testType, docType) {
 	var nodeType = getNodeType(root);
@@ -197,35 +214,136 @@ function runValidSelectorTest(type, root, selectors, testType, docType) {
 		var q = s["selector"];
 		var e = s["expect"];
 
-		if ((!s["exclude"] || (s["exclude"].indexOf(nodeType) === -1 && s["exclude"].indexOf(docType) === -1))
-		 && (s["testType"] & testType) ) {
+		var ctx = s["ctx"];
+		var ref = s["ref"];
+
+		if (!s["exclude"] || (s["exclude"].indexOf(nodeType) === -1 && s["exclude"].indexOf(docType) === -1)) {
 			//console.log("Running tests " + nodeType + ": " + s["testType"] + "&" + testType + "=" + (s["testType"] & testType) + ": " + JSON.stringify(s))
-			var foundall, found;
+			var foundall, found, context, refNodes, refArray;
 
-			test(function() {
-				foundall = root.findAll(q);
-				assert_not_equals(foundall, null, "The method should not return null.")
-				assert_equals(foundall.length, e.length, "The method should return the expected number of matches.")
+			if (s["testType"] & testType & (TEST_FIND_BASELINE | TEST_FIND_ADDITIONAL)) {
 
-				for (var i = 0; i < e.length; i++) {
-					assert_not_equals(foundall[i], null, "The item in index " + i + " should not be null.")
-					assert_equals(foundall[i].getAttribute("id"), e[i], "The item in index " + i + " should have the expected ID.");
-					assert_false(foundall[i].hasAttribute("data-clone"), "This should not be a cloned element.");
+
+				/*
+				 * If ctx and ref are specified:
+				 * context.findAll(selector, refNodes)
+				 * context.find(selector, refNodes)
+				 */
+				if (ctx && ref) {
+					context = root.querySelector(ctx);
+					refNodes = root.querySelectorAll(ref);
+					refArray = Array.prototype.slice.call(refNodes, 0);
+
+					test(function() {
+						foundall = context.findAll(q, refNodes);
+						verifyNodeList(foundall, expect);
+					}, type + " [Context Element].findAll: " + n + " (with refNodes NodeList): " + q);
+
+					test(function() {
+						foundall = context.findAll(q, refArray);
+						verifyNodeList(foundall, expect);
+					}, type + " [Context Element].findAll: " + n + " (with refNodes Array): " + q);
+
+					test(function() {
+						found = context.find(q, refNodes);
+						verifyElement(found, foundall, expect)
+					}, type + " [Context Element].find: " + n + " (with refNodes NodeList): " + q);
+
+					test(function() {
+						found = context.find(q, refArray);
+						verifyElement(found, foundall, expect)
+					}, type + " [Context Element].find: " + n + " (with refNodes Array): " + q);
 				}
-			}, type + ".findAll: " + n + ": " + q);
 
-			test(function() {
-				found = root.find(q);
 
-				if (e.length > 0) {
-					assert_not_equals(found, null, "The method should return a match.")
-					assert_equals(found.getAttribute("id"), e[0], "The method should return the first match.");
-					assert_equals(found, foundall[0], "The result should match the first item from findAll.");
-					assert_false(found.hasAttribute("data-clone"), "This should not be annotated as a cloned element.");
-				} else {
-					assert_equals(found, null, "The method should not match anything.");
+				/*
+				 * If ctx is specified, ref is not:
+				 * context.findAll(selector)
+				 * context.find(selector)
+				 * root.findAll(selector, context)
+				 * root.find(selector, context)
+				 */
+				if (ctx && !ref) {
+					context = root.querySelector(ctx);
+
+					test(function() {
+						foundall = context.findAll(q);
+						verifyNodeList(foundall, expect);
+					}, type + " [Context Element].findAll: " + n + " (with no refNodes): " + q);
+
+					test(function() {
+						found = context.find(q);
+						verifyElement(found, foundall, expect)
+					}, type + " [Context Element].find: " + n + " (with no refNodes): " + q);
+
+					test(function() {
+						foundall = root.findAll(q, context);
+						verifyNodeList(foundall, expect);
+					}, type + " [Root Node].findAll: " + n + " (with refNode Element): " + q);
+
+					test(function() {
+						foundall = root.find(q, context);
+						verifyElement(found, foundall, expect);
+					}, type + " [Root Node].find: " + n + " (with refNode Element): " + q);
 				}
-			}, type + ".find: " + n + ": " + q);
+
+				/*
+				 * If ref is specified, ctx is not:
+				 * root.findAll(selector, refNodes)
+				 * root.find(selector, refNodes)
+				 */
+				if (!ctx && ref) {
+					refNodes = root.querySelectorAll(ref);
+					refArray = Array.prototype.slice.call(refNodes, 0);
+					
+					test(function() {
+						foundall = root.findAll(q, refNodes);
+						verifyNodeList(foundall, expect);
+					}, type + " [Root Node].findAll: " + n + " (with refNodes NodeList): " + q);
+
+					test(function() {
+						foundall = root.findAll(q, refArray);
+						verifyNodeList(foundall, expect);
+					}, type + " [Root Node].findAll: " + n + " (with refNodes Array): " + q);
+
+					test(function() {
+						found = root.find(q, refNodes);
+						verifyElement(found, foundall, expect);
+					}, type + " [Root Node].find: " + n + " (with refNodes NodeList): " + q);
+
+					test(function() {
+						found = root.find(q, refArray);
+						verifyElement(found, foundall, expect);
+					}, type + " [Root Node].find: " + n + " (with refNodes Array): " + q);
+				}
+
+				/*
+				 * If neither ctx nor ref is specified:
+				 * root.findAll(selector)
+				 * root.find(selector)
+				 */
+				if (!ctx && !ref) {
+					test(function() {
+						foundall = root.findAll(q);
+						verifyNodeList(foundall, expect);
+					}, type + ".findAll: " + n + " (with no refNodes): " + q);
+
+					test(function() {
+						found = root.find(q);
+						verifyElement(found, foundall, expect);
+					}, type + ".find: " + n + " (with no refNodes): " + q);
+				}
+			}
+
+			if (s["testType"] & testType & (TEST_QSA_BASELINE | TEST_QSA_ADDITIONAL)) {
+				if (ctx && !ref) {
+				 	// context.querySelectorAll(selector) // Only if refNodes is not specified
+				}
+				
+				if (!ctx && !ref) {
+					// root.querySelectorAll(selector)    // Only if neither context nor refNodes is specified
+				}
+			}
 		} else {
 			//console.log("Excluding for " + nodeType + ": " + s["testType"] + "&" + testType + "=" + (s["testType"] & testType) + ": " + JSON.stringify(s))
 		}
@@ -273,29 +391,48 @@ function runMatchesTest(type, root, selectors, testType, docType) {
 		var n = s["name"];
 		var q = s["selector"];
 		var e = s["expect"];
+		var u = s["unexpected"];
 
 		var ctx = s["ctx"];
 		var ref = s["ref"];
 
 		if ((!s["exclude"] || (s["exclude"].indexOf(nodeType) === -1 && s["exclude"].indexOf(docType) === -1))
-		 && (s["testType"] & testType) ) {
-			if (ctx && !ref) {
+		 && (s["testType"] & testType & (TEST_MATCH_BASELINE | TEST_MATCH_ADDITIONAL)) ) {
 
+			if (ctx && !ref) {
 				test(function() {
-					for (var j = 0; j < e.length; j++) {
-						var context = root.querySelector("#" + e[j]);
-						var refNode = root.querySelector(ctx);
-						assert_true(context[matches](q, refNode), "The element " + e[j] + " should match the selector.")
+					var j, element, refNode;
+					for (j = 0; j < e.length; j++) {
+						element = root.querySelector("#" + e[j]);
+						refNode = root.querySelector(ctx);
+						assert_true(element[matches](q, refNode), "The element #" + e[j] + " should match the selector.")
+					}
+
+					if (u) {
+						for (j = 0; j < u.length; j++) {
+							element = root.querySelector("#" + u[j]);
+							refNode = root.querySelector(ctx);
+							assert_false(element[matches](q, refNode), "The element #" + u[j] + " should not match the selector.")
+						}
 					}
 				}, type + " Element." + matches + ": " + n + " (with refNode Element): " + q);
 			}
 
 			if (ref) {
 				test(function() {
-					for (var j = 0; j < e.length; j++) {
-						var context = root.querySelector("#" + e[j]);
-						var refNode = root.querySelectorAll(ref);
-						assert_true(context[matches](q, refNode), "The element " + e[j] + " should match the selector.")
+					var j, element, refNodes;
+					for (j = 0; j < e.length; j++) {
+						element = root.querySelector("#" + e[j]);
+						refNodes = root.querySelectorAll(ref);
+						assert_true(element[matches](q, refNodes), "The element #" + e[j] + " should match the selector.")
+					}
+
+					if (u) {
+						for (j = 0; j < u.length; j++) {
+							element = root.querySelector("#" + u[j]);
+							refNodes = root.querySelectorAll(ref);
+							assert_false(element[matches](q, refNodes), "The element #" + u[j] + " should not match the selector.")
+						}
 					}
 				}, type + " Element." + matches + ": " + n + " (with refNodes NodeList): " + q);
 			}
@@ -303,13 +440,19 @@ function runMatchesTest(type, root, selectors, testType, docType) {
 			if (!ctx && !ref) {
 				test(function() {
 					for (var j = 0; j < e.length; j++) {
-						var context = root.querySelector("#" + e[j]);
-						var refNode = root.querySelectorAll(ref);
-						assert_true(context[matches](q, refNode), "The element " + e[j] + " should match the selector.")
+						var element = root.querySelector("#" + e[j]);
+						assert_true(element[matches](q), "The element #" + e[j] + " should match the selector.")
+					}
+
+					if (u) {
+						for (j = 0; j < u.length; j++) {
+							element = root.querySelector("#" + u[j]);
+							assert_false(element[matches](q), "The element #" + u[j] + " should not match the selector.")
+						}
 					}
 				}, type + " Element." + matches + ": " + n + " (with no refNodes): " + q);
 			}
-		}			
+		}
 	}
 }
 
@@ -338,4 +481,26 @@ function getNodeType(node) {
 			console.log("Reached unreachable code path.");
 			return "unknown"; // This should never happen.
 	}
+}
+
+function verifyNodeList(resultAll, expect) {
+	assert_not_equals(resultAll, null, "The method should not return null.");
+	assert_equals(resultAll.length, e.length, "The method should return the expected number of matches.");
+
+	for (var i = 0; i < e.length; i++) {
+		assert_not_equals(resultAll[i], null, "The item in index " + i + " should not be null.")
+		assert_equals(resultAll[i].getAttribute("id"), e[i], "The item in index " + i + " should have the expected ID.");
+		assert_false(resultAll[i].hasAttribute("data-clone"), "This should not be a cloned element.");
+	}	
+}
+
+function verifyElement(result, resultAll, expect) {
+	if (expect.length > 0) {
+		assert_not_equals(result, null, "The method should return a match.")
+		assert_equals(found.getAttribute("id"), e[0], "The method should return the first match.");
+		assert_equals(result, resultAll[0], "The result should match the first item from querySelectorAll.");
+		assert_false(found.hasAttribute("data-clone"), "This should not be annotated as a cloned element.");
+	} else {
+		assert_equals(result, null, "The method should not match anything.");
+	}	
 }

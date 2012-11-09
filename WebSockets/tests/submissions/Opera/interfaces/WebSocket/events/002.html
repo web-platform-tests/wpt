@@ -1,0 +1,19 @@
+<!doctype html>
+<title>WebSockets: setting on*</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=../../../constants.js></script>
+<div id=log></div>
+<script>
+test(function(){
+  var events = ['open', 'message', 'error', 'close'];
+  var ws = new WebSocket(SCHEME_AND_DOMAIN+'/');
+  function foo() {
+  }
+  for (var i = 0; i < events.length; ++i) {
+    ws['on'+events[i]] = foo;
+    assert_equals(ws['on'+events[i]], foo);
+  }
+});
+end();
+</script>

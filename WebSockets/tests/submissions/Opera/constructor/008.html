@@ -1,0 +1,13 @@
+<!doctype html>
+<title>WebSockets: new WebSocket(url with not blocked port)</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=../constants.js></script>
+<div id=log></div>
+<script>
+test(function(){new WebSocket('ws://'+location.hostname+':80/ws/')});
+test(function(){new WebSocket('ws://'+location.hostname+':443/')});
+test(function(){new WebSocket('wss://'+location.hostname+':80/ws/')});
+test(function(){new WebSocket('wss://'+location.hostname+':443/')});
+end();
+</script>

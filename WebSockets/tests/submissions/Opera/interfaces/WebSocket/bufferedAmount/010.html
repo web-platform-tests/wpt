@@ -1,0 +1,21 @@
+<!doctype html>
+<title>WebSockets: bufferedAmount for unicode data</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=../../../constants.js></script>
+<div id=log></div>
+<script>
+test(function(){
+  var ws = new WebSocket(SCHEME_AND_DOMAIN+':80/ws/echo');
+  var data = "¥¥¥¥¥¥";
+   ws.onopen = function(e) {
+    ws.send(data);
+    assert_equals(data.length * 2, ws.bufferedAmount);
+  }
+  ws.onmessage = function(e) {
+    assert_equals(e.data, data);
+    end();
+  }
+  
+});
+</script>

@@ -1,0 +1,23 @@
+<!doctype html>
+<title>WebSockets: proper first line</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=../constants.js></script>
+<div id=log></div>
+<script>
+test(function(){
+  var ws = new WebSocket(SCHEME_AND_DOMAIN+':8007/simple_handshake');
+  ws.onmessage = assertUnreached;
+  ws.onopen = function(e) {
+    debug(e);
+    ws.onclose = function(e) {
+      debug(e);
+      assert_equals(e.wasClean, true);
+      ws.onclose = assertUnreached;
+      setTestTimeout(null);
+      setTimeout(end, 50);
+    }
+    ws.close();
+  }
+});
+</script>

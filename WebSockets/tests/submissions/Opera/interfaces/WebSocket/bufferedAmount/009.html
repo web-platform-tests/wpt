@@ -1,0 +1,24 @@
+<!doctype html>
+<title>WebSockets: bufferedAmount for 65K data</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=../../../constants.js></script>
+<div id=log></div>
+<script>
+test(function(){
+  var ws = new WebSocket(SCHEME_AND_DOMAIN+':80/ws/echo');
+  var data = "";
+  ws.onopen = function(e) {
+   for (var i = 0; i < 65000; i++) {
+      data = data + "x";
+    }
+   ws.send(data);
+   assert_equals(data.length, ws.bufferedAmount);
+  }
+  ws.onmessage = function(e) {
+    assert_equals(e.data, data);
+    end();
+  }
+  
+});
+</script>

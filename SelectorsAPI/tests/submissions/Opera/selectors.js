@@ -360,11 +360,11 @@ var validSelectors = [
 
 
 /*
- * These selectors are intended to be used with the find() and findAll() methods.  Expected results should
- * be determined under the assumption that :scope will be prepended to the selector where appropriate, in
- * accordance with the specification.
+ * These selectors are intended to be used with the find(), findAll() and matches() methods.  Expected results
+ * should be determined under the assumption that :scope will be prepended to the selector where appropriate,
+ * in accordance with the specification.
  *
- * All of these should be valid selectors, expected to match zero or more elements in the document.
+ * All of these should be valid relative selectors, expected to match zero or more elements in the document.
  * None should throw any errors.
  *
  *   name:      A descriptive name of the selector being tested
@@ -383,6 +383,9 @@ var validSelectors = [
  *
  *   expect:    A list of IDs of the elements expected to be matched. List must be given in tree order.
  *
+ *   unexpected: A list of IDs of some elements that are not expected to match the given selector.
+ *               This is used to verify that unexpected.matches(selector, refNode) does not match.
+ *
  *   exclude:   An array of contexts to exclude from testing. The valid values are:
  *              ["document", "element", "fragment", "detached", "html", "xhtml"]
  *              The "html" and "xhtml" values represent the type of document being queried. These are useful
@@ -398,39 +401,43 @@ var validSelectors = [
  *
  * Where testType is TEST_FIND_BASELINE or TEST_FIND_ADDITIONAL:
  *
- * context.findAll(selector)
  * context.findAll(selector, refNodes)
- *
+ * context.findAll(selector)        // Only if refNodes is not specified
  * root.findAll(selector, context)  // Only if refNodes is not specified
  * root.findAll(selector, refNodes) // Only if context is not specified
  * root.findAll(selector)           // Only if neither context nor refNodes is specified
  *
- * Equivalent tests will be run for .find() as well.
+ * Where testType is TEST_QSA_BASELINE or TEST_QSA_ADDITIONAL
  *
- * Where testType is TEST_MATCH_BASELINE or TEST_MATCH_ADDITIONAL
- * For each expected result given, within the specified root, individually:
+ * context.querySelectorAll(selector)
+ * root.querySelectorAll(selector)  // Only if neither context nor refNodes is specified
+ *
+ * Equivalent tests will be run for .find() as well.
+ * Note: Do not specify a testType of TEST_QSA_* where either implied :scope or explicit refNodes
+ * are required.
+ *
+ * Where testType is TEST_MATCH_BASELINE or TEST_MATCH_ADDITIONAL:
+ * For each expected result given, within the specified root:
  *
  * expect.matches(selector, context)    // Only where refNodes is not specified
  * expect.matches(selector, refNodes)
  * expect.matches(selector)             // Only if neither context nor refNodes is specified
- *
- * Where testType is TEST_QSA_BASELINE or TEST_QSA_ADDITIONAL
- *
- * context.querySelectorAll(selector)
- *
- * root.querySelectorAll(selector)  // Only if neither context nor refNodes is specified
- *
- * Equivalent tests will be run for .find() as well.
- * Note: Do not specify a testType of TEST_QSA_ADDITIONAL where either implied :scope or explicit refNodes
- * are required.
  *
  * The tests involving refNodes for both find(), findAll() and matches() will each be run by passing the
  * collection as a NodeList, an Array and, if there is only a single element, an Element node.
  * 
  * Note: Interactive pseudo-classes (:active :hover and :focus) have not been tested in this test suite.
  */
+
 var scopedSelectors = [
-//	{name: "", selector: "", ctx: "", ref: "", expect: [], level: 1, testType: TEST_FIND_BASELINE | TEST_MATCH_BASELINE},
+	//{name: "", selector: "", ctx: "", ref: "", expect: [], level: 1, testType: TEST_FIND_BASELINE | TEST_MATCH_BASELINE},
+
+	// Universal Selector
+	{name: "Universal selector, matching all children of the specified reference element",       selector: ">*",   ctx: "#universal", expect: ["universal-p1", "universal-hr1", "universal-pre1", "universal-p2", "universal-address1"], unexpected: ["universal", "empty"], level: 2, testType: TEST_FIND_BASELINE | TEST_MATCH_BASELINE},
+	{name: "Universal selector, matching all grandchildren of the specified reference element",  selector: ">*>*", ctx: "#universal", expect: ["universal-code1", "universal-span1", "universal-a1", "universal-code2"],                 unexpected: ["universal", "empty"], level: 2, testType: TEST_FIND_BASELINE | TEST_MATCH_BASELINE},
+	{name: "Universal selector, matching all children of the specified empty reference element", selector: ">*",   ctx: "#empty",     expect: [] /*no matches*/,                                                                         unexpected: ["universal", "empty"], level: 2, testType: TEST_QSA_BASELINE},
+	{name: "Universal selector, matching all descendants of the specified reference element",    selector: "*",    ctx: "#universal", expect: ["universal-p1", "universal-code1", "universal-hr1", "universal-pre1", "universal-span1",
+	                                                                                                                                           "universal-p2", "universal-a1", "universal-address1", "universal-code2", "universal-a2"], unexpected: ["universal", "empty"], level: 2, testType: TEST_FIND_BASELINE | TEST_MATCH_BASELINE},
 ];
 
 

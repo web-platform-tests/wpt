@@ -51,15 +51,26 @@ function setupSpecialElements(parent) {
  * Check that the querySelector and querySelectorAll methods exist on the given Node
  */
 function interfaceCheck(type, obj, testType) {
-	test(function() {
-		var q = typeof obj.querySelector === "function";
-		assert_true(q, type + " supports querySelector.");
-	}, type + " supports querySelector")
+	if (testType & TEST_QSA_BASELINE) {
+		test(function() {
+			var q = typeof obj.querySelector === "function";
+			assert_true(q, type + " supports querySelector.");
+		}, type + " supports querySelector")
 
-	test(function() {
-		var qa = typeof obj.querySelectorAll === "function";
-		assert_true( qa, type + " supports querySelectorAll.");
-	}, type + " supports querySelectorAll")
+		test(function() {
+			var qa = typeof obj.querySelectorAll === "function";
+			assert_true( qa, type + " supports querySelectorAll.");
+		}, type + " supports querySelectorAll")
+
+		test(function() {
+			var list = obj.querySelectorAll("div");
+			if (obj.ownerDocument) { // The object is a Node	
+				assert_true(list instanceof obj.ownerDocument.defaultView.NodeList, "The result should be an instance of a NodeList")
+			} else { // The object is a Document
+				assert_true(list instanceof obj.defaultView.NodeList, "The result should be an instance of a NodeList")
+			}
+		}, type + ".querySelectorAll returns NodeList instance")		
+	}
 }
 
 /*

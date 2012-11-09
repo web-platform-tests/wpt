@@ -1,0 +1,20 @@
+<!doctype html>
+<meta charset=windows-1252>
+<title>WebSockets: non-ascii URL in query, document encoding windows-1252</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=../constants.js></script>
+<div id=log></div>
+<script>
+test(function(){
+  var ws = new WebSocket(SCHEME_AND_DOMAIN+':8007/echo-query_v13?åäö');
+  ws.onopen = debug;
+  ws.onclose = assertUnreached;
+  ws.onmessage = function(e) {
+    debug(e);
+    ws.onclose = debug;
+    assert_equals(e.data, '%C3%A5%C3%A4%C3%B6');
+    end();
+  }
+});
+</script>

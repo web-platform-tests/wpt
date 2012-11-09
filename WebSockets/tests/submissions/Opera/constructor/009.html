@@ -1,0 +1,24 @@
+<!doctype html>
+<title>WebSockets: protocol</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=../constants.js></script>
+<div id=log></div>
+<script>
+test(function(){
+  var ws = new WebSocket(SCHEME_AND_DOMAIN+':8007/protocol', 'foobar');
+  ws.onopen = debug;
+  ws.onmessage = function(e) {
+    debug(e);
+    assert_equals(ws.protocol, 'foobar');
+    ws.onclose = function(e) {
+      debug(e);
+      ws.onclose = assertUnreached;
+      setTestTimeout(null);
+      setTimeout(end, 50);
+    }
+    ws.close();
+  }
+  ws.onerror = assertUnreached;
+});
+</script>

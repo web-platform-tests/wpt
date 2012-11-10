@@ -22,10 +22,20 @@ testNodes.forEach(function(referenceName) {
         return;
       }
 
-      // "If other and reference are not in the same tree, return
-      // DOCUMENT_POSITION_DISCONNECTED and terminate these steps."
+      // "If other and reference are not in the same tree, return the result of
+      // adding DOCUMENT_POSITION_DISCONNECTED,
+      // DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC, and either
+      // DOCUMENT_POSITION_PRECEDING or DOCUMENT_POSITION_FOLLOWING, with the
+      // constraint that this is to be consistent, together and terminate these
+      // steps."
       if (furthestAncestor(reference) !== furthestAncestor(other)) {
-        assert_equals(result, Node.DOCUMENT_POSITION_DISCONNECTED);
+        // TODO: Test that it's consistent.
+        assert_in_array(result, [Node.DOCUMENT_POSITION_DISCONNECTED +
+                                 Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC +
+                                 Node.DOCUMENT_POSITION_PRECEDING,
+                                 Node.DOCUMENT_POSITION_DISCONNECTED +
+                                 Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC +
+                                 Node.DOCUMENT_POSITION_FOLLOWING]);
         return;
       }
 

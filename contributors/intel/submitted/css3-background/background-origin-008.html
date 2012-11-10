@@ -2,11 +2,22 @@
 <html>
   <head>
     <title>CSS Backgrounds and Borders Test: background-origin - inherit keyword value</title>
-    <link rel="author" title="Intel" href="http://www.intel.com" />
-    <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-origin" />
-    <link rel="help" href="http://www.w3.org/TR/css3-background/#values" />
-    <meta name="flags" content="" />
-    <meta name="assert" content="Background-origin with 'inherit' implies to inherit its parent element value to position the background area" />
+    <link rel="author" title="Intel" href="http://www.intel.com">
+    <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/"> <!-- 2012-11-09 -->
+    <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-origin" title="3.8. Positioning Area: the 'background-origin' property">
+    <link rel="help" href="http://www.w3.org/TR/css3-background/#value-types" title="2.2. Value Types">
+    <!--
+    "
+    all properties defined in this specification also accept 
+    the inherit keyword as their property value
+    "
+    CSS Backgrounds and Borders Module Level 3
+    2.2. Value Types
+    http://www.w3.org/TR/css3-background/#value-types
+    -->
+
+    <meta name="flags" content="">
+    <meta name="assert" content="Background-origin with 'inherit' implies to inherit its parent element value to position the background area.">
     <style>
         div {
             position: absolute;

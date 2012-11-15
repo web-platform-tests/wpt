@@ -28,7 +28,7 @@ function setupSpecialElements(parent) {
 	anyNS.id = "any-namespace";
 	noNS.id = "no-namespace";
 
-	var div;
+	var divs;
 	div = [doc.createElement("div"),
 	       doc.createElementNS("http://www.w3.org/1999/xhtml", "div"),
 	       doc.createElementNS("", "div"),
@@ -64,7 +64,7 @@ function setupSpecialElements(parent) {
 /*
  * Check that the find, findAll and matches() methods exist on the given Node
  */
-function interfaceCheck(type, obj, testType) {
+function interfaceCheck(type, obj) {
 	test(function() {
 		var q = typeof obj.find === "function";
 		assert_true(q, type + " supports find.");
@@ -74,7 +74,6 @@ function interfaceCheck(type, obj, testType) {
 		var qa = typeof obj.findAll === "function";
 		assert_true( qa, type + " supports findAll.");
 	}, type + " supports findAll")
-
 
 	if (obj.nodeType === obj.ELEMENT_NODE) {
 		test(function() {
@@ -359,7 +358,6 @@ function runInvalidSelectorTest(type, root, selectors) {
 		var s = selectors[i];
 		var n = s["name"];
 		var q = s["selector"];
-		var e = s["expect"];
 
 		test(function() {
 			assert_throws("SyntaxError", function() {

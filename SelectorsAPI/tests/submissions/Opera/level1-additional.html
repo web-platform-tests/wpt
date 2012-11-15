@@ -67,11 +67,6 @@ function init() {
 	fragment.appendChild(element.cloneNode(true));
 
 	// Setup Tests
-	interfaceCheck("Document", doc, testType);
-	interfaceCheck("Detached Element", detached, testType);
-	interfaceCheck("Fragment", fragment, testType);
-	interfaceCheck("In-document Element", element, testType);
-
 	runValidSelectorTest("Document", doc, validSelectors, testType, docType);
 	runValidSelectorTest("Detached Element", detached, validSelectors, testType, docType);
 	runValidSelectorTest("Fragment", fragment, validSelectors, testType, docType);

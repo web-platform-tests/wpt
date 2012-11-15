@@ -80,10 +80,10 @@ function init() {
 	fragment.appendChild(element.cloneNode(true));
 
 	// Setup Tests
-	interfaceCheck("Document", doc, testType);
-	interfaceCheck("Detached Element", detached, testType);
-	interfaceCheck("Fragment", fragment, testType);
-	interfaceCheck("In-document Element", element, testType);
+	interfaceCheck("Document", doc);
+	interfaceCheck("Detached Element", detached);
+	interfaceCheck("Fragment", fragment);
+	interfaceCheck("In-document Element", element);
 
 	runSpecialSelectorTests("Document", doc);
 	runSpecialSelectorTests("Detached Element", detached);

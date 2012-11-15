@@ -14,7 +14,7 @@ function setupSpecialElements(parent) {
 	anyNS.id = "any-namespace";
 	noNS.id = "no-namespace";
 
-	var div;
+	var divs;
 	div = [doc.createElement("div"),
 	       doc.createElementNS("http://www.w3.org/1999/xhtml", "div"),
 	       doc.createElementNS("", "div"),
@@ -50,27 +50,25 @@ function setupSpecialElements(parent) {
 /*
  * Check that the querySelector and querySelectorAll methods exist on the given Node
  */
-function interfaceCheck(type, obj, testType) {
-	if (testType & TEST_QSA_BASELINE) {
-		test(function() {
-			var q = typeof obj.querySelector === "function";
-			assert_true(q, type + " supports querySelector.");
-		}, type + " supports querySelector")
+function interfaceCheck(type, obj) {
+	test(function() {
+		var q = typeof obj.querySelector === "function";
+		assert_true(q, type + " supports querySelector.");
+	}, type + " supports querySelector")
 
-		test(function() {
-			var qa = typeof obj.querySelectorAll === "function";
-			assert_true( qa, type + " supports querySelectorAll.");
-		}, type + " supports querySelectorAll")
+	test(function() {
+		var qa = typeof obj.querySelectorAll === "function";
+		assert_true( qa, type + " supports querySelectorAll.");
+	}, type + " supports querySelectorAll")
 
-		test(function() {
-			var list = obj.querySelectorAll("div");
-			if (obj.ownerDocument) { // The object is a Node	
-				assert_true(list instanceof obj.ownerDocument.defaultView.NodeList, "The result should be an instance of a NodeList")
-			} else { // The object is a Document
-				assert_true(list instanceof obj.defaultView.NodeList, "The result should be an instance of a NodeList")
-			}
-		}, type + ".querySelectorAll returns NodeList instance")		
-	}
+	test(function() {
+		var list = obj.querySelectorAll("div");
+		if (obj.ownerDocument) { // The object is not a Document	
+			assert_true(list instanceof obj.ownerDocument.defaultView.NodeList, "The result should be an instance of a NodeList")
+		} else { // The object is a Document
+			assert_true(list instanceof obj.defaultView.NodeList, "The result should be an instance of a NodeList")
+		}
+	}, type + ".querySelectorAll returns NodeList instance")		
 }
 
 /*
@@ -106,7 +104,7 @@ function runSpecialSelectorTests(type, root) {
 	}, type + ".querySelectorAll null")
 
 	test(function() { // 2
-		assert_equals(root.querySelectorAll(undefined).length, 1, "This should find one elements with the tag name 'UNDEFINED'.");
+		assert_equals(root.querySelectorAll(undefined).length, 1, "This should find one element with the tag name 'UNDEFINED'.");
 	}, type + ".querySelectorAll undefined")
 
 	test(function() { // 3
@@ -138,7 +136,8 @@ function runSpecialSelectorTests(type, root) {
 		var i = 0;
 		traverse(root, function(elem) {
 			if (elem !== root) {
-				assert_equals(elem, result[i++], "The result in index " + i + " should be in tree order.")
+				assert_equals(elem, result[i], "The result in index " + i + " should be in tree order.");
+				i++;
 			}
 		})
 	}, type + ".querySelectorAll tree order");
@@ -215,7 +214,6 @@ function runInvalidSelectorTest(type, root, selectors) {
 		var s = selectors[i];
 		var n = s["name"];
 		var q = s["selector"];
-		var e = s["expect"];
 
 		test(function() {
 			assert_throws("SyntaxError", function() {
@@ -234,11 +232,10 @@ function runInvalidSelectorTest(type, root, selectors) {
 function traverse(elem, fn) {
 	if (elem.nodeType === elem.ELEMENT_NODE) {
 		fn(elem);
-
-		elem = elem.firstChild;
-		while (elem) {
-			traverse(elem, fn);
-			elem = elem.nextSibling;
-		}
+	}
+	elem = elem.firstChild;
+	while (elem) {
+		traverse(elem, fn);
+		elem = elem.nextSibling;
 	}
 }

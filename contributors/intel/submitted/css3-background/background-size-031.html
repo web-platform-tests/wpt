@@ -2,11 +2,11 @@
 <html>
   <head>
     <title>CSS Backgrounds and Borders Test: background-size '20% 30%' with background-repeat 'no-repeat round'</title>
-    <link rel="author" title="Intel" href="http://www.intel.com" />
-    <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-size" />
-    <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-repeat" />
-    <meta name="flags" content="image" />
-    <meta name="assert" content="Check if 'background-size' is '20% 30%' and 'background-repeat' is 'no-repeat round', then the height of the corresponding background image is rounded to 33.3% (50px in this test) so that it fits a whole number of times (3 in this test) in the background positioning area, and the width of the background image is rescaled to 20% (50px in this test) of the background area." />
+    <link rel="author" title="Intel" href="http://www.intel.com">
+    <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-size" title="3.9. Sizing Images: the 'background-size' property">
+    <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-repeat">
+    <meta name="flags" content="image">
+    <meta name="assert" content="Check if 'background-size' is '20% 30%' and 'background-repeat' is 'no-repeat round', then the height of the corresponding background image is rounded to 33.3% (50px in this test) so that it fits a whole number of times (3 in this test) in the background positioning area, and the width of the background image is rescaled to 20% (50px in this test) of the background area.">
     <style>
         #ref-overlapped-red {
             background-color: red;
@@ -14,7 +14,7 @@
             width: 50px; 
         }
         #test-overlapping-cat {
-            background-image: url(support/cat.png);  /* 98px by 99px */
+            background-image: url(support/cat.png);  /* 98px wide by 99px tall */
             background-repeat: no-repeat round;
             background-size: 20% 30%;
             bottom: 150px;

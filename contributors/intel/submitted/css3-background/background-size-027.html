@@ -2,15 +2,15 @@
 <html>
   <head>
     <title>CSS Backgrounds and Borders Test: background-size '60px auto' with background-repeat 'repeat round'</title>
-    <link rel="author" title="Intel" href="http://www.intel.com" />
-    <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-size" />
-    <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-repeat" />
-    <meta name="flags" content="image" />
-    <meta name="assert" content="Check if 'background-size' is '60px auto' and 'background-repeat' is 'repeat round', then the width of the corresponding background image is 60px, and the height is rescaled to approximately 60px to keep the original aspect ratio or slightly less." />
+    <link rel="author" title="Intel" href="http://www.intel.com">
+    <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-size" title="3.9. Sizing Images: the 'background-size' property">
+    <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-repeat">
+    <meta name="flags" content="image">
+    <meta name="assert" content="Check if 'background-size' is '60px auto' and 'background-repeat' is 'repeat round', then the width of the corresponding background image is 60px, and the height is rescaled to approximately 60px to keep the original aspect ratio or slightly less.">
     <style>
         div {
             background-color: red;
-            background-image: url(support/cat.png);  /* 98px by 99px */
+            background-image: url(support/cat.png);  /* 98px wide by 99px tall */
             background-repeat: repeat round;
             background-size: 60px auto;
             height: 180px;

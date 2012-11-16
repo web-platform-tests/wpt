@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# CSS Multicol Level 3 Test Suite Build Script
+# CSS Exclusions Level 3 Test Suite Build Script
 # Copyright 2011 Hewlett-Packard Development Company, L.P.
 # Initial code by fantasai, joint copyright 2010 W3C and Microsoft
 # Licensed under BSD 3-Clause: <http://www.w3.org/Consortium/Legal/2008/03-bsd-license>
@@ -17,18 +17,18 @@ from w3ctestlib.Utils import listdirs, listfiles, basepath
 
 # run from css test suite repo root
 
-print "Building CSS Regions Test Suite from repository %s into %s" % \
-      (os.path.abspath('.'), os.path.abspath(os.path.join('.', 'dist', 'css3-regions')))
+print "Building CSS Exclusions Test Suite from repository %s into %s" % \
+      (os.path.abspath('.'), os.path.abspath(os.path.join('.', 'dist', 'css3-exclusions')))
 
 unreviewed = sys.argv[1:]
 print "Requested unreviewed source directories."
 
 # Set up
-suite = TestSuite('css3-regions', 'CSS Regions Module Test Suite', 'http://www.w3.org/TR/css3-regions/')
-suite.setFormats(('html5', 'xhtml1'))
+suite = TestSuite('css3-exclusions', 'CSS Exclusions Module Test Suite', 'http://www.w3.org/TR/css3-exclusions/')
+suite.setFormats(('html5', 'xhtml1', 'xhtml1print'))
 
 # Add approved tests
-root = join('approved', 'css3-regions', 'src')
+root = join('approved', 'css3-exclusions', 'src')
 dirs = listdirs(root)
 for dir in dirs:
   if dir in skipDirs or rawDirs.has_key(dir): continue
@@ -64,7 +64,7 @@ for path in unreviewed:
     suite.addTestsByList(path, files)
 
 # Build
-data = join('approved', 'css3-regions', 'data')
+data = join('approved', 'css3-exclusions', 'data')
 indexer = Indexer(suite, join(data, 'sections.dat'), True, templatePathList=[data],
                   extraData={ 'devel' : False, 'official' : True })
-suite.buildInto(join('dist', 'css3-regions'), indexer)
+suite.buildInto(join('dist', 'css3-exclusions'), indexer)

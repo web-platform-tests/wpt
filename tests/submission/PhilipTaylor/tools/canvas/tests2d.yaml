@@ -2028,11 +2028,12 @@
 
 
 - name: 2d.gradient.linear.nonfinite
-  desc: createLinearGradient() throws NOT_SUPPORTED_ERR if arguments are not finite
+  desc: createLinearGradient() throws TypeError if arguments are not finite
+  notes: *bindings
   testing:
     - 2d.gradient.linear.nonfinite
   code: |
-    @nonfinite @assert throws NOT_SUPPORTED_ERR ctx.createLinearGradient(<0 Infinity -Infinity NaN>, <0 Infinity -Infinity NaN>, <1 Infinity -Infinity NaN>, <0 Infinity -Infinity NaN>);
+    @nonfinite @assert throws TypeError ctx.createLinearGradient(<0 Infinity -Infinity NaN>, <0 Infinity -Infinity NaN>, <1 Infinity -Infinity NaN>, <0 Infinity -Infinity NaN>); @moz-todo
 
 - name: 2d.gradient.linear.transform.1
   desc: Linear gradient coordinates are relative to the coordinate space at the time of filling
@@ -2100,11 +2101,12 @@
     @assert throws INDEX_SIZE_ERR ctx.createRadialGradient(0, 0, -0.1, 0, 0, -0.1);
 
 - name: 2d.gradient.radial.nonfinite
-  desc: createRadialGradient() throws NOT_SUPPORTED_ERR if arguments are not finite
+  desc: createRadialGradient() throws TypeError if arguments are not finite
+  notes: *bindings
   testing:
     - 2d.gradient.radial.nonfinite
   code: |
-    @nonfinite @assert throws NOT_SUPPORTED_ERR ctx.createRadialGradient(<0 Infinity -Infinity NaN>, <0 Infinity -Infinity NaN>, <1 Infinity -Infinity NaN>, <0 Infinity -Infinity NaN>, <0 Infinity -Infinity NaN>, <1 Infinity -Infinity NaN>);
+    @nonfinite @assert throws TypeError ctx.createRadialGradient(<0 Infinity -Infinity NaN>, <0 Infinity -Infinity NaN>, <1 Infinity -Infinity NaN>, <0 Infinity -Infinity NaN>, <0 Infinity -Infinity NaN>, <1 Infinity -Infinity NaN>); @moz-todo
 
 - name: 2d.gradient.radial.inside1
   testing:
@@ -9216,15 +9218,16 @@
     @assert throws INDEX_SIZE_ERR ctx.createImageData(0, 0);
 
 - name: 2d.imageData.create2.nonfinite
-  desc: createImageData() throws NOT_SUPPORTED_ERR if arguments are not finite
+  desc: createImageData() throws TypeError if arguments are not finite
+  notes: *bindings
   testing:
     - 2d.imageData.getcreate.nonfinite
   code: |
-    @nonfinite @assert throws NOT_SUPPORTED_ERR ctx.createImageData(<10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>);
+    @nonfinite @assert throws TypeError ctx.createImageData(<10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>); @moz-todo
     var posinfobj = { valueOf: function() { return Infinity; } },
         neginfobj = { valueOf: function() { return -Infinity; } },
         nanobj = { valueOf: function() { return -Infinity; } };
-    @nonfinite @assert throws NOT_SUPPORTED_ERR ctx.createImageData(<10 posinfobj neginfobj nanobj>, <10 posinfobj neginfobj nanobj>);
+    @nonfinite @assert throws TypeError ctx.createImageData(<10 posinfobj neginfobj nanobj>, <10 posinfobj neginfobj nanobj>); @moz-todo
 
 - name: 2d.imageData.create1.zero
   desc: createImageData(null) throws TypeError
@@ -9273,15 +9276,16 @@
     @assert throws INDEX_SIZE_ERR ctx.getImageData(1, 1, 0, 0);
 
 - name: 2d.imageData.get.nonfinite
-  desc: getImageData() throws NOT_SUPPORTED_ERR if arguments are not finite
+  desc: getImageData() throws TypeError if arguments are not finite
+  notes: *bindings
   testing:
     - 2d.imageData.getcreate.nonfinite
   code: |
-    @nonfinite @assert throws NOT_SUPPORTED_ERR ctx.getImageData(<10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>);
+    @nonfinite @assert throws TypeError ctx.getImageData(<10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>); @moz-todo
     var posinfobj = { valueOf: function() { return Infinity; } },
         neginfobj = { valueOf: function() { return -Infinity; } },
         nanobj = { valueOf: function() { return -Infinity; } };
-    @nonfinite @assert throws NOT_SUPPORTED_ERR ctx.getImageData(<10 posinfobj neginfobj nanobj>, <10 posinfobj neginfobj nanobj>, <10 posinfobj neginfobj nanobj>, <10 posinfobj neginfobj nanobj>);
+    @nonfinite @assert throws TypeError ctx.getImageData(<10 posinfobj neginfobj nanobj>, <10 posinfobj neginfobj nanobj>, <10 posinfobj neginfobj nanobj>, <10 posinfobj neginfobj nanobj>); @moz-todo
 
 - name: 2d.imageData.get.source.outside
   desc: getImageData() returns transparent black outside the canvas
@@ -9711,13 +9715,14 @@
     @assert throws TypeError ctx.putImageData(null, 0, 0);
 
 - name: 2d.imageData.put.nonfinite
-  desc: putImageData() throws NOT_SUPPORTED_ERR if arguments are not finite
+  desc: putImageData() throws TypeError if arguments are not finite
+  notes: *bindings
   testing:
     - 2d.imageData.put.nonfinite
   code: |
     var imgdata = ctx.getImageData(0, 0, 10, 10);
-    @nonfinite @assert throws NOT_SUPPORTED_ERR ctx.putImageData(<imgdata>, <10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>);
-    @nonfinite @assert throws NOT_SUPPORTED_ERR ctx.putImageData(<imgdata>, <10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>);
+    @nonfinite @assert throws TypeError ctx.putImageData(<imgdata>, <10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>);
+    @nonfinite @assert throws TypeError ctx.putImageData(<imgdata>, <10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>);
 
 - name: 2d.imageData.put.basic
   desc: putImageData() puts image data from getImageData() onto the canvas

@@ -1,12 +1,20 @@
-<doc
+<resource
   xmlns:its="http://www.w3.org/2005/11/its" >
  <its:rules version="2.0">
-  <its:idValueRule selector="//text" idValue="concat(../@name, '_t')"/>
-  <its:idValueRule selector="//desc" idValue="concat(../@name, '_d')"/>
+  <its:idValueRule selector="//text" idValue="../@name"/>
  </its:rules>
- <msg name="settingsMissing">
-  <text>Can't find settings file.</text>
-  <desc>The module cannot find the default settings file.
-     You need to re-initialize the system.</desc>
- </msg>
-</doc>
+<webform>
+ <entry name="btn.OK">
+    <text>OK</text>
+    <pos>1, 1</pos>
+    <trig>sendOK</trig>
+  </entry>
+</webform>
+<webform>
+  <entry name="btn.CANCEL">
+    <text>Cancel</text>
+    <pos>2, 1</pos>
+    <trig>cancelAll</trig>
+  </entry>
+</webform>
+</resource>

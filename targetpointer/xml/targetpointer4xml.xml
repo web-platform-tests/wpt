@@ -1,0 +1,13 @@
+<file>
+<its:rules xmlns:its="http://www.w3.org/2005/11/its" xmlns:xlink="http://www.w3.org/1999/xlink" its:version="2.0" xlink:href="targetpointer4xmlrules.xml"/>
+ <entry id="one">
+  <source>Remember last folders</source>
+  <target id="first">firstFolder</target>
+  <target id="second">secondFolder</target>
+ </entry>
+ <entry id="two">
+  <source>Custom file filter:</source>
+  <target id="first">firstFile.txt</target>
+  <target id="second">secondFile.txt</target>
+ </entry>
+</file>

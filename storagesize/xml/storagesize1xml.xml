@@ -1,7 +1,6 @@
 <db>
   <its:rules xmlns:its="http://www.w3.org/2005/11/its" version="2.0">
-    <its:storageSizeRule selector="//country" storageSize="25"
-      storageEncoding="ISO-8859-1"/>
+    <its:storageSizeRule selector="//country" storageSize="25" storageEncoding="ISO-8859-1"/>
   </its:rules>
   <data>
     <country id="123">Papouasie-Nouvelle-Guinée</country>

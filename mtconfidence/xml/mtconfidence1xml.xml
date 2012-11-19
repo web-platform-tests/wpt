@@ -1,8 +1,6 @@
 <text xmlns:its="http://www.w3.org/2005/11/its">
   <its:rules version="2.0">
-    <its:mtConfidenceRule selector="/text/body/p/"
-      mtProducer="Bing Translator"
-      mtEngine="en-t-cs"/>
+    <its:mtConfidenceRule selector="/text/body/p" mtProducer="Bing Translator" mtEngine="en-t-cs"/>
   </its:rules>
   <body>
     <p>

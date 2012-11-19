@@ -1,0 +1,17 @@
+<file
+  xmlns:its="http://www.w3.org/2005/11/its" >
+ <its:rules version="2.0">
+  <its:param name="targetParam">second</its:param>
+  <its:targetPointerRule selector="//source" targetPointer="../target[@id=$targetParam]"/>
+ </its:rules>
+ <entry id="one">
+  <source>Remember last folders</source>
+  <target id="first">firstFolder</target>
+  <target id="second">secondFolder</target>
+ </entry>
+ <entry id="two">
+  <source>Custom file filter:</source>
+  <target id="first">firstFile.txt</target>
+  <target id="second">secondFile.txt</target>
+ </entry>
+</file>

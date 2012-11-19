@@ -1,5 +1,5 @@
 <text>
-<its:rules xmlns:its="http://www.w3.org/2005/11/its" xmlns:xlink="http://www.w3.org/1999/xlink" version="2.0" xlink:type="simple" xlink:href="terminology8xmlrules.xml">
+<its:rules xmlns:its="http://www.w3.org/2005/11/its" xmlns:xlink="http://www.w3.org/1999/xlink" version="2.0" xlink:type="simple" xlink:href="terminology8xmlrules.xml"/>
 <p>
 We may define
 <term target="#TDPV">discoursal point of view</term>

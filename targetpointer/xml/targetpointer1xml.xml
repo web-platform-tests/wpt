@@ -1,8 +1,6 @@
 <file
   xmlns:its="http://www.w3.org/2005/11/its" >
  <its:rules version="2.0">
-  <its:translateRule selector="/file" translate="no"/>
-  <its:translateRule selector="//source" translate="yes"/>
   <its:targetPointerRule selector="//source" targetPointer="../target"/>
  </its:rules>
  <entry id="one">

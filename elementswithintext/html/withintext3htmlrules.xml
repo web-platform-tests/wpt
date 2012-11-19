@@ -2,5 +2,5 @@
 <its:param name="withinTextParam">keyword</its:param>
 <its:withinTextRule selector="//h:span|//h:img|//h:em" withinText="yes"/>
 <its:withinTextRule selector="//h:cite" withinText="nested"/>
-<its:withinTextRule selector="//h:section/h:span[@itemref=$itemParam]" withinText="no"/>
+<its:withinTextRule selector="//h:section/h:span[@itemref=$withinTextParam]" withinText="no"/>
 </its:rules>

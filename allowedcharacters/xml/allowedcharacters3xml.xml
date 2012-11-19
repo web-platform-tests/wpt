@@ -1,6 +1,6 @@
 <myRes xmlns:its="http://www.w3.org/2005/11/its">
   <head>
-	<link href="allowedcharacters3xmlrules.xml" rel="its-rules"/> 
+      <its:rules xmlns:its="http://www.w3.org/2005/11/its" xmlns:xlink="http://www.w3.org/1999/xlink" version="2.0" xlink:type="simple" xlink:href="allowedcharacters3xmlrules.xml"/>
   </head>
   <body>
     <content>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam

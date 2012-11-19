@@ -1,0 +1,4 @@
+ <its:rules version="2.0" xmlns:its="http://www.w3.org/2005/11/its" xmlns:h="http://www.w3.org/1999/xhtml">
+  <its:param name="targetParam">second</its:param>
+  <its:targetPointerRule selector="//h4" targetPointer="../span[@id=$targetParam]"/>
+ </its:rules>

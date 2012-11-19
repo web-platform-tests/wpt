@@ -3,7 +3,7 @@
 <its:locNoteRule selector="//@alt" locNoteType="description">
 <its:locNote>This text will be displayed over the image.</its:locNote>
 </its:locNoteRule>
-<its:locNoteRule selector="//h:span[@id='1']/img/@alt" locNoteType="alert">
+<its:locNoteRule selector="//h:span[@id='1']/h:img/@alt" locNoteType="alert">
 <its:locNote>Do not translate the word "Chobe"</its:locNote>
 </its:locNoteRule>
 <its:locNoteRule locNoteType="alert" selector="//h:span[@id=$spanIdParam]">

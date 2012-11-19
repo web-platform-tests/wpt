@@ -1,11 +1,13 @@
-<doc
-  xmlns:its="http://www.w3.org/2005/11/its" >
-  <its:rules xmlns:its="http://www.w3.org/2005/11/its" xmlns:xlink="http://www.w3.org/1999/xlink" its:version="2.0" xlink:href="idvalue3xmlrules.xml"/>
- <msg name="settingsMissing">
-  <text>Can't find settings file.</text>
-  <desc>The module cannot find the default settings file.
-     You need to re-initialize the system.</desc>
- </msg>
-</doc>
-
-
+<resource>
+<its:rules xmlns:its="http://www.w3.org/2005/11/its" xmlns:xlink="http://www.w3.org/1999/xlink" its:version="2.0" xlink:href="idvalue3xmlrules.xml"/>
+ <entry name="btn.OK">
+    <text>OK</text>
+    <pos>1, 1</pos>
+    <trig>sendOK</trig>
+  </entry>
+  <entry name="btn.CANCEL">
+    <text>Cancel</text>
+    <pos>2, 1</pos>
+    <trig>cancelAll</trig>
+  </entry>
+</resource>

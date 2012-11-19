@@ -1,0 +1,4 @@
+ <its:rules xmlns:its="http://www.w3.org/2005/11/its" version="2.0">
+  <its:param name="targetParam">second</its:param>
+  <its:targetPointerRule selector="//source" targetPointer="../target[@id=$targetParam]"/>
+ </its:rules>

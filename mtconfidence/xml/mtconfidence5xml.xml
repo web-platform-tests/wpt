@@ -1,0 +1,13 @@
+<text xmlns:its="http://www.w3.org/2005/11/its">
+<head>
+   <its:rules xmlns:its="http://www.w3.org/2005/11/its" xmlns:xlink="http://www.w3.org/1999/xlink" its:version="2.0" xlink:type="simple" xlink:href="mtconfidence5xmlrules.xml"/>
+</head>
+  <body>
+    <p>
+      <span id="ireland">Dublin is the capital city of Ireland and has the 50th biggest popluation density in Europe.</span>
+      <span id="spain">Madrid is the capital of Spain.</span>
+      <span id="germany">Berlin is the captial of Germany.</span>
+      <span id="england">London is the captial of England</span>
+    </p>
+  </body>
+</text>

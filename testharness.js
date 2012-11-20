@@ -875,7 +875,7 @@ policies and contribution forms [3].
                 QUOTA_EXCEEDED_ERR: 'QuotaExceededError',
                 TIMEOUT_ERR: 'TimeoutError',
                 INVALID_NODE_TYPE_ERR: 'InvalidNodeTypeError',
-                DATA_CLONE_ERR: 'DataCloneError',
+                DATA_CLONE_ERR: 'DataCloneError'
             };
 
             var name = code in code_name_map ? code_name_map[code] : code;
@@ -908,7 +908,7 @@ policies and contribution forms [3].
                 DataError: 0,
                 TransactionInactiveError: 0,
                 ReadOnlyError: 0,
-                VersionError: 0,
+                VersionError: 0
             };
 
             if (!(name in name_code_map))

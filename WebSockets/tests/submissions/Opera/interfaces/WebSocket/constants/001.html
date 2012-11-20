@@ -5,12 +5,11 @@
 <script src=../../../constants.js></script>
 <div id=log></div>
 <script>
-test(function(){
-  var ws = new WebSocket(SCHEME_AND_DOMAIN+'/');
-  var constants = ['CONNECTING', 'OPEN', 'CLOSING', 'CLOSED'];
-  for (var i = 0; i < constants.length; ++i) {
+var constants = ['CONNECTING', 'OPEN', 'CLOSING', 'CLOSED'];
+for (var i = 0; i < constants.length; ++i) {
+  test(function(){
+    var ws = new WebSocket(SCHEME_AND_DOMAIN+'/');
     assert_equals(WebSocket[constants[i]], i, 'WebSocket.'+constants[i]);
-  }
-});
-end();
+  }, "Constants on constructors " + constants[i]);
+};
 </script>

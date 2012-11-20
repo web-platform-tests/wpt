@@ -5,18 +5,14 @@
 <script src=../../../constants.js></script>
 <div id=log></div>
 <script>
-assertNotEquals(Object.defineProperty, undefined, 'defineProperty not supported');
-test(function(){
-  var constants = ['CONNECTING', 'OPEN', 'CLOSING', 'CLOSED'];
-  for (var i = 0; i < constants.length; ++i) {
-    assertThrows(function(){
+var constants = ['CONNECTING', 'OPEN', 'CLOSING', 'CLOSED'];
+for (var i = 0; i < constants.length; ++i) {
+  test(function() {
+    assert_throws(new TypeError(), function(){
       Object.defineProperty(WebSocket.prototype, constants[i], {
         set: function() { return 'foo'; }
       });
-    }, function(e) {
-      assertInstanceOf(e, TypeError);
     });
-  }
-});
-end();
+  }, "defineProperty setter " + constants[i])
+};
 </script>

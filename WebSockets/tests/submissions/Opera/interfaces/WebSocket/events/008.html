@@ -5,16 +5,17 @@
 <script src=../../../constants.js></script>
 <div id=log></div>
 <script>
-setTestTimeout(2000);
 test(function(){
   var ws = new WebSocket(SCHEME_AND_DOMAIN+'/');
+  var run = false;
   function foo(e) {
-    if (e.detail == 5)
-      end();
+    run = true;
+    assert_equals(e.detail, 5)
   }
   ws.onerror = foo;
   var ev = document.createEvent('UIEvents');
   ev.initUIEvent('error', false, false, window, 5);
   ws.dispatchEvent(ev);
+  assert_true(run);
 });
 </script>

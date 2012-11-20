@@ -3,7 +3,7 @@
     <head>
         <title>CSS Test: Color set to rgb() using percentages with a nominal value and a plus sign, rgb(+50%, +50%, +50%)</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
-        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-11-10 -->
+        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-11-19 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#propdef-color" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#colors" />
         <link rel="match" href="color-052-ref.xht" />
@@ -11,26 +11,23 @@
         <meta name="flags" content="ahem" />
         <meta name="assert" content="The 'color' set to 'rgb(+50%, +50%, +50%)' renders the correct foreground color of an element's text content." />
         <style type="text/css">
-            div
-            {
-                height: 1in;
-                width: 1in;
-            }
             #test
             {
                 color: rgb(+50%, +50%, +50%);
                 font: 1in Ahem;
             }
-            #reference
-            {
-                background-color: rgb(50%, 50%, 50%);
-                margin-top: 10px;
+            img            {
+                height: 1in;
+                width: 1in;
             }
         </style>
     </head>
     <body>
         <p>Test passes if there are 2 squares with the <strong>same color</strong>.</p>
         <div id="test">X</div>
-        <div id="reference"></div>
+        <div id="reference">
+            <br />
+            <img alt="#7f7f7f color swatch" src="support/7f7f7f_color.png" />
+        </div>
     </body>
 </html>

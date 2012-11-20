@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<meta charset='utf-8'>
+<title>drag &amp; drop – events</title>
+<style>div#test_elements { display: none; }</style>
+
+<script src='/resources/testharness.js'></script>
+<script src='/resources/testharnessreport.js'></script>
+
+
+<noscript><p>Enable JavaScript and reload.</p></noscript>
+
+<div id='log'></div>
+
+<script>
+
+var element = document.createElement('div');
+
+test(function () {
+  assert_not_equals(element.ondragstart, null);
+}, 'element.ondragstart must not be null ');
+
+test(function () {
+  assert_not_equals(element.ondrag, null);
+}, 'element.ondrag must not be null ');
+
+test(function () {
+  assert_not_equals(element.ondragenter, null);
+}, 'element.ondragenter must not be null ');
+
+test(function () {
+  assert_not_equals(element.ondragleave, null);
+}, 'element.ondragleave must not be null ');
+
+test(function () {
+  assert_not_equals(element.ondragover, null);
+}, 'element.ondragover must not be null ');
+
+test(function () {
+  assert_not_equals(element.ondrop, null);
+}, 'element.ondrop must not be null ');
+
+test(function () {
+  assert_not_equals(element.ondragend, null);
+}, 'element.ondragend must not be null ');
+
+</script>
+
+</body>
+</html>

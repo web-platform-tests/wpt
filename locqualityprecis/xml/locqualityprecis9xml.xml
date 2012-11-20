@@ -1,0 +1,21 @@
+<doc>
+<its:rules xmlns:its="http://www.w3.org/2005/11/its" version="2.0">
+  <its:param name="locqualityParam">twain</its:param>
+  <its:locQualityPrecisRule selector="/doc/section[@author=$locqualityParam]"
+    locQualityPrecisScore="80"
+    locQualityPrecisThreshold="95"
+    locQualityPrecisProfileRef="http://example.org/qaModel/v13"/>
+</its:rules>
+<section author="twain">
+  <title>The Adventures of Tom Sawyer</title>
+  <para>He got home pretty late that night, and when he climbed cautiously in at
+    the window, he uncovered an ambuscade, in the person of his aunt; and when
+    she saw the state his clothes were in her resolution to turn his Saturday
+    holiday into captivity at hard labor became adamantine in its
+    firmness.</para>
+</section>
+<section author="joyce">
+  <title>Ulysses</title>
+  <para>A man of genius makes no mistakes. His errors are volitional and are the portals of discovery.</para>
+</section>
+</doc>

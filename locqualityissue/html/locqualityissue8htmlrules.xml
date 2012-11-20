@@ -1,5 +1,6 @@
     <its:rules xmlns:its="http://www.w3.org/2005/11/its" xmlns:h="http://www.w3.org/1999/xhtml" version="2.0">
-      <its:locQualityIssueRule selector="//h:span[@id='q1']"
+      <its:param name="locQualityIssueParam">q1</its:param>
+      <its:locQualityIssueRule selector="//h:span[@id=$locQualityIssueParam]"
         locQualityIssuesRef="#l1234"
         locQualityIssueType="typographical"
         locQualityIssueComment="Sentence without capitalization"
@@ -8,7 +9,7 @@
        <its:locQualityIssueRule selector="//h:span[@id='q2']"
         locQualityIssuesRef="#l1235"	
         locQualityIssueType="spelling"
-        locQualityIssueComment="should be 'Music can'"
+        locQualityIssueComent="should be 'Music can'"
         locQualityIssueSeverity="75"
         locQualityIssueProfileRef="http://example.org/qaMovel/v1"/>
     </its:rules>

@@ -2,14 +2,19 @@
 <doc>
   <header>
     <its:rules xmlns:its="http://www.w3.org/2005/11/its" version="2.0">
-      <its:locQualityIssueRule selector="//span[@id='q1']"
+      <its:param name="locqualityissueParam">q1</its:param>
+      <its:locQualityIssueRule selector="//span[@id=$locqualityissueParam]"
         locQualityIssuesRef="#l1234"
         locQualityIssueType="typographical"
-        locQualityIssueComment="Sentence without capitalization"/>
+        locQualitIssueComment="Sentence without capitalization"
+        locQualityIssueSeverity="50"
+	locQualityIssueProfileRef="http://example.org/qaMovel/v1"/>
 	<its:locQualityIssueRule selector="//span[@id='q2']"
         locQualityIssuesRef="#l1235"	
         locQualityIssueType="spelling"
-        locQualityIssueComment="should be 'transport include'"/>
+        locQualityIssueComment="should be 'transport include'"
+	locQualityIssueSeverity="75"
+	locQualityIssueProfileRef="http://example.org/qaMovel/v1"/>
     </its:rules>
   </header>
   <para>
@@ -17,6 +22,4 @@
    Modes of <span id="q2">tranport inc.</span> air, rail, road, water, cable, pipeline, and space.
 </para>
 </doc>
-
-
 

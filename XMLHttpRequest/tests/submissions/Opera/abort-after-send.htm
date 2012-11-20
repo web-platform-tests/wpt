@@ -4,6 +4,7 @@
     <title>XMLHttpRequest: abort() after send()</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-abort()-method" data-tested-assertations="/following-sibling::ol/li[1] /following-sibling::ol/li[3] /following-sibling::ol/li[6] /following-sibling::ol/li[6]/ol/li[1] /following-sibling::ol/li[6]/ol/li[3] /following-sibling::ol/li[7]" />
   </head>
   <body>
     <div id="log"></div>
@@ -13,7 +14,7 @@
         var client = new XMLHttpRequest(),
             control_flag = false,
             result = [],
-            expected = [1, 1, 4] // open() -> 1, send() -> 1, abort() -> 4
+            expected = [1, 4] // open() -> 1, abort() -> 4
         client.onreadystatechange = function() {
           test.step(function() {
             result.push(client.readyState)
@@ -27,7 +28,7 @@
             }
           })
         }
-        client.open("GET", "resources/delay.php?ms=2000", true)
+        client.open("GET", "resources/well-formed.xml", true)
         client.send(null)
         client.abort()
         assert_true(control_flag)

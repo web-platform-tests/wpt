@@ -1,0 +1,14 @@
+<!doctype html>
+<title>WebSockets: Same sub protocol twice</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=../constants.js></script>
+<div id=log></div>
+<script>
+function checkException(e) {
+  assertInstanceOf(e, DOMException);
+  assert_equals(e.code, e.SYNTAX_ERR);
+}
+assertThrows(function(){new WebSocket("ws://certo2.oslo.osa:8007/protocol_array",["foobar, foobar"])}, checkException);
+end();
+</script>

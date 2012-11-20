@@ -1,0 +1,21 @@
+<!doctype html>
+<title>WebSockets: NUL char in url</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=../constants.js></script>
+<div id=log></div>
+<script>
+test(function(){
+  var ws = new WebSocket(SCHEME_AND_DOMAIN+':8007/echo-query?x\u0000');
+  ws.onopen = debug;
+  ws.onmessage = function(e) {
+    debug(e);
+    ws.onclose = debug;
+    assert_equals(e.data, 'x%00');
+    ws.close();
+    end();
+  }
+  ws.onclose = ws.onerror = assertUnreached;
+});
+end();
+</script>

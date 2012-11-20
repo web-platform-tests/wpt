@@ -1,0 +1,14 @@
+<!doctype html>
+<title>WebSockets: new WebSocket(url, null char)</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=../constants.js></script>
+<div id=log></div>
+<script>
+function checkException(e) {
+  assertInstanceOf(e, DOMException);
+  assert_equals(e.code, e.SYNTAX_ERR);
+}
+assertThrows(function(){new WebSocket("ws://"+location.hostname+"/", 'a'+String.fromCharCode(0)+'b')}, checkException);
+end();
+</script>

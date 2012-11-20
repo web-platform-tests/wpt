@@ -1,0 +1,17 @@
+<!doctype html>
+<title>WebSockets: defineProperty getter for bufferedAmount</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=../../../../constants.js></script>
+<div id=log></div>
+<script>
+test(function(){
+  assert_throws(new TypeError(), 
+    function() {
+      Object.defineProperty(WebSocket.prototype, 'bufferedAmount', {
+        get: function() { return 'foo'; }
+      });
+    }
+  )
+});
+</script>

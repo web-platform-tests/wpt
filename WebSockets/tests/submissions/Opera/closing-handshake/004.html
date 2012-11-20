@@ -1,0 +1,29 @@
+<!doctype html>
+<title>WebSockets: data after closing handshake</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=../constants.js></script>
+<div id=log></div>
+<script>
+test(function(){
+  var ws = new WebSocket(SCHEME_AND_DOMAIN+':8007/echo_close_data');
+  ws.onmessage = ws.onerror = assertUnreached;
+  
+  ws.onmessage = function(e){
+    alert('onmessage');
+    debug(e.data);
+  }
+  
+  ws.onopen = function(e) {
+    debug(e);
+    ws.send('Goodbye');
+  }
+  ws.onclose = function(e) {
+    debug(e);
+    assert_equals(e.wasClean, true);
+    ws.onclose = assertUnreached;
+    setTestTimeout(null);
+    setTimeout(end, 50);
+  }
+});
+</script>

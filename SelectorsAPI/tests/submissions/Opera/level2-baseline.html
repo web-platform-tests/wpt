@@ -91,5 +91,9 @@ function init() {
 	runMatchesTest("In-document", doc, validSelectors, testType, "html");
 	runMatchesTest("Detached", detached, validSelectors, testType, "html");
 	runMatchesTest("Fragment", fragment, validSelectors, testType, "html");
+
+	runMatchesTest("In-document", doc, scopedSelectors, testType, "html");
+
+	runValidSelectorTest("In-document", doc, scopedSelectors, testType, "html");
 }
 </script>

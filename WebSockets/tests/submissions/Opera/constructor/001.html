@@ -1,0 +1,12 @@
+<!doctype html>
+<title>WebSockets: new WebSocket() with no args</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=../constants.js></script>
+<div id=log></div>
+<script>
+assertThrows(function(){new WebSocket()}, function(e) {
+  assertInstanceOf(e, TypeError);
+});
+end();
+</script>

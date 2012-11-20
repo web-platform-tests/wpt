@@ -1,0 +1,21 @@
+<!doctype html>
+<title>WebSockets: wasClean, true</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=../../constants.js></script>
+<div id=log></div>
+<script>
+test(function(){
+  var ws = new WebSocket(SCHEME_AND_DOMAIN+':8007/echo');
+  ws.onopen = function(e) {
+    ws.send('Test');
+  }
+  ws.onmessage = function(e) {
+    ws.close();
+  }
+  ws.onclose = function(e) {
+    assert_equals(e.wasClean,true);
+    end();
+  }
+});
+</script>

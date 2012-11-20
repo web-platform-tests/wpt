@@ -1,0 +1,16 @@
+<!doctype html>
+<title>WebSockets: 'on*' in ws</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=../../../constants.js></script>
+<div id=log></div>
+<script>
+test(function(){
+  var ws = new WebSocket(SCHEME_AND_DOMAIN+'/');
+  assert_equals('onopen' in ws, true, 'onopen');
+  assert_equals('onmessage' in ws, true, 'onmessage');
+  assert_equals('onerror' in ws, true, 'onerror');
+  assert_equals('onclose' in ws, true, 'onclose');
+});
+end();
+</script>

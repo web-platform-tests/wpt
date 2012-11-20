@@ -1,0 +1,31 @@
+<!doctype html>
+<title>WebSockets: instanceof on events</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=../../../constants.js></script>
+<div id=log></div>
+<script>
+test(function(){
+  var ws = new WebSocket(SCHEME_AND_DOMAIN+':80/ws/echo_raw');
+  ws.onopen = function(e) {
+    assertInstanceOf(e, Event);
+    // first a text frame, then a frame with reserved opcode 3
+    // which should fail the connection
+    ws.send('\\x81\\x04test\\x83\\x03LOL');
+  }
+  ws.onmessage = function(e) {
+    assertInstanceOf(e, Event);
+    assertInstanceOf(e, MessageEvent);
+    assert_equals(ws.readyState, ws.OPEN);
+  }
+  ws.onerror = function(e) {
+    assertInstanceOf(e, Event);
+    assert_equals(ws.readyState, ws.CLOSED);
+  }
+  ws.onclose = function(e) {
+    assertInstanceOf(e, Event);
+    assertInstanceOf(e, CloseEvent);
+    end();
+  }
+});
+</script>

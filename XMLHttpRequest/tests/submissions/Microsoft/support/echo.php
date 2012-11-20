@@ -1,5 +1,5 @@
 <?php
-    if ($_GET["content"])
+    if (isset($_GET["content"]))
     {
         echo $_GET["content"];
     }

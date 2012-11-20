@@ -1,0 +1,19 @@
+<!doctype html>
+<title>WebSockets: getting readyState in open</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=../../../constants.js></script>
+<div id=log></div>
+<script>
+test(function(){
+  var ws = new WebSocket(SCHEME_AND_DOMAIN+':80/ws/echo');
+  ws.onopen = function(e) {
+    debug(e);
+    assert_equals(ws.readyState, ws.OPEN);
+    ws.onclose = debug;
+    ws.close();
+    end();
+  }
+  ws.onerror = ws.onmessage = ws.onclose = assertUnreached;
+});
+</script>

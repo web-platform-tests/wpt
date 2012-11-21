@@ -3,9 +3,10 @@
     <head>
         <title>CSS Test: Border-right-color set to rgb() using integers with blue set to a nominal value with a plus sign, rgb(0, 0, +128)</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
-        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-06-03 -->
+        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-11-21 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#propdef-border-right-color" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#border-color-properties" />
+        <link rel="match" href="border-bottom-color-123-ref.xht" />
 
         <meta name="flags" content="" />
         <meta name="assert" content="The 'border-right-color' set to rgb(0, 0, +128) renders the correct color." />
@@ -20,6 +21,7 @@
                 border-right-style: solid;
                 border-right-width: 1in;
                 border-right-color: rgb(0, 0, +128);
+                width: 0;
             }
             #reference
             {

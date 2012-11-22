@@ -5,18 +5,25 @@ postMessage(2);
 /*
 -->
 <!doctype html>
-<title>close()</title>
-<script src="/resources/jsframework.js"></script>
+<title>close() and sending messages</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
 <script>
-test(function() {
+async_test(function() {
   var worker = new Worker('#');
-  var messages = [];
-  worker.onmessage = function(e) {
-    messages.push(e.data);
-  }
-  test(function(e) {
-    assertArrayEquals(messages, []);
-  }, 200);
+  var i = 0;
+  var timeout = setTimeout(this.step_func(function(e) {
+    assert_equals(i, 2);
+  }), 500);
+  worker.onmessage = this.step_func(function(e) {
+    i++;
+    assert_equals(e.data, i);
+    if (i == 2) {
+      clearTimeout(timeout);
+      this.done();
+    }
+  });
 });
 </script>
 <!--

@@ -1,13 +1,15 @@
 <!--
-onmessage = function(e) {
+function x() {
   postMessage(1);
   throw new Error();
 }
+setTimeout(x, 0);
 close();
+setTimeout(x, 0);
 /*
 -->
 <!doctype html>
-<title>close() and incoming message</title>
+<title>close() and setTimeout</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
@@ -22,7 +24,6 @@ async_test(function() {
   worker.onerror = function(e) {
     gotError = true;
   };
-  worker.postMessage(1);
   setTimeout(this.step_func(function() {
     assert_false(gotMessage, 'got message');
     assert_false(gotError, 'got error');

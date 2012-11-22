@@ -6,21 +6,24 @@ postMessage([null, location.href, location.protocol, location.host,
 -->
 <!doctype html>
 <title>members of WorkerLocation</title>
-<script src="/resources/jsframework.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
 <script>
-test(function() {
+async_test(function() {
   var worker = new Worker('#');
-  test(function(e) {
-    assertNull(e.data[0]);
-    assertEquals(e.data[1], location.href + '#', 'href');
-    assertEquals(e.data[2], location.protocol, 'protocol');
-    assertEquals(e.data[3], location.host, 'host');
-    assertEquals(e.data[4], location.hostname, 'hostname');
-    assertEquals(e.data[5], location.port, 'port');
-    assertEquals(e.data[6], location.pathname, 'pathname');
-    assertEquals(e.data[7], location.search, 'search');
-    assertEquals(e.data[8], '', 'hash');
-  }, worker, 'message');
+  worker.onmessage = this.step_func(function(e) {
+    assert_equals(e.data[0], null);
+    assert_equals(e.data[1], location.href + '#', 'href');
+    assert_equals(e.data[2], location.protocol, 'protocol');
+    assert_equals(e.data[3], location.host, 'host');
+    assert_equals(e.data[4], location.hostname, 'hostname');
+    assert_equals(e.data[5], location.port, 'port');
+    assert_equals(e.data[6], location.pathname, 'pathname');
+    assert_equals(e.data[7], location.search, 'search');
+    assert_equals(e.data[8], '', 'hash');
+    this.done();
+  });
 });
 </script>
 <!--

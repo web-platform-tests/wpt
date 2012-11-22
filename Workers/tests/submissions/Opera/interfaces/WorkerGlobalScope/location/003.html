@@ -1,37 +1,40 @@
 <!--
-var i = 0;
-try { location.href = 1; } catch(e) { i++; }
-try { location.protocol = 1; } catch(e) { i++; }
-try { location.host = 1; } catch(e) { i++; }
-try { location.hostname = 1; } catch(e) { i++; }
-try { location.port = 1; } catch(e) { i++; }
-try { location.pathname = 1; } catch(e) { i++; }
-try { location.search = 1; } catch(e) { i++; }
-try { location.hash = 1; } catch(e) { i++; }
+var exceptions = [];
+try { location.href = 1; } catch(e) { exceptions.push('href'); }
+try { location.protocol = 1; } catch(e) { exceptions.push('protocol'); }
+try { location.host = 1; } catch(e) { exceptions.push('host'); }
+try { location.hostname = 1; } catch(e) { exceptions.push('hostname');}
+try { location.port = 1; } catch(e) { exceptions.push('port'); }
+try { location.pathname = 1; } catch(e) { exceptions.push('pathname'); }
+try { location.search = 1; } catch(e) { exceptions.push('search'); }
+try { location.hash = 1; } catch(e) { exceptions.push('hash'); }
 
 postMessage([null, location.href, location.protocol, location.host,
              location.hostname, location.port, location.pathname,
-             location.search, location.hash, i]);
+             location.search, location.hash, exceptions]);
 /*
 -->
 <!doctype html>
-<title>members of WorkerLocation</title>
-<script src="/resources/jsframework.js"></script>
+<title>setting members of WorkerLocation</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
 <script>
-test(function() {
+async_test(function() {
   var worker = new Worker('#');
-  test(function(e) {
-    assertNull(e.data[0]);
-    assertEquals(e.data[1], location.href + '#', 'href');
-    assertEquals(e.data[2], location.protocol, 'protocol');
-    assertEquals(e.data[3], location.host, 'host');
-    assertEquals(e.data[4], location.hostname, 'hostname');
-    assertEquals(e.data[5], location.port, 'port');
-    assertEquals(e.data[6], location.pathname, 'pathname');
-    assertEquals(e.data[7], location.search, 'search');
-    assertEquals(e.data[8], '', 'hash');
-    assertEquals(e.data[9], 0, 'number of exceptions');
-  }, worker, 'message');
+  worker.onmessage = this.step_func(function(e) {
+    assert_equals(e.data[0], null);
+    assert_equals(e.data[1], location.href + '#', 'href');
+    assert_equals(e.data[2], location.protocol, 'protocol');
+    assert_equals(e.data[3], location.host, 'host');
+    assert_equals(e.data[4], location.hostname, 'hostname');
+    assert_equals(e.data[5], location.port, 'port');
+    assert_equals(e.data[6], location.pathname, 'pathname');
+    assert_equals(e.data[7], location.search, 'search');
+    assert_equals(e.data[8], '', 'hash');
+    assert_array_equals(e.data[9], [], 'number of exceptions');
+    this.done();
+  });
 });
 </script>
 <!--

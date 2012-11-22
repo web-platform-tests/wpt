@@ -1,5 +1,5 @@
-<doc its:version="2.0" xmlns:its="http://www.w3.org/2005/11/its">
-  <its:rules version="2.0">
+<doc>
+  <its:rules xmlns:its="http://www.w3.org/2005/11/its" version="2.0">
     <its:param name="LCID">409</its:param>
     <its:translateRule selector="/doc" translate="no"/>
     <its:translateRule selector="//msg[@lcid=$LCID]" translate="yes"/>

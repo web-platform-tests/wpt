@@ -8,14 +8,14 @@
 <div id="log"></div>
 <script>
 async_test(function() {
-  var worker = new Worker('005-1.php?fail');
+  var worker = new Worker('helper-redirect.php?fail');
   worker.onmessage = this.step_func(function(e) {
-    assert_equals(e.data[0], location.href.replace(/005\.html$/, '004-1.js?a'));
+    assert_equals(e.data[0], location.href.replace(/\/[^\/]+$/, '/post-location-members.js?a'));
     assert_equals(e.data[1], location.protocol);
     assert_equals(e.data[2], location.host);
     assert_equals(e.data[3], location.hostname);
     assert_equals(e.data[4], location.port);
-    assert_equals(e.data[5], location.pathname.replace(/005\.html$/, '004-1.js'));
+    assert_equals(e.data[5], location.pathname.replace(/\/[^\/]+$/, '/post-location-members.js'));
     assert_equals(e.data[6], '?a');
     assert_equals(e.data[7], '');
   });

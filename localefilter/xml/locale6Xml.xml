@@ -1,9 +1,7 @@
-<book
-  xmlns:its="http://www.w3.org/2005/11/its" 
-  its:version="2.0">
+<book>
  <info>
- <its:rules xmlns:its="http://www.w3.org/2005/11/its" xmlns:xlink="http://www.w3.org/1999/xlink" its:version="2.0" xlink:href="locale4xmlrules.xml"/>
  <its:rules xmlns:its="http://www.w3.org/2005/11/its" version="2.0">
+   <its:param name="localeParam">Germany</its:param>
    <its:localeFilterRule selector="//legalnotice[@role='Germany']" localeFilterList="de-DE"/>
 </its:rules>
   <legalnotice role="Canada">

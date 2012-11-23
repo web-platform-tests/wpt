@@ -1,0 +1,10 @@
+  <its:rules xmlns:its="http://www.w3.org/2005/11/its" version="2.0">
+    <its:disambiguationRule selector="/text/body/p/*[@id='dublin']"
+      disambigClassRefPointer="@classref"
+      disambigGranularity="entity"
+      disambigIdentRefPointer="@identref"/>
+    <its:disambiguationRule selector="/text/body/p/*[@id='capital']"
+      disambigGranularity="lexicalConcept"
+      disambigClassPointer="@class"
+      disambigIdentPointer="@ident"/>
+  </its:rules>

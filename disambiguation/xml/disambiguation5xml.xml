@@ -1,10 +1,18 @@
-<text
-  xmlns:its="http://www.w3.org/2005/11/its" >
- <its:rules version="2.0">
-  <its:disambiguationRule selector="//span" entityTypeRefPointer="../span"/>
- </its:rules>
- <body>
-  <p>
-   <span id="http:/nerd.eurecom.fr/ontology#Place">Dublin</span> is the capital of Ireland.</p>
- </body>
+<?xml version="1.0"?>
+<text>
+  <its:rules xmlns:its="http://www.w3.org/2005/11/its" version="2.0">
+    <its:param name="disambigCityParam">dublin</its:param>
+    <its:disambiguationRule selector="/text/body/p/*[@id='dublin']"
+      disambigClassRef="http:/nerd.eurecom.fr/ontology#Place"
+      disambigGranularity="entity"
+      disambigIdentRef="http://dbpedia.org/resource/Dublin"/>
+     <its:param name="disambigCapitalParam">capital</its:param>
+    <its:disambiguationRule selector="/text/body/p/*[@id='capital']"
+      disambigGranularity="lexicalConcept"
+      disambigSource="Wordnet3.0"
+      disambigIdent="301467919"/>
+  </its:rules>
+  <body>
+    <p><span id="dublin">Dublin</span> is the <span id="capital">capital</span> of Ireland.</p>
+  </body>
 </text>

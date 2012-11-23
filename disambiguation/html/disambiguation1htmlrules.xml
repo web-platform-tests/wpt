@@ -1,0 +1,10 @@
+ <its:rules xmlns:its="http://www.w3.org/2005/11/its" version="2.0" xmlns:h="http://www.w3.org/1999/xhtml">
+    <its:disambiguationRule selector="//h:body/h:p/h:*[@id='dublin']"
+      disambigClassRef="http:/nerd.eurecom.fr/ontology#Place"
+      disambigGranularity="entity"
+      disambigIdentRef="http://dbpedia.org/resource/Dublin"/>
+    <its:disambiguationRule selector="//h:body/h:p/h:*[@id='capital']"
+      disambigGranularity="lexicalConcept"
+      disambigSource="Wordnet3.0"
+      disambigIdent="301467919"/>
+  </its:rules>

@@ -121,51 +121,69 @@
                              '#ref{border-style:solid;position:relative;{prop}:{ref};}';
         
         tests.forEach(function(t) {
-            test(function() {
-                for (var i in props) {
-                    if (t.shorthand && !(props[i].check_also)) {
-                        continue;
-                    }
+            var test_q = async_test(t.input + ' (quirks)');
+            var test_a = async_test(t.input + ' (almost standards)');
+            var test_s = async_test(t.input + ' (standards)');
+            for (var i in props) {
+                if (t.shorthand && !(props[i].check_also)) {
+                    continue;
+                }
+                test_q.step(function() {
                     q.style.textContent = style_template.replace('{test}', t.input)
                                 .replace('{ref}', t.q).replace(/\{prop\}/g, props[i].prop)
                                 .replace(/clip:[^;]+/g, function(match) {
                                     return 'clip:rect(auto, auto, auto, ' + match.substr(5) + ')';
                                 });
+                    assert_equals(q.getComputedStyle(q.test).getPropertyValue(props[i].check),
+                                  q.getComputedStyle(q.ref).getPropertyValue(props[i].check),
+                                  props[i].prop);
+                    if (t.shorthand && props[i].check_also) {
+                        for (var j in props[i].check_also) {
+                            assert_equals(q.getComputedStyle(q.test).getPropertyValue(props[i].check_also[j]),
+                                          q.getComputedStyle(q.ref).getPropertyValue(props[i].check_also[j]),
+                                          props[i].prop + ', checking ' + props[i].check_also[j]);
+                        }
+                    }
+                });
+                test_a.step(function() {
                     a.style.textContent = style_template.replace('{test}', t.input)
                                 .replace('{ref}', t.s).replace(/\{prop\}/g, props[i].prop)
                                 .replace(/clip:[^;]+/g, function(match) {
                                     return 'clip:rect(auto, auto, auto, ' + match.substr(5) + ')';
                                 });
+                    assert_equals(a.getComputedStyle(a.test).getPropertyValue(props[i].check),
+                                  a.getComputedStyle(a.ref).getPropertyValue(props[i].check),
+                                  props[i].prop + ' in almost standards mode');
+                    if (t.shorthand && props[i].check_also) {
+                        for (var j in props[i].check_also) {
+                            assert_equals(a.getComputedStyle(a.test).getPropertyValue(props[i].check_also[j]),
+                                          a.getComputedStyle(a.ref).getPropertyValue(props[i].check_also[j]),
+                                          props[i].prop + ', checking ' + props[i].check_also[j]);
+                        }
+                    }
+                });
+                test_s.step(function() {
                     s.style.textContent = style_template.replace('{test}', t.input)
                                 .replace('{ref}', t.s).replace(/\{prop\}/g, props[i].prop)
                                 .replace(/clip:[^;]+/g, function(match) {
                                     return 'clip:rect(auto, auto, auto, ' + match.substr(5) + ')';
                                 });
-                    assert_equals(q.getComputedStyle(q.test).getPropertyValue(props[i].check),
-                                  q.getComputedStyle(q.ref).getPropertyValue(props[i].check),
-                                  props[i].prop + ' in quirks mode');
-                    assert_equals(a.getComputedStyle(a.test).getPropertyValue(props[i].check),
-                                  a.getComputedStyle(a.ref).getPropertyValue(props[i].check),
-                                  props[i].prop + ' in almost standards mode');
                     assert_equals(s.getComputedStyle(s.test).getPropertyValue(props[i].check),
                                   s.getComputedStyle(s.ref).getPropertyValue(props[i].check),
                                   props[i].prop + ' in standards mode');
                     if (t.shorthand && props[i].check_also) {
                         for (var j in props[i].check_also) {
-                            assert_equals(q.getComputedStyle(q.test).getPropertyValue(props[i].check_also[j]),
-                                          q.getComputedStyle(q.ref).getPropertyValue(props[i].check_also[j]),
-                                          props[i].prop + ' in quirks mode, checking ' + props[i].check_also[j]);
-                            assert_equals(a.getComputedStyle(q.test).getPropertyValue(props[i].check_also[j]),
-                                          a.getComputedStyle(q.ref).getPropertyValue(props[i].check_also[j]),
-                                          props[i].prop + ' in almost standards mode, checking ' + props[i].check_also[j]);
-                            assert_equals(s.getComputedStyle(q.test).getPropertyValue(props[i].check_also[j]),
-                                          s.getComputedStyle(q.ref).getPropertyValue(props[i].check_also[j]),
-                                          props[i].prop + ' in standards mode, checking ' + props[i].check_also[j]);
+                            assert_equals(s.getComputedStyle(s.test).getPropertyValue(props[i].check_also[j]),
+                                          s.getComputedStyle(s.ref).getPropertyValue(props[i].check_also[j]),
+                                          props[i].prop + ', checking ' + props[i].check_also[j]);
                         }
                     }
-                }
-                
-            }, document.title+', '+t.input);
+                });
+            }
+            test_q.done();
+            test_a.done();
+            test_s.done();
+
         });
 
         var other_tests = [
@@ -196,7 +214,7 @@
                 assert_equals(q.getComputedStyle(q.test).getPropertyValue(t.prop),
                               q.getComputedStyle(q.ref).getPropertyValue(t.prop),
                               'quirk was supported');
-            }, document.title+', excluded property '+t.input);
+            }, 'Excluded property '+t.input);
         });
 
         done();

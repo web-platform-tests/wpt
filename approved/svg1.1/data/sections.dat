@@ -152,8 +152,8 @@ http://www.w3.org/TR/SVG/paths.html#PathDataMovetoCommands	8.3.2	The "moveto" co
 http://www.w3.org/TR/SVG/paths.html#PathDataClosePathCommand	8.3.3	The "closepath" command
 http://www.w3.org/TR/SVG/paths.html#PathDataLinetoCommands	8.3.4	The "lineto" commands
 http://www.w3.org/TR/SVG/paths.html#PathDataCurveCommands	8.3.5	The curve commands
-http://www.w3.org/TR/SVG/paths.html#PathDataCubicBezierCommands	8.3.6	The cubic Bézier curve commands
-http://www.w3.org/TR/SVG/paths.html#PathDataQuadraticBezierCommands	8.3.7	The quadratic Bézier curve commands
+http://www.w3.org/TR/SVG/paths.html#PathDataCubicBezierCommands	8.3.6	The cubic BÃ©zier curve commands
+http://www.w3.org/TR/SVG/paths.html#PathDataQuadraticBezierCommands	8.3.7	The quadratic BÃ©zier curve commands
 http://www.w3.org/TR/SVG/paths.html#PathDataEllipticalArcCommands	8.3.8	The elliptical arc curve commands
 http://www.w3.org/TR/SVG/paths.html#PathDataBNF	8.3.9	The grammar for path data
 http://www.w3.org/TR/SVG/paths.html#DistanceAlongAPath	8.4	Distance along a path

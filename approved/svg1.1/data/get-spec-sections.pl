@@ -29,6 +29,7 @@ use utf8;
 use LWP::Simple;
 
 # read the page in from the web
+my $baseURI = 'http://www.w3.org/TR/SVG/';
 my $specURI = 'http://www.w3.org/TR/SVG/expanded-toc.html';
 my $page = get($specURI);
 $page =~ s/\x{D}\x{A}|\x{A}\{D}|\x{D}|\x{A}/\n/gos; # normalize newlines
@@ -39,7 +40,7 @@ $page =~ s/<div class=\"header bottom\">.*//os;
 #print "$page\n";
 
 while ($page =~ m/<a[\s]+href=[\'\"]?([^\"\']+)[\'\"]?>(Appendix[\s]+)?([A-Z]?[0-9.]*)\:?[\s]+(.+?)<\/a>/gos) {
-    my $uri = "$specURI$1";
+    my $uri = "$baseURI$1";
     my $section = $3;
     my $title = $4;
     $title =~ s/&nbsp;/ /gos;

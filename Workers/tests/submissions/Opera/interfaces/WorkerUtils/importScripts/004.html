@@ -1,24 +1,32 @@
 <!--
 var x = '';
+var exception;
 try {
   importScripts('data:text/javascript,x+="first script successful. "',
                 'data:text/javascript,x+="FAIL (second script). "; for(;) break;', // doesn't compile
                 'data:text/javascript,x+="FAIL (third script)"');
-} catch(e) {
-  x += 'exception code: ' + e.code;
+} catch(ex) {
+  if (e instanceof SyntaxError)
+    exception = true;
+  else
+    exception = String(ex);
 }
-postMessage(x);
+postMessage([x, exception]);
 /*
 -->
 <!doctype html>
 <title>importScripts broken script</title>
-<script src="/resources/jsframework.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
 <script>
-test(function() {
+async_test(function() {
   var worker = new Worker('#');
-  test(function(e) {
-    assertEquals(e.data, "first script successful. exception code: 12");
-  }, worker, 'message');
+  worker.onmessage = this.step_func(function(e) {
+    assert_equals(e.data[0], "first script successful. ");
+    assert_true(e.data[1], 'expected SyntaxError');
+    this.done();
+  });
 });
 </script>
 <!--

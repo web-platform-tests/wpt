@@ -7,25 +7,26 @@ beenThere = true;
 try {
   importScripts(1);
   postMessage(got);
-} catch(e) {
-  postMessage(''+e);
+} catch(ex) {
+  postMessage(String(ex));
 }
 /*
 -->
 <!doctype html>
 <title>importScripts(1)</title>
-<script src="/resources/jsframework.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
 <script>
-test(function() {
+async_test(function() {
   var worker = new Worker('#');
-  var i = 0;
-  worker.onmessage = function(e) {
-    i++;
-    test(function() {
-      assertEquals(e.data, '1');
-    }, 'none');
-  }
-  test(function() { assertEquals(i, 1) }, 500);
+  worker.onmessage = this.step_func(function(e) {
+    assert_equals(e.data, '1');
+    this.done();
+  });
+  worker.onerror = this.step_func(function(e) {
+    assert_unreached(e.message);
+  });
 });
 </script>
 <!--

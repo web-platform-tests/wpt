@@ -6,13 +6,16 @@ run();
 -->
 <!doctype html>
 <title>variables and functions crossing importScripts boundary</title>
-<script src="/resources/jsframework.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
 <script>
-test(function() {
+async_test(function() {
   var worker = new Worker('#');
-  test(function(e) {
-    assertTrue(e.data);
-  }, worker, 'message');
+  worker.onmessage = this.step_func(function(e) {
+    assert_true(e.data);
+    this.done();
+  });
 });
 </script>
 <!--

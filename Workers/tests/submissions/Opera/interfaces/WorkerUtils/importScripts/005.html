@@ -2,7 +2,8 @@
 var x;
 var y;
 try {
-  importScripts('data:text/javascript,x={','data:text/javascript,}');
+  importScripts('data:text/javascript,x={',
+                'data:text/javascript,}');
 } catch(e) {
   y = true;
 }
@@ -11,14 +12,17 @@ postMessage([x, y]);
 -->
 <!doctype html>
 <title>importScripts separate scripts</title>
-<script src="/resources/jsframework.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
 <script>
-test(function() {
+async_test(function() {
   var worker = new Worker('#');
-  test(function(e) {
-    assertUndefined(e.data[0]);
-    assertTrue(e.data[1]);
-  }, worker, 'message');
+  worker.onmessage = this.step_func(function(e) {
+    assert_equals(e.data[0], undefined);
+    assert_true(e.data[1]);
+    this.done();
+  });
 });
 </script>
 <!--

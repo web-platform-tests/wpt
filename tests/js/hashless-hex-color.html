@@ -307,18 +307,18 @@
         {input:'"111a"'},
         {input:'"1111a"'},
         {input:'"11111a"'},
-        {input:"url(a)"},
-        {input:"url(aa)"},
-        {input:"url(aaa)"},
-        {input:"url(aaaa)"},
-        {input:"url(aaaaa)"},
-        {input:"url(aaaaaa)"},
-        {input:"url('a')"},
-        {input:"url('aa')"},
-        {input:"url('aaa')"},
-        {input:"url('aaaa')"},
-        {input:"url('aaaaa')"},
-        {input:"url('aaaaaa')"},
+        {input:"url(a)", svg:'url("a")'},
+        {input:"url(aa)", svg:'url("aa")'},
+        {input:"url(aaa)", svg:'url("aaa")'},
+        {input:"url(aaaa)", svg:'url("aaaa")'},
+        {input:"url(aaaaa)", svg:'url("aaaaa")'},
+        {input:"url(aaaaaa)", svg:'url("aaaaaa")'},
+        {input:"url('a')", svg:'url("a")'},
+        {input:"url('aa')", svg:'url("aa")'},
+        {input:"url('aaa')", svg:'url("aaa")'},
+        {input:"url('aaaa')", svg:'url("aaaa")'},
+        {input:"url('aaaaa')", svg:'url("aaaaa")'},
+        {input:"url('aaaaaa')", svg:'url("aaaaaa")'},
         {input:"#a"},
         {input:"#aa"},
         {input:"#aaaa"},
@@ -423,9 +423,9 @@
                     q.svg.setAttribute('fill', t.input);
                     a.svg.setAttribute('fill', t.input);
                     s.svg.setAttribute('fill', t.input);
-                    assert_equals(q.getComputedStyle(q.svg).fill, q.getComputedStyle(q.svg_ref).fill, 'SVG fill="" in quirks mode');
-                    assert_equals(a.getComputedStyle(a.svg).fill, a.getComputedStyle(a.svg_ref).fill, 'SVG fill="" in almost standards mode');
-                    assert_equals(s.getComputedStyle(s.svg).fill, s.getComputedStyle(s.svg_ref).fill, 'SVG fill="" in standards mode');
+                    assert_equals(q.getComputedStyle(q.svg).fill, t.svg ? t.svg : q.getComputedStyle(q.svg_ref).fill, 'SVG fill="" in quirks mode');
+                    assert_equals(a.getComputedStyle(a.svg).fill, t.svg ? t.svg : a.getComputedStyle(a.svg_ref).fill, 'SVG fill="" in almost standards mode');
+                    assert_equals(s.getComputedStyle(s.svg).fill, t.svg ? t.svg : s.getComputedStyle(s.svg_ref).fill, 'SVG fill="" in standards mode');
                 });
             }
             test_q.done();

@@ -1,27 +1,37 @@
 <!--
-var log = '';
-try {
-if (self !== self)
-  log += 'self !== self failed. ';
-if (!(self instanceof WorkerGlobalScope))
-  log += 'self instanceof WorkerGlobalScope failed. ';
-if (!('self' in self))
-  log += '"self" in self failed. ';
-} catch(e) {
-  log += e.message + '. ';
+var results = [];
+function check(func, msg) {
+  try {
+    results.push([func(), msg]);
+  } catch(ex) {
+    results.push([String(ex), msg]);
+  }
 }
-postMessage(log);
+check(function() { return self === self; }, 'self === self');
+check(function() { return self instanceof WorkerGlobalScope; }, 'self instanceof WorkerGlobalScope');
+check(function() { return 'self' in self; }, '\'self\' in self');
+check(function() {
+  var x = self;
+  self = 1;
+  return x === self;
+}, 'self = 1');
+postMessage(results);
 /*
 -->
 <!doctype html>
 <title>self</title>
-<script src="/resources/jsframework.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
 <script>
-test(function() {
+async_test(function() {
   var worker = new Worker('#');
-  test(function(e) {
-    assertEquals(e.data, '');
-  }, worker, 'message');
+  worker.onmessage = this.step_func(function(e) {
+    for (var i = 0; i < e.data.length; ++i) {
+      assert_true(e.data[i][0], e.data[i][1]);
+    }
+    this.done();
+  });
 });
 </script>
 <!--

@@ -1,7 +1,7 @@
 <!--
-onerror = function(a, b, c) {
-  postMessage([a, b, c]);
-  return false; // the error is "handled"
+onerror = function(a, b, c, d) {
+  postMessage([a, b, c, d]);
+  return true; // the error is "handled"
 }
 function x() {
   y();
@@ -11,20 +11,24 @@ x();
 -->
 <!doctype html>
 <title>onerror, "handled"</title>
-<script src="/resources/jsframework.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
 <script>
-test(function() {
+async_test(function() {
   var worker = new Worker('#');
-  test(function(e) {
-    assertEquals(typeof e.data[0], 'string', 'first argument');
-    assertEquals(typeof e.data[1], 'string', 'second argument');
-    assertEquals(typeof e.data[2], 'string', 'third argument');
-    assertEquals(e.data[1], document.URL+'#');
-  }, worker, 'message');
-  worker.onerror = function(e) {
-    test(function() { assertUnreached('error event fired on the Worker despite the error having been "handled"') }, 'none');
-  }
-  test(function() {}, 200);
+  worker.onmessage = this.step_func(function(e) {
+    assert_equals(typeof e.data[0], 'string', 'first argument');
+    assert_equals(e.data[1], document.URL+'#', 'second argument');
+    assert_equals(typeof e.data[2], 'number', 'third argument');
+    assert_equals(typeof e.data[3], 'number', 'fourth argument');
+    setTimeout(this.step_func(function() {
+      this.done();
+    }), 100);
+  });
+  worker.onerror = this.step_func(function(e) {
+    assert_unreached();
+  });
 });
 </script>
 <!--

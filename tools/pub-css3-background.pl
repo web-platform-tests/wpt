@@ -34,6 +34,7 @@ rmtree('dist/css3-background');
 ###############################################################################
 # Mozilla
 push @dirs, 'contributors/mozilla/submitted/css3-background/background-size/vector';
+push @dirs, 'contributors/mozilla/submitted/css3-background/background-size/vector/empty';
 push @dirs, 'contributors/mozilla/submitted/css3-background/box-shadow';
 
 ###############################################################################

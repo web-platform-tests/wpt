@@ -1,33 +1,65 @@
-<!--
-     Any copyright is dedicated to the Public Domain.
-     http://creativecommons.org/publicdomain/zero/1.0/
--->
 <!DOCTYPE html>
+
 <html>
-<head>
-  <title>Scaled vector image without intrinsic dimensions as background, with rendering dependent on the diagonal</title>
-  <link rel="author" title="Jeff Walden" href="http://whereswalden.com/" />
-<!-- 
-  Reference must not have specification links: so commenting this block
-  <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-size">
-  <link rel="help" href="http://www.w3.org/TR/SVG/coords.html#IntrinsicSizing">
-  <link rel="help" href="http://www.w3.org/TR/SVG/coords.html#PreserveAspectRatioAttribute"> -->
-  <meta name="flags" content="svg" />
+
+ <head>
+
+  <title>CSS Reftest Reference</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+
   <style type="text/css">
-#outer
-{
-  width: 256px; height: 768px;
-  border: 1px solid black;
-}
-#inner
-{
-  width: 100px; height: 700px;
-  background-image: url(support/diagonal-scaled-fixed.svg);
-  background-repeat: no-repeat;
-}
+  table
+  {
+  border: black solid 8px;
+  border-spacing: 0px;
+  height: 400px; /* 384px + (2 mult 8px) == 400px */
+  table-layout: fixed;
+  width: 144px; /* 128px + (2 mult 8px) == 144px */
+  }
+  
+  col#first-column, col#second-column {width: 25px;}
+  
+  td {padding: 0px;}
+  
+  td.lime
+  {
+  background-color: lime;
+  height: 88px; /* 88px mult by 4 rows == 352px */
+  }
+  
+  td.fuchsia
+  {
+  background-color: fuchsia;
+  height: 88px;
+  }
+  
+  td.aqua
+  {
+  background-color: aqua;
+  height: 88px;
+  }
   </style>
-</head>
-<body>
-<div id="outer"><div id="inner"></div></div>
-</body>
+
+ </head>
+
+ <body>
+
+  <table>
+
+  <col id="first-column"><col id="second-column"><col>
+
+      <tr><td class="lime"></td><td class="lime"></td><td></td></tr>
+
+      <tr><td class="fuchsia"></td><td class="lime"></td><td></td></tr>
+
+      <tr><td class="fuchsia"></td><td class="aqua"></td><td></td></tr>
+
+      <tr><td class="aqua"></td><td class="aqua"></td><td></td></tr>
+
+      <tr><td></td><td></td><td></td></tr>
+
+  </table>
+
+ </body>
 </html>

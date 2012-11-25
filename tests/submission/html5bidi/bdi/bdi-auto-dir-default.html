@@ -24,15 +24,15 @@
   </head>
   <body>
     <div class="instructions"><p>Test passes if the two boxes below look exactly the same.</p></div>
-    <div class='comments'>
+    <div class="comments">
       Key to entities used below:
         &#x05D0; ... &#x05D5; - The first six Hebrew letters (strongly RTL).
-        &#x202D; - The LRO (left-to-right-override) formatting character.
+        &#x202D; - The LRO (left-to-right override) formatting character.
         &#x202C; - The PDF (pop directional formatting) formatting character; closes LRO.
       In each DIV of the test:
         - the first BDI, having no characters with strong direction, should be LTR by default;
         - the second BDI, having an LTR character first, should be LTR by default;
-        - the thord BDI, having an RTL character first, should be RTL by default.
+        - the third BDI, having an RTL character first, should be RTL by default.
     </div>
     <div class="test">
       <div dir="ltr"><bdi>[:)]</bdi>, <bdi>[+- a &#x05D1;]</bdi>, <bdi>[1 &#x05D2; d]</bdi>...</div>

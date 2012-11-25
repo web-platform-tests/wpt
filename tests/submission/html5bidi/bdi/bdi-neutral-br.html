@@ -30,11 +30,11 @@
     <div class="comments">
       Key to entities used below:
         &#x05D0; ... &#x05D5; - The first six Hebrew letters (strongly RTL).
-        &#x202D; - The LRO (left-to-right-override) formatting character.
+        &#x202D; - The LRO (left-to-right override) formatting character.
         &#x202C; - The PDF (pop directional formatting) formatting character; closes LRO.
       If the BDI in the test's first DIV were a SPAN, its BR would put the &#x05D0; and the &#x05D1;
-      in separate paragraphs, thus preventing them forming a single RTL run and thus keeping the
-      &gt;s between from being mirrored into &lt;s.
+      in separate paragraphs, thus preventing them from forming a single RTL run and thus keeping
+      the &gt;s between them from being mirrored into &lt;s.
     </div>
     <div class="test">
       <div dir="ltr">&#x05D0; &gt; <bdi><br/></bdi> &gt; &#x05D1;...</div>

@@ -34,6 +34,8 @@
       Key to entities used below:
         &#x200E; - LRM, the invisible left-to-right mark (strongly LTR).
         &#x200F; - RLM, the invisible right-to-left mark (strongly RTL).
+      This test makes sure that the direction is set correctly for a textarea whose value is set
+      dynamically by script.
       We use text-align:left because neither the dir="auto" nor the unicode-bidi:plaintext
       specification states whether text-align:start and text-align:end should obey the paragraph
       direction or the direction property in a unicode-bidi:plaintext element.

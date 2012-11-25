@@ -14,7 +14,7 @@
   wide- -contain- -percent-width-omitted-height-viewbox.html
   -->
 
-  <title>CSS Backgrounds and Borders Test: wide background-size: contain; for percent-width-omitted-height-viewbox.svg</title>
+  <title>CSS Backgrounds and Borders Test: background-size: contain; for percent-width-omitted-height-viewbox.svg</title>
 
   <link rel="author" title="Jeff Walden" href="http://whereswalden.com/">
   <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-size">
@@ -25,23 +25,22 @@
   <meta name="flags" content="svg">
 
   <style type="text/css">
-div
-{
-  width: 768px; height: 256px;
-}
-#outer
-{
-  border: 1px solid black;
-}
-#inner
-{
+  div
+  {
   background-image: url("support/percent-width-omitted-height-viewbox.svg");
   background-repeat: no-repeat;
   background-size: contain;
-}
+  border: black solid 1px;
+  height: 768px;
+  width: 256px;
+  }
   </style>
-</head>
-<body>
-<div id="outer"><div id="inner"></div></div>
-</body>
+
+ </head>
+
+ <body>
+
+  <div></div>
+
+ </body>
 </html>

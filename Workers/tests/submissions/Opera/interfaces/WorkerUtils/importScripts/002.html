@@ -1,11 +1,14 @@
 <!--
-var x = 0;
+var ran = false;
+var threw = false;
+var code = undefined;
 try {
-  importScripts('data:text/javascript,x=1','http://foo bar');
+  importScripts('data:text/javascript,ran=true','http://foo bar');
 } catch(e) {
-  x += 2
+  threw = true;
+  code = e.code;
 }
-postMessage(x);
+postMessage([ran, threw, code]);
 /*
 -->
 <!doctype html>
@@ -17,7 +20,9 @@ postMessage(x);
 async_test(function() {
   var worker = new Worker('#');
   worker.onmessage = this.step_func(function(e) {
-    assert_equals(e.data, 2);
+    assert_false(e.data[0], 'first argument to importScripts ran');
+    assert_true(e.data[1], 'space in URL in second argument to importScripts did not throw');
+    assert_equals(e.data[2], 12, 'exception code');
     this.done();
   });
 });

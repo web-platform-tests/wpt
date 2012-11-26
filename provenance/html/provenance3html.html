@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Test</title>
+    <script id="its-standoff-no-2" type="application/xml">
+      <its:translationProvenanceRecords xml:id="pr1">
+        <its:translationProvenanceRecord
+            transToolRef="http://www.onlinemtex.com/2012/7/25/wsdl/" 
+            transOrg="acme-CAT-v2.3"
+            transRevToolRef="http://www.mycat.com/v1.0/download" 
+            transRevOrg="acme-CAT-v2.3"
+            provRef="http://www.examplelsp.com/excontent987/production/prov/e6354"/>
+      </its:translationProvenanceRecords>
+      <its:translationProvenanceRecords xml:id="pr2">
+        <its:translationProvenanceRecord
+            transPerson="John Doe"
+            transOrgRef="http://www.legaltrans-ex.com/"
+            transRevPerson="Tommy Atkins" 
+            transRevOrgRef="http://www.vistatec.com/"
+            provRef="http://www.examplelsp.com/excontent987/legal/prov/e6354 http://www.vistatec.com/job-12-7-15-X31/reviewed/prov/re8573469"/>
+        <its:translationProvenanceRecord
+            transRevPerson="John Smith" 
+            transRevOrgRef="http://john-smith.qa.example.com"/>
+      </its:translationProvenanceRecords>       
+    </script>
+  </head>
+  <body>
+    <p its-translation-provenance-records-ref="#pr1"> This paragraph was translated from the machine.</p>
+    <p its-translation-provenance-records-ref="#pr2">This text was translated directly by a person.</p>
+  </body>
+</html>

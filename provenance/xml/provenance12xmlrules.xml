@@ -1,0 +1,15 @@
+  <its:rules xmlns:its="http://www.w3.org/2005/11/its" version="2.0">
+ <its:transProvRule selector="/text/body/legalnotice"
+      transPerson="John Doe"
+      transOrg="legaltrans-ex"
+      transRevPerson="Tommy Atkins"
+      transRevOrg="vistatec"
+      provRef=" http://www.examplelsp.com/excontent987/legal/prov/e6354 http://www.vistatec.com/job-12-7-15-X31/reviewed/prov/re8573469"/>
+   <its:param name="provenanceParam">p1</its:param>
+    <its:transProvRule selector="/text/body/par[@xml:id='$provenanceParam']"
+      transTool="onlinemtex"
+      transRevPerson="James Joyce"
+      transRevTool="mycat-v1.0"
+      transRevOrg="acme-CAT-v2.3"
+      provRef="http://www.examplelsp.com/excontent987/production/prov/e6354"/>
+  </its:rules>

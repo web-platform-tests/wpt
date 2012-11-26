@@ -1,0 +1,22 @@
+<text xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <its:rules xmlns:its="http://www.w3.org/2005/11/its" version="2.0">
+ <its:transProvRule selector="/text/body/legalnotice"
+      transPersonPointer="@person"
+      transOrgPointer="@organisation"
+      transRevPersonPointer="@revperson"
+      transRevOrgPointer="@postediting-by"
+      provRef=" http://www.examplelsp.com/excontent987/legal/prov/e6354 http://www.vistatec.com/job-12-7-15-X31/reviewed/prov/re8573469"/>
+    <its:transProvRule selector="/text/body/par[@xml:id='p1']"
+      transToolPointer="@tool"
+      transRevPerson="James Joyce"
+      transRevToolPointer="@revtool"
+      transRevOrg="acme-CAT-v2.3"
+      provRef="http://www.examplelsp.com/excontent987/production/prov/e6354"/>
+  </its:rules>
+  <title>Translation Revision Provenance Agent: Global Test in XML</title>
+  <body>
+    <par xml:id="p1" tool="http://www.provdata.com/tool/#onlinemtex" revtool="http://www.provdata.com/RevTool/#mycat-v1"> This paragraph was translated from the machine.</par>
+    <legalnotice person="http://www.provdata.com/person/#John_Doe" revperson="http://www.provdata.com/RevPerson/#Tommy_Atkins" organisation="http://www.provdata.com/org/#legaltrans-ex" postediting-by="http://www.vistatec.com/">This text was
+      translated directly by a person.</legalnotice>
+  </body>
+</text>

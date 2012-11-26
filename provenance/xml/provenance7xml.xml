@@ -1,0 +1,9 @@
+<text xmlns:dc="http://purl.org/dc/elements/1.1/">
+ <its:rules xmlns:its="http://www.w3.org/2005/11/its" version="2.0" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="provenance7xmlrules.xml"/>
+  <title>Translation Revision Provenance Agent: Global Test in XML</title>
+  <body>
+    <par xml:id="p1" tool="onlinemtex" revtool="mycat-v1.0"> This paragraph was translated from the machine.</par>
+    <legalnotice person="John Doe" revperson="Tommy Atkins" organisation="legaltrans-ex" postediting-by="vistatec" provref="http://www.examplelsp.com/excontent987/production/prov/e6354">This text was
+      translated directly by a person.</legalnotice>
+  </body>
+</text>

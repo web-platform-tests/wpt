@@ -1,0 +1,14 @@
+<its:rules xmlns:its="http://www.w3.org/2005/11/its" version="2.0">
+ <its:transProvRule selector="/text/body/legalnotice"
+      transPersonRef="http://www.provdata.com/person/#John_Doe"
+      transOrgRef="http://www.provdata.com/org/#legaltrans-ex"
+      transRevPersonRef="http://www.provdata.com/RevPerson/#Tommy_Atkins"
+      transRevOrgRef="http://www.provdata.com/RevOrg/#vistatec"
+      provRef=" http://www.examplelsp.com/excontent987/legal/prov/e6354 http://www.vistatec.com/job-12-7-15-X31/reviewed/prov/re8573469"/>
+    <its:transProvRule selector="/text/body/par[@xml:id='p1']"
+      transToolRef="http://www.provdata.com/tool/#onlinemtex"
+      transRevPerson="James Joyce"
+      transRevToolRef="http://www.provdata.com/RevTool/#mycat-v1"
+      transRevOrg="acme-CAT-v2.3"
+      provRef="http://www.examplelsp.com/excontent987/production/prov/e6354"/>
+  </its:rules>

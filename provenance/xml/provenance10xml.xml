@@ -23,7 +23,7 @@
   <its:rules>
     <its:transProvRule selector="/text/body/par[@xml:id='p1']"
       translationProvenanceRecordsRefPointer="@provRecordsRef"/>
-    <its:transProvRule selector="/text/body/legalnotice/"
+    <its:transProvRule selector="/text/body/legalnotice"
       translationProvenanceRecordsRefPointer="@provRecordsRef"/>
   </its:rules>
   <title>Translation Revision Provenance Agent: Global Test in XML</title>

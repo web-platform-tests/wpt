@@ -1,11 +1,11 @@
-<its:rules xmlns:its="http://www.w3.org/2005/11/its" version="2.0">
-<its:transProvRule selector="/html/body/p[@class='legal-notice']"
+<its:rules xmlns:its="http://www.w3.org/2005/11/its" version="2.0" xmlns:h="http://www.w3.org/1999/xhtml" >
+<its:transProvRule selector="/h:html/h:body/h:p[@class='legal-notice']"
       transPerson="John Doe"
       transOrg="legaltrans-ex"
       transRevPerson="Tommy Atkins"
       transRevOrg="vistatec"
       provRef=" http://www.examplelsp.com/excontent987/legal/prov/e6354 http://www.vistatec.com/job-12-7-15-X31/reviewed/prov/re8573469"/>
-    <its:transProvRule selector="/html/body/p[@id='p1']"
+    <its:transProvRule selector="/h:html/h:body/h:p[@id='p1']"
       transTool="onlinemtex"
       transRevPerson="James Joyce"
       transRevTool="mycat-v1.0"

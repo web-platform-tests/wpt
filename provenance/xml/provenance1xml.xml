@@ -1,22 +1,32 @@
-<text xmlns:dc="http://purl.org/dc/elements/1.1/">
-  <its:rules xmlns:its="http://www.w3.org/2005/11/its" version="2.0">
- <its:transProvRule selector="/text/body/legalnotice"
-      transPerson="John Doe"
-      transOrg="legaltrans-ex"
-      transRevPerson="Tommy Atkins"
-      transRevOrg="vistatec"
-      provRef=" http://www.examplelsp.com/excontent987/legal/prov/e6354 http://www.vistatec.com/job-12-7-15-X31/reviewed/prov/re8573469"/>
-    <its:transProvRule selector="/text/body/par[@xml:id='p1']"
-      transTool="onlinemtex"
-      transRevPerson="James Joyce"
-      transRevTool="mycat-v1.0"
-      transRevOrg="acme-CAT-v2.3"
+<text xmlns:dc="http://purl.org/dc/elements/1.1/"
+  xmlns:its="http://www.w3.org/2005/11/its" its:version="2.0">
+  <dc:creator>John Doe</dc:creator>
+  <its:translationProvenanceRecords xml:id="pr1">
+    <its:translationProvenanceRecord
+      tool="onlinemtex"
+      revPerson="James Joyce"
+      revTool="mycat-v1.0"
+      revOrg="acme-CAT-v2.3"
       provRef="http://www.examplelsp.com/excontent987/production/prov/e6354"/>
+  </its:translationProvenanceRecords>
+  <its:translationProvenanceRecords xml:id="pr2">
+    <its:translationProvenanceRecord
+      person="John Doe"
+      org="legaltrans-ex"
+      revPerson="Tommy Atkins"
+      revOrg="vistatec"
+      provRef=" http://www.examplelsp.com/excontent987/legal/prov/e6354 http://www.vistatec.com/job-12-7-15-X31/reviewed/prov/re8573469"/>
+  </its:translationProvenanceRecords>
+  <its:rules>
+    <its:provRule selector="/text/body/par[@xml:id='p1']"
+      translationProvenanceRecordsRef="#pr1"/>
+    <its:provRule selector="/text/body/legalnotice"
+      translationProvenanceRecordsRef="#pr2"/>
   </its:rules>
   <title>Translation Revision Provenance Agent: Global Test in XML</title>
   <body>
     <par xml:id="p1"> This paragraph was translated from the machine.</par>
-    <legalnotice postediting-by="http://www.vistatec.com/">This text was
+    <legalnotice>This text was
       translated directly by a person.</legalnotice>
   </body>
 </text>

@@ -1052,6 +1052,10 @@ IdlInterface.prototype.test_self = function()
         assert_false(desc.enumerable, "window's property " + format_value(this.name) + " is enumerable");
         assert_true(desc.configurable, "window's property " + format_value(this.name) + " is not configurable");
 
+        if (this.has_extended_attribute("Callback")) {
+            return;
+        }
+
         // "Interface objects are always function objects."
         // "If an object is defined to be a function object, then it has
         // characteristics as follows:"
@@ -1138,6 +1142,12 @@ IdlInterface.prototype.test_self = function()
         assert_own_property(window, this.name,
                             "window does not have own property " + format_value(this.name));
 
+        if (this.has_extended_attribute("Callback")) {
+            assert_false("prototype" in window[this.name],
+                         this.name + ' should not have a "prototype" property');
+            return;
+        }
+
         // "The interface object must also have a property named “prototype”
         // with attributes { [[Writable]]: false, [[Enumerable]]: false,
         // [[Configurable]]: false } whose value is an object called the
@@ -1219,6 +1229,13 @@ IdlInterface.prototype.test_self = function()
     {
         assert_own_property(window, this.name,
                             "window does not have own property " + format_value(this.name));
+
+        if (this.has_extended_attribute("Callback")) {
+            assert_false("prototype" in window[this.name],
+                         this.name + ' should not have a "prototype" property');
+            return;
+        }
+
         assert_own_property(window[this.name], "prototype",
                             'interface "' + this.name + '" does not have own property "prototype"');
 
@@ -1282,6 +1299,13 @@ IdlInterface.prototype.test_members = function()
             {
                 assert_own_property(window, this.name,
                                     "window does not have own property " + format_value(this.name));
+
+                if (this.has_extended_attribute("Callback")) {
+                    assert_false("prototype" in window[this.name],
+                                 this.name + ' should not have a "prototype" property');
+                    return;
+                }
+
                 assert_own_property(window[this.name], "prototype",
                                     'interface "' + this.name + '" does not have own property "prototype"');
 
@@ -1331,6 +1355,13 @@ IdlInterface.prototype.test_members = function()
             {
                 assert_own_property(window, this.name,
                                     "window does not have own property " + format_value(this.name));
+
+                if (this.has_extended_attribute("Callback")) {
+                    assert_false("prototype" in window[this.name],
+                                 this.name + ' should not have a "prototype" property');
+                    return;
+                }
+
                 assert_own_property(window[this.name], "prototype",
                                     'interface "' + this.name + '" does not have own property "prototype"');
 

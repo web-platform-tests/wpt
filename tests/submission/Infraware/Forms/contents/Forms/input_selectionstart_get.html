@@ -1,0 +1,34 @@
+<!DOCTYPE HTML>
+<html>
+ <head>
+  <title>Forms</title>
+  <script src="../../resources/testharness.js"></script>
+  <script src="../../resources/testharnessreport.js"></script>
+ </head>
+ <body>
+	<p>
+		<h3>input_selectionStart_get</h3>
+	</p>
+	
+	<hr>
+
+	<div id="log"></div>
+
+	<p>
+		input: <input type="text" id="textField" value="input"></input>
+	</p>
+
+	<script>
+
+		var textField = document.getElementById("textField");
+		textField.select();
+		textField.selectionStart = 1;
+
+		test(function() {
+			assert_equals(textField.selectionStart, 1, "Value attribute is not correct.");
+		});
+
+	</script>
+
+ </body>
+</html>

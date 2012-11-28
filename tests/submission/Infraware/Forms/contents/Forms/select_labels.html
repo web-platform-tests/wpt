@@ -1,0 +1,68 @@
+<!DOCTYPE HTML>
+<html>
+ <head>
+  <title>Forms</title>
+  <script src="../../resources/testharness.js"></script>
+  <script src="../../resources/testharnessreport.js"></script>
+ </head>
+ <body>
+	<p>
+		<h3>select_labels</h3>
+	</p>
+	
+	<hr>
+
+	<div id="log"></div>
+
+	<form method="post"
+		  enctype="application/x-www-form-urlencoded"
+		  action="" 
+		  id="input_form">
+		<p>
+		 <label for="unittype1">Select unit type1:
+		 <select id="unittype1" name="unittype1">
+		  <option value="1"> Miner </option>
+		  <option value="2"> Puffer </option>
+		  <option value="3"> Snipey </option>
+		  <option value="4"> Max </option>
+		  <option value="5"> Firebot </option>
+		 </select>
+		 </label>
+		 <label for="unittype2">Select unit type2:
+		 <label for="unittype3">(Custom)
+		 <select id="unittype2" name="unittype2">
+		  <option value="1"> Miner </option>
+		  <option value="2"> Puffer </option>
+		  <option value="3" selected> Snipey </option>
+		  <option value="4"> Max </option>
+		  <option value="5"> Firebot </option>
+		 </select>
+		 </label>
+		 </label>
+		</p>	
+	</form>
+	<script>
+
+		var select1 = document.getElementById("unittype1");
+		var select2 = document.getElementById("unittype2");
+
+		if (typeof(select1.labels) == "object") {
+			if (select1.labels.length == 1 && select2.labels.length == 1) {
+				test(function() {
+					assert_true(true, "labels attribute is correct.");
+				});
+			} else {
+				test(function() {
+					assert_unreached("labels attribute is not correct.");
+				});
+			}
+		} else {
+			test(function() {
+				assert_unreached("labels attribute is not exist.");
+			});
+		}
+
+	</script>
+
+ </body>
+</html>

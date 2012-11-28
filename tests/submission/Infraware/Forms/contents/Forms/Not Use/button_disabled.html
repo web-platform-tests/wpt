@@ -1,0 +1,46 @@
+<!DOCTYPE HTML>
+<html>
+ <head>
+  <title>Forms</title>
+  <script src="../../resources/testharness.js"></script>
+  <script src="../../resources/testharnessreport.js"></script>
+ </head>
+ <body>
+	<p>
+		<h3>button_disabled</h3>
+	</p>
+	
+	<li>The button control be disabled when the document was loaded.</li>
+	
+	<hr>
+
+	<div id="log"></div>
+	
+	<form method="post"
+		  enctype="application/x-www-form-urlencoded"
+		  action=""
+		  id="input_form">
+	<p><button id='button_id'>button</button></p>
+	</form>
+
+	<script>
+		
+		var button = document.getElementById("button_id");
+		button.disabled = true;
+
+		if (typeof(button.disabled) == "boolean") {
+			if (button.disabled != true) {
+				test(function() {
+					assert_true(false, "disabled attribute is not correct.");
+				});
+			}
+		} else {
+			test(function() {
+				assert_unreached("disabled attribute is not exist.");
+			});
+		}
+
+	</script>
+
+ </body>
+</html>

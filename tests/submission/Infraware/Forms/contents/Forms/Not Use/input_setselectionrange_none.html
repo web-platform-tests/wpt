@@ -1,0 +1,29 @@
+<!DOCTYPE HTML>
+<html>
+ <head>
+  <title>Forms</title>
+  <script src="../../resources/testharness.js"></script>
+  <script src="../../resources/testharnessreport.js"></script>
+ </head>
+ <body>
+	<p>
+		<h3>input_setSelectionRange_none</h3>
+	</p>
+	
+	<li>In the text field "np" is selected.</li>
+
+	<hr>
+
+	<p>
+		input: <input type="text" id="textField" value="input"></input>
+	</p>
+
+	<script>
+
+		var textField = document.getElementById("textField");
+		textField.setSelectionRange(1, 3, "none");
+
+	</script>
+
+ </body>
+</html>

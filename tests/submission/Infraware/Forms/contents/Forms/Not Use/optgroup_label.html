@@ -1,0 +1,58 @@
+<!DOCTYPE HTML>
+<html>
+ <head>
+  <title>Forms</title>
+  <script src="../../resources/testharness.js"></script>
+  <script src="../../resources/testharnessreport.js"></script>
+ </head>
+ <body>
+	<p>
+		<h3>optgroup_label</h3>
+	</p>
+	
+	<li>The label of first optgroup control is 'CustomLabel'.</li>
+	
+	<hr>
+
+	<div id="log"></div>
+
+	<form method="post"
+		  enctype="application/x-www-form-urlencoded"
+		  action=""
+		  id="input_form">
+		<p><label>Course:
+		  <select name="c">
+		   <optgroup label="8.01 Physics I: Classical Mechanics" id='optgroup1'>
+			<option value="8.01.1">Lecture 01: Powers of Ten
+			<option value="8.01.2">Lecture 02: 1D Kinematics
+			<option value="8.01.3">Lecture 03: Vectors
+		   <optgroup label="8.02 Electricity and Magnestism" id='optgroup2'>
+			<option value="8.02.1">Lecture 01: What holds our world together?
+			<option value="8.02.2">Lecture 02: Electric Field
+			<option value="8.02.3">Lecture 03: Electric Flux
+		  </select>
+		 </label>
+	</form>
+
+	<script>
+		
+		var optgroup1 = document.getElementById("optgroup1");
+		var label = optgroup1.label;
+		optgroup1.label = 'CustomLabel';
+
+		if (typeof(optgroup1.label) == "string") {
+			if (optgroup1.label != 'CustomLabel' || label != '8.01 Physics I: Classical Mechanics') {
+				test(function() {
+					assert_unreached("label attribute is not correct.");
+				});
+			}
+		} else {
+			test(function() {
+				assert_unreached("label attribute is not exist.");
+			});
+		}
+
+	</script>
+
+ </body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE HTML>
+<html>
+ <head>
+  <title>Forms</title>
+  <script src="../../resources/testharness.js"></script>
+  <script src="../../resources/testharnessreport.js"></script>
+ </head>
+ <body>
+	<p>
+		<h3>label_control</h3>
+	</p>
+	
+	<hr>
+
+	<div id="log"></div>
+
+	<form method="post"
+		  enctype="application/x-www-form-urlencoded"
+		  action=""
+		  id="input_form"
+		  name="input_form">
+		<label id='input_label'><input type=checkbox name=lost> Lost</label>
+	</form>
+	<script>
+
+		var label = document.getElementById("input_label");
+
+		try
+		{
+			var checkbox = label.control;
+
+			test(function() {
+				assert_equals(checkbox.name, "lost", "control attribute is not correct.");
+			});		
+		}
+		catch (e)
+		{
+			test(function() {
+				assert_unreached("Error is raised.");
+			});
+		}
+
+	</script>
+
+ </body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE HTML>
+<html>
+ <head>
+  <title>Forms</title>
+  <script src="../../resources/testharness.js"></script>
+  <script src="../../resources/testharnessreport.js"></script>
+ </head>
+ <body>
+	<p>
+		<h3>select_add_002</h3>
+	</p>
+	
+	<hr>
+
+	<div id="log"></div>
+
+	<form method="post"
+		  enctype="application/x-www-form-urlencoded"
+		  action=""
+		  id="input_form">
+		<p>
+		 <label for="unittype">Select unit type:</label>
+		 <select id="unittype" name="unittype">
+		  <option value="1"> Miner </option>
+		  <option value="2"> Puffer </option>
+		  <option value="3" selected> Snipey </option>
+		  <option value="4"> Max </option>
+		  <option value="5"> Firebot </option>
+		 </select>
+		 <select id='addSelect'>
+		  <option value="6"> AddElement </option>
+		 </select>
+		</p>	
+	</form>
+
+	<script>
+		
+		var select = document.getElementById("unittype");
+		var item = select.item(2);
+
+		var addselect = document.getElementById("addSelect");
+		var additem = addselect.item(0);
+
+		select.add(additem, 2);
+		var newitem = select.item(2);
+
+		test(function() {
+			assert_equals(newitem.value, "6", "calling of add method is failed.");
+		});
+
+	</script>
+
+ </body>
+</html>

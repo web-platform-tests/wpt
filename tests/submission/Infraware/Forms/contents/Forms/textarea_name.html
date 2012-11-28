@@ -1,0 +1,49 @@
+<!DOCTYPE HTML>
+<html>
+ <head>
+  <title>Forms</title>
+  <script src="../../resources/testharness.js"></script>
+  <script src="../../resources/testharnessreport.js"></script>
+ </head>
+ <body>
+	<p>
+		<h3>textarea_name</h3>
+	</p>
+	
+	<hr>
+
+	<div id="log"></div>
+
+	<form method="post"
+		  enctype="application/x-www-form-urlencoded"
+		  action=""
+		  name="input_form">
+	<p><textarea id='textarea_id' name='name'></textarea></p>
+	</form>
+
+	<script>
+		
+		var textarea = document.getElementById("textarea_id");
+		name = textarea.name;
+		textarea.name = "textarea_name";
+
+		if (typeof(textarea.name) == "string") {
+			if (name == 'name' && textarea.name == "textarea_name") {
+				test( function() {
+					assert_true(true, "name attribute is correct.");
+				});
+			} else {
+				test( function() {
+					assert_unreached("name attribute is not correct.");
+				});
+			}
+		} else {
+			test( function() {
+				assert_unreached("name attribute is not exist.");
+			});
+		}
+
+	</script>
+
+ </body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>CSS Reftest Reference</title>
+		<link rel="author" title="Mihai Balan" href="mibalan@adobe.com">
+		<style>
+		body {
+			font-family: monospace;
+			font-size: 20px;
+			line-height: 25px;
+		}
+		ol {
+			margin-top: 0;
+			margin-bottom: 0;
+		}
+		#list21, #list31 {
+			margin-bottom: 1em;
+		}
+
+		.region {
+			background-color: lightgray;
+			margin: 1em;
+			float: left;
+			width: 15em;
+			height: 15em;
+		}
+		</style>
+	</head>
+	<body>
+		<div class="region" id="region1">
+			<ol id="list1">
+				<li>List item 1</li>
+				<li>List item 2</li>
+				<li>List item 3</li>
+				<li>List item 4</li>
+			</ol>
+		</div>
+		<div class="region" id="region2">
+			<ol id="list21">
+				<li>Second-1 list 1</li>
+				<li>Second-1 list 2</li>
+			</ol>
+			<ol id="list22">	
+				<li>Second-2 list 3</li>
+				<li>Second-2 list 4</li>
+			</ol>
+		</div>
+		<div class="region" id="region3">
+			<ol id="list31">
+				<li>Third-1 list 1</li>
+				<li>Third-1 list 2
+					<ol>
+						<li>Some item 1</li>
+						<li>Some item 2</li>
+					</ol>
+				</li>
+				<li>Third-1 list 3</li>
+			</ol>
+			<ol id="list32">
+				<li>Third-2 list 1</li>
+				<li>Third-2 list 2</li>
+				<li>Third-2 list 3
+					<ol>
+						<li>Another item 1</li>
+						<li>Another item 2</li>
+					</ol>
+				</li>
+			</ol>
+		</div>
+	</body>
+</html>

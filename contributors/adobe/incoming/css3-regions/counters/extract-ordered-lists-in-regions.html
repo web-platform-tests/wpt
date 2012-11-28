@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>CSS Test: extracting lists in regions</title>
+		<link rel="author" title="Mihai Balan" href="mibalan@adobe.com">
+		<link rel="help" href="http://www.w3.org/TR/css3-regions">
+		<meta name="flags" content="">
+		<meta name="assert" content="Test checks that ordered HTML lists are properly rendered inside regions.">
+		<link rel="match" href="extract-ordered-lists-in-regions-ref.html">
+		<link rel="mismatch" href="">
+		<style>
+		body {
+			font-family: monospace;
+			font-size: 20px;
+			line-height: 25px;
+		}
+		ol {
+			margin-top: 0;
+			margin-bottom: 0;
+		}
+		#list1 {
+			-webkit-flow-into: flow1;
+		}
+		#list21, #list22 {
+			-webkit-flow-into: flow2;
+		}
+		#list31, #list32 {
+			-webkit-flow-into: flow3;
+		}
+		#list21, #list31 {
+			margin-bottom: 1em;
+		}
+
+		.region {
+			background-color: lightgray;
+			margin: 1em;
+			float: left;
+			width: 15em;
+			height: 15em;
+		}
+		#region1 {
+			-webkit-flow-from: flow1;
+		}
+		#region2 {
+			-webkit-flow-from: flow2;
+		}
+		#region3 {
+			-webkit-flow-from: flow3;
+		}
+		</style>
+	</head>
+	<body>
+		<ol id="list1">
+			<li>List item 1</li>
+			<li>List item 2</li>
+			<li>List item 3</li>
+			<li>List item 4</li>
+		</ol>
+		<ol id="list21">
+			<li>Second-1 list 1</li>
+			<li>Second-1 list 2</li>
+		</ol>
+		<ol id="list22">	
+			<li>Second-2 list 3</li>
+			<li>Second-2 list 4</li>
+		</ol>
+		<ol id="list31">
+			<li>Third-1 list 1</li>
+			<li>Third-1 list 2
+				<ol>
+					<li>Some item 1</li>
+					<li>Some item 2</li>
+				</ol>
+			</li>
+			<li>Third-1 list 3</li>
+		</ol>
+		<ol id="list32">
+			<li>Third-2 list 1</li>
+			<li>Third-2 list 2</li>
+			<li>Third-2 list 3
+				<ol>
+					<li>Another item 1</li>
+					<li>Another item 2</li>
+				</ol>
+			</li>
+		</ol>
+		<div class="region" id="region1"></div>
+		<div class="region" id="region2"></div>
+		<div class="region" id="region3"></div>
+	</body>
+</html>

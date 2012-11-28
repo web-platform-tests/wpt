@@ -7,7 +7,7 @@
 	locQualityIssueProfileRef="http://example.org/qaMovel/v1"/>
        <its:locQualityIssueRule selector="//h:span[@id='q2']"
         locQualityIssueType="spelling"
-        locQualityIssueComent="should be 'Music can'"
+        locQualityIssueComment="should be 'Music can'"
         locQualityIssueSeverity="75"
         locQualityIssueProfileRef="http://example.org/qaMovel/v1"/>
     </its:rules>

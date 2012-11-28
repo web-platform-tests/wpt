@@ -11,14 +11,13 @@
   <link rel="match" href="reference/ref-if-there-is-no-red.xht" />
 
   <meta content="invalid" name="flags" />
-  <meta content="Percentage unit does not apply to 'border-spacing' property." name="assert" />
+  <meta content="'border-spacing' property does not accept percentage unit." name="assert" />
 
   <style type="text/css"><![CDATA[
-  table {border-spacing: 0px;}
-          
   table
   {
   background-color: red;
+  border-spacing: 0px;
   border-spacing: 20%; /* invalid */
   table-layout: fixed;
   width: 200px;

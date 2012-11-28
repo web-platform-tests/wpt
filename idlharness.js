@@ -1029,18 +1029,42 @@ IdlException.prototype.test_object = function(desc)
 /// IdlInterface ///
 function IdlInterface(obj) { IdlExceptionOrInterface.call(this, obj); }
 IdlInterface.prototype = Object.create(IdlExceptionOrInterface.prototype);
+IdlInterface.prototype.is_callback = function()
+//@{
+{
+    return this.has_extended_attribute("Callback");
+}
+//@}
+
+IdlInterface.prototype.has_constants = function()
+//@{
+{
+    return this.members.any(function(member) {
+        return member.type === "const";
+    });
+}
+//@}
+
 IdlInterface.prototype.test_self = function()
 //@{
 {
     test(function()
     {
-        // "For every interface that is not declared with the
-        // [NoInterfaceObject] extended attribute, a corresponding property
-        // must exist on the interface’s relevant namespace object. The name of
-        // the property is the identifier of the interface, and its value is an
-        // object called the interface object. The property has the attributes
-        // { [[Writable]]: true, [[Enumerable]]: false, [[Configurable]]: true
-        // }."
+        // This function tests WebIDL as of 2012-11-28.
+
+        // "For every interface that:
+        // * is a callback interface that has constants declared on it, or
+        // * is a non-callback interface that is not declared with the
+        //   [NoInterfaceObject] extended attribute,
+        // a corresponding property MUST exist on the ECMAScript global object.
+        // The name of the property is the identifier of the interface, and its
+        // value is an object called the interface object.
+        // The property has the attributes { [[Writable]]: true,
+        // [[Enumerable]]: false, [[Configurable]]: true }."
+        if (this.is_callback() && !this.has_constants()) {
+            return;
+        }
+
         // TODO: Should we test here that the property is actually writable
         // etc., or trust getOwnPropertyDescriptor?
         assert_own_property(window, this.name,
@@ -1052,47 +1076,53 @@ IdlInterface.prototype.test_self = function()
         assert_false(desc.enumerable, "window's property " + format_value(this.name) + " is enumerable");
         assert_true(desc.configurable, "window's property " + format_value(this.name) + " is not configurable");
 
-        if (this.has_extended_attribute("Callback")) {
+        if (this.is_callback()) {
+            // "The internal [[Prototype]] property of an interface object for
+            // a callback interface MUST be the Object.prototype object."
+            assert_equals(Object.getPrototypeOf(window[this.name]), Object.prototype,
+                          "prototype of window's property " + format_value(this.name) + " is not Object.prototype");
+
             return;
         }
 
-        // "Interface objects are always function objects."
+        // "The interface object for a given non-callback interface is a
+        // function object."
         // "If an object is defined to be a function object, then it has
         // characteristics as follows:"
-        // "Its [[Prototype]] internal property is the Function prototype
-        // object."
-        // Note: This doesn't match browsers as of December 2011, see
-        // http://www.w3.org/Bugs/Public/show_bug.cgi?id=14813
+
+        // "* Its [[Prototype]] internal property is the Function prototype
+        //    object."
         assert_equals(Object.getPrototypeOf(window[this.name]), Function.prototype,
                       "prototype of window's property " + format_value(this.name) + " is not Function.prototype");
-        // "Its [[Get]] internal property is set as described in ECMA-262
-        // section 15.3.5.4."
+
+        // "* Its [[Get]] internal property is set as described in ECMA-262
+        //    section 15.3.5.4."
         // Not much to test for this.
-        // "Its [[Construct]] internal property is set as described in ECMA-262
-        // section 13.2.2."
+
+        // "* Its [[Construct]] internal property is set as described in
+        //    ECMA-262 section 13.2.2."
         // Tested below if no constructor is defined.  TODO: test constructors
         // if defined.
-        // "Its [[HasInstance]] internal property is set as described in
-        // ECMA-262 section 15.3.5.3, unless otherwise specified."
+
+        // "* Its [[HasInstance]] internal property is set as described in
+        //    ECMA-262 section 15.3.5.3, unless otherwise specified."
         // TODO
-        // "Its [[Class]] internal property is “Function”."
+
+        // "* Its [[NativeBrand]] internal property is “Function”."
         // String() returns something implementation-dependent, because it calls
         // Function#toString.
         assert_class_string(window[this.name], "Function", "class string of " + this.name);
 
-        if (!this.has_extended_attribute("Constructor"))
-        {
+        if (!this.has_extended_attribute("Constructor")) {
             // "The internal [[Call]] method of the interface object behaves as
             // follows . . .
             //
             // "If I was not declared with a [Constructor] extended attribute,
             // then throw a TypeError."
-            assert_throws(new TypeError(), function()
-            {
+            assert_throws(new TypeError(), function() {
                 window[this.name]();
             }.bind(this), "interface object didn't throw TypeError when called as a function");
-            assert_throws(new TypeError(), function()
-            {
+            assert_throws(new TypeError(), function() {
                 new window[this.name]();
             }.bind(this), "interface object didn't throw TypeError when called as a constructor");
         }

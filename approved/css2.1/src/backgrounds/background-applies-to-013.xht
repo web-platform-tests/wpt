@@ -3,7 +3,7 @@
     <head>
         <title>CSS Test: Background applied to elements with 'display' set to 'table'</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
-        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-04-17 -->
+        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-11-27 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#propdef-background" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#background-properties" />
         <link rel="match" href="../reference/ref-filled-black-96px-square.xht" />
@@ -13,28 +13,34 @@
         <style type="text/css">
             #table
             {
+                background: black;
                 display: table;
                 table-layout: fixed;
-                background: black;
+                width: 1in;
             }
-            #row
+            .row
             {
                 display: table-row;
             }
-            #cell
+            .cell
             {
                 display: table-cell;
-                height: 1in;
-                width: 1in;
+                height: 0.5in;
             }
         </style>
     </head>
     <body>
         <p>Test passes if there is a filled black square.</p>
+
         <div id="table">
-            <div id="row">
-                <div id="cell"></div>
+            <div class="row">
+                <div class="cell">a</div><div class="cell">b</div>
+            </div>
+
+            <div class="row">
+                <div class="cell">c</div><div class="cell">d</div>
             </div>
         </div>
+
     </body>
 </html>

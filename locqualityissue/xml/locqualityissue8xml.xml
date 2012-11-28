@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <doc>
   <header>
-   <its:rules xmlns:its="http://www.w3.org/2005/11/its" xmlns:xlink="http://www.w3.org/1999/xlink" its:version="2.0" xlink:type="simple" xlink:href="locqualityissue8xmlrules.xml"/>
+   <its:rules xmlns:its="http://www.w3.org/2005/11/its" xmlns:xlink="http://www.w3.org/1999/xlink" version="2.0" xlink:type="simple" xlink:href="locqualityissue8xmlrules.xml"/>
   </header>
   <para><issue issueref="#l1234" type="typographical" note="Sentence without capitalization" value="50" profile="http://example.org/qaModel/v13">transport</issue> or transportation is the movement of people, animals and goods from one location to another.Modes of <issue issueref="#l1235" type="spelling" note="should be 'transport include'" value="75" profile="http://example.org/qaModel/v13">tranport inc.</issue> air, rail, road, water, cable, pipeline, and space.</para>
 </doc>

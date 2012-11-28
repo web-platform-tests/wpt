@@ -1,0 +1,5 @@
+<its:rules xmlns:its="http://www.w3.org/2005/11/its" xmlns:h="http://www.w3.org/1999/xhtml"  version="2.0">
+ <its:param name="externalresourceParam">video-image.png</its:param>
+ <its:externalResourceRefRule selector="//h:video/@src" externalResourceRefPointer="."/>
+ <its:externalResourceRefRule selector="//h:video[@poster=$externalresourceParam]" externalResourceRefPointer="."/>
+</its:rules>

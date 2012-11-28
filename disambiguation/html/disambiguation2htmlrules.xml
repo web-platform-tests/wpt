@@ -1,10 +1,10 @@
  <its:rules xmlns:its="http://www.w3.org/2005/11/its" version="2.0" xmlns:h="http://www.w3.org/1999/xhtml">
     <its:param name="disambigCityParam">dublin</its:param>
+    <its:param name="disambigCapitalParam">capital</its:param>
     <its:disambiguationRule selector="//h:body/h:p/h:*[@id=$disambigCityParam]"
       disambigClassRef="http:/nerd.eurecom.fr/ontology#Place"
       disambigGranularity="entity"
       disambigIdentRef="http://dbpedia.org/resource/Dublin"/>
-    <its:param name="disambigCapitalParam">capital</its:param>
     <its:disambiguationRule selector="//h:body/h:p/h:*[@id=$disambigCapitalParam]"
       disambigGranularity="lexicalConcept"
       disambigSource="Wordnet3.0"

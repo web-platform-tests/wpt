@@ -2843,10 +2843,8 @@
 - name: 2d.pattern.repeat.null
   testing:
     - 2d.pattern.unrecognised
-  images:
-    - green-1x1.png
   code: |
-    @assert throws SYNTAX_ERR ctx.createPattern(canvas, null);
+    @assert throws SYNTAX_ERR ctx.createPattern(canvas, null); @moz-todo
 
 - name: 2d.pattern.repeat.undefined
   testing:

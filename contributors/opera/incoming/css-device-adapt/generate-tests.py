@@ -24,6 +24,8 @@ class TestGenerator:
         return self.getSpecURL() + spec_section
 
     def getVendorPrefix(self):
+        if self.vendor is "":
+            return ""
         return "-"+self.vendor+"-"
 
     def getHarnessURL(self):

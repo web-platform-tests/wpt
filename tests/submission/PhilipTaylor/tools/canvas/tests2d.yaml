@@ -1749,7 +1749,7 @@
     g.addColorStop(1, '#f00');
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, 100, 50);
-    @assert pixel 40,20 == 0,255,0,255;
+    @assert pixel 40,20 == 0,255,0,255; @moz-todo
   expected: green
 
 - name: 2d.gradient.interpolate.zerosize.strokeRect

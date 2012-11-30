@@ -2033,7 +2033,7 @@
   testing:
     - 2d.gradient.linear.nonfinite
   code: |
-    @nonfinite @assert throws TypeError ctx.createLinearGradient(<0 Infinity -Infinity NaN>, <0 Infinity -Infinity NaN>, <1 Infinity -Infinity NaN>, <0 Infinity -Infinity NaN>); @moz-todo
+    @nonfinite @assert throws TypeError ctx.createLinearGradient(<0 Infinity -Infinity NaN>, <0 Infinity -Infinity NaN>, <1 Infinity -Infinity NaN>, <0 Infinity -Infinity NaN>);
 
 - name: 2d.gradient.linear.transform.1
   desc: Linear gradient coordinates are relative to the coordinate space at the time of filling
@@ -2106,7 +2106,7 @@
   testing:
     - 2d.gradient.radial.nonfinite
   code: |
-    @nonfinite @assert throws TypeError ctx.createRadialGradient(<0 Infinity -Infinity NaN>, <0 Infinity -Infinity NaN>, <1 Infinity -Infinity NaN>, <0 Infinity -Infinity NaN>, <0 Infinity -Infinity NaN>, <1 Infinity -Infinity NaN>); @moz-todo
+    @nonfinite @assert throws TypeError ctx.createRadialGradient(<0 Infinity -Infinity NaN>, <0 Infinity -Infinity NaN>, <1 Infinity -Infinity NaN>, <0 Infinity -Infinity NaN>, <0 Infinity -Infinity NaN>, <1 Infinity -Infinity NaN>);
 
 - name: 2d.gradient.radial.inside1
   testing:
@@ -9221,11 +9221,11 @@
   testing:
     - 2d.imageData.getcreate.nonfinite
   code: |
-    @nonfinite @assert throws TypeError ctx.createImageData(<10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>); @moz-todo
+    @nonfinite @assert throws TypeError ctx.createImageData(<10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>);
     var posinfobj = { valueOf: function() { return Infinity; } },
         neginfobj = { valueOf: function() { return -Infinity; } },
         nanobj = { valueOf: function() { return -Infinity; } };
-    @nonfinite @assert throws TypeError ctx.createImageData(<10 posinfobj neginfobj nanobj>, <10 posinfobj neginfobj nanobj>); @moz-todo
+    @nonfinite @assert throws TypeError ctx.createImageData(<10 posinfobj neginfobj nanobj>, <10 posinfobj neginfobj nanobj>);
 
 - name: 2d.imageData.create1.zero
   desc: createImageData(null) throws TypeError
@@ -9279,11 +9279,11 @@
   testing:
     - 2d.imageData.getcreate.nonfinite
   code: |
-    @nonfinite @assert throws TypeError ctx.getImageData(<10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>); @moz-todo
+    @nonfinite @assert throws TypeError ctx.getImageData(<10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>);
     var posinfobj = { valueOf: function() { return Infinity; } },
         neginfobj = { valueOf: function() { return -Infinity; } },
         nanobj = { valueOf: function() { return -Infinity; } };
-    @nonfinite @assert throws TypeError ctx.getImageData(<10 posinfobj neginfobj nanobj>, <10 posinfobj neginfobj nanobj>, <10 posinfobj neginfobj nanobj>, <10 posinfobj neginfobj nanobj>); @moz-todo
+    @nonfinite @assert throws TypeError ctx.getImageData(<10 posinfobj neginfobj nanobj>, <10 posinfobj neginfobj nanobj>, <10 posinfobj neginfobj nanobj>, <10 posinfobj neginfobj nanobj>);
 
 - name: 2d.imageData.get.source.outside
   desc: getImageData() returns transparent black outside the canvas

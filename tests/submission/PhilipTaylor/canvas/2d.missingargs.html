@@ -95,7 +95,7 @@ assert_throws(new TypeError(), function() { ctx.arc(0); });
 assert_throws(new TypeError(), function() { ctx.arc(0, 0); });
 assert_throws(new TypeError(), function() { ctx.arc(0, 0, 1); });
 assert_throws(new TypeError(), function() { ctx.arc(0, 0, 1, 0); });
-// (5th argument to arc is optional)
+// (6th argument to arc is optional)
 if (ctx.isPointInPath) {
     assert_throws(new TypeError(), function() { ctx.isPointInPath(); });
     assert_throws(new TypeError(), function() { ctx.isPointInPath(0); });

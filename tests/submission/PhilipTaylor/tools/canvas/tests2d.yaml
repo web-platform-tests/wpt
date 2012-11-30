@@ -220,7 +220,7 @@
     @assert throws TypeError ctx.arc(0, 0);
     @assert throws TypeError ctx.arc(0, 0, 1);
     @assert throws TypeError ctx.arc(0, 0, 1, 0);
-    // (5th argument to arc is optional)
+    // (6th argument to arc is optional)
     if (ctx.isPointInPath) {
         @assert throws TypeError ctx.isPointInPath();
         @assert throws TypeError ctx.isPointInPath(0);

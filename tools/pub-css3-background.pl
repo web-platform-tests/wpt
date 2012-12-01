@@ -45,6 +45,7 @@ push @dirs, 'contributors/mozilla/submitted/css3-background/box-shadow';
 
 ###############################################################################
 # Gérard Talbot
+push @dirs, 'contributors/gtalbot/submitted';
 
 ###############################################################################
 # Google

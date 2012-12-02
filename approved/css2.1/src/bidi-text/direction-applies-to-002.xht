@@ -3,7 +3,7 @@
     <head>
         <title>CSS Test: Direction applied to element with 'display' set to 'table-header-group'</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
-        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-03-14 -->
+        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-12-01 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#propdef-direction" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#direction" />
         <link rel="match" href="direction-applies-to-001-ref.xht" />
@@ -22,6 +22,7 @@
             {
                 display: table;
                 table-layout: fixed;
+                width: 100px;
             }
             #row
             {
@@ -31,7 +32,6 @@
             {
                 display: table-cell;
                 height: 100px;
-                width: 100px;
             }
         </style>
     </head>

@@ -3,7 +3,7 @@
   xmlns:dbk="http://docbook.org/ns/docbook" >
  <its:rules version="2.0">
    <its:param name="externalResourceParam">movie-frame.gif</its:param>
-  <its:externalResourceRefRule selector="//dbk:imagedata | //dbk:audiodata |  //dbk:videodata" externalResourceRefPointer="//imagedata[@fileref=$externalResourceParam]"/>
+    <its:externalResourceRefRule selector="//dbk:imagedata[@fileref=$externalResourceParam]" externalResourceRefPointer="@fileref"/>
  </its:rules>
  <dbk:mediaobject>
   <dbk:videoobject>

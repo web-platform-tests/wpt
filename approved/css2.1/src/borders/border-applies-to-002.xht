@@ -3,7 +3,7 @@
     <head>
         <title>CSS Test: Border applied to element with 'display' set to 'table-header-group'</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
-        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-05-18 -->
+        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-12-03 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#propdef-border" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#border-shorthand-properties" />
         <link rel="match" href="border-applies-to-001-ref.xht" />
@@ -13,7 +13,7 @@
         <style type="text/css">
             #test
             {
-                border: solid green;
+                border: green solid 4px;
                 display: table-header-group;
             }
             #table
@@ -21,27 +21,38 @@
                 border-collapse: collapse;
                 display: table;
                 table-layout: fixed;
+                width: 100px;
             }
-            #row
+            .row
             {
                 display: table-row;
             }
-            #cell
+            .cell
             {
+                color: white;
                 display: table-cell;
-                height: 1in;
-                width: 1in;
+                height: 48px;
             }
         </style>
     </head>
     <body>
         <p>Test passes if there is a hollow green square.</p>
+
         <div id="table">
+
             <div id="test">
-                <div id="row">
-                    <div id="cell"></div>
+
+                <div class="row">
+                    <div class="cell">a</div><div class="cell">b</div>
                 </div>
+
+                <div class="row">
+                    <div class="cell">c</div><div class="cell">d</div>
+                </div>
+
             </div>
+
         </div>
+
     </body>
 </html>

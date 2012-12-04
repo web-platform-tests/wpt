@@ -1,6 +1,6 @@
   <its:rules xmlns:its="http://www.w3.org/2005/11/its" version="2.0">
     <its:provRule selector="/text/body/par[@xml:id='p1']"
-      translationProvenanceRecordsRef="#pr1"/>
+      provenanceRecordsRef="#pr1"/>
     <its:provRule selector="/text/body/legalnotice"
-      translationProvenanceRecordsRef="#pr2"/>
+      provenanceRecordsRef="#pr2"/>
   </its:rules>

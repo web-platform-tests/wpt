@@ -4,7 +4,7 @@
 		<title>CSS Reftest Reference</title>
 		<link rel="author" title="Mihai Balan" href="mibalan@adobe.com">
 		<style>
-		#outer-ordered-1 {
+		#outer-unordered-1 {
 			padding: 0;
 		}
 		#r2 ol, #r2 ul {
@@ -21,41 +21,41 @@
 	<body>
 
 		<div class="region" id="r1">
-			<ol id="outer-ordered-1">
+			<ul id="outer-unordered-1">
 				<li>First list, item 1
-					<ol>
+					<ul>
 						<li>Second list, item 1</li>
 						<li>Second list, item 2</li>
 						<li>Second list, item 3</li>
-					</ol>
+					</ul>
 				</li>
 				<li>First list, item 2
-					<ol>
+					<ul>
 						<li>Third list, item 1</li>
 						<li>Third list, item 2</li>
-					</ol>
+					</ul>
 				</li>
 				<li>First list, final item</li>
-			</ol>
+			</ul>
 		</div>
 		<div class="region" id="r2">
-			<ol id="outer-ordered-2">
+			<ul id="outer-unordered-2">
 				<li>1 on another list</li>
 				<li>2 on another list
-					<ol>
+					<ul>
 						<li>One</li>
 						<li>Two
-							<ol>
+							<ul>
 								<li>I</li>
 								<li>II</li>
-							</ol>
+							</ul>
 						</li>
 						<li>Three</li>
 						<li>Four</li>
-					</ol>
+					</ul>
 				</li>
 				<li>3 on another list</li>
-			</ol>
+			</ul>
 		</div>
 	</body>
 </html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>CSS Test: Extracting list items from multiple lists in same named flow</title>
+		<link rel="author" title="Mihai Balan" href="mibalan@adobe.com">
+		<link rel="help" href="http://www.w3.org/TR/css3-regions">
+		<meta name="flags" content="">
+		<meta name="assert" content="Test checks that extracting list items from multiple lists in the same named flow does not lead to artifacts.">
+		<link rel="match" href="extract-list-items-002.html">
+		<link rel="mismatch" href="">
+		<style>
+		ol > li {
+			-webkit-flow-into: f1;
+		}
+		#r1 {
+			-webkit-flow-from: f1;
+		}
+		ul > li {
+			-webkit-flow-into: f2;
+		}
+		#r2 {
+			-webkit-flow-from: f2;
+		}
+		.region {
+			margin: 2em;
+			background-color: lightgray;
+			width: 200px;
+		}
+		</style>
+	</head>
+	<body>
+		<ol>
+			<li>First list, item 1</li>
+			<li>First list, item 2</li>
+			<li>First list, item 3</li>
+		</ol>
+		<ol>
+			<li>Second list, item 1</li>
+			<li>Second list, item 2</li>
+			<li>Second list, item 3</li>
+		</ol>
+		<div class="region" id="r1"></div>
+
+		<ul>
+			<li>Item 1, list 1</li>
+			<li>Item 2, list 2</li>
+		</ul>
+		<ul>
+			<li>Item 1, list 2</li>
+			<li>Item 2, list 2</li>
+		</ul>
+		<ul>
+			<li>Item 1, list 3</li>
+			<li>Item 2, list 3</li>
+		</ul>
+		<div class="region" id="r2"></div>
+	</body>
+</html>

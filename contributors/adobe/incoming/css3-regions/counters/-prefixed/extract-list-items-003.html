@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>CSS Test: Extracting list items from nested lists in same named flow</title>
+		<link rel="author" title="Mihai Balan" href="mibalan@adobe.com">
+		<link rel="help" href="http://www.w3.org/TR/css3-regions">
+		<meta name="flags" content="">
+		<meta name="assert" content="Test checks that extracting list items from nested lists in the same named flow does not lead to artifacts.">
+		<link rel="match" href="extract-list-items-003.html">
+		<link rel="mismatch" href="">
+		<style>
+		#outer1  li {
+			-webkit-flow-into: f1;
+		}
+		#r1 {
+			-webkit-flow-from: f1;
+		}
+		
+		.region {
+			margin: 2em;
+			background-color: lightgray;
+			width: 200px;
+		}
+		</style>
+	</head>
+	<body>
+		<ol id="outer1">
+			<li>First list, item 1
+				<ol>
+					<li>Second list, item 1</li>
+					<li>Second list, item 2</li>
+					<li>Second list, item 3</li>
+				</ol>
+			</li>
+			<li>First list, item 3</li>
+		</ol>
+		<div class="region" id="r1"></div>
+		<ol>
+			<li>Foo
+				<ul>
+					<li>Zaz</li>
+					<li>Gaz</li>
+					<ol>
+						<li>NiH</li>
+						<li>Ao!</li>
+					</ol>
+					<li>Kaz</li>
+					<li>Naz</li>
+				</ul>
+			</li>
+			<li>Baz</li>
+		</ol>
+	</body>
+</html>

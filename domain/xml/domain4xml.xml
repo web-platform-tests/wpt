@@ -1,6 +1,6 @@
 <text>
     <head>
-       <its:rules xmlns:its="http://www.w3.org/2005/11/its" xmlns:xlink="http://www.w3.org/1999/xlink" version="2.0" xlink:href="Domain4XmlRule.xml"/>
+       <its:rules xmlns:its="http://www.w3.org/2005/11/its" xmlns:xlink="http://www.w3.org/1999/xlink" version="2.0" xlink:href="domain4xmlrules.xml"/>
         <meta name="DC.subject" content="sports"/>
     </head>
     <body>

@@ -13,29 +13,36 @@
         <style type="text/css">
             #table
             {
-                border: solid green;
+                border: green solid 4px;
                 border-collapse: collapse;
                 display: inline-table;
                 table-layout: fixed;
+                width: 100px;
             }
-            #row
+            .row
             {
                 display: table-row;
             }
-            #cell
+            .cell
             {
+                color: white;
                 display: table-cell;
-                height: 1in;
-                width: 1in;
+                height: 48px;
             }
         </style>
     </head>
     <body>
         <p>Test passes if there is a hollow green square.</p>
+
         <div id="table">
-            <div id="row">
-                <div id="cell"></div>
+            <div class="row">
+                <div class="cell">a</div><div class="cell">b</div>
+            </div>
+
+            <div class="row">
+                <div class="cell">c</div><div class="cell">d</div>
             </div>
         </div>
+
     </body>
 </html>

@@ -190,7 +190,7 @@
             "TOKENS" : "dom",
             "ASSERTION" : "When width is set to device-width, the device-width media feature will match when the actual viewport width is the value.",
             "VIEWPORT_DESC" : "width: device-width",
-            "TEST_FUNCTION" : "var mq = window.matchMedia(\"(device-width: \"+viewport.actualWidth+\")\"); assert_true(mq.matches);"
+            "TEST_FUNCTION" : "var mq = window.matchMedia(\"(device-width: \"+viewport.actualWidth+\"px)\"); assert_true(mq.matches);"
         },
         {
             "DESCRIPTION" : "@viewport constrained - height is device-height.",
@@ -198,8 +198,8 @@
             "AUTHOR_EMAIL" : "rune@opera.com",
             "TOKENS" : "dom",
             "ASSERTION" : "When height is set to device-height, the device-height media feature will match when the actual viewport height is the value.",
-            "VIEWPORT_DESC" : "width: device-height",
-            "TEST_FUNCTION" : "var mq = window.matchMedia(\"(device-height: \"+viewport.actualHeight+\")\"); assert_true(mq.matches);"
+            "VIEWPORT_DESC" : "height: device-height",
+            "TEST_FUNCTION" : "var mq = window.matchMedia(\"(device-height: \"+viewport.actualHeight+\"px)\"); assert_true(mq.matches);"
         },
         {
             "DESCRIPTION" : "@viewport constrained - used width is positive.",

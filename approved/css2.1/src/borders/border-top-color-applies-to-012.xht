@@ -3,23 +3,40 @@
     <head>
         <title>CSS Test: Border-top-color applied to element with display inline-block</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
-        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-06-24 -->
+        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-12-05 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#propdef-border-top-color" />
+        <link rel="match" href="border-bottom-applies-to-001-ref.xht" />
+
         <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#border-color-properties" />
         <meta name="flags" content="" />
         <meta name="assert" content="The 'border-top-color' property applies to elements with a display of inline-block." />
         <style type="text/css">
-            div
+            span#inline-block
             {
+                border-top-width: 3px;
                 border-top-style: solid;
                 border-top-color: green;
                 display: inline-block;
+                vertical-align: top;
                 width: 1in;
+            }
+
+            span.block-descendant
+            {
+                display: block;
             }
         </style>
     </head>
     <body>
         <p>Test passes if there is a short horizontal green line.</p>
-        <div></div>
+
+        <div>
+            <span id="inline-block">
+				        <span class="block-descendant"></span>        
+				        <span class="block-descendant"></span>
+        	  </span>
+
+        </div>
+
     </body>
 </html>

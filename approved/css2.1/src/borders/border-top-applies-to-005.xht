@@ -3,7 +3,7 @@
     <head>
         <title>CSS Test: Border-top applied to element with display table-column-group</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
-        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-06-24 -->
+        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-12-05 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#propdef-border-top" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#border-shorthand-properties" />
         <link rel="match" href="border-bottom-applies-to-001-ref.xht" />
@@ -21,25 +21,33 @@
                 border-collapse: collapse;
                 display: table;
                 table-layout: fixed;
+                width: 1in;
             }
-            #row
+            .column
+            {
+            display: table-column;            
+            }            
+            .row
             {
                 display: table-row;
             }
-            #cell
+            .cell
             {
                 display: table-cell;
-                width: 1in;
             }
         </style>
     </head>
     <body>
         <p>Test passes if there is a short horizontal green line.</p>
         <div id="table">
-            <div id="test"></div>
-            <div id="row">
-                <div id="cell"></div>
-            </div>
+            <div id="test"><div class="column"></div><div class="column"></div></div>
+                <div class="row">
+                    <div class="cell"></div><div class="cell"></div>
+                </div>
+
+                <div class="row">
+                    <div class="cell"></div><div class="cell"></div>
+                </div>
         </div>
     </body>
 </html>

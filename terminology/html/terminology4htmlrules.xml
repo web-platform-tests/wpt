@@ -2,6 +2,6 @@
 <its:param name="termParam">keywords</its:param>
 <its:termRule selector="//h:p[2]/h:em" term="yes" termInfoPointer="../h:dfn"/>
 <its:termRule selector="//h:p[3]/h:em[@id=$termParam]" term="no"/>
-<its:termRule selector="//h:em" term="yes" termInfoPointer="../h:dfn"/>
+<its:termRule selector="//h:p[1]/h:em" term="yes" termInfoPointer="../h:dfn"/>
 </its:rules>
 

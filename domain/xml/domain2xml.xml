@@ -6,7 +6,7 @@
                 domainMapping="automotive auto, medical medicine, 'criminal law' law, 'property law' law"
             />
         </its:rules>
-        <meta name="DC.subject" content="automotive"/>
+        <meta name="DC.subject" content="auto"/>
     </head>
     <body>
         <p>The new car from XYZ - buy it now!</p>

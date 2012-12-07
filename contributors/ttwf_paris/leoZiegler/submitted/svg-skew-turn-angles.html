@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<!-- Submitted from TestTWF Paris -->
+<head>
+    <title>CSS Transforms Test: SVG presentation attribute and skew transform with turn angles</title>
+    <link rel="author" title="Leo Ziegler" href="mailto:leo.ziegler@gmail.com">
+    <link rel="reviewer" title="Dirk Schulze" href="mailto:dschulze@adobe.com"> <!-- 2012-10-27 -->
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-transform">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions">
+	<link rel="help" href="http://www.w3.org/TR/css3-transforms/#skew-function">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-transform-value">
+    <link rel="match" href="reference/svg-skew-ref.html">
+    <meta name="flags" content="svg">
+    <meta name="assert" content="The green rect in this test should be skewed horizontally and vertically to completely cover the red rectangle. The 1px stroke on the green rect avoids anti-aliasing artefacts.">
+    <style type="text/css">
+        svg {
+            height: 250px;
+            width: 250px;
+        }
+    </style>
+</head>
+<body>
+    <p>The test passes if there is a green polygon and no red.</p>
+    <svg>
+        <rect width="100px" height="100px" transform="matrix(1,0.36397023426620234,1,0.8390996311772799,0,0)" fill="red" stroke="green" stroke-width="1"/> 
+        <rect width="100px" height="100px" transform="skew(0.0555555556turn,0.111111111turn)" fill="green" /> 
+    </svg>
+</body>
+</html>

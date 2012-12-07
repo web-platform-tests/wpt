@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<!-- Submitted from TestTWF Paris -->
+<head>
+    <title>CSS Transforms Test: SVG presentation attribute and skew transform with degree angles</title>
+    <link rel="author" title="Leo Ziegler" href="mailto:leo.ziegler@gmail.com">
+    <link rel="reviewer" title="Dirk Schulze" href="mailto:dschulze@adobe.com"> <!-- 2012-10-27 -->
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-transform">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions">
+	<link rel="help" href="http://www.w3.org/TR/css3-transforms/#skew-function">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#svg-transform-value">
+    <link rel="match" href="reference/svg-skew-ref.html">
+    <meta name="flags" content="svg">
+    <meta name="assert" content="The green rect in this ref should NOT be transformed to ensure ref is valid.">
+    <style type="text/css">
+        svg {
+            height: 250px;
+            width: 250px;
+        }
+    </style>
+</head>
+<body>
+    <p>The test passes if there is a green polygon and no red.</p>
+    <svg>
+        <rect width="100px" height="100px" fill="green" stroke="green" stroke-width="1"/> 
+    </svg>
+</body>
+</html>

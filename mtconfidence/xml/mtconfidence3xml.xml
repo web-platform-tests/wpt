@@ -1,13 +1,10 @@
 <text xmlns:its="http://www.w3.org/2005/11/its">
-<head>
-   <its:rules xmlns:its="http://www.w3.org/2005/11/its" xmlns:xlink="http://www.w3.org/1999/xlink" its:version="2.0" xlink:type="simple" xlink:href="mtconfidence3xmlrules.xml"/>
-</head>
   <body>
     <p>
-      <span its:mtConfidenceScore="0.6982">Dublin is the capital city of Ireland and has the 50th biggest popluation density in Europe.</span>
-      <span its:mtConfidenceScore="0.7982">Madrid is the capital of Spain.</span>
-      <span its:mtConfidenceScore="0.9982">Berlin is the captial of Germany.</span>
-      <span its:mtConfidenceScore="0.6982">London is the captial of England</span>
+      <span its:annotatorsRef="mt-confidence|file:///tools.xml#T1" its:mtConfidence="0.6982">Dublin is the capital city of Ireland and has the 50th biggest popluation density in Europe.</span>
+      <span its:annotatorsRef="mt-confidence|file:///tools.xml#T2" its:mtConfidence="0.7982">Madrid is the capital of Spain.</span>
+      <span its:annotatorsRef="mt-confidence|file:///tools.xml#T3" its:mtConfidence="0.9982">Berlin is the captial of Germany.</span>
+      <span its:annotatorsRef="mt-confidence|file:///tools.xml#T4" its:mtConfidence="0.6982">London is the captial of England</span>
     </p>
   </body>
 </text>

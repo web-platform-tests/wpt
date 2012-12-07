@@ -1,10 +1,10 @@
 <text xmlns:its="http://www.w3.org/2005/11/its">
   <body>
     <p>
-      <its:span mtProducer="Bing Translator" mtEngine="en-t-cs" mtConfidenceScore="0.9982">Dublin is the capital city of Ireland.</its:span>
-      <its:span mtProducer="Google Translator" mtEngine="en-t-cs" mtConfidenceScore="0.8982">Madrid is the capital of Spain.</its:span>
-      <its:span mtProducer="vanilla Moses" mtEngine="en-t-cs" mtConfidenceScore="0.7982">Berlin is the captial of Germany.</its:span>
-      <its:span mtProducer="Bing Translator" mtEngine="en-t-cs" mtConfidenceScore="0.6982">London is the captial of England</its:span>
+      <its:span annotatorsRef="mt-confidence|file:///tools.xml#T1" mtConfidence="0.9982">Dublin is the capital city of Ireland.</its:span>
+      <its:span annotatorsRef="mt-confidence|file:///tools.xml#T2" mtConfidence="0.8982">Madrid is the capital of Spain.</its:span>
+      <its:span annotatorsRef="mt-confidence|file:///tools.xml#T3" mtConfidence="0.7982">Berlin is the captial of Germany.</its:span>
+      <its:span annotatorsRef="mt-confidence|file:///tools.xml#T4" mtConfidence="0.6982">London is the captial of England</its:span>
     </p>
   </body>
 </text>

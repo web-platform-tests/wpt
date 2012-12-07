@@ -18,6 +18,18 @@
 	<!-- Be sure to make the main testing area first in the order -->
 	<link rel="help" href="http://www.w3.org/TR/css3-values/#viewport-relative-lengths">
 
+    <!-- testharness inclusion for later submission -->    
+	<script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    
+    <!-- testharness fallback for local testing -->    
+	<script>
+		window.test || document.write('\
+			<script src="http://www.w3c-test.org/resources/testharness.js"><\/script>\
+			<script src="http://www.w3c-test.org/resources/testharnessreport.js"><\/script>\
+		');
+    </script>
+
 	<style>
 		
 		#div {
@@ -58,18 +70,6 @@
         </tbody>
     </table>
 	
-    <!-- testharness inclusion for later submission -->    
-	<script src="/resources/testharness.js"></script>
-    <script src="/resources/testharnessreport.js"></script>
-    
-    <!-- testharness fallback for local testing -->    
-	<script>
-		window.test || document.write('\
-			<script src="http://www.w3c-test.org/resources/testharness.js"><\/script>\
-			<script src="http://www.w3c-test.org/resources/testharnessreport.js"><\/script>\
-		');
-    </script>
-
     <script>
 	
 	/* Boilerplate code */

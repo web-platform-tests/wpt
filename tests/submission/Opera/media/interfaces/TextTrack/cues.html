@@ -9,19 +9,15 @@ setup(function(){
     window.t1 = video.addTextTrack('subtitles');
     window.track = document.createElement('track');
     track['default'] = true;
-    video.appendChild(track);
+    video.appendChild(track); // queues a task to "honor user preferences...", media element event task source
     window.t2 = track.track;
     window.t1_cues = t1.cues
     window.t2_cues = t2.cues
 });
 test(function(){
     assert_equals(t1.cues, t1_cues, 't1.cues should return same object');
-    assert_equals(t2.cues, t2_cues, 't2.cues should return same object');
-    assert_not_equals(t1.cues, t2.cues, 't1.cues and t2.cues should be different objects');
     assert_not_equals(t1.cues, null, 't1.cues should not be null');
-    assert_not_equals(t2.cues, null, 't2.cues should not be null');
     assert_equals(t1.cues.length, 0, 't1.cues should have length 0');
-    assert_equals(t2.cues.length, 0, 't2.cues should have length 0');
 }, document.title+', empty list');
 test(function(){
     var c = new TextTrackCue(0, 1, "text");
@@ -66,4 +62,16 @@ test(function(){
     assert_equals(t1.cues[0].id, 'id');
     assert_equals(t1.cues[1].id, 'id2');
 }, document.title+', changing order');
+async_test(function(){
+    t1.mode = 'showing';
+    assert_equals(t2.cues, null, 't2.cues should be null');
+    video.onplay = this.step_func(function(){
+        assert_equals(t2.cues, t2_cues, 't2.cues should return same object');
+        assert_not_equals(t1.cues, t2.cues, 't1.cues and t2.cues should be different objects');
+        assert_not_equals(t2.cues, null, 't2.cues should not be null');
+        assert_equals(t2.cues.length, 0, 't2.cues should have length 0');
+        this.done();
+    });
+    video.play(); // queues a task to fire 'play', media element event task source
+}, document.title+', default attribute');
 </script>

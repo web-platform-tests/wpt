@@ -1,0 +1,146 @@
+<!DOCTYPE HTML>
+<html>
+<!-- Submitted from TestTWF Paris -->
+    <head>
+        <title>HTMLTableElement.rows tests</title>
+        <meta charset="UTF-8">
+
+        <link rel="author" title="Hans Christian Reinl" href="http://drublic.de/">
+        <link rel="help" href="http://www.w3.org/TR/html5/single-page.html#dom-table-rows">
+
+        <meta name="assert" content="Test `rows` in `table`">
+
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+    </head>
+
+    <body>
+        <div id="log"></div>
+
+        <table id="table1">
+            <tr id="row1"><td></td></tr>
+            <tr><td></td></tr>
+            <tr><td></td></tr>
+        </table>
+
+        <table id="table2">
+            <tbody>
+                <tr><td></td></tr>
+                <tr><td></td></tr>
+            </tbody>
+        </table>
+
+        <table id="table3">
+            <tbody>
+                <tr><td></td></tr>
+                <tr><td></td></tr>
+            </tbody>
+            <tbody>
+                <tr><td></td></tr>
+            </tbody>
+        </table>
+
+        <table id="table4">
+            <thead>
+                <tr><th></th></tr>
+                <tr><th></th></tr>
+            </thead>
+            <tbody>
+                <tr><td></td></tr>
+                <tr><td></td></tr>
+            </tbody>
+        </table>
+
+        <table id="table5">
+            <tbody>
+                <tr><td>
+                    <table>
+                        <tr><td></td></tr>
+                    </table>
+                </td></tr>
+                <tr><td></td></tr>
+            </tbody>
+        </table>
+
+        <table id="table6">
+            <thead>
+                <tr id="order-0"><th></th></tr>
+            </thead>
+            <tbody>
+                <tr id="order-1"><td></td></tr>
+                <tr id="order-2"><td></td></tr>
+            </tbody>
+            <tfoot>
+                <tr id="order-3"><td></td></tr>
+            </tfoot>
+        </table>
+
+        <table id="table7">
+            <thead>
+                <tr id="order-0"><td></td></tr>
+                <tr id="order-1"><td></td></tr>
+            </thead>
+
+            <tr id="order-2"><td></td></tr>
+            <tr id="order-3"><td></td></tr>
+        </table>
+
+        <script>
+            // without tbody
+            test(function () {
+                assert_equals(document.getElementById('table1').rows.length, 3);
+            }, "`rows` length of all rows in the table: without <tbody>");
+
+            // with tbody
+            test(function () {
+                assert_equals(document.getElementById('table2').rows.length, 2);
+            }, "`rows` length of all rows in the table: with <tbody>");
+
+            // two tbodys
+            test(function () {
+                assert_equals(document.getElementById('table3').rows.length, 3);
+            }, "`rows` length of all rows in the table: with two <tbody>s");
+
+            // thead & tbody
+            test(function () {
+                assert_equals(document.getElementById('table4').rows.length, 4);
+            }, "`rows` length of all rows in the table: with <thead> and <tbody>");
+
+            // Tables in a table
+            test(function () {
+                assert_equals(document.getElementById('table5').rows.length, 2);
+            }, "`rows` length of all rows in one table which includes another table");
+
+            // thead but no tbody
+            test(function () {
+                assert_equals(document.getElementById('table7').rows.length, 4);
+            }, "`rows` length of all rows in one table if tbody is absent");
+
+            // HTML Collection
+            test(function () {
+                assert_equals(typeof document.getElementById('table1').rows.item, "function");
+            }, "`rows` needs to return a HTMLCollection");
+
+            // HTML Collection: Index
+            test(function () {
+                var tableRows = document.getElementById('table1').rows;
+                assert_equals(tableRows.item(0).getAttribute('id'), "row1");
+            }, "Check if index of row is returned correctly");
+
+            // Row Order
+            test(function () {
+                var tableRows = document.getElementById('table6').rows;
+                assert_equals(tableRows.item(1).id, "order-1");
+                assert_equals(tableRows.item(3).id, "order-3");
+            }, "row order as in tree");
+
+            // Row Order if tbody is absent
+            test(function () {
+                var tableRows = document.getElementById('table7').rows;
+                assert_equals(tableRows.item(1).id, "order-1");
+                assert_equals(tableRows.item(3).id, "order-3");
+            }, "row order as in tree if tbody is absent");
+        </script>
+    </body>
+</html>
+

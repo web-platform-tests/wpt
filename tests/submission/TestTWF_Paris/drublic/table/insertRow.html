@@ -1,0 +1,179 @@
+<!DOCTYPE HTML>
+<html>
+<!-- Submitted from TestTWF Paris -->
+    <head>
+        <title>HTMLTableElement.insertRows()</title>
+        <meta charset="UTF-8">
+
+        <link rel="author" title="Hans Christian Reinl" href="http://drublic.de/">
+        <link rel="help" href="http://www.w3.org/TR/html5/single-page.html#dom-table-insertrow">
+
+        <meta name="assert" content="Test `insertRows` in `table`">
+
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+    </head>
+
+    <body>
+        <div id="log"></div>
+
+        <table id="table1">
+            <tr><td></td></tr>
+            <tr><td></td></tr>
+        </table>
+
+        <table id="table2">
+            <tr></tr>
+            <tr><td></td></tr>
+        </table>
+
+        <table id="table3"></table>
+
+        <table id="table4"><tbody></tbody></table>
+
+        <table id="table5"><tbody></tbody><tbody></tbody></table>
+
+        <script>
+            // Inserting a row
+            test(function () {
+                var table = document.getElementById('table1');
+                assert_equals(table.rows.length, 2);
+                table.insertRow(0);
+                assert_equals(table.rows.length, 3);
+            }, "insert a row");
+
+            // Insert row at undefined position
+            test(function () {
+                var table = document.getElementById('table1');
+                table.insertRow();
+                assert_equals(table.rows.length, 4);
+
+                // Browser-Bugs:
+                //   Firefox 16.0.2:            Fails with Exception "Not enough arguments".
+                //   Firefox Nightly 18.0.2:    Fails with Exception "Not enough arguments".
+                //   Opera 12.02:               Fails with Exception "WRONG_ARGUMENTS_ERR".
+                //   Opera 12.10 beta RC:       Fails with Exception "WRONG_ARGUMENTS_ERR".
+            }, "Insert row at undefined position");
+
+            // Insert row at end of table
+            test(function () {
+                var table = document.getElementById('table2');
+                assert_equals(table.rows.length, 2);
+                table.insertRow(-1);
+                assert_equals(table.rows.length, 3);
+            }, "Insert row at the end of a table");
+
+            // Check if row is inserted at table end
+            test(function () {
+                var tr,
+                    position,
+                    table = document.getElementById('table2');
+
+                // Inset a row at the end
+                tr = table.insertRow(-1);
+
+                // Compare last row with just inserted
+                assert_equals(table.rows.item(table.rows.length - 1), tr);
+
+                // To be save, test other row agains inserted one
+                assert_not_equals(table.rows.item(0), tr);
+            }, "Row positioned at end of table");
+
+            // Insert row if postion more than rows in table
+            test(function () {
+                var table = document.getElementById('table2');
+                assert_throws("IndexSizeError", function () {
+                    table.insertRow(table.rows.length + 1);
+                });
+            }, "Insert row if postion more than rows in table");
+
+            // If row inserted at position less than -1, IndexSizeError
+            test(function () {
+                var table = document.getElementById('table2');
+
+                // Try inserting at -2
+                assert_throws("IndexSizeError", function () {
+                    table.insertRow(-2);
+                });
+
+                // Try inserting at -6
+                assert_throws("IndexSizeError", function () {
+                    table.insertRow(-6);
+                });
+            }, "Insert row at position less than -1");
+
+            // Insert row if no tbody and no tr is in table
+            test(function () {
+                var table = document.getElementById('table3');
+                table.insertRow(0);
+
+                assert_equals(table.innerHTML, "<tbody><tr></tr></tbody>");
+            }, "Insert row if no tbody and no tr");
+
+            // Insert row if no tr is in table
+            test(function () {
+                var table = document.getElementById('table4');
+                table.insertRow(0);
+
+                assert_equals(table.innerHTML, "<tbody><tr></tr></tbody>");
+            }, "Insert row if no tr is in table");
+
+            // Insert row if more than one tbody is in table
+            test(function () {
+                var tr, lastTbody,
+                    table = document.getElementById('table5');
+
+                tr = table.insertRow(0);
+
+                lastTbody = table.childNodes[table.childNodes.length - 1];
+                assert_equals(lastTbody.tagName.toLowerCase(), "tbody");
+
+                assert_equals(lastTbody.childNodes[0], tr);
+
+                // Browser Bugs:
+                //   Firefox 16.0.2: Fails, does not create tbody
+            }, "Insert row if more than one tbody is in table");
+
+            // row inserted, position more than elements in table, +Infinity
+            test(function () {
+                var table = document.getElementById('table2');
+
+                assert_throws("IndexSizeError", function () {
+                    table.insertRow(Infinity);
+                });
+
+                // Browser Bugs:
+                //   Google Chrome 22.0.1229.94:        Inserts row in _last_ tbody at first position
+                //   Google Chrome Canary 24.0.1309.0:  Inserts row in _last_ tbody at first position
+                //   Safari 6.0.1:                      Inserts row in _last_ tbody at first position
+                //   Webkit Nightly r132467:            Inserts row in _last_ tbody at first position
+                //   Firefox 16.0.2:                    Inserts row in _first_ tbody at first position
+                //   Firefox Nightly 18.0.2:            Inserts row in _first_ tbody at first position
+                //   Opera 12.02:                       Inserts row in _first_ tbody at first position
+                //   Opera 12.10 beta RC:               Inserts row in _first_ tbody at first position
+                //   Internet Explorer 9.0.8112.16421:  Inserts row in _last_ tbody at first position
+            }, "Insert row, position more than elements in table, +Infinity");
+
+            // row inserted, position less than -1, -Infinity
+            test(function () {
+                var table = document.getElementById('table2');
+
+                assert_throws("IndexSizeError", function () {
+                    table.insertRow(-Infinity);
+                });
+            }, "Insert row at position less than -1, -Infinity");
+
+            // row inserted, NaN
+            //    Expected behavior in secification not defined
+            test(function () {
+                var table = document.getElementById('table2');
+
+                assert_throws("IndexSizeError", function () {
+                    table.insertRow(NaN);
+                });
+            }, "Insert row, NaN");
+
+        </script>
+    </body>
+</html>
+

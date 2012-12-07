@@ -3,7 +3,7 @@
     <head>
         <title>CSS Test: Border-top-width applied to element with display table</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
-        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-06-25 -->
+        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-12-06 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#propdef-border-top-width" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#border-width-properties" />
 		<link rel="match" href="../reference/ref-filled-black-96px-square.xht" />
@@ -17,24 +17,30 @@
                 border-top-width: 1in;
                 display: table;
                 table-layout: fixed;
+                width: 1in;
             }
-            #row
+            .row
             {
                 display: table-row;
             }
-            #cell
+            .cell
             {
                 display: table-cell;
-                width: 1in;
             }
         </style>
     </head>
     <body>
         <p>Test passes if there is a filled black square.</p>
+
         <div id="table">
-            <div id="row">
-                <div id="cell"></div>
+            <div class="row">
+                <div class="cell"></div><div class="cell"></div>
+            </div>
+
+            <div class="row">
+                <div class="cell"></div><div class="cell"></div>
             </div>
         </div>
+
     </body>
 </html>

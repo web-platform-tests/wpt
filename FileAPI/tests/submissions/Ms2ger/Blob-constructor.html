@@ -178,19 +178,12 @@ test_blob(function() {
 
 // options argument
 test(function() {
-  assert_throws(new TypeError(), function() {
-    new Blob([], { endings: "invalidEnumValue" });
-  });
-  assert_throws(new TypeError(), function() {
-    new Blob([], { endings: null });
-  });
-  assert_throws(new TypeError(), function() {
-    new Blob([], { endings: undefined });
-  });
-  assert_throws(new TypeError(), function() {
-    new Blob([], { endings: 0 });
-  });
-}, "Should throw TypeError for invalid enum values.");
+  new Blob([], { endings: "invalidEnumValue" });
+  new Blob([], { endings: null });
+  new Blob([], { endings: undefined });
+  new Blob([], { endings: 0 });
+  new Blob([], { get endings() { assert_unreached("Should not call getter"); } });
+}, "The 'endings' property should be ignored.");
 
 test(function() {
   assert_throws(test_error, function() {
@@ -200,38 +193,16 @@ test(function() {
   });
   assert_throws(test_error, function() {
     new Blob([], {
-      get endings() { throw test_error; },
-      get type() { assert_unreached("endings getter should be called before type getter."); }
-    });
-  });
-  assert_throws(test_error, function() {
-    new Blob([], {
       type: { toString: function() { throw test_error; } }
     });
   });
-  assert_throws(test_error, function() {
-    new Blob([], {
-      endings: { toString: function() { throw test_error; } },
-      type: { toString: function() { assert_unreached("endings toString should be called before type toString."); } }
-    });
-  });
 }, "options properties should be accessed in lexicographic order.");
-
-test(function() {
-  assert_throws(new TypeError(), function() {
-    new Blob([], {
-      endings: "invalidEnumValue",
-      get type() { assert_unreached("endings should be validated before calling the type getter."); }
-    });
-  });
-}, "options properties should be converted to the IDL type before accessing the next property.");
 
 test(function() {
   assert_throws(test_error, function() {
     new Blob(
       [{ toString: function() { throw test_error } }],
       {
-        get endings() { assert_unreached("endings getter should not be called."); },
         get type() { assert_unreached("type getter should not be called."); }
       }
     );
@@ -286,44 +257,19 @@ test_blob(function() {
   desc: "Passing 'TEXT/HTML' for type should return a 'text/html' for blob.type."
 });
 
-// TODO: SyntaxErrors
-
-test_blob(function() {
-  return new Blob([], { endings: "native" });
-}, {
-  expected: "",
-  type: "",
-  desc: "Endings can be 'native'."
-});
-test_blob(function() {
-  return new Blob([], { endings: "transparent" });
-}, {
-  expected: "",
-  type: "",
-  desc: "Endings can be 'transparent'."
-});
-
-test_blob(function() {
-  return new Blob([], { endings: { toString: function() { return "native"; } } });
-}, {
-  expected: "",
-  type: "",
-  desc: "Endings can be 'native' (toString)."
-});
-test_blob(function() {
-  return new Blob([], { endings: { toString: function() { return "transparent" } } });
-}, {
-  expected: "",
-  type: "",
-  desc: "Endings can be 'transparent' (toString)."
-});
-
 test_blob(function() {
   return new Blob(["\na\r\nb\n\rc\r"], { endings: "transparent" });
 }, {
   expected: "\na\r\nb\n\rc\r",
   type: "",
   desc: "Newlines should not change when endings is 'transparent'."
+});
+test_blob(function() {
+  return new Blob(["\na\r\nb\n\rc\r"], { endings: "native" });
+}, {
+  expected: "\na\r\nb\n\rc\r",
+  type: "",
+  desc: "Newlines should not change when endings is 'native'."
 });
 
 test(function() {
@@ -416,19 +362,6 @@ test(function() {
       [{start: 0, length: 8, contents:  "DEFGHsqu"},
        {start: 8, length:10, contents:  "igglefoo"},
        {start: 4, length: 8, contents:  "Hsquiggl"}]
-    ],
-
-    // Test native line endings
-    [
-      ["foo\r\n", "bar\r", "baz\n"],
-      { endings: "native" },
-      navigator.platform.indexOf("Win") != -1
-      ? [{start: 0, length: 5, contents:  "foo\r\n"},
-         {start: 5, length: 5, contents:  "bar\r\n"},
-         {start: 10, length: 5, contents: "baz\r\n"}]
-      : [{start: 0, length: 4, contents:  "foo\n"},
-         {start: 4, length: 4, contents:  "bar\n"},
-         {start: 8, length: 4, contents: "baz\n"}]
     ],
 
     // Test type coercion of a number

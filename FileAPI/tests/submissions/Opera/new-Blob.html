@@ -38,30 +38,6 @@
         });
         reader.readAsText(b1);
     });
-    var t_native = async_test(document.title+', native endings');
-    t_native.step(function(){
-        var r = new Blob(['\r'], {endings:"native"});
-        var n = new Blob(['\n'], {endings:"native"});
-        var rn = new Blob(['\r\n'], {endings:"native"});
-        var r_n = new Blob(['\r', '\n'], {endings:"native"});
-        var rrnn = new Blob(['\r\r\n\n'], {endings:"native"});
-        var len = /*isWin ? 2 :*/ 1;
-        assert_equals(r.size, len, '\\r');
-        assert_equals(n.size, len, '\\n');
-        assert_equals(rn.size, len * /*1*/ 2, '\\r\\n');
-        assert_equals(r_n.size, len * 2, '\\r, \\n'); // https://www.w3.org/Bugs/Public/show_bug.cgi?id=16731
-        assert_equals(rrnn.size, len * /*3*/ 4, '\\r\\r\\n\\n');
-        var reader = new FileReader();
-        reader.onload = this.step_func(function(e) {
-            var newline = /*isWin ? '\r\n' : '\n'*/ '\r';
-            assert_equals(reader.result, newline);
-            this.done();
-        });
-        reader.onerror = this.step_func(function(e) {
-            assert_unreached('got error event on FileReader');
-        });
-        reader.readAsText(r);
-    });
     test(function() {
         assert_throws(new TypeError(), function() { new Blob("foo"); });
         // assert_throws(new TypeError(), function() { new Blob({"0": "foo", "length":1}); }); // https://www.w3.org/Bugs/Public/show_bug.cgi?id=16767
@@ -169,8 +145,8 @@
             var reader = new FileReader();
             reader.onload = this.step_func(function(e) {
                 assert_equals(reader.result, b.expectedText, b.msg);
-		if (b === b6)
-		   this.done();
+                if (b === b6)
+                    this.done();
             });
             reader.readAsText(b, 'utf-8');
         }));

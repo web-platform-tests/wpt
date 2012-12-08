@@ -17,6 +17,8 @@
   table
   {
   border-collapse: collapse;
+  table-layout: fixed;
+  width: 200px;
   }
 
   tfoot
@@ -25,11 +27,9 @@
   border-style: hidden;
   }
 
-  td
+  tfoot td
   {
-  height: 200px;
-  padding: 0px;
-  width: 200px;
+  height: 100px;
   }
   ]]></style>
 
@@ -41,17 +41,21 @@
 
   <table>
 
-   <tfoot>
-    <tr>
-     <td></td>
-    </tr>
-   </tfoot>
+      <tfoot>
+          <tr>
+              <td></td><td></td>
+          </tr>
 
-   <tbody>
-    <tr>
-     <td></td>
-    </tr>
-   </tbody>
+          <tr>
+              <td></td><td></td>
+          </tr>
+      </tfoot>
+
+      <tbody>
+          <tr>
+              <td></td><td></td>
+          </tr>
+      </tbody>
 
   </table>
 

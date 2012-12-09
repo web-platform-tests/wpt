@@ -3,7 +3,7 @@
     <head>
         <title>CSS Test: Border applied to element with 'display' set to 'table-column'</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
-        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-12-03 -->
+        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-12-08 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#propdef-border" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#border-shorthand-properties" />
         <link rel="match" href="border-applies-to-001-ref.xht" />
@@ -21,8 +21,14 @@
                 border-collapse: collapse;
                 display: table;
                 table-layout: fixed;
-                width: 100px;
+                width: 200px;
             }
+
+            .column
+            {
+                display: table-column;            
+            }
+
             .row
             {
                 display: table-row;
@@ -40,14 +46,14 @@
 
         <div id="table">
 
-            <div id="test"></div>
+            <div id="test"></div><div class="column"></div>
 
                 <div class="row">
-                    <div class="cell">a</div>
+                    <div class="cell">a</div><div class="cell">b</div>
                 </div>
 
                 <div class="row">
-                    <div class="cell">c</div>
+                    <div class="cell">c</div><div class="cell">d</div>
                 </div>
 
         </div>

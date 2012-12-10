@@ -2,6 +2,6 @@
     <its:param name="provenanceParam">pr1</its:param>
     <its:provRule selector="/h:html/h:body/h:p[@id=$provenanceParam]"
       provenanceRecordsRefPointer="@id"/>
-    <its:provRule selector="/h:html/h:body/h:p[@id='#pr2']"
+    <its:provRule selector="/h:html/h:body/h:p[@id='pr2']"
       provenanceRecordsRefPointer="@id"/>
   </its:rules>

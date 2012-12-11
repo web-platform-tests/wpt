@@ -1,0 +1,68 @@
+[
+    {
+        "id": "rel-alternate",
+        "original_id": "links.html#rel-alternate"
+    },
+    {
+        "id": "link-type-author",
+        "original_id": "links.html#link-type-author"
+    },
+    {
+        "id": "link-type-bookmark",
+        "original_id": "links.html#link-type-bookmark"
+    },
+    {
+        "id": "link-type-help",
+        "original_id": "links.html#link-type-help"
+    },
+    {
+        "id": "rel-icon",
+        "original_id": "links.html#rel-icon"
+    },
+    {
+        "id": "link-type-license",
+        "original_id": "links.html#link-type-license"
+    },
+    {
+        "id": "link-type-nofollow",
+        "original_id": "links.html#link-type-nofollow"
+    },
+    {
+        "id": "link-type-noreferrer",
+        "original_id": "links.html#link-type-noreferrer"
+    },
+    {
+        "id": "link-type-prefetch",
+        "original_id": "links.html#link-type-prefetch"
+    },
+    {
+        "id": "link-type-search",
+        "original_id": "links.html#link-type-search"
+    },
+    {
+        "id": "link-type-stylesheet",
+        "original_id": "links.html#link-type-stylesheet"
+    },
+    {
+        "id": "link-type-tag",
+        "original_id": "links.html#link-type-tag"
+    },
+    {
+        "id": "sequential-link-types",
+        "original_id": "links.html#sequential-link-types",
+        "children": [
+            {
+                "id": "link-type-next",
+                "original_id": "links.html#link-type-next"
+            },
+            {
+                "id": "link-type-prev",
+                "original_id": "links.html#link-type-prev"
+            }
+        ]
+    },
+    {
+        "id": "other-link-types",
+        "original_id": "links.html#other-link-types"
+    }
+]

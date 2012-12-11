@@ -1,0 +1,48 @@
+[
+    {
+        "id": "kinds-of-content",
+        "original_id": "dom.html#kinds-of-content",
+        "children": [
+            {
+                "id": "metadata-content",
+                "original_id": "dom.html#metadata-content"
+            },
+            {
+                "id": "flow-content",
+                "original_id": "dom.html#flow-content"
+            },
+            {
+                "id": "sectioning-content",
+                "original_id": "dom.html#sectioning-content"
+            },
+            {
+                "id": "heading-content",
+                "original_id": "dom.html#heading-content"
+            },
+            {
+                "id": "phrasing-content",
+                "original_id": "dom.html#phrasing-content"
+            },
+            {
+                "id": "embedded-content",
+                "original_id": "dom.html#embedded-content"
+            },
+            {
+                "id": "interactive-content",
+                "original_id": "dom.html#interactive-content"
+            },
+            {
+                "id": "palpable-content",
+                "original_id": "dom.html#palpable-content"
+            }
+        ]
+    },
+    {
+        "id": "transparent-content-models",
+        "original_id": "dom.html#transparent-content-models"
+    },
+    {
+        "id": "paragraphs",
+        "original_id": "dom.html#paragraphs"
+    }
+]

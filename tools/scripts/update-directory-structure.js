@@ -56,7 +56,15 @@ function walkTree ($, $el, list) {
         ;
         // skip sections that don't have a number
         if (!/^\s*\d+/.test($a.text())) return;
-        var def = { id: $a.attr("href").replace(/^.*#/, "") }
+        var href = $a.attr("href")
+        ,   def = {
+                id: href.toLowerCase()
+                        .replace(/^.*#/, "")
+                        .replace(/[^a-z0-9\-]/g, "-")
+                        .replace(/\-{2,}/g, "-")
+                        .replace(/(?:^\-|\-$)/g, "")
+            ,   original_id: href
+            }
         ,   $ol = $li.find("> ol").first()
         ;
         if ($ol.length) {
@@ -92,7 +100,7 @@ function makeDirs (base, tree, depth) {
     console.log("Making " + base + " at depth " + depth);
     for (var i = 0, n = tree.length; i < n; i++) {
         var sec = tree[i]
-        ,   sane = sec.id.replace(/\//g, "_")
+        ,   sane = sec.id
         ,   path = pth.join(base, sane)
         ;
         mkdirp(path);

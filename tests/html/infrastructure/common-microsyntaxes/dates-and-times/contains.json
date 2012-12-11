@@ -1,0 +1,42 @@
+[
+    {
+        "id": "months",
+        "original_id": "infrastructure.html#months"
+    },
+    {
+        "id": "dates",
+        "original_id": "infrastructure.html#dates"
+    },
+    {
+        "id": "yearless-dates",
+        "original_id": "infrastructure.html#yearless-dates"
+    },
+    {
+        "id": "times",
+        "original_id": "infrastructure.html#times"
+    },
+    {
+        "id": "local-dates-and-times",
+        "original_id": "infrastructure.html#local-dates-and-times"
+    },
+    {
+        "id": "time-zones",
+        "original_id": "infrastructure.html#time-zones"
+    },
+    {
+        "id": "global-dates-and-times",
+        "original_id": "infrastructure.html#global-dates-and-times"
+    },
+    {
+        "id": "weeks",
+        "original_id": "infrastructure.html#weeks"
+    },
+    {
+        "id": "durations",
+        "original_id": "infrastructure.html#durations"
+    },
+    {
+        "id": "vaguer-moments-in-time",
+        "original_id": "infrastructure.html#vaguer-moments-in-time"
+    }
+]

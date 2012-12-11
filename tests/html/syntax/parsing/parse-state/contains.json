@@ -1,0 +1,22 @@
+[
+    {
+        "id": "the-insertion-mode",
+        "original_id": "syntax.html#the-insertion-mode"
+    },
+    {
+        "id": "the-stack-of-open-elements",
+        "original_id": "syntax.html#the-stack-of-open-elements"
+    },
+    {
+        "id": "the-list-of-active-formatting-elements",
+        "original_id": "syntax.html#the-list-of-active-formatting-elements"
+    },
+    {
+        "id": "the-element-pointers",
+        "original_id": "syntax.html#the-element-pointers"
+    },
+    {
+        "id": "other-parsing-state-flags",
+        "original_id": "syntax.html#other-parsing-state-flags"
+    }
+]

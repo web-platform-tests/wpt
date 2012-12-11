@@ -1,0 +1,60 @@
+[
+    {
+        "id": "alt",
+        "original_id": "embedded-content-0.html#alt",
+        "children": [
+            {
+                "id": "general-guidelines",
+                "original_id": "embedded-content-0.html#general-guidelines"
+            },
+            {
+                "id": "a-link-or-button-containing-nothing-but-the-image",
+                "original_id": "embedded-content-0.html#a-link-or-button-containing-nothing-but-the-image"
+            },
+            {
+                "id": "a-phrase-or-paragraph-with-an-alternative-graphical-representation-charts-diagrams-graphs-maps-illustrations",
+                "original_id": "embedded-content-0.html#a-phrase-or-paragraph-with-an-alternative-graphical-representation:-charts,-diagrams,-graphs,-maps,-illustrations"
+            },
+            {
+                "id": "a-short-phrase-or-label-with-an-alternative-graphical-representation-icons-logos",
+                "original_id": "embedded-content-0.html#a-short-phrase-or-label-with-an-alternative-graphical-representation:-icons,-logos"
+            },
+            {
+                "id": "text-that-has-been-rendered-to-a-graphic-for-typographical-effect",
+                "original_id": "embedded-content-0.html#text-that-has-been-rendered-to-a-graphic-for-typographical-effect"
+            },
+            {
+                "id": "a-graphical-representation-of-some-of-the-surrounding-text",
+                "original_id": "embedded-content-0.html#a-graphical-representation-of-some-of-the-surrounding-text"
+            },
+            {
+                "id": "a-purely-decorative-image-that-doesn-t-add-any-information",
+                "original_id": "embedded-content-0.html#a-purely-decorative-image-that-doesn't-add-any-information"
+            },
+            {
+                "id": "a-group-of-images-that-form-a-single-larger-picture-with-no-links",
+                "original_id": "embedded-content-0.html#a-group-of-images-that-form-a-single-larger-picture-with-no-links"
+            },
+            {
+                "id": "a-group-of-images-that-form-a-single-larger-picture-with-links",
+                "original_id": "embedded-content-0.html#a-group-of-images-that-form-a-single-larger-picture-with-links"
+            },
+            {
+                "id": "a-key-part-of-the-content",
+                "original_id": "embedded-content-0.html#a-key-part-of-the-content"
+            },
+            {
+                "id": "an-image-not-intended-for-the-user",
+                "original_id": "embedded-content-0.html#an-image-not-intended-for-the-user"
+            },
+            {
+                "id": "guidance-for-markup-generators",
+                "original_id": "embedded-content-0.html#guidance-for-markup-generators"
+            },
+            {
+                "id": "guidance-for-conformance-checkers",
+                "original_id": "embedded-content-0.html#guidance-for-conformance-checkers"
+            }
+        ]
+    }
+]

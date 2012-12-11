@@ -1,0 +1,30 @@
+[
+    {
+        "id": "introduction-2",
+        "original_id": "forms.html#introduction-2"
+    },
+    {
+        "id": "implicit-submission",
+        "original_id": "forms.html#implicit-submission"
+    },
+    {
+        "id": "form-submission-algorithm",
+        "original_id": "forms.html#form-submission-algorithm"
+    },
+    {
+        "id": "constructing-form-data-set",
+        "original_id": "forms.html#constructing-form-data-set"
+    },
+    {
+        "id": "url-encoded-form-data",
+        "original_id": "forms.html#url-encoded-form-data"
+    },
+    {
+        "id": "multipart-form-data",
+        "original_id": "forms.html#multipart-form-data"
+    },
+    {
+        "id": "plain-text-form-data",
+        "original_id": "forms.html#plain-text-form-data"
+    }
+]

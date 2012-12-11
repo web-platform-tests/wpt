@@ -1,0 +1,22 @@
+[
+    {
+        "id": "client-identification",
+        "original_id": "webappapis.html#client-identification"
+    },
+    {
+        "id": "custom-handlers",
+        "original_id": "webappapis.html#custom-handlers"
+    },
+    {
+        "id": "security-and-privacy",
+        "original_id": "webappapis.html#security-and-privacy"
+    },
+    {
+        "id": "sample-handler-impl",
+        "original_id": "webappapis.html#sample-handler-impl"
+    },
+    {
+        "id": "manually-releasing-the-storage-mutex",
+        "original_id": "webappapis.html#manually-releasing-the-storage-mutex"
+    }
+]

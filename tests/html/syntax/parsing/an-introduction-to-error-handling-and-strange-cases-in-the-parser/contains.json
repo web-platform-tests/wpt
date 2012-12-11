@@ -1,0 +1,26 @@
+[
+    {
+        "id": "misnested-tags-b-i-b-i",
+        "original_id": "syntax.html#misnested-tags:-b-i-/b-/i"
+    },
+    {
+        "id": "misnested-tags-b-p-b-p",
+        "original_id": "syntax.html#misnested-tags:-b-p-/b-/p"
+    },
+    {
+        "id": "unexpected-markup-in-tables",
+        "original_id": "syntax.html#unexpected-markup-in-tables"
+    },
+    {
+        "id": "scripts-that-modify-the-page-as-it-is-being-parsed",
+        "original_id": "syntax.html#scripts-that-modify-the-page-as-it-is-being-parsed"
+    },
+    {
+        "id": "the-execution-of-scripts-that-are-moving-across-multiple-documents",
+        "original_id": "syntax.html#the-execution-of-scripts-that-are-moving-across-multiple-documents"
+    },
+    {
+        "id": "unclosed-formatting-elements",
+        "original_id": "syntax.html#unclosed-formatting-elements"
+    }
+]

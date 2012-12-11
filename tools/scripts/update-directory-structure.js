@@ -4,7 +4,6 @@
 // XXX changes
 //  - turn everything outside [a-zA-Z0-9-] to "-"
 //  - add an "original-id.json" file with the original ID
-//  - merge 5+5.1, etc. build on latest and greatest spec
 //  - make a master/ED and a CR branch (make that temp/CR and temp/unicorn)
 //  - make this into a tool in the repo
 //      - get the spec off the Web
@@ -42,22 +41,10 @@ console.log("Delete the test directory.");
 if (fs.existsSync(testDir)) wrench.rmdirSyncRecursive(testDir);
 mkdirp(testDir);
 
-
-// build a demonstration directory structure with no content in order to show
-// how it could work
-// at the root: html5, html51, canvas2d, canvas2d2, microdata
-// in each of those, extract relevant sections from relevant specs (from ToC)
-//  use IDs for directory names, sanitised
-//  build directories three levels deep
-//  put a .gitkeep in each directory
-//  when there are sections beyond the third level, place a contains.json that has the subsections there
-
 var sections = {
-    html5:      "/Projects/htmlwg.org/drafts/output/html/CR/Overview.html"
-,   html51:     "/Projects/htmlwg.org/drafts/output/html/master/Overview.html"
-,   canvas2d:   "/Projects/htmlwg.org/drafts/output/2dcontext/html5_canvas_CR/Overview.html"
-,   canvas2d2:  "/Projects/htmlwg.org/drafts/output/2dcontext/html5_canvas/Overview.html"
-,   microdata:  "/Projects/htmlwg.org/drafts/output/microdata/CR/Overview.html"
+    html:       "/Projects/htmlwg.org/drafts/output/html/master/Overview.html"
+,   canvas2d:   "/Projects/htmlwg.org/drafts/output/2dcontext/html5_canvas/Overview.html"
+,   microdata:  "/Projects/htmlwg.org/drafts/output/microdata/master/Overview.html"
 };
 
 function walkTree ($, $el, list) {

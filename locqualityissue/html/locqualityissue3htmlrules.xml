@@ -4,11 +4,11 @@
         locQualityIssueComment="Sentence without capitalization"
         locQualityIssueSeverity="50"
 	locQualityIssueProfileRef="http://example.org/qaMovel/v1"
-	locQualityIssueEnabled="yes"/>
+	/>
        <its:locQualityIssueRule selector="//h:span[@id='q2']"
         locQualityIssueType="misspelling"
         locQualityIssueComment="should be 'Music can'"
         locQualityIssueSeverity="75"
         locQualityIssueProfileRef="http://example.org/qaMovel/v1"
-        locQualityIssueEnabled="yes"/>
+        />
     </its:rules>

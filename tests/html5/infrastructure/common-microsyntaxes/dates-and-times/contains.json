@@ -1,0 +1,32 @@
+[
+    {
+        "id": "months"
+    },
+    {
+        "id": "dates"
+    },
+    {
+        "id": "yearless-dates"
+    },
+    {
+        "id": "times"
+    },
+    {
+        "id": "local-dates-and-times"
+    },
+    {
+        "id": "time-zones"
+    },
+    {
+        "id": "global-dates-and-times"
+    },
+    {
+        "id": "weeks"
+    },
+    {
+        "id": "durations"
+    },
+    {
+        "id": "vaguer-moments-in-time"
+    }
+]

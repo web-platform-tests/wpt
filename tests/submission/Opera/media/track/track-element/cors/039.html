@@ -1,9 +1,0 @@
-<!doctype html>
-<title>track CORS: Anonymous, same-origin, no headers, redirects to not same-origin, with headers, redirects to same-origin, no headers</title>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<div id=log></div>
-<script src=support/common.js></script>
-<script>
-var expected = {event:'error', requests:[{cors:'no', cookie:'yes'}, {cors:origin, cookie:'no'}, {cors:'null', cookie:'no'}]};
-</script>

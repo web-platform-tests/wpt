@@ -1,0 +1,11 @@
+[
+    {
+        "id": "some-sample-manifests"
+    },
+    {
+        "id": "writing-cache-manifests"
+    },
+    {
+        "id": "parsing-cache-manifests"
+    }
+]

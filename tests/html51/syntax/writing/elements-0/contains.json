@@ -1,0 +1,20 @@
+[
+    {
+        "id": "start-tags"
+    },
+    {
+        "id": "end-tags"
+    },
+    {
+        "id": "attributes-0"
+    },
+    {
+        "id": "optional-tags"
+    },
+    {
+        "id": "element-restrictions"
+    },
+    {
+        "id": "cdata-rcdata-restrictions"
+    }
+]

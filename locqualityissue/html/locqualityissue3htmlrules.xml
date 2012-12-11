@@ -3,10 +3,17 @@
         locQualityIssueType="typographical"
         locQualityIssueComment="sentence without capitalization"
         locQualityIssueSeverity="50"
+<<<<<<< HEAD
 	locQualityIssueProfileRef="http://example.org/qaMovel/v1"/>
        <its:locQualityIssueRule selector="//span[@id='q2']"
+=======
+	locQualityIssueProfileRef="http://example.org/qaMovel/v1"
+	/>
+       <its:locQualityIssueRule selector="//h:span[@id='q2']"
+>>>>>>> c8699d26c28cd1c63bcef7b8922b7c119684d810
         locQualityIssueType="misspelling"
         locQualityIssueComment="should be 'Music can'"
         locQualityIssueSeverity="75"
-        locQualityIssueProfileRef="http://example.org/qaMovel/v1"/>
+        locQualityIssueProfileRef="http://example.org/qaMovel/v1"
+        />
     </its:rules>

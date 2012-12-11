@@ -5,7 +5,11 @@
         locQualityIssueComment="Sentence without capitalization"
         locQualityIssueSeverity="50"
 	locQualityIssueProfileRef="http://example.org/qaMovel/v1"/>
+<<<<<<< HEAD
        <its:locQualityIssueRule selector="//span[@id='q2']"
+=======
+       <its:locQualityIssueRule selector="//h:span[@id='q2']"
+>>>>>>> c8699d26c28cd1c63bcef7b8922b7c119684d810
         locQualityIssueType="misspelling"
         locQualityIssueComment="should be 'Music can'"
         locQualityIssueSeverity="75"

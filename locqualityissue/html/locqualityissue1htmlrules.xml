@@ -3,6 +3,6 @@
     locQualityIssueType="typographical"
     locQualityIssueComment="Sentence without capitalization"/>
   <its:locQualityIssueRule selector="//h:span[@id='q2']"
-    locQualityIssueType="spelling"
+    locQualityIssueType="misspelling"
     locQualityIssueComment="should be 'Music can'"/>
 </its:rules>

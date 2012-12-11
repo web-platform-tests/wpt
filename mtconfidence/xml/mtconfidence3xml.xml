@@ -1,4 +1,4 @@
-<text xmlns:its="http://www.w3.org/2005/11/its">
+<text xmlns:its="http://www.w3.org/2005/11/its" its:version="2.0">
   <body>
     <p>
       <span its:annotatorsRef="mt-confidence|file:///tools.xml#T1" its:mtConfidence="0.6982">Dublin is the capital city of Ireland and has the 50th biggest population density in Europe.</span>

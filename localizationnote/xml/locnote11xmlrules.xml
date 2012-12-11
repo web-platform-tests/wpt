@@ -9,7 +9,7 @@
 <its:locNoteRule locNoteType="alert" selector="//msg[@id=$DisableInfoParam]">
 <its:locNote>
 The variable
-<code>{0}</code>
+{0}
 has three possible values: 'printer', 'stacker' and 'stapler options'.
 </its:locNote>
 </its:locNoteRule>

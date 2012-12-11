@@ -8,7 +8,7 @@
 <its:locNoteRule locNoteType="alert" selector="//h:p[@id='DisableInfo']">
 <its:locNote>
 The variable
-<code>{0}</code>
+{0}
 has three possible values: 'printer', 'stacker' and 'stapler options'.
 </its:locNote>
 </its:locNoteRule>

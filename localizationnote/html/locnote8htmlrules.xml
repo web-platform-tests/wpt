@@ -9,7 +9,7 @@
 <its:locNoteRule locNoteType="alert" selector="//h:span[@id=$spanIdParam]">
 <its:locNote>
 The variable
-<code>{0}</code>
+{0}
 has three possible values: 'printer', 'stacker' and 'stapler options'.
 </its:locNote>
 </its:locNoteRule>

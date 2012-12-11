@@ -8,7 +8,7 @@
     <its:locNote>Do not translate the word "Chobe"</its:locNote>
    </its:locNoteRule>
    <its:locNoteRule locNoteType="alert" selector="//msg[@id='DisableInfo']">
-    <its:locNote>The variable <code>{0}</code> has three possible values: 'printer', 
+    <its:locNote>The variable {0} has three possible values: 'printer', 
     'stacker' and 'stapler options'.</its:locNote>
    </its:locNoteRule>
   </its:rules>

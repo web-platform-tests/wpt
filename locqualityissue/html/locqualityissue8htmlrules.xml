@@ -6,7 +6,7 @@
         locQualityIssueSeverity="50"
 	locQualityIssueProfileRef="http://example.org/qaMovel/v1"/>
        <its:locQualityIssueRule selector="//h:span[@id='q2']"
-        locQualityIssueType="spelling"
+        locQualityIssueType="misspelling"
         locQualityIssueComment="should be 'Music can'"
         locQualityIssueSeverity="75"
         locQualityIssueProfileRef="http://example.org/qaMovel/v1"/>

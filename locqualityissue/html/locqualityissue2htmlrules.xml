@@ -4,7 +4,7 @@
         locQualityIssueComment="Sentence without capitalization"
         locQualityIssueSeverity="50"/>
 	<its:locQualityIssueRule selector="//h:span[@id='q2']"
-         locQualityIssueType="spelling"
+         locQualityIssueType="misspelling"
          locQualityIssueComment="should be 'Music can'"
 	 locQualityIssueSeverity="75"/>
     </its:rules>

@@ -18,7 +18,7 @@
       provRef=" http://www.examplelsp.com/excontent987/legal/prov/e6354 http://www.vistatec.com/job-12-7-15-X31/reviewed/prov/re8573469"/>
   </its:provenanceRecords>
   <its:rules>
-    <its:param name="provenanceParam">p1</its:param>
+    <its:param name="provenanceParam">#pr1</its:param>
     <its:provRule selector="/text/body/par[@xml:id=$provenanceParam]"
       provenanceRecordsRef="#pr1"/>
     <its:provRule selector="/text/body/legalnotice"
@@ -26,8 +26,8 @@
   </its:rules>
   <title>Translation Revision Provenance Agent: Global Test in XML</title>
   <body>
-    <par xml:id="p1"> This paragraph was translated from the machine.</par>
-    <legalnotice>This text was
+    <par xml:id="#pr1"> This paragraph was translated from the machine.</par>
+    <legalnotice xml:id="#pr2">This text was
       translated directly by a person.</legalnotice>
   </body>
 </text>

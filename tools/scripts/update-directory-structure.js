@@ -56,10 +56,9 @@ function walkTree ($, $el, list) {
         ;
         // skip sections that don't have a number
         if (!/^\s*\d+/.test($a.text())) return;
-        var href = $a.attr("href")
+        var href = $a.attr("href").replace(/^.*#/, "")
         ,   def = {
                 id: href.toLowerCase()
-                        .replace(/^.*#/, "")
                         .replace(/[^a-z0-9\-]/g, "-")
                         .replace(/\-{2,}/g, "-")
                         .replace(/(?:^\-|\-$)/g, "")
@@ -105,6 +104,9 @@ function makeDirs (base, tree, depth) {
         ;
         mkdirp(path);
         fs.writeFileSync(pth.join(path, ".gitkeep"), "", "utf8");
+        if (sec.id !== sec.original_id) {
+            fs.writeFileSync(pth.join(path, "original-id.json"), JSON.stringify({ original_id: sec.original_id}), "utf8");
+        }
         if (sec.children && sec.children.length) {
             if (depth === 3) {
                 fs.writeFileSync(pth.join(path, "contains.json"), JSON.stringify(sec.children, null, 4), "utf8");

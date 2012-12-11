@@ -1,18 +1,18 @@
 [
     {
         "id": "definitions",
-        "original_id": "forms.html#definitions"
+        "original_id": "definitions"
     },
     {
         "id": "constraint-validation",
-        "original_id": "forms.html#constraint-validation"
+        "original_id": "constraint-validation"
     },
     {
         "id": "the-constraint-validation-api",
-        "original_id": "forms.html#the-constraint-validation-api"
+        "original_id": "the-constraint-validation-api"
     },
     {
         "id": "security-forms",
-        "original_id": "forms.html#security-forms"
+        "original_id": "security-forms"
     }
 ]

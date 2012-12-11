@@ -1,26 +1,26 @@
 [
     {
         "id": "start-tags",
-        "original_id": "syntax.html#start-tags"
+        "original_id": "start-tags"
     },
     {
         "id": "end-tags",
-        "original_id": "syntax.html#end-tags"
+        "original_id": "end-tags"
     },
     {
         "id": "attributes-0",
-        "original_id": "syntax.html#attributes-0"
+        "original_id": "attributes-0"
     },
     {
         "id": "optional-tags",
-        "original_id": "syntax.html#optional-tags"
+        "original_id": "optional-tags"
     },
     {
         "id": "element-restrictions",
-        "original_id": "syntax.html#element-restrictions"
+        "original_id": "element-restrictions"
     },
     {
         "id": "cdata-rcdata-restrictions",
-        "original_id": "syntax.html#cdata-rcdata-restrictions"
+        "original_id": "cdata-rcdata-restrictions"
     }
 ]

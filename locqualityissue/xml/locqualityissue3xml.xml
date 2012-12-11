@@ -5,15 +5,15 @@
       <its:locQualityIssueRule selector="//span[@id='q1']"
         locQualityIssuesRef="#l1234"
         locQualityIssueType="typographical"
-        locQualityIssueComment="Sentence without capitalization"
         locQualityIssueSeverity="50"
-	locQualityIssueProfileRef="http://example.org/qaMovel/v1"/>
+	locQualityIssueProfileRef="http://example.org/qaMovel/v1"
+	locQualityIssueEnabled="yes"/>
 	<its:locQualityIssueRule selector="//span[@id='q2']"
         locQualityIssuesRef="#l1235"	
-        locQualityIssueType="spelling"
-        locQualityIssueComment="should be 'transport include'"
+        locQualityIssueType="misspelling"
 	locQualityIssueSeverity="75"
-	locQualityIssueProfileRef="http://example.org/qaMovel/v1"/>
+	locQualityIssueProfileRef="http://example.org/qaMovel/v1"
+	locQualityIssueEnabled="yes"/>
     </its:rules>
   </header>
   <para>

@@ -34,8 +34,10 @@ if (process.argv[2] !== "--force") {
 }
 
 console.log("Move harness and reporting dirs out of test.");
-wrench.copyDirSyncRecursive(pth.join(testDir, "harness"), pth.join(testDir, "../harness"));
-wrench.copyDirSyncRecursive(pth.join(testDir, "reporting"), pth.join(testDir, "../reporting"));
+var harness = pth.join(testDir, "harness")
+,   reporting = pth.join(testDir, "reporting");
+if (fs.existsSync(harness)) wrench.copyDirSyncRecursive(harness, pth.join(testDir, "../harness"));
+if (fs.existsSync(reporting)) wrench.copyDirSyncRecursive(reporting, pth.join(testDir, "../reporting"));
 
 console.log("Delete the test directory.");
 if (fs.existsSync(testDir)) wrench.rmdirSyncRecursive(testDir);

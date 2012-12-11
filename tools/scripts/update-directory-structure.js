@@ -2,6 +2,7 @@
 // convert from old-style test structure to new style
 
 // XXX changes
+//  - forget about using the hg source
 //  - turn everything outside [a-zA-Z0-9-] to "-"
 //  - add an "original-id.json" file with the original ID
 //  - merge 5+5.1, etc. build on latest and greatest spec
@@ -25,6 +26,18 @@ var fs = require("fs")
 ,   testDir = pth.join(targetDir, "tests")
 ,   MAX_DEPTH = 3
 ;
+
+if (process.argv[2] !== "--force") {
+    console.log([
+        "################ WARNING #########################################"
+    ,   "   As currently implemented, this script is very much destructive."
+    ,   "   It will destroy the entire tests directory. For real."
+    ,   "   If you *really* wish to run it, run it with --force."
+    ,   "   Eventually, it will simply update the directory tree."
+    ,   "################ /WARNING ########################################"
+    ].join("\n"));
+    process.exit(1);
+}
 
 console.log("Reset target.");
 if (fs.existsSync(testDir)) wrench.rmdirSyncRecursive(testDir);

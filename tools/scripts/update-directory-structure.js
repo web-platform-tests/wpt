@@ -2,7 +2,6 @@
 // convert from old-style test structure to new style
 
 // XXX changes
-//  - forget about using the hg source
 //  - turn everything outside [a-zA-Z0-9-] to "-"
 //  - add an "original-id.json" file with the original ID
 //  - merge 5+5.1, etc. build on latest and greatest spec
@@ -19,11 +18,7 @@ var fs = require("fs")
 ,   jsdom = require("jsdom")
 ,   wrench = require("wrench")
 ,   mkdirp = require("mkdirp").sync
-    // use hg for source, gh for target
-,   sourceDir = pth.join(__dirname, "../html")
-,   targetDir = pth.join(__dirname, "../html-testsuite")
-,   sourceTestDir = pth.join(sourceDir, "tests")
-,   testDir = pth.join(targetDir, "tests")
+,   testDir = pth.join(__dirname, "../../tests")
 ,   MAX_DEPTH = 3
 ;
 
@@ -39,13 +34,14 @@ if (process.argv[2] !== "--force") {
     process.exit(1);
 }
 
-console.log("Reset target.");
-if (fs.existsSync(testDir)) wrench.rmdirSyncRecursive(testDir);
-
 console.log("Move harness and reporting dirs out of test.");
+wrench.copyDirSyncRecursive(pth.join(testDir, "harness"), pth.join(testDir, "../harness"));
+wrench.copyDirSyncRecursive(pth.join(testDir, "reporting"), pth.join(testDir, "../reporting"));
+
+console.log("Delete the test directory.");
+if (fs.existsSync(testDir)) wrench.rmdirSyncRecursive(testDir);
 mkdirp(testDir);
-wrench.copyDirSyncRecursive(pth.join(sourceDir, "tests/harness"), pth.join(targetDir, "harness"));
-wrench.copyDirSyncRecursive(pth.join(sourceDir, "tests/reporting"), pth.join(targetDir, "reporting"));
+
 
 // build a demonstration directory structure with no content in order to show
 // how it could work
@@ -132,47 +128,4 @@ for (var sec in sections) {
         makeDirs(secDir, toc, 1);
     });
 }
-
-
-// take all tests from approved
-//  - for each, if it identifies a section of the specification, move it to
-//    the correct directory structure
-//  - if not, move it to UNSORTED, and under that maintain its original path
-//  - add all tests to approved.json (explain why JSON)
-// console.log("Finding all approved tests.");
-// var approved = wrench.readdirSyncRecursive(pth.join(sourceDir, "tests/approved"))
-// ,   approvedDir = pth.join(sourceTestDir, "approved")
-// ;
-// wrench.copyDirSyncRecursive(pth.join(approvedDir, "common"), pth.join(testDir, "common"));
-// wrench.copyDirSyncRecursive(pth.join(approvedDir, "fonts"), pth.join(testDir, "fonts"));
-// wrench.copyDirSyncRecursive(pth.join(approvedDir, "images"), pth.join(testDir, "images"));
-// approved = approved.filter(function (it) {
-//     if (it === "common" || it.indexOf("common/") === 0 ||
-//         it === "fonts"  || it.indexOf("fonts/") === 0 ||
-//         it === "images" || it.indexOf("images/") === 0 ||
-//         /MANIFEST$/.test(it) || /approvedtests\.txt/.test(it) ||
-//         fs.statSync(pth.join(approvedDir, it)).isDirectory()
-//     ) return false;
-//     return true;
-// });
-// var bundles = {};
-// approved.forEach(function (it) { bundles[it] = true; });
-// function bundleIt (bund, orig, base, ext) {
-//     if (!bund[base + ext]) return false;
-//     if (!_.isArray(bund[base + ext])) bund[base + ext] = [];
-//     bund[base + ext].push(orig);
-//     delete bund[orig];
-//     return true;
-// }
-// for (var k in bundles) {
-//     if (k.indexOf(".htm") === -1 && k.indexOf(".xhtm") === -1) {
-//         var base = k.replace(/\.(?:x)?htm(?:l)?$/, "");
-//         console.log(base, k);
-//         bundleIt(bundles, k, base, ".html") ||
-//         bundleIt(bundles, k, base, ".xhtml") ||
-//         bundleIt(bundles, k, base, ".htm") ||
-//         console.log("Couldn't bundle: " + k);
-//     }
-// }
-// console.log(approved);
 

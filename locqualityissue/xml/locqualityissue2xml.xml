@@ -3,11 +3,9 @@
   <header>
     <its:rules xmlns:its="http://www.w3.org/2005/11/its" version="2.0">
       <its:locQualityIssueRule selector="//span[@id='q1']"
-        locQualityIssuesRef="#l1234"
         locQualityIssueComment="Sentence without capitalization"
         locQualityIssueSeverity="50"/>
       <its:locQualityIssueRule selector="//span[@id='q2']"
-        locQualityIssuesRef="#l1235"	
         locQualityIssueComment="should be 'transport include'"
 	locQualityIssueSeverity="75"/>
     </its:rules>

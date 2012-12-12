@@ -15,7 +15,6 @@
       <its:locQualityIssues xml:id="lq1">
         <its:locQualityIssue
         locQualityIssueComment="'c'es' is unknown. Could be 'c'est'"
-        locQualityIssuesRef="#l1235"	
 	locQualityIssueSeverity="75"
 	locQualityIssueProfileRef="http://example.org/qaMovel/v1"
 	locQualityIssueEnabled="yes"/>

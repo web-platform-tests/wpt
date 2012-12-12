@@ -1,15 +1,10 @@
 
 // convert from old-style test structure to new style
 
-// XXX changes
-//  - turn everything outside [a-zA-Z0-9-] to "-"
-//  - add an "original-id.json" file with the original ID
+// XXX TODO
 //  - make a master/ED and a CR branch (make that temp/CR and temp/unicorn)
-//  - make this into a tool in the repo
-//      - get the spec off the Web
-//      - be non-destructive, just add missing directories when applicable
-//  - then move stuff around
-
+//  - be non-destructive, just add missing directories when applicable
+//  - move stuff around
 
 var fs = require("fs")
 ,   pth = require("path")
@@ -44,9 +39,9 @@ if (fs.existsSync(testDir)) wrench.rmdirSyncRecursive(testDir);
 mkdirp(testDir);
 
 var sections = {
-    html:       "/Projects/htmlwg.org/drafts/output/html/master/Overview.html"
-,   canvas2d:   "/Projects/htmlwg.org/drafts/output/2dcontext/html5_canvas/Overview.html"
-,   microdata:  "/Projects/htmlwg.org/drafts/output/microdata/master/Overview.html"
+    html:       "http://www.w3.org/html/wg/drafts/html/master/Overview.html"
+,   canvas2d:   "http://www.w3.org/html/wg/drafts/2dcontext/html5_canvas/Overview.html"
+,   microdata:  "http://www.w3.org/html/wg/drafts/microdata/master/Overview.html"
 };
 
 function walkTree ($, $el, list) {
@@ -75,15 +70,11 @@ function walkTree ($, $el, list) {
 }
 
 function extractSections (sec, secDir, spec, cb) {
-    jsdom.defaultDocumentFeatures.FetchExternalResources = false;
-    jsdom.defaultDocumentFeatures.ProcessExternalResources = false;
-    jsdom.defaultDocumentFeatures.MutationEvents = "2.0";
-    jsdom.defaultDocumentFeatures.SkipExternalResources = true;
     jsdom.env(
         spec
     ,   function (err, window) {
             if (err) return cb(err);
-            jsdom.jQueryify(window, "/Projects/COMMON/jquery.min.js", function (window, $) {
+            jsdom.jQueryify(window, "https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js", function (window, $) {
                 if (!$) return cb("$ was not defined");
                 var $root = $("body > ol.toc").first()
                 ,   tree = []
@@ -123,7 +114,7 @@ for (var sec in sections) {
     mkdirp(secDir);
     console.log("Launching extraction for " + sec);
     extractSections(sec, secDir, sections[sec], function (err, toc, sec, secDir) {
-        if (err) console.log("ERROR: " + err);
+        if (err) return console.log("ERROR: " + err);
         makeDirs(secDir, toc, 1);
     });
 }

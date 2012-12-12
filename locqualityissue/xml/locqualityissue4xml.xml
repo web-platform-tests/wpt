@@ -9,7 +9,6 @@
 	locQualityIssueProfileRef="http://example.org/qaMovel/v1"
 	locQualityIssueEnabled="yes"/>
 	<its:locQualityIssueRule selector="//span[@id='q2']"
-        locQualityIssuesRef="#l1235"	
         locQualityIssueType="misspelling"
 	locQualityIssueSeverity="75"
 	locQualityIssueProfileRef="http://example.org/qaMovel/v1"

@@ -3,29 +3,33 @@
     <head>
         <title>CSS Test: CSS Tables: Margin Collapsing</title>
         <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch" />
+        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-12-12 -->
         <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/table/016.xml" type="application/xhtml+xml" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#collapsing-margins" />
+        <link rel="match" href="reference/table-margin-004-ref.xht" />
+
+        <meta name="flags" content="ahem" />
+
         <style type="text/css">
             div#wrapper
             {
                 border: blue solid medium;
-                height: 188px;
+                height: 180px;
                 /*
-                20px (margin-top) + 1px + 20px (content) + 1px + max(20px, 20px) 1st div table
-                + 1px + 20px (content) + 1px + max(20px, 20px)  2nd div table
-                + 1px + 20px (content) + 1px + max(20px, 20px)  1st p table
-                + 1px + 20px (content) + 1px + 20px 2nd p table
-                --------------------------------------------------------
-                188px
+                  20px (margin-top) + 20px (content) + max(20px, 20px) 1st div table
+                + 20px (content) + max(20px, 20px)  2nd div table
+                + 20px (content) + max(20px, 20px)  1st p table
+                + 20px (content) + 20px 2nd p table
+                ========================================================
+                180px
                 */
             }
             
             .table
             {
-                border: 1px solid silver;
                 border-spacing: 0;
                 display: table;
-                font: 20px/20px Ahem;
+                font: 20px/1 Ahem;
                 height: 1em;
                 margin: 1em;
             }
@@ -42,7 +46,8 @@
         </style>
     </head>
     <body>
-        <p>There should be four black bars below that do not overflow the blue box.</p>
+        <p>Test passes if there are 4 black bars which do not overflow a wide blue rectangle. The black bars are evenly distributed (vertically) in the blue rectangle: the gap between the blue border at the top and the first black bar should be equal to the gap between the 4th bar and the blue border at the bottom.</p>
+
         <div id="wrapper">
             <div class="table">
                 <div class="table-row">
@@ -57,6 +62,6 @@
             <p class="table">Test</p>
             <p class="table">Test</p>
         </div>
-        <p>This test has passed if the black bars are evenly distributed in the blue box. The gap between the blue border at the top and the first black bar should be equal to the gap between the 4th bar and the blue border at the bottom.</p>
+
     </body>
 </html>

@@ -4,7 +4,7 @@
       disambigGranularity="entity"
       disambigIdentRef="http://dbpedia.org/resource/Dublin"/>
     <its:disambiguationRule selector="//h:body/h:p/h:*[@id='capital']"
-      disambigGranularity="lexicalConcept"
+      disambigGranularity="lexical-concept"
       disambigSource="Wordnet3.0"
       disambigIdent="301467919"/>
   </its:rules>

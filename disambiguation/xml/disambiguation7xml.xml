@@ -6,7 +6,7 @@
       disambigGranularity="entity"
       disambigIdentRefPointer="@identref"/>
     <its:disambiguationRule selector="/text/body/p/*[@id='capital']"
-      disambigGranularity="lexicalConcept"
+      disambigGranularity="lexical-concept"
       disambigSourcePointer="@source"
       disambigIdentPointer="@ident"/>
   </its:rules>

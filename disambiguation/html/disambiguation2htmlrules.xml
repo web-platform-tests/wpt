@@ -2,7 +2,7 @@
     <its:param name="disambigCityParam">dublin</its:param>
     <its:param name="disambigCapitalParam">capital</its:param>
     <its:disambiguationRule selector="//h:body/h:p/h:*[@id=$disambigCityParam]"
-      disambigClassRef="http:/nerd.eurecom.fr/ontology#Place"
+      disambigClassRef="http://nerd.eurecom.fr/ontology#Place"
       disambigGranularity="entity"
       disambigIdentRef="http://dbpedia.org/resource/Dublin"/>
     <its:disambiguationRule selector="//h:body/h:p/h:*[@id=$disambigCapitalParam]"

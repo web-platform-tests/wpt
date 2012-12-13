@@ -6,14 +6,13 @@
     <its:disambiguationRule selector="/text/body/p/*[@id=$disambigCityParam]"
       disambigClassRefPointer="@classref"
       disambigGranularity="entity"
-      disambigIdentRefPointer="@identref"/>
+      disambigIdentRef="http://dbpedia.org/resource/Dublin"/>
     <its:disambiguationRule selector="/text/body/p/*[@id=$disambigCapitalParam]"
       disambigGranularity="lexicalConcept"
-      disambigClassPointer="@class"
-      disambigIdentPointer="@ident"/>
+      disambigSource="Wordnet3.0"
+      disambigIdent="301467919"/>
   </its:rules>
   <body>
-    <p><span id="dublin" classref="http://nerd.eurecom.fr/ontology#Place" identref="http://dbpedia.org/resource/Dublin">Dublin</span> is the <span id="capital" class="http://example.com/ontology#concept" ident="301467919">capital</span>
-      of Ireland.</p>
+    <p><span classref="http:/nerd.eurecom.fr/ontology#Place" id="dublin">Dublin</span> is the <span id="capital">capital</span> of Ireland.</p>
   </body>
 </text>

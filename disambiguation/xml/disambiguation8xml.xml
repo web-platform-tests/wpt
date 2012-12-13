@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
-<text xmlns:its="http://www.w3.org/2005/11/its" its:version="2.0">
+<text>
+  <its:rules xmlns:its="http://www.w3.org/2005/11/its" version="2.0" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="disambiguation10xmlrules.xml"/>
   <body>
-    <p><its:span disambigClassRef="http://nerd.eurecom.fr/ontology#Place" disambigIdentRef="http://dbpedia.org/resource/Dublin" disambigGranularity="entity">Dublin</its:span> is the <its:span disambigSource="Wordnet3.0" disambigIdent="301467919" disambigGranularity="lexicalConcept">capital</its:span> of Ireland.</p>
+   <p><span class="place" identref="http://dbpedia.org/resource/Dublin"  id="dublin">Dublin</span> is the <span source="Wordnet3.0" ident="301467919" id="capital">capital</span> of Ireland.</p>
   </body>
 </text>

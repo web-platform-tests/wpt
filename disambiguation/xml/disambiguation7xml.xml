@@ -1,6 +1,16 @@
 <?xml version="1.0"?>
-<text xmlns:its="http://www.w3.org/2005/11/its" its:version="2.0">
+<text>
+  <its:rules xmlns:its="http://www.w3.org/2005/11/its" version="2.0">
+    <its:disambiguationRule selector="/text/body/p/*[@id='dublin']"
+      disambigClassPointer="@class"
+      disambigGranularity="entity"
+      disambigIdentRefPointer="@identref"/>
+    <its:disambiguationRule selector="/text/body/p/*[@id='capital']"
+      disambigGranularity="lexicalConcept"
+      disambigSourcePointer="@source"
+      disambigIdentPointer="@ident"/>
+  </its:rules>
   <body>
-    <p><span its:disambigClassRef="http://nerd.eurecom.fr/ontology#Place"  its:disambigIdentRef="http://dbpedia.org/resource/Dublin" its:disambigGranularity="entity">Dublin</span> is the <span its:disambigSource="Wordnet3.0" its:disambigIdent="301467919" its:disambigGranularity="lexicalConcept">capital</span> of Ireland.</p>
+    <p><span class="place" identref="http://dbpedia.org/resource/Dublin"  id="dublin">Dublin</span> is the <span source="Wordnet3.0" ident="301467919" id="capital">capital</span> of Ireland.</p>
   </body>
 </text>

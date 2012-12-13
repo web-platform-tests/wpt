@@ -13,6 +13,6 @@
       disambigIdent="301467919"/>
   </its:rules>
   <body>
-    <p><span classref="http:/nerd.eurecom.fr/ontology#Place" id="dublin">Dublin</span> is the <span id="capital">capital</span> of Ireland.</p>
+    <p><span classref="http://nerd.eurecom.fr/ontology#Place" id="dublin">Dublin</span> is the <span id="capital">capital</span> of Ireland.</p>
   </body>
 </text>

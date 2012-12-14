@@ -3,7 +3,7 @@
     <head>
         <title>CSS Test: Color applied to elements with 'display' set to 'block'</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
-		    <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-07-01 -->
+		    <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-12-14 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#propdef-color" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#colors" />
 		    <link rel="match" href="color-applies-to-001-ref.xht" />
@@ -11,6 +11,8 @@
         <meta name="flags" content="" />
         <meta name="assert" content="The 'color' property applies to elements with 'display' set to 'block'." />
         <style type="text/css">
+            div {color: red;}
+
             span
             {
                 color: green;
@@ -19,8 +21,9 @@
         </style>
     </head>
     <body>
-        <p>Test passes if the "Filler Text" below is green.</p>
+        <p>Test passes if there are 2 green "Filler Text".</p>
         <div>
+            <span>Filler Text</span>
             <span>Filler Text</span>
         </div>
     </body>

@@ -3,7 +3,7 @@
     <head>
         <title>CSS Test: Color applied to elements with 'display' set to 'table-column-group'</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
-		    <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-07-01 -->
+		    <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-12-14 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#propdef-color" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#colors" />
 		    <link rel="match" href="color-applies-to-005-ref.xht" />
@@ -13,18 +13,24 @@
         <style type="text/css">
             #test
             {
-                color: red;
                 display: table-column-group;
+                color: red;
             }
             #table
             {
                 display: table;
             }
-            #row
+            
+            .col
+            {
+                display: table-column;
+            }
+
+            .row
             {
                 display: table-row;
             }
-            #cell
+            .cell
             {
                 display: table-cell;
             }
@@ -32,11 +38,20 @@
     </head>
     <body>
         <p>Test passes if there is <strong>no red</strong>.</p>
+
         <div id="table">
-            <div id="test"></div>
-            <div id="row">
-                <div id="cell">Filler Text</div>
-            </div>
+
+            <div id="test"><div class="col"></div><div class="col"></div></div>
+
+                <div class="row">
+                    <div class="cell">Filler</div><div class="cell">&nbsp;Text</div>
+                </div>
+
+                <div class="row">
+                    <div class="cell">Filler</div><div class="cell">&nbsp;Text</div>
+                </div>
+
         </div>
+
     </body>
 </html>

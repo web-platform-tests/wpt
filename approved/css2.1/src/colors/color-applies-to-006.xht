@@ -3,7 +3,7 @@
     <head>
         <title>CSS Test: Color applied to elements with 'display' set to 'table-column'</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
-		    <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-07-01 -->
+		    <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-12-14 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#propdef-color" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#colors" />
 		    <link rel="match" href="color-applies-to-005-ref.xht" />
@@ -11,7 +11,7 @@
         <meta name="flags" content="" />
         <meta name="assert" content="The 'color' property does not apply to elements with 'display' set to 'table-column'." />
         <style type="text/css">
-            #test
+            .test
             {
                 color: red;
                 display: table-column;
@@ -20,11 +20,11 @@
             {
                 display: table;
             }
-            #row
+            .row
             {
                 display: table-row;
             }
-            #cell
+            .cell
             {
                 display: table-cell;
             }
@@ -32,11 +32,20 @@
     </head>
     <body>
         <p>Test passes if there is <strong>no red</strong>.</p>
+
         <div id="table">
-            <div id="test"></div>
-            <div id="row">
-                <div id="cell">Filler Text</div>
-            </div>
+
+            <div class="test"></div><div class="test"></div>
+
+                <div class="row">
+                    <div class="cell">Filler</div><div class="cell">&nbsp;Text</div>
+                </div>
+
+                <div class="row">
+                    <div class="cell">Filler</div><div class="cell">&nbsp;Text</div>
+                </div>
+
         </div>
+
     </body>
 </html>

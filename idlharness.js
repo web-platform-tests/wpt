@@ -213,7 +213,7 @@ window.IdlArray = function()
      * results in { A: ["B", "C"], D: ["E"] }.
      */
     this.partials = [];
-    this.implements = {};
+    this["implements"] = {};
 }
 
 //@}
@@ -266,11 +266,11 @@ IdlArray.prototype.internal_add_idls = function(parsed_idls)
 
         if (parsed_idl.type == "implements")
         {
-            if (!(parsed_idl.target in this.implements))
+            if (!(parsed_idl.target in this["implements"]))
             {
-                this.implements[parsed_idl.target] = [];
+                this["implements"][parsed_idl.target] = [];
             }
-            this.implements[parsed_idl.target].push(parsed_idl.implements);
+            this["implements"][parsed_idl.target].push(parsed_idl["implements"]);
             return;
         }
 
@@ -349,12 +349,12 @@ IdlArray.prototype.recursively_get_implements = function(interface_name)
      *
      * then recursively_get_implements("A") should return ["B", "C", "D"].
      */
-    var ret = this.implements[interface_name];
+    var ret = this["implements"][interface_name];
     if (ret === undefined)
     {
         return [];
     }
-    for (var i = 0; i < this.implements[interface_name].length; i++)
+    for (var i = 0; i < this["implements"][interface_name].length; i++)
     {
         ret = ret.concat(this.recursively_get_implements(ret[i]));
         if (ret.indexOf(ret[i]) != ret.lastIndexOf(ret[i]))
@@ -394,7 +394,7 @@ IdlArray.prototype.test = function()
     }.bind(this));
     this.partials = [];
 
-    for (var lhs in this.implements)
+    for (var lhs in this["implements"])
     {
         this.recursively_get_implements(lhs).forEach(function(rhs)
         {
@@ -411,7 +411,7 @@ IdlArray.prototype.test = function()
             }.bind(this));
         }.bind(this));
     }
-    this.implements = {};
+    this["implements"] = {};
 
     // Now run test() on every member, and test_object() for every object.
     for (var name in this.members)

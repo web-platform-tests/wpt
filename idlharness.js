@@ -170,8 +170,8 @@ policies and contribution forms [3].
  * The members and methods of the classes defined by this file are all at least
  * briefly documented, hopefully.
  */
-"use strict";
 (function(){
+"use strict";
 /// IdlArray ///
 // Entry point
 window.IdlArray = function()

@@ -8,13 +8,17 @@
 <script>
 // TODO: getElementsByTagName("*")
 test(function() {
-  assert_false(document.getElementsByTagName("html") instanceof NodeList, "NodeList")
-  assert_true(document.getElementsByTagName("html") instanceof HTMLCollection, "HTMLCollection")
+  assert_false(document.getElementsByTagName("html") instanceof NodeList,
+               "Should not return a NodeList")
+  assert_true(document.getElementsByTagName("html") instanceof HTMLCollection,
+              "Should return an HTMLCollection")
+}, "Interfaces")
+test(function() {
   var firstCollection = document.getElementsByTagName("html"),
       secondCollection = document.getElementsByTagName("html")
-  assert_true(firstCollection !== secondCollection || firstCollection === secondCollection,
-              "Caching is allowed.")
-})
+  assert_true(firstCollection !== secondCollection ||
+              firstCollection === secondCollection)
+}, "Caching is allowed")
 
 test(function() {
   var l = document.getElementsByTagName("nosuchtag")
@@ -25,6 +29,7 @@ test(function() {
 test(function() {
   var l = document.getElementsByTagName("nosuchtag")
   assert_throws(new TypeError(), function() {
+    "use strict";
     l[5] = "foopy"
   })
   assert_equals(l[5], undefined)
@@ -32,9 +37,20 @@ test(function() {
 }, "Shouldn't be able to set unsigned properties on a HTMLCollection (strict mode)")
 test(function() {
   var l = document.getElementsByTagName("nosuchtag")
+  var fn = l.item;
+  assert_equals(fn, HTMLCollection.prototype.item);
+  l.item = "pass"
+  assert_equals(l.item, "pass")
+  assert_equals(HTMLCollection.prototype.item, fn);
+}, "Should be able to set expando shadowing a proto prop (item)")
+test(function() {
+  var l = document.getElementsByTagName("nosuchtag")
+  var fn = l.namedItem;
+  assert_equals(fn, HTMLCollection.prototype.namedItem);
   l.namedItem = "pass"
   assert_equals(l.namedItem, "pass")
-}, "Should be able to set expando shadowing a proto prop")
+  assert_equals(HTMLCollection.prototype.namedItem, fn);
+}, "Should be able to set expando shadowing a proto prop (namedItem)")
 
 test(function() {
   assert_equals(document.createElementNS("http://www.w3.org/1999/xhtml", "i").localName, "i") // Sanity

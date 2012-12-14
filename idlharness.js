@@ -618,10 +618,7 @@ function IdlDictionary(obj)
      * The name (as a string) of the dictionary type we inherit from, or null
      * if there is none.
      */
-    if (obj.inheritance.length > 1) {
-        throw "Multiple inheritance is no longer supported in WebIDL";
-    }
-    this.base = obj.inheritance.length ? obj.inheritance[0] : null;
+    this.base = obj.inheritance;
 }
 
 //@}
@@ -660,10 +657,7 @@ function IdlExceptionOrInterface(obj)
      * The name (as a string) of the type we inherit from, or null if there is
      * none.
      */
-    if (obj.inheritance.length > 1) {
-        throw "Multiple inheritance is no longer supported in WebIDL";
-    }
-    this.base = obj.inheritance.length ? obj.inheritance[0] : null;
+    this.base = obj.inheritance;
 }
  
 //@}

@@ -15,12 +15,27 @@ test(function() {
   assert_true(firstCollection !== secondCollection || firstCollection === secondCollection,
               "Caching is allowed.")
 })
+
 test(function() {
   var l = document.getElementsByTagName("nosuchtag")
   l[5] = "foopy"
   assert_equals(l[5], undefined)
   assert_equals(l.item(5), null)
-}, "Shouldn't be able to set unsigned properties on a HTMLCollection")
+}, "Shouldn't be able to set unsigned properties on a HTMLCollection (non-strict mode)")
+test(function() {
+  var l = document.getElementsByTagName("nosuchtag")
+  assert_throws(new TypeError(), function() {
+    l[5] = "foopy"
+  })
+  assert_equals(l[5], undefined)
+  assert_equals(l.item(5), null)
+}, "Shouldn't be able to set unsigned properties on a HTMLCollection (strict mode)")
+test(function() {
+  var l = document.getElementsByTagName("nosuchtag")
+  l.namedItem = "pass"
+  assert_equals(l.namedItem, "pass")
+}, "Should be able to set expando shadowing a proto prop")
+
 test(function() {
   assert_equals(document.createElementNS("http://www.w3.org/1999/xhtml", "i").localName, "i") // Sanity
   var i = document.body.appendChild(document.createElementNS("http://www.w3.org/1999/xhtml", "I"))

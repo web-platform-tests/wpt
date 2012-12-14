@@ -2,9 +2,7 @@
   <ex:head> ... 
    <its:rules version="2.0" >
     <its:rubyRule selector="//ex:p[1]//ex:rb" 
-     rubyPointer="ancestor::ex:ruby" rbcPointer="parent::ex:rbc"
-     rtcPointer="../following-sibling::ex:rtc"
-     rbspanPointer="../following-sibling::ex:rtc/ex:rt/@rbspan"
+     rubyPointer="ancestor::ex:ruby"
      rtPointer="../following-sibling::ex:rtc/ex:rt"/>
     <its:rubyRule selector="//ex:p[2]//ex:rb" 
      rubyPointer="ancestor::ex:ruby" rpPointer="following-sibling::ex:rp" rtPointer="following-sibling::ex:rt"/>

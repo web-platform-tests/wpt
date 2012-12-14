@@ -1,8 +1,10 @@
 <text its:version="2.0" xmlns:its="http://www.w3.org/2005/11/its">
- <body>
-  <p>この本は <its:ruby>
-     <its:rb>慶応義塾大学</its:rb>
-     <its:rp>(</its:rp><its:rt>けいおうぎじゅくだいがく</its:rt><its:rp>)</its:rp>
+  <head> ... </head>
+  <body>
+  <p>この本は 
+    <its:ruby>
+      慶応義塾大学
+      <its:rp>(</its:rp><its:rt>けいおうぎじゅくだいがく</its:rt><its:rp>)</its:rp>
     </its:ruby>の歴史を説明するものです。</p>
  </body>
 </text>

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset=utf-8> 
+<meta name="description" content="SPORTS LAW, Judicial Matters"/>
+<meta name="x-mykeywords" content="Sport, Law"/>
+<script type="application/its+xml">
+<its:rules xmlns:its="http://www.w3.org/2005/11/its" version="2.0">
+<its:param name="domainParam">description</its:param>
+<its:domainRule selector="/h:html/h:body" domainPointer="/h:html/h:head/h:meta[@name='x-mykeywords' or @name=$domainParam]/@content" domainMapping="'sports law' LAW, 'labor law' LAW, 'contract law' LAW, 'competition law' LAW,'tort law' LAW"/>
+</its:rules>
+</script>
+</head>
+<body>
+<p>Some text about sport and law.</p>
+</body>
+</html>

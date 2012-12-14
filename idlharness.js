@@ -1,3 +1,4 @@
+/*jshint evil:true, laxbreak:true */
 /*
 Distributed under both the W3C Test Suite License [1] and the W3C
 3-clause BSD License [2]. To contribute to a W3C Test Suite, see the
@@ -651,7 +652,7 @@ function IdlExceptionOrInterface(obj)
     this.extAttrs = obj.extAttrs;
 
     /** An array of IdlInterfaceMembers. */
-    this.members = obj.members.map(function(m){return new IdlInterfaceMember(m)});
+    this.members = obj.members.map(function(m){return new IdlInterfaceMember(m); });
 
     /**
      * The name (as a string) of the type we inherit from, or null if there is
@@ -687,7 +688,7 @@ IdlExceptionOrInterface.prototype.test = function()
     // members will be marked as untested, but the members added by the partial
     // interface are still tested.
     this.test_members();
-}
+};
 
 //@}
 
@@ -841,7 +842,7 @@ IdlException.prototype.test_self = function()
         assert_equals(window[this.name].prototype.constructor, window[this.name],
                       this.name + '.prototype.constructor is not the same object as ' + this.name);
     }.bind(this), this.name + " exception: existence and properties of exception interface prototype object's \"constructor\" property");
-}
+};
 
 //@}
 IdlException.prototype.test_members = function()
@@ -949,7 +950,7 @@ IdlException.prototype.test_members = function()
             }.bind(this), this.name + " exception: field " + member.name + " on exception interface prototype object");
         }
     }
-}
+};
 
 //@}
 IdlException.prototype.test_object = function(desc)
@@ -1017,7 +1018,7 @@ IdlException.prototype.test_object = function(desc)
             }
         }.bind(this), this.name + " exception: " + desc + ' must inherit property "' + member.name + '" with the proper type');
     }
-}
+};
 //@}
 
 /// IdlInterface ///
@@ -1027,7 +1028,7 @@ IdlInterface.prototype.is_callback = function()
 //@{
 {
     return this.has_extended_attribute("Callback");
-}
+};
 //@}
 
 IdlInterface.prototype.has_constants = function()
@@ -1036,7 +1037,7 @@ IdlInterface.prototype.has_constants = function()
     return this.members.any(function(member) {
         return member.type === "const";
     });
-}
+};
 //@}
 
 IdlInterface.prototype.test_self = function()
@@ -1140,14 +1141,14 @@ IdlInterface.prototype.test_self = function()
             // works for testing operation length too (currently we just don't
             // support multiple operations with the same identifier).
             var expected_length = this.extAttrs
-                .filter(function(attr) { return attr.name == "Constructor" })
+                .filter(function(attr) { return attr.name == "Constructor"; })
                 .map(function(attr) {
                     return attr.arguments ? attr.arguments.filter(
                         function(arg) {
                             return !arg.optional;
-                        }).length : 0
+                        }).length : 0;
                 })
-                .reduce(function(m, n) { return Math.min(m, n) });
+                .reduce(function(m, n) { return Math.min(m, n); });
             assert_own_property(window[this.name], "length");
             assert_equals(window[this.name].length, expected_length, "wrong value for " + this.name + ".length");
             var desc = Object.getOwnPropertyDescriptor(window[this.name], "length");
@@ -1279,7 +1280,7 @@ IdlInterface.prototype.test_self = function()
         assert_equals(window[this.name].prototype.constructor, window[this.name],
                       this.name + '.prototype.constructor is not the same object as ' + this.name);
     }.bind(this), this.name + ' interface: existence and properties of interface prototype object\'s "constructor" property');
-}
+};
 
 //@}
 IdlInterface.prototype.test_members = function()
@@ -1457,7 +1458,7 @@ IdlInterface.prototype.test_members = function()
         }
         // TODO: check more member types, like stringifier
     }
-}
+};
 
 //@}
 IdlInterface.prototype.test_object = function(desc)
@@ -1498,7 +1499,7 @@ IdlInterface.prototype.test_object = function(desc)
         current_interface.test_interface_of(desc, obj, exception, expected_typeof);
         current_interface = this.array.members[current_interface.base];
     }
-}
+};
 
 //@}
 IdlInterface.prototype.test_primary_interface_of = function(desc, obj, exception, expected_typeof)
@@ -1543,7 +1544,7 @@ IdlInterface.prototype.test_primary_interface_of = function(desc, obj, exception
             assert_equals(String(obj), "[object " + this.name + "]", "String(" + desc + ")");
         }
     }.bind(this), "Stringification of " + desc);
-}
+};
 
 //@}
 IdlInterface.prototype.test_interface_of = function(desc, obj, exception, expected_typeof)
@@ -1632,13 +1633,13 @@ IdlInterface.prototype.test_interface_of = function(desc, obj, exception, expect
             ") on " + desc + " with too few arguments must throw TypeError");
         }
     }
-}
+};
 
 //@}
 IdlInterface.prototype.has_stringifier = function()
 //@{
 {
-    if (this.members.some(function(member) { return member.stringifier })) {
+    if (this.members.some(function(member) { return member.stringifier; })) {
         return true;
     }
     if (this.base &&
@@ -1646,7 +1647,7 @@ IdlInterface.prototype.has_stringifier = function()
         return true;
     }
     return false;
-}
+};
 
 //@}
 function do_interface_attribute_asserts(obj, member)
@@ -1776,5 +1777,5 @@ function create_suitable_object(type)
     return null;
 }
 //@}
-})();
+}());
 // vim: set expandtab shiftwidth=4 tabstop=4 foldmarker=@{,@} foldmethod=marker:

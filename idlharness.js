@@ -221,7 +221,7 @@ IdlArray.prototype.add_idls = function(raw_idls)
 //@{
 {
     /** Entry point.  See documentation at beginning of file. */
-    this.internal_add_idls(WebIDLParser.parse(raw_idls));
+    this.internal_add_idls(WebIDL2.parse(raw_idls));
 };
 
 //@}
@@ -229,7 +229,7 @@ IdlArray.prototype.add_untested_idls = function(raw_idls)
 //@{
 {
     /** Entry point.  See documentation at beginning of file. */
-    var parsed_idls = WebIDLParser.parse(raw_idls);
+    var parsed_idls = WebIDL2.parse(raw_idls);
     for (var i = 0; i < parsed_idls.length; i++)
     {
         parsed_idls[i].untested = true;

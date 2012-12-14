@@ -214,7 +214,7 @@ window.IdlArray = function()
      */
     this.partials = [];
     this["implements"] = {};
-}
+};
 
 //@}
 IdlArray.prototype.add_idls = function(raw_idls)
@@ -242,7 +242,7 @@ IdlArray.prototype.add_untested_idls = function(raw_idls)
         }
     }
     this.internal_add_idls(parsed_idls);
-}
+};
 
 //@}
 IdlArray.prototype.internal_add_idls = function(parsed_idls)
@@ -307,7 +307,7 @@ IdlArray.prototype.internal_add_idls = function(parsed_idls)
             throw parsed_idl.name + ": " + parsed_idl.type + " not yet supported";
         }
     }.bind(this));
-}
+};
 
 //@}
 IdlArray.prototype.add_objects = function(dict)
@@ -325,7 +325,7 @@ IdlArray.prototype.add_objects = function(dict)
             this.objects[k] = dict[k];
         }
     }
-}
+};
 
 //@}
 IdlArray.prototype.prevent_multiple_testing = function(name)
@@ -333,7 +333,7 @@ IdlArray.prototype.prevent_multiple_testing = function(name)
 {
     /** Entry point.  See documentation at beginning of file. */
     this.members[name].prevent_multiple_testing = true;
-}
+};
 
 //@}
 IdlArray.prototype.recursively_get_implements = function(interface_name)
@@ -363,7 +363,7 @@ IdlArray.prototype.recursively_get_implements = function(interface_name)
         }
     }
     return ret;
-}
+};
 
 //@}
 IdlArray.prototype.test = function()

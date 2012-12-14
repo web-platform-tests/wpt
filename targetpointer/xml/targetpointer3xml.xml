@@ -3,8 +3,8 @@
  <its:rules version="2.0">
   <its:param name="targetOneParam">firstfolder</its:param>
   <its:param name="targetTwoParam">firstfile</its:param>
-  <its:targetPointerRule selector="//entry[@id='one']/source" targetPointe="../target[@id=$targetOneParam]"/>
-  <its:targetPointerRule selector="//entry[@id='two']/source" targetPointe="../target[@id=$targetTwoParam]"/>
+  <its:targetPointerRule selector="//entry[@id='one']/source" targetPointer="../target[@id=$targetOneParam]"/>
+  <its:targetPointerRule selector="//entry[@id='two']/source" targetPointer="../target[@id=$targetTwoParam]"/>
  </its:rules>
  <entry id="one">
   <source>Remember last folders</source>

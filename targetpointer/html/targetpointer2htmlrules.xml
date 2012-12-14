@@ -1,4 +1,8 @@
  <its:rules version="2.0" xmlns:its="http://www.w3.org/2005/11/its" xmlns:h="http://www.w3.org/1999/xhtml">
-  <its:param name="targetParam">second</its:param>
-  <its:targetPointerRule selector="//h:h4" targetPointer="../h:span[@id=$targetParam]"/>
+  <its:param name="targetFolder">targetfolder</its:param>
+  <its:param name="targetFile">targetfile</its:param>
+  <its:targetPointerRule selector="//h:div[@id='one']/h:p[@class='srcfolder']"  targetPointe="../h:p[@class=$targetFolder]"/>
+  <its:targetPointerRule selector="//h:div[@id='two']/h:p[@class='srcfile']"  targetPointe="../h:p[@class=$targetFile]"/>
  </its:rules>
+
+

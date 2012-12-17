@@ -2,7 +2,7 @@
  <head> ... 
   <its:rules version="2.0" >
       <its:param name="rubyParam">W3C</its:param>
-      <its:rubyRule selector="/text/body/img[@alt='W3C']/@alt">
+      <its:rubyRule selector="/text/body/img[@alt=$rubyParam]/@alt">
           <its:rubyText>World Wide Web Consortium</its:rubyText>
       </its:rubyRule>
   </its:rules> </head>

@@ -1,0 +1,12 @@
+<text xmlns:its="http://www.w3.org/2005/11/its">
+ <head> ... 
+  <its:rules version="2.0"
+   xlink:href="ruby6xmlrules.xml" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <its:rubyRule selector="/text/body/img[1]/@alt">
+          <its:rubyText>TBD</its:rubyText>
+      </its:rubyRule>
+  </its:rules> </head>
+ <body>
+  <img src="w3c_home.png" alt="W3C"/> ...
+ </body>
+</text>

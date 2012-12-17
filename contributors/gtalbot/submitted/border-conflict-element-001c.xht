@@ -8,23 +8,19 @@
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#border-conflict-resolution" title="17.6.2.1 Border conflict resolution" />
-  <link rel="match" href="reference/border-conflict-element-001a-ref.xht" />
+  <link rel="match" href="reference/ref-filled-green-100px-square.xht" />
 
   <meta content="" name="flags" />
   <meta content="When two adjacent cells have the same border-width and the same border-style in a 'border-collapse: collapse' table, then the color of the border from the leftmost cell wins (if the table's 'direction' is 'ltr'; rightmost, if it is 'rtl')." name="assert" />
 
   <style type="text/css"><![CDATA[
-  table
-  {
-  border-collapse: collapse;
-  margin: 40px auto auto 40px;
-  }
+  table {border-collapse: collapse;}
 
   td
   {
   border-style: none solid none solid;
-  border-width: 0px 40px 0px 40px;
-  height: 50px;
+  border-width: 0px 20px 0px 20px;
+  height: 25px;
   padding: 0px;
   }
 
@@ -57,21 +53,21 @@
 
   <table>
 
-   <tr>
-    <td id="one"></td> <td id="two"></td> <td id="three"></td> <td id="four"></td>
-   </tr>
+      <tr>
+          <td id="one"></td> <td id="two"></td> <td id="three"></td> <td id="four"></td>
+      </tr>
 
-   <tr>
-    <td id="five"></td> <td id="six"></td> <td id="seven"></td> <td id="eight"></td>
-   </tr>
+      <tr>
+          <td id="five"></td> <td id="six"></td> <td id="seven"></td> <td id="eight"></td>
+      </tr>
 
-   <tr>
-    <td id="nine"></td> <td id="ten"></td> <td id="eleven"></td> <td id="twelve"></td>
-   </tr>
+      <tr>
+          <td id="nine"></td> <td id="ten"></td> <td id="eleven"></td> <td id="twelve"></td>
+      </tr>
 
-   <tr>
-    <td id="thirteen"></td> <td id="fourteen"></td> <td id="fifteen"></td> <td id="sixteen"></td>
-   </tr>
+      <tr>
+          <td id="thirteen"></td> <td id="fourteen"></td> <td id="fifteen"></td> <td id="sixteen"></td>
+      </tr>
 
   </table>
 

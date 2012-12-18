@@ -95,10 +95,7 @@ interface MutationObserver {
   void disconnect();
 };
 
-[Callback]
-interface MutationCallback {
-  void handleEvent(MutationRecord[] mutations, MutationObserver observer);
-};
+callback MutationCallback = void (sequence<MutationRecord> mutations, MutationObserver observer);
 
 dictionary MutationObserverInit {
   // Mutation types

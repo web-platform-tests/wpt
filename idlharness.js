@@ -1,4 +1,3 @@
-/*jshint evil:true, laxbreak:true */
 /*
 Distributed under both the W3C Test Suite License [1] and the W3C
 3-clause BSD License [2]. To contribute to a W3C Test Suite, see the
@@ -15,7 +14,7 @@ policies and contribution forms [3].
  *
  *   <script src=/resources/testharness.js></script>
  *   <script src=/resources/testharnessreport.js></script>
- *   <script src=/resources/WebIDLParser.js></script>
+ *   <script src=/resources/webidl2.js></script>
  *   <script src=/resources/idlharness.js></script>
  *
  * Then you'll need some type of IDLs.  Here's some script that can be run on a
@@ -259,7 +258,7 @@ IdlArray.prototype.internal_add_idls = function(parsed_idls)
      */
     parsed_idls.forEach(function(parsed_idl)
     {
-        if (parsed_idl.type == "partialinterface")
+        if (parsed_idl.type == "interface" && parsed_idl.partial)
         {
             this.partials.push(parsed_idl);
             return;
@@ -297,6 +296,10 @@ IdlArray.prototype.internal_add_idls = function(parsed_idls)
             break;
 
         case "typedef":
+            // TODO
+            break;
+
+        case "callback":
             // TODO
             break;
 

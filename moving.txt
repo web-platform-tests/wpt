@@ -6,7 +6,6 @@ DIRECTORIES TO MOVE:
         
         
     - Robin
-        base64.html
         canvas/
         dataset/
         documentwrite/
@@ -18,6 +17,7 @@ DIRECTORIES TO MOVE:
     - Done
         attributes/
         audio/
+        base64.html
         common/
         images/
         fonts/

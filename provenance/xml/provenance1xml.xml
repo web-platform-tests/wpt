@@ -18,7 +18,7 @@
       provRef=" http://www.examplelsp.com/excontent987/legal/prov/e6354 http://www.vistatec.com/job-12-7-15-X31/reviewed/prov/re8573469"/>
   </its:provenanceRecords>
   <its:rules>
-    <its:provRule selector="/text/body/par
+    <its:provRule selector="/text/body/par"
       provenanceRecordsRef="#pr1"/>
     <its:provRule selector="/text/body/legalnotice"
       provenanceRecordsRef="#pr2"/>

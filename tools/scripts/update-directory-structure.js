@@ -10,6 +10,9 @@ var fs = require("fs")
 ,   testDir = pth.join(__dirname, "../../tests")
 ,   MAX_DEPTH = 3
 ,   id2path = {}
+,   limitDepth = {
+        parsing:    true
+    }
 ;
 
 var sections = {
@@ -81,7 +84,7 @@ function makeDirs (base, tree, depth) {
             fs.writeFileSync(pth.join(path, "original-id.json"), JSON.stringify({ original_id: sec.original_id}), "utf8");
         }
         if (sec.children && sec.children.length) {
-            if (depth === 3) {
+            if (depth === MAX_DEPTH || limitDepth[sec.id]) {
                 fs.writeFileSync(pth.join(path, "contains.json"), JSON.stringify(sec.children, null, 4), "utf8");
                 makeID2Path(path, sec.children);
             }

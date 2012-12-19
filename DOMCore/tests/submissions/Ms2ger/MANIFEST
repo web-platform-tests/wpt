@@ -20,6 +20,7 @@ support Document-createProcessingInstruction.js
 Document-createProcessingInstruction-literal-1.xhtml
 Document-createProcessingInstruction-literal-2.xhtml
 Document-createProcessingInstruction.xhtml
+Document-createTreeWalker.html
 Document-getElementById.html
 Document-getElementsByTagName.html
 Document-getElementsByTagNameNS.html

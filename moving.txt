@@ -2,6 +2,9 @@
 DIRECTORIES TO MOVE:
 
     - Ms2ger
+        dom-tree-accessors/
+        dynamic-markup-insertion/
+        editing/
         html5_approvedtests.txt
         
         
@@ -9,16 +12,13 @@ DIRECTORIES TO MOVE:
         canvas/
         dataset/
         documentwrite/
-        dom-tree-accessors/
-        dynamic-markup-insertion/
-        editing/
-        events/
         
     - Done
         attributes/
         audio/
         base64.html
         common/
+        events/
         images/
         fonts/
         foreigncontent/

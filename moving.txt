@@ -3,7 +3,6 @@ DIRECTORIES TO MOVE:
 
     - Ms2ger
         html5_approvedtests.txt
-        video/
         xhtml5/
         
         
@@ -27,6 +26,7 @@ DIRECTORIES TO MOVE:
         named-character-references/
         parsing/
         the-elements-of-html/
+        video/
         window-onerror/
 
 Note:

@@ -13,7 +13,6 @@ DIRECTORIES TO MOVE:
         
         
     - Robin
-        attributes/
         audio/
         base64.html
         canvas/
@@ -25,6 +24,7 @@ DIRECTORIES TO MOVE:
         events/
         
     - Done
+        attributes/
         common/
         images/
         fonts/

@@ -1,0 +1,112 @@
+[
+    {
+        "id": "creating-and-inserting-elements",
+        "original_id": "creating-and-inserting-elements"
+    },
+    {
+        "id": "closing-elements-that-have-implied-end-tags",
+        "original_id": "closing-elements-that-have-implied-end-tags"
+    },
+    {
+        "id": "foster-parenting",
+        "original_id": "foster-parenting"
+    },
+    {
+        "id": "parsing-main-inhtml",
+        "original_id": "parsing-main-inhtml",
+        "children": [
+            {
+                "id": "the-initial-insertion-mode",
+                "original_id": "the-initial-insertion-mode"
+            },
+            {
+                "id": "the-before-html-insertion-mode",
+                "original_id": "the-before-html-insertion-mode"
+            },
+            {
+                "id": "the-before-head-insertion-mode",
+                "original_id": "the-before-head-insertion-mode"
+            },
+            {
+                "id": "parsing-main-inhead",
+                "original_id": "parsing-main-inhead"
+            },
+            {
+                "id": "parsing-main-inheadnoscript",
+                "original_id": "parsing-main-inheadnoscript"
+            },
+            {
+                "id": "the-after-head-insertion-mode",
+                "original_id": "the-after-head-insertion-mode"
+            },
+            {
+                "id": "parsing-main-inbody",
+                "original_id": "parsing-main-inbody"
+            },
+            {
+                "id": "parsing-main-incdata",
+                "original_id": "parsing-main-incdata"
+            },
+            {
+                "id": "parsing-main-intable",
+                "original_id": "parsing-main-intable"
+            },
+            {
+                "id": "parsing-main-intabletext",
+                "original_id": "parsing-main-intabletext"
+            },
+            {
+                "id": "parsing-main-incaption",
+                "original_id": "parsing-main-incaption"
+            },
+            {
+                "id": "parsing-main-incolgroup",
+                "original_id": "parsing-main-incolgroup"
+            },
+            {
+                "id": "parsing-main-intbody",
+                "original_id": "parsing-main-intbody"
+            },
+            {
+                "id": "parsing-main-intr",
+                "original_id": "parsing-main-intr"
+            },
+            {
+                "id": "parsing-main-intd",
+                "original_id": "parsing-main-intd"
+            },
+            {
+                "id": "parsing-main-inselect",
+                "original_id": "parsing-main-inselect"
+            },
+            {
+                "id": "parsing-main-inselectintable",
+                "original_id": "parsing-main-inselectintable"
+            },
+            {
+                "id": "parsing-main-afterbody",
+                "original_id": "parsing-main-afterbody"
+            },
+            {
+                "id": "parsing-main-inframeset",
+                "original_id": "parsing-main-inframeset"
+            },
+            {
+                "id": "parsing-main-afterframeset",
+                "original_id": "parsing-main-afterframeset"
+            },
+            {
+                "id": "the-after-after-body-insertion-mode",
+                "original_id": "the-after-after-body-insertion-mode"
+            },
+            {
+                "id": "the-after-after-frameset-insertion-mode",
+                "original_id": "the-after-after-frameset-insertion-mode"
+            }
+        ]
+    },
+    {
+        "id": "parsing-main-inforeign",
+        "original_id": "parsing-main-inforeign"
+    }
+]

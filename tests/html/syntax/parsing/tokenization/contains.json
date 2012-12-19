@@ -1,0 +1,278 @@
+[
+    {
+        "id": "data-state",
+        "original_id": "data-state"
+    },
+    {
+        "id": "character-reference-in-data-state",
+        "original_id": "character-reference-in-data-state"
+    },
+    {
+        "id": "rcdata-state",
+        "original_id": "rcdata-state"
+    },
+    {
+        "id": "character-reference-in-rcdata-state",
+        "original_id": "character-reference-in-rcdata-state"
+    },
+    {
+        "id": "rawtext-state",
+        "original_id": "rawtext-state"
+    },
+    {
+        "id": "script-data-state",
+        "original_id": "script-data-state"
+    },
+    {
+        "id": "plaintext-state",
+        "original_id": "plaintext-state"
+    },
+    {
+        "id": "tag-open-state",
+        "original_id": "tag-open-state"
+    },
+    {
+        "id": "end-tag-open-state",
+        "original_id": "end-tag-open-state"
+    },
+    {
+        "id": "tag-name-state",
+        "original_id": "tag-name-state"
+    },
+    {
+        "id": "rcdata-less-than-sign-state",
+        "original_id": "rcdata-less-than-sign-state"
+    },
+    {
+        "id": "rcdata-end-tag-open-state",
+        "original_id": "rcdata-end-tag-open-state"
+    },
+    {
+        "id": "rcdata-end-tag-name-state",
+        "original_id": "rcdata-end-tag-name-state"
+    },
+    {
+        "id": "rawtext-less-than-sign-state",
+        "original_id": "rawtext-less-than-sign-state"
+    },
+    {
+        "id": "rawtext-end-tag-open-state",
+        "original_id": "rawtext-end-tag-open-state"
+    },
+    {
+        "id": "rawtext-end-tag-name-state",
+        "original_id": "rawtext-end-tag-name-state"
+    },
+    {
+        "id": "script-data-less-than-sign-state",
+        "original_id": "script-data-less-than-sign-state"
+    },
+    {
+        "id": "script-data-end-tag-open-state",
+        "original_id": "script-data-end-tag-open-state"
+    },
+    {
+        "id": "script-data-end-tag-name-state",
+        "original_id": "script-data-end-tag-name-state"
+    },
+    {
+        "id": "script-data-escape-start-state",
+        "original_id": "script-data-escape-start-state"
+    },
+    {
+        "id": "script-data-escape-start-dash-state",
+        "original_id": "script-data-escape-start-dash-state"
+    },
+    {
+        "id": "script-data-escaped-state",
+        "original_id": "script-data-escaped-state"
+    },
+    {
+        "id": "script-data-escaped-dash-state",
+        "original_id": "script-data-escaped-dash-state"
+    },
+    {
+        "id": "script-data-escaped-dash-dash-state",
+        "original_id": "script-data-escaped-dash-dash-state"
+    },
+    {
+        "id": "script-data-escaped-less-than-sign-state",
+        "original_id": "script-data-escaped-less-than-sign-state"
+    },
+    {
+        "id": "script-data-escaped-end-tag-open-state",
+        "original_id": "script-data-escaped-end-tag-open-state"
+    },
+    {
+        "id": "script-data-escaped-end-tag-name-state",
+        "original_id": "script-data-escaped-end-tag-name-state"
+    },
+    {
+        "id": "script-data-double-escape-start-state",
+        "original_id": "script-data-double-escape-start-state"
+    },
+    {
+        "id": "script-data-double-escaped-state",
+        "original_id": "script-data-double-escaped-state"
+    },
+    {
+        "id": "script-data-double-escaped-dash-state",
+        "original_id": "script-data-double-escaped-dash-state"
+    },
+    {
+        "id": "script-data-double-escaped-dash-dash-state",
+        "original_id": "script-data-double-escaped-dash-dash-state"
+    },
+    {
+        "id": "script-data-double-escaped-less-than-sign-state",
+        "original_id": "script-data-double-escaped-less-than-sign-state"
+    },
+    {
+        "id": "script-data-double-escape-end-state",
+        "original_id": "script-data-double-escape-end-state"
+    },
+    {
+        "id": "before-attribute-name-state",
+        "original_id": "before-attribute-name-state"
+    },
+    {
+        "id": "attribute-name-state",
+        "original_id": "attribute-name-state"
+    },
+    {
+        "id": "after-attribute-name-state",
+        "original_id": "after-attribute-name-state"
+    },
+    {
+        "id": "before-attribute-value-state",
+        "original_id": "before-attribute-value-state"
+    },
+    {
+        "id": "attribute-value-double-quoted-state",
+        "original_id": "attribute-value-(double-quoted)-state"
+    },
+    {
+        "id": "attribute-value-single-quoted-state",
+        "original_id": "attribute-value-(single-quoted)-state"
+    },
+    {
+        "id": "attribute-value-unquoted-state",
+        "original_id": "attribute-value-(unquoted)-state"
+    },
+    {
+        "id": "character-reference-in-attribute-value-state",
+        "original_id": "character-reference-in-attribute-value-state"
+    },
+    {
+        "id": "after-attribute-value-quoted-state",
+        "original_id": "after-attribute-value-(quoted)-state"
+    },
+    {
+        "id": "self-closing-start-tag-state",
+        "original_id": "self-closing-start-tag-state"
+    },
+    {
+        "id": "bogus-comment-state",
+        "original_id": "bogus-comment-state"
+    },
+    {
+        "id": "markup-declaration-open-state",
+        "original_id": "markup-declaration-open-state"
+    },
+    {
+        "id": "comment-start-state",
+        "original_id": "comment-start-state"
+    },
+    {
+        "id": "comment-start-dash-state",
+        "original_id": "comment-start-dash-state"
+    },
+    {
+        "id": "comment-state",
+        "original_id": "comment-state"
+    },
+    {
+        "id": "comment-end-dash-state",
+        "original_id": "comment-end-dash-state"
+    },
+    {
+        "id": "comment-end-state",
+        "original_id": "comment-end-state"
+    },
+    {
+        "id": "comment-end-bang-state",
+        "original_id": "comment-end-bang-state"
+    },
+    {
+        "id": "doctype-state",
+        "original_id": "doctype-state"
+    },
+    {
+        "id": "before-doctype-name-state",
+        "original_id": "before-doctype-name-state"
+    },
+    {
+        "id": "doctype-name-state",
+        "original_id": "doctype-name-state"
+    },
+    {
+        "id": "after-doctype-name-state",
+        "original_id": "after-doctype-name-state"
+    },
+    {
+        "id": "after-doctype-public-keyword-state",
+        "original_id": "after-doctype-public-keyword-state"
+    },
+    {
+        "id": "before-doctype-public-identifier-state",
+        "original_id": "before-doctype-public-identifier-state"
+    },
+    {
+        "id": "doctype-public-identifier-double-quoted-state",
+        "original_id": "doctype-public-identifier-(double-quoted)-state"
+    },
+    {
+        "id": "doctype-public-identifier-single-quoted-state",
+        "original_id": "doctype-public-identifier-(single-quoted)-state"
+    },
+    {
+        "id": "after-doctype-public-identifier-state",
+        "original_id": "after-doctype-public-identifier-state"
+    },
+    {
+        "id": "between-doctype-public-and-system-identifiers-state",
+        "original_id": "between-doctype-public-and-system-identifiers-state"
+    },
+    {
+        "id": "after-doctype-system-keyword-state",
+        "original_id": "after-doctype-system-keyword-state"
+    },
+    {
+        "id": "before-doctype-system-identifier-state",
+        "original_id": "before-doctype-system-identifier-state"
+    },
+    {
+        "id": "doctype-system-identifier-double-quoted-state",
+        "original_id": "doctype-system-identifier-(double-quoted)-state"
+    },
+    {
+        "id": "doctype-system-identifier-single-quoted-state",
+        "original_id": "doctype-system-identifier-(single-quoted)-state"
+    },
+    {
+        "id": "after-doctype-system-identifier-state",
+        "original_id": "after-doctype-system-identifier-state"
+    },
+    {
+        "id": "bogus-doctype-state",
+        "original_id": "bogus-doctype-state"
+    },
+    {
+        "id": "cdata-section-state",
+        "original_id": "cdata-section-state"
+    },
+    {
+        "id": "tokenizing-character-references",
+        "original_id": "tokenizing-character-references"
+    }
+]

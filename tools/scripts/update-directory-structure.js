@@ -23,16 +23,6 @@ if (process.argv[2] !== "--force") {
     process.exit(1);
 }
 
-console.log("Move harness and reporting dirs out of test.");
-var harness = pth.join(testDir, "harness")
-,   reporting = pth.join(testDir, "reporting");
-if (fs.existsSync(harness)) wrench.copyDirSyncRecursive(harness, pth.join(testDir, "../harness"));
-if (fs.existsSync(reporting)) wrench.copyDirSyncRecursive(reporting, pth.join(testDir, "../reporting"));
-
-console.log("Delete the test directory.");
-if (fs.existsSync(testDir)) wrench.rmdirSyncRecursive(testDir);
-mkdirp(testDir);
-
 var sections = {
     html:       "http://www.w3.org/html/wg/drafts/html/master/Overview.html"
 ,   canvas2d:   "http://www.w3.org/html/wg/drafts/2dcontext/html5_canvas/Overview.html"

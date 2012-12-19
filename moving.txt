@@ -3,7 +3,6 @@ DIRECTORIES TO MOVE:
 
     - Ms2ger
         dom-tree-accessors/
-        dynamic-markup-insertion/
         html5_approvedtests.txt
         
         
@@ -17,6 +16,7 @@ DIRECTORIES TO MOVE:
         audio/
         base64.html
         common/
+        dynamic-markup-insertion/
         editing/
         events/
         images/

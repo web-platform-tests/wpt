@@ -4,7 +4,6 @@ DIRECTORIES TO MOVE:
     - Ms2ger
         html5_approvedtests.txt
         video/
-        window-onerror/
         xhtml5/
         
         
@@ -28,6 +27,7 @@ DIRECTORIES TO MOVE:
         named-character-references/
         parsing/
         the-elements-of-html/
+        window-onerror/
 
 Note:
   syntax/parsing limited to 2 levels deep

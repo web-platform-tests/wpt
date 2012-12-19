@@ -3,7 +3,6 @@ DIRECTORIES TO MOVE:
 
     - Ms2ger
         html5_approvedtests.txt
-        named-character-references/
         parsing/
         the-elements-of-html/
         video/
@@ -28,6 +27,7 @@ DIRECTORIES TO MOVE:
         images/
         fonts/
         foreigncontent/
+        named-character-references/
 
 Note:
   syntax/parsing limited to 2 levels deep

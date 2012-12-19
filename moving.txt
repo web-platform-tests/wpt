@@ -1,0 +1,32 @@
+
+DIRECTORIES TO MOVE:
+
+    - Ms2ger
+        foreigncontent/
+        html5_approvedtests.txt
+        images/
+        named-character-references/
+        parsing/
+        the-elements-of-html/
+        video/
+        window-onerror/
+        xhtml5/
+        
+        
+    - Robin
+        attributes/
+        audio/
+        base64.html
+        canvas/
+        canvas2d_approvedtests.txt
+        common/
+        dataset/
+        documentwrite/
+        dom-tree-accessors/
+        dynamic-markup-insertion/
+        editing/
+        events/
+        fonts/
+        
+    - Done
+    

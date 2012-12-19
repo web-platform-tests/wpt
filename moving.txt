@@ -2,20 +2,20 @@
 DIRECTORIES TO MOVE:
 
     - Ms2ger
-        dom-tree-accessors/
         html5_approvedtests.txt
         
         
     - Robin
         canvas/
         dataset/
-        documentwrite/
         
     - Done
         attributes/
         audio/
         base64.html
         common/
+        documentwrite/
+        dom-tree-accessors/
         dynamic-markup-insertion/
         editing/
         events/

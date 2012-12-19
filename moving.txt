@@ -2,7 +2,6 @@
 DIRECTORIES TO MOVE:
 
     - Ms2ger
-        foreigncontent/
         html5_approvedtests.txt
         named-character-references/
         parsing/
@@ -28,4 +27,7 @@ DIRECTORIES TO MOVE:
         common/
         images/
         fonts/
-    
+        foreigncontent/
+
+Note:
+  syntax/parsing limited to 2 levels deep

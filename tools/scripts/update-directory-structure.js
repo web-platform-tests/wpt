@@ -11,18 +11,6 @@ var fs = require("fs")
 ,   MAX_DEPTH = 3
 ;
 
-if (process.argv[2] !== "--force") {
-    console.log([
-        "################ WARNING #########################################"
-    ,   "   As currently implemented, this script is very much destructive."
-    ,   "   It will destroy the entire tests directory. For real."
-    ,   "   If you *really* wish to run it, run it with --force."
-    ,   "   Eventually, it will simply update the directory tree."
-    ,   "################ /WARNING ########################################"
-    ].join("\n"));
-    process.exit(1);
-}
-
 var sections = {
     html:       "http://www.w3.org/html/wg/drafts/html/master/Overview.html"
 ,   canvas2d:   "http://www.w3.org/html/wg/drafts/2dcontext/html5_canvas/Overview.html"

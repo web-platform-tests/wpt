@@ -1,11 +1,6 @@
 
 // convert from old-style test structure to new style
 
-// XXX TODO
-//  - make a master/ED and a CR branch (make that temp/CR and temp/unicorn)
-//  - be non-destructive, just add missing directories when applicable
-//  - move stuff around
-
 var fs = require("fs")
 ,   pth = require("path")
 ,   _ = require("underscore")

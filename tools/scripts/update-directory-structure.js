@@ -9,6 +9,7 @@ var fs = require("fs")
 ,   mkdirp = require("mkdirp").sync
 ,   testDir = pth.join(__dirname, "../../tests")
 ,   MAX_DEPTH = 3
+,   id2path = {}
 ;
 
 var sections = {
@@ -59,21 +60,30 @@ function extractSections (sec, secDir, spec, cb) {
     });
 }
 
+function makeID2Path (base, tree) {
+    for (var i = 0, n = tree.length; i < n; i++) {
+        var sec = tree[i];
+        id2path[sec.original_id] = base;
+        if (sec.children && sec.children.length) makeID2Path(base, sec.children);
+    }
+}
+
 function makeDirs (base, tree, depth) {
     console.log("Making " + base + " at depth " + depth);
     for (var i = 0, n = tree.length; i < n; i++) {
         var sec = tree[i]
-        ,   sane = sec.id
-        ,   path = pth.join(base, sane)
+        ,   path = pth.join(base, sec.id)
         ;
         mkdirp(path);
         fs.writeFileSync(pth.join(path, ".gitkeep"), "", "utf8");
+        id2path[sec.original_id] = path;
         if (sec.id !== sec.original_id) {
             fs.writeFileSync(pth.join(path, "original-id.json"), JSON.stringify({ original_id: sec.original_id}), "utf8");
         }
         if (sec.children && sec.children.length) {
             if (depth === 3) {
                 fs.writeFileSync(pth.join(path, "contains.json"), JSON.stringify(sec.children, null, 4), "utf8");
+                makeID2Path(path, sec.children);
             }
             else {
                 makeDirs(path, sec.children, depth + 1);
@@ -89,6 +99,7 @@ for (var sec in sections) {
     extractSections(sec, secDir, sections[sec], function (err, toc, sec, secDir) {
         if (err) return console.log("ERROR: " + err);
         makeDirs(secDir, toc, 1);
+        for (var k in id2path) id2path[k] = id2path[k].replace(testDir, "tests");
+        fs.writeFileSync(pth.join(__dirname, "id2path.json"), JSON.stringify(id2path, null, 4), "utf8");
     });
 }
-

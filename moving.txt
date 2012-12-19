@@ -3,7 +3,6 @@ DIRECTORIES TO MOVE:
 
     - Ms2ger
         html5_approvedtests.txt
-        xhtml5/
         
         
     - Robin
@@ -28,6 +27,7 @@ DIRECTORIES TO MOVE:
         the-elements-of-html/
         video/
         window-onerror/
+        xhtml5/
 
 Note:
   syntax/parsing limited to 2 levels deep

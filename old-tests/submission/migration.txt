@@ -4,8 +4,7 @@ TODO:
     Google          (not sure how much of that is what's already in)
     Infraware       (these come bundled with resources and require lots of rewriting)
     Intel           (need to check how much overlap there is with existing stuff)
-    MathiasBynens
-    Microsoft
+    Microsoft       (a million things, check overlap)
     MOSQUITO
     Mozilla
     Ms2ger
@@ -23,4 +22,5 @@ DONE:
     Comcast
     DavidCarlisle
     html5bidi
+    MathiasBynens
     

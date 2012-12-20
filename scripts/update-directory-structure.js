@@ -102,7 +102,7 @@ for (var sec in sections) {
     extractSections(sec, secDir, sections[sec], function (err, toc, sec, secDir) {
         if (err) return console.log("ERROR: " + err);
         makeDirs(secDir, toc, 1);
-        for (var k in id2path) id2path[k] = id2path[k].replace(testDir, "tests");
+        for (var k in id2path) id2path[k] = id2path[k].replace(testDir + "/", "");
         fs.writeFileSync(pth.join(__dirname, "id2path.json"), JSON.stringify(id2path, null, 4), "utf8");
     });
 }

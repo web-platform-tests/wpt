@@ -5,7 +5,6 @@ TODO:
     Infraware       (these come bundled with resources and require lots of rewriting)
     Intel           (need to check how much overlap there is with existing stuff)
     Microsoft       (lots of things, need to check overlap)
-    MOSQUITO
     Mozilla
     Ms2ger
     Opera
@@ -22,5 +21,6 @@ DONE:
     DavidCarlisle
     html5bidi
     MathiasBynens
+    MOSQUITO
     WebKit
     

@@ -2,8 +2,8 @@
 TODO:
 
     Google          (not sure how much of that is what's already in)
-    Infraware
-    Intel
+    Infraware       (these come bundled with resources and require lots of rewriting)
+    Intel           (need to check how much overlap there is with existing stuff)
     MathiasBynens
     Microsoft
     MOSQUITO

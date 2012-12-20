@@ -1,4 +1,3 @@
-
 Description
 ===========
 
@@ -51,8 +50,7 @@ Save the Web, Write Some Tests!
 
 Let's get the legalese out of the way:
 
-- Grant of License for Contributed Test Cases Published Outside a W3C
-Recommendation
+### Grant of License for Contributed Test Cases Published Outside a W3C Recommendation
 
 By contributing to this repository, you, the Contributor, hereby grant
 to the W3C, a perpetual, non-exclusive, royalty-free, world-wide right
@@ -78,7 +76,7 @@ just contact us to ask about it.
 
 [1] http://www.w3.org/Consortium/Legal/2008/03-bsd-license.html
 
-- Disclaimer
+### Disclaimer
 
 THE CONTRIBUTION IS PROVIDED AS IS, AND CONTRIBUTORS MAKE NO
 REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED, INCLUDING, BUT NOT

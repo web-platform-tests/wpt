@@ -4,13 +4,12 @@ TODO:
     Google          (not sure how much of that is what's already in)
     Infraware       (these come bundled with resources and require lots of rewriting)
     Intel           (need to check how much overlap there is with existing stuff)
-    MathiasBynens
-    Microsoft
+    Microsoft       (lots of things, need to check overlap)
     MOSQUITO
     Mozilla
     Ms2ger
     Opera
-    PhilipTaylor
+    PhilipTaylor    (these have been updated; need a script to copy them correctly)
     TestTWF_Paris
     W3C
 
@@ -22,5 +21,6 @@ DONE:
     Comcast
     DavidCarlisle
     html5bidi
+    MathiasBynens
     WebKit
     

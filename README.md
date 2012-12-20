@@ -10,11 +10,19 @@ bunch of cool froods.
 Finding Things
 ==============
 
-The tests are under `tests` (yes indeed), with subdirectories per specification.
+Tests are under `html` (for the HTML specification), `canvas` (for the
+Canvas specification), and `microdata` (Surprise test! Which specification
+are these tests for?).
+
 Inside the specification directories, the tree represents the sections of the
 respective documents, using the section IDs for directory names, with a maximum
 of three levels deep. So if you're looking for tests for "The History interface",
-they will be under `tests/html/browsers/history/the-history-interface/`.
+they will be under `html/browsers/history/the-history-interface/`.
+
+Various resources that tests depend on are in `common`, `images`, and `fonts`.
+
+In order to function properly, tests need to be run from a web server that has
+testharness.js in `/resources/`.
 
 Branches
 ========
@@ -35,7 +43,19 @@ you want to see your work destroyed.
 Contributing
 ============
 
-XXX GET INFO FROM @plehegar ABOUT CONTRIBUTION AGREEMENT
+Save the Web, Write Some Tests!
+
+Let's get the legalese out of the way:
+
+All contributors **must** agree to the following W3C test licences:
+
+* http://www.w3.org/Consortium/Legal/2008/04-testsuite-license.html
+* http://www.w3.org/Consortium/Legal/2008/03-bsd-license.html
+
+We can accept tests contributed under compatible conditions, just contact
+us to ask about it.
+
+*Legalese over*.
 
 Absolutely everyone is welcome (and even encouraged) to contribute to test 
 development, so long as you fulfil the contribution requirements detailed

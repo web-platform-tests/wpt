@@ -5,9 +5,8 @@ TODO:
     Infraware       (these come bundled with resources and require lots of rewriting)
     Intel           (need to check how much overlap there is with existing stuff)
     Microsoft       (lots of things, need to check overlap)
-    Mozilla
-    Ms2ger
-    Opera
+    Ms2ger          (Ms2ger is doing those)
+    Opera           (split into multiple PRs)
     PhilipTaylor    (these have been updated; need a script to copy them correctly)
     TestTWF_Paris
     W3C
@@ -22,5 +21,6 @@ DONE:
     html5bidi
     MathiasBynens
     MOSQUITO
+    Mozilla
     WebKit
     

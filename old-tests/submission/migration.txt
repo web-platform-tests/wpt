@@ -13,7 +13,6 @@ TODO:
     PhilipTaylor
     TestTWF_Paris
     W3C
-    WebKit
 
 DONE:
 
@@ -23,4 +22,5 @@ DONE:
     Comcast
     DavidCarlisle
     html5bidi
+    WebKit
     

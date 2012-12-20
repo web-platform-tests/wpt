@@ -1,0 +1,6 @@
+  <its:rules version="2.0" xmlns:its="http://www.w3.org/2005/11/its">
+      <its:param name="rubyParam">W3C</its:param>
+      <its:rubyRule selector="/text/body/img[@alt=$rubyParam]/@alt">
+          <its:rubyText>World Wide Web Consortium</its:rubyText>
+      </its:rubyRule>
+  </its:rules>

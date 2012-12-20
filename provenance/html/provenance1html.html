@@ -3,7 +3,7 @@
   <head>
     <meta charset=utf-8>
     <title>Test</title>
-    <script id="its-standoff-no-2" type="application/its+xml">
+    <script id="pr1" type="application/its+xml">
       <its:provenanceRecords xml:id="pr1" xmlns:its="http://www.w3.org/2005/11/its" version="2.0">
         <its:provenanceRecord
                tool="onlinemtex"
@@ -12,7 +12,9 @@
                revOrg="acme-CAT-v2.3"
                provRef="http://www.examplelsp.com/excontent987/production/prov/e6354"/>
       </its:provenanceRecords>
-      <its:provenanceRecords xml:id="pr2" xmlns:its="http://www.w3.org/2005/11/its" version="2.0">
+	</script>
+    <script id="pr2" type="application/its+xml">
+	  <its:provenanceRecords xml:id="pr2" xmlns:its="http://www.w3.org/2005/11/its" version="2.0">
         <its:provenanceRecord
             person="John Doe"
             org="legaltrans-ex"
@@ -24,7 +26,7 @@
     <link href=provenance1htmlrules.xml rel=its-rules>
   </head>
   <body>
-    <p id="#pr1"> This paragraph was translated from the machine.</p>
+    <p id="#pr1">This paragraph was translated from the machine.</p>
     <p id="#pr2">This text was translated directly by a person.</p>
   </body>
 </html>

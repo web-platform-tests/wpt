@@ -7,7 +7,6 @@ TODO:
     Microsoft       (lots of things, need to check overlap)
     Ms2ger          (Ms2ger is doing those)
     Opera           (split into multiple PRs)
-    PhilipTaylor    (these have been updated; need a script to copy them correctly)
     TestTWF_Paris
     W3C
 
@@ -20,6 +19,7 @@ DONE:
     DavidCarlisle
     html5bidi
     MathiasBynens
+    PhilipTaylor
     MOSQUITO
     Mozilla
     WebKit

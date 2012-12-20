@@ -19,24 +19,18 @@
     <script type="text/javascript">  
 
       function deleteChildNodes() {
-        var node  = document.getElementById('TEST_ID_2');  
+        var node  = document.getElementById('TEST_ID_1');  
         while (node.firstChild) node.removeChild(node.firstChild);
       }
 
       function addLiveRegion() {
         var node = document.getElementById('TEST_ID_1');  
         
-        var live_node = document.createElement('div');
-        live_node.setAttribute('aria-live', 'polite');
-        live_node.setAttribute('id', 'TEST_ID_2');
- 
-        var element_node = document.createElement('div');
+        node.setAttribute('aria-live', 'polite');
        
         var text_node = document.createTextNode('TEST TEXT');
         
-        element_node.appendChild(text_node);
-        live_node.appendChild(element_node);
-        node.appendChild(live_node);
+        node.appendChild(text_node);
         
         setTimeout(deleteChildNodes,500);
       }

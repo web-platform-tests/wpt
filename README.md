@@ -51,13 +51,43 @@ Save the Web, Write Some Tests!
 
 Let's get the legalese out of the way:
 
-All contributors **must** agree to the following W3C test licences:
+- Grant of License for Contributed Test Cases Published Outside a W3C
+Recommendation
 
-* http://www.w3.org/Consortium/Legal/2008/04-testsuite-license.html
-* http://www.w3.org/Consortium/Legal/2008/03-bsd-license.html
+By contributing to this repository, you, the Contributor, hereby grant
+to the W3C, a perpetual, non-exclusive, royalty-free, world-wide right
+and license under any Contributor copyrights in this contribution to
+copy, publish, use, and modify the contribution and to distribute the
+contribution under a BSD License (see [1] below) or one with more
+restrictive terms, as well as a right and license of the same scope to
+any derivative works prepared by the W3C and based on, or
+incorporating all or part of the contribution. The Contributor further
+agrees that any derivative works of this contribution prepared by the
+W3C shall be solely owned by the W3C.
 
-We can accept tests contributed under compatible conditions, just contact
-us to ask about it.
+The Contributor states, to the best of her/his knowledge, that she/he,
+or the company she/he represents, has all rights necessary to
+contribute the Materials.
+
+W3C will retain attribution of initial authorship to the
+Contributor. The W3C makes no a-priori commitment to support or
+distribute contributions.
+
+Note: We can accept tests contributed under compatible conditions,
+just contact us to ask about it.
+
+[1] http://www.w3.org/Consortium/Legal/2008/03-bsd-license.html
+
+- Disclaimer
+
+THE CONTRIBUTION IS PROVIDED AS IS, AND CONTRIBUTORS MAKE NO
+REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED, INCLUDING, BUT NOT
+LIMITED TO, WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+PURPOSE, NON-INFRINGEMENT, OR TITLE; THAT THE CONTENTS OF THE DOCUMENT
+ARE SUITABLE FOR ANY PURPOSE. CONTRIBUTORS MAKE NO REPRESENTATIONS,
+EXPRESS OR IMPLIED, THAT THE CONTRIBUTION OR THE USE THEREOF INDICATES
+CONFORMANCE TO A SPECIFICATION; CONTRIBUTIONS ARE PROVIDED ONLY TO
+HELP REACHING INTEROPERABILITY.
 
 *Legalese over*.
 

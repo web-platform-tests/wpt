@@ -17,6 +17,7 @@
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="help" title="18.4 Dynamic outlines: the 'outline' property" href="http://www.w3.org/TR/CSS21/ui.html#dynamic-outlines" />
+  <link rel="match" href="reference/outline-layout-006-ref.xht" />
 
   <meta content="" name="flags" />
   <meta content="The outline of an element is the minimum outline that encloses all the element's boxes." name="assert" />
@@ -28,7 +29,7 @@
   {
   color: white;
   font: 3.125em/1 Ahem;
-  margin: -2.8em auto auto 10px;
+  margin: -1.8em auto auto 10px;
   }
 
   span#outline-wrapper {outline: blue solid 10px;}
@@ -38,18 +39,18 @@
   span#outline-wrapper > span {line-height: 3em;}
   
   span#outline-wrapper > span > span {line-height: 5em;}
-
-  span#outline-wrapper > span > span > span {line-height: 7em;}
   ]]></style>
 
  </head>
 
  <body>
 
-  <p>Test passes if there is a blue line that creates the shape of a staircase (or a small pyramid) that go 4 steps up and then go 4 steps down.</p>
+  <p>Test passes if there is a blue line that creates<br />
+  the shape of a staircase (or a small pyramid)<br />
+  that go 3 steps up and then go 3 steps down.</p>
 
   <div id="test">
-      <span id="outline-wrapper">1<span>2<span>3<span>4</span>5</span>6</span>7</span>
+      <span id="outline-wrapper">1<span>2<span>3</span>4</span>5</span>
   </div>
 
  </body>

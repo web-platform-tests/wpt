@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
-<someDataFile>
-<its:locQualityIssues xml:id="lq1" xmlns:its="http://www.w3.org/2005/11/its">
+<someDataFile xmlns:its="http://www.w3.org/2005/11/its" its:version="2.0">
+<its:locQualityIssues xml:id="lq1">
  <its:locQualityIssue
   locQualityIssueType="misspelling"
   locQualityIssueComment="'c'es' is unknown. Could be 'c'est'"

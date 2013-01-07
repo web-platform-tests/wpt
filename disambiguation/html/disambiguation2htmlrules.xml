@@ -2,11 +2,12 @@
     <its:param name="disambigCityParam">dublin</its:param>
     <its:param name="disambigCapitalParam">capital</its:param>
     <its:disambiguationRule selector="//h:body/h:p/h:*[@id=$disambigCityParam]"
-      disambigClassRef="http://nerd.eurecom.fr/ontology#Place"
+      disambigClassRefPointer="@typeof"
       disambigGranularity="entity"
-      disambigIdentRef="http://dbpedia.org/resource/Dublin"/>
+      disambigIdentRefPointer="@property"/>
     <its:disambiguationRule selector="//h:body/h:p/h:*[@id=$disambigCapitalParam]"
+      disambigClassPointer="@typeof"
       disambigGranularity="lexical-concept"
-      disambigSource="Wordnet3.0"
-      disambigIdent="301467919"/>
+      disambigSourcePointer="@property"
+      disambigIdentPointer="@about"/>
   </its:rules>

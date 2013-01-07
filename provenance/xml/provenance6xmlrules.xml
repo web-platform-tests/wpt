@@ -1,7 +1,7 @@
   <its:rules xmlns:its="http://www.w3.org/2005/11/its" version="2.0">
     <its:param name="provenanceParam">#pr1</its:param>
     <its:provRule selector="/text/body/par[@xml:id=$provenanceParam]"
-      provenanceRecordsRef="#pr1"/>
+      provenanceRecordsRefPointer="#pr1"/>
     <its:provRule selector="/text/body/legalnotice"
-      provenanceRecordsRef="#pr2"/>
+      provenanceRecordsRefPointer="#pr2"/>
   </its:rules>

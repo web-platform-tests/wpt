@@ -24,30 +24,42 @@
 
   div#table-row-group
   {
-  background-color: green;
+  background-color: blue;
   display: table-row-group;
   float: right;
   height: 1in;
   width: 1in;
   }
 
-  div#row {display: table-row;}
+  div.row {display: table-row;}
 
-  div#cell {display: table-cell;}
+  div.cell
+  {
+  color: blue;
+  display: table-cell;
+  }
   ]]></style>
 
  </head>
 
  <body>
 
-  <p>Test passes if there is a filled green square on the right side of the page.</p>
+  <p>Test passes if there is a filled blue square on the right side of the page.</p>
   
   <div id="table">
-     <div id="table-row-group">
-         <div id="row">
-             <div id="cell"></div>
+
+      <div id="table-row-group">
+
+          <div class="row">
+              <div class="cell">a</div><div class="cell">b</div>
           </div>
+
+          <div class="row">
+              <div class="cell">c</div><div class="cell">d</div>
+          </div>
+
      </div>
+
   </div>
 
  </body>

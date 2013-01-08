@@ -3,10 +3,12 @@
  <head>
   <title>CSS Test: CSS Blocks: Margin Collapsing</title>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
-  <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-10-06 -->
+  <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-12-12 -->
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/block/007.xml" type="application/xhtml+xml"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#collapsing-margins" />
-  <link rel="match" href="blocks-017-ref.xht" />
+  <link rel="match" href="../tables/reference/table-margin-004-ref.xht" />
+  
+  <meta name="flags" content="ahem" />
 
   <style type="text/css"><![CDATA[
    div {
@@ -25,13 +27,14 @@
   ]]></style>
  </head>
  <body>
-  <p>The black bars should not overflow the blue box.</p>
+  <p>Test passes if there are 4 black bars which do not overflow a wide blue rectangle. The black bars are evenly distributed (vertically) in the blue rectangle: the gap between the blue border at the top and the first black bar should be equal to the gap between the 4th bar and the blue border at the bottom.</p>
+
   <div>
    <table><tr><td>Test</td></tr></table>
    <table><tr><td>Test</td></tr></table>
    <p>Test</p>
    <p>Test</p>
   </div>
-  <p>Test passes if the black bars are evenly distributed (vertically) in the blue box.</p>
+
  </body>
 </html>

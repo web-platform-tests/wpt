@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>CSS Regions: Interactivity - Mouse events - onclick</title>
+        <link rel="author" title="David Alcala" href="mailto:dalcala@adobe.com">
+        <link rel="help" href="http://www.w3.org/TR/css3-regions/">
+        <link href="/resources/testharness.css" rel="stylesheet" type="text/css">
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+        <style>
+        
+            #content { 
+              -webkit-flow-into: article;
+              width: 200px; }
+              
+            .region{
+              -webkit-flow-from: article;
+              width:200px;
+              height:300px;
+              float:left;
+              margin: 20px;
+            }
+            
+            #target {
+              width: 50px;
+              height: 50px;
+              background-color: gray;
+              margin: 25px;
+              /* float: left; removing this so gray box is hidden when test fails */
+            }
+            
+            #target:hover { background-color: lightgreen; }
+            #target:active { background-color: green; }
+            
+            
+            #outside-region {
+              clear: both;
+              width: 150px;
+              height: 150px;
+              background-color: orange;
+              margin: 25px;
+              /* float: left; removing this so gray box is hidden when test fails */
+            }
+            
+            #error{
+              height: 578px;
+              width: 200px;
+              background-color: red;
+              margin: -20px;
+            }
+            
+            #log {
+              clear: both;
+            }
+
+        </style>
+    </head>
+    <body>
+      
+        <ul>
+            <li>There should be no red</li>
+            <li>Click on the gray square</li>
+            <li>Click on the yellow square</li>
+            <li>Done</li>
+        </ul>
+        
+        <div class="region" id="region"><div id="error"></div></div>
+        <div class="region" id="region"></div>
+        
+        <div id="content" style="outline: solid black">
+            <div style="height: 500px; width: 200px; background-color: green;"></div>
+            <div id="target"></div>
+        </div>
+        
+        <div id="outside-region">This div is outside the region</div>
+        
+        <div id="log"></div>
+ 
+        <script type="text/javascript">
+         
+        function checkRectPosition(elemID) {
+            return document.getElementById(elemID).getBoundingClientRect().top + "," +
+                  document.getElementById(elemID).getBoundingClientRect().left;            
+        }
+          
+        test(function() {assert_equals(checkRectPosition("target"), "349,293", "Expected target to be located at 349,293")}, 
+                        "Test that regions is enabled");
+         
+        var testTimeout = 10000;
+        setup({timeout: testTimeout});
+         
+        var test1 = async_test("Test onclick event on target", {timeout: testTimeout});
+            test1.step( function() {
+                var testTarget = document.getElementById("target");
+                testTarget.onclick = test1.step_func( function(evt) {
+                    assert_true(true);
+                    test1.done();
+                });
+            });
+            
+        var test2 = async_test("Test onclick event on content", {timeout: testTimeout});
+            test2.step( function() {
+                var testTarget = document.getElementById("content");
+                testTarget.onclick = test2.step_func( function(evt) {
+                    assert_true(true);
+                    test2.done();
+                });
+            });
+            
+        var test3 = async_test("Test onclick event on div oustide region", {timeout: testTimeout});
+            test3.step( function() {
+                var testTarget = document.getElementById("outside-region");
+                testTarget.onclick = test3.step_func( function(evt) {
+                    assert_true(true);
+                    test3.done();
+                });
+            });
+            
+        </script>
+    </body>
+</html>

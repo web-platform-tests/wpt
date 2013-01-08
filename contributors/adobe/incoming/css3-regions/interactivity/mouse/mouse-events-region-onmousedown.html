@@ -1,0 +1,87 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>CSS Regions: Interactivity - Mouse events - onmousedown</title>
+        <link rel="author" title="David Alcala" href="mailto:dalcala@adobe.com">
+        <link rel="help" href="http://www.w3.org/TR/css3-regions/">
+        <link href="/resources/testharness.css" rel="stylesheet" type="text/css">
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+
+        <style>
+        
+            #content { 
+              -webkit-flow-into: article;
+              width: 200px; }
+              
+            .region{
+              -webkit-flow-from: article;
+              width:200px;
+              height:300px;
+              float:left;
+              margin: 20px;
+            }
+            
+            #target {
+              width: 50px;
+              height: 50px;
+              background-color: gray;
+              margin: 25px;
+              /* float: left; removing this so gray box is hidden when test fails */
+            }
+            
+            #target:hover { background-color: lightgreen; }
+            #target:active { background-color: green; }
+            
+            #error{
+              height: 578px;
+              width: 200px;
+              background-color: red;
+              margin: -20px;
+            }
+
+        </style>
+    </head>
+    <body>
+        <ul>
+            <li>There should be no red</li>
+            <li>Mouse down on the gray square</li>
+            <li>x</li>
+            <li>x</li>
+        </ul>
+        
+        <div class="region"><div id="error"></div></div>
+        <div class="region"></div>
+        
+        <div id="content" style="outline: solid black">
+            <div style="height: 500px; width: 200px; background-color: green;"></div>
+            <div id="target"></div>
+        </div>
+        
+        <div id="log"></div>
+ 
+        <script type="text/javascript">
+        
+        function checkRectPosition(elemID) {
+            return document.getElementById(elemID).getBoundingClientRect().top + "," +
+                  document.getElementById(elemID).getBoundingClientRect().left;            
+        }
+          
+        test(function() {assert_equals(checkRectPosition("target"), "349,293", "Expected target to be located at 349,293")}, 
+                        "Test that regions is enabled");
+         
+        var testTimeout = 10000;
+        setup({timeout: testTimeout});
+         
+            var test1 = async_test("Test onmousedown event", {timeout: testTimeout});
+            test1.step( function() {
+                var testTarget = document.getElementById("target");
+                testTarget.onmousedown = test1.step_func( function(evt) {
+                    assert_true(true);
+                    test1.done();
+                });
+            });
+
+        </script>
+    </body>
+</html>

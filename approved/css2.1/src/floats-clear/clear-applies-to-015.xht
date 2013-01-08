@@ -3,52 +3,51 @@
     <head>
         <title>CSS Test: Clear applied to element with 'display' set to 'table-caption'</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
-        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-05-01 -->
+        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-12-14 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#propdef-clear" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#flow-control" />
-        <link rel="match" href="clear-applies-to-015-ref.xht" />
+
+        <!--
+        http://wiki.csswg.org/spec/css2.1#issue-120
+        "
+        The caption boxes are block-level boxes that retain 
+        their own content, padding, margin, and border areas, 
+        and are rendered as normal block boxes inside the table 
+        wrapper box.
+        "
+        http://www.w3.org/TR/CSS21/tables.html#model
+        -->
+
+        <link rel="match" href="clear-applies-to-009-ref.xht" />
 
         <meta name="flags" content="" />
-        <meta name="assert" content="The 'clear' property does not apply to elements with a display of 'table-caption'." />
+        <meta name="assert" content="The 'clear' property applies to elements with a display of 'table-caption'." />
         <style type="text/css">
+            body {margin: 8px;}        
+        
             p
             {
                 float: left;
                 line-height: 1.25;
                 margin: 1em 0;
+                width: 320px;
             }
+
             #caption
             {
-                background: green;
-                display: table-caption;
+                background: blue;
                 clear: both;
-            }
-            #table, #cell, #caption
-            {
+                color: blue;
+                display: table-caption;
                 height: 1in;
                 width: 1in;
-            }
-            #table
-            {
-                display: table;
-            }
-            #row
-            {
-                display: table-row;
-            }
-            #cell
-            {
-                display: table-cell;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if there is a box to the right of this text.</p>
-        <div id="table">
-            <div id="caption"></div>
-            <div id="row">
-                <div id="cell"></div>
-            </div>
-        </div>
+        <p>Test passes if there is a filled blue square <strong>below this text</strong>.</p>
+
+        <div id="caption">C</div>
+
     </body>
 </html>

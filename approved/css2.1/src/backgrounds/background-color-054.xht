@@ -2,12 +2,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <title>CSS Test: Background-color set to rgb() using percentages with a maximum minus one value, rgb(99%, 99%, 99%)</title>
-        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
-        <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#propdef-background-color" />
-        <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#background-properties" />
-
-        <meta name="flags" content="image" />
-        <meta name="assert" content="Background-color is set to rgb(99%, 99%, 99%)." />
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/"/>
+        <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#propdef-background-color"/>
+        <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#background-properties"/>
+        <!-- This test has 2 reference files to match rounding fractional color values up or down -->
+        <link rel="match" href="background-color-054-fcfcfc-ref.xht"/>
+        <link rel="match" href="background-color-054-fdfdfd-ref.xht"/>
+        <meta name="flags" content="ahem"/>
+        <meta name="assert" content="Background-color is set to rgb(99%, 99%, 99%)."/>
         <style type="text/css">
             body
             {
@@ -17,23 +19,26 @@
             {
                 color: white;
             }
-            img, #test
-            {
-                height: 1in;
-                width: 1in;
-            }
             #test
             {
                 background-color: rgb(99%, 99%, 99%);
+            }
+            #test, #reference
+            {
+                height: 100px;
+                width: 100px;
+            }
+            #reference
+            {
+                color: rgb(99%, 99%, 99%);
+                font: 100px/1 Ahem;
             }
         </style>
     </head>
     <body>
         <p>Test passes if there are 2 squares with the <strong>same color</strong>.</p>
         <div id="test"></div>
-        <div id="reference">
-            <br />
-            <img alt="#fcfcfc color swatch" src="support/fcfcfc_color.png" />
-        </div>
+        <br />
+        <div id="reference">X</div>
     </body>
 </html>

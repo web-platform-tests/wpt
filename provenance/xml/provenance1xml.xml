@@ -15,13 +15,13 @@
       org="legaltrans-ex"
       revPerson="Tommy Atkins"
       revOrg="vistatec"
-      provRef=" http://www.examplelsp.com/excontent987/legal/prov/e6354 http://www.vistatec.com/job-12-7-15-X31/reviewed/prov/re8573469"/>
+      provRef="http://www.examplelsp.com/excontent987/legal/prov/e6354 http://www.vistatec.com/job-12-7-15-X31/reviewed/prov/re8573469"/>
   </its:provenanceRecords>
   <its:rules version="2.0">
     <its:provRule selector="/text/body/par"
-      provenanceRecordsRefPointer="#pr1"/>
+      provenanceRecordsRefPointer="@xml:id"/>
     <its:provRule selector="/text/body/legalnotice"
-      provenanceRecordsRefPointer="#pr2"/>
+      provenanceRecordsRefPointer="@xml:id"/>
   </its:rules>
   <title>Translation Revision Provenance Agent: Global Test in XML</title>
   <body>

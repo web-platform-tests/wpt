@@ -2,11 +2,13 @@
  <head>
   <script type="application/its+xml">  
   <its:rules xmlns:its="http://www.w3.org/2005/11/its" version="2.0" xmlns:h="http://www.w3.org/1999/xhtml">
-    <its:disambiguationRule selector="//h:body/h:p/h:*[@id='dublin']"
+    <its:param name="disambigCityParam">dublin</its:param>
+    <its:param name="disambigCapitalParam">capital</its:param>
+    <its:disambiguationRule selector="//h:body/h:p/h:*[@id=$disambigCityParam]"
       disambigClassRefPointer="@typeof"
       disambigGranularity="entity"
       disambigIdentRefPointer="@property"/>
-    <its:disambiguationRule selector="//h:body/h:p/h:*[@id='capital']"
+    <its:disambiguationRule selector="//h:body/h:p/h:*[@id=$disambigCapitalParam]"
       disambigClassPointer="@typeof"
       disambigGranularity="lexical-concept"
       disambigSourcePointer="@property"

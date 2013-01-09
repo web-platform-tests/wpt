@@ -32,7 +32,7 @@ A_04_03_06_07_T01.step(function () {
 
             var d = iframe.contentDocument;
             var div = d.querySelector('#inputs-wrapper');
-            var s = new SR(div);
+            var s = createSR(div);
             
             d.querySelector('#chb1').indeterminate = true; 
             

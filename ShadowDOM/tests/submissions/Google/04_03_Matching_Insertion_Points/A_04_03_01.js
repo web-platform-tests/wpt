@@ -31,7 +31,7 @@ A_04_03_01_T1.step(function () {
         try {
             var d = iframe.contentDocument;
             var div = d.querySelector('#divid');
-            var s = new SR(div);
+            var s = createSR(div);
 
             //make shadow subtree
             var subdiv1 = document.createElement('div');

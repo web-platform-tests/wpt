@@ -121,8 +121,13 @@
             <li><a href="#shadow-aware-attributes"><span class="section">10.2.1</span> <code>ShadowAware</code> Attributes</a></li>
             <li><a href="#shadow-aware-methods"><span class="section">10.2.2</span> <code>ShadowAware</code> Methods</a></li>
         </ol></li>
-        <li><a href="#content-element"><span class="section">10.3</span> The <code>content</code> HTML element</a></li>
-        <li><a href="#shadow-element"><span class="section">10.4</span> The <code>shadow</code> HTML element</a></li>
+        <li><a href="#css-host-rule-interface"><span class="section">10.3</span> <code>CSSHostRule</code> Interface</a>
+        <ol>
+            <li><a href="#css-host-rule-attributes"><span class="section">10.3.1</span> <code>CSSHostRule</code> Attributes</a></li>
+            <li><a href="#css-host-rule-methods"><span class="section">10.3.2</span> <code>CSSHostRule</code> Methods</a></li>
+        </ol></li>
+        <li><a href="#content-element"><span class="section">10.4</span> The <code>content</code> HTML element</a></li>
+        <li><a href="#shadow-element"><span class="section">10.5</span> The <code>shadow</code> HTML element</a></li>
     </ol></li>
     <li><a href="#shadow-dom-example"><span class="section">11</span> Shadow DOM Example</a></li>
     <li><a href="#acknowledgements">Acknowledgements</a></li>
@@ -334,7 +339,7 @@
 
 <h3 id="reprojection">Reprojection</h3>
 
-<p>One case that deserves special consideration is the situation when an <a href="#dfn-insertion-point">insertion point</a> is a child <a target='_blank' href="http://www.w3.org/TR/domcore/#concept-node">node</a> of another <a href="#dfn-shadow-host">shadow host</a>. In such situations, the <a target='_blank' href="http://www.w3.org/TR/domcore/#concept-node">nodes</a> <a href="#dfn-distribution">distributed</a> into that <a href="#dfn-insertion-point">insertion point</a> <strong>must</strong> appear as if they were child <a target='_blank' href="http://www.w3.org/TR/domcore/#concept-node">nodes</a> of the <a href="#dfn-shadow-host">shadow host</a> in the context of <a href="#dfn-distribution">distribution</a> within the <a href="#dfn-shadow-tree">shadow tree</a>, hosted by said <a href="#dfn-shadow-host">shadow host</a>. Thus, the <a target='_blank' href="http://www.w3.org/TR/domcore/#concept-node">nodes</a> <a href="#dfn-distribution">distributed</a> to a <a href="#dfn-shadow-tree">shadow tree</a> could have already been <a href="#dfn-distribution">distributed</a> by the <a href="#dfn-nested-tree">nesting</a> tree. The effect of a <a target='_blank' href="http://www.w3.org/TR/domcore/#concept-node">node</a> being <a href="#dfn-distribution">distributed</a> into more than one <a href="#dfn-insertion-point">insertion point</a> is called <dfn id="dfn-reprojection">reprojection</a>.</p>
+<p>One case that deserves special consideration is the situation when an <a href="#dfn-insertion-point">insertion point</a> is a child <a target='_blank' href="http://www.w3.org/TR/domcore/#concept-node">node</a> of another <a href="#dfn-shadow-host">shadow host</a>. In such situations, the <a target='_blank' href="http://www.w3.org/TR/domcore/#concept-node">nodes</a> <a href="#dfn-distribution">distributed</a> into that <a href="#dfn-insertion-point">insertion point</a> <strong>must</strong> appear as if they were child <a target='_blank' href="http://www.w3.org/TR/domcore/#concept-node">nodes</a> of the <a href="#dfn-shadow-host">shadow host</a> in the context of <a href="#dfn-distribution">distribution</a> within the <a href="#dfn-shadow-tree">shadow tree</a>, hosted by said <a href="#dfn-shadow-host">shadow host</a>. Thus, the <a target='_blank' href="http://www.w3.org/TR/domcore/#concept-node">nodes</a> <a href="#dfn-distribution">distributed</a> to a <a href="#dfn-shadow-tree">shadow tree</a> could have already been <a href="#dfn-distribution">distributed</a> by the <a href="#dfn-nesting-tree">nesting</a> tree. The effect of a <a target='_blank' href="http://www.w3.org/TR/domcore/#concept-node">node</a> being <a href="#dfn-distribution">distributed</a> into more than one <a href="#dfn-insertion-point">insertion point</a> is called <dfn id="dfn-reprojection">reprojection</a>.</p>
 
 <div class="informative">
 Despite being distributed to more than one insertion point during reprojection, a node is still only rendered once, because of the constraints under which the reprojection occurs: since the insertion points are only subject to reprojection when they are children of a shadow host, they are never rendered. Instead the shadow tree is rendered in their place.
@@ -355,14 +360,14 @@ Despite being distributed to more than one insertion point during reprojection, 
 
 <ol>
     <li>Let <var>TREE</var> be the <a href="#dfn-youngest-tree">youngest tree</a> in the <var>HOST</var>'s <a href="#dfn-tree-stack">tree stack</a>
-    <li>Let <var>POOL</var> be the list of nodes</li>
+    <li>Let <var>POOL</var> be an empty list of nodes</li>
     <li>For each child <a target='_blank' href="http://www.w3.org/TR/domcore/#concept-node">node</a> of <var>HOST</var>:
     <ol>
         <li>Let <var>CHILD</var> be this node</li>
         <li>If <var>CHILD</var> is an <a href="#dfn-insertion-point">insertion point</a>:
         <ol>
             <li>Let <var>REPROJECTED</var> be the list of nodes, distributed into this <a href="#dfn-insertion-point">insertion point</a> as a result of running <a href="#dfn-tree-composition">tree composition algorithm</a> on this <a href="#dfn-insertion-point">insertion point</a>'s <a href="#dfn-shadow-tree">shadow tree</a></li>
-            <li>If <var>RERPOJECTED</var> is an empty list, set it to list of all child <a target='_blank' href="http://www.w3.org/TR/domcore/#concept-node">nodes</a> of <var>CHILD</var>
+            <li>If <var>REPROJECTED</var> is an empty list, set it to the list of all child <a target='_blank' href="http://www.w3.org/TR/domcore/#concept-node">nodes</a> of <var>CHILD</var>
             <li>Add all <a target='_blank' href="http://www.w3.org/TR/domcore/#concept-node">nodes</a> in <var>REPROJECTED</var> into <var>POOL</var></li>
         </ol></li>
         <li>Otherwise, add <var>CHILD</var> to <var>POOL</var></li>
@@ -393,7 +398,7 @@ Despite being distributed to more than one insertion point during reprojection, 
 
 <h3 id="nested-shadow-trees">Nested Shadow Trees</h3>
 
-<p>Any <a target='_blank' href="http://www.w3.org/TR/domcore/#concept-element">element</a> in a <a href="#dfn-shadow-tree">shadow tree</a> can be a <a href="#dfn-shadow-host">shadow host</a>, thus producing nested <a href="#dfn-shadow-tree">shadow trees</a>. A <a href="#dfn-shadow-tree">shadow tree</a> is <dfn id="dfn-nested-tree">nested</dfn> when its <a href="#dfn-shadow-host">shadow host</a> is itself a part of a <a href="#dfn-shadow-tree">shadow tree</a>. If a <a href="#dfn-shadow-host">shadow host</a> is declared in the <a target='_blank' href="http://www.w3.org/TR/domcore/#concept-document">document</a>, the <a target='_blank' href="http://www.w3.org/TR/domcore/#concept-document">document</a> is the <a href="#dfn-nested-tree">nesting</a> <a target='_blank' href="http://www.w3.org/TR/domcore/#trees">tree</a> of its <a href="#dfn-shadow-tree">shadow tree</a>.</p>
+<p>Any <a target='_blank' href="http://www.w3.org/TR/domcore/#concept-element">element</a> in a <a href="#dfn-shadow-tree">shadow tree</a> can be a <a href="#dfn-shadow-host">shadow host</a>, thus producing nested <a href="#dfn-shadow-tree">shadow trees</a>. A <a href="#dfn-shadow-tree">shadow tree</a> is <dfn id="dfn-nested-tree">nested</dfn> when its <a href="#dfn-shadow-host">shadow host</a> is itself a part of a <a href="#dfn-shadow-tree">shadow tree</a>. Conversely, a <a href="#dfn-shadow-tree">shadow tree</a> <em>A</em> is said to be <dfn id="dfn-nesting-tree">nesting</dfn> the <a href="#dfn-shadow-tree">shadow tree</a> <em>B</em> if <em>B</em> is <a href="#dfn-nested-tree">nested</a> by <em>A</em>. If a <a href="#dfn-shadow-host">shadow host</a> is declared in the <a target='_blank' href="http://www.w3.org/TR/domcore/#concept-document">document</a>, the <a target='_blank' href="http://www.w3.org/TR/domcore/#concept-document">document</a> is the <a href="#dfn-nesting-tree">nesting</a> <a target='_blank' href="http://www.w3.org/TR/domcore/#trees">tree</a> of its <a href="#dfn-shadow-tree">shadow trees</a>.</p>
 
 <p>A <a href="#dfn-shadow-tree">shadow tree</a> is <dfn id="dfn-enclosed-tree">enclosed</dfn> by another <a href="#dfn-shadow-tree">shadow tree</a> when the enclosing <a target='_blank' href="http://www.w3.org/TR/domcore/#trees">tree</a> nests the enclosed <a target='_blank' href="http://www.w3.org/TR/domcore/#trees">tree</a> through one or more levels of nesting. All <a href="#dfn-shadow-tree">shadow trees</a> are <a href="#dfn-enclosed-tree">enclosed</a> by the <a href="#dfn-document-tree">document tree</a>.</p>
 
@@ -623,6 +628,7 @@ div::x-thumb {
 <ul>
     <li>The <a target='_blank' href="http://www.w3.org/TR/domcore/#event"><code>Event</code></a> <a target='_blank' href="http://www.w3.org/TR/domcore/#dom-event-target"><code>target</code></a> and <a target='_blank' href="http://www.w3.org/TR/domcore/#dom-event-currenttarget"><code>currentTarget</code></a> attributes <strong>must</strong> return the <a href="#dfn-relative-target">relative target</a> for the <a target='_blank' href="http://www.w3.org/TR/domcore/#concept-node">node</a> on which event listeners are <a target='_blank' href="http://www.w3.org/TR/domcore/#concept-event-listener-invoke">invoked</a></li>
     <li>The <a target='_blank' href="http://www.w3.org/TR/DOM-Level-3-Events/#events-MouseEvent"><code>MouseEvent</code></a> <a target='_blank' href="http://www.w3.org/TR/DOM-Level-3-Events/#events-MouseEvent-relatedTarget"><code>relatedTarget</code></a> attribute <strong>must</strong> return the <a href="#dfn-adjusted-related-target">adjusted related target</a></li>
+    <li>The <a target='_blank' href="http://www.w3.org/TR/DOM-Level-3-Events/#events-MouseEvent"><code>MouseEvent</code></a> <a target='_blank' href="http://dev.w3.org/csswg/cssom-view/#widl-MouseEvent-offsetX"><code>offsetX</code></a> and <a target='_blank' href="http://dev.w3.org/csswg/cssom-view/#widl-MouseEvent-offsetY"><code>offsetY</code></a> attributes <strong>must</strong> return the coordinates relative to the origin of the <a target='_blank' href="http://dev.w3.org/csswg/cssom-view/#padding-edge">padding edge</a> of the <a href="#dfn-relative-target">relative target</a></li>
     <li>If the <a target='_blank' href="http://www.w3.org/TR/DOM-Level-3-Events/#events-MouseEvent-relatedTarget"><code>relatedTarget</code></a> and <a target='_blank' href="http://www.w3.org/TR/domcore/#dom-event-target"><code>target</code></a> are the same for a given node, its the event listeners <strong>must not</strong> be invoked</li>
     <li>When <em>capturing</em>, which entails processing step 3 of the <a target='_blank' href="http://www.w3.org/TR/domcore/#dispatching-events">event dispatch algorithm</a>, the <a target='_blank' href="http://www.w3.org/TR/domcore/#event"><code>Event</code></a> <a target='_blank' href="http://www.w3.org/TR/domcore/#dom-event-eventphase">eventPhase</a> attribute <strong>must</strong> return <a target='_blank' href="http://www.w3.org/TR/domcore/#dom-event-at_target">AT_TARGET</a> <strong>if</strong> the <a href="#dfn-relative-target">relative target</a> is same as the <a target='_blank' href="http://www.w3.org/TR/domcore/#concept-node">node</a> on which event listeners are <a target='_blank' href="http://www.w3.org/TR/domcore/#concept-event-listener-invoke">invoked</a></li>
     <li>When <em>bubbling</em>, which entails processing step 6 of the <a target='_blank' href="http://www.w3.org/TR/domcore/#dispatching-events">event dispatch algorithm</a>, the event listeners <strong>must not</strong> be <a target='_blank' href="http://www.w3.org/TR/domcore/#concept-event-listener-invoke">invoked</a> on a <a target='_blank' href="http://www.w3.org/TR/domcore/#concept-node">node</a> <strong>if</strong> it is the same as its <a href="#dfn-relative-target">relative target</a></li>
@@ -739,18 +745,20 @@ div::x-thumb {
 
 <p>Each <a href="#dfn-shadow-root">shadow root</a> has an associated list of zero or more <a target='_blank' href="http://www.w3.org/TR/cssom/#style-sheet">style sheets</a>, named <dfn id="dfn-shadow-root-style-sheets">shadow root style sheets</dfn>. This is an ordered list that contains all <a target='_blank' href="http://www.w3.org/TR/cssom/#style-sheet">style sheets</a>, associated with the <a href="#dfn-shadow-root">shadow root</a>, in <a target='_blank' href="http://www.w3.org/TR/dom/#concept-tree-order">tree order</a>.</p>
 
-<p>When a <a href="#dfn-shadow-host">shadow host</a> has multiple <a href="#dfn-shadow-root">shadow roots</a>, the <a target='_blank' href="http://www.w3.org/TR/CSS2/cascade.html#cascading-order">sorting order</a> of <a target='_blank' href="http://www.w3.org/TR/CSS2/syndata.html#rule-sets">CSS rules</a>, defined in <a href="#dfn-shadow-root-style-sheets">shadow roow style sheets</a>, in ascending order of precedence <strong>must</strong> match the order of the <a href="#dfn-tree-stack">tree stack</a>, ending with the <a href="#dfn-youngest-tree">youngest tree</a>.
+<p>When a <a href="#dfn-shadow-host">shadow host</a> has multiple <a href="#dfn-shadow-root">shadow roots</a>, the <a target='_blank' href="http://dev.w3.org/csswg/css3-cascade/#cascade">cascade order</a> of <a target='_blank' href="http://www.w3.org/TR/CSS2/syndata.html#rule-sets">CSS rules</a>, defined in <a href="#dfn-shadow-root-style-sheets">shadow roow style sheets</a>, in ascending order of precedence <strong>must</strong> match the order of the <a href="#dfn-tree-stack">tree stack</a>, ending with the <a href="#dfn-youngest-tree">youngest tree</a>.
 
 <p>To enforce <a href="#dfn-upper-boundary-encapsulation">upper-boundary encapsulation</a>, <a target='_blank' href="http://www.w3.org/TR/CSS2/syndata.html#rule-sets">CSS rules</a> declared in an <a href="#dfn-enclosed-tree">enclosing</a> <a target='_blank' href="http://www.w3.org/TR/domcore/#trees">tree</a> <strong>must not</strong> apply in a <a href="#dfn-shadow-tree">shadow tree</a>, except when the <dfn id="dfn-apply-author-styles">apply-author-styles</dfn> flag is set for this tree. The flag signals that the rules declared in the <a href="#dfn-enclosed-tree">enclosing</a> trees are applicable in the <a href="#dfn-shadow-tree">shadow tree</a>.</li>
 
 <p>Even when the <a href="#dfn-apply-author-styles">apply-author-styles</a> is set, the <a target='_blank' href="http://www.w3.org/TR/selectors/">selectors</a> still <strong>must not</strong> cross the <a href="#dfn-shadow-boundary">shadow boundary</a> per <a href="#dfn-scoping-constraints">scoping constraints</a>. In other words, with <a href="#dfn-apply-author-styles">apply-author-styles</a> set, the <a target='_blank' href="http://www.w3.org/TR/domcore/#concept-document">document</a> CSS rules only match wholly inside or outside of the <a href="#dfn-shadow-tree">shadow tree</a>.</p>
 
-<p>If a <a target='_blank' href="http://www.w3.org/TR/CSS2/syndata.html#rule-sets">CSS rule</a> in a <a href="#dfn-nested-tree">nesting</a> <a target='_blank' href="http://www.w3.org/TR/domcore/#trees">tree</a> ends with a <a target='_blank' href="http://www.w3.org/TR/selectors4/#compound">compound selector</a> that contains a <a target='_blank' href="http://www.w3.org/TR/selectors4/#pseudo-elements">pseudo-element</a> whose name equals to a <a href="#dfn-valid-custom-pseudo-element-value">valid</a> <a href="#dfn-custom-pseudo-element-value">value</a> of a <a href="#dfn-custom-pseudo-element">custom pseudo-element</a> that exists in this <a href="#dfn-shadow-tree">shadow tree</a>, this <a target='_blank' href="http://www.w3.org/TR/selectors4/#pseudo-elements">pseudo-element</a> <strong>must</strong> match the <a target='_blank' href="http://www.w3.org/TR/domcore/#concept-element">element</a>, associated with this <a href="#dfn-custom-pseudo-element">custom pseudo-element</a>.</p>
+<p>For the purposes of the <a target='_blank' href="http://dev.w3.org/csswg/css3-cascade/#cascade">cascade order</a>, the  <a target='_blank' href="http://www.w3.org/TR/CSS2/syndata.html#rule-sets">CSS rules</a> for <a href="#dfn-shadow-tree">shadow trees</a> that have the <a href="#dfn-apply-author-styles">apply-author-styles</a> flag set <strong>must</strong> be treated as <a target='_blank' href="http://www.w3.org/TR/selectors4/#scoping">scoped</a> selectors with <a href="#dfn-shadow-root">shadow root</a> as their scope. In this context, for <a href="#dfn-shadow-tree">shadow trees</a> <em>A</em> and <em>B</em>, the <em>A</em>'s <a href="#dfn-shadow-root">shadow root</a> is treated as <em>descendant</em> of <em>B</em>'s <a href="#dfn-shadow-root">shadow root</a> if <em>A</em> is <a href="#dfn-enclosed-tree">enclosed</a> by <em>B</em>.</p>
+
+<p>If a <a target='_blank' href="http://www.w3.org/TR/CSS2/syndata.html#rule-sets">CSS rule</a> in a <a href="#dfn-nesting-tree">nesting</a> <a target='_blank' href="http://www.w3.org/TR/domcore/#trees">tree</a> ends with a <a target='_blank' href="http://www.w3.org/TR/selectors4/#compound">compound selector</a> that contains a <a target='_blank' href="http://www.w3.org/TR/selectors4/#pseudo-elements">pseudo-element</a> whose name equals to a <a href="#dfn-valid-custom-pseudo-element-value">valid</a> <a href="#dfn-custom-pseudo-element-value">value</a> of a <a href="#dfn-custom-pseudo-element">custom pseudo-element</a> that exists in this <a href="#dfn-shadow-tree">shadow tree</a>, this <a target='_blank' href="http://www.w3.org/TR/selectors4/#pseudo-elements">pseudo-element</a> <strong>must</strong> match the <a target='_blank' href="http://www.w3.org/TR/domcore/#concept-element">element</a>, associated with this <a href="#dfn-custom-pseudo-element">custom pseudo-element</a>.</p>
 
 <p>Conversely, to enforce <a href="#dfn-lower-boundary-encapsulation">lower-boundary encapsulation</a>, <a target='_blank' href="http://www.w3.org/TR/CSS2/syndata.html#rule-sets">CSS rules</a> declared in a <a href="#dfn-shadow-root-style-sheets">shadow root style sheets</a> <strong>must not</strong> apply in the <a href="#dfn-document-tree">document tree</a>, with two exceptions:</p>
 <ol>
     <li>Rules that contain <code>select</code> <a target='_blank' href="http://dev.w3.org/csswg/selectors4/#idref-combinators">reference combinators</a> match <a target='_blank' href="http://www.w3.org/TR/domcore/#concept-element">elements</a> in the <a href="#dfn-enclosed-tree">enclosing</a> trees;</li>
-    <li>The <a href="#host-at-rule"><code>@host</code> @-rule</a> matches a <a href="#dfn-shadow-host">shadow host</a> in the <a href="#dfn-nested-tree">nesting</a> tree.</li>
+    <li>The <a href="#host-at-rule"><code>@host</code> @-rule</a> matches a <a href="#dfn-shadow-host">shadow host</a> in the <a href="#dfn-nesting-tree">nesting</a> tree.</li>
 </ol>
 
 <p>In a <a target='_blank' href="http://www.w3.org/TR/domcore/#concept-document">document</a> that contains <a href="#dfn-shadow-tree">shadow trees</a>, the CSS properties <strong>must</strong> be inherited from parent nodes, produced using the <a href="#dfn-parent-calculation-algorithm">parent calculation algorithm</a>. This requirement has the following effects:</p>
@@ -809,7 +817,11 @@ host
 
 <h3 id="focus-navigation">Focus Navigation</h3>
 
-<p><a href="#dfn-shadow-tree">shadow trees</a> participate in <a target='_blank' href="http://www.w3.org/TR/css3-ui/#keyboard">sequential</a> or <a target='_blank' href="http://www.w3.org/TR/css3-ui/#keyboard">directional</a> focus navigation as part of the <a href="#dfn-document-tree">document tree</a>. The <a target='_blank' href="http://www.w3.org/TR/css3-ui/#keyboard">navigation order</a> within a <a href="#dfn-shadow-tree">shadow tree</a> <strong>must</strong> be computed as a list of <a target='_blank' href="http://www.whatwg.org/specs/web-apps/current-work/multipage/editing.html#focusable">focusable</a> <a target='_blank' href="http://www.w3.org/TR/domcore/#concept-element">elements</a> in <a target='_blank' href="http://www.whatwg.org/specs/web-apps/current-work/multipage/infrastructure.html#tree-order">tree order</a> <a href="#dfn-as-rendered">as-rendered</a>, with the exception of any <a target='_blank' href="http://www.w3.org/TR/domcore/#concept-element">elements</a>, <a href="#dfn-distribution">distributed</a> its <a href="#dfn-insertion-point">insertion points</a>, and is called <dfn id="dfn-shadow-dom-navigation-order">shadow DOM navigation order</dfn>.</p>
+<p><a href="#dfn-shadow-tree">shadow trees</a> participate in <a target='_blank' href="http://www.w3.org/TR/css3-ui/#keyboard">sequential</a> or <a target='_blank' href="http://www.w3.org/TR/css3-ui/#keyboard">directional</a> focus navigation as part of the <a href="#dfn-document-tree">document tree</a>. The <a target='_blank' href="http://www.w3.org/TR/css3-ui/#keyboard">navigation order</a> within a <a href="#dfn-shadow-tree">shadow tree</a> <strong>must</strong> be computed as a list of <a target='_blank' href="http://www.whatwg.org/specs/web-apps/current-work/multipage/editing.html#focusable">focusable</a> <a target='_blank' href="http://www.w3.org/TR/domcore/#concept-element">elements</a> in <a target='_blank' href="http://www.whatwg.org/specs/web-apps/current-work/multipage/infrastructure.html#tree-order">tree order</a> <a href="#dfn-as-rendered">as-rendered</a>, with the exception of any <a target='_blank' href="http://www.w3.org/TR/domcore/#concept-element">elements</a>, <a href="#dfn-distribution">distributed</a> into <a href="#dfn-insertion-point">insertion points</a>, and is called <dfn id="dfn-shadow-dom-navigation-order">shadow DOM navigation order</dfn>.</p>
+
+<div class="informative">
+Since the elements, distributed into insertion points are not part of the shadow tree, their order remains to be controlled by the navigation order of the nesting tree.
+</div>
 
 <p>For <a target='_blank' href="http://www.w3.org/TR/css3-ui/#keyboard">sequential focus navigation</a>, the <a href="#dfn-shadow-dom-navigation-order">shadow DOM navigation order</a> sequence <strong>must</strong> be inserted into the <a target='_blank' href="http://www.w3.org/TR/domcore/#concept-document">document</a> <a target='_blank' href="http://www.w3.org/TR/css3-ui/#keyboard">navigation order</a>:</p>
 <ol>
@@ -852,7 +864,7 @@ host
 
 <p>User agents with assistive technology traverse the <a href="#dfn-document-tree">document tree</a> <a href="#dfn-as-rendered">as rendered</a>, and thus enable full use of of <a target='_blank' href="http://www.w3.org/WAI/PF/aria/">WAI-ARIA</a> semantics in the <a href="#dfn-shadow-tree">shadow trees</a>.</p>
 
-<h2 id="html-elements">HTML Elements in shadow trees</h2>
+<h2 id="html-elements">HTML Elements in Shadow Trees</h2>
 
 <p>Comparatively, a <a href="#dfn-shadow-tree">shadow tree</a> can be seen as somewhere between <em>just part of a <a target='_blank' href="http://www.w3.org/TR/domcore/#concept-document">document</a></em> and itself being a <a target='_blank' href="http://www.w3.org/TR/domcore/#interface-documentfragment">document fragment</a>. Since it is rendered, a <a href="#dfn-shadow-tree">shadow tree</a> aims to retain the traits of a typical <a target='_blank' href="http://www.w3.org/TR/domcore/#trees">tree</a> in a <a target='_blank' href="http://www.w3.org/TR/domcore/#concept-document">document</a>. At the same time, it is an encapsulation abstraction, so it has to avoid affecting the <a href="#dfn-document-tree">document tree</a>. Thus, the <a target='_blank' href="http://www.whatwg.org/specs/web-apps/current-work/multipage/semantics.html#semantics">HTML elements</a> <strong>must</strong> behave <a target='_blank' href="http://www.whatwg.org/specs/web-apps/current-work/multipage/">as specified</a> in the <a href="#dfn-shadow-tree">shadow trees</a>, with a few exceptions.</p>
 
@@ -1075,7 +1087,6 @@ interface <dfn id="api-shadow-aware">ShadowAware</dfn> {
 <dd>Represents the top <a href="#dfn-shadow-tree">shadow tree</a> in the "<a href="#dfn-as-rendered">as rendered</a>" structure.</dd>
 <dd>On getting, the attribute <strong>must</strong> return the <a href="#dfn-youngest-tree">youngest tree</a> that has the <a target='_blank' href="http://www.w3.org/TR/domcore/#context-object">context object</a> as its <a href="#dfn-shadow-host">shadow host</a>, or <strong>null</strong> if no such <a href="#dfn-shadow-tree">shadow tree</a> is accesible.</dd>
 <dd>For <a target='_blank' href="http://www.whatwg.org/specs/web-apps/current-work/multipage/semantics.html#semantics">HTML elements</a>, the <a href="#html-elements-and-their-shadow-trees">UA-provided</a> <a href="#dfn-shadow-tree">shadow trees</a> <strong>must not</strong> be accessible.</dd>
-</dd>
 </dl>
 
 <h4 id="shadow-aware-methods"><code>ShadowAware</code> Methods</h4>
@@ -1092,10 +1103,51 @@ interface <dfn id="api-shadow-aware">ShadowAware</dfn> {
         <li>Add the <a href="#api-shadow-root"><code>ShadowRoot</code></a> object at the top of the <a href="#dfn-tree-stack">tree stack</a> of its <a href="#dfn-shadow-host">host</a></li>
         <li>Return <a href="#api-shadow-root"><code>ShadowRoot</code></a> object.</li>
     </ol></li>
-</ol>
-</dd>
+</ol></dd>
 </dl>
 
+
+<h3 id="css-host-rule-interface"><code>CSSHostRule</code> Interface</h3>
+
+<p>The <code>CSSHostRule</code> represents the <a href="#host-at-rule"><code>@host</code></a> at-rule in a CSS style sheet.</p>
+
+<pre><code>
+interface <dfn id="api-css-host-rule">CSSHostRule</dfn> : <a target='_blank' href="http://dev.w3.org/csswg/cssom/#the-cssrule-interface">CSSRule</a> {
+    readonly attribute <a target='_blank' href="http://dev.w3.org/csswg/cssom/#the-cssrulelist-sequence">CSSRuleList</a> <a href="#api-css-host-rule-css-rules">cssRules</a>;
+    unsigned long <a href="#api-css-host-rule-insert-rule">insertRule</a>(DOMString rule, unsigned long index);
+    void <a href="#api-css-host-rule-delete-rule">deleteRule</a>(unsigned long index);
+};
+</code></pre>
+
+<h4 id="css-host-rule-attributes"><code>CSSHostRule</code> Attributes</h4>
+
+<dl>
+    <dt><dfn id="api-css-host-rule-css-rules"><code>cssRules</code></dfn> of type <a target='_blank' href="http://dev.w3.org/csswg/cssom/#the-cssrulelist-sequence">CSSRuleList</a></dt>
+    <dd>Represents the CSS rules in the <code>@host</code> style block</dd>
+    <dd>On getting, the attribute <strong>must</strong> return the list of all CSS rules, specified in the <code>@host</code> at-rule, represented by the <a target='_blank' href="http://domparsing.spec.whatwg.org/#context-object">context object</a>.</dd>
+</dl>
+
+<h4 id="css-host-rule-methods"><code>CSSHostRule</code> Methods</h4>
+
+<dl>
+    <dt><dfn id="api-css-host-rule-insert-rule"><code>insertRule(DOMSTring <em>rule</em>, unsigned long <em>index</em>)</code></dfn></dt>
+    <dd>When invoked, the method <strong>must</strong> <a target='_blank' href="http://dvcs.w3.org/hg/csswg/raw-file/tip/cssom/Overview.html#insert-a-css-rule">insert a CSS rule</a> <em>rule</em> into the CSS rule list returned by <a href="#api-css-host-rule-css-rules"><code>cssRules</code></a> at <em>index</em>.</dd>
+    <dt><dfn id="api-css-host-rule-delete-rule"><code>deleteRule(unsigned long <em>index</em>)</code></dfn></dt>
+    <dd>When invoked, the method <strong>must</strong> <a target='_blank' href="http://dvcs.w3.org/hg/csswg/raw-file/tip/cssom/Overview.html#remove-a-css-rule">remove a CSS rule</a> <em>rule</em> from the CSS rule list returned by <a href="#api-css-host-rule-css-rules"><code>cssRules</code></a> at <em>index</em>.</dd>
+</dl>
+
+<p>The <code>HOST_RULE</code> type is added to <a target='_blank' href="http://dev.w3.org/csswg/cssom/#the-cssrule-interface">CSSRule</a> interface.</p>
+
+<pre><code>
+partial interface <a target='_blank' href="http://dev.w3.org/csswg/cssom/#the-cssrule-interface">CSSRule</a> {
+    const unsigned short <a href="#api-css-rule-host-rule">HOST_RULE</a> = 1001;
+};
+</code></pre>
+
+<dl>
+    <dt><dfn id="api-css-rule-host-rule"><code>HOST_RULE</code></dfn></dt>
+    <dd>When the value of the <code>type</code> attribute is <code>HOST_RULE</code>, then the object that implements this interface <strong>must</strong> implement <a href="#api-css-host-rule"><code>CSSHostRule</code></a> interface</a>.</dd>
+</dl>
 
 <h3 id="content-element">The <code>content</code> HTML element</h3>
 
@@ -1145,11 +1197,11 @@ interface <dfn id="api-html-content-element">HTMLContentElement</dfn> : <a targe
     </dd>
     </dl>
     <dl>
-    <dt>Methods</dt>
-    <dd>
-    <dl>
-        <dt id="api-html-content-element-get-distributed-nodes"><code>getDistributedNodes</code></dt>
-        <dd><strong>Must</strong> return a <a target='_blank' href="http://www.w3.org/TR/domcore/#concept-collection-static">static</a> <a target='_blank' href="http://www.w3.org/TR/domcore/#nodelist"><code>NodeList</code></a> consisting of nodes, currently <a href="#dfn-distribution">distributed</a> into this <a href="#dfn-insertion-point">insertion point</a>.</dd>
+        <dt>Methods</dt>
+        <dd><dl>
+            <dt id="api-html-content-element-get-distributed-nodes"><code>getDistributedNodes</code></dt>
+            <dd><strong>Must</strong> return a <a target='_blank' href="http://www.w3.org/TR/domcore/#concept-collection-static">static</a> <a target='_blank' href="http://www.w3.org/TR/domcore/#nodelist"><code>NodeList</code></a> consisting of nodes, currently <a href="#dfn-distribution">distributed</a> into this <a href="#dfn-insertion-point">insertion point</a>.</dd>
+        </dl></dd>
     </dl>
 </dd>
 </dl>
@@ -1190,7 +1242,7 @@ interface <dfn id="api-html-shadow-element">HTMLShadowElement</dfn> : <a target=
             <ol>
                 <li>Let <var>TREE</var> be the <a href="#dfn-shadow-tree">shadow tree</a> that contains the <a target='_blank' href="http://www.w3.org/TR/domcore/#context-object">context object</a></li>
                 <li>If <var>TREE</var> does not exist, return <strong>null</strong>.</li>
-                <li>If <a target='_blank' href="http://www.w3.org/TR/domcore/#context-object">context object</a>, in <a target='_blank' href="http://www.w3.org/TR/domcore/#concept-tree-order">tree order</a>, is not the first instance of <a href="#dfn-shadow-element"><code>shadow</code></a> element in <var>TREE</var>, return <strong>null</strong>.</li>
+                <li>If <a target='_blank' href="http://www.w3.org/TR/domcore/#context-object">context object</a>, in <a target='_blank' href="http://www.w3.org/TR/domcore/#concept-tree-order">tree order</a>, is not the first <a href="#dfn-active-insertion-point">active</a> instance of <a href="#dfn-shadow-element"><code>shadow</code></a> element in <var>TREE</var>, return <strong>null</strong>.</li>
                 <li>Let <var>HOST</var> be the <a href="#dfn-shadow-host">shadow host</a> of <var>TREE</var></li>
                 <li>From <var>HOST</var>'s <a href="#dfn-tree-stack">tree stack</a>, return the <a href="#dfn-older-tree">older tree</a> relative to <var>TREE</var>, or <strong>null</strong> if no such <a href="#dfn-shadow-tree">shadow tree</a> is accessible.</li>
             </ol></dd>

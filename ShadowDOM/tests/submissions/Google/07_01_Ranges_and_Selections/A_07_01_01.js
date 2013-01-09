@@ -24,7 +24,7 @@ test(unit(function (ctx) {
 	
 	var host = d.createElement('div');
 	d.body.appendChild(host);
-	var s = new SR(host);
+	var s = createSR(host);
     
 	var span = d.createElement('span');
 	span.innerHTML = 'Some text';
@@ -39,9 +39,42 @@ test(unit(function (ctx) {
     selection.addRange(range); 	
     
     var sl = window.getSelection();
-    assert_equals(sl.toString(), '', 'window.getSelection() method must never return a selection within a shadow tree');
+    assert_equals(sl.toString(), '', 'window.getSelection() method must never return a selection ' +
+    		'within a shadow tree');
 	
 }), 'A_07_07_01_T01', PROPS(A_07_01_01, {
+    author:'Sergey G. Grekhov <sgrekhov@unipro.ru>',
+    reviewer:''
+}));
+
+
+// test distributed nodes
+test(unit(function (ctx) {
+	var d = newRenderedHTMLDocument(ctx);
+	
+	var host = d.createElement('div');
+	d.body.appendChild(host);
+    
+	var span = d.createElement('span');
+	span.innerHTML = 'Some text';
+	host.appendChild(span);
+	
+	var s = createSR(host);
+	s.innerHTML = '<content select="span"></content>';
+	
+	var range = d.createRange();
+	range.setStart(span.firstChild, 0);
+	range.setEnd(span.firstChild, 3);
+	
+	var selection = window.getSelection();                 
+    selection.removeAllRanges();                       
+    selection.addRange(range); 	
+    
+    var sl = window.getSelection();
+    assert_equals(sl.toString(), '', 'window.getSelection() method must never return a selection ' +
+    	'within a shadow tree');
+	
+}), 'A_07_07_01_T02', PROPS(A_07_01_01, {
     author:'Sergey G. Grekhov <sgrekhov@unipro.ru>',
     reviewer:''
 }));

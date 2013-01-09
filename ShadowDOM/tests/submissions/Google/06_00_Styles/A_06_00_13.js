@@ -71,7 +71,7 @@ test(unit(function (ctx) {
 	assert_true(height6 > defHeight6, 'Point 16: Element height should be changed');
     
 	//Shadow root to play with
-    var s = new SR(host);
+    var s = createSR(host);
 
 	var div = d.createElement('div');	
 	div.innerHTML ='<ul><content select=".shadow" reset-style-inheritance=true></content></ul>'; 
@@ -144,7 +144,7 @@ test(unit(function (ctx) {
 	assert_true(height6 > defHeight6, 'Point 16: Element height should be changed');
 	
 	//Shadow root to play with
-	var s = new SR(host);
+	var s = createSR(host);
 	
 	var div = d.createElement('div');	
 	div.innerHTML ='<ul><content select=".shadow" id="shInsPoint"></content></ul>'; 

@@ -36,7 +36,7 @@ A_05_01_03_T01.step(unit(function (ctx) {
 	'</div>';	
 	
     var ul = d.querySelector('#shadow-root');
-    var s = new SR(ul);
+    var s = createSR(ul);
   
     //make shadow subtree
     var div = document.createElement('div');

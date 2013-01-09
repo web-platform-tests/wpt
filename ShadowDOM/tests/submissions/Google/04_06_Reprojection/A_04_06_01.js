@@ -60,14 +60,14 @@ A_04_06_01_T01.step(function () {
             d.body.appendChild(div);
             
             var li1 = d.querySelector('#li1');
-            var s = new SR(li1);
+            var s = createSR(li1);
             //make shadow subtree
             var shadowLI1 = document.createElement('li');
             shadowLI1.innerHTML = '<li><content select=".cl1"></content></li>';
             s.appendChild(shadowLI1);
             
             var ul = d.querySelector('#host');
-            var s2 = new SR(ul);
+            var s2 = createSR(ul);
             var div2 = document.createElement('div');
             div2.innerHTML = '<ul><content select=".shadow"></content></ul>';
             s2.appendChild(div2);
@@ -139,14 +139,14 @@ A_04_06_01_T02.step(function () {
             d.body.appendChild(div);
             
             var li1 = d.querySelector('#li1');
-            var s = new SR(li1);
+            var s = createSR(li1);
             //make shadow subtree
             var shadowLI1 = document.createElement('li');
             shadowLI1.innerHTML = '<li><content select=".cl1"></content></li>';
             s.appendChild(shadowLI1);
             
             var ul = d.querySelector('#host');
-            var s2 = new SR(ul);
+            var s2 = createSR(ul);
             var div2 = document.createElement('div');
             div2.innerHTML = '<li><content select=".cl1"></content></li>';
             s2.appendChild(div2);

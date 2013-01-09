@@ -41,18 +41,19 @@ test(unit(function (ctx) {
 
     var host = d.querySelector('.cls');
 	//Shadow root to play with
-	var s = new SR(host);
+	var s = createSR(host);
 	
 	var div = d.createElement('div');	
 	div.innerHTML ='<ul><content select=".shadow"></content></ul>'; 
 	s.appendChild(div);
 	
-	assert_equals(d.querySelector('#li1').offsetTop, 0,
-		'Point 1: element should not be rendered');
-	assert_equals(d.querySelector('#li3').offsetTop, 0,
-		'Point 2: element should not be rendered');
-	assert_equals(d.querySelector('#li5').offsetTop, 0,
-		'Point 3: element should not be rendered');
+	//@host rule shouldn't take any effect
+	assert_true(d.querySelector('#li1').offsetTop > 0,
+		'Point 1: element should be rendered');
+	assert_true(d.querySelector('#li3').offsetTop > 0,
+		'Point 2: element should be rendered');
+	assert_true(d.querySelector('#li5').offsetTop > 0,
+		'Point 3: element should be rendered');
 
 	
 }), 'A_06_00_08_T01', PROPS(A_06_00_08, {
@@ -76,7 +77,7 @@ test(unit(function (ctx) {
 
     var host = d.querySelector('.cls');
 	//Shadow root to play with
-	var s = new SR(host);
+	var s = createSR(host);
 	
 	var div = d.createElement('div');	
 	div.innerHTML ='<ul><content select=".shadow"></content></ul>'; 
@@ -85,15 +86,15 @@ test(unit(function (ctx) {
 	var style = d.createElement('style');
     style.innerHTML = '' + 
 			'@host {' +
-				'div{display:none;}' +
+				'ul {display:none;}' +
 			'}';
 	s.appendChild(style);
 
-	assert_true(d.querySelector('#li1').offsetTop > 0,
+	assert_true(d.querySelector('#li1').offsetTop, 0,
 		'Point 1: element should be rendered');
-	assert_true(d.querySelector('#li3').offsetTop > 0,
+	assert_true(d.querySelector('#li3').offsetTop, 0,
 		'Point 2: element should be rendered');
-	assert_true(d.querySelector('#li5').offsetTop > 0,
+	assert_true(d.querySelector('#li5').offsetTop, 0,
 		'Point 3: element should be rendered');
 	
 	
@@ -111,13 +112,13 @@ test(unit(function (ctx) {
     d.body.appendChild(host);
 
 	//Older tree
-	var s1 = new SR(host);
+	var s1 = createSR(host);
 	var div1 = d.createElement('div');
 	div1.innerHTML = '<span id="shd1">This is an old shadow tree</span>'; 
 	s1.appendChild(div1);
 	
 	//Younger tree
-	var s2 = new SR(host);
+	var s2 = createSR(host);
 	var div1 = d.createElement('div');
 	div1.innerHTML = '<span id="shd2">This is a young shadow tree</span>' + 
 		'<shadow><span id="shd3">This is the shadow tree fallback content</span></shadow>'; 

@@ -21,14 +21,14 @@ var A_06_00_11 = {
 
 
 // Test fails. See https://bugs.webkit.org/show_bug.cgi?id=103625
-test(unit(function (ctx) {ctx.debug = true;
+test(unit(function (ctx) {
 	var d = newRenderedHTMLDocument(ctx);
     
     var host = d.createElement('div');
     d.body.appendChild(host);
 
 	//Old tree
-	var s1 = new SR(host);
+	var s1 = createSR(host);
 	
 	var div1 = d.createElement('div');
 	div1.setAttribute('style', 'font-size: 10px');
@@ -40,7 +40,7 @@ test(unit(function (ctx) {ctx.debug = true;
 	assert_true(height1 > 0, 'Element height should be greater than zero');
 	
 	//younger tree
-	var s2 = new SR(host);	
+	var s2 = createSR(host);	
 	var div2 = d.createElement('div');
 	div2.innerHTML =  '<shadow style="font-size:20px"></shadow>'; 
 	s2.appendChild(div2);

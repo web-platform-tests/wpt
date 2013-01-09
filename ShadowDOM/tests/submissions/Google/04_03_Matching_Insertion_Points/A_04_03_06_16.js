@@ -32,7 +32,7 @@ A_04_03_06_16_T01.step(function () {
 
             var d = iframe.contentDocument;
             var ul = d.querySelector('ul.stories');
-            var s = new SR(ul);
+            var s = createSR(ul);
             
             //make shadow subtree
             var subdiv1 = document.createElement('div');
@@ -53,7 +53,7 @@ A_04_03_06_16_T01.step(function () {
             assert_equals(d.querySelector('#li6').offsetTop, 0,
     			'Point 6: element shouldn\'t match :only-of-type pseudo-class selector');
             
-            var s2 = new SR(d.querySelector('#divid'));
+            var s2 = createSR(d.querySelector('#divid'));
             
             //make shadow subtree
             var subdiv2 = document.createElement('div');

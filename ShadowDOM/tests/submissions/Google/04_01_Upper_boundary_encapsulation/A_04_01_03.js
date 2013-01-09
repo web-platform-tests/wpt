@@ -13,7 +13,9 @@ var A_04_01_03 = {
     assert:'Upper-boundary encapsulation: ' +
         'The nodes and named elements are not accessible with Window object named properties',
     link:'http://www.w3.org/TR/shadow-dom/#upper-boundary-encapsulation',
-    highlight:'[[The nodes and named elements are not accessible]] using shadow host\'s document DOM tree accessors or [[with Window object named properties]]'
+    highlight:'[[The nodes and named elements are not accessible]] using shadow host\'s ' +
+    	'document DOM tree accessors or [[with Window object named properties]]',
+    bug: ['https://bugs.webkit.org/show_bug.cgi?id=105617']
 
 };
 
@@ -26,11 +28,11 @@ test(unit(function (ctx) {
 
     var div = d.createElement('div');
     d.body.appendChild(div);
-    var s = new SR(div);
+    var s = createSR(div);
 
     //Window named properties
     var namedElements = ['a', 'applet', 'area', 'embed', 'form', 'frame',
-        'frameset', 'iframe', 'img', 'object'];
+        'frameset', 'iframe','img', 'object'];
 
     namedElements.forEach(function (tagName) {
         var element = d.createElement(tagName);
@@ -40,10 +42,10 @@ test(unit(function (ctx) {
         s.appendChild(element);
 
         assert_false(element.name in f.contentWindow,
-            'named "' + tagName + '" must not appear in window object named properties');
+            'Point 1: named "' + tagName + '" must not appear in window object named properties');
 
         assert_false(element.name in d,
-            'named "' + tagName + '" must not appear in document object named properties');
+            'Point 2: named "' + tagName + '" must not appear in document object named properties');
     });
 }), 'A_04_01_03_T01', PROPS(A_04_01_03, {
     author:'Sergey G. Grekhov <sgrekhov@unipro.ru>',
@@ -57,7 +59,7 @@ test(unit(function (ctx) {
 
     var div1 = d.createElement('div');
     d.body.appendChild(div1);
-    var s = new SR(div1);
+    var s = createSR(div1);
 
     var div2 = d.createElement('div');
     div2.id = 'divWithId';
@@ -77,7 +79,7 @@ test(unit(function (ctx) {
 test(unit(function (ctx) {
     var f = newIFrame(ctx);
     var d = f.contentWindow.document;
-    var s = new SR(d.documentElement);
+    var s = createSR(d.documentElement);
 
     var i;
     for (i=0; i<HTML5_TAG.length; i++){

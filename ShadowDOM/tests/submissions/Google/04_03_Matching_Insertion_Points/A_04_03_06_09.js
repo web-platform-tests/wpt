@@ -32,26 +32,26 @@ A_04_03_06_09_T01.step(function () {
 
             var d = iframe.contentDocument;
             var ul = d.querySelector('ul.stories');
-            var s = new SR(ul);
+            var s = createSR(ul);
             
             //make shadow subtree
             var subdiv1 = document.createElement('div');
             subdiv1.innerHTML = '<ul><content select=":nth-last-child(2)"></content></ul>';
             s.appendChild(subdiv1);
 
-            //li5 should be visible, all other not
-            assert_true(d.querySelector('#li5').offsetTop > 0,
-                'Element should match :nth-last-child(2) pseudo-class selector');
-            assert_equals(d.querySelector('#li1').offsetTop, 0,
-                'Point 1: element shouldn\'t match :nth-last-child() pseudo-class selector');
-            assert_equals(d.querySelector('#li2').offsetTop, 0,
-            	'Point 2: element shouldn\'t match :nth-last-child() pseudo-class selector');
-            assert_equals(d.querySelector('#li3').offsetTop, 0,
-            	'Point 3: element shouldn\'t match :nth-last-child() pseudo-class selector');
-            assert_equals(d.querySelector('#li4').offsetTop, 0,
-            	'Point 4: element shouldn\'t match :nth-last-child() pseudo-class selector');
-            assert_equals(d.querySelector('#li6').offsetTop, 0,
-            	'Point 5: element shouldn\'t match :nth-last-child() pseudo-class selector');
+            //li6 should be invisible, all other visible
+            assert_true(d.querySelector('#li1').offsetTop > 0,
+            'Point 1: element should match :nth-last-child(2) pseudo-class selector');
+        assert_true(d.querySelector('#li2').offsetTop > 0,
+        	'Point 2: element should match :nth-last-child(2) pseudo-class selector');
+        assert_true(d.querySelector('#li3').offsetTop > 0,
+        	'Point 3: element should match :nth-last-child(2) pseudo-class selector');
+        assert_true(d.querySelector('#li4').offsetTop > 0,
+        	'Point 4: element should match :nth-last-child(2) pseudo-class selector');
+        assert_true(d.querySelector('#li5').offsetTop > 0,
+        	'Point 5: element should match :nth-last-child(2) pseudo-class selector');
+        assert_equals(d.querySelector('#li6').offsetTop, 0,
+    		'Element shouldn\'t match :nth-last-child(2) pseudo-class selector');
 
         } finally {
             iframe.parentNode.removeChild(iframe);

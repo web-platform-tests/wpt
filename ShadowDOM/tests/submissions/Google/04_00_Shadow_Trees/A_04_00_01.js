@@ -14,7 +14,8 @@ var A_04_00_01 = {
     link:'http://www.w3.org/TR/shadow-dom/#shadow-dom-subtrees',
     highlight:'The existence of multiple DOM trees is enabled by letting any element in the ' +
         'document tree to host one or more additional DOM trees',
-    seealso:'http://www.w3.org/TR/html4/index/elements.html'
+    seealso:'http://www.w3.org/TR/html4/index/elements.html',
+    bug: ['https://bugs.webkit.org/show_bug.cgi?id=102864']
 };
 
 
@@ -27,10 +28,10 @@ function A_04_00_01_test(elementName) {
     d.body.appendChild(n);
 
 // add first shadow tree
-    var shadowTree1 =  new SR(n);
+    var shadowTree1 =  createSR(n);
     assert_equals(shadowTree1.ownerDocument, d, 'Expected: Shadow tree 1 is part of the document, Actual: Shadow tree 1 is not part of the document');
  // add second shadow tree
-    var shadowTree2 =  new SR(n);
+    var shadowTree2 =  createSR(n);
     assert_equals(shadowTree2.ownerDocument, d, 'Expected: Shadow tree 2 is part of the document, Actual: Shadow tree 2 is not part of the document');
 }
 
@@ -67,6 +68,14 @@ test(function () {
 }, 'A_04_00_01_T05', PROPS(A_04_00_01, {
   author:'Mikhail Fursov <mfursov@unipro.ru>',
   reviewer:'Sergey G. Grekhov <sgrekhov@unipro.ru>, Aleksei Yu. Semenov <a.semenov@unipro.ru>'
+}));
+
+
+test(function () {
+	A_04_00_01_test('AUDIO');
+}, 'A_04_00_01_T05_01', PROPS(A_04_00_01, {
+  author:'Sergey G. Grekhov <sgrekhov@unipro.ru>',
+  reviewer:''
 }));
 
 test(function () {
@@ -138,6 +147,14 @@ test(function () {
   author:'Mikhail Fursov <mfursov@unipro.ru>',
   reviewer:'Sergey G. Grekhov <sgrekhov@unipro.ru>, Aleksei Yu. Semenov <a.semenov@unipro.ru>'
 }));
+
+test(function () {
+	A_04_00_01_test('CANVAS');
+}, 'A_04_00_01_T14_01', PROPS(A_04_00_01, {
+  author:'Sergey G. Grekhov <sgrekhov@unipro.ru>',
+  reviewer:''
+}));
+
 
 test(function () {
 	A_04_00_01_test('CENTER');
@@ -228,6 +245,13 @@ test(function () {
 }, 'A_04_00_01_T27', PROPS(A_04_00_01, {
   author:'Mikhail Fursov <mfursov@unipro.ru>',
   reviewer:'Sergey G. Grekhov <sgrekhov@unipro.ru>, Aleksei Yu. Semenov <a.semenov@unipro.ru>'
+}));
+
+test(function () {
+	A_04_00_01_test('EMBED');
+}, 'A_04_00_01_T27_01', PROPS(A_04_00_01, {
+  author:'Sergey G. Grekhov <sgrekhov@unipro.ru>',
+  reviewer:''
 }));
 
 test(function () {
@@ -428,6 +452,14 @@ test(function () {
 }));
 
 test(function () {
+	A_04_00_01_test('METER');
+}, 'A_04_00_01_T55_01', PROPS(A_04_00_01, {
+  author:'Sergey G. Grekhov <sgrekhov@unipro.ru>',
+  reviewer:''
+}));
+
+
+test(function () {
 	A_04_00_01_test('NOFRAMES');
 }, 'A_04_00_01_T56', PROPS(A_04_00_01, {
   author:'Mikhail Fursov <mfursov@unipro.ru>',
@@ -488,6 +520,13 @@ test(function () {
 }, 'A_04_00_01_T64', PROPS(A_04_00_01, {
   author:'Mikhail Fursov <mfursov@unipro.ru>',
   reviewer:'Sergey G. Grekhov <sgrekhov@unipro.ru>, Aleksei Yu. Semenov <a.semenov@unipro.ru>'
+}));
+
+test(function () {
+	A_04_00_01_test('PROGRESS');
+}, 'A_04_00_01_T64_01', PROPS(A_04_00_01, {
+  author:'Sergey G. Grekhov <sgrekhov@unipro.ru>',
+  reviewer:''
 }));
 
 test(function () {

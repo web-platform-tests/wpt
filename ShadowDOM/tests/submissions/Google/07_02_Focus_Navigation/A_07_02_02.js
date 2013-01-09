@@ -15,7 +15,7 @@ var A_07_02_02 = {
     	'in tree order as-rendered  with the exception of any elements, distributed its insertion points, ' +
     	'and is called shadow DOM navigation order.',
     link:'https://dvcs.w3.org/hg/webcomponents/raw-file/tip/spec/shadow/index.html#focus-navigation',
-    highlight: 'with the exception of any elements, distributed its insertion points,'
+    highlight: 'with the exception of any elements, distributed into insertion points,'
 };
 
 
@@ -65,7 +65,7 @@ A_07_02_02_T01.step(unit(function (ctx) {
 	invoked[2] = false;
 	host.appendChild(chb3);
 	
-	var s = new SR(host);
+	var s = createSR(host);
 	
 	var div = d.createElement('div');
 	div.innerHTML = '<content select=".shadow"></content>';

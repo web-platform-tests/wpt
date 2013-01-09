@@ -22,7 +22,7 @@ var A_06_00_04 = {
 //check querySelector method
 test(unit(function (ctx) {
 	var d = newRenderedHTMLDocument(ctx);
-    var s = new SR(d.body);
+    var s = createSR(d.body);
     s.applyAuthorStyles = true;
 
     var e = d.createElement('span');
@@ -48,7 +48,7 @@ test(unit(function (ctx) {
 //check querySelectorAll method
 test(unit(function (ctx) {
 	var d = newRenderedHTMLDocument(ctx);
-    var s = new SR(d.body);
+    var s = createSR(d.body);
     s.applyAuthorStyles = true;
 
     var e1 = d.createElement('span');

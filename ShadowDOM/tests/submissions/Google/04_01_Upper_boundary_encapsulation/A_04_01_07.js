@@ -23,7 +23,7 @@ test(function () {
     var d = newHTMLDocument();
     var div = d.createElement('div');
     d.body.appendChild(div);
-    var s = new SR(div);
+    var s = createSR(div);
 
     var input = d.createElement('input');
     input.setAttribute('type', 'text');
@@ -46,10 +46,7 @@ test(function () {
 // check for elem.form associated elements
 test(function () {
 
-    var formAssociatedElements = ['button', 'fieldset', 'input', 'keygen', 'label', 'object',
-        'output', 'select', 'textarea'];
-
-    formAssociatedElements.forEach(function (tagName) {
+    HTML5_FORM_ASSOCIATED_ELEMENTS.forEach(function (tagName) {
         d = newHTMLDocument();
 
         var form = d.createElement('form');
@@ -64,7 +61,7 @@ test(function () {
         div = d.createElement('div');
         d.body.appendChild(div);
 
-        s = new SR(div);
+        var s = createSR(div);
         s.appendChild(form);
         s.appendChild(el);
 

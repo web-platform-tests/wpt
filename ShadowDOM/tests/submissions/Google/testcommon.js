@@ -2,29 +2,64 @@
 
 "use strict";
 
-var HTML5_TAG = new Array(
+var HTML5_TAG = [
 		'a','abbr','address','area','article','aside','audio','b','base','bdi','bdo','blockquote','body','br','button',
 		'canvas','caption','cite','code','col','colgroup','command','datalist','dd','del','details','dfn','dialog','div',
 		'dl','dt','em','embed','fieldset','figcaption','figure','footer','form','h1','h2','h3','h4','h5','h6','head','header',
 		'hgroup','hr','html','i','iframe','img','input','ins','kbd','keygen','label','legend','li','link','map','mark','menu',
 		'meta','meter','nav','noscript','object','ol','optgroup','option','output','p','param','pre','progress','q','rp','rt',
 		'ruby','s','samp','script','section','select','small','source','span','strong','style','sub','table','tbody','td','textarea',
-		'tfoot','th','thead','time','title','tr','track','u','ul','var','video','wbr');
+		'tfoot','th','thead','time','title','tr','track','u','ul','var','video','wbr'];
+
+
+// http://www.whatwg.org/specs/web-apps/current-work/multipage/forms.html#form-associated-element
+var HTML5_FORM_ASSOCIATED_ELEMENTS = ['button', 'fieldset', 'input', 'keygen', 'label',
+                                      'object', 'output', 'select', 'textarea'];
 
 function ShadowDomNotSupportedError() {
     this.message = "Shadow DOM is not supported";
 }
 
-function ShadowDomNotSupported() {
-    throw new ShadowDomNotSupportedError();
+function createSR(element) {
+	if (element.createShadowRoot) {
+		return element.createShadowRoot(); 
+	}
+	if (element.webkitCreateShadowRoot) {
+		return element.webkitCreateShadowRoot();
+	}
+	throw new ShadowDomNotSupportedError();
 }
 
-// Alias the constructor so vendor-prefixed implementations can run
-// most of the test suite.
-var SR = window.ShadowRoot ||
-    window.WebKitShadowRoot ||
-    // Add other vendor prefixes here.
-    ShadowDomNotSupported;
+// To allow using of both prefixed and non-prefixed API we do
+// the following hook
+function addPrefixed(element) {
+	if (element && !element.pseudo) {
+		Object.defineProperty(element, 'pseudo', {
+			  get: function () { return element.webkitPseudo; },
+			  set: function (value) { return element.webkitPseudo = value; }
+		});
+	}
+}
+
+function addDocumentPrefixed(d) {
+	if (d) {
+		if (d.body) {
+		    addPrefixed(d.body);
+		}
+		if (d.head) {
+		    addPrefixed(d.head);			
+		}
+		if (d.documentElement) {
+			addPrefixed(d.documentElement);
+		}
+		d.oldCreate = d.createElement;
+		d.createElement = function(tagName) {
+			var el = d.oldCreate(tagName);
+			addPrefixed(el);
+			return el;
+		};		
+	}	
+}
 
 
 function PROPS(assertion, properties) {
@@ -51,11 +86,17 @@ function rethrowInternalErrors(e) {
 }
 
 function newDocument() {
-    return document.implementation.createDocument();
+    var d = document.implementation.createDocument();
+    //FIXME remove the call below when non-prefixed API is used
+    addDocumentPrefixed(d);
+    return d;        
 }
 
 function newHTMLDocument() {
-    return document.implementation.createHTMLDocument();
+	var d = document.implementation.createHTMLDocument('Test Document');
+    //FIXME remove the call below when non-prefixed API is used
+    addDocumentPrefixed(d);
+    return d;
 }
 
 function newIFrame(ctx, src) {
@@ -81,7 +122,10 @@ function newIFrame(ctx, src) {
 }
 function newRenderedHTMLDocument(ctx) {
     var frame = newIFrame(ctx);
-    return frame.contentWindow.document;
+    var d = frame.contentWindow.document;
+    //FIXME remove the call below when non-prefixed API is used
+    addDocumentPrefixed(d);
+    return d;    
 }
 
 function newContext() {
@@ -162,7 +206,7 @@ function createTestMediaPlayer(d) {
 	    '</div>' +
 	'</div>';
 
-	var playerShadowRoot = new SR(d.querySelector('#player-shadow-root'));
+	var playerShadowRoot = createSR(d.querySelector('#player-shadow-root'));
 	playerShadowRoot.innerHTML = '' +
 		'<div id="controls">' +
 			'<button class="play-button">PLAY</button>' +
@@ -178,10 +222,10 @@ function createTestMediaPlayer(d) {
 		    '</div>' +
 		'</div>';
 
-	var timeLineShadowRoot = new SR(playerShadowRoot.querySelector('#timeline-shadow-root'));
+	var timeLineShadowRoot = createSR(playerShadowRoot.querySelector('#timeline-shadow-root'));
 	timeLineShadowRoot.innerHTML =  '<div class="slider-thumb" id="timeline-slider-thumb"></div>';
 
-	var volumeShadowRoot = new SR(playerShadowRoot.querySelector('#volume-shadow-root'));
+	var volumeShadowRoot = createSR(playerShadowRoot.querySelector('#volume-shadow-root'));
 	volumeShadowRoot.innerHTML = '<div class="slider-thumb" id="volume-slider-thumb"></div>';
 
 	return {
@@ -191,7 +235,7 @@ function createTestMediaPlayer(d) {
 		};
 }
 
-//FIXME This call of initKeyboardEvent works for WebKit-only. 
+//FIXME This call of initKeyboardEvent works for WebKit-only.
 //See https://bugs.webkit.org/show_bug.cgi?id=16735
 // and https://bugs.webkit.org/show_bug.cgi?id=13368. Add check for browser here
 function fireKeyboardEvent(doc, element, key) {

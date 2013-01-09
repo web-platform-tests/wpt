@@ -38,13 +38,13 @@ A_04_05_01_T1.step(function () {
             var ul = d.querySelector('ul.stories');
                                     
             //make old shadow subtree
-            var s1 = new SR(ul);
+            var s1 = createSR(ul);
             var subdiv1 = d.createElement('div');
             subdiv1.innerHTML = '<ul><content select=".shadow"></content></ul>';
             s1.appendChild(subdiv1);
                         
             //make younger shadow subtree
-            var s2 = new SR(ul);
+            var s2 = createSR(ul);
             var subdiv2 = d.createElement('div');
             subdiv2.innerHTML = '<ul><content select=".shadow2"></content></ul>';
             s2.appendChild(subdiv2);
@@ -92,13 +92,13 @@ A_04_05_01_T2.step(function () {
             var ul = d.querySelector('ul.stories');
                                     
             //make old shadow subtree
-            var s1 = new SR(ul);
+            var s1 = createSR(ul);
             var subdiv1 = d.createElement('div');
             subdiv1.innerHTML = '<ul><content select=".shadow"></content></ul>';
             s1.appendChild(subdiv1);
                         
             //make younger shadow subtree
-            var s2 = new SR(ul);
+            var s2 = createSR(ul);
             var subdiv2 = d.createElement('div');
             subdiv2.innerHTML = '<ul><content select=".shadow2"></content></ul>';
             s2.appendChild(subdiv2);

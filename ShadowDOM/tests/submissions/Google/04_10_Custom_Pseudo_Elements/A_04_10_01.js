@@ -13,7 +13,8 @@ var A_04_10_01 = {
     assert:'Custom Pseudo-Elements: test valid pseudo-element',
     link:'https://dvcs.w3.org/hg/webcomponents/raw-file/tip/spec/shadow/index.html#custom-pseudo-elements',
     highlight:'The custom pseudo-element value must be considered valid if it starts with ' +
-    	'a U+0078 LATIN SMALL LETTER X, followed by  U+002D HYPHEN-MINUS.'
+    	'a U+0078 LATIN SMALL LETTER X, followed by  U+002D HYPHEN-MINUS.',
+    bug: ['https://bugs.webkit.org/show_bug.cgi?id=103973']
 };
 
 
@@ -30,9 +31,14 @@ test(unit(function (ctx) {
     
     var widget = d.createElement('div');
     d.body.appendChild(widget);
-    var s = new SR(widget);
+    
+    var s = createSR(widget);
+    
     var thumb = d.createElement('span');
     thumb.innerHTML = 'This is a pseudo-element';
+    //FIXME test works if prefixed version of API used. 
+    //In other words works if webkitPseudo property is used
+    //thumb.webkitPseudo = 'x-thumb';
     thumb.pseudo = 'x-thumb';
     s.appendChild(thumb);
     
@@ -41,10 +47,10 @@ test(unit(function (ctx) {
     assert_true(height > 0, 'Element should be rendered');
     
     style = d.createElement('style');
-    style.innerHTML = 'span::x-thumb {' +
+    style.innerHTML = 'div::x-thumb {' +
     	'font-size: 30px;' +
     	'}';
-    s.appendChild(style);
+    d.body.appendChild(style);
     
     assert_true(thumb.offsetHeight > height, 'Pseudo-element style should be applied');
 	

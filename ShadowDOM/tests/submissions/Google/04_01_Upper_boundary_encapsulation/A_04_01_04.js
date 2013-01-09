@@ -20,7 +20,7 @@ var A_04_01_04 = {
 // check node list returned by getElementsByTagName method
 test(function () {
     var d = newHTMLDocument();
-    var s = new SR(d.body);
+    var s = createSR(d.body);
 
     var span = d.createElement('span');
     d.body.appendChild(span);
@@ -38,7 +38,7 @@ test(function () {
 // check node list returned by getElementsByTagNameNS method
 test(function () {
     var d = newHTMLDocument();
-    var s = new SR(d.body);
+    var s = createSR(d.body);
 
     var span = d.createElement('span');
     d.body.appendChild(span);
@@ -57,7 +57,7 @@ test(function () {
 // check node list returned by getElementsByClassName method
 test(function () {
     var d = newHTMLDocument();
-    var s = new SR(d.body);
+    var s = createSR(d.body);
 
     var span = d.createElement('span');
     span.setAttribute('class', 'shadowy');
@@ -77,7 +77,7 @@ test(function () {
 // check node list returned by querySelectorAll method
 test(function () {
     var d = newHTMLDocument();
-    var s = new SR(d.body);
+    var s = createSR(d.body);
 
     var span = d.createElement('span');
 
@@ -108,7 +108,7 @@ test(function () {
 // check for HTMLCollection content
 test(function () {
     var d = newHTMLDocument();
-    var s = new SR(d.body);
+    var s = createSR(d.body);
 
     var htmlCollections =         ['anchors', 'links', 'embeds', 'forms', 'images', 'links', 'plugins','scripts'];
     var htmlCollectionsElements = ['a',       'a',     'embed',  'form',  'img',    'area',  'embed',   'script'];
@@ -128,7 +128,7 @@ test(function () {
                 'document.' + htmlCollections[cnt] + ' collection cnt:'+cnt);
         }
         cnt++;
-    })
+    });
 }, 'A_04_01_04_T05', PROPS(A_04_01_04, {
     author:'Sergey G. Grekhov <sgrekhov@unipro.ru>',
     reviewer:'Mikhail Fursov <mfursov@unipro.ru>'

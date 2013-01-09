@@ -50,7 +50,7 @@ A_07_02_03_T01.step(unit(function (ctx) {
 	
 	var host = d.createElement('div');
 	d.body.appendChild(host);
-	var s = new SR(host);
+	var s = createSR(host);
     
 	var inp1 = d.createElement('input');
 	inp1.setAttribute('type', 'text');
@@ -176,7 +176,7 @@ A_07_02_03_T02.step(unit(function (ctx) {
 	invoked[3] = false;
 	host.appendChild(chb3);
 	
-	var s = new SR(host);
+	var s = createSR(host);
 	
 	var div = d.createElement('div');
 	div.innerHTML = '<content select=".shadow"></content>';

@@ -51,7 +51,7 @@ A_07_02_04_T01.step(unit(function (ctx) {
 	//make shadow host focusable
 	host.setAttribute('tabindex', '3');
 	d.body.appendChild(host);
-	var s = new SR(host);
+	var s = createSR(host);
     
 	var inp1 = d.createElement('input');
 	inp1.setAttribute('type', 'text');
@@ -180,7 +180,7 @@ A_07_02_04_T02.step(unit(function (ctx) {
 	invoked[3] = false;
 	host.appendChild(chb3);
 	
-	var s = new SR(host);
+	var s = createSR(host);
 	
 	var div = d.createElement('div');
 	div.innerHTML = '<content select=".shadow"></content>';
@@ -273,7 +273,7 @@ A_07_02_04_T03.step(unit(function (ctx) {
 	var host = d.createElement('div');
 	host.setAttribute('tabindex', '1');
 	d.body.appendChild(host);
-	var s = new SR(host);
+	var s = createSR(host);
     
 	var inp1 = d.createElement('input');
 	inp1.setAttribute('type', 'text');
@@ -368,7 +368,7 @@ A_07_02_04_T04.step(unit(function (ctx) {
 	var host = d.createElement('div');
 	host.setAttribute('tabindex', '3');
 	d.body.appendChild(host);
-	var s = new SR(host);
+	var s = createSR(host);
     
 	var inp1 = d.createElement('input');
 	inp1.setAttribute('type', 'text');

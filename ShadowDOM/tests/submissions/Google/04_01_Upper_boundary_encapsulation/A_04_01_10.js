@@ -10,7 +10,8 @@ policies and contribution forms [3].
 
 var A_04_01_10 = {
     name:'A_04_01_10',
-    assert:'Upper-boundary encapsulation: attributes of the shadow root object',
+    assert:'Upper-boundary encapsulation: The parentNode and parentElement attributes of the shadow root object ' +
+    		'must always return null.',
     link:'http://www.w3.org/TR/shadow-dom/#upper-boundary-encapsulation',
     highlight:'The parentNode and parentElement attributes of the shadow root object ' +
         'must always return null.'
@@ -19,7 +20,7 @@ var A_04_01_10 = {
 //check parentNode of usual shadow
 test(function () {
     var d = newHTMLDocument();
-    var s = new SR(d.body);
+    var s = createSR(d.body);
 
     assert_equals(s.parentNode, null, 'the parentNode attribute of the shadow ' +
         'root object must always return null');
@@ -32,7 +33,7 @@ test(function () {
 //check parentElement of usual shadow
 test(function () {
     var d = newHTMLDocument();
-    var s = new SR(d.body);
+    var s = createSR(d.body);
 
     assert_equals(s.parentElement, null, 'the parentElement attribute of the shadow root object ' +
         'must always return null');
@@ -45,31 +46,31 @@ test(function () {
 //check parentNode for nested shadow
 test(function () {
     var d = newHTMLDocument();
-    var s1 = new SR(d.body);
+    var s1 = createSR(d.body);
     var e1 = d.createElement('div');
     s1.appendChild(e1);
-    var s2 = new SR(e1);
+    var s2 = createSR(e1);
 
     assert_equals(s2.parentNode, null, 'the parentNode attribute of the shadow ' +
         'root object must always return null');
 
 }, 'A_04_01_10_T03', PROPS(A_04_01_10, {
     author:'Mikhail Fursov <mfursov@unipro.ru>',
-    reviewer:''
+    reviewer:'Aleksei Yu. Semenov <a.semenov@unipro.ru>'
 }));
 
 //check parentElement for nested shadow
 test(function () {
     var d = newHTMLDocument();
-    var s1 = new SR(d.body);
+    var s1 = createSR(d.body);
     var e1 = d.createElement('div');
     s1.appendChild(e1);
-    var s2 = new SR(e1);
+    var s2 = createSR(e1);
 
     assert_equals(s2.parentElement, null, 'the parentElement attribute of the shadow root object ' +
         'must always return null');
 
 }, 'A_04_01_10_T04', PROPS(A_04_01_10, {
     author:'Mikhail Fursov <mfursov@unipro.ru>',
-    reviewer:''
+    reviewer:'Aleksei Yu. Semenov <a.semenov@unipro.ru>'
 }));

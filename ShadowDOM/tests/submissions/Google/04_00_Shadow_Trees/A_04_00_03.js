@@ -23,7 +23,7 @@ test(unit(function (ctx) {
     d.body.appendChild(div);
     assert_true(div.offsetTop > 0, 'Expected: the host element is rendered before the check. Actual: the host element is not rendered');
 
-    var s = new SR(div);
+    var s = createSR(div);
     var hr = d.createElement('hr');
     assert_true(hr.offsetTop == 0, 'Expected: The element to be added to shadow is not rendered before the check');
 
@@ -47,7 +47,7 @@ test(unit(function (ctx) {
     assert_true(d.querySelector('#spandex').offsetTop > 0, 'Expected: The host element content is ' +
         'rendered before the check');
 
-    var s = new SR(div);
+    var s = createSR(div);
     var hr = d.createElement('hr');
     assert_true(hr.offsetTop == 0, "Expected: The element to be added to shadow is not rendered before the check");
 

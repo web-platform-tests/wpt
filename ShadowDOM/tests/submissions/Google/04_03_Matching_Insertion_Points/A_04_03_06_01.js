@@ -32,7 +32,7 @@ A_04_03_06_01_T01.step(function () {
 
             var d = iframe.contentDocument;
             var div = d.querySelector('#links-wrapper');
-            var s = new SR(div);
+            var s = createSR(div);
 
             //make shadow subtree
             var subdiv1 = document.createElement('div');

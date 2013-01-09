@@ -35,7 +35,7 @@ test(unit(function (ctx) {
     d.body.appendChild(host);
 
 	//Shadow root to play with
-	var s = new SR(host);
+	var s = createSR(host);
 	s.applyAuthorStyles = true;
 	
 	var div1 = d.createElement('div');
@@ -69,7 +69,7 @@ test(unit(function (ctx) {
     d.body.appendChild(host);
 
 	//Shadow root to play with
-	var s1 = new SR(host);
+	var s1 = createSR(host);
 	s1.applyAuthorStyles = true;
 	
 	var div1 = d.createElement('div');
@@ -77,7 +77,7 @@ test(unit(function (ctx) {
 	s1.appendChild(div1);
 	
 	//younger tree
-	var s2 = new SR(host);
+	var s2 = createSR(host);
 	s2.applyAuthorStyles = true;
 	var div1 = d.createElement('div');
 	div1.innerHTML = '<span id="shd2" class="invis">This is a young shadow tree</span>' + 
@@ -119,7 +119,7 @@ test(unit(function (ctx) {
     d.body.appendChild(host);
 
 	//Shadow root to play with
-	var s1 = new SR(host);
+	var s1 = createSR(host);
 	s1.applyAuthorStyles = true;
 	
 	var div1 = d.createElement('div');
@@ -127,7 +127,7 @@ test(unit(function (ctx) {
 	s1.appendChild(div1);
 	
 	//younger tree
-	var s2 = new SR(host);
+	var s2 = createSR(host);
 	//applyAuthorStyles false by default
 	var div1 = d.createElement('div');
 	div1.innerHTML = '<span id="shd2" class="invis">This is a young shadow tree</span>' + 

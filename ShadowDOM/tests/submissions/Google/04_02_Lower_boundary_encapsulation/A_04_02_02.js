@@ -21,19 +21,18 @@ var A_04_02_02 = {
 
 var A_04_02_02_T1 = async_test('A_04_02_02_T01', PROPS(A_04_02_02, {
     author:'Sergey G. Grekhov <sgrekhov@unipro.ru>',
-    reviewer:''
+    reviewer:'Aleksei Yu. Semenov <a.semenov@unipro.ru>'
 }));
 
 A_04_02_02_T1.step(function () {
     var iframe = document.createElement('iframe');
-    iframe.src = 'resources/bobs_page.html';
     document.body.appendChild(iframe);
 
     iframe.onload = A_04_02_02_T1.step_func(function () {
         try {
             var d = iframe.contentDocument;
             var ul = d.querySelector('ul.stories');
-            var s = new SR(ul);
+            var s = createSR(ul);
 
             //make shadow subtree
             var subdiv1 = document.createElement('div');
@@ -61,29 +60,31 @@ A_04_02_02_T1.step(function () {
             // After the distribution the order should be the following (starting from top):
             // li3, li6, li4, li1, li2, li5, li10, li11, li12, li13, li14, li15
             assert_true(d.querySelector('#li3').offsetTop < d.querySelector('#li6').offsetTop,
-                'Point 1: Elements that mach insertion point criteria don\'t participate in distribution');
+                'Point 1: Elements that match insertion point criteria don\'t participate in distribution');
             assert_true(d.querySelector('#li6').offsetTop < d.querySelector('#li4').offsetTop,
-                'Point 2: Elements that mach insertion point criteria don\'t participate in distribution');
+                'Point 2: Elements that match insertion point criteria don\'t participate in distribution');
             assert_true(d.querySelector('#li4').offsetTop < d.querySelector('#li1').offsetTop,
-                'Point 3: Elements that mach insertion point criteria don\'t participate in distribution');
+                'Point 3: Elements that match insertion point criteria don\'t participate in distribution');
             assert_true(d.querySelector('#li1').offsetTop < d.querySelector('#li2').offsetTop,
-                'Point 4: Elements that mach insertion point criteria don\'t participate in distribution');
+                'Point 4: Elements that match insertion point criteria don\'t participate in distribution');
             assert_true(d.querySelector('#li2').offsetTop < d.querySelector('#li5').offsetTop,
-                'Point 5: Elements that mach insertion point criteria don\'t participate in distribution');
+                'Point 5: Elements that match insertion point criteria don\'t participate in distribution');
 
             assert_true(d.querySelector('#li5').offsetTop < d.querySelector('#li11').offsetTop,
-                'Point 6: Elements that mach insertion point criteria don\'t participate in distribution');
+                'Point 6: Elements that match insertion point criteria don\'t participate in distribution');
             assert_true(d.querySelector('#li11').offsetTop < d.querySelector('#li12').offsetTop,
-                'Point 7: Elements that mach insertion point criteria don\'t participate in distribution');
+                'Point 7: Elements that match insertion point criteria don\'t participate in distribution');
             assert_true(d.querySelector('#li12').offsetTop < d.querySelector('#li13').offsetTop,
-                'Point 8: Elements that mach insertion point criteria don\'t participate in distribution');
+                'Point 8: Elements that match insertion point criteria don\'t participate in distribution');
             assert_true(d.querySelector('#li13').offsetTop < d.querySelector('#li14').offsetTop,
-                'Point 9: Elements that mach insertion point criteria don\'t participate in distribution');
+                'Point 9: Elements that match insertion point criteria don\'t participate in distribution');
             assert_true(d.querySelector('#li14').offsetTop < d.querySelector('#li15').offsetTop,
-                'Point 10: Elements that mach insertion point criteria don\'t participate in distribution');
+                'Point 10: Elements that match insertion point criteria don\'t participate in distribution');
         } finally {
             iframe.parentNode.removeChild(iframe);
         }
+
         A_04_02_02_T1.done();
     });
+    iframe.src = 'resources/bobs_page.html';
 });

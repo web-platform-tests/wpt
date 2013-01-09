@@ -35,7 +35,7 @@ test(unit(function (ctx) {
     d.body.appendChild(host);
 
 	//Shadow root to play with
-	var s = new SR(host);
+	var s = createSR(host);
 	
 	var div1 = d.createElement('div');
 	div1.innerHTML ='<span id="shd" class="invis">This is the shadow tree</span>'; 
@@ -68,7 +68,7 @@ test(unit(function (ctx) {
     d.body.appendChild(host);
 
 	//Shadow root to play with
-	var s = new SR(host);
+	var s = createSR(host);
 	s.applyAuthorStyles = false;
 	
 	var div1 = d.createElement('div');
@@ -101,14 +101,14 @@ test(unit(function (ctx) {
     d.body.appendChild(host);
 
 	//Shadow root to play with
-	var s1 = new SR(host);
+	var s1 = createSR(host);
 	
 	var div1 = d.createElement('div');
 	div1.innerHTML = '<span id="shd1" class="invis">This is an old shadow tree</span>'; 
 	s1.appendChild(div1);
 	
 	//younger tree
-	var s2 = new SR(host);	
+	var s2 = createSR(host);	
 	var div1 = d.createElement('div');
 	div1.innerHTML = '<span id="shd2" class="invis">This is a young shadow tree</span>' + 
 		'<shadow><span id="shd3" class="invis">This is the shadow tree fallback content</span></shadow>'; 
@@ -148,7 +148,7 @@ test(unit(function (ctx) {
     d.body.appendChild(host);
 
 	//Shadow root to play with
-	var s1 = new SR(host);
+	var s1 = createSR(host);
 	s1.applyAuthorStyles = false;
 	
 	var div1 = d.createElement('div');
@@ -156,7 +156,7 @@ test(unit(function (ctx) {
 	s1.appendChild(div1);
 	
 	//younger tree
-	var s2 = new SR(host);	
+	var s2 = createSR(host);	
 	var div1 = d.createElement('div');
 	div1.innerHTML = '<span id="shd2" class="invis">This is a young shadow tree</span>' + 
 		'<shadow><span id="shd3" class="invis">This is the shadow tree fallback content</span></shadow>'; 

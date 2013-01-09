@@ -32,7 +32,7 @@ A_04_03_06_13_T01.step(function () {
 
             var d = iframe.contentDocument;
             var ul = d.querySelector('ul.stories');
-            var s = new SR(ul);
+            var s = createSR(ul);
             
             //make shadow subtree
             var subdiv1 = document.createElement('div');

@@ -34,7 +34,7 @@ A_04_08_01_T1.step(function () {
             var ul = d.querySelector('ul.stories');
                                     
             //make a shadow subtree
-            var s1 = new SR(ul);
+            var s1 = createSR(ul);
             var subdiv1 = d.createElement('div');
             subdiv1.innerHTML = '<ul><content select=".shadow"></content></ul>' +
             	'<div id="host_div">' + 
@@ -51,7 +51,7 @@ A_04_08_01_T1.step(function () {
                         
             //make nested shadow subtree
             var sh_ul = s1.querySelector('#host');
-            var s2 = new SR(sh_ul);
+            var s2 = createSR(sh_ul);
             var subdiv2 = d.createElement('div');
             subdiv2.innerHTML = '<ul><content select=".shadow2"></content></ul>';
             s2.appendChild(subdiv2);

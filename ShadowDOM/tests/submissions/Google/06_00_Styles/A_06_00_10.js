@@ -50,7 +50,7 @@ test(unit(function (ctx) {
     
     var host = d.querySelector('.cls');
 	//Shadow root to play with
-    var s = new SR(host);
+    var s = createSR(host);
 
 	var div = d.createElement('div');	
 	div.innerHTML ='<ul><content select=".shadow" style="font-size:20px"></content></ul>'; 

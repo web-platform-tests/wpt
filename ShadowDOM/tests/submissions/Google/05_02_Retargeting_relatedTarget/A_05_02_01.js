@@ -36,7 +36,7 @@ A_05_02_01_T01.step(unit(function (ctx) {
     d.body.appendChild(host);
     
     //Shadow root to play with
-    var s = new SR(host);
+    var s = createSR(host);
     
     var div1 = d.createElement('div');
     div1.setAttribute('style', 'height:40px; width:100%');

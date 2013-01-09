@@ -18,7 +18,8 @@ var A_06_00_12 = {
 	link:'https://dvcs.w3.org/hg/webcomponents/raw-file/tip/spec/shadow/index.html#styles',
 	highlight:'If the reset-style-inheritance flag is set for a shadow tree, all inheritable CSS ' +
 		'properties must behave as if they were explicitly set to the initial value at the upper ' +
-		'boundary of the tree.'
+		'boundary of the tree.',
+	bug: ['https://bugs.webkit.org/show_bug.cgi?id=103709']
 };
 
 // test Shadow root
@@ -70,7 +71,7 @@ test(unit(function (ctx) {
 	assert_true(height6 > defHeight6, 'Point 16: Element height should be changed');
     
 	//Shadow root to play with
-    var s = new SR(host);
+    var s = createSR(host);
 
 	var div = d.createElement('div');	
 	div.innerHTML ='<ul><content select=".shadow"></content></ul>'; 
@@ -148,7 +149,7 @@ test(unit(function (ctx) {
 	assert_true(height6 > defHeight6, 'Point 16: Element height should be changed');
     
 	//Shadow root to play with
-    var s = new SR(host);
+    var s = createSR(host);
 
 	var div = d.createElement('div');	
 	div.innerHTML ='<ul><content select=".shadow"></content></ul>'; 
@@ -163,7 +164,7 @@ test(unit(function (ctx) {
 	assert_equals(d.querySelector('#li6').offsetHeight, 0, 'Point 26: Element shouldn\'t be rendered');
 	
 	//Young tree
-	var s2 = new SR(host);
+	var s2 = createSR(host);
 	
 	var div2 = d.createElement('div');	
 	div2.innerHTML = '<span id="spn1">A young shadow tree</span>' + 
@@ -249,7 +250,7 @@ test(unit(function (ctx) {
 	assert_true(height6 > defHeight6, 'Point 16: Element height should be changed');
     
 	//Shadow root to play with
-    var s = new SR(host);
+    var s = createSR(host);
 
 	var div = d.createElement('div');	
 	div.innerHTML ='<ul><content select=".shadow"></content></ul>'; 
@@ -264,7 +265,7 @@ test(unit(function (ctx) {
 	assert_equals(d.querySelector('#li6').offsetHeight, 0, 'Point 26: Element shouldn\'t be rendered');
 	
 	//Young tree
-	var s2 = new SR(host);
+	var s2 = createSR(host);
 	
 	var div2 = d.createElement('div');	
 	div2.innerHTML = '<shadow reset-style-inheritance=true></shadow>'; 

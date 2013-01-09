@@ -27,7 +27,7 @@ test(unit(function (ctx) {
     d.body.appendChild(host);
 
 	//Shadow root to play with
-	var s = new SR(host);
+	var s = createSR(host);
 	
 	assert_equals(s.styleSheets.length, 0, 'There should be no style sheets');
 }), 'A_06_00_03_T01', PROPS(A_06_00_03, {
@@ -45,7 +45,7 @@ test(unit(function (ctx) {
     d.body.appendChild(host);
 
 	//Shadow root to play with
-	var s = new SR(host);
+	var s = createSR(host);
 	
 	assert_equals(s.styleSheets.length, 0, 'There should be no style sheets');
 }), 'A_06_00_03_T02', PROPS(A_06_00_03, {
@@ -60,7 +60,7 @@ test(unit(function (ctx) {
 	var host = d.createElement('div');
 
 	//Shadow root to play with
-	var s = new SR(host);
+	var s = createSR(host);
 	
 	var style = d.createElement('style');
 	style.innerHTML = 'div {witht: 50%;}';
@@ -83,7 +83,7 @@ test(unit(function (ctx) {
     d.body.appendChild(host);
 
 	//Shadow root to play with
-	var s = new SR(host);
+	var s = createSR(host);
 	
     // create StyleSheet
     var style = d.createElement('style');

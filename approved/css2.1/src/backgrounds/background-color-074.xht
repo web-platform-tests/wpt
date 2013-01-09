@@ -8,14 +8,11 @@
         <meta name="flags" content="ahem"/>
         <link rel="match" href="background-color-073-ref.xht"/>>
         <meta name="assert" content="Background-color is set to rgb(+40%, 0%, 0%)."/>
-        <style type="text/css">
-            #test, #reference
-            {
-               height: 100px;
-               width: 100px;
-            }
+        <style type="text/css"><![CDATA[
             #test
             {
+                height: 100px;
+                width: 100px;
                 background-color: rgb(+40%, 0%, 0%);
             }
             #reference
@@ -23,7 +20,7 @@
                 color: rgb(+40%, 0%, 0%);
                 font: 100px/1 Ahem;
             }
-        </style>
+        ]]></style>
     </head>
     <body>
         <p>Test passes if there are 2 squares with the <strong>same color</strong>.</p>

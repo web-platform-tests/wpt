@@ -3,7 +3,8 @@
   <head>
    <script type="application/its+xml">  
     <its:rules xmlns:its="http://www.w3.org/2005/11/its" xmlns:h="http://www.w3.org/1999/xhtml" version="2.0">
-     <its:locQualityIssueRule selector="//h:span[@id='q1']"
+     <its:param name="locQualityIssueParam">q1</its:param>
+     <its:locQualityIssueRule selector="//h:span[@id=$locQualityIssueParam]"
       locQualityIssueType="typographical"
       locQualityIssueComment="sentence without capitalization"
       locQualityIssueEnabled="yes"/>

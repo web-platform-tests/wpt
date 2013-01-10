@@ -7,28 +7,26 @@
         <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#propdef-color" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#colors" />
         <link rel="match" href="color-142-ref.xht" />
-
         <meta name="flags" content="ahem" />
         <meta name="assert" content="The 'color' set to 'silver' renders the correct foreground color of an element's text content." />
         <style type="text/css">
             #test
             {
                 color: silver;
-                font: 1in/1 Ahem;
+                font: 100px/1 Ahem;
             }
-            img
+            #reference
             {
-                height: 1in;
-                width: 1in;
+                height: 100px;
+                width: 100px;
+                background-color: silver;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if there are 2 squares with the <strong>same color</strong>.</p>
+        <p>Test passes if the two squares below are the same color.</p>
         <div id="test">X</div>
-        <div id="reference">
-            <br />
-            <img alt="silver color swatch" src="support/silver_color.png" />
-        </div>
+        <br />
+        <div id="reference"></div>
     </body>
 </html>

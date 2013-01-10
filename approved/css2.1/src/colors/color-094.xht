@@ -3,18 +3,13 @@
     <head>
         <title>CSS Test: Color set to rgb() using percentages with green set to a nominal value with a plus sign, rgb(0%, +50%, 0%)</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
-        <link rel="author" title="Rebecca Hauck" href="rhauck@adobe.com" /> <!-- converted to reftest 01-08-2013 -->
+        <link rel="author" title="Rebecca Hauck" href="rhauck@adobe.com" /> <!-- converted to reftest 01-07-2013 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#propdef-color" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#colors" />
         <link rel="match" href="color-093-ref.xht"/>
         <meta name="flags" content="ahem" />
         <meta name="assert" content="The 'color' set to 'rgb(0%, +50%, 0%)' renders the correct foreground color of an element's text content." />
         <style type="text/css">
-            div
-            {
-                height: 100px;
-                width: 100px;
-            }
             #test
             {
                 color: rgb(0%, +50%, 0%);
@@ -22,6 +17,8 @@
             }
             #reference
             {
+                height: 100px;
+                width: 100px;
                 background-color: rgb(0%, 50%, 0%);
                 margin-top: 10px;
             }

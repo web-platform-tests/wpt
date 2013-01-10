@@ -7,28 +7,26 @@
         <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#propdef-color" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#colors" />
         <link rel="match" href="color-103-ref.xht" />
-
         <meta name="flags" content="ahem" />
         <meta name="assert" content="The 'color' set to 'rgb(0, +128, 0)' renders the correct foreground color of an element's text content." />
         <style type="text/css">
             #test
             {
                 color: rgb(0, +128, 0);
-                font: 1in/1 Ahem;
+                font: 100px/1 Ahem;
             }
-            img
+            #reference
             {
-                height: 1in;
-                width: 1in;
+                height: 100px;
+                width: 100px;
+                background-color: rgb(0, 128, 0);
             }
         </style>
     </head>
     <body>
-        <p>Test passes if there are 2 squares with the <strong>same color</strong>.</p>
+        <p>Test passes if the two squares below are the same color.</p>
         <div id="test">X</div>
-        <div id="reference">
-            <br />
-            <img alt="#008000 color swatch" src="support/008000_color.png" />
-        </div>
+        <br />
+        <div id="reference"></div>
     </body>
 </html>

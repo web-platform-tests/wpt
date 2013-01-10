@@ -7,27 +7,26 @@
         <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#propdef-color" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#colors" />
         <link rel="match" href="color-034-ref.xht" />
-
         <meta name="flags" content="ahem" />
         <meta name="assert" content="The 'color' set to '#e00' renders the correct foreground color of an element's text content." />
         <style type="text/css">
             #test
             {
                 color: #e00;
-                font: 1in/1 Ahem;
+                font: 100px/1 Ahem;
             }
-            img            {
-                height: 1in;
-                width: 1in;
+            #reference
+            {
+                height: 100px;
+                width: 100px;
+                background-color: #e00;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if there are 2 squares with the <strong>same color</strong>.</p>
+        <p>Test passes if the two squares below are the same color.</p>
         <div id="test">X</div>
-        <div id="reference">
-            <br />
-            <img alt="#e00 color swatch" src="support/e00_color.png" />
-        </div>
+        <br />
+        <div id="reference"></div>
     </body>
 </html>

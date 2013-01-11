@@ -310,6 +310,6 @@ test(function() {
   assert_equals(window.constructor, Window);
   assert_false(window.hasOwnProperty("constructor"), "window.constructor should not be an own property.");
   assert_data_propdesc(Object.getOwnPropertyDescriptor(Window.prototype, "constructor"),
-                       Window, true, false, true);
+                       true, false, true);
 }, "constructor");
 </script>

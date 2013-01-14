@@ -37,9 +37,11 @@ before submitting any tests to this repository.
 Write Access
 ------------
 
-Since we don't have an automated sign-up system yet, to get write
-access to this repository, fill out the license grant form and then
-email fantasai
-  http://fantasai.inkedblade.net/contact
-with the username you want. That's it!
+To gain write access to this repository, sign up for an account
+on the CSS Test Suite Manager (aka Shepherd) at:
+https://test.csswg.org/shepherd/register
+and then submit a request on the Repository Access page at:
+https://test.csswg.org/shepherd/account/access/
+
+You will be notified by email when your request is processed.
 

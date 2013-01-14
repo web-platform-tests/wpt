@@ -32,9 +32,10 @@ iframe.onload = function(e) {
     tD.done();
   })
   tC.step(function() {
-    assert_equals(doc.documentElement.lastChild.firstChild.firstChild.data, "Text\n");
+    assert_equals(doc.documentElement.lastChild.firstChild.firstChild.data,
+                  "This is a sample text/plain document.\n\nThis is not an HTML document.\n\n");
     tC.done();
   })
 };
-iframe.src = "../../support/text/200-textplain.cgi";
+iframe.src = "../../../../common/text-plain.txt";
 </script>

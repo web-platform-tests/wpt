@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Body Element</title>
+    <link rel="author" title="dzenana" href="mailto:dzenana.trenutak@gmail.com">
+    <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/single-page.html#the-body-element">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+
+    <h1>Description</h1>
+    <p>This test validates the behavior of a bubbling onerror event as it passes through document.body (part two - body's event handler as provided by an event listener is fired when event reaches body, rather than waiting for event to reach window).</p>
+
+    <div id="log"></div>
+
+    <script>
+        "use strict";
+
+	// Spec says, in context of a bubbling error event:  "A regular event listener attached to the body using addEventListener(), however, would be run when the 
+	// event bubbled through the body and not when it reaches the Window object." 
+
+	// Verify that an event handler added onto body through addEventListener runs after body's child's but before html's during a bubbling error event
+	test(function() {
+		
+		var myErrors = [], myError = {};
+	
+		// add event listeners
+            	document.documentElement.addEventListener("error", function(event) { myErrors.push("html");}, false);
+            	document.body.addEventListener("error", function(event) { myErrors.push("body-eventListener");}, false);
+            	document.body.firstElementChild.addEventListener("error", function(event) { myErrors.push("child");}, false);
+
+		// Create an error in child of body element
+                myError = document.createEvent("Event");
+                myError.initEvent("error", true, false);
+                document.body.firstElementChild.dispatchEvent(myError);		
+
+		// Verify that body's onerror added event handler was fired AFTER child's and BEFORE html's
+		assert_in_array("body-eventListener", myErrors, "Verify that body's onerror event handler was fired.");
+		assert_true(myErrors.indexOf("body-eventListener") > myErrors.lastIndexOf("child"), "Body's onerror event handler fired after child's onerror event handler(s).");
+		assert_true(myErrors.lastIndexOf("body-eventListener") < myErrors.indexOf("html"), "Body's onerror event handler fired before html's onerror event handler(s).");
+
+	}, "Body's onerror event listener's event handler fired as per spec order during bubbling");
+
+    </script>
+</body>
+

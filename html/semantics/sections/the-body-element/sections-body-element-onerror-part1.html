@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Body Element</title>
+    <link rel="author" title="dzenana" href="mailto:dzenana.trenutak@gmail.com">
+    <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/single-page.html#the-body-element">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+</head>
+<body onerror="myErrors.push('body-content')">
+
+    <h1>Description</h1>
+    <p>This test validates the behavior of a bubbling onerror event as it passes through document.body (part one - body's event handler as provided by a content attribute is NOT fired when event reaches body, but waits for the event to reach window before firing).</p>
+
+    <div id="log"></div>
+
+    <script>
+        "use strict";
+
+        /*  The spec discusses 5 of the body element's content attributes specifically:  
+    		"The onblur, onerror, onfocus, onload, and onscroll 
+		event handlers of the Window object, exposed on the body element, shadow the generic event handlers 
+		with the same names normally supported by HTML elements. With the exception of onerror, this is actually 
+		implemented by just using the properties of the HTMLElement interface. The onerror attribute has a different type."
+
+	   	**** QUESTION:  Testing the implementation of event handlers as based on which interface is outside the scope of these tests,
+	    	but is there a test to be done here re: the type of the onerror attributes?  ****
+
+  	   	The spec then says:  "Thus, for example, a bubbling error event dispatched on a child of the body element 
+		of a Document would first trigger the onerror event handler content attributes of that element, then 
+		that of the root html element, and only then would it trigger the onerror event handler content attribute 
+		on the body element. This is because the event would bubble from the target, to the body, to the html, 
+		to the Document, to the Window, and the event handler on the body is watching the Window not the body."
+	*/
+
+	// Check that, during bubbling of an onerror event, the body.onerror content attribute is fired when the bubble reaches window object
+ 
+	var myErrors = [];
+
+	test(function() {
+
+		var myError = {}; 
+		
+		// Add event listeners to other elements in chain
+		window.addEventListener("error", function(event) { myErrors.push("window"); }, false);
+            	document.addEventListener("error", function(event) { myErrors.push("document"); }, false);
+            	document.documentElement.addEventListener("error", function(event) { myErrors.push("html"); }, false);
+            	document.body.firstElementChild.addEventListener("error", function(event) { myErrors.push("child"); }, false);
+		// (To match spec text, it would have been nice to use "the onerror event handler content attributes of that [child] element"
+		//     for the test, but I don't see any possible child elements that have an onerror CONTENT attribute
+		//     so the child will make do with an event listener)
+
+		// Create an error in child of body element
+		myError = document.createEvent("Event");
+                myError.initEvent("error", true, false);
+                document.body.firstElementChild.dispatchEvent(myError);
+
+		// Verify that body's onerror content attribute's event handler was fired AFTER the child/html/documents' onerror content attributes, but near window
+		assert_in_array("body-content", myErrors, "Verify that body's onerror content attribute was fired.");
+		assert_true(myErrors.indexOf("body-content") > myErrors.lastIndexOf("child"), "Body's onerror content attribute fired after child's onerror event handler(s).");
+		assert_true(myErrors.indexOf("body-content") > myErrors.lastIndexOf("html"), "Body's onerror content attribute fired after html's onerror event handler(s).");
+		assert_true(myErrors.indexOf("body-content") > myErrors.lastIndexOf("document"), "Body's onerror content attribute fired after document's onerror event handler(s).");
+		assert_approx_equals(myErrors.indexOf("body-content"), myErrors.indexOf("window"), 1, "Body's onerror content attribute fired immediately before or after window event handler(s).");
+
+	}, "Body's onerror content attribute's event handler fired as per spec order during bubbling");
+
+
+    </script>
+</body>
+

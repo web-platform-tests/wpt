@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Body Element</title>
+	<link rel="author" title="dzenana" href="mailto:dzenana.trenutak@gmail.com">
+	<link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/single-page.html#the-body-element">
+</head>
+<body onbeforeunload="window.opener.myReaction.push('beforeunload-content')" 
+      onblur="window.opener.myReaction.push('blur-content')" 
+      onerror="window.opener.myReaction.push('error-content')" 
+      onfocus="window.opener.myReaction.push('focus-content')" 
+      onhashchange="window.opener.myReaction.push('hashchange-content')" 
+      onmessage="window.opener.myReaction.push('message-content')"  
+      onpagehide="window.opener.myReaction.push('pagehide-content')" 
+      onpageshow="window.opener.myReaction.push('pageshow-content')" 
+      onpopstate="window.opener.myReaction.push('popstate-content')" 
+      onscroll="window.opener.myReaction.push('scroll-content')" 
+      onstorage="window.opener.myReaction.push('storage-content')" 
+      onunload="window.opener.myReaction.push('unload-content')">
+
+	<h1 id="first_hash">Purpose of form</h1>
+	<p>This new window is here to test that body element's automatable event handlers truly respond to given events.</p>
+	<p>Please be patient!</p>
+	<p>There is a long (10 second) interval between the firing of these events and the return to the testing page.</p>
+	<p>But you will get there eventually.</p>
+	<h1 id="second_hash">List of Events</h1>
+	<p>We are going to test:</p>
+	<ul>
+		<li>load</li>
+		<li>pageshow</li>
+		<li>blur</li>
+		<li>focus</li>
+		<li>scroll</li>
+		<li>popstate</li>
+		<li>hashchange</li>
+		<li>message</li>
+		<li>storage</li>
+		<li>error</li>
+		<li>beforeunload</li>
+		<li>pagehide</li>
+		<li>unload</li>
+	</ul>
+	<a id="first_anchor" href="#first_hash">Purpose</a>
+	<a id="second_anchor" href="#second_hash">Events</a>
+	<script>
+		function runEvents() {
+			// LOAD event occurred, that is how this function is called
+				// (no code needed)
+
+			// PAGESHOW event should also occur after load event for this new document
+
+			// The BLUR and FOCUS events happen thanks to this new window
+			// pulling the action away from the main test page for this interval
+
+			// SCROLL in window
+			window.scrollBy(2,2);
+			window.scrollBy(-2,-2);;			
+
+			// change hashtags -- this should generate both POPSTATE and HASHCHANGE events
+			var myAnchor = document.getElementById("second_anchor");
+			myAnchor.click();
+			myAnchor = document.getElementById("first_anchor");
+			myAnchor.click();			
+
+			// send some MESSAGEs
+			window.postMessage("message for you", "*");
+			window.opener.postMessage("message for you", "*");
+
+			// use STORAGE
+			localStorage.clear();
+			localStorage["key1"] = "value1";
+			localStorage["key2"] = "value2";
+			localStorage.clear();
+
+			// cause an ERROR
+			var myError = document.createEvent("Event");
+                	myError.initEvent("error", true, false);
+                	document.body.dispatchEvent(myError);
+
+			// closing this window after this function returns should generate 
+			// BEFOREUNLOAD, PAGEHIDE, and UNLOAD events
+		}
+
+		// run events
+		window.onload = function() {
+			runEvents();
+			// wait, then close window
+			setTimeout(window.close, 10000);
+		}
+		
+	</script>
+
+<body>
+
+
+
+

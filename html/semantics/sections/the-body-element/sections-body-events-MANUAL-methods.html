@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Body Element</title>
+    <link rel="author" title="dzenana" href="mailto:dzenana.trenutak@gmail.com">
+    <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/single-page.html#the-body-element">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+
+    <h1>Validation of body's IDL event handler attributes that require manual testing</h1>
+
+    <p>Please do the following:</p>
+    <ol>
+        <li>resize this page</li>
+        <li>print this page (to a file)</li>
+        <li>choose to work offline</li>
+        <li>come back online</li>
+        <li>press the buttons immediately below this text</li>
+    </ol>
+
+    <form>
+        <input type="button" id="btnResize" value="click me" />
+        <input type="button" id="btnBefore" value="click me" />
+        <input type="button" id="btnAfter" value="click me" />
+        <input type="button" id="btnOnline" value="click me" />
+        <input type="button" id="btnOffline" value="click me" />
+    </form>
+
+    <div id="log"></div>
+
+    <script>
+        "use strict";
+
+        var myReaction = [], testResize = {}, testBeforePrint = {}, testAfterPrint = {}, testOnline = {}, testOffline = {};
+
+        // need to be able to wait for user to push button
+        setup({ explicit_timeout: true });
+
+        // register IDL attribute event handlers
+        document.body.onresize = function () { myReaction.push("resize-IDL"); };
+        document.body.onbeforeprint = function () { myReaction.push("beforeprint-IDL"); };
+        document.body.onafterprint = function () { myReaction.push("afterprint-IDL"); };
+        document.body.ononline = function () { myReaction.push("online-IDL"); };
+        document.body.onoffline = function () { myReaction.push("offline-IDL"); };
+
+        // register async tests 
+        testResize = async_test("Check body's onresize IDL event handler");
+        testBeforePrint = async_test("Check body's onbeforeprint IDL event handler");
+        testAfterPrint = async_test("Check body's onafterprint IDL event handler");
+        testOnline = async_test("Check body's ononline IDL event handler");
+        testOffline = async_test("Check body's onoffline IDL event handler");
+
+        // run async tests after buttons are clicked
+        document.getElementById("btnResize").onclick = testResize.step_func(function (event) {     	
+                        assert_in_array("resize-IDL", myReaction, "onresize IDL event handler failed: ");
+                        testResize.done();
+        });
+        document.getElementById("btnBefore").onclick = testBeforePrint.step_func(function (event) {     	
+                        assert_in_array("beforeprint-IDL", myReaction, "onbeforeprint IDL event handler failed: ");
+                        testBeforePrint.done();
+        });
+        document.getElementById("btnAfter").onclick = testAfterPrint.step_func(function (event) {      	
+                        assert_in_array("afterprint-IDL", myReaction, "onafterprint IDL event handler failed: ");
+                        testAfterPrint.done();
+        });
+        document.getElementById("btnOnline").onclick = testOnline.step_func(function (event) {   	
+                        assert_in_array("online-IDL", myReaction, "ononline IDL event handler failed: ");
+                        testOnline.done();
+        });
+        document.getElementById("btnOffline").onclick = testOffline.step_func(function (event) {     	
+                        assert_in_array("offline-IDL", myReaction, "onoffline IDL event handler failed: ");
+                        testOffline.done();
+        })
+
+    </script>
+
+</body>
+

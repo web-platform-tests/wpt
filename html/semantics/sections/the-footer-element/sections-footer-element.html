@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>footer element</title>
+	<link rel="author" title="dzenana" href="mailto:dzenana.trenutak@gmail.com">
+	<link rel="help" href="http://www.w3.org/html/wg/drafts/html/master/single-page.html#the-footer-element">
+	<script src="/resources/testharness.js"></script>
+	<script src="/resources/testharnessreport.js"></script>
+
+	<script>
+
+		var strElement = "footer", testElement = {}, testElementProperties = [];
+		
+		// check that prototype matches spec's DOM interface
+		test(function () {
+			testElement = document.createElement(strElement);
+			assert_equals(Object.getPrototypeOf(testElement), HTMLElement.prototype, "HTMLElement.prototype should be used for " + strElement);
+		}, "The prototype for " + strElement + " is HTMLElement.prototype");
+
+		// check that no unexpected "own" properties are present
+		test(function () {
+			testElement = document.createElement(strElement);
+			testElementProperties = Object.getOwnPropertyNames(testElement);
+			assert_equals(testElementProperties.length, 0, strElement + " should not have any own attributes.");
+		}, strElement + " should not have any own attributes.");
+
+		// not checking (lack of) sectioning effect of element, as browsers have not implemented sectioning (outline creation)
+		// not checking that no header or footer elements are allowed as descendants of this element
+
+	</script>
+</head>
+<body>
+	<h1>Description</h1>
+	<p>This test validates the footer element.</p>
+	
+	<div id="log"></div>
+	
+</body>
+</html>

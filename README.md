@@ -50,6 +50,12 @@ Save the Web, Write Some Tests!
 
 Let's get the legalese out of the way:
 
+You may wish to read the details below, but the **simplest thing to know** is this:
+
+* if the company you work for is already a member of the HTML WG, then you don't need 
+  to worry; you're already covered
+* if not, you will need to [fill out this form](http://www.w3.org/2002/09/wbs/1/testgrants2-200409/)
+
 ### Grant of License for Contributed Test Cases Published Outside a W3C Recommendation
 
 By contributing to this repository, you, the Contributor, hereby grant

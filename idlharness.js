@@ -297,14 +297,17 @@ IdlArray.prototype.internal_add_idls = function(parsed_idls)
 
         case "typedef":
             // TODO
+            console.log("typedef not yet supported");
             break;
 
         case "callback":
             // TODO
+            console.log("callback not yet supported");
             break;
 
         case "enum":
             // TODO
+            console.log("enum not yet supported");
             break;
 
         default:
@@ -1432,7 +1435,7 @@ IdlInterface.prototype.test_members = function()
 
                 // Make some suitable arguments
                 var args = member.arguments.map(function(arg) {
-                    return create_suitable_object(arg.type);
+                    return create_suitable_object(arg.idlType);
                 });
 
                 // "Let O be a value determined as follows:
@@ -1629,10 +1632,10 @@ IdlInterface.prototype.test_interface_of = function(desc, obj, exception, expect
                         obj[member.name].apply(obj, args);
                     }.bind(this), "Called with " + i + " arguments");
 
-                    args.push(create_suitable_object(member.arguments[i].type));
+                    args.push(create_suitable_object(member.arguments[i].idlType));
                 }
             }.bind(this), this.name + " interface: calling " + member.name +
-            "(" + member.arguments.map(function(m) { return m.type.idlType; }) +
+            "(" + member.arguments.map(function(m) { return m.idlType.idlType; }) +
             ") on " + desc + " with too few arguments must throw TypeError");
         }
     }

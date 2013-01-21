@@ -9,7 +9,7 @@ CharacterData-deleteData.html
 CharacterData-insertData.html
 CharacterData-remove.html
 CharacterData-replaceData.html
-ChildNode-remove.js
+support ChildNode-remove.js
 Document-adoptNode.html
 Document-createComment.html
 Document-createElement.html

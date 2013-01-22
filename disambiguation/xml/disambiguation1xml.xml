@@ -4,13 +4,14 @@
     <its:disambiguationRule selector="/text/body/p/*[@id='dublin']"
       disambigClassRefPointer="@classref"
       disambigGranularity="entity"
-      disambigIdentRef="http://dbpedia.org/resource/Dublin"/>
+      disambigIdentRefPointer="@identref"/>
     <its:disambiguationRule selector="/text/body/p/*[@id='capital']"
+      disambigClassPointer="@class"
       disambigGranularity="lexical-concept"
-      disambigSource="Wordnet3.0"
-      disambigIdent="301467919"/>
+      disambigSourcePointer="@source"
+      disambigIdentPointer="@ident"/>
   </its:rules>
   <body>
-    <p><span classref="http://nerd.eurecom.fr/ontology#Place" id="dublin">Dublin</span> is the <span id="capital">capital</span> of Ireland.</p>
+    <p><span classref="http://nerd.eurecom.fr/ontology#Place" id="dublin" identref="http://dbpedia.org/resource/Dublin">Dublin</span> is the <span id="capital" class="capital" source="Wordnet3.0" ident="301467919">capital</span> of Ireland.</p>
   </body>
 </text>

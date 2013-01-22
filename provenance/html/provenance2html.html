@@ -3,6 +3,12 @@
   <head>
     <meta charset=utf-8>
     <title>Test</title>
+	<script type="application/its+xml">
+		<its:rules xmlns:its="http://www.w3.org/2005/11/its" version="2.0" xmlns:h="http://www.w3.org/1999/xhtml">
+		<its:provRule selector="/h:html/h:body/h:p[@id]"
+			provenanceRecordsRefPointer="@id"/>
+		</its:rules>
+	</script>
     <script id="pr1" type="application/its+xml">
       <its:provenanceRecords xml:id="pr1" xmlns:its="http://www.w3.org/2005/11/its" version="2.0">
         <its:provenanceRecord
@@ -23,7 +29,6 @@
              provRef="http://www.vistatec.com/job-12-7-15-X31/reviewed/prov/re8573469"/>
       </its:provenanceRecords>       
     </script>
-    <link href=provenance2htmlrules.xml rel=its-rules>
   </head>
   <body>
     <p id="#pr1">This paragraph was translated from the machine.</p>

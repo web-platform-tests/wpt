@@ -1,10 +1,11 @@
 <its:rules xmlns:its="http://www.w3.org/2005/11/its" version="2.0">
-    <its:disambiguationRule selector="/text/body/p/*[@id='dublin']"
+      <its:disambiguationRule selector="/text/body/p/*[@id='dublin']"
       disambigClassRefPointer="@classref"
       disambigGranularity="entity"
-      disambigIdentRef="http://dbpedia.org/resource/Dublin"/>
+      disambigIdentRefPointer="@identref"/>
     <its:disambiguationRule selector="/text/body/p/*[@id='capital']"
+      disambigClassPointer="@class"
       disambigGranularity="lexical-concept"
-      disambigSource="Wordnet3.0"
-      disambigIdent="301467919"/>
+      disambigSourcePointer="@source"
+      disambigIdentPointer="@ident"/>
   </its:rules>

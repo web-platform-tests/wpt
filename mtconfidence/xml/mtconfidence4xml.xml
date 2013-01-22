@@ -1,4 +1,4 @@
-<text xmlns:its="http://www.w3.org/2005/11/its">
+<text xmlns:its="http://www.w3.org/2005/11/its" its:version="2.0">
   <body>
     <p>
       <its:span annotatorsRef="mt-confidence|file:///tools.xml#T1" mtConfidence="0.9982">Dublin is the capital city of Ireland.</its:span>

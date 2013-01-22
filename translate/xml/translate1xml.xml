@@ -27,7 +27,7 @@
      <z:段落识别 id="A34B"><z:姓名>Pippin</z:姓名> looked out from the shelter of <z:姓名>Gandalf</z:姓名>'s cloak.</z:段落识别>
     </z:章节>
     <z:躯>
-     <i:rules version="1.0" xmlns:cml="myChineseMakupLanguage">
+     <i:rules version="2.0" xmlns:cml="myChineseMakupLanguage">
       <i:translateRule selector="//cml:作者" translate="no"/>
       <i:translateRule selector="//cml:姓名" translate="no"/>
       <i:withinTextRule selector="//cml:姓名" withinText="yes"/>

@@ -6,7 +6,7 @@
       disambigGranularity="entity"
       disambigIdentRefPointer="@property"/>
     <its:disambiguationRule selector="//h:body/h:p/h:*[@id=$disambigCapitalParam]"
-      disambigClassPointer="@typeof"
+      disambigClassRefPointer="@typeof"
       disambigGranularity="lexical-concept"
       disambigSourcePointer="@property"
       disambigIdentPointer="@about"/>

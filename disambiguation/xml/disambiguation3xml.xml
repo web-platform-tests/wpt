@@ -8,12 +8,12 @@
       disambigGranularity="entity"
       disambigIdentRefPointer="@identref"/>
     <its:disambiguationRule selector="/text/body/p/*[@id='capital']"
-      disambigClassPointer="@class"
+      disambigClassRefPointer="@classref"
       disambigGranularity="lexical-concept"
       disambigSourcePointer="@source"
       disambigIdentPointer="@ident"/>
   </its:rules>
   <body>
-    <p><span classref="http://nerd.eurecom.fr/ontology#Place" id="dublin" identref="http://dbpedia.org/resource/Dublin">Dublin</span> is the <span id="capital" class="capital" source="Wordnet3.0" ident="301467919">capital</span> of Ireland.</p>
+    <p><span classref="http://nerd.eurecom.fr/ontology#Place" id="dublin" identref="http://dbpedia.org/resource/Dublin">Dublin</span> is the <span id="capital" classref="http://nerd.eurecom.fr/ontology#City" source="Wordnet3.0" ident="301467919">capital</span> of Ireland.</p>
   </body>
 </text>

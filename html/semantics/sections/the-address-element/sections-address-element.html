@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<title>address element</title>
 	<link rel="author" title="dzenana" href="mailto:dzenana.trenutak@gmail.com">
-	<link rel="help" href="http://www.w3.org/html/wg/drafts/html/master/single-page.html#the-address-element">
+	<link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/single-page.html#the-address-element">
 	<script src="/resources/testharness.js"></script>
 	<script src="/resources/testharnessreport.js"></script>
 
@@ -17,15 +17,6 @@
 			testElement = document.createElement(strElement);
 			assert_equals(Object.getPrototypeOf(testElement), HTMLElement.prototype, "HTMLElement.prototype should be used for " + strElement);
 		}, "The prototype for " + strElement + " is HTMLElement.prototype");
-
-		// check that no unexpected "own" properties are present
-		test(function () {
-			testElement = document.createElement(strElement);
-			testElementProperties = Object.getOwnPropertyNames(testElement);
-			assert_equals(testElementProperties.length, 0, strElement + " should not have any own attributes.");
-		}, strElement + " should not have any own attributes.");
-
-		// not checking that no heading content (h1 h2 h3 h4 h5 h6 hgroup), sectioning content (article aside nav section), header, footer, nor address elements are allowed as descendants of this element
 
 	</script>
 </head>

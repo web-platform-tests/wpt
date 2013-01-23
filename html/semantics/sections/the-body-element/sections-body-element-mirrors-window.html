@@ -4,7 +4,8 @@
     <meta charset="utf-8">
     <title>Body Element</title>
     <link rel="author" title="dzenana" href="mailto:dzenana.trenutak@gmail.com">
-    <link rel="help" href="http://www.w3.org/html/wg/drafts/html/master/single-page.html#the-body-element">
+    <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/single-page.html#the-body-element">
+    <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/single-page.html#event-handlers-on-elements,-document-objects,-and-window-objects">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
 </head>
@@ -15,35 +16,32 @@
      onerror = "foobar = 4;"
      onafterprint = "foobar = 5;"
      onbeforeprint = "foobar = 6;"
-     onbeforeunload = "foobar = 7;"
-     onfullscreenchange = "foobar = 8;"
-     onfullscreenerror = "foobar = 9;"
-     onhashchange = "foobar = 10;"
-     onmessage = "foobar = 11;"
-     onoffline = "foobar = 12;"
-     ononline = "foobar = 13;"
-     onpagehide = "foobar = 14;"
-     onpageshow = "foobar = 15;"
-     onpopstate = "foobar = 16;"
-     onresize = "foobar = 17;"
-     onstorage = "foobar = 18;"
-     onunload = "foobar = 19;">
+     onbeforeunload = "foobar = 7;""
+     onhashchange = "foobar = 8;"
+     onmessage = "foobar = 9;"
+     onoffline = "foobar = 10;"
+     ononline = "foobar = 11;"
+     onpagehide = "foobar = 12;"
+     onpageshow = "foobar = 13;"
+     onpopstate = "foobar = 14;"
+     onresize = "foobar = 15;"
+     onstorage = "foobar = 16;"
+     onunload = "foobar = 17;">
 
     <h1>Description</h1>
-    <p>This test checks parsing of body element's attributes and their mirroring of/by window attributes.</p>
+    <p>This test checks body element's attributes vis-a-vis content markup, IDL methods, and mirroring by the window object.</p>
 
     <div id="log"></div>
 
     <script>
         "use strict";
 
-        /* Spec lists 20 content attributes for body element and says 
-
-          "The body element expose as event handler content attributes a number of the event handlers of the Window object. 
-           It also mirrors their event handler IDL attributes."  
-
-           As "a number of" is not clear, FOR TESTING, I WILL ASSUME THAT ALL ATTRIBUTES SHOULD BE SHARED BETWEEN BODY AND WINDOW.
-        */
+        // 5.0 Spec lists 18 content attributes for body element and says 
+        //  "The body element expose as event handler content attributes a number of the event handlers of the Window object. 
+        //   It also mirrors their event handler IDL attributes."  
+        // All 18 content attributes are listed in the third section of
+	//   http://www.w3.org/html/wg/drafts/html/CR/single-page.html#event-handlers-on-elements,-document-objects,-and-window-objects,  
+	//   confirming that "a number of" means all eighteen.  
 
         function makeRegEx(strAttr, strArgs, strCode) {
 		
@@ -57,9 +55,9 @@
         }
 
         // note:  index of attributes here must match return values of actual markup placeholder functions
-        var testAttributes = ["onblur", "onfocus", "onload", "onscroll", "onerror", "onafterprint", "onbeforeprint", "onbeforeunload", 
-                "onfullscreenchange", "onfullscreenerror", "onhashchange", "onmessage", "onoffline", "ononline", "onpagehide", 
-                "onpageshow", "onpopstate", "onresize", "onstorage", "onunload"];
+        var testAttributes = ["onblur", "onfocus", "onload", "onscroll", "onerror", "onafterprint", 
+                              "onbeforeprint", "onbeforeunload", "onhashchange", "onmessage", "onoffline", 
+                              "ononline", "onpagehide", "onpageshow", "onpopstate", "onresize", "onstorage", "onunload"];
 
         var numAttr = 0,  
             strAttr = "",
@@ -81,7 +79,7 @@
 
                 strArgs = strArgsRegEx = "event"; 
 
-            } else { // is onerror.  Spec does define exactly four parameters for onerror event, so capturing that in this test.
+            } else { // is onerror.  Spec defines exactly four parameters for onerror event, so capturing that in this test.
 
                 strArgs = "event, source, lineno, column";
                 strArgsRegEx = "((event|source|lineno|column),?\\s*){4}"; // for regExp
@@ -140,7 +138,7 @@
             	// update document.body
             	document.body[strAttr] = new Function(strArgs, strCode); 
 
-		// use the regexp to check two functions' equivalency-despite-white-space
+		// use the regexp to check two functions' equivalency-despite-being-different-objects
             	if ((typeof document.body[strAttr] === "function") && (document.body[strAttr] !== undefined) 
                     	&& (strCheck = document.body[strAttr].toString(), regEx.test(strCheck))) {
 

@@ -4,30 +4,30 @@
     <meta charset="utf-8">
     <title>Body Element</title>
     <link rel="author" title="dzenana" href="mailto:dzenana.trenutak@gmail.com">
-    <link rel="help" href="http://www.w3.org/html/wg/drafts/html/master/single-page.html#the-body-element">
+    <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/single-page.html#the-body-element">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
 </head>
-<body   onafterprint=myReaction.push("afterprint-content")
-	onbeforeprint=myReaction.push("beforeprint-content")
-	ononline=myReaction.push("online-content")
-	onoffline=myReaction.push("offline-content")>
+<body onafterprint=myReaction.push("afterprint-content")
+      onbeforeprint=myReaction.push("beforeprint-content")
+      ononline=myReaction.push("online-content")
+      onoffline=myReaction.push("offline-content")>
 
     <h1>Validation of body's 4 content attributes requiring manual testing</h1>
 
     <p>Please do the following:</p>
     <ol>
-	<li>print this page (to a file)</li>
-	<li>choose to work offline</li>
-	<li>come back online</li>
-	<li>press the four buttons immediately below this text</li>
+        <li>print this page (to a file)</li>
+        <li>choose to work offline</li>
+        <li>come back online</li>
+        <li>press the four buttons immediately below this text</li>
     </ol>
 
     <form>
-	<input type="button" id="butBefore" value="test 1" />
-	<input type="button" id="butAfter" value="test 2" />
-	<input type="button" id="butOnline" value="test 3" />
-	<input type="button" id="butOffline" value="test 4" />
+        <input type="button" id="btnBefore" value="test 1" />
+        <input type="button" id="btnAfter" value="test 2" />
+        <input type="button" id="btnOnline" value="test 3" />
+        <input type="button" id="btnOffline" value="test 4" />
     </form>
 
     <div id="log"></div>
@@ -35,35 +35,34 @@
     <script>
         "use strict";
 
-	var myReaction = [], testBeforePrint, testAfterPrint, testOnline, testOffline;
-	testBeforePrint = testAfterPrint = testOnline = testOffline = {};
+        var myReaction = [], testBeforePrint = {}, testAfterPrint = {}, testOnline = {}, testOffline = {};
 
-	// need to be able to wait for user to push button
-	setup({ explicit_timeout: true });
+        // need to be able to wait for user to push button
+        setup({ explicit_timeout: true });
 
-	// register async tests 
-	testBeforePrint = async_test("Check body's onbeforeprint content attribute");
-	testAfterPrint = async_test("Check body's onafterprint content attribute");
-	testOnline = async_test("Check body's ononline content attribute");
-	testOffline = async_test("Check body's onoffline content attribute");
+        // register async tests 
+        testBeforePrint = async_test("Check body's onbeforeprint content attribute");
+        testAfterPrint = async_test("Check body's onafterprint content attribute");
+        testOnline = async_test("Check body's ononline content attribute");
+        testOffline = async_test("Check body's onoffline content attribute");
 
- 	// run async tests after buttons are clicked
-	document.getElementById("butBefore").onclick = testBeforePrint.step_func(function (event) {     	
-			assert_true(myReaction.indexOf("beforeprint-content") > -1, "onbeforeprint content attribute failed: ");
-			testBeforePrint.done();
+        // run async tests after buttons are clicked
+        document.getElementById("btnBefore").onclick = testBeforePrint.step_func(function (event) {     	
+                assert_in_array("beforeprint-content", myReaction, "onbeforeprint content attribute failed: ");
+                testBeforePrint.done();
+        });
+        document.getElementById("btnAfter").onclick = testAfterPrint.step_func(function (event) {      	
+                assert_in_array("afterprint-content", myReaction, "onafterprint content attribute failed: ");
+                testAfterPrint.done();
     	});
-	document.getElementById("butAfter").onclick = testAfterPrint.step_func(function (event) {      	
-			assert_true(myReaction.indexOf("afterprint-content") > -1, "onafterprint content attribute failed: ");
-			testAfterPrint.done();
-    	});
-	document.getElementById("butOnline").onclick = testOnline.step_func(function (event) {     	
-			assert_true(myReaction.indexOf("online-content") > -1, "ononline content attribute failed: ");
-			testOnline.done();
-    	});
-	document.getElementById("butOffline").onclick = testOffline.step_func(function (event) {      	
-			assert_true(myReaction.indexOf("offline-content") > -1, "onoffline content attribute failed: ");
-			testOffline.done();
-    	})
+        document.getElementById("btnOnline").onclick = testOnline.step_func(function (event) {     	
+                assert_in_array("online-content", myReaction, "ononline content attribute failed: ");
+                testOnline.done();
+        });
+        document.getElementById("btnOffline").onclick = testOffline.step_func(function (event) {      	
+                assert_in_array("offline-content", myReaction, "onoffline content attribute failed: ");
+                testOffline.done();
+        })
 
     </script>
 

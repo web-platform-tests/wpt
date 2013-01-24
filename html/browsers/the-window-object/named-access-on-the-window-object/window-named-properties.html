@@ -8,16 +8,11 @@
 <link rel="help" href="http://dev.w3.org/2006/webapi/WebIDL/#named-properties-object">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="../../../../common/propdesc.js"></script>
 <div id=log></div>
 <iframe name="bar"></iframe>
 <iframe name="constructor"></iframe>
 <script>
-function assert_data_propdesc(pd, Writable, Enumerable, Configurable) {
-  assert_equals(typeof pd, "object");
-  assert_equals(pd.writable, Writable);
-  assert_equals(pd.enumerable, Enumerable);
-  assert_equals(pd.configurable, Configurable);
-}
 test(function() {
   assert_true("bar" in window, "bar not in window");
   assert_equals(window["bar"],
@@ -33,22 +28,6 @@ test(function() {
   assert_data_propdesc(Object.getOwnPropertyDescriptor(gsp, "bar"),
                        false, true, true);
 }, "Static name on the prototype");
-test(function() {
-  assert_equals(window.constructor, Window);
-  assert_false(window.hasOwnProperty("constructor"), "window.constructor should not be an own property.");
-
-  var proto = Object.getPrototypeOf(window);
-  assert_equals(proto.constructor, Window);
-  assert_true("constructor" in proto, "constructor in proto");
-  assert_data_propdesc(Object.getOwnPropertyDescriptor(proto, "constructor"),
-                       true, false, true);
-
-  var gsp = Object.getPrototypeOf(proto);
-  assert_true("constructor" in gsp, "constructor in gsp");
-  assert_true(gsp.hasOwnProperty("constructor"), "gsp.hasOwnProperty(\"constructor\")");
-  assert_data_propdesc(Object.getOwnPropertyDescriptor(gsp, "constructor"),
-                       false, true, true);
-}, "constructor");
 var t = async_test("Dynamic name")
 var t2 = async_test("Ghost name")
 t.step(function() {

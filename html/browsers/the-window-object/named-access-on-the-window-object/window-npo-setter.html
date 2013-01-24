@@ -1,0 +1,22 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Setting properties of the named properties object</title>
+<link rel="author" title="Ms2ger" href="ms2ger@gmail.com">
+<link rel="help" href="http://www.whatwg.org/html/#window">
+<link rel="help" href="http://www.whatwg.org/html/#dom-window-nameditem">
+<link rel="help" href="http://dev.w3.org/2006/webapi/WebIDL/#named-properties-object">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../../../../common/propdesc.js"></script>
+<div id=log></div>
+<script>
+test(function() {
+  var proto = Object.getPrototypeOf(window);
+  var gsp = Object.getPrototypeOf(proto);
+  gsp.foo = "bar";
+
+  assert_equals(window.foo, "bar", "Property should be visible on the window.");
+  assert_equals(proto.foo, "bar", "Property should be visible on the interface prototype object.");
+  assert_equals(gsp.foo, "bar", "Property should be visible on the named properties object.");
+}, "constructor should be an own property of the interface prototype object");
+</script>

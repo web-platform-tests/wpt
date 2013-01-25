@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>CSS Regions: Selection is downward, begins and ends inside a region containing one other element - div</title>
+        <link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
+        <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
+        <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
+        <link rel="help" href="http://www.w3.org/TR/css3-regions/#relation-to-document-events">
+        <meta name="assert" content="CSS regions module does not alter the normal processing of events in the document tree. Therefore, mouse selection within a named flow should contain all of the content covered by the mouse movement, including nested elements.">
+        <meta name="flags" content="dom interact">
+        <link href="/resources/testharness.css" rel="stylesheet" type="text/css">
+        <script src="/resources/testharness.js"></script>
+        <script src="script-tests/selection-test-helper.js"></script>
+        <style>
+            #sourceElement 
+            {
+                flow-into: content;
+            }
+            #regionElement 
+            { 
+                flow-from: content; 
+            }
+            #startSelect
+            {
+                background-color: orange;
+            }
+            #endSelect
+            {
+                background-color: blue;
+            }
+            #startSelect, #endSelect, #nestedDiv
+            {
+                width: 15px;
+                height: 15px;
+                display: inline-block; 
+            }
+        </style>
+    </head>
+    <body>
+       <p>Click on the orange square, keep the mouse button down and drag it to the blue square, release the mouse over the blue square.</p>
+        <br />
+        <div id="beforeRegionElement">
+            before region before region before region before region before region before region before region before region before region before region before region before region before region before region before region before region before region before region 
+        </div>
+        <div id="regionElement"></div>
+        <div id="sourceElement">
+            in region in region <div id="startSelect"></div> in region in region in region in region in region in region in region in region in region in region in region in region in region in region in region in region in region in region in region in <div id="nestedDiv"> nested div nested div </div>  region in region in region in region in region in region in region in region in region in region in region in region in region in region in region in region <div id="endSelect"></div> in region in region in region
+        </div>
+        <div id="afterRegionElement">
+            after region after region after region after region after region after region after region after region after region after region after region after region after region after region after region after region after region after region after region after region after region 
+        </div>
+        <div id="log"></div>
+    </body>
+    <script>
+          runSelectionTest();
+    </script>
+</html>

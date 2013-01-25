@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Body Element</title>
+    <link rel="author" title="dzenana" href="mailto:dzenana.trenutak@gmail.com">
+    <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/single-page.html#the-body-element">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+</head>
+<body onbeforeunload="myReaction.push('beforeunload')" 
+      onblur="myReaction.push('blur')" 
+      onerror="myReaction.push('error')" 
+      onfocus="myReaction.push('focus')" 
+      onhashchange="myReaction.push('hashchange')" 
+      onload="myReaction.push('load')" 
+      onmessage="myReaction.push('message')"  
+      onpagehide="myReaction.push('pagehide')" 
+      onpageshow="myReaction.push('pageshow')" 
+      onpopstate="myReaction.push('popstate')" 
+      onresize="myReaction.push('resize')" 
+      onscroll="myReaction.push('scroll')" 
+      onstorage="myReaction.push('storage')" 
+      onunload="myReaction.push('unload')">
+
+    <h1>Description</h1>
+    <p>This test validates that all automatable body element content attribute event handlers react to relevant events.</p>
+    <p>Please be patient - there is a 10 second delay between events being fired and the tests being run.</p>
+    <p>For this round of tests, events are fired via DOM createEvent and dispatchEvent methods.</p>
+
+    <div id="log"></div>
+
+    <script>
+        "use strict";
+
+        // Verify that all the content attributes that allow body to react to certain events actually do react to those events
+
+        var myReaction = [], num = 0, strEvent="", myEvent = {};
+        var myEvents = [["error", true, false],
+                        ["hashchange", true, false], 
+                        ["resize", true, false], 
+                        ["scroll", true, false],  
+                        ["blur", false, false], 
+                        ["focus", false, false], 
+                        ["pagehide", false, false], 
+                        ["pageshow", false, false], 
+                        ["popstate", false, false], 
+                        ["storage", false, false],
+                        ["beforeunload", false, true],
+                        ["unload", false, false],
+                        ["load", false, false]];
+                        // message is handled separately
+
+        function runTests() {
+            for (num = 0; num < myEvents.length; num++) {
+                strEvent = myEvents[num][0];
+                test(function() {
+                    // check that content attribute's event handler fired
+                    assert_in_array(strEvent, myReaction, "on" + strEvent + " content attribute failed: ");            	
+                }, "Body's on" + strEvent + " content attribute responds to event.");
+            }
+            test(function() {
+                // check that content attribute's event handler fired
+                assert_in_array("message", myReaction, "onmessage content attribute failed: ");            	
+            }, "Body's onmessage content attribute responds to event.");
+
+            done();
+        }
+
+        setup(function() { 
+            for (num = 0; num < myEvents.length; num++) {
+
+                // create and cause the event
+                myEvent = document.createEvent("Event");
+                myEvent.initEvent(myEvents[num][0], myEvents[num][1], myEvents[num][2]);
+                document.body.dispatchEvent(myEvent);
+            }
+            // shoot off windows message, too
+            window.postMessage("message_here", "*");
+
+         }, {explicit_done: true, explicit_timeout: true } );
+
+         setTimeout(runTests, 10000);
+
+    </script>
+
+</body>
+

@@ -14,7 +14,6 @@ test(function() {
   assert_equals(option.text, "font");
 }, "option.text should recurse");
 
-// https://www.w3.org/Bugs/Public/show_bug.cgi?id=19549
 test(function() {
   var option = document.createElement("option");
   option.appendChild(document.createTextNode(" before "));
@@ -56,4 +55,23 @@ test(function() {
   option.appendChild(document.createTextNode(" Text "));
   assert_equals(option.text, "Some Text");
 }, "option.text should work if a child of the option ends with a script");
+
+test(function() {
+  var script = document.createElement("script");
+  var option = script.appendChild(document.createElement("option"));
+  option.appendChild(document.createTextNode("text"));
+  assert_equals(option.text, "text");
+}, "option.text should work if the option is in an HTML script element");
+test(function() {
+  var script = document.createElementNS("http://www.w3.org/2000/svg", "script");
+  var option = script.appendChild(document.createElement("option"));
+  option.appendChild(document.createTextNode("text"));
+  assert_equals(option.text, "text");
+}, "option.text should work if the option is in an SVG script element");
+test(function() {
+  var script = document.createElementNS("http://www.w3.org/1998/Math/MathML", "script");
+  var option = script.appendChild(document.createElement("option"));
+  option.appendChild(document.createTextNode("text"));
+  assert_equals(option.text, "text");
+}, "option.text should work if the option is in a MathML script element");
 </script>

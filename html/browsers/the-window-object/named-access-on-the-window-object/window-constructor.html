@@ -1,0 +1,31 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>window.constructor</title>
+<link rel="author" title="Ms2ger" href="ms2ger@gmail.com">
+<link rel="help" href="http://www.whatwg.org/html/#window">
+<link rel="help" href="http://www.whatwg.org/html/#dom-window-nameditem">
+<link rel="help" href="http://dev.w3.org/2006/webapi/WebIDL/#named-properties-object">
+<link rel="help" href="http://dev.w3.org/2006/webapi/WebIDL/#interface-prototype-object">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../../../../common/propdesc.js"></script>
+<div id=log></div>
+<iframe name="constructor"></iframe>
+<script>
+test(function() {
+  assert_equals(window.constructor, Window);
+  assert_false(window.hasOwnProperty("constructor"), "window.constructor should not be an own property.");
+
+  var proto = Object.getPrototypeOf(window);
+  assert_equals(proto.constructor, Window);
+  assert_true("constructor" in proto, "constructor in proto");
+  assert_data_propdesc(Object.getOwnPropertyDescriptor(proto, "constructor"),
+                       true, false, true);
+
+  var gsp = Object.getPrototypeOf(proto);
+  assert_true("constructor" in gsp, "constructor in gsp");
+  assert_true(gsp.hasOwnProperty("constructor"), "gsp.hasOwnProperty(\"constructor\")");
+  assert_data_propdesc(Object.getOwnPropertyDescriptor(gsp, "constructor"),
+                       false, true, true);
+}, "constructor should be an own property of the interface prototype object");
+</script>

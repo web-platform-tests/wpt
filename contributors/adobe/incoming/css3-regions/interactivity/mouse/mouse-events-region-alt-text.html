@@ -5,80 +5,100 @@
         <link href="/resources/testharness.css" rel="stylesheet" type="text/css">
         <script src="/resources/testharness.js"></script>
         <style>
-        
+            /* Set the margin to 0 so we'll know that the target will be there if the content isn't flowing into a region */
+            body {
+                margin: 0;
+            }
+            /* Set the width of the content div so that the blocks will wrap downward when they're not flowing into a region */
             #content { 
               -webkit-flow-into: article;
-              width: 200px; }
-              
+              width: 75px; }
+            /* Set regions to float left so the blocks will be laid out horizontally when they're flowing into the regions */
             .region{
               -webkit-flow-from: article;
-              width:200px;
-              height:300px;
+              width: 75px;
+              height: 75px;
               float:left;
-              margin: 20px;
             }
-            
-            #target {
-              width: 50px;
-              height: 50px;
-              background-color: gray;
-              margin: 25px;
-              /* float: left; removing this so gray box is hidden when test fails */
+            /* Basic block */
+            .block {
+                background-color: gray;
+                display: inline-block;
+                width: 50px;
+                height: 50px; 
             }
-            
-            #target:hover { background-color: lightgreen; }
-            #target:active { background-color: green; }
-            
-            #error{
-              height: 578px;
-              width: 200px;
-              background-color: red;
-              margin: -20px;
+            /* Set color on the target to be different than the others */
+            #target-block {
+              background-color: rgb(0, 0, 0);
             }
-
+            #log {
+              clear: both;
+            }
+            /* This is arguably not really necessary since we're not verifying this anywhere */
+            #target-block:hover { background-color: rgb(0, 255, 0); }
         </style>
     </head>
     <body>
-      
-        <ul>
-            <li>There should be no red</li>
-            <li>Move mouse over the square</li>
-            <li>Click the square</li>
-            <li>Move mouse away from the square</li>
-        </ul>
-        
-        <div class="region"><div id="error"></div></div>
-        <div class="region"></div>
-        
-        <div id="content" style="outline: solid black">
-            <div style="height: 500px; width: 200px; background-color: green;"></div>
-            <div id="target" title="Here is some title text"></div>
+        <p>Move the mouse over the black square then away from it.</p>
+        <p>The test passes if all of the results below are PASS.</p>
+        <div id="content">
+            <div class="block" title="FAIL"></div>
+            <div class="block" title="FAIL"></div>
+            <div id="target-block" class="block" title="PASS"></div>
         </div>
-        
+        <div class="region"></div>
+        <div class="region"></div>
+        <div class="region"></div>
+        <br/>
         <div id="log"></div>
- 
-        <script type="text/javascript">
-         
-        function checkRectPosition(elemID) {
-            return document.getElementById(elemID).getBoundingClientRect().top + "," +
-                  document.getElementById(elemID).getBoundingClientRect().left;            
+    </body>
+     <script type="text/javascript">
+
+        function checkLeftPosition(elemID) 
+        {
+            return document.getElementById(elemID).getBoundingClientRect().left;
         }
-          
-        test(function() {assert_equals(checkRectPosition("target"), "349,293", "Expected target to be located at 349,293")}, 
-                        "Test that regions is enabled");
-         
-        var testTimeout = 10000;
+        function checkBackgroundColor(elemID) {
+            var foo = window.getComputedStyle(document.getElementById(elemID)).backgroundColor;
+            return window.getComputedStyle(document.getElementById(elemID)).backgroundColor;
+        }
+        
+        
+        test(function() {assert_not_equals(checkLeftPosition("target-block"), 0)}, "Target is flowing into the region");
+
+        var testTimeout = 15000;
         setup({timeout: testTimeout});
-         
-        var test1 = async_test("Test onmouseover event", {timeout: testTimeout});
-            test1.step( function(){
-                var testTarget = document.getElementById("target");
-                testTarget.onmouseover = test1.step_func( function(evt) {
+
+        var event_test1 = async_test("onmouseover event fired", {timeout: testTimeout});
+            event_test1.step( function(){
+                var testTarget = document.getElementById("target-block");
+                testTarget.onmouseover = event_test1.step_func( function(evt) 
+                {
+                    /* Log assertion the event got fired */
                     assert_true(true);
-                    test1.done();
+                    
+                    /* Verify the target was the one with the alt text set */
+                    test(function() { assert_equals(evt.target.title, "PASS")}, "Target has the correct alt text");
+                    
+                    /* Verify the hover color is correct */
+                    test(function() { assert_equals(checkBackgroundColor("target-block"), "rgb(0, 255, 0)") }, "Color changes on mouseover");
+                    
+                    event_test1.done();
                 });
             });
-            
-        </script>
-    </body>
+         var event_test2 = async_test("onmouseout event fired", {timeout: testTimeout});
+            event_test2.step( function(){
+                var testTarget = document.getElementById("target-block");
+                testTarget.onmouseout = event_test2.step_func( function(evt) 
+                {
+                    /* Log assertion the event got fired */
+                    assert_true(true);
+
+                    /* Verify it returns to the original background color */
+                    test(function() { assert_equals(checkBackgroundColor("target-block"), "rgb(0, 0, 0)") }, "Color changes back on mouseout");
+
+                    event_test2.done();
+                });
+            });
+    </script>
 </html>

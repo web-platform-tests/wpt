@@ -4,13 +4,13 @@
 <link rel="help" href="http://dev.w3.org/2006/webapi/WebIDL/#es-stringifier">
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
-<script src=../../../support/stringifiers.js></script>
+<script src=../../../../common/stringifiers.js></script>
 <div id=log></div>
 <script>
-try {
-test_stringifier_attribute(document.createElement("area"), "href");
-var area = document.createElement("area");
-area.setAttribute("href", "foo");
-test_stringifier_attribute(area, "href");
-} catch(e) { console.log(e) }
+test(function() {
+  test_stringifier_attribute(document.createElement("area"), "href");
+  var area = document.createElement("area");
+  area.setAttribute("href", "foo");
+  test_stringifier_attribute(area, "href");
+})
 </script>

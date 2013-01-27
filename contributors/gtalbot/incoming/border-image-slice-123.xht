@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+ <head>
+
+  <title>CSS Backgrounds and Borders Test: border-image-slice - percentages</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
+  <link rel="help" href="http://www.w3.org/TR/css3-background/#the-border-image" title="6.7 Border Image Shorthand: the 'border-image' property" />
+  <link rel="match" href="reference/ref-filled-green-100px-square.xht" />
+  <meta name="flags" content="image" />
+  <meta name="assert" content="Percentage values for border-image-slice are relative to the size of the image: the width of the image for the horizontal offsets, the height for vertical offsets. border-image-slice specifies inward offsets from the top, right, bottom, and left edges (in that order) of the image. In this test, the border-image-source has 5px of green at the top, 10px of green on the right, 15px of green at the bottom and 20px of green at the left; the remaing center is all red." />
+
+  <style type="text/css"><![CDATA[
+  div#test
+  {
+  border-color: red;
+  border-style: solid;
+  border-width: 15px 20px 35px 30px;
+  border-image-source: url("support/outline-5px-10px-15px-20px-green.png");
+  border-image-slice: 5% 10% 15% 20%; /* <number> Numbers represent pixels in the image */
+  border-image-width: 15% 20% 35% 30%; /* 1 is default ; <number> Numbers represent multiples of the corresponding computed border-width; % is a percentage of height or width of border-box.*/
+  border-image-outset: 0; /* 0 is default */
+  border-image-repeat: repeat; /* stretch is default */
+
+  /*
+  Equivalent to this shorthand form:
+  border-image: url("support/outline-5px-10px-15px-20px-green.png") 10% 15% 20% 25% / 15% 20% 35% 30% / 0 repeat; 
+  */
+
+  width: 50px;
+  }
+
+  img {vertical-align: top;}
+
+  div#overlapped-red
+  {
+  background-color: red;
+  bottom: 100px;
+  height: 100px;
+  position: relative;
+  width: 100px;
+  z-index: -1;
+  }
+  ]]></style>
+
+ </head>
+
+ <body>
+
+  <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
+
+  <div id="test"><img src="support/50x50-green.png" alt="Image download support must be enabled" /></div>
+
+  <div id="overlapped-red"></div>
+
+ </body>
+</html>

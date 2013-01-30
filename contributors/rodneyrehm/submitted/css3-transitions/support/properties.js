@@ -35,7 +35,7 @@ var values = {
     'percentage': function() {
         // http://www.w3.org/TR/css3-values/#percentages
         return {
-            '%': ['1%', '10%']
+            '%': ['33%', '80%']
         };
     },
     'color': function() {
@@ -69,7 +69,7 @@ var values = {
         // http://www.w3.org/TR/css3-values/#number
         // applies to [0,1]-ranged properties like opacity
         return {
-            "[0,1]": ["0.2", "0.9"]
+            "zero-to-one": ["0.2", "0.9"]
         };
     },
     'integer': function() {
@@ -209,15 +209,15 @@ var properties = {
     'font-weight': ['font-weight'],
     'line-height': ['number', 'length', 'percentage'],
     'letter-spacing': ['length'],
-    // Note: percentage is Level3 an not implemented anywhere yet
+    // Note: percentage is Level3 and not implemented anywhere yet
     // http://dev.w3.org/csswg/css3-text/#word-spacing
     'word-spacing': ['length', 'percentage'],
     'text-indent': ['length', 'percentage'],
     'text-shadow': ['shadow'],
     
     'outline-color': ['color'],
-    // Note: there is no outline-offset: <integer> this is an error in the spec!
-    'outline-offset': ['integer'],
+    // outline-offset <integer> used to be an error in the spec
+    'outline-offset': ['length'],
     'outline-width': ['length'],
     
     'clip': ['rectangle'],
@@ -255,7 +255,6 @@ var properties_auto = [
  * (missing value-types of specified properties)
  */
 var missing_properties = {
-    'outline-offset': ['length'],
     'margin-bottom': ['percentage'],
     'margin-left': ['percentage'],
     'margin-right': ['percentage'],
@@ -319,6 +318,7 @@ var additional_styles = {
     'z-index': {'position': 'absolute'},
     'outline-offset': {'outline-style': 'solid'},
     'outline-width': {'outline-style': 'solid'},
+    'word-spacing': {'width': '100px', 'height': '100px'},
     // unspecified properties
     'column-rule-width': {'column-rule-style': 'solid'},
     'position': {'width': '50px', 'height': '50px', top: '10px', left: '50px'}
@@ -340,7 +340,12 @@ var parent_styles = {
     'min-width': {'width': '100px', 'height': '100px'},
     'max-width': {'width': '100px', 'height': '100px'},
     // unspecified properties
-    'position': {'position': 'relative', 'width': '100px', 'height': '100px'}
+    'position': {'position': 'relative', 'width': '100px', 'height': '100px'},
+    // inheritance tests
+    'top': {'width': '100px', 'height': '100px', 'position': 'relative'},    
+    'right': {'width': '100px', 'height': '100px', 'position': 'relative'},
+    'bottom': {'width': '100px', 'height': '100px', 'position': 'relative'},
+    'left': {'width': '100px', 'height': '100px', 'position': 'relative'}
 };
 
 
@@ -351,18 +356,20 @@ function assemble(props) {
     for (var property in props) {
         props[property].forEach(function(type) {
             var _values = values[type](property);
-            Object.keys(_values).forEach(function(_type) {
+            Object.keys(_values).forEach(function(unit) {
                 var data = {
-                    name: property + ' ' + type + '(' + _type + ')',
+                    name: property + ' ' + type + '(' + unit + ')',
                     property: property,
+                    valueType : type,
+                    unit : unit,
                     parentStyle: extend({}, parent_styles[property] || {}),
                     from: extend({}, additional_styles[property] || {}),
                     to: {}
                 };
 
-                data.from[property] = _values[_type][0];
-                data.to[property] = _values[_type][1];
-                data.flags = _values[_type][2] || {};
+                data.from[property] = _values[unit][0];
+                data.to[property] = _values[unit][1];
+                data.flags = _values[unit][2] || {};
 
                 tests.push(data);
             });
@@ -410,6 +417,33 @@ root.getAutoPropertyTests = function() {
     return assemble(accepted);
 };
 
-
+root.filterPropertyTests = function(tests, names) {
+    var allowed = {};
+    var accepted = [];
+    
+    if (typeof names === "string") {
+        names = [names];
+    }
+    
+    if (!(names instanceof RegExp)) {
+        names.forEach(function(name) {
+            allowed[name] = true;
+        });
+    }
+    
+    tests.forEach(function(test) {
+        if (names instanceof RegExp) {
+            if (!test.name.match(names)) {
+                return;
+            }
+        } else if (!allowed[test.name]) {
+            return;
+        }
+        
+        accepted.push(test);
+    });
+    
+    return accepted;
+};
 
 })(window);

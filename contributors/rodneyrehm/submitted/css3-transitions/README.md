@@ -35,11 +35,17 @@ Using `support/property.js` test suites compile a list of animatable properties.
 
 For each compiled test case the test runner identifies computed initial and target values. If they match, no transition will take place, because the property couldn't be parsed. If after starting the transition the computed style matches the target value, the browser applied that value immedately and no transition will take place. During the transition the computed style may match neither initial nor target value (unless it's a discrete transition), or there was no transition.
 
-If value-assertions passed, the suites will compare received TransitionEnd events. While the values are only matched against computed initial and target values, expected TransitionEnd events are declared explicitly. This can (and will) to some test failures that are arguably not a failure (mainly because the specification didn't cover the specific case).
+Besides value-assertions, the suites compare received TransitionEnd events. While the values are only matched against computed initial and target values, expected TransitionEnd events are declared explicitly. This can (and will) lead to some test failures that are arguably not a failure (mainly because the specification didn't cover the specific case). Transitioning `color` *may* (or not, depending on browser) also run a transition for `background-color`, as the latter's default value is `currentColor`. This suite considers those implicit transitions a failure. If it truly is a failure or not, should be decided in the specification (and tests updated accordingly).
 
-Browsers supporting requestAnimationFrame can run a test in 100ms. Browsers that don't need a wider time frame to allow the not very dead-on-target setTimeout() to be triggered between TransitionStart and TransitionEnd.
+Browsers supporting requestAnimationFrame can run a test in 100ms. Browsers that don't need a wider time frame to allow the not very dead-on-target setTimeout() to be triggered between TransitionStart and TransitionEnd. Low-end CPU devices also benefit from slower transitions. Since a 300 hundred tests, each lasting 500ms would require 2.5 minutes to run, tests are run concurrently, as they cannot affect each other. For low-end devices (e.g. iPad) too many parallel tests lead to global failure, because a single `requestAnimationFrame()` would have to iterate too many nodes, which is why the suite shards into slices of 50 parallel tests. Tests are run in an off-viewport container, to prevent you from having seizures.
 
 To make individual tests a bit more readable, a lot of the test-functionality has been moved to external JavaScript files. All assertions reside within the test file itsel, though. Although they are mostly exact duplicates of other tests, it should help understanding what a test does (while abstracting away *how* it does it.)
+
+### Debugging ###
+
+1. reduce to the tests you want to take a closer look at - see `filterPropertyTests()` in `support/properties.js`
+2. disable final cleanup by commenting out `done` and `teardown` callbacks
+3. possibly increase the `duration` and disable the `#offscreen` (by simply naming it `#off-screen`)
 
 
 ## Unspecified Behavior ##
@@ -50,6 +56,10 @@ the following suites test behavior that is not covered in CSS3 Transitions (as o
 * `properties-value-003.html` - verify transitionable properties thus far not specified at all
 * `properties-value-implicit-001.html` - verify behavior for `em` based `<length>` properties when `font-size` is changed
 * `events-006.html` - expect `TransitionEnd` event to be triggered and `event.pseudoElement` to be set properly
+* `before-DOMContentLoaded-001.html` - expect transitions to be performed before DOM is ready
+* `before-load-001.html` - expect transitions to be performed before document is fully loaded
+* `hidden-container-001.html` - expect transitions to NOT be performed if they happen within hidden elements
+* `detached-container-001.html` - expect transitions to NOT be performed if they happen outside of the document
 
 
 ## Yet To Be Tested ##

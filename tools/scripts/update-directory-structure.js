@@ -5,7 +5,6 @@ var fs = require("fs")
 ,   pth = require("path")
 ,   _ = require("underscore")
 ,   jsdom = require("jsdom")
-,   wrench = require("wrench")
 ,   mkdirp = require("mkdirp").sync
 ,   testDir = pth.join(__dirname, "../..")
 ,   MAX_DEPTH = 3

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta charset='utf-8'>
+    <title>Test Loader</title>
+  </head>
+  <body>
+    <script>
+      var numTests = 0
+      ,   timeOut = 1000
+      ,   path = location.search.replace(/^\?/, "")
+      ;
+      function dataDone () {
+          window.callPhantom({
+              path:   path
+          ,   tests:  numTests
+          });
+      }
+      var tmID = setTimeout(dataDone, timeOut);
+      function start_callback () {
+          clearTimeout(tmID);
+      }
+      function result_callback (t) {
+          numTests++;
+      }
+      function completion_callback () {
+          dataDone();
+      }
+      var ifr = document.createElement("iframe");
+      ifr.src = path;
+      document.getElementsByTagName("body")[0].appendChild(ifr);
+    </script>
+  </body>
+</html>

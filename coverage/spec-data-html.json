@@ -1,1 +1,2654 @@
-[]
+[
+    {
+        "end_id": "infrastructure",
+        "id": "introduction",
+        "level": 1,
+        "original_id": "introduction"
+    },
+    {
+        "end_id": "audience",
+        "id": "background",
+        "level": 2,
+        "original_id": "background"
+    },
+    {
+        "end_id": "scope",
+        "id": "audience",
+        "level": 2,
+        "original_id": "audience"
+    },
+    {
+        "end_id": "history-0",
+        "id": "scope",
+        "level": 2,
+        "original_id": "scope"
+    },
+    {
+        "end_id": "design-notes",
+        "id": "history-0",
+        "level": 2,
+        "original_id": "history-0"
+    },
+    {
+        "end_id": "html-vs-xhtml",
+        "id": "design-notes",
+        "level": 2,
+        "original_id": "design-notes"
+    },
+    {
+        "end_id": "compliance-with-other-specifications",
+        "id": "serializability-of-script-execution",
+        "level": 3,
+        "original_id": "serializability-of-script-execution"
+    },
+    {
+        "end_id": "html-vs-xhtml",
+        "id": "compliance-with-other-specifications",
+        "level": 3,
+        "original_id": "compliance-with-other-specifications"
+    },
+    {
+        "end_id": "structure-of-this-specification",
+        "id": "html-vs-xhtml",
+        "level": 2,
+        "original_id": "html-vs-xhtml"
+    },
+    {
+        "end_id": "fingerprint",
+        "id": "structure-of-this-specification",
+        "level": 2,
+        "original_id": "structure-of-this-specification"
+    },
+    {
+        "end_id": "typographic-conventions",
+        "id": "how-to-read-this-specification",
+        "level": 3,
+        "original_id": "how-to-read-this-specification"
+    },
+    {
+        "end_id": "fingerprint",
+        "id": "typographic-conventions",
+        "level": 3,
+        "original_id": "typographic-conventions"
+    },
+    {
+        "end_id": "a-quick-introduction-to-html",
+        "id": "fingerprint",
+        "level": 2,
+        "original_id": "fingerprint"
+    },
+    {
+        "end_id": "conformance-requirements-for-authors",
+        "id": "a-quick-introduction-to-html",
+        "level": 2,
+        "original_id": "a-quick-introduction-to-html"
+    },
+    {
+        "end_id": "common-pitfalls-to-avoid-when-using-the-scripting-apis",
+        "id": "writing-secure-applications-with-html",
+        "level": 3,
+        "original_id": "writing-secure-applications-with-html"
+    },
+    {
+        "end_id": "conformance-requirements-for-authors",
+        "id": "common-pitfalls-to-avoid-when-using-the-scripting-apis",
+        "level": 3,
+        "original_id": "common-pitfalls-to-avoid-when-using-the-scripting-apis"
+    },
+    {
+        "end_id": "suggested-reading",
+        "id": "conformance-requirements-for-authors",
+        "level": 2,
+        "original_id": "conformance-requirements-for-authors"
+    },
+    {
+        "end_id": "syntax-errors",
+        "id": "presentational-markup",
+        "level": 3,
+        "original_id": "presentational-markup"
+    },
+    {
+        "end_id": "restrictions-on-content-models-and-on-attribute-values",
+        "id": "syntax-errors",
+        "level": 3,
+        "original_id": "syntax-errors"
+    },
+    {
+        "end_id": "suggested-reading",
+        "id": "restrictions-on-content-models-and-on-attribute-values",
+        "level": 3,
+        "original_id": "restrictions-on-content-models-and-on-attribute-values"
+    },
+    {
+        "end_id": "infrastructure",
+        "id": "suggested-reading",
+        "level": 2,
+        "original_id": "suggested-reading"
+    },
+    {
+        "end_id": "dom",
+        "id": "infrastructure",
+        "level": 1,
+        "original_id": "infrastructure"
+    },
+    {
+        "end_id": "conformance-requirements",
+        "id": "terminology",
+        "level": 2,
+        "original_id": "terminology"
+    },
+    {
+        "end_id": "xml",
+        "id": "resources",
+        "level": 3,
+        "original_id": "resources"
+    },
+    {
+        "end_id": "dom-trees",
+        "id": "xml",
+        "level": 3,
+        "original_id": "xml"
+    },
+    {
+        "end_id": "scripting-0",
+        "id": "dom-trees",
+        "level": 3,
+        "original_id": "dom-trees"
+    },
+    {
+        "end_id": "plugins",
+        "id": "scripting-0",
+        "level": 3,
+        "original_id": "scripting-0"
+    },
+    {
+        "end_id": "encoding-terminology",
+        "id": "plugins",
+        "level": 3,
+        "original_id": "plugins"
+    },
+    {
+        "end_id": "conformance-requirements",
+        "id": "encoding-terminology",
+        "level": 3,
+        "original_id": "encoding-terminology"
+    },
+    {
+        "end_id": "case-sensitivity-and-string-comparison",
+        "id": "conformance-requirements",
+        "level": 2,
+        "original_id": "conformance-requirements"
+    },
+    {
+        "end_id": "dependencies",
+        "id": "conformance-classes",
+        "level": 3,
+        "original_id": "conformance-classes"
+    },
+    {
+        "end_id": "extensibility",
+        "id": "dependencies",
+        "level": 3,
+        "original_id": "dependencies"
+    },
+    {
+        "end_id": "case-sensitivity-and-string-comparison",
+        "id": "extensibility",
+        "level": 3,
+        "original_id": "extensibility"
+    },
+    {
+        "end_id": "common-microsyntaxes",
+        "id": "case-sensitivity-and-string-comparison",
+        "level": 2,
+        "original_id": "case-sensitivity-and-string-comparison"
+    },
+    {
+        "end_id": "urls",
+        "id": "common-microsyntaxes",
+        "level": 2,
+        "original_id": "common-microsyntaxes"
+    },
+    {
+        "end_id": "boolean-attributes",
+        "id": "common-parser-idioms",
+        "level": 3,
+        "original_id": "common-parser-idioms"
+    },
+    {
+        "end_id": "keywords-and-enumerated-attributes",
+        "id": "boolean-attributes",
+        "level": 3,
+        "original_id": "boolean-attributes"
+    },
+    {
+        "end_id": "numbers",
+        "id": "keywords-and-enumerated-attributes",
+        "level": 3,
+        "original_id": "keywords-and-enumerated-attributes"
+    },
+    {
+        "end_id": "dates-and-times",
+        "id": "numbers",
+        "level": 3,
+        "original_id": "numbers"
+    },
+    {
+        "end_id": "colors",
+        "id": "dates-and-times",
+        "level": 3,
+        "original_id": "dates-and-times"
+    },
+    {
+        "end_id": "space-separated-tokens",
+        "id": "colors",
+        "level": 3,
+        "original_id": "colors"
+    },
+    {
+        "end_id": "comma-separated-tokens",
+        "id": "space-separated-tokens",
+        "level": 3,
+        "original_id": "space-separated-tokens"
+    },
+    {
+        "end_id": "syntax-references",
+        "id": "comma-separated-tokens",
+        "level": 3,
+        "original_id": "comma-separated-tokens"
+    },
+    {
+        "end_id": "mq",
+        "id": "syntax-references",
+        "level": 3,
+        "original_id": "syntax-references"
+    },
+    {
+        "end_id": "urls",
+        "id": "mq",
+        "level": 3,
+        "original_id": "mq"
+    },
+    {
+        "end_id": "fetching-resources",
+        "id": "urls",
+        "level": 2,
+        "original_id": "urls"
+    },
+    {
+        "end_id": "parsing-urls",
+        "id": "terminology-0",
+        "level": 3,
+        "original_id": "terminology-0"
+    },
+    {
+        "end_id": "base-urls",
+        "id": "parsing-urls",
+        "level": 3,
+        "original_id": "parsing-urls"
+    },
+    {
+        "end_id": "resolving-urls",
+        "id": "base-urls",
+        "level": 3,
+        "original_id": "base-urls"
+    },
+    {
+        "end_id": "url-manipulation-and-creation",
+        "id": "resolving-urls",
+        "level": 3,
+        "original_id": "resolving-urls"
+    },
+    {
+        "end_id": "dynamic-changes-to-base-urls",
+        "id": "url-manipulation-and-creation",
+        "level": 3,
+        "original_id": "url-manipulation-and-creation"
+    },
+    {
+        "end_id": "interfaces-for-url-manipulation",
+        "id": "dynamic-changes-to-base-urls",
+        "level": 3,
+        "original_id": "dynamic-changes-to-base-urls"
+    },
+    {
+        "end_id": "fetching-resources",
+        "id": "interfaces-for-url-manipulation",
+        "level": 3,
+        "original_id": "interfaces-for-url-manipulation"
+    },
+    {
+        "end_id": "common-dom-interfaces",
+        "id": "fetching-resources",
+        "level": 2,
+        "original_id": "fetching-resources"
+    },
+    {
+        "end_id": "processing-model",
+        "id": "terminology-1",
+        "level": 3,
+        "original_id": "terminology-1"
+    },
+    {
+        "end_id": "encrypted-http-and-related-security-concerns",
+        "id": "processing-model",
+        "level": 3,
+        "original_id": "processing-model"
+    },
+    {
+        "end_id": "content-type-sniffing",
+        "id": "encrypted-http-and-related-security-concerns",
+        "level": 3,
+        "original_id": "encrypted-http-and-related-security-concerns"
+    },
+    {
+        "end_id": "extracting-character-encodings-from-meta-elements",
+        "id": "content-type-sniffing",
+        "level": 3,
+        "original_id": "content-type-sniffing"
+    },
+    {
+        "end_id": "cors-settings-attributes",
+        "id": "extracting-character-encodings-from-meta-elements",
+        "level": 3,
+        "original_id": "extracting-character-encodings-from-meta-elements"
+    },
+    {
+        "end_id": "cors-enabled-fetch",
+        "id": "cors-settings-attributes",
+        "level": 3,
+        "original_id": "cors-settings-attributes"
+    },
+    {
+        "end_id": "common-dom-interfaces",
+        "id": "cors-enabled-fetch",
+        "level": 3,
+        "original_id": "cors-enabled-fetch"
+    },
+    {
+        "end_id": "namespaces",
+        "id": "common-dom-interfaces",
+        "level": 2,
+        "original_id": "common-dom-interfaces"
+    },
+    {
+        "end_id": "collections",
+        "id": "reflecting-content-attributes-in-idl-attributes",
+        "level": 3,
+        "original_id": "reflecting-content-attributes-in-idl-attributes"
+    },
+    {
+        "end_id": "domstringmap",
+        "id": "collections",
+        "level": 3,
+        "original_id": "collections"
+    },
+    {
+        "end_id": "transferable-objects",
+        "id": "domstringmap",
+        "level": 3,
+        "original_id": "domstringmap"
+    },
+    {
+        "end_id": "safe-passing-of-structured-data",
+        "id": "transferable-objects",
+        "level": 3,
+        "original_id": "transferable-objects"
+    },
+    {
+        "end_id": "garbage-collection",
+        "id": "safe-passing-of-structured-data",
+        "level": 3,
+        "original_id": "safe-passing-of-structured-data"
+    },
+    {
+        "end_id": "namespaces",
+        "id": "garbage-collection",
+        "level": 3,
+        "original_id": "garbage-collection"
+    },
+    {
+        "end_id": "dom",
+        "id": "namespaces",
+        "level": 2,
+        "original_id": "namespaces"
+    },
+    {
+        "end_id": "semantics",
+        "id": "dom",
+        "level": 1,
+        "original_id": "dom"
+    },
+    {
+        "end_id": "elements",
+        "id": "documents",
+        "level": 2,
+        "original_id": "documents"
+    },
+    {
+        "end_id": "security-document",
+        "id": "the-document-object",
+        "level": 3,
+        "original_id": "the-document-object"
+    },
+    {
+        "end_id": "resource-metadata-management",
+        "id": "security-document",
+        "level": 3,
+        "original_id": "security-document"
+    },
+    {
+        "end_id": "dom-tree-accessors",
+        "id": "resource-metadata-management",
+        "level": 3,
+        "original_id": "resource-metadata-management"
+    },
+    {
+        "end_id": "loading-xml-documents",
+        "id": "dom-tree-accessors",
+        "level": 3,
+        "original_id": "dom-tree-accessors"
+    },
+    {
+        "end_id": "elements",
+        "id": "loading-xml-documents",
+        "level": 3,
+        "original_id": "loading-xml-documents"
+    },
+    {
+        "end_id": "interactions-with-xpath-and-xslt",
+        "id": "elements",
+        "level": 2,
+        "original_id": "elements"
+    },
+    {
+        "end_id": "elements-in-the-dom",
+        "id": "semantics-0",
+        "level": 3,
+        "original_id": "semantics-0"
+    },
+    {
+        "end_id": "global-attributes",
+        "id": "elements-in-the-dom",
+        "level": 3,
+        "original_id": "elements-in-the-dom"
+    },
+    {
+        "end_id": "element-definitions",
+        "id": "global-attributes",
+        "level": 3,
+        "original_id": "global-attributes"
+    },
+    {
+        "end_id": "content-models",
+        "id": "element-definitions",
+        "level": 3,
+        "original_id": "element-definitions"
+    },
+    {
+        "end_id": "requirements-relating-to-bidirectional-algorithm-formatting-characters",
+        "id": "content-models",
+        "level": 3,
+        "original_id": "content-models"
+    },
+    {
+        "end_id": "wai-aria",
+        "id": "requirements-relating-to-bidirectional-algorithm-formatting-characters",
+        "level": 3,
+        "original_id": "requirements-relating-to-bidirectional-algorithm-formatting-characters"
+    },
+    {
+        "end_id": "interactions-with-xpath-and-xslt",
+        "id": "wai-aria",
+        "level": 3,
+        "original_id": "wai-aria"
+    },
+    {
+        "end_id": "dynamic-markup-insertion",
+        "id": "interactions-with-xpath-and-xslt",
+        "level": 2,
+        "original_id": "interactions-with-xpath-and-xslt"
+    },
+    {
+        "end_id": "semantics",
+        "id": "dynamic-markup-insertion",
+        "level": 2,
+        "original_id": "dynamic-markup-insertion"
+    },
+    {
+        "end_id": "closing-the-input-stream",
+        "id": "opening-the-input-stream",
+        "level": 3,
+        "original_id": "opening-the-input-stream"
+    },
+    {
+        "end_id": "document.write()",
+        "id": "closing-the-input-stream",
+        "level": 3,
+        "original_id": "closing-the-input-stream"
+    },
+    {
+        "end_id": "document.writeln()",
+        "id": "document-write",
+        "level": 3,
+        "original_id": "document.write()"
+    },
+    {
+        "end_id": "semantics",
+        "id": "document-writeln",
+        "level": 3,
+        "original_id": "document.writeln()"
+    },
+    {
+        "end_id": "browsers",
+        "id": "semantics",
+        "level": 1,
+        "original_id": "semantics"
+    },
+    {
+        "end_id": "document-metadata",
+        "id": "the-root-element",
+        "level": 2,
+        "original_id": "the-root-element"
+    },
+    {
+        "end_id": "document-metadata",
+        "id": "the-html-element",
+        "level": 3,
+        "original_id": "the-html-element"
+    },
+    {
+        "end_id": "scripting-1",
+        "id": "document-metadata",
+        "level": 2,
+        "original_id": "document-metadata"
+    },
+    {
+        "end_id": "the-title-element",
+        "id": "the-head-element",
+        "level": 3,
+        "original_id": "the-head-element"
+    },
+    {
+        "end_id": "the-base-element",
+        "id": "the-title-element",
+        "level": 3,
+        "original_id": "the-title-element"
+    },
+    {
+        "end_id": "the-link-element",
+        "id": "the-base-element",
+        "level": 3,
+        "original_id": "the-base-element"
+    },
+    {
+        "end_id": "the-meta-element",
+        "id": "the-link-element",
+        "level": 3,
+        "original_id": "the-link-element"
+    },
+    {
+        "end_id": "the-style-element",
+        "id": "the-meta-element",
+        "level": 3,
+        "original_id": "the-meta-element"
+    },
+    {
+        "end_id": "styling",
+        "id": "the-style-element",
+        "level": 3,
+        "original_id": "the-style-element"
+    },
+    {
+        "end_id": "scripting-1",
+        "id": "styling",
+        "level": 3,
+        "original_id": "styling"
+    },
+    {
+        "end_id": "sections",
+        "id": "scripting-1",
+        "level": 2,
+        "original_id": "scripting-1"
+    },
+    {
+        "end_id": "the-noscript-element",
+        "id": "the-script-element",
+        "level": 3,
+        "original_id": "the-script-element"
+    },
+    {
+        "end_id": "sections",
+        "id": "the-noscript-element",
+        "level": 3,
+        "original_id": "the-noscript-element"
+    },
+    {
+        "end_id": "grouping-content",
+        "id": "sections",
+        "level": 2,
+        "original_id": "sections"
+    },
+    {
+        "end_id": "the-article-element",
+        "id": "the-body-element",
+        "level": 3,
+        "original_id": "the-body-element"
+    },
+    {
+        "end_id": "the-section-element",
+        "id": "the-article-element",
+        "level": 3,
+        "original_id": "the-article-element"
+    },
+    {
+        "end_id": "the-nav-element",
+        "id": "the-section-element",
+        "level": 3,
+        "original_id": "the-section-element"
+    },
+    {
+        "end_id": "the-aside-element",
+        "id": "the-nav-element",
+        "level": 3,
+        "original_id": "the-nav-element"
+    },
+    {
+        "end_id": "the-h1,-h2,-h3,-h4,-h5,-and-h6-elements",
+        "id": "the-aside-element",
+        "level": 3,
+        "original_id": "the-aside-element"
+    },
+    {
+        "end_id": "the-hgroup-element",
+        "id": "the-h1-h2-h3-h4-h5-and-h6-elements",
+        "level": 3,
+        "original_id": "the-h1,-h2,-h3,-h4,-h5,-and-h6-elements"
+    },
+    {
+        "end_id": "the-header-element",
+        "id": "the-hgroup-element",
+        "level": 3,
+        "original_id": "the-hgroup-element"
+    },
+    {
+        "end_id": "the-footer-element",
+        "id": "the-header-element",
+        "level": 3,
+        "original_id": "the-header-element"
+    },
+    {
+        "end_id": "the-address-element",
+        "id": "the-footer-element",
+        "level": 3,
+        "original_id": "the-footer-element"
+    },
+    {
+        "end_id": "headings-and-sections",
+        "id": "the-address-element",
+        "level": 3,
+        "original_id": "the-address-element"
+    },
+    {
+        "end_id": "usage-summary-0",
+        "id": "headings-and-sections",
+        "level": 3,
+        "original_id": "headings-and-sections"
+    },
+    {
+        "end_id": "grouping-content",
+        "id": "usage-summary-0",
+        "level": 3,
+        "original_id": "usage-summary-0"
+    },
+    {
+        "end_id": "text-level-semantics",
+        "id": "grouping-content",
+        "level": 2,
+        "original_id": "grouping-content"
+    },
+    {
+        "end_id": "the-hr-element",
+        "id": "the-p-element",
+        "level": 3,
+        "original_id": "the-p-element"
+    },
+    {
+        "end_id": "the-pre-element",
+        "id": "the-hr-element",
+        "level": 3,
+        "original_id": "the-hr-element"
+    },
+    {
+        "end_id": "the-blockquote-element",
+        "id": "the-pre-element",
+        "level": 3,
+        "original_id": "the-pre-element"
+    },
+    {
+        "end_id": "the-ol-element",
+        "id": "the-blockquote-element",
+        "level": 3,
+        "original_id": "the-blockquote-element"
+    },
+    {
+        "end_id": "the-ul-element",
+        "id": "the-ol-element",
+        "level": 3,
+        "original_id": "the-ol-element"
+    },
+    {
+        "end_id": "the-li-element",
+        "id": "the-ul-element",
+        "level": 3,
+        "original_id": "the-ul-element"
+    },
+    {
+        "end_id": "the-dl-element",
+        "id": "the-li-element",
+        "level": 3,
+        "original_id": "the-li-element"
+    },
+    {
+        "end_id": "the-dt-element",
+        "id": "the-dl-element",
+        "level": 3,
+        "original_id": "the-dl-element"
+    },
+    {
+        "end_id": "the-dd-element",
+        "id": "the-dt-element",
+        "level": 3,
+        "original_id": "the-dt-element"
+    },
+    {
+        "end_id": "the-figure-element",
+        "id": "the-dd-element",
+        "level": 3,
+        "original_id": "the-dd-element"
+    },
+    {
+        "end_id": "the-figcaption-element",
+        "id": "the-figure-element",
+        "level": 3,
+        "original_id": "the-figure-element"
+    },
+    {
+        "end_id": "the-div-element",
+        "id": "the-figcaption-element",
+        "level": 3,
+        "original_id": "the-figcaption-element"
+    },
+    {
+        "end_id": "the-main-element",
+        "id": "the-div-element",
+        "level": 3,
+        "original_id": "the-div-element"
+    },
+    {
+        "end_id": "text-level-semantics",
+        "id": "the-main-element",
+        "level": 3,
+        "original_id": "the-main-element"
+    },
+    {
+        "end_id": "edits",
+        "id": "text-level-semantics",
+        "level": 2,
+        "original_id": "text-level-semantics"
+    },
+    {
+        "end_id": "the-em-element",
+        "id": "the-a-element",
+        "level": 3,
+        "original_id": "the-a-element"
+    },
+    {
+        "end_id": "the-strong-element",
+        "id": "the-em-element",
+        "level": 3,
+        "original_id": "the-em-element"
+    },
+    {
+        "end_id": "the-small-element",
+        "id": "the-strong-element",
+        "level": 3,
+        "original_id": "the-strong-element"
+    },
+    {
+        "end_id": "the-s-element",
+        "id": "the-small-element",
+        "level": 3,
+        "original_id": "the-small-element"
+    },
+    {
+        "end_id": "the-cite-element",
+        "id": "the-s-element",
+        "level": 3,
+        "original_id": "the-s-element"
+    },
+    {
+        "end_id": "the-q-element",
+        "id": "the-cite-element",
+        "level": 3,
+        "original_id": "the-cite-element"
+    },
+    {
+        "end_id": "the-dfn-element",
+        "id": "the-q-element",
+        "level": 3,
+        "original_id": "the-q-element"
+    },
+    {
+        "end_id": "the-abbr-element",
+        "id": "the-dfn-element",
+        "level": 3,
+        "original_id": "the-dfn-element"
+    },
+    {
+        "end_id": "the-time-element",
+        "id": "the-abbr-element",
+        "level": 3,
+        "original_id": "the-abbr-element"
+    },
+    {
+        "end_id": "the-code-element",
+        "id": "the-time-element",
+        "level": 3,
+        "original_id": "the-time-element"
+    },
+    {
+        "end_id": "the-var-element",
+        "id": "the-code-element",
+        "level": 3,
+        "original_id": "the-code-element"
+    },
+    {
+        "end_id": "the-samp-element",
+        "id": "the-var-element",
+        "level": 3,
+        "original_id": "the-var-element"
+    },
+    {
+        "end_id": "the-kbd-element",
+        "id": "the-samp-element",
+        "level": 3,
+        "original_id": "the-samp-element"
+    },
+    {
+        "end_id": "the-sub-and-sup-elements",
+        "id": "the-kbd-element",
+        "level": 3,
+        "original_id": "the-kbd-element"
+    },
+    {
+        "end_id": "the-i-element",
+        "id": "the-sub-and-sup-elements",
+        "level": 3,
+        "original_id": "the-sub-and-sup-elements"
+    },
+    {
+        "end_id": "the-b-element",
+        "id": "the-i-element",
+        "level": 3,
+        "original_id": "the-i-element"
+    },
+    {
+        "end_id": "the-u-element",
+        "id": "the-b-element",
+        "level": 3,
+        "original_id": "the-b-element"
+    },
+    {
+        "end_id": "the-mark-element",
+        "id": "the-u-element",
+        "level": 3,
+        "original_id": "the-u-element"
+    },
+    {
+        "end_id": "the-ruby-element",
+        "id": "the-mark-element",
+        "level": 3,
+        "original_id": "the-mark-element"
+    },
+    {
+        "end_id": "the-rt-element",
+        "id": "the-ruby-element",
+        "level": 3,
+        "original_id": "the-ruby-element"
+    },
+    {
+        "end_id": "the-rp-element",
+        "id": "the-rt-element",
+        "level": 3,
+        "original_id": "the-rt-element"
+    },
+    {
+        "end_id": "the-bdi-element",
+        "id": "the-rp-element",
+        "level": 3,
+        "original_id": "the-rp-element"
+    },
+    {
+        "end_id": "the-bdo-element",
+        "id": "the-bdi-element",
+        "level": 3,
+        "original_id": "the-bdi-element"
+    },
+    {
+        "end_id": "the-span-element",
+        "id": "the-bdo-element",
+        "level": 3,
+        "original_id": "the-bdo-element"
+    },
+    {
+        "end_id": "the-br-element",
+        "id": "the-span-element",
+        "level": 3,
+        "original_id": "the-span-element"
+    },
+    {
+        "end_id": "the-wbr-element",
+        "id": "the-br-element",
+        "level": 3,
+        "original_id": "the-br-element"
+    },
+    {
+        "end_id": "usage-summary",
+        "id": "the-wbr-element",
+        "level": 3,
+        "original_id": "the-wbr-element"
+    },
+    {
+        "end_id": "edits",
+        "id": "usage-summary",
+        "level": 3,
+        "original_id": "usage-summary"
+    },
+    {
+        "end_id": "embedded-content-0",
+        "id": "edits",
+        "level": 2,
+        "original_id": "edits"
+    },
+    {
+        "end_id": "the-del-element",
+        "id": "the-ins-element",
+        "level": 3,
+        "original_id": "the-ins-element"
+    },
+    {
+        "end_id": "attributes-common-to-ins-and-del-elements",
+        "id": "the-del-element",
+        "level": 3,
+        "original_id": "the-del-element"
+    },
+    {
+        "end_id": "edits-and-paragraphs",
+        "id": "attributes-common-to-ins-and-del-elements",
+        "level": 3,
+        "original_id": "attributes-common-to-ins-and-del-elements"
+    },
+    {
+        "end_id": "edits-and-lists",
+        "id": "edits-and-paragraphs",
+        "level": 3,
+        "original_id": "edits-and-paragraphs"
+    },
+    {
+        "end_id": "edits-and-tables",
+        "id": "edits-and-lists",
+        "level": 3,
+        "original_id": "edits-and-lists"
+    },
+    {
+        "end_id": "embedded-content-0",
+        "id": "edits-and-tables",
+        "level": 3,
+        "original_id": "edits-and-tables"
+    },
+    {
+        "end_id": "tabular-data",
+        "id": "embedded-content-0",
+        "level": 2,
+        "original_id": "embedded-content-0"
+    },
+    {
+        "end_id": "the-iframe-element",
+        "id": "the-img-element",
+        "level": 3,
+        "original_id": "the-img-element"
+    },
+    {
+        "end_id": "the-embed-element",
+        "id": "the-iframe-element",
+        "level": 3,
+        "original_id": "the-iframe-element"
+    },
+    {
+        "end_id": "the-object-element",
+        "id": "the-embed-element",
+        "level": 3,
+        "original_id": "the-embed-element"
+    },
+    {
+        "end_id": "the-param-element",
+        "id": "the-object-element",
+        "level": 3,
+        "original_id": "the-object-element"
+    },
+    {
+        "end_id": "the-video-element",
+        "id": "the-param-element",
+        "level": 3,
+        "original_id": "the-param-element"
+    },
+    {
+        "end_id": "the-audio-element",
+        "id": "the-video-element",
+        "level": 3,
+        "original_id": "the-video-element"
+    },
+    {
+        "end_id": "the-source-element",
+        "id": "the-audio-element",
+        "level": 3,
+        "original_id": "the-audio-element"
+    },
+    {
+        "end_id": "the-track-element",
+        "id": "the-source-element",
+        "level": 3,
+        "original_id": "the-source-element"
+    },
+    {
+        "end_id": "media-elements",
+        "id": "the-track-element",
+        "level": 3,
+        "original_id": "the-track-element"
+    },
+    {
+        "end_id": "the-canvas-element",
+        "id": "media-elements",
+        "level": 3,
+        "original_id": "media-elements"
+    },
+    {
+        "end_id": "the-map-element",
+        "id": "the-canvas-element",
+        "level": 3,
+        "original_id": "the-canvas-element"
+    },
+    {
+        "end_id": "the-area-element",
+        "id": "the-map-element",
+        "level": 3,
+        "original_id": "the-map-element"
+    },
+    {
+        "end_id": "image-maps",
+        "id": "the-area-element",
+        "level": 3,
+        "original_id": "the-area-element"
+    },
+    {
+        "end_id": "mathml",
+        "id": "image-maps",
+        "level": 3,
+        "original_id": "image-maps"
+    },
+    {
+        "end_id": "svg",
+        "id": "mathml",
+        "level": 3,
+        "original_id": "mathml"
+    },
+    {
+        "end_id": "dimension-attributes",
+        "id": "svg",
+        "level": 3,
+        "original_id": "svg"
+    },
+    {
+        "end_id": "tabular-data",
+        "id": "dimension-attributes",
+        "level": 3,
+        "original_id": "dimension-attributes"
+    },
+    {
+        "end_id": "forms",
+        "id": "tabular-data",
+        "level": 2,
+        "original_id": "tabular-data"
+    },
+    {
+        "end_id": "the-caption-element",
+        "id": "the-table-element",
+        "level": 3,
+        "original_id": "the-table-element"
+    },
+    {
+        "end_id": "the-colgroup-element",
+        "id": "the-caption-element",
+        "level": 3,
+        "original_id": "the-caption-element"
+    },
+    {
+        "end_id": "the-col-element",
+        "id": "the-colgroup-element",
+        "level": 3,
+        "original_id": "the-colgroup-element"
+    },
+    {
+        "end_id": "the-tbody-element",
+        "id": "the-col-element",
+        "level": 3,
+        "original_id": "the-col-element"
+    },
+    {
+        "end_id": "the-thead-element",
+        "id": "the-tbody-element",
+        "level": 3,
+        "original_id": "the-tbody-element"
+    },
+    {
+        "end_id": "the-tfoot-element",
+        "id": "the-thead-element",
+        "level": 3,
+        "original_id": "the-thead-element"
+    },
+    {
+        "end_id": "the-tr-element",
+        "id": "the-tfoot-element",
+        "level": 3,
+        "original_id": "the-tfoot-element"
+    },
+    {
+        "end_id": "the-td-element",
+        "id": "the-tr-element",
+        "level": 3,
+        "original_id": "the-tr-element"
+    },
+    {
+        "end_id": "the-th-element",
+        "id": "the-td-element",
+        "level": 3,
+        "original_id": "the-td-element"
+    },
+    {
+        "end_id": "attributes-common-to-td-and-th-elements",
+        "id": "the-th-element",
+        "level": 3,
+        "original_id": "the-th-element"
+    },
+    {
+        "end_id": "processing-model-1",
+        "id": "attributes-common-to-td-and-th-elements",
+        "level": 3,
+        "original_id": "attributes-common-to-td-and-th-elements"
+    },
+    {
+        "end_id": "table-sorting-model",
+        "id": "processing-model-1",
+        "level": 3,
+        "original_id": "processing-model-1"
+    },
+    {
+        "end_id": "examples",
+        "id": "table-sorting-model",
+        "level": 3,
+        "original_id": "table-sorting-model"
+    },
+    {
+        "end_id": "forms",
+        "id": "examples",
+        "level": 3,
+        "original_id": "examples"
+    },
+    {
+        "end_id": "interactive-elements",
+        "id": "forms",
+        "level": 2,
+        "original_id": "forms"
+    },
+    {
+        "end_id": "categories",
+        "id": "introduction-1",
+        "level": 3,
+        "original_id": "introduction-1"
+    },
+    {
+        "end_id": "the-form-element",
+        "id": "categories",
+        "level": 3,
+        "original_id": "categories"
+    },
+    {
+        "end_id": "the-fieldset-element",
+        "id": "the-form-element",
+        "level": 3,
+        "original_id": "the-form-element"
+    },
+    {
+        "end_id": "the-legend-element",
+        "id": "the-fieldset-element",
+        "level": 3,
+        "original_id": "the-fieldset-element"
+    },
+    {
+        "end_id": "the-label-element",
+        "id": "the-legend-element",
+        "level": 3,
+        "original_id": "the-legend-element"
+    },
+    {
+        "end_id": "the-input-element",
+        "id": "the-label-element",
+        "level": 3,
+        "original_id": "the-label-element"
+    },
+    {
+        "end_id": "the-button-element",
+        "id": "the-input-element",
+        "level": 3,
+        "original_id": "the-input-element"
+    },
+    {
+        "end_id": "the-select-element",
+        "id": "the-button-element",
+        "level": 3,
+        "original_id": "the-button-element"
+    },
+    {
+        "end_id": "the-datalist-element",
+        "id": "the-select-element",
+        "level": 3,
+        "original_id": "the-select-element"
+    },
+    {
+        "end_id": "the-optgroup-element",
+        "id": "the-datalist-element",
+        "level": 3,
+        "original_id": "the-datalist-element"
+    },
+    {
+        "end_id": "the-option-element",
+        "id": "the-optgroup-element",
+        "level": 3,
+        "original_id": "the-optgroup-element"
+    },
+    {
+        "end_id": "the-textarea-element",
+        "id": "the-option-element",
+        "level": 3,
+        "original_id": "the-option-element"
+    },
+    {
+        "end_id": "the-keygen-element",
+        "id": "the-textarea-element",
+        "level": 3,
+        "original_id": "the-textarea-element"
+    },
+    {
+        "end_id": "the-output-element",
+        "id": "the-keygen-element",
+        "level": 3,
+        "original_id": "the-keygen-element"
+    },
+    {
+        "end_id": "the-progress-element",
+        "id": "the-output-element",
+        "level": 3,
+        "original_id": "the-output-element"
+    },
+    {
+        "end_id": "the-meter-element",
+        "id": "the-progress-element",
+        "level": 3,
+        "original_id": "the-progress-element"
+    },
+    {
+        "end_id": "form-control-infrastructure",
+        "id": "the-meter-element",
+        "level": 3,
+        "original_id": "the-meter-element"
+    },
+    {
+        "end_id": "attributes-common-to-form-controls",
+        "id": "form-control-infrastructure",
+        "level": 3,
+        "original_id": "form-control-infrastructure"
+    },
+    {
+        "end_id": "textFieldSelection",
+        "id": "attributes-common-to-form-controls",
+        "level": 3,
+        "original_id": "attributes-common-to-form-controls"
+    },
+    {
+        "end_id": "constraints",
+        "id": "textfieldselection",
+        "level": 3,
+        "original_id": "textFieldSelection"
+    },
+    {
+        "end_id": "form-submission-0",
+        "id": "constraints",
+        "level": 3,
+        "original_id": "constraints"
+    },
+    {
+        "end_id": "resetting-a-form",
+        "id": "form-submission-0",
+        "level": 3,
+        "original_id": "form-submission-0"
+    },
+    {
+        "end_id": "interactive-elements",
+        "id": "resetting-a-form",
+        "level": 3,
+        "original_id": "resetting-a-form"
+    },
+    {
+        "end_id": "links",
+        "id": "interactive-elements",
+        "level": 2,
+        "original_id": "interactive-elements"
+    },
+    {
+        "end_id": "the-summary-element",
+        "id": "the-details-element",
+        "level": 3,
+        "original_id": "the-details-element"
+    },
+    {
+        "end_id": "the-menu-element",
+        "id": "the-summary-element",
+        "level": 3,
+        "original_id": "the-summary-element"
+    },
+    {
+        "end_id": "the-menuitem-element",
+        "id": "the-menu-element",
+        "level": 3,
+        "original_id": "the-menu-element"
+    },
+    {
+        "end_id": "context-menus",
+        "id": "the-menuitem-element",
+        "level": 3,
+        "original_id": "the-menuitem-element"
+    },
+    {
+        "end_id": "commands",
+        "id": "context-menus",
+        "level": 3,
+        "original_id": "context-menus"
+    },
+    {
+        "end_id": "the-dialog-element",
+        "id": "commands",
+        "level": 3,
+        "original_id": "commands"
+    },
+    {
+        "end_id": "links",
+        "id": "the-dialog-element",
+        "level": 3,
+        "original_id": "the-dialog-element"
+    },
+    {
+        "end_id": "common-idioms",
+        "id": "links",
+        "level": 2,
+        "original_id": "links"
+    },
+    {
+        "end_id": "links-created-by-a-and-area-elements",
+        "id": "introduction-3",
+        "level": 3,
+        "original_id": "introduction-3"
+    },
+    {
+        "end_id": "following-hyperlinks",
+        "id": "links-created-by-a-and-area-elements",
+        "level": 3,
+        "original_id": "links-created-by-a-and-area-elements"
+    },
+    {
+        "end_id": "downloading-resources",
+        "id": "following-hyperlinks",
+        "level": 3,
+        "original_id": "following-hyperlinks"
+    },
+    {
+        "end_id": "linkTypes",
+        "id": "downloading-resources",
+        "level": 3,
+        "original_id": "downloading-resources"
+    },
+    {
+        "end_id": "common-idioms",
+        "id": "linktypes",
+        "level": 3,
+        "original_id": "linkTypes"
+    },
+    {
+        "end_id": "disabled-elements",
+        "id": "common-idioms",
+        "level": 2,
+        "original_id": "common-idioms"
+    },
+    {
+        "end_id": "tag-clouds",
+        "id": "rel-up",
+        "level": 3,
+        "original_id": "rel-up"
+    },
+    {
+        "end_id": "conversations",
+        "id": "tag-clouds",
+        "level": 3,
+        "original_id": "tag-clouds"
+    },
+    {
+        "end_id": "footnotes",
+        "id": "conversations",
+        "level": 3,
+        "original_id": "conversations"
+    },
+    {
+        "end_id": "disabled-elements",
+        "id": "footnotes",
+        "level": 3,
+        "original_id": "footnotes"
+    },
+    {
+        "end_id": "selectors",
+        "id": "disabled-elements",
+        "level": 2,
+        "original_id": "disabled-elements"
+    },
+    {
+        "end_id": "browsers",
+        "id": "selectors",
+        "level": 2,
+        "original_id": "selectors"
+    },
+    {
+        "end_id": "pseudo-classes",
+        "id": "case-sensitivity",
+        "level": 3,
+        "original_id": "case-sensitivity"
+    },
+    {
+        "end_id": "browsers",
+        "id": "pseudo-classes",
+        "level": 3,
+        "original_id": "pseudo-classes"
+    },
+    {
+        "end_id": "webappapis",
+        "id": "browsers",
+        "level": 1,
+        "original_id": "browsers"
+    },
+    {
+        "end_id": "the-window-object",
+        "id": "windows",
+        "level": 2,
+        "original_id": "windows"
+    },
+    {
+        "end_id": "auxiliary-browsing-contexts",
+        "id": "nested-browsing-contexts",
+        "level": 3,
+        "original_id": "nested-browsing-contexts"
+    },
+    {
+        "end_id": "secondary-browsing-contexts",
+        "id": "auxiliary-browsing-contexts",
+        "level": 3,
+        "original_id": "auxiliary-browsing-contexts"
+    },
+    {
+        "end_id": "security-nav",
+        "id": "secondary-browsing-contexts",
+        "level": 3,
+        "original_id": "secondary-browsing-contexts"
+    },
+    {
+        "end_id": "groupings-of-browsing-contexts",
+        "id": "security-nav",
+        "level": 3,
+        "original_id": "security-nav"
+    },
+    {
+        "end_id": "browsing-context-names",
+        "id": "groupings-of-browsing-contexts",
+        "level": 3,
+        "original_id": "groupings-of-browsing-contexts"
+    },
+    {
+        "end_id": "the-window-object",
+        "id": "browsing-context-names",
+        "level": 3,
+        "original_id": "browsing-context-names"
+    },
+    {
+        "end_id": "origin",
+        "id": "the-window-object",
+        "level": 2,
+        "original_id": "the-window-object"
+    },
+    {
+        "end_id": "apis-for-creating-and-navigating-browsing-contexts-by-name",
+        "id": "security-window",
+        "level": 3,
+        "original_id": "security-window"
+    },
+    {
+        "end_id": "accessing-other-browsing-contexts",
+        "id": "apis-for-creating-and-navigating-browsing-contexts-by-name",
+        "level": 3,
+        "original_id": "apis-for-creating-and-navigating-browsing-contexts-by-name"
+    },
+    {
+        "end_id": "named-access-on-the-window-object",
+        "id": "accessing-other-browsing-contexts",
+        "level": 3,
+        "original_id": "accessing-other-browsing-contexts"
+    },
+    {
+        "end_id": "garbage-collection-and-browsing-contexts",
+        "id": "named-access-on-the-window-object",
+        "level": 3,
+        "original_id": "named-access-on-the-window-object"
+    },
+    {
+        "end_id": "closing-browsing-contexts",
+        "id": "garbage-collection-and-browsing-contexts",
+        "level": 3,
+        "original_id": "garbage-collection-and-browsing-contexts"
+    },
+    {
+        "end_id": "browser-interface-elements",
+        "id": "closing-browsing-contexts",
+        "level": 3,
+        "original_id": "closing-browsing-contexts"
+    },
+    {
+        "end_id": "the-windowproxy-object",
+        "id": "browser-interface-elements",
+        "level": 3,
+        "original_id": "browser-interface-elements"
+    },
+    {
+        "end_id": "origin",
+        "id": "the-windowproxy-object",
+        "level": 3,
+        "original_id": "the-windowproxy-object"
+    },
+    {
+        "end_id": "sandboxing",
+        "id": "origin",
+        "level": 2,
+        "original_id": "origin"
+    },
+    {
+        "end_id": "sandboxing",
+        "id": "relaxing-the-same-origin-restriction",
+        "level": 3,
+        "original_id": "relaxing-the-same-origin-restriction"
+    },
+    {
+        "end_id": "history",
+        "id": "sandboxing",
+        "level": 2,
+        "original_id": "sandboxing"
+    },
+    {
+        "end_id": "browsing-the-web",
+        "id": "history",
+        "level": 2,
+        "original_id": "history"
+    },
+    {
+        "end_id": "the-history-interface",
+        "id": "the-session-history-of-browsing-contexts",
+        "level": 3,
+        "original_id": "the-session-history-of-browsing-contexts"
+    },
+    {
+        "end_id": "the-location-interface",
+        "id": "the-history-interface",
+        "level": 3,
+        "original_id": "the-history-interface"
+    },
+    {
+        "end_id": "history-notes",
+        "id": "the-location-interface",
+        "level": 3,
+        "original_id": "the-location-interface"
+    },
+    {
+        "end_id": "browsing-the-web",
+        "id": "history-notes",
+        "level": 3,
+        "original_id": "history-notes"
+    },
+    {
+        "end_id": "offline",
+        "id": "browsing-the-web",
+        "level": 2,
+        "original_id": "browsing-the-web"
+    },
+    {
+        "end_id": "read-html",
+        "id": "navigating-across-documents",
+        "level": 3,
+        "original_id": "navigating-across-documents"
+    },
+    {
+        "end_id": "read-xml",
+        "id": "read-html",
+        "level": 3,
+        "original_id": "read-html"
+    },
+    {
+        "end_id": "read-text",
+        "id": "read-xml",
+        "level": 3,
+        "original_id": "read-xml"
+    },
+    {
+        "end_id": "read-multipart-x-mixed-replace",
+        "id": "read-text",
+        "level": 3,
+        "original_id": "read-text"
+    },
+    {
+        "end_id": "read-media",
+        "id": "read-multipart-x-mixed-replace",
+        "level": 3,
+        "original_id": "read-multipart-x-mixed-replace"
+    },
+    {
+        "end_id": "read-plugin",
+        "id": "read-media",
+        "level": 3,
+        "original_id": "read-media"
+    },
+    {
+        "end_id": "read-ua-inline",
+        "id": "read-plugin",
+        "level": 3,
+        "original_id": "read-plugin"
+    },
+    {
+        "end_id": "scroll-to-fragid",
+        "id": "read-ua-inline",
+        "level": 3,
+        "original_id": "read-ua-inline"
+    },
+    {
+        "end_id": "history-traversal",
+        "id": "scroll-to-fragid",
+        "level": 3,
+        "original_id": "scroll-to-fragid"
+    },
+    {
+        "end_id": "unloading-documents",
+        "id": "history-traversal",
+        "level": 3,
+        "original_id": "history-traversal"
+    },
+    {
+        "end_id": "aborting-a-document-load",
+        "id": "unloading-documents",
+        "level": 3,
+        "original_id": "unloading-documents"
+    },
+    {
+        "end_id": "offline",
+        "id": "aborting-a-document-load",
+        "level": 3,
+        "original_id": "aborting-a-document-load"
+    },
+    {
+        "end_id": "webappapis",
+        "id": "offline",
+        "level": 2,
+        "original_id": "offline"
+    },
+    {
+        "end_id": "appcache",
+        "id": "introduction-4",
+        "level": 3,
+        "original_id": "introduction-4"
+    },
+    {
+        "end_id": "manifests",
+        "id": "appcache",
+        "level": 3,
+        "original_id": "appcache"
+    },
+    {
+        "end_id": "downloading-or-updating-an-application-cache",
+        "id": "manifests",
+        "level": 3,
+        "original_id": "manifests"
+    },
+    {
+        "end_id": "the-application-cache-selection-algorithm",
+        "id": "downloading-or-updating-an-application-cache",
+        "level": 3,
+        "original_id": "downloading-or-updating-an-application-cache"
+    },
+    {
+        "end_id": "changesToNetworkingModel",
+        "id": "the-application-cache-selection-algorithm",
+        "level": 3,
+        "original_id": "the-application-cache-selection-algorithm"
+    },
+    {
+        "end_id": "expiring-application-caches",
+        "id": "changestonetworkingmodel",
+        "level": 3,
+        "original_id": "changesToNetworkingModel"
+    },
+    {
+        "end_id": "disk-space",
+        "id": "expiring-application-caches",
+        "level": 3,
+        "original_id": "expiring-application-caches"
+    },
+    {
+        "end_id": "application-cache-api",
+        "id": "disk-space",
+        "level": 3,
+        "original_id": "disk-space"
+    },
+    {
+        "end_id": "browser-state",
+        "id": "application-cache-api",
+        "level": 3,
+        "original_id": "application-cache-api"
+    },
+    {
+        "end_id": "webappapis",
+        "id": "browser-state",
+        "level": 3,
+        "original_id": "browser-state"
+    },
+    {
+        "end_id": "editing",
+        "id": "webappapis",
+        "level": 1,
+        "original_id": "webappapis"
+    },
+    {
+        "end_id": "atob",
+        "id": "scripting",
+        "level": 2,
+        "original_id": "scripting"
+    },
+    {
+        "end_id": "enabling-and-disabling-scripting",
+        "id": "introduction-5",
+        "level": 3,
+        "original_id": "introduction-5"
+    },
+    {
+        "end_id": "processing-model-3",
+        "id": "enabling-and-disabling-scripting",
+        "level": 3,
+        "original_id": "enabling-and-disabling-scripting"
+    },
+    {
+        "end_id": "event-loops",
+        "id": "processing-model-3",
+        "level": 3,
+        "original_id": "processing-model-3"
+    },
+    {
+        "end_id": "javascript-protocol",
+        "id": "event-loops",
+        "level": 3,
+        "original_id": "event-loops"
+    },
+    {
+        "end_id": "events",
+        "id": "javascript-protocol",
+        "level": 3,
+        "original_id": "javascript-protocol"
+    },
+    {
+        "end_id": "atob",
+        "id": "events",
+        "level": 3,
+        "original_id": "events"
+    },
+    {
+        "end_id": "timers",
+        "id": "atob",
+        "level": 2,
+        "original_id": "atob"
+    },
+    {
+        "end_id": "user-prompts",
+        "id": "timers",
+        "level": 2,
+        "original_id": "timers"
+    },
+    {
+        "end_id": "system-state-and-capabilities",
+        "id": "user-prompts",
+        "level": 2,
+        "original_id": "user-prompts"
+    },
+    {
+        "end_id": "printing",
+        "id": "simple-dialogs",
+        "level": 3,
+        "original_id": "simple-dialogs"
+    },
+    {
+        "end_id": "dialogs-implemented-using-separate-documents",
+        "id": "printing",
+        "level": 3,
+        "original_id": "printing"
+    },
+    {
+        "end_id": "system-state-and-capabilities",
+        "id": "dialogs-implemented-using-separate-documents",
+        "level": 3,
+        "original_id": "dialogs-implemented-using-separate-documents"
+    },
+    {
+        "end_id": "images",
+        "id": "system-state-and-capabilities",
+        "level": 2,
+        "original_id": "system-state-and-capabilities"
+    },
+    {
+        "end_id": "the-external-interface",
+        "id": "the-navigator-object",
+        "level": 3,
+        "original_id": "the-navigator-object"
+    },
+    {
+        "end_id": "images",
+        "id": "the-external-interface",
+        "level": 3,
+        "original_id": "the-external-interface"
+    },
+    {
+        "end_id": "editing",
+        "id": "images",
+        "level": 2,
+        "original_id": "images"
+    },
+    {
+        "end_id": "syntax",
+        "id": "editing",
+        "level": 1,
+        "original_id": "editing"
+    },
+    {
+        "end_id": "inert-subtrees",
+        "id": "the-hidden-attribute",
+        "level": 2,
+        "original_id": "the-hidden-attribute"
+    },
+    {
+        "end_id": "activation",
+        "id": "inert-subtrees",
+        "level": 2,
+        "original_id": "inert-subtrees"
+    },
+    {
+        "end_id": "activation",
+        "id": "the-inert-attribute",
+        "level": 3,
+        "original_id": "the-inert-attribute"
+    },
+    {
+        "end_id": "focus",
+        "id": "activation",
+        "level": 2,
+        "original_id": "activation"
+    },
+    {
+        "end_id": "assigning-keyboard-shortcuts",
+        "id": "focus",
+        "level": 2,
+        "original_id": "focus"
+    },
+    {
+        "end_id": "focus-management",
+        "id": "sequential-focus-navigation-and-the-tabindex-attribute",
+        "level": 3,
+        "original_id": "sequential-focus-navigation-and-the-tabindex-attribute"
+    },
+    {
+        "end_id": "document-level-focus-apis",
+        "id": "focus-management",
+        "level": 3,
+        "original_id": "focus-management"
+    },
+    {
+        "end_id": "element-level-focus-apis",
+        "id": "document-level-focus-apis",
+        "level": 3,
+        "original_id": "document-level-focus-apis"
+    },
+    {
+        "end_id": "assigning-keyboard-shortcuts",
+        "id": "element-level-focus-apis",
+        "level": 3,
+        "original_id": "element-level-focus-apis"
+    },
+    {
+        "end_id": "editing-0",
+        "id": "assigning-keyboard-shortcuts",
+        "level": 2,
+        "original_id": "assigning-keyboard-shortcuts"
+    },
+    {
+        "end_id": "the-accesskey-attribute",
+        "id": "introduction-6",
+        "level": 3,
+        "original_id": "introduction-6"
+    },
+    {
+        "end_id": "processing-model-5",
+        "id": "the-accesskey-attribute",
+        "level": 3,
+        "original_id": "the-accesskey-attribute"
+    },
+    {
+        "end_id": "editing-0",
+        "id": "processing-model-5",
+        "level": 3,
+        "original_id": "processing-model-5"
+    },
+    {
+        "end_id": "dnd",
+        "id": "editing-0",
+        "level": 2,
+        "original_id": "editing-0"
+    },
+    {
+        "end_id": "making-entire-documents-editable:-the-designmode-idl-attribute",
+        "id": "contenteditable",
+        "level": 3,
+        "original_id": "contenteditable"
+    },
+    {
+        "end_id": "best-practices-for-in-page-editors",
+        "id": "making-entire-documents-editable-the-designmode-idl-attribute",
+        "level": 3,
+        "original_id": "making-entire-documents-editable:-the-designmode-idl-attribute"
+    },
+    {
+        "end_id": "editing-apis",
+        "id": "best-practices-for-in-page-editors",
+        "level": 3,
+        "original_id": "best-practices-for-in-page-editors"
+    },
+    {
+        "end_id": "spelling-and-grammar-checking",
+        "id": "editing-apis",
+        "level": 3,
+        "original_id": "editing-apis"
+    },
+    {
+        "end_id": "dnd",
+        "id": "spelling-and-grammar-checking",
+        "level": 3,
+        "original_id": "spelling-and-grammar-checking"
+    },
+    {
+        "end_id": "syntax",
+        "id": "dnd",
+        "level": 2,
+        "original_id": "dnd"
+    },
+    {
+        "end_id": "the-drag-data-store",
+        "id": "introduction-7",
+        "level": 3,
+        "original_id": "introduction-7"
+    },
+    {
+        "end_id": "the-datatransfer-interface",
+        "id": "the-drag-data-store",
+        "level": 3,
+        "original_id": "the-drag-data-store"
+    },
+    {
+        "end_id": "the-dragevent-interface",
+        "id": "the-datatransfer-interface",
+        "level": 3,
+        "original_id": "the-datatransfer-interface"
+    },
+    {
+        "end_id": "drag-and-drop-processing-model",
+        "id": "the-dragevent-interface",
+        "level": 3,
+        "original_id": "the-dragevent-interface"
+    },
+    {
+        "end_id": "dndevents",
+        "id": "drag-and-drop-processing-model",
+        "level": 3,
+        "original_id": "drag-and-drop-processing-model"
+    },
+    {
+        "end_id": "the-draggable-attribute",
+        "id": "dndevents",
+        "level": 3,
+        "original_id": "dndevents"
+    },
+    {
+        "end_id": "the-dropzone-attribute",
+        "id": "the-draggable-attribute",
+        "level": 3,
+        "original_id": "the-draggable-attribute"
+    },
+    {
+        "end_id": "security-risks-in-the-drag-and-drop-model",
+        "id": "the-dropzone-attribute",
+        "level": 3,
+        "original_id": "the-dropzone-attribute"
+    },
+    {
+        "end_id": "syntax",
+        "id": "security-risks-in-the-drag-and-drop-model",
+        "level": 3,
+        "original_id": "security-risks-in-the-drag-and-drop-model"
+    },
+    {
+        "end_id": "the-xhtml-syntax",
+        "id": "syntax",
+        "level": 1,
+        "original_id": "syntax"
+    },
+    {
+        "end_id": "parsing",
+        "id": "writing",
+        "level": 2,
+        "original_id": "writing"
+    },
+    {
+        "end_id": "elements-0",
+        "id": "the-doctype",
+        "level": 3,
+        "original_id": "the-doctype"
+    },
+    {
+        "end_id": "text",
+        "id": "elements-0",
+        "level": 3,
+        "original_id": "elements-0"
+    },
+    {
+        "end_id": "character-references",
+        "id": "text",
+        "level": 3,
+        "original_id": "text"
+    },
+    {
+        "end_id": "cdata-sections",
+        "id": "character-references",
+        "level": 3,
+        "original_id": "character-references"
+    },
+    {
+        "end_id": "comments",
+        "id": "cdata-sections",
+        "level": 3,
+        "original_id": "cdata-sections"
+    },
+    {
+        "end_id": "parsing",
+        "id": "comments",
+        "level": 3,
+        "original_id": "comments"
+    },
+    {
+        "end_id": "serializing-html-fragments",
+        "id": "parsing",
+        "level": 2,
+        "original_id": "parsing"
+    },
+    {
+        "end_id": "the-input-byte-stream",
+        "id": "overview-of-the-parsing-model",
+        "level": 3,
+        "original_id": "overview-of-the-parsing-model"
+    },
+    {
+        "end_id": "parse-state",
+        "id": "the-input-byte-stream",
+        "level": 3,
+        "original_id": "the-input-byte-stream"
+    },
+    {
+        "end_id": "tokenization",
+        "id": "parse-state",
+        "level": 3,
+        "original_id": "parse-state"
+    },
+    {
+        "end_id": "tree-construction",
+        "id": "tokenization",
+        "level": 3,
+        "original_id": "tokenization"
+    },
+    {
+        "end_id": "the-end",
+        "id": "tree-construction",
+        "level": 3,
+        "original_id": "tree-construction"
+    },
+    {
+        "end_id": "coercing-an-html-dom-into-an-infoset",
+        "id": "the-end",
+        "level": 3,
+        "original_id": "the-end"
+    },
+    {
+        "end_id": "an-introduction-to-error-handling-and-strange-cases-in-the-parser",
+        "id": "coercing-an-html-dom-into-an-infoset",
+        "level": 3,
+        "original_id": "coercing-an-html-dom-into-an-infoset"
+    },
+    {
+        "end_id": "serializing-html-fragments",
+        "id": "an-introduction-to-error-handling-and-strange-cases-in-the-parser",
+        "level": 3,
+        "original_id": "an-introduction-to-error-handling-and-strange-cases-in-the-parser"
+    },
+    {
+        "end_id": "parsing-html-fragments",
+        "id": "serializing-html-fragments",
+        "level": 2,
+        "original_id": "serializing-html-fragments"
+    },
+    {
+        "end_id": "named-character-references",
+        "id": "parsing-html-fragments",
+        "level": 2,
+        "original_id": "parsing-html-fragments"
+    },
+    {
+        "end_id": "the-xhtml-syntax",
+        "id": "named-character-references",
+        "level": 2,
+        "original_id": "named-character-references"
+    },
+    {
+        "end_id": "rendering",
+        "id": "the-xhtml-syntax",
+        "level": 1,
+        "original_id": "the-xhtml-syntax"
+    },
+    {
+        "end_id": "parsing-xhtml-documents",
+        "id": "writing-xhtml-documents",
+        "level": 2,
+        "original_id": "writing-xhtml-documents"
+    },
+    {
+        "end_id": "serializing-xhtml-fragments",
+        "id": "parsing-xhtml-documents",
+        "level": 2,
+        "original_id": "parsing-xhtml-documents"
+    },
+    {
+        "end_id": "parsing-xhtml-fragments",
+        "id": "serializing-xhtml-fragments",
+        "level": 2,
+        "original_id": "serializing-xhtml-fragments"
+    },
+    {
+        "end_id": "rendering",
+        "id": "parsing-xhtml-fragments",
+        "level": 2,
+        "original_id": "parsing-xhtml-fragments"
+    },
+    {
+        "end_id": "obsolete",
+        "id": "rendering",
+        "level": 1,
+        "original_id": "rendering"
+    },
+    {
+        "end_id": "the-css-user-agent-style-sheet-and-presentational-hints",
+        "id": "introduction-8",
+        "level": 2,
+        "original_id": "introduction-8"
+    },
+    {
+        "end_id": "non-replaced-elements",
+        "id": "the-css-user-agent-style-sheet-and-presentational-hints",
+        "level": 2,
+        "original_id": "the-css-user-agent-style-sheet-and-presentational-hints"
+    },
+    {
+        "end_id": "replaced-elements",
+        "id": "non-replaced-elements",
+        "level": 2,
+        "original_id": "non-replaced-elements"
+    },
+    {
+        "end_id": "the-page",
+        "id": "hidden-elements",
+        "level": 3,
+        "original_id": "hidden-elements"
+    },
+    {
+        "end_id": "flow-content-0",
+        "id": "the-page",
+        "level": 3,
+        "original_id": "the-page"
+    },
+    {
+        "end_id": "phrasing-content-0",
+        "id": "flow-content-0",
+        "level": 3,
+        "original_id": "flow-content-0"
+    },
+    {
+        "end_id": "bidirectional-text",
+        "id": "phrasing-content-0",
+        "level": 3,
+        "original_id": "phrasing-content-0"
+    },
+    {
+        "end_id": "quotes",
+        "id": "bidirectional-text",
+        "level": 3,
+        "original_id": "bidirectional-text"
+    },
+    {
+        "end_id": "sections-and-headings",
+        "id": "quotes",
+        "level": 3,
+        "original_id": "quotes"
+    },
+    {
+        "end_id": "lists",
+        "id": "sections-and-headings",
+        "level": 3,
+        "original_id": "sections-and-headings"
+    },
+    {
+        "end_id": "tables",
+        "id": "lists",
+        "level": 3,
+        "original_id": "lists"
+    },
+    {
+        "end_id": "form-controls",
+        "id": "tables",
+        "level": 3,
+        "original_id": "tables"
+    },
+    {
+        "end_id": "the-hr-element-0",
+        "id": "form-controls",
+        "level": 3,
+        "original_id": "form-controls"
+    },
+    {
+        "end_id": "the-fieldset-element-0",
+        "id": "the-hr-element-0",
+        "level": 3,
+        "original_id": "the-hr-element-0"
+    },
+    {
+        "end_id": "replaced-elements",
+        "id": "the-fieldset-element-0",
+        "level": 3,
+        "original_id": "the-fieldset-element-0"
+    },
+    {
+        "end_id": "bindings",
+        "id": "replaced-elements",
+        "level": 2,
+        "original_id": "replaced-elements"
+    },
+    {
+        "end_id": "images-0",
+        "id": "embedded-content-1",
+        "level": 3,
+        "original_id": "embedded-content-1"
+    },
+    {
+        "end_id": "attributes-for-embedded-content-and-images",
+        "id": "images-0",
+        "level": 3,
+        "original_id": "images-0"
+    },
+    {
+        "end_id": "image-maps-0",
+        "id": "attributes-for-embedded-content-and-images",
+        "level": 3,
+        "original_id": "attributes-for-embedded-content-and-images"
+    },
+    {
+        "end_id": "bindings",
+        "id": "image-maps-0",
+        "level": 3,
+        "original_id": "image-maps-0"
+    },
+    {
+        "end_id": "frames-and-framesets",
+        "id": "bindings",
+        "level": 2,
+        "original_id": "bindings"
+    },
+    {
+        "end_id": "the-button-element-0",
+        "id": "introduction-9",
+        "level": 3,
+        "original_id": "introduction-9"
+    },
+    {
+        "end_id": "the-details-element-0",
+        "id": "the-button-element-0",
+        "level": 3,
+        "original_id": "the-button-element-0"
+    },
+    {
+        "end_id": "the-input-element-as-a-text-entry-widget",
+        "id": "the-details-element-0",
+        "level": 3,
+        "original_id": "the-details-element-0"
+    },
+    {
+        "end_id": "the-input-element-as-domain-specific-widgets",
+        "id": "the-input-element-as-a-text-entry-widget",
+        "level": 3,
+        "original_id": "the-input-element-as-a-text-entry-widget"
+    },
+    {
+        "end_id": "the-input-element-as-a-range-control",
+        "id": "the-input-element-as-domain-specific-widgets",
+        "level": 3,
+        "original_id": "the-input-element-as-domain-specific-widgets"
+    },
+    {
+        "end_id": "the-input-element-as-a-color-well",
+        "id": "the-input-element-as-a-range-control",
+        "level": 3,
+        "original_id": "the-input-element-as-a-range-control"
+    },
+    {
+        "end_id": "the-input-element-as-a-checkbox-and-radio-button-widgets",
+        "id": "the-input-element-as-a-color-well",
+        "level": 3,
+        "original_id": "the-input-element-as-a-color-well"
+    },
+    {
+        "end_id": "the-input-element-as-a-file-upload-control",
+        "id": "the-input-element-as-a-checkbox-and-radio-button-widgets",
+        "level": 3,
+        "original_id": "the-input-element-as-a-checkbox-and-radio-button-widgets"
+    },
+    {
+        "end_id": "the-input-element-as-a-button",
+        "id": "the-input-element-as-a-file-upload-control",
+        "level": 3,
+        "original_id": "the-input-element-as-a-file-upload-control"
+    },
+    {
+        "end_id": "the-marquee-element",
+        "id": "the-input-element-as-a-button",
+        "level": 3,
+        "original_id": "the-input-element-as-a-button"
+    },
+    {
+        "end_id": "the-meter-element-0",
+        "id": "the-marquee-element",
+        "level": 3,
+        "original_id": "the-marquee-element"
+    },
+    {
+        "end_id": "the-progress-element-0",
+        "id": "the-meter-element-0",
+        "level": 3,
+        "original_id": "the-meter-element-0"
+    },
+    {
+        "end_id": "the-select-element-0",
+        "id": "the-progress-element-0",
+        "level": 3,
+        "original_id": "the-progress-element-0"
+    },
+    {
+        "end_id": "the-textarea-element-0",
+        "id": "the-select-element-0",
+        "level": 3,
+        "original_id": "the-select-element-0"
+    },
+    {
+        "end_id": "the-keygen-element-0",
+        "id": "the-textarea-element-0",
+        "level": 3,
+        "original_id": "the-textarea-element-0"
+    },
+    {
+        "end_id": "frames-and-framesets",
+        "id": "the-keygen-element-0",
+        "level": 3,
+        "original_id": "the-keygen-element-0"
+    },
+    {
+        "end_id": "interactive-media",
+        "id": "frames-and-framesets",
+        "level": 2,
+        "original_id": "frames-and-framesets"
+    },
+    {
+        "end_id": "print-media",
+        "id": "interactive-media",
+        "level": 2,
+        "original_id": "interactive-media"
+    },
+    {
+        "end_id": "the-title-attribute-0",
+        "id": "links-forms-and-navigation",
+        "level": 3,
+        "original_id": "links,-forms,-and-navigation"
+    },
+    {
+        "end_id": "editing-hosts",
+        "id": "the-title-attribute-0",
+        "level": 3,
+        "original_id": "the-title-attribute-0"
+    },
+    {
+        "end_id": "text-rendered-in-native-user-interfaces",
+        "id": "editing-hosts",
+        "level": 3,
+        "original_id": "editing-hosts"
+    },
+    {
+        "end_id": "print-media",
+        "id": "text-rendered-in-native-user-interfaces",
+        "level": 3,
+        "original_id": "text-rendered-in-native-user-interfaces"
+    },
+    {
+        "end_id": "unstyled-xml-documents",
+        "id": "print-media",
+        "level": 2,
+        "original_id": "print-media"
+    },
+    {
+        "end_id": "obsolete",
+        "id": "unstyled-xml-documents",
+        "level": 2,
+        "original_id": "unstyled-xml-documents"
+    },
+    {
+        "end_id": "iana",
+        "id": "obsolete",
+        "level": 1,
+        "original_id": "obsolete"
+    },
+    {
+        "end_id": "non-conforming-features",
+        "id": "obsolete-but-conforming-features",
+        "level": 2,
+        "original_id": "obsolete-but-conforming-features"
+    },
+    {
+        "end_id": "non-conforming-features",
+        "id": "warnings-for-obsolete-but-conforming-features",
+        "level": 3,
+        "original_id": "warnings-for-obsolete-but-conforming-features"
+    },
+    {
+        "end_id": "requirements-for-implementations",
+        "id": "non-conforming-features",
+        "level": 2,
+        "original_id": "non-conforming-features"
+    },
+    {
+        "end_id": "iana",
+        "id": "requirements-for-implementations",
+        "level": 2,
+        "original_id": "requirements-for-implementations"
+    },
+    {
+        "end_id": "the-marquee-element-0",
+        "id": "the-applet-element",
+        "level": 3,
+        "original_id": "the-applet-element"
+    },
+    {
+        "end_id": "frames",
+        "id": "the-marquee-element-0",
+        "level": 3,
+        "original_id": "the-marquee-element-0"
+    },
+    {
+        "end_id": "other-elements,-attributes-and-apis",
+        "id": "frames",
+        "level": 3,
+        "original_id": "frames"
+    },
+    {
+        "end_id": "iana",
+        "id": "other-elements-attributes-and-apis",
+        "level": 3,
+        "original_id": "other-elements,-attributes-and-apis"
+    },
+    {
+        "end_id": "index",
+        "id": "iana",
+        "level": 1,
+        "original_id": "iana"
+    },
+    {
+        "end_id": "multipart/x-mixed-replace",
+        "id": "text-html",
+        "level": 2,
+        "original_id": "text/html"
+    },
+    {
+        "end_id": "application/xhtml+xml",
+        "id": "multipart-x-mixed-replace",
+        "level": 2,
+        "original_id": "multipart/x-mixed-replace"
+    },
+    {
+        "end_id": "application/x-www-form-urlencoded",
+        "id": "application-xhtml-xml",
+        "level": 2,
+        "original_id": "application/xhtml+xml"
+    },
+    {
+        "end_id": "text/cache-manifest",
+        "id": "application-x-www-form-urlencoded",
+        "level": 2,
+        "original_id": "application/x-www-form-urlencoded"
+    },
+    {
+        "end_id": "ping-to",
+        "id": "text-cache-manifest",
+        "level": 2,
+        "original_id": "text/cache-manifest"
+    },
+    {
+        "end_id": "web+-scheme-prefix",
+        "id": "ping-to",
+        "level": 2,
+        "original_id": "ping-to"
+    },
+    {
+        "end_id": "index",
+        "id": "web-scheme-prefix",
+        "level": 2,
+        "original_id": "web+-scheme-prefix"
+    },
+    {
+        "end_id": "references",
+        "id": "index",
+        "level": 1,
+        "original_id": "index"
+    },
+    {
+        "end_id": "element-content-categories",
+        "id": "elements-1",
+        "level": 2,
+        "original_id": "elements-1"
+    },
+    {
+        "end_id": "attributes-1",
+        "id": "element-content-categories",
+        "level": 2,
+        "original_id": "element-content-categories"
+    },
+    {
+        "end_id": "element-interfaces",
+        "id": "attributes-1",
+        "level": 2,
+        "original_id": "attributes-1"
+    },
+    {
+        "end_id": "all-interfaces",
+        "id": "element-interfaces",
+        "level": 2,
+        "original_id": "element-interfaces"
+    },
+    {
+        "end_id": "events-0",
+        "id": "all-interfaces",
+        "level": 2,
+        "original_id": "all-interfaces"
+    },
+    {
+        "end_id": "references",
+        "id": "events-0",
+        "level": 2,
+        "original_id": "events-0"
+    },
+    {
+        "end_id": "acknowledgements",
+        "id": "references",
+        "level": 1,
+        "original_id": "references"
+    },
+    {
+        "end_id": "",
+        "id": "acknowledgements",
+        "level": 1,
+        "original_id": "acknowledgements"
+    }
+]

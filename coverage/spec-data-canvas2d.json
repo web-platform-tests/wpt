@@ -1,1 +1,128 @@
-[]
+[
+    {
+        "end_id": "the-canvas-state",
+        "id": "conformance-requirements",
+        "level": 1,
+        "original_id": "conformance-requirements"
+    },
+    {
+        "end_id": "drawingstyle-objects",
+        "id": "the-canvas-state",
+        "level": 1,
+        "original_id": "the-canvas-state"
+    },
+    {
+        "end_id": "line-styles",
+        "id": "drawingstyle-objects",
+        "level": 1,
+        "original_id": "drawingstyle-objects"
+    },
+    {
+        "end_id": "text-styles",
+        "id": "line-styles",
+        "level": 1,
+        "original_id": "line-styles"
+    },
+    {
+        "end_id": "building-paths",
+        "id": "text-styles",
+        "level": 1,
+        "original_id": "text-styles"
+    },
+    {
+        "end_id": "path-objects",
+        "id": "building-paths",
+        "level": 1,
+        "original_id": "building-paths"
+    },
+    {
+        "end_id": "transformations",
+        "id": "path-objects",
+        "level": 1,
+        "original_id": "path-objects"
+    },
+    {
+        "end_id": "fill-and-stroke-styles",
+        "id": "transformations",
+        "level": 1,
+        "original_id": "transformations"
+    },
+    {
+        "end_id": "drawing-rectangles-to-the-canvas",
+        "id": "fill-and-stroke-styles",
+        "level": 1,
+        "original_id": "fill-and-stroke-styles"
+    },
+    {
+        "end_id": "drawing-text-to-the-canvas",
+        "id": "drawing-rectangles-to-the-canvas",
+        "level": 1,
+        "original_id": "drawing-rectangles-to-the-canvas"
+    },
+    {
+        "end_id": "drawing-paths-to-the-canvas",
+        "id": "drawing-text-to-the-canvas",
+        "level": 1,
+        "original_id": "drawing-text-to-the-canvas"
+    },
+    {
+        "end_id": "drawing-images-to-the-canvas",
+        "id": "drawing-paths-to-the-canvas",
+        "level": 1,
+        "original_id": "drawing-paths-to-the-canvas"
+    },
+    {
+        "end_id": "hit-regions",
+        "id": "drawing-images-to-the-canvas",
+        "level": 1,
+        "original_id": "drawing-images-to-the-canvas"
+    },
+    {
+        "end_id": "pixel-manipulation",
+        "id": "hit-regions",
+        "level": 1,
+        "original_id": "hit-regions"
+    },
+    {
+        "end_id": "compositing",
+        "id": "pixel-manipulation",
+        "level": 1,
+        "original_id": "pixel-manipulation"
+    },
+    {
+        "end_id": "shadows",
+        "id": "compositing",
+        "level": 1,
+        "original_id": "compositing"
+    },
+    {
+        "end_id": "drawing-model",
+        "id": "shadows",
+        "level": 1,
+        "original_id": "shadows"
+    },
+    {
+        "end_id": "best-practices",
+        "id": "drawing-model",
+        "level": 1,
+        "original_id": "drawing-model"
+    },
+    {
+        "end_id": "examples",
+        "id": "best-practices",
+        "level": 1,
+        "original_id": "best-practices"
+    },
+    {
+        "end_id": "references",
+        "id": "examples",
+        "level": 1,
+        "original_id": "examples"
+    },
+    {
+        "end_id": "",
+        "id": "references",
+        "level": 1,
+        "original_id": "references"
+    }
+]

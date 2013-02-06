@@ -63,6 +63,10 @@ page.open(url, function (status) {
                     }
                 }
             }
+            
+            // extract ranges
+            // do the analysis
+            
             return tocList;
         });
         console.log(JSON.stringify(toc));

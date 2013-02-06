@@ -4,10 +4,10 @@
   <its:rules xmlns:its="http://www.w3.org/2005/11/its" version="2.0" xmlns:h="http://www.w3.org/1999/xhtml">
     <its:param name="disambigCityParam">dublin</its:param>
     <its:param name="disambigCapitalParam">capital</its:param>
-    <its:textAnalysisAnnotationRule selector="//h:body/h:p/h:*[@id=$disambigCityParam]"
+    <its:textAnalysisRule selector="//h:body/h:p/h:*[@id=$disambigCityParam]"
       tanClassRefPointer="@typeof"
       tanIdentRefPointer="@property"/>
-    <its:textAnalysisAnnotationRule selector="//h:body/h:p/h:*[@id=$disambigCapitalParam]"
+    <its:textAnalysisRule selector="//h:body/h:p/h:*[@id=$disambigCapitalParam]"
       tanClassRefPointer="@typeof"
       tanSourcePointer="@property"
       tanIdentPointer="@about"/>

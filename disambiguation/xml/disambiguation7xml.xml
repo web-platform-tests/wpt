@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <text>
   <its:rules xmlns:its="http://www.w3.org/2005/11/its" version="2.0">
-    <its:textAnalysisAnnotationRule selector="/text/body/p/*[@id='dublin']"
+    <its:textAnalysisRule selector="/text/body/p/*[@id='dublin']"
       tanClassRefPointer="@classref"
       tanIdentRefPointer="@identref"/>
-    <its:textAnalysisAnnotationRule selector="/text/body/p/*[@id='capital']"
+    <its:textAnalysisRule selector="/text/body/p/*[@id='capital']"
       tanSourcePointer="@source"
       tanIdentPointer="@ident"/>
   </its:rules>

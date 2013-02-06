@@ -39,13 +39,14 @@ function processNext () {
         fs.writeFileSync(pth.join(__dirname, "test-data.json"), JSON.stringify(results, null, 4), "utf8");
         process.exit(0);
     }
-    var url = loaderURL + candidates.shift();
+    var urlPath = candidates.shift()
+    ,   url = loaderURL + urlPath;
     concurrent++;
     exec("/usr/local/bin/phantomjs", [phanthomScript, url], { timeout: spawnTimeOut }, function (err, stdout, stderr) {
         concurrent--;
         if (err || stderr) {
             console.log("[ERROR] " + (err || stderr) + " (" + url + ")");
-            results[url] = 0;
+            results[urlPath] = 0;
         }
         else {
             try {
@@ -55,7 +56,7 @@ function processNext () {
             }
             catch (e) {
                 console.log("[ERROR] " + e + " (" + url + ") received: <<<" + stdout + ">>>");
-                results[url] = 0;
+                results[urlPath] = 0;
             }
         }
         processNext();

@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <title>Canvas test: 2d.voidreturn</title>
 <meta name="author" content="Philip Taylor">
-<script src="../../common/canvas-tests.js"></script>
-<link rel="stylesheet" href="../../common/canvas-tests.css">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../common/canvas-tests.js"></script>
+<link rel="stylesheet" href="../common/canvas-tests.css">
 <body class="show_output">
 
 <h1><a href="index.2d.html">2d</a>.voidreturn</h1>
@@ -18,6 +20,7 @@
 
 <ul id="d"></ul>
 <script>
+var t = async_test("void methods return undefined");
 _addTest(function(canvas, ctx) {
 
 _assertSame(ctx.save(), undefined, "ctx.save()", "undefined");
@@ -60,5 +63,5 @@ _assertSame(ctx.createLinearGradient(0, 0, 0, 0).addColorStop(0, 'white'), undef
 
 });
 </script>
-<img src="../../images/yellow.png" id="yellow.png" class="resource">
+<img src="../images/yellow.png" id="yellow.png" class="resource">
 

@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <title>Canvas test: 2d.pattern.repeat.undefined</title>
 <meta name="author" content="Philip Taylor">
-<script src="../../common/canvas-tests.js"></script>
-<link rel="stylesheet" href="../../common/canvas-tests.css">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../common/canvas-tests.js"></script>
+<link rel="stylesheet" href="../common/canvas-tests.css">
 <body class="show_output">
 
 <h1><a href="index.2d.html">2d</a>.<a href="index.2d.pattern.html">pattern</a>.<a href="index.2d.pattern.repeat.html">repeat</a>.undefined</h1>
@@ -19,11 +21,10 @@
 
 <ul id="d"></ul>
 <script>
+var t = async_test("");
 _addTest(function(canvas, ctx) {
 
-try { var _thrown = false;
-  ctx.createPattern(canvas, undefined);
-} catch (e) { if (e.code != DOMException.SYNTAX_ERR) _fail("Failed assertion: expected exception of type SYNTAX_ERR, got: "+e.message); _thrown = true; } finally { _assert(_thrown, "should throw exception of type SYNTAX_ERR: ctx.createPattern(canvas, undefined)"); }
+assert_throws("SYNTAX_ERR", function() { ctx.createPattern(canvas, undefined); });
 
 
 });

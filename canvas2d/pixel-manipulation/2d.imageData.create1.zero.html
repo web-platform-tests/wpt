@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <title>Canvas test: 2d.imageData.create1.zero</title>
 <meta name="author" content="Philip Taylor">
-<script src="../../common/canvas-tests.js"></script>
-<link rel="stylesheet" href="../../common/canvas-tests.css">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../common/canvas-tests.js"></script>
+<link rel="stylesheet" href="../common/canvas-tests.css">
 <body class="show_output">
 
 <h1><a href="index.2d.html">2d</a>.<a href="index.2d.imageData.html">imageData</a>.<a href="index.2d.imageData.create1.html">create1</a>.zero</h1>
@@ -19,11 +21,10 @@
 
 <ul id="d"></ul>
 <script>
+var t = async_test("createImageData(null) throws TypeError");
 _addTest(function(canvas, ctx) {
 
-try { var _thrown = false;
-  ctx.createImageData(null);
-} catch (e) { if (!(e instanceof TypeError)) _fail("Failed assertion: expected exception of type TypeError, got: "+e); _thrown = true; } finally { _assert(_thrown, "should throw exception of type TypeError: ctx.createImageData(null)"); }
+assert_throws(new TypeError(), function() { ctx.createImageData(null); });
 
 
 });

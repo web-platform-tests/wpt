@@ -1,6 +1,5 @@
  <its:rules xmlns:its="http://www.w3.org/2005/11/its" version="2.0" xmlns:h="http://www.w3.org/1999/xhtml">
-    <its:disambiguationRule selector="//h:body/h:p/h:*[@id='dublin']"
-      disambigClassRefPointer="@typeof"
-      disambigGranularity="entity"
-      disambigIdentRefPointer="@about"/>
+    <its:textAnalysisAnnotationRule selector="//h:body/h:p/h:*[@id='dublin']"
+      tanClassRefPointer="@typeof"
+      tanIdentRefPointer="@about"/>
   </its:rules>

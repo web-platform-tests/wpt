@@ -1,11 +1,9 @@
  <its:rules xmlns:its="http://www.w3.org/2005/11/its" version="2.0" xmlns:h="http://www.w3.org/1999/xhtml">
-    <its:disambiguationRule selector="//h:body/h:p/h:*[@id='dublin']"
-      disambigClassRefPointer="@typeof"
-      disambigGranularity="entity"
-      disambigIdentRefPointer="@property"/>
-    <its:disambiguationRule selector="//h:body/h:p/h:*[@id='capital']"
-      disambigClassRefPointer="@typeof"
-      disambigGranularity="lexical-concept"
-      disambigSourcePointer="@property"
-      disambigIdentPointer="@about"/>
+    <its:textAnalysisAnnotationRule selector="//h:body/h:p/h:*[@id='dublin']"
+      tanClassRefPointer="@typeof"
+      tanIdentRefPointer="@property"/>
+    <its:textAnalysisAnnotationRule selector="//h:body/h:p/h:*[@id='capital']"
+      tanClassRefPointer="@typeof"
+      tanSourcePointer="@property"
+      tanIdentPointer="@about"/>
   </its:rules>

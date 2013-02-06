@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
-<text xmlns:its="http://www.w3.org/2005/11/its" its:version="2.0" its:annotatorsRef="disambiguation|http://enrycher.ijs.si">
+<text xmlns:its="http://www.w3.org/2005/11/its" its:version="2.0" its:annotatorsRef="tan|http://enrycher.ijs.si">
   <body>
-    <p><its:span disambigClassRef="http://nerd.eurecom.fr/ontology#Place" disambigIdentRef="http://dbpedia.org/resource/Dublin" disambigGranularity="entity" disambigConfidence="0.7"
->Dublin</its:span> is the <its:span disambigSource="Wordnet3.0" disambigIdent="301467919" disambigGranularity="lexical-concept" disambigConfidence="0.5">capital</its:span> of Ireland.</p>
+    <p><its:span tanClassRef="http://nerd.eurecom.fr/ontology#Place" tanIdentRef="http://dbpedia.org/resource/Dublin" tanConfidence="0.7"
+>Dublin</its:span> is the <its:span tanSource="Wordnet3.0" tanIdent="301467919" tanConfidence="0.5">capital</its:span> of Ireland.</p>
   </body>
 </text>

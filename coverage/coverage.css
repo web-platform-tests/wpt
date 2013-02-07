@@ -1,0 +1,26 @@
+
+table {
+    border-spacing: 10px 3px;
+}
+
+th {
+    text-align: left;
+}
+
+td {
+    text-align: right;
+}
+
+td.level1, td.level2, td.level3 {
+    text-align: left;
+}
+
+td.level1 {
+    padding-left:   0em;
+}
+td.level2 {
+    padding-left:   2em;
+}
+td.level3 {
+    padding-left:   4em;
+}

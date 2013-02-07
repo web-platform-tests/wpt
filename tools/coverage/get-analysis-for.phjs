@@ -68,19 +68,27 @@ page.open(url, function (status) {
             }
             
             function getNodesForSection (section) {
-                var xpath, nodes = [];
-                // let me get all Kayessian on your arse!
-                if (section.end_id) {
-                    // xpath = "id('" + section.original_id + "')/following-sibling::node()[count(.| id('" + section.end_id + "')/preceding-sibling::node())=count(id('" + section.end_id + "')/preceding-sibling::node())]";
-                    xpath = "id('" + section.original_id + "')/following::node()[count(.| id('" + section.end_id + "')/preceding::node())=count(id('" + section.end_id + "')/preceding::node())]";
+                var range = document.createRange()
+                ,   start = document.getElementById(section.original_id)
+                ;
+                if (start.parentNode.tagName.toLowerCase() === "div" && start.parentNode.classList.contains("impl")) {
+                    start = start.parentNode;
                 }
-                else {
-                    // xpath = "id('" + section.original_id + "')/following-sibling::node()";
-                    xpath = "id('" + section.original_id + "')/following::node()";
-                }
-                var xpr = document.evaluate(xpath, document.documentElement, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-                for (var j = 0, m = xpr.snapshotLength; j < m; j++) nodes.push(xpr.snapshotItem(j));
-                return nodes;
+                range.setStartBefore(start);
+                
+                // var xpath, nodes = [];
+                // // let me get all Kayessian on your arse!
+                // if (section.end_id) {
+                //     // xpath = "id('" + section.original_id + "')/following-sibling::node()[count(.| id('" + section.end_id + "')/preceding-sibling::node())=count(id('" + section.end_id + "')/preceding-sibling::node())]";
+                //     xpath = "id('" + section.original_id + "')/following::node()[count(.| id('" + section.end_id + "')/preceding::node())=count(id('" + section.end_id + "')/preceding::node())]";
+                // }
+                // else {
+                //     // xpath = "id('" + section.original_id + "')/following-sibling::node()";
+                //     xpath = "id('" + section.original_id + "')/following::node()";
+                // }
+                // var xpr = document.evaluate(xpath, document.documentElement, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+                // for (var j = 0, m = xpr.snapshotLength; j < m; j++) nodes.push(xpr.snapshotItem(j));
+                // return nodes;
             }
 
             function getClonesForSection (section) {

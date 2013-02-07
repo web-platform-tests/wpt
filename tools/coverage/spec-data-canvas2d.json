@@ -1,1 +1,192 @@
-[]
+[
+    {
+        "algorithmicSteps": 0,
+        "end_id": "the-canvas-state",
+        "id": "conformance-requirements",
+        "idlComplexity": 148,
+        "level": 1,
+        "normativeStatements": 3,
+        "original_id": "conformance-requirements",
+        "wordCount": 324
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "drawingstyle-objects",
+        "id": "the-canvas-state",
+        "idlComplexity": 0,
+        "level": 1,
+        "normativeStatements": 3,
+        "original_id": "the-canvas-state",
+        "wordCount": 95
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "line-styles",
+        "id": "drawingstyle-objects",
+        "idlComplexity": 0,
+        "level": 1,
+        "normativeStatements": 1,
+        "original_id": "drawingstyle-objects",
+        "wordCount": 134
+    },
+    {
+        "algorithmicSteps": 34,
+        "end_id": "text-styles",
+        "id": "line-styles",
+        "idlComplexity": 0,
+        "level": 1,
+        "normativeStatements": 33,
+        "original_id": "line-styles",
+        "wordCount": 1933
+    },
+    {
+        "algorithmicSteps": 9,
+        "end_id": "building-paths",
+        "id": "text-styles",
+        "idlComplexity": 0,
+        "level": 1,
+        "normativeStatements": 20,
+        "original_id": "text-styles",
+        "wordCount": 1312
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "path-objects",
+        "id": "building-paths",
+        "idlComplexity": 0,
+        "level": 1,
+        "normativeStatements": 30,
+        "original_id": "building-paths",
+        "wordCount": 1301
+    },
+    {
+        "algorithmicSteps": 43,
+        "end_id": "transformations",
+        "id": "path-objects",
+        "idlComplexity": 0,
+        "level": 1,
+        "normativeStatements": 7,
+        "original_id": "path-objects",
+        "wordCount": 1125
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "fill-and-stroke-styles",
+        "id": "transformations",
+        "idlComplexity": 0,
+        "level": 1,
+        "normativeStatements": 7,
+        "original_id": "transformations",
+        "wordCount": 257
+    },
+    {
+        "algorithmicSteps": 3,
+        "end_id": "drawing-rectangles-to-the-canvas",
+        "id": "fill-and-stroke-styles",
+        "idlComplexity": 0,
+        "level": 1,
+        "normativeStatements": 45,
+        "original_id": "fill-and-stroke-styles",
+        "wordCount": 1705
+    },
+    {
+        "algorithmicSteps": 3,
+        "end_id": "drawing-text-to-the-canvas",
+        "id": "drawing-rectangles-to-the-canvas",
+        "idlComplexity": 0,
+        "level": 1,
+        "normativeStatements": 5,
+        "original_id": "drawing-rectangles-to-the-canvas",
+        "wordCount": 339
+    },
+    {
+        "algorithmicSteps": 3,
+        "end_id": "drawing-paths-to-the-canvas",
+        "id": "drawing-text-to-the-canvas",
+        "idlComplexity": 0,
+        "level": 1,
+        "normativeStatements": 10,
+        "original_id": "drawing-text-to-the-canvas",
+        "wordCount": 945
+    },
+    {
+        "algorithmicSteps": 12,
+        "end_id": "drawing-images-to-the-canvas",
+        "id": "drawing-paths-to-the-canvas",
+        "idlComplexity": 0,
+        "level": 1,
+        "normativeStatements": 23,
+        "original_id": "drawing-paths-to-the-canvas",
+        "wordCount": 879
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "hit-regions",
+        "id": "drawing-images-to-the-canvas",
+        "idlComplexity": 0,
+        "level": 1,
+        "normativeStatements": 15,
+        "original_id": "drawing-images-to-the-canvas",
+        "wordCount": 641
+    },
+    {
+        "algorithmicSteps": 67,
+        "end_id": "pixel-manipulation",
+        "id": "hit-regions",
+        "idlComplexity": 6,
+        "level": 1,
+        "normativeStatements": 16,
+        "original_id": "hit-regions",
+        "wordCount": 2469
+    },
+    {
+        "algorithmicSteps": 6,
+        "end_id": "compositing",
+        "id": "pixel-manipulation",
+        "idlComplexity": 0,
+        "level": 1,
+        "normativeStatements": 23,
+        "original_id": "pixel-manipulation",
+        "wordCount": 911
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "shadows",
+        "id": "compositing",
+        "idlComplexity": 0,
+        "level": 1,
+        "normativeStatements": 10,
+        "original_id": "compositing",
+        "wordCount": 346
+    },
+    {
+        "algorithmicSteps": 9,
+        "end_id": "drawing-model",
+        "id": "shadows",
+        "idlComplexity": 0,
+        "level": 1,
+        "normativeStatements": 14,
+        "original_id": "shadows",
+        "wordCount": 532
+    },
+    {
+        "algorithmicSteps": 6,
+        "end_id": "references",
+        "id": "drawing-model",
+        "idlComplexity": 0,
+        "level": 1,
+        "normativeStatements": 3,
+        "original_id": "drawing-model",
+        "wordCount": 153
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "",
+        "id": "references",
+        "idlComplexity": 0,
+        "level": 1,
+        "normativeStatements": 0,
+        "original_id": "references",
+        "wordCount": 2183
+    }
+]

@@ -4,7 +4,7 @@ var fs = require("fs")
 ,   exec = require("child_process").execFile
 ,   phanthomScript = pth.join(__dirname, "get-analysis-for.phjs")
 ,   specs = {
-        html:       "http://www.w3.org/html/wg/drafts/html/master/Overview.html"
+        html:       "http://www.w3.org/html/wg/drafts/html/master/single-page.html"
     ,   canvas2d:   "http://www.w3.org/html/wg/drafts/2dcontext/html5_canvas/Overview.html"
     // ,   microdata:  "http://www.w3.org/html/wg/drafts/microdata/master/Overview.html"
     }

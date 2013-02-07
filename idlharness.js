@@ -1459,7 +1459,7 @@ IdlInterface.prototype.test_members = function()
                     window[this.name].prototype[member.name].apply({}, args);
                 }, "calling operation with this = {} didn't throw TypeError");
             }.bind(this), this.name + " interface: operation " + member.name +
-            "(" + member.arguments.map(function(m) { return m.type.idlType; }) +
+            "(" + member.arguments.map(function(m) { return m.idlType.idlType; }) +
             ")");
         }
         // TODO: check more member types, like stringifier

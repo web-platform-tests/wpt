@@ -7,7 +7,8 @@
         "level": 1,
         "normativeStatements": 3,
         "original_id": "conformance-requirements",
-        "wordCount": 324
+        "wordCount": 324,
+        "tests": 4
     },
     {
         "algorithmicSteps": 0,
@@ -17,7 +18,8 @@
         "level": 1,
         "normativeStatements": 3,
         "original_id": "the-canvas-state",
-        "wordCount": 95
+        "wordCount": 95,
+        "tests": 22
     },
     {
         "algorithmicSteps": 0,
@@ -27,7 +29,8 @@
         "level": 1,
         "normativeStatements": 1,
         "original_id": "drawingstyle-objects",
-        "wordCount": 134
+        "wordCount": 134,
+        "tests": 0
     },
     {
         "algorithmicSteps": 34,
@@ -37,7 +40,8 @@
         "level": 1,
         "normativeStatements": 33,
         "original_id": "line-styles",
-        "wordCount": 1933
+        "wordCount": 1933,
+        "tests": 31
     },
     {
         "algorithmicSteps": 9,
@@ -47,7 +51,8 @@
         "level": 1,
         "normativeStatements": 20,
         "original_id": "text-styles",
-        "wordCount": 1312
+        "wordCount": 1312,
+        "tests": 23
     },
     {
         "algorithmicSteps": 0,
@@ -57,7 +62,8 @@
         "level": 1,
         "normativeStatements": 30,
         "original_id": "building-paths",
-        "wordCount": 1301
+        "wordCount": 1301,
+        "tests": 0
     },
     {
         "algorithmicSteps": 43,
@@ -67,7 +73,8 @@
         "level": 1,
         "normativeStatements": 7,
         "original_id": "path-objects",
-        "wordCount": 1125
+        "wordCount": 1125,
+        "tests": 129
     },
     {
         "algorithmicSteps": 0,
@@ -77,7 +84,8 @@
         "level": 1,
         "normativeStatements": 7,
         "original_id": "transformations",
-        "wordCount": 257
+        "wordCount": 257,
+        "tests": 22
     },
     {
         "algorithmicSteps": 3,
@@ -87,7 +95,8 @@
         "level": 1,
         "normativeStatements": 45,
         "original_id": "fill-and-stroke-styles",
-        "wordCount": 1705
+        "wordCount": 1705,
+        "tests": 185
     },
     {
         "algorithmicSteps": 3,
@@ -97,7 +106,8 @@
         "level": 1,
         "normativeStatements": 5,
         "original_id": "drawing-rectangles-to-the-canvas",
-        "wordCount": 339
+        "wordCount": 339,
+        "tests": 30
     },
     {
         "algorithmicSteps": 3,
@@ -107,7 +117,8 @@
         "level": 1,
         "normativeStatements": 10,
         "original_id": "drawing-text-to-the-canvas",
-        "wordCount": 945
+        "wordCount": 945,
+        "tests": 26
     },
     {
         "algorithmicSteps": 12,
@@ -117,7 +128,8 @@
         "level": 1,
         "normativeStatements": 23,
         "original_id": "drawing-paths-to-the-canvas",
-        "wordCount": 879
+        "wordCount": 879,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -127,7 +139,8 @@
         "level": 1,
         "normativeStatements": 15,
         "original_id": "drawing-images-to-the-canvas",
-        "wordCount": 641
+        "wordCount": 641,
+        "tests": 34
     },
     {
         "algorithmicSteps": 67,
@@ -137,7 +150,8 @@
         "level": 1,
         "normativeStatements": 16,
         "original_id": "hit-regions",
-        "wordCount": 2469
+        "wordCount": 2469,
+        "tests": 0
     },
     {
         "algorithmicSteps": 6,
@@ -147,7 +161,8 @@
         "level": 1,
         "normativeStatements": 23,
         "original_id": "pixel-manipulation",
-        "wordCount": 911
+        "wordCount": 911,
+        "tests": 58
     },
     {
         "algorithmicSteps": 0,
@@ -157,7 +172,8 @@
         "level": 1,
         "normativeStatements": 10,
         "original_id": "compositing",
-        "wordCount": 346
+        "wordCount": 346,
+        "tests": 91
     },
     {
         "algorithmicSteps": 9,
@@ -167,7 +183,8 @@
         "level": 1,
         "normativeStatements": 14,
         "original_id": "shadows",
-        "wordCount": 532
+        "wordCount": 532,
+        "tests": 58
     },
     {
         "algorithmicSteps": 6,
@@ -177,7 +194,8 @@
         "level": 1,
         "normativeStatements": 3,
         "original_id": "drawing-model",
-        "wordCount": 153
+        "wordCount": 153,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -187,6 +205,7 @@
         "level": 1,
         "normativeStatements": 0,
         "original_id": "references",
-        "wordCount": 2183
+        "wordCount": 2183,
+        "tests": 0
     }
 ]

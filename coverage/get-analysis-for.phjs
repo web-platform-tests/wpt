@@ -3,6 +3,7 @@
 var page = require("webpage").create()
 ,   system = require("system")
 ,   url
+,   debug = false
 ;
 
 if (system.args.length === 1) {
@@ -12,6 +13,10 @@ if (system.args.length === 1) {
 else {
     url = system.args[1];
 }
+
+page.onConsoleMessage = function (msg) {
+    if (debug) console.log(msg);
+};
 
 page.open(url, function (status) {
     if (status !== "success") {
@@ -66,22 +71,23 @@ page.open(url, function (status) {
                 var xpath, nodes = [];
                 // let me get all Kayessian on your arse!
                 if (section.end_id) {
-                    xpath = "id('" + section.original_id + "')/following-sibling::node()[count(.| id('" + section.end_id + "')/preceding-sibling::node())=count(id('" + section.end_id + "')/preceding-sibling::node())]";
+                    // xpath = "id('" + section.original_id + "')/following-sibling::node()[count(.| id('" + section.end_id + "')/preceding-sibling::node())=count(id('" + section.end_id + "')/preceding-sibling::node())]";
+                    xpath = "id('" + section.original_id + "')/following::node()[count(.| id('" + section.end_id + "')/preceding::node())=count(id('" + section.end_id + "')/preceding::node())]";
                 }
                 else {
-                    xpath = "id('" + section.original_id + "')/following-sibling::node()";
+                    // xpath = "id('" + section.original_id + "')/following-sibling::node()";
+                    xpath = "id('" + section.original_id + "')/following::node()";
                 }
                 var xpr = document.evaluate(xpath, document.documentElement, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
                 for (var j = 0, m = xpr.snapshotLength; j < m; j++) nodes.push(xpr.snapshotItem(j));
                 return nodes;
             }
 
-            function getFragmentForSection (section) {
-                var nodes = getNodesForSection(section)
-                ,   df = document.createDocumentFragment()
-                ;
-                for (var j = 0, m = nodes.length; j < m; j++) df.appendChild(nodes[j].cloneNode(true));
-                return df;
+            function getClonesForSection (section) {
+                // return getNodesForSection(section).map(function (n) { return n.cloneNode(true); });
+                var div = document.createElement("div");
+                getNodesForSection(section).map(function (n) { div.appendChild(n.cloneNode(true)); });
+                return div;
             }
 
             // process ToC
@@ -109,10 +115,10 @@ page.open(url, function (status) {
             // turn ranges to DFs
             for (var i = 0, n = tocList.length; i < n; i++) {
                 var section = tocList[i]
-                ,   $df = $(getFragmentForSection(section));
-                // ranges[tocList[i].id] = $df;
+                ,   $df = $(getClonesForSection(section));
+
                 // remove non-normative content inside DFs
-                $df.find(".example, .domintro").remove();
+                $df.find(".example, .domintro, .note").remove();
 
                 // count webidl complexity (then remove webidls)
                 section.idlComplexity = $df.find(".idl:not(.extract)")

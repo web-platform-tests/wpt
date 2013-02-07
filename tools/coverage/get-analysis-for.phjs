@@ -46,27 +46,94 @@ page.open(url, function (status) {
                 });
             }
             
-            var $toc = $("body > ol.toc").first()
-            ;
-            walkToC($, $toc, tocList, 0);
-            // get ID ranges for the ToC
-            for (var i = 0, n = tocList.length; i < n; i++) {
-                var section = tocList[i]
-                ,   level = section.level
-                ;
-                section.end_id = null;
-                for (var j = i + 1, m = tocList.length; j < m; j++) {
-                    var next = tocList[j];
-                    if (next.level === level || next.level < level) {
-                        section.end_id = next.original_id;
-                        break;
+            function processTocForRanges (tocList) {
+                for (var i = 0, n = tocList.length; i < n; i++) {
+                    var section = tocList[i]
+                    ,   level = section.level
+                    ;
+                    section.end_id = null;
+                    for (var j = i + 1, m = tocList.length; j < m; j++) {
+                        var next = tocList[j];
+                        if (next.level === level || next.level < level) {
+                            section.end_id = next.original_id;
+                            break;
+                        }
                     }
                 }
             }
             
-            // extract ranges
-            // do the analysis
+            function getNodesForSection (section) {
+                var xpath, nodes = [];
+                // let me get all Kayessian on your arse!
+                if (section.end_id) {
+                    xpath = "id('" + section.original_id + "')/following-sibling::node()[count(.| id('" + section.end_id + "')/preceding-sibling::node())=count(id('" + section.end_id + "')/preceding-sibling::node())]";
+                }
+                else {
+                    xpath = "id('" + section.original_id + "')/following-sibling::node()";
+                }
+                var xpr = document.evaluate(xpath, document.documentElement, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+                for (var j = 0, m = xpr.snapshotLength; j < m; j++) nodes.push(xpr.snapshotItem(j));
+                return nodes;
+            }
+
+            function getFragmentForSection (section) {
+                var nodes = getNodesForSection(section)
+                ,   df = document.createDocumentFragment()
+                ;
+                for (var j = 0, m = nodes.length; j < m; j++) df.appendChild(nodes[j].cloneNode(true));
+                return df;
+            }
+
+            // process ToC
+            var $toc = $("body > ol.toc").first()
+            ;
+            walkToC($, $toc, tocList, 0);
+            processTocForRanges(tocList);
             
+            // remove non-normative sections from the document
+            $("p:contains('This section is non-normative.')").prev().each(function () {
+                var id = $(this).attr("id");
+                for (var i = 0, n = tocList.length; i < n; i++) {
+                    if (tocList[i].id === id) {
+                        var nodes = getNodesForSection(tocList[i]);
+                        for (var j = 0, m = nodes.length; j < m; j++) $(nodes[j]).remove();
+                        tocList.splice(i, 1);
+                        break;
+                    }
+                }
+            });
+            
+            // we now need to recompute the ranges
+            processTocForRanges(tocList);
+
+            // turn ranges to DFs
+            for (var i = 0, n = tocList.length; i < n; i++) {
+                var section = tocList[i]
+                ,   $df = $(getFragmentForSection(section));
+                // ranges[tocList[i].id] = $df;
+                // remove non-normative content inside DFs
+                $df.find(".example, .domintro").remove();
+
+                // count webidl complexity (then remove webidls)
+                section.idlComplexity = $df.find(".idl:not(.extract)")
+                                           .text()
+                                           .replace(/\/\/.*$/gm, "")
+                                           .replace(/^\s*$/gm, "")
+                                           .replace(/^\s*\}\s*;\s*$/gm, "")
+                                           .split("\n")
+                                           .length;
+                $df.find(".idl").remove();
+
+                // count words
+                section.wordCount = $df.text().split(/\s+/).length;
+
+                // count "ol li"
+                section.algorithmicSteps = $df.find("ol li").length;
+                
+                // count normative statements
+                var norms = $df.text().match(/\b(should|must)\b/g);
+                section.normativeStatements = norms ? norms.length : 0;
+            }
             return tocList;
         });
         console.log(JSON.stringify(toc));

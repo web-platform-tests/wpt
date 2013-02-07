@@ -1,2654 +1,4422 @@
 [
     {
+        "algorithmicSteps": 0,
         "end_id": "infrastructure",
         "id": "introduction",
+        "idlComplexity": 1,
         "level": 1,
-        "original_id": "introduction"
+        "normativeStatements": 0,
+        "original_id": "introduction",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "audience",
         "id": "background",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "background"
+        "normativeStatements": 0,
+        "original_id": "background",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "scope",
         "id": "audience",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "audience"
+        "normativeStatements": 0,
+        "original_id": "audience",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "history-0",
         "id": "scope",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "scope"
+        "normativeStatements": 0,
+        "original_id": "scope",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "design-notes",
         "id": "history-0",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "history-0"
+        "normativeStatements": 0,
+        "original_id": "history-0",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "html-vs-xhtml",
         "id": "design-notes",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "design-notes"
+        "normativeStatements": 0,
+        "original_id": "design-notes",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "compliance-with-other-specifications",
         "id": "serializability-of-script-execution",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "serializability-of-script-execution"
+        "normativeStatements": 0,
+        "original_id": "serializability-of-script-execution",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "html-vs-xhtml",
         "id": "compliance-with-other-specifications",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "compliance-with-other-specifications"
+        "normativeStatements": 0,
+        "original_id": "compliance-with-other-specifications",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "structure-of-this-specification",
         "id": "html-vs-xhtml",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "html-vs-xhtml"
+        "normativeStatements": 0,
+        "original_id": "html-vs-xhtml",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "fingerprint",
         "id": "structure-of-this-specification",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "structure-of-this-specification"
+        "normativeStatements": 0,
+        "original_id": "structure-of-this-specification",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "typographic-conventions",
         "id": "how-to-read-this-specification",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "how-to-read-this-specification"
+        "normativeStatements": 0,
+        "original_id": "how-to-read-this-specification",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "fingerprint",
         "id": "typographic-conventions",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "typographic-conventions"
+        "normativeStatements": 0,
+        "original_id": "typographic-conventions",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "a-quick-introduction-to-html",
         "id": "fingerprint",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "fingerprint"
+        "normativeStatements": 0,
+        "original_id": "fingerprint",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "conformance-requirements-for-authors",
         "id": "a-quick-introduction-to-html",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "a-quick-introduction-to-html"
+        "normativeStatements": 0,
+        "original_id": "a-quick-introduction-to-html",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "common-pitfalls-to-avoid-when-using-the-scripting-apis",
         "id": "writing-secure-applications-with-html",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "writing-secure-applications-with-html"
+        "normativeStatements": 0,
+        "original_id": "writing-secure-applications-with-html",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "conformance-requirements-for-authors",
         "id": "common-pitfalls-to-avoid-when-using-the-scripting-apis",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "common-pitfalls-to-avoid-when-using-the-scripting-apis"
+        "normativeStatements": 0,
+        "original_id": "common-pitfalls-to-avoid-when-using-the-scripting-apis",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "suggested-reading",
         "id": "conformance-requirements-for-authors",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "conformance-requirements-for-authors"
+        "normativeStatements": 0,
+        "original_id": "conformance-requirements-for-authors",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "syntax-errors",
         "id": "presentational-markup",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "presentational-markup"
+        "normativeStatements": 0,
+        "original_id": "presentational-markup",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "restrictions-on-content-models-and-on-attribute-values",
         "id": "syntax-errors",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "syntax-errors"
+        "normativeStatements": 0,
+        "original_id": "syntax-errors",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "suggested-reading",
         "id": "restrictions-on-content-models-and-on-attribute-values",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "restrictions-on-content-models-and-on-attribute-values"
+        "normativeStatements": 0,
+        "original_id": "restrictions-on-content-models-and-on-attribute-values",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "infrastructure",
         "id": "suggested-reading",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "suggested-reading"
+        "normativeStatements": 0,
+        "original_id": "suggested-reading",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "dom",
         "id": "infrastructure",
+        "idlComplexity": 1,
         "level": 1,
-        "original_id": "infrastructure"
+        "normativeStatements": 0,
+        "original_id": "infrastructure",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "conformance-requirements",
         "id": "terminology",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "terminology"
+        "normativeStatements": 0,
+        "original_id": "terminology",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "xml",
         "id": "resources",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "resources"
+        "normativeStatements": 0,
+        "original_id": "resources",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "dom-trees",
         "id": "xml",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "xml"
+        "normativeStatements": 0,
+        "original_id": "xml",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "scripting-0",
         "id": "dom-trees",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "dom-trees"
+        "normativeStatements": 0,
+        "original_id": "dom-trees",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "plugins",
         "id": "scripting-0",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "scripting-0"
+        "normativeStatements": 0,
+        "original_id": "scripting-0",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "encoding-terminology",
         "id": "plugins",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "plugins"
+        "normativeStatements": 0,
+        "original_id": "plugins",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "conformance-requirements",
         "id": "encoding-terminology",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "encoding-terminology"
+        "normativeStatements": 0,
+        "original_id": "encoding-terminology",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "case-sensitivity-and-string-comparison",
         "id": "conformance-requirements",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "conformance-requirements"
+        "normativeStatements": 0,
+        "original_id": "conformance-requirements",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "dependencies",
         "id": "conformance-classes",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "conformance-classes"
+        "normativeStatements": 0,
+        "original_id": "conformance-classes",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "extensibility",
         "id": "dependencies",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "dependencies"
+        "normativeStatements": 0,
+        "original_id": "dependencies",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "case-sensitivity-and-string-comparison",
         "id": "extensibility",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "extensibility"
+        "normativeStatements": 0,
+        "original_id": "extensibility",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "common-microsyntaxes",
         "id": "case-sensitivity-and-string-comparison",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "case-sensitivity-and-string-comparison"
+        "normativeStatements": 0,
+        "original_id": "case-sensitivity-and-string-comparison",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "urls",
         "id": "common-microsyntaxes",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "common-microsyntaxes"
+        "normativeStatements": 0,
+        "original_id": "common-microsyntaxes",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "boolean-attributes",
         "id": "common-parser-idioms",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "common-parser-idioms"
+        "normativeStatements": 0,
+        "original_id": "common-parser-idioms",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "keywords-and-enumerated-attributes",
         "id": "boolean-attributes",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "boolean-attributes"
+        "normativeStatements": 0,
+        "original_id": "boolean-attributes",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "numbers",
         "id": "keywords-and-enumerated-attributes",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "keywords-and-enumerated-attributes"
+        "normativeStatements": 0,
+        "original_id": "keywords-and-enumerated-attributes",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "dates-and-times",
         "id": "numbers",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "numbers"
+        "normativeStatements": 0,
+        "original_id": "numbers",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "colors",
         "id": "dates-and-times",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "dates-and-times"
+        "normativeStatements": 0,
+        "original_id": "dates-and-times",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "space-separated-tokens",
         "id": "colors",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "colors"
+        "normativeStatements": 0,
+        "original_id": "colors",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "comma-separated-tokens",
         "id": "space-separated-tokens",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "space-separated-tokens"
+        "normativeStatements": 0,
+        "original_id": "space-separated-tokens",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "syntax-references",
         "id": "comma-separated-tokens",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "comma-separated-tokens"
+        "normativeStatements": 0,
+        "original_id": "comma-separated-tokens",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "mq",
         "id": "syntax-references",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "syntax-references"
+        "normativeStatements": 0,
+        "original_id": "syntax-references",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "urls",
         "id": "mq",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "mq"
+        "normativeStatements": 0,
+        "original_id": "mq",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "fetching-resources",
         "id": "urls",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "urls"
+        "normativeStatements": 0,
+        "original_id": "urls",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "parsing-urls",
         "id": "terminology-0",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "terminology-0"
+        "normativeStatements": 0,
+        "original_id": "terminology-0",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "base-urls",
         "id": "parsing-urls",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "parsing-urls"
+        "normativeStatements": 0,
+        "original_id": "parsing-urls",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "resolving-urls",
         "id": "base-urls",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "base-urls"
+        "normativeStatements": 0,
+        "original_id": "base-urls",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "url-manipulation-and-creation",
         "id": "resolving-urls",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "resolving-urls"
+        "normativeStatements": 0,
+        "original_id": "resolving-urls",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "dynamic-changes-to-base-urls",
         "id": "url-manipulation-and-creation",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "url-manipulation-and-creation"
+        "normativeStatements": 0,
+        "original_id": "url-manipulation-and-creation",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "interfaces-for-url-manipulation",
         "id": "dynamic-changes-to-base-urls",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "dynamic-changes-to-base-urls"
+        "normativeStatements": 0,
+        "original_id": "dynamic-changes-to-base-urls",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "fetching-resources",
         "id": "interfaces-for-url-manipulation",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "interfaces-for-url-manipulation"
+        "normativeStatements": 0,
+        "original_id": "interfaces-for-url-manipulation",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "common-dom-interfaces",
         "id": "fetching-resources",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "fetching-resources"
+        "normativeStatements": 0,
+        "original_id": "fetching-resources",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "processing-model",
         "id": "terminology-1",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "terminology-1"
+        "normativeStatements": 0,
+        "original_id": "terminology-1",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "encrypted-http-and-related-security-concerns",
         "id": "processing-model",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "processing-model"
+        "normativeStatements": 0,
+        "original_id": "processing-model",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "content-type-sniffing",
         "id": "encrypted-http-and-related-security-concerns",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "encrypted-http-and-related-security-concerns"
+        "normativeStatements": 0,
+        "original_id": "encrypted-http-and-related-security-concerns",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "extracting-character-encodings-from-meta-elements",
         "id": "content-type-sniffing",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "content-type-sniffing"
+        "normativeStatements": 0,
+        "original_id": "content-type-sniffing",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "cors-settings-attributes",
         "id": "extracting-character-encodings-from-meta-elements",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "extracting-character-encodings-from-meta-elements"
+        "normativeStatements": 0,
+        "original_id": "extracting-character-encodings-from-meta-elements",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "cors-enabled-fetch",
         "id": "cors-settings-attributes",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "cors-settings-attributes"
+        "normativeStatements": 0,
+        "original_id": "cors-settings-attributes",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "common-dom-interfaces",
         "id": "cors-enabled-fetch",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "cors-enabled-fetch"
+        "normativeStatements": 0,
+        "original_id": "cors-enabled-fetch",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "namespaces",
         "id": "common-dom-interfaces",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "common-dom-interfaces"
+        "normativeStatements": 0,
+        "original_id": "common-dom-interfaces",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "collections",
         "id": "reflecting-content-attributes-in-idl-attributes",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "reflecting-content-attributes-in-idl-attributes"
+        "normativeStatements": 0,
+        "original_id": "reflecting-content-attributes-in-idl-attributes",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "domstringmap",
         "id": "collections",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "collections"
+        "normativeStatements": 0,
+        "original_id": "collections",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "transferable-objects",
         "id": "domstringmap",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "domstringmap"
+        "normativeStatements": 0,
+        "original_id": "domstringmap",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "safe-passing-of-structured-data",
         "id": "transferable-objects",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "transferable-objects"
+        "normativeStatements": 0,
+        "original_id": "transferable-objects",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "garbage-collection",
         "id": "safe-passing-of-structured-data",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "safe-passing-of-structured-data"
+        "normativeStatements": 0,
+        "original_id": "safe-passing-of-structured-data",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "namespaces",
         "id": "garbage-collection",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "garbage-collection"
+        "normativeStatements": 0,
+        "original_id": "garbage-collection",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "dom",
         "id": "namespaces",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "namespaces"
+        "normativeStatements": 0,
+        "original_id": "namespaces",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "semantics",
         "id": "dom",
+        "idlComplexity": 1,
         "level": 1,
-        "original_id": "dom"
+        "normativeStatements": 0,
+        "original_id": "dom",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "elements",
         "id": "documents",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "documents"
+        "normativeStatements": 0,
+        "original_id": "documents",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "security-document",
         "id": "the-document-object",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-document-object"
+        "normativeStatements": 0,
+        "original_id": "the-document-object",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "resource-metadata-management",
         "id": "security-document",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "security-document"
+        "normativeStatements": 0,
+        "original_id": "security-document",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "dom-tree-accessors",
         "id": "resource-metadata-management",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "resource-metadata-management"
+        "normativeStatements": 0,
+        "original_id": "resource-metadata-management",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "loading-xml-documents",
         "id": "dom-tree-accessors",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "dom-tree-accessors"
+        "normativeStatements": 0,
+        "original_id": "dom-tree-accessors",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "elements",
         "id": "loading-xml-documents",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "loading-xml-documents"
+        "normativeStatements": 0,
+        "original_id": "loading-xml-documents",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "interactions-with-xpath-and-xslt",
         "id": "elements",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "elements"
+        "normativeStatements": 0,
+        "original_id": "elements",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "elements-in-the-dom",
         "id": "semantics-0",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "semantics-0"
+        "normativeStatements": 0,
+        "original_id": "semantics-0",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "global-attributes",
         "id": "elements-in-the-dom",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "elements-in-the-dom"
+        "normativeStatements": 0,
+        "original_id": "elements-in-the-dom",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "element-definitions",
         "id": "global-attributes",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "global-attributes"
+        "normativeStatements": 0,
+        "original_id": "global-attributes",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "content-models",
         "id": "element-definitions",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "element-definitions"
+        "normativeStatements": 0,
+        "original_id": "element-definitions",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "requirements-relating-to-bidirectional-algorithm-formatting-characters",
         "id": "content-models",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "content-models"
+        "normativeStatements": 0,
+        "original_id": "content-models",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "wai-aria",
         "id": "requirements-relating-to-bidirectional-algorithm-formatting-characters",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "requirements-relating-to-bidirectional-algorithm-formatting-characters"
+        "normativeStatements": 0,
+        "original_id": "requirements-relating-to-bidirectional-algorithm-formatting-characters",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "interactions-with-xpath-and-xslt",
         "id": "wai-aria",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "wai-aria"
+        "normativeStatements": 0,
+        "original_id": "wai-aria",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "dynamic-markup-insertion",
         "id": "interactions-with-xpath-and-xslt",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "interactions-with-xpath-and-xslt"
+        "normativeStatements": 0,
+        "original_id": "interactions-with-xpath-and-xslt",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "semantics",
         "id": "dynamic-markup-insertion",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "dynamic-markup-insertion"
+        "normativeStatements": 0,
+        "original_id": "dynamic-markup-insertion",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "closing-the-input-stream",
         "id": "opening-the-input-stream",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "opening-the-input-stream"
+        "normativeStatements": 0,
+        "original_id": "opening-the-input-stream",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "document.write()",
         "id": "closing-the-input-stream",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "closing-the-input-stream"
+        "normativeStatements": 0,
+        "original_id": "closing-the-input-stream",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "document.writeln()",
         "id": "document-write",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "document.write()"
+        "normativeStatements": 0,
+        "original_id": "document.write()",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "semantics",
         "id": "document-writeln",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "document.writeln()"
+        "normativeStatements": 0,
+        "original_id": "document.writeln()",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "browsers",
         "id": "semantics",
+        "idlComplexity": 1,
         "level": 1,
-        "original_id": "semantics"
+        "normativeStatements": 0,
+        "original_id": "semantics",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "document-metadata",
         "id": "the-root-element",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "the-root-element"
+        "normativeStatements": 0,
+        "original_id": "the-root-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "document-metadata",
         "id": "the-html-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-html-element"
+        "normativeStatements": 0,
+        "original_id": "the-html-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "scripting-1",
         "id": "document-metadata",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "document-metadata"
+        "normativeStatements": 0,
+        "original_id": "document-metadata",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-title-element",
         "id": "the-head-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-head-element"
+        "normativeStatements": 0,
+        "original_id": "the-head-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-base-element",
         "id": "the-title-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-title-element"
+        "normativeStatements": 0,
+        "original_id": "the-title-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-link-element",
         "id": "the-base-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-base-element"
+        "normativeStatements": 0,
+        "original_id": "the-base-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-meta-element",
         "id": "the-link-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-link-element"
+        "normativeStatements": 0,
+        "original_id": "the-link-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-style-element",
         "id": "the-meta-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-meta-element"
+        "normativeStatements": 0,
+        "original_id": "the-meta-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "styling",
         "id": "the-style-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-style-element"
+        "normativeStatements": 0,
+        "original_id": "the-style-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "scripting-1",
         "id": "styling",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "styling"
+        "normativeStatements": 0,
+        "original_id": "styling",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "sections",
         "id": "scripting-1",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "scripting-1"
+        "normativeStatements": 0,
+        "original_id": "scripting-1",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-noscript-element",
         "id": "the-script-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-script-element"
+        "normativeStatements": 0,
+        "original_id": "the-script-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "sections",
         "id": "the-noscript-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-noscript-element"
+        "normativeStatements": 0,
+        "original_id": "the-noscript-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "grouping-content",
         "id": "sections",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "sections"
+        "normativeStatements": 0,
+        "original_id": "sections",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-article-element",
         "id": "the-body-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-body-element"
+        "normativeStatements": 0,
+        "original_id": "the-body-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-section-element",
         "id": "the-article-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-article-element"
+        "normativeStatements": 0,
+        "original_id": "the-article-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-nav-element",
         "id": "the-section-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-section-element"
+        "normativeStatements": 0,
+        "original_id": "the-section-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-aside-element",
         "id": "the-nav-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-nav-element"
+        "normativeStatements": 0,
+        "original_id": "the-nav-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-h1,-h2,-h3,-h4,-h5,-and-h6-elements",
         "id": "the-aside-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-aside-element"
+        "normativeStatements": 0,
+        "original_id": "the-aside-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-hgroup-element",
         "id": "the-h1-h2-h3-h4-h5-and-h6-elements",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-h1,-h2,-h3,-h4,-h5,-and-h6-elements"
+        "normativeStatements": 0,
+        "original_id": "the-h1,-h2,-h3,-h4,-h5,-and-h6-elements",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-header-element",
         "id": "the-hgroup-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-hgroup-element"
+        "normativeStatements": 0,
+        "original_id": "the-hgroup-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-footer-element",
         "id": "the-header-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-header-element"
+        "normativeStatements": 0,
+        "original_id": "the-header-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-address-element",
         "id": "the-footer-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-footer-element"
+        "normativeStatements": 0,
+        "original_id": "the-footer-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "headings-and-sections",
         "id": "the-address-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-address-element"
+        "normativeStatements": 0,
+        "original_id": "the-address-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "usage-summary-0",
         "id": "headings-and-sections",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "headings-and-sections"
+        "normativeStatements": 0,
+        "original_id": "headings-and-sections",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "grouping-content",
         "id": "usage-summary-0",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "usage-summary-0"
+        "normativeStatements": 0,
+        "original_id": "usage-summary-0",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "text-level-semantics",
         "id": "grouping-content",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "grouping-content"
+        "normativeStatements": 0,
+        "original_id": "grouping-content",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-hr-element",
         "id": "the-p-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-p-element"
+        "normativeStatements": 0,
+        "original_id": "the-p-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-pre-element",
         "id": "the-hr-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-hr-element"
+        "normativeStatements": 0,
+        "original_id": "the-hr-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-blockquote-element",
         "id": "the-pre-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-pre-element"
+        "normativeStatements": 0,
+        "original_id": "the-pre-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-ol-element",
         "id": "the-blockquote-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-blockquote-element"
+        "normativeStatements": 0,
+        "original_id": "the-blockquote-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-ul-element",
         "id": "the-ol-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-ol-element"
+        "normativeStatements": 0,
+        "original_id": "the-ol-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-li-element",
         "id": "the-ul-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-ul-element"
+        "normativeStatements": 0,
+        "original_id": "the-ul-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-dl-element",
         "id": "the-li-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-li-element"
+        "normativeStatements": 0,
+        "original_id": "the-li-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-dt-element",
         "id": "the-dl-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-dl-element"
+        "normativeStatements": 0,
+        "original_id": "the-dl-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-dd-element",
         "id": "the-dt-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-dt-element"
+        "normativeStatements": 0,
+        "original_id": "the-dt-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-figure-element",
         "id": "the-dd-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-dd-element"
+        "normativeStatements": 0,
+        "original_id": "the-dd-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-figcaption-element",
         "id": "the-figure-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-figure-element"
+        "normativeStatements": 0,
+        "original_id": "the-figure-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-div-element",
         "id": "the-figcaption-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-figcaption-element"
+        "normativeStatements": 0,
+        "original_id": "the-figcaption-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-main-element",
         "id": "the-div-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-div-element"
+        "normativeStatements": 0,
+        "original_id": "the-div-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "text-level-semantics",
         "id": "the-main-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-main-element"
+        "normativeStatements": 0,
+        "original_id": "the-main-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "edits",
         "id": "text-level-semantics",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "text-level-semantics"
+        "normativeStatements": 0,
+        "original_id": "text-level-semantics",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-em-element",
         "id": "the-a-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-a-element"
+        "normativeStatements": 0,
+        "original_id": "the-a-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-strong-element",
         "id": "the-em-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-em-element"
+        "normativeStatements": 0,
+        "original_id": "the-em-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-small-element",
         "id": "the-strong-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-strong-element"
+        "normativeStatements": 0,
+        "original_id": "the-strong-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-s-element",
         "id": "the-small-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-small-element"
+        "normativeStatements": 0,
+        "original_id": "the-small-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-cite-element",
         "id": "the-s-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-s-element"
+        "normativeStatements": 0,
+        "original_id": "the-s-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-q-element",
         "id": "the-cite-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-cite-element"
+        "normativeStatements": 0,
+        "original_id": "the-cite-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-dfn-element",
         "id": "the-q-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-q-element"
+        "normativeStatements": 0,
+        "original_id": "the-q-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-abbr-element",
         "id": "the-dfn-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-dfn-element"
+        "normativeStatements": 0,
+        "original_id": "the-dfn-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-time-element",
         "id": "the-abbr-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-abbr-element"
+        "normativeStatements": 0,
+        "original_id": "the-abbr-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-code-element",
         "id": "the-time-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-time-element"
+        "normativeStatements": 0,
+        "original_id": "the-time-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-var-element",
         "id": "the-code-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-code-element"
+        "normativeStatements": 0,
+        "original_id": "the-code-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-samp-element",
         "id": "the-var-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-var-element"
+        "normativeStatements": 0,
+        "original_id": "the-var-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-kbd-element",
         "id": "the-samp-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-samp-element"
+        "normativeStatements": 0,
+        "original_id": "the-samp-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-sub-and-sup-elements",
         "id": "the-kbd-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-kbd-element"
+        "normativeStatements": 0,
+        "original_id": "the-kbd-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-i-element",
         "id": "the-sub-and-sup-elements",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-sub-and-sup-elements"
+        "normativeStatements": 0,
+        "original_id": "the-sub-and-sup-elements",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-b-element",
         "id": "the-i-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-i-element"
+        "normativeStatements": 0,
+        "original_id": "the-i-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-u-element",
         "id": "the-b-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-b-element"
+        "normativeStatements": 0,
+        "original_id": "the-b-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-mark-element",
         "id": "the-u-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-u-element"
+        "normativeStatements": 0,
+        "original_id": "the-u-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-ruby-element",
         "id": "the-mark-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-mark-element"
+        "normativeStatements": 0,
+        "original_id": "the-mark-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-rt-element",
         "id": "the-ruby-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-ruby-element"
+        "normativeStatements": 0,
+        "original_id": "the-ruby-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-rp-element",
         "id": "the-rt-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-rt-element"
+        "normativeStatements": 0,
+        "original_id": "the-rt-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-bdi-element",
         "id": "the-rp-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-rp-element"
+        "normativeStatements": 0,
+        "original_id": "the-rp-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-bdo-element",
         "id": "the-bdi-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-bdi-element"
+        "normativeStatements": 0,
+        "original_id": "the-bdi-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-span-element",
         "id": "the-bdo-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-bdo-element"
+        "normativeStatements": 0,
+        "original_id": "the-bdo-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-br-element",
         "id": "the-span-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-span-element"
+        "normativeStatements": 0,
+        "original_id": "the-span-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-wbr-element",
         "id": "the-br-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-br-element"
+        "normativeStatements": 0,
+        "original_id": "the-br-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "usage-summary",
         "id": "the-wbr-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-wbr-element"
+        "normativeStatements": 0,
+        "original_id": "the-wbr-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "edits",
         "id": "usage-summary",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "usage-summary"
+        "normativeStatements": 0,
+        "original_id": "usage-summary",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "embedded-content-0",
         "id": "edits",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "edits"
+        "normativeStatements": 0,
+        "original_id": "edits",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-del-element",
         "id": "the-ins-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-ins-element"
+        "normativeStatements": 0,
+        "original_id": "the-ins-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "attributes-common-to-ins-and-del-elements",
         "id": "the-del-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-del-element"
+        "normativeStatements": 0,
+        "original_id": "the-del-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "edits-and-paragraphs",
         "id": "attributes-common-to-ins-and-del-elements",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "attributes-common-to-ins-and-del-elements"
+        "normativeStatements": 0,
+        "original_id": "attributes-common-to-ins-and-del-elements",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "edits-and-lists",
         "id": "edits-and-paragraphs",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "edits-and-paragraphs"
+        "normativeStatements": 0,
+        "original_id": "edits-and-paragraphs",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "edits-and-tables",
         "id": "edits-and-lists",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "edits-and-lists"
+        "normativeStatements": 0,
+        "original_id": "edits-and-lists",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "embedded-content-0",
         "id": "edits-and-tables",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "edits-and-tables"
+        "normativeStatements": 0,
+        "original_id": "edits-and-tables",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "tabular-data",
         "id": "embedded-content-0",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "embedded-content-0"
+        "normativeStatements": 0,
+        "original_id": "embedded-content-0",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-iframe-element",
         "id": "the-img-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-img-element"
+        "normativeStatements": 0,
+        "original_id": "the-img-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-embed-element",
         "id": "the-iframe-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-iframe-element"
+        "normativeStatements": 0,
+        "original_id": "the-iframe-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-object-element",
         "id": "the-embed-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-embed-element"
+        "normativeStatements": 0,
+        "original_id": "the-embed-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-param-element",
         "id": "the-object-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-object-element"
+        "normativeStatements": 0,
+        "original_id": "the-object-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-video-element",
         "id": "the-param-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-param-element"
+        "normativeStatements": 0,
+        "original_id": "the-param-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-audio-element",
         "id": "the-video-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-video-element"
+        "normativeStatements": 0,
+        "original_id": "the-video-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-source-element",
         "id": "the-audio-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-audio-element"
+        "normativeStatements": 0,
+        "original_id": "the-audio-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-track-element",
         "id": "the-source-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-source-element"
+        "normativeStatements": 0,
+        "original_id": "the-source-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "media-elements",
         "id": "the-track-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-track-element"
+        "normativeStatements": 0,
+        "original_id": "the-track-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-canvas-element",
         "id": "media-elements",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "media-elements"
+        "normativeStatements": 0,
+        "original_id": "media-elements",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-map-element",
         "id": "the-canvas-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-canvas-element"
+        "normativeStatements": 0,
+        "original_id": "the-canvas-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-area-element",
         "id": "the-map-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-map-element"
+        "normativeStatements": 0,
+        "original_id": "the-map-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "image-maps",
         "id": "the-area-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-area-element"
+        "normativeStatements": 0,
+        "original_id": "the-area-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "mathml",
         "id": "image-maps",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "image-maps"
+        "normativeStatements": 0,
+        "original_id": "image-maps",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "svg",
         "id": "mathml",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "mathml"
+        "normativeStatements": 0,
+        "original_id": "mathml",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "dimension-attributes",
         "id": "svg",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "svg"
+        "normativeStatements": 0,
+        "original_id": "svg",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "tabular-data",
         "id": "dimension-attributes",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "dimension-attributes"
+        "normativeStatements": 0,
+        "original_id": "dimension-attributes",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "forms",
         "id": "tabular-data",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "tabular-data"
+        "normativeStatements": 0,
+        "original_id": "tabular-data",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-caption-element",
         "id": "the-table-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-table-element"
+        "normativeStatements": 0,
+        "original_id": "the-table-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-colgroup-element",
         "id": "the-caption-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-caption-element"
+        "normativeStatements": 0,
+        "original_id": "the-caption-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-col-element",
         "id": "the-colgroup-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-colgroup-element"
+        "normativeStatements": 0,
+        "original_id": "the-colgroup-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-tbody-element",
         "id": "the-col-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-col-element"
+        "normativeStatements": 0,
+        "original_id": "the-col-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-thead-element",
         "id": "the-tbody-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-tbody-element"
+        "normativeStatements": 0,
+        "original_id": "the-tbody-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-tfoot-element",
         "id": "the-thead-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-thead-element"
+        "normativeStatements": 0,
+        "original_id": "the-thead-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-tr-element",
         "id": "the-tfoot-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-tfoot-element"
+        "normativeStatements": 0,
+        "original_id": "the-tfoot-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-td-element",
         "id": "the-tr-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-tr-element"
+        "normativeStatements": 0,
+        "original_id": "the-tr-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-th-element",
         "id": "the-td-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-td-element"
+        "normativeStatements": 0,
+        "original_id": "the-td-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "attributes-common-to-td-and-th-elements",
         "id": "the-th-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-th-element"
+        "normativeStatements": 0,
+        "original_id": "the-th-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "processing-model-1",
         "id": "attributes-common-to-td-and-th-elements",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "attributes-common-to-td-and-th-elements"
+        "normativeStatements": 0,
+        "original_id": "attributes-common-to-td-and-th-elements",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "table-sorting-model",
         "id": "processing-model-1",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "processing-model-1"
+        "normativeStatements": 0,
+        "original_id": "processing-model-1",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "examples",
         "id": "table-sorting-model",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "table-sorting-model"
+        "normativeStatements": 0,
+        "original_id": "table-sorting-model",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "forms",
         "id": "examples",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "examples"
+        "normativeStatements": 0,
+        "original_id": "examples",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "interactive-elements",
         "id": "forms",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "forms"
+        "normativeStatements": 0,
+        "original_id": "forms",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "categories",
         "id": "introduction-1",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "introduction-1"
+        "normativeStatements": 0,
+        "original_id": "introduction-1",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-form-element",
         "id": "categories",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "categories"
+        "normativeStatements": 0,
+        "original_id": "categories",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-fieldset-element",
         "id": "the-form-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-form-element"
+        "normativeStatements": 0,
+        "original_id": "the-form-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-legend-element",
         "id": "the-fieldset-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-fieldset-element"
+        "normativeStatements": 0,
+        "original_id": "the-fieldset-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-label-element",
         "id": "the-legend-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-legend-element"
+        "normativeStatements": 0,
+        "original_id": "the-legend-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-input-element",
         "id": "the-label-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-label-element"
+        "normativeStatements": 0,
+        "original_id": "the-label-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-button-element",
         "id": "the-input-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-input-element"
+        "normativeStatements": 0,
+        "original_id": "the-input-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-select-element",
         "id": "the-button-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-button-element"
+        "normativeStatements": 0,
+        "original_id": "the-button-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-datalist-element",
         "id": "the-select-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-select-element"
+        "normativeStatements": 0,
+        "original_id": "the-select-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-optgroup-element",
         "id": "the-datalist-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-datalist-element"
+        "normativeStatements": 0,
+        "original_id": "the-datalist-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-option-element",
         "id": "the-optgroup-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-optgroup-element"
+        "normativeStatements": 0,
+        "original_id": "the-optgroup-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-textarea-element",
         "id": "the-option-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-option-element"
+        "normativeStatements": 0,
+        "original_id": "the-option-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-keygen-element",
         "id": "the-textarea-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-textarea-element"
+        "normativeStatements": 0,
+        "original_id": "the-textarea-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-output-element",
         "id": "the-keygen-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-keygen-element"
+        "normativeStatements": 0,
+        "original_id": "the-keygen-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-progress-element",
         "id": "the-output-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-output-element"
+        "normativeStatements": 0,
+        "original_id": "the-output-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-meter-element",
         "id": "the-progress-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-progress-element"
+        "normativeStatements": 0,
+        "original_id": "the-progress-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "form-control-infrastructure",
         "id": "the-meter-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-meter-element"
+        "normativeStatements": 0,
+        "original_id": "the-meter-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "attributes-common-to-form-controls",
         "id": "form-control-infrastructure",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "form-control-infrastructure"
+        "normativeStatements": 0,
+        "original_id": "form-control-infrastructure",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "textFieldSelection",
         "id": "attributes-common-to-form-controls",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "attributes-common-to-form-controls"
+        "normativeStatements": 0,
+        "original_id": "attributes-common-to-form-controls",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "constraints",
         "id": "textfieldselection",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "textFieldSelection"
+        "normativeStatements": 0,
+        "original_id": "textFieldSelection",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "form-submission-0",
         "id": "constraints",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "constraints"
+        "normativeStatements": 0,
+        "original_id": "constraints",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "resetting-a-form",
         "id": "form-submission-0",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "form-submission-0"
+        "normativeStatements": 0,
+        "original_id": "form-submission-0",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "interactive-elements",
         "id": "resetting-a-form",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "resetting-a-form"
+        "normativeStatements": 0,
+        "original_id": "resetting-a-form",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "links",
         "id": "interactive-elements",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "interactive-elements"
+        "normativeStatements": 0,
+        "original_id": "interactive-elements",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-summary-element",
         "id": "the-details-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-details-element"
+        "normativeStatements": 0,
+        "original_id": "the-details-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-menu-element",
         "id": "the-summary-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-summary-element"
+        "normativeStatements": 0,
+        "original_id": "the-summary-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-menuitem-element",
         "id": "the-menu-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-menu-element"
+        "normativeStatements": 0,
+        "original_id": "the-menu-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "context-menus",
         "id": "the-menuitem-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-menuitem-element"
+        "normativeStatements": 0,
+        "original_id": "the-menuitem-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "commands",
         "id": "context-menus",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "context-menus"
+        "normativeStatements": 0,
+        "original_id": "context-menus",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-dialog-element",
         "id": "commands",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "commands"
+        "normativeStatements": 0,
+        "original_id": "commands",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "links",
         "id": "the-dialog-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-dialog-element"
+        "normativeStatements": 0,
+        "original_id": "the-dialog-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "common-idioms",
         "id": "links",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "links"
+        "normativeStatements": 0,
+        "original_id": "links",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "links-created-by-a-and-area-elements",
         "id": "introduction-3",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "introduction-3"
+        "normativeStatements": 0,
+        "original_id": "introduction-3",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "following-hyperlinks",
         "id": "links-created-by-a-and-area-elements",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "links-created-by-a-and-area-elements"
+        "normativeStatements": 0,
+        "original_id": "links-created-by-a-and-area-elements",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "downloading-resources",
         "id": "following-hyperlinks",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "following-hyperlinks"
+        "normativeStatements": 0,
+        "original_id": "following-hyperlinks",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "linkTypes",
         "id": "downloading-resources",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "downloading-resources"
+        "normativeStatements": 0,
+        "original_id": "downloading-resources",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "common-idioms",
         "id": "linktypes",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "linkTypes"
+        "normativeStatements": 0,
+        "original_id": "linkTypes",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "disabled-elements",
         "id": "common-idioms",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "common-idioms"
+        "normativeStatements": 0,
+        "original_id": "common-idioms",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "tag-clouds",
         "id": "rel-up",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "rel-up"
+        "normativeStatements": 0,
+        "original_id": "rel-up",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "conversations",
         "id": "tag-clouds",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "tag-clouds"
+        "normativeStatements": 0,
+        "original_id": "tag-clouds",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "footnotes",
         "id": "conversations",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "conversations"
+        "normativeStatements": 0,
+        "original_id": "conversations",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "disabled-elements",
         "id": "footnotes",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "footnotes"
+        "normativeStatements": 0,
+        "original_id": "footnotes",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "selectors",
         "id": "disabled-elements",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "disabled-elements"
+        "normativeStatements": 0,
+        "original_id": "disabled-elements",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "browsers",
         "id": "selectors",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "selectors"
+        "normativeStatements": 0,
+        "original_id": "selectors",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "pseudo-classes",
         "id": "case-sensitivity",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "case-sensitivity"
+        "normativeStatements": 0,
+        "original_id": "case-sensitivity",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "browsers",
         "id": "pseudo-classes",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "pseudo-classes"
+        "normativeStatements": 0,
+        "original_id": "pseudo-classes",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "webappapis",
         "id": "browsers",
+        "idlComplexity": 1,
         "level": 1,
-        "original_id": "browsers"
+        "normativeStatements": 0,
+        "original_id": "browsers",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-window-object",
         "id": "windows",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "windows"
+        "normativeStatements": 0,
+        "original_id": "windows",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "auxiliary-browsing-contexts",
         "id": "nested-browsing-contexts",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "nested-browsing-contexts"
+        "normativeStatements": 0,
+        "original_id": "nested-browsing-contexts",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "secondary-browsing-contexts",
         "id": "auxiliary-browsing-contexts",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "auxiliary-browsing-contexts"
+        "normativeStatements": 0,
+        "original_id": "auxiliary-browsing-contexts",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "security-nav",
         "id": "secondary-browsing-contexts",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "secondary-browsing-contexts"
+        "normativeStatements": 0,
+        "original_id": "secondary-browsing-contexts",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "groupings-of-browsing-contexts",
         "id": "security-nav",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "security-nav"
+        "normativeStatements": 0,
+        "original_id": "security-nav",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "browsing-context-names",
         "id": "groupings-of-browsing-contexts",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "groupings-of-browsing-contexts"
+        "normativeStatements": 0,
+        "original_id": "groupings-of-browsing-contexts",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-window-object",
         "id": "browsing-context-names",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "browsing-context-names"
+        "normativeStatements": 0,
+        "original_id": "browsing-context-names",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "origin",
         "id": "the-window-object",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "the-window-object"
+        "normativeStatements": 0,
+        "original_id": "the-window-object",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "apis-for-creating-and-navigating-browsing-contexts-by-name",
         "id": "security-window",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "security-window"
+        "normativeStatements": 0,
+        "original_id": "security-window",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "accessing-other-browsing-contexts",
         "id": "apis-for-creating-and-navigating-browsing-contexts-by-name",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "apis-for-creating-and-navigating-browsing-contexts-by-name"
+        "normativeStatements": 0,
+        "original_id": "apis-for-creating-and-navigating-browsing-contexts-by-name",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "named-access-on-the-window-object",
         "id": "accessing-other-browsing-contexts",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "accessing-other-browsing-contexts"
+        "normativeStatements": 0,
+        "original_id": "accessing-other-browsing-contexts",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "garbage-collection-and-browsing-contexts",
         "id": "named-access-on-the-window-object",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "named-access-on-the-window-object"
+        "normativeStatements": 0,
+        "original_id": "named-access-on-the-window-object",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "closing-browsing-contexts",
         "id": "garbage-collection-and-browsing-contexts",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "garbage-collection-and-browsing-contexts"
+        "normativeStatements": 0,
+        "original_id": "garbage-collection-and-browsing-contexts",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "browser-interface-elements",
         "id": "closing-browsing-contexts",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "closing-browsing-contexts"
+        "normativeStatements": 0,
+        "original_id": "closing-browsing-contexts",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-windowproxy-object",
         "id": "browser-interface-elements",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "browser-interface-elements"
+        "normativeStatements": 0,
+        "original_id": "browser-interface-elements",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "origin",
         "id": "the-windowproxy-object",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-windowproxy-object"
+        "normativeStatements": 0,
+        "original_id": "the-windowproxy-object",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "sandboxing",
         "id": "origin",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "origin"
+        "normativeStatements": 0,
+        "original_id": "origin",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "sandboxing",
         "id": "relaxing-the-same-origin-restriction",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "relaxing-the-same-origin-restriction"
+        "normativeStatements": 0,
+        "original_id": "relaxing-the-same-origin-restriction",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "history",
         "id": "sandboxing",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "sandboxing"
+        "normativeStatements": 0,
+        "original_id": "sandboxing",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "browsing-the-web",
         "id": "history",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "history"
+        "normativeStatements": 0,
+        "original_id": "history",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-history-interface",
         "id": "the-session-history-of-browsing-contexts",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-session-history-of-browsing-contexts"
+        "normativeStatements": 0,
+        "original_id": "the-session-history-of-browsing-contexts",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-location-interface",
         "id": "the-history-interface",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-history-interface"
+        "normativeStatements": 0,
+        "original_id": "the-history-interface",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "history-notes",
         "id": "the-location-interface",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-location-interface"
+        "normativeStatements": 0,
+        "original_id": "the-location-interface",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "browsing-the-web",
         "id": "history-notes",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "history-notes"
+        "normativeStatements": 0,
+        "original_id": "history-notes",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "offline",
         "id": "browsing-the-web",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "browsing-the-web"
+        "normativeStatements": 0,
+        "original_id": "browsing-the-web",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "read-html",
         "id": "navigating-across-documents",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "navigating-across-documents"
+        "normativeStatements": 0,
+        "original_id": "navigating-across-documents",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "read-xml",
         "id": "read-html",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "read-html"
+        "normativeStatements": 0,
+        "original_id": "read-html",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "read-text",
         "id": "read-xml",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "read-xml"
+        "normativeStatements": 0,
+        "original_id": "read-xml",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "read-multipart-x-mixed-replace",
         "id": "read-text",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "read-text"
+        "normativeStatements": 0,
+        "original_id": "read-text",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "read-media",
         "id": "read-multipart-x-mixed-replace",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "read-multipart-x-mixed-replace"
+        "normativeStatements": 0,
+        "original_id": "read-multipart-x-mixed-replace",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "read-plugin",
         "id": "read-media",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "read-media"
+        "normativeStatements": 0,
+        "original_id": "read-media",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "read-ua-inline",
         "id": "read-plugin",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "read-plugin"
+        "normativeStatements": 0,
+        "original_id": "read-plugin",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "scroll-to-fragid",
         "id": "read-ua-inline",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "read-ua-inline"
+        "normativeStatements": 0,
+        "original_id": "read-ua-inline",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "history-traversal",
         "id": "scroll-to-fragid",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "scroll-to-fragid"
+        "normativeStatements": 0,
+        "original_id": "scroll-to-fragid",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "unloading-documents",
         "id": "history-traversal",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "history-traversal"
+        "normativeStatements": 0,
+        "original_id": "history-traversal",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "aborting-a-document-load",
         "id": "unloading-documents",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "unloading-documents"
+        "normativeStatements": 0,
+        "original_id": "unloading-documents",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "offline",
         "id": "aborting-a-document-load",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "aborting-a-document-load"
+        "normativeStatements": 0,
+        "original_id": "aborting-a-document-load",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "webappapis",
         "id": "offline",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "offline"
+        "normativeStatements": 0,
+        "original_id": "offline",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "appcache",
         "id": "introduction-4",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "introduction-4"
+        "normativeStatements": 0,
+        "original_id": "introduction-4",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "manifests",
         "id": "appcache",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "appcache"
+        "normativeStatements": 0,
+        "original_id": "appcache",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "downloading-or-updating-an-application-cache",
         "id": "manifests",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "manifests"
+        "normativeStatements": 0,
+        "original_id": "manifests",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-application-cache-selection-algorithm",
         "id": "downloading-or-updating-an-application-cache",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "downloading-or-updating-an-application-cache"
+        "normativeStatements": 0,
+        "original_id": "downloading-or-updating-an-application-cache",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "changesToNetworkingModel",
         "id": "the-application-cache-selection-algorithm",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-application-cache-selection-algorithm"
+        "normativeStatements": 0,
+        "original_id": "the-application-cache-selection-algorithm",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "expiring-application-caches",
         "id": "changestonetworkingmodel",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "changesToNetworkingModel"
+        "normativeStatements": 0,
+        "original_id": "changesToNetworkingModel",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "disk-space",
         "id": "expiring-application-caches",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "expiring-application-caches"
+        "normativeStatements": 0,
+        "original_id": "expiring-application-caches",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "application-cache-api",
         "id": "disk-space",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "disk-space"
+        "normativeStatements": 0,
+        "original_id": "disk-space",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "browser-state",
         "id": "application-cache-api",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "application-cache-api"
+        "normativeStatements": 0,
+        "original_id": "application-cache-api",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "webappapis",
         "id": "browser-state",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "browser-state"
+        "normativeStatements": 0,
+        "original_id": "browser-state",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "editing",
         "id": "webappapis",
+        "idlComplexity": 1,
         "level": 1,
-        "original_id": "webappapis"
+        "normativeStatements": 0,
+        "original_id": "webappapis",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "atob",
         "id": "scripting",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "scripting"
+        "normativeStatements": 0,
+        "original_id": "scripting",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "enabling-and-disabling-scripting",
         "id": "introduction-5",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "introduction-5"
+        "normativeStatements": 0,
+        "original_id": "introduction-5",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "processing-model-3",
         "id": "enabling-and-disabling-scripting",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "enabling-and-disabling-scripting"
+        "normativeStatements": 0,
+        "original_id": "enabling-and-disabling-scripting",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "event-loops",
         "id": "processing-model-3",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "processing-model-3"
+        "normativeStatements": 0,
+        "original_id": "processing-model-3",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "javascript-protocol",
         "id": "event-loops",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "event-loops"
+        "normativeStatements": 0,
+        "original_id": "event-loops",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "events",
         "id": "javascript-protocol",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "javascript-protocol"
+        "normativeStatements": 0,
+        "original_id": "javascript-protocol",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "atob",
         "id": "events",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "events"
+        "normativeStatements": 0,
+        "original_id": "events",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "timers",
         "id": "atob",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "atob"
+        "normativeStatements": 0,
+        "original_id": "atob",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "user-prompts",
         "id": "timers",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "timers"
+        "normativeStatements": 0,
+        "original_id": "timers",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "system-state-and-capabilities",
         "id": "user-prompts",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "user-prompts"
+        "normativeStatements": 0,
+        "original_id": "user-prompts",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "printing",
         "id": "simple-dialogs",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "simple-dialogs"
+        "normativeStatements": 0,
+        "original_id": "simple-dialogs",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "dialogs-implemented-using-separate-documents",
         "id": "printing",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "printing"
+        "normativeStatements": 0,
+        "original_id": "printing",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "system-state-and-capabilities",
         "id": "dialogs-implemented-using-separate-documents",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "dialogs-implemented-using-separate-documents"
+        "normativeStatements": 0,
+        "original_id": "dialogs-implemented-using-separate-documents",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "images",
         "id": "system-state-and-capabilities",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "system-state-and-capabilities"
+        "normativeStatements": 0,
+        "original_id": "system-state-and-capabilities",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-external-interface",
         "id": "the-navigator-object",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-navigator-object"
+        "normativeStatements": 0,
+        "original_id": "the-navigator-object",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "images",
         "id": "the-external-interface",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-external-interface"
+        "normativeStatements": 0,
+        "original_id": "the-external-interface",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "editing",
         "id": "images",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "images"
+        "normativeStatements": 0,
+        "original_id": "images",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "syntax",
         "id": "editing",
+        "idlComplexity": 1,
         "level": 1,
-        "original_id": "editing"
+        "normativeStatements": 0,
+        "original_id": "editing",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "inert-subtrees",
         "id": "the-hidden-attribute",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "the-hidden-attribute"
+        "normativeStatements": 0,
+        "original_id": "the-hidden-attribute",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "activation",
         "id": "inert-subtrees",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "inert-subtrees"
+        "normativeStatements": 0,
+        "original_id": "inert-subtrees",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "activation",
         "id": "the-inert-attribute",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-inert-attribute"
+        "normativeStatements": 0,
+        "original_id": "the-inert-attribute",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "focus",
         "id": "activation",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "activation"
+        "normativeStatements": 0,
+        "original_id": "activation",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "assigning-keyboard-shortcuts",
         "id": "focus",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "focus"
+        "normativeStatements": 0,
+        "original_id": "focus",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "focus-management",
         "id": "sequential-focus-navigation-and-the-tabindex-attribute",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "sequential-focus-navigation-and-the-tabindex-attribute"
+        "normativeStatements": 0,
+        "original_id": "sequential-focus-navigation-and-the-tabindex-attribute",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "document-level-focus-apis",
         "id": "focus-management",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "focus-management"
+        "normativeStatements": 0,
+        "original_id": "focus-management",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "element-level-focus-apis",
         "id": "document-level-focus-apis",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "document-level-focus-apis"
+        "normativeStatements": 0,
+        "original_id": "document-level-focus-apis",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "assigning-keyboard-shortcuts",
         "id": "element-level-focus-apis",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "element-level-focus-apis"
+        "normativeStatements": 0,
+        "original_id": "element-level-focus-apis",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "editing-0",
         "id": "assigning-keyboard-shortcuts",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "assigning-keyboard-shortcuts"
+        "normativeStatements": 0,
+        "original_id": "assigning-keyboard-shortcuts",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-accesskey-attribute",
         "id": "introduction-6",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "introduction-6"
+        "normativeStatements": 0,
+        "original_id": "introduction-6",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "processing-model-5",
         "id": "the-accesskey-attribute",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-accesskey-attribute"
+        "normativeStatements": 0,
+        "original_id": "the-accesskey-attribute",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "editing-0",
         "id": "processing-model-5",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "processing-model-5"
+        "normativeStatements": 0,
+        "original_id": "processing-model-5",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "dnd",
         "id": "editing-0",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "editing-0"
+        "normativeStatements": 0,
+        "original_id": "editing-0",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "making-entire-documents-editable:-the-designmode-idl-attribute",
         "id": "contenteditable",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "contenteditable"
+        "normativeStatements": 0,
+        "original_id": "contenteditable",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "best-practices-for-in-page-editors",
         "id": "making-entire-documents-editable-the-designmode-idl-attribute",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "making-entire-documents-editable:-the-designmode-idl-attribute"
+        "normativeStatements": 0,
+        "original_id": "making-entire-documents-editable:-the-designmode-idl-attribute",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "editing-apis",
         "id": "best-practices-for-in-page-editors",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "best-practices-for-in-page-editors"
+        "normativeStatements": 0,
+        "original_id": "best-practices-for-in-page-editors",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "spelling-and-grammar-checking",
         "id": "editing-apis",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "editing-apis"
+        "normativeStatements": 0,
+        "original_id": "editing-apis",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "dnd",
         "id": "spelling-and-grammar-checking",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "spelling-and-grammar-checking"
+        "normativeStatements": 0,
+        "original_id": "spelling-and-grammar-checking",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "syntax",
         "id": "dnd",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "dnd"
+        "normativeStatements": 0,
+        "original_id": "dnd",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-drag-data-store",
         "id": "introduction-7",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "introduction-7"
+        "normativeStatements": 0,
+        "original_id": "introduction-7",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-datatransfer-interface",
         "id": "the-drag-data-store",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-drag-data-store"
+        "normativeStatements": 0,
+        "original_id": "the-drag-data-store",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-dragevent-interface",
         "id": "the-datatransfer-interface",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-datatransfer-interface"
+        "normativeStatements": 0,
+        "original_id": "the-datatransfer-interface",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "drag-and-drop-processing-model",
         "id": "the-dragevent-interface",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-dragevent-interface"
+        "normativeStatements": 0,
+        "original_id": "the-dragevent-interface",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "dndevents",
         "id": "drag-and-drop-processing-model",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "drag-and-drop-processing-model"
+        "normativeStatements": 0,
+        "original_id": "drag-and-drop-processing-model",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-draggable-attribute",
         "id": "dndevents",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "dndevents"
+        "normativeStatements": 0,
+        "original_id": "dndevents",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-dropzone-attribute",
         "id": "the-draggable-attribute",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-draggable-attribute"
+        "normativeStatements": 0,
+        "original_id": "the-draggable-attribute",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "security-risks-in-the-drag-and-drop-model",
         "id": "the-dropzone-attribute",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-dropzone-attribute"
+        "normativeStatements": 0,
+        "original_id": "the-dropzone-attribute",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "syntax",
         "id": "security-risks-in-the-drag-and-drop-model",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "security-risks-in-the-drag-and-drop-model"
+        "normativeStatements": 0,
+        "original_id": "security-risks-in-the-drag-and-drop-model",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-xhtml-syntax",
         "id": "syntax",
+        "idlComplexity": 1,
         "level": 1,
-        "original_id": "syntax"
+        "normativeStatements": 0,
+        "original_id": "syntax",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "parsing",
         "id": "writing",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "writing"
+        "normativeStatements": 0,
+        "original_id": "writing",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "elements-0",
         "id": "the-doctype",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-doctype"
+        "normativeStatements": 0,
+        "original_id": "the-doctype",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "text",
         "id": "elements-0",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "elements-0"
+        "normativeStatements": 0,
+        "original_id": "elements-0",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "character-references",
         "id": "text",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "text"
+        "normativeStatements": 0,
+        "original_id": "text",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "cdata-sections",
         "id": "character-references",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "character-references"
+        "normativeStatements": 0,
+        "original_id": "character-references",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "comments",
         "id": "cdata-sections",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "cdata-sections"
+        "normativeStatements": 0,
+        "original_id": "cdata-sections",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "parsing",
         "id": "comments",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "comments"
+        "normativeStatements": 0,
+        "original_id": "comments",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "serializing-html-fragments",
         "id": "parsing",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "parsing"
+        "normativeStatements": 0,
+        "original_id": "parsing",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-input-byte-stream",
         "id": "overview-of-the-parsing-model",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "overview-of-the-parsing-model"
+        "normativeStatements": 0,
+        "original_id": "overview-of-the-parsing-model",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "parse-state",
         "id": "the-input-byte-stream",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-input-byte-stream"
+        "normativeStatements": 0,
+        "original_id": "the-input-byte-stream",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "tokenization",
         "id": "parse-state",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "parse-state"
+        "normativeStatements": 0,
+        "original_id": "parse-state",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "tree-construction",
         "id": "tokenization",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "tokenization"
+        "normativeStatements": 0,
+        "original_id": "tokenization",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-end",
         "id": "tree-construction",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "tree-construction"
+        "normativeStatements": 0,
+        "original_id": "tree-construction",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "coercing-an-html-dom-into-an-infoset",
         "id": "the-end",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-end"
+        "normativeStatements": 0,
+        "original_id": "the-end",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "an-introduction-to-error-handling-and-strange-cases-in-the-parser",
         "id": "coercing-an-html-dom-into-an-infoset",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "coercing-an-html-dom-into-an-infoset"
+        "normativeStatements": 0,
+        "original_id": "coercing-an-html-dom-into-an-infoset",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "serializing-html-fragments",
         "id": "an-introduction-to-error-handling-and-strange-cases-in-the-parser",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "an-introduction-to-error-handling-and-strange-cases-in-the-parser"
+        "normativeStatements": 0,
+        "original_id": "an-introduction-to-error-handling-and-strange-cases-in-the-parser",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "parsing-html-fragments",
         "id": "serializing-html-fragments",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "serializing-html-fragments"
+        "normativeStatements": 0,
+        "original_id": "serializing-html-fragments",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "named-character-references",
         "id": "parsing-html-fragments",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "parsing-html-fragments"
+        "normativeStatements": 0,
+        "original_id": "parsing-html-fragments",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-xhtml-syntax",
         "id": "named-character-references",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "named-character-references"
+        "normativeStatements": 0,
+        "original_id": "named-character-references",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "rendering",
         "id": "the-xhtml-syntax",
+        "idlComplexity": 1,
         "level": 1,
-        "original_id": "the-xhtml-syntax"
+        "normativeStatements": 0,
+        "original_id": "the-xhtml-syntax",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "parsing-xhtml-documents",
         "id": "writing-xhtml-documents",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "writing-xhtml-documents"
+        "normativeStatements": 0,
+        "original_id": "writing-xhtml-documents",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "serializing-xhtml-fragments",
         "id": "parsing-xhtml-documents",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "parsing-xhtml-documents"
+        "normativeStatements": 0,
+        "original_id": "parsing-xhtml-documents",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "parsing-xhtml-fragments",
         "id": "serializing-xhtml-fragments",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "serializing-xhtml-fragments"
+        "normativeStatements": 0,
+        "original_id": "serializing-xhtml-fragments",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "rendering",
         "id": "parsing-xhtml-fragments",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "parsing-xhtml-fragments"
+        "normativeStatements": 0,
+        "original_id": "parsing-xhtml-fragments",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "obsolete",
         "id": "rendering",
+        "idlComplexity": 1,
         "level": 1,
-        "original_id": "rendering"
+        "normativeStatements": 0,
+        "original_id": "rendering",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-css-user-agent-style-sheet-and-presentational-hints",
         "id": "introduction-8",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "introduction-8"
+        "normativeStatements": 0,
+        "original_id": "introduction-8",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "non-replaced-elements",
         "id": "the-css-user-agent-style-sheet-and-presentational-hints",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "the-css-user-agent-style-sheet-and-presentational-hints"
+        "normativeStatements": 0,
+        "original_id": "the-css-user-agent-style-sheet-and-presentational-hints",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "replaced-elements",
         "id": "non-replaced-elements",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "non-replaced-elements"
+        "normativeStatements": 0,
+        "original_id": "non-replaced-elements",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-page",
         "id": "hidden-elements",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "hidden-elements"
+        "normativeStatements": 0,
+        "original_id": "hidden-elements",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "flow-content-0",
         "id": "the-page",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-page"
+        "normativeStatements": 0,
+        "original_id": "the-page",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "phrasing-content-0",
         "id": "flow-content-0",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "flow-content-0"
+        "normativeStatements": 0,
+        "original_id": "flow-content-0",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "bidirectional-text",
         "id": "phrasing-content-0",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "phrasing-content-0"
+        "normativeStatements": 0,
+        "original_id": "phrasing-content-0",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "quotes",
         "id": "bidirectional-text",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "bidirectional-text"
+        "normativeStatements": 0,
+        "original_id": "bidirectional-text",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "sections-and-headings",
         "id": "quotes",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "quotes"
+        "normativeStatements": 0,
+        "original_id": "quotes",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "lists",
         "id": "sections-and-headings",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "sections-and-headings"
+        "normativeStatements": 0,
+        "original_id": "sections-and-headings",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "tables",
         "id": "lists",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "lists"
+        "normativeStatements": 0,
+        "original_id": "lists",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "form-controls",
         "id": "tables",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "tables"
+        "normativeStatements": 0,
+        "original_id": "tables",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-hr-element-0",
         "id": "form-controls",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "form-controls"
+        "normativeStatements": 0,
+        "original_id": "form-controls",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-fieldset-element-0",
         "id": "the-hr-element-0",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-hr-element-0"
+        "normativeStatements": 0,
+        "original_id": "the-hr-element-0",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "replaced-elements",
         "id": "the-fieldset-element-0",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-fieldset-element-0"
+        "normativeStatements": 0,
+        "original_id": "the-fieldset-element-0",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "bindings",
         "id": "replaced-elements",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "replaced-elements"
+        "normativeStatements": 0,
+        "original_id": "replaced-elements",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "images-0",
         "id": "embedded-content-1",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "embedded-content-1"
+        "normativeStatements": 0,
+        "original_id": "embedded-content-1",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "attributes-for-embedded-content-and-images",
         "id": "images-0",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "images-0"
+        "normativeStatements": 0,
+        "original_id": "images-0",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "image-maps-0",
         "id": "attributes-for-embedded-content-and-images",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "attributes-for-embedded-content-and-images"
+        "normativeStatements": 0,
+        "original_id": "attributes-for-embedded-content-and-images",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "bindings",
         "id": "image-maps-0",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "image-maps-0"
+        "normativeStatements": 0,
+        "original_id": "image-maps-0",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "frames-and-framesets",
         "id": "bindings",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "bindings"
+        "normativeStatements": 0,
+        "original_id": "bindings",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-button-element-0",
         "id": "introduction-9",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "introduction-9"
+        "normativeStatements": 0,
+        "original_id": "introduction-9",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-details-element-0",
         "id": "the-button-element-0",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-button-element-0"
+        "normativeStatements": 0,
+        "original_id": "the-button-element-0",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-input-element-as-a-text-entry-widget",
         "id": "the-details-element-0",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-details-element-0"
+        "normativeStatements": 0,
+        "original_id": "the-details-element-0",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-input-element-as-domain-specific-widgets",
         "id": "the-input-element-as-a-text-entry-widget",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-input-element-as-a-text-entry-widget"
+        "normativeStatements": 0,
+        "original_id": "the-input-element-as-a-text-entry-widget",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-input-element-as-a-range-control",
         "id": "the-input-element-as-domain-specific-widgets",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-input-element-as-domain-specific-widgets"
+        "normativeStatements": 0,
+        "original_id": "the-input-element-as-domain-specific-widgets",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-input-element-as-a-color-well",
         "id": "the-input-element-as-a-range-control",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-input-element-as-a-range-control"
+        "normativeStatements": 0,
+        "original_id": "the-input-element-as-a-range-control",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-input-element-as-a-checkbox-and-radio-button-widgets",
         "id": "the-input-element-as-a-color-well",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-input-element-as-a-color-well"
+        "normativeStatements": 0,
+        "original_id": "the-input-element-as-a-color-well",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-input-element-as-a-file-upload-control",
         "id": "the-input-element-as-a-checkbox-and-radio-button-widgets",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-input-element-as-a-checkbox-and-radio-button-widgets"
+        "normativeStatements": 0,
+        "original_id": "the-input-element-as-a-checkbox-and-radio-button-widgets",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-input-element-as-a-button",
         "id": "the-input-element-as-a-file-upload-control",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-input-element-as-a-file-upload-control"
+        "normativeStatements": 0,
+        "original_id": "the-input-element-as-a-file-upload-control",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-marquee-element",
         "id": "the-input-element-as-a-button",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-input-element-as-a-button"
+        "normativeStatements": 0,
+        "original_id": "the-input-element-as-a-button",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-meter-element-0",
         "id": "the-marquee-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-marquee-element"
+        "normativeStatements": 0,
+        "original_id": "the-marquee-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-progress-element-0",
         "id": "the-meter-element-0",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-meter-element-0"
+        "normativeStatements": 0,
+        "original_id": "the-meter-element-0",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-select-element-0",
         "id": "the-progress-element-0",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-progress-element-0"
+        "normativeStatements": 0,
+        "original_id": "the-progress-element-0",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-textarea-element-0",
         "id": "the-select-element-0",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-select-element-0"
+        "normativeStatements": 0,
+        "original_id": "the-select-element-0",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-keygen-element-0",
         "id": "the-textarea-element-0",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-textarea-element-0"
+        "normativeStatements": 0,
+        "original_id": "the-textarea-element-0",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "frames-and-framesets",
         "id": "the-keygen-element-0",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-keygen-element-0"
+        "normativeStatements": 0,
+        "original_id": "the-keygen-element-0",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "interactive-media",
         "id": "frames-and-framesets",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "frames-and-framesets"
+        "normativeStatements": 0,
+        "original_id": "frames-and-framesets",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "print-media",
         "id": "interactive-media",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "interactive-media"
+        "normativeStatements": 0,
+        "original_id": "interactive-media",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-title-attribute-0",
         "id": "links-forms-and-navigation",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "links,-forms,-and-navigation"
+        "normativeStatements": 0,
+        "original_id": "links,-forms,-and-navigation",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "editing-hosts",
         "id": "the-title-attribute-0",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-title-attribute-0"
+        "normativeStatements": 0,
+        "original_id": "the-title-attribute-0",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "text-rendered-in-native-user-interfaces",
         "id": "editing-hosts",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "editing-hosts"
+        "normativeStatements": 0,
+        "original_id": "editing-hosts",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "print-media",
         "id": "text-rendered-in-native-user-interfaces",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "text-rendered-in-native-user-interfaces"
+        "normativeStatements": 0,
+        "original_id": "text-rendered-in-native-user-interfaces",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "unstyled-xml-documents",
         "id": "print-media",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "print-media"
+        "normativeStatements": 0,
+        "original_id": "print-media",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "obsolete",
         "id": "unstyled-xml-documents",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "unstyled-xml-documents"
+        "normativeStatements": 0,
+        "original_id": "unstyled-xml-documents",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "iana",
         "id": "obsolete",
+        "idlComplexity": 1,
         "level": 1,
-        "original_id": "obsolete"
+        "normativeStatements": 0,
+        "original_id": "obsolete",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "non-conforming-features",
         "id": "obsolete-but-conforming-features",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "obsolete-but-conforming-features"
+        "normativeStatements": 0,
+        "original_id": "obsolete-but-conforming-features",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "non-conforming-features",
         "id": "warnings-for-obsolete-but-conforming-features",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "warnings-for-obsolete-but-conforming-features"
+        "normativeStatements": 0,
+        "original_id": "warnings-for-obsolete-but-conforming-features",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "requirements-for-implementations",
         "id": "non-conforming-features",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "non-conforming-features"
+        "normativeStatements": 0,
+        "original_id": "non-conforming-features",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "iana",
         "id": "requirements-for-implementations",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "requirements-for-implementations"
+        "normativeStatements": 0,
+        "original_id": "requirements-for-implementations",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "the-marquee-element-0",
         "id": "the-applet-element",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-applet-element"
+        "normativeStatements": 0,
+        "original_id": "the-applet-element",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "frames",
         "id": "the-marquee-element-0",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "the-marquee-element-0"
+        "normativeStatements": 0,
+        "original_id": "the-marquee-element-0",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "other-elements,-attributes-and-apis",
         "id": "frames",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "frames"
+        "normativeStatements": 0,
+        "original_id": "frames",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "iana",
         "id": "other-elements-attributes-and-apis",
+        "idlComplexity": 1,
         "level": 3,
-        "original_id": "other-elements,-attributes-and-apis"
+        "normativeStatements": 0,
+        "original_id": "other-elements,-attributes-and-apis",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "index",
         "id": "iana",
+        "idlComplexity": 1,
         "level": 1,
-        "original_id": "iana"
+        "normativeStatements": 0,
+        "original_id": "iana",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "multipart/x-mixed-replace",
         "id": "text-html",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "text/html"
+        "normativeStatements": 0,
+        "original_id": "text/html",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "application/xhtml+xml",
         "id": "multipart-x-mixed-replace",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "multipart/x-mixed-replace"
+        "normativeStatements": 0,
+        "original_id": "multipart/x-mixed-replace",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "application/x-www-form-urlencoded",
         "id": "application-xhtml-xml",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "application/xhtml+xml"
+        "normativeStatements": 0,
+        "original_id": "application/xhtml+xml",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "text/cache-manifest",
         "id": "application-x-www-form-urlencoded",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "application/x-www-form-urlencoded"
+        "normativeStatements": 0,
+        "original_id": "application/x-www-form-urlencoded",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "ping-to",
         "id": "text-cache-manifest",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "text/cache-manifest"
+        "normativeStatements": 0,
+        "original_id": "text/cache-manifest",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "web+-scheme-prefix",
         "id": "ping-to",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "ping-to"
+        "normativeStatements": 0,
+        "original_id": "ping-to",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "index",
         "id": "web-scheme-prefix",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "web+-scheme-prefix"
+        "normativeStatements": 0,
+        "original_id": "web+-scheme-prefix",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "references",
         "id": "index",
+        "idlComplexity": 1,
         "level": 1,
-        "original_id": "index"
+        "normativeStatements": 0,
+        "original_id": "index",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "element-content-categories",
         "id": "elements-1",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "elements-1"
+        "normativeStatements": 0,
+        "original_id": "elements-1",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "attributes-1",
         "id": "element-content-categories",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "element-content-categories"
+        "normativeStatements": 0,
+        "original_id": "element-content-categories",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "element-interfaces",
         "id": "attributes-1",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "attributes-1"
+        "normativeStatements": 0,
+        "original_id": "attributes-1",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "all-interfaces",
         "id": "element-interfaces",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "element-interfaces"
+        "normativeStatements": 0,
+        "original_id": "element-interfaces",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "events-0",
         "id": "all-interfaces",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "all-interfaces"
+        "normativeStatements": 0,
+        "original_id": "all-interfaces",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "references",
         "id": "events-0",
+        "idlComplexity": 1,
         "level": 2,
-        "original_id": "events-0"
+        "normativeStatements": 0,
+        "original_id": "events-0",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "acknowledgements",
         "id": "references",
+        "idlComplexity": 1,
         "level": 1,
-        "original_id": "references"
+        "normativeStatements": 0,
+        "original_id": "references",
+        "wordCount": 1
     },
     {
+        "algorithmicSteps": 0,
         "end_id": "",
         "id": "acknowledgements",
+        "idlComplexity": 1,
         "level": 1,
-        "original_id": "acknowledgements"
+        "normativeStatements": 0,
+        "original_id": "acknowledgements",
+        "wordCount": 1
     }
 ]

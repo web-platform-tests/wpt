@@ -1343,9 +1343,10 @@ test(function () {
 	testEl.innerHTML = 'retest';
 	assert_equals( testEl.itemValue, 'retest', 'reading after change' );
 	testEl.itemValue = '2001-02-03T04:05:06Z';
-	assert_equals( testEl.dateTime, '', 'writing (checking dateTime)' );
-	assert_equals( testEl.textContent, '2001-02-03T04:05:06Z', 'writing (checking textContent)' );
-}, 'itemValue must reflect the textContent of time elements with no datetime attribute');
+	assert_equals( testEl.dateTime, '2001-02-03T04:05:06Z', 'writing (checking dateTime)' );
+	assert_equals( testEl.textContent, 'retest', 'writing (checking textContent)' );
+	assert_equals( testEl.itemValue, '2001-02-03T04:05:06Z', 'writing (checking itemValue)' );
+}, 'itemValue must reflect the dateTime attribute of time elements with no datetime attribute');
 test(function () {
 	var testEl = makeEl('time',{itemprop:'foo',datetime:'test'},'te <span itemprop="bar" itemscope>st</span> ing');
 	assert_equals( testEl.itemValue, 'test', 'reading' );

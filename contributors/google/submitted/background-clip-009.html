@@ -1,47 +1,28 @@
 <!DOCTYPE html>
 <html>
  <head>
-  <title>CSS Test: Background clip: border-box with background-color</title>
+  <title>CSS Background and Borders Test: background-clip: border-box with background-color</title>
   <link rel="author" title="Julien Chaffraix" href="mailto:jchaffraix@webkit.org">
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
   <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-clip">
   <meta name="flags" content="">
-  <meta name="assert" content="background-clip: border-box properly clips the background color to the border box.">
-  <link rel="match" href="reference/background-clip-009-ref.html">
+  <meta content="When 'background-clip' is set to 'border-box', then the background painting area is clipped at the edges of the borders of the element. In this test, the border box is 96px tall and 96px wide and is made from only the borders." name="assert">
+  <link rel="match" href="reference/ref-filled-black-96px-square.xht">
   <style>
-   .borderBoxBackgroundClip
+   div
    {
     background-clip: border-box;
-    height: 80px;
-    width: 80px;
-    padding: 10px;
-    border: 10px solid transparent;
-    margin: 10px;
-    background-color: green;
-   }
-   .placeholder
-   {
-    height: 120px;
-    width: 120px;
-    top: 8px;
-    left: 8px;
-    position: absolute;
-    z-index: -1;
-    background-color: red;
-    border: 2px solid blue;
-   }
-   .container
-   {
-    position: relative;
-    /* Prevent the margin from collapsing here. */
-    border: 1px solid transparent;
+    background-color: black;
+    border: solid 48px transparent;
+    height: auto;
+    margin-bottom: 50px;
+    width: 0px;
    }
   </style>
  </head>
  <body>
-  <p>There should be a green rectangle with a blue border below and no red.</p>
-  <div class="container">
-   <div class="borderBoxBackgroundClip"></div>
-   <div class="placeholder"></div>
+  <p>Test passes if there is no <strong>red</strong>.</p>
+   <div></div>
   </div>
  </body>
 </html>

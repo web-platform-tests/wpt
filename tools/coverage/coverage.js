@@ -50,12 +50,12 @@
                 var tests = counts[5].num;
                 // words per test
                 if (tests === 0) {
-                    if (words === 0) ok(counts[1].el);
+                    if (counts[1].num === 0) ok(counts[1].el);
                     else nok(counts[1].el);
                 }
                 else {
                     var ratio = counts[1].num / tests;
-                    (ratio >= words) ? ok(counts[1].el) : nok(counts[1].el);
+                    (ratio <= words) ? ok(counts[1].el) : nok(counts[1].el);
                 }
                 // tests per rfc2119
                 hasEnough(tests, counts[2].num, counts[2].el, rfc2119);

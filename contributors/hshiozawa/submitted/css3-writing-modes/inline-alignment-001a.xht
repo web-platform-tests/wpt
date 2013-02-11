@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>CSS Writing Modes Test: inline alignment - Text Baseline (horizontal layout with alphabetical alignment)</title>
+    <link rel="author" title="Hajime Shiozawa" href="mailto:hajime.shiozawa@gmail.com" />
+    <link rel="help" title="CSS3 Writing modes: 4.2. Text Baseline" href="http://www.w3.org/TR/css3-writing-modes/#text-baselines" />
+    <meta name="assert" content="This tests a basic inline text alignment. Check that an alphabetical baseline is used as the dominant baseline." />
+    <style type="text/css"><![CDATA[
+      div > p {
+        font-size: 2em;
+        background-color: orange;
+      }
+      div > p > img {
+        margin-left: -200px;
+      }
+
+      /* writing-mode property */
+      .horizontal-tb {
+        writing-mode: horizontal-tb;
+      }
+
+      /* text-orientation property */
+      .mixed {
+        text-orientation: mixed;
+      }
+      .upright {
+        text-orientation: upright;
+      }
+      .sideways-right {
+        text-orientation: sideways-right;
+      }
+      .sideways-left {
+        text-orientation: sideways-left;
+      }
+      .sideways {
+        text-orientation: sideways;
+      }
+      .use-glyph-orientation {
+        text-orientation: use-glyph-orientation;
+      }
+  ]]></style>
+  </head>
+  <body>
+    <p>Test passes if the bottom of glyph 'L' and the blue line are aligned.</p>
+    <div class="horizontal-tb">
+      <p class="mixed">LLLLLLLLLLLL<img src="./support/baseline.png" alt="baseline" width="220px" height="1px" /></p>
+      <p class="upright">LLLLLLLLLLLL<img src="./support/baseline.png" alt="baseline" width="220px" height="1px" /></p>
+      <p class="sideways-right">LLLLLLLLLLLL<img src="./support/baseline.png" alt="baseline" width="220px" height="1px" /></p>
+      <p class="sideways-left">LLLLLLLLLLLL<img src="./support/baseline.png" alt="baseline" width="220px" height="1px" /></p>
+      <p class="sideways">LLLLLLLLLLLL<img src="./support/baseline.png" alt="baseline" width="220px" height="1px" /></p>
+      <p class="use-glyph-orientation">LLLLLLLLLLLL<img src="./support/baseline.png" alt="baseline" width="220px" height="1px" /></p>
+    </div>
+  </body>
+</html>

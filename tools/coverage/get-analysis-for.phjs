@@ -163,33 +163,3 @@ page.open(url, function (status) {
     });
     
 });
-
-
-// var nodes = []
-// ,   doc = window.document
-// ,   start = doc.getElementById(section.original_id)
-// ;
-// console.log(start);
-// if (section.end_id) {
-//     var end = doc.getElementById(section.end_id);
-//     var nxt = start;
-//     console.log("Start '%s' (%s) and end at '%s' (%s)", start.innerHTML, section.original_id, end.innerHTML, section.end_id);
-//     while (nxt = start.nextSibling) {
-//         // compareDocumentPosition -- because bitmasks are just so cool
-//         if (nxt.compareDocumentPosition(end) & nxt.DOCUMENT_POSITION_FOLLOWING) {
-//             // console.log("Adding node...");
-//             nodes.push(nxt);
-//         }
-//         else {
-//             break;
-//         }
-//     }
-// }
-// else {
-//     console.log("Start '%s' and end at EOF", $(start).text());
-//     var nxt = start;
-//     while (nxt = start.nextSibling) nodes.push(nxt);
-// }
-// ranges[spec][section.id] = $(nodes);
-// console.log("OK with %d", nodes.length);
-// // console.log(nodes);

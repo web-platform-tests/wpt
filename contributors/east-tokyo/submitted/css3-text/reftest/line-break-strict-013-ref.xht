@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>CSS Reftest Reference</title>
+		<!-- reftest for line-break-strict-013.xht -->
+		<link rel="author" title="Taka Oshiyama" href="mailto:takaoshiyama@gmail.com" />
+		<meta http-equiv="content-language" content="en, ja" />
+		<style type="text/css">
+			@font-face
+			{
+			font-family: "IPAMincho"; 
+			src: url("support/ipam.ttf"); /* Filesize: 8046712 bytes; version: 00303 */
+			}
+			@font-face
+			{
+			font-family: "IPAGothic"; 
+			src: url("support/ipag.ttf"); /* Filesize: 6235344 bytes; version: 00303 */
+			}
+			.test span {
+				line-break: strict;
+			}
+			p.control {
+				border: 1px solid gray;
+				color: blue;
+				font-family: "IPAMincho", "IPAGothic", "IPA明朝", "IPAゴシック";
+				width: 10em;
+			}
+			span.target {
+				background-color: aqua;
+			}
+		</style>
+	</head>
+	<body  lang="en">
+		<p>
+			Test passes if the highlighted characters in each pair of rectangles are at the exact same horizontal position.
+		</p>
+		<!-- hyphens -->
+		<p class="control" lang="ja">
+			<span>サンプル文サンプル<br />文<span class="target">&#x2010;</span>サンプル文</span>
+		</p>
+		<p class="control" lang="ja">
+			<span>サンプル文サンプル<br />文<span class="target">&#x2010;</span>サンプル文</span>
+		</p>
+		<hr />
+		<p class="control" lang="ja">
+			<span>サンプル文サンプル<br />文<span class="target">&#x2013;</span>サンプル文</span>
+		</p>
+		<p class="control" lang="ja">
+			<span>サンプル文サンプル<br />文<span class="target">&#x2013;</span>サンプル文</span>
+		</p>
+		<hr />
+		<p class="control" lang="ja">
+			<span>サンプル文サンプル<br />文<span class="target">&#x301c;</span>サンプル文</span>
+		</p>
+		<p class="control" lang="ja">
+			<span>サンプル文サンプル<br />文<span class="target">&#x301c;</span>サンプル文</span>
+		</p>
+		<hr />
+		<p class="control" lang="ja">
+			<span>サンプル文サンプル<br />文<span class="target">&#x30a0;</span>サンプル文</span>
+		</p>
+		<p class="control" lang="ja">
+			<span>サンプル文サンプル<br />文<span class="target">&#x30a0;</span>サンプル文</span>
+		</p>
+	</body>
+</html>

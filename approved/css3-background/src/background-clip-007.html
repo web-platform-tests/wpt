@@ -1,45 +1,27 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>CSS Test: Background clip: content-box with background-color</title>
+        <title>CSS Background and Borders Test: background-clip: content-box with background-color</title>
         <link rel="author" title="Julien Chaffraix" href="mailto:jchaffraix@webkit.org">
+        <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
         <link rel="reviewer" title="Arron Eicholz" href="mailto:arronei@microsoft.com" /> <!-- 2012-10-27 -->
         <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-clip">
         <meta name="flags" content="">
-        <meta name="assert" content="background-clip: content-box properly clips the background color to the content box.">
-        <link rel="match" href="reference/background-clip-007-ref.html">
+        <meta name="assert" content="When 'background-clip' is set to 'content-box', then the background-color shines only through the content area; it does not shine through the padding area nor the border area.">
+        <link rel="match" href="reference/ref-if-there-is-no-red.xht">
         <style>
-            div
-            {
-                height: 80px;
-                width: 80px;
-            }
-            .borderBoxBackgroundClip
-            {
-                background-clip: content-box;
-                padding: 10px;
-                background-color: green;
-            }
-            .placeholder
-            {
-                position: absolute;
-                z-index: -1;
-                top: 8px;
-                left: 8px;
-                background-color: red;
-                border: 2px solid blue;
-            }
-            .container
-            {
-                position: relative;
-            }
+          div
+          {
+              background-clip: content-box;
+              background-color: red;
+              height: auto;
+              padding: 50px;
+              width: auto;
+          }
         </style>
     </head>
     <body>
-        <p>Test passes if there is a green rectangle with a blue border below and no red visible on the page.</p>
-        <div class="container">
-            <div class="borderBoxBackgroundClip"></div>
-            <div class="placeholder"></div>
-        </div>
+        <p>Test passes if there is <strong>no red</strong>.</p>
+        <div></div>
     </body>
 </html>

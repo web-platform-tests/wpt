@@ -75,6 +75,7 @@ function setSelection(start, end, useMouse)
 {
 	if(window.testRunner)
 	{
+		// This block is executed if running in the Webkit harness
 		var startNode = document.getElementById(start);
 		var endNode = document.getElementById(end); 
 

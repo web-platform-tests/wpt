@@ -19,9 +19,10 @@
         <script src="support/js/selection-test-helper.js"></script>
     </head>
     <body>
-       <p>Click on the orange square, keep the mouse button down and drag it to the blue square, release the mouse over
-          the blue square.</p>
-        <br />
+        <p id="msg">
+            Click on the orange square, keep the mouse button down and drag it to the blue square, 
+            release the mouse over the blue square.
+        </p>
         <div id="beforeRegion">
             before region before region before region before region before region before region before region before
             region before region before region before region before region before region before region before region
@@ -33,7 +34,7 @@
             <div id="start-select" class="select-point"></div> 
             in region in region in region in region in region in region in region in region in region in region in
             region in region in region in region in region in region in region in region in region in 
-            <img id="nestedImg" src="support/cat.png"></img> 
+            <img id="nestedImg" src="support/img/cat.png"></img> 
             region in region in region in region in region in region in region in region in region in region in region
             in region in region in region in region in region 
             <div id="end-select" class="select-point"></div> 
@@ -45,9 +46,9 @@
             after region after region after region after region after region 
         </div>
         <div id="log"></div>
+        <script>
+              runSelectionTest( [ { nodeName: "nestedImg", expected: true } ] );
+        </script>
     </body>
-    <script>
-          runSelectionTest( [ { nodeName: "nestedImg", expected: true } ] );
-    </script>
 </html>
 

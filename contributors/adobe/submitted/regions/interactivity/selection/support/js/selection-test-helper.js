@@ -52,6 +52,14 @@ function runSelectionTest(inSelectionTests, useMouse)
 						test( function(){ assert_equals(isStringInSelection(strToCheck), strExp) }, msg);
 					}
 				}
+				
+				// Update the message stating the tests are complete
+				var msg = document.getElementById("msg");
+
+				var complete = document.createElement("p");
+				complete.innerHTML = "Tests are complete. All results in the Details section below should PASS.";
+				complete.style.color = "blue";
+				msg.appendChild(complete);
 
 				selectionTest.done();
 			});

@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>CSS Reftest Reference</title>
+		<!-- reftest for text-orientation-012.xht -->
+		<link rel="author" title="Taka Oshiyama" href="mailto:takaoshiyama@gmail.com" />
+		<meta http-equiv="content-language" content="en, ja" />		
+		<style type="text/css">
+				@font-face
+				{
+					font-family: "IPAMincho"; 
+					src: url("support/ipam.ttf"); /* Filesize: 8046712 bytes; version: 00303 */
+				}
+				@font-face
+				{
+					font-family: "IPAGothic"; 
+					src: url("support/ipag.ttf"); /* Filesize: 6235344 bytes; version: 00303 */
+				}
+				div 
+				{
+					border: 1px solid gray;
+					font-family: "IPAMincho", "IPAGothic", "IPA明朝", "IPAゴシック";
+					font-size: 1.5em;
+					line-height: 1.5;
+					width: 3em;
+					writing-mode: vertical-rl;
+					-webkit-writing-mode: vertical-rl;
+				}
+				.test 
+				{
+					text-orientaion: sideway-right;
+				}
+				.control 
+				{
+					text-combine-horizontal: none;
+				}
+		</style>
+	</head>
+	<body lang="en">
+		<p>Test passes if the upper block is identical to the lower block including layout of each characters.</p>
+		<!-- sideway-right -->
+		<div class="control">123Abc<br />def456</div>
+		<hr />
+		<div class="control">123Abc<br />def456</div>
+	</body>
+</html>

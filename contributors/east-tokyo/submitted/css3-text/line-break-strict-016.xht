@@ -9,28 +9,23 @@
 		<link rel="match" href="reftest/line-break-strict-016-ref.xht" />
 		<meta http-equiv="content-language" content="en, ja" />
 		<meta name="flags" content="font should" />
-		<meta name="assert" content="Breaks text using the most stringent set of line-breaking rules." />
+		<meta name="assert" content="This test verifies that 'line-break: strict' does not allow line breaking before centered punctuation marks." />
 		<style type="text/css">
-			@font-face
-			{
-			font-family: "IPAMincho"; 
-			src: url("support/ipam.ttf"); /* Filesize: 8046712 bytes; version: 00303 */
+			@font-face {	
+				font-family: "mplus-1p-regular";
+				src: url("support/mplus-1p-regular.ttf") format("truetype");
+				/* filesize: 1382116 bytes (1.3MB) */
 			}
-			@font-face
-			{
-			font-family: "IPAGothic"; 
-			src: url("support/ipag.ttf"); /* Filesize: 6235344 bytes; version: 00303 */
-			}
-			.test span {
+			#test span {
 				line-break: strict;
 			}
-			p.test, p.control {
+			p#test, p#control {
 				border: 1px solid gray;
 				color: blue;
-				font-family: "IPAMincho", "IPAGothic", "IPA明朝", "IPAゴシック";
+				font-family: "mplus-1p-regular";
 				width: 10em;
 			}
-			span.target {
+			span#target {
 				background-color: aqua;
 			}
 		</style>
@@ -40,115 +35,115 @@
 			Test passes if the highlighted characters in each pair of rectangles are at the exact same horizontal position.
 		</p>
 		<!-- centered punctuation marks COLON -->
-		<p class="test" lang="ja">
-			<span>サンプル文サンプル文<span class="target">&#x003a;</span>サンプル文</span>
+		<p id="test" lang="ja">
+			<span>サンプル文サンプル文<span id="target">&#x003a;</span>サンプル文</span>
 		</p>
-		<p class="control" lang="ja">
-			<span>サンプル文サンプル<br />文<span class="target">&#x003a;</span>サンプル文</span>
+		<p id="control" lang="ja">
+			<span>サンプル文サンプル<br />文<span id="target">&#x003a;</span>サンプル文</span>
 		</p>
 		<hr />
 		<!-- centered punctuation marks SEMICOLON -->
-		<p class="test" lang="ja">
-			<span>サンプル文サンプル文<span class="target">&#x003b;</span>サンプル文</span>
+		<p id="test" lang="ja">
+			<span>サンプル文サンプル文<span id="target">&#x003b;</span>サンプル文</span>
 		</p>
-		<p class="control" lang="ja">
-			<span>サンプル文サンプル<br />文<span class="target">&#x003b;</span>サンプル文</span>
+		<p id="control" lang="ja">
+			<span>サンプル文サンプル<br />文<span id="target">&#x003b;</span>サンプル文</span>
 		</p>
 		<hr />
 		<!-- centered punctuation marks KATAKANA MIDDLE DOT -->
-		<p class="test" lang="ja">
-			<span>サンプル文サンプル文<span class="target">&#x30fb;</span>サンプル文</span>
+		<p id="test" lang="ja">
+			<span>サンプル文サンプル文<span id="target">&#x30fb;</span>サンプル文</span>
 		</p>
-		<p class="control" lang="ja">
-			<span>サンプル文サンプル<br />文<span class="target">&#x30fb;</span>サンプル文</span>
+		<p id="control" lang="ja">
+			<span>サンプル文サンプル<br />文<span id="target">&#x30fb;</span>サンプル文</span>
 		</p>
 		<hr />
 		<!-- centered punctuation marks FULLWIDTH COLON -->
-		<p class="test" lang="ja">
-			<span>サンプル文サンプル文<span class="target">&#xff1a;</span>サンプル文</span>
+		<p id="test" lang="ja">
+			<span>サンプル文サンプル文<span id="target">&#xff1a;</span>サンプル文</span>
 		</p>
-		<p class="control" lang="ja">
-			<span>サンプル文サンプル<br />文<span class="target">&#xff1a;</span>サンプル文</span>
+		<p id="control" lang="ja">
+			<span>サンプル文サンプル<br />文<span id="target">&#xff1a;</span>サンプル文</span>
 		</p>
 		<hr />
 		<!-- centered punctuation marks FULLWIDTH SEMICOLON -->
-		<p class="test" lang="ja">
-			<span>サンプル文サンプル文<span class="target">&#xff1b;</span>サンプル文</span>
+		<p id="test" lang="ja">
+			<span>サンプル文サンプル文<span id="target">&#xff1b;</span>サンプル文</span>
 		</p>
-		<p class="control" lang="ja">
-			<span>サンプル文サンプル<br />文<span class="target">&#xff1b;</span>サンプル文</span>
+		<p id="control" lang="ja">
+			<span>サンプル文サンプル<br />文<span id="target">&#xff1b;</span>サンプル文</span>
 		</p>
 		<hr />
 		<!-- centered punctuation marks HALFWIDTH KATAKANA MIDDLE DOT -->
-		<p class="test" lang="ja">
-			<span>サンプル文サンプル文<span class="target">&#xff65;</span>サンプル文</span>
+		<p id="test" lang="ja">
+			<span>サンプル文サンプル文<span id="target">&#xff65;</span>サンプル文</span>
 		</p>
-		<p class="control" lang="ja">
-			<span>サンプル文サンプル<br />文<span class="target">&#xff65;</span>サンプル文</span>
+		<p id="control" lang="ja">
+			<span>サンプル文サンプル<br />文<span id="target">&#xff65;</span>サンプル文</span>
 		</p>
 		<hr />
 		<!-- centered punctuation marks EXCLAMATION MARK -->
-		<p class="test" lang="ja">
-			<span>サンプル文サンプル文<span class="target">&#x0021;</span>サンプル文</span>
+		<p id="test" lang="ja">
+			<span>サンプル文サンプル文<span id="target">&#x0021;</span>サンプル文</span>
 		</p>
-		<p class="control" lang="ja">
-			<span>サンプル文サンプル<br />文<span class="target">&#x0021;</span>サンプル文</span>
+		<p id="control" lang="ja">
+			<span>サンプル文サンプル<br />文<span id="target">&#x0021;</span>サンプル文</span>
 		</p>
 		<hr />
 		<!-- centered punctuation marks QUESTION MARK -->
-		<p class="test" lang="ja">
-			<span>サンプル文サンプル文<span class="target">&#x003f;</span>サンプル文</span>
+		<p id="test" lang="ja">
+			<span>サンプル文サンプル文<span id="target">&#x003f;</span>サンプル文</span>
 		</p>
-		<p class="control" lang="ja">
-			<span>サンプル文サンプル<br />文<span class="target">&#x003f;</span>サンプル文</span>
+		<p id="control" lang="ja">
+			<span>サンプル文サンプル<br />文<span id="target">&#x003f;</span>サンプル文</span>
 		</p>
 		<hr />
 		<!-- centered punctuation marks DOUBLE EXCLAMATION MARK -->
-		<p class="test" lang="ja">
-			<span>サンプル文サンプル文<span class="target">&#x203c;</span>サンプル文</span>
+		<p id="test" lang="ja">
+			<span>サンプル文サンプル文<span id="target">&#x203c;</span>サンプル文</span>
 		</p>
-		<p class="control" lang="ja">
-			<span>サンプル文サンプル<br />文<span class="target">&#x203c;</span>サンプル文</span>
+		<p id="control" lang="ja">
+			<span>サンプル文サンプル<br />文<span id="target">&#x203c;</span>サンプル文</span>
 		</p>
 		<hr />
 		<!-- centered punctuation marks DOUBLE QUESTION MARK -->
-		<p class="test" lang="ja">
-			<span>サンプル文サンプル文<span class="target">&#x2047;</span>サンプル文</span>
+		<p id="test" lang="ja">
+			<span>サンプル文サンプル文<span id="target">&#x2047;</span>サンプル文</span>
 		</p>
-		<p class="control" lang="ja">
-			<span>サンプル文サンプル<br />文<span class="target">&#x2047;</span>サンプル文</span>
+		<p id="control" lang="ja">
+			<span>サンプル文サンプル<br />文<span id="target">&#x2047;</span>サンプル文</span>
 		</p>
 		<hr />
 		<!-- centered punctuation marks QUESTION EXCLAMATION MARK -->
-		<p class="test" lang="ja">
-			<span>サンプル文サンプル文<span class="target">&#x2048;</span>サンプル文</span>
+		<p id="test" lang="ja">
+			<span>サンプル文サンプル文<span id="target">&#x2048;</span>サンプル文</span>
 		</p>
-		<p class="control" lang="ja">
-			<span>サンプル文サンプル<br />文<span class="target">&#x2048;</span>サンプル文</span>
+		<p id="control" lang="ja">
+			<span>サンプル文サンプル<br />文<span id="target">&#x2048;</span>サンプル文</span>
 		</p>
 		<hr />
 		<!-- centered punctuation marks EXCLAMATION QUESTION MARK -->
-		<p class="test" lang="ja">
-			<span>サンプル文サンプル文<span class="target">&#x2049;</span>サンプル文</span>
+		<p id="test" lang="ja">
+			<span>サンプル文サンプル文<span id="target">&#x2049;</span>サンプル文</span>
 		</p>
-		<p class="control" lang="ja">
-			<span>サンプル文サンプル<br />文<span class="target">&#x2049;</span>サンプル文</span>
+		<p id="control" lang="ja">
+			<span>サンプル文サンプル<br />文<span id="target">&#x2049;</span>サンプル文</span>
 		</p>
 		<hr />
 		<!-- centered punctuation marks FULLWIDTH EXCLAMATION MARK -->
-		<p class="test" lang="ja">
-			<span>サンプル文サンプル文<span class="target">&#xff01;</span>サンプル文</span>
+		<p id="test" lang="ja">
+			<span>サンプル文サンプル文<span id="target">&#xff01;</span>サンプル文</span>
 		</p>
-		<p class="control" lang="ja">
-			<span>サンプル文サンプル<br />文<span class="target">&#xff01;</span>サンプル文</span>
+		<p id="control" lang="ja">
+			<span>サンプル文サンプル<br />文<span id="target">&#xff01;</span>サンプル文</span>
 		</p>
 		<hr />
 		<!-- centered punctuation marks FULLWIDTH QUESTION MARK -->
-		<p class="test" lang="ja">
-			<span>サンプル文サンプル文<span class="target">&#xff1f;</span>サンプル文</span>
+		<p id="test" lang="ja">
+			<span>サンプル文サンプル文<span id="target">&#xff1f;</span>サンプル文</span>
 		</p>
-		<p class="control" lang="ja">
-			<span>サンプル文サンプル<br />文<span class="target">&#xff1f;</span>サンプル文</span>
+		<p id="control" lang="ja">
+			<span>サンプル文サンプル<br />文<span id="target">&#xff1f;</span>サンプル文</span>
 		</p>
 	</body>
 </html>

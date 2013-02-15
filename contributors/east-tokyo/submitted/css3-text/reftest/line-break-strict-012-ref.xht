@@ -7,26 +7,21 @@
 		<link rel="author" title="Taka Oshiyama" href="mailto:takaoshiyama@gmail.com" />
 		<meta http-equiv="content-language" content="en, ja" />
 		<style type="text/css">
-			@font-face
-			{
-			font-family: "IPAMincho"; 
-			src: url("support/ipam.ttf"); /* Filesize: 8046712 bytes; version: 00303 */
+			@font-face {	
+				font-family: "mplus-1p-regular";
+				src: url("support/mplus-1p-regular.ttf") format("truetype");
+				/* filesize: 1382116 bytes (1.3MB) */
 			}
-			@font-face
-			{
-			font-family: "IPAGothic"; 
-			src: url("support/ipag.ttf"); /* Filesize: 6235344 bytes; version: 00303 */
-			}
-			.test span {
+			#test span {
 				line-break: strict;
 			}
-			p.control {
+			p#test, p#control {
 				border: 1px solid gray;
 				color: blue;
-				font-family: "IPAMincho", "IPAGothic", "IPA明朝", "IPAゴシック";
+				font-family: "mplus-1p-regular";
 				width: 10em;
 			}
-			span.target {
+			span#target {
 				background-color: aqua;
 			}
 		</style>
@@ -36,19 +31,19 @@
 			Test passes if the highlighted characters in each pair of rectangles are at the exact same horizontal position.
 		</p>
 		<!-- Katakana-Hiragana prolonged sound mark - fullwidth -->
-		<p class="control" lang="ja">
-			<span>サンプル文サンプル<br />文<span class="target">&#x30FC;</span>サンプル文</span>
+		<p id="control" lang="ja">
+			<span>サンプル文サンプル<br />文<span id="target">&#x30FC;</span>サンプル文</span>
 		</p>
-		<p class="control" lang="ja">
-			<span>サンプル文サンプル<br />文<span class="target">&#x30FC;</span>サンプル文</span>
+		<p id="control" lang="ja">
+			<span>サンプル文サンプル<br />文<span id="target">&#x30FC;</span>サンプル文</span>
 		</p>
 		<hr />
 		<!-- Katakana-Hiragana prolonged sound mark - halfwidth -->
-		<p class="control" lang="ja">
-			<span>サンプル文サンプル<br />文<span class="target">&#xff70;</span>サンプル文</span>
+		<p id="control" lang="ja">
+			<span>サンプル文サンプル<br />文<span id="target">&#xff70;</span>サンプル文</span>
 		</p>
-		<p class="control" lang="ja">
-			<span>サンプル文サンプル<br />文<span class="target">&#xff70;</span>サンプル文</span>
+		<p id="control" lang="ja">
+			<span>サンプル文サンプル<br />文<span id="target">&#xff70;</span>サンプル文</span>
 		</p>
 	</body>
 </html>

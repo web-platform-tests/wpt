@@ -2,45 +2,42 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">	
 	<head>
-		<title>CSS Text Test: text-decoration-line</title>
+		<title>CSS Text Test: text-decoration-line-underline</title>
 		<!-- underline -->
 		<link rel="author" title="Taka Oshiyama" href="mailto:takaoshiyama@gmail.com" />
 		<link rel="help" title="2.1. Text Decoration Lines: the‘text-decoration-line’property" href="http://www.w3.org/TR/css-text-decor-3/#text-decoration-line-property" />
 		<link rel="match" href="reftest/text-decoration-line-011-ref.xht" />
 		<meta http-equiv="content-language" content="en, ja" />
-		<meta name="flags" content="" />
-		<meta name="assert" content="Each line of text is underlined." />		
+		<meta name="flags" content="font should" />
+		<meta name="assert" content="This test checks that 'text-decoration-line: underline' produces an horizontal line under the text (underlined)." />		
 		<style type="text/css">
-				@font-face
-				{
-					font-family: "IPAMincho"; 
-					src: url("support/ipam.ttf"); /* Filesize: 8046712 bytes; version: 00303 */
-				}
-				@font-face
-				{
-					font-family: "IPAGothic"; 
-					src: url("support/ipag.ttf"); /* Filesize: 6235344 bytes; version: 00303 */
+				@font-face 
+				{	
+					font-family: "mplus-1p-regular";
+					src: url("support/mplus-1p-regular.ttf") format("truetype");
+					/* filesize: 1382116 bytes (1.3MB) */
 				}
 				div 
 				{
-					font-family: "IPAMincho", "IPAGothic", "IPA明朝", "IPAゴシック";
-					font-size: 1.5em; /* equivalent to 24px */
-					line-height: 1.5; /* equivalent to 36px: so top-half-leading is 6px, bottom-half-leading is 6px */
+					font-family: "mplus-1p-regular";
+					//font-size: 1.5em;
+					font-size: 1.0em;
+					line-height: 1.5;
 				}
-				.test 
+				#test 
 				{
 					text-decoration-line: underline;
 				}
-				.control 
+				#control 
 				{
 					text-decoration: underline;			
 				}
 		</style>
 	</head>
 	<body lang="en, ja">
-		<p>Test passes if each line of text has an horizontal line under it (underlined).</p>
+		<p>Test passes if the 2 "Text sample サンプル文" are <strong>identical</strong> and <strong>underlined</strong>.</p>
 		<!-- underline -->
-		<div class="test">Text sample サンプル文</div>
-		<div class="control">Text sample サンプル文</div>
+		<div id="test">Text sample サンプル文</div>
+		<div id="control">Text sample サンプル文</div>
 	</body>
 </html>

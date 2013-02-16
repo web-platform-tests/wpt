@@ -9,23 +9,23 @@
 		<link rel="match" href="reftest/line-break-strict-015-ref.xht" />
 		<meta http-equiv="content-language" content="en, ja" />
 		<meta name="flags" content="font should" />
-		<meta name="assert" content="This test verifies that 'line-break: strict' does not allow line breaking before inseparable characters." />
+		<meta name="assert" content="This test verifies that 'line-break: strict' does not allow line breaking before inseparable characters such as TWO DOT LEADER (U+2025) and HORIZONTAL ELLIPSIS (U+2026)." />
 		<style type="text/css">
 			@font-face {	
 				font-family: "mplus-1p-regular";
 				src: url("support/mplus-1p-regular.ttf") format("truetype");
 				/* filesize: 1382116 bytes (1.3MB) */
 			}
-			#test span {
+			.test span {
 				line-break: strict;
 			}
-			p#test, p#control {
+			p.test, p.control {
 				border: 1px solid gray;
 				color: blue;
 				font-family: "mplus-1p-regular";
 				width: 10em;
 			}
-			span#target {
+			span.target {
 				background-color: aqua;
 			}
 		</style>
@@ -35,19 +35,19 @@
 			Test passes if the highlighted characters in each pair of rectangles are at the exact same horizontal position.
 		</p>
 		<!-- inseparable characters TWO DOT LEADER -->
-		<p id="test" lang="ja">
-			<span>サンプル文サンプル文<span id="target">&#x2025;</span>サンプル文</span>
+		<p class="test" lang="ja">
+			<span>サンプル文サンプル文<span class="target">&#x2025;</span>サンプル文</span>
 		</p>
-		<p id="control" lang="ja">
-			<span>サンプル文サンプル<br />文<span id="target">&#x2025;</span>サンプル文</span>
+		<p class="control" lang="ja">
+			<span>サンプル文サンプル<br />文<span class="target">&#x2025;</span>サンプル文</span>
 		</p>
 		<hr />
 		<!-- inseparable characters HORIZONTAL ELLIPSIS -->
-		<p id="test" lang="ja">
-			<span>サンプル文サンプル文<span id="target">&#x2026;</span>サンプル文</span>
+		<p class="test" lang="ja">
+			<span>サンプル文サンプル文<span class="target">&#x2026;</span>サンプル文</span>
 		</p>
-		<p id="control" lang="ja">
-			<span>サンプル文サンプル<br />文<span id="target">&#x2026;</span>サンプル文</span>
+		<p class="control" lang="ja">
+			<span>サンプル文サンプル<br />文<span class="target">&#x2026;</span>サンプル文</span>
 		</p>
 	</body>
 </html>

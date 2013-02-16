@@ -12,16 +12,16 @@
 				src: url("support/mplus-1p-regular.ttf") format("truetype");
 				/* filesize: 1382116 bytes (1.3MB) */
 			}
-			#test span {
+			.test span {
 				line-break: strict;
 			}
-			p#test, p#control {
+			p.test, p.control {
 				border: 1px solid gray;
 				color: blue;
 				font-family: "mplus-1p-regular";
 				width: 10em;
 			}
-			span#target {
+			span.target {
 				background-color: aqua;
 			}
 		</style>
@@ -31,19 +31,19 @@
 			Test passes if the highlighted characters in each pair of rectangles are at the exact same horizontal position.
 		</p>
 		<!-- inseparable characters TWO DOT LEADER -->
-		<p id="control" lang="ja">
-			<span>サンプル文サンプル<br />文<span id="target">&#x2025;</span>サンプル文</span>
+		<p class="control" lang="ja">
+			<span>サンプル文サンプル<br />文<span class="target">&#x2025;</span>サンプル文</span>
 		</p>
-		<p id="control" lang="ja">
-			<span>サンプル文サンプル<br />文<span id="target">&#x2025;</span>サンプル文</span>
+		<p class="control" lang="ja">
+			<span>サンプル文サンプル<br />文<span class="target">&#x2025;</span>サンプル文</span>
 		</p>
 		<hr />
 		<!-- inseparable characters HORIZONTAL ELLIPSIS -->
-		<p id="control" lang="ja">
-			<span>サンプル文サンプル<br />文<span id="target">&#x2026;</span>サンプル文</span>
+		<p class="control" lang="ja">
+			<span>サンプル文サンプル<br />文<span class="target">&#x2026;</span>サンプル文</span>
 		</p>
-		<p id="control" lang="ja">
-			<span>サンプル文サンプル<br />文<span id="target">&#x2026;</span>サンプル文</span>
+		<p class="control" lang="ja">
+			<span>サンプル文サンプル<br />文<span class="target">&#x2026;</span>サンプル文</span>
 		</p>
 	</body>
 </html>

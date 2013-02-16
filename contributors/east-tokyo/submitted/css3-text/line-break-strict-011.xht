@@ -9,23 +9,23 @@
 		<link rel="match" href="reftest/line-break-strict-011-ref.xht" />
 		<meta http-equiv="content-language" content="en, ja" />
 		<meta name="flags" content="font should" />
-		<meta name="assert" content="This test verifies that 'line-break: strict' does not allow line breaking before Japanese small kana." />
+		<meta name="assert" content="This test verifies that 'line-break: strict' does not allow line breaking before Japanese small kana such as 'Japanese small kana a (U+3041)' and  'Japanese small kana i (U+3043)'." />
 		<style type="text/css">
 			@font-face {	
 				font-family: "mplus-1p-regular";
 				src: url("support/mplus-1p-regular.ttf") format("truetype");
 				/* filesize: 1382116 bytes (1.3MB) */
 			}
-			#test span {
+			.test span {
 				line-break: strict;
 			}
-			p#test, p#control {
+			p.test, p.control {
 				border: 1px solid gray;
 				color: blue;
 				font-family: "mplus-1p-regular";
 				width: 10em;
 			}
-			span#target {
+			span.target {
 				background-color: aqua;
 			}
 		</style>
@@ -35,43 +35,43 @@
 			Test passes if the highlighted characters in each pair of rectangles are at the exact same horizontal position.
 		</p>
 		<!-- Japanese small kana: HIRAGANA LETTER SMALL A -->
-		<p id="test" lang="ja">
-			<span>サンプル文サンプル文<span id="target">&#x3041;</span>サンプル文</span>
+		<p class="test" lang="ja">
+			<span>サンプル文サンプル文<span class="target">&#x3041;</span>サンプル文</span>
 		</p>
-		<p id="control" lang="ja">
-			<span>サンプル文サンプル<br />文<span id="target">&#x3041;</span>サンプル文</span>
+		<p class="control" lang="ja">
+			<span>サンプル文サンプル<br />文<span class="target">&#x3041;</span>サンプル文</span>
 		</p>
 		<hr />
 		<!-- Japanese small kana: HIRAGANA LETTER SMALL I -->
-		<p id="test" lang="ja">
-			<span>サンプル文サンプル文<span id="target">&#x3043;</span>サンプル文</span>
+		<p class="test" lang="ja">
+			<span>サンプル文サンプル文<span class="target">&#x3043;</span>サンプル文</span>
 		</p>
-		<p id="control" lang="ja">
-			<span>サンプル文サンプル<br />文<span id="target">&#x3043;</span>サンプル文</span>
+		<p class="control" lang="ja">
+			<span>サンプル文サンプル<br />文<span class="target">&#x3043;</span>サンプル文</span>
 		</p>
 		<hr />
 		<!-- Japanese small kana: HIRAGANA LETTER SMALL U -->
-		<p id="test" lang="ja">
-			<span>サンプル文サンプル文<span id="target">&#x3045;</span>サンプル文</span>
+		<p class="test" lang="ja">
+			<span>サンプル文サンプル文<span class="target">&#x3045;</span>サンプル文</span>
 		</p>
-		<p id="control" lang="ja">
-			<span>サンプル文サンプル<br />文<span id="target">&#x3045;</span>サンプル文</span>
+		<p class="control" lang="ja">
+			<span>サンプル文サンプル<br />文<span class="target">&#x3045;</span>サンプル文</span>
 		</p>
 		<hr />
 		<!-- Japanese small kana: HIRAGANA LETTER SMALL E -->
-		<p id="test" lang="ja">
-			<span>サンプル文サンプル文<span id="target">&#x3047;</span>サンプル文</span>
+		<p class="test" lang="ja">
+			<span>サンプル文サンプル文<span class="target">&#x3047;</span>サンプル文</span>
 		</p>
-		<p id="control" lang="ja">
-			<span>サンプル文サンプル<br />文<span id="target">&#x3047;</span>サンプル文</span>
+		<p class="control" lang="ja">
+			<span>サンプル文サンプル<br />文<span class="target">&#x3047;</span>サンプル文</span>
 		</p>
 		<hr />
 		<!-- Japanese small kana: HIRAGANA LETTER SMALL O -->
-		<p id="test" lang="ja">
-			<span>サンプル文サンプル文<span id="target">&#x3049;</span>サンプル文</span>
+		<p class="test" lang="ja">
+			<span>サンプル文サンプル文<span class="target">&#x3049;</span>サンプル文</span>
 		</p>
-		<p id="control" lang="ja">
-			<span>サンプル文サンプル<br />文<span id="target">&#x3049;</span>サンプル文</span>
+		<p class="control" lang="ja">
+			<span>サンプル文サンプル<br />文<span class="target">&#x3049;</span>サンプル文</span>
 		</p>
 	</body>
 </html>

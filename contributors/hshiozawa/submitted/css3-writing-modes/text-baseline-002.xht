@@ -3,8 +3,8 @@
   <head>
     <title>CSS Writing Modes Test: inline alignment - Text Baseline (vertical layout with central alignment)</title>
     <link rel="author" title="Hajime Shiozawa" href="mailto:hajime.shiozawa@gmail.com" />
-    <link rel="help" title="CSS3 Writing modes: 4.2. Text Baseline" href="http://www.w3.org/TR/css3-writing-modes/#text-baselines" />
-    <meta name="assert" content="This tests a basic inline text alignment. Check that an central baseline is used as the dominant baseline." />
+    <link rel="help" title="4.2. Text Baseline" href="http://www.w3.org/TR/css3-writing-modes/#text-baselines" />
+    <meta name="assert" content="This test checks the generation of text baseline. Unless 'writing-mode' is vertical and also unless 'text-orientation' is 'mixed' or 'upright', the alphabetical baseline is used as the dominant baseline." />
     <style type="text/css"><![CDATA[
       div {
         margin: 10px;
@@ -49,12 +49,12 @@
   <body>
     <p>Test passes if the blue line position is halfway between the right and left (over and under) edges of line box.</p>
     <div class="vertical-rl">
-      <p class="mixed">ABCDEFGHIJ <img src="./support/baseline.png" alt="baseline" width="1px" height="220px" /></p>
-      <p class="upright">ABCDEFG<img src="./support/baseline.png" alt="baseline" width="1px" height="220px" /></p>
+      <p class="mixed">ABCDEFGHIJ <img src="./support/blue-vert-line_1x220.png" alt="Image download support must be enabled" /></p>
+      <p class="upright">ABCDEFG<img src="./support/blue-vert-line_1x220.png" alt="Image download support must be enabled" /></p>
     </div>
     <div class="vertical-lr">
-      <p class="mixed">ABCDEFGHIJ <img src="./support/baseline.png" alt="baseline" width="1px" height="220px" /></p>
-      <p class="upright">ABCDEFG<img src="./support/baseline.png" alt="baseline" width="1px" height="220px" /></p>
+      <p class="mixed">ABCDEFGHIJ <img src="./support/blue-vert-line_1x220.png" alt="Image download support must be enabled" /></p>
+      <p class="upright">ABCDEFG<img src="./support/blue-vert-line_1x220.png" alt="Image download support must be enabled" /></p>
     </div>
   </body>
 </html>

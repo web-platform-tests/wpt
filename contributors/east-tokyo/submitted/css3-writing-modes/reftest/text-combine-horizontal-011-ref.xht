@@ -7,44 +7,39 @@
 		<link rel="author" title="Taka Oshiyama" href="mailto:takaoshiyama@gmail.com" />
 		<meta http-equiv="content-language" content="en, ja" />		
 		<style type="text/css">
-				@font-face
-				{
-					font-family: "IPAMincho"; 
-					src: url("support/ipam.ttf"); /* Filesize: 8046712 bytes; version: 00303 */
-				}
-				@font-face
-				{
-					font-family: "IPAGothic"; 
-					src: url("support/ipag.ttf"); /* Filesize: 6235344 bytes; version: 00303 */
+				@font-face {	
+					font-family: "mplus-1p-regular";
+					src: url("support/mplus-1p-regular.ttf") format("truetype");
+					/* filesize: 1382116 bytes (1.3MB) */
 				}
 				div 
 				{
-					font-family: "IPAMincho", "IPAGothic", "IPA明朝", "IPAゴシック";
 					border: 1px solid gray;
-					width: 4em;
+					font-family: "mplus-1p-regular";
 					font-size: 1.5em;
 					line-height: 2;
+					width: 4em;
 					writing-mode: vertical-rl;
 					-webkit-writing-mode: vertical-rl;
 				}
-				.test 
+				#test 
 				{
-				}
-				.control 
-				{
-					text-orientaion: upright;
 				}
 				.tcy  /* tate-cyu-yoko: horizontal-in-vertical */
-				<!-- all -->
 				{ 
 					text-combine-horizontal: all; 
+				}
+				#control 
+				{
+					text-orientation: upright;
+					-webkit-text-orientation: upright;
 				}
 		</style>
 	</head>
 	<body lang="en">
-		<p>Test passes if the upper block is identical to the lower block including layout and orientation of each characters.</p>
-		<div class="control" lang="ja">1月2日の次の日は、<br />1月3日です。</div>
+		<p>Test passes if the upper block is <strong>identical</strong> to the lower block including <strong>layout</strong> and <strong>orientation</strong> of each characters.</p>
+		<div id="control" lang="ja">1月2日の次の日は、<br />1月3日です。</div>	
 		<hr />
-		<div class="control" lang="ja">1月2日の次の日は、<br />1月3日です。</div>	
+		<div id="control" lang="ja">1月2日の次の日は、<br />1月3日です。</div>	
 	</body>
 </html>

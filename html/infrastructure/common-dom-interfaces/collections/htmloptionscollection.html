@@ -192,8 +192,7 @@ test(function() {
 
 test(function() {
   var add = document.createElement("p");
-  b_opts.add(add);
-  assert_equals(add.parentNode, null);
+  assert_throws(new TypeError(), function() {b_opts.add(add);});
 }, "Add non-option to collection");
 
 </script>

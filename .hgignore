@@ -9,3 +9,4 @@ dist_last
 *.directory
 *~
 *.orig
+*Thumbs.db

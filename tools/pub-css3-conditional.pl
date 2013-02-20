@@ -44,6 +44,7 @@ push @dirs, 'contributors/mozilla/submitted/mozilla-central-reftests/conditional
 
 ###############################################################################
 # Gérard Talbot
+push @dirs, 'contributors/gtalbot/submitted';
 
 ###############################################################################
 # Ian Hickson
@@ -69,6 +70,7 @@ push @dirs, 'contributors/mozilla/submitted/mozilla-central-reftests/conditional
 ###############################################################################
 # Opera
 push @dirs, 'contributors/opera/submitted/css3-conditional';
+push @dirs, 'contributors/opera/submitted/css3-conditional/js';
 
 ###############################################################################
 

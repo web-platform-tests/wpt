@@ -37,7 +37,7 @@
           "parse '0ms'": {},
           "parse '-500ms'": {},
           "parse '1s, 0.1s, 10ms'": {},
-          "parse 'foobar'": {}
+          "parse 'foobar'": { "flags": "invalid" }
         }
         */</script>
     </head>
@@ -94,11 +94,12 @@
                             'transition-delay': key
                         });
                         var result = computedStyle(transition, 'transition-delay');
-                        assert_equals(result, values[key], "Expected computed value", {
-                            // mark tests that fail as such
-                            flags: invalidTests[key] ? "invalid" : ""
-                        });
-                    }, "parse '" + key + "'");
+                        assert_equals(result, values[key], "Expected computed value");
+                    }, "parse '" + key + "'",
+                    {
+                        // mark tests that fail as such
+                        flags: invalidTests[key] ? "invalid" : ""
+                    });
                 }
             }
         </script>

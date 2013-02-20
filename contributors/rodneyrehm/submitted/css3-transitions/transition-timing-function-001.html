@@ -29,13 +29,13 @@
           "parse 'steps(3, start)'": {},
           "parse 'steps(3, end)'": {},
           "parse 'steps(3)'": {},
-          "parse 'cubic-bezier(foobar)'": {},
-          "parse 'steps(foobar)'": {},
-          "parse 'steps(3.3, end)'": {},
-          "parse 'steps(3, top)'": {},
-          "parse 'steps(-3, top)'": {},
-          "parse 'cubic-bezier(-0.1, -0.2, -0.3, -0.4)'": {},
-          "parse 'cubic-bezier(1.1, 1.2, 1.3, 1.4)'": {}
+          "parse 'cubic-bezier(foobar)'": { "flags": "invalid" },
+          "parse 'steps(foobar)'": { "flags": "invalid" },
+          "parse 'steps(3.3, end)'": { "flags": "invalid" },
+          "parse 'steps(3, top)'": { "flags": "invalid" },
+          "parse 'steps(-3, top)'": { "flags": "invalid" },
+          "parse 'cubic-bezier(-0.1, -0.2, -0.3, -0.4)'": { "flags": "invalid" },
+          "parse 'cubic-bezier(1.1, 1.2, 1.3, 1.4)'": { "flags": "invalid" }
         }
         */</script>
     </head>
@@ -99,11 +99,12 @@
                             'transition-timing-function': key
                         });
                         var result = computedStyle(transition, 'transition-timing-function');
-                        assert_equals(result, values[key], "Expected computed value", {
-                            // mark tests that fail as such
-                            flags: invalidTests[key] ? "invalid" : ""
-                        });
-                    }, "parse '" + key + "'");
+                        assert_equals(result, values[key], "Expected computed value");
+                    }, "parse '" + key + "'",
+                    {
+                        // mark tests that fail as such
+                        flags: invalidTests[key] ? "invalid" : ""
+                    });
                 }
             }
         </script>

@@ -27,7 +27,7 @@
           "parse '.0s'": {},
           "parse '0.0s'": {},
           "parse '.3s'": {},
-          "parse '-5s'": {},
+          "parse '-5s'": { "flags": "invalid" },
           "parse '10200ms'": {},
           "parse '1000ms'": {},
           "parse '100ms'": {},
@@ -35,9 +35,9 @@
           "parse '9ms'": {},
           "parse '1ms'": {},
           "parse '0ms'": {},
-          "parse '-500ms'": {},
+          "parse '-500ms'": { "flags": "invalid" },
           "parse '1s, 0.1s, 10ms'": {},
-          "parse 'foobar'": {}
+          "parse 'foobar'": { "flags": "invalid" }
         }
         */</script>
     </head>
@@ -95,11 +95,12 @@
                             'transition-duration': key
                         });
                         var result = computedStyle(transition, 'transition-duration');
-                        assert_equals(result, values[key], "Expected computed value", {
-                            // mark tests that fail as such
-                            flags: invalidTests[key] ? "invalid" : ""
-                        });
-                    }, "parse '" + key + "'");
+                        assert_equals(result, values[key], "Expected computed value");
+                    }, "parse '" + key + "'",
+                    {
+                        // mark tests that fail as such
+                        flags: invalidTests[key] ? "invalid" : ""
+                    });
                 }
             }
         </script>

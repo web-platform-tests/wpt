@@ -7,7 +7,7 @@
         <link rel="help" title="2.2. The 'transition-duration' Property" href="http://www.w3.org/TR/css3-transitions/#transition-duration-property">
         <link rel="help" title="CSS Values and Units Module Level 3 - 6.2. Times: the ‘<time>’ type and ‘s’, ‘ms’ units" href="http://www.w3.org/TR/css3-values/#time">
         <link rel="author" title="Rodney Rehm" href="http://rodneyrehm.de/en/">
-        <meta name="flags" content="dom invalid">
+        <meta name="flags" content="dom">
         
         <script src="/resources/testharness.js" type="text/javascript"></script>
         <script src="/resources/testharnessreport.js" type="text/javascript"></script>
@@ -54,6 +54,14 @@
                 'foobar': '0s'
             };
             
+            // these tests are supposed to fail and
+            // possibly make the engine issue a parser warning
+            var invalidTests = {
+                '-5s': true,
+                '-500ms': true,
+                'foobar': true
+            };
+            
             for (var key in values) {
                 if (Object.prototype.hasOwnProperty.call(values, key)) {
                     test(function() {
@@ -61,7 +69,10 @@
                             'transition-duration': key
                         });
                         var result = computedStyle(transition, 'transition-duration');
-                        assert_equals(result, values[key]);
+                        assert_equals(result, values[key], "Expected computed value", {
+                            // mark tests that fail as such
+                            flags: invalidTests[key] ? "invalid" : ""
+                        });
                     }, "parse '" + key + "'");
                 }
             }

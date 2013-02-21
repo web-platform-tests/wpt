@@ -2,29 +2,47 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">	
 	<head>
-		<title>CSS3 Writing Modes Test: text-orientation</title>
-		<!-- upright -->
+		<title>CSS3 Writing Modes Test: text-orientation-upright</title>
 		<link rel="author" title="Taka Oshiyama" href="mailto:takaoshiyama@gmail.com" />
 		<link rel="help" title="5.1. Orienting Text: the‘text-orientation’property" href="http://www.w3.org/TR/css3-writing-modes/#text-orientation" />
 		<link rel="match" href="reftest/text-orientation-011-ref.xht" />
 		<meta http-equiv="content-language" content="en, ja" />
-		<meta name="flags" content="" />
-		<meta name="assert" content="This property specifies the orientation of text within a line." />		
+		<meta name="flags" content="font should" />
+		<meta name="assert" content="This test checks that 'text-orientation: upright' causes characters from horizontal-only scripts are rendered upright, i.e. in their standard horizontal orientation, in vertical writing modes. This is effective to verify 1.block flow direction, 2.inline direction and 3.glyph orientation." />		
 		<style type="text/css">
-				@font-face
-				{
-					font-family: "IPAMincho"; 
-					src: url("support/ipam.ttf"); /* Filesize: 8046712 bytes; version: 00303 */
+				@font-face 
+				{	
+					font-family: "mplus-1p-regular";
+					src: url("support/mplus-1p-regular.ttf") format("truetype");
+					/* filesize: 1382116 bytes (1.3MB) */
 				}
-				@font-face
+				.view_ahem
 				{
-					font-family: "IPAGothic"; 
-					src: url("support/ipag.ttf"); /* Filesize: 6235344 bytes; version: 00303 */
+					background: pink;
+					border: 1px solid black;
+					color: blue;
+					font: 20px/1 "Ahem";
+					height: 3em;
+					margin: 10px;        
+					width: 3em;
+					white-space: pre;
 				}
-				div 
+				.test_ahem
+				{
+					text-orientation: upright;				//The property to be tested
+					-webkit-text-orientation: upright;
+					writing-mode: vertical-rl;
+					-webkit-writing-mode: vertical-rl;
+				}
+				.control_ahem
+				{
+					writing-mode: horizontal-tb;
+					-webkit-writing-mode: horizontal-tb;
+				}
+				.view 
 				{
 					border: 1px solid gray;
-					font-family: "IPAMincho", "IPAGothic", "IPA明朝", "IPAゴシック";
+					font-family: "mplus-1p-regular";
 					font-size: 1.5em;
 					line-height: 1.5;
 					width: 3em;
@@ -33,7 +51,8 @@
 				}
 				.test 
 				{
-					text-orientaion: upright;
+					text-orientaion: upright;					//The property to be tested
+					-webkit-text-orientation: upright;
 				}
 				.control 
 				{
@@ -47,10 +66,15 @@
 		</style>
 	</head>
 	<body lang="en">
-		<p>Test passes if the upper block is identical to the lower block including layout of each characters.</p>
-		<!-- upright -->
-		<div class="test" lang="ja">月火水Abc<br />def木金土</div>
+		<p>Test passes if a pair of rectangles is <strong>identical</strong> including <strong>layout</strong> and <strong>orientation</strong>.</p>
+		<div class="view_ahem"><span class="test_ahem">123
+ 56
+7  </span></div>
+		<div class="view_ahem"><span class="control_ahem">7 1
+ 52
+ 63</span></div>
 		<hr />
-		<div class="control" lang="ja">月火水<span class="tcy">A</span><span class="tcy">b</span><span class="tcy">c</span><br /><span class="tcy">d</span><span class="tcy">e</span><span class="tcy">f</span>木金土</div>
+		<div class="view" lang="ja"><span class="test">月火水Abc<br />def木金土</span></div><br />
+		<div class="view" lang="ja"><span class="control">月火水<span class="tcy">A</span><span class="tcy">b</span><span class="tcy">c</span><br /><span class="tcy">d</span><span class="tcy">e</span><span class="tcy">f</span>木金土</span></div>
 	</body>
 </html>

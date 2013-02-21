@@ -22,14 +22,7 @@
 					writing-mode: vertical-rl;
 					-webkit-writing-mode: vertical-rl;
 				}
-				#test 
-				{
-				}
-				.tcy  /* tate-cyu-yoko: horizontal-in-vertical */
-				{ 
-					text-combine-horizontal: all; 
-				}
-				#control 
+				.control 
 				{
 					text-orientation: upright;
 					-webkit-text-orientation: upright;
@@ -37,9 +30,9 @@
 		</style>
 	</head>
 	<body lang="en">
-		<p>Test passes if the upper block is <strong>identical</strong> to the lower block including <strong>layout</strong> and <strong>orientation</strong> of each characters.</p>
-		<div id="control" lang="ja">1月2日の次の日は、<br />1月3日です。</div>	
+		<p>Test passes if the upper block is <strong>identical</strong> to the lower block, including orientation of each character.</p>
+		<div class="control" lang="ja">1月2日の次の日は、<br />1月3日です。</div>	
 		<hr />
-		<div id="control" lang="ja">1月2日の次の日は、<br />1月3日です。</div>	
+		<div class="control" lang="ja">1月2日の次の日は、<br />1月3日です。</div>	
 	</body>
 </html>

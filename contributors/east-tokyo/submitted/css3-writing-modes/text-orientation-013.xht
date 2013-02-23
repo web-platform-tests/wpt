@@ -7,7 +7,7 @@
 		<link rel="help" title="5.1. Orienting Text: the‘text-orientation’property" href="http://www.w3.org/TR/css3-writing-modes/#text-orientation" />
 		<link rel="match" href="reftest/text-orientation-013-ref.xht" />
 		<meta http-equiv="content-language" content="en" />
-		<meta name="flags" content="font ahem" />
+		<meta name="flags" content="ahem font" />
 		<meta name="assert" content="This test checks that 'text-orientation: sideways-left' causes text to be set as if in a horizontal layout, but rotated 90°counter-clockwise, in vertical writing modes. It's effective to verify 1.block flow direction and 2.inline direction, but not effective to verify 3.glyph orientation." />		
 		<style type="text/css">
 				div
@@ -36,6 +36,10 @@
 		</style>
 	</head>
 	<body>
+		<!--
+			Here, the "Ahem" sub-test is in place and checks 1.block flow direction and 2.inline direction, 
+			but not cheks 3.glyph orientation.
+		-->
 		<p>Test passes if a pair of rectangles is <strong>identical</strong> including <strong>layout</strong>.</p>
 		<div id="test_ahem">123
  56

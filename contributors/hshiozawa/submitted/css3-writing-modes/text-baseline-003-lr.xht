@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>CSS Writing Modes Test: text baseline alignment (central alignment wit vertical layout)</title>
+    <link rel="author" title="Hajime Shiozawa" href="mailto:hajime.shiozawa@gmail.com" />
+    <link rel="help" title="4.2. Text Baseline" href="http://www.w3.org/TR/css3-writing-modes/#text-baselines" />
+    <meta name="assert" content="This test checks the generation of text baseline. When 'writing-mode' is vertical and when 'text-orientation' is 'mixed' or 'upright', then the central baseline is used as the dominant baseline." />
+    <meta name="flags" content="font ahem" />
+    <style type="text/css"><![CDATA[
+      div > p {
+        font: 40px/1 "Ahem";
+        background-color: orange;
+      }
+      div > p > img {
+        margin-top: -200px;
+      }
+
+      /* writing-mode property */
+      .vertical-lr {
+        writing-mode: vertical-lr;
+      }
+
+      /* text-orientation property */
+      .mixed {
+        text-orientation: mixed;
+      }
+      .upright {
+        text-orientation: upright;
+      }
+
+      /* font-size */
+      .half {
+        vertical-align: text-top;
+        font-size: 0.5em;
+      }
+  ]]></style>
+  </head>
+  <body>
+    <p>Test passes if the side edge of black block is touching a thin blue line in each 2 orange rectangles and if all 2 orange rectangles are <strong>identical</strong>.</p>
+    <div class="vertical-lr">
+      <p class="mixed"><span class='half'>XXXXXXXXXX</span><img src="./support/blue-vert-line_1x220.png" alt="Image download support must be enabled" /></p>
+      <p class="upright"><span class='half'>XXXXXXXXXX</span><img src="./support/blue-vert-line_1x220.png" alt="Image download support must be enabled" /></p>
+    </div>
+  </body>
+</html>

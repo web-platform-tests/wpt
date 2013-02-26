@@ -4,9 +4,11 @@ var fs = require("fs")
 ,   exec = require("child_process").execFile
 ,   phanthomScript = pth.join(__dirname, "get-analysis-for.phjs")
 ,   specs = {
-        html:       "http://www.w3.org/html/wg/drafts/html/master/single-page.html"
-    ,   canvas2d:   "http://www.w3.org/html/wg/drafts/2dcontext/html5_canvas/Overview.html"
-    // ,   microdata:  "http://www.w3.org/html/wg/drafts/microdata/master/Overview.html"
+          html:             "http://www.w3.org/html/wg/drafts/html/master/single-page.html"
+       ,  canvas2d:         "http://www.w3.org/html/wg/drafts/2dcontext/html5_canvas/Overview.html"
+    // ,  microdata:        "http://www.w3.org/html/wg/drafts/microdata/master/Overview.html"
+    // ,  css3transforms:   "http://dev.w3.org/csswg/css3-transforms/Overview.html"
+    // ,  css3backgrounds:  "http://dev.w3.org/csswg/css3-background/Overview.html"
     }
 ,   perSec = JSON.parse(fs.readFileSync(pth.join(__dirname, "tests-per-section.json"), "utf8"))
 ,   data = {}
@@ -40,7 +42,9 @@ for (var spec in specs) {
         if (err) return console.log("ERROR: " + err);
         for (var i = 0, n = data[spec].length; i < n; i++) {
             var sec = data[spec][i];
-            sec.tests = perSec[spec][sec.id] || 0;
+            // Only read in the test data if it isn't already there
+            if( !sec.hasOwnProperty("tests") )
+               sec.tests = perSec[spec][sec.id] || 0;
         }
         fs.writeFileSync(pth.join(__dirname, "spec-data-" + spec + ".json"), JSON.stringify(data[spec], null, 4), "utf8");
     });

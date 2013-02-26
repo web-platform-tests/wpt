@@ -42,8 +42,9 @@ page.open(url, function (status) {
                         ,   original_id: href
                         ,   level:  level
                         }
-                    ,   $ol = $li.find("> ol").first()
                     ;
+                    var $ol = $li.find("> ol").first().length ? $li.find("> ol").first() : $li.find("> ul").first();
+
                     list.push(def);
                     if ($ol.length && level < 3) {
                         walkToC($, $ol, list, level);
@@ -99,9 +100,21 @@ page.open(url, function (status) {
                 return div;
             }
 
+            function getTestAnnotations(tocList)  {
+                for(var i = 0; i < tocList.length; i++)
+                {
+                    // If the spec uses annotate.js, each section will have a widget with the id prepended with 'annotation_'
+                    var $annotation = $("#annotation_"+ tocList[i].id);
+                    if( $annotation.length )
+                        tocList[i].tests = parseInt($annotation.attr("testcount"));
+                    else if( $("#annotation_root_").length )
+                        // If there's no annotation on this section but this spec has annotate.js, that means there are no tests
+                        tocList[i].tests = 0;
+                }
+            }
+
             // process ToC
-            var $toc = $("body > ol.toc").first()
-            ;
+            var $toc = $("body > ol.toc").first().length ? $("body > ol.toc").first() : $("body > ul.toc").first();
             walkToC($, $toc, tocList, 0);
             processTocForRanges(tocList);
             
@@ -156,6 +169,10 @@ page.open(url, function (status) {
                 var norms = $df.text().match(/\b(should|must)\b/g);
                 section.normativeStatements = norms ? norms.length : 0;
             }
+
+            // Pull testcounts from spec if it has annotate.js
+            getTestAnnotations(tocList);
+
             return tocList;
         });
         console.log(JSON.stringify(toc));

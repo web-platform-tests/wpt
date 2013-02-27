@@ -15,7 +15,7 @@ async_test(function(t){
    ws.send(data);
   })
   ws.onmessage = t.step_func(function(e) {
-    assertTrue(e.data instanceof Blob);
+    assert_true(e.data instanceof Blob);
     assert_equals(e.data.size, datasize);
     t.done();
   })

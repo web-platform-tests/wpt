@@ -5,20 +5,17 @@
 <script src=../constants.js></script>
 <div id=log></div>
 <script>
-setTestTimeout(10000, 'got no open event');
+setup({timeout:10010});
 async_test(function(t) {
   var ws = new WebSocket(SCHEME_AND_DOMAIN+'/ws/echo');
-  ws.onopen = function(e) {
-    
-    ws.onclose = function(e) {
-      
+  ws.onopen = t.step_func(function(e) {    
+    ws.onclose = t.step_func(function(e) {
       assert_equals(e.wasClean, true);
-      ws.onclose = t.step_func(function() {assert_unreached()});
-      
+      ws.onclose = t.step_func(function() {assert_unreached()});  
       setTimeout(t.step_func(function() {t.done();}), 50)
-    }
+    })
     ws.close();
-  }
+  });
   ws.onerror = ws.onmessage = ws.onclose = t.step_func(function() {assert_unreached()});
-});
+}, {timeout:10000});
 </script>

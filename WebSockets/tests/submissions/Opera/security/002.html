@@ -7,10 +7,10 @@
 <script>
 async_test(function(t) {
   var xhr = new XMLHttpRequest();
-	 xhr.onload = function()	{
-		 	assert_equals(xhr.responseText, 'PASS');
-		 	end();
-	 }
+  xhr.onload = t.step_func(function() {
+    assert_equals(xhr.responseText, 'PASS');
+    t.done();
+  });
   xhr.open("GET", "check.php", true);
   xhr.setRequestHeader('Sec-WebSocket-Key', 'jW7qmdXj5Kk5jTClF1BN3');
   xhr.send(null);

@@ -5,16 +5,15 @@
 <script src=../constants.js></script>
 <div id=log></div>
 <script>
-setTestTimeout(10000, 'got no close event');
+setup({timeout:10010});
+
 async_test(function(t) {
   var ws = new WebSocket(SCHEME_AND_DOMAIN+'/ws/invalid');
-  ws.onclose = function(e) {
-    assert_equals(e.wasClean, false);
-    
+  ws.onclose = t.step_func(function(e) {
+    assert_false(e.wasClean);
     ws.onclose = t.step_func(function() {assert_unreached()});
-    
     setTimeout(t.step_func(function() {t.done();}), 50)
-  }
+  });
    ws.onmessage = ws.onopen = t.step_func(function() {assert_unreached()});
-});
+}, null, {timeout:10000});
 </script>

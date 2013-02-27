@@ -6,25 +6,21 @@
 <script src=../constants.js></script>
 <div id=log></div>
 <script>
+setup({timeout:300010});
 async_test(function(t) {
   var ws = new WebSocket(SCHEME_AND_DOMAIN+'/ws/echo');
   ws.onclose = ws.onerror = ws.onmessage = t.step_func(function() {assert_unreached()});
-  ws.onopen = function(e) {
-    
-    setTestTimeout(30000);
-    setTimeout(function() {
+  ws.onopen = t.step_func(function(e) {
+    setTimeout(t.step_func(function() {
       ws.send('test');
-      ws.onmessage = function(e) {
-        
+      ws.onmessage = t.step_func(function(e) {
         assert_equals(e.data, 'test');
-        ws.onclose = function(e) {
-          
-          
+        ws.onclose = t.step_func(function(e) {
           setTimeout(t.step_func(function() {t.done();}), 50)
-        }
+        });
         ws.close();
-      }
-    }, 20000);
-  }
-});
+      });
+    }), 20000);
+  })
+}, null, {timeout:30000});
 </script>

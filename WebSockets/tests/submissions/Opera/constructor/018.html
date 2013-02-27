@@ -1,5 +1,5 @@
 <!doctype html>
-<title>WebSockets: NUL char in url</title>
+<title>WebSockets: NULL char in url</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script src=../constants.js></script>
@@ -12,6 +12,6 @@ async_test(function(t) {
     ws.close();
     t.done();
   })
-  ws.onclose = ws.onerror = t.step_func(function() {assert_unreached()});
+  ws.onclose = ws.onerror = t.step_func(function(e) {assert_unreached(e.type)});
 });
 </script>

@@ -5,6 +5,8 @@
 <script src=../constants.js></script>
 <div id=log></div>
 <script>
+setup({timeout:6000});
+
 async_test(function(t) {
   // test that the events are fired as they should when opening 25 websockets and
   // sending a message on each and then closing when getting the message back
@@ -14,7 +16,6 @@ async_test(function(t) {
     ws[i] = new WebSocket(SCHEME_DOMAIN_PORT+'/ws/echo');
     ws[i].id = i;
     ws[i].onopen = t.step_func(function(e) {
-      setTestTimeout(5000);
       events++;
       this.send(this.id);
       this.onopen = t.step_func(function() {assert_unreached()});
@@ -34,6 +35,6 @@ async_test(function(t) {
     });
     ws[i].onerror = t.step_func(function() {assert_unreached()});
   }
-});
+}, null, {timeout:5000});
 </script>
 

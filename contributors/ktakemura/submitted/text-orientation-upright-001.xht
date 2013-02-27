@@ -4,16 +4,22 @@
 		<title>CSS Writing Modes Test: text-orientation - upright in vertical-rl writing mode</title>
 		<link rel="author" title="Kazuaki Takemura" href="mailto:takemura@networksoft.co.jp" />
 		<link rel="help" title="5.1.  Orienting Text" href="http://www.w3.org/TR/css3-writing-modes/#text-orientation" />
-		<link rel="match" href="text-orientation-upright-001-ref.xht" />
+		<link rel="match" href="reference/text-orientation-upright-001-ref.xht" />
 		<meta name="flags" content="font image" />
 		<meta name="assert" content="This test checks that the alphabet is displayed on the upright (not sideways),and it is verified whether the characters are aligned in the vertical direction including vertical writing characters(Japanese, Mongolian, Hangul, etc)." />
 		<style type="text/css"><![CDATA[
+			@font-face
+			{
+				font-family: "DejaVuSerifBook";
+				src: url("support/DejaVuSerif-webfont.woff") format("woff");
+				/* Filesize: 18096 bytes (17.7 KBytes) */
+			}
 
 			div {
 				border: 1px solid gray;
 				float: left;
 				color: blue;
-				font-family: "DejaVu Serif", serif;
+				font-family: "DejaVuSerifBook";
 				font-size: 1.875em; /* equivalent to 30px */
 				line-height: 1.4; /* equivalent to 42px: 
 				so that top-half-leading is 6px
@@ -45,7 +51,7 @@
 
 	<div id="vertical">Ｔext sample</div>
 
-	<div><img src="./text-orientation-upright-001.png" width="42" height="349" alt="Image download support must be enabled" /></div>
+	<div><img src="./support/text-orientation-upright-001.png" width="42" height="349" alt="Image download support must be enabled" /></div>
 
 	</body>
 </html>

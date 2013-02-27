@@ -5,33 +5,31 @@
 <script src=../constants.js></script>
 <div id=log></div>
 <script>
-setTestTimeout(10000);
-test(function(){
+setup({timeout:10000});
+async_test(function(t) {
   var ws = [];
   var events = 0;
   var prevDate;
   var date;
   for (var i = 0; i < 4; ++i) {
-    ws[i] = new WebSocket(SCHEME_AND_DOMAIN+':8007/handshake_sleep_1');
+    ws[i] = new WebSocket(SCHEME_DOMAIN_PORT+'/ws/handshake_sleep_1');
     ws[i].id = i;
-    ws[i].onopen = function(e) {
-      debug(e.type+' '+this.id);
+    ws[i].onopen = t.step_func(function(e) {
       events++;
       date = new Date();
       if (prevDate)
         assertGreaterThan(date-prevDate, 998);
       prevDate = date;
-      this.onopen = assertUnreached;
-    }
-    ws[i].onclose = function(e) {
-      debug(e.type+' '+this.id);
+      this.onopen = t.step_func(function() {assert_unreached()});
+    })
+    ws[i].onclose = t.step_func(function(e) {
       events++;
       if (events == 8) {
-        end();
+        t.done();
       }
-      this.onclose = assertUnreached;
-    }
-    ws[i].onerror = ws[i].onmessage = assertUnreached;
+      this.onclose = t.step_func(function() {assert_unreached()});
+    });
+    ws[i].onerror = ws[i].onmessage = t.step_func(function() {assert_unreached()});
   }
-});
+}, null, {timeout:10000});
 </script>

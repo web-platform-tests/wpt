@@ -5,15 +5,15 @@
 <script src=../constants.js></script>
 <div id=log></div>
 <script>
-test(function(){
+async_test(function(t) {
   if (window.WebSocket)
     document.cookie = 'ws_test=test; Path=/; Secure';
-  var ws = new WebSocket(SCHEME_AND_DOMAIN+':8007/echo-cookie');
+  var ws = new WebSocket(SCHEME_DOMAIN_PORT+'/ws/echo-cookie');
   ws.onmessage = function(e) {
-    debug(e);
+    
     ws.onclose = debug;
     ws.close();
-    if (SCHEME_AND_DOMAIN.substr(0,3) == 'wss') {
+    if (SCHEME_DOMAIN_PORT.substr(0,3) == 'wss') {
       assertMatches(e.data, /ws_test=test/);
     } else {
       assertNotMatches(e.data, /ws_test=test/);
@@ -21,7 +21,7 @@ test(function(){
     end();
   }
   ws.onopen = debug;
-  ws.onclose = assertUnreached;
+  ws.onclose = t.step_func(function() {assert_unreached()});
 });
 // remove cookie
 document.cookie = 'ws_test=; Path=/; Secure; Expires=Sun, 06 Nov 1994 08:49:37 GMT';

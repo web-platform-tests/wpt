@@ -7,7 +7,7 @@
 <script>
 var i = 0;
 async_test(function(t) {
-  var ws = new WebSocket(SCHEME_AND_DOMAIN+'/');
+  var ws = new WebSocket(SCHEME_DOMAIN_PORT+'/');
   ws.onclose = function(e) {
     i++;
   }

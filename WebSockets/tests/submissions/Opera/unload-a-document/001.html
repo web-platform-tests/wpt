@@ -5,22 +5,22 @@
 <script src=../constants.js></script>
 <div id=log></div>
 <script>
-test(function(){
+async_test(function(t) {
   if (sessionStorage.second_run) {
     delete sessionStorage.second_run;
     end();
   } else {
     sessionStorage.second_run = 'true';
-    var ws = new WebSocket(SCHEME_AND_DOMAIN+':8007/echo');
+    var ws = new WebSocket(SCHEME_AND_DOMAIN+'/ws/echo');
     ws.onopen = function(e) {
-      debug(e);
+      
       setTimeout(function() {
         delete sessionStorage.second_run;
-        assertUnreached('document was not discarded');
+        assert_unreached('document was not discarded');
       }, 1000);
       location = 'data:text/html,<body onload="history.back()">';
     }
-    ws.onerror = ws.onmessage = ws.onclose = assertUnreached;
+    ws.onerror = ws.onmessage = ws.onclose = t.step_func(function() {assert_unreached()});
   }
 });
 </script>

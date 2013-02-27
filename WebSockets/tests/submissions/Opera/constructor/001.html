@@ -5,8 +5,7 @@
 <script src=../constants.js></script>
 <div id=log></div>
 <script>
-assertThrows(function(){new WebSocket()}, function(e) {
-  assertInstanceOf(e, TypeError);
+test(function() {
+  assert_throws(new TypeError(), function(){new WebSocket()});
 });
-end();
 </script>

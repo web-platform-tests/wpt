@@ -5,17 +5,17 @@
 <script src=../constants.js></script>
 <div id=log></div>
 <script>
-test(function(){
-  var ws = new WebSocket(SCHEME_AND_DOMAIN+':8007/simple_handshake');
-  ws.onmessage = assertUnreached;
+async_test(function(t) {
+  var ws = new WebSocket(SCHEME_AND_DOMAIN+'/ws/simple_handshake');
+  ws.onmessage = t.step_func(function() {assert_unreached()});
   ws.onopen = function(e) {
-    debug(e);
+    
     ws.onclose = function(e) {
-      debug(e);
+      
       assert_equals(e.wasClean, true);
-      ws.onclose = assertUnreached;
-      setTestTimeout(null);
-      setTimeout(end, 50);
+      ws.onclose = t.step_func(function() {assert_unreached()});
+      
+      setTimeout(t.step_func(function() {t.done();}), 50)
     }
     ws.close();
   }

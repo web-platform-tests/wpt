@@ -5,7 +5,7 @@
 <script src=../constants.js></script>
 <div id=log></div>
 <script>
-setTestTimeout(null);
+
 var timeout = setTimeout(function() {
   deleteCookie(false, 'timed out');
 }, 10000);
@@ -14,7 +14,7 @@ iframe.src = 'support/set-cookie.php?'+encodeURIComponent('ws_test=test; Path=/;
 iframe.onload = runTest;
 function runTest() {
   try {
-    var ws = new WebSocket(SCHEME_AND_DOMAIN+':8007/echo-cookie');
+    var ws = new WebSocket(SCHEME_DOMAIN_PORT+'/ws/echo-cookie');
     ws.onmessage = function(e) {
       ws.onclose = debug;
       ws.close();

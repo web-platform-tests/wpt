@@ -5,17 +5,13 @@
 <script src=../constants.js></script>
 <div id=log></div>
 <script>
-test(function(){
-  var ws = new WebSocket(SCHEME_AND_DOMAIN+':8007/echo-query?x\u0000');
-  ws.onopen = debug;
-  ws.onmessage = function(e) {
-    debug(e);
-    ws.onclose = debug;
+async_test(function(t) {
+  var ws = new WebSocket(SCHEME_DOMAIN_PORT+'/ws/echo-query?x\u0000');
+  ws.onmessage = t.step_func(function(e) {   
     assert_equals(e.data, 'x%00');
     ws.close();
-    end();
-  }
-  ws.onclose = ws.onerror = assertUnreached;
+    t.done();
+  })
+  ws.onclose = ws.onerror = t.step_func(function() {assert_unreached()});
 });
-end();
 </script>

@@ -5,15 +5,15 @@
 <script src=../../../constants.js></script>
 <div id=log></div>
 <script>
-test(function(){
+async_test(function(t) {
   var ws = new WebSocket(SCHEME_AND_DOMAIN+':80/ws/echo');
   ws.onopen = function(e) {
-    debug(e);
+    
     assert_equals(ws.readyState, ws.OPEN);
     ws.onclose = debug;
     ws.close();
     end();
   }
-  ws.onerror = ws.onmessage = ws.onclose = assertUnreached;
+  ws.onerror = ws.onmessage = ws.onclose = t.step_func(function() {assert_unreached()});
 });
 </script>

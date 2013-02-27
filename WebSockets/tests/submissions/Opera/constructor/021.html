@@ -5,10 +5,5 @@
 <script src=../constants.js></script>
 <div id=log></div>
 <script>
-function checkException(e) {
-  assertInstanceOf(e, DOMException);
-  assert_equals(e.code, e.SYNTAX_ERR);
-}
-assertThrows(function(){new WebSocket("ws://certo2.oslo.osa:8007/protocol_array",["foobar, foobar"])}, checkException);
-end();
+test(function() {assert_throws("SyntaxError", function(){new WebSocket("ws://certo2.oslo.osa/ws/protocol_array",["foobar, foobar"])})});
 </script>

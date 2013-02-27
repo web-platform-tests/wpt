@@ -5,17 +5,17 @@
 <script src=../constants.js></script>
 <div id=log></div>
 <script>
-setTestTimeout(null);
+
 var timeout = setTimeout(function() {
   deleteCookie(false, 'timed out');
 }, 15000);
 var iframe = document.createElement('iframe');
 try {
-  var ws = new WebSocket(SCHEME_AND_DOMAIN+':8007/set-cookie?'+encodeURIComponent('ws_test=test; Path=/; HttpOnly'));
+  var ws = new WebSocket(SCHEME_DOMAIN_PORT+'/ws/set-cookie?'+encodeURIComponent('ws_test=test; Path=/; HttpOnly'));
   ws.onopen = function(e) {
-    debug(e);
+    
     ws.onclose = debug;
-    var ws2 = new WebSocket(SCHEME_AND_DOMAIN+':8007/echo-cookie');
+    var ws2 = new WebSocket(SCHEME_DOMAIN_PORT+'/ws/echo-cookie');
     ws2.onmessage = function(e) {
       debug('ws2 message');
       ws2.onclose = function(e) { debug('ws2 close'); }
@@ -26,9 +26,9 @@ try {
     ws2.onopen = function(e) { debug('ws2 open'); }
     ws2.onclose = function(e) { debug('ws2 close'); deleteCookie(false, 'ws2 close'); }
   }
-  ws.onclose = assertUnreached;
+  ws.onclose = t.step_func(function() {assert_unreached()});
 } catch(e) {
-  assertUnreached(e);
+  assert_unreached(e);
 }
 
 function deleteCookie(testPassed, msg) {

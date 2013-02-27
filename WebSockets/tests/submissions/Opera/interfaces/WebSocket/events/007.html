@@ -6,8 +6,8 @@
 <div id=log></div>
 <script>
 setTestTimeout(2000);
-test(function(){
-  var ws = new WebSocket(SCHEME_AND_DOMAIN+'/');
+async_test(function(t) {
+  var ws = new WebSocket(SCHEME_DOMAIN_PORT+'/');
   function foo(e) {
     if (e.detail == 5)
       end();

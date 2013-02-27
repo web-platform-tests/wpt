@@ -5,19 +5,14 @@
 <script src=../constants.js></script>
 <div id=log></div>
 <script>
-function checkException(e) {
-  assertInstanceOf(e, DOMException);
-  assert_equals(e.code, e.SYNTAX_ERR);
-}
-assertThrows(function(){new WebSocket("/test")}, checkException);
-assertThrows(function(){new WebSocket("ws://foo bar.com/")}, checkException);
-assertThrows(function(){new WebSocket("wss://foo bar.com/")}, checkException);
-assertThrows(function(){new WebSocket("http://"+location.hostname+"/")}, checkException);
-assertThrows(function(){new WebSocket("mailto:example@example.org")}, checkException);
-assertThrows(function(){new WebSocket("about:blank")}, checkException);
-assertThrows(function(){new WebSocket("ws://"+location.hostname+"/#")}, checkException);
-assertThrows(function(){new WebSocket("ws://"+location.hostname+"/#test")}, checkException);
-assertThrows(function(){new WebSocket("?test")}, checkException);
-assertThrows(function(){new WebSocket("#test")}, checkException);
-end();
+test(function() {assert_throws("SyntaxError", function(){new WebSocket("/test")})});
+test(function() {assert_throws("SyntaxError", function(){new WebSocket("ws://foo bar.com/")})});
+test(function() {assert_throws("SyntaxError", function(){new WebSocket("wss://foo bar.com/")})});
+test(function() {assert_throws("SyntaxError", function(){new WebSocket("http://"+location.hostname+"/")})});
+test(function() {assert_throws("SyntaxError", function(){new WebSocket("mailto:example@example.org")})});
+test(function() {assert_throws("SyntaxError", function(){new WebSocket("about:blank")})});
+test(function() {assert_throws("SyntaxError", function(){new WebSocket("ws://"+location.hostname+"/#")})});
+test(function() {assert_throws("SyntaxError", function(){new WebSocket("ws://"+location.hostname+"/#test")})});
+test(function() {assert_throws("SyntaxError", function(){new WebSocket("?test")})});
+test(function() {assert_throws("SyntaxError", function(){new WebSocket("#test")})});
 </script>

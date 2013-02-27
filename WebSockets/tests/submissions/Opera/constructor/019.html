@@ -5,17 +5,14 @@
 <script src=../constants.js></script>
 <div id=log></div>
 <script>
-test(function(){
-  var scheme = SCHEME_AND_DOMAIN.split('://')[0];
-  var domain = SCHEME_AND_DOMAIN.split('://')[1];
-  var ws = new WebSocket(scheme.toUpperCase()+'://'+domain+':8007/echo');
-  ws.onopen = function(e) {
-    debug(e);
-    ws.onclose = debug;
+async_test(function(t) {
+  var scheme = SCHEME_DOMAIN_PORT.split('://')[0];
+  var domain = SCHEME_DOMAIN_PORT.split('://')[1];
+  var ws = new WebSocket(scheme.toUpperCase()+'://'+domain+'/ws/echo');
+  ws.onopen = t.step_func(function(e) {
     ws.close();
-    end();
-  }
-  ws.onclose = ws.onerror = ws.onmessage = assertUnreached;
+    t.done();
+  })
+  ws.onclose = ws.onerror = ws.onmessage = t.step_func(function() {assert_unreached()});
 });
-end();
 </script>

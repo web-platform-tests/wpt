@@ -6,15 +6,15 @@
 <div id=log></div>
 <script>
 setTestTimeout(10000, 'got no close event');
-test(function(){
-  var ws = new WebSocket(SCHEME_AND_DOMAIN+':8007/invalid');
+async_test(function(t) {
+  var ws = new WebSocket(SCHEME_AND_DOMAIN+'/ws/invalid');
   ws.onclose = function(e) {
     assert_equals(e.wasClean, false);
-    debug(e);
-    ws.onclose = assertUnreached;
-    setTestTimeout(null);
-    setTimeout(end, 50);
+    
+    ws.onclose = t.step_func(function() {assert_unreached()});
+    
+    setTimeout(t.step_func(function() {t.done();}), 50)
   }
-   ws.onmessage = ws.onopen = assertUnreached;
+   ws.onmessage = ws.onopen = t.step_func(function() {assert_unreached()});
 });
 </script>

@@ -5,7 +5,7 @@
 <script src=../constants.js></script>
 <div id=log></div>
 <script>
-test(function(){
+async_test(function(t) {
   var xhr = new XMLHttpRequest();
 	 xhr.onload = function()	{
 		 	assert_equals(xhr.responseText, 'PASS');

@@ -6,19 +6,19 @@
 <div id=log></div>
 <script>
 setTestTimeout(10000, 'got no open event');
-test(function(){
-  var ws = new WebSocket(SCHEME_AND_DOMAIN+':8007/echo');
+async_test(function(t) {
+  var ws = new WebSocket(SCHEME_AND_DOMAIN+'/ws/echo');
   ws.onopen = function(e) {
-    debug(e);
+    
     ws.onclose = function(e) {
-      debug(e);
+      
       assert_equals(e.wasClean, true);
-      ws.onclose = assertUnreached;
-      setTestTimeout(null);
-      setTimeout(end, 50);
+      ws.onclose = t.step_func(function() {assert_unreached()});
+      
+      setTimeout(t.step_func(function() {t.done();}), 50)
     }
     ws.close();
   }
-  ws.onerror = ws.onmessage = ws.onclose = assertUnreached;
+  ws.onerror = ws.onmessage = ws.onclose = t.step_func(function() {assert_unreached()});
 });
 </script>

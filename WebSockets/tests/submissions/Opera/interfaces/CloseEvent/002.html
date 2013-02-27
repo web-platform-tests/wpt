@@ -6,7 +6,7 @@
 <div id=log></div>
 <script>
 setTestTimeout(2000);
-test(function(){
+async_test(function(t) {
   var e = document.createEvent('CloseEvent');
   e.initCloseEvent('foo', false, false, false);
   var div = document.createElement('div');

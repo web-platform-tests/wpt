@@ -5,8 +5,7 @@
 <script src=../constants.js></script>
 <div id=log></div>
 <script>
-test(function(){
-  assertInstanceOf(new WebSocket("ws://"+location.hostname+"/"), WebSocket);
+test(function() {
+  assert_true(new WebSocket("ws://"+location.hostname+"/") instanceof WebSocket);
 });
-end();
 </script>

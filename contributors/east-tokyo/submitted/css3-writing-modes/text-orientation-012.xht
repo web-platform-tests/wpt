@@ -6,16 +6,10 @@
 		<link rel="author" title="Taka Oshiyama" href="mailto:takaoshiyama@gmail.com" />
 		<link rel="help" title="5.1. Orienting Text: the‘text-orientation’property" href="http://www.w3.org/TR/css3-writing-modes/#text-orientation" />
 		<link rel="match" href="reftest/text-orientation-012-ref.xht" />
-		<meta http-equiv="content-language" content="en, ja" />
+		<meta http-equiv="content-language" content="en" />
 		<meta name="flags" content="ahem font" />
 		<meta name="assert" content="This test checks that 'text-orientation: sideways-right' causes text to be set as if in a horizontal layout, but rotated 90° clockwise, in vertical writing modes. This is effective to verify 1.block flow direction, 2.inline direction and 3.glyph orientation." />	
 		<style type="text/css">
-				@font-face 
-				{	
-					font-family: "mplus-1p-regular";
-					src: url("support/mplus-1p-regular.ttf") format("truetype");
-					/* filesize: 1382116 bytes (1.3MB) */
-				}
 				.view_ahem
 				{
 					background: pink;
@@ -42,7 +36,6 @@
 				.view 
 				{
 					border: 1px solid gray;
-					font-family: "mplus-1p-regular";
 					font-size: 1.5em;
 					line-height: 1.5;
 					margin-bottom: 10px;
@@ -78,7 +71,7 @@
  52
  63</span></div>
 		<hr />
-		<div class="view" lang="ja"><span class="test">123Abc<br />def456</span></div>
-		<div class="view" lang="ja"><span class="control">123Abc<br />def456</span></div>
+		<div class="view"><span class="test">123Abc<br />def456</span></div>
+		<div class="view"><span class="control">123Abc<br />def456</span></div>
 	</body>
 </html>

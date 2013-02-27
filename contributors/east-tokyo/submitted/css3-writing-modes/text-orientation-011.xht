@@ -11,11 +11,11 @@
 		<meta name="assert" content="This test checks that 'text-orientation: upright' causes characters from horizontal-only scripts are rendered upright, i.e. in their standard horizontal orientation, in vertical writing modes. This is effective to verify 1.block flow direction, 2.inline direction and 3.glyph orientation." />		
 		<style type="text/css">
 				@font-face 
-				{	
-					font-family: "mplus-1p-regular";
-					src: url("support/mplus-1p-regular.ttf") format("truetype");
-					/* filesize: 1382116 bytes (1.3MB) */
-				}
+				{
+			        font-family: "DejaVuSerifBook";
+			        src: url("support/DejaVuSerif-webfont.woff") format("woff");
+			        /* Filesize: 18096 bytes (17.7 KBytes) */
+	        	}
 				.view_ahem
 				{
 					background: pink;
@@ -42,7 +42,7 @@
 				.view 
 				{
 					border: 1px solid gray;
-					font-family: "mplus-1p-regular";
+					font-family:  "DejaVuSerifBook";
 					font-size: 1.5em;
 					line-height: 1.5;
 					margin-bottom: 10px;

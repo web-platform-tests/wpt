@@ -10,15 +10,16 @@
 		<meta name="flags" content="font" />
 		<meta name="assert" content="This test verifies that 'text-combine-horizontal: none' does not combine multiple characters into the space of a single character i.e. characters from horizontal-only scripts are set sideways, i.e. 90° clockwise from their standard orientation in horizontal text." />		
 		<style type="text/css">
-				@font-face {	
-					font-family: "mplus-1p-regular";
-					src: url("support/mplus-1p-regular.ttf") format("truetype");
-					/* filesize: 1382116 bytes (1.3MB) */
-				}
+				@font-face 
+				{
+			        font-family: "DejaVuSerifBook";
+			        src: url("support/DejaVuSerif-webfont.woff") format("woff");
+			        /* Filesize: 18096 bytes (17.7 KBytes) */
+	        	}
 				div 
 				{
 					border: 1px solid gray;
-					font-family: "mplus-1p-regular";
+					font-family: "DejaVuSerifBook";
 					font-size: 1.5em;
 					line-height: 2;
 					width: 4em;

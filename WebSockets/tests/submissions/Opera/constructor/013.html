@@ -19,20 +19,20 @@ async_test(function(t) {
       events++;
       this.send(this.id);
       this.onopen = t.step_func(function() {assert_unreached()});
-    });
+    }, ws[i]);
     ws[i].onmessage = t.step_func(function(e) {
       events++;
       assert_equals(e.data, ''+this.id);
       this.close();
       this.onmessage = t.step_func(function() {assert_unreached()});
-    });
+    }, ws[i]);
     ws[i].onclose = t.step_func(function(e) {
       events++;
       if (events == 75) {
         t.done();
       }
       this.onclose = t.step_func(function() {assert_unreached()});
-    });
+    }, ws[i]);
     ws[i].onerror = t.step_func(function() {assert_unreached()});
   }
 }, null, {timeout:5000});

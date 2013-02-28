@@ -12,10 +12,10 @@
     </its:rules>
   </header>
   <para>
-   <span id="q1" issues="#1234">transport</span> or transportation is the movement of people, animals and goods from one location to another.
+   <span id="q1" issues="#id1234">transport</span> or transportation is the movement of people, animals and goods from one location to another.
    Modes of <span id="q2">tranport inc.</span> air, rail, road, water, cable, pipeline, and space.
  </para>
- <its:locQualityIssues xml:id="1234">
+ <its:locQualityIssues xml:id="id1234">
   <its:locQualityIssue locQualityIssueType="typographical"
    locQualityIssueSeverity="50"
    locQualityIssueProfileRef="http://example.org/qaMovel/v1"

@@ -61,6 +61,7 @@
         {style:'#test img { padding:1px }', body:'<div id=test><img src="{png}"></div><img id=ref src="{png}" height=3><div id=s_ref>x</div>'},
         {style:'iframe { height:1px }', body:'<div id=test><iframe></iframe></div><img id=ref src="{png}" height=5><div id=s_ref>x</div>'},
         {style:'#test::before { content:"" } #test::before, span { border:solid }', body:'<div id=test></div><div id=ref><span>x</span></div><div id=s_ref><span>x</span></div>'},
+        {style:'div { line-height: 0;} span { margin:0 1px; line-height: normal; }', body:'<div id=test>x<span></span></div><div id=ref>x</div><div id=s_ref>x<span>x</span></div>'},
         ];
 
         tests.forEach(function(t) {

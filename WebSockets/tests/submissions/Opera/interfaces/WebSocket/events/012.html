@@ -7,12 +7,11 @@
 <script>
 var events = ['onclose', 'onopen', 'onerror', 'onmessage'];
 for (var i = 0; i < events.length; ++i) {
-async_test(function(t) {
-  var ws = new WebSocket(SCHEME_AND_DOMAIN+'/');
-  assert_throws(new TypeError(), function(){
+  test(function(t) {
+    var ws = new WebSocket(SCHEME_AND_DOMAIN+'/');
+    assert_throws(new TypeError(), function(){
       ws[events[i]] = ";";
     });
   })
 };
-end();
 </script>

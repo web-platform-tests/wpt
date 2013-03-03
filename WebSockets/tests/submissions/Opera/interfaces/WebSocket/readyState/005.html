@@ -5,13 +5,10 @@
 <script src=../../../constants.js></script>
 <div id=log></div>
 <script>
-assertNotEquals(Object.defineProperty, undefined, 'defineProperty not supported');
-assertThrows(function(){
+test(assert_throws(new typeError(), function(){
   Object.defineProperty(WebSocket.prototype, 'readyState', {
     set: function() { return 'foo'; }
   });
-}, function(e) {
-  assertInstanceOf(e, TypeError);
-});
-end();
+})
+);
 </script>

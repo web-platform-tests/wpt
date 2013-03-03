@@ -7,9 +7,9 @@
 <script>
 async_test(function(t) {
   var ws = new WebSocket(SCHEME_AND_DOMAIN+':9000/echo');
-   ws.onerror = function(e) {
-	assertInstanceOf(e, Event);
-	end();
- }
+  ws.onerror = t.step_func(function(e) {
+    assert_true(e instanceof Event);
+    t.done();
+  })
 });
 </script>

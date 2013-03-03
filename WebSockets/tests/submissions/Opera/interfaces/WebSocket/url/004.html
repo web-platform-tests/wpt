@@ -5,7 +5,7 @@
 <script src=../../../constants.js></script>
 <div id=log></div>
 <script>
-async_test(function(t) {
+test(function() {
   var ws = new WebSocket(SCHEME_AND_DOMAIN+'/');
   assert_equals(ws.URL, undefined);
   assert_equals('URL' in ws, false);

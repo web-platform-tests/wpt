@@ -5,26 +5,25 @@
 <script src=../../../constants.js></script>
 <div id=log></div>
 <script>
-async_test(function(t) {
-  var ws = new WebSocket(SCHEME_AND_DOMAIN+':80/ws/echo');
-  ws.close();
-  var events = ['open', 'message', 'error', 'close'];
-  var got = [];
-  var event;
-  function addThis(e) {
-    got.push(e.type);
-  }
-  for (var i = 0; i < events.length; ++i) {
+var events = ['open', 'message', 'error', 'close'];
+for (var i = 0; i < events.length; ++i) {
+  test(function(t) {
+    var ws = new WebSocket(SCHEME_AND_DOMAIN+':80/ws/echo');
+    ws.close();
+    var got = [];
+    var event;
+    function addThis(e) {
+      got.push(e.type);
+    }
     ws.addEventListener(events[i], addThis, false);
     ws.removeEventListener(events[i], addThis, false);
     event = document.createEvent('Event');
     event.initEvent(events[i], false, false);
     ws.dispatchEvent(event);
-  }
-  assert_equals(got.length, 0);
-  if (got.length) {
-    debug('Got: '+got);
-  }
-  end();
-});
+    assert_equals(got.length, 0);
+    if (got.length) {
+      debug('Got: '+got);
+    }
+  })
+};
 </script>

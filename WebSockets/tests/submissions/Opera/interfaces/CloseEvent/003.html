@@ -5,17 +5,16 @@
 <script src=../../constants.js></script>
 <div id=log></div>
 <script>
-setTestTimeout(2000);
 async_test(function(t) {
   var e = document.createEvent('CloseEvent');
   e.initCloseEvent('foo', true, true, true);
   var div = document.createElement('div');
-  div.addEventListener('foo', function(ev) {
+  div.addEventListener('foo', t.step_func(function(ev) {
     assert_equals(ev.bubbles, true);
     assert_equals(ev.cancelable, true);
     assert_equals(ev.wasClean, true);
-    end();
-  }, false);
+    t.done();
+  }), false);
   div.dispatchEvent(e);
 });
 </script>

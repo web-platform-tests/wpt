@@ -7,25 +7,25 @@
 <script>
 async_test(function(t) {
   var ws = new WebSocket(SCHEME_AND_DOMAIN+':80/ws/echo_raw');
-  ws.onopen = function(e) {
-    assertInstanceOf(e, Event);
+  ws.onopen = t.step_func(function(e) {
+    assert_true(e instanceof Event);
     // first a text frame, then a frame with reserved opcode 3
     // which should fail the connection
     ws.send('\\x81\\x04test\\x83\\x03LOL');
-  }
-  ws.onmessage = function(e) {
-    assertInstanceOf(e, Event);
-    assertInstanceOf(e, MessageEvent);
+  });
+  ws.onmessage = t.step_func(function(e) {
+    assert_true(e instanceof Event);
+    assert_true(e instanceof MessageEvent);
     assert_equals(ws.readyState, ws.OPEN);
-  }
-  ws.onerror = function(e) {
-    assertInstanceOf(e, Event);
+  })
+  ws.onerror = t.step_func(function(e) {
+    assert_true(e instanceof Event);
     assert_equals(ws.readyState, ws.CLOSED);
-  }
-  ws.onclose = function(e) {
-    assertInstanceOf(e, Event);
-    assertInstanceOf(e, CloseEvent);
-    end();
-  }
+  })
+  ws.onclose = t.step_func(function(e) {
+    assert_true(e instanceof Event);
+    assert_true(e instanceof CloseEvent);
+    t.done();
+  })
 });
 </script>

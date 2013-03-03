@@ -7,15 +7,13 @@
 <script>
 async_test(function(t) {
   var ws = new WebSocket(SCHEME_AND_DOMAIN+':80/ws/echo');
-  ws.onopen = function(e) {
-    
-    ws.onclose = function(e) {
-      
+  ws.onopen = t.step_func(function(e) {
+    ws.onclose = t.step_func(function(e) {
       assert_equals(ws.readyState, ws.CLOSED);
-      end();
-    }
+      t.done();
+    })
     ws.close();
-  }
+  })
   ws.onerror = ws.onmessage = ws.onclose = t.step_func(function() {assert_unreached()});
 });
 </script>

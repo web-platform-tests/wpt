@@ -7,8 +7,7 @@
 <script>
 async_test(function(t) {
   var ws = new WebSocket(SCHEME_AND_DOMAIN+':80/ws/echo_raw');
-  ws.addEventListener('open', function(e) {
-    
+  ws.addEventListener('open', t.step_func(function(e) {
     // first a text frame, then a frame with reserved opcode 3
     // which should fail the connection
     ws.send('\\x81\\x04test\\x83\\x03LOL');
@@ -16,28 +15,25 @@ async_test(function(t) {
     assert_equals(e.target, ws);
     assert_equals(e.currentTarget, ws);
     assert_equals(e.eventPhase, 2);
-  }, false);
-  ws.addEventListener('message', function(e) {
-    
+  }), false);
+  ws.addEventListener('message', t.step_func(function(e) {
     assert_equals(this, ws);
     assert_equals(e.target, ws);
     assert_equals(e.currentTarget, ws);
     assert_equals(e.eventPhase, 2);
-  }, false);
-  ws.addEventListener('error', function(e) {
-    
+  }), false);
+  ws.addEventListener('error', t.step_func(function(e) {
     assert_equals(this, ws);
     assert_equals(e.target, ws);
     assert_equals(e.currentTarget, ws);
     assert_equals(e.eventPhase, 2);
-  }, false);
-  ws.addEventListener('close', function(e) {
-    
+  }), false);
+  ws.addEventListener('close', t.step_func(function(e) {
     assert_equals(this, ws);
     assert_equals(e.target, ws);
     assert_equals(e.currentTarget, ws);
     assert_equals(e.eventPhase, 2);
-    end();
-  }, false);  
+    t.done();
+  }), false);  
 });
 </script>

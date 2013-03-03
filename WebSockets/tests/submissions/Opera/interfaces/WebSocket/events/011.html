@@ -5,16 +5,13 @@
 <script src=../../../constants.js></script>
 <div id=log></div>
 <script>
-async_test(function(t) {
-  var ws = new WebSocket(SCHEME_AND_DOMAIN+'/');
-  var events = ['onclose', 'onopen', 'onerror', 'onmessage'];
-  for (var i = 0; i < events.length; ++i) {
-    assertThrows(function(){
+var events = ['onclose', 'onopen', 'onerror', 'onmessage'];
+for (var i = 0; i < events.length; ++i) {
+  test(function(t) {
+    var ws = new WebSocket(SCHEME_AND_DOMAIN+'/');
+    assert_throws(new TypeError(), function(){
       ws[events[i]] = 1;
-    }, function(e) {
-      assertInstanceOf(e, TypeError);
     });
-  }
-});
-end();
+  })
+};
 </script>

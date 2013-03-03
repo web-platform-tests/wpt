@@ -14,7 +14,7 @@ async_test(function(t) {
     ws.onclose = debug;
     ws.close();
     if (SCHEME_DOMAIN_PORT.substr(0,3) == 'wss') {
-      assert_regexp_matches(e.data, /ws_test=test/);
+      assert_regexp_match(e.data, /ws_test=test/);
     } else {
       assert_false(/ws_test=test/.test(e.data));
     }

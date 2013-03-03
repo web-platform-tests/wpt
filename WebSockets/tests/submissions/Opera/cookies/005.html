@@ -16,7 +16,7 @@ var t = async_test(function(t) {
     ws2.onmessage = t.step_func(function(e) {
       ws.close();
       ws2.close();
-      assert_regexp_matches(/ws_test=test/, e.data);
+      assert_regexp_match(/ws_test=test/, e.data);
       t.done();
     });
   });

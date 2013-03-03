@@ -15,7 +15,7 @@ iframe.onload = t.step_func(function() {
     var ws = new WebSocket(SCHEME_DOMAIN_PORT+'/ws/echo-cookie');
     ws.onmessage = t.step_func(function(e) {
       ws.close();
-      assert_regexp_matches(e.data, /ws_test=test/);
+      assert_regexp_match(e.data, /ws_test=test/);
       t.done();;
     });
     ws.onclose = function() { deleteCookie(false, e.type); }

@@ -7,6 +7,9 @@
     <meta name="assert" content="This test checks the generation of text baseline. Unless 'writing-mode' is vertical and also unless 'text-orientation' is 'mixed' or 'upright', the alphabetical baseline is used as the dominant baseline." />
     <meta name="flags" content="image" />
     <style type="text/css"><![CDATA[
+      div {
+        margin-top: 10px;
+      }
       div > p {
         font-size: 2em;
         background-color: orange;
@@ -19,29 +22,27 @@
       .vertical-lr {
         writing-mode: vertical-lr;
       }
+      .vertical-rl {
+        writing-mode: vertical-rl;
+      }
 
       /* text-orientation property */
-      .sideways-right {
-        text-orientation: sideways-right;
-      }
       .sideways-left {
         text-orientation: sideways-left;
       }
       .sideways {
         text-orientation: sideways;
       }
-      .use-glyph-orientation {
-        text-orientation: use-glyph-orientation;
-      }
   ]]></style>
   </head>
   <body>
-    <p>Test passes if the bottom of glyph 'L' is touching a thin blue line in each 4 orange rectangles and if all 4 orange rectangles are <strong>identical</strong>.</p>
+    <p>Test passes if the bottom of glyph 'L' is touching a thin blue line in each 3 orange rectangles and if all 3 orange rectangles are <strong>identical</strong>.</p>
     <div class="vertical-lr">
-      <p class="sideways-right">LLLLLLLLLLLL<img src="./support/blue-vert-line_1x220.png" alt="Image download support must be enabled" /></p>
       <p class="sideways-left">LLLLLLLLLLLL<img src="./support/blue-vert-line_1x220.png" alt="Image download support must be enabled" /></p>
       <p class="sideways">LLLLLLLLLLLL<img src="./support/blue-vert-line_1x220.png" alt="Image download support must be enabled" /></p>
-      <p class="use-glyph-orientation">LLLLLLLLLLLL<img src="./support/blue-vert-line_1x220.png" alt="Image download support must be enabled" /></p>
+    </div>
+    <div class="vertical-rl">
+      <p class="sideways-left">LLLLLLLLLLLL<img src="./support/blue-vert-line_1x220.png" alt="Image download support must be enabled" /></p>
     </div>
   </body>
 </html>

@@ -18,7 +18,7 @@
       }
 
       /* writing-mode property */
-      .vertical-rl {
+     .vertical-rl {
         writing-mode: vertical-rl;
       }
 
@@ -28,6 +28,9 @@
       }
       .upright {
         text-orientation: upright;
+      }
+      .use-glyph-orientation {
+        text-orientation: use-glyph-orientation;
       }
 
       /* inline block */
@@ -50,12 +53,15 @@
   ]]></style>
   </head>
   <body>
-    <p>Test passes if the <strong>left side</strong> edge of black block is touching a thin blue line in each 2 orange rectangles and if all 2 orange rectangles are <strong>identical</strong>.</p>
+    <p>Test passes if the <strong>left</strong> edge of black block is touching a thin blue line in each 2 orange rectangles and if all 2 orange rectangles are <strong>identical</strong>.</p>
     <div class="vertical-rl">
       <p class="mixed"><span class='half'>OUTTEXT</span><span class="inline-block">
           <span class="descendant-block top">TOP.</span><span class="descendant-block"><span class='half'>BOTTOM..</span></span>
         </span><img src="support/blue-vert-line_1x320.png" alt="Image download support must be enabled" /></p>
       <p class="upright"><span class='half'>OUTTEXT</span><span class="inline-block">
+          <span class="descendant-block top">TOP.</span><span class="descendant-block"><span class='half'>BOTTOM..</span></span>
+        </span><img src="support/blue-vert-line_1x320.png" alt="Image download support must be enabled" /></p>
+      <p class="use-glyph-orientation"><span class='half'>OUTTEXT</span><span class="inline-block">
           <span class="descendant-block top">TOP.</span><span class="descendant-block"><span class='half'>BOTTOM..</span></span>
         </span><img src="support/blue-vert-line_1x320.png" alt="Image download support must be enabled" /></p>
     </div>

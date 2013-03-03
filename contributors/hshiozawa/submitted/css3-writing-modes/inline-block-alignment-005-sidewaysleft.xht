@@ -8,6 +8,9 @@
     <meta name="assert" content="This test checks the generation of empty inline block baseline. Unless 'writing-mode' is vertical and also unless 'text-orientation' is 'mixed' or 'upright', the alphabetical baseline is used as the dominant baseline." />
     <meta name="flags" content="image" />
     <style type="text/css"><![CDATA[
+      div {
+        margin-top: 10px;
+      }
       div > p {
         padding: 0.2em;
         font-size: 2em;
@@ -18,22 +21,19 @@
       }
 
       /* writing-mode property */
+      .vertical-lr {
+        writing-mode: vertical-lr;
+      }
       .vertical-rl {
         writing-mode: vertical-rl;
       }
 
       /* text-orientation property */
-      .sideways-right {
-        text-orientation: sideways-right;
-      }
       .sideways-left {
         text-orientation: sideways-left;
       }
       .sideways {
         text-orientation: sideways;
-      }
-      .use-glyph-orientation {
-        text-orientation: use-glyph-orientation;
       }
 
       /* inline block */
@@ -50,12 +50,13 @@
   ]]></style>
   </head>
   <body>
-    <p>Test passes if the bottom of glyph 'L' and the <strong>left side</strong> edge of yellow rectangle is touching a thin blue line in each 4 orange rectangles and if all 4 orange rectangles are <strong>identical</strong>.</p>
-    <div class="vertical-rl">
-      <p class="sideways-right">LLLLLL<span class="inline-block">
-          <span class="descendant-block"></span>
-          <span class="descendant-block"></span>
-        </span>LLLLL<img src="support/blue-vert-line_1x320.png" alt="Image download support must be enabled" /></p>
+    <p>Test passes if ...</p>
+    <ol>
+      <li>the bottom of glyph 'L' is touching a thin blue line in each 3 orange rectangles</li>
+      <li>the <strong>right</strong> edge of yellow rectangle is touching a thin blue line in each 3 orange rectangles</li>
+      <li>all 3 orange rectangles are <strong>identical</strong>.</li>
+    </ol>
+    <div class="vertical-lr">
       <p class="sideways-left">LLLLLL<span class="inline-block">
           <span class="descendant-block"></span>
           <span class="descendant-block"></span>
@@ -64,7 +65,9 @@
           <span class="descendant-block"></span>
           <span class="descendant-block"></span>
         </span>LLLLL<img src="support/blue-vert-line_1x320.png" alt="Image download support must be enabled" /></p>
-      <p class="use-glyph-orientation">LLLLLL<span class="inline-block">
+    </div>
+    <div class="vertical-rl">
+      <p class="sideways-left">LLLLLL<span class="inline-block">
           <span class="descendant-block"></span>
           <span class="descendant-block"></span>
         </span>LLLLL<img src="support/blue-vert-line_1x320.png" alt="Image download support must be enabled" /></p>

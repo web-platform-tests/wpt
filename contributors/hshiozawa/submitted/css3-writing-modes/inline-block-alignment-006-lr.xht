@@ -29,6 +29,9 @@
       .upright {
         text-orientation: upright;
       }
+      .use-glyph-orientation {
+        text-orientation: use-glyph-orientation;
+      }
 
       /* inline block */
       .inline-block {
@@ -50,15 +53,19 @@
   ]]></style>
   </head>
   <body>
-    <p>Test passes if the <strong>right side</strong> edge of black block is touching a thin blue line in each 2 orange rectangles and if all 2 orange rectangles are <strong>identical</strong>.</p>
+    <p>Test passes if the <strong>left</strong> edge of black block is touching a thin blue line in each 3 orange rectangles and if all 3 orange rectangles are <strong>identical</strong>.</p>
     <div class="vertical-lr">
       <p class="mixed"><span class='half'>OUTSIDE</span><span class="inline-block">
+          <span class="descendant-block"><img src="support/right-side-filled-square_40x160.png" alt="Image download support must be enabled" /></span>
           <span class="descendant-block"><img src="support/opaque-square_40x160.png" alt="Image download support must be enabled" /></span>
-          <span class="descendant-block"><img src="support/left-side-filled-square_40x160.png" alt="Image download support must be enabled" /></span>
         </span><img class='baseline' src="support/blue-vert-line_1x320.png" alt="Image download support must be enabled" /></p>
       <p class="upright"><span class='half'>OUTSIDE</span><span class="inline-block">
+          <span class="descendant-block"><img src="support/right-side-filled-square_40x160.png" alt="Image download support must be enabled" /></span>
           <span class="descendant-block"><img src="support/opaque-square_40x160.png" alt="Image download support must be enabled" /></span>
-          <span class="descendant-block"><img src="support/left-side-filled-square_40x160.png" alt="Image download support must be enabled" /></span>
+        </span><img class='baseline' src="support/blue-vert-line_1x320.png" alt="Image download support must be enabled" /></p>
+      <p class="use-glyph-orientation"><span class='half'>OUTSIDE</span><span class="inline-block">
+          <span class="descendant-block"><img src="support/right-side-filled-square_40x160.png" alt="Image download support must be enabled" /></span>
+          <span class="descendant-block"><img src="support/opaque-square_40x160.png" alt="Image download support must be enabled" /></span>
         </span><img class='baseline' src="support/blue-vert-line_1x320.png" alt="Image download support must be enabled" /></p>
     </div>
   </body>

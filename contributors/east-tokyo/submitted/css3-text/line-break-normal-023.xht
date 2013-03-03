@@ -2,14 +2,14 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
-		<title>CSS Text Test: line-break - strict and centered punctuation marks</title>
+		<title>CSS Text Test: line-break - normal and centered punctuation marks</title>
 		<!-- centered punctuation marks -->
 		<link rel="author" title="Taka Oshiyama" href="mailto:takaoshiyama@gmail.com" />
 		<link rel="help" title="5.2. Breaking Rules for Punctuation: the 'line-break' property" href="http://www.w3.org/TR/css3-text/#line-break" />
-		<link rel="match" href="reftest/line-break-strict-016-ref.xht" />
+		<link rel="match" href="reftest/line-break-normal-023-ref.xht" />
 		<meta http-equiv="content-language" content="en, ja" />
 		<meta name="flags" content="font" />
-		<meta name="assert" content="This test verifies that 'line-break: strict' does not allow line breaking before centered punctuation marks such as COLON (U+003A) and SEMICOLON (U+003B)." />
+		<meta name="assert" content="This test verifies that 'line-break: normal' does not allow line breaking before centered punctuation marks such as COLON (U+003A) and SEMICOLON (U+003B)." />
 		<style type="text/css">
 			@font-face {
 		        font-family: "DejaVuSerifBook";
@@ -17,7 +17,7 @@
 		        /* Filesize: 18096 bytes (17.7 KBytes) */
 	        }
 			.test span {
-				line-break: strict;						// The property to be tested
+				line-break: normal;						// The property to be tested
 			}
 			p.test, p.control {
 				border: 1px solid gray;

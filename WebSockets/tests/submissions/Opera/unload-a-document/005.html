@@ -4,24 +4,13 @@
 <script src=/resources/testharnessreport.js></script>
 <script src=../constants.js></script>
 <div id=log></div>
+<p>Test requires popup blocker disabled</p>
+<div id=log></div>
 <script>
-var hasRun = false;
-function run(){
-  var ws = new WebSocket(SCHEME_AND_DOMAIN+'/ws/echo');
-  ws.onopen = function(e) {
-    
-    setTimeout(function() {
-      ws.send('test');
-    }, 1000);
-    window[0].location = 'data:text/html,<body onload="history.back()">';
-    ws.onmessage = function(e) {
-      
-      ws.close();
-      ws.onclose = debug;
-      end();
-    }
-  }
-  ws.onerror = ws.onmessage = ws.onclose = t.step_func(function() {assert_unreached()});
-}
+async_test(function(t) {
+  var w = window.open("005-1.html");
+  add_result_callback(function() {
+    w.close();
+  });
+});
 </script>
-<iframe src='data:text/html,foo' onload='if (hasRun) return; hasRun = true; assertNotThrows(run)'></iframe>

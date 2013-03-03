@@ -5,7 +5,7 @@
 <script src=../constants.js></script>
 <div id=log></div>
 <script>
-setup({timeout:6000});
+setup({timeout:25100});
 
 async_test(function(t) {
   // test that the events are fired as they should when opening 25 websockets and
@@ -35,6 +35,6 @@ async_test(function(t) {
     }, ws[i]);
     ws[i].onerror = t.step_func(function() {assert_unreached()});
   }
-}, null, {timeout:5000});
+}, null, {timeout:25000});
 </script>
 

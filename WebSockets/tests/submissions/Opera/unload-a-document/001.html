@@ -3,24 +3,13 @@
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script src=../constants.js></script>
+<p>Test requires popup blocker disabled</p>
 <div id=log></div>
 <script>
 async_test(function(t) {
-  if (sessionStorage.second_run) {
-    delete sessionStorage.second_run;
-    end();
-  } else {
-    sessionStorage.second_run = 'true';
-    var ws = new WebSocket(SCHEME_AND_DOMAIN+'/ws/echo');
-    ws.onopen = function(e) {
-      
-      setTimeout(function() {
-        delete sessionStorage.second_run;
-        assert_unreached('document was not discarded');
-      }, 1000);
-      location = 'data:text/html,<body onload="history.back()">';
-    }
-    ws.onerror = ws.onmessage = ws.onclose = t.step_func(function() {assert_unreached()});
-  }
+  var w = window.open("001-1.html");
+  add_result_callback(function() {
+    w.close();
+  });
 });
 </script>

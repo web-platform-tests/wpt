@@ -3,30 +3,14 @@
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script src=../constants.js></script>
+<p>Test requires popup blocker disabled</p>
 <div id=log></div>
 <script>
-setTestTimeout(15000);
+setup({timeout:15100});
 async_test(function(t) {
-  // this test can fail if the document is unloaded on navigation e.g. due to OOM
-  if (sessionStorage.second_run) {
-    delete sessionStorage.second_run;
-    assert_unreached('document was discarded');
-  } else {
-    sessionStorage.second_run = 'true';
-    var ws = new WebSocket(SCHEME_AND_DOMAIN+'/ws/echo');
-    ws.onopen = function(e) {
-      
-      setTimeout(function() {
-        delete sessionStorage.second_run;
-        assert_equals(ws.readyState, ws.CLOSED, 'ws.readyState');
-        end();
-      }, 4000);
-      ws.close();
-      ws.onclose = function() {
-        location = 'data:text/html,<body onload="history.back()">';
-      }
-    }
-    ws.onerror = ws.onmessage = ws.onclose = t.step_func(function() {assert_unreached()});
-  }
-});
+  var w = window.open("002-1.html");
+  add_result_callback(function() {
+    w.close();
+  });
+}, null, {timeout:15000});
 </script>

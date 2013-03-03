@@ -5,44 +5,28 @@
 <script src=../constants.js></script>
 <div id=log></div>
 <script>
+setup({timeout:15100,
+explicit_done:true})
 
-var timeout = setTimeout(function() {
-  deleteCookie(false, 'timed out');
-}, 15000);
-var iframe = document.createElement('iframe');
-try {
+var t = async_test(function(t) {
+  var iframe = document.createElement('iframe');
   var ws = new WebSocket(SCHEME_DOMAIN_PORT+'/ws/set-cookie?'+encodeURIComponent('ws_test=test; Path=/; HttpOnly'));
-  ws.onopen = function(e) {
-    
-    ws.onclose = debug;
+  ws.onopen = t.step_func(function(e) {
     var ws2 = new WebSocket(SCHEME_DOMAIN_PORT+'/ws/echo-cookie');
-    ws2.onmessage = function(e) {
-      debug('ws2 message');
-      ws2.onclose = function(e) { debug('ws2 close'); }
+    ws2.onmessage = t.step_func(function(e) {
       ws.close();
       ws2.close();
-      deleteCookie(/ws_test=test/.test(e.data), e.data);
-    }
-    ws2.onopen = function(e) { debug('ws2 open'); }
-    ws2.onclose = function(e) { debug('ws2 close'); deleteCookie(false, 'ws2 close'); }
-  }
+      assert_regexp(/ws_test=test/, e.data);
+      t.done();
+    });
+  });
   ws.onclose = t.step_func(function() {assert_unreached()});
-} catch(e) {
-  assert_unreached(e);
-}
 
-function deleteCookie(testPassed, msg) {
-  if (arguments.callee.done)
-    return;
-  arguments.callee.done = true;
-  clearTimeout(timeout);
-  setTestTimeout(10000);
-  iframe.onload = function() {
-    assert_equals(testPassed, true, msg);
-    end();
-  }
-  // remove cookie
-  iframe.src = 'support/set-cookie.php?'+encodeURIComponent('ws_test=; Path=/; HttpOnly; Expires=Sun, 06 Nov 1994 08:49:37 GMT');
-}
-document.body.appendChild(iframe);
+  add_result_callback(function() {
+    //This might be racy if a completion callback is being used to load multiple tests
+    iframe.src = 'support/set-cookie.php?'+encodeURIComponent('ws_test=; Path=/; HttpOnly; Expires=Sun, 06 Nov 1994 08:49:37 GMT');
+    iframe.onload = done;
+  });
+  document.body.appendChild(iframe);
+})
 </script>

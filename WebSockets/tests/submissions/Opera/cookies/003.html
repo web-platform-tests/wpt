@@ -5,7 +5,8 @@
 <script src=../constants.js></script>
 <div id=log></div>
 <script>
-setup({timeout:10001})
+setup({timeout:10100,
+explict_done:true})
 
 var t = async_test(function(t) {
 var iframe = document.createElement('iframe');
@@ -20,9 +21,12 @@ iframe.onload = t.step_func(function() {
     ws.onclose = function() { deleteCookie(false, e.type); }
 });
 
+var cookie_removed = false;
+
 add_result_callback(function() {
     //This might be racy if a completion callback is being used to load multiple tests
     iframe.src = 'support/set-cookie.php?'+encodeURIComponent('ws_test=; Path=/; HttpOnly; Expires=Sun, 06 Nov 1994 08:49:37 GMT');
+    iframe.onload = done;
 });
 
 document.body.appendChild(iframe);

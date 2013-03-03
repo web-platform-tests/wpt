@@ -1,23 +1,25 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <title>CSS Writing Modes Test: vertical alignment - XXXX</title>
+    <title>CSS Writing Modes Test: vertical alignment - 'text-top' property (vertical-lr)</title>
     <link rel="author" title="Hajime Shiozawa" href="mailto:hajime.shiozawa@gmail.com" />
-    <link rel="help" title="4.2. Text Baseline" href="http://www.w3.org/TR/css3-writing-modes/#text-baselines" />
-    <link rel="match" href="text-baseline-001-ref.xht" />
-    <meta name="assert" content="This test checks the generation of text baseline. Unless 'writing-mode' is vertical and also unless 'text-orientation' is 'mixed' or 'upright', the alphabetical baseline is used as the dominant baseline." />
+    <link rel="help" title="4.4. Baseline Alignment" href="http://www.w3.org/TR/css3-writing-modes/#baseline-alignment" />
+    <meta name="assert" content="This test checks the generation of text baseline with vertical align property." />
     <meta name="flags" content="image" />
     <style type="text/css"><![CDATA[
-      div > p, p#control {
+      div > p {
         line-height: 3em;
-        font-size: 2em;
+        font-family: "Ahem";
+        font-size: 25px;
         background-color: orange;
       }
-      span {
-        border: 2px dashed blue;
+
+      /* vertical-align */
+      img {
+        vertical-align: text-top;
       }
       img.box {
-        margin-top: -20px;
+        margin-top: -50px;
       }
       img.line {
         margin-top: -210px;
@@ -53,39 +55,36 @@
       .use-glyph-orientation {
         text-orientation: use-glyph-orientation;
       }
-
-      /* vertical-align */
-      img {
-        vertical-align: text-top;
-      }
   ]]></style>
   </head>
   <body>
-    <p>Test passes if the bottom of glyph 'L' is touching a thin blue line in each 7 orange rectangles and if all 7 orange rectangles are <strong>identical</strong>.</p>
+    <p>Test passes if a thin blue line is aligned to the <strong>right</strong> of black rectangles,
+      if the <strong>right</strong> margin edge of yellow box is aligned to the <strong>right</strong> of black rectangles
+      and if all 4 orange rectangles are <strong>identical</strong>.</p>
 
     <div class="vertical-lr">
-      <p class="mixed"><span>VERTICAL
-        <img class="line" src="./support/blue-vert-line_1x320.png" alt="Image download support must be enabled" />
+      <p class="mixed"><span>TEXTTOP.
+        <img class="line" src="./support/blue-vert-line_1x220.png" alt="Image download support must be enabled" />
         <img class="box" src="./support/vert-box_59x59.png" alt="Image download support must be enabled" /></span>
       </p>
-      <p class="upright"><span>VERTICAL
-        <img class="line" src="./support/blue-vert-line_1x320.png" alt="Image download support must be enabled" />
+      <p class="upright"><span>TEXTTOP.
+        <img class="line" src="./support/blue-vert-line_1x220.png" alt="Image download support must be enabled" />
         <img class="box" src="./support/vert-box_59x59.png" alt="Image download support must be enabled" /></span>
       </p>
-      <p class="sideways-right"><span>VERTICAL
-        <img class="line" src="./support/blue-vert-line_1x320.png" alt="Image download support must be enabled" />
+      <p class="sideways-right"><span>TEXTTOP.
+        <img class="line" src="./support/blue-vert-line_1x220.png" alt="Image download support must be enabled" />
         <img class="box" src="./support/vert-box_59x59.png" alt="Image download support must be enabled" /></span>
       </p>
-      <p class="sideways-left"><span>VERTICAL
-        <img class="line" src="./support/blue-vert-line_1x320.png" alt="Image download support must be enabled" />
+      <p class="sideways-left"><span>TEXTTOP.
+        <img class="line" src="./support/blue-vert-line_1x220.png" alt="Image download support must be enabled" />
         <img class="box" src="./support/vert-box_59x59.png" alt="Image download support must be enabled" /></span>
       </p>
-      <p class="sideways"><span>VERTICAL
-        <img class="line" src="./support/blue-vert-line_1x320.png" alt="Image download support must be enabled" />
+      <p class="sideways"><span>TEXTTOP.
+        <img class="line" src="./support/blue-vert-line_1x220.png" alt="Image download support must be enabled" />
         <img class="box" src="./support/vert-box_59x59.png" alt="Image download support must be enabled" /></span>
       </p>
-      <p class="use-glyph-orientation"><span>VERTICAL
-        <img class="line" src="./support/blue-vert-line_1x320.png" alt="Image download support must be enabled" />
+      <p class="use-glyph-orientation"><span>TEXTTOP.
+        <img class="line" src="./support/blue-vert-line_1x220.png" alt="Image download support must be enabled" />
         <img class="box" src="./support/vert-box_59x59.png" alt="Image download support must be enabled" /></span>
       </p>
     </div>

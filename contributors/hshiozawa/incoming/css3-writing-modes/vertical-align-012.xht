@@ -1,20 +1,24 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <title>CSS Writing Modes Test: vertical alignment - XXXX</title>
+    <title>CSS Writing Modes Test: vertical alignment - 'text-top' property (horizontal-tb)</title>
     <link rel="author" title="Hajime Shiozawa" href="mailto:hajime.shiozawa@gmail.com" />
-    <link rel="help" title="4.2. Text Baseline" href="http://www.w3.org/TR/css3-writing-modes/#text-baselines" />
-    <link rel="match" href="text-baseline-001-ref.xht" />
-    <meta name="assert" content="This test checks the generation of text baseline. Unless 'writing-mode' is vertical and also unless 'text-orientation' is 'mixed' or 'upright', the alphabetical baseline is used as the dominant baseline." />
+    <link rel="help" title="4.4. Baseline Alignment" href="http://www.w3.org/TR/css3-writing-modes/#baseline-alignment" />
+    <meta name="assert" content="This test checks the generation of text baseline with vertical align property." />
     <meta name="flags" content="image" />
     <style type="text/css"><![CDATA[
-      div > p, p#control {
-        line-height: 3em;
+      div > p {
+        line-height: 2em;
         font-size: 2em;
         background-color: orange;
       }
       span {
-        border: 2px dashed blue;
+        border: 1px solid black;
+      }
+
+      /* vertical-align */
+      img {
+        vertical-align: text-top;
       }
       img.box {
         margin-left: -20px;
@@ -47,47 +51,35 @@
       .use-glyph-orientation {
         text-orientation: use-glyph-orientation;
       }
-
-      /* vertical-align */
-      img {
-        vertical-align: text-top;
-      }
-      .middle {
-        vertical-align: middle;
-      }
-      .bottom {
-        vertical-align: bottom;
-      }
-      .text-bottom {
-        vertical-align: text-bottom;
-      }
   ]]></style>
   </head>
   <body>
-    <p>Test passes if the bottom of glyph 'L' is touching a thin blue line in each 7 orange rectangles and if all 7 orange rectangles are <strong>identical</strong>.</p>
+    <p>Test passes if a thin blue line is aligned to the top of black rectangles
+      and if the top margin edge of yellow box is aligned to the top of black rectangles
+      in each 6 orange rectangles and if all 6 orange rectangles are <strong>identical</strong>.</p>
 
     <div class="horizontal-tb">
-      <p class="mixed"><span>&Eacute;&Eacute;&Eacute;&Eacute;&Eacute;&Eacute;&Eacute;&Eacute;&Eacute;
+      <p class="mixed"><span>TextTopText
         <img class="line" src="./support/blue-horiz-line_220x1.png" alt="Image download support must be enabled" />
         <img class="box" src="./support/horiz-box_59x59.png" alt="Image download support must be enabled" /></span>
       </p>
-      <p class="upright"><span>&Eacute;&Eacute;&Eacute;&Eacute;&Eacute;&Eacute;&Eacute;&Eacute;&Eacute;
+      <p class="upright"><span>TextTopText
         <img class="line" src="./support/blue-horiz-line_220x1.png" alt="Image download support must be enabled" />
         <img class="box" src="./support/horiz-box_59x59.png" alt="Image download support must be enabled" /></span>
       </p>
-      <p class="sideways-right"><span>&Eacute;&Eacute;&Eacute;&Eacute;&Eacute;&Eacute;&Eacute;&Eacute;&Eacute;
+      <p class="sideways-right"><span>TextTopText
         <img class="line" src="./support/blue-horiz-line_220x1.png" alt="Image download support must be enabled" />
         <img class="box" src="./support/horiz-box_59x59.png" alt="Image download support must be enabled" /></span>
       </p>
-      <p class="sideways-left"><span>&Eacute;&Eacute;&Eacute;&Eacute;&Eacute;&Eacute;&Eacute;&Eacute;&Eacute;
+      <p class="sideways-left"><span>TextTopText
         <img class="line" src="./support/blue-horiz-line_220x1.png" alt="Image download support must be enabled" />
         <img class="box" src="./support/horiz-box_59x59.png" alt="Image download support must be enabled" /></span>
       </p>
-      <p class="sideways"><span>&Eacute;&Eacute;&Eacute;&Eacute;&Eacute;&Eacute;&Eacute;&Eacute;&Eacute;
+      <p class="sideways"><span>TextTopText
         <img class="line" src="./support/blue-horiz-line_220x1.png" alt="Image download support must be enabled" />
         <img class="box" src="./support/horiz-box_59x59.png" alt="Image download support must be enabled" /></span>
       </p>
-      <p class="use-glyph-orientation"><span>&Eacute;&Eacute;&Eacute;&Eacute;&Eacute;&Eacute;&Eacute;&Eacute;&Eacute;
+      <p class="use-glyph-orientation"><span>TextTopText
         <img class="line" src="./support/blue-horiz-line_220x1.png" alt="Image download support must be enabled" />
         <img class="box" src="./support/horiz-box_59x59.png" alt="Image download support must be enabled" /></span>
       </p>

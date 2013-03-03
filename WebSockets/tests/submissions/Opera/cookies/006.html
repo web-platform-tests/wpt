@@ -10,8 +10,7 @@ async_test(function(t) {
     document.cookie = 'ws_test=test; Path=/; Secure';
   }
   var ws = new WebSocket(SCHEME_DOMAIN_PORT+'/ws/echo-cookie');
-  ws.onmessage = t.step_func(function(e) {  
-    ws.onclose = debug;
+  ws.onmessage = t.step_func(function(e) {
     ws.close();
     if (SCHEME_DOMAIN_PORT.substr(0,3) == 'wss') {
       assert_regexp_match(e.data, /ws_test=test/);

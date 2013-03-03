@@ -7,10 +7,11 @@
 <div id=log></div>
 <script>
 setup({timeout:15100});
-async_test(function(t) {
+var t = async_test(null, {timeout:15000});
+t.step(function() {
   var w = window.open("002-1.html");
   add_result_callback(function() {
     w.close();
   });
-}, null, {timeout:15000});
+});
 </script>

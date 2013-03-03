@@ -3,6 +3,7 @@
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script>
-var t = async_test()
+setup({timeout:15100});
+var t = async_test(null, {timeout:15000})
 </script>
 <iframe src=002-1.html></iframe>

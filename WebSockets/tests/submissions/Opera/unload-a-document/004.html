@@ -5,5 +5,8 @@
 <script>
 setup({timeout:15100});
 var t = async_test(null, {timeout:15000})
+var navigate = t.step_func(function() {
+  document.getElementsByTagName("iframe")[0].src = 'data:text/html,<body onload="history.back()">';
+});
 </script>
 <iframe src=002-1.html></iframe>

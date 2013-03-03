@@ -4,5 +4,8 @@
 <script src=/resources/testharnessreport.js></script>
 <script>
 var t = async_test()
+var navigate = t.step_func(function() {
+  document.getElementsByTagName("iframe")[0].src = 'data:text/html,<body onload="history.back()">';
+});
 </script>
 <iframe src=001-1.html></iframe>

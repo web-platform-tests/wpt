@@ -7,10 +7,14 @@
 <div id=log></div>
 <script>
 var t = async_test();
+var w;
 t.step(function() {
-  var w = window.open("001-1.html");
+  w = window.open("001-1.html");
   add_result_callback(function() {
     w.close();
   });
+});
+navigate = t.step_func(function() {
+  w.location = 'data:text/html,<body onload="history.back()">';
 });
 </script>

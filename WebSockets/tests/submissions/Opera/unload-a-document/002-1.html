@@ -23,7 +23,7 @@ t.step(function() {
       }), 4000);
       ws.close();
       ws.onclose = t.step_func(function() {
-        location = 'data:text/html,<body onload="history.back()">';
+        controller.navigate();
       });
     })
     ws.onerror = ws.onmessage = ws.onclose = t.step_func(function() {assert_unreached()});

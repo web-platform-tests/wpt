@@ -19,7 +19,7 @@ t.step(function() {
         delete sessionStorage.second_run;
         assert_unreached('document was not discarded');
       }), 1000);
-      location = 'data:text/html,<body onload="history.back()">';
+      controller.navigate();
     })
     ws.onerror = ws.onmessage = ws.onclose = t.step_func(function() {assert_unreached()});
   }

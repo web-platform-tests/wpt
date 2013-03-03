@@ -5,7 +5,7 @@
 <script src=../../../constants.js></script>
 <div id=log></div>
 <script>
-test(assert_throws(new typeError(), function(){
+test(assert_throws(new TxsypeError(), function(){
   Object.defineProperty(WebSocket.prototype, 'readyState', {
     set: function() { return 'foo'; }
   });

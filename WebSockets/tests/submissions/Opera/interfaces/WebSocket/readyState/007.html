@@ -8,7 +8,6 @@
 async_test(function(t) {
   var ws = new WebSocket(SCHEME_AND_DOMAIN+':80/ws/echo');
   ws.onopen = t.step_func(function(e) {
-    ws.onclose = debug;
     ws.close();
     assert_equals(ws.readyState, ws.CLOSING);
     end();

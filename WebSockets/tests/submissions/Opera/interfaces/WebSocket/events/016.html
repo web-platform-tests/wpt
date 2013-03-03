@@ -10,7 +10,6 @@ async_test(function(t) {
   var count = 0;
   var checkCount = t.step_func(function (c, e) {
     count++;
-    debug(e.type + ', '+c);
     assert_equals(count, c);
   });
   // no spec requires this order for event listeners but the web does

@@ -13,7 +13,7 @@ async_test(function(t) {
    ws.binaryType = "arraybuffer";
    data = new ArrayBuffer(datasize);
    ws.send(data);
-   assert_equals(data.size(), ws.bufferedAmount);
+   assert_equals(data.size, ws.bufferedAmount);
   })
   ws.onmessage = t.step_func(function(e) {
     assert_equals(e.data.byteLength, datasize);

@@ -9,7 +9,7 @@ var events = ['onclose', 'onopen', 'onerror', 'onmessage'];
 for (var i = 0; i < events.length; ++i) {
   async_test(function(t) {
     var ws = new WebSocket(SCHEME_AND_DOMAIN+'/');
-    assertThrows(new TypeError(), function(){
+    assert_throws(new TypeError(), function(){
       ws[events[i]] = {};
     });
   })

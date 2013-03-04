@@ -4,7 +4,7 @@
     <title>CSS Writing Modes Test: text baseline alignment - plain text (alphabetical alignment with vertical layout)</title>
     <link rel="author" title="Hajime Shiozawa" href="mailto:hajime.shiozawa@gmail.com" />
     <link rel="help" title="4.2. Text Baseline" href="http://www.w3.org/TR/css3-writing-modes/#text-baselines" />
-    <meta name="assert" content="This test checks the generation of text baseline. Unless 'writing-mode' is vertical and also unless 'text-orientation' is 'mixed' or 'upright', the alphabetical baseline is used as the dominant baseline." />
+    <meta name="assert" content="This test checks the generation of text baseline. When 'writing-mode' is vertical and when 'text-orientation' is 'sideways-left', 'sideways-right' or 'sideways', then the central baseline is used as the dominant baseline." />
     <meta name="flags" content="image" />
     <style type="text/css"><![CDATA[
       div {

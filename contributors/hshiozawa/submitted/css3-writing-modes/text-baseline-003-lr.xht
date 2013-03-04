@@ -4,7 +4,7 @@
     <title>CSS Writing Modes Test: text baseline alignment - plain text (central alignment with vertical layout)</title>
     <link rel="author" title="Hajime Shiozawa" href="mailto:hajime.shiozawa@gmail.com" />
     <link rel="help" title="4.2. Text Baseline" href="http://www.w3.org/TR/css3-writing-modes/#text-baselines" />
-    <meta name="assert" content="This test checks the generation of text baseline. When 'writing-mode' is vertical and when 'text-orientation' is 'mixed' or 'upright', then the central baseline is used as the dominant baseline." />
+    <meta name="assert" content="This test checks the generation of text baseline. When 'writing-mode' is vertical and when 'text-orientation' is 'mixed', 'upright' or 'use-glyph-orientation', then the central baseline is used as the dominant baseline." />
     <meta name="flags" content="ahem image" />
     <style type="text/css"><![CDATA[
       div > p {
@@ -39,7 +39,7 @@
   ]]></style>
   </head>
   <body>
-    <p>Test passes if the <strong>left</strong> edge of black block is touching a thin blue line in each 3 orange rectangles and if all 3 orange rectangles are <strong>identical</strong>.</p>
+    <p>Test passes if the <strong>left</strong> edge of black strip is touching a thin blue line in each 3 orange rectangles and if all 3 orange rectangles are <strong>identical</strong>.</p>
     <div class="vertical-lr">
       <p class="mixed"><span class='half'>TOrieMixed</span><img src="./support/blue-vert-line_1x220.png" alt="Image download support must be enabled" /></p>
       <p class="upright"><span class='half'>TOrUPright</span><img src="./support/blue-vert-line_1x220.png" alt="Image download support must be enabled" /></p>

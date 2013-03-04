@@ -4,7 +4,7 @@
     <title>CSS Writing Modes Test: vertical align - 'baseline' (central baseline with vertical layout)</title>
     <link rel="author" title="Hajime Shiozawa" href="mailto:hajime.shiozawa@gmail.com" />
     <link rel="help" title="4.4. Baseline Alignment" href="http://www.w3.org/TR/css3-writing-modes/#baseline-alignment" />
-    <meta name="assert" content="This test checks the generation of text baseline with vertical align property. When 'writing-mode' is vertical and when 'text-orientation' is 'mixed' or 'upright', then the central baseline is used as the dominant baseline." />
+    <meta name="assert" content="This test checks the generation of text baseline with vertical align property. When 'writing-mode' is vertical and when 'text-orientation' is 'mixed', 'upright' or 'use-glyph-orientation', then the central baseline is used as the dominant baseline." />
     <meta name="flags" content="ahem image" />
     <style type="text/css"><![CDATA[
       div > p {
@@ -49,7 +49,7 @@
   <body>
     <p>Test passes if ...</p>
     <ol>
-      <li>if the <strong>left</strong> edge of black block is touching a thin blue line in each 3 orange rectangles.</li>
+      <li>if the <strong>left</strong> edge of black strip is touching a thin blue line in each 3 orange rectangles.</li>
       <li>if the <strong>center</strong> of yellow box (showed as a blue line) is aligned to a thin blue line in each 3 orange rectangles.</li>
       <li>if all 3 orange rectangles are <strong>identical</strong>.</li>
     </ol>

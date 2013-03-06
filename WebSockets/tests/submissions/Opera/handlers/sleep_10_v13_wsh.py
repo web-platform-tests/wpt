@@ -17,9 +17,9 @@ def web_socket_do_extra_handshake(request):
     return
 
 def web_socket_transfer_data(request):
-	while True:
-		line = msgutil.receive_message(request)
-		if line == 'Goodbye':
-			return
-		request.ws_stream.send_message(line, binary=False)
+    while True:
+        line = msgutil.receive_message(request)
+        if line == 'Goodbye':
+            return
+        request.ws_stream.send_message(line, binary=False)
 

@@ -9,5 +9,5 @@ def web_socket_do_extra_handshake(request):
     
 def web_socket_transfer_data(request):
     while True:
-	request.ws_stream.send_message('test', binary=False)
-	return
+        request.ws_stream.send_message('test', binary=False)
+        return

@@ -8,5 +8,5 @@ def web_socket_do_extra_handshake(request):
     return
 
 def web_socket_transfer_data(request):
-     while True:
-	return
+    while True:
+        return

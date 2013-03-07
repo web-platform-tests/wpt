@@ -6,12 +6,10 @@
 <div id=log></div>
 <script>
 test(function(){
-  assert_throws(new TypeError(), 
-    function() {
-      Object.defineProperty(WebSocket.prototype, 'bufferedAmount', {
-        get: function() { return 'foo'; }
-      });
-    }
-  )
+		Object.defineProperty(WebSocket.prototype, 'bufferedAmount', {
+				get: function() { return 'foo'; }
+		});
+  var ws = new WebSocket('ws://example.invalid/');
+  assert_equals(ws.bufferedAmount, 'foo');
 });
 </script>

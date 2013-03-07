@@ -6,10 +6,12 @@
 <div id=log></div>
 <script>
 test(function() {
-assert_throws(new TypeError(), function(){
+  window.setter_ran = false;
   Object.defineProperty(WebSocket.prototype, 'bufferedAmount', {
-    set: function() { return 'foo'; }
+    set: function(v) { window[v] = true; }
   });
+  var ws = new WebSocket('ws://example.invalid/');
+  ws.bufferedAmount = 'setter_ran';
+  assert_true(setter_ran);
 });
-})
 </script>

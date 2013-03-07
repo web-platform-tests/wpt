@@ -5,10 +5,13 @@
 <script src=../../../constants.js></script>
 <div id=log></div>
 <script>
-test(assert_throws(new TxsypeError(), function(){
+test(function(){
+  window.setter_ran = false;
   Object.defineProperty(WebSocket.prototype, 'readyState', {
-    set: function() { return 'foo'; }
+    set: function(v) { window[v] = true; }
   });
-})
-);
+  var ws = new WebSocket('ws://example.invalid/');
+  ws.readyState = 'setter_ran';
+  assert_true(setter_ran);
+});
 </script>

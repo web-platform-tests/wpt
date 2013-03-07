@@ -6,12 +6,12 @@
 <div id=log></div>
 <script>
 test(function() {
-  assert_throws(new TypeError(), 
-    function(){
-      Object.defineProperty(WebSocket.prototype, 'readyState', {
-        set: function() { return 'foo'; }
-      });
-    }
-  );
+  window.setter_ran = false;
+		Object.defineProperty(WebSocket.prototype, 'url', {
+				set: function(v) { window[v] = true; }
+		});
+		var ws = new WebSocket('ws://example.invalid/');
+		ws.url = 'setter_ran';
+		assert_true(setter_ran);
 });
 </script>

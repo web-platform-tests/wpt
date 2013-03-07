@@ -8,7 +8,7 @@
 async_test(function(t){
   // bufferedAmount should increase sync in the send() method and decrease between
   // events in the event loop (so never while script is running).
-  var ws = new WebSocket(SCHEME_DOMAIN_PORT+':80/ws/echo');
+  var ws = new WebSocket(SCHEME_DOMAIN_PORT+'/ws/echo');
   ws.onopen = t.step_func(function(e) {
     ws.send('x');
     assert_equals(ws.bufferedAmount, 1, 'bufferedAmount after sent "x"');

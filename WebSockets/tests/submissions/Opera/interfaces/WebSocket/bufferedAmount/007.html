@@ -6,7 +6,7 @@
 <div id=log></div>
 <script>
 async_test(function(t) {
-  var ws = new WebSocket(SCHEME_DOMAIN_PORT+':80/ws/echo');
+  var ws = new WebSocket(SCHEME_DOMAIN_PORT+'/ws/echo');
   var data = "";
   var datasize = 10;  
   ws.onopen = t.step_func(function(e) {

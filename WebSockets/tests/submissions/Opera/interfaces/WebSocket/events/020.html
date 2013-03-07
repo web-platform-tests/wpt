@@ -6,7 +6,7 @@
 <div id=log></div>
 <script>
 async_test(function(t) {
-  var ws = new WebSocket(SCHEME_AND_DOMAIN+':9000/echo');
+  var ws = new WebSocket('ws://example.invalid/');
   ws.onerror = t.step_func(function(e) {
     assert_true(e instanceof Event);
     t.done();

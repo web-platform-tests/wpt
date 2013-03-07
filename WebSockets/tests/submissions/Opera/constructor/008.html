@@ -6,8 +6,8 @@
 <div id=log></div>
 <script>
 //Pass condition is to not throw
-test(function(){new WebSocket('ws://'+location.hostname+':80/ws/')});
-test(function(){new WebSocket('ws://'+location.hostname+':443/')});
-test(function(){new WebSocket('wss://'+location.hostname+':80/ws/')});
-test(function(){new WebSocket('wss://'+location.hostname+':443/')});
+test(function(){new WebSocket('ws://example.invalid:80/')});
+test(function(){new WebSocket('ws://example.invalid:443/')});
+test(function(){new WebSocket('wss://example.invalid:80/')});
+test(function(){new WebSocket('wss://example.invalid:443/')});
 </script>

@@ -18,7 +18,7 @@ async_test(function(t) {
       events++;
       date = new Date();
       if (prevDate)
-        assertGreaterThan(date-prevDate, 998);
+        assert_greater_than(date-prevDate, 998);
       prevDate = date;
       this.onopen = t.step_func(function() {assert_unreached()});
     })

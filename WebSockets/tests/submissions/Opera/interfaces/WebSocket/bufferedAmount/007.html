@@ -10,15 +10,15 @@ async_test(function(t) {
   var data = "";
   var datasize = 10;  
   ws.onopen = t.step_func(function(e) {
-   ws.binaryType = "blob";
-   data = new ArrayBuffer(datasize);
-   ws.send(data);
-   assert_equals(data.size, ws.bufferedAmount);
-  })
+				ws.binaryType = "blob";
+				data = new ArrayBuffer(datasize);
+				ws.send(data);
+				assert_equals(ws.bufferedAmount, data.byteLength);
+  });
   ws.onmessage = t.step_func(function(e) {
     assert_true(e.data instanceof Blob);
     assert_equals(e.data.size, datasize);
     t.done();
-});
+		});
 });
 </script>

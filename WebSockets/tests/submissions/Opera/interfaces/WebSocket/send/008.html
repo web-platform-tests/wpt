@@ -15,7 +15,8 @@ async_test(function(t) {
     // test that nothing strange happens when send()ing in closed state
     var sent = ws.send('test');
     assert_equals(sent, undefined);
-    setTimeout(function() {t.done()}, 500);
+    ws.onclose = t.step_func(function() {assert_unreached()});
+    setTimeout(function() {t.done()}, 50);
   })
   ws.onerror = t.step_func(function() {assert_unreached()});
 });

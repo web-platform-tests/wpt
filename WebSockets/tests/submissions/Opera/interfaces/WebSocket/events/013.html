@@ -7,7 +7,7 @@
 <script>
 var events = ['onclose', 'onopen', 'onerror', 'onmessage'];
 for (var i = 0; i < events.length; ++i) {
-  async_test(function(t) {
+  test(function(t) {
     var ws = new WebSocket(SCHEME_AND_DOMAIN+'/');
     ws[events[i]] = {handleEvent:function(){}};
     assert_equals(ws[events[i]], null);

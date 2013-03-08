@@ -9,9 +9,8 @@ var events = ['onclose', 'onopen', 'onerror', 'onmessage'];
 for (var i = 0; i < events.length; ++i) {
   test(function(t) {
     var ws = new WebSocket(SCHEME_AND_DOMAIN+'/');
-    assert_throws(new TypeError(), function(){
-      ws[events[i]] = ";";
-    });
-  })
+    ws[events[i]] = ";";
+    assert_equals(ws[events[i]], null);
+  }, events[i]);
 };
 </script>

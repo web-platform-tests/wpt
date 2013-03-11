@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<meta charset='utf-8'>
+<title>Fragment target URLs</title>
+<script>
+window.onload = function() {
+  if (location.hash.length > 0) {
+	  document.getElementsByTagName('p')[0].innerHTML = 'PASS';
+  } else {
+    document.getElementsByTagName('p')[0].innerHTML = 'FAIL';
+  }
+}
+</script>
+
+<p>Test not yet run.</p>
+

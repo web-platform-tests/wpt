@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<meta charset='utf-8'>
+<title>Infinite dialog spam</title>
+
+<script>
+window.onload = function() {
+	while(true) {
+    navigator.registerProtocolHandler('mailto', window.location.href + '?%s&' +
+    Math.random(), Math.random());
+	}
+}
+</script>
+
+<noscript><p><strong>Note:</strong> This test requires JavaScript to be
+enabled.</p></noscript>
+
+
+<p>This page contains an infinite loop of custom handler requests. Quickly
+accepting or rejecting the dialogs should not crash the browser, and the
+browser should not lock up.

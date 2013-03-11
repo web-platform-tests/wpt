@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<meta charset='utf-8'>
+<title>Cancelling the dialog should not load a new page when using a
+protocol handler</title>
+<script>
+window.onload = function() {
+  navigator.registerProtocolHandler('mailto',
+  location.href.replace(/\/([a-z0-9-]+)\.html/g,'') + '/res/fail.html#%s',
+  'foobar');
+}
+</script>
+
+<noscript><p><strong>Note:</strong> This test requires JavaScript to be
+enabled.</p></noscript>
+
+<p><strong>Note:</strong> Before running this test, delete all registered
+custom handlers and restart your browser.
+
+<ol>
+ <li>After loading this page, the browser should prompt you to allow a handler to be added. Allow it.
+ <li><a href='mailto:foo@bar.baz'>Click this link.</a>
+ <li>The browser should prompt you to allow the handler to be used. <em>Reject</em> it.
+ <li>The prompt should disappear and no new page should open.
+</ol>
+

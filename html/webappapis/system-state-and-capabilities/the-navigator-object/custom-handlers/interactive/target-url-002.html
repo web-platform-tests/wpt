@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<meta charset='utf-8'>
+<title>%s in a query string URL should be passed correctly (1)</title>
+<script>
+window.onload = function() {
+  navigator.registerProtocolHandler('sms',
+  location.href.replace(/\/([a-z0-9-]+)\.html/g,'') + '/res/target-url-query.html?%s',
+  'foobar');
+}
+</script>
+
+<noscript><p><strong>Note:</strong> This test requires JavaScript to be
+enabled.</p></noscript>
+
+<p><strong>Note:</strong> Before running this test, delete all registered
+custom handlers and restart your browser.
+
+<ol>
+ <li>After loading this page, the browser should prompt you to add a handler.
+ Allow it.
+ <li><a href='sms:FOO'>Click this link.</a>
+ <li>The browser should prompt you to allow the handler to be used. Allow it.
+ <li>You should see the string “sms%3AFOO” with no other text visible on the page.
+</ol>
+

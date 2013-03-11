@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<meta charset='utf-8'>
+<title>Infinite dialog spam with redirects</title>
+
+<script>
+window.onload = function() {
+
+  navigator.registerProtocolHandler('mailto', window.location.href + '?%s&' +
+	Math.random(), Math.random());
+
+  window.setTimeout(function () {
+    window.location = window.location.href.split('?')[0] + '?' + Math.random();
+  },50); /* ← Decrease this number to 10 to make the test more evil. */
+
+}
+</script>
+
+<noscript><p><strong>Note:</strong> This test requires JavaScript to be
+enabled.</p></noscript>
+
+
+<p>This is an infinite redirect loop, triggering custom handler requests many
+times per second. Quickly accepting or rejecting the dialogs should not crash
+the browser, and the browser should not lock up.

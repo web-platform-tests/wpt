@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Script origin and unregisterProtocolHandler</title>
+<script type="application/ecmascript">
+function start()
+	{var scheme = 'web+TestProtocolTen', url = './%s';
+	if(!location.href.match(/:\/\/www1/./))
+		{var li = document.getElementsByTagName('li')[0].setAttribute('style','display:none')}
+	navigator.registerProtocolHandler(scheme, url, 'test');}
+</script>
+</head>
+<body onload="start()">
+<ol>
+	<li style="color:maroon">This test should be loaded from <strong>a domain without "www1."</strong></li>
+	<li>On first load there should be dialog asking to allow protocol handler</li>
+	<li>Allow it</li>
+	<li><a id="check_link">Check test result</a>
+	<script><![CDATA[
+	var url_prefix = location.href.replace('://', '://www1.').replace(/\/protocol\/[^\/]+$/, '');
+	var href = url_prefix + "/content/010-1.xhtml";
+	document.getElementById('check_link').href = href;
+	]]></script>
+	</li>
+</ol>
+</body>
+</html>

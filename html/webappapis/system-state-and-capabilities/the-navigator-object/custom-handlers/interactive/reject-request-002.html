@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<meta charset='utf-8'>
+<title>When rejecting a registerContentHandler() request, no handler should be added</title>
+<script>
+window.onload = function() {
+  navigator.registerContentHandler('text/x-hoobaflooba',
+  location.href.replace(/\/([a-z0-9-]+)\.html/g,'') + '/res/fail.html#%s',
+  'foobar');
+}
+</script>
+
+<noscript><p><strong>Note:</strong> This test requires JavaScript to be
+enabled.</p></noscript>
+
+<p><strong>Note:</strong> Before running this test, delete all registered
+custom handlers and restart your browser.
+
+<ol>
+ <li>After loading this page, the browser should prompt you to add a handler.
+ <em>Reject it.</em>
+ <li><a href='./res/x-hoobaflooba.hooba'>Click this link.</a>
+ <li>The browser <em>must not</em> prompt you to allow the handler to be used.
+</ol>
+

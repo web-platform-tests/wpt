@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<meta charset='utf-8'>
+<title>Feed MIME types</title>
+
+<script>
+window.onload = function() {
+  navigator.registerContentHandler('application/rss+xml',
+  location.href.replace(/\/([a-z0-9-]+)\.html/g,'') + '/res/pass.html#%s',
+  'Acme Feed Reader');
+}
+</script>
+
+<noscript><p><strong>Note:</strong> This test requires JavaScript to be
+enabled.</p></noscript>
+
+<p><strong>Note:</strong> Before running this test, delete all registered
+custom handlers and restart your browser.
+
+<ol>
+ <li>After loading this page, the browser should prompt you to allow a handler
+ to be added. Allow it.
+ <li>Click each of the links below. Each one should bring up a new prompt
+ allowing you to choose a feed reader. Choose the “foobar” option and approve.
+  <ol>
+   <li><a href='res/rss.php?type=application/rss%2Bxml'>application/rss+xml</a></li>
+   <li><a href='res/rss.php?type=application/atom%2Bxml'>application/atom+xml</a></li>
+   <li><a href='res/rss.php?type=text/xml'>text/xml</a></li>
+   <li><a href='res/rss.php?type=application/xml'>application/xml</a></li>
+   <li><a href='res/rss.php?type=text/html'>text/html</a></li>
+  </ol>
+ </li>
+ <li>The word “PASS” should appear for each of the links.
+</ol>

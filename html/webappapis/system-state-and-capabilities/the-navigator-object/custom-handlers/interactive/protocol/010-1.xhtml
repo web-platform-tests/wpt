@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Script origin and unregisterProtocolHandler</title>
+<script type="application/ecmascript">
+function start()
+	{var url_prefix = location.href.replace('://www1.', '://');
+	var scheme = 'web+TestProtocolTen', url = url_prefix+'/%s', e = 0;
+	try
+		{var r = navigator.isProtocolHandlerRegistered(scheme, url);}
+	catch(themALL)
+		{if(themALL.code = DOMException.SECURITY_ERR)
+			{e++}
+		}
+	try
+		{navigator.unregisterProtocolHandler(scheme, url);}
+	catch(themALL)
+		{if(themALL.code = DOMException.SECURITY_ERR)
+			{e++}
+		}
+	document.getElementsByTagName('tt')[0].firstChild.nodeValue = (e == 2)?"PASS":"FAIL";}
+</script>
+</head>
+<body onload="start()">
+<p>Test result: <tt>Not Tested (script did not run)</tt></p>
+</body>
+</html>

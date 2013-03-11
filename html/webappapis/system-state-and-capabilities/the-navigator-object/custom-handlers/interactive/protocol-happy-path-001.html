@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<meta charset='utf-8'>
+<title>Happy path tests for registerProtocolHandler()</title>
+<script>
+window.onload = function() {
+  var whitelist = new Array(
+    'irc',
+    'geo',
+    'mailto',
+    'magnet',
+    'mms',
+    'news',
+    'nntp',
+    'sip',
+    'sms',
+    'smsto',
+    'ssh',
+    'tel',
+    'urn',
+    'webcal',
+    'xmpp',
+    'web+foobarbaz'
+    );
+
+  var list = '';
+
+  for ( var i=0, l=whitelist.length; i<l; ++i ) {
+    list = list + ' <li><a href="res/protocol.html#' + whitelist[i] + '">' + whitelist[i] + '</a></li>\n';
+  }
+
+  document.getElementsByTagName('ol')[0].innerHTML = list;
+}
+</script>
+
+<noscript><p><strong>Note:</strong> This test requires JavaScript to be
+enabled.</p></noscript>
+
+<p><strong>Note:</strong> Before running these tests, delete all registered
+custom handlers and restart your browser.
+
+<p>Run each of the following tests:</p>
+
+<ol></ol>

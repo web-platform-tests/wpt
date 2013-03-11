@@ -38,6 +38,8 @@ test(function() {
   assert_throws(new TypeError(), function() {
     HTMLAudioElement();
   });
+}, "Calling HTMLAudioElement should throw");
+test(function() {
   assert_throws(new TypeError(), function() {
     new HTMLAudioElement();
   });

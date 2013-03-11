@@ -28,6 +28,7 @@ test(function() {
       assert_equals(element.tagName, "AUDIO");
       assert_equals(element.namespaceURI, "http://www.w3.org/1999/xhtml");
       assert_equals(element.nodeType, Node.ELEMENT_NODE);
+      assert_equals(element.getAttribute("preload"), "auto");
       assert_equals(element.getAttribute("src"), expectedSrc);
       assert_equals(element.ownerDocument, document);
     }, description);

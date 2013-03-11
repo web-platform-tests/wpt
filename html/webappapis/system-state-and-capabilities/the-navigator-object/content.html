@@ -97,15 +97,25 @@ test(function () {
 /* Content type argument */
 
 /* The following MIME types are handled natively by the browser, and must not
- * be possible to override. Note that this list only covers a few basic content
- * types. Full lists of content types handled by each browser is found under
- * /vendor/. */
+ * be possible to override. Note that this list does not cover "All types that the user
+ * agent supports displaying natively in a browsing context during navigation, except for
+ * application/rss+xml and application/atom+xml" (from the spec) */
 
 var blacklist = new Array(
-  'image/jpeg',
-  'text/html',
-  'text/javascript',
-  'text/plain');
+      'application/x-www-form-urlencoded',
+      'application/xhtml+xml',
+      'application/xml',
+      'image/gif',
+      'image/jpeg',
+      'image/png',
+      'image/svg+xml',
+      'multipart/x-mixed-replace',
+      'text/cache-manifest',
+      'text/css',
+      'text/html',
+      'text/ping',
+      'text/plain',
+      'text/xml');
 
 for (var bi=0, bl=blacklist.length; bi<bl; ++bi){
 

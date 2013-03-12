@@ -1,9 +1,8 @@
 <!DOCTYPE HTML>
 <html>
     <head>
-        <title>CSS Regions: onmouseup events work inside region</title>
+        <title>CSS Regions: onmouseup events inside region</title>
         <link rel="author" title="David Alcala" href="mailto:dalcala@adobe.com">
-        <link rel="help" href="http://www.w3.org/TR/css3-regions/">
         <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
         <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
         <link rel="help" href="http://www.w3.org/TR/css3-regions/#relation-to-document-events">
@@ -13,14 +12,14 @@
         <link href="support/css/regions-mouse-events.css" rel="stylesheet" type="text/css">
         <link href="/resources/testharness.css" rel="stylesheet" type="text/css">
         <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+        <script src="support/js/regions-mouse-events-test-helper.js"></script>
     </head>
     <body>
-        <p id="msg">
-            Mouse up on the black square.
-        </p>
+        <p id="msg">Mouse up on the black square.</p>
         <div id="content">
-            <div class="block" title="FAIL"></div>
-            <div class="block" title="FAIL"></div>
+            <div class="block"></div>
+            <div class="block"></div>
             <div id="target-block" class="block"></div>
         </div>
         <div class="region"></div>
@@ -30,25 +29,8 @@
         <div id="log"></div>
     </body>
      <script type="text/javascript">
-        
-        var testTimeout = 10000;
-        setup({timeout: testTimeout});
-        
-        // This block is executed if running in WebKit's harness
-        if (window.testRunner)
-        {
-        	testRunner.dumpAsText(false);
-        }
 
-        // Verify that CSS Regions are enabled in the browser.
-        // Divs will be horizontal if Regions are enabled.
-        // Divs will be vertical if Regions are not enabled.
-        function checkLeftPosition(elemID) 
-        {
-            return document.getElementById(elemID).getBoundingClientRect().left;
-        }
-        
-        if(checkLeftPosition("target-block") != 0) {
+        if(checkLeftPosition("target-block") !== 0) {
 
             var test1 = async_test("onmouseup event fired inside region", {timeout: testTimeout});
                 test1.step( function() {
@@ -56,30 +38,20 @@
                     testTarget.onmouseup = test1.step_func( function(evt) {
                         /* Log assertion that the event got fired */
                         assert_true(true);
-                        
+
                         /* Verify the target inside the region has the correct ID */
-                        test(function() { assert_equals(evt.target.id, "target-block")}, "Target mouse upped on inside region has the correct ID");
-                        
+                        test(function() { assert_equals(evt.target.id, "target-block"); }, "Target that mouseup was performed on inside region has correct ID");
+
                         test1.done();
                     });
-                    
+
                     mouseUp("target-block");
                 });
 
-            function mouseUp(block)
-            {
-            	if(window.testRunner)
-               	{
-            		var startNode = document.getElementById(block);
-            		var xStartPosition = startNode.getBoundingClientRect().left;
-            		var yStartPosition = startNode.getBoundingClientRect().top;
-            		eventSender.mouseMoveTo(xStartPosition, yStartPosition);
-            		eventSender.mouseUp();
-            	}
-            }
+            completionCallback();
         }
-        else { 
-            test(function() {assert_true(false) }, "Regions are not enabled");
+        else {
+            test(function() { assert_true(false); }, "Regions are not enabled");
         }
 
     </script>

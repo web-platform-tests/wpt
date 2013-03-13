@@ -1399,7 +1399,7 @@ policies and contribution forms [3].
                             }
                         }
                     }
-                    if (supports_post_message(w))
+                    if (supports_post_message(w) && w !== self)
                     {
                         w.postMessage({
                             type: "start",
@@ -1445,7 +1445,7 @@ policies and contribution forms [3].
                             }
                         }
                     }
-                    if (supports_post_message(w))
+                    if (supports_post_message(w) && w !== self)
                     {
                         w.postMessage({
                             type: "result",
@@ -1515,7 +1515,7 @@ policies and contribution forms [3].
                             }
                         }
                     }
-                    if (supports_post_message(w))
+                    if (supports_post_message(w) && w !== self)
                     {
                         w.postMessage({
                             type: "complete",

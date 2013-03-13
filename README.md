@@ -6,6 +6,12 @@ This is the HTML Working Group's test suite for HTML, Canvas, and Microdata
 Task Force, which for all that it has "Task Force" in its name is really a
 bunch of cool froods.
 
+Publication
+===========
+
+The master branch is synced every ten minutes to: http://w3c-test.org/web-platform-tests/master/.
+Likewise the CR branch to: http://w3c-test.org/web-platform-tests/CR/.
+
 Finding Things
 ==============
 

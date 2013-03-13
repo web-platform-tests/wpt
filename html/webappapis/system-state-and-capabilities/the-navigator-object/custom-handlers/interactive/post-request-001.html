@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<meta charset='utf-8'>
+<title>POST requests</title>
+<script>
+window.onload = function() {
+  navigator.registerContentHandler('text/x-hoobaflooba',
+  location.href.replace(/\/([a-z0-9-]+)\.html/g,'') + '/res/fail.html#%s',
+  'foobar');
+}
+</script>
+
+<noscript><p><strong>Note:</strong> This test requires JavaScript to be
+enabled.</p></noscript>
+
+<p><strong>Note:</strong> Before running this test, delete all registered
+custom handlers and restart your browser.
+
+<ol>
+ <li>After loading this page, the browser should prompt you to add a handler.
+ Allow it.
+ <li>
+  <form action='res/x-hoobaflooba.hooba' method='post'>
+	<p><input type='submit' value='Click this button.'></p>
+  </form>
+ </li>
+ <li>The registered handler must not be used.
+</ol>
+

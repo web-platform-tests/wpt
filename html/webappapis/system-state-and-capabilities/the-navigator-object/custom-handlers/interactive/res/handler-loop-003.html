@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<meta charset='utf-8'>
+<title>Protocol handler loop</title>
+<script>
+window.onload = function() {
+  navigator.registerProtocolHandler('mailto', '../handler-loop-003.html#%s', 'foobar');
+}
+</script>
+
+<ol>
+ <li>After loading this page, there should be a dialog visible.
+ <li>Click “OK” in the dialog.
+ <li><a href='mailto:foo'>Click this link.</a>
+ <li>A new dialog should appear. Approve it and have it remember your selection.
+ <li>(What happens next?)
+</ol>
+

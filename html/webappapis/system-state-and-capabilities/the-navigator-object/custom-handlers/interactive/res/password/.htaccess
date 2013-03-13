@@ -1,0 +1,4 @@
+AuthType Basic
+AuthName "Username: foo | Password: bar"
+AuthUserFile /var/www/t.oslo.osa/core/standards/registerhandler/interactive/res/password/.htpasswd
+Require user foo

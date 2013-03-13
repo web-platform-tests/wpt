@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<meta charset='utf-8'>
+<title>Handler dialog spam</title>
+
+<script>
+window.onload = function() {
+  navigator.registerProtocolHandler('sms',
+  window.location.href.replace(/\/([a-z0-9-]+)\.html/g,'') + '/res/frames-handler.html?%s',
+  'frame');
+}
+</script>
+
+<noscript><p><strong>Note:</strong> This test requires JavaScript to be
+enabled.</p></noscript>
+
+
+<p><strong>Note:</strong> Before running this test, delete all registered
+custom handlers and restart your browser.
+<ol>
+ <li>A dialog should appear on this page. Approve it.
+ <li><a href='res/frames-multiple.html'>Click this link.</a>
+ <li>The following page will attempt to load a large number of different
+ pages using the handler added above, opening many dialogs at the same time.
+ These dialogs should not block other types of interaction with the browser,
+ and should allow you to recover, such as by loading a new URL or closing
+ the tab, without having to approve or reject all the dialogs (of which there
+ may be an infinite amount).
+</ol>

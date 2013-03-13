@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<meta charset='utf-8'>
+<title>Insanely long strings</title>
+
+<script>
+window.onload = function() {
+
+  /* Generate a long random string to use below */
+  var randomstring = 'x';
+	for (var i=0; i<1000000; i++) {
+    randomstring += 'x';
+  }
+
+  navigator.registerProtocolHandler('sms' + randomstring,
+  location.href + '/%s' + randomstring,
+  'long url' + randomstring);
+}
+</script>
+
+<noscript><p><strong>Note:</strong> This test requires JavaScript to be
+enabled.</p></noscript>
+
+
+<p><strong>Note:</strong> Before running this test, delete all registered
+custom handlers and restart your browser.
+
+<p>This page attempts to set a handler with an insanely long
+protocol string, URL and title. It should fail sliently, without
+locking up the browser.

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<meta charset='utf-8'>
+<title>Loading handled content types over HTTPS</title>
+<script>
+window.onload = function() {
+  navigator.registerContentHandler('text/x-hoobaflooba',
+  location.href.replace(/\/([a-z0-9-]+)\.html/g,'') + '/res/fail.html#%s',
+  'foobar');
+}
+</script>
+
+<noscript><p><strong>Note:</strong> This test requires JavaScript to be
+enabled.</p></noscript>
+
+<p><strong>Note:</strong> Before running this test, delete all registered
+custom handlers and restart your browser.
+
+<ol>
+ <li>After loading this page, the browser should prompt you to allow a handler
+ to be added. Allow it.
+ <li><a id="check_link">Click this link.</a>
+ <script>
+ var url_prefix = location.href.replace(/^http:/, 'https:').replace(/\/[^\/]+$/, '');
+ var href= url_prefix + '/x-hoobaflooba.hooba';
+ document.getElementById('check_link').href = href;
+ </script>
+ <li>The handler added above <em>must not</em> be used.
+</ol>
+

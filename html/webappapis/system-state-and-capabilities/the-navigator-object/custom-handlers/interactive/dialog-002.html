@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<meta charset='utf-8'>
+<title>Dialog should appear every time when using a content handler</title>
+<script>
+window.onload = function() {
+  navigator.registerContentHandler('text/x-hoobaflooba',
+  window.location.href.replace(/\/([a-z0-9-]+)\.html/g,'') + '/res/empty.html#%s',
+  'foobar');
+}
+</script>
+
+<noscript><p><strong>Note:</strong> This test requires JavaScript to be
+enabled.</p></noscript>
+
+<p><strong>Note:</strong> Before running this test, delete all registered
+custom handlers and restart your browser.
+
+<ol>
+ <li>After loading this page, the browser should prompt you to allow a handler to be added. Allow it.
+ <li><a href='res/x-hoobaflooba.hooba'>Click this link.</a>
+ <li>The browser should prompt you to allow the handler to be used. Allow it.
+ <li>A new page should load.
+ <li>Go back to this page.
+ <li><a href='res/x-hoobaflooba.hooba'>Click this link.</a>
+ <li>The browser should prompt you to allow the handler to be used again.
+</ol>
+

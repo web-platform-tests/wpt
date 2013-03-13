@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<meta charset='utf-8'>
+<title>%s in a query string URL should be passed correctly (2)</title>
+<script>
+window.onload = function() {
+  navigator.registerProtocolHandler('sms',
+  window.location.href.replace(/\/([a-z0-9-]+)\.html/g,'') + '/res/target-url-query.html?one=FOO&two=%s',
+  'foobar');
+}
+</script>
+
+<p><strong>Note:</strong> Before running this test, delete all registered
+custom handlers and restart your browser.
+
+<ol>
+ <li>After loading this page, there should be a dialog visible.
+ <li>Click “OK” in the dialog.
+ <li>Click <a href='sms:BAR'>this link</a>. A new dialog should appear.
+ <li>Click “OK”.
+ <li>You should see the string “one=FOO&amp;two=sms%3ABAR” with no other text
+ visible on the page.
+</ol>
+

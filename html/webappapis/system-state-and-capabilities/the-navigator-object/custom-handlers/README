@@ -1,0 +1,28 @@
+This is a test suite for the custom scheme and content handlers
+described in the HTML5 specification:
+
+  http://www.whatwg.org/specs/web-apps/current-work/multipage/timers.html#custom-handlers
+
+The following two functions are tested:
+
+  navigator.registerProtocolHandler(scheme, url, title);
+  navigator.registerContentHandler(mimeType, url, title);
+
+The test suite is structured as follows:
+
+  evil/
+    Contains tests demonstrating methods malicious authors
+    may use to cause trouble for users. The tests have no
+    definite pass conditions, but browsers should not crash
+    or become unusable when said tests are loaded.
+
+  interactive/
+    Contains tests requiring some sort of human interaction.
+    These tests are automated using the Watir test framework.
+    Automation scripts reside in the interactive/watir/
+    directory. Helper files reside in the interactive/res/
+    directory.
+
+  js/
+    Contains tests automated with JavaScript.
+

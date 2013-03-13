@@ -6,9 +6,9 @@
 <script src='/resources/testharnessreport.js'></script>
 <script type="application/ecmascript">
 test(function() {
-  var scheme = 'web+CustomProtocolFour', url = location.href.replace(/\/[^\/]*$/, "") + '/%s';
+  var scheme = 'web+CustomProtocolFour', url = './%s';
   navigator.registerProtocolHandler(scheme, url, 'Ignore dialog');
-  assert_equals(navigator.isProtocolHandlerRegistered(scheme, 'http://t/core/standards/registerhandler/%s'), 'new');
+  assert_equals(navigator.isProtocolHandlerRegistered(scheme, url), 'new');
 });
 </script>
 </head>

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<meta charset='utf-8'>
+<title>registerProtocolHandler()</title>
+<script>
+window.onload = function() {
+  if (!location.hash) {
+	  document.getElementsByTagName('body')[0].innerHTML = "Please specify which protocol you wish to test using a fragment URL (for example	protocol.html#mailto) and reload this page.";
+	} else {
+    var protocol = location.hash.substr(1);
+    document.getElementsByTagName('a')[0].setAttribute('href', protocol + ':foobar');
+    navigator.registerProtocolHandler(protocol, 'pass.html#%s', 'foobar');
+  }
+}
+</script>
+
+<ol>
+ <li>After loading this page, there should be a dialog visible.
+ <li>Click “OK” in the dialog.
+ <li>Click <a href=''>this link</a>. A new dialog should appear.
+ <li>Click “OK”.
+ <li>You should see the word “PASS”.
+</ol>
+

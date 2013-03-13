@@ -1,0 +1,16 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Script origin and unregisterProtocolHandler</title>
+<script type="application/ecmascript">
+function start()
+	{try
+		{navigator.unregisterProtocolHandler('web+TestProtocolEight', './%s');}
+	catch(themALL)
+		{}
+	window.history.go(-1)}
+</script>
+</head>
+<body onload="start()">
+<p>You should be redirected back to test page</p>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Data URIs, script origin and unregisterContentHandler</title>
+<script type="application/ecmascript">
+var ctype = 'application/x-notRegisteredElsewhere-004', url = '../unregister/content/%s', result = true;
+function start()
+	{navigator.registerContentHandler(ctype, url, 'test');}
+function check()
+	{if(navigator.isContentHandlerRegistered(ctype, url) != 'new')
+		{result = false}
+	var li = document.getElementsByTagName('li')[3];
+	li.replaceChild(document.createTextNode(result?"PASS":"FAIL"), li.firstChild)}
+</script>
+</head>
+<body onload="start()">
+<ol>
+	<li>There should be dialog asking to allow content handler</li>
+	<li>Allow it</li>
+	<li><a id="unregister_link">Unregister content handler by following this link</a>
+	<script><![CDATA[
+	var url_prefix = location.href.replace(/\/content\/[^\/]+$/, '');
+	var href = 'data:application/xhtml+xml,%3Chtml%20xmlns%3D%22http%3A//www.w3.org/1999/xhtml%22%3E%0D%0A%3Chead%3E%0D%0A%3Ctitle%3EScript%20origin%20and%20unregisterContentHandler%3C/title%3E%0D%0A%3Cscript%20type%3D%22application/ecmascript%22%3E%0D%0Afunction%20start%28%29%0D%0A%09%7Btry%0D%0A%09%09%7Bnavigator.unregisterContentHandler%28%27application/x-notRegisteredElsewhere-004%27%2C%20%27'+encodeURIComponent(url_prefix)+'/unregister/content/%25s%27%29%3B%7D%0D%0A%09catch%28themALL%29%0D%0A%09%09%7B%7D%0D%0A%09window.history.go%28-1%29%7D%0D%0A%3C/script%3E%0D%0A%3C/head%3E%0D%0A%3Cbody%20onload%3D%22start%28%29%22%3E%0D%0A%3Cp%3EYou%20should%20be%20redirected%20back%20to%20test%20page%3C/p%3E%0D%0A%3C/body%3E%0D%0A%3C/html%3E'
+	document.getElementById('unregister_link').href = href;
+	]]></script>
+	</li>
+	<li><a href="javascript:check()">Check test result</a></li>
+</ol>
+</body>
+</html>

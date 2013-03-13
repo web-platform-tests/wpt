@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<meta charset='utf-8'>
+<title>Infinite content handler loop</title>
+
+<script>
+window.onload = function() {
+  navigator.registerContentHandler('text/x-loop',
+  window.location.href.replace(/\/([a-z0-9-]+)\.html/g,'') + '/res/evil.loop?%s',
+  'Infinite Loop Inc.');
+}
+</script>
+
+<noscript><p><strong>Note:</strong> This test requires JavaScript to be
+enabled.</p></noscript>
+
+<p><strong>Note:</strong> Before running this test, delete all registered
+custom handlers and restart your browser.
+
+<ol>
+ <li>A dialog should appear on this page. Approve it.
+ <li><a href='res/evil.loop'>Click this link.</a>
+ <li>A new dialog should appear. Approve the dialog and have it
+ remember your selection, if possible.
+ <li>The handler will attempt to put the browser into an infinite request
+ loop. Even if it does end up in a loop, the browser should not become
+ unusable, and should allow you to recover, such as by loading a new URL
+ or closing the tab.
+</ol>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Script origin and unregisterContentHandler</title>
+<script type="application/ecmascript">
+var ctype = 'application/x-notRegisteredElsewhere-007', url = '../content/%s', result = true;
+function start()
+	{navigator.registerContentHandler(ctype, url, 'test');}
+function check()
+	{if(navigator.isContentHandlerRegistered(ctype, url) != 'registered')
+		{result = false}
+	navigator.unregisterContentHandler(ctype.toUpperCase(), url);
+	if(navigator.isContentHandlerRegistered(ctype, url) != 'new')
+		{result = false}
+	var li = document.getElementsByTagName('li')[3];
+	li.replaceChild(document.createTextNode(result?"PASS":"FAIL"), li.firstChild)}
+</script>
+</head>
+<body onload="start()">
+<ol>
+	<li>There should be dialog asking to allow content handler</li>
+	<li>Allow it</li>
+	<li><a id="unregister_link">Open this link in a <strong>new tab</strong></a>
+	<script><![CDATA[
+	var url_prefix = location.href.replace(/\/content\/[^\/]+$/, '');
+	var href = "javascript:try{navigator.unregisterContentHandler('application/x-notRegisteredElsewhere-007', '"+encodeURIComponent(url_prefix)+"/content/%s');}catch(themALL){};say = 'You can now close this page and return to test'";
+	document.getElementById('unregister_link').href = href;
+	]]></script>
+	</li>
+	<li><a href="javascript:check()">Check test result</a></li>
+</ol>
+</body>
+</html>

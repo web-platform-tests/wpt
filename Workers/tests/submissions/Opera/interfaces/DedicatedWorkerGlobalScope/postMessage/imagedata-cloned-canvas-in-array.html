@@ -25,7 +25,7 @@ onmessage = function(e) {
   var ctx = clone.getContext('2d');
   var imagedata = ctx.getImageData(0, 0, 300, 150);
   worker.postMessage([imagedata]);
-  worker.onmessage = this.step_func(function(e) {
+  worker.onmessage = this.step_func(function(e) {
     var pixeldata = e.data.data;
     for (var i = 0; i < pixeldata.length; i++) {
       assert_equals(pixeldata[i], (i % 4 == 0) ? 128 : 0);

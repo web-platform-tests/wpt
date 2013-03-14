@@ -7,12 +7,13 @@
 <div id="log"></div>
 <script>
 test(function() {
-  // Note: annevk thinks this URL should resolve, and thus throw a SecurityError
-  // rather than a SyntaxError. A specification is forthcoming.
   assert_throws("SecurityError", function() { new Worker('unsupported:'); });
 }, "unsupported_scheme");
-test(function() {
-  assert_throws("SecurityError", function() { new Worker('data:,'); });
+async_test(function() {
+  var worker = new Worker('data:,postMessage(1);');
+  worker.onmessage = this.step_func_done(function(e) {
+    assert_equals(e.data, 1);
+  });
 }, "data_url");
 test(function() {
   assert_throws("SecurityError", function() { new Worker('javascript:""'); });

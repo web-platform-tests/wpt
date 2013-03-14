@@ -25,7 +25,7 @@ async_test(function() {
   worker.postMessage(1);
   setTimeout(this.step_func(function() {
     assert_false(gotMessage, 'got message');
-    assert_false(gotError, 'got error');
+    assert_true(gotError, 'got error');
     this.done();
   }), 500);
 });

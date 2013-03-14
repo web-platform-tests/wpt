@@ -19,6 +19,7 @@ onconnect = function(e) {
 <script src="/resources/testharnessreport.js"></script>
 <div id=log></div>
 <script>
+var t = async_test();
 function runtest() {
   var worker = new SharedWorker('#', '');
   worker.port.onmessage = this.step_func(function(e) {

@@ -11,7 +11,7 @@ postMessage('FAIL');
 <div id="log"></div>
 <script>
 var t = async_test();
-test(function() {
+t.step(function() {
   var worker = new Worker(undefined);
   worker.addEventListener('message', t.step_func_done(function(e) {
     assert_equals(e.data, 'undefined')

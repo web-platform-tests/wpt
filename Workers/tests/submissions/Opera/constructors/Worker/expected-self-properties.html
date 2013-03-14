@@ -17,7 +17,7 @@ onmessage = function(e) {
 <div id="log"></div>
 <script>
 var t = async_test();
-test(function() {
+t.step(function() {
   var expected = ['XMLHttpRequest', 'WebSocket', 'EventSource', 'MessageChannel', 'Worker', 'SharedWorker'];
   var supported = expected.filter(function(iface) { return iface in window; });
   var worker = new Worker('#');

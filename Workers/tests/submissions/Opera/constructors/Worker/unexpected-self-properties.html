@@ -16,7 +16,7 @@ postMessage('done');
 <div id="log"></div>
 <script>
 var t = async_test();
-test(function() {
+t.step(function() {
   var worker = new Worker('#');
   listenForMessages(t, worker);
 });

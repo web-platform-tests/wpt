@@ -11,8 +11,11 @@
 test(function() {
   assert_throws("SecurityError", function() { new SharedWorker('unsupported:', ''); });
 }, "unsupported_scheme");
-test(function() {
-  assert_throws("SecurityError", function() { new SharedWorker('data:,', ''); });
+async_test(function() {
+  var worker = new SharedWorker('data:,onconnect = function(e) { e.ports[0].postMessage(1); }', '');
+  worker.port.onmessage = this.step_func_done(function(e) {
+    assert_equals(e.data, 1);
+  });
 }, "data_url");
 test(function() {
   assert_throws("SecurityError", function() { new SharedWorker('javascript:""', ''); });

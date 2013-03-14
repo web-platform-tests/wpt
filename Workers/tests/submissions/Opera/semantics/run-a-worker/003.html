@@ -9,7 +9,7 @@
 <script>
 async_test(function() {
   var worker = new Worker('404_worker');
-  worker.onerror = this.step_func(function(e) { this.done(); }, worker, 'error');
+  worker.onerror = this.step_func(function(e) { this.done(); });
 }, 'worker', {timeout:500});
 async_test(function() {
   var shared = new SharedWorker('404_shared');

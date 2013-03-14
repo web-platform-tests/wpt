@@ -1,13 +1,13 @@
 <!DOCTYPE HTML>
 <html>
     <head>
-        <title>CSS Regions: onmouseover, onmouseout, alt text events outside region</title>
+        <title>CSS Regions: onmouseover and onmouseout events outside region</title>
         <link rel="author" title="David Alcala" href="mailto:dalcala@adobe.com">
         <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
         <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
         <link rel="help" href="http://www.w3.org/TR/css3-regions/#relation-to-document-events">
         <meta name="assert" content="CSS regions module does not alter the normal processing of events in the document
-         tree. Therefore, mouse onclick events outside and outside a named flow should function correctly.">
+         tree. Therefore, onmouseover and onmouseout events outside a named flow should function correctly.">
         <meta name="flags" content="dom interact">
         <link href="support/css/regions-mouse-events.css" rel="stylesheet" type="text/css">
         <link href="/resources/testharness.css" rel="stylesheet" type="text/css">
@@ -31,47 +31,42 @@
     </body>
     <script type="text/javascript">
 
-        if(checkLeftPosition("target-block") !== 0) {
-
+        if(getLeftPosition("target-block") !== 0) {
             var test1 = async_test("onmouseover event fired outside region", {timeout: testTimeout});
-                test1.step( function() {
-                    var testTarget = document.getElementById("outside-region");
-                    testTarget.onmouseover = test1.step_func( function(evt) {
-                        /* Log assertion that the event got fired */
-                        assert_true(true);
+            test1.step(function () {
+                var testTarget = document.getElementById("outside-region");
+                testTarget.onmouseover = test1.step_func(function (evt) {
 
-                        /* Verify the target was the one with the alt text set */
-                        test(function() { assert_equals(evt.target.title, "PASS"); }, "Target has the correct alt text");
+                    /* Verify the hover color is correct */
+                    test(function () {
+                        assert_equals(getBackgroundColor("outside-region"), "rgb(0, 255, 0)");
+                    }, "Color changes on mouseover");
 
-                        /* Verify the hover color is correct */
-                        test(function() { assert_equals(checkBackgroundColor("outside-region"), "rgb(0, 255, 0)"); }, "Color changes on mouseover");
-
-                        test1.done();
-                    });
-
-                    mouseOver("outside-region");
+                    test1.done();
                 });
+                mouseOver("outside-region");
+            });
 
             var test2 = async_test("onmouseout event fired outside region", {timeout: testTimeout});
-                test2.step( function() {
-                    var testTarget = document.getElementById("outside-region");
-                    testTarget.onmouseout = test2.step_func( function(evt) {
-                        /* Log assertion that the event got fired */
-                        assert_true(true);
+            test2.step(function () {
+                var testTarget = document.getElementById("outside-region");
+                testTarget.onmouseout = test2.step_func(function (evt) {
 
-                        /* Verify it returns to the original background color */
-                        test(function() { assert_equals(checkBackgroundColor("outside-region"), "rgb(255, 191, 0)"); }, "Color changes back on mouseout");
+                    /* Verify it returns to the original background color */
+                    test(function () {
+                        assert_equals(getBackgroundColor("outside-region"), "rgb(255, 191, 0)");
+                    }, "Color changes back on mouseout");
 
-                        test2.done();
-                    });
-
-                    mouseOut("outside-region");
+                    test2.done();
                 });
-
+                mouseOut("outside-region");
+            });
             completionCallback();
         }
         else {
-            test(function() { assert_true(false); }, "Regions are not enabled");
+            test(function () {
+                assert_true(false);
+            }, "Regions are not enabled");
         }
 
     </script>

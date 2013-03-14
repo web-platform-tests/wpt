@@ -1,23 +1,25 @@
+// Timeout is 10 seconds for manual testing, 1.5 seconds for automated testing
 var testTimeout = 10000;
 setup({timeout: testTimeout});
 
 // This block is executed if running in WebKit's harness
 if (window.testRunner) {
     testRunner.dumpAsText(false);
+    testTimeout = 1500;
 }
 
 // Verify that CSS Regions are enabled in the browser.
 // Divs will be horizontal if Regions are enabled.
 // Divs will be vertical if Regions are not enabled.
-function checkLeftPosition(elemID) {
+function getLeftPosition(elemID) {
     return document.getElementById(elemID).getBoundingClientRect().left;
 }
 
 function mouseClick(block) {
     if(window.testRunner) {
         var startNode = document.getElementById(block);
-        var xStartPosition = startNode.getBoundingClientRect().left;
-        var yStartPosition = startNode.getBoundingClientRect().top;
+        var xStartPosition = startNode.getBoundingClientRect().left + startNode.getBoundingClientRect().width / 2;
+        var yStartPosition = startNode.getBoundingClientRect().top + startNode.getBoundingClientRect().height / 2;
         eventSender.mouseMoveTo(xStartPosition, yStartPosition);
         eventSender.mouseDown();
         eventSender.mouseUp();
@@ -27,8 +29,8 @@ function mouseClick(block) {
 function mouseDown(block) {
     if(window.testRunner) {
         var startNode = document.getElementById(block);
-        var xStartPosition = startNode.getBoundingClientRect().left;
-        var yStartPosition = startNode.getBoundingClientRect().top;
+        var xStartPosition = startNode.getBoundingClientRect().left + startNode.getBoundingClientRect().width / 2;
+        var yStartPosition = startNode.getBoundingClientRect().top + startNode.getBoundingClientRect().height / 2;
         eventSender.mouseMoveTo(xStartPosition, yStartPosition);
         eventSender.mouseDown();
     }
@@ -37,8 +39,8 @@ function mouseDown(block) {
 function mouseUp(block) {
     if(window.testRunner) {
         var startNode = document.getElementById(block);
-        var xStartPosition = startNode.getBoundingClientRect().left;
-        var yStartPosition = startNode.getBoundingClientRect().top;
+        var xStartPosition = startNode.getBoundingClientRect().left + startNode.getBoundingClientRect().width / 2;
+        var yStartPosition = startNode.getBoundingClientRect().top + startNode.getBoundingClientRect().height / 2;
         eventSender.mouseMoveTo(xStartPosition, yStartPosition);
         eventSender.mouseUp();
     }
@@ -47,8 +49,8 @@ function mouseUp(block) {
 function mouseDblClick(block) {
     if(window.testRunner) {
         var startNode = document.getElementById(block);
-        var xStartPosition = startNode.getBoundingClientRect().left;
-        var yStartPosition = startNode.getBoundingClientRect().top;
+        var xStartPosition = startNode.getBoundingClientRect().left + startNode.getBoundingClientRect().width / 2;
+        var yStartPosition = startNode.getBoundingClientRect().top + startNode.getBoundingClientRect().height / 2;
         eventSender.mouseMoveTo(xStartPosition, yStartPosition);
         eventSender.mouseDown();
         eventSender.mouseUp();
@@ -60,14 +62,13 @@ function mouseDblClick(block) {
 function mouseMove(block) {
     if(window.testRunner) {
         var startNode = document.getElementById(block);
-        var xStartPosition = startNode.getBoundingClientRect().left;
-        var yStartPosition = startNode.getBoundingClientRect().top;
+        var xStartPosition = startNode.getBoundingClientRect().left + startNode.getBoundingClientRect().width / 2;
+        var yStartPosition = startNode.getBoundingClientRect().top + startNode.getBoundingClientRect().height / 2;
         eventSender.mouseMoveTo(xStartPosition, yStartPosition);
-        eventSender.mouseMoveTo(xStartPosition+10, yStartPosition+10);
     }
 }
 
-function checkBackgroundColor(elemID) {
+function getBackgroundColor(elemID) {
     var foo = window.getComputedStyle(document.getElementById(elemID)).backgroundColor;
     return window.getComputedStyle(document.getElementById(elemID)).backgroundColor;
 }
@@ -75,8 +76,8 @@ function checkBackgroundColor(elemID) {
 function mouseOver(block) {
     if(window.testRunner) {
         var startNode = document.getElementById(block);
-        var xStartPosition = startNode.getBoundingClientRect().left;
-        var yStartPosition = startNode.getBoundingClientRect().top;
+        var xStartPosition = startNode.getBoundingClientRect().left + startNode.getBoundingClientRect().width / 2;
+        var yStartPosition = startNode.getBoundingClientRect().top + startNode.getBoundingClientRect().height / 2;
         eventSender.mouseMoveTo(xStartPosition, yStartPosition);
     }
 }
@@ -89,18 +90,10 @@ function mouseOut(block) {
 
 function completionCallback () {
     add_completion_callback(function (allRes, status) {
-        console.log("Test run completed", allRes, status);
         if(status.status === 0){
-            console.log("Tests ran successfully");
             //Update the message stating that tests are complete
             var msg = document.getElementById("msg");
-
-            var complete = document.createElement("p");
-            complete.innerHTML = "Tests are complete. All results in the Details section below should PASS.";
-            complete.style.color = "blue";
-            msg.appendChild(complete);
-        } else {
-            console.log("tests timed out");
+            msg.innerHTML += "<p id='msg-complete'>Tests are complete. All results in the Details section below should PASS.</p>";
         }
     });
 }

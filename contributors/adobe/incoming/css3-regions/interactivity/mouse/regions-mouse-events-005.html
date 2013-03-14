@@ -16,7 +16,7 @@
         <script src="support/js/regions-mouse-events-test-helper.js"></script>
     </head>
     <body>
-        <p id="msg">Mouse up on the orange square.</p>
+        <p id="msg">Mouse up on the orange square (Press the mouse button down somewhere outside the orange square.  Then drag the mouse to the orange square.  Release the mouse button while on the orange square.)</p>
         <div id="content">
             <div class="block"></div>
             <div class="block"></div>
@@ -31,29 +31,27 @@
     </body>
      <script type="text/javascript">
 
-        if(checkLeftPosition("target-block") !== 0) {
-
+        if(getLeftPosition("target-block") !== 0) {
             var test1 = async_test("onmouseup event fired outside region", {timeout: testTimeout});
-                test1.step( function() {
-                    var testTarget = document.getElementById("outside-region");
-                    testTarget.onmouseup = test1.step_func( function(evt) {
-                        /* Log assertion that the event got fired */
-                        assert_true(true);
+            test1.step(function () {
+                var testTarget = document.getElementById("outside-region");
+                testTarget.onmouseup = test1.step_func(function (evt) {
 
-                        /* Verify the target outside the region has the correct ID  */
-                        test(function() { assert_equals(evt.target.id, "outside-region"); }, "Div that mouseup was performed on outside region has correct ID");
+                    /* Verify the target outside the region has the correct ID */
+                    test(function() {
+                        assert_equals(evt.target.id, "outside-region");
+                    }, "Div that mouseup was performed on outside region has correct ID");
 
-                        test1.done();
-
-                    });
-
-                    mouseUp("outside-region");
+                    test1.done();
                 });
-
+                mouseUp("outside-region");
+            });
             completionCallback();
         }
         else {
-            test(function() { assert_true(false); }, "Regions are not enabled");
+            test(function () {
+                assert_true(false);
+            }, "Regions are not enabled");
         }
 
     </script>

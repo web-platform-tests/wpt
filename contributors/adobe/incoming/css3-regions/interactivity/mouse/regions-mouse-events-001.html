@@ -31,45 +31,42 @@
     </body>
     <script type="text/javascript">
 
-        if(checkLeftPosition("target-block") !== 0) {
-
+        if(getLeftPosition("target-block") !== 0) {
             var test1 = async_test("onclick event fired inside region", {timeout: testTimeout});
-                test1.step( function() {
-                    var testTarget = document.getElementById("target-block");
-                    testTarget.onclick = test1.step_func( function(evt) {
-                        /* Log assertion that the event got fired */
-                        assert_true(true);
+            test1.step(function () {
+                var testTarget = document.getElementById("target-block");
+                testTarget.onclick = test1.step_func(function (evt) {
 
-                        /* Verify the target inside the region has the correct ID */
-                        test(function() { assert_equals(evt.target.id, "target-block");}, "Target inside region has the correct ID");
+                    /* Verify the target inside the region has the correct ID */
+                    test(function () {
+                        assert_equals(evt.target.id, "target-block");
+                    }, "Div clicked on inside region has the correct ID");
 
-                        test1.done();
-                    });
-
-                    mouseClick("target-block");
+                    test1.done();
                 });
+                mouseClick("target-block");
+            });
 
             var test2 = async_test("onclick event fired outside region", {timeout: testTimeout});
-                test2.step( function() {
-                    var testTarget = document.getElementById("outside-region");
-                    testTarget.onclick = test2.step_func( function(evt) {
-                        /* Log assertion that the event got fired */
-                        assert_true(true);
+            test2.step(function () {
+                var testTarget = document.getElementById("outside-region");
+                testTarget.onclick = test2.step_func(function (evt) {
 
-                        /* Verify the target outside the region has the correct ID  */
-                        test(function() { assert_equals(evt.target.id, "outside-region");}, "Div clicked on outside region has the correct ID");
+                    /* Verify the target outside the region has the correct ID */
+                    test(function () {
+                        assert_equals(evt.target.id, "outside-region");
+                    }, "Div clicked on outside region has the correct ID");
 
-                        test2.done();
-                    });
-
-                    mouseClick("outside-region");
+                    test2.done();
                 });
-
+                mouseClick("outside-region");
+            });
             completionCallback();
-
         }
         else {
-            test(function() { assert_true(false); }, "Regions are not enabled");
+            test(function () {
+                assert_true(false);
+            }, "Regions are not enabled");
         }
 
     </script>

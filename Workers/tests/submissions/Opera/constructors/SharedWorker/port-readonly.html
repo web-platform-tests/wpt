@@ -13,7 +13,7 @@ test(function() {
   var worker = new SharedWorker('#', '');
   var x = worker.port;
   worker.port = 1;
-  assertEquals(worker.port, x);
+  assert_equals(worker.port, x);
 });
 </script>
 <!--

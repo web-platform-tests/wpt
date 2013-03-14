@@ -20,7 +20,7 @@ async_test(function() {
   var worker = new SharedWorker('#', '');
   worker.addEventListener('error', this.step_func(function(e) {
     assert_unreached('error on worker');
-  }, false);
+  }), false);
   worker.port.addEventListener('error', this.step_func(function(e) {
     assert_unreached('error on port');
   }), false);

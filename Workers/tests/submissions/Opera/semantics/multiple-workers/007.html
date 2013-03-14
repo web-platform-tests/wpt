@@ -29,7 +29,7 @@ if (location.hash == '#1') {
 async_test(function() {
   var w1 = new SharedWorker('#1');
   w1.port.onmessage = this.step_func(function(e) {
-    assertEquals(e.data, '123');
+    assert_equals(e.data, '123');
     this.done();
   });
 });

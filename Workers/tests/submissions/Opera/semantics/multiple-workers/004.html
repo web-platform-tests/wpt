@@ -5,7 +5,7 @@
 <div id=log></div>
 <script>
 var i = 0;
-async_test(function() {
+var t = async_test(function() {
   var w1 = new SharedWorker('004-2.js', 'x');
   w1.port.onmessage = function(e) {
     i++;
@@ -22,5 +22,5 @@ function iframe_loaded() {
   }
 }
 </script>
-<iframe src=004-1.html onload=iframe_loaded();></iframe>
-<iframe src=004-1.html onload=iframe_loaded();></iframe>
+<iframe src=004-1.html onload="t.step(iframe_loaded);"></iframe>
+<iframe src=004-1.html onload="t.step(iframe_loaded);"></iframe>

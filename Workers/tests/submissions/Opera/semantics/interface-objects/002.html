@@ -1,5 +1,5 @@
 <!--
-var unexpected = 'AbstractView AbstractWorker ApplicationCache Location Navigator DOMImplementation Audio HTMLCanvasElement CanvasRenderingContext2D CanvasGradient CanvasPattern TextMetrics MouseEvent'.split(' ');
+var unexpected = 'AbstractView AbstractWorker ApplicationCache Location Navigator DOMImplementation Audio HTMLCanvasElement MouseEvent'.split(' ');
 var log = [];
 for (var i = 0; i < unexpected.length; ++i) {
   if (unexpected[i] in self)
@@ -11,13 +11,16 @@ postMessage(log.join(', '));
 -->
 <!doctype html>
 <title>unavailable interface objects in dedicated worker</title>
-<script src="/resources/jsframework.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
 <script>
-test(function() {
+async_test(function() {
   var worker = new Worker('#');
-  test(function(e) {
-    assertEquals(e.data, '', 'these interface objects were not expected');
-  }, worker, 'message');
+  worker.onmessage = this.step_func(function(e) {
+    assert_equals(e.data, '', 'these interface objects were not expected');
+    this.done();
+  });
 });
 </script>
 <!--

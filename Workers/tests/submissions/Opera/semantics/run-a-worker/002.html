@@ -7,14 +7,16 @@ onconnect = function(e) {
 -->
 <!doctype html>
 <title>worker global scope, shared worker</title>
-<script src="/resources/jsframework.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
 <script>
-test(function() {
+async_test(function() {
   var worker = new SharedWorker('#');
-  test(function(e) {
-    assertTrue(e.data);
-  }, worker.port, 'message');
-  worker.port.start();
+  worker.port.onmessage = this.step_func(function(e) {
+    assert_true(e.data);
+    this.done();
+  });
 });
 </script>
 <!--

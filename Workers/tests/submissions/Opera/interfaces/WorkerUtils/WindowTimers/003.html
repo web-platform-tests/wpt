@@ -1,14 +1,19 @@
 <!--
-setInterval(function() { postMessage(1) }, 10);
+setInterval(function() { postMessage(1); }, 10);
 /*
 -->
 <!doctype html>
 <title>setInterval</title>
-<script src="/resources/jsframework.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
 <script>
-test(function() {
+async_test(function() {
   var worker = new Worker('#');
-  test(function(e) { assertEquals(e.data, 1); }, worker, 'message');
+  worker.onmessage = this.step_func(function(e) {
+    assert_equals(e.data, 1);
+    this.done();
+  });
 });
 </script>
 <!--

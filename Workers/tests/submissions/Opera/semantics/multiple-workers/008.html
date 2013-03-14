@@ -10,19 +10,21 @@ onconnect = function(e) {
 -->
 <!doctype html>
 <title>messagechannel in shared worker</title>
-<script src="/resources/jsframework.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
 <iframe src=008-1.html></iframe>
 <script>
-test(function() {
+var t = async_test();
+onload = t.step_func(function() {
   var w1 = new SharedWorker('#');
-  test(function(e) {
-    test(function(e) {
-      assertEquals(e.data, 2);
-    }, e.ports[0], 'message', 1000);
-    e.ports[0].start();
-  }, w1.port, 'message');
-  w1.port.start();
-}, window, 'load', 1000);
+  w1.port.onmessage = this.step_func(function(e) {
+    e.ports[0].onmessage = this.step_func(function(e) {
+      assert_equals(e.data, 2);
+      this.done();
+    });
+  });
+});
 </script>
 <!--
 */

@@ -15,19 +15,19 @@ onconnect = function(e) {
 -->
 <!doctype html>
 <title>sync XMLHttpRequest in shared worker</title>
-<script src="/resources/jsframework.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
 <script>
 function runtest() {
-  test(function() {
-    var worker = new SharedWorker('#', '');
-    worker.port.start();
-    test(function(e) {
-      assertEquals(e.data, '');
-    }, worker.port, 'message');
-  }, 'none');
+  var worker = new SharedWorker('#', '');
+  worker.port.onmessage = this.step_func(function(e) {
+    assert_equals(e.data, '');
+    this.done();
+  });
 }
 </script>
-<iframe src=001-1.xml onload=runtest()></iframe>
+<iframe src=001-1.xml onload="t.step(runtest);"></iframe>
 <!--
 */
 //-->

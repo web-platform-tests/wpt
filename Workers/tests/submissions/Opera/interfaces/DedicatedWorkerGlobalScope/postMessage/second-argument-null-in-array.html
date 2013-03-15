@@ -1,8 +1,8 @@
 <!--
 try {
-  postMessage(undefined, [null]);
+  postMessage(false, [null]);
 } catch(e) {
-  postMessage(''+e);
+  postMessage(e instanceof TypeError);
 }
 /*
 -->
@@ -15,7 +15,7 @@ try {
 (async_test()).step(function() {
   var worker = new Worker('#');
   worker.onmessage = this.step_func(function(e) {
-    assert_not_equals(e.data, undefined);
+    assert_true(e.data);
     this.done();
   });
 });

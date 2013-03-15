@@ -1,11 +1,13 @@
 // Timeout is 10 seconds for manual testing, 1.5 seconds for automated testing
 var testTimeout = 10000;
+if (window.testRunner) {
+    testTimeout = 1500;
+}
 setup({timeout: testTimeout});
 
 // This block is executed if running in WebKit's harness
 if (window.testRunner) {
     testRunner.dumpAsText(false);
-    testTimeout = 1500;
 }
 
 // Verify that CSS Regions are enabled in the browser.
@@ -17,9 +19,9 @@ function getLeftPosition(elemID) {
 
 function mouseClick(block) {
     if(window.testRunner) {
-        var startNode = document.getElementById(block);
-        var xStartPosition = startNode.getBoundingClientRect().left + startNode.getBoundingClientRect().width / 2;
-        var yStartPosition = startNode.getBoundingClientRect().top + startNode.getBoundingClientRect().height / 2;
+        var elemBox = document.getElementById(block).getBoundingClientRect();
+        var xStartPosition = elemBox.left + elemBox.width/2;
+        var yStartPosition = elemBox.top + elemBox.height/2;
         eventSender.mouseMoveTo(xStartPosition, yStartPosition);
         eventSender.mouseDown();
         eventSender.mouseUp();
@@ -28,9 +30,9 @@ function mouseClick(block) {
 
 function mouseDown(block) {
     if(window.testRunner) {
-        var startNode = document.getElementById(block);
-        var xStartPosition = startNode.getBoundingClientRect().left + startNode.getBoundingClientRect().width / 2;
-        var yStartPosition = startNode.getBoundingClientRect().top + startNode.getBoundingClientRect().height / 2;
+        var elemBox = document.getElementById(block).getBoundingClientRect();
+        var xStartPosition = elemBox.left + elemBox.width/2;
+        var yStartPosition = elemBox.top + elemBox.height/2;
         eventSender.mouseMoveTo(xStartPosition, yStartPosition);
         eventSender.mouseDown();
     }
@@ -38,9 +40,9 @@ function mouseDown(block) {
 
 function mouseUp(block) {
     if(window.testRunner) {
-        var startNode = document.getElementById(block);
-        var xStartPosition = startNode.getBoundingClientRect().left + startNode.getBoundingClientRect().width / 2;
-        var yStartPosition = startNode.getBoundingClientRect().top + startNode.getBoundingClientRect().height / 2;
+        var elemBox = document.getElementById(block).getBoundingClientRect();
+        var xStartPosition = elemBox.left + elemBox.width/2;
+        var yStartPosition = elemBox.top + elemBox.height/2;
         eventSender.mouseMoveTo(xStartPosition, yStartPosition);
         eventSender.mouseUp();
     }
@@ -48,9 +50,9 @@ function mouseUp(block) {
 
 function mouseDblClick(block) {
     if(window.testRunner) {
-        var startNode = document.getElementById(block);
-        var xStartPosition = startNode.getBoundingClientRect().left + startNode.getBoundingClientRect().width / 2;
-        var yStartPosition = startNode.getBoundingClientRect().top + startNode.getBoundingClientRect().height / 2;
+        var elemBox = document.getElementById(block).getBoundingClientRect();
+        var xStartPosition = elemBox.left + elemBox.width/2;
+        var yStartPosition = elemBox.top + elemBox.height/2;
         eventSender.mouseMoveTo(xStartPosition, yStartPosition);
         eventSender.mouseDown();
         eventSender.mouseUp();
@@ -61,9 +63,9 @@ function mouseDblClick(block) {
 
 function mouseMove(block) {
     if(window.testRunner) {
-        var startNode = document.getElementById(block);
-        var xStartPosition = startNode.getBoundingClientRect().left + startNode.getBoundingClientRect().width / 2;
-        var yStartPosition = startNode.getBoundingClientRect().top + startNode.getBoundingClientRect().height / 2;
+        var elemBox = document.getElementById(block).getBoundingClientRect();
+        var xStartPosition = elemBox.left + elemBox.width/2;
+        var yStartPosition = elemBox.top + elemBox.height/2;
         eventSender.mouseMoveTo(xStartPosition, yStartPosition);
     }
 }
@@ -75,15 +77,18 @@ function getBackgroundColor(elemID) {
 
 function mouseOver(block) {
     if(window.testRunner) {
-        var startNode = document.getElementById(block);
-        var xStartPosition = startNode.getBoundingClientRect().left + startNode.getBoundingClientRect().width / 2;
-        var yStartPosition = startNode.getBoundingClientRect().top + startNode.getBoundingClientRect().height / 2;
+        var elemBox = document.getElementById(block).getBoundingClientRect();
+        var xStartPosition = elemBox.left + elemBox.width/2;
+        var yStartPosition = elemBox.top + elemBox.height/2;
         eventSender.mouseMoveTo(xStartPosition, yStartPosition);
     }
 }
 
 function mouseOut(block) {
     if(window.testRunner) {
+        var elemBox = document.getElementById(block).getBoundingClientRect();
+        var xStartPosition = elemBox.left + elemBox.width/2;
+        var yStartPosition = elemBox.top + elemBox.height/2;
         eventSender.mouseMoveTo(0, 0);
     }
 }

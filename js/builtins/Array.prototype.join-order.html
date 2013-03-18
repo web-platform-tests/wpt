@@ -79,7 +79,7 @@ test(function() {
   generateTest(function() {
     return {
       valueOf: function() { throw test_error; },
-      toString: function() { assert_notreached("toString should not be invoked if valueOf exists"); }
+      toString: function() { assert_unreached("toString should not be invoked if valueOf exists"); }
     };
   }, "valueOf and toString");
 }, "Step 3.");

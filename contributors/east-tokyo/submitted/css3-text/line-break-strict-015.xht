@@ -11,18 +11,22 @@
 		<meta name="flags" content="font" />
 		<meta name="assert" content="This test verifies that 'line-break: strict' does not allow line breaking before inseparable characters such as TWO DOT LEADER (U+2025) and HORIZONTAL ELLIPSIS (U+2026)." />
 		<style type="text/css">
-			@font-face {
-		        font-family: "DejaVuSerifBook";
-		        src: url("support/DejaVuSerif-webfont.woff") format("woff");
-		        /* Filesize: 18096 bytes (17.7 KBytes) */
-	        }
+			@font-face
+			{
+				font-family: "mplus-1p-regular";
+				src: url("support/mplus-1p-regular.woff") format("woff");
+				/* filesize: 803300 bytes (784.5 KBytes) */
+				/*
+				mplus-1p-regular.ttf can be downloaded at/from [TBD later]
+				*/
+			}
 			.test span {
 				line-break: strict;						// The property to be tested
 			}
 			p.test, p.control {
 				border: 1px solid gray;
 				color: blue;
-				font-family: "DejaVuSerifBook";
+				font-family: "mplus-1p-regular";
 				width: 10em;
 			}
 			span.target {

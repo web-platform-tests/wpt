@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>WebIDL Tests: HTML Grouping</title>
+    <link rel="author" title="dzenana" href="mailto:dzenana.trenutak@gmail.com">
+    <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/grouping-content.html#the-p-element">
+    <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/grouping-content.html#the-hr-element">
+    <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/grouping-content.html#the-pre-element">
+    <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/grouping-content.html#the-blockquote-element">
+    <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/grouping-content.html#the-ol-element">
+    <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/grouping-content.html#the-ul-element">
+    <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/grouping-content.html#the-li-element">
+    <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/grouping-content.html#the-dl-element">
+    <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/grouping-content.html#the-div-element">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src=/resources/webidl2.js></script>
+    <script src="/resources/idlharness.js"></script>
+</head>
+<body>
+
+<h1>idlharness test</h1>
+<p>This test validates the WebIDL contained within the HTML5 CR "grouping content" section.</p>
+
+<div id="test_div" style='display:none'>
+    <p id="test_p"></p>
+    <hr id="test_hr">
+    <pre id="test_pre"></pre>
+    <blockquote id="test_blockquote">Test This</blockquote>
+    <ol id="test_ol">
+        <li></li>
+    </ol>
+    <ul id="test_ul">
+        <li id="test_li"></li>
+    </ul>
+    <dl id="test_dl">
+        <dt></dt>
+    </dl>
+</div>
+
+<pre id='untested_idl' style='display:none'>
+    interface HTMLElement : Element {};
+    interface Element : Node {};
+    interface Node : EventTarget {};
+</pre>
+
+<pre id='idl'>
+    interface HTMLParagraphElement : HTMLElement {};
+    interface HTMLHRElement : HTMLElement {};
+    interface HTMLPreElement : HTMLElement {};
+    interface HTMLQuoteElement : HTMLElement {
+           attribute DOMString cite;
+    };
+    interface HTMLOListElement : HTMLElement {
+           attribute boolean reversed;
+           attribute long start;
+           attribute DOMString type;
+    };
+    interface HTMLUListElement : HTMLElement {};
+    interface HTMLLIElement : HTMLElement {
+           attribute long value;
+    };
+    interface HTMLDListElement : HTMLElement {};
+    interface HTMLDivElement : HTMLElement {};
+</pre>
+
+<script>
+
+    (function() {
+
+        var idl_array = new IdlArray();
+
+        idl_array.add_untested_idls(document.getElementById("untested_idl").textContent);
+        idl_array.add_idls(document.getElementById("idl").textContent);
+        idl_array.add_objects({
+            HTMLParagraphElement: ["document.getElementById('test_p')"],
+            HTMLHRElement: ["document.getElementById('test_hr')"],
+            HTMLPreElement: ["document.getElementById('test_pre')"],
+            HTMLQuoteElement: ["document.getElementById('test_blockquote')"],
+            HTMLOListElement: ["document.getElementById('test_ol')"],
+            HTMLUListElement: ["document.getElementById('test_ul')"],
+            HTMLLIElement: ["document.getElementById('test_li')"],
+            HTMLDListElement: ["document.getElementById('test_dl')"],
+            HTMLDivElement: ["document.getElementById('test_div')"]
+        });
+        idl_array.test();
+    })();
+
+</script>
+
+<div id="log"></div>
+
+</body>
+</html>

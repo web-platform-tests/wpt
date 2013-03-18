@@ -1,11 +1,11 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <title>CSS Writing Modes Test: inline block alignment - inline block containing two blocks (central alignment with vertical layout)</title>
+    <title>CSS Writing Modes Test: inline-block alignment - inline-block with content (central alignment with vertical layout)</title>
     <link rel="author" title="Hajime Shiozawa" href="mailto:hajime.shiozawa@gmail.com" />
     <link rel="help" title="CSS3 Writing modes: 4.3. Atomic Inline Baseline" href="http://www.w3.org/TR/css3-writing-modes/#replaced-baselines" />
     <link rel="help" title="CSS2.1 9.2.2 Inline-level elements and inline boxes" href="http://www.w3.org/TR/CSS21/visuren.html#inline-boxes" />
-    <meta name="assert" content="This test checks the generation of inline block baseline. When 'writing-mode' is vertical and when 'text-orientation' is 'mixed', 'upright' or 'use-glyph-orientation', then the central baseline is used as the dominant baseline." />
+    <meta name="assert" content="This test checks the generation of inline-block baseline. When 'writing-mode' is vertical and when 'text-orientation' is 'mixed', 'upright' or 'use-glyph-orientation', then the central baseline is used as the dominant baseline." />
     <meta name="flags" content="ahem image" />
     <style type="text/css"><![CDATA[
       div > p {
@@ -32,7 +32,7 @@
         text-orientation: use-glyph-orientation;
       }
 
-      /* inline block */
+      /* inline-block */
       .inline-block {
         display: inline-block;
       }
@@ -52,7 +52,12 @@
   ]]></style>
   </head>
   <body>
-    <p>Test passes if the <strong>left</strong> edge of black stripe is touching a thin blue line in each 2 orange rectangles and if all 2 orange rectangles are <strong>identical</strong>.</p>
+    <p>Test passes if ...</p>
+    <ol>
+      <li>the <strong>left</strong> edge of black stripe is touching a thin blue line in each 3 orange rectangles and</li>
+      <li>all 3 orange rectangles are <strong>identical</strong>.</li>
+    </ol>
+
     <div class="vertical-rl">
       <p class="mixed"><span class='half'>OUTSIDe</span><span class="inline-block">
           <span class="descendant-block right-side-of-central-baseline">RIGH</span>

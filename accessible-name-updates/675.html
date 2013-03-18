@@ -7,21 +7,22 @@
   <body>
     <h1>ARIA 1.0 Test Case 675</h1>
     
-    <div id="TEST_ID" aria-live="polite" >
+    <div id="TEST_ID">
     </div>
     
     <h2>Description</h2>
-    <p>An element with an aria-live attribute is defined in markup with the value="polite". 
-      After the onload event completes a child DOM element node is added to the element 
-      with the aria-live attribute.</p>
+    <p>An element without an aria-live attribute is defined in markup.   
+      After the onload event completes an aria-live attribute with the 
+      value 'assertive' is added to the element and a child DOM text 
+      node is added to the element.</p>
     
     <script type="text/javascript">  
   
      function addLiveRegion() {
        var node = document.getElementById('TEST_ID');  
-       var live_node = document.createElement('div');
-       live_node.setAttribute('aria-live', 'assertive');
-       node.appendChild(live_node);
+       node.setAttribute('aria-live', 'assertive');
+       var text_node = document.createTextNode('TEST TEXT');
+       node.appendChild(text_node);
      }
      
      function onload() {

@@ -7,20 +7,21 @@
   <body>
     <h1>ARIA 1.0 Test Case 676</h1>
     
-    <div id="TEST_ID" aria-live="assertive" >
-      <span>Text in markup</span>
+    <div id="TEST_ID">
     </div>
     
     <h2>Description</h2>
-    <p>An element with an aria-live attribute is defined in markup with the 
-      value="assertive". After the onload event completes a child DOM element 
+    <p>An element without an aria-live attribute is defined in markup.   
+      After the onload event completes a new element with an aria-live attribute with the 
+      value 'assertive' is added to the document and a child element and text 
       node is added to the element with the aria-live attribute.</p>
     
     <script type="text/javascript">  
   
       function addElement() {
-        var node = document.getElementById('TEST_ID');  
+        var node = document.getElementById('TEST_ID');
         var element_node = document.createElement('span');
+        element_node.setAttribute('aria-live','assertive');
         var text_node = document.createTextNode('Text added in a span element on load');
         element_node.appendChild(text_node);
         node.appendChild(element_node);

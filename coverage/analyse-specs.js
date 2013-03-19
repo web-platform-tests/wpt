@@ -46,10 +46,3 @@ for (var spec in specs) {
     });
 }
 
-
-
-// XXX
-//  - output data that matches that to the tests we have
-//  - the output data needs to keep the ToCs in order
-
-

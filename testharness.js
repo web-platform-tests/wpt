@@ -1118,7 +1118,7 @@ policies and contribution forms [3].
 
         try
         {
-            func.apply(this_obj, Array.prototype.slice.call(arguments, 2));
+            return func.apply(this_obj, Array.prototype.slice.call(arguments, 2));
         }
         catch(e)
         {

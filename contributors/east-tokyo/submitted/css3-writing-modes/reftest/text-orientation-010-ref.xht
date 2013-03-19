@@ -7,12 +7,15 @@
 		<link rel="author" title="Taka Oshiyama" href="mailto:takaoshiyama@gmail.com" />
 		<meta http-equiv="content-language" content="en, ja" />		
 		<style type="text/css">
-				@font-face 
+				@font-face
 				{
-					font-family: "DejaVuSerifBook";
-			        src: url("support/DejaVuSerif-webfont.woff") format("woff");
-			        /* Filesize: 18096 bytes (17.7 KBytes) */
-	        	}
+					font-family: "mplus-1p-regular";
+					src: url("../support/mplus-1p-regular.woff") format("woff");
+					/* filesize: 803300 bytes (784.5 KBytes) */
+					/*
+					mplus-1p-regular.ttf can be downloaded at/from [TBD later]
+					*/
+				}
 				.view_ahem
 				{
 					background: pink;
@@ -24,13 +27,6 @@
 					width: 3em;
 					white-space: pre;
 				}
-				.test_ahem
-				{
-					text-orientation: mixed;				//The property to be tested
-					-webkit-text-orientation: mixed;
-					writing-mode: vertical-rl;
-					-webkit-writing-mode: vertical-rl;
-				}
 				.control_ahem
 				{
 					writing-mode: horizontal-tb;
@@ -39,7 +35,7 @@
 				.view 
 				{
 					border: 1px solid gray;
-					font-family: "DejaVuSerifBook";
+					font-family: "mplus-1p-regular";
 					font-size: 1.5em;
 					line-height: 1.5;
 					margin-bottom: 10px;
@@ -47,16 +43,9 @@
 					writing-mode: vertical-rl;
 					-webkit-writing-mode: vertical-rl;
 				}
-				.test 
-				{
-					text-orientation: mixed;					//The property to be tested
-					-webkit-text-orientation: mixed;
-				}
 				.control 
 				{
 					text-combine-horizontal: none;
-					text-combine: none;
-					-webkit-text-combine: none; 
 				}
 		</style>
 	</head>

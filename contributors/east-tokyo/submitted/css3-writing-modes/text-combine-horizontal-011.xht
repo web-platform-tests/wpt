@@ -10,16 +10,19 @@
 		<meta name="flags" content="font" />
 		<meta name="assert" content="This test verifies that 'text-combine-horizontal: all'  display the text contents of the element horizontally within the vertical line box. i.e. characters from horizontal-only scripts are rendered upright." />		
 		<style type="text/css">
-				@font-face 
+				@font-face
 				{
-			        font-family: "DejaVuSerifBook";
-			        src: url("support/DejaVuSerif-webfont.woff") format("woff");
-			        /* Filesize: 18096 bytes (17.7 KBytes) */
-	        	}
+					font-family: "mplus-1p-regular";
+					src: url("support/mplus-1p-regular.woff") format("woff");
+					/* filesize: 803300 bytes (784.5 KBytes) */
+					/*
+					mplus-1p-regular.ttf can be downloaded at/from [TBD later]
+					*/
+				}
 				div 
 				{
 					border: 1px solid gray;
-					font-family: "DejaVuSerifBook";
+					font-family: "mplus-1p-regular";
 					font-size: 1.5em;
 					line-height: 2;
 					width: 4em;
@@ -31,7 +34,7 @@
 				}
 				.tcy  /* tate-cyu-yoko: horizontal-in-vertical */
 				{ 
-					text-combine-horizontal: all; 
+					text-combine-horizontal: all; 						// The property to be tested
 				}
 				#control 
 				{

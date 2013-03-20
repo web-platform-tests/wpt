@@ -305,7 +305,7 @@ interface CharacterData : Node {
   void replaceData(unsigned long offset, unsigned long count, DOMString data);
 };
 
-[Text(optional DOMString data)]
+[Constructor(optional DOMString data)]
 interface Text : CharacterData {
   Text splitText(unsigned long offset);
   readonly attribute DOMString wholeText;

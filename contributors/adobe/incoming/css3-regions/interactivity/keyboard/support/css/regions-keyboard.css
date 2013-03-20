@@ -1,15 +1,17 @@
 /* Set the margin to 0 so we'll know that the target will be there if the content isn't flowing into a region */
-body
-{
+body {
     margin: 0;
 }
+#msg-complete {
+    color: blue;
+}
 /* Set the width of the content div so that the blocks will wrap downward when they're not flowing into a region */
-#content
-{ 
+#content { 
 	-webkit-flow-into: content;
-	width: 125px; }
+	width: 125px;
+}
 /* Set regions to float left so the blocks will be laid out horizontally when they're flowing into the regions */
-.region{
+.region {
 	-webkit-flow-from: content;
 	width: 125px;
 	height: 125px;
@@ -27,6 +29,9 @@ body
 	background-color: rgb(0, 0, 0);
 }
 #target-block:hover {
+	background-color: rgb(0, 255, 0);
+}
+input:focus {
 	background-color: rgb(0, 255, 0);
 }
 #outside-region {

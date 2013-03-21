@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
-<someDataFile>
-	<its:provenanceRecords xml:id="pr1" xmlns:its="http://www.w3.org/2005/11/its" version="2.0">
+<someDataFile xmlns:its="http://www.w3.org/2005/11/its" its:version="2.0">
+<its:provenanceRecords xml:id="pr1">
         <its:provenanceRecord
             toolRef="http://www.provdata.com/tool/#onlinemtex"
             revPerson="James Joyce"

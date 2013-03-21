@@ -5,10 +5,11 @@
     <link rel="author" title="Hajime Shiozawa" href="mailto:hajime.shiozawa@gmail.com" />
     <link rel="help" title="4.4. Baseline Alignment" href="http://www.w3.org/TR/css3-writing-modes/#baseline-alignment" />
     <link rel="help" title="10.8 Line height calculations: the 'line-height' and 'vertical-align' properties" href="http://www.w3.org/TR/CSS2/visudet.html#line-height" />
+    <link rel="match" href="vertical-alignment-025-ref.xht" />
     <meta name="assert" content="This test checks the generation of text baseline with vertical align property. When 'writing-mode' is horizontal, then the alphabetical baseline is used as the dominant baseline." />
     <meta name="flags" content="ahem image" />
     <style type="text/css"><![CDATA[
-      div > p {
+      div > p, p.control {
         padding-bottom: 0.2em;
         font: 40px/1 "Ahem";
         background-color: orange;
@@ -18,11 +19,8 @@
       img {
         vertical-align: -20%;
       }
-      img.box {
-        margin-left: -50px;
-      }
       img.line {
-        margin-left: -230px;
+        margin-left: -260px;
       }
 
       /* writing-mode property */
@@ -54,34 +52,40 @@
   <body>
     <p>Test passes if ...</p>
     <ol>
-      <li>the bottom of black stripe is touching a thin blue line in each 6 orange rectangles.</li>
-      <li>the bottom edge of yellow box is aligned to a thin blue line in each 6 orange rectangles.</li>
-      <li>all 6 orange rectangles are <strong>identical</strong>.</li>
+      <li>the bottom of black stripe is touching a thin blue line in each 7 orange rectangles.</li>
+      <li>the bottom edge of yellow square is aligned to a thin blue line in each 7 orange rectangles and</li>
+      <li>all 7 orange rectangles are <strong>identical</strong>.</li>
     </ol>
+
+    <p class="control">CONTR
+      <img class="square" src="./support/yellow-square-59x59.png" alt="Image download support must be enabled" />
+      <img class="line" src="./support/blue-horiz-line_220x1.png" alt="Image download support must be enabled" />
+    </p>
+
     <div class="horizontal-tb">
-      <p class="mixed"><span>MIXED
-          <img class="line" src="./support/blue-horiz-line_220x1.png" alt="Image download support must be enabled" />
-          <img class="box" src="./support/horiz-box_59x59.png" alt="Image download support must be enabled" /></span>
+      <p class="mixed">MIXED
+        <img class="square" src="./support/yellow-square-horiz-redline-bottom-59x59.png" alt="Image download support must be enabled" />
+        <img class="line" src="./support/blue-horiz-line_220x1.png" alt="Image download support must be enabled" />
       </p>
-      <p class="upright"><span>UPRIG
-          <img class="line" src="./support/blue-horiz-line_220x1.png" alt="Image download support must be enabled" />
-          <img class="box" src="./support/horiz-box_59x59.png" alt="Image download support must be enabled" /></span>
+      <p class="upright">UPRIG
+        <img class="square" src="./support/yellow-square-horiz-redline-bottom-59x59.png" alt="Image download support must be enabled" />
+        <img class="line" src="./support/blue-horiz-line_220x1.png" alt="Image download support must be enabled" />
       </p>
-      <p class="sideways-right"><span>SIDER
-          <img class="line" src="./support/blue-horiz-line_220x1.png" alt="Image download support must be enabled" />
-          <img class="box" src="./support/horiz-box_59x59.png" alt="Image download support must be enabled" /></span>
+      <p class="sideways-right">SIDER
+        <img class="square" src="./support/yellow-square-horiz-redline-bottom-59x59.png" alt="Image download support must be enabled" />
+        <img class="line" src="./support/blue-horiz-line_220x1.png" alt="Image download support must be enabled" />
       </p>
-      <p class="sideways-left"><span>SIDEL
-          <img class="line" src="./support/blue-horiz-line_220x1.png" alt="Image download support must be enabled" />
-          <img class="box" src="./support/horiz-box_59x59.png" alt="Image download support must be enabled" /></span>
+      <p class="sideways-left">SIDEL
+        <img class="square" src="./support/yellow-square-horiz-redline-bottom-59x59.png" alt="Image download support must be enabled" />
+        <img class="line" src="./support/blue-horiz-line_220x1.png" alt="Image download support must be enabled" />
       </p>
-      <p class="sideways"><span>SIDEW
-          <img class="line" src="./support/blue-horiz-line_220x1.png" alt="Image download support must be enabled" />
-          <img class="box" src="./support/horiz-box_59x59.png" alt="Image download support must be enabled" /></span>
+      <p class="sideways">SIDEW
+        <img class="square" src="./support/yellow-square-horiz-redline-bottom-59x59.png" alt="Image download support must be enabled" />
+        <img class="line" src="./support/blue-horiz-line_220x1.png" alt="Image download support must be enabled" />
       </p>
-      <p class="use-glyph-orientation"><span>USEGL
-          <img class="line" src="./support/blue-horiz-line_220x1.png" alt="Image download support must be enabled" />
-          <img class="box" src="./support/horiz-box_59x59.png" alt="Image download support must be enabled" /></span>
+      <p class="use-glyph-orientation">USEGL
+        <img class="square" src="./support/yellow-square-horiz-redline-bottom-59x59.png" alt="Image download support must be enabled" />
+        <img class="line" src="./support/blue-horiz-line_220x1.png" alt="Image download support must be enabled" />
       </p>
     </div>
   </body>

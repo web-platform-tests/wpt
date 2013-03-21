@@ -2,7 +2,8 @@
 <text>
  <head>
   <its:rules version="2.0" xmlns:its="http://www.w3.org/2005/11/its">
-   <its:langRule selector="//*" langPointer="@language"/>
+   <its:langRule selector="//content" langPointer="@language"/>
+   <its:langRule selector="//q" langPointer="@language"/>
   </its:rules>
  </head>
  <content language="en">

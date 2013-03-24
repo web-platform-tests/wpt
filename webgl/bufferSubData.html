@@ -10,7 +10,7 @@
 <script>
 test(function() {
   var gl = getGl();
-  assert_false(gl.getError());
+  assert_equals(gl.getError(), WebGLRenderingContext.NO_ERROR);
 
   var b = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, b);
@@ -21,6 +21,6 @@ test(function() {
   var nan = 0 / 0;
   gl.bufferSubData(gl.ARRAY_BUFFER, nan, a);
 
-  assert_false(gl.getError());
+  assert_equals(gl.getError(), WebGLRenderingContext.NO_ERROR);
 });
 </script>

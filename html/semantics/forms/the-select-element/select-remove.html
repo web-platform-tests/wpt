@@ -5,7 +5,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <div id=log></div>
 <script>
-function testRemove(getter) {
+function testRemove(getter, desc) {
   test(function() {
     var div = document.createElement("div");
     var select = document.createElement("select");
@@ -31,10 +31,10 @@ function testRemove(getter) {
     getter(select).remove(0);
     assert_array_equals(select.options, [options[1], options[2]], "After remove(0)");
     assert_equals(select.parentNode, div);
-  })
+  }, desc)
 }
-testRemove(function(select) { return select; });
-testRemove(function(select) { return select.options; });
+testRemove(function(select) { return select; }, "select.remove(n) should work");
+testRemove(function(select) { return select.options; }, "select.options.remove(n) should work");
 test(function() {
   var div = document.createElement("div");
   var select = document.createElement("select");

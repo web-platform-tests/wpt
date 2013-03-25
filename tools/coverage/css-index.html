@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta charset='utf-8'>
+    <title>Test Suite Coverage Analysis</title>
+    <link rel='stylesheet' href='coverage.css'>
+  </head>
+  <body>
+    <h1>Test Suite Coverage Analysis</h1>
+    <p>
+      The following tables summarise test coverage for the specifications contained in this
+      test suite.
+    </p>
+    <div>
+      <h4>Show levels:</h4>
+      <p>
+        The report analyses sections at a maximal depth of 3. If you want to see an overview
+        at section levels 1 or 2 instead, you can choose those options below.
+      </p>
+      <ul>
+        <li>Level 1 <input type='radio' name='level' value='1'></li>
+        <li>Level 2 <input type='radio' name='level' value='2'></li>
+        <li>Level 3 <input type='radio' name='level' value='3'></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Thresholds:</h4>
+      <p>
+        Picking a good ratio of tests to something (or something to test) is difficult.
+        You can set values for specific aspects below. I assume that at some point we
+        will come up with a more or less definitive set of values to roughly aim for.
+      </p>
+      <ul>
+        <li>Words per test: <input type='number' name='words' size='4' value='10'></li>
+        <li>Tests per RFC2119: <input type='number' name='rfc2119' size='4' value='5'></li>
+        <li>Tests per algorithm step: <input type='number' name='algos' size='4' value='1'></li>
+        <li>Tests per IDL item: <input type='number' name='idl' size='4' value='5'></li>
+      </ul>
+      <button id='update'>Update</button>
+    </div>
+    <div id='output'></div>
+    
+    <!-- 
+      - add a filter that can colour the cells based on user-defined thresholds
+      - hide levels
+    -->
+    <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js'></script>
+    <script src='coverage.js'></script>
+    <script>
+      cover(["css3transforms", "css3backgrounds"]
+          , ["CSS Transforms", "CSS Backgrounds & Borders"]
+          , $("#output"));
+    </script>
+  </body>
+</html>

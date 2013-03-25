@@ -11,6 +11,8 @@
 test(function() {
   var el = document.createElement("h7");
   el.align = "left";
-  Test.is(el.hasAttribute("align"), false);
-})
+  assert_equals(el.align, "left");
+  assert_false(el.hasAttribute("align"));
+  assert_equals(el.getAttribute("align"), null);
+}, "IDL attributes for HTMLHeadingElement should not apply to h7.")
 </script>

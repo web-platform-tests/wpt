@@ -1,0 +1,222 @@
+[
+    {
+        "algorithmicSteps": 0,
+        "end_id": "transitions",
+        "id": "introduction",
+        "idlComplexity": 0,
+        "level": 1,
+        "normativeStatements": 0,
+        "original_id": "introduction",
+        "wordCount": 38,
+        "tests": 0
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "starting",
+        "id": "transitions",
+        "idlComplexity": 0,
+        "level": 1,
+        "normativeStatements": 7,
+        "original_id": "transitions",
+        "wordCount": 1654,
+        "tests": 20
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "transition-duration-property",
+        "id": "transition-property-property",
+        "idlComplexity": 0,
+        "level": 2,
+        "normativeStatements": 3,
+        "original_id": "transition-property-property",
+        "wordCount": 316,
+        "tests": 6
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "transition-timing-function-property",
+        "id": "transition-duration-property",
+        "idlComplexity": 0,
+        "level": 2,
+        "normativeStatements": 1,
+        "original_id": "transition-duration-property",
+        "wordCount": 96,
+        "tests": 1
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "transition-delay-property",
+        "id": "transition-timing-function-property",
+        "idlComplexity": 0,
+        "level": 2,
+        "normativeStatements": 2,
+        "original_id": "transition-timing-function-property",
+        "wordCount": 531,
+        "tests": 1
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "transition-shorthand-property",
+        "id": "transition-delay-property",
+        "idlComplexity": 0,
+        "level": 2,
+        "normativeStatements": 0,
+        "original_id": "transition-delay-property",
+        "wordCount": 176,
+        "tests": 2
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "starting",
+        "id": "transition-shorthand-property",
+        "idlComplexity": 0,
+        "level": 2,
+        "normativeStatements": 0,
+        "original_id": "transition-shorthand-property",
+        "wordCount": 137,
+        "tests": 1
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "reversing",
+        "id": "starting",
+        "idlComplexity": 0,
+        "level": 1,
+        "normativeStatements": 8,
+        "original_id": "starting",
+        "wordCount": 349,
+        "tests": 4
+    },
+    {
+        "algorithmicSteps": 4,
+        "end_id": "transition-events",
+        "id": "reversing",
+        "idlComplexity": 0,
+        "level": 1,
+        "normativeStatements": 3,
+        "original_id": "reversing",
+        "wordCount": 504,
+        "tests": 0
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "animatable-types",
+        "id": "transition-events",
+        "idlComplexity": 0,
+        "level": 1,
+        "normativeStatements": 0,
+        "original_id": "transition-events",
+        "wordCount": 271,
+        "tests": 8
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "animatable-properties",
+        "id": "animatable-types",
+        "idlComplexity": 0,
+        "level": 1,
+        "normativeStatements": 1,
+        "original_id": "animatable-types",
+        "wordCount": 679,
+        "tests": 0
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "acknowledgments",
+        "id": "animatable-properties",
+        "idlComplexity": 0,
+        "level": 1,
+        "normativeStatements": 5,
+        "original_id": "animatable-properties",
+        "wordCount": 474,
+        "tests": 4
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "animatable-svg",
+        "id": "animatable-css",
+        "idlComplexity": 0,
+        "level": 2,
+        "normativeStatements": 0,
+        "original_id": "animatable-css",
+        "wordCount": 216,
+        "tests": 3
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "acknowledgments",
+        "id": "animatable-svg",
+        "idlComplexity": 0,
+        "level": 2,
+        "normativeStatements": 0,
+        "original_id": "animatable-svg",
+        "wordCount": 24,
+        "tests": 0
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "references",
+        "id": "acknowledgments",
+        "idlComplexity": 0,
+        "level": 1,
+        "normativeStatements": 0,
+        "original_id": "acknowledgments",
+        "wordCount": 29,
+        "tests": 0
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "property-index",
+        "id": "references",
+        "idlComplexity": 0,
+        "level": 1,
+        "normativeStatements": 0,
+        "original_id": "references",
+        "wordCount": 94,
+        "tests": 0
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "other-references",
+        "id": "normative-references",
+        "idlComplexity": 0,
+        "level": 2,
+        "normativeStatements": 0,
+        "original_id": "normative-references",
+        "wordCount": 3,
+        "tests": 0
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "property-index",
+        "id": "other-references",
+        "idlComplexity": 0,
+        "level": 2,
+        "normativeStatements": 0,
+        "original_id": "other-references",
+        "wordCount": 90,
+        "tests": 0
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "index",
+        "id": "property-index",
+        "idlComplexity": 0,
+        "level": 1,
+        "normativeStatements": 0,
+        "original_id": "property-index",
+        "wordCount": 96,
+        "tests": 0
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "",
+        "id": "index",
+        "idlComplexity": 0,
+        "level": 1,
+        "normativeStatements": 0,
+        "original_id": "index",
+        "wordCount": 33,
+        "tests": 0
+    }
+]

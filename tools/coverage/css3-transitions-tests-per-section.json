@@ -1,0 +1,20 @@
+{
+    "css3-transitions": {
+        "introduction": 0,
+        "transitions": 20,
+        "transition-property-property": 6,
+        "transition-duration-property": 1,
+        "transition-timing-function-property": 1,
+        "transition-delay-property": 2,
+        "transition-shorthand-property": 1,
+        "starting": 4,
+        "reversing": 0,
+        "transition-events": 8,
+        "animatable-types": 0,
+        "animatable-properties": 4,
+        "animatable-css": 3,
+        "animatable-svg": 0,
+        "acknowledgments": 0,
+        "references": 0
+    }
+}

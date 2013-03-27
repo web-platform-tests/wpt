@@ -47,8 +47,22 @@
     <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js'></script>
     <script src='coverage.js'></script>
     <script>
-      cover(["css3transforms", "css3backgrounds"]
-          , ["CSS Transforms", "CSS Backgrounds & Borders"]
+      cover(["css3-animations", "css3-background",
+              "css3-color", "css3-fonts",
+              "css3-transforms", "css3-transitions",
+              "cssom", "cssom-view",
+              "css-device-adapt", "css3-flexbox",
+              "css3-images", "css3-mediaqueries",
+              "css3-selectors", "css3-text",
+              "css3-values", "css3-ui"]
+          , [ "CSS Animations", "CSS Backgrounds & Borders",
+              "CSS Color Level 3", "CSS Fonts Level 3",
+              "CSS Transforms", "CSS Transitions",
+              "CSSOM", "CSSOM View Module",
+              "CSS Device Adaptation", "CSS Flexible Box Layout",
+              "CSS Image Values and Replaced Content", "CSS Media Queries",
+              "CSS Selectors Level 3", "CSS Text Level 3",
+              "CSS Values and Units", "CSS Basic User Interface Module"]
           , $("#output"));
     </script>
   </body>

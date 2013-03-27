@@ -7,8 +7,8 @@
         "level": 1,
         "normativeStatements": 0,
         "original_id": "introduction",
-        "tests": 0,
-        "wordCount": 273
+        "wordCount": 273,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -18,8 +18,8 @@
         "level": 1,
         "normativeStatements": 0,
         "original_id": "module-interactions",
-        "tests": 0,
-        "wordCount": 109
+        "wordCount": 109,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -29,8 +29,8 @@
         "level": 1,
         "normativeStatements": 0,
         "original_id": "css-values",
-        "tests": 0,
-        "wordCount": 63
+        "wordCount": 63,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -40,8 +40,8 @@
         "level": 1,
         "normativeStatements": 0,
         "original_id": "definitions",
-        "tests": 5,
-        "wordCount": 415
+        "wordCount": 415,
+        "tests": 5
     },
     {
         "algorithmicSteps": 0,
@@ -51,8 +51,8 @@
         "level": 1,
         "normativeStatements": 1,
         "original_id": "two-dimensional-subset",
-        "tests": 0,
-        "wordCount": 124
+        "wordCount": 124,
+        "tests": 0
     },
     {
         "algorithmicSteps": 13,
@@ -62,8 +62,8 @@
         "level": 1,
         "normativeStatements": 8,
         "original_id": "transform-rendering",
-        "tests": 37,
-        "wordCount": 1799
+        "wordCount": 1799,
+        "tests": 41
     },
     {
         "algorithmicSteps": 9,
@@ -73,8 +73,8 @@
         "level": 2,
         "normativeStatements": 3,
         "original_id": "transform-3d-rendering",
-        "tests": 6,
-        "wordCount": 1038
+        "wordCount": 1038,
+        "tests": 10
     },
     {
         "algorithmicSteps": 0,
@@ -84,8 +84,8 @@
         "level": 2,
         "normativeStatements": 4,
         "original_id": "processing-of-perspective-transformed-boxes",
-        "tests": 0,
-        "wordCount": 308
+        "wordCount": 308,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -95,8 +95,8 @@
         "level": 1,
         "normativeStatements": 0,
         "original_id": "transform-property",
-        "tests": 53,
-        "wordCount": 141
+        "wordCount": 141,
+        "tests": 86
     },
     {
         "algorithmicSteps": 0,
@@ -106,8 +106,8 @@
         "level": 1,
         "normativeStatements": 1,
         "original_id": "transform-origin-property",
-        "tests": 106,
-        "wordCount": 395
+        "wordCount": 414,
+        "tests": 107
     },
     {
         "algorithmicSteps": 0,
@@ -117,8 +117,8 @@
         "level": 1,
         "normativeStatements": 0,
         "original_id": "transform-style-property",
-        "tests": 25,
-        "wordCount": 121
+        "wordCount": 121,
+        "tests": 25
     },
     {
         "algorithmicSteps": 0,
@@ -128,8 +128,8 @@
         "level": 1,
         "normativeStatements": 1,
         "original_id": "perspective-property",
-        "tests": 10,
-        "wordCount": 105
+        "wordCount": 105,
+        "tests": 14
     },
     {
         "algorithmicSteps": 0,
@@ -139,8 +139,8 @@
         "level": 1,
         "normativeStatements": 0,
         "original_id": "perspective-origin-property",
-        "tests": 2,
-        "wordCount": 366
+        "wordCount": 384,
+        "tests": 4
     },
     {
         "algorithmicSteps": 2,
@@ -150,8 +150,8 @@
         "level": 1,
         "normativeStatements": 1,
         "original_id": "backface-visibility-property",
-        "tests": 7,
-        "wordCount": 153
+        "wordCount": 153,
+        "tests": 8
     },
     {
         "algorithmicSteps": 0,
@@ -161,8 +161,8 @@
         "level": 1,
         "normativeStatements": 9,
         "original_id": "svg-transform",
-        "tests": 643,
-        "wordCount": 1285
+        "wordCount": 1285,
+        "tests": 645
     },
     {
         "algorithmicSteps": 0,
@@ -172,8 +172,8 @@
         "level": 2,
         "normativeStatements": 0,
         "original_id": "transform-attribute-specificity",
-        "tests": 42,
-        "wordCount": 41
+        "wordCount": 41,
+        "tests": 42
     },
     {
         "algorithmicSteps": 0,
@@ -183,8 +183,8 @@
         "level": 2,
         "normativeStatements": 1,
         "original_id": "svg-syntax",
-        "tests": 289,
-        "wordCount": 433
+        "wordCount": 433,
+        "tests": 289
     },
     {
         "algorithmicSteps": 0,
@@ -194,8 +194,8 @@
         "level": 3,
         "normativeStatements": 0,
         "original_id": "svg-transform-list",
-        "tests": 11,
-        "wordCount": 67
+        "wordCount": 67,
+        "tests": 11
     },
     {
         "algorithmicSteps": 0,
@@ -205,8 +205,8 @@
         "level": 3,
         "normativeStatements": 0,
         "original_id": "svg-functional-notation",
-        "tests": 15,
-        "wordCount": 81
+        "wordCount": 81,
+        "tests": 15
     },
     {
         "algorithmicSteps": 0,
@@ -216,8 +216,8 @@
         "level": 3,
         "normativeStatements": 0,
         "original_id": "svg-data-types",
-        "tests": 274,
-        "wordCount": 171
+        "wordCount": 171,
+        "tests": 274
     },
     {
         "algorithmicSteps": 0,
@@ -227,8 +227,8 @@
         "level": 2,
         "normativeStatements": 0,
         "original_id": "svg-gradient-transform-pattern-transform",
-        "tests": 122,
-        "wordCount": 62
+        "wordCount": 62,
+        "tests": 122
     },
     {
         "algorithmicSteps": 0,
@@ -238,8 +238,8 @@
         "level": 2,
         "normativeStatements": 0,
         "original_id": "svg-transform-functions",
-        "tests": 39,
-        "wordCount": 147
+        "wordCount": 147,
+        "tests": 39
     },
     {
         "algorithmicSteps": 0,
@@ -249,8 +249,8 @@
         "level": 2,
         "normativeStatements": 3,
         "original_id": "svg-three-dimensional-functions",
-        "tests": 0,
-        "wordCount": 164
+        "wordCount": 164,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -260,8 +260,8 @@
         "level": 2,
         "normativeStatements": 0,
         "original_id": "svg-user-coordinate-space",
-        "tests": 0,
-        "wordCount": 120
+        "wordCount": 120,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -271,8 +271,8 @@
         "level": 2,
         "normativeStatements": 5,
         "original_id": "transform-attribute-dom",
-        "tests": 0,
-        "wordCount": 228
+        "wordCount": 228,
+        "tests": 1
     },
     {
         "algorithmicSteps": 0,
@@ -282,8 +282,8 @@
         "level": 1,
         "normativeStatements": 1,
         "original_id": "svg-animation",
-        "tests": 0,
-        "wordCount": 452
+        "wordCount": 452,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -293,8 +293,8 @@
         "level": 2,
         "normativeStatements": 1,
         "original_id": "svg-animate-element",
-        "tests": 0,
-        "wordCount": 316
+        "wordCount": 316,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -304,8 +304,8 @@
         "level": 2,
         "normativeStatements": 0,
         "original_id": "neutral-element",
-        "tests": 0,
-        "wordCount": 90
+        "wordCount": 90,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -315,8 +315,8 @@
         "level": 2,
         "normativeStatements": 0,
         "original_id": "svg-attribute-name",
-        "tests": 0,
-        "wordCount": 45
+        "wordCount": 45,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -326,8 +326,8 @@
         "level": 1,
         "normativeStatements": 1,
         "original_id": "transform-functions",
-        "tests": 617,
-        "wordCount": 676
+        "wordCount": 676,
+        "tests": 637
     },
     {
         "algorithmicSteps": 0,
@@ -337,8 +337,8 @@
         "level": 2,
         "normativeStatements": 0,
         "original_id": "two-d-transform-functions",
-        "tests": 594,
-        "wordCount": 293
+        "wordCount": 293,
+        "tests": 614
     },
     {
         "algorithmicSteps": 0,
@@ -348,8 +348,8 @@
         "level": 2,
         "normativeStatements": 1,
         "original_id": "three-d-transform-functions",
-        "tests": 23,
-        "wordCount": 297
+        "wordCount": 297,
+        "tests": 24
     },
     {
         "algorithmicSteps": 0,
@@ -359,8 +359,8 @@
         "level": 1,
         "normativeStatements": 0,
         "original_id": "transform-function-lists",
-        "tests": 13,
-        "wordCount": 128
+        "wordCount": 128,
+        "tests": 13
     },
     {
         "algorithmicSteps": 0,
@@ -370,8 +370,8 @@
         "level": 1,
         "normativeStatements": 1,
         "original_id": "animation",
-        "tests": 0,
-        "wordCount": 243
+        "wordCount": 243,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -381,8 +381,8 @@
         "level": 1,
         "normativeStatements": 0,
         "original_id": "transform-primitives",
-        "tests": 0,
-        "wordCount": 139
+        "wordCount": 139,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -392,8 +392,8 @@
         "level": 1,
         "normativeStatements": 0,
         "original_id": "interpolation-of-transform-functions",
-        "tests": 0,
-        "wordCount": 217
+        "wordCount": 217,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -403,8 +403,8 @@
         "level": 1,
         "normativeStatements": 1,
         "original_id": "matrix-interpolation",
-        "tests": 0,
-        "wordCount": 1393
+        "wordCount": 1393,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -414,8 +414,8 @@
         "level": 2,
         "normativeStatements": 0,
         "original_id": "matrix-decomposing",
-        "tests": 0,
-        "wordCount": 702
+        "wordCount": 702,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -425,8 +425,8 @@
         "level": 2,
         "normativeStatements": 0,
         "original_id": "matrix-values-interpolation",
-        "tests": 0,
-        "wordCount": 249
+        "wordCount": 249,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -436,19 +436,30 @@
         "level": 2,
         "normativeStatements": 0,
         "original_id": "matrix-recomposing",
-        "tests": 0,
-        "wordCount": 350
+        "wordCount": 350,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
-        "end_id": "references",
+        "end_id": "conformance",
         "id": "mathematical-description",
         "idlComplexity": 0,
         "level": 1,
         "normativeStatements": 0,
         "original_id": "mathematical-description",
-        "tests": 0,
-        "wordCount": 233
+        "wordCount": 233,
+        "tests": 0
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "references",
+        "id": "conformance",
+        "idlComplexity": 0,
+        "level": 1,
+        "normativeStatements": 5,
+        "original_id": "conformance",
+        "wordCount": 616,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -458,8 +469,8 @@
         "level": 1,
         "normativeStatements": 0,
         "original_id": "references",
-        "tests": 0,
-        "wordCount": 90
+        "wordCount": 108,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -469,8 +480,8 @@
         "level": 2,
         "normativeStatements": 0,
         "original_id": "normative-references",
-        "tests": 0,
-        "wordCount": 70
+        "wordCount": 88,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -480,8 +491,8 @@
         "level": 2,
         "normativeStatements": 0,
         "original_id": "other-references",
-        "tests": 0,
-        "wordCount": 19
+        "wordCount": 19,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -491,8 +502,8 @@
         "level": 1,
         "normativeStatements": 0,
         "original_id": "property-index",
-        "tests": 0,
-        "wordCount": 170
+        "wordCount": 207,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -502,7 +513,7 @@
         "level": 1,
         "normativeStatements": 0,
         "original_id": "index",
-        "tests": 0,
-        "wordCount": 87
+        "wordCount": 98,
+        "tests": 0
     }
 ]

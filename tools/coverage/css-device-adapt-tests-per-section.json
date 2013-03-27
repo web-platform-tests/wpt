@@ -1,0 +1,32 @@
+{
+    "css-device-adapt": {
+        "introduction": 0,
+        "values": 0,
+        "the-viewport": 0,
+        "the-viewport-rule": 0,
+        "syntax": 0,
+        "viewport-properties": 0,
+        "the-lsquomin-widthrsquo-and-lsquomax-wid": 0,
+        "the-lsquowidthrsquo-shorthand-property": 0,
+        "the-lsquomin-heightrsquo-and-lsquomax-he": 0,
+        "the-lsquoheightrsquo-shorthand-property": 0,
+        "the-lsquozoomrsquo-property": 0,
+        "the-lsquomin-zoomrsquo-property": 0,
+        "the-lsquomax-zoomrsquo-property": 0,
+        "the-lsquouser-zoomrsquo-property": 0,
+        "the-lsquoorientationrsquo-property": 0,
+        "the-lsquoresolutionrsquo-property": 0,
+        "constraining-viewport-property-values": 0,
+        "definitions": 0,
+        "constraining-procedure": 0,
+        "media-queries": 0,
+        "cssom": 0,
+        "conformance": 0,
+        "viewport-meta-element": 0,
+        "ua-stylesheet": 0,
+        "meta-properties": 0,
+        "parsing-algorithm": 0,
+        "translation-into-viewport-properties": 0,
+        "handling-auto-zoom": 0
+    }
+}

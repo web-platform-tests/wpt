@@ -1,0 +1,25 @@
+{
+    "cssom-view": {
+        "background": 0,
+        "conformance": 0,
+        "webidl": 0,
+        "terminology": 0,
+        "css-pixels": 0,
+        "extensions-to-the-window-interface": 13,
+        "the-mediaquerylist-interface": 4,
+        "the-screen-interface": 8,
+        "extensions-to-the-document-interface": 3,
+        "the-caretposition-interface": 1,
+        "extensions-to-the-element-interface": 4,
+        "the-getclientrects-and-getboundingclientrect-methods": 2,
+        "element-scrolling-members": 2,
+        "client-attributes": 0,
+        "extensions-to-the-htmlelement-interface": 0,
+        "offset-attributes": 0,
+        "extensions-to-the-range-interface": 0,
+        "extensions-to-the-mouseevent-interface": 0,
+        "rectangles": 0,
+        "the-clientrectlist-interface": 0,
+        "the-clientrect-interface": 0
+    }
+}

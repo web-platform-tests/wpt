@@ -7,8 +7,8 @@
         "level": 1,
         "normativeStatements": 0,
         "original_id": "introduction",
-        "tests": 0,
-        "wordCount": 228
+        "wordCount": 228,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -18,8 +18,8 @@
         "level": 1,
         "normativeStatements": 1,
         "original_id": "values",
-        "tests": 6,
-        "wordCount": 276
+        "wordCount": 276,
+        "tests": 6
     },
     {
         "algorithmicSteps": 0,
@@ -29,8 +29,8 @@
         "level": 2,
         "normativeStatements": 1,
         "original_id": "placement",
-        "tests": 1,
-        "wordCount": 75
+        "wordCount": 75,
+        "tests": 1
     },
     {
         "algorithmicSteps": 0,
@@ -40,8 +40,8 @@
         "level": 2,
         "normativeStatements": 0,
         "original_id": "value-types",
-        "tests": 2,
-        "wordCount": 116
+        "wordCount": 116,
+        "tests": 2
     },
     {
         "algorithmicSteps": 0,
@@ -51,8 +51,8 @@
         "level": 2,
         "normativeStatements": 0,
         "original_id": "animations",
-        "tests": 0,
-        "wordCount": 68
+        "wordCount": 68,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -62,8 +62,8 @@
         "level": 1,
         "normativeStatements": 8,
         "original_id": "backgrounds",
-        "tests": 291,
-        "wordCount": 3024
+        "wordCount": 3024,
+        "tests": 323
     },
     {
         "algorithmicSteps": 0,
@@ -73,8 +73,8 @@
         "level": 2,
         "normativeStatements": 1,
         "original_id": "layering",
-        "tests": 1,
-        "wordCount": 153
+        "wordCount": 153,
+        "tests": 2
     },
     {
         "algorithmicSteps": 0,
@@ -84,8 +84,8 @@
         "level": 2,
         "normativeStatements": 0,
         "original_id": "the-background-color",
-        "tests": 0,
-        "wordCount": 64
+        "wordCount": 64,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -95,8 +95,8 @@
         "level": 2,
         "normativeStatements": 2,
         "original_id": "the-background-image",
-        "tests": 1,
-        "wordCount": 218
+        "wordCount": 218,
+        "tests": 2
     },
     {
         "algorithmicSteps": 0,
@@ -106,8 +106,8 @@
         "level": 2,
         "normativeStatements": 0,
         "original_id": "the-background-repeat",
-        "tests": 11,
-        "wordCount": 373
+        "wordCount": 373,
+        "tests": 19
     },
     {
         "algorithmicSteps": 0,
@@ -117,8 +117,8 @@
         "level": 2,
         "normativeStatements": 1,
         "original_id": "the-background-attachment",
-        "tests": 2,
-        "wordCount": 321
+        "wordCount": 321,
+        "tests": 12
     },
     {
         "algorithmicSteps": 0,
@@ -128,8 +128,8 @@
         "level": 2,
         "normativeStatements": 1,
         "original_id": "the-background-position",
-        "tests": 0,
-        "wordCount": 608
+        "wordCount": 608,
+        "tests": 5
     },
     {
         "algorithmicSteps": 0,
@@ -139,8 +139,8 @@
         "level": 2,
         "normativeStatements": 0,
         "original_id": "the-background-clip",
-        "tests": 12,
-        "wordCount": 128
+        "wordCount": 128,
+        "tests": 15
     },
     {
         "algorithmicSteps": 0,
@@ -150,8 +150,8 @@
         "level": 2,
         "normativeStatements": 0,
         "original_id": "the-background-origin",
-        "tests": 10,
-        "wordCount": 176
+        "wordCount": 176,
+        "tests": 12
     },
     {
         "algorithmicSteps": 0,
@@ -161,8 +161,8 @@
         "level": 2,
         "normativeStatements": 2,
         "original_id": "the-background-size",
-        "tests": 256,
-        "wordCount": 471
+        "wordCount": 471,
+        "tests": 257
     },
     {
         "algorithmicSteps": 0,
@@ -172,8 +172,8 @@
         "level": 2,
         "normativeStatements": 0,
         "original_id": "the-background",
-        "tests": 6,
-        "wordCount": 197
+        "wordCount": 197,
+        "tests": 8
     },
     {
         "algorithmicSteps": 0,
@@ -183,8 +183,8 @@
         "level": 2,
         "normativeStatements": 1,
         "original_id": "special-backgrounds",
-        "tests": 0,
-        "wordCount": 243
+        "wordCount": 243,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -194,8 +194,8 @@
         "level": 1,
         "normativeStatements": 2,
         "original_id": "borders",
-        "tests": 0,
-        "wordCount": 965
+        "wordCount": 965,
+        "tests": 18
     },
     {
         "algorithmicSteps": 0,
@@ -205,8 +205,8 @@
         "level": 2,
         "normativeStatements": 0,
         "original_id": "the-border-color",
-        "tests": 0,
-        "wordCount": 123
+        "wordCount": 123,
+        "tests": 6
     },
     {
         "algorithmicSteps": 0,
@@ -216,8 +216,8 @@
         "level": 2,
         "normativeStatements": 1,
         "original_id": "the-border-style",
-        "tests": 0,
-        "wordCount": 353
+        "wordCount": 353,
+        "tests": 7
     },
     {
         "algorithmicSteps": 0,
@@ -227,8 +227,8 @@
         "level": 2,
         "normativeStatements": 0,
         "original_id": "the-border-width",
-        "tests": 0,
-        "wordCount": 221
+        "wordCount": 221,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -238,8 +238,8 @@
         "level": 2,
         "normativeStatements": 1,
         "original_id": "the-border-shorthands",
-        "tests": 0,
-        "wordCount": 228
+        "wordCount": 228,
+        "tests": 5
     },
     {
         "algorithmicSteps": 0,
@@ -249,8 +249,8 @@
         "level": 1,
         "normativeStatements": 9,
         "original_id": "corners",
-        "tests": 0,
-        "wordCount": 1132
+        "wordCount": 1132,
+        "tests": 102
     },
     {
         "algorithmicSteps": 0,
@@ -260,8 +260,8 @@
         "level": 2,
         "normativeStatements": 0,
         "original_id": "the-border-radius",
-        "tests": 66,
-        "wordCount": 313
+        "wordCount": 313,
+        "tests": 98
     },
     {
         "algorithmicSteps": 0,
@@ -271,8 +271,8 @@
         "level": 2,
         "normativeStatements": 0,
         "original_id": "corner-shaping",
-        "tests": 0,
-        "wordCount": 194
+        "wordCount": 194,
+        "tests": 1
     },
     {
         "algorithmicSteps": 0,
@@ -282,8 +282,8 @@
         "level": 2,
         "normativeStatements": 1,
         "original_id": "corner-clipping",
-        "tests": 0,
-        "wordCount": 76
+        "wordCount": 76,
+        "tests": 2
     },
     {
         "algorithmicSteps": 0,
@@ -293,8 +293,8 @@
         "level": 2,
         "normativeStatements": 2,
         "original_id": "corner-transitions",
-        "tests": 0,
-        "wordCount": 232
+        "wordCount": 232,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -304,8 +304,8 @@
         "level": 2,
         "normativeStatements": 2,
         "original_id": "corner-overlap",
-        "tests": 0,
-        "wordCount": 146
+        "wordCount": 146,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -315,8 +315,8 @@
         "level": 2,
         "normativeStatements": 4,
         "original_id": "border-radius-tables",
-        "tests": 0,
-        "wordCount": 173
+        "wordCount": 173,
+        "tests": 1
     },
     {
         "algorithmicSteps": 16,
@@ -326,8 +326,8 @@
         "level": 1,
         "normativeStatements": 1,
         "original_id": "border-images",
-        "tests": 0,
-        "wordCount": 1897
+        "wordCount": 1897,
+        "tests": 17
     },
     {
         "algorithmicSteps": 0,
@@ -337,8 +337,8 @@
         "level": 2,
         "normativeStatements": 0,
         "original_id": "the-border-image-source",
-        "tests": 0,
-        "wordCount": 111
+        "wordCount": 111,
+        "tests": 2
     },
     {
         "algorithmicSteps": 0,
@@ -348,8 +348,8 @@
         "level": 2,
         "normativeStatements": 1,
         "original_id": "the-border-image-slice",
-        "tests": 0,
-        "wordCount": 374
+        "wordCount": 374,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -359,8 +359,8 @@
         "level": 2,
         "normativeStatements": 0,
         "original_id": "the-border-image-width",
-        "tests": 0,
-        "wordCount": 322
+        "wordCount": 322,
+        "tests": 4
     },
     {
         "algorithmicSteps": 0,
@@ -370,8 +370,8 @@
         "level": 2,
         "normativeStatements": 0,
         "original_id": "the-border-image-outset",
-        "tests": 0,
-        "wordCount": 175
+        "wordCount": 175,
+        "tests": 1
     },
     {
         "algorithmicSteps": 0,
@@ -381,8 +381,8 @@
         "level": 2,
         "normativeStatements": 0,
         "original_id": "the-border-image-repeat",
-        "tests": 0,
-        "wordCount": 203
+        "wordCount": 203,
+        "tests": 6
     },
     {
         "algorithmicSteps": 16,
@@ -392,8 +392,8 @@
         "level": 2,
         "normativeStatements": 0,
         "original_id": "border-image-process",
-        "tests": 0,
-        "wordCount": 472
+        "wordCount": 472,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -403,8 +403,8 @@
         "level": 2,
         "normativeStatements": 0,
         "original_id": "the-border-image",
-        "tests": 0,
-        "wordCount": 70
+        "wordCount": 70,
+        "tests": 1
     },
     {
         "algorithmicSteps": 0,
@@ -414,8 +414,8 @@
         "level": 2,
         "normativeStatements": 0,
         "original_id": "border-image-tables",
-        "tests": 0,
-        "wordCount": 96
+        "wordCount": 96,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -425,8 +425,8 @@
         "level": 1,
         "normativeStatements": 3,
         "original_id": "misc",
-        "tests": 0,
-        "wordCount": 1283
+        "wordCount": 1283,
+        "tests": 8
     },
     {
         "algorithmicSteps": 0,
@@ -436,8 +436,8 @@
         "level": 2,
         "normativeStatements": 0,
         "original_id": "the-box-decoration-break",
-        "tests": 0,
-        "wordCount": 541
+        "wordCount": 541,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -447,8 +447,8 @@
         "level": 2,
         "normativeStatements": 3,
         "original_id": "the-box-shadow",
-        "tests": 2,
-        "wordCount": 740
+        "wordCount": 740,
+        "tests": 8
     },
     {
         "algorithmicSteps": 3,
@@ -458,8 +458,8 @@
         "level": 1,
         "normativeStatements": 7,
         "original_id": "definitions",
-        "tests": 0,
-        "wordCount": 994
+        "wordCount": 994,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -469,8 +469,8 @@
         "level": 2,
         "normativeStatements": 0,
         "original_id": "glossary",
-        "tests": 0,
-        "wordCount": 104
+        "wordCount": 104,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -480,8 +480,8 @@
         "level": 2,
         "normativeStatements": 0,
         "original_id": "conformance",
-        "tests": 0,
-        "wordCount": 337
+        "wordCount": 337,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -491,8 +491,8 @@
         "level": 2,
         "normativeStatements": 0,
         "original_id": "levels",
-        "tests": 0,
-        "wordCount": 158
+        "wordCount": 158,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -502,8 +502,8 @@
         "level": 3,
         "normativeStatements": 0,
         "original_id": "level-1",
-        "tests": 0,
-        "wordCount": 54
+        "wordCount": 54,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -513,8 +513,8 @@
         "level": 3,
         "normativeStatements": 0,
         "original_id": "level-2",
-        "tests": 0,
-        "wordCount": 53
+        "wordCount": 53,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -524,8 +524,8 @@
         "level": 3,
         "normativeStatements": 0,
         "original_id": "level-3",
-        "tests": 0,
-        "wordCount": 16
+        "wordCount": 16,
+        "tests": 0
     },
     {
         "algorithmicSteps": 3,
@@ -535,8 +535,8 @@
         "level": 2,
         "normativeStatements": 7,
         "original_id": "exit",
-        "tests": 0,
-        "wordCount": 396
+        "wordCount": 396,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -546,8 +546,8 @@
         "level": 1,
         "normativeStatements": 4,
         "original_id": "changes",
-        "tests": 0,
-        "wordCount": 1052
+        "wordCount": 1052,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -557,8 +557,8 @@
         "level": 2,
         "normativeStatements": 0,
         "original_id": "changes-2012",
-        "tests": 0,
-        "wordCount": 0
+        "wordCount": 0,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -568,8 +568,8 @@
         "level": 2,
         "normativeStatements": 0,
         "original_id": "changes-2012",
-        "tests": 0,
-        "wordCount": 171
+        "wordCount": 171,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -579,8 +579,8 @@
         "level": 2,
         "normativeStatements": 0,
         "original_id": "changes-2012LC",
-        "tests": 0,
-        "wordCount": 151
+        "wordCount": 151,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -590,8 +590,8 @@
         "level": 2,
         "normativeStatements": 4,
         "original_id": "changes-2011",
-        "tests": 0,
-        "wordCount": 670
+        "wordCount": 670,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -601,8 +601,8 @@
         "level": 2,
         "normativeStatements": 0,
         "original_id": "changes-2009",
-        "tests": 0,
-        "wordCount": 61
+        "wordCount": 61,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -612,8 +612,8 @@
         "level": 1,
         "normativeStatements": 0,
         "original_id": "acknowledgments",
-        "tests": 0,
-        "wordCount": 149
+        "wordCount": 149,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -623,8 +623,8 @@
         "level": 1,
         "normativeStatements": 0,
         "original_id": "references",
-        "tests": 0,
-        "wordCount": 246
+        "wordCount": 246,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -634,8 +634,8 @@
         "level": 2,
         "normativeStatements": 0,
         "original_id": "normative-references",
-        "tests": 0,
-        "wordCount": 79
+        "wordCount": 79,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -645,8 +645,8 @@
         "level": 2,
         "normativeStatements": 0,
         "original_id": "other-references",
-        "tests": 0,
-        "wordCount": 168
+        "wordCount": 168,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -656,8 +656,8 @@
         "level": 1,
         "normativeStatements": 0,
         "original_id": "property-index",
-        "tests": 0,
-        "wordCount": 609
+        "wordCount": 609,
+        "tests": 0
     },
     {
         "algorithmicSteps": 0,
@@ -667,7 +667,7 @@
         "level": 1,
         "normativeStatements": 0,
         "original_id": "index",
-        "tests": 0,
-        "wordCount": 284
+        "wordCount": 284,
+        "tests": 0
     }
 ]

@@ -493,11 +493,22 @@ policies and contribution forms [3].
     /*
      * Convert a value to a nice, human-readable string
      */
-    function format_value(val)
+    function format_value(val, seen)
     {
+	if (!seen) {
+	    seen = [];
+        }
+        if (typeof val === "object" && val !== null)
+        {
+            if (seen.indexOf(val) >= 0)
+            {
+                return "[...]";
+            }
+	    seen.push(val);
+        }
         if (Array.isArray(val))
         {
-            return "[" + val.map(format_value).join(", ") + "]";
+            return "[" + val.map(function(x) {return format_value(x, seen)}).join(", ") + "]";
         }
 
         switch (typeof val)

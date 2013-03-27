@@ -500,9 +500,10 @@ policies and contribution forms [3].
         }
         if (typeof val === "object" && val !== null)
         {
-            if (seen.indexOf(val) > -1) {
+            if (seen.indexOf(val) >= 0)
+            {
                 return "[...]";
-	    }
+            }
 	    seen.push(val);
         }
         if (Array.isArray(val))

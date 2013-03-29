@@ -1,0 +1,31 @@
+<!--
+var expected = ['appName','appVersion','platform','userAgent','language','onLine'];
+for (x in navigator) {
+  postMessage([x, expected.indexOf(x) != -1])
+}
+/*
+-->
+<!doctype html>
+<title>navigator</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script>
+async_test(function() {
+  var worker = new Worker('#');
+  var i = 0;
+  worker.onmessage = this.step_func(function(e) {
+    assert_true(e.data[1], e.data[0]);
+    i++;
+  });
+  worker.onerror = this.step_func(function(e) {
+    assert_unreached('got error event');
+  });
+  setTimeout(this.step_func(function(e) { assert_equals(i, 6); this.done(); }), 100);
+});
+</script>
+<!--
+*/
+//-->
+
+

@@ -1,0 +1,40 @@
+<!--
+var port;
+addEventListener('error', function() {
+  // this function is not the .onerror function, so won't be invoked as
+  // part of "report the error". thus the error will be "not handled"
+  // and should be reported to the user, but this test doesn't check that
+  // make sure that this function doesn't run at all
+  port.postMessage('error event');
+}, false);
+onconnect = function (e) {
+  port = e.ports[0];
+  port.postMessage('control');
+  y(); // will "report the error"
+}
+
+
+/*
+-->
+<!doctype html>
+<title>shared worker, addEventListener</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script>
+async_test(function() {
+  var worker = new SharedWorker('#', '');
+  var i = 0;
+  worker.port.onmessage = this.step_func(function(e) {
+    i++;
+    assert_equals(e.data, 'control');
+  });
+  setTimeout(this.step_func(function() {
+    assert_equals(i, 1, 'number of message events');
+    this.done();
+  }), 100);
+});
+</script>
+<!--
+*/
+//-->

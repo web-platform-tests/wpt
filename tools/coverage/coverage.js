@@ -1,126 +1,515 @@
-
-(function ($) {
+var applicationState = (function() {
+    var usingPopState = false;
     
-    function filterByLevel (lvl) {
-        var mask;
-        if (lvl == 1) mask = ["show", "hide", "hide"];
-        else if (lvl == 2) mask = ["show", "show", "hide"];
-        else if (lvl == 3) mask = ["show", "show", "show"];
-        else alert("Beuargh");
-        for (var i = 0, n = mask.length; i < n; i++) {
-            var action = mask[i];
-            $("td.level" + (i + 1)).parent()[action]();
+    function pushState(state) {
+        if (window.history && window.history.pushState) {
+            usingPopState = true;
+            window.history.pushState(null, '', getUrlFromState(state));
         }
     }
-    $("input[name=level]").click(function () {
-        var lvl = $(this).val();
-        filterByLevel(lvl);
-        localStorage.setItem("filterLevel", lvl);
-    });
-    var curFilterLevel = localStorage.getItem("filterByLevel") || 3;
-    $("input[name=level][value=" + curFilterLevel + "]").attr("checked", "checked");
-    filterByLevel(curFilterLevel);
-    
-    $("#update").click(function () {
-        var words = 1 * $("input[name=words]").val()
-        ,   rfc2119 = 1 * $("input[name=rfc2119]").val()
-        ,   algos = 1 * $("input[name=algos]").val()
-        ,   idl = 1 * $("input[name=idl]").val()
-        ;
+    window.onpopstate = function(event) {
+        if (usingPopState && self.onstatechange) self.onstatechange(getStateFromUrl());
+    }
 
-        function ok ($el) { $el.css("background", "#aaff71"); }
-        function nok ($el) { $el.css("background", "rgba(255, 0, 0, 0.5)"); }
-
-        function hasEnough (tests, num, el, threshold) {
-            if (num === 0) ok(el);
-            else {
-                var ratio = tests / num;
-                (ratio >= threshold) ? ok(el) : nok(el);
+    function getStateFromUrl() {
+        return (window.location.href.split('?')[1] || '').split('&').reduce(function(obj, str) {
+            if (str) {
+                str = str.split('=');
+                obj[str[0]] = str[1] || true;                
             }
-        }
+            return obj;
+        }, {});
+    }
+    
+    function getUrlFromState(state) {
+        return location.pathname + "?" + Object.keys(state).sort().filter(function(k) { return state[k] }).map(function(k) {
+            var v = state[k];
+            return v === true ? k : k + "=" + v;
+        }).join('&');
+    }
+    
+    var self = {
+        getStateFromUrl: getStateFromUrl,
+        getUrlFromState: getUrlFromState,
+        pushState: pushState,
+        onstatechange: null
+    };
+    
+    return self;
+})();
 
-        $("table").each(function () {
-            $(this).find("tr").each(function () {
-                var $tr = $(this);
-                if ($tr.find("th").length) return;
-                var counts = [];
-                $tr.find("td").each(function () {
-                    counts.push({ el: $(this), num: 1 * $(this).text() });
-                });
-                var tests = counts[5].num;
-                // words per test
-                if (tests === 0) {
-                    if (counts[1].num === 0) ok(counts[1].el);
-                    else nok(counts[1].el);
-                }
-                else {
-                    var ratio = counts[1].num / tests;
-                    (ratio <= words) ? ok(counts[1].el) : nok(counts[1].el);
-                }
-                // tests per rfc2119
-                hasEnough(tests, counts[2].num, counts[2].el, rfc2119);
-                hasEnough(tests, counts[3].num, counts[3].el, algos);
-                hasEnough(tests, counts[4].num, counts[4].el, idl);
-            });
+var controls = (function($) {
+    var self = {
+        currentSpec: null,
+        update: update,
+        getState: getState,
+        setLevel: setLevel,
+        displayAllReqs: displayAllReqs,
+        displayDetails: displayDetails
+    };
+    
+    
+    function displayAllReqs(bool) {
+        $("body").toggleClass("hide-no-reqs", !bool);
+    }
+    
+    function displayDetails(bool) {
+        $("body").toggleClass("hide-details", !bool);
+    }
+    
+    function setViewType(spec) {
+        $("body").toggleClass("spec-view", !!spec);
+        $("body").toggleClass("summary-view", !spec);
+    }
+    
+    function setLevel(lvl) {
+         var $body = $('body');
+         if (lvl == 1) {
+             $body.addClass('hide-level-2');
+             $body.addClass('hide-level-3');
+         } else if (lvl == 2) {
+             $body.removeClass('hide-level-2');
+             $body.addClass('hide-level-3');
+         } else {
+             $body.removeClass('hide-level-2');
+             $body.removeClass('hide-level-3');
+         }
+    }
+    
+    function update(state) {
+        self.currentSpec = state.spec;
+        setViewType(state.spec);
+        [
+          "rfc2119",
+          "algos",
+          "idl",
+          "assume-idl",
+          "assume-tooling",
+          "review-time",
+          "test-time",
+          "propdef",
+          "review-success",
+          "reftest-factor"
+        ].forEach(function(k) {
+            if (k in state) {
+                $("input[name=" + k + "]").val(state[k]);
+            }
         });
 
+        var lvl = state.level || 1;
+        $("input[name=level][value=" + lvl + "]").get(0).checked = true;
+        self.setLevel(lvl);
+        
+        var showAll = !!state['show-all'];
+        self.displayAllReqs(showAll);
+        $('#show-all').get(0).checked = showAll;
+
+        var showDetails = !!state['show-details']
+        self.displayDetails(showDetails);
+        $('#show-details').get(0).checked = showDetails;
+    }
+
+    function getState() {
+        var output = $('#form').serializeArray().reduce(function(obj, input) {
+            if (input.name == "show-details" || input.name == "show-all") {
+                obj[input.name] = true;
+            } else {
+                obj[input.name] = input.value;
+            }
+            return obj;
+        }, {});
+
+        if (self.currentSpec) {
+            output.spec = self.currentSpec;
+        }
+        return output;
+    }
+    
+    return self;
+})(jQuery);
+
+function View(model) {
+    this.model = model;
+    this.existingTests = 0;
+    this.missingTests = 0;
+    this.desiredTests = 0;
+    this.exceedingTests = 0;
+    this.maxDesiredTests = 0;
+    this.testsAwaitingReview = 0;
+    this.testsPassingReview = 0;
+    this.testTime = 0;
+    this.reviewTime = 0;
+    this.totalTime = 0;
+    this.children = [];
+}
+
+View.maxDesiredTests = 0; // :(
+
+View.calculateTotals = function(obj, item) {
+    obj.missingTests += item.missingTests || 0;
+    obj.desiredTests += item.desiredTests || 0;
+    obj.existingTests += item.existingTests || 0;
+    obj.exceedingTests += item.exceedingTests || 0;
+    obj.testsAwaitingReview += item.testsAwaitingReview || 0;
+    obj.testsPassingReview += item.testsPassingReview || 0;
+    if (item.desiredTests > View.maxDesiredTests) {
+        View.maxDesiredTests = item.desiredTests;
+    }
+    obj.testTime += item.testTime || 0;
+    obj.reviewTime += item.reviewTime || 0;
+    obj.totalTime += item.totalTime || 0;
+    return obj;
+};
+
+function SpecModel(specs) {
+    this._specArray = specs;
+    this._data = {};
+    this._specs = {};
+    specs.forEach(function(spec) {
+        this.setSpec(spec.shortName, spec);
+    }, this);
+}
+
+SpecModel.prototype.setData = function(shortName, data) {
+    this._data[shortName] = data;
+};
+
+SpecModel.prototype.getData = function(shortName) {
+    return this._data[shortName];
+};
+
+SpecModel.prototype.setSpec = function(shortName, spec) {
+    this._specs[shortName] = spec;
+};
+
+SpecModel.prototype.getSpec = function(shortName) {
+    return this._specs[shortName];
+};
+
+SpecModel.prototype.getCurrentSpec = function() {
+    return this._specs[controls.currentSpec];
+};
+
+
+SpecModel.prototype.findIntersection = function() {
+    return this._intersection = this._intersection || this._specArray.filter(function(s) {
+        return s.publisher === "W3C" && !s.insufficientData && s.requiredBy && s.requiredBy.length == 2;
+    });
+};
+
+SpecModel.prototype.findSymDiff = function() {
+    return this._symDiff = this._symDiff || this._specArray.filter(function(s) {
+        return s.publisher === "W3C" && !s.insufficientData && s.requiredBy && s.requiredBy.length == 1;
+    });
+};
+
+SpecModel.prototype.findMissingData = function() {
+    return this._missingData = this._missingData || this._specArray.filter(function(s) {
+        return s.insufficientData;
+    });
+};
+
+SpecModel.prototype.findOutOfScope = function() {
+    return this._outScope = this._outScope || this._specArray.filter(function(s) {
+        return s.publisher !== "W3C";
+    });
+};
+
+(function ($) {
+
+    var specs = null;
+    var $target = null;
+    
+    function clone(obj) {
+        var r = {};
+        for (var k in obj) {
+            if (obj.hasOwnProperty(k)) {
+                r[k] = obj[k];
+            }
+        }
+        return r;
+    }
+    
+    var templates = (function ($) {
+        
+        Handlebars.registerHelper('formatNumber', function(num, option) {
+            if (num == null) return 'n/a';
+            num = (num + "");
+            if (num.length > 3) {
+              num = num.replace(/\B(?=(?:\d{3})+(?!\d))/g, ',');
+            }
+            return num;
+        });
+        
+        
+        function allowHalfs(num) {
+            return Math.round(((num % 1) + Math.floor(num)) * 2) / 2;
+        }
+        
+        Handlebars.registerHelper('formatTime', function(time) {
+            var H = 60, D = 8 * H, W = 5 * D, Y = 52 * W, M = Y / 12;
+            if (time < H) {
+                return "1hr";
+            }
+
+            if (time < D) {
+                return allowHalfs(time / H) + "hr";
+            }
+
+            if (time < W) {
+                return allowHalfs(time / D) + "d";
+            }
+
+            if (time < 6 * W) {
+                return allowHalfs(time / W) + "wk";
+            }
+
+            if (time < 11 * M) {
+                return allowHalfs(time / M) + "mo";
+            }
+
+            return allowHalfs(time / Y) + "yr";
+        });
+
+        Handlebars.registerHelper('getColor', function(percent) {
+            if (percent == null) return 'transparent';
+            if (percent > 79) return '#0f0';
+            if (percent > 59) return '#cf6';
+            if (percent > 39) return '#ff6';
+            if (percent > 19) return '#fc6';
+            return '#f00';
+        });
+        
+        return {
+            spec: Handlebars.compile($("#table-template").html()),
+            summary: Handlebars.compile($("#summary-template").html()),
+            otherSpecs: Handlebars.compile($("#other-specs-template").html())
+        }
+    })(jQuery);
+    
+
+    $("input[name=level]").click(function() {
+        controls.setLevel(1 * $(this).val());
+        applicationState.pushState(controls.getState());
     });
     
-    window.cover = function (items, titles, $target) {
-        function process () {
-            if (!items.length) {
-                $("#update").click();
-                return;
-            }
-            var it = items.shift()
-            ,   tit = titles.shift()
-            ,   $div = $("<div></div>")
-            ,   $table = $("<table></table>")
-            ,   totals = {
-                    algorithmicSteps:       0
-                ,   idlComplexity:          0
-                ,   normativeStatements:    0
-                ,   wordCount:              0
-                ,   tests:                  0
-                }
-            ;
-            $("<tr><th>Section</th><th>Words</th><th>2119</th><th>Algos</th><th>IDL</th><th>Tests</th></tr>")
-                .appendTo($table);
-
-            $div.append($("<h2></h2>").text(tit));
-            $.getJSON("spec-data-" + it + ".json", function (data) {
-                for (var i = 0, n = data.length; i < n; i++) {
-                    var row = data[i]
-                    ,   $tr = $("<tr></tr>")
-                    ;
-                    $("<td></td>").addClass("level" + row.level).text(row.original_id).appendTo($tr);
-                    $("<td></td>").text(row.wordCount).appendTo($tr);
-                    $("<td></td>").text(row.normativeStatements).appendTo($tr);
-                    $("<td></td>").text(row.algorithmicSteps).appendTo($tr);
-                    $("<td></td>").text(row.idlComplexity).appendTo($tr);
-                    $("<td></td>").text(row.tests).appendTo($tr);
-                    $table.append($tr);
-                    if (row.level === 1) {
-                        totals.algorithmicSteps += row.algorithmicSteps;
-                        totals.idlComplexity += row.idlComplexity;
-                        totals.normativeStatements += row.normativeStatements;
-                        totals.wordCount += row.wordCount;
-                        totals.tests += row.tests;
-                    }
-                }
-                $div.append($table);
-                var $ul = $("<ul></ul>");
-                $("<li></li>").text("Words: " + totals.wordCount).appendTo($ul);
-                $("<li></li>").text("2119: " + totals.normativeStatements).appendTo($ul);
-                $("<li></li>").text("Algos: " + totals.algorithmicSteps).appendTo($ul);
-                $("<li></li>").text("IDL: " + totals.idlComplexity).appendTo($ul);
-                $("<li></li>").text("Tests: " + totals.tests).appendTo($ul);
-                $div.append($ul);
-                $target.append($div);
-                process();
-            });
+    $("#form").submit(function(e) {
+        e.preventDefault();
+        var state = controls.getState();
+        refreshApp(state);
+        applicationState.pushState(state);
+    });
+    
+    $("#show-all").click(function() {
+        controls.displayAllReqs(this.checked);
+        applicationState.pushState(controls.getState());
+    });
+    
+    $("#show-details").click(function() {
+        controls.displayDetails(this.checked);
+        applicationState.pushState(controls.getState());
+    });
+    
+    function calculatePercentage(existing, desired) {
+        if (!desired) {
+            return null;
         }
-        process();
+        return Math.min(Math.round((existing / desired) * 100), 100);
+    }
+    
+    function calculateDesired(data, multipliers) {
+        var output = 0;
+        output += data.normativeStatements * multipliers.normativeStatements;
+        output += data.algorithmicSteps * multipliers.algorithmicSteps;
+        output += data.idlComplexity * multipliers.idlComplexity;
+        output += data.propdef * multipliers.propdef;
+        return output;
+    }
+    
+    function calculateExisting(data, multipliers) {
+        var output = data.tests || 0;
+        output += Math.floor(multipliers.idlComplexity * data.idlComplexity * multipliers.assumeIdl / 100);
+        return output;
+    }
+    
+    function calculateReviewTime(missingTests, reviewTime, toolingPercent) {
+        var total = reviewTime * missingTests;
+        total -=  total * toolingPercent / 100;
+        return total;
+    }
+    
+    function calculateNumberOfTestsAwaitingReview(awaiting, desired) {
+        if (typeof awaiting == 'object' && awaiting.type == "%") {
+            awaiting = awaiting.value * desired / 100;
+        }
+        return Math.round(awaiting || 0);
+    }
+    
+    function createBarGraph(item) {
+        var containerW = item.desiredTests * 600 / View.maxDesiredTests;
+        var barW = (item.percent || 0) * containerW / 100;
+        var reviewW = Math.min(item.testsPassingReview / item.desiredTests * containerW, containerW - barW);
+        
+        item.progressBarValue = barW;
+        item.progressBarTotal = containerW + 2;
+        item.progressBarReviewValue = reviewW;
+        item.progressBarReviewMargin = barW + 1;
+    }
+    
+    function getMultipliers(spec) {
+        var rTB = spec.refTestBased;
+        var refTestFactor = 1 * $("input[name=reftest-factor]").val()
+        return {
+            normativeStatements: (rTB ? refTestFactor : 1 ) * $("input[name=rfc2119]").val(),
+            algorithmicSteps: (rTB ? refTestFactor : 1) * $("input[name=algos]").val(),
+            idlComplexity: 1 * $("input[name=idl]").val(),
+            propdef: 1 * $("input[name=propdef]").val(),
+            assumeIdl: 1 * $("input[name=assume-idl]").val(),
+            assumeTooling: 1 * $("input[name=assume-tooling]").val(),
+            reviewTime: 1 * $("input[name=review-time]").val(),
+            testTime: 1 * $("input[name=test-time]").val(),
+            reviewSuccess: 1 * $("input[name=review-success]").val()
+        };
+    }
+    
+    function getUrlForSpec(spec) {
+        var state = controls.getState();
+        state.spec = spec.shortName;
+        return applicationState.getUrlFromState(state);
+    }
+    
+    function makeViewFromSpecData(spec, data, multipliers) {
+        var view = new View(spec);
+        view.href = getUrlForSpec(spec);
+        
+        data.forEach(function(row) {
+            var section = clone(row);
+            section.href = section.url ? section.url : spec.href + '#' + row.original_id;
+            section.name = section.original_id;
+        
+            var desired = calculateDesired(row, multipliers),
+                existing = calculateExisting(row, multipliers);
+                
+            section.existingTests = existing;
+            section.desiredTests = desired;
+            section.missingTests = Math.max(0, desired - existing);
+            section.exceedingTests = Math.max(0, existing - desired);
+            section.percent = calculatePercentage(existing, desired);
+        
+            section.href = section.url ? section.url : spec.href + '#' + row.original_id;
+            section.name = section.original_id;
+            section.className = "level-" + section.level;
+            if (!desired) section.className += ' no-req';
+        
+            view.children.push(section);
+        });
+        
+        
+        // We should do all the math looking at the leaves only.
+        view.children.filter(function (s) { return s.level === 1; }).reduce(View.calculateTotals, view);
+        
+        // Now that we have maxDesiredTests we can build the graphs.
+        view.children.forEach(createBarGraph);
+        
+        view.reviewTime = calculateReviewTime(view.missingTests, multipliers.reviewTime, multipliers.assumeTooling);
+        view.testsAwaitingReview = calculateNumberOfTestsAwaitingReview(spec.testsAwaitingReview, view.desiredTests);
+        view.testsPassingReview = Math.round(view.testsAwaitingReview * multipliers.reviewSuccess / 100);
+        view.testTime = multipliers.testTime * Math.max(0, view.missingTests - view.testsPassingReview);
+        view.totalTime = view.testTime + view.reviewTime;
+        view.percent = calculatePercentage(view.desiredTests - view.missingTests, view.desiredTests);
+        return view;
+    }
+    
+    function getDataForSpec(spec, callback) {
+        $.getJSON("spec-data-" + spec.shortName + ".json", function (data) {
+            specs.setData(spec.shortName, data);
+            callback(data);
+        });
+    }
+    
+    function makeViewFromSpecs(_specs, getData, callback) {
+        var view = new View(),
+            count = _specs.length;
+    
+        _specs.forEach(function(spec) {
+            getData(spec, function(data) {
+                count--;
+                view.children.push(makeViewFromSpecData(spec, data, getMultipliers(spec)));
+                if (count === 0) {
+                    view.children.reduce(View.calculateTotals, view);
+                    view.children.forEach(createBarGraph);
+                    view.children.sort(function(a, b) {
+                        return a.model.id > b.model.id ? 1 : -1;
+                    });
+                    callback(view);
+                }
+            });
+        });
+        
+    }
+    
+    function createOtherSpecList() {
+        var output = templates.otherSpecs({
+            title: "Specs Pending Estimate",
+            message: "These are specs we plan to test as part of this effort but we are currently lacking coverage info and reliable enough heuristics to enable a trustworthy estimate.",
+            children: specs.findMissingData()
+        });
+        
+        output += templates.otherSpecs({
+            title: "Specs which are Out of Scope",
+            message: "These specs  are part of the Coremob and/or TV profiles but aren't edited by W3C. We will not be authoring tests specifically for these at present. We might be running their test suites as part of this effort, license permitting.",
+            children: specs.findOutOfScope()
+        });
+        return output;
+    }
+    
+    function buildSummaryTable(getData) {
+        var html = '';
+        makeViewFromSpecs(specs.findIntersection(), getData, function(view) {
+            view.phase = "Intersection";
+            html += templates.summary(view);
+            makeViewFromSpecs(specs.findSymDiff(), getData, function(view) {
+                view.phase = "Symmetric Difference";
+                html += templates.summary(view);
+                html += createOtherSpecList();
+                
+                $target.html(html);
+            });
+        });
+    }
+    
+    function refreshApp(state) {
+        View.makeViewFromSpecData = 0;
+        if (state.spec) {
+            var spec = specs.getSpec(state.spec);
+            if (spec) {
+                getDataForSpec(spec, function(data) {
+                    var view = makeViewFromSpecData(spec, data, getMultipliers(spec));
+                    $target.html(templates.spec(view));
+                });
+            } else {
+                alert("This spec isn't listed: " + state.spec);
+                delete state.spec; // enables fallback
+                applicationState.pushState(state);
+                controls.update(state);
+                buildSummaryTable(getDataForSpec);
+            }
+        } else {            
+            buildSummaryTable(getDataForSpec);
+        }
+    }
+    
+    window.cover = function (_specs, _$target) {
+        specs = new SpecModel(_specs);
+        $target = _$target;
+
+        applicationState.onstatechange = function(state) {
+            controls.update(state);
+            refreshApp(state);
+        };
+        var state = applicationState.getStateFromUrl();
+        controls.update(state);
+        refreshApp(state);
     };
 }(jQuery));
 

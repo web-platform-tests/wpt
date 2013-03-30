@@ -4,52 +4,188 @@
     <meta charset='utf-8'>
     <title>Test Suite Coverage Analysis</title>
     <link rel='stylesheet' href='coverage.css'>
+    <script type="text/template" id="table-template" charset="utf-8">
+      <div class="spec" data-short-name={{model.shortName}}>
+        <h2>{{ model.title }}<small> - [<a href='{{ model.href }}'>document</a>]</small></h2>
+        <p>There are <strong>{{ formatNumber missingTests }}</strong> missing tests out of <strong>{{ formatNumber desiredTests }}</strong> desired tests. Additionally, <strong>{{ formatNumber testsAwaitingReview }}</strong> are awaiting review, of which an estimated <strong>{{ formatNumber testsPassingReview }}</strong> will pass review.
+         Current coverage is <strong>{{ formatNumber percent }}%</strong>.<br>
+         The overall estimated time needed to develop a test suite and review it for this specification is <strong>{{ formatTime totalTime }}</strong>.</p>
+        <table data-short-name='{{ model.shortName }}'>
+          <tr>
+            <th>Section</th>
+            <th class=detailed-data>Norm. stat.</th>
+            <th class=detailed-data>Algo steps</th>
+            <th class=detailed-data>WebIDL LOC</th>
+            <th class=detailed-data>Prop Defs</th>
+            <th>Existing Tests</th>
+            <th>Desired Tests</th>
+            <th class=detailed-data>Exceeding tests</th>
+            <th>Coverage (%)</th>
+            <th>Graph</th>
+          </tr>
+          {{#each children}}
+            <tr class="{{ className}}">
+              <td class='{{ className }}'><a href='{{ href }}'>{{ name }}</a></td>
+              <td class=detailed-data>{{ formatNumber normativeStatements }}</td>
+              <td class=detailed-data>{{ formatNumber algorithmicSteps }}</td>
+              <td class=detailed-data>{{ formatNumber idlComplexity }}</td>
+              <td class=detailed-data>{{ formatNumber propdef }}</td>
+              <td>{{ formatNumber existingTests }}</td>
+              <td>{{ formatNumber desiredTests }}</td>
+              <td class=detailed-data>{{ formatNumber exceedingTests }}</td>
+              <td style="background-color: {{ getColor percent }}">{{ formatNumber percent }}</td>
+              <td>
+                <div style="width:610px">
+                  {{#if desiredTests }}
+                    <div class=progress-bar-container style='width:{{ progressBarTotal }}px'>
+                      <div class=progress-bar style='width:{{ progressBarValue }}px'></div>
+                    </div>
+                  {{/if}}
+                </div>
+              </td>
+            </tr>
+          {{/each}}
+        </table>
+      </div>
+    </script>
+    
+    <script type="text/template" id="summary-template" charset="utf-8">
+        <h2>{{ phase }} of the Coremob and TV Profiles</h2>
+        <table>
+          <tr>
+            <th>Spec</th>
+            <th>Existing Tests</th>
+            <th class=detailed-data>Tests Awaiting Review</th>
+            <th class=detailed-data>Tests Passing Review</th>
+            <th>Missing tests</th>
+            <th>Desired tests</th>
+            <th class=detailed-data>Exceeding tests</th>
+            <th>Coverage (%)</th>
+            <th>Test Development Time</th>
+            <th>Test Review Time</th>
+            <th>Total Time</th>
+            <th>Graph</th>
+          </tr>
+          {{#each children}}
+            <tr>
+              <td>[<a href='{{ href }}' title='{{ model.title }}'>{{ model.id }}</a>]{{#if model.refTestBased}}*{{/if}}</td>
+              <td>{{ formatNumber existingTests }}</td>
+              <td class=detailed-data>{{ formatNumber testsAwaitingReview }}</td>
+              <td class=detailed-data>{{ formatNumber testsPassingReview }}</td>
+              <td>{{ formatNumber missingTests  }}</td>
+              <td>{{ formatNumber desiredTests }}</td>
+              <td class=detailed-data>{{ formatNumber exceedingTests }}</td>
+              <td style="background-color: {{ getColor percent }}">{{ formatNumber percent }}</td>
+              <td>{{ formatTime testTime }}</td>
+              <td>{{ formatTime reviewTime }}</td>
+              <td title="{{ totalTime }}">{{ formatTime totalTime }}</td>
+              <td>
+                <div style="width:610px">
+                  <div class=progress-bar-container style='width:{{ progressBarTotal }}px'>
+                    <div class=progress-bar-review style='margin-left: {{ progressBarReviewMargin }}px; width:{{ progressBarReviewValue }}px'></div>
+                    <div class=progress-bar style='width:{{ progressBarValue }}px'></div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          {{/each}}
+          <tr>
+            <td>TOTAL</td>
+            <td>{{ formatNumber existingTests }}</td>
+            <td class=detailed-data>{{ formatNumber testsAwaitingReview }}</td>
+            <td class=detailed-data>{{ formatNumber testsPassingReview }}</td>
+            <td>{{ formatNumber missingTests  }}</td>
+            <td>{{ formatNumber desiredTests }}</td>
+            <td class=detailed-data>{{ formatNumber exceedingTests }}</td>
+            <td style="background-color: {{ getColor percent }}">{{ formatNumber percent }}</td>
+            <td>{{ formatTime testTime }}</td>
+            <td>{{ formatTime reviewTime }}</td>
+            <td title="{{ totalTime }}">{{ formatTime totalTime }}</td>
+            <td></td>
+          </tr>
+        </table>
+    </script>
+    
+    <script type="text/template" id="other-specs-template" charset="utf-8">
+        <h2>{{ title }}</h2>
+        <p>{{ message }}</p>
+        <ul>
+          {{#each children}}
+            <li>
+              [<a href='{{ href }}' title='{{ title }}'>{{ id }}</a>]
+            </li>
+          {{/each}}
+        </ul>
+    </script>
   </head>
-  <body>
-    <h1>Test Suite Coverage Analysis</h1>
-    <p>
-      The following tables summarise test coverage for the specifications contained in this
-      test suite.
-    </p>
-    <div>
-      <h4>Show levels:</h4>
-      <p>
-        The report analyses sections at a maximal depth of 3. If you want to see an overview
-        at section levels 1 or 2 instead, you can choose those options below.
-      </p>
-      <ul>
-        <li>Level 1 <input type='radio' name='level' value='1'></li>
-        <li>Level 2 <input type='radio' name='level' value='2'></li>
-        <li>Level 3 <input type='radio' name='level' value='3'></li>
-      </ul>
-    </div>
-    <div>
-      <h4>Thresholds:</h4>
-      <p>
-        Picking a good ratio of tests to something (or something to test) is difficult.
-        You can set values for specific aspects below. I assume that at some point we
-        will come up with a more or less definitive set of values to roughly aim for.
-      </p>
-      <ul>
-        <li>Words per test: <input type='number' name='words' size='4' value='10'></li>
-        <li>Tests per RFC2119: <input type='number' name='rfc2119' size='4' value='5'></li>
-        <li>Tests per algorithm step: <input type='number' name='algos' size='4' value='1'></li>
-        <li>Tests per IDL item: <input type='number' name='idl' size='4' value='5'></li>
-      </ul>
-      <button id='update'>Update</button>
-    </div>
+  <body class="hide-reqs hide-details">
+    <h1>Open Web Platform Test Suite - <small>Coverage Analysis and Development Time Estimate</small></h1>
+
     <div id='output'></div>
     
-    <!-- 
-      - add a filter that can colour the cells based on user-defined thresholds
-      - hide levels
-    -->
+    <ul id=color-coding>
+      <li style="background-color:#0F0">80 - 100%</li>
+      <li style="background-color:#CF6">60 - 79%</li>
+      <li style="background-color:#FF6">40 - 69%</li>
+      <li style="background-color:#FC6">20 - 39%</li>
+      <li style="background-color:#F00">0 - 19%</li>
+    </ul>
+    
+    <form action="" method="get" id="form" accept-charset="utf-8">
+      <div id="spec-controls" style="clear:both">
+        <h4>Section depth</h4>
+        <p>Note the report analyses sections at a maximal depth of 3.</p>
+        <ul>
+          <li>Level 1 <input type='radio' name='level' value='1' checked></li>
+          <li>Level 2 <input type='radio' name='level' value='2'></li>
+          <li>Level 3 <input type='radio' name='level' value='3'></li>
+        </ul>
+
+        <p>
+          <label><input type='checkbox' name='show-all' id="show-all"> Also show sections which don't have requirements.</label>
+        </p>
+        <p>
+          <label><input type='checkbox' name='show-details' id="show-details"> Show detailed coverage data.</label>
+        </p>
+      </div>
+      <div style="clear:both">
+        <h4>Desired number of test</h4>
+        <ul>
+          <li>Tests per RFC2119 keyword: <input type='number' name='rfc2119' size='4' value='4' min='0'></li>
+          <li>Tests per algorithm step: <input type='number' name='algos' size='4' value='2' min='0'></li>
+          <li>Tests per IDL LOC: <input type='number' name='idl' size='4' value='5' min='0'> (Assume idlharness provides <input type='number' name='assume-idl' id="assume-idl" size='4' value='85' min='0' max='100'>% coverage of IDL.)</li>
+          <li>Tests per CSS property definition (propdef) LOC: <input type='number' name='propdef' size='4' value='8' min='0'></li>
+        </ul>
+        
+        <p>
+          Assume <input type='number' name='review-success' size='4' value='50' min='0' max='100'>% of tests awaiting review will pass review.
+        </p>
+        
+        <p>
+          Assume a factor of <input type='number' name='reftest-factor' size='4' value='2' min='0'> for the test requirements (normative and algo-based tests) of ref-test based specs (*).
+        </p>
+        <h4>Time Estimator</h4>
+        <ul>
+          <li>Average time required to develop a test (in minutes): <input type='test-time' name='test-time' size='4' value='60' min='0'></li>
+          <li>Average time required to review a test (in minutes): <input type='review-time' name='review-time' size='4' value='30' min='0'> (Assume new tooling will diminish review time by <input type='number' name='assume-tooling' id="assume-tooling" size='4' value='50'  min='0' max='100'>%.)</li>
+        </ul>
+        <p><input type="submit" value="Update"></p>
+      </div>
+
+    </form>
+    
+
     <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js'></script>
+    <script src="handlebars.js"></script>
     <script src='coverage.js'></script>
     <script>
-      cover(["html", "canvas2d"]
-          , ["HTML", "Canvas"]
-          , $("#output"));
+    $.getJSON("specs.json", function (data) {
+        cover(Object.keys(data).map(function(k) {
+            var spec = data[k];
+            spec.id = k;
+            return spec;
+        }), $("#output"));
+    });
     </script>
   </body>
 </html>

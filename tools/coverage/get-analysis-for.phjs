@@ -42,11 +42,12 @@ page.open(url, function (status) {
                         ,   original_id: href
                         ,   level:  level
                         }
-                    ,   $ol = $li.find("> ol").first()
+                    ,   $list = $li.find("> ol").first()
                     ;
+                    $list = $list.length ? $list : $li.find("> ul").first();
                     list.push(def);
-                    if ($ol.length && level < 3) {
-                        walkToC($, $ol, list, level);
+                    if ($list.length && level < 3) {
+                        walkToC($, $list, list, level);
                     }
                 });
             }
@@ -76,13 +77,17 @@ page.open(url, function (status) {
                 return node;
             }
             
+            function getElement(id) {
+              return document.getElementById(id) || document.querySelector("*[name=\"" + id + "\"]");
+            }
+            
             function getRangeForSection (section) {
                 var range = document.createRange()
-                ,   start = nodeOrParent(document.getElementById(section.original_id), section.original_id)
+                ,   start = nodeOrParent(getElement(section.original_id), section.original_id)
                 ;
                 range.setStartBefore(start);
                 if (section.end_id) {
-                    var end = nodeOrParent(document.getElementById(section.end_id));
+                    var end = nodeOrParent(getElement(section.end_id));
                     range.setEndBefore(end);
                 }
                 else {
@@ -100,8 +105,14 @@ page.open(url, function (status) {
             }
 
             // process ToC
-            var $toc = $("body > ol.toc").first()
-            ;
+            
+            var $toc = $("body > ol.toc").first();
+            $toc = $toc.length ? $toc : $("body > ul.toc").first(); // CSS 3
+            $toc = $toc.length ? $toc : $("body > .subtoc > ul.toc").first(); // CSS 2
+            $toc = $toc.length ? $toc : $("body > div > ol.toc").first(); // WAI-ARIA
+            $toc = $toc.length ? $toc : $("#toc > div.toc > ul").first(); // FileAPI and others?
+            $toc = $toc.length ? $toc : $("#toc > ul.toc").first(); // IndexedDb and others?
+            
             walkToC($, $toc, tocList, 0);
             processTocForRanges(tocList);
             
@@ -146,6 +157,12 @@ page.open(url, function (status) {
                 section.idlComplexity = idl ? idl.split("\n").length : 0;
                 $df.find(".idl").remove();
 
+                // count propdef complexity (then remove propdefs)
+                var propdef = $df.find(".propdef tr").length;
+                propdef = propdef ? propdef-1 : 0;
+                section.propdef = propdef;
+                $df.find(".propdef").remove();
+
                 // count words
                 section.wordCount = $df.text() ? $df.text().split(/\s+/).length : 0;
 
@@ -153,7 +170,7 @@ page.open(url, function (status) {
                 section.algorithmicSteps = $df.find("ol li").length;
                 
                 // count normative statements
-                var norms = $df.text().match(/\b(should|must)\b/g);
+                var norms = $df.text().match(/\b(should|must|may)\b/g);
                 section.normativeStatements = norms ? norms.length : 0;
             }
             return tocList;

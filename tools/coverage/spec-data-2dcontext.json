@@ -7,8 +7,10 @@
         "level": 1,
         "normativeStatements": 3,
         "original_id": "conformance-requirements",
+        "propdef": 0,
         "wordCount": 324,
-        "tests": 4
+        "url": "http://www.w3.org/TR/2012/CR-2dcontext-20121217#conformance-requirements",
+        "tests": 3
     },
     {
         "algorithmicSteps": 0,
@@ -18,8 +20,10 @@
         "level": 1,
         "normativeStatements": 3,
         "original_id": "the-canvas-state",
+        "propdef": 0,
         "wordCount": 95,
-        "tests": 22
+        "url": "http://www.w3.org/TR/2012/CR-2dcontext-20121217#the-canvas-state",
+        "tests": 21
     },
     {
         "algorithmicSteps": 0,
@@ -29,7 +33,9 @@
         "level": 1,
         "normativeStatements": 1,
         "original_id": "drawingstyle-objects",
+        "propdef": 0,
         "wordCount": 134,
+        "url": "http://www.w3.org/TR/2012/CR-2dcontext-20121217#drawingstyle-objects",
         "tests": 0
     },
     {
@@ -40,8 +46,10 @@
         "level": 1,
         "normativeStatements": 33,
         "original_id": "line-styles",
-        "wordCount": 1933,
-        "tests": 31
+        "propdef": 0,
+        "wordCount": 1941,
+        "url": "http://www.w3.org/TR/2012/CR-2dcontext-20121217#line-styles",
+        "tests": 29
     },
     {
         "algorithmicSteps": 9,
@@ -51,7 +59,9 @@
         "level": 1,
         "normativeStatements": 20,
         "original_id": "text-styles",
+        "propdef": 0,
         "wordCount": 1312,
+        "url": "http://www.w3.org/TR/2012/CR-2dcontext-20121217#text-styles",
         "tests": 23
     },
     {
@@ -62,7 +72,9 @@
         "level": 1,
         "normativeStatements": 30,
         "original_id": "building-paths",
-        "wordCount": 1301,
+        "propdef": 0,
+        "wordCount": 1216,
+        "url": "http://www.w3.org/TR/2012/CR-2dcontext-20121217#building-paths",
         "tests": 0
     },
     {
@@ -73,7 +85,9 @@
         "level": 1,
         "normativeStatements": 7,
         "original_id": "path-objects",
+        "propdef": 0,
         "wordCount": 1125,
+        "url": "http://www.w3.org/TR/2012/CR-2dcontext-20121217#path-objects",
         "tests": 129
     },
     {
@@ -84,7 +98,9 @@
         "level": 1,
         "normativeStatements": 7,
         "original_id": "transformations",
+        "propdef": 0,
         "wordCount": 257,
+        "url": "http://www.w3.org/TR/2012/CR-2dcontext-20121217#transformations",
         "tests": 22
     },
     {
@@ -93,10 +109,12 @@
         "id": "fill-and-stroke-styles",
         "idlComplexity": 0,
         "level": 1,
-        "normativeStatements": 45,
+        "normativeStatements": 46,
         "original_id": "fill-and-stroke-styles",
+        "propdef": 0,
         "wordCount": 1705,
-        "tests": 185
+        "url": "http://www.w3.org/TR/2012/CR-2dcontext-20121217#fill-and-stroke-styles",
+        "tests": 180
     },
     {
         "algorithmicSteps": 3,
@@ -106,8 +124,10 @@
         "level": 1,
         "normativeStatements": 5,
         "original_id": "drawing-rectangles-to-the-canvas",
+        "propdef": 0,
         "wordCount": 339,
-        "tests": 30
+        "url": "http://www.w3.org/TR/2012/CR-2dcontext-20121217#drawing-rectangles-to-the-canvas",
+        "tests": 31
     },
     {
         "algorithmicSteps": 3,
@@ -117,8 +137,10 @@
         "level": 1,
         "normativeStatements": 10,
         "original_id": "drawing-text-to-the-canvas",
-        "wordCount": 945,
-        "tests": 26
+        "propdef": 0,
+        "wordCount": 954,
+        "url": "http://www.w3.org/TR/2012/CR-2dcontext-20121217#drawing-text-to-the-canvas",
+        "tests": 27
     },
     {
         "algorithmicSteps": 12,
@@ -126,9 +148,11 @@
         "id": "drawing-paths-to-the-canvas",
         "idlComplexity": 0,
         "level": 1,
-        "normativeStatements": 23,
+        "normativeStatements": 26,
         "original_id": "drawing-paths-to-the-canvas",
+        "propdef": 0,
         "wordCount": 879,
+        "url": "http://www.w3.org/TR/2012/CR-2dcontext-20121217#drawing-paths-to-the-canvas",
         "tests": 0
     },
     {
@@ -137,9 +161,11 @@
         "id": "drawing-images-to-the-canvas",
         "idlComplexity": 0,
         "level": 1,
-        "normativeStatements": 15,
+        "normativeStatements": 16,
         "original_id": "drawing-images-to-the-canvas",
-        "wordCount": 641,
+        "propdef": 0,
+        "wordCount": 627,
+        "url": "http://www.w3.org/TR/2012/CR-2dcontext-20121217#drawing-images-to-the-canvas",
         "tests": 34
     },
     {
@@ -148,9 +174,11 @@
         "id": "hit-regions",
         "idlComplexity": 6,
         "level": 1,
-        "normativeStatements": 16,
+        "normativeStatements": 17,
         "original_id": "hit-regions",
+        "propdef": 0,
         "wordCount": 2469,
+        "url": "http://www.w3.org/TR/2012/CR-2dcontext-20121217#hit-regions",
         "tests": 0
     },
     {
@@ -159,9 +187,11 @@
         "id": "pixel-manipulation",
         "idlComplexity": 0,
         "level": 1,
-        "normativeStatements": 23,
+        "normativeStatements": 24,
         "original_id": "pixel-manipulation",
+        "propdef": 0,
         "wordCount": 911,
+        "url": "http://www.w3.org/TR/2012/CR-2dcontext-20121217#pixel-manipulation",
         "tests": 58
     },
     {
@@ -172,8 +202,10 @@
         "level": 1,
         "normativeStatements": 10,
         "original_id": "compositing",
+        "propdef": 0,
         "wordCount": 346,
-        "tests": 91
+        "url": "http://www.w3.org/TR/2012/CR-2dcontext-20121217#compositing",
+        "tests": 90
     },
     {
         "algorithmicSteps": 9,
@@ -181,10 +213,12 @@
         "id": "shadows",
         "idlComplexity": 0,
         "level": 1,
-        "normativeStatements": 14,
+        "normativeStatements": 15,
         "original_id": "shadows",
+        "propdef": 0,
         "wordCount": 532,
-        "tests": 58
+        "url": "http://www.w3.org/TR/2012/CR-2dcontext-20121217#shadows",
+        "tests": 56
     },
     {
         "algorithmicSteps": 6,
@@ -194,7 +228,9 @@
         "level": 1,
         "normativeStatements": 3,
         "original_id": "drawing-model",
+        "propdef": 0,
         "wordCount": 153,
+        "url": "http://www.w3.org/TR/2012/CR-2dcontext-20121217#drawing-model",
         "tests": 0
     },
     {
@@ -205,7 +241,9 @@
         "level": 1,
         "normativeStatements": 0,
         "original_id": "references",
+        "propdef": 0,
         "wordCount": 2183,
+        "url": "http://www.w3.org/TR/2012/CR-2dcontext-20121217#references",
         "tests": 0
     }
 ]

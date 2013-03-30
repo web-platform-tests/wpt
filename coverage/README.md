@@ -1,6 +1,8 @@
 
 # Updating the coverage data
 
+Make sure you have [node][1] and [phantomjs][2] installed.
+
 In order to update the data on the tests that we have, run:
 
     node test-data.js
@@ -17,7 +19,9 @@ That will produce `tests-per-section.json`.
 Finally, in order to update the full mapping data (which depends on the previous
 step), run:
 
-    node analyse.specs.js
+    node analyse-specs.js
 
 That will produce `spec-data-*.json`. Those files are used by the coverage page.
 
+[1]: http://nodejs.org
+[2]: http://phantomjs.org/

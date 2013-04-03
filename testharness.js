@@ -287,6 +287,18 @@ policies and contribution forms [3].
  * assert_approx_equals(actual, expected, epsilon, description)
  *   asserts that /actual/ is a number within +/- /epsilon/ of /expected/
  *
+ * assert_less_than(actual, expected, description)
+ *   asserts that /actual/ is a number less than /expected/
+ *
+ * assert_greater_than(actual, expected, description)
+ *   asserts that /actual/ is a number greater than /expected/
+ *
+ * assert_less_than_equal(actual, expected, description)
+ *   asserts that /actual/ is a number less than or equal to /expected/
+ *
+ * assert_greater_than_equal(actual, expected, description)
+ *   asserts that /actual/ is a number greater than or equal to /expected/
+ *
  * assert_regexp_match(actual, expected, description)
  *   asserts that /actual/ matches the regexp /expected/
  *
@@ -481,11 +493,22 @@ policies and contribution forms [3].
     /*
      * Convert a value to a nice, human-readable string
      */
-    function format_value(val)
+    function format_value(val, seen)
     {
+	if (!seen) {
+	    seen = [];
+        }
+        if (typeof val === "object" && val !== null)
+        {
+            if (seen.indexOf(val) >= 0)
+            {
+                return "[...]";
+            }
+	    seen.push(val);
+        }
         if (Array.isArray(val))
         {
-            return "[" + val.map(format_value).join(", ") + "]";
+            return "[" + val.map(function(x) {return format_value(x, seen)}).join(", ") + "]";
         }
 
         switch (typeof val)
@@ -744,6 +767,74 @@ policies and contribution forms [3].
                {expected:expected, actual:actual, epsilon:epsilon});
     };
     expose(assert_approx_equals, "assert_approx_equals");
+
+    function assert_less_than(actual, expected, description)
+    {
+        /*
+         * Test if a primitive number is less than another
+         */
+        assert(typeof actual === "number",
+               "assert_less_than", description,
+               "expected a number but got a ${type_actual}",
+               {type_actual:typeof actual});
+
+        assert(actual < expected,
+               "assert_less_than", description,
+               "expected a number less than ${expected} but got ${actual}",
+               {expected:expected, actual:actual});
+    };
+    expose(assert_less_than, "assert_less_than");
+
+    function assert_greater_than(actual, expected, description)
+    {
+        /*
+         * Test if a primitive number is greater than another
+         */
+        assert(typeof actual === "number",
+               "assert_greater_than", description,
+               "expected a number but got a ${type_actual}",
+               {type_actual:typeof actual});
+
+        assert(actual > expected,
+               "assert_greater_than", description,
+               "expected a number greater than ${expected} but got ${actual}",
+               {expected:expected, actual:actual});
+    };
+    expose(assert_greater_than, "assert_greater_than");
+
+    function assert_less_than_equal(actual, expected, description)
+    {
+        /*
+         * Test if a primitive number is less than or equal to another
+         */
+        assert(typeof actual === "number",
+               "assert_less_than_equal", description,
+               "expected a number but got a ${type_actual}",
+               {type_actual:typeof actual});
+
+        assert(actual <= expected,
+               "assert_less_than", description,
+               "expected a number less than or equal to ${expected} but got ${actual}",
+               {expected:expected, actual:actual});
+    };
+    expose(assert_less_than_equal, "assert_less_than_equal");
+
+    function assert_greater_than_equal(actual, expected, description)
+    {
+        /*
+         * Test if a primitive number is greater than or equal to another
+         */
+        assert(typeof actual === "number",
+               "assert_greater_than_equal", description,
+               "expected a number but got a ${type_actual}",
+               {type_actual:typeof actual});
+
+        assert(actual >= expected,
+               "assert_greater_than_equal", description,
+               "expected a number greater than or equal to ${expected} but got ${actual}",
+               {expected:expected, actual:actual});
+    };
+    expose(assert_greater_than_equal, "assert_greater_than_equal");
 
     function assert_regexp_match(actual, expected, description) {
         /*
@@ -1038,7 +1129,7 @@ policies and contribution forms [3].
 
         try
         {
-            func.apply(this_obj, Array.prototype.slice.call(arguments, 2));
+            return func.apply(this_obj, Array.prototype.slice.call(arguments, 2));
         }
         catch(e)
         {
@@ -1319,7 +1410,7 @@ policies and contribution forms [3].
                             }
                         }
                     }
-                    if (supports_post_message(w))
+                    if (supports_post_message(w) && w !== self)
                     {
                         w.postMessage({
                             type: "start",
@@ -1365,7 +1456,7 @@ policies and contribution forms [3].
                             }
                         }
                     }
-                    if (supports_post_message(w))
+                    if (supports_post_message(w) && w !== self)
                     {
                         w.postMessage({
                             type: "result",
@@ -1435,7 +1526,7 @@ policies and contribution forms [3].
                             }
                         }
                     }
-                    if (supports_post_message(w))
+                    if (supports_post_message(w) && w !== self)
                     {
                         w.postMessage({
                             type: "complete",

@@ -73,6 +73,36 @@
     }
     test(basicAssertObjectEquals, "basic assert_object_equals test");
 
+    function basicAssertApproxEquals()
+    {
+        assert_approx_equals(10, 11, 1, "10 is approximately (+/- 1) 11")
+    }
+    test(basicAssertApproxEquals, "basic assert_approx_equals test");
+
+    function basicAssertLessThan()
+    {
+        assert_less_than(10, 11, "10 is less than 11")
+    }
+    test(basicAssertApproxEquals, "basic assert_less_than test");
+
+    function basicAssertGreaterThan()
+    {
+        assert_greater_than(10, 11, "10 is not greater than 11");
+    }
+    test(basicAssertGreaterThan, "assert_greater_than expected to fail");
+
+    function basicAssertGreaterThanEqual()
+    {
+        assert_greater_than_equal(10, 10, "10 is greater than or equal to 10")
+    }
+    test(basicAssertGreaterThanEqual, "basic assert_greater_than_equal test");
+
+    function basicAssertLessThanEqual()
+    {
+        assert_greater_than_equal('10', 10, "'10' is not a number")
+    }
+    test(basicAssertLessThanEqual, "assert_less_than_equal expected to fail");
+
     function testAssertInherits() {
         var A = function(){this.a = "a"}
         A.prototype = {b:"b"}

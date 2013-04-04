@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset=windows-1252>
+    <title>XMLHttpRequest: open() - URL encoding</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <script>
+      test(function() {
+        var client = new XMLHttpRequest()
+        client.open("GET", "resources/content.php?ß", false)
+        client.send(null)
+        assert_equals(client.getResponseHeader("x-request-query"), "%C3%9F")
+      })
+    </script>
+  </body>
+</html>

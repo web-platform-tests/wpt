@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>XMLHttpRequest: members during network errors</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <script>
+      var test = async_test()
+      test.step(function() {
+        var client = new XMLHttpRequest()
+        client.onreadystatechange = function() {
+          test.step(function() {
+            assert_equals(client.status, 0, "status")
+            assert_equals(client.statusText, "", "statusText")
+            assert_equals(client.getAllResponseHeaders(), "", "getAllResponseHeaders")
+            assert_equals(client.getResponseHeader("content-type"), null, "getResponseHeader")
+            assert_equals(client.responseText, "", "responseText")
+            assert_equals(client.responseXML, null, "responseXML")
+            if(client.readyState == 4)
+              test.done()
+          })
+        }
+        client.open("GET", "resources/infinite-redirects.php")
+        client.send(null)
+      })
+  </script>
+ </body>
+</html>

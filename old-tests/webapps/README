@@ -1,0 +1,17 @@
+WebApps WG
+
+NOTE: the http://dvcs.w3.org/hg/webapps/ directory is ONLY for tests as
+described in WebApps' Testing Process:
+
+   http://www.w3.org/2008/webapps/wiki/Testing
+
+For a list of all of WebApps' test suites, see the Hg mirror:
+
+   http://w3c-test.org/webapps/
+
+NOTE: _specifications_ for this WG should use the http://dvcs.w3.org/hg/
+directory (and NOT http://dvcs.w3.org/hg/webapps/). For example, the following
+are specification directories:
+
+   http://dvcs.w3.org/hg/domcore
+   http://dvcs.w3.org/hg/editing

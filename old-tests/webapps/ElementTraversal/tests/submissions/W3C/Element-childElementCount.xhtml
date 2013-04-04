@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xml:lang="en" xmlns='http://www.w3.org/1999/xhtml'  xmlns:pickle="http://ns.example.org/pickle" >
+<head>
+	<meta charset="utf-8" />
+
+	<title id='title'>childElementCount</title>
+	<script src="/resources/testharnessreport.js"></script>	
+	<script src="/resources/testharness.js"></script>
+</head>
+
+<body>
+
+  <h1 id='h1'>Test of childElementCount</h1>
+  <p id="parentEl">This <span id="first_element_child"><span>is</span> a <span>test</span></span> for the 
+  <span id="middle_element_child">ElementTraversal specification</span>  
+  <span id="last_element_child" style="display:none;">display: none &#160;</span>.</p>
+
+  <div id="divEl">
+    <pickle:dill />
+  </div>
+
+  <div id="log">Running test...</div>
+
+	<script>
+	  test(function() {
+                assert_true(!!document.getElementById("parentEl").childElementCount);
+               }, "childElementCount must exist");
+	  test(function() {
+	        // various random checks of childElementCount
+                assert_equals( document.documentElement.childElementCount, 2);
+                assert_equals( document.getElementById("title").childElementCount, 0);
+                assert_equals( document.getElementById("h1").childElementCount, 0);
+
+                assert_equals(document.getElementById("divEl").childElementCount, 1);
+
+                assert_equals(document.getElementById("parentEl").childElementCount, 3);
+                assert_equals( document.getElementById("first_element_child").childElementCount, 2);
+                assert_equals( document.getElementById("last_element_child").childElementCount, 0);
+                assert_equals( document.getElementById("middle_element_child").childElementCount, 0);
+               }, "childElementCount must return the correct number of child elements");
+	  test(function() {
+	        var h1 = document.getElementById("h1");	        
+                assert_equals( document.getElementById("h1").childElementCount, 0);
+	        var span = document.createElement("span");
+	        h1.appendChild(span);
+                assert_equals( document.getElementById("h1").childElementCount, 1);
+	        h1.removeChild(span);
+                assert_equals( document.getElementById("h1").childElementCount, 0);
+               }, "childElementCount must be dynamically updated");
+	  test(function() {
+                assert_readonly(document.getElementById("parentEl"), "childElementCount");
+               }, "childElementCount must be readonly");
+	</script>
+</body>
+</html>

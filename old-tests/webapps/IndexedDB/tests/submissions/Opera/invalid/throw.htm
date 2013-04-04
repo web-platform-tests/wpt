@@ -1,0 +1,19 @@
+﻿<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Error</title>
+<p>Testing the startup error event
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+
+setup(function() { throw {name: 'ohmy', message: "ohmygod it's exception"}; }, {});
+
+var p = async_test('Test which passes');
+p.step(function() { assert_true(true); p.done(); });
+
+var f = async_test('Test which fails');
+f.step(function() { assert_true(false, "this is OK"); f.done() });
+
+var d = async_test('Test which misses done');
+d.step(function() { assert_true(true); });
+</script>

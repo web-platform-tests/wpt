@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     version="1.1"
+     width="100%" height="100%" viewBox="0 0 400 400"
+     onload="initTest()">
+
+  <title>firstElementChild</title>
+  <desc>Test of firstElementChild</desc>
+
+  <script type="text/ecmascript"><![CDATA[
+    function initTest ()
+    {
+      var parentEl = document.getElementById("parentEl");
+      var fec = parentEl.firstElementChild;
+      if ( fec 
+            && 1 == fec.nodeType 
+            && "first_element_child" == fec.getAttribute("id") )
+      {
+        fec.firstChild.nodeValue = "pass!";
+      }
+    }
+
+  ]]></script>
+
+  <text x="200" y="40" font-size="25" fill="black" text-anchor="middle">Test of Entity Reference Nodes</text>
+  <text id="parentEl" x="200" y="70" font-size="20" fill="black" text-anchor="middle">The result of this test is a <tspan id="first_element_child" font-weight="bold">fail.</tspan></text>
+  
+
+</svg>
+

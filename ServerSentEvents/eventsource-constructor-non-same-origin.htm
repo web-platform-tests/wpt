@@ -17,7 +17,7 @@
           source.onerror = function(e) {
             test.step(function() {
               assert_equals(source.readyState, source.CLOSED)
-              assert_not_exists(e, "data")
+              assert_false(e.hasOwnProperty('data'))
             })
             test.done()
           }

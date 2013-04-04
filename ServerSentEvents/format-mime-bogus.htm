@@ -21,7 +21,7 @@
         source.onerror = function(e) {
           test.step(function() {
             assert_equals(this.readyState, this.CLOSED)
-            assert_not_exists(e, "data")
+            assert_false(e.hasOwnProperty('data'))
             assert_false(e.bubbles)
             assert_false(e.cancelable)
             this.close()

@@ -13,7 +13,7 @@
           var source = new EventSource({toString:function(){return "resources/message.php";}})
           source.onopen = function(e) {
             test.step(function() {
-              assert_not_exists(e, "data")
+              assert_false(e.hasOwnProperty('data'))
               source.close()
               test.done()
             })

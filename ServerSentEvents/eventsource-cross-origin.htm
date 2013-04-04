@@ -37,7 +37,7 @@
           var source = new EventSource(url)
           source.onerror = test.step_func(function(e) {
             assert_equals(source.readyState, source.CLOSED, 'readyState')
-            assert_not_exists(e, 'data')
+            assert_false(e.hasOwnProperty('data'))
             source.close()
             test.done()
           })

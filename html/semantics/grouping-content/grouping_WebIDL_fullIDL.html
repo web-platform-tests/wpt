@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>WebIDL Tests: HTML Grouping</title>
+    <link rel="author" title="dzenana" href="mailto:dzenana.trenutak@gmail.com">
+    <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/grouping-content.html#the-p-element">
+    <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/grouping-content.html#the-hr-element">
+    <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/grouping-content.html#the-pre-element">
+    <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/grouping-content.html#the-blockquote-element">
+    <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/grouping-content.html#the-ol-element">
+    <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/grouping-content.html#the-ul-element">
+    <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/grouping-content.html#the-li-element">
+    <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/grouping-content.html#the-dl-element">
+    <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/grouping-content.html#the-div-element">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src=/resources/webidl2.js></script>
+    <script src="/resources/idlharness.js"></script>
+</head>
+<body>
+
+<h1>idlharness test</h1>
+<p>This test validates the WebIDL contained within the HTML5 CR "grouping content" section:</p>
+<p>the <code>p</code>, <code>hr</code>, <code>pre</code>, <code>blockquote</code>, <code>ol</code>, <code>ul</code>, <code>li</code>, <code>dl</code>, and <code>div</code> elements.</p>
+
+<div id="test_div" style='display:none'>
+    <p id="test_p"></p>
+    <hr id="test_hr">
+    <pre id="test_pre"></pre>
+    <blockquote id="test_blockquote">Test This</blockquote>
+    <ol id="test_ol">
+        <li></li>
+    </ol>
+    <ul id="test_ul">
+        <li id="test_li"></li>
+    </ul>
+    <dl id="test_dl">
+        <dt></dt>
+    </dl>
+</div>
+
+<pre id='idl'>
+    interface HTMLParagraphElement : HTMLElement {};
+    interface HTMLHRElement : HTMLElement {};
+    interface HTMLPreElement : HTMLElement {};
+    interface HTMLQuoteElement : HTMLElement {
+           attribute DOMString cite;
+    };
+    interface HTMLOListElement : HTMLElement {
+           attribute boolean reversed;
+           attribute long start;
+           attribute DOMString type;
+    };
+    interface HTMLUListElement : HTMLElement {};
+    interface HTMLLIElement : HTMLElement {
+           attribute long value;
+    };
+    interface HTMLDListElement : HTMLElement {};
+    interface HTMLDivElement : HTMLElement {};
+</pre>
+
+<p>NOTE, for the tests to run, SOME "UNTESTED" WEBIDL WAS COMMENTED OUT as follows:</p>
+
+<pre>
+
+// typedef sequence<CSSRule> CSSRuleList;
+
+// interface HTMLCollection {};
+
+[Constructor]  
+interface Document : Node {
+    ...
+  // HTMLCollection getElementsByTagName(DOMString localName);   
+  // HTMLCollection getElementsByTagNameNS(DOMString? namespace, DOMString localName); 
+  // HTMLCollection getElementsByClassName(DOMString classNames); 
+
+//callback 
+interface NodeFilter {
+
+// callback       
+interface EventListener {
+
+</pre>
+
+
+<pre id='untested_idl' style='display:none'>
+
+interface HTMLElement : Element {
+  // metadata attributes
+           attribute DOMString title;
+           attribute DOMString lang;
+           attribute boolean translate;
+           attribute DOMString dir;
+  readonly attribute DOMStringMap dataset;
+
+
+  // user interaction
+           attribute boolean hidden;
+  void click();
+           attribute long tabIndex;
+  void focus();
+  void blur();
+           attribute DOMString accessKey;
+  readonly attribute DOMString accessKeyLabel;
+           attribute boolean draggable;
+  [PutForwards=value] readonly attribute DOMSettableTokenList dropzone;
+           attribute DOMString contentEditable;
+  readonly attribute boolean isContentEditable;
+           attribute HTMLMenuElement? contextMenu;
+           attribute boolean spellcheck;
+
+  // command API
+  readonly attribute DOMString? commandType;
+  readonly attribute DOMString? commandLabel;
+  readonly attribute DOMString? commandIcon;
+  readonly attribute boolean? commandHidden;
+  readonly attribute boolean? commandDisabled;
+  readonly attribute boolean? commandChecked;
+
+  // styling
+  readonly attribute CSSStyleDeclaration style;
+
+  // event handler IDL attributes
+           attribute EventHandler onabort;
+           attribute EventHandler onblur;
+           attribute EventHandler oncancel;
+           attribute EventHandler oncanplay;
+           attribute EventHandler oncanplaythrough;
+           attribute EventHandler onchange;
+           attribute EventHandler onclick;
+           attribute EventHandler onclose;
+           attribute EventHandler oncontextmenu;
+           attribute EventHandler oncuechange;
+           attribute EventHandler ondblclick;
+           attribute EventHandler ondrag;
+           attribute EventHandler ondragend;
+           attribute EventHandler ondragenter;
+           attribute EventHandler ondragleave;
+           attribute EventHandler ondragover;
+           attribute EventHandler ondragstart;
+           attribute EventHandler ondrop;
+           attribute EventHandler ondurationchange;
+           attribute EventHandler onemptied;
+           attribute EventHandler onended;
+           attribute OnErrorEventHandler onerror;
+           attribute EventHandler onfocus;
+           attribute EventHandler oninput;
+           attribute EventHandler oninvalid;
+           attribute EventHandler onkeydown;
+           attribute EventHandler onkeypress;
+           attribute EventHandler onkeyup;
+           attribute EventHandler onload;
+           attribute EventHandler onloadeddata;
+           attribute EventHandler onloadedmetadata;
+           attribute EventHandler onloadstart;
+           attribute EventHandler onmousedown;
+           attribute EventHandler onmousemove;
+           attribute EventHandler onmouseout;
+           attribute EventHandler onmouseover;
+           attribute EventHandler onmouseup;
+           attribute EventHandler onmousewheel;
+           attribute EventHandler onpause;
+           attribute EventHandler onplay;
+           attribute EventHandler onplaying;
+           attribute EventHandler onprogress;
+           attribute EventHandler onratechange;
+           attribute EventHandler onreset;
+           attribute EventHandler onscroll;
+           attribute EventHandler onseeked;
+           attribute EventHandler onseeking;
+           attribute EventHandler onselect;
+           attribute EventHandler onshow;
+           attribute EventHandler onstalled;
+           attribute EventHandler onsubmit;
+           attribute EventHandler onsuspend;
+           attribute EventHandler ontimeupdate;
+           attribute EventHandler onvolumechange;
+           attribute EventHandler onwaiting;
+};
+
+interface DOMStringMap {
+  getter DOMString (DOMString name);
+  setter void (DOMString name, DOMString value);
+  creator void (DOMString name, DOMString value);
+  deleter void (DOMString name);
+};
+
+interface DOMSettableTokenList : DOMTokenList {
+            attribute DOMString value;
+};
+
+interface HTMLMenuElement : HTMLElement {
+           attribute DOMString type;
+           attribute DOMString label;
+};
+
+
+interface CSSStyleDeclaration {
+           attribute DOMString cssText;
+
+  readonly attribute unsigned long length;
+  DOMString item(unsigned long index);
+
+  DOMString getPropertyValue(DOMString property);
+  DOMString getPropertyPriority(DOMString property);
+  void setProperty(DOMString? property, DOMString? value);
+  void setProperty(DOMString? property, DOMString? value, DOMString? priority);
+  DOMString removeProperty(DOMString property);
+
+  readonly attribute CSSStyleDeclarationValue values;
+
+  readonly attribute CSSRule parentRule;
+
+  // CSS Properties
+           attribute DOMString? azimuth;
+           attribute DOMString? background;
+           attribute DOMString? backgroundAttachment;
+           attribute DOMString? backgroundColor;
+           attribute DOMString? backgroundImage;
+           attribute DOMString? backgroundPosition;
+           attribute DOMString? backgroundRepeat;
+           attribute DOMString? border;
+           attribute DOMString? borderCollapse;
+           attribute DOMString? borderColor;
+           attribute DOMString? borderSpacing;
+           attribute DOMString? borderStyle;
+           attribute DOMString? borderTop;
+           attribute DOMString? borderRight;
+           attribute DOMString? borderBottom;
+           attribute DOMString? borderLeft;
+           attribute DOMString? borderTopColor;
+           attribute DOMString? borderRightColor;
+           attribute DOMString? borderBottomColor;
+           attribute DOMString? borderLeftColor;
+           attribute DOMString? borderTopStyle;
+           attribute DOMString? borderRightStyle;
+           attribute DOMString? borderBottomStyle;
+           attribute DOMString? borderLeftStyle;
+           attribute DOMString? borderTopWidth;
+           attribute DOMString? borderRightWidth;
+           attribute DOMString? borderBottomWidth;
+           attribute DOMString? borderLeftWidth;
+           attribute DOMString? borderWidth;
+           attribute DOMString? bottom;
+           attribute DOMString? captionSide;
+           attribute DOMString? clear;
+           attribute DOMString? clip;
+           attribute DOMString? color;
+           attribute DOMString? content;
+           attribute DOMString? counterIncrement;
+           attribute DOMString? counterReset;
+           attribute DOMString? cue;
+           attribute DOMString? cueAfter;
+           attribute DOMString? cueBefore;
+           attribute DOMString? cursor;
+           attribute DOMString? direction;
+           attribute DOMString? display;
+           attribute DOMString? elevation;
+           attribute DOMString? emptyCells;
+           attribute DOMString? cssFloat;
+           attribute DOMString? font;
+           attribute DOMString? fontFamily;
+           attribute DOMString? fontSize;
+           attribute DOMString? fontSizeAdjust;
+           attribute DOMString? fontStretch;
+           attribute DOMString? fontStyle;
+           attribute DOMString? fontVariant;
+           attribute DOMString? fontWeight;
+           attribute DOMString? height;
+           attribute DOMString? left;
+           attribute DOMString? letterSpacing;
+           attribute DOMString? lineHeight;
+           attribute DOMString? listStyle;
+           attribute DOMString? listStyleImage;
+           attribute DOMString? listStylePosition;
+           attribute DOMString? listStyleType;
+           attribute DOMString? margin;
+           attribute DOMString? marginTop;
+           attribute DOMString? marginRight;
+           attribute DOMString? marginBottom;
+           attribute DOMString? marginLeft;
+           attribute DOMString? markerOffset;
+           attribute DOMString? marks;
+           attribute DOMString? maxHeight;
+           attribute DOMString? maxWidth;
+           attribute DOMString? minHeight;
+           attribute DOMString? minWidth;
+           attribute DOMString? orphans;
+           attribute DOMString? outline;
+           attribute DOMString? outlineColor;
+           attribute DOMString? outlineStyle;
+           attribute DOMString? outlineWidth;
+           attribute DOMString? overflow;
+           attribute DOMString? padding;
+           attribute DOMString? paddingTop;
+           attribute DOMString? paddingRight;
+           attribute DOMString? paddingBottom;
+           attribute DOMString? paddingLeft;
+           attribute DOMString? page;
+           attribute DOMString? pageBreakAfter;
+           attribute DOMString? pageBreakBefore;
+           attribute DOMString? pageBreakInside;
+           attribute DOMString? pause;
+           attribute DOMString? pauseAfter;
+           attribute DOMString? pauseBefore;
+           attribute DOMString? pitch;
+           attribute DOMString? pitchRange;
+           attribute DOMString? playDuring;
+           attribute DOMString? position;
+           attribute DOMString? quotes;
+           attribute DOMString? richness;
+           attribute DOMString? right;
+           attribute DOMString? size;
+           attribute DOMString? speak;
+           attribute DOMString? speakHeader;
+           attribute DOMString? speakNumeral;
+           attribute DOMString? speakPunctuation;
+           attribute DOMString? speechRate;
+           attribute DOMString? stress;
+           attribute DOMString? tableLayout;
+           attribute DOMString? textAlign;
+           attribute DOMString? textDecoration;
+           attribute DOMString? textIndent;
+           attribute DOMString? textShadow;
+           attribute DOMString? textTransform;
+           attribute DOMString? top;
+           attribute DOMString? unicodeBidi;
+           attribute DOMString? verticalAlign;
+           attribute DOMString? visibility;
+           attribute DOMString? voiceFamily;
+           attribute DOMString? volume;
+           attribute DOMString? whiteSpace;
+           attribute DOMString? widows;
+           attribute DOMString? width;
+           attribute DOMString? wordSpacing;
+           attribute DOMString? zIndex;
+};
+
+interface CSSStyleDeclarationValue {
+  // ...
+
+  // CSS Properties
+
+};
+
+interface CSSRule {
+  // Types
+  const unsigned short STYLE_RULE = 1;
+  const unsigned short IMPORT_RULE = 3;
+  const unsigned short MEDIA_RULE = 4;
+  const unsigned short FONT_FACE_RULE = 5;
+  const unsigned short PAGE_RULE = 6;
+  const unsigned short NAMESPACE_RULE = 10;
+  readonly attribute unsigned short type;
+
+  // Parsing and serialization
+           attribute DOMString cssText;
+
+  // Context
+  readonly attribute CSSRule parentRule;
+  readonly attribute CSSStyleSheet parentStyleSheet;
+};
+
+interface CSSStyleSheet : StyleSheet {
+  readonly attribute CSSRule ownerRule;
+  readonly attribute CSSRuleList cssRules;
+  unsigned long insertRule(DOMString rule, unsigned long index);
+  void deleteRule(unsigned long index);
+};
+
+interface CSSRuleList {};
+// typedef sequence<CSSRule> CSSRuleList;  COMMENTED THIS OUT BECAUSE IT BREAKS TEST (and provided preceding "dummy")
+
+[TreatNonCallableAsNull]
+callback EventHandlerNonNull = any (Event event);
+typedef EventHandlerNonNull? EventHandler;
+
+[TreatNonCallableAsNull]
+callback OnErrorEventHandlerNonNull = any ((Event or DOMString) event, DOMString source, unsigned long lineno, unsigned long column);
+typedef OnErrorEventHandlerNonNull? OnErrorEventHandler;
+
+interface Element : Node {
+  readonly attribute DOMString? namespaceURI;
+  readonly attribute DOMString? prefix;
+  readonly attribute DOMString localName;
+  readonly attribute DOMString tagName;
+
+           attribute DOMString id;
+           attribute DOMString className;
+  readonly attribute DOMTokenList classList;
+
+  readonly attribute Attr[] attributes;
+  DOMString? getAttribute(DOMString name);
+  DOMString? getAttributeNS(DOMString? namespace, DOMString localName);
+  void setAttribute(DOMString name, DOMString value);
+  void setAttributeNS(DOMString? namespace, DOMString name, DOMString value);
+  void removeAttribute(DOMString name);
+  void removeAttributeNS(DOMString? namespace, DOMString localName);
+  boolean hasAttribute(DOMString name);
+  boolean hasAttributeNS(DOMString? namespace, DOMString localName);
+
+  HTMLCollection getElementsByTagName(DOMString localName);
+  HTMLCollection getElementsByTagNameNS(DOMString? namespace, DOMString localName);
+  HTMLCollection getElementsByClassName(DOMString classNames);
+
+  readonly attribute HTMLCollection children;
+  readonly attribute Element? firstElementChild;
+  readonly attribute Element? lastElementChild;
+  readonly attribute Element? previousElementSibling;
+  readonly attribute Element? nextElementSibling;
+  readonly attribute unsigned long childElementCount;
+
+  // NEW
+  void prepend((Node or DOMString)... nodes);
+  void append((Node or DOMString)... nodes);
+  void before((Node or DOMString)... nodes);
+  void after((Node or DOMString)... nodes);
+  void replace((Node or DOMString)... nodes);
+  void remove();
+};
+
+interface DOMTokenList {
+  readonly attribute unsigned long length;
+  getter DOMString? item(unsigned long index);
+  boolean contains(DOMString token);
+  void add(DOMString... tokens);
+  void remove(DOMString... tokens);
+  boolean toggle(DOMString token, optional boolean force);
+  stringifier;
+};
+
+interface Attr {
+  readonly attribute DOMString name;
+           attribute DOMString value;
+
+  readonly attribute DOMString? namespaceURI;
+  readonly attribute DOMString? prefix;
+  readonly attribute DOMString localName;
+};
+
+interface HTMLCollection {
+  readonly attribute unsigned long length;
+  getter Element? item(unsigned long index);
+  getter object? namedItem(DOMString name); // only returns Element
+};
+
+interface Node : EventTarget {
+  const unsigned short ELEMENT_NODE = 1;
+  const unsigned short ATTRIBUTE_NODE = 2; // historical
+  const unsigned short TEXT_NODE = 3;
+  const unsigned short CDATA_SECTION_NODE = 4; // historical
+  const unsigned short ENTITY_REFERENCE_NODE = 5; // historical
+  const unsigned short ENTITY_NODE = 6; // historical
+  const unsigned short PROCESSING_INSTRUCTION_NODE = 7;
+  const unsigned short COMMENT_NODE = 8;
+  const unsigned short DOCUMENT_NODE = 9;
+  const unsigned short DOCUMENT_TYPE_NODE = 10;
+  const unsigned short DOCUMENT_FRAGMENT_NODE = 11;
+  const unsigned short NOTATION_NODE = 12; // historical
+  readonly attribute unsigned short nodeType;
+  readonly attribute DOMString nodeName;
+
+  readonly attribute DOMString? baseURI;
+
+  readonly attribute Document? ownerDocument;
+  readonly attribute Node? parentNode;
+  readonly attribute Element? parentElement;
+  boolean hasChildNodes();
+  readonly attribute NodeList childNodes;
+  readonly attribute Node? firstChild;
+  readonly attribute Node? lastChild;
+  readonly attribute Node? previousSibling;
+  readonly attribute Node? nextSibling;
+
+           attribute DOMString? nodeValue;
+           attribute DOMString? textContent;
+  Node insertBefore(Node node, Node? child);
+  Node appendChild(Node node);
+  Node replaceChild(Node node, Node child);
+  Node removeChild(Node child);
+  void normalize();
+
+  Node cloneNode(optional boolean deep = true);
+  boolean isEqualNode(Node? node);
+
+  const unsigned short DOCUMENT_POSITION_DISCONNECTED = 0x01;
+  const unsigned short DOCUMENT_POSITION_PRECEDING = 0x02;
+  const unsigned short DOCUMENT_POSITION_FOLLOWING = 0x04;
+  const unsigned short DOCUMENT_POSITION_CONTAINS = 0x08;
+  const unsigned short DOCUMENT_POSITION_CONTAINED_BY = 0x10;
+  const unsigned short DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC = 0x20;
+  unsigned short compareDocumentPosition(Node other);
+  boolean contains(Node? other);
+
+  DOMString? lookupPrefix(DOMString? namespace);
+  DOMString? lookupNamespaceURI(DOMString? prefix);
+  boolean isDefaultNamespace(DOMString? namespace);
+};
+
+interface NodeList {
+  getter Node? item(unsigned long index);
+  readonly attribute unsigned long length;
+};
+
+[Constructor]  
+interface Document : Node {
+  readonly attribute DOMImplementation implementation;
+  readonly attribute DOMString URL;
+  readonly attribute DOMString documentURI;
+  readonly attribute DOMString compatMode;
+  readonly attribute DOMString characterSet;
+  readonly attribute DOMString contentType;
+
+  readonly attribute DocumentType? doctype;
+  readonly attribute Element? documentElement;
+  // HTMLCollection getElementsByTagName(DOMString localName);    COMMENTED THIS OUT BECAUSE INTERFACE BREAKS TEST
+  // HTMLCollection getElementsByTagNameNS(DOMString? namespace, DOMString localName);  COMMENTED THIS OUT BECAUSE INTERFACE BREAKS TEST
+  // HTMLCollection getElementsByClassName(DOMString classNames);  COMMENTED THIS OUT BECAUSE INTERFACE BREAKS TEST
+  Element? getElementById(DOMString elementId);
+
+  Element createElement(DOMString localName);
+  Element createElementNS(DOMString? namespace, DOMString qualifiedName);
+  DocumentFragment createDocumentFragment();
+  Text createTextNode(DOMString data);
+  Comment createComment(DOMString data);
+  ProcessingInstruction createProcessingInstruction(DOMString target, DOMString data);
+
+  Node importNode(Node node, optional boolean deep = true);
+  Node adoptNode(Node node);
+
+  Event createEvent(DOMString interface);
+
+  Range createRange();
+
+  // NodeFilter.SHOW_ALL = 0xFFFFFFFF
+  NodeIterator createNodeIterator(Node root, optional unsigned long whatToShow = 0xFFFFFFFF, optional NodeFilter? filter = null);
+  TreeWalker createTreeWalker(Node root, optional unsigned long whatToShow = 0xFFFFFFFF, optional NodeFilter? filter = null);
+
+  // NEW
+  void prepend((Node or DOMString)... nodes);
+  void append((Node or DOMString)... nodes);
+};
+
+interface DOMImplementation {
+  DocumentType createDocumentType(DOMString qualifiedName, DOMString publicId, DOMString systemId);
+  XMLDocument createDocument(DOMString? namespace, [TreatNullAs=EmptyString] DOMString qualifiedName, DocumentType? doctype);
+  Document createHTMLDocument(optional DOMString title);
+
+  boolean hasFeature(DOMString feature, [TreatNullAs=EmptyString] DOMString version);
+};
+   
+interface DocumentType : Node {
+  readonly attribute DOMString name;
+  readonly attribute DOMString publicId;
+  readonly attribute DOMString systemId;
+
+  // NEW
+  void before((Node or DOMString)... nodes);
+  void after((Node or DOMString)... nodes);
+  void replace((Node or DOMString)... nodes);
+  void remove();
+};
+
+interface XMLDocument : Document {};
+
+// interface HTMLCollection {};   COMMENTED THIS OUT BECAUSE IT BREAKS TEST
+
+interface DocumentFragment : Node {
+  // NEW
+  void prepend((Node or DOMString)... nodes);
+  void append((Node or DOMString)... nodes);
+};
+
+interface Text : CharacterData {
+  Text splitText(unsigned long offset);
+  readonly attribute DOMString wholeText;
+};
+
+interface CharacterData : Node {
+  [TreatNullAs=EmptyString] attribute DOMString data;
+  readonly attribute unsigned long length;
+  DOMString substringData(unsigned long offset, unsigned long count);
+  void appendData(DOMString data);
+  void insertData(unsigned long offset, DOMString data);
+  void deleteData(unsigned long offset, unsigned long count);
+  void replaceData(unsigned long offset, unsigned long count, DOMString data);
+
+  // NEW
+  void before((Node or DOMString)... nodes);
+  void after((Node or DOMString)... nodes);
+  void replace((Node or DOMString)... nodes);
+  void remove();
+};
+
+interface Comment : CharacterData {
+};
+
+interface ProcessingInstruction : CharacterData {
+  readonly attribute DOMString target;
+};
+
+
+interface Range {
+  readonly attribute Node startContainer;
+  readonly attribute unsigned long startOffset;
+  readonly attribute Node endContainer;
+  readonly attribute unsigned long endOffset;
+  readonly attribute boolean collapsed;
+  readonly attribute Node commonAncestorContainer;
+
+  void setStart(Node refNode, unsigned long offset);
+  void setEnd(Node refNode, unsigned long offset);
+  void setStartBefore(Node refNode);
+  void setStartAfter(Node refNode);
+  void setEndBefore(Node refNode);
+  void setEndAfter(Node refNode);
+  void collapse(boolean toStart);
+  void selectNode(Node refNode);
+  void selectNodeContents(Node refNode);
+
+  const unsigned short START_TO_START = 0;
+  const unsigned short START_TO_END = 1;
+  const unsigned short END_TO_END = 2;
+  const unsigned short END_TO_START = 3;
+  short compareBoundaryPoints(unsigned short how, Range sourceRange);
+
+  void deleteContents();
+  DocumentFragment extractContents();
+  DocumentFragment cloneContents();
+  void insertNode(Node node);
+  void surroundContents(Node newParent);
+
+  Range cloneRange();
+  void detach();
+
+  boolean isPointInRange(Node node, unsigned long offset);
+  short comparePoint(Node node, unsigned long offset);
+
+  boolean intersectsNode(Node node);
+
+  stringifier;
+};
+
+interface NodeIterator {
+  readonly attribute Node root;
+  readonly attribute Node? referenceNode;
+  readonly attribute boolean pointerBeforeReferenceNode;
+  readonly attribute unsigned long whatToShow;
+  readonly attribute NodeFilter? filter;
+
+  Node? nextNode();
+  Node? previousNode();
+
+  void detach();
+};
+
+//callback      COMMENTED "CALLBACK" KEYWORD OUT AS IT BREAKS TEST
+interface NodeFilter {
+  // Constants for acceptNode()
+  const unsigned short FILTER_ACCEPT = 1;
+  const unsigned short FILTER_REJECT = 2;
+  const unsigned short FILTER_SKIP = 3;
+
+  // Constants for whatToShow
+  const unsigned long SHOW_ALL = 0xFFFFFFFF;
+  const unsigned long SHOW_ELEMENT = 0x1;
+  const unsigned long SHOW_ATTRIBUTE = 0x2; // historical
+  const unsigned long SHOW_TEXT = 0x4;
+  const unsigned long SHOW_CDATA_SECTION = 0x8; // historical
+  const unsigned long SHOW_ENTITY_REFERENCE = 0x10; // historical
+  const unsigned long SHOW_ENTITY = 0x20; // historical
+  const unsigned long SHOW_PROCESSING_INSTRUCTION = 0x40;
+  const unsigned long SHOW_COMMENT = 0x80;
+  const unsigned long SHOW_DOCUMENT = 0x100;
+  const unsigned long SHOW_DOCUMENT_TYPE = 0x200;
+  const unsigned long SHOW_DOCUMENT_FRAGMENT = 0x400;
+  const unsigned long SHOW_NOTATION = 0x800; // historical
+
+  unsigned short acceptNode(Node node);
+};
+
+interface TreeWalker {
+  readonly attribute Node root;
+  readonly attribute unsigned long whatToShow;
+  readonly attribute NodeFilter? filter;
+           attribute Node currentNode;
+
+  Node? parentNode();
+  Node? firstChild();
+  Node? lastChild();
+  Node? previousSibling();
+  Node? nextSibling();
+  Node? previousNode();
+  Node? nextNode();
+};
+
+interface EventTarget {
+  void addEventListener(DOMString type, EventListener? callback, optional boolean capture = false);
+  void removeEventListener(DOMString type, EventListener? callback, optional boolean capture = false);
+  boolean dispatchEvent(Event event);
+};
+
+// callback         COMMENTED "CALLBACK" KEYWORD OUT AS IT BREAKS TEST
+interface EventListener {
+  void handleEvent(Event event);
+};
+
+interface Event {
+  readonly attribute DOMString type;
+  readonly attribute EventTarget? target;
+  readonly attribute EventTarget? currentTarget;
+
+  const unsigned short NONE = 0;
+  const unsigned short CAPTURING_PHASE = 1;
+  const unsigned short AT_TARGET = 2;
+  const unsigned short BUBBLING_PHASE = 3;
+  readonly attribute unsigned short eventPhase;
+
+  void stopPropagation();
+  void stopImmediatePropagation();
+
+  readonly attribute boolean bubbles;
+  readonly attribute boolean cancelable;
+  void preventDefault();
+  readonly attribute boolean defaultPrevented;
+
+  readonly attribute boolean isTrusted;
+  readonly attribute DOMTimeStamp timeStamp;
+
+  void initEvent(DOMString type, boolean bubbles, boolean cancelable);
+};
+
+    [TreatNonCallableAsNull]
+    callback EventHandlerNonNull = any (Event event);
+    typedef EventHandlerNonNull? EventHandler;
+
+    [TreatNonCallableAsNull]
+    callback OnErrorEventHandlerNonNull = any ((Event or DOMString) event, DOMString source, unsigned long lineno, unsigned long column);
+    typedef OnErrorEventHandlerNonNull? OnErrorEventHandler;
+   
+</pre>
+
+
+<script>
+
+    (function() {
+
+        var idl_array = new IdlArray();
+
+        idl_array.add_untested_idls(document.getElementById("untested_idl").textContent);
+        idl_array.add_idls(document.getElementById("idl").textContent);
+        idl_array.add_objects({
+            HTMLParagraphElement: ["document.getElementById('test_p')"],
+            HTMLHRElement: ["document.getElementById('test_hr')"],
+            HTMLPreElement: ["document.getElementById('test_pre')"],
+            HTMLQuoteElement: ["document.getElementById('test_blockquote')"],
+            HTMLOListElement: ["document.getElementById('test_ol')"],
+            HTMLUListElement: ["document.getElementById('test_ul')"],
+            HTMLLIElement: ["document.getElementById('test_li')"],
+            HTMLDListElement: ["document.getElementById('test_dl')"],
+            HTMLDivElement: ["document.getElementById('test_div')"]
+        });
+        idl_array.test();
+    })();
+
+</script>
+
+<div id="log"></div>
+
+</body>
+</html>

@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <title> IDBObjectStore.delete() - delete removes record (out-of-line keys) </title>
+    <script type="text/javascript" src="support.js"></script>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script type="text/javascript">
+        var objectStoreName = "objectstore";
+        var record = {property:"data"};
+        var key = 1;
+        var db = null;
+        
+        var t = async_test();
+        
+        function RunTest() {
+            var rqOpen = window.indexedDB.open(databaseName, databaseVersion);
+            rqOpen.onupgradeneeded = t.step_func(function(event) {
+                db = event.target.result;
+                db.onerror = t.step_func(assert_database_error);
+                var objStore = db.createObjectStore(objectStoreName);
+                objStore.add(record, key);
+            });
+            rqOpen.onerror = t.step_func(assert_open_request_error);
+            rqOpen.onsuccess = t.step_func(DeleteRecord);
+        }
+        
+        function DeleteRecord() {
+            var txn = db.transaction(objectStoreName, "readwrite");
+            var objStore = txn.objectStore(objectStoreName);
+            var rqDelete = objStore.delete(key);
+            var rqGet = objStore.get(key);
+            rqGet.onsuccess = t.step_func(function(event) {
+                assert_equals(event.target.result, undefined, 'event.target.result');
+                t.done();
+            });
+        }
+        
+        add_completion_callback(function() { if(db) db.close(); });
+        
+        setup(function() {
+            var rqDelete = window.indexedDB.deleteDatabase(databaseName);
+            rqDelete.onsuccess = t.step_func( RunTest );
+        });
+    </script>
+</head>
+<body>
+    <div id="log"></div>
+</body>
+</html>

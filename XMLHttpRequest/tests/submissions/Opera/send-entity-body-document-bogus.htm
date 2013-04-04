@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+  <head>
+    <title>XMLHttpRequest: send() - unserializable Document</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <script>
+      function request_throws(input) {
+        test(function() {
+          var client = new XMLHttpRequest()
+          client.open("POST", "resources/content.php", false)
+          assert_throws("INVALID_STATE_ERR", function() { client.send(input) })
+        })
+      }
+      var doc = document.implementation.createDocument(null, null, null)
+      while(doc.childNodes.length) {
+        doc.removeChild(doc.childNodes[0])
+      }
+      request_throws(doc)
+    </script>
+  </body>
+</html>

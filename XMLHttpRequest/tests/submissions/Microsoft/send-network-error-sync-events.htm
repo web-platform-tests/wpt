@@ -1,0 +1,26 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method" />
+    <script src="/resources/testharness.js"></script>
+    <title>XmlHttpRequest L2: The send() method: Throw a "throw an "NetworkError" exception when Network error happens (synchronous flag is set)</title>
+</head>
+
+<body>
+    <div id="log"></div>
+
+    <script type="text/javascript">
+        test(function()
+        {
+            var xhr = new XMLHttpRequest();
+            
+            xhr.open("POST", "http://nonexistent-origin.w3c-test.org", false);  
+            
+            assert_throws("NETWORK_ERR", function()
+            {
+                xhr.send("Test Message");
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+  <head>
+    <title>XMLHttpRequest: send("") - empty entity body</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <script>
+      test(function() {
+        var client = new XMLHttpRequest()
+        client.open("POST", "resources/content.php", false)
+        client.send("")
+        assert_equals(client.getResponseHeader("x-request-content-length"), "0")
+      })
+    </script>
+  </body>
+</html>

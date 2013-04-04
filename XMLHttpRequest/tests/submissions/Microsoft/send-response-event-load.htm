@@ -1,0 +1,34 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method" />
+    <script src="/resources/testharness.js"></script>
+    <title>XMLHttpRequest L2: The send() method: Fire an event named load (synchronous flag is unset)</title>
+</head>
+
+<body>
+    <div id="log"></div>
+
+    <script type="text/javascript">
+        var test = async_test();
+
+        test.step(function() 
+        {
+            var xhr = new XMLHttpRequest();
+
+            xhr.onload = function(e) 
+            {
+                test.step(function() 
+                {
+                    assert_true(e instanceof ProgressEvent);
+                    assert_equals(e.type, "load");
+                    test.done(); 
+                });
+            };
+
+            xhr.open("POST", "./support/echo.php", true);
+            xhr.send("Test Message");
+        });
+    </script>
+</body>
+</html>

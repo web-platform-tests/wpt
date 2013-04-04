@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <title> IDBIndex.get() - returns the record with the first key in the range </title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="../support.js"></script>
+    <script>
+        var objectStoreName = "objectstore";
+        var indexName = "index";
+        var db = null;
+        
+        var t = async_test();
+        
+        function RunTest() {
+            var rqOpen = window.indexedDB.open(databaseName, databaseVersion);
+            rqOpen.onupgradeneeded = t.step_func(function(event) {
+                db = event.target.result;
+                db.onerror = t.step_func(assert_database_error);
+                var objStore = db.createObjectStore(objectStoreName, {keyPath:"key"});
+                objStore.createIndex(indexName, "indexedProperty");
+                for(var i = 0; i < 10; i++) {
+                    objStore.add({key:i, indexedProperty:"data"+i});
+                }
+            });
+            rqOpen.onerror = t.step_func(assert_open_request_error);
+            rqOpen.onsuccess = t.step_func(GetRecordFromIndex);
+        }
+        
+        function GetRecordFromIndex() {
+            var txn = db.transaction(objectStoreName, "readwrite");
+            var objStore = txn.objectStore(objectStoreName);
+            var index = objStore.index(indexName);
+            var rqGet = index.get(IDBKeyRange.bound("data4","data7"));
+            rqGet.onsuccess = t.step_func(function(event) {
+                assert_equals(event.target.result.key, 4, 'event.target.result.key');
+                assert_equals(event.target.result.indexedProperty, 'data4', 'event.target.result.indexedProperty');
+                t.done();
+            });
+        }
+        
+        add_completion_callback(function() { if(db) db.close(); });
+        
+        setup(function() {
+            var rqDelete = window.indexedDB.deleteDatabase(databaseName);
+            rqDelete.onsuccess = t.step_func( RunTest );
+        });
+    </script>
+</head>
+<body>
+    <div id="log"></div>
+</body>
+</html>

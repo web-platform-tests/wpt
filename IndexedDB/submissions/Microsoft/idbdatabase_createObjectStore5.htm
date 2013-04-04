@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>IDBDatabase.createObjectStore() - object store's name appears in database's list </title>
+    <script type="text/javascript" src="support.js"></script>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script type="text/javascript">
+        var objectStoreName = "objectstore";
+        var db = null;
+
+        var t = async_test(); 
+        function RunTest() {
+            var rqOpen = window.indexedDB.open(databaseName);
+            rqOpen.onupgradeneeded = t.step_func( function (event) {
+                db = event.target.result;
+                db.onerror = t.step_func( assert_database_error );
+                var objStore = db.createObjectStore(objectStoreName);
+                assert_true(db.objectStoreNames.contains(objectStoreName), "objectStoreNames.contains('" + objectStoreName + "')") 
+                t.done();
+            });
+            rqOpen.onerror = t.step_func( assert_open_request_error );
+        }
+
+        add_completion_callback(function() { if(db) db.close(); });
+        
+        setup(function() {
+            var rqDelete = window.indexedDB.deleteDatabase(databaseName);
+            rqDelete.onsuccess = t.step_func( RunTest );
+        }); 
+    </script>
+</head>
+<body>
+    <div id="log"></div>    
+</body>
+</html>

@@ -34,7 +34,6 @@ test(function() {
         format_value(space) + ")");
   });
   spaces.forEach(function(space) {
-    // https://www.w3.org/Bugs/Public/show_bug.cgi?id=20780
     test(function() {
       var option = document.createElement("option");
       option.textContent = "before" + space + "after";

@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+  <head>
+    <title>XMLHttpRequest: send() - Redirects (bogus Location header; sync)</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <script>
+      function redirect(code, location) {
+        test(function() {
+          var client = new XMLHttpRequest()
+          client.open("GET", "resources/redirect.php?location=" + location + "&code=" + code)
+          assert_throws("NETWORK_ERR", function() { client.send(null) })
+        }, document.title + " (" + code + ": " + location + ")")
+      }
+      redirect("302", "http://z")
+      redirect("302", "mailto:someone@example.org")
+      redirect("303", "http://z")
+      redirect("303", "mailto:someone@example.org")
+    </script>
+  </body>
+</html>

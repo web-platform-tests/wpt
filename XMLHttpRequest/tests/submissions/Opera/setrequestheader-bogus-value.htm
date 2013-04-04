@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+  <head>
+    <title>XMLHttpRequest: setRequestHeader() value argument checks</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-setrequestheader()-method" data-tested-assertations="/following::ol/li[4]" />  
+  </head>
+  <body>
+    <div id="log"></div>
+    <script>
+      function try_value(value) {
+        test(function() {
+          var client = new XMLHttpRequest()
+          client.open("GET", "...")
+          assert_throws("SYNTAX_ERR", function() { client.setRequestHeader("x-test", value) })
+        })
+      }
+      try_value("t\rt")
+      try_value("t\nt")
+    </script>
+  </body>
+</html>

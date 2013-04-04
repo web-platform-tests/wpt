@@ -1,0 +1,1 @@
+Here is where Microsoft tests for WebIDL will go when they are created.

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>XMLHttpRequest: open() resolving URLs - &lt;base></title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <base href="http://localhost/xhr/resources/">
+  </head>
+  <body>
+    <div id="log"></div>
+    <script>
+      test(function() {
+        var client = new XMLHttpRequest()
+        client.open("GET", "folder.txt", false)
+        client.send(null)
+        assert_equals(client.responseText, "bottom\n")
+      })
+    </script>
+  </body>
+</html>

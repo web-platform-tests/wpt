@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>  
+    <title>IDBFactory.open() - error in version change transaction aborts open</title>
+    <script type="text/javascript" src="support.js"></script>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script type="text/javascript">
+        var bOnupgradeNeededFired = false;
+        var t = async_test();
+        
+        function RunTest() {
+            var rqOpen = window.indexedDB.open(databaseName, databaseVersion);
+            rqOpen.onupgradeneeded = t.step_func(function(event) {
+                bOnupgradeNeededFired = true;
+                event.target.transaction.abort();
+            });
+            rqOpen.onerror = t.step_func(function (event) {
+                assert_true(bOnupgradeNeededFired, "Expected onupgradeneeded event to fire")
+                assert_equals(event.target.error.name, "AbortError", "error.code");
+                t.done();
+            });
+        }
+        
+        setup(function() {
+            var rqDelete = window.indexedDB.deleteDatabase(databaseName);
+            rqDelete.onsuccess = t.step_func( RunTest );
+        });
+    </script>
+</head>
+<body>
+    <div id="log"></div>
+</body>
+</html>

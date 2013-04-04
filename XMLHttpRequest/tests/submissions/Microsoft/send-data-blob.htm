@@ -1,0 +1,58 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method" />
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-response-attribute" />
+    <script src="/resources/testharness.js"></script>
+    <title>XMLHttpRequest L2: The send() method: Blob data</title>
+</head>
+
+<body>
+    <div id="log"></div>
+
+    <script type="text/javascript">
+        var test = async_test();
+
+        test.step(function()
+        {
+            var xhr = new XMLHttpRequest();
+            var xhr2 = new XMLHttpRequest();
+            
+            var content = "Hello";
+            var blob;
+
+            xhr.onreadystatechange = function()
+            {
+                if (xhr.readyState == 4)
+                {
+                    test.step(function()
+                    {
+                        blob = xhr.response;
+                        assert_true(blob instanceof Blob, "Blob from XHR Response");
+                        
+                        xhr2.open("POST", "./support/echo.php", true);
+                        xhr2.send(blob);
+                    });
+                }
+            }
+
+            xhr2.onreadystatechange = function()
+            {
+                if (xhr2.readyState == 4) 
+                {
+                    test.step(function()
+                    {
+                        assert_equals(xhr2.status, 200);
+                        assert_equals(xhr2.response, content);
+                        test.done();
+                    });
+                }
+            };
+            
+            xhr.open("GET", "./support/echo.php?content=" + content, true);
+            xhr.responseType = "blob";
+            xhr.send();
+        });
+    </script>
+</body>
+</html>

@@ -13,6 +13,7 @@ test(function() {
   assert_equals(ev.bubbles, false)
   assert_equals(ev.cancelable, false)
   assert_equals(ev.defaultPrevented, false)
+  assert_equals(ev.isTrusted, false)
   assert_true(ev.timeStamp > 0)
   assert_true("initEvent" in ev)
   assert_equals(ev.lengthComputable, false)
@@ -40,4 +41,9 @@ test(function() {
   assert_equals(ev.type, "Xx")
   assert_equals(ev.lengthComputable, false)
 }, "ProgressEventInit members must be matched case-sensitively.")
+test(function() {
+  assert_throws("NotSupportedError", function() {
+    document.createEvent("ProgressEvent")
+  })
+}, "document.createEvent() should not work with ProgressEvent.")
 </script>

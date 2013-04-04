@@ -1,1 +1,0 @@
-pass("test passed - script loaded (w3c-test.org)");

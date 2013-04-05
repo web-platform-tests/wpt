@@ -66,31 +66,11 @@ ReflectionTests.urlsExpected = function(urls) {
  * as any.  Returns false on error.
  */
 ReflectionTests.parseNonneg = function(input) {
-	var position = 0;
-	// Skip whitespace
-	while (input.length > position && /^[ \t\n\f\r]$/.test(input[position])) {
-		position++;
-	}
-	if (position >= input.length) {
-		return false;
-	}
-	if (input[position] == "+") {
-		position++;
-	}
-	if (position >= input.length) {
-		return false;
-	}
-	if (!/^[0-9]$/.test(input[position])) {
-		return false;
-	}
-	var value = 0;
-	while (/^[0-9]$/.test(input[position])) {
-		value *= 10;
-		// Don't use parseInt even for single-digit strings . . .
-		value += input.charCodeAt(position) - "0".charCodeAt(0);
-		position++;
-	}
-	return value;
+  var value = this.parseInt(input);
+  if (value === false || value < 0) {
+    return false;
+  }
+  return value !== -0 ? value : 0;
 }
 
 /**

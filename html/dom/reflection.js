@@ -100,7 +100,7 @@ ReflectionTests.parseInt = function(input) {
 		return false;
 	}
 	var value = 0;
-	while (/^[0-9]$/.test(input[position])) {
+	while (input.length > position && /^[0-9]$/.test(input[position])) {
 		value *= 10;
 		// Don't use parseInt even for single-digit strings . . .
 		value += input.charCodeAt(position) - "0".charCodeAt(0);

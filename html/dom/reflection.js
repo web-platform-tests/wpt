@@ -70,7 +70,7 @@ ReflectionTests.parseNonneg = function(input) {
   if (value === false || value < 0) {
     return false;
   }
-  return value !== -0 ? value : 0;
+  return value;
 }
 
 /**
@@ -105,6 +105,9 @@ ReflectionTests.parseInt = function(input) {
 		// Don't use parseInt even for single-digit strings . . .
 		value += input.charCodeAt(position) - "0".charCodeAt(0);
 		position++;
+	}
+	if (value === 0) {
+		return 0;
 	}
 	return sign * value;
 }

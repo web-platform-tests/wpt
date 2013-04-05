@@ -404,7 +404,8 @@ ReflectionTests.typeMap = {
 			}
 			return parsed;
 		},
-		"idlTests": [0, 1, 257, 2147483647],
+		"idlTests": [0, 1, 257, 2147483647, "-0"],
+		"idlIdlExpected": [0, 1, 257, 2147483647, 0],
 	},
 	/**
 	 * "If a reflecting IDL attribute is an unsigned integer type (unsigned

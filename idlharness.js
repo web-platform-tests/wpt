@@ -1374,6 +1374,9 @@ IdlInterface.prototype.test_members = function()
                                     "window does not have own property " + format_value(this.name));
                 assert_own_property(window[this.name], "prototype",
                                     'interface "' + this.name + '" does not have own property "prototype"');
+                assert_true(member.name in window[this.name].prototype,
+                            "The prototype object must have a property " +
+                            format_value(member.name));
 
                 // TODO: Needs to test for LenientThis.
                 assert_throws(new TypeError(), function() {

@@ -1,0 +1,33 @@
+{
+    "css3-color": {
+        "introduction": 0,
+        "dependencies": 0,
+        "color": 12,
+        "foreground": 2,
+        "transparency": 10,
+        "colorunits": 45,
+        "html4": 2,
+        "numerical": 38,
+        "rgb-color": 12,
+        "rgba-color": 13,
+        "transparent": 2,
+        "hsl-color": 6,
+        "hsl-examples": 0,
+        "hsla-color": 7,
+        "svg-color": 0,
+        "currentcolor": 4,
+        "css-system": 1,
+        "css2-system": 1,
+        "notes": 0,
+        "alpha": 0,
+        "sample": 0,
+        "profiles": 0,
+        "testsuite": 0,
+        "dropped": 0,
+        "acknowledgments": 0,
+        "changes": 0,
+        "references": 0,
+        "normative": 0,
+        "informative": 0
+    }
+}

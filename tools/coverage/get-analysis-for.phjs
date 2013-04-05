@@ -42,8 +42,9 @@ page.open(url, function (status) {
                         ,   original_id: href
                         ,   level:  level
                         }
-                    ,   $ol = $li.find("> ol").first()
                     ;
+                    var $ol = $li.find("> ol").first().length ? $li.find("> ol").first() : $li.find("> ul").first();
+
                     list.push(def);
                     if ($ol.length && level < 3) {
                         walkToC($, $ol, list, level);
@@ -100,8 +101,7 @@ page.open(url, function (status) {
             }
 
             // process ToC
-            var $toc = $("body > ol.toc").first()
-            ;
+            var $toc = $("body > ol.toc").first().length ? $("body > ol.toc").first() : $("body > ul.toc").first();
             walkToC($, $toc, tocList, 0);
             processTocForRanges(tocList);
             
@@ -156,6 +156,7 @@ page.open(url, function (status) {
                 var norms = $df.text().match(/\b(should|must)\b/g);
                 section.normativeStatements = norms ? norms.length : 0;
             }
+
             return tocList;
         });
         console.log(JSON.stringify(toc));

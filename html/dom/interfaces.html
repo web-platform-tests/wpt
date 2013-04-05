@@ -29,6 +29,19 @@ interface URLUtils {
            attribute URLQuery? query;
            attribute DOMString hash;
 };
+
+[NoInterfaceObject]
+interface URLUtilsReadOnly {
+  stringifier readonly attribute DOMString href;
+
+  readonly attribute DOMString protocol;
+  readonly attribute DOMString host;
+  readonly attribute DOMString hostname;
+  readonly attribute DOMString port;
+  readonly attribute DOMString pathname;
+  readonly attribute DOMString search;
+  readonly attribute DOMString hash;
+};
 </script>
 <!-- DOM IDLs -->
 <script type=text/plain class=untested>
@@ -1999,7 +2012,7 @@ enum SelectionMode {
   "select",
   "start",
   "end",
-  "preserve",
+  "preserve"
 };
 
 interface ValidityState {
@@ -2054,8 +2067,8 @@ interface HTMLDialogElement : HTMLElement {
   void close(optional DOMString returnValue);
 };
 
-[ReplaceableNamedProperties]
-interface Window : EventTarget {
+[NamedPropertiesObject]
+/*sealed*/ interface Window : EventTarget {
   // the current browsing context
   [Unforgeable] readonly attribute WindowProxy window;
   [Replaceable] readonly attribute WindowProxy self;
@@ -2063,9 +2076,6 @@ interface Window : EventTarget {
            attribute DOMString name; 
   [PutForwards=href, Unforgeable] readonly attribute Location location;
   readonly attribute History history;
-
-  boolean find(optional DOMString aString, optional boolean aCaseSensitive, optional boolean aBackwards, optional boolean aWrapAround, optional boolean aWholeWord, optional boolean aSearchInFrames, optional boolean aShowDialog);
-
   [Replaceable] readonly attribute BarProp locationbar;
   [Replaceable] readonly attribute BarProp menubar;
   [Replaceable] readonly attribute BarProp personalbar;
@@ -2082,7 +2092,7 @@ interface Window : EventTarget {
   [Replaceable] readonly attribute WindowProxy frames;
   [Replaceable] readonly attribute unsigned long length;
   [Unforgeable] readonly attribute WindowProxy top;
-           attribute WindowProxy opener;
+           attribute WindowProxy? opener;
   readonly attribute WindowProxy parent;
   readonly attribute Element? frameElement;
   WindowProxy open(optional DOMString url, optional DOMString target, optional DOMString features, optional boolean replace);
@@ -2095,85 +2105,18 @@ interface Window : EventTarget {
   readonly attribute ApplicationCache applicationCache;
 
   // user prompts
-  // https://www.w3.org/Bugs/Public/show_bug.cgi?id=21587
-  //void alert(DOMString message);
-  //boolean confirm(DOMString message);
-  //DOMString? prompt(DOMString message, optional DOMString default);
+  // TODO https://www.w3.org/Bugs/Public/show_bug.cgi?id=21587
+  // void alert(DOMString message);
+  // boolean confirm(DOMString message);
+  // DOMString? prompt(DOMString message, optional DOMString default);
   void print();
-  //TODO freezes WebKit
-  //any showModalDialog(DOMString url, optional any argument);
+  // TODO freezes WebKit
+  // any showModalDialog(DOMString url, optional any argument);
 
-  // cross-document messaging
   void postMessage(any message, DOMString targetOrigin, optional sequence<Transferable> transfer);
-
-  // event handler IDL attributes
-  [TreatNonCallableAsNull] attribute Function? onabort;
-  [TreatNonCallableAsNull] attribute Function? onafterprint;
-  [TreatNonCallableAsNull] attribute Function? onbeforeprint;
-  [TreatNonCallableAsNull] attribute Function? onbeforeunload;
-  [TreatNonCallableAsNull] attribute Function? onblur;
-  [TreatNonCallableAsNull] attribute Function? oncanplay;
-  [TreatNonCallableAsNull] attribute Function? oncanplaythrough;
-  [TreatNonCallableAsNull] attribute Function? onchange;
-  [TreatNonCallableAsNull] attribute Function? onclick;
-  [TreatNonCallableAsNull] attribute Function? oncontextmenu;
-  [TreatNonCallableAsNull] attribute Function? oncuechange;
-  [TreatNonCallableAsNull] attribute Function? ondblclick;
-  [TreatNonCallableAsNull] attribute Function? ondrag;
-  [TreatNonCallableAsNull] attribute Function? ondragend;
-  [TreatNonCallableAsNull] attribute Function? ondragenter;
-  [TreatNonCallableAsNull] attribute Function? ondragleave;
-  [TreatNonCallableAsNull] attribute Function? ondragover;
-  [TreatNonCallableAsNull] attribute Function? ondragstart;
-  [TreatNonCallableAsNull] attribute Function? ondrop;
-  [TreatNonCallableAsNull] attribute Function? ondurationchange;
-  [TreatNonCallableAsNull] attribute Function? onemptied;
-  [TreatNonCallableAsNull] attribute Function? onended;
-  [TreatNonCallableAsNull] attribute Function? onerror;
-  [TreatNonCallableAsNull] attribute Function? onfocus;
-  [TreatNonCallableAsNull] attribute Function? onhashchange;
-  [TreatNonCallableAsNull] attribute Function? oninput;
-  [TreatNonCallableAsNull] attribute Function? oninvalid;
-  [TreatNonCallableAsNull] attribute Function? onkeydown;
-  [TreatNonCallableAsNull] attribute Function? onkeypress;
-  [TreatNonCallableAsNull] attribute Function? onkeyup;
-  [TreatNonCallableAsNull] attribute Function? onload;
-  [TreatNonCallableAsNull] attribute Function? onloadeddata;
-  [TreatNonCallableAsNull] attribute Function? onloadedmetadata;
-  [TreatNonCallableAsNull] attribute Function? onloadstart;
-  [TreatNonCallableAsNull] attribute Function? onmessage;
-  [TreatNonCallableAsNull] attribute Function? onmousedown;
-  [TreatNonCallableAsNull] attribute Function? onmousemove;
-  [TreatNonCallableAsNull] attribute Function? onmouseout;
-  [TreatNonCallableAsNull] attribute Function? onmouseover;
-  [TreatNonCallableAsNull] attribute Function? onmouseup;
-  [TreatNonCallableAsNull] attribute Function? onmousewheel;
-  [TreatNonCallableAsNull] attribute Function? onoffline;
-  [TreatNonCallableAsNull] attribute Function? ononline;
-  [TreatNonCallableAsNull] attribute Function? onpause;
-  [TreatNonCallableAsNull] attribute Function? onplay;
-  [TreatNonCallableAsNull] attribute Function? onplaying;
-  [TreatNonCallableAsNull] attribute Function? onpagehide;
-  [TreatNonCallableAsNull] attribute Function? onpageshow;
-  [TreatNonCallableAsNull] attribute Function? onpopstate;
-  [TreatNonCallableAsNull] attribute Function? onprogress;
-  [TreatNonCallableAsNull] attribute Function? onratechange;
-  [TreatNonCallableAsNull] attribute Function? onreset;
-  [TreatNonCallableAsNull] attribute Function? onresize;
-  [TreatNonCallableAsNull] attribute Function? onscroll;
-  [TreatNonCallableAsNull] attribute Function? onseeked;
-  [TreatNonCallableAsNull] attribute Function? onseeking;
-  [TreatNonCallableAsNull] attribute Function? onselect;
-  [TreatNonCallableAsNull] attribute Function? onshow;
-  [TreatNonCallableAsNull] attribute Function? onstalled;
-  [TreatNonCallableAsNull] attribute Function? onstorage;
-  [TreatNonCallableAsNull] attribute Function? onsubmit;
-  [TreatNonCallableAsNull] attribute Function? onsuspend;
-  [TreatNonCallableAsNull] attribute Function? ontimeupdate;
-  [TreatNonCallableAsNull] attribute Function? onunload;
-  [TreatNonCallableAsNull] attribute Function? onvolumechange;
-  [TreatNonCallableAsNull] attribute Function? onwaiting;
 };
+Window implements GlobalEventHandlers;
+Window implements WindowEventHandlers;
 
 interface BarProp {
            attribute boolean visible;
@@ -2185,26 +2128,18 @@ interface History {
   void go(optional long delta);
   void back();
   void forward();
-  void pushState(any data, DOMString title, optional DOMString url);
-  void replaceState(any data, DOMString title, optional DOMString url);
+  void pushState(any data, DOMString title, optional DOMString? url = null);
+  void replaceState(any data, DOMString title, optional DOMString? url = null);
 };
 
-interface Location {
+[Unforgeable] interface Location {
   stringifier attribute DOMString href;
-  //TODO causes infinite loop in Opera
-  //void assign(DOMString url);
-  //void replace(DOMString url);
+  // TODO causes infinite loop in Opera
+  // void assign(DOMString url);
+  // void replace(DOMString url);
   void reload();
-
-  // URL decomposition IDL attributes 
-           attribute DOMString protocol;
-           attribute DOMString host;
-           attribute DOMString hostname;
-           attribute DOMString port;
-           attribute DOMString pathname;
-           attribute DOMString search;
-           attribute DOMString hash;
 };
+Location implements URLUtils;
 
 [Constructor(DOMString type, optional PopStateEventInit eventInitDict)]
 interface PopStateEvent : Event {
@@ -2256,14 +2191,14 @@ interface ApplicationCache : EventTarget {
   void swapCache();
 
   // events
-  [TreatNonCallableAsNull] attribute Function? onchecking;
-  [TreatNonCallableAsNull] attribute Function? onerror;
-  [TreatNonCallableAsNull] attribute Function? onnoupdate;
-  [TreatNonCallableAsNull] attribute Function? ondownloading;
-  [TreatNonCallableAsNull] attribute Function? onprogress;
-  [TreatNonCallableAsNull] attribute Function? onupdateready;
-  [TreatNonCallableAsNull] attribute Function? oncached;
-  [TreatNonCallableAsNull] attribute Function? onobsolete;
+           attribute EventHandler onchecking;
+           attribute EventHandler onerror;
+           attribute EventHandler onnoupdate;
+           attribute EventHandler ondownloading;
+           attribute EventHandler onprogress;
+           attribute EventHandler onupdateready;
+           attribute EventHandler oncached;
+           attribute EventHandler onobsolete;
 };
 
 [NoInterfaceObject]
@@ -2370,11 +2305,11 @@ Window implements WindowBase64;
 
 [NoInterfaceObject]
 interface WindowTimers {
-  long setTimeout(Function handler, optional long timeout, any... args);
-  long setTimeout([AllowAny] DOMString handler, optional long timeout, any... args);
+  long setTimeout(Function handler, optional long timeout, any... arguments);
+  long setTimeout(DOMString handler, optional long timeout, any... arguments);
   void clearTimeout(long handle);
-  long setInterval(Function handler, optional long timeout, any... args);
-  long setInterval([AllowAny] DOMString handler, optional long timeout, any... args);
+  long setInterval(Function handler, optional long timeout, any... arguments);
+  long setInterval(DOMString handler, optional long timeout, any... arguments);
   void clearInterval(long handle);
 };
 Window implements WindowTimers;
@@ -2388,6 +2323,7 @@ interface Navigator {
   // objects implementing this interface also implement the interfaces given below
 };
 Navigator implements NavigatorID;
+Navigator implements NavigatorLanguage;
 Navigator implements NavigatorOnLine;
 Navigator implements NavigatorContentUtils;
 Navigator implements NavigatorStorageUtils;
@@ -2398,6 +2334,14 @@ interface NavigatorID {
   readonly attribute DOMString appVersion;
   readonly attribute DOMString platform;
   readonly attribute DOMString userAgent;
+
+  // TODO: Invalid WebIDL
+  // const DOMString product = "Gecko"; // for historical reasons
+};
+
+[NoInterfaceObject]
+interface NavigatorLanguage {
+  readonly attribute DOMString? language;
 };
 
 [NoInterfaceObject]
@@ -2421,6 +2365,27 @@ interface External {
   unsigned long IsSearchProviderInstalled(DOMString engineURL);
 };
 
+interface ImageBitmap {
+  // opaque object
+};
+
+callback ImageBitmapCallback = void (ImageBitmap image);
+
+typedef (HTMLImageElement or
+         HTMLVideoElement or
+         HTMLCanvasElement or
+         Blob or
+         ImageData or
+         CanvasRenderingContext2D or
+         ImageBitmap) ImageBitmapSource;
+
+[NoInterfaceObject]
+interface ImageBitmapFactories {
+  void createImageBitmap(ImageBitmapSource image, ImageBitmapCallback _callback, optional long sx, long sy, long sw, long sh);
+};
+Window implements ImageBitmapFactories;
+WorkerGlobalScope implements ImageBitmapFactories;
+
 interface DataTransfer {
            attribute DOMString dropEffect;
            attribute DOMString effectAllowed;
@@ -2428,10 +2393,9 @@ interface DataTransfer {
   readonly attribute DataTransferItemList items;
 
   void setDragImage(Element image, long x, long y);
-  void addElement(Element element);
 
   /* old interface */
-  readonly attribute DOMStringList types;
+  readonly attribute DOMString[] types;
   DOMString getData(DOMString format);
   void setData(DOMString format, DOMString data);
   void clearData(optional DOMString format);
@@ -2451,7 +2415,7 @@ interface DataTransferItemList {
 interface DataTransferItem {
   readonly attribute DOMString kind;
   readonly attribute DOMString type;
-  void getAsString(FunctionStringCallback? callback);
+  void getAsString(FunctionStringCallback? _callback);
   File? getAsFile();
 };
 
@@ -2469,47 +2433,47 @@ dictionary DragEventInit : MouseEventInit {
   DataTransfer? dataTransfer;
 };
 
-[NoInterfaceObject]
 interface WorkerGlobalScope : EventTarget {
   readonly attribute WorkerGlobalScope self;
   readonly attribute WorkerLocation location;
 
   void close();
-  [TreatNonCallableAsNull] attribute Function? onerror;
-  [TreatNonCallableAsNull] attribute Function? onoffline;
-  [TreatNonCallableAsNull] attribute Function? ononline;
-};
-WorkerGlobalScope implements WorkerUtils;
+           attribute EventHandler onerror;
+           attribute EventHandler onoffline;
+           attribute EventHandler ononline;
 
-interface DedicatedWorkerGlobalScope {
-  void postMessage(any message, optional sequence<Transferable> transfer);
-  [TreatNonCallableAsNull] attribute Function? onmessage;
+  // also has obsolete members
 };
-DedicatedWorkerGlobalScope implements WorkerGlobalScope;
+
+interface DedicatedWorkerGlobalScope : WorkerGlobalScope {
+  void postMessage(any message, optional sequence<Transferable> transfer);
+           attribute EventHandler onmessage;
+};
 
 interface SharedWorkerGlobalScope : WorkerGlobalScope {
   readonly attribute DOMString name;
   readonly attribute ApplicationCache applicationCache;
-  [TreatNonCallableAsNull] attribute Function? onconnect;
+           attribute EventHandler onconnect;
 };
-SharedWorkerGlobalScope implements WorkerGlobalScope;
 
 [Constructor(DOMString type, optional ErrorEventInit eventInitDict)]
 interface ErrorEvent : Event {
   readonly attribute DOMString message;
   readonly attribute DOMString filename;
   readonly attribute unsigned long lineno;
+  readonly attribute unsigned long column;
 };
 
 dictionary ErrorEventInit : EventInit {
   DOMString message;
   DOMString filename;
   unsigned long lineno;
+  unsigned long column;
 };
 
 [NoInterfaceObject]
 interface AbstractWorker {
-  [TreatNonCallableAsNull] attribute Function? onerror;
+           attribute EventHandler onerror;
 
 };
 
@@ -2518,7 +2482,7 @@ interface Worker : EventTarget {
   void terminate();
 
   void postMessage(any message, optional sequence<Transferable> transfer);
-  [TreatNonCallableAsNull] attribute Function? onmessage;
+           attribute EventHandler onmessage;
 };
 Worker implements AbstractWorker;
 
@@ -2529,35 +2493,29 @@ interface SharedWorker : EventTarget {
 SharedWorker implements AbstractWorker;
 
 [NoInterfaceObject]
-interface WorkerUtils {
+partial interface WorkerGlobalScope {
   void importScripts(DOMString... urls);
   readonly attribute WorkerNavigator navigator;
 };
-WorkerUtils implements WindowTimers;
-WorkerUtils implements WindowBase64;
+WorkerGlobalScope implements WindowTimers;
+WorkerGlobalScope implements WindowBase64;
 
 interface WorkerNavigator {};
 WorkerNavigator implements NavigatorID;
+WorkerNavigator implements NavigatorLanguage;
 WorkerNavigator implements NavigatorOnLine;
 
 interface WorkerLocation {
-  // URL decomposition IDL attributes
   stringifier readonly attribute DOMString href;
-  readonly attribute DOMString protocol;
-  readonly attribute DOMString host;
-  readonly attribute DOMString hostname;
-  readonly attribute DOMString port;
-  readonly attribute DOMString pathname;
-  readonly attribute DOMString search;
-  readonly attribute DOMString hash;
 };
+WorkerLocation implements URLUtilsReadOnly;
 
 [Constructor(DOMString type, optional MessageEventInit eventInitDict)]
 interface MessageEvent : Event {
   readonly attribute any data;
   readonly attribute DOMString origin;
   readonly attribute DOMString lastEventId;
-  readonly attribute WindowProxy? source;
+  readonly attribute (WindowProxy or MessagePort)? source;
   readonly attribute MessagePort[]? ports;
 };
 
@@ -2581,9 +2539,9 @@ interface EventSource : EventTarget {
   readonly attribute unsigned short readyState;
 
   // networking
-  [TreatNonCallableAsNull] attribute Function? onopen;
-  [TreatNonCallableAsNull] attribute Function? onmessage;
-  [TreatNonCallableAsNull] attribute Function? onerror;
+           attribute EventHandler onopen;
+           attribute EventHandler onmessage;
+           attribute EventHandler onerror;
   void close();
 };
 
@@ -2591,8 +2549,8 @@ dictionary EventSourceInit {
   boolean withCredentials = false;
 };
 
-[Constructor(DOMString url, optional DOMString protocols),
- Constructor(DOMString url, optional DOMString[] protocols)]
+enum BinaryType { "blob", "arraybuffer" };
+[Constructor(DOMString url, optional (DOMString or DOMString[]) protocols)]
 interface WebSocket : EventTarget {
   readonly attribute DOMString url;
 
@@ -2605,19 +2563,20 @@ interface WebSocket : EventTarget {
   readonly attribute unsigned long bufferedAmount;
 
   // networking
-  [TreatNonCallableAsNull] attribute Function? onopen;
-  [TreatNonCallableAsNull] attribute Function? onerror;
-  [TreatNonCallableAsNull] attribute Function? onclose;
+           attribute EventHandler onopen;
+           attribute EventHandler onerror;
+           attribute EventHandler onclose;
   readonly attribute DOMString extensions;
   readonly attribute DOMString protocol;
   void close([Clamp] optional unsigned short code, optional DOMString reason);
 
   // messaging
-  [TreatNonCallableAsNull] attribute Function? onmessage;
-           attribute DOMString binaryType;
+           attribute EventHandler onmessage;
+           attribute BinaryType binaryType;
   void send(DOMString data);
-  void send(ArrayBuffer data);
   void send(Blob data);
+  void send(ArrayBuffer data);
+  void send(ArrayBufferView data);
 };
 
 [Constructor(DOMString type, optional CloseEventInit eventInitDict)]
@@ -2645,14 +2604,23 @@ interface MessagePort : EventTarget {
   void close();
 
   // event handlers
-  [TreatNonCallableAsNull] attribute Function? onmessage;
+           attribute EventHandler onmessage;
 };
 MessagePort implements Transferable;
+
+[Constructor] interface PortCollection {
+  void add(MessagePort port);
+  void remove(MessagePort port);
+  void clear();
+  void iterate(PortCollectionCallback callback);
+};
+
+callback PortCollectionCallback = void (MessagePort port);
 
 interface Storage {
   readonly attribute unsigned long length;
   DOMString? key(unsigned long index);
-  getter DOMString getItem(DOMString key);
+  getter DOMString? getItem(DOMString key);
   setter creator void setItem(DOMString key, DOMString value);
   deleter void removeItem(DOMString key);
   void clear();
@@ -2672,7 +2640,7 @@ Window implements WindowLocalStorage;
 
 [Constructor(DOMString type, optional StorageEventInit eventInitDict)]
 interface StorageEvent : Event {
-  readonly attribute DOMString key;
+  readonly attribute DOMString? key;
   readonly attribute DOMString? oldValue;
   readonly attribute DOMString? newValue;
   readonly attribute DOMString url;
@@ -2680,7 +2648,7 @@ interface StorageEvent : Event {
 };
 
 dictionary StorageEventInit : EventInit {
-  DOMString key;
+  DOMString? key;
   DOMString? oldValue;
   DOMString? newValue;
   DOMString url;
@@ -2714,9 +2682,9 @@ interface HTMLMarqueeElement : HTMLElement {
            attribute unsigned long vspace;
            attribute DOMString width;
 
-  [TreatNonCallableAsNull] attribute Function? onbounce;
-  [TreatNonCallableAsNull] attribute Function? onfinish;
-  [TreatNonCallableAsNull] attribute Function? onstart;
+           attribute EventHandler onbounce;
+           attribute EventHandler onfinish;
+           attribute EventHandler onstart;
 
   void start();
   void stop();
@@ -2725,25 +2693,8 @@ interface HTMLMarqueeElement : HTMLElement {
 interface HTMLFrameSetElement : HTMLElement {
            attribute DOMString cols;
            attribute DOMString rows;
-  [TreatNonCallableAsNull] attribute Function? onafterprint;
-  [TreatNonCallableAsNull] attribute Function? onbeforeprint;
-  [TreatNonCallableAsNull] attribute Function? onbeforeunload;
-  [TreatNonCallableAsNull] attribute Function? onblur;
-  [TreatNonCallableAsNull] attribute Function? onerror;
-  [TreatNonCallableAsNull] attribute Function? onfocus;
-  [TreatNonCallableAsNull] attribute Function? onhashchange;
-  [TreatNonCallableAsNull] attribute Function? onload;
-  [TreatNonCallableAsNull] attribute Function? onmessage;
-  [TreatNonCallableAsNull] attribute Function? onoffline;
-  [TreatNonCallableAsNull] attribute Function? ononline;
-  [TreatNonCallableAsNull] attribute Function? onpagehide;
-  [TreatNonCallableAsNull] attribute Function? onpageshow;
-  [TreatNonCallableAsNull] attribute Function? onpopstate;
-  [TreatNonCallableAsNull] attribute Function? onresize;
-  [TreatNonCallableAsNull] attribute Function? onscroll;
-  [TreatNonCallableAsNull] attribute Function? onstorage;
-  [TreatNonCallableAsNull] attribute Function? onunload;
 };
+HTMLFrameSetElement implements WindowEventHandlers;
 
 interface HTMLFrameElement : HTMLElement {
            attribute DOMString name;
@@ -2926,6 +2877,7 @@ partial interface HTMLScriptElement {
 
 partial interface HTMLTableElement {
            attribute DOMString align;
+           attribute DOMString border;
            attribute DOMString frame;
            attribute DOMString rules;
            attribute DOMString summary;
@@ -2944,7 +2896,6 @@ partial interface HTMLTableSectionElement {
 };
 
 partial interface HTMLTableCellElement {
-           attribute DOMString abbr;
            attribute DOMString align;
            attribute DOMString axis;
            attribute DOMString height;
@@ -2956,6 +2907,10 @@ partial interface HTMLTableCellElement {
            attribute DOMString vAlign;
 
   [TreatNullAs=EmptyString] attribute DOMString bgColor;
+};
+
+partial interface HTMLTableDataCellElement {
+           attribute DOMString abbr;
 };
 
 partial interface HTMLTableRowElement {

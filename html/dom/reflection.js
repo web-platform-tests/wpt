@@ -678,11 +678,11 @@ ReflectionTests.doReflects = function(data, idlName, idlObj, domName, domObj) {
 		// it OOMs when given excessive sizes.  This is permissible under the
 		// hardware-limitations clause, so cut out those checks.  TODO: Must be
 		// a way to make this more succinct.
-		domTests = domTests.filter(function(element, index, array) { return element < 1000; });
+		domTests = domTests.filter(function(element, index, array) { return domExpected[index] < 1000; });
 		domExpected = domExpected.filter(function(element, index, array) { return element < 1000; });
-		idlTests = idlTests.filter(function(element, index, array) { return element < 1000; });
-		idlDomExpected = idlDomExpected.filter(function(element, index, array) { return element < 1000; });
-		idlIdlExpected = idlIdlExpected.filter(function(element, index, array) { return element < 1000; });
+		idlTests = idlTests.filter(function(element, index, array) { return idlIdlExpected[index] < 1000; });
+		idlDomExpected = idlDomExpected.filter(function(element, index, array) { return idlIdlExpected[index] < 1000; });
+		idlIdlExpected = idlIdlExpected.filter(function(element, index, array) { return idlIdlExpected[index] < 1000; });
 	}
 
 	for (var i = 0; i < domTests.length; i++) {

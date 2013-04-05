@@ -4,8 +4,8 @@
 they currently test the WHATWG HTML spec's IDLs, not the W3C HTML5 spec,
 although this can be remedied easily enough. -->
 <div id=log></div>
-<script src=/resources/testharnessreport.js></script>
 <script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
 <script src=/resources/WebIDLParser.js></script>
 <script src=/resources/idlharness.js></script>
 <!-- DOM4 IDLs -->
@@ -564,7 +564,7 @@ interface CSSImportRule : CSSRule {
 interface CSSMediaRule : CSSRule {
   [PutForwards=mediaText] readonly attribute MediaList media;
   readonly attribute CSSRuleList cssRules;
-  unsigned long insertRule(DOMString rule, in unsigned long index);
+  unsigned long insertRule(DOMString rule, unsigned long index);
   void deleteRule(unsigned long index);
 };
 
@@ -2051,9 +2051,10 @@ interface Window : EventTarget {
   readonly attribute ApplicationCache applicationCache;
 
   // user prompts
-  void alert(DOMString message);
-  boolean confirm(DOMString message);
-  DOMString? prompt(DOMString message, optional DOMString default);
+  // https://www.w3.org/Bugs/Public/show_bug.cgi?id=21587
+  //void alert(DOMString message);
+  //boolean confirm(DOMString message);
+  //DOMString? prompt(DOMString message, optional DOMString default);
   void print();
   //TODO freezes WebKit
   //any showModalDialog(DOMString url, optional any argument);

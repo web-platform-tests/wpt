@@ -417,13 +417,11 @@ IdlArray.prototype.test = function()
     {
         this.recursively_get_implements(lhs).forEach(function(rhs)
         {
-            if (!(lhs in this.members)
-            || !(this.members[lhs] instanceof IdlInterface)
-            || !(rhs in this.members)
-            || !(this.members[rhs] instanceof IdlInterface))
-            {
-                throw lhs + " implements " + rhs + ", but one is undefined or not an interface";
-            }
+            var errStr = lhs + " implements " + rhs + ", but ";
+            if (!(lhs in this.members)) throw errStr + lhs + " is undefined.";
+            if (!(this.members[lhs] instanceof IdlInterface)) throw errStr + lhs + " is not an interface.";
+            if (!(rhs in this.members)) throw errStr + rhs + " is undefined.";
+            if (!(this.members[rhs] instanceof IdlInterface)) throw errStr + rhs + " is not an interface.";
             this.members[rhs].members.forEach(function(member)
             {
                 this.members[lhs].members.push(new IdlInterfaceMember(member));

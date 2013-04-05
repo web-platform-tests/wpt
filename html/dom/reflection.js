@@ -330,7 +330,8 @@ ReflectionTests.typeMap = {
 		"jsType": "number",
 		"defaultVal": 0,
 		"domTests": [-36, -1, 0, 1, maxInt, minInt, maxInt + 1, minInt - 1,
-			maxUnsigned, maxUnsigned + 1, "", " " + binaryString + " foo ",
+			maxUnsigned, maxUnsigned + 1, "", "-1", "-0", "0", "1",
+			" " + binaryString + " foo ",
 			// Test various different whitespace.  The spec currently says only
 			// 20, 9, A, C, and D are whitespace.  JavaScript includes many
 			// more, including all Zs characters in Unicode 3.0.0.  All the
@@ -371,8 +372,9 @@ ReflectionTests.typeMap = {
 	"limited long": {
 		"jsType": "number",
 		"defaultVal": -1,
-		"domTests": [minInt - 1, minInt, -36,  -1,   0, 1, maxInt, maxInt + 1,
-			maxUnsigned, maxUnsigned + 1, "", " " + binaryString + " foo ",
+		"domTests": [minInt - 1, minInt, -36, -1, -0, 0, 1, maxInt, maxInt + 1,
+			maxUnsigned, maxUnsigned + 1, "", "-1", "-0", "0", "1",
+			" " + binaryString + " foo ",
 			//"\u00097", "\u000B7", "\u000C7", "\u00207", "\u00A07", "\uFEFF7",
 			//"\u000A7", "\u000D7", "\u20287", "\u20297", "\u16807", "\u180E7",
 			//"\u20007", "\u20017", "\u20027", "\u20037", "\u20047", "\u20057",
@@ -406,7 +408,7 @@ ReflectionTests.typeMap = {
 		"jsType": "number",
 		"defaultVal": 0,
 		"domTests": [minInt - 1, minInt, -36,  -1,   0, 1, 257, maxInt,
-			maxInt + 1, maxUnsigned, maxUnsigned + 1, "",
+			maxInt + 1, maxUnsigned, maxUnsigned + 1, "", "-1", "-0", "0", "1",
 			//"\u00097", "\u000B7", "\u000C7", "\u00207", "\u00A07", "\uFEFF7",
 			//"\u000A7", "\u000D7", "\u20287", "\u20297", "\u16807", "\u180E7",
 			//"\u20007", "\u20017", "\u20027", "\u20037", "\u20047", "\u20057",
@@ -444,7 +446,7 @@ ReflectionTests.typeMap = {
 		"jsType": "number",
 		"defaultVal": 1,
 		"domTests": [minInt - 1, minInt, -36,  -1,   0,    1, maxInt,
-			maxInt + 1, maxUnsigned, maxUnsigned + 1, "",
+			maxInt + 1, maxUnsigned, maxUnsigned + 1, "", "-1", "-0", "0", "1",
 			//"\u00097", "\u000B7", "\u000C7", "\u00207", "\u00A07", "\uFEFF7",
 			//"\u000A7", "\u000D7", "\u20287", "\u20297", "\u16807", "\u180E7",
 			//"\u20007", "\u20017", "\u20027", "\u20037", "\u20047", "\u20057",

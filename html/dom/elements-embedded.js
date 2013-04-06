@@ -1,8 +1,10 @@
+// Up-to-date as of 2013-04-06.
 var embeddedElements = {
 	img: {
 		// Conforming
 		alt: "string",
 		src: "url",
+		srcset: "string",
 		crossOrigin: {type: "enum", keywords: ["", "anonymous", "use-credentials"]},
 		useMap: "string",
 		isMap: "boolean",
@@ -23,8 +25,9 @@ var embeddedElements = {
 		name: "string",
 		sandbox: "settable tokenlist",
 		seamless: "boolean",
-		height: "string",
+		allowFullscreen: "boolean",
 		width: "string",
+		height: "string",
 
 		// Obsolete
 		align: "string",
@@ -38,22 +41,22 @@ var embeddedElements = {
 		// Conforming
 		src: "url",
 		type: "string",
-		height: "string",
 		width: "string",
+		height: "string",
 
 		// Obsolete
-		name: "string",
 		align: "string",
+		name: "string",
 	},
 	object: {
 		// Conforming
 		data: "url",
 		type: "string",
+		typeMustMatch: "boolean",
 		name: "string",
 		useMap: "string",
-		typeMustMatch: "boolean",
-		height: "string",
 		width: "string",
+		height: "string",
 
 		// Obsolete
 		align: "string",
@@ -77,28 +80,42 @@ var embeddedElements = {
 		valueType: "string",
 	},
 	video: {
-		poster: "url",
+		// HTMLMediaElement
 		src: "url",
+		crossOrigin: {type: "enum", keywords: ["", "anonymous", "use-credentials"]},
 		// As with "keytype", we have no missing value default defined here.
 		preload: {type: "enum", keywords: ["none", "metadata", "auto"], nonCanon: {"": "auto"}, defaultVal: null},
-		loop: "boolean",
 		autoplay: "boolean",
+		loop: "boolean",
 		controls: "boolean",
-		height: "unsigned long",
+		defaultMuted: {type: "boolean", domAttrName: "muted"},
+
 		width: "unsigned long",
+		height: "unsigned long",
+		poster: "url",
 	},
 	audio: {
+		// HTMLMediaElement
 		src: "url",
+		crossOrigin: {type: "enum", keywords: ["", "anonymous", "use-credentials"]},
 		// As with "keytype", we have no missing value default defined here.
 		preload: {type: "enum", keywords: ["none", "metadata", "auto"], nonCanon: {"": "auto"}, defaultVal: null},
-		loop: "boolean",
 		autoplay: "boolean",
+		loop: "boolean",
 		controls: "boolean",
+		defaultMuted: {type: "boolean", domAttrName: "muted"},
 	},
 	source: {
 		src: "url",
 		type: "string",
 		media: "string",
+	},
+	track: {
+		kind: {type: "enum", keywords: ["subtitles", "captions", "descriptions", "chapters", "metadata"]},
+		src: "url",
+		srclang: "string",
+		label: "string",
+		"default": "boolean",
 	},
 	canvas: {
 		width: {type: "unsigned long", defaultVal: 300},
@@ -111,15 +128,15 @@ var embeddedElements = {
 		// Conforming
 		alt: "string",
 		coords: "string",
+		shape: "string",
 		href: "url",
 		target: "string",
+		download: "string",
 		ping: "urls",
 		rel: "string",
-		media: "string",
+		relList: {type: "tokenlist", domAttrName: "rel"},
 		hreflang: "string",
 		type: "string",
-		shape: "string",
-		relList: {type: "tokenlist", domAttrName: "rel"},
 
 		// Obsolete
 		noHref: "boolean",

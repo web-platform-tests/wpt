@@ -128,7 +128,7 @@ ReflectionHarness.testException = function(exceptionName, fn, description) {
 	try {
 		fn();
 	} catch (e) {
-		if (e instanceof DOMException && e.code == eval("DOMException." + exceptionName)) {
+		if (e instanceof DOMException && e.code == DOMException[exceptionName]) {
 			this.increment(this.passed);
 			return true;
 		}

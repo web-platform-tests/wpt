@@ -159,7 +159,7 @@ var maxUnsigned = 4294967295;
  * http://www.w3.org/Bugs/Public/show_bug.cgi?id=12220
  * Will fix and uncomment once the bugs are resolved.
  *
- * TODO: tokenlist, settable tokenlist
+ * TODO: tokenlist, settable tokenlist, limited 
  */
 ReflectionTests.typeMap = {
 	/**

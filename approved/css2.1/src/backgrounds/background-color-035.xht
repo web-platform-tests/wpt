@@ -3,7 +3,7 @@
     <head>
         <title>CSS Test: Background-color set to hex with 3 digits with a red set to the maximum value, #f00</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
-        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-04-21 -->
+        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2013-04-08 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#propdef-background-color" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#background-properties" />
         <link rel="match" href="background-color-035-ref.xht" />
@@ -13,12 +13,13 @@
         <style type="text/css">
             img, #test
             {
-                height: 1in;
-                width: 1in;
+                height: 100px;
+                width: 100px;
             }
             #test
             {
                 background-color: #f00;
+                margin-bottom: 10px;
             }
         </style>
     </head>
@@ -26,7 +27,6 @@
         <p>Test passes if there are 2 squares with the <strong>same color</strong>.</p>
         <div id="test"></div>
         <div id="reference">
-            <br />
             <img alt="#f00 color swatch" src="support/f00_color.png" />
         </div>
     </body>

@@ -49,7 +49,8 @@ var formElements = {
 		placeholder: "string",
 		readOnly: "boolean",
 		required: "boolean",
-		size: "unsigned long",
+		// http://www.whatwg.org/html/#attr-input-size
+		size: {type: "limited unsigned long", defaultVal: 20},
 		src: "url",
 		step: "string",
 		type: {type: "enum", keywords: ["hidden", "text", "search", "tel",

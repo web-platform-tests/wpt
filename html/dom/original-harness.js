@@ -117,6 +117,14 @@ ReflectionHarness.test = function(expected, actual, description) {
 	}
 }
 
+ReflectionHarness.run = function(fun, description) {
+	try {
+		fun();
+	} catch (err) {
+		ReflectionHarness.failure(description);
+	}
+}
+
 /**
  * If calling fn causes a DOMException of the type given by the string
  * exceptionName (e.g., "INDEX_SIZE_ERR"), output a success.  Otherwise, report

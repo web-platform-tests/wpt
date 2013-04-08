@@ -704,7 +704,7 @@ ReflectionTests.doReflects = function(data, idlName, idlObj, domName, domObj) {
 				idlObj[idlName] = idlTests[i];
 			}, "IDL set to " + ReflectionHarness.stringRep(idlTests[i]) + " must throw INDEX_SIZE_ERR");
 		} else {
-			try {
+			ReflectionHarness.run(function() {
 				idlObj[idlName] = idlTests[i];
 				if (data.type == "boolean") {
 					// Special case yay
@@ -718,13 +718,7 @@ ReflectionTests.doReflects = function(data, idlName, idlObj, domName, domObj) {
 				if (ReflectionHarness.catchUnexpectedExceptions) {
 					ReflectionHarness.success();
 				}
-			} catch (err) {
-				if (ReflectionHarness.catchUnexpectedExceptions) {
-					ReflectionHarness.failure("Exception thrown during tests with IDL set to " + ReflectionHarness.stringRep(idlTests[i]));
-				} else {
-					throw err;
-				}
-			}
+			}, "IDL set to " + ReflectionHarness.stringRep(idlTests[i]) + " should not throw");
 		}
 	}
 }

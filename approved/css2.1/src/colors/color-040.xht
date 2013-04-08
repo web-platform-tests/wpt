@@ -3,7 +3,7 @@
     <head>
         <title>CSS Test: Color set to hex with three digits with a green set to the maximum value, #0f0</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
-        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-11-19 -->
+        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2013-04-08 -->
         <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#propdef-color" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#colors" />
         <link rel="match" href="color-017-ref.xht" />
@@ -14,6 +14,7 @@
             {
                 color: #0f0;
                 font: 100px/1 Ahem;
+                margin-bottom: 10px;
             }
             #reference
             {
@@ -24,9 +25,8 @@
         </style>
     </head>
     <body>
-        <p>Test passes if the two squares below are the same color.</p>
+        <p>Test passes if there are 2 squares with the <strong>same color</strong>.</p>
         <div id="test">X</div>
-        <br />
         <div id="reference"></div>
     </body>
 </html>

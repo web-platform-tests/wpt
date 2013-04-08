@@ -1,19 +1,21 @@
+// Up-to-date as of 2013-04-08.
 var metadataElements = {
 	head: {},
 	title: {},
 	base: {
-		href: "url",
+		// XXX href is weird. href: "url",
 		target: "string",
 	},
 	link: {
 		// Conforming
 		href: "url",
+		crossOrigin: {type: "enum", keywords: ["", "anonymous", "use-credentials"]},
 		rel: "string",
+		relList: {type: "tokenlist", domAttrName: "rel"},
 		media: "string",
 		hreflang: "string",
 		type: "string",
 		sizes: "settable tokenlist",
-		relList: {type: "tokenlist", domAttrName: "rel"},
 
 		// Obsolete
 		charset: "string",
@@ -23,8 +25,8 @@ var metadataElements = {
 	meta: {
 		// Conforming
 		name: "string",
-		content: "string",
 		httpEquiv: {type: "string", domAttrName: "http-equiv"},
+		content: "string",
 
 		// Obsolete
 		scheme: "string",

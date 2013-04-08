@@ -1,3 +1,4 @@
+// Up-to-date as of 2013-04-08.
 var groupingElements = {
 	p: {
 		// Obsolete
@@ -7,13 +8,13 @@ var groupingElements = {
 		// Obsolete
 		align: "string",
 		color: "string",
+		noShade: "boolean",
 		size: "string",
 		width: "string",
-		noShade: "boolean",
 	},
 	pre: {
 		// Obsolete
-		width: "unsigned long",
+		width: "long",
 	},
 	blockquote: {
 		cite: "url",
@@ -49,6 +50,7 @@ var groupingElements = {
 	dd: {},
 	figure: {},
 	figcaption: {},
+	main: {},
 	div: {
 		// Obsolete
 		align: "string",

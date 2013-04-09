@@ -1,28 +1,29 @@
+// Up-to-date as of 2013-04-09.
 var obsoleteElements = {
 	applet: {
 		align: "string",
 		alt: "string",
 		archive: "string",
 		code: "string",
+		codeBase: "url",
 		height: "string",
 		hspace: "unsigned long",
 		name: "string",
 		object: "url",
 		vspace: "unsigned long",
 		width: "string",
-		codeBase: "url",
 	},
 	marquee: {
 		behavior: "string",
+		bgColor: "string",
 		direction: "string",
 		height: "string",
 		hspace: "unsigned long",
-		vspace: "unsigned long",
-		width: "string",
-		bgColor: "string",
-		trueSpeed: "boolean",
 		scrollAmount: {type: "unsigned long", defaultVal: 6},
 		scrollDelay: {type: "unsigned long", defaultVal: 85},
+		trueSpeed: "boolean",
+		vspace: "unsigned long",
+		width: "string",
 	},
 	frameset: {
 		cols: "string",
@@ -31,7 +32,7 @@ var obsoleteElements = {
 	frame: {
 		name: "string",
 		scrolling: "string",
-		src: "url",
+		src: "url", // https://www.w3.org/Bugs/Public/show_bug.cgi?id=21638
 		frameBorder: "string",
 		longDesc: "url",
 		noResize: "boolean",
@@ -48,8 +49,8 @@ var obsoleteElements = {
 	},
 	font: {
 		color: {type: "string", treatNullAsEmptyString: true},
-		face: {type: "string", treatNullAsEmptyString: true},
-		size: {type: "string", treatNullAsEmptyString: true},
+		face: "string",
+		size: "string",
 	},
 };
 

@@ -34,7 +34,8 @@
         <li>The structure should be reflected in the accessibility tree as directed by aria-posinset.</li>
         <li>function groupPosition() should be available and have the following results:
           <ul>
-            <li>groupLevel: 1</li>
+            <li>object attributes setsize:4, posinset:<1-based position in the list></li> 
+            <li>groupLevel: 0 or 1</li>
             <li>similarItemsInGroup: 4</li>
             <li>positionInGroup: position in list</li>
           </ul>
@@ -53,9 +54,7 @@
       <ul>
         <li>role="list": ROLE_LIST and STATE_EDITABLE is not exposed</li>
         <li>role="listitem": ROLE_LISTITEM and STATE_EDITABLE is not exposed</li>
-        <li>setsize: 4</li>
-        <li>posinset: position in list</li>
-        <li>level: 1 </li>
+        <li>object attributes setsize:4, posinset:<1-based position in the list></li>
       </ul>
       
       <h3>AXAPI</h3>
@@ -64,7 +63,7 @@
         <li>role="listitem": AXGroup = nil</li>
         <li>AXARIASetSize: 4</li>
         <li>AXARIAPosInSet: position in list</li>
-        <li>AXDisclosureLevel: 1 </li>
+        <li>AXDisclosureLevel: 0 or 1 </li>
       </ul>
   </body>
 </html>

@@ -10,9 +10,11 @@ var miscElements = {
 		src: "url",
 		type: "string",
 		charset: "string",
-		defer: "boolean",
 		// TODO: async attribute (complicated).
+		defer: "boolean",
+		crossOrigin: {type: "enum", keywords: ["", "anonymous", "use-credentials"]},
 	},
+	noscript: {},
 
 	// "Edits" section
 	ins: {
@@ -24,18 +26,11 @@ var miscElements = {
 		dateTime: "string",
 	},
 
-	command: {
-		type: {type: "enum", keywords: ["command", "checkbox", "radio"],
-			defaultVal: "command"},
-		label: "string",
-		icon: "string",
-		disabled: "boolean",
-		checked: "string",
-		radiogroup: "string",
-	},
+	// "Interactive elements" section
 	details: {
 		open: "boolean",
 	},
+	summary: {},
 	menu: {
 		// Conforming
 		type: "string",
@@ -44,8 +39,15 @@ var miscElements = {
 		// Obsolete
 		compact: "boolean",
 	},
-	noscript: {},
-	summary: {},
+	menuitem: {
+		type: {type: "enum", keywords: ["command", "checkbox", "radio"], defaultVal: "command"},
+		label: "string",
+		icon: "url",
+		disabled: "boolean",
+		checked: "boolean",
+		radiogroup: "string",
+		"default": "boolean",
+	},
 
 	// Global attributes should exist even on unknown elements
 	undefinedelement: {},

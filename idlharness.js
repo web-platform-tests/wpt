@@ -314,8 +314,7 @@ IdlArray.prototype.internal_add_idls = function(parsed_idls)
             break;
 
         case "enum":
-            // TODO
-            console.log("enum not yet supported");
+            this.members[parsed_idl.name] = new IdlEnum(parsed_idl);
             break;
 
         case "callback":
@@ -576,6 +575,10 @@ IdlArray.prototype.assert_type_is = function(value, type)
         {
             assert_true(value instanceof window[type], "not instanceof " + type);
         }
+    }
+    else if (this.members[type] instanceof IdlEnum)
+    {
+        assert_equals(typeof value, "string");
     }
     else if (this.members[type] instanceof IdlDictionary)
     {
@@ -1794,6 +1797,40 @@ function create_suitable_object(type)
             return document.createTextNode("abc");
     }
     return null;
+}
+//@}
+
+/// IdlEnum ///
+// Used for IdlArray.prototype.assert_type_is
+function IdlEnum(obj)
+//@{
+{
+    /**
+     * obj is an object produced by the WebIDLParser.js "dictionary"
+     * production.
+     */
+
+    /** Self-explanatory. */
+    this.name = obj.name;
+
+    console.log("Name is " + this.name);
+
+    /** An array of values produced by the "enum" production. */
+    this.values = obj.values;
+
+}
+//@}
+
+IdlEnum.prototype = Object.create(IdlObject.prototype);
+
+IdlEnum.prototype.test = function()
+//@{
+{
+            test(function()
+            {
+		// NOTHING to test
+		return;
+	    });
 }
 //@}
 }());

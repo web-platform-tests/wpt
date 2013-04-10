@@ -125,3 +125,6 @@ correctly. But we look at all of them, and take everything that we can.
 If you wish to contribute actively, you're very welcome to join the
 public-html-testsuite@w3.org mailing list (low traffic) by 
 [signing up to our mailing list](mailto:public-html-testsuite-request@w3.org?subject=subscribe).
+
+
+

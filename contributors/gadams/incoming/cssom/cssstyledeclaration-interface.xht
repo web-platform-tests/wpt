@@ -49,44 +49,6 @@
 
       }, 'CSSStyleDeclaration.prototype.constructor === CSSStyleDeclaration');
 
-      // attributes
-
-      test(function(){
-
-        assert_true('length' in CSSStyleDeclaration.prototype);
-
-      }, '\'length\' in CSSStyleDeclaration.prototype');
-
-      test(function(){
-
-        assert_equals(typeof(CSSStyleDeclaration.prototype.length),'number');
-
-      }, 'typeof(CSSStyleDeclaration.prototype.length) == \'number\'');
-
-      test(function(){
-
-        assert_true('cssText' in CSSStyleDeclaration.prototype);
-
-      }, '\'cssText\' in CSSStyleDeclaration.prototype');
-
-      test(function(){
-
-        assert_equals(typeof(CSSStyleDeclaration.prototype.cssText),'string');
-
-      }, 'typeof(CSSStyleDeclaration.prototype.cssText) == \'string\'');
-
-      test(function(){
-
-        assert_true('parentRule' in CSSStyleDeclaration.prototype);
-
-      }, '\'parentRule\' in CSSStyleDeclaration.prototype');
-
-      test(function(){
-
-        assert_equals(typeof(CSSStyleDeclaration.prototype.parentRule),'object');
-
-      }, 'typeof(CSSStyleDeclaration.prototype.parentRule) == \'object\'');
-
       // operations
 
       test(function(){

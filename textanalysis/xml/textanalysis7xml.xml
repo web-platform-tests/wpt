@@ -9,6 +9,6 @@
       taIdentPointer="@ident"/>
   </its:rules>
   <body>
-    <p><span classref="http://nerd.eurecom.fr/ontology#Place" identref="http://dbpedia.org/resource/Dublin"  id="dublin">Dublin</span> is the <span source="Wordnet3.0" ident="301467919" id="capital">capital</span> of Ireland.</p>
+    <p><span classref="http://nerd.eurecom.fr/ontology#Location" identref="http://dbpedia.org/resource/Dublin"  id="dublin">Dublin</span> is the <span source="Wordnet3.0" ident="301467919" id="capital">capital</span> of Ireland.</p>
   </body>
 </text>

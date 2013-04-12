@@ -1,16 +1,17 @@
+// Up-to-date as of 2013-04-12.
 var sectionElements = {
 	body: {
 		// Obsolete
 		text: {type: "string", treatNullAsEmptyString: true},
-		link: {type: "string", treatnullAsEmptyString: true},
-		vLink: {type: "string", treatnullAsEmptyString: true},
-		aLink: {type: "string", treatnullAsEmptyString: true},
-		bgColor: {type: "string", treatnullAsEmptyString: true},
+		link: {type: "string", treatNullAsEmptyString: true},
+		vLink: {type: "string", treatNullAsEmptyString: true},
+		aLink: {type: "string", treatNullAsEmptyString: true},
+		bgColor: {type: "string", treatNullAsEmptyString: true},
 		background: "string",
 	},
+	article: {},
 	section: {},
 	nav: {},
-	article: {},
 	aside: {},
 	h1: {
 		// Obsolete

@@ -1,0 +1,64 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>3D Transforms: rotateX, perspective, & transformed region</title>
+    <link rel="author" title="David Alcala" href="mailto:dalcala@adobe.com">
+    <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
+    <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
+    <link rel="help" href="http://www.w3.org/TR/css3-2d-transforms/#transform-functions">
+    <link rel="match" href="reference/????????">
+    <meta name="assert" content="CSS rotateX and perspective 3D transform applied to a region transforms the content node.">
+    <style>
+    #region {
+        width: 300px;
+        height: 300px;
+        position: relative;
+        left: 100px;
+        -webkit-flow-from: f;
+        -webkit-transform: perspective(600px) rotateX(45deg);
+    }
+    #source {
+        width: 200px;
+        height: 200px;
+        border: 1px solid #CCC;
+        margin: 0 auto 60px;
+        background-color: green;
+        -webkit-flow-into: f;
+    }
+    .div-red {
+        width: 48px;
+        height: 48px;
+        background-color: red;
+        position: absolute;
+    }
+    #div-red1 {
+        left: 175px;
+        top: 188px;
+    }
+    #div-red2 {
+        left: 293px;
+        top: 188px;
+    }
+    #div-red3 {
+        left: 162px;
+        top: 266px;
+    }
+    #div-red4 {
+        left: 307px;
+        top: 266px;
+    </style>
+</head>
+<body>
+    <h3>3D Transforms: rotateX, perspective and transformed region</h3>
+    <p>The test passes if there is a green polygon and no red.</p>
+    <p>Manual test since source & region layers are flattened; can't test polygon with ref test</p>
+    <div id="source"></div>
+    <div class="div-red" id="div-red1"></div>
+    <div class="div-red" id="div-red2"></div>
+    <div class="div-red" id="div-red3"></div>
+    <div class="div-red" id="div-red4"></div>
+    <div id="region"></div>
+
+</body>
+</html>

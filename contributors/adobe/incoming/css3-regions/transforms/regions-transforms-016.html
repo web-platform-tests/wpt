@@ -1,0 +1,64 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>CSS Regions: Transformed regions where source elements span region boundaries</title>
+    <link rel="author" title="David Alcala" href="mailto:dalcala@adobe.com">
+    <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
+    <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
+    <link rel="help" href="http://www.w3.org/TR/css3-2d-transforms/#transform-functions">
+    <link rel="match" href="reference/regions-transforms-two-green-squares-100x100-ref.html">
+    <meta name="assert" content="CSS 2D scaleY transform applied to regions. Transformed content spans multiple regions.">
+    <style>
+    #source {
+        width: 100px;
+        height: 100px;
+        background-color: green;
+        -webkit-flow-into: f;
+    }
+    #region1 {
+        width: 100px;
+        height: 50px;
+        float: left;
+        background-color: red;
+        -webkit-flow-from: f;
+        -webkit-transform: scaley(2);
+        -webkit-transform-origin: top left;
+    }
+    #region2 {
+        width: 100px;
+        height: 50px;
+        margin-left: 10px;
+        float: left;
+        background-color: red;
+        -webkit-flow-from: f;
+        -webkit-transform: scaley(2);
+        -webkit-transform-origin: top left;
+    }
+    #div-red1 {
+        width: 98px;
+        height: 98px;
+        background-color: red;
+        position: absolute;
+        left: 9px;
+        top: 51px;
+    }
+    #div-red2 {
+        width: 98px;
+        height: 98px;
+        background-color: red;
+        position: absolute;
+        left: 119px;
+        top: 51px;
+    }
+    </style>
+</head>
+<body>
+    <p>The test passes if there are two green squares and no red.</p>
+    <div id="div-red1"></div>
+    <div id="div-red2"></div>
+    <div id="source"></div>
+    <div class="region" id="region1"></div>
+    <div class="region" id="region2"></div>
+</body>
+</html>

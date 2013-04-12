@@ -1,0 +1,44 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>CSS Regions: Transformed named flow content where parent and child are both flowed into same named flow</title>
+    <link rel="author" title="David Alcala" href="mailto:dalcala@adobe.com">
+    <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
+    <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
+    <link rel="help" href="http://www.w3.org/TR/css3-2d-transforms/#transform-functions">
+    <link rel="match" href="reference/regions-transforms-green-square-100x100-ref.html">
+    <meta name="assert" content="CSS scalex 2D transform and transform-origin applied to parent and child named flow content. Named flow content is transformed, and parent and child nodes render as siblings.">
+    <style>
+    #source {
+        width: 50px;
+        height: 50px;
+        background-color: green;
+        -webkit-flow-into: f;
+        -webkit-transform: scalex(2);
+        -webkit-transform-origin: left top;
+    }
+    #parent {
+        width: 50px;
+        height: 50px;
+        background-color: green;
+        -webkit-flow-into: f;
+        -webkit-transform: scalex(2);
+        -webkit-transform-origin: left top;
+    }
+    #region {
+        width: 100px;
+        height: 100px;
+        background-color: red;
+        -webkit-flow-from: f;
+    }
+    </style>
+</head>
+<body>
+    <p>The test passes if there is a green square and no red.</p>
+    <div id="parent">
+        <div id="source"></div>
+    </div>
+    <div id="region"></div>
+</body>
+</html>

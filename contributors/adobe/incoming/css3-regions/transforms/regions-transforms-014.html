@@ -1,0 +1,48 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>CSS Regions: Transformed regions using 2D transform, transform-origin, and position: absolute for region</title>
+    <link rel="author" title="David Alcala" href="mailto:dalcala@adobe.com">
+    <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
+    <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
+    <link rel="help" href="http://www.w3.org/TR/css3-2d-transforms/#transform-functions">
+    <link rel="match" href="reference/regions-transforms-green-square-100x100-l58-t100-ref.html">
+    <meta name="assert" content="2D CSS scale transform and transform-origin applied to a region with absolute positioning transforms the content node.">
+    <style>
+    #source {
+        width: 50px;
+        height: 50px;
+        background-color: green;
+        -webkit-flow-into: f;
+    }
+    #region {
+        width: 50px;
+        height: 50px;
+        background-color: red;
+        position: absolute;
+        left: 58px;
+        top: 100px;
+        z-index: 4;
+        -webkit-flow-from: f;
+        -webkit-transform: scale(2);
+        -webkit-transform-origin: left top;
+    }
+    #div-red {
+        width: 98px;
+        height: 98px;
+        background-color: red;
+        position: absolute;
+        left: 59px;
+        top: 101px;
+        z-index: 3;
+    }
+    </style>
+</head>
+<body>
+    <p>The test passes if there is a green square and no red.</p>
+    <div id="div-red"></div>
+    <div id="source"></div>
+    <div id="region"></div>
+</body>
+</html>

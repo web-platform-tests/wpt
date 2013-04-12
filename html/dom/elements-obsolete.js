@@ -32,7 +32,7 @@ var obsoleteElements = {
 	frame: {
 		name: "string",
 		scrolling: "string",
-		src: "url", // https://www.w3.org/Bugs/Public/show_bug.cgi?id=21638
+		src: "url",
 		frameBorder: "string",
 		longDesc: "url",
 		noResize: "boolean",

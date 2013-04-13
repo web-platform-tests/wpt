@@ -11,7 +11,6 @@
 
 <div id=log></div>
 <script>
-var indeterminate = document.getElementById("indeterminate");
 
 test(function() {
 	assert_equals(indeterminate.position, -1);
@@ -24,5 +23,9 @@ test(function() {
 test(function() {
 	assert_equals(indeterminate.value, 0);
 }, "indeterminate progress bar should have value 0");
+
+test(function() {
+	assert_equals(indeterminate.max, 1);
+}, "max should be 1 by default");
 
 </script>

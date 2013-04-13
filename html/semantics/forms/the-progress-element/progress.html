@@ -7,6 +7,7 @@
 <script src="/resources/testharnessreport.js"></script>
 
 <progress id=indeterminate></progress>
+<progress id=quarter value=1 max=4></progress>
 
 <div id=log></div>
 <script>
@@ -15,4 +16,13 @@ var indeterminate = document.getElementById("indeterminate");
 test(function() {
 	assert_equals(indeterminate.position, -1);
 }, "indeterminate progress bar should have position -1");
+
+test(function() {
+	assert_equals(quarter.position, .25);
+}, "determinate progress bar should have fractional position");
+
+test(function() {
+	assert_equals(indeterminate.value, 0);
+}, "indeterminate progress bar should have value 0");
+
 </script>

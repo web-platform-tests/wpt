@@ -1,11 +1,11 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <title>CSS Text Test: tab-size: -1em</title>
+    <title>CSS Text Test: tab-size: 100%</title>
     <link rel="author" title="David Storey" href="david@openweb.io">
     <link rel="help" href="http://www.w3.org/TR/css3-text/#tab-size">
     <link rel="match" href="tab-size-length-001-ref.html">
-    <meta name="assert" content="Tab-size negative length values are not allowed">
+    <meta name="assert" content="Tab-size percentage values are not allowed">
     <style type="text/css">
         .container {
             position: absolute;
@@ -23,8 +23,8 @@
          }
         .red {
             background: red;
-            tab-size: 1em;
-            tab-size: -1em;
+            tab-size: 0;
+            tab-size: 100%;
         }
     </style>
 </head>

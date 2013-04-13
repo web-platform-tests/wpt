@@ -1,0 +1,18 @@
+<!doctype html>
+<title>The progress element</title>
+<link rel="author" title="dan smith" href="mailto:XX1011@gmail.com">
+<link rel="help" href="http://www.w3.org/TR/html5/forms.html#the-progress-element">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<progress id=indeterminate></progress>
+
+<div id=log></div>
+<script>
+var indeterminate = document.getElementById("indeterminate");
+
+test(function() {
+	assert_equals(indeterminate.position, -1);
+}, "indeterminate progress bar should have position -1");
+</script>

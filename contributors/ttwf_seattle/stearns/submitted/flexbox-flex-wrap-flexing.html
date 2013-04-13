@@ -4,45 +4,32 @@
     <title>CSS Flexbox Test: flex-wrap flexes widths after line breaking</title>
     <link rel="author" title="Alan Stearns" href="mailto:stearns@adobe.com">
     <link rel="help" href="http://www.w3.org/TR/css3-flexbox/#flex-lines">
-    <meta name="flags" content="dom">
+    <meta name="flags" content="">
     <meta name="assert" content="Flex items given more space after line breaking should flex wider">
     <meta name="assert" content="http://www.w3.org/TR/css3-flexbox/#flex-wrap-property">
     <meta name="assert" content="http://www.w3.org/TR/css3-flexbox/#flex-property">
-    <script src="/resources/testharness.js"></script>
-    <script src="/resources/testharnessreport.js"></script>
     <style>
         .container {
             display: flex;
             width: 150px;
-            border: thin black solid;
+            height: 100px;
             flex-wrap: wrap;
+            background: red;
         }
         .item {
             min-width: 100px;
             flex: 1;
             height: 50px;
             display: inline-block; /*to fail the test if display:flex fails*/;
-            background-color: lightgreen;
+            background: green;
         }
     </style>
 </head>
 <body>
+    <p>Test passes if there is a green rectangle and no red.</p>
     <div class="container">
-        <div id="one" class="item"></div>
-        <div id="two" class="item"></div>
+        <div class="item"></div>
+        <div class="item"></div>
     </div>
-    <div id="log"></div>
 </body>
-<script>
-test(
-function() {
-  assert_equals(two.clientWidth, 150);
-}, "item on first line flexes width"
-);
-test(
-function() {
-  assert_equals(two.clientWidth, 150);
-}, "item on second line flexes width"
-);
-</script>
 </html>

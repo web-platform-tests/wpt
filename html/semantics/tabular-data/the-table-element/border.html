@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>The border attribute</title>
+	<link rel="author" title="Erika Navara" href="mailto:edoyle@microsoft.com">
+	<link rel="help" href="http://www.w3.org/TR/html5/tabular-data.html#the-table-element" />
+	<script src="/resources/testharness.js"></script>
+	<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+	<div id="log"></div>
+	<table id="table1" style="display:none">
+		<tr>
+			<td>cell</td>
+			<td>cell</td>
+		</tr>
+	</table>
+	<table id="table2" border="2" style="display:none">
+		<tr>
+			<td>cell</td>
+			<td>cell</td>
+		</tr>
+	</table>
+	<script>
+		test(function () {
+			assert_equals(document.getElementById('table1').border, "");
+		}, "Table with no border attribute")
+		var table2 = document.getElementById('table2');
+		test(function () {
+			assert_idl_attribute(table2, "border", "");
+		}, "Table with border markup attribute has 'border' IDL attribute")
+		test(function () {
+			assert_equals(table2.border, "2");
+		}, "The border IDL attribute must reflect the content attribute of the same name.")
+	</script>
+</body>
+</html>

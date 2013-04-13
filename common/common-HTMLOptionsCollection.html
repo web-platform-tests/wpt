@@ -1,11 +1,11 @@
 ﻿<!DOCTYPE html>
-<html xmlns:h="http://www.w3.org/2000/xhtml">
+<html>
 <head>
 	<meta charset="utf-8">
 
 	<title id='title'>HTMLOptionsCollection 2.8.3.2</title>
-	<script src="/resources/testharnessreport.js"></script>	
 	<script src="/resources/testharness.js"></script>
+	<script src="/resources/testharnessreport.js"></script>	
 
 	<div id="log"></div>
     <select id="selly">
@@ -16,17 +16,11 @@
     </select>
 
     	<script>
-    	    (function () {
-    	        //test asserts go here
+    	    test(function () {
+    	        /* Responding to notes from Ms2ger
+                Mutation events removed, other items fixed. Would it be better to do a separate async test with mutation observers to cover requirement that mutation events fire?
+                */
     	        var selly = document.getElementById('selly');
-    	        var initval = selly.length;
-    	        var midval = 0;
-    	        var firecount = 0;
-    	        selly.addEventListener('DOMNodeInserted', firecounter)
-
-    	        function firecounter() {
-    	            firecount++;
-    	        }
 
     	        test(function () {
     	            assert_equals(selly.length, 4);
@@ -35,12 +29,7 @@
     	        selly.length = 7;
     	        test(function () {
     	            assert_equals(selly.length, 7);
-    	        }, "Changing the length adds new nodes");
-
-    	        test(function () {
-    	            midval = selly.length;
-    	            assert_equals(midval - initval, 3);
-    	        }, "The number of new nodes = new length minus old length");
+    	        }, "Changing the length adds new nodes; The number of new nodes = new length minus old length");
 
     	        var elarray = [];
     	        for (var i = 0; i < selly.length; i++) {
@@ -51,10 +40,6 @@
     	            assert_array_equals(elarray, ["1", "2", "3", "4", "", "", ""]);
     	        }, "New nodes have no value");
 
-    	        test(function () {
-    	            assert_equals(firecount, 3);
-    	        }, "Changing the length & adding new nodes fires DOMNodeInserted on the select once for each new element");
-
     	        selly.length = 7;
     	        test(function () {
     	            assert_equals(selly.length, 7);
@@ -63,13 +48,12 @@
 
     	        selly.length = 4;
     	        test(function () {
-    	            assert_equals(selly[6], null);
-    	        }, "Setting a length lower than the old length trims nodes from the end (checking that previously set node is now null)");
+    	            assert_equals(selly[6], undefined);
+    	        }, "Setting a length lower than the old length trims nodes from the end (checking that previously set node is now undefined)");
 
     	        test(function () {
-    	            var newdiff = midval - selly.length;
-    	            assert_equals(newdiff, 3);
-    	        }, "Number of nodes trimmed from the end is equal to old length - new length");
+    	            assert_equals(selly.length, 4);
+    	        }, "Number of nodes in collection is correctly changed");
 
-    	    })();
+    	    });
 	</script>

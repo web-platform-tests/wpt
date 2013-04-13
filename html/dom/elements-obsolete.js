@@ -1,4 +1,4 @@
-// Up-to-date as of 2013-04-09.
+// Up-to-date as of 2013-04-13.
 var obsoleteElements = {
 	applet: {
 		align: "string",
@@ -38,11 +38,6 @@ var obsoleteElements = {
 		noResize: "boolean",
 		marginHeight: {type: "string", treatNullAsEmptyString: true},
 		marginWidth: {type: "string", treatNullAsEmptyString: true},
-	},
-	basefont: {
-		color: "string",
-		face: "string",
-		size: "long",
 	},
 	dir: {
 		compact: "boolean",

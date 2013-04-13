@@ -63,8 +63,8 @@
 
     	        selly.length = 4;
     	        test(function () {
-    	            assert_equals(selly[6], undefined);
-    	        }, "Setting a length lower than the old length trims nodes from the end (checking that previously set node is now undefined)");
+    	            assert_equals(selly[6], null);
+    	        }, "Setting a length lower than the old length trims nodes from the end (checking that previously set node is now null)");
 
     	        test(function () {
     	            var newdiff = midval - selly.length;

@@ -2722,12 +2722,6 @@ partial interface HTMLAreaElement {
            attribute boolean noHref;
 };
 
-interface HTMLBaseFontElement : HTMLElement {
-           attribute DOMString color;
-           attribute DOMString face;
-           attribute long size; 
-};
-
 partial interface HTMLBodyElement {
   [TreatNullAs=EmptyString] attribute DOMString text;
   [TreatNullAs=EmptyString] attribute DOMString link;
@@ -3012,6 +3006,7 @@ idlArray.add_objects({
 		'document.createElement("nextid")',
 		'document.createElement("rb")',
 		'document.createElement("spacer")',
+		'document.createElement("basefont")',
 	],
 	HTMLHtmlElement: ['document.createElement("html")'],
 	HTMLHeadElement: ['document.createElement("head")'],
@@ -3161,7 +3156,6 @@ idlArray.add_objects({
 	HTMLMarqueeElement: ['document.createElement("marquee")'],
 	HTMLFrameSetElement: ['document.createElement("frameset")'],
 	HTMLFrameElement: ['document.createElement("frame")'],
-	HTMLBaseFontElement: ['document.createElement("basefont")'],
 	HTMLDirectoryElement: ['document.createElement("dir")'],
 	HTMLFontElement: ['document.createElement("font")'],
 });

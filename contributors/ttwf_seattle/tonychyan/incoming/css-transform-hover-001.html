@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html>
-<title>CSS Transforms Test: transform property with combination of translate and rotate function
-</title>
+<title>CSS Transforms Test: transform property on hover state</title>
     <link rel="author" title="Jun Qian" href="mailto:tonychyan9@gmail.com">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-property">
     <link rel="help" href="http://dev.w3.org/csswg/css3-transforms/#transform-origin">
-    <link rel="match" href="reference/css-transform-scale-ref-001.html">
-    <meta name="assert" content="Test checks that whether function translate and rotate can work together.">
-    <meta name="flag" content="combination">
+    <meta name="assert" content="Test checks that whether transform property work on hover state.">
+    <meta name="flag" content="interaction">
      <style type="text/css">
         .container {
             position: absolute;
@@ -19,10 +17,13 @@
             width: 100px;
             height: 200px;
             background-color: green;
-			transform:translate(100px,0);
+         }
+        .greenRectangle:hover {
+            transform:translate(100px,0);
 			transform-origin: 100% bottom;
-			transform:rotate(90deg);
-         }         						        
+			transform:rotate(90deg);			
+		}
+         						        
          /* This div should only be visible if the test fails */
         .redSquare {
             position: absolute;
@@ -36,7 +37,7 @@
     </style>
 </head>
 <body>
-    <p>The test passes if you can only see the green rectangle and no red square.</p>
+    <p>The test passes if you hover over the green rectangle and it completely covers the red square.</p>
     <div class="container">
         <!-- This is the square that should not be visible if the test passes -->
         <div class="redSquare"></div>

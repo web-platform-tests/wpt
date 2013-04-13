@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>CSS Flexbox Test: Flex-wrap = wrap</title>
+		<link rel="author" title="Gavin Elster" href="mailto:gavin.elster@me.com">
+		<link rel="help" href="http://www.w3.org/TR/css3-flexbox/#flex-flow-wrap">
+		<meta name="flags" content="image">
+		<meta name="assert" content="Test checks that flex elements wrap when flex-wrap is set to 'wrap'.">
+		<style>
+			.flex-wrapper {
+				display: flex;
+				flex-wrap: wrap;
+
+				background: url(300x300-ggg-ggg-grg.png);
+
+				width: 300px;
+				height: 300px;
+			}
+
+			.flex-wrapper div{
+				width:  100px;
+				height: 100px;
+			}
+		</style>
+	</head>
+	<body>
+		<p>The test passes if there is a green square and no red.</p>
+		<div class="flex-wrapper">
+			<div></div>
+			<div></div>
+			<div></div>
+			<div></div>
+			<div></div>
+			<div></div>
+			<div></div>
+			<div style="background: green;"></div>
+			<div></div>
+		</div>
+	</body>
+</html>

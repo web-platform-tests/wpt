@@ -4,6 +4,7 @@
 		<title>CSS Flexbox Test: Flex-wrap = wrap</title>
 		<link rel="author" title="Gavin Elster" href="mailto:gavin.elster@me.com">
 		<link rel="help" href="http://www.w3.org/TR/css3-flexbox/#flex-flow-wrap">
+		<link rel="match" href="reference/flexbox-wrap-ref.html" />
 		<meta name="flags" content="image">
 		<meta name="assert" content="Test checks that flex elements wrap when flex-wrap is set to 'wrap'.">
 		<style>
@@ -21,6 +22,10 @@
 				width:  100px;
 				height: 100px;
 			}
+
+			.green {
+				background: green;
+			}
 		</style>
 	</head>
 	<body>
@@ -33,7 +38,7 @@
 			<div></div>
 			<div></div>
 			<div></div>
-			<div style="background: green;"></div>
+			<div class="green"></div>
 			<div></div>
 		</div>
 	</body>

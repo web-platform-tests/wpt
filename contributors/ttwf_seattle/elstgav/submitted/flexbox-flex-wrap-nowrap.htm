@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>CSS Flexbox Test: Flex-wrap = nowrap</title>
+		<link rel="author" title="Gavin Elster" href="mailto:gavin.elster@me.com">
+		<link rel="help" href="http://www.w3.org/TR/css3-flexbox/#flex-flow-nowrap">
+		<link rel="match" href="reference/flexbox-wrap-ref.html" />
+		<meta name="flags" content="image">
+		<meta name="assert" content="Test checks that flex elements will flex and not wrap when flex-wrap is set to 'nowrap'.">
+		<style>
+			.flex-wrapper {
+				display: flex;
+				flex-wrap: nowrap;
+
+				background: url(300x300-gr.png);
+
+				width:  300px;
+				height: 300px;
+			}
+
+			.flex-wrapper div{
+				width:  300px;
+			}
+
+			.green {
+				background: green;
+			}
+		</style>
+	</head>
+	<body>
+		<p>The test passes if there is a green square and no red.</p>
+		<div class="flex-wrapper">
+			<div></div>
+			<div class="green"></div>
+		</div>
+	</body>
+</html>

@@ -63,7 +63,7 @@
     window.HTMLCanvasElement.prototype.getContext = 1;
     @assert window.HTMLCanvasElement.prototype.getContext === 1;
     delete window.HTMLCanvasElement.prototype.getContext;
-    @assert window.HTMLCanvasElement.prototype.getContext === undefined; @moz-todo
+    @assert window.HTMLCanvasElement.prototype.getContext === undefined;
 
 - name: type.replace
   desc: HTMLCanvasElement methods can be replaced, and the replacement methods used by canvases

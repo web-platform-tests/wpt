@@ -35,6 +35,7 @@ test(function() {
   assert_true("test1" in document, '"test1" in document should be true');
   assert_equals(document.test1, applet);
 }, "If there is one applet, it should be returned (name)");
+
 test(function() {
   var applet1 = document.getElementsByTagName("applet")[1];
   assert_equals(applet1.name, "test2");
@@ -46,6 +47,7 @@ test(function() {
   assert_true(collection instanceof HTMLCollection, "collection should be an HTMLCollection");
   assert_array_equals(collection, [applet1, applet2]);
 }, "If there are two applets, a collection should be returned. (name)");
+
 test(function() {
   var applet = document.getElementsByTagName("applet")[3];
   assert_equals(applet.id, "test3");
@@ -53,6 +55,7 @@ test(function() {
   assert_true("test3" in document, '"test3" in document should be true');
   assert_equals(document.test3, applet);
 }, "If there is one applet, it should be returned (id)");
+
 test(function() {
   var applet1 = document.getElementsByTagName("applet")[4];
   assert_equals(applet1.id, "test4");
@@ -64,6 +67,7 @@ test(function() {
   assert_true(collection instanceof HTMLCollection, "collection should be an HTMLCollection");
   assert_array_equals(collection, [applet1, applet2]);
 }, "If there are two applets, a collection should be returned. (id)");
+
 test(function() {
   var applet1 = document.getElementsByTagName("applet")[6];
   assert_equals(applet1.name, "test5");
@@ -75,6 +79,7 @@ test(function() {
   assert_true(collection instanceof HTMLCollection, "collection should be an HTMLCollection");
   assert_array_equals(collection, [applet1, applet2]);
 }, "If there are two applets, a collection should be returned. (name and id)");
+
 test(function() {
   var applet1 = document.getElementsByTagName("applet")[8];
   assert_equals(applet1.id, "test6");
@@ -86,6 +91,7 @@ test(function() {
   assert_true(collection instanceof HTMLCollection, "collection should be an HTMLCollection");
   assert_array_equals(collection, [applet1, applet2]);
 }, "If there are two applets, a collection should be returned. (id and name)");
+
 test(function() {
   var applet = document.getElementsByTagName("applet")[10];
   assert_equals(applet.id, "test7");
@@ -93,6 +99,7 @@ test(function() {
   assert_true("test7" in document, '"test7" in document should be true');
   assert_equals(document.test7, applet);
 }, "A name shouldn't affect getting an applet by id");
+
 test(function() {
   var applet = document.getElementsByTagName("applet")[11];
   assert_equals(applet.name, "test8");

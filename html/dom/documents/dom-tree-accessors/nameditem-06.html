@@ -35,6 +35,7 @@ test(function() {
   assert_true("test1" in document, '"test1" in document should be true');
   assert_equals(document.test1, img);
 }, "If there is one img, it should be returned (name)");
+
 test(function() {
   var img1 = document.getElementsByTagName("img")[1];
   assert_equals(img1.name, "test2");
@@ -46,6 +47,7 @@ test(function() {
   assert_true(collection instanceof HTMLCollection, "collection should be an HTMLCollection");
   assert_array_equals(collection, [img1, img2]);
 }, "If there are two imgs, a collection should be returned. (name)");
+
 test(function() {
   var img = document.getElementsByTagName("img")[3];
   assert_equals(img.id, "test3");
@@ -53,6 +55,7 @@ test(function() {
   assert_false("test3" in document, '"test3" in document should be false');
   assert_equals(document.test3, undefined);
 }, "If there is one img, it should not be returned (id)");
+
 test(function() {
   var img1 = document.getElementsByTagName("img")[4];
   assert_equals(img1.id, "test4");
@@ -64,6 +67,7 @@ test(function() {
   assert_true(collection instanceof HTMLCollection, "collection should be an HTMLCollection");
   assert_array_equals(collection, [img1, img2]);
 }, "If there are two imgs, nothing should be returned. (id)");
+
 test(function() {
   var img1 = document.getElementsByTagName("img")[6];
   assert_equals(img1.name, "test5");
@@ -73,6 +77,7 @@ test(function() {
   assert_true("test5" in document, '"test5" in document should be true');
   assert_equals(document.test5, img1);
 }, "If there are two imgs, the one with a name should be returned. (name and id)");
+
 test(function() {
   var img1 = document.getElementsByTagName("img")[8];
   assert_equals(img1.id, "test6");
@@ -82,6 +87,7 @@ test(function() {
   assert_true("test6" in document, '"test6" in document should be true');
   assert_equals(document.test6, img2);
 }, "If there are two imgs, the one with a name should be returned. (id and name)");
+
 test(function() {
   var img = document.getElementsByTagName("img")[10];
   assert_equals(img.id, "test7");
@@ -89,6 +95,7 @@ test(function() {
   assert_true("test7" in document, '"test7" in document should be true');
   assert_equals(document.test7, img);
 }, "A name should affect getting an img by id");
+
 test(function() {
   var img = document.getElementsByTagName("img")[11];
   assert_equals(img.name, "test8");

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CSS Transforms Test: scale 0.5 with only one parameter specified</title>
+    <link rel="author" title="Amol Shanbhag" href="mailto:amolvshanbhag@yahoo.com">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-property">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions">
+    <link rel="match" href="reference/ttwf-reftest-tutorial-ref.html">
+    <meta name="assert" content="Child square element is transformed (scaled to zero) along with the parent element">
+    <link rel="match" href="reference/css-scale-nested-ref.html">
+    <style type="text/css">
+	div{
+		position: absolute; 
+	}
+		.greenSquare {
+  			width: 100px;
+            height: 100px;
+            background: green;
+        }
+        .parentredSquare {
+            width: 100px;
+            height: 100px;
+            background: red;
+			transform: scale(0);
+        }
+		.childredSquare {
+            top: 25px;
+            left: 25px;
+            width: 50px;
+            height: 50px;
+			border: 1px black solid;
+            background: red;
+        }
+		p{
+		padding-top: 130px;
+		}
+    </style>
+</head>
+<body>
+    <div class="greenSquare"></div>
+    <div class="parentredSquare"><div class="childredSquare"></div></div>
+    <p>The test passes if there is a green square and no red.</p>
+</body>
+</html>

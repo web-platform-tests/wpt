@@ -1,0 +1,22 @@
+<!DOCTYPE HTML>
+<html>
+<body onload="load_test_attr.done()">
+<h1>HTMLAllCollection Tests</h1>
+<img src="http://www.w3.org/Icons/w3c_home" name="picture">
+<p>There should be eight tests </p>
+<div id="log"></div>
+<script src="testharness.js"></script>
+<script src="testharnessreport.js"></script>
+<script> 
+	setup({explicit_done:true})
+	{test(function(){ assert_true(document.all.length == 10)}, "Test for HTMLAllCollection size");}
+	{test(function(){ assert_true(document.all.item(0).tagName == "HTML")}, "Test lookup by index using ()");}
+	{test(function(){ assert_true(document.all[0].tagName == "HTML")}, "Test lookup by index using []");}
+	{test(function(){ assert_true(document.all.tags("script").length == 3)}, "Test for multiple occurence 3 <script> found");}
+	{test(function(){ assert_true(document.all.item("picture").nodeName == "IMG")}, "Test lookup IMG by name");}
+	{test(function(){ assert_true(document.all.namedItem("picture").nodeName == "IMG")}, "Test lookup IMG by namedItem ");}
+	{test(function(){ assert_true(document.all("picture").nodeName == "IMG")}, "Test lookup IMG in collection using ()");}
+	{test(function(){ assert_true(document.all["picture"].nodeName == "IMG")}, "Test lookup IMG in collection using []");}
+	onload = function() {done();}
+</script>
+ </html> 

@@ -4,42 +4,40 @@
 		<title>CSS Flexbox Test: Flex-wrap = wrap-reverse</title>
 		<link rel="author" title="Gavin Elster" href="mailto:gavin.elster@me.com">
 		<link rel="help" href="http://www.w3.org/TR/css3-flexbox/#flex-flow-wrap-reverse">
-		<link rel="match" href="reference/flexbox-wrap-ref.html" />
-		<meta name="flags" content="image">
+		<link rel="match" href="reference/flexbox-flex-wrap-ref.htm" />
+		<meta name="flags" content="">
 		<meta name="assert" content="Test checks that flex elements wrap in reverse (cross-start and cross-end are swapped) when flex-wrap is set to 'wrap-reverse'.">
 		<style>
 			.flex-wrapper {
 				display: flex;
 				flex-wrap: wrap-reverse;
 
-				background: url(300x300-ggg-ggg-grg.png);
-
-				width: 300px;
-				height: 300px;
+				width:  120px;
+				height: 120px;
 			}
 
 			.flex-wrapper div{
-				width:  100px;
-				height: 100px;
-			}
-
-			.green {
-				background: green;
+				width:  40px;
+				height: 40px;
+				outline: 1px solid blue;
+				text-align: center;
+				vertical-align: middle;
+				line-height: 40px;
 			}
 		</style>
 	</head>
 	<body>
-		<p>The test passes if there is a green square and no red.</p>
+		<p>The test passes if there is a 3x3 grid of squares, numbered 1-9 from the top left to the bottom right</p>
 		<div class="flex-wrapper">
-			<div></div>
-			<div class="green"></div>
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
+			<div>7</div>
+			<div>8</div>
+			<div>9</div>
+			<div>4</div>
+			<div>5</div>
+			<div>6</div>
+			<div>1</div>
+			<div>2</div>
+			<div>3</div>
 		</div>
 	</body>
 </html>

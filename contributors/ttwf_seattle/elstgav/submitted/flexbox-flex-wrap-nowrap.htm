@@ -6,20 +6,22 @@
 		<link rel="help" href="http://www.w3.org/TR/css3-flexbox/#flex-flow-nowrap">
 		<link rel="match" href="reference/flexbox-wrap-ref.html" />
 		<meta name="flags" content="image">
-		<meta name="assert" content="Test checks that flex elements will flex and not wrap when flex-wrap is set to 'nowrap'.">
+		<meta name="assert" content="Test checks that flex elements set to flex-wrap: nowrap will not wrap their flex items. The flexitems will overflow if flex is set to none and their size is larger than the flex container.">
 		<style>
 			.flex-wrapper {
 				display: flex;
 				flex-wrap: nowrap;
 
-				background: url(300x300-gr.png);
+				background: green;
+				border-right: 60px solid red;
 
-				width:  300px;
-				height: 300px;
+				width:  60px;
+				height: 120px;
 			}
 
 			.flex-wrapper div{
-				width:  300px;
+				width:  60px;
+				flex: none;
 			}
 
 			.green {

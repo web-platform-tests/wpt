@@ -8,8 +8,13 @@
       </title>
    </head>
    <body>
-      <div id="test" role="rowgroup" aria-activedescendant="obj1">Placeholder content</div>
-      <div id="obj1">obj1</div>
-      <div id="obj2">obj2</div>
+      <div role="grid">
+        <div id="test" role="rowgroup" aria-activedescendant="obj1" tabindex="0">
+          <div id="obj1" role="row">
+            <div role="gridcell">r1c1</div>
+            <div role="gridcell">r1c2</div>
+          </div>
+        </div>
+      </div>
    </body>
 </html>

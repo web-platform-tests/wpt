@@ -3,10 +3,10 @@
 	<head>
 		<title>CSS Flexbox Test: Flex-wrap = nowrap</title>
 		<link rel="author" title="Gavin Elster" href="mailto:gavin.elster@me.com">
-		<link rel="help" href="http://www.w3.org/TR/css3-flexbox/#flex-flow-nowrap">
-		<link rel="match" href="reference/flexbox-wrap-ref.html" />
-		<meta name="flags" content="image">
-		<meta name="assert" content="Test checks that flex elements set to flex-wrap: nowrap will not wrap their flex items. The flexitems will overflow if flex is set to none and their size is larger than the flex container.">
+		<link rel="help" href="http://www.w3.org/TR/css3-flexbox/#flex-wrap-property">
+		<link rel="match" href="reference/flexbox-flex-wrap-nowrap-ref.html" />
+		<meta name="flags" content="">
+		<meta name="assert" content="Test checks that flex elements set to flex-wrap: nowrap will not wrap their flex items. With wrapping disabled, the .green flex item should extend outside the bounds of its container, as it is set to flex:none.">
 		<style>
 			.flex-wrapper {
 				display: flex;

@@ -1,18 +1,19 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>CSS Flexbox Test: Flex-wrap = wrap</title>
+		<title>CSS Flexbox Test: Flex-direction = row</title>
 		<link rel="author" title="Gavin Elster" href="mailto:gavin.elster@me.com">
-		<link rel="help" href="http://www.w3.org/TR/css3-flexbox/#flex-wrap-property">
+		<link rel="help" href="http://www.w3.org/TR/css3-flexbox/#flex-direction-property">
 		<link rel="match" href="reference/flexbox-flex-direction-ref.htm" />
 		<meta name="flags" content="">
-		<meta name="assert" content="Test checks that flex elements wrap left-to-right within their flex container when flex-wrap = 'wrap', matching the writing direction. This assumes writing-direction = horizontal-tb', and direction = 'ltr'.">
+		<meta name="assert" content="Test checks that flex container's main axis has the same orientation as the inline axis of the current writing mode, when flex-direction = row. This assumes writing-direction =	horizontal-tb', and direction = 'ltr'.">
 		<style>
 
 		/* Test specific Styles */
 
 			.flex-wrapper {
 				display: flex;
+				flex-direction: row;
 				flex-wrap: wrap;
 			}
 

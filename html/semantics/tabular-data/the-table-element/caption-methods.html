@@ -4,6 +4,8 @@
 	<title>Creating and deleting captions</title>
 	<link rel="author" title="Erika Navara" href="mailto:edoyle@microsoft.com">
 	<link rel="help" href="http://www.w3.org/TR/html5/tabular-data.html#the-table-element" />
+	<link rel="help" href="http://www.w3.org/TR/html5/tabular-data.html#dom-table-createcaption" />
+	<link rel="help" href="http://www.w3.org/TR/html5/tabular-data.html#dom-table-deletecaption" />
 	<script src="/resources/testharness.js"></script>
 	<script src="/resources/testharnessreport.js"></script>
 </head>
@@ -23,7 +25,7 @@
 		</tr>
 	</table>
 	<table id="table3" style="display:none">
-		<caption id="caption3">caption</caption>
+		<caption id="caption3">caption 3</caption>
 		<tr>
 			<td>cell</td>
 			<td>cell</td>
@@ -45,7 +47,7 @@
 		}, "createCaption method creates a new caption and inserts it as the first node of the table element")
 		test(function () {
 			var table3 = document.getElementById('table3');
-			assert_not_equals(table3.caption, null);
+			assert_equals(table3.caption.textContent, "caption 3");
 			table3.deleteCaption();
 			assert_equals(table3.caption, null);
 		}, "deleteCaption method removes the first caption element child of the table element")

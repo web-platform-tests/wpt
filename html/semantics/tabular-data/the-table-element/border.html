@@ -15,7 +15,13 @@
 			<td>cell</td>
 		</tr>
 	</table>
-	<table id="table2" border="2" style="display:none">
+	<table id="table2" border="" style="display:none">
+		<tr>
+			<td>cell</td>
+			<td>cell</td>
+		</tr>
+	</table>
+	<table id="table3" border="1" style="display:none">
 		<tr>
 			<td>cell</td>
 			<td>cell</td>
@@ -23,15 +29,16 @@
 	</table>
 	<script>
 		test(function () {
-			assert_equals(document.getElementById('table1').border, "");
-		}, "Table with no border attribute")
-		var table2 = document.getElementById('table2');
-		test(function () {
+			var table1 = document.getElementById('table1');
+			var table2 = document.getElementById('table2');
+			var table3 = document.getElementById('table3');
+			assert_idl_attribute(table1, "border", "");
 			assert_idl_attribute(table2, "border", "");
-		}, "Table with border markup attribute has 'border' IDL attribute")
-		test(function () {
-			assert_equals(table2.border, "2");
-		}, "The border IDL attribute must reflect the content attribute of the same name.")
+			assert_idl_attribute(table3, "border", "");
+			assert_equals(table1.border, "");
+			assert_equals(table2.border, "");
+			assert_equals(table3.border, "1");
+		}, "The border IDL attribute reflects the content attribute of the same name.")
 	</script>
 </body>
 </html>

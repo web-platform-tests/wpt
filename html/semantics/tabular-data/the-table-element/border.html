@@ -4,6 +4,7 @@
 	<title>The border attribute</title>
 	<link rel="author" title="Erika Navara" href="mailto:edoyle@microsoft.com">
 	<link rel="help" href="http://www.w3.org/TR/html5/tabular-data.html#the-table-element" />
+	<link rel="help" href="http://www.w3.org/TR/html5/tabular-data.html#dom-table-border" />
 	<script src="/resources/testharness.js"></script>
 	<script src="/resources/testharnessreport.js"></script>
 </head>
@@ -29,12 +30,9 @@
 	</table>
 	<script>
 		test(function () {
-			var table1 = document.getElementById('table1');
-			var table2 = document.getElementById('table2');
-			var table3 = document.getElementById('table3');
-			assert_idl_attribute(table1, "border", "");
-			assert_idl_attribute(table2, "border", "");
-			assert_idl_attribute(table3, "border", "");
+			assert_idl_attribute(table1, "border");
+			assert_idl_attribute(table2, "border");
+			assert_idl_attribute(table3, "border");
 			assert_equals(table1.border, "");
 			assert_equals(table2.border, "");
 			assert_equals(table3.border, "1");

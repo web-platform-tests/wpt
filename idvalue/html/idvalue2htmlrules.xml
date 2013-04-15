@@ -2,6 +2,7 @@
  <its:param name="idvalueparam">text</its:param>
 <its:idValueRule selector="//h:p" idValue="@id"/>
    <its:idValueRule selector="//h:b[@id=$idvalueparam]" idValue="@id"/>
+   <its:idValueRule selector="//h:b[@id='crashtext']" idValue="@id"/>
   <its:idValueRule selector="//h:var" idValue="@id"/>
 </its:rules>
 

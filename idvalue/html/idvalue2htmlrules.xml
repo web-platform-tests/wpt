@@ -5,5 +5,3 @@
  <its:idValueRule selector="//h:b[@id='crashtext']" idValue="@id"/>
  <its:idValueRule selector="//h:var" idValue="@id"/>
 </its:rules>
-
-

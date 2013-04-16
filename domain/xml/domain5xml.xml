@@ -4,8 +4,8 @@
 <its:rules xmlns:its="http://www.w3.org/2005/11/its" version="2.0">
 <its:domainRule selector="/text/body/span" domainPointer="/text/head/meta[@name='DC.type']/@content" domainMapping="'sports law' amateur"/>
 </its:rules>
-<meta name="DC.subject" content="sports law"/>
-<meta name="DC.type" content="sports law"/>
+<meta name="DC.subject" content="law"/>
+<meta name="DC.type" content="amateur"/>
 </head>
 <body>
 <p>

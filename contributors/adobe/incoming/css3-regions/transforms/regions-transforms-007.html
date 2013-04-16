@@ -1,0 +1,64 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <title>CSS Regions: 3D Transforms: rotateX, perspective, region & transformed content node</title>
+    <link rel="author" title="David Alcala" href="mailto:dalcala@adobe.com">
+    <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
+    <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
+    <link rel="help" href="http://www.w3.org/TR/css3-2d-transforms/#transform-functions">
+    <link rel="match" href="reference/????????">
+    <meta name="assert" content="CSS rotateX and perspective 3D transform applied to a named flow transforms the content node.">
+    <style>
+    #region {
+        width: 300px;
+        height: 300px;
+        position: relative;
+        -webkit-flow-from: f;
+    }
+    #source {
+        width: 200px;
+        height: 200px;
+        margin: 0 auto 60px;
+        background-color: green;
+        -webkit-flow-into: f;
+        -webkit-transform: perspective(600px) rotateX(45deg);
+    }
+    .div-red {
+        width: 48px;
+        height: 48px;
+        position: absolute;
+        background-color: red;
+    }
+    #div-red1 {
+        left: 134px;
+        top: 203px;
+    }
+    #div-red2 {
+        left: 262px;
+        top: 203px;
+    }
+    #div-red3 {
+        left: 120px;
+        top: 296px;
+    }
+    #div-red4 {
+        left: 277px;
+        top: 296px;
+    }
+    </style>
+</head>
+<body>
+    <h3>3D Transforms: rotateX, perspective, region & transformed content node</h3>
+    <p>The test passes if there is a green polygon and no red.</p>
+    <p>Manual test since source & region layers are flattened; can't test polygon with ref test</p>
+    <p>Bug: The perspective is not getting applied correctly with regions</p>
+    <div class="div-red" id="div-red1"></div>
+    <div class="div-red" id="div-red2"></div>
+    <div class="div-red" id="div-red3"></div>
+    <div class="div-red" id="div-red4"></div>
+    <div id="source"></div>
+    <div id="region"></div>
+</body>
+</html>

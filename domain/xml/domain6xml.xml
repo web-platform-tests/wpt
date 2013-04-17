@@ -4,7 +4,7 @@
 <its:param name="domainParam">DC.type</its:param>
 <its:domainRule selector="/text/body/p" domainPointer="/text/head/meta[@name=$domainParam]/@content" domainMapping="'Poetry literature' poetry"/>
 </its:rules>
-<meta name="DC.type" content="poetry"/>
+<meta name="DC.type" content="Poetry literature"/>
 </head>
 <body>
 <p>

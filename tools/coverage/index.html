@@ -33,7 +33,7 @@
               <td>{{ formatNumber existingTests }}</td>
               <td>{{ formatNumber desiredTests }}</td>
               <td class=detailed-data>{{ formatNumber exceedingTests }}</td>
-              <td style="background-color: {{ getColor percent }}">{{ formatNumber percent }}</td>
+              <td class="{{ percentToValue percent }}">{{ formatNumber percent }}</td>
               <td>
                 <div style="width:610px">
                   {{#if desiredTests }}
@@ -54,13 +54,14 @@
         <table>
           <tr>
             <th>Spec</th>
+            <th>Rec Track Status</th>
             <th>Existing Tests</th>
             <th class=detailed-data>Tests Awaiting Review</th>
             <th class=detailed-data>Tests Passing Review</th>
             <th>Missing tests</th>
             <th>Desired tests</th>
             <th class=detailed-data>Exceeding tests</th>
-            <th>Coverage (%)</th>
+            <th>Coverage&nbsp;(%)</th>
             <th>Test Development Time</th>
             <th>Test Review Time</th>
             <th>Total Time</th>
@@ -69,13 +70,14 @@
           {{#each children}}
             <tr>
               <td>[<a href='{{ href }}' title='{{ model.title }}'>{{ model.id }}</a>]{{#if model.refTestBased}}*{{/if}}</td>
+              <td class="{{ lowerCase model.status }}">{{ model.status }}</td>
               <td>{{ formatNumber existingTests }}</td>
               <td class=detailed-data>{{ formatNumber testsAwaitingReview }}</td>
               <td class=detailed-data>{{ formatNumber testsPassingReview }}</td>
               <td>{{ formatNumber missingTests  }}</td>
               <td>{{ formatNumber desiredTests }}</td>
               <td class=detailed-data>{{ formatNumber exceedingTests }}</td>
-              <td style="background-color: {{ getColor percent }}">{{ formatNumber percent }}</td>
+              <td class="{{ percentToValue percent }}">{{ formatNumber percent }}</td>
               <td>{{ formatTime testTime }}</td>
               <td>{{ formatTime reviewTime }}</td>
               <td title="{{ totalTime }}">{{ formatTime totalTime }}</td>
@@ -97,7 +99,7 @@
             <td>{{ formatNumber missingTests  }}</td>
             <td>{{ formatNumber desiredTests }}</td>
             <td class=detailed-data>{{ formatNumber exceedingTests }}</td>
-            <td style="background-color: {{ getColor percent }}">{{ formatNumber percent }}</td>
+            <td class="{{ percentToValue percent }}">{{ formatNumber percent }}</td>
             <td>{{ formatTime testTime }}</td>
             <td>{{ formatTime reviewTime }}</td>
             <td title="{{ totalTime }}">{{ formatTime totalTime }}</td>
@@ -124,11 +126,11 @@
     <div id='output'></div>
     
     <ul id=color-coding>
-      <li style="background-color:#0F0">80 - 100%</li>
-      <li style="background-color:#CF6">60 - 79%</li>
-      <li style="background-color:#FF6">40 - 69%</li>
-      <li style="background-color:#FC6">20 - 39%</li>
-      <li style="background-color:#F00">0 - 19%</li>
+      <li class="high">80 - 100%</li>
+      <li class="med-high">60 - 79%</li>
+      <li class="med">40 - 69%</li>
+      <li class="med-low">20 - 39%</li>
+      <li class="low">0 - 19%</li>
     </ul>
     
     <form action="" method="get" id="form" accept-charset="utf-8">
@@ -148,7 +150,14 @@
           <label><input type='checkbox' name='show-details' id="show-details"> Show detailed coverage data.</label>
         </p>
       </div>
-      <div style="clear:both">
+      <div id="summary-controls" style="clear:both">
+        <h4>Table Sort</h4>
+        
+        <p>
+          Sort by: <select name='sort-by' id='sort-by'><option value=id select>spec short name</option><option value=status>rec track status</option></select>
+        </p>
+      </div>
+      <div>
         <h4>Desired number of test</h4>
         <ul>
           <li>Tests per RFC2119 keyword: <input type='number' name='rfc2119' size='4' value='4' min='0'></li>

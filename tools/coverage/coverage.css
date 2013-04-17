@@ -83,10 +83,19 @@ tr:hover {
     display: none;
 }
 
-.spec-view #spec-controls {
+.spec-view #spec-controls,
+.summary-view #summary-controls {
     display: block;
 }
 
+.spec-view #summary-controls,
 .summary-view #spec-controls {
     display: none;
 }
+
+.rec, .pr, .high { background-color: #7f7 }
+.cr, .lcwd, .med-high { background-color: #cf7 }
+.wd, .med { background-color: #ff7 }
+.fpwd, .med-low { background-color: #fc7 }
+.ed, .low { background-color: #f77 }
+

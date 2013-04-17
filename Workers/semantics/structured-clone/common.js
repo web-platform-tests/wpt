@@ -1,4 +1,5 @@
 function createWorker(msg) {
+  // `type` is defined in the test case itself
   if (type == 'dedicated')
     return new Worker('dedicated.js#'+encodeURIComponent(msg));
   else if (type == 'shared')

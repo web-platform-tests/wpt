@@ -108,8 +108,7 @@ var controls = (function($) {
         self.displayDetails(showDetails);
         $('#show-details').get(0).checked = showDetails;
 
-        var sortBy = state['sort-by'] == 'state' ? 1 : 0;
-        $("select[name=sort-by]").selectedIndex = sortBy;
+        $("#sort-by").get(0).selectedIndex = state['sort-by'] == 'status' ? 1 : 0;
     }
 
     function getState() {

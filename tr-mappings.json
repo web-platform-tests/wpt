@@ -12,7 +12,6 @@
     "crypto-api": "WebCryptoAPI",
     "SelectorsAPI": "selectors-api",
     "ServerSentEvents": "eventsource",
-    "typedarrays": "typedarrays",
     "ShadowDOM": "shadow-dom",
     "ext-xhtml-pubid": "xhtml-pubid"
 }

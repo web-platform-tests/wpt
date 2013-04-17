@@ -99,7 +99,7 @@ var controls = (function($) {
         var lvl = state.level || 1;
         $("input[name=level][value=" + lvl + "]").get(0).checked = true;
         self.setLevel(lvl);
-        
+
         var showAll = !!state['show-all'];
         self.displayAllReqs(showAll);
         $('#show-all').get(0).checked = showAll;
@@ -107,6 +107,9 @@ var controls = (function($) {
         var showDetails = !!state['show-details']
         self.displayDetails(showDetails);
         $('#show-details').get(0).checked = showDetails;
+
+        var sortBy = state['sort-by'] == 'state' ? 1 : 0;
+        $("select[name=sort-by]").selectedIndex = sortBy;
     }
 
     function getState() {
@@ -219,6 +222,15 @@ SpecModel.prototype.findOutOfScope = function() {
 
     var specs = null;
     var $target = null;
+    var STATUS_VALUES = {
+        "ED": 0,
+        "FPWD": 1,
+        "WD": 2,
+        "LCWD": 3,
+        "CR": 4,
+        "PR": 5,
+        "REC": 6
+    };
     
     function clone(obj) {
         var r = {};
@@ -271,13 +283,17 @@ SpecModel.prototype.findOutOfScope = function() {
             return allowHalfs(time / Y) + "yr";
         });
 
-        Handlebars.registerHelper('getColor', function(percent) {
-            if (percent == null) return 'transparent';
-            if (percent > 79) return '#0f0';
-            if (percent > 59) return '#cf6';
-            if (percent > 39) return '#ff6';
-            if (percent > 19) return '#fc6';
-            return '#f00';
+        Handlebars.registerHelper('percentToValue', function(percent) {
+            if (percent == null) return '';
+            if (percent > 79) return 'high';
+            if (percent > 59) return 'med-high';
+            if (percent > 39) return 'med';
+            if (percent > 19) return 'med-low';
+            return 'low';
+        });
+
+        Handlebars.registerHelper('lowerCase', function(str) {
+            return str.toLowerCase();
         });
         
         return {
@@ -368,7 +384,8 @@ SpecModel.prototype.findOutOfScope = function() {
             assumeTooling: 1 * $("input[name=assume-tooling]").val(),
             reviewTime: 1 * $("input[name=review-time]").val(),
             testTime: 1 * $("input[name=test-time]").val(),
-            reviewSuccess: 1 * $("input[name=review-success]").val()
+            reviewSuccess: 1 * $("input[name=review-success]").val(),
+            sortBy: $("select[name=sort-by]").val()
         };
     }
     
@@ -434,12 +451,16 @@ SpecModel.prototype.findOutOfScope = function() {
         _specs.forEach(function(spec) {
             getData(spec, function(data) {
                 count--;
-                view.children.push(makeViewFromSpecData(spec, data, getMultipliers(spec)));
+                var multipliers = getMultipliers(spec);
+                view.children.push(makeViewFromSpecData(spec, data, multipliers));
                 if (count === 0) {
                     view.children.reduce(View.calculateTotals, view);
                     view.children.forEach(createBarGraph);
                     view.children.sort(function(a, b) {
-                        return a.model.id > b.model.id ? 1 : -1;
+                        a = a.model;
+                        b = b.model;
+                        if (multipliers.sortBy == "id" || a.status == b.status) return a.id > b.id ? 1 : -1;
+                        return STATUS_VALUES[b.status] - STATUS_VALUES[a.status];
                     });
                     callback(view);
                 }

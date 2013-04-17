@@ -94,31 +94,31 @@
             "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, 20*viewport.fontSize);"
         },
         {
-            "DESCRIPTION" : "@viewport constrained - width from zoom: 200%",
+            "DESCRIPTION" : "@viewport constrained - zoom: 200% not affecting width",
             "AUTHOR_NAME" : "Rune Lillesveen",
             "AUTHOR_EMAIL" : "rune@opera.com",
             "TOKENS" : "dom",
-            "ASSERTION" : "Setting zoom in @viewport to 200% will set the actual viewport width to half the initial-width.",
+            "ASSERTION" : "Setting zoom in @viewport to 200% will not affect the actual viewport width.",
             "VIEWPORT_DESC" : "zoom: 200%",
-            "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, Math.round(viewport.initialWidth/2));"
+            "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, viewport.initialWidth);"
         },
         {
             "DESCRIPTION" : "@viewport constrained - min-zoom not affecting width.",
             "AUTHOR_NAME" : "Rune Lillesveen",
             "AUTHOR_EMAIL" : "rune@opera.com",
             "TOKENS" : "dom",
-            "ASSERTION" : "Setting min-zoom in @viewport to 200% will not affect width if zoom is auto.",
+            "ASSERTION" : "Setting min-zoom in @viewport to 200% will not affect width.",
             "VIEWPORT_DESC" : "min-zoom: 200%",
             "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, viewport.initialWidth);"
         },
         {
-            "DESCRIPTION" : "@viewport constrained - max-zoom affecting width.",
+            "DESCRIPTION" : "@viewport constrained - max-zoom not affecting width.",
             "AUTHOR_NAME" : "Rune Lillesveen",
             "AUTHOR_EMAIL" : "rune@opera.com",
             "TOKENS" : "dom",
-            "ASSERTION" : "Setting max-zoom in @viewport to 50% affect width if zoom is auto because of step 10 in the constraining procedure.",
+            "ASSERTION" : "Setting max-zoom in @viewport to 50% will not affect width.",
             "VIEWPORT_DESC" : "max-zoom: 50%",
-            "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, 2*viewport.initialWidth);"
+            "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, viewport.initialWidth);"
         },
         {
             "DESCRIPTION" : "@viewport constrained - zoom greater than max-zoom.",
@@ -127,7 +127,7 @@
             "TOKENS" : "dom",
             "ASSERTION" : "Setting zoom greater than max-zoom will set zoom to max-zoom.",
             "VIEWPORT_DESC" : "max-zoom: 50%; zoom: 150%",
-            "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, 2*viewport.initialWidth);"
+            "TEST_FUNCTION" : "assert_equals(viewport.zoom, 0.5);"
         },
         {
             "DESCRIPTION" : "@viewport constrained - zoom less than min-zoom.",
@@ -136,7 +136,7 @@
             "TOKENS" : "dom",
             "ASSERTION" : "Setting zoom less than min-zoom will set zoom to min-zoom.",
             "VIEWPORT_DESC" : "min-zoom: 200%; zoom: 50%",
-            "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, Math.round(viewport.initialWidth/2));"
+            "TEST_FUNCTION" : "assert_equals(viewport.zoom, 2);"
         },
         {
             "DESCRIPTION" : "@viewport constrained - height deduced from width and aspect ratio.",
@@ -148,40 +148,13 @@
             "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, 10000); assert_equals(viewport.actualHeight, Math.round(10000*viewport.initialHeight/viewport.initialWidth));"
         },
         {
-            "DESCRIPTION" : "@viewport constrained - Large non-auto height not affecting width.",
+            "DESCRIPTION" : "@viewport constrained - width deduced from height and aspect ratio.",
             "AUTHOR_NAME" : "Rune Lillesveen",
             "AUTHOR_EMAIL" : "rune@opera.com",
             "TOKENS" : "dom",
-            "ASSERTION" : "Non-auto height does not affect width if zoom is auto.",
+            "ASSERTION" : "Setting height and not width will set a width that makes the actual width/height and initial width/height have the same aspect ratio.",
             "VIEWPORT_DESC" : "height: 10000px",
-            "TEST_FUNCTION" : "assert_equals(viewport.actualHeight, 10000); assert_equals(viewport.actualWidth, viewport.initialWidth);"
-        },
-        {
-            "DESCRIPTION" : "@viewport constrained - Small non-auto height not affecting width.",
-            "AUTHOR_NAME" : "Rune Lillesveen",
-            "AUTHOR_EMAIL" : "rune@opera.com",
-            "TOKENS" : "dom",
-            "ASSERTION" : "Non-auto height does not affect width if zoom is auto.",
-            "VIEWPORT_DESC" : "height: 1px",
-            "TEST_FUNCTION" : "assert_equals(viewport.actualHeight, 1); assert_equals(viewport.actualWidth, viewport.initialWidth);"
-        },
-        {
-            "DESCRIPTION" : "@viewport constrained - Auto width from height and non-auto zoom.",
-            "AUTHOR_NAME" : "Rune Lillesveen",
-            "AUTHOR_EMAIL" : "rune@opera.com",
-            "TOKENS" : "dom",
-            "ASSERTION" : "Non-auto height affects width if zoom is not auto.",
-            "VIEWPORT_DESC" : "height: 10000px; zoom: 100%",
             "TEST_FUNCTION" : "assert_equals(viewport.actualHeight, 10000); assert_equals(viewport.actualWidth, Math.round(10000*viewport.initialWidth/viewport.initialHeight));"
-        },
-        {
-            "DESCRIPTION" : "@viewport constrained - extended width and height for non-auto zoom.",
-            "AUTHOR_NAME" : "Rune Lillesveen",
-            "AUTHOR_EMAIL" : "rune@opera.com",
-            "TOKENS" : "dom",
-            "ASSERTION" : "When zoom is non-auto, and the constrained width does not fill the viewport for the constrained zoom value, the width is extended to fill the viewport. Likewise for height.",
-            "VIEWPORT_DESC" : "width: 1px; height: 1px; zoom: 50%",
-            "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, 2*viewport.initialWidth); assert_equals(viewport.actualHeight, 2*viewport.initialHeight);"
         },
         {
             "DESCRIPTION" : "@viewport constrained - width is device-width.",
@@ -324,6 +297,55 @@
             "ASSERTION" : "CSSRule.VIEWPORT_RULE has the value 15, and the stylesheet contains a CSSViewportRule with type value 15.",
             "VIEWPORT_DESC" : "width: auto 1200px; min-height: 700px; max-zoom: 100%",
             "TEST_FUNCTION" : "assert_equals(CSSRule.VIEWPORT_RULE, 15); assert_equals(testStyleSheet.cssRules.item(0).type, 15);"
+        }]
+    },
+    {
+        "FILE_PREFIX" : "descriptor-values-",
+        "SPEC_SECTION" : "#viewport-descriptors",
+        "TESTS" : [{
+            "DESCRIPTION" : "@viewport accept both percentage and number values for zoom factors",
+            "AUTHOR_NAME" : "Rune Lillesveen",
+            "AUTHOR_EMAIL" : "rune@opera.com",
+            "TOKENS" : "dom",
+            "ASSERTION" : "Descriptors that take zoom factors must accept both positive percentage and number values.",
+            "VIEWPORT_DESC" : "min-zoom: 1.5; max-zoom: 2; zoom: 170%",
+            "TEST_FUNCTION" : "assert_equals(testStyleSheet.cssRules.item(0).style.length, 3);"
+        },
+        {
+            "DESCRIPTION" : "@viewport invalid <viewport-length> - drop negative lengths",
+            "AUTHOR_NAME" : "Rune Lillesveen",
+            "AUTHOR_EMAIL" : "rune@opera.com",
+            "TOKENS" : "dom",
+            "ASSERTION" : "Descriptors that take <viewport-length> values must drop negative lengths and percentages.",
+            "VIEWPORT_DESC" : "min-width: -1em; max-width: -10%; min-height: -0.1cm; max-height: -12rem",
+            "TEST_FUNCTION" : "assert_equals(testStyleSheet.cssRules.item(0).style.length, 0);"
+        },
+        {
+            "DESCRIPTION" : "@viewport invalid <viewport-length> - drop 0 lengths",
+            "AUTHOR_NAME" : "Rune Lillesveen",
+            "AUTHOR_EMAIL" : "rune@opera.com",
+            "TOKENS" : "dom",
+            "ASSERTION" : "Descriptors that take <viewport-length> values must drop negative lengths and percentages.",
+            "VIEWPORT_DESC" : "min-width: 0; max-width: 0%; min-height: 0cm; max-height: 0ex",
+            "TEST_FUNCTION" : "assert_equals(testStyleSheet.cssRules.item(0).style.length, 0);"
+        },
+        {
+            "DESCRIPTION" : "@viewport invalid zoom factor - drop negative factors",
+            "AUTHOR_NAME" : "Rune Lillesveen",
+            "AUTHOR_EMAIL" : "rune@opera.com",
+            "TOKENS" : "dom",
+            "ASSERTION" : "Zoom factor descriptors must drop negative numbers and percentages.",
+            "VIEWPORT_DESC" : "min-zoom: -1; max-zoom: -10%; zoom: -0.1;",
+            "TEST_FUNCTION" : "assert_equals(testStyleSheet.cssRules.item(0).style.length, 0);"
+        },
+        {
+            "DESCRIPTION" : "@viewport invalid zoom factor - drop 0 factors",
+            "AUTHOR_NAME" : "Rune Lillesveen",
+            "AUTHOR_EMAIL" : "rune@opera.com",
+            "TOKENS" : "dom",
+            "ASSERTION" : "Zoom factor descriptors must drop 0 numbers and percentages.",
+            "VIEWPORT_DESC" : "min-zoom: 0; max-zoom: 0%; zoom: 0",
+            "TEST_FUNCTION" : "assert_equals(testStyleSheet.cssRules.item(0).style.length, 0);"
         }]
     }]
 }

@@ -1,15 +1,17 @@
+// Up-to-date as of 2013-04-19.
 var textElements = {
 	a: {
 		// Conforming
-		href: "url",
+		target: "string",
 		download: "string",
 		ping: "urls",
-		target: "string",
 		rel: "string",
-		media: "string",
+		relList: {type: "tokenlist", domAttrName: "rel"},
 		hreflang: "string",
 		type: "string",
-		relList: {type: "tokenlist", domAttrName: "rel"},
+
+		// URLUtils
+		href: "url",
 
 		// Obsolete
 		coords: "string",
@@ -23,12 +25,16 @@ var textElements = {
 	small: {},
 	s: {},
 	cite: {},
-	q: {},
+	q: {
+		cite: "url",
+	},
 	dfn: {},
 	abbr: {},
+	data: {
+		value: "string",
+	},
 	time: {
 		dateTime: "string",
-		pubDate: "boolean",
 	},
 	code: {},
 	// Opera 11.50 doesn't allow unquoted "var" here, although ES5 does and
@@ -40,6 +46,7 @@ var textElements = {
 	sup: {},
 	i: {},
 	b: {},
+	u: {},
 	mark: {},
 	ruby: {},
 	rt: {},

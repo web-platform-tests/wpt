@@ -73,7 +73,7 @@
             "TOKENS" : "dom",
             "ASSERTION" : "If min-zoom is greater than max-zoom, min-zoom will overrule max-zoom.",
             "VIEWPORT_DESC" : "zoom: 100%; min-zoom: 200%; max-zoom: 50%",
-            "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, Math.round(viewport.initialWidth/2));"
+            "TEST_FUNCTION" : "assert_equals(viewport.zoom, 2);"
         },
         {
             "DESCRIPTION" : "@viewport constrained - width 20em",
@@ -100,7 +100,7 @@
             "TOKENS" : "dom",
             "ASSERTION" : "Setting zoom in @viewport to 200% will not affect the actual viewport width.",
             "VIEWPORT_DESC" : "zoom: 200%",
-            "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, viewport.initialWidth);"
+            "TEST_FUNCTION" : "assert_equals(viewport.zoom, 2); assert_equals(viewport.actualWidth, viewport.initialWidth);"
         },
         {
             "DESCRIPTION" : "@viewport constrained - min-zoom not affecting width.",
@@ -109,7 +109,7 @@
             "TOKENS" : "dom",
             "ASSERTION" : "Setting min-zoom in @viewport to 200% will not affect width.",
             "VIEWPORT_DESC" : "min-zoom: 200%",
-            "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, viewport.initialWidth);"
+            "TEST_FUNCTION" : "assert_equals(viewport.zoom, 2); assert_equals(viewport.actualWidth, viewport.initialWidth);"
         },
         {
             "DESCRIPTION" : "@viewport constrained - max-zoom not affecting width.",
@@ -118,7 +118,7 @@
             "TOKENS" : "dom",
             "ASSERTION" : "Setting max-zoom in @viewport to 50% will not affect width.",
             "VIEWPORT_DESC" : "max-zoom: 50%",
-            "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, viewport.initialWidth);"
+            "TEST_FUNCTION" : "assert_equals(viewport.zoom, 0.5); assert_equals(viewport.actualWidth, viewport.initialWidth);"
         },
         {
             "DESCRIPTION" : "@viewport constrained - zoom greater than max-zoom.",

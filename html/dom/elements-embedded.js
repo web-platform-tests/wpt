@@ -87,6 +87,7 @@ var embeddedElements = {
 		preload: {type: "enum", keywords: ["none", "metadata", "auto"], nonCanon: {"": "auto"}, defaultVal: null},
 		autoplay: "boolean",
 		loop: "boolean",
+		mediaGroup: "string",
 		controls: "boolean",
 		defaultMuted: {type: "boolean", domAttrName: "muted"},
 
@@ -102,6 +103,7 @@ var embeddedElements = {
 		preload: {type: "enum", keywords: ["none", "metadata", "auto"], nonCanon: {"": "auto"}, defaultVal: null},
 		autoplay: "boolean",
 		loop: "boolean",
+		mediaGroup: "string",
 		controls: "boolean",
 		defaultMuted: {type: "boolean", domAttrName: "muted"},
 	},

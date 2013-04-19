@@ -8,18 +8,21 @@ class TestGenerator:
     """Class used for generating an .html or .xht file for each test defined by
        entries in the json file."""
 
-    def __init__(self, harness_url, vendor, markup, infile):
+    def __init__(self, harness_url, vendor, template_file, infile):
         self.harness_url = harness_url
         self.vendor = vendor
-        self.markup = markup
-        template_file = open("template." + markup, "r")
+        extMatch = re.search("\.([^\.]+)$", template_file.name)
+        if extMatch == None:
+            self.ext = "html"
+        else:
+            self.ext = extMatch.group(1)
         self.test_file_template = template_file.read()
         template_file.close()
         self.tests = json.load(infile)
         self.spec_url = self.tests["SPEC_URL"]
 
     def getTestFileName(self, file_prefix, idx):
-        return file_prefix + str(idx+1).rjust(3, '0') + "." + self.markup
+        return file_prefix + str(idx+1).rjust(3, '0') + "." + self.ext
 
     def getSpecURL(self):
         return self.spec_url
@@ -68,12 +71,12 @@ def main():
     parser = argparse.ArgumentParser(description="Generate the CSS Device Adaptation testsuite.", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("-u", "--harness-url", default="http://w3c-test.org/resources/", help="The URL of the directory where the testharness files are found.")
     parser.add_argument("-v", "--vendor", default="", help="The vendor string used for @viewport and corresponding CSSOM names. For instance 'o' for @-o-viewport. By default, no prefix will be added.")
-    parser.add_argument("-m", "--markup", default="html", choices=["html", "xht"], help="Select between HTML5 and XHTML output.")
+    parser.add_argument("-t", "--template", type=file, default="template.html", help="Select template file to use (HTML5 or XHTML output).")
     parser.add_argument("infile", type=file, help="The input .json file which contains the tests.")
 
     args = parser.parse_args()
 
-    generator = TestGenerator(args.harness_url, args.vendor, args.markup, args.infile)
+    generator = TestGenerator(args.harness_url, args.vendor, args.template, args.infile)
 
     print "\nGenerating tests for " + generator.getSpecURL() + ":\n"
 

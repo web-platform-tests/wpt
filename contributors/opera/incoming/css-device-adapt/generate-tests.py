@@ -52,6 +52,9 @@ class TestGenerator:
         else:
             test["TEST_CSS"] = ""
 
+        if "TEST_FUNCTION" in test and self.vendor:
+            test["TEST_FUNCTION"] = re.sub("VIEWPORT_RULE", self.vendor.upper() + "_VIEWPORT_RULE", test["TEST_FUNCTION"])
+
         file = open(file_name, "w")
         file.write(self.test_file_template.format(**test))
         file.close()

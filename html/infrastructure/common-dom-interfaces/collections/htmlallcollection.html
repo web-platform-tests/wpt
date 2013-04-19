@@ -1,22 +1,23 @@
 <!DOCTYPE HTML>
+<link rel="author" title="Dan Druta" href="mailto:dan.druta@att.com"/>
+<link rel="help" href="2.7.2.1 - Common Infrastructure/Common DOM Interfaces/Collections/HTMLAllCollection"/>
+<meta name="flags" content="TOKENS" />
+<meta name="assert" content="TEST ASSERTION"/>
 <html>
-<body onload="load_test_attr.done()">
-<h1>HTMLAllCollection Tests</h1>
-<img src="http://www.w3.org/Icons/w3c_home" name="picture">
-<p>There should be eight tests </p>
-<div id="log"></div>
-<script src="testharness.js"></script>
-<script src="testharnessreport.js"></script>
+<body>
+<title>HTMLAllCollection Tests</title>
+<img src="../../../../images/green.png" name="picture">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
 <script> 
-	setup({explicit_done:true})
-	{test(function(){ assert_true(document.all.length == 10)}, "Test for HTMLAllCollection size");}
-	{test(function(){ assert_true(document.all.item(0).tagName == "HTML")}, "Test lookup by index using ()");}
-	{test(function(){ assert_true(document.all[0].tagName == "HTML")}, "Test lookup by index using []");}
-	{test(function(){ assert_true(document.all.tags("script").length == 3)}, "Test for multiple occurence 3 <script> found");}
-	{test(function(){ assert_true(document.all.item("picture").nodeName == "IMG")}, "Test lookup IMG by name");}
-	{test(function(){ assert_true(document.all.namedItem("picture").nodeName == "IMG")}, "Test lookup IMG by namedItem ");}
-	{test(function(){ assert_true(document.all("picture").nodeName == "IMG")}, "Test lookup IMG in collection using ()");}
-	{test(function(){ assert_true(document.all["picture"].nodeName == "IMG")}, "Test lookup IMG in collection using []");}
-	onload = function() {done();}
+	{test(function(){ assert_equals(document.all.length,12)}, "Test for HTMLAllCollection size");}
+	{test(function(){ assert_equals(document.all.item(0).tagName,"HTML")}, "Test lookup by index using ()");}
+	{test(function(){ assert_equals(document.all[0].tagName,"HTML")}, "Test lookup by index using []");}
+	{test(function(){ assert_equals(document.all.tags("script").length,3)}, "Test for multiple occurence 3 <script> found");}
+	{test(function(){ assert_equals(document.all.item("picture").nodeName,"IMG")}, "Test lookup IMG by name");}
+	{test(function(){ assert_equals(document.all.namedItem("picture").nodeName,"IMG")}, "Test lookup IMG by namedItem ");}
+	{test(function(){ assert_equals(document.all("picture").nodeName,"IMG")}, "Test lookup IMG in collection using ()");}
+	{test(function(){ assert_equals(document.all["picture"].nodeName,"IMG")}, "Test lookup IMG in collection using []");}
 </script>
+<div id="log"></div>
  </html> 

@@ -44,7 +44,7 @@ test(function() {
 
   assert_true("test2" in document, '"test2" in document should be true');
   var collection = document.test2;
-  assert_true(collection instanceof HTMLCollection, "collection should be an HTMLCollection");
+  assert_class_string(collection, "HTMLCollection", "collection should be an HTMLCollection");
   assert_array_equals(collection, [form1, form2]);
 }, "If there are two forms, a collection should be returned. (name)");
 

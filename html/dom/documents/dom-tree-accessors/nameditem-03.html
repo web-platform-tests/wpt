@@ -44,7 +44,7 @@ test(function() {
 
   assert_true("test2" in document, '"test2" in document should be true');
   var collection = document.test2;
-  assert_true(collection instanceof HTMLCollection, "collection should be an HTMLCollection");
+  assert_class_string(collection, "HTMLCollection", "collection should be an HTMLCollection");
   assert_array_equals(collection, [applet1, applet2]);
 }, "If there are two applets, a collection should be returned. (name)");
 
@@ -64,7 +64,7 @@ test(function() {
 
   assert_true("test4" in document, '"test4" in document should be true');
   var collection = document.test4;
-  assert_true(collection instanceof HTMLCollection, "collection should be an HTMLCollection");
+  assert_class_string(collection, "HTMLCollection", "collection should be an HTMLCollection");
   assert_array_equals(collection, [applet1, applet2]);
 }, "If there are two applets, a collection should be returned. (id)");
 
@@ -76,7 +76,7 @@ test(function() {
 
   assert_true("test5" in document, '"test5" in document should be true');
   var collection = document.test5;
-  assert_true(collection instanceof HTMLCollection, "collection should be an HTMLCollection");
+  assert_class_string(collection, "HTMLCollection", "collection should be an HTMLCollection");
   assert_array_equals(collection, [applet1, applet2]);
 }, "If there are two applets, a collection should be returned. (name and id)");
 
@@ -88,7 +88,7 @@ test(function() {
 
   assert_true("test6" in document, '"test6" in document should be true');
   var collection = document.test6;
-  assert_true(collection instanceof HTMLCollection, "collection should be an HTMLCollection");
+  assert_class_string(collection, "HTMLCollection", "collection should be an HTMLCollection");
   assert_array_equals(collection, [applet1, applet2]);
 }, "If there are two applets, a collection should be returned. (id and name)");
 

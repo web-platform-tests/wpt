@@ -43,7 +43,7 @@ test(function() {
 
   assert_true("test2" in document, '"test2" in document should be true');
   var collection = document.test2;
-  assert_true(collection instanceof HTMLCollection, "collection should be an HTMLCollection");
+  assert_class_string(collection, "HTMLCollection", "collection should be an HTMLCollection");
   assert_array_equals(collection, [iframe1, iframe2]);
 }, "If there are two iframes, a collection should be returned.");
 
@@ -55,7 +55,7 @@ test(function() {
 
   assert_true("test3" in document, '"test3" in document should be true');
   var collection = document.test3;
-  assert_true(collection instanceof HTMLCollection, "collection should be an HTMLCollection");
+  assert_class_string(collection, "HTMLCollection", "collection should be an HTMLCollection");
   assert_array_equals(collection, [iframe, img]);
 }, "If there are an iframe and another element (iframe first), a collection should be returned.");
 
@@ -67,7 +67,7 @@ test(function() {
 
   assert_true("test4" in document, '"test4" in document should be true');
   var collection = document.test4;
-  assert_true(collection instanceof HTMLCollection, "collection should be an HTMLCollection");
+  assert_class_string(collection, "HTMLCollection", "collection should be an HTMLCollection");
   assert_array_equals(collection, [img, iframe]);
 }, "If there are an iframe and another element (iframe last), a collection should be returned.");
 

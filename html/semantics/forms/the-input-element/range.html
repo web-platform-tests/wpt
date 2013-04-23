@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <title>Input Range</title>
+     <meta name=viewport content="width=device-width, maximum-scale=1.0, user-scalable=no" />
+ 	  <link rel="author" title="Fabrice Clari" href="mailto:f.clari@inno-group.com">
+ 	  <link rel="author" title="Dimitri Bocquet" href="mailto:Dimitri.Bocquet@mosquito-fp7.eu">
+	  <link rel="help" href="http://www.w3.org/TR/html5/the-input-element.html#the-input-element">
+   <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+
+  <body>
+
+  
+  		<h1>Input Range</h1>
+  		<input type="range" style="display:none" min=0 max=5 />
+
+    <div id="log">
+    </div>
+	
+	<script type="text/javascript">
+		
+
+		test(function() {assert_equals(document.getElementsByTagName("input")[0].type, "range")}, "range type support on input element", {
+		  "help" : "http://www.w3.org/TR/html5/the-input-element.html#dom-input-type" });
+		test(function() {assert_equals(document.getElementsByTagName("input")[0].min, "0")}, "min attribute support on input element", {
+		"help" : "http://www.w3.org/TR/html5/the-input-element.html#dom-input-min" });
+		test(function() {assert_equals(document.getElementsByTagName("input")[0].max, "5")}, "max attribute support on input element", {
+		  "help" : "http://www.w3.org/TR/html5/the-input-element.html#dom-input-max" });
+		  
+	</script>
+	
+  </body>
+  
+</html>

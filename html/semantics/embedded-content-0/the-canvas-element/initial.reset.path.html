@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <title>Canvas test: initial.reset.path</title>
 <meta name="author" content="Philip Taylor">
-<script src="../../../../common/canvas-tests.js"></script>
-<link rel="stylesheet" href="../../../../common/canvas-tests.css">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../../../../../common/canvas-tests.js"></script>
+<link rel="stylesheet" href="../../../../../common/canvas-tests.css">
 <body class="show_output">
 
 <h1><a href="index.initial.html">initial</a>.<a href="index.initial.reset.html">reset</a>.path</h1>
@@ -19,6 +21,7 @@
 <p class="output expectedtext">Expected output:<p><img src="initial.reset.path.png" class="output expected" id="expected" alt="">
 <ul id="d"></ul>
 <script>
+var t = async_test("Resetting the canvas state resets the current path");
 _addTest(function(canvas, ctx) {
 
 canvas.width = 100;

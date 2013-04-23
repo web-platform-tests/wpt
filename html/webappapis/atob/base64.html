@@ -4,8 +4,8 @@ to Google. -->
 <title>atob()/btoa() tests</title>
 <meta charset=utf-8>
 <div id=log></div>
-<script src="/resources/testharness.js"></script>
-<script /resources/testharnessreport.js</script>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
 <script>
 // From WebIDL:
 //
@@ -92,12 +92,16 @@ function btoaLookup(idx) {
 }
 
 /**
- * Implementation of atob() according to the HTML spec.
+ * Implementation of atob() according to the HTML spec, except that instead of
+ * throwing INVALID_CHARACTER_ERR we return null.
  */
 function myatob(input) {
 	// WebIDL requires DOMStrings to just be converted using ECMAScript
 	// ToString, which in our case amounts to calling String().
 	input = String(input);
+
+	// "Remove all space characters from input."
+	input = input.replace(/[ \t\n\f\r]/g, "");
 
 	// "If the length of input divides by 4 leaving no remainder, then: if
 	// input ends with one or two U+003D EQUALS SIGN (=) characters, remove
@@ -120,7 +124,7 @@ function myatob(input) {
 	// U+0061 LATIN SMALL LETTER A to U+007A LATIN SMALL LETTER Z"
 	if (input.length % 4 == 1
 	|| !/^[+/0-9A-Za-z]*$/.test(input)) {
-		return "INVALID_CHARACTER_ERR";
+		return null;
 	}
 
 	// "Let output be a string, initially empty."
@@ -222,7 +226,7 @@ function testBtoa(input) {
 	var normalizedInput = String(input);
 	for (var i = 0; i < normalizedInput.length; i++) {
 		if (normalizedInput.charCodeAt(i) > 255) {
-			assert_throws("INVALID_CHARACTER_ERR", function() { btoa(input); },
+			assert_throws("InvalidCharacterError", function() { btoa(input); },
 				"Code unit " + i + " has value " + normalizedInput.charCodeAt(i) + ", which is greater than 255");
 			return;
 		}
@@ -270,38 +274,13 @@ tests.push(["btoa(first 256 code points concatenated)", everything]);
 generate_tests(testBtoa, tests);
 
 function testAtob(input) {
-	// "If the length of input divides by 4 leaving no remainder, then: if
-	// input ends with one or two U+003D EQUALS SIGN (=) characters, remove
-	// them from input."
-	var normalizedInput = String(input);
-	if (normalizedInput.length % 4 == 0) {
-		normalizedInput = normalizedInput.replace(/==?$/, "");
-	}
-
-	// "If the length of input divides by 4 leaving a remainder of 1, throw an
-	// INVALID_CHARACTER_ERR exception and abort these steps."
-	if (normalizedInput.length % 4 == 1) {
-		assert_throws("INVALID_CHARACTER_ERR", function() { atob(input) },
-			"After stripping one or two trailing equals signs (if appropriate), input has length with remainder 1 when divided by 4");
+	var expected = myatob(input);
+	if (expected === null) {
+		assert_throws("InvalidCharacterError", function() { atob(input) });
 		return;
 	}
 
-	// "If input contains a character that is not in the following list of
-	// characters and character ranges, throw an INVALID_CHARACTER_ERR
-	// exception and abort these steps:
-	//
-	// U+002B PLUS SIGN (+)
-	// U+002F SOLIDUS (/)
-	// U+0030 DIGIT ZERO (0) to U+0039 DIGIT NINE (9)
-	// U+0041 LATIN CAPITAL LETTER A to U+005A LATIN CAPITAL LETTER Z
-	// U+0061 LATIN SMALL LETTER A to U+007A LATIN SMALL LETTER Z"
-	if (!/^[+/0-9A-Za-z]*$/.test(normalizedInput)) {
-		assert_throws("INVALID_CHARACTER_ERR", function() { atob(input) },
-			"After stripping one or two trailing equals signs (if appropriate), input contains an invalid character");
-		return;
-	}
-
-	assert_equals(atob(input), myatob(input));
+	assert_equals(atob(input), expected);
 }
 
 var tests = ["", "abcd", " abcd", "abcd ", "abcd===", " abcd===", "abcd=== ",
@@ -313,7 +292,10 @@ var tests = ["", "abcd", " abcd", "abcd ", "abcd===", " abcd===", "abcd=== ",
 	"abcd=", "abcd==", "abcd===", "abcd====", "abcd=====",
 	"abcde=", "abcde==", "abcde===", "abcde====", "abcde=====",
 	"=a", "=a=", "a=b", "a=b=", "ab=c", "ab=c=", "abc=d", "abc=d=",
-	"ab\ncd",
+	// With whitespace
+	"ab\tcd", "ab\ncd", "ab\fcd", "ab\rcd", "ab cd", "ab\u00a0cd",
+	"ab\t\n\f\r cd", " \t\n\f\r ab\t\n\f\r cd\t\n\f\r ",
+	"ab\t\n\f\r =\t\n\f\r =\t\n\f\r ",
 	// Test if any bits are set at the end.  These should all be fine, since
 	// they end with A, which becomes 0:
 	"A", "/A", "//A", "///A", "////A",
@@ -334,9 +316,8 @@ var tests = ["", "abcd", " abcd", "abcd ", "abcd===", " abcd===", "abcd=== ",
 ];
 tests = tests.map(
 	function(elem) {
-		var expected = myatob(elem);
-		if (expected === "INVALID_CHARACTER_ERR") {
-			return ["atob(" + format_value(elem) + ") must raise INVALID_CHARACTER_ERR", elem];
+		if (myatob(elem) === null) {
+			return ["atob(" + format_value(elem) + ") must raise InvalidCharacterError", elem];
 		}
 		return ["atob(" + format_value(elem) + ") == " + format_value(myatob(elem)), elem];
 	}

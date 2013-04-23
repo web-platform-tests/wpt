@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <title>Canvas test: initial.colour</title>
 <meta name="author" content="Philip Taylor">
-<script src="../../../../common/canvas-tests.js"></script>
-<link rel="stylesheet" href="../../../../common/canvas-tests.css">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../../../../../common/canvas-tests.js"></script>
+<link rel="stylesheet" href="../../../../../common/canvas-tests.css">
 <body class="show_output">
 
 <h1><a href="index.initial.html">initial</a>.colour</h1>
@@ -22,6 +24,7 @@ the actual blackness visible.
 <p class="output expectedtext">Expected output:<p><img src="initial.colour.png" class="output expected" id="expected" alt="">
 <ul id="d"></ul>
 <script>
+var t = async_test("Initial state is transparent black");
 _addTest(function(canvas, ctx) {
 
 _assertPixel(canvas, 20,20, 0,0,0,0, "20,20", "0,0,0,0");

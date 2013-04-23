@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <title>Canvas test: size.attributes.default</title>
 <meta name="author" content="Philip Taylor">
-<script src="../../../../common/canvas-tests.js"></script>
-<link rel="stylesheet" href="../../../../common/canvas-tests.css">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../../../../../common/canvas-tests.js"></script>
+<link rel="stylesheet" href="../../../../../common/canvas-tests.css">
 <body class="show_output">
 
 <h1><a href="index.size.html">size</a>.<a href="index.size.attributes.html">attributes</a>.default</h1>
@@ -20,6 +22,7 @@
 <p class="output expectedtext">Expected output:<p><img src="size.attributes.default.png" class="output expected" id="expected" alt="">
 <ul id="d"></ul>
 <script>
+var t = async_test("Default width/height when attributes are missing");
 _addTest(function(canvas, ctx) {
 
 _assertSame(canvas.width, 300, "canvas.width", "300");

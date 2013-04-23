@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <title>Canvas test: toDataURL.jpeg.quality.outsiderange</title>
 <meta name="author" content="Philip Taylor">
-<script src="../../../../common/canvas-tests.js"></script>
-<link rel="stylesheet" href="../../../../common/canvas-tests.css">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../../../../../common/canvas-tests.js"></script>
+<link rel="stylesheet" href="../../../../../common/canvas-tests.css">
 <body class="show_output">
 
 <h1><a href="index.toDataURL.html">toDataURL</a>.<a href="index.toDataURL.jpeg.html">jpeg</a>.<a href="index.toDataURL.jpeg.quality.html">quality</a>.outsiderange</h1>
@@ -19,6 +21,7 @@
 
 <ul id="d"></ul>
 <script>
+var t = async_test("toDataURL with JPEG handles out-of-range quality parameters");
 _addTest(function(canvas, ctx) {
 
 ctx.fillStyle = '#00f';

@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <title>Canvas test: context.unrecognised.nullsuffix</title>
 <meta name="author" content="Philip Taylor">
-<script src="../../../../common/canvas-tests.js"></script>
-<link rel="stylesheet" href="../../../../common/canvas-tests.css">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../../../../../common/canvas-tests.js"></script>
+<link rel="stylesheet" href="../../../../../common/canvas-tests.css">
 <body class="show_output">
 
 <h1><a href="index.context.html">context</a>.<a href="index.context.unrecognised.html">unrecognised</a>.nullsuffix</h1>
@@ -19,6 +21,7 @@
 
 <ul id="d"></ul>
 <script>
+var t = async_test("Context name \"2d\" plus a \"\\0\" suffix is unrecognised");
 _addTest(function(canvas, ctx) {
 
 _assertSame(canvas.getContext("2d\0"), null, "canvas.getContext(\"2d\\0\")", "null");

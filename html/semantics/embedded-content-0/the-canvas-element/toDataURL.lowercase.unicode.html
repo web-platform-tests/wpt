@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <title>Canvas test: toDataURL.lowercase.unicode</title>
 <meta name="author" content="Philip Taylor">
-<script src="../../../../common/canvas-tests.js"></script>
-<link rel="stylesheet" href="../../../../common/canvas-tests.css">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../../../../../common/canvas-tests.js"></script>
+<link rel="stylesheet" href="../../../../../common/canvas-tests.css">
 <body class="show_output">
 
 <h1><a href="index.toDataURL.html">toDataURL</a>.<a href="index.toDataURL.lowercase.html">lowercase</a>.unicode</h1>
@@ -19,6 +21,7 @@
 
 <ul id="d"></ul>
 <script>
+var t = async_test("toDataURL type is ASCII-case-insensitive");
 _addTest(function(canvas, ctx) {
 
 // Use LATIN CAPITAL LETTER I WITH DOT ABOVE (Unicode lowercase is "i")

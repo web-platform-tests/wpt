@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <title>Canvas test: toDataURL.png.primarycolours</title>
 <meta name="author" content="Philip Taylor">
-<script src="../../../../common/canvas-tests.js"></script>
-<link rel="stylesheet" href="../../../../common/canvas-tests.css">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../../../../../common/canvas-tests.js"></script>
+<link rel="stylesheet" href="../../../../../common/canvas-tests.css">
 <body class="show_output">
 
 <h1><a href="index.toDataURL.html">toDataURL</a>.<a href="index.toDataURL.png.html">png</a>.primarycolours</h1>
@@ -19,6 +21,7 @@
 <p class="output expectedtext">Expected output:<p><img src="toDataURL.png.primarycolours.png" class="output expected" id="expected" alt="">
 <ul id="d"></ul>
 <script>
+var t = async_test("toDataURL with PNG handles simple colours correctly");
 _addTest(function(canvas, ctx) {
 
 ctx.fillStyle = '#ff0';
@@ -37,7 +40,6 @@ deferTest();
 img.onload = wrapFunction(function ()
 {
     ctx.drawImage(img, 0, 0);
-    
     _assertPixel(canvas, 12,20, 255,255,0,255, "12,20", "255,255,0,255");
     _assertPixel(canvas, 50,20, 0,255,255,255, "50,20", "0,255,255,255");
     _assertPixel(canvas, 87,20, 0,0,255,255, "87,20", "0,0,255,255");

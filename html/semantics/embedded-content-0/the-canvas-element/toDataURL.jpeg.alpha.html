@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <title>Canvas test: toDataURL.jpeg.alpha</title>
 <meta name="author" content="Philip Taylor">
-<script src="../../../../common/canvas-tests.js"></script>
-<link rel="stylesheet" href="../../../../common/canvas-tests.css">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../../../../../common/canvas-tests.js"></script>
+<link rel="stylesheet" href="../../../../../common/canvas-tests.css">
 <body class="show_output">
 
 <h1><a href="index.toDataURL.html">toDataURL</a>.<a href="index.toDataURL.jpeg.html">jpeg</a>.alpha</h1>
@@ -20,6 +22,7 @@
 <p class="output expectedtext">Expected output:<p><img src="toDataURL.jpeg.alpha.png" class="output expected" id="expected" alt="">
 <ul id="d"></ul>
 <script>
+var t = async_test("toDataURL with JPEG composites onto black");
 _addTest(function(canvas, ctx) {
 
 ctx.fillStyle = 'rgba(128, 255, 128, 0.5)';
@@ -37,7 +40,6 @@ if (!data.match(/^data:image\/jpeg[;,]/)) {
   img.onload = wrapFunction(function ()
   {
       ctx.drawImage(img, 0, 0);
-      
       _assertPixelApprox(canvas, 50,25, 63,127,63,255, "50,25", "63,127,63,255", 8);
   });
   img.src = data;

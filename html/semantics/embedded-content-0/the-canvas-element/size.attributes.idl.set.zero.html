@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <title>Canvas test: size.attributes.idl.set.zero</title>
 <meta name="author" content="Philip Taylor">
-<script src="../../../../common/canvas-tests.js"></script>
-<link rel="stylesheet" href="../../../../common/canvas-tests.css">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../../../../../common/canvas-tests.js"></script>
+<link rel="stylesheet" href="../../../../../common/canvas-tests.css">
 <body class="show_output">
 
 <h1><a href="index.size.html">size</a>.<a href="index.size.attributes.html">attributes</a>.<a href="index.size.attributes.idl.html">idl</a>.<a href="index.size.attributes.idl.set.html">set</a>.zero</h1>
@@ -20,6 +22,7 @@
 
 <ul id="d"></ul>
 <script>
+var t = async_test("Setting width/height IDL attributes to 0");
 _addTest(function(canvas, ctx) {
 
 canvas.width = 0;

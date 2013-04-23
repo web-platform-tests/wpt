@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <title>Canvas test: security.drawImage.image</title>
 <meta name="author" content="Philip Taylor">
-<script src="../../../../common/canvas-tests.js"></script>
-<link rel="stylesheet" href="../../../../common/canvas-tests.css">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../../../../../common/canvas-tests.js"></script>
+<link rel="stylesheet" href="../../../../../common/canvas-tests.css">
 <body class="show_output">
 
 <h1><a href="index.security.html">security</a>.<a href="index.security.drawImage.html">drawImage</a>.image</h1>
@@ -21,11 +23,12 @@
 
 <ul id="d"></ul>
 <script>
+var t = async_test("drawImage of different-origin image makes the canvas origin-unclean");
 _addTest(function(canvas, ctx) {
 
 ctx.drawImage(document.getElementById('yellow.png'), 0, 0);
-try { var _thrown = false; canvas.toDataURL(); } catch (e) { _thrown = true; } finally { _assert(_thrown, "should throw exception: canvas.toDataURL()"); }
-try { var _thrown = false; ctx.getImageData(0, 0, 1, 1); } catch (e) { _thrown = true; } finally { _assert(_thrown, "should throw exception: ctx.getImageData(0, 0, 1, 1)"); }
+assert_throws("SECURITY_ERR", function() { canvas.toDataURL(); });
+assert_throws("SECURITY_ERR", function() { ctx.getImageData(0, 0, 1, 1); });
 
 
 });

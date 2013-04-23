@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <title>Canvas test: security.pattern.canvas.timing</title>
 <meta name="author" content="Philip Taylor">
-<script src="../../../../common/canvas-tests.js"></script>
-<link rel="stylesheet" href="../../../../common/canvas-tests.css">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../../../../../common/canvas-tests.js"></script>
+<link rel="stylesheet" href="../../../../../common/canvas-tests.css">
 <body class="show_output">
 
 <h1><a href="index.security.html">security</a>.<a href="index.security.pattern.html">pattern</a>.<a href="index.security.pattern.canvas.html">canvas</a>.timing</h1>
@@ -20,6 +22,7 @@
 
 <ul id="d"></ul>
 <script>
+var t = async_test("Pattern safety depends on whether the source was origin-clean, not on whether it still is clean");
 _addTest(function(canvas, ctx) {
 
 var canvas2 = document.createElement('canvas');

@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <title>Canvas test: toDataURL.jpeg.quality.basic</title>
 <meta name="author" content="Philip Taylor">
-<script src="../../../../common/canvas-tests.js"></script>
-<link rel="stylesheet" href="../../../../common/canvas-tests.css">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../../../../../common/canvas-tests.js"></script>
+<link rel="stylesheet" href="../../../../../common/canvas-tests.css">
 <body class="show_output">
 
 <h1><a href="index.toDataURL.html">toDataURL</a>.<a href="index.toDataURL.jpeg.html">jpeg</a>.<a href="index.toDataURL.jpeg.quality.html">quality</a>.basic</h1>
@@ -19,6 +21,7 @@
 <p class="output expectedtext">Expected output:<p><img src="toDataURL.jpeg.quality.basic.png" class="output expected" id="expected" alt="">
 <ul id="d"></ul>
 <script>
+var t = async_test("toDataURL with JPEG uses the quality parameter");
 _addTest(function(canvas, ctx) {
 
 ctx.fillStyle = '#00f';
@@ -43,7 +46,6 @@ if (!data.match(/^data:image\/jpeg[;,]/)) {
       {
           ctx.drawImage(img_hi, 0, 0, 50, 50, 0, 0, 50, 50);
           ctx.drawImage(img_lo, 0, 0, 50, 50, 50, 0, 50, 50);
-          
           _assert(data_hi.length > data_lo.length, "data_hi.length > data_lo.length");
           _assertPixelApprox(canvas, 25,25, 0,0,255,255, "25,25", "0,0,255,255", 8);
           _assertPixelApprox(canvas, 75,25, 0,0,255,255, "75,25", "0,0,255,255", 32);

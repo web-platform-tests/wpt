@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <title>Canvas test: security.pattern.cross</title>
 <meta name="author" content="Philip Taylor">
-<script src="../../../../common/canvas-tests.js"></script>
-<link rel="stylesheet" href="../../../../common/canvas-tests.css">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../../../../../common/canvas-tests.js"></script>
+<link rel="stylesheet" href="../../../../../common/canvas-tests.css">
 <body class="show_output">
 
 <h1><a href="index.security.html">security</a>.<a href="index.security.pattern.html">pattern</a>.cross</h1>
@@ -19,6 +21,7 @@
 
 <ul id="d"></ul>
 <script>
+var t = async_test("Using an unclean pattern makes the target canvas origin-unclean, not the pattern canvas");
 _addTest(function(canvas, ctx) {
 
 var canvas2 = document.createElement('canvas');
@@ -28,8 +31,8 @@ var ctx2 = canvas2.getContext('2d');
 var p = ctx2.createPattern(document.getElementById('yellow.png'), 'repeat');
 ctx.fillStyle = p;
 ctx.fillRect(0, 0, 100, 50);
-try { var _thrown = false; canvas.toDataURL(); } catch (e) { _thrown = true; } finally { _assert(_thrown, "should throw exception: canvas.toDataURL()"); }
-try { var _thrown = false; ctx.getImageData(0, 0, 1, 1); } catch (e) { _thrown = true; } finally { _assert(_thrown, "should throw exception: ctx.getImageData(0, 0, 1, 1)"); }
+assert_throws("SECURITY_ERR", function() { canvas.toDataURL(); });
+assert_throws("SECURITY_ERR", function() { ctx.getImageData(0, 0, 1, 1); });
 canvas2.toDataURL();
 ctx2.getImageData(0, 0, 1, 1);
 

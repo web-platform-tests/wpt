@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <title>Canvas test: 2d.scaled</title>
 <meta name="author" content="Philip Taylor">
-<script src="../../../../common/canvas-tests.js"></script>
-<link rel="stylesheet" href="../../../../common/canvas-tests.css">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../../../../../common/canvas-tests.js"></script>
+<link rel="stylesheet" href="../../../../../common/canvas-tests.css">
 <body class="show_output">
 
 <h1><a href="index.2d.html">2d</a>.scaled</h1>
@@ -18,6 +20,7 @@
 <p class="output expectedtext">Expected output:<p><img src="2d.scaled.png" class="output expected" id="expected" alt="">
 <ul id="d"></ul>
 <script>
+var t = async_test("CSS-scaled canvases get drawn correctly");
 _addTest(function(canvas, ctx) {
 
 ctx.fillStyle = '#00f';

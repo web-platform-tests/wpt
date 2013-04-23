@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <title>Canvas test: security.dataURI</title>
 <meta name="author" content="Philip Taylor">
-<script src="../../../../common/canvas-tests.js"></script>
-<link rel="stylesheet" href="../../../../common/canvas-tests.css">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../../../../../common/canvas-tests.js"></script>
+<link rel="stylesheet" href="../../../../../common/canvas-tests.css">
 <body class="show_output">
 
 <h1><a href="index.security.html">security</a>.dataURI</h1>
@@ -15,9 +17,10 @@
 
 <p class="output">Actual output:</p>
 <canvas id="c" class="output" width="100" height="50"><p class="fallback">FAIL (fallback content)</p></canvas>
-<p class="output expectedtext">Expected output:<p><img src="../../../../images/green-100x50.png" class="output expected" id="expected" alt="">
+<p class="output expectedtext">Expected output:<p><img src="../../../../../images/green-100x50.png" class="output expected" id="expected" alt="">
 <ul id="d"></ul>
 <script>
+var t = async_test("data: URIs do not count as different-origin, and do not taint the canvas");
 _addTest(function(canvas, ctx) {
 
 ctx.fillStyle = '#0f0';

@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <title>Canvas test: type.extend</title>
 <meta name="author" content="Philip Taylor">
-<script src="../../../../common/canvas-tests.js"></script>
-<link rel="stylesheet" href="../../../../common/canvas-tests.css">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../../../../../common/canvas-tests.js"></script>
+<link rel="stylesheet" href="../../../../../common/canvas-tests.css">
 <body class="show_output">
 
 <h1><a href="index.type.html">type</a>.extend</h1>
@@ -19,6 +21,7 @@
 
 <ul id="d"></ul>
 <script>
+var t = async_test("HTMLCanvasElement methods can be added, and the new methods used by canvases");
 _addTest(function(canvas, ctx) {
 
 window.HTMLCanvasElement.prototype.getZero = function () { return 0; };

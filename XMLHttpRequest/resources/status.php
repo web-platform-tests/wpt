@@ -14,7 +14,8 @@
   $text = $_GET["text"] ? $_GET["text"] : "OMG";
   $content = $_GET["content"] ? $_GET["content"] : "";
   $type = $_GET["type"] ? $_GET["type"] : "";
-  header("HTTP/1.1 " . $code . " " . $text);
+  header("HTTP/1.1 " . $code . " " . $text, true, $code);
+  header($text, true, $code); // workaround to try to get it running on w3c-test.org
   header("Content-Type:" . $type);
   echo $content;
   exit;

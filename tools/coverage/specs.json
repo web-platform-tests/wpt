@@ -1,0 +1,874 @@
+{
+    "ANIMATION-TIMING": {
+        "authors": [
+            "James Robinson",
+            "Cameron McCormack"
+        ],
+        "href": "http://www.w3.org/TR/2012/WD-animation-timing-20120221",
+        "title": "Timing control for script-based animations",
+        "date": "21 February 2012",
+        "status": "LCWD",
+        "publisher": "W3C",
+        "shortName": "animation-timing",
+        "requiredBy": ["Coremob"],
+        "testType": null
+    },
+    "CANVAS-2D": {
+        "authors": [
+            "Rik Cabanier",
+            "Eliot Graff",
+            "Jay Munro",
+            "Tom Wiltzius",
+            "Ian Hickson"
+        ],
+        "href": "http://www.w3.org/TR/2012/CR-2dcontext-20121217",
+        "title": "HTML Canvas 2D Context",
+        "date": "17 December 2012",
+        "status": "CR",
+        "publisher": "W3C",
+        "shortName": "2dcontext",
+        "requiredBy": ["Coremob", "Web+TV"],
+        "testType": null
+    },
+    "CORS": {
+        "authors": [
+            "Anne van Kesteren"
+        ],
+        "href": "http://www.w3.org/TR/2013/CR-cors-20130129",
+        "title": "Cross-Origin Resource Sharing",
+        "date": "29 January 2013",
+        "status": "CR",
+        "publisher": "W3C",
+        "shortName": "cors",
+        "requiredBy": ["Coremob", "Web+TV"],
+        "testsAwaitingReview": {"value": 85, "type": "%"},
+        "testType": null,
+        "insufficientData": true
+    },
+    "CSS-ADAPTATION": {
+        "authors": [
+            "Rune Lillesveen"
+        ],
+        "href": "http://www.w3.org/TR/2011/WD-css-device-adapt-20110915",
+        "title": "CSS Device Adaptation",
+        "date": "15 September 2011",
+        "status": "FPWD",
+        "publisher": "W3C",
+        "shortName": "css-adaptation",
+        "refTestBased": true,
+        "requiredBy": ["Coremob", "Web+TV"],
+        "testType": null
+    },
+    "CSS21": {
+        "authors": [
+            "Bert Bos"
+        ],
+        "etAl": true,
+        "href": "http://www.w3.org/TR/CSS21/",
+        "title": "Cascading Style Sheets, level 2 (CSS2) Specification",
+        "date": "07 June 2011",
+        "status": "REC",
+        "publisher": "W3C",
+        "shortName": "css21",
+        "refTestBased": true,
+        "requiredBy": ["Coremob", "Web+TV"],
+        "pages": [
+            "http://www.w3.org/TR/CSS2/about.html",
+            "http://www.w3.org/TR/CSS2/intro.html",
+            "http://www.w3.org/TR/CSS2/conform.html",
+            "http://www.w3.org/TR/CSS2/syndata.html",
+            "http://www.w3.org/TR/CSS2/selector.html",
+            "http://www.w3.org/TR/CSS2/cascade.html",
+            "http://www.w3.org/TR/CSS2/media.html",
+            "http://www.w3.org/TR/CSS2/box.html",
+            "http://www.w3.org/TR/CSS2/visuren.html",
+            "http://www.w3.org/TR/CSS2/visudet.html",
+            "http://www.w3.org/TR/CSS2/visufx.html",
+            "http://www.w3.org/TR/CSS2/generate.html",
+            "http://www.w3.org/TR/CSS2/page.html",
+            "http://www.w3.org/TR/CSS2/colors.html",
+            "http://www.w3.org/TR/CSS2/fonts.html",
+            "http://www.w3.org/TR/CSS2/text.html",
+            "http://www.w3.org/TR/CSS2/tables.html",
+            "http://www.w3.org/TR/CSS2/ui.html",
+            "http://www.w3.org/TR/CSS2/aural.html",
+            "http://www.w3.org/TR/CSS2/refs.html",
+            "http://www.w3.org/TR/CSS2/changes.html",
+            "http://www.w3.org/TR/CSS2/sample.html",
+            "http://www.w3.org/TR/CSS2/zindex.html",
+            "http://www.w3.org/TR/CSS2/propidx.html",
+            "http://www.w3.org/TR/CSS2/grammar.html",
+            "http://www.w3.org/TR/CSS2/leftblank.html"
+        ],
+        "testType": "css"
+    },
+    "CSS3-ANIMATIONS": {
+        "authors": [
+            "Dean Jackson",
+            "David Hyatt",
+            "Chris Marrin",
+            "Sylvain Galineau",
+            "L. David Baron"
+        ],
+        "href": "http://www.w3.org/TR/2012/WD-css3-animations-20120403",
+        "title": "CSS Animations",
+        "date": "03 April 2012",
+        "status": "WD",
+        "publisher": "W3C",
+        "shortName": "css3-animations",
+        "refTestBased": true,
+        "requiredBy": ["Coremob", "Web+TV"],
+        "testType": null
+    },
+    "CSS3-BG": {
+        "authors": [
+            "Bert Bos",
+            "Elika J. Etemad",
+            "Brad Kemper"
+        ],
+        "href": "http://www.w3.org/TR/2012/CR-css3-background-20120724/",
+        "title": "CSS Backgrounds and Borders Module Level 3",
+        "date": "24 July 2012",
+        "status": "CR",
+        "publisher": "W3C",
+        "shortName": "css3-background",
+        "refTestBased": true,
+        "requiredBy": ["Coremob", "Web+TV"],
+        "testType": "css"
+    },
+    "CSS3-FONTS": {
+        "authors": [
+            "John Daggett"
+        ],
+        "href": "http://www.w3.org/TR/2012/WD-css3-fonts-20121211",
+        "title": "CSS Fonts Module Level 3",
+        "date": "11 December 2012",
+        "status": "WD",
+        "publisher": "W3C",
+        "shortName": "css3-fonts",
+        "refTestBased": true,
+        "requiredBy": ["Coremob", "Web+TV"],
+        "testType": null
+    },
+    "CSS3-IMAGES": {
+        "authors": [
+            "Elika J. Etemad",
+            "Tab Atkins Jr."
+        ],
+        "href": "http://www.w3.org/TR/2012/CR-css3-images-20120417",
+        "title": "CSS Image Values and Replaced Content",
+        "date": "17 April 2012",
+        "status": "CR",
+        "publisher": "W3C",
+        "shortName": "css3-images",
+        "refTestBased": true,
+        "requiredBy": ["Coremob", "Web+TV"],
+        "testType": null
+    },
+    "CSS3-MEDIAQUERIES": {
+        "authors": [
+            "H&#229;kon Wium Lie",
+            "Tantek &#199;elik",
+            "Daniel Glazman",
+            "Anne van Kesteren"
+        ],
+        "href": "http://www.w3.org/TR/css3-mediaqueries",
+        "title": "Media Queries",
+        "date": "19 June 2012",
+        "status": "REC",
+        "publisher": "W3C",
+        "shortName": "css3-mediaqueries",
+        "refTestBased": true,
+        "requiredBy": ["Coremob", "Web+TV"],
+        "testType": null
+    },
+    "CSS3-TRANSFORMS": {
+        "authors": [
+            "Simon Fraser",
+            "Dean Jackson",
+            "David Hyatt",
+            "Chris Marrin",
+            "Edward O'Connor",
+            "Dirk Schulze",
+            "Aryeh Gregor"
+        ],
+        "href": "http://www.w3.org/TR/2012/WD-css3-transforms-20120911/",
+        "title": "CSS Transforms",
+        "date": "11 September 2012",
+        "status": "WD",
+        "publisher": "W3C",
+        "shortName": "css3-transforms",
+        "refTestBased": true,
+        "requiredBy": ["Coremob", "Web+TV"],
+        "testType": "css"
+    },
+    "CSS3-TRANSITIONS": {
+        "authors": [
+            "Dean Jackson",
+            "David Hyatt",
+            "Chris Marrin",
+            "L. David Baron"
+        ],
+        "href": "http://www.w3.org/TR/2012/WD-css3-transitions-20120403/",
+        "title": "CSS Transitions",
+        "date": "03 April 2012",
+        "status": "WD",
+        "publisher": "W3C",
+        "shortName": "css3-transitions",
+        "refTestBased": true,
+        "requiredBy": ["Coremob", "Web+TV"],
+        "testType": null
+    },
+    "CSS3COLOR": {
+        "authors": [
+            "Tantek Çelik",
+            "Chris Lilley",
+            "L. David Baron"
+        ],
+        "href": "http://www.w3.org/TR/css3-color",
+        "title": "CSS Color Module Level 3",
+        "date": "07 June 2011",
+        "status": "REC",
+        "publisher": "W3C",
+        "shortName": "css3-color",
+        "refTestBased": true,
+        "requiredBy": ["Coremob", "Web+TV"],
+        "testType": "css"
+    },
+    "CSS3TEXT": {
+        "authors": [
+            "Elika J. Etemad",
+            "Koji Ishii"
+        ],
+        "href": "http://www.w3.org/TR/2012/WD-css3-text-20121113",
+        "title": "CSS Text Module Level 3",
+        "date": "13 November 2012",
+        "status": "WD",
+        "publisher": "W3C",
+        "shortName": "css3text",
+        "refTestBased": true,
+        "requiredBy": ["Coremob", "Web+TV"],
+        "testType": null
+    },
+    "CSS3VAL": {
+        "authors": [
+            "H&#229;kon Wium Lie",
+            "Tab Atkin",
+            "Elika J. Etemad"
+        ],
+        "href": "http://www.w3.org/TR/2012/CR-css3-values-20120828/",
+        "title": "CSS3 Values and Units",
+        "date": "28 August 2012",
+        "status": "CR",
+        "publisher": "W3C",
+        "shortName": "css3val",
+        "refTestBased": true,
+        "requiredBy": ["Coremob", "Web+TV"],
+        "testType": null
+    },
+    "CSSOM": {
+        "authors": [
+            "Anne van Kesteren"
+        ],
+        "href": "http://www.w3.org/TR/2011/WD-cssom-20110712",
+        "title": "CSSOM",
+        "date": "12 July 2011",
+        "status": "FPWD",
+        "publisher": "W3C",
+        "shortName": "cssom",
+        "requiredBy": ["Coremob", "Web+TV"],
+        "testType": null
+    },
+    "CSSOM-VIEW": {
+        "authors": [
+            "Anne van Kesteren"
+        ],
+        "href": "http://www.w3.org/TR/2011/WD-cssom-view-20110804",
+        "title": "CSSOM View Module",
+        "date": "4 August 2011",
+        "status": "WD",
+        "publisher": "W3C",
+        "shortName": "cssom-view",
+        "requiredBy": ["Coremob", "Web+TV"],
+        "testType": null
+    },
+    "DEVICE-ORIENTATION": {
+        "authors": [
+            "Steve Block",
+            "Andrei Popescu"
+        ],
+        "href": "http://www.w3.org/TR/2011/WD-orientation-event-20111201",
+        "title": "DeviceOrientation Event Specification",
+        "date": "1 December 2011",
+        "status": "LCWD",
+        "publisher": "W3C",
+        "shortName": "device-orientation",
+        "requiredBy": ["Coremob"],
+        "testType": null
+    },
+    "DOM-LEVEL-3-EVENTS": {
+        "authors": [
+            "Travis Leithead",
+            "Jacob Rossi",
+            "Doug Schepers",
+            "Bj&#246;rn H&#246;hrmann",
+            "Philippe Le H&#233;garet",
+            "Tom Pixley"
+        ],
+        "href": "http://www.w3.org/TR/2012/WD-DOM-Level-3-Events-20120906",
+        "title": "Document Object Model (DOM) Level 3 Events Specification",
+        "date": "06 September 2012",
+        "status": "WD",
+        "publisher": "W3C",
+        "testsAwaitingReview": {"value": 75, "type": "%"},
+        "shortName": "dom-level-3-events",
+        "requiredBy": ["Coremob", "Web+TV"],
+        "testType": null
+    },
+    "DOM4": {
+        "authors": [
+            "Anne van Kesteren",
+            "Aryeh Gregor",
+            "Lachlan Hunt",
+            "Ms2ger"
+        ],
+        "href": "http://www.w3.org/TR/2012/WD-dom-20121206",
+        "title": "DOM4",
+        "date": "6 December 2012",
+        "status": "WD",
+        "publisher": "W3C",
+        "shortName": "dom4",
+        "testsAwaitingReview": {"value": 50, "type": "%"},
+        "requiredBy": ["Coremob", "Web+TV"],
+        "testType": null
+    },
+    "ECMA-262-51": {
+        "date": "June 2011",
+        "href": "http://www.ecma-international.org/publications/standards/Ecma-262.htm",
+        "publisher": "ECMA",
+        "title": "ECMAScript Language Specification, Edition 5.1",
+        "shortName": "ecma",
+        "requiredBy": ["Coremob", "Web+TV"],
+        "testType": null
+    },
+    "FILE-API": {
+        "authors": [
+            "Arun Ranganathan",
+            "Jonas Sicking"
+        ],
+        "href": "http://www.w3.org/TR/2012/WD-FileAPI-20121025/",
+        "title": "File API",
+        "date": "25 October 2012",
+        "status": "WD",
+        "publisher": "W3C",
+        "shortName": "FileAPI",
+        "testsAwaitingReview": {"value": 20, "type": "%"},
+        "requiredBy": ["Coremob"],
+        "testType": null
+    },
+    "FLEXBOX": {
+        "authors": [
+            "Tab Atkins Jr",
+            "Elika J. Etemad",
+            "Alex Mogilevsky"
+        ],
+        "href": "http://www.w3.org/TR/2012/CR-css3-flexbox-20120918",
+        "title": "CSS Flexible Box Layout Module",
+        "date": "18 September 2012",
+        "status": "CR",
+        "publisher": "W3C",
+        "refTestBased": true,
+        "shortName": "flexbox",
+        "requiredBy": ["Coremob"],
+        "testType": null
+    },
+    "GEOLOCATION-API": {
+        "authors": [
+            "Andrei Popescu"
+        ],
+        "href": "http://www.w3.org/TR/2012/PR-geolocation-API-20120510",
+        "title": "Geolocation API Specification",
+        "date": "10 May 2012",
+        "status": "PR",
+        "publisher": "W3C",
+        "testsAwaitingReview": 38,
+        "shortName": "geolocation-api",
+        "requiredBy": ["Coremob"],
+        "testType": null
+    },
+    "HTML5": {
+        "authors": [
+            "Robin Berjon"
+        ],
+        "etAl": true,
+        "href": "http://www.w3.org/TR/html5/single-page.html",
+        "title": "HTML5",
+        "date": "17 December 2012",
+        "status": "CR",
+        "publisher": "W3C",
+        "shortName": "html",
+        "testsAwaitingReview": 6000,
+        "requiredBy": ["Coremob", "Web+TV"],
+        "testType": null
+    },
+    "HTMLMEDIACAPTURE": {
+        "authors": [
+            "Anssi Kostiainen",
+            "Ilkka Oksanen",
+            "Dominique Hazaël-Massieux"
+        ],
+        "href": "http://www.w3.org/TR/2012/WD-html-media-capture-20120529/",
+        "title": "HTML Media Capture",
+        "date": "29 May 2012",
+        "status": "WD",
+        "publisher": "W3C",
+        "shortName": "htmlmediacapture",
+        "requiredBy": ["Coremob"],
+        "testType": null
+    },
+    "HTTP11": {
+        "authors": [
+            "R. Fielding"
+        ],
+        "etAl": true,
+        "href": "http://www.ietf.org/rfc/rfc2616.txt",
+        "title": "Hypertext Transfer Protocol - HTTP/1.1",
+        "date": "June 1999",
+        "status": "RFC 2616",
+        "publisher": "IETF",
+        "shortName": "http11",
+        "requiredBy": ["Coremob", "Web+TV"],
+        "testType": null
+    },
+    "INDEXEDDB": {
+        "authors": [
+            "Nikunj Mehta",
+            "Jonas Sicking",
+            "Eliot Graff",
+            "Andrei Popescu",
+            "Jeremy Orlow"
+        ],
+        "href": "http://www.w3.org/TR/2012/WD-IndexedDB-20120524/",
+        "title": "Indexed Database API",
+        "date": "24 May 2012",
+        "status": "LCWD",
+        "publisher": "W3C",
+        "shortName": "indexeddb",
+        "testsAwaitingReview": {"value": 90, "type": "%"},
+        "requiredBy": ["Coremob"],
+        "testType": null
+    },
+    "OMA-URI-SCHEMES": {
+      "href": "http://www.openmobilealliance.org/Technical/release_program/docs/URI_Schemes/V1_0-20080626-A/OMA-TS-URI_Schemes-V1_0-20080626-A.pdf",
+      "title": "URI Schemes for the Mobile Applications Environment. Approved Version 1.0",
+      "date": "26 Jun 2008",
+      "publisher": "OMA",
+      "requiredBy": ["Coremob"],
+        "testType": null
+    },
+    "ORIGIN": {
+        "authors": [
+            "A. Barth"
+        ],
+        "href": "http://tools.ietf.org/html/rfc6454",
+        "title": "The Web Origin Concept",
+        "date": "December 2011",
+        "status": "RFC 6454",
+        "publisher": "IETF",
+        "shortName": "origin",
+        "requiredBy": ["Coremob", "Web+TV"],
+        "testType": null        
+    },
+    "POINTER-EVENTS": {
+        "authors": [
+            "Jacob Rossi",
+            "Matt Brubeck"
+        ],
+        "href": "http://www.w3.org/TR/2013/WD-pointerevents-20130115",
+        "title": "Pointer Events",
+        "date": "15 January 2013",
+        "status": "WD",
+        "publisher": "W3C",
+        "shortName": "pointer-events",
+        "requiredBy": ["Coremob", "Web+TV"],
+        "testType": null
+    },
+    "POSTMSG": {
+        "authors": [
+            "Ian Hickson"
+        ],
+        "href": "http://www.w3.org/TR/2012/CR-webmessaging-20120501",
+        "title": "HTML5 Web Messaging",
+        "date": " 01 May 2012",
+        "status": "CR",
+        "publisher": "W3C",
+        "shortName": "postmsg",
+        "testsAwaitingReview": {"value": 75, "type": "%"},
+        "requiredBy": ["Coremob"],
+        "testType": null
+    },
+    "PROGRESS-EVENTS": {
+        "authors": [
+            "Anne van Kesteren"
+        ],
+        "href": "http://www.w3.org/TR/2011/CR-progress-events-20110922",
+        "title": "Progress Events",
+        "date": "22 September 2011",
+        "status": "CR",
+        "publisher": "W3C",
+        "shortName": "progress-events",
+        "testsAwaitingReview": {"value": 100, "type": "%"},
+        "requiredBy": ["Coremob", "Web+TV"],
+        "testType": null
+    },
+    "QUOTA-API": {
+        "authors": [
+            "Kinuko Yasuda"
+        ],
+        "href": "http://www.w3.org/TR/2012/WD-quota-api-20120703",
+        "title": "Quota Management API",
+        "date": "03 July 2012",
+        "status": "FPWD",
+        "publisher": "W3C",
+        "shortName": "quota-api",
+        "requiredBy": ["Coremob"],
+        "testType": null
+    },
+    "RFC2397": {
+        "authors": [
+            "L. Masinter"
+        ],
+        "href": "http://www.ietf.org/rfc/rfc2397.txt",
+        "title": "The &quot;data&quot; URL scheme",
+        "date": "August 1998",
+        "status": "RFC 2397",
+        "publisher": "IETF",
+        "shortName": "rfc2397",
+        "requiredBy": ["Coremob"],
+        "testType": null
+    },
+    "RFC3966": {
+        "authors": [
+            "H. Schulzrinne"
+        ],
+        "href": "http://www.ietf.org/rfc/rfc3966.txt",
+        "title": "The tel URI for Telephone Numbers",
+        "date": "December 2004",
+        "status": "RFC 3966",
+        "publisher": "IETF",
+        "shortName": "rfc3966",
+        "requiredBy": ["Coremob"],
+        "testType": null
+    },
+    "RFC5724": {
+        "authors": [
+            "E. Wilde",
+            "A. Vaha-Sipila"
+        ],
+        "href": "http://www.ietf.org/rfc/rfc5724.txt",
+        "title": "URI Scheme for Global System for Mobile Communications (GSM) Short Message Service (SMS) (RFC 5785)",
+        "date": "January 2010",
+        "status": "RFC",
+        "publisher": "IETF",
+        "shortName": "RFC5724",
+        "requiredBy": ["Coremob"],
+        "testType": null
+    },
+    "RFC6068": {
+        "authors": [
+            "M. Duerst",
+            "L. Masinter",
+            "J. Zawinski"
+        ],
+        "href": "http://www.ietf.org/rfc/rfc6068.txt",
+        "title": "The 'mailto' URI Scheme",
+        "date": "October 2010",
+        "status": "Internet Proposed Standard RFC 6068",
+        "publisher": "IETF",
+        "shortName": "rfc6068",
+        "requiredBy": ["Coremob"],
+        "testType": null
+    },
+    "SELECT": {
+        "authors": [
+            "Tantek Çelik",
+            "Elika J. Etemad",
+            "Daniel Glazman",
+            "Ian Hickson"
+        ],
+        "etAl": true,
+        "href": "http://www.w3.org/TR/css3-selectors/",
+        "title": "Selectors Level 3",
+        "date": "29 September 2011",
+        "status": "REC",
+        "publisher": "W3C",
+        "shortName": "css3-selectors",
+        "refTestBased": true,
+        "requiredBy": ["Coremob", "Web+TV"],
+        "testType": null
+    },
+    "SELECTORS-API": {
+        "authors": [
+            "Lachlan Hunt",
+            "Anne van Kesteren"
+        ],
+        "href": "http://www.w3.org/TR/2012/PR-selectors-api-20121213",
+        "title": "Selectors API Level 1",
+        "date": "13 December 2012",
+        "status": "PR",
+        "publisher": "W3C",
+        "shortName": "selectors-api",
+        "requiredBy": ["Coremob", "Web+TV"],
+        "testType": null
+    },
+    "SVG11": {
+        "authors": [
+            "Erik Dahlstr&#246;m"
+        ],
+        "etAl": true,
+        "href": "http://www.w3.org/TR/2011/REC-SVG11-20110816/",
+        "title": "Scalable Vector Graphics (SVG) 1.1 (Second Edition)",
+        "date": "16 August 2011",
+        "status": "REC",
+        "publisher": "W3C",
+        "shortName": "svg11",
+        "pages": [
+            "http://www.w3.org/TR/2011/REC-SVG11-20110816/intro.html",
+            "http://www.w3.org/TR/2011/REC-SVG11-20110816/concepts.html",
+            "http://www.w3.org/TR/2011/REC-SVG11-20110816/render.html",
+            "http://www.w3.org/TR/2011/REC-SVG11-20110816/types.html",
+            "http://www.w3.org/TR/2011/REC-SVG11-20110816/struct.html",
+            "http://www.w3.org/TR/2011/REC-SVG11-20110816/styling.html",
+            "http://www.w3.org/TR/2011/REC-SVG11-20110816/coords.html",
+            "http://www.w3.org/TR/2011/REC-SVG11-20110816/paths.html",
+            "http://www.w3.org/TR/2011/REC-SVG11-20110816/shapes.html",
+            "http://www.w3.org/TR/2011/REC-SVG11-20110816/text.html",
+            "http://www.w3.org/TR/2011/REC-SVG11-20110816/painting.html",
+            "http://www.w3.org/TR/2011/REC-SVG11-20110816/color.html",
+            "http://www.w3.org/TR/2011/REC-SVG11-20110816/pservers.html",
+            "http://www.w3.org/TR/2011/REC-SVG11-20110816/masking.html",
+            "http://www.w3.org/TR/2011/REC-SVG11-20110816/filters.html",
+            "http://www.w3.org/TR/2011/REC-SVG11-20110816/interact.html",
+            "http://www.w3.org/TR/2011/REC-SVG11-20110816/linking.html",
+            "http://www.w3.org/TR/2011/REC-SVG11-20110816/script.html",
+            "http://www.w3.org/TR/2011/REC-SVG11-20110816/animate.html",
+            "http://www.w3.org/TR/2011/REC-SVG11-20110816/fonts.html",
+            "http://www.w3.org/TR/2011/REC-SVG11-20110816/metadata.html",
+            "http://www.w3.org/TR/2011/REC-SVG11-20110816/backward.html",
+            "http://www.w3.org/TR/2011/REC-SVG11-20110816/extend.html",
+            "http://www.w3.org/TR/2011/REC-SVG11-20110816/svgdtd.html",
+            "http://www.w3.org/TR/2011/REC-SVG11-20110816/svgdom.html",
+            "http://www.w3.org/TR/2011/REC-SVG11-20110816/idl.html",
+            "http://www.w3.org/TR/2011/REC-SVG11-20110816/java.html",
+            "http://www.w3.org/TR/2011/REC-SVG11-20110816/escript.html",
+            "http://www.w3.org/TR/2011/REC-SVG11-20110816/implnote.html",
+            "http://www.w3.org/TR/2011/REC-SVG11-20110816/conform.html",
+            "http://www.w3.org/TR/2011/REC-SVG11-20110816/access.html",
+            "http://www.w3.org/TR/2011/REC-SVG11-20110816/i18n.html",
+            "http://www.w3.org/TR/2011/REC-SVG11-20110816/minimize.html",
+            "http://www.w3.org/TR/2011/REC-SVG11-20110816/refs.html",
+            "http://www.w3.org/TR/2011/REC-SVG11-20110816/eltindex.html",
+            "http://www.w3.org/TR/2011/REC-SVG11-20110816/attindex.html",
+            "http://www.w3.org/TR/2011/REC-SVG11-20110816/propidx.html",
+            "http://www.w3.org/TR/2011/REC-SVG11-20110816/feature.html",
+            "http://www.w3.org/TR/2011/REC-SVG11-20110816/mimereg.html",
+            "http://www.w3.org/TR/2011/REC-SVG11-20110816/changes.html"
+        ],
+        "requiredBy": ["Coremob", "Web+TV"],
+        "insufficientData": true,
+        "testType": null
+    },
+    "TOUCH-EVENTS": {
+        "authors": [
+            "Doug Schepers",
+            "Sangwhan Moon",
+            "Matt Brubeck"
+        ],
+        "href": "http://www.w3.org/TR/2013/WD-touch-events-20130124",
+        "title": "Touch Events version 1",
+        "date": "24 January 2013",
+        "status": "WD",
+        "publisher": "W3C",
+        "shortName": "touch-events",
+        "testsAwaitingReview": {"value": 100, "type": "%"},
+        "requiredBy": ["Coremob", "Web+TV"],
+        "testType": null
+    },
+    "WEBSTORAGE": {
+        "authors": [
+            "Ian Hickson"
+        ],
+        "href": "http://www.w3.org/TR/2011/CR-webstorage-20111208",
+        "title": "Web Storage",
+        "date": "08 December 2011",
+        "status": "CR",
+        "publisher": "W3C",
+        "testsAwaitingReview": {"value": 100, "type": "%"},
+        "shortName": "webstorage",
+        "requiredBy": ["Coremob", "Web+TV"],
+        "testType": null
+    },
+    "WEBWORKERS": {
+        "authors": [
+            "Ian Hickson"
+        ],
+        "href": "http://www.w3.org/TR/2012/CR-workers-20120501",
+        "title": "Web Workers",
+        "date": "01 May 2012",
+        "status": "CR",
+        "publisher": "W3C",
+        "shortName": "webworkers",
+        "testsAwaitingReview": {"value": 100, "type": "%"},
+        "requiredBy": ["Coremob", "Web+TV"],
+        "testType": null
+    },
+    "WOFF": {
+        "authors": [
+            "Jonathan Kew",
+            "Tal Leming",
+            "Erik van Blokland"
+        ],
+        "href": "http://www.w3.org/TR/WOFF/",
+        "title": "WOFF File Format 1.0",
+        "date": "13 December 2012",
+        "status": "REC",
+        "publisher": "W3C",
+        "shortName": "WOFF",
+        "requiredBy": ["Coremob", "Web+TV"],
+        "insufficientData": true,
+        "testType": null
+    },
+    "XMLHTTPREQUEST": {
+        "authors": [
+            "Julian Aubourg",
+            "Jungkee Song",
+            "Hallvord R. M. Steen",
+            "Anne van Kesteren"
+        ],
+        "href": "http://www.w3.org/TR/2012/WD-XMLHttpRequest-20121206/",
+        "title": "XMLHttpRequest",
+        "date": "6 December 2012",
+        "status": "WD",
+        "publisher": "W3C",
+        "testsAwaitingReview": {"value": 50, "type": "%"},
+        "shortName": "XMLHttpRequest",
+        "requiredBy": ["Coremob", "Web+TV"],
+        "testType": null
+    },
+    "CSS3UI": {
+        "authors": [
+            "Tantek Çelik"
+        ],
+        "href": "http://www.w3.org/TR/css3-ui/",
+        "title": "CSS3 Basic User Interface Module",
+        "date": "17 January 2012",
+        "status": "WD",
+        "publisher": "W3C",
+        "shortName": "css3-ui",
+        "refTestBased": true,
+        "requiredBy": ["Web+TV"],
+        "testType": null
+    },
+    "CSS3COL": {
+        "authors": [
+            "Håkon Wium Lie"
+        ],
+        "href": "http://www.w3.org/TR/css3-multicol/",
+        "title": "CSS3 module: Multi-column layout",
+        "date": "12 April 2011",
+        "status": "CR",
+        "publisher": "W3C",
+        "shortName": "css3-multicol",
+        "refTestBased": true,
+        "requiredBy": ["Web+TV"],
+        "testType": "css"
+    },
+    "CSS3NAMESPACE": {
+        "authors": [
+            "Anne van Kesteren",
+            "Elika J. Etemad"
+        ],
+        "href": "http://www.w3.org/TR/2008/CR-css3-namespace-20080523",
+        "title": "CSS Namespaces Module",
+        "date": "23 May 2008",
+        "status": "CR",
+        "publisher": "W3C",
+        "shortName": "css3-namespace",
+        "refTestBased": true,
+        "requiredBy": ["Web+TV"],
+        "testType": null
+    },
+    "CSS3WRITINGMODES": {
+        "authors": [
+            "Elika J. Etemad",
+            "Koji Ishii",
+            "Shinyu Murakami"
+        ],
+        "href": "http://dev.w3.org/csswg/css3-writing-modes",
+        "title": "CSS Writing Modes Module Level 3",
+        "date": "17 October 2010",
+        "status": "ED",
+        "publisher": "W3C",
+        "shortName": "css3-writing-modes",
+        "refTestBased": true,
+        "requiredBy": ["Web+TV"],
+        "testType": null
+    },
+    "SSE": {
+        "authors": [
+            "Ian Hickson"
+        ],
+        "href": "http://www.w3.org/TR/2012/CR-eventsource-20121211/",
+        "title": "Server-Sent Events",
+        "date": "11 December 2012",
+        "status": "CR",
+        "publisher": "W3C",
+        "shortName": "eventsource",
+        "testsAwaitingReview": {"value": 50, "type": "%"},
+        "requiredBy": ["Web+TV"],
+        "testType": null
+    },
+    "WEBGL": {
+        "authors": [
+            "Chris Marrin (Apple Inc.)"
+        ],
+        "href": "https://www.khronos.org/registry/webgl/specs/1.0/",
+        "title": "WebGL Specification, Version 1.0",
+        "date": "10 February 2011",
+        "publisher": "Khronos",
+        "shortName": "webgl",
+        "requiredBy": ["Web+TV"],
+        "testType": null
+    },
+    "WAI-ARIA": {
+        "authors": [
+            "James Craig",
+            "Michael Cooper"
+        ],
+        "etAl": true,
+        "href": "http://www.w3.org/TR/wai-aria/complete",
+        "title": "Accessible Rich Internet Applications (WAI-ARIA) 1.0",
+        "date": "18 January 2011",
+        "status": "CR",
+        "publisher": "W3C",
+        "shortName": "wai-aria",
+        "requiredBy": [],
+        "insufficientData": true,
+        "testType": null
+    },
+    "WAI-ARIA-IMPLEMENTATION": {
+        "authors": [
+            "Michael Cooper",
+            "Aaron Leventhal"
+        ],
+        "href": "http://www.w3.org/TR/wai-aria-implementation/",
+        "title": "WAI-ARIA 1.0 User Agent Implementation Guide",
+        "date": "16 August 2012",
+        "status": "WD",
+        "publisher": "W3C",
+        "shortName": "wai-aria-implementation",
+        "requiredBy": [],
+        "insufficientData": true,
+        "testType": null
+    }
+}

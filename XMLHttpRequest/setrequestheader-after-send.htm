@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+  <head>
+    <title>XMLHttpRequest: setRequestHeader() after send()</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <script>
+      var test = async_test()
+      test.step(function() {
+        var client = new XMLHttpRequest()
+        client.open("GET", "resources/delay.php?ms=0")
+        client.onreadystatechange = function() {
+          test.step(function() {
+            assert_throws("INVALID_STATE_ERR", function() { client.setRequestHeader("x-test", "test") })
+            if(client.readyState == 4)
+              test.done()
+          })
+        }
+        client.send(null)
+      })
+    </script>
+  </body>
+</html>

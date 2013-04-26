@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>IDBCursor.update() - index - attempt to modify a record in an inactive transaction</title>
+    <script type="text/javascript" src="support.js"></script>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script type="text/javascript">
+        var objectStoreName = "objectstore";
+        var indexName = "index";
+        var records = [{ pKey: "primaryKey_0", iKey: "indexKey_0" },
+                            { pKey: "primaryKey_1", iKey: "indexKey_1"}];
+        var count = records.length;
+        var db = null;
+        var t = async_test();
+
+        add_completion_callback(function() { if(db) db.close(); });
+        
+        function RunTest() {
+            var rqOpen = window.indexedDB.open(databaseName);
+            rqOpen.onupgradeneeded = t.step_func( function (event) {
+                db = event.target.result;
+                db.onerror = t.step_func( assert_database_error );
+                
+                var objStore = db.createObjectStore(objectStoreName, { keyPath: "pKey" });
+                var index = objStore.createIndex(indexName, "iKey");
+                for (var i = 0; i < records.length; i++) {
+                    objStore.add(records[i]);
+                }
+                var rqCursor = index.openCursor();
+                rqCursor.onsuccess = t.step_func( function (event) {
+                    var cursor = event.target.result;
+                    assert_cursor_exists(cursor);
+                    window.cursor = cursor;
+                    window.record = cursor.value;
+                });
+            });
+            rqOpen.onsuccess = t.step_func( function(event) { 
+                try {
+                    window.cursor.update(window.record);
+                } catch (ex) {
+                    assert_equals(ex.name, "TransactionInactiveError", "ex.name");
+                    t.done();
+                    return;
+                }
+                assert_expected_exception();
+            });
+            rqOpen.onerror = t.step_func( function(event) { assert_open_request_error(event); } );
+        }
+        
+        add_completion_callback(function() { if(db) db.close(); });
+        
+        setup(function() {
+            var rqDelete = window.indexedDB.deleteDatabase(databaseName);
+            rqDelete.onsuccess = t.step_func( RunTest );
+        });
+    </script>
+</head>
+<body>
+    <div id="log"></div>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!doctype html>
+<title>The progress element</title>
+<link rel="author" title="dan smith" href="mailto:XX1011@gmail.com">
+<link rel="help" href="http://www.w3.org/TR/html5/forms.html#the-progress-element">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+
+<progress id=indeterminate></progress>
+<progress id=quarter value=1 max=4></progress>
+
+<script>
+
+test(function() {
+	assert_equals(indeterminate.position, -1);
+}, "indeterminate progress bar should have position -1");
+
+test(function() {
+	assert_equals(quarter.position, 0.25);
+}, "determinate progress bar should have fractional position");
+
+test(function() {
+	assert_equals(indeterminate.value, 0);
+}, "indeterminate progress bar should have value 0");
+
+test(function() {
+	assert_equals(indeterminate.max, 1);
+}, "max should be 1 by default");
+
+</script>

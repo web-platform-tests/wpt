@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     version="1.1"
+     width="100%" height="100%" viewBox="0 0 400 400"
+     onload="initTest()">
+
+	<title>previousElementSibling</title>
+	
+  <script type="text/ecmascript"><![CDATA[
+  function initTest ()
+  {
+    var lec = document.getElementById("last_element_child");
+    var pes = lec.previousElementSibling;
+    if ( pes
+        && 1 == pes.nodeType 
+        && "middle_element_child" == pes.getAttribute("id") )
+    {
+      pes.firstChild.nodeValue = "pass!";
+    }
+  }
+  ]]></script>
+
+  <text x="200" y="40" font-size="25" fill="black" text-anchor="middle">Test of previousElementSibling</text>
+  <text id="parentEl" x="200" y="70" font-size="20" fill="black" text-anchor="middle">The result of <tspan id="first_element_child">this test</tspan> is a 
+  <tspan id="middle_element_child" font-weight="bold">fail.</tspan>  
+  
+  
+  
+  <tspan id="last_element_child" display="none">fnord</tspan> </text>
+
+</svg>
+

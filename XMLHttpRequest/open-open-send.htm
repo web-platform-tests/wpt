@@ -12,7 +12,7 @@
       test.step(function() {
         var client = new XMLHttpRequest(),
             result = [],
-            expected = [1,1,1,2,3,4]
+            expected = [1,2,3,4]
         client.onreadystatechange = function() {
           test.step(function() {
             result.push(client.readyState)

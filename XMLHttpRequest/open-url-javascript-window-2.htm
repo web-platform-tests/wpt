@@ -11,7 +11,7 @@
       var test = async_test()
       test.step(function() {
         var iframe = document.body.appendChild(document.createElement("iframe"))
-        iframe.src = "javascript:parent.test.step(function() { var x = new XMLHttpRequest(); x.open('GET', 'folder.txt', false); x.send(null); parent.assert_equals(x.responseText, 'top\n'); parent.test.done() })"
+        iframe.src = "javascript:parent.test.step(function() { var x = new XMLHttpRequest(); x.open('GET', 'folder.txt', false); x.send(null); parent.assert_equals(x.responseText, 'top\\n'); parent.test.done() })"
       })
     </script>
   </body>

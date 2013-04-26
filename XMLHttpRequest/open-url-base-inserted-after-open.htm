@@ -11,7 +11,7 @@
       test(function() {
         var client = new XMLHttpRequest(),
             base = document.createElement("base")
-        base.href = "http://localhost/xhr/resources/"
+        base.href = location.href.replace(/\/[^/]*$/, '') + "/resources/"
         client.open("GET", "folder.txt", false)
         document.getElementsByTagName("head")[0].appendChild(base)
         client.send(null)

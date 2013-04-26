@@ -9,20 +9,20 @@
     <div id="log"></div>
     <script>
       function try_header(header) {
-        assert_throws("INVALID_STATE_ERR", function() { client.setRequestHeader(header, "test") })
+        test(function() {
+          var client = new XMLHttpRequest()
+          client.open("GET", "...")
+          assert_throws("SYNTAX_ERR", function() { client.setRequestHeader(header, "test") })
+        })
       }
-      test(function() {
-        var client = new XMLHttpRequest()
-        client.open("GET", "...")
-        try_header("")
-        try_header("t<")
-        try_header("t:t")
-        try_header("t t")
-        try_header(" t")
-        try_header("\tt")
-        try_header("t\rt")
-        try_header("t\nt")
-      })
+      try_header("")
+      try_header("t<")
+      try_header("t:t")
+      try_header("t t")
+      try_header(" t")
+      try_header("\tt")
+      try_header("t\rt")
+      try_header("t\nt")
     </script>
   </body>
 </html>

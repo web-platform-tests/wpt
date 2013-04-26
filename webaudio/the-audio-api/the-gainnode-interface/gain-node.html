@@ -1,0 +1,70 @@
+<!doctype html>
+<html class="a">
+ <head>
+  <title>GainNode interface</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/webaudio/js/lodash.js"></script>
+  <script src="/webaudio/js/vendor-prefixes.js"></script>
+  <script src="/webaudio/js/helpers.js"></script>
+ </head>
+ <body class="a">
+  <div id="log"></div>
+  <script>
+
+var t = async_test("GainNode test");
+
+var gainNode;
+var expectedBuffer;
+var scriptProcessor;
+setup(function() {
+  context = new AudioContext();
+  gainNode = context.createGain();
+  gainNode.gain.value = 0.5;
+  var buffer = context.createBuffer(1, 2048, context.sampleRate);
+  for (var i = 0; i < 2048; ++i) {
+    buffer.getChannelData(0)[i] = Math.sin(440 * 2 * Math.PI * i / context.sampleRate);
+  }
+  expectedBuffer = context.createBuffer(1, 2048, context.sampleRate);
+  for (var i = 0; i < 2048; ++i) {
+    expectedBuffer.getChannelData(0)[i] = buffer.getChannelData(0)[i] / 2;
+  }
+  sourceNode = context.createBufferSource();
+  sourceNode.buffer = buffer;
+  sourceNode.connect(gainNode);
+  scriptProcessor = context.createScriptProcessor(2048, 1);
+  gainNode.connect(scriptProcessor);
+  scriptProcessor.connect(context.destination);
+  scriptProcessor.onaudioprocess = t.step_func(checkGainBuffer);
+  sourceNode.start(0);
+});
+
+function checkGainBuffer(event) {
+  scriptProcessor.onaudioprocess = null;
+  assert_equals(event.inputBuffer.numberOfChannels, 1, "event.inputBuffer.numberOfChannels");
+  assert_equals(event.inputBuffer.getChannelData(0).length,
+                expectedBuffer.getChannelData(0).length,
+                "expected buffer length");
+  assert_true(compareBuffers(event.inputBuffer.getChannelData(0),
+                             expectedBuffer.getChannelData(0)),
+              "compareBuffers");
+  t.done();
+}
+
+test(function() {
+  assert_equals(gainNode.numberOfInputs, 1, "gainNode.numberOfInputs");
+}, "gainNode.numberOfInputs should be 1 by default");
+
+test(function() {
+  assert_equals(gainNode.numberOfOutputs, 1, "gainNode.numberOfOutputs");
+}, "gainNode.numberOfOutputs should be 1 by default");
+
+test(function() {
+  assert_has_property(gainNode, "gain", "gainNode should have gain");
+}, "gainNode should have gain");
+
+test_implements_audio_param_interface(gainNode.gain);
+
+  </script>
+ </body>
+</html>

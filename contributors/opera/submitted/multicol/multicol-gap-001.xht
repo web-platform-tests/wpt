@@ -6,37 +6,31 @@
 <link rel="author" title="Opera Software ASA" href="http://www.opera.com/"/>
 <link rel="help" href="http://www.w3.org/TR/css3-multicol/#column-gaps-and-rules"/>
 <link rel="match" href="multicol-gap-ref.xht"/>
-<meta name="flags" content=""/>
+<meta name="assert" content="This test checks that the 'normal' column gap is 1em, which is suggested -- and not prescribed -- by the specification" />
+<meta name="flags" content="may"/>
+<meta name="flags" content="ahem"/>
 <style type="text/css"><![CDATA[
-body {
-	width: 40em;
-}
 div {
-	font-family: sans-serif;
-	font-size: 1em;
-	line-height: 1em;
+	font: 10px/10px ahem;
 	color: black;
 	background: yellow;
 	orphans: 1;
 	widows: 1;
-
-	column-width: 8em;
+	width: 3em;
+	margin: 1em;
+}
+div.multicol {
+	column-width: 1em;
 	column-gap: 1em;
 }
+span { padding-right: 1em }
 ]]></style>
 </head>
 
 <body>
+The two boxes below should be identical.
 
-<div>
-	one two three four
-	five six seven eight
-	nine ten eleven twelve
-	thirtn fourtn fiftn sixtn
-	seventn eightn ninetn twenty
-	hundred thousand million billion
-	trillion
-</div>
-
+<div class="multicol">x<br/>x</div>
+<div><span>x</span>x</div>
 </body>
 </html>

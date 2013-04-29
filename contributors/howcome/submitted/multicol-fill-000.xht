@@ -5,6 +5,8 @@
 <link rel="author" title="Hakon Wium Lie" href="mailto:howcome@opera.com"/>
 <link rel="help" href="http://www.w3.org/TR/css3-multicol/#cf"/>
 <link rel="match" href="multicol-fill-000-ref.xht"/>
+<meta name="assert" content="This test checks that content is balanced into all columns." />
+
 <meta name="flags" content="ahem" />
 <style type="text/css">
 div, table {
@@ -13,6 +15,8 @@ div, table {
   color: lime;
   background: yellow;
   width: 400px;
+  orphans: 0;
+  widows: 0;
 }
 
 div.multicol { 

@@ -1,15 +1,18 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>multicol-rule-inset</title>
+<title>multicol | column-rule-style</title>
 <link rel="author" title="Hakon Wium Lie" href="mailto:howcome@opera.com"/>
 <style type="text/css">
-div {
+div, table {
   font: 50px/50px Ahem;
+  width: 410px;
   margin: 10px 0;
   color: black;
   background: black;
-  width: 410px;
+  border-collapse: collapse;
+  orphans: 1;
+  widows: 1;
 }
 
 div.multicol { 
@@ -18,14 +21,13 @@ div.multicol {
   column-rule: 10px inset lime;
 }
 
-div.ref span { 
-  border-left: 10px inset lime;
-}
+td { border-right: 10px inset lime }
+td + td { border-left: 10px inset lime; border-right: none }
 </style>
 </head>
 <body>
 The two horizontal bars below should be identical.
-<div class="ref">0123<span>0123</span></div>
-<div class="ref">0123<span>0123</span></div>
+<div class="multicol">0<br/>0</div>
+<div class="multicol">0<br/>0</div>
 </body>
 </html>

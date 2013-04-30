@@ -11,7 +11,6 @@
       var client = new XMLHttpRequest()
       client.open("GET", "resources/well-formed.xml", false)
       client.send(null)
-      // TODO: styleSheets
       var expected = {
         domain:undefined,
         URL:location.href.replace(/[^/]*$/, 'resources/well-formed.xml'),

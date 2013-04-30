@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+  <head>
+    <title>EventSource: "retry" field</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <script>
+      var test = async_test()
+      test.step(function() {
+        var timeoutms = 2000,
+            timeoutstr = "02000", // 1024 in octal, but should be 2000
+            source = new EventSource("resources/message.php?message=retry%3A" + timeoutstr + "%0Adata%3Ax"),
+            opened = 0
+        source.onopen = function() {
+          test.step(function() {
+            if(opened == 0)
+              opened = new Date().getTime()
+            else {
+              var diff = (new Date().getTime()) - opened
+              assert_true(Math.abs(1 - diff / timeoutms) < 0.1) // allow 10% difference
+              this.close();
+              test.done()
+            }
+          }, this)
+        }
+      })
+    </script>
+  </body>
+</html>
+

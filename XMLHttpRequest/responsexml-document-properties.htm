@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+  <head>
+    <title>XMLHttpRequest: responseXML document properties</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <script>
+      var client = new XMLHttpRequest()
+      client.open("GET", "resources/well-formed.xml", false)
+      client.send(null)
+      test(function() {
+        assert_equals((new Date(client.getResponseHeader('Last-Modified'))).getTime(), (new Date(client.responseXML.lastModified)).getTime()) 
+      }, 'lastModified set according to HTTP header')
+      test(function() {
+        assert_equals(client.responseXML.domain, undefined)
+      }, 'domain')
+      test(function() {
+        assert_equals(client.responseXML.URL, location.href.replace(/[^/]*$/, 'resources/well-formed.xml')) // not sure what this pass condition should be.. sort of odd if domain is expected to be 
+      }, 'URL')
+      test(function() {
+        assert_equals(client.responseXML.defaultView, null)
+      }, 'defaultView')
+      test(function() {
+        assert_equals(client.responseXML.body, undefined)
+      }, 'body')
+      test(function() {
+        assert_equals(client.responseXML.images, undefined)
+      }, 'images')
+      test(function() {
+        assert_equals(client.responseXML.doctype, null)
+      }, 'doctype')
+      test(function() {
+        assert_equals(client.responseXML.all, undefined)
+      }, 'all')
+      test(function() {
+        assert_equals(client.responseXML.cookie, "")
+      }, 'cookie')
+      test(function() {
+        client.responseXML.cookie = "thisshouldbeignored"
+        assert_equals(client.responseXML.cookie, "")
+      }, 'cookie (after setting it)')
+    </script>
+  </body>
+</html>

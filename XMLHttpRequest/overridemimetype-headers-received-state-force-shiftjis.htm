@@ -12,8 +12,10 @@
     <script>
       var test = async_test();
       var client = new XMLHttpRequest();
+      var readyState2Reached = false;
       client.onreadystatechange = test.step_func( function() {
         if(client.readyState===2){
+          readyState2Reached = true;
           try{
             client.overrideMimeType('text/plain;charset=Shift-JIS');
           }catch(e){
@@ -21,6 +23,7 @@
           }
         }
         if (client.readyState !== 4) return;
+        assert_equals( readyState2Reached, true, "readyState = 2 event fired" );
         assert_equals( client.responseText, 'テスト', 'overrideMimeType() in HEADERS RECEIVED state set encoding' );
         test.done();
       });

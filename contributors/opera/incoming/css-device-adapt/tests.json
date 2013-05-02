@@ -175,22 +175,22 @@
             "TEST_FUNCTION" : "var mq = window.matchMedia(\"(device-height: \"+viewport.actualHeight+\"px)\"); assert_true(mq.matches);"
         },
         {
-            "DESCRIPTION" : "@viewport constrained - used width is positive.",
+            "DESCRIPTION" : "@viewport constrained - used width can be zero.",
             "AUTHOR_NAME" : "Rune Lillesveen",
             "AUTHOR_EMAIL" : "rune@opera.com",
             "TOKENS" : "dom",
-            "ASSERTION" : "When constrained width is lower than 0.5px, rounding would make it 0px. Make sure the used width is then set to 1px.",
-            "VIEWPORT_DESC" : "width: 0.01em",
-            "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, 1);"
+            "ASSERTION" : "Check that zero length is allowed for width",
+            "VIEWPORT_DESC" : "width: 0em",
+            "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, 0);"
         },
         {
-            "DESCRIPTION" : "@viewport constrained - used height is positive.",
+            "DESCRIPTION" : "@viewport constrained - used height can be zero.",
             "AUTHOR_NAME" : "Rune Lillesveen",
             "AUTHOR_EMAIL" : "rune@opera.com",
             "TOKENS" : "dom",
-            "ASSERTION" : "When constrained height is lower than 0.5px, rounding would make it 0px. Make sure the used height is then set to 1px.",
-            "VIEWPORT_DESC" : "height: 0.01em",
-            "TEST_FUNCTION" : "assert_equals(viewport.actualHeight, 1);"
+            "ASSERTION" : "Check that zero length is allowed for height.",
+            "VIEWPORT_DESC" : "height: 0",
+            "TEST_FUNCTION" : "assert_equals(viewport.actualHeight, 0);"
         }]
     },
     {
@@ -307,7 +307,7 @@
             "AUTHOR_NAME" : "Rune Lillesveen",
             "AUTHOR_EMAIL" : "rune@opera.com",
             "TOKENS" : "dom",
-            "ASSERTION" : "Descriptors that take zoom factors must accept both positive percentage and number values.",
+            "ASSERTION" : "Descriptors that take zoom factors must accept non-negative percentage and number values.",
             "VIEWPORT_DESC" : "min-zoom: 1.5; max-zoom: 2; zoom: 170%",
             "TEST_FUNCTION" : "assert_equals(testStyleSheet.cssRules.item(0).style.length, 3);"
         },
@@ -321,13 +321,13 @@
             "TEST_FUNCTION" : "assert_equals(testStyleSheet.cssRules.item(0).style.length, 0);"
         },
         {
-            "DESCRIPTION" : "@viewport invalid <viewport-length> - drop 0 lengths",
+            "DESCRIPTION" : "@viewport <viewport-length> - allow zero lengths",
             "AUTHOR_NAME" : "Rune Lillesveen",
             "AUTHOR_EMAIL" : "rune@opera.com",
             "TOKENS" : "dom",
-            "ASSERTION" : "Descriptors that take <viewport-length> values must drop negative lengths and percentages.",
+            "ASSERTION" : "Descriptors that take <viewport-length> values must allow zero value lengths and percentages.",
             "VIEWPORT_DESC" : "min-width: 0; max-width: 0%; min-height: 0cm; max-height: 0ex",
-            "TEST_FUNCTION" : "assert_equals(testStyleSheet.cssRules.item(0).style.length, 0);"
+            "TEST_FUNCTION" : "assert_equals(testStyleSheet.cssRules.item(0).style.length, 4);"
         },
         {
             "DESCRIPTION" : "@viewport invalid zoom factor - drop negative factors",
@@ -339,13 +339,13 @@
             "TEST_FUNCTION" : "assert_equals(testStyleSheet.cssRules.item(0).style.length, 0);"
         },
         {
-            "DESCRIPTION" : "@viewport invalid zoom factor - drop 0 factors",
+            "DESCRIPTION" : "@viewport zoom factor - allow zero factors",
             "AUTHOR_NAME" : "Rune Lillesveen",
             "AUTHOR_EMAIL" : "rune@opera.com",
             "TOKENS" : "dom",
-            "ASSERTION" : "Zoom factor descriptors must drop 0 numbers and percentages.",
+            "ASSERTION" : "Zoom factor descriptors must allow zero numbers and percentages.",
             "VIEWPORT_DESC" : "min-zoom: 0; max-zoom: 0%; zoom: 0",
-            "TEST_FUNCTION" : "assert_equals(testStyleSheet.cssRules.item(0).style.length, 0);"
+            "TEST_FUNCTION" : "assert_equals(testStyleSheet.cssRules.item(0).style.length, 3);"
         }]
     }]
 }

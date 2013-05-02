@@ -1,14 +1,14 @@
 <?php
-  if ($_GET['logout']) {
+  if (isset($_GET['logout'])) {
     header('HTTP/1.1 401 Unauthorized');
     header('WWW-Authenticate: Basic realm="test"');
     die("Logged out, hopefully");
   }
 
-  $session_user = $_SERVER["PHP_AUTH_USER"];
-  $session_pass = $_SERVER["PHP_AUTH_PW"];
-  $xhr_user = $_SERVER["HTTP_X_USER"];
-  $xhr_pass = $_SERVER["HTTP_X_PASS"];
+  $session_user = isset($_SERVER["PHP_AUTH_USER"]) ? $_SERVER["PHP_AUTH_USER"] : null;
+  $session_pass = isset($_SERVER["PHP_AUTH_PW"]) ? $_SERVER["PHP_AUTH_PW"] : null;
+  $xhr_user = isset($_SERVER["HTTP_X_USER"]) ? $_SERVER["HTTP_X_USER"] : null;
+  $xhr_pass = isset($_SERVER["HTTP_X_PASS"]) ? $_SERVER["HTTP_X_PASS"] : null;
   $file = "authentication-temp-" . $xhr_user;
   if((empty($session_user) && empty($session_pass))/* ||
      ($session_user != $xhr_user || $session_pass != $xhr_pass)*/
@@ -31,9 +31,9 @@
     header('SES-USER: ' . $session_user);
     if(!file_exists($file)) {
       header("X-challenge: DID-NOT");
-    else
+    }else{
       unlink($file);
-
+    }
     echo $session_user . "\n" . $session_pass;
   }
 ?>

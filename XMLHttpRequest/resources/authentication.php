@@ -30,7 +30,7 @@
     header('XHR-USER: ' . $xhr_user);
     header('SES-USER: ' . $session_user);
     if(!file_exists($file)) {
-      header("X-challenge: DID-NOT";
+      header("X-challenge: DID-NOT");
     else
       unlink($file);
 

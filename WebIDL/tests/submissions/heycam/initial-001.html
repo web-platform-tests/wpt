@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<title>Initial objects are unique across global environments</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.1 ECMAScript environment
+//
+// Each ECMAScript global environment has a unique set of initial objects.
+
+function runTest(iframe) {
+  iframe.onload = null;
+
+  var w = iframe.contentWindow;
+  var objects = [
+
+    // interface object
+    interfaceObject("DOMImplementation"), interfaceObject("DOMImplementation", w), "DOMImplementation interface object",
+    interfaceObject("HTMLCollection"), interfaceObject("HTMLCollection", w), "HTMLCollection interface object",
+
+    // interface object for inherited interface
+    interfaceObject("Element"), interfaceObject("Element", w), "Element interface object",
+    interfaceObject("UIEvent"), interfaceObject("UIEvent", w), "UIEvent interface object",
+
+    // interface prototype object
+    interfacePrototypeObject("DOMImplementation"), interfacePrototypeObject("DOMImplementation", w), "DOMImplementation interface prototype object",
+    interfacePrototypeObject("HTMLCollection"), interfacePrototypeObject("HTMLCollection", w), "HTMLCollection interface prototype object",
+
+    // interface prototype object for inherited interface
+    interfacePrototypeObject("Element"), interfacePrototypeObject("Element", w), "Element interface prototype object",
+    interfacePrototypeObject("UIEvent"), interfacePrototypeObject("UIEvent", w), "UIEvent interface prototype object",
+
+    // named constructor object
+    namedConstructorObject("Image"), namedConstructorObject("Image", w), "Image named constructor object",
+    namedConstructorObject("Audio"), namedConstructorObject("Audio", w), "Audio named constructor object",
+
+    // attribute getter
+    getter("Document", "title"), getter("Document", "title", w), "Document.title attribute getter",
+    getter("HTMLSelectElement", "length"), getter("HTMLSelectElement", "length", w), "HTMLSelectElement.length attribute getter",
+
+    // read only attribute getter
+    getter("Node", "parentNode"), getter("Node", "parentNode", w), "Node.parentNode attribute getter",
+    getter("HTMLFormElement", "length"), getter("HTMLFormElement", "length", w), "HTMLFormElement.length attribute getter",
+
+    // attribute setter
+    setter("Document", "title"), setter("Document", "title", w), "Document.title attribute setter",
+    setter("HTMLSelectElement", "length"), setter("HTMLSelectElement", "length", w), "HTMLSelectElement.length attribute setter",
+
+    // operation function
+    operation("HTMLElement", "click"), operation("HTMLElement", "click", w), "HTMLElement.click function",
+    operation("Node", "appendChild"), operation("Node", "appendChild", w), "Node.appendChild function",
+
+    // stringifier function
+    stringifier("DOMTokenList"), stringifier("DOMTokenList", w), "DOMTokenList stringifier function",
+
+    // exception interface object
+    interfaceObject("DOMException"), interfaceObject("DOMException", w), "DOMException exception interface object",
+
+    // exception interface prototype object
+    interfacePrototypeObject("DOMException"), interfacePrototypeObject("DOMException", w), "DOMException exception interface prototype object",
+
+    // exception field getter
+    getter("DOMException", "code"), getter("DOMException", "code", w), "DOMException.code exception field getter",
+
+    // named properties object
+    function() { return Object.getPrototypeOf(Window.prototype); }, function() { return Object.getPrototypeOf(w.Window.prototype); }, "named properties object"
+  ];
+
+  for (var i = 0; i < objects.length; i += 3) {
+    test(function() {
+      var object1 = objects[i]();
+      var object2 = objects[i + 1]();
+      assert_true(object1 != object2, "object1 != object2");
+    }, objects[i + 2] + " from two windows are different");
+  }
+}
+</script>
+
+<div style="visibility: hidden; position: absolute; width: 0; height: 0; overflow: hidden">
+  <iframe onload="runTest(event.target)"></iframe>
+</div>

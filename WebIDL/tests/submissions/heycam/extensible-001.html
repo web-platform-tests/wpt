@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<title>Objects are extensible</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4. ECMAScript binding
+//
+// Objects are [[Extensible]] = true, by default.  And there aren't any
+// objects that are defined to be non-extensible.
+
+var objects = [
+
+  // interface object
+  interfaceObject("DOMImplementation"), "DOMImplementation interface object",
+  interfaceObject("HTMLCollection"), "HTMLCollection interface object",
+
+  // interface object for inherited interface
+  interfaceObject("Element"), "Element interface object",
+  interfaceObject("UIEvent"), "UIEvent interface object",
+
+  // interface prototype object
+  interfacePrototypeObject("DOMImplementation"), "DOMImplementation interface prototype object",
+  interfacePrototypeObject("HTMLCollection"), "HTMLCollection interface prototype object",
+
+  // interface prototype object for inherited interface
+  interfacePrototypeObject("Element"), "Element interface prototype object",
+  interfacePrototypeObject("UIEvent"), "UIEvent interface prototype object",
+
+  // named constructor object
+  namedConstructorObject("Image"), "Image named constructor object",
+  namedConstructorObject("Audio"), "Audio named constructor object",
+
+  // attribute getter
+  getter("Document", "title"), "Document.title attribute getter",
+  getter("HTMLSelectElement", "length"), "HTMLSelectElement.length attribute getter",
+
+  // read only attribute getter
+  getter("Node", "parentNode"), "Node.parentNode attribute getter",
+  getter("HTMLFormElement", "length"), "HTMLFormElement.length attribute getter",
+
+  // attribute setter
+  setter("Document", "title"), "Document.title attribute setter",
+  setter("HTMLSelectElement", "length"), "HTMLSelectElement.length attribute setter",
+
+  // operation function
+  operation("HTMLElement", "click"), "HTMLElement.click function",
+  operation("Node", "appendChild"), "Node.appendChild function",
+
+  // stringifier function
+  stringifier("DOMTokenList"), "DOMTokenList stringifier function",
+
+  // exception interface object
+  interfaceObject("DOMException"), "DOMException exception interface object",
+
+  // exception interface prototype object
+  interfacePrototypeObject("DOMException"), "DOMException exception interface prototype object",
+
+  // exception field getter
+  getter("DOMException", "code"), "DOMException.code exception field getter",
+
+  // platform object implementing an interface
+  function() { return document.implementation; }, "a platform object implementing DOMImplementation",
+  function() { return document.getElementsByTagName("div"); }, "a platform object implementing HTMLCollection",
+
+  // platform object implementing an inherited interface
+  function() { return document.createElement("div"); }, "a platform object implementing Element",
+  function() { return document.createEvent("UIEvent"); }, "a platform object implementing UIEvent",
+
+  // platform object representing an exception
+  function() {
+    try {
+      document.appendChild(document);
+    } catch (e) {
+      return e;
+    }
+  }, "a platform object representing a DOMException",
+
+  // platform array object
+  // XXX
+
+  // named properties object
+  function() { return Object.getPrototypeOf(Window.prototype); }, "named properties object"
+];
+
+for (var i = 0; i < objects.length; i += 2) {
+  test(function() {
+    var object = objects[i]();
+    assert_true(Object.isExtensible(object), "object is extensible");
+  }, objects[i + 1] + " is extensible");
+}
+</script>

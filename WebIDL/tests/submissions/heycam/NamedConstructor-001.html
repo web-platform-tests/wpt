@@ -43,8 +43,14 @@ for (var i = 0; i < lengthProperties.length; i += 3) {
   var val = lengthProperties[i + 1];
   var intf = lengthProperties[i + 2];
 
-  assert_property(window, named, { writable: true, enumerable: false, configurable: true }, "window." + named);
-  assert_property(window[named], "length", { writable: false, enumerable: false, configurable: false, value: val }, named + ".length");
-  assert_property(window[named], "prototype", { writable: false, enumerable: false, configurable: false, value: window[intf].prototype }, named + ".prototype");
+  test(function() {
+    assert_property(window, named, { writable: true, enumerable: false, configurable: true }, "window." + named);
+  }, named + " named constructor exists");
+  test(function() {
+    assert_property(window[named], "length", { writable: false, enumerable: false, configurable: false, value: val }, named + ".length");
+  }, named + " has correct length property");
+  test(function() {
+    assert_property(window[named], "prototype", { writable: false, enumerable: false, configurable: false, value: window[intf].prototype }, named + ".prototype");
+  }, named + " has correct prototype property");
 }
 </script>

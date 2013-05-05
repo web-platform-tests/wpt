@@ -28,26 +28,31 @@ function stringifier(interfaceName, w) {
   return operation(interfaceName, "toString", w);
 }
 
-function assert_property(object, property, descriptor, description) {
-  var desc = Object.getOwnPropertyDescriptor(object, property);
-  if ("writable" in descriptor) {
-    test(function() {
-      assert_equals(desc.writable, descriptor.writable, description + " [[Writable]]");
-    }, description + " is " + (descriptor.writable ? "" : "not ") + " writable");
+function assert_descriptor(desc1, desc2, description) {
+  assert_true(!!desc1, description + " exists");
+  if ("value" in desc2) {
+    assert_equals(desc1.value, desc2.value, description + " [[Value]]");
   }
-  if ("enumerable" in descriptor) {
-    test(function() {
-      assert_equals(desc.enumerable, descriptor.enumerable, description + " [[Enumerable]]");
-    }, description + " is " + (descriptor.enumerable ? "" : "not ") + " enumerable");
+  if ("writable" in desc2) {
+    assert_equals(desc1.writable, desc2.writable, description + " [[Writable]]");
   }
-  if ("configurable" in descriptor) {
-    test(function() {
-      assert_equals(desc.configurable, descriptor.configurable, description + " [[Configurable]]");
-    }, description + " is " + (descriptor.configurable ? "" : "not ") + " configurable");
+  if ("enumerable" in desc2) {
+    assert_equals(desc1.enumerable, desc2.enumerable, description + " [[Enumerable]]");
   }
-  if ("value" in descriptor) {
-    test(function() {
-      assert_equals(desc.value, descriptor.value, " [[Value]]");
-    }, description + " has the expected value");
+  if ("configurable" in desc2) {
+    assert_equals(desc1.configurable, desc2.configurable, description + " [[Configurable]]");
   }
+}
+
+function assert_property(object, property, desc, description) {
+  assert_descriptor(Object.getOwnPropertyDescriptor(object, property), desc, description);
+}
+
+function prototypeChain(o) {
+  var a = [];
+  do {
+    a.push(o);
+    o = Object.getPrototypeOf(o);
+  } while (o);
+  return a;
 }

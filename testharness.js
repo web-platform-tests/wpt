@@ -491,6 +491,35 @@ policies and contribution forms [3].
     }
 
     /*
+     * Return true if object is probably a Node object.
+     */
+    function is_node(object)
+    {
+        // I use duck-typing instead of instanceof, because
+        // instanceof doesn't work if the node is from another window (like an
+        // iframe's contentWindow):
+        // http://www.w3.org/Bugs/Public/show_bug.cgi?id=12295
+        if ("nodeType" in object
+        && "nodeName" in object
+        && "nodeValue" in object
+        && "childNodes" in object)
+        {
+            try
+            {
+                object.nodeType;
+            }
+            catch (e)
+            {
+                // The object is probably Node.prototype or another prototype
+                // object that inherits from it, and not a Node instance.
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /*
      * Convert a value to a nice, human-readable string
      */
     function format_value(val, seen)
@@ -573,14 +602,8 @@ policies and contribution forms [3].
             }
 
             // Special-case Node objects, since those come up a lot in my tests.  I
-            // ignore namespaces.  I use duck-typing instead of instanceof, because
-            // instanceof doesn't work if the node is from another window (like an
-            // iframe's contentWindow):
-            // http://www.w3.org/Bugs/Public/show_bug.cgi?id=12295
-            if ("nodeType" in val
-            && "nodeName" in val
-            && "nodeValue" in val
-            && "childNodes" in val)
+            // ignore namespaces.
+            if (is_node(val))
             {
                 switch (val.nodeType)
                 {

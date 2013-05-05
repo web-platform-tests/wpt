@@ -495,8 +495,8 @@ policies and contribution forms [3].
      */
     function format_value(val, seen)
     {
-	if (!seen) {
-	    seen = [];
+        if (!seen) {
+            seen = [];
         }
         if (typeof val === "object" && val !== null)
         {
@@ -504,7 +504,7 @@ policies and contribution forms [3].
             {
                 return "[...]";
             }
-	    seen.push(val);
+            seen.push(val);
         }
         if (Array.isArray(val))
         {

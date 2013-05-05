@@ -6,8 +6,8 @@
 <div id="log"></div>
 
 <div id="hidden" style="visibility: hidden; position: absolute; width: 0; height: 0; overflow: hidden">
-  <iframe id="f1" name="f1"></iframe>
-  <iframe id="f2" name="f2"></iframe>
+  <form id="f1" name="f1"></form>
+  <form id="f2" name="f2"></form>
 </div>
 
 <script>
@@ -18,20 +18,20 @@
 // properties object.
 
 var hidden = document.getElementById("hidden");
-var iframe1 = document.getElementById("f1");
-var iframe2 = document.getElementById("f2");
+var form1 = document.getElementById("f1");
+var form2 = document.getElementById("f2");
 
 test(function() {
-  assert_equals(window.f1, iframe1.contentWindow);
+  assert_equals(window.f1, form1);
 }, "properties from the named properties object can be looked up on window");
 
 test(function() {
-  assert_equals(Window.prototype.f1, iframe1.contentWindow);
+  assert_equals(Window.prototype.f1, form1);
 }, "properties from the named properties object can be looked up on Window.prototype");
 
 test(function() {
   var namedPropertiesObject = Object.getPrototypeOf(Window.prototype);
-  assert_equals(namedPropertiesObject.f1, iframe1.contentWindow);
+  assert_equals(namedPropertiesObject.f1, form1);
 }, "named properties can be looked up on the named properties object");
 
 test(function() {
@@ -42,7 +42,7 @@ test(function() {
     object = Object.getPrototypeOf(object);
   }
   assert_true(!!desc, "named property exposed through [[GetOwnProperty]]");
-  assert_descriptor(desc, { writable: false, enumerable: true, configurable: true, value: iframe1.contentWindow }, "f1");
+  assert_descriptor(desc, { writable: false, enumerable: true, configurable: true, value: form1 }, "f1");
 }, "named properties are exposed correctly through [[GetOwnProperty]]");
 
 test(function() {
@@ -55,7 +55,7 @@ test(function() {
   var namedPropertiesObject = Object.getPrototypeOf(Window.prototype);
 
   // Ensure there's already a named property "f2".
-  assert_property(namedPropertiesObject, "f2", { writable: false, enumerable: true, configurable: true, value: iframe2.contentWindow }, "#1 namedPropertiesObject.f2");
+  assert_property(namedPropertiesObject, "f2", { writable: false, enumerable: true, configurable: true, value: form2 }, "#1 namedPropertiesObject.f2");
 
   // Define a property with the same name.
   Object.defineProperty(namedPropertiesObject, "f2", { writable: false, enumerable: false, configurable: true, value: "hello" });
@@ -65,7 +65,7 @@ test(function() {
   assert_property(namedPropertiesObject, "f2", { writable: false, enumerable: false, configurable: true, value: "hello" }, "#2 namedPropertiesObject.f2");
 
   // Remove the named property.
-  iframe2.parentNode.removeChild(iframe2);
+  form2.parentNode.removeChild(form2);
 
   // The expando should still be exposed.
   assert_property(namedPropertiesObject, "f2", { writable: false, enumerable: false, configurable: true, value: "hello" }, "#3 namedPropertiesObject.f2");
@@ -81,7 +81,7 @@ test(function() {
   assert_property(namedPropertiesObject, "f3", { writable: false, enumerable: false, configurable: true, value: "hello" }, "#1 namedPropertiesObject.f3");
 
   // Cause a named property with the same name to start existing.
-  var e = document.createElement("iframe");
+  var e = document.createElement("form");
   e.name = "f3";
   hidden.appendChild(e);
 
@@ -105,7 +105,7 @@ test(function() {
   assert_property(namedPropertiesObject, "f4", { writable: false, enumerable: false, configurable: true, value: "hello" }, "#1 namedPropertiesObject.f4");
 
   // Cause a named property with the same name to start existing.
-  var e = document.createElement("iframe");
+  var e = document.createElement("form");
   e.name = "f4";
   hidden.appendChild(e);
 
@@ -116,7 +116,7 @@ test(function() {
   assert_true(delete namedPropertiesObject.f4, "delete namedPropertiesObject.f4");
 
   // The named property should now be visible.
-  assert_property(namedPropertiesObject, "f4", { writable: false, enumerable: true, configurable: true, value: e.contentWindow }, "#3 namedPropertiesObject.f4");
+  assert_property(namedPropertiesObject, "f4", { writable: false, enumerable: true, configurable: true, value: e }, "#3 namedPropertiesObject.f4");
 
   // Remove the named property.
   hidden.removeChild(e);

@@ -3,6 +3,7 @@ Constructor-001.html
 NamedConstructor-001.html
 NamedPropertiesObject-001.html
 NamedPropertiesObject-002.html
+NamedPropertiesObject-003.html
 NoInterfaceObject-001.html
 class-string-001.html
 extensible-001.html

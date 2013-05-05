@@ -42,22 +42,6 @@ for (var i = 0; i < lengthProperties.length; i += 2) {
   var intf = lengthProperties[i];
   var val = lengthProperties[i + 1];
 
-  var desc = Object.getOwnPropertyDescriptor(window[intf], "length");
-
-  test(function() {
-    assert_equals(desc.writable, false, intf + ".length [[Writable]]");
-  }, intf + ".length is writable");
-
-  test(function() {
-    assert_equals(desc.enumerable, false, intf + ".length [[Enumerable]]");
-  }, intf + ".length is enumerable");
-
-  test(function() {
-    assert_equals(desc.configurable, false, intf + ".length [[Configurable]]");
-  }, intf + ".length is configurable");
-
-  test(function() {
-    assert_equals(desc.value, val, intf + ".length");
-  }, intf + ".length reflects the constructor's minimum argument count");
+  assert_property(window[intf], "length", { writable: false, enumerable: false, configurable: false, value: val }, intf + ".length");
 }
 </script>

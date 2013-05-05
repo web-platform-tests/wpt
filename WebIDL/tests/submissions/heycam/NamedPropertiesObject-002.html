@@ -60,15 +60,16 @@ test(function() {
   // Define a property with the same name.
   Object.defineProperty(namedPropertiesObject, "f2", { writable: false, enumerable: false, configurable: true, value: "hello" });
 
-  // Although the property definition should work, the named property should still shadow it.
-  assert_property(namedPropertiesObject, "f2", { writable: false, enumerable: true, configurable: true, value: iframe2.contentWindow }, "#2 namedPropertiesObject.f2");
+  // The expando should now be exposed, since the named property visibility
+  // algorithm should prevent the named property from shadowing it.
+  assert_property(namedPropertiesObject, "f2", { writable: false, enumerable: false, configurable: true, value: "hello" }, "#2 namedPropertiesObject.f2");
 
   // Remove the named property.
   iframe2.parentNode.removeChild(iframe2);
 
-  // The expand should now be exposed.
+  // The expando should still be exposed.
   assert_property(namedPropertiesObject, "f2", { writable: false, enumerable: false, configurable: true, value: "hello" }, "#3 namedPropertiesObject.f2");
-}, "expando properties with the same as named properties can be set, but named properties will shadow it");
+}, "expando properties with the same as named properties can be set and will shadow named properties");
 
 test(function() {
   var namedPropertiesObject = Object.getPrototypeOf(Window.prototype);
@@ -84,15 +85,15 @@ test(function() {
   e.name = "f3";
   hidden.appendChild(e);
 
-  // The named property should shadow the expando.
-  assert_property(namedPropertiesObject, "f3", { writable: false, enumerable: true, configurable: true, value: e.contentWindow }, "#2 namedPropertiesObject.f3");
+  // The expando should shadow the named property.
+  assert_property(namedPropertiesObject, "f3", { writable: false, enumerable: false, configurable: true, value: "hello" }, "#2 namedPropertiesObject.f3");
 
   // Remove the named property.
   hidden.removeChild(e);
 
-  // The expando should be revealed.
+  // The expando should still be visible.
   assert_property(namedPropertiesObject, "f3", { writable: false, enumerable: false, configurable: true, value: "hello" }, "#3 namedPropertiesObject.f3");
-}, "pre-existing expando properties are shadowed by named properties that start existing");
+}, "named properties will not shadow an existing expando property");
 
 test(function() {
   var namedPropertiesObject = Object.getPrototypeOf(Window.prototype);
@@ -108,13 +109,13 @@ test(function() {
   e.name = "f4";
   hidden.appendChild(e);
 
-  // The named property should shadow the expando.
-  assert_property(namedPropertiesObject, "f4", { writable: false, enumerable: true, configurable: true, value: e.contentWindow }, "#2 namedPropertiesObject.f4");
+  // The expando should shadow the named property.
+  assert_property(namedPropertiesObject, "f4", { writable: false, enumerable: false, configurable: true, value: "hello" }, "#2 namedPropertiesObject.f4");
 
   // Remove the expando.
   assert_true(delete namedPropertiesObject.f4, "delete namedPropertiesObject.f4");
 
-  // The named property should still be there.
+  // The named property should now be visible.
   assert_property(namedPropertiesObject, "f4", { writable: false, enumerable: true, configurable: true, value: e.contentWindow }, "#3 namedPropertiesObject.f4");
 
   // Remove the named property.
@@ -122,7 +123,7 @@ test(function() {
 
   // There shouldn't be anything there now.
   assert_true(!Object.getOwnPropertyDescriptor(namedPropertiesObject, "f4"), "existence of namedPropertiesObject.f4");
-}, "expando properties should be able to be removed while shadowed by a named property");
+}, "removing an expando property will reveal a shadowed named property");
 
 // XXX We probably shouldn't allow non-configurable properties to be defined
 // on the named properties object: https://www.w3.org/Bugs/Public/show_bug.cgi?id=21929

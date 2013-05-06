@@ -17,6 +17,7 @@ TreatNullAs-002.html
 Unforgeable-001.html
 any-001.html
 boolean-001.html
+byte-001.html
 class-string-001.html
 extensible-001.html
 functions-001.html

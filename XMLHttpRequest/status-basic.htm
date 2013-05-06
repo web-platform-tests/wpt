@@ -15,7 +15,7 @@
       function statusRequest(method, code, text, content, type) {
         test(function() {
           var client = new XMLHttpRequest()
-          client.open(method, "resources/status.php?code=" + code + "&text=" + text + "&content=" + content + "&type=" + type, false)
+          client.open(method, "resources/status.php?code=" + code + "&text=" + encodeURIComponent(text) + "&content=" + encodeURIComponent(content) + "&type=" + encodeURIComponent(type), false)
           client.send(null)
           assert_equals(client.status, code)
           assert_equals(client.statusText, text)

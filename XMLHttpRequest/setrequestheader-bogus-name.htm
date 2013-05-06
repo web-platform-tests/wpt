@@ -16,9 +16,13 @@
           assert_throws("SYNTAX_ERR", function() { client.setRequestHeader(name, 'x-value') })
         })
       }
+      try_name("")
       try_name("t\rt")
       try_name("t\nt")
       try_name("t: t")
+      try_name("t:t")
+      try_name("t<t")
+      try_name("t t")
       try_name(" tt")
       try_name(":tt")
       try_name("\ttt")

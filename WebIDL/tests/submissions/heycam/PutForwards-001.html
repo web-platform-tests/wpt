@@ -42,15 +42,6 @@ async_test(function(t) {
 }, "Document.location assignment forwards property assignment");
 
 test(function() {
-  var iframe = document.getElementById("iframe");
-  var desc = Object.getOwnPropertyDescriptor(iframe.contentWindow.Document.prototype, "location");
-  assert_true(!!desc, "!!desc");
-  assert_throws({ name: "TypeError" }, function() {
-    desc.set.call(iframe.contentDocument);
-  });
-}, "Document.location assignment throws TypeError when called with no arguments");
-
-test(function() {
   var desc = Object.getOwnPropertyDescriptor(HTMLElement.prototype, "style");
   assert_true(!!desc, "!!desc");
   assert_true(!!desc.set, "!!desc.set");
@@ -63,7 +54,7 @@ test(function() {
 }, "HTMLElement.prototype.style setter has correct length property");
 
 test(function() {
-  var e = document.getElementById("span");
+  var e = document.getElementById("span1");
   e.style.color = "red";
 
   assert_equals(e.style.color, "red");

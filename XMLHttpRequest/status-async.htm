@@ -12,8 +12,10 @@
   <body>
     <div id="log"></div>
     <script>
+      var counter=0;
       function statusRequest(method, code, text, content, type) {
-        var test = async_test(document.title + " (" + method + " " + code + ")")
+        counter++;
+        var test = async_test(document.title +' '+ counter+" (" + method + " " + code + ")")
         test.step(function() {
           var client = new XMLHttpRequest()
           client.onreadystatechange = function(e) {
@@ -34,7 +36,7 @@
               }
             }, this)
           }
-          client.open(method, "resources/status.php?code=" + code + "&text=" + text + "&content=" + content + "&type=" + type)
+          client.open(method, "resources/status.php?code=" + encodeURIComponent(code) + "&text=" + text + "&content=" + encodeURIComponent(content) + "&type=" + encodeURIComponent(type))
           client.send(null)
         })
       }

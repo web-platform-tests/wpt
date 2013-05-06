@@ -1,4 +1,5 @@
 ArrayClass-001.html
+Clamp-001.html
 Constructor-001.html
 LenientThis-001.html
 NamedConstructor-001.html

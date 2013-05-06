@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<title>[Clamp] on operation arguments</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.2.5 octet
+//
+// When [Clamp] is on an operation argument whose type is an integer type, then
+// values outside the range of the integer will be clamped to be valid.
+
+test(function() {
+  var a = new Uint8ClampedArray(1);
+  a[0] = 128;
+  a[0] = -1;
+  assert_equals(a[0], 0);
+  a[0] = 256;
+  assert_equals(a[0], 255);
+  a[0] = -0.1;
+  assert_equals(a[0], 0);
+  a[0] = 255.1;
+  assert_equals(a[0], 255);
+  a[0] = -Infinity;
+  assert_equals(a[0], 0);
+  a[0] = Infinity;
+  assert_equals(a[0], 255);
+  a[0] = -0;
+  assert_true(a[0] == 0 && 1 / a[0] > 0);
+  a[0] = 2.5;
+  assert_equals(a[0], 2);
+  a[0] = 5.5;
+  assert_equals(a[0], 6);
+  a[0] = NaN;
+  assert_equals(a[0], 0);
+}, "correct conversion of Number values to a [Clamp]ed octet");
+
+test(function() {
+  var ws = new WebSocket("wss://test.invalid");
+
+  // valid code, should not throw
+  ws.close(1000);
+
+  // invalid code, should throw
+  assert_throws({ name: "InvalidAccessError" }, function() { ws.close(500); });
+
+  // invalid code, as it should clamp to 65535, rather than wrap to 1000
+  assert_throws({ name: "InvalidAccessError" }, function() { ws.close(66536); });
+}, "correct conversion of Number values to a [Clamp]ed unsigned short");
+</script>

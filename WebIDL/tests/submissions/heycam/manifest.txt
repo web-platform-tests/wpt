@@ -11,6 +11,7 @@ OverrideBuiltins-002.html
 PutForwards-001.html
 Replaceable-001.html
 TreatNullAs-001.html
+Unforgeable-001.html
 class-string-001.html
 extensible-001.html
 functions-001.html

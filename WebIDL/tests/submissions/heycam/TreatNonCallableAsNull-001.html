@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<title>[TreatNonCallableAsNull]</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.2.22 Nullable types — T?
+//
+// Assigning an object that is not callable to an attribute whose type is a
+// nullable callback function that is annotated with [TreatNonCallableAsNull]
+// will be treated as an assignment of null.
+
+function noop() { }
+
+var properties = ["onclick", "onerror"];
+var tests = [
+  // assign this            // get this
+  noop,                     noop,
+  { },                      null,
+  Event,                    Event,
+  Event.prototype,          null,
+  Image,                    Image,
+  document.documentElement, null
+];
+
+for (var i = 0; i < properties.length; i++) {
+  var p = properties[i];
+  test(function() {
+    for (var j = 0; j < tests.length; j += 2) {
+      var value = tests[j];
+      var expected = tests[j + 1];
+      document[p] = value;
+      assert_equals(document[p], expected, "#" + (j / 2));
+    }
+  }, "assignments of non-callable objects to document." + p + " are treated as assignments of null");
+}
+</script>

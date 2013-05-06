@@ -23,4 +23,5 @@ extensible-001.html
 functions-001.html
 initial-001.html
 initial-002.html
+octet-001.html
 void-001.html

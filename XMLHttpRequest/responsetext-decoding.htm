@@ -11,7 +11,7 @@
       function request(type, input, output) {
         test(function() {
           var client = new XMLHttpRequest()
-          client.open("GET", "resources/status.php?content=" + input + "&type=" + type, false)
+          client.open("GET", "resources/status.php?content=" + encodeURIComponent(input) + "&type=" + encodeURIComponent(type), false)
           client.send(null)
           //alert(encodeURI(client.responseText))
           assert_equals(client.responseText, output)

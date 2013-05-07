@@ -27,6 +27,8 @@ long-001.html
 long-002.html
 octet-001.html
 short-001.html
+unsigned-long-001.html
+unsigned-long-002.html
 unsigned-short-001.html
 unsigned-short-002.html
 void-001.html

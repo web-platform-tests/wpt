@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<title>long</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.2.8 long
+//
+// Converting a JS value to an IDL long uses ECMAScript's ToInt32 operation.
+
+var values = [
+  undefined,    0,            "undefined",
+  null,         0,            "null",
+  false,        0,            "false",
+  true,         1,            "true",
+  0,            0,            "0",
+  1,            1,            "1",
+  -1,           -1,           "-1",
+  0.5,          0,            "0.5",
+  Infinity,     0,            "Infinity",
+  -Infinity,    0,            "-Infinity",
+  NaN,          0,            "NaN",
+  -0,           0,            "-0",
+  "",           0,            '""',
+  "1",          1,            '"1"',
+  "hello",      0,            '"hello"',
+  { },          0,            "{ }",
+  [],           0,            "[]",
+  /abc/,        0,            "/abc/",
+  document,     0,            "document",
+  -2147483648,  -2147483648,  "-2147483648",
+  -2147483649,  2147483647,   "-2147483649",
+  2147483647,   2147483647,   "2147483647",
+  2147483648,   -2147483648,  "2147483648",
+  -0.5,         0,            "-0.5",
+  -1.5,         -1,           "-1.5",
+  1.5,          1,            "1.5"
+];
+
+var pre = document.createElement("pre");
+
+for (var i = 0; i < values.length; i += 3) {
+  var value = values[i];
+  var expected = values[i + 1];
+  var desc = values[i + 2];
+  test(function() {
+    pre.width = value;
+    assert_equals(+pre.getAttribute("width"), expected);
+  }, "assigning " + desc + " to HTMLPreElement.width coerces the value to an IDL long correctly");
+}
+
+for (var i = 0; i < values.length; i += 3) {
+  var value = values[i];
+  var expected = values[i + 1];
+  var desc = values[i + 2];
+  test(function() {
+    var objectValue = { valueOf: function() { return value; }, toString: function() { return { } } };
+    if (value === null || typeof value != "object") {
+      pre.width = objectValue;
+      assert_equals(+pre.getAttribute("width"), expected);
+    } else {
+      // ToPrimitive() will throw a TypeError if valueOf and toString both return an object.
+      assert_throws({ name: "TypeError" }, function() { pre.width = objectValue; });
+    }
+  }, "assigning { valueOf: function() { return " + desc + " } } to HTMLPreElement.width coerces the value to an IDL long correctly");
+}
+
+for (var i = 0; i < values.length; i += 3) {
+  var value = values[i];
+  var expected = values[i + 1];
+  var desc = values[i + 2];
+  test(function() {
+    var objectValue = { valueOf: function() { return { } }, toString: function() { return value; } };
+    if (value === null || typeof value != "object") {
+      pre.width = objectValue;
+      assert_equals(+pre.getAttribute("width"), expected);
+    } else {
+      // ToPrimitive() will throw a TypeError if valueOf and toString both return an object.
+      assert_throws({ name: "TypeError" }, function() { pre.width = objectValue; });
+    }
+  }, "assigning { toString: function() { return " + desc + " } } to HTMLPreElement.width coerces the value to an IDL long correctly");
+}
+
+test(function() {
+  assert_throws({ name: "SomeError" }, function() { pre.width = { toString: function() { throw { name: "SomeError" }; } }; });
+}, "assigning { toString: function() { throw ... } } to HTMLPreElement.width will propagate the exception");
+</script>

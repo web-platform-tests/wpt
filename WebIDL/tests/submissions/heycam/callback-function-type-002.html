@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<title>Callback function types</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.2.21 Callback function types
+//
+// Anything that isn't callable is a TypeError.
+
+async_test(function(t) {
+  var invoked = false;
+  var span = document.createElement("span");
+  span.onclick = function() { invoked = true; };
+  span.addEventListener("click", function() { t.step(function() { assert_true(invoked); t.done(); }); }, false);
+  var event = document.createEvent("Event");
+  event.initEvent("click", false, false);
+  span.dispatchEvent(event);
+}, "assigning a Function object to HTMLElement.onclick converts to an IDL callback function type correctly");
+
+test(function() {
+  var span = document.createElement("span");
+  span.onclick = Node.prototype.appendChild;
+  assert_equals(span.onclick, Node.prototype.appendChild);
+}, "assigning Node.prototype.appendChild converts to an IDL callback function type correctly");
+
+test(function() {
+  var span = document.createElement("span");
+  span.onclick = Image;
+  assert_equals(span.onclick, Image);
+}, "assigning Image converts to an IDL callback function type correctly");
+
+test(function() {
+  var span = document.createElement("span");
+  span.onclick = { };
+  assert_equals(span.onclick, null);
+}, "assigning { } converts to an IDL callback function type correctly");
+
+test(function() {
+  var span = document.createElement("span");
+  span.onclick = [];
+  assert_equals(span.onclick, null);
+}, "assigning [] converts to an IDL callback function type correctly");
+
+test(function() {
+  var span = document.createElement("span");
+  span.onclick = 123;
+  assert_equals(span.onclick, null);
+}, "assigning 123 converts to an IDL callback function type correctly");
+</script>

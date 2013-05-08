@@ -20,6 +20,8 @@ Unforgeable-001.html
 any-001.html
 boolean-001.html
 byte-001.html
+callback-function-type-001.html
+callback-function-type-002.html
 class-string-001.html
 dictionary-type-001.html
 double-001.html

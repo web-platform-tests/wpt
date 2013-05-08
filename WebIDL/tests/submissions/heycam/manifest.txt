@@ -31,6 +31,7 @@ initial-001.html
 initial-002.html
 long-001.html
 long-002.html
+object-001.html
 octet-001.html
 short-001.html
 unrestricted-float-001.html

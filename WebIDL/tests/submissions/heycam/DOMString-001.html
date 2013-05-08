@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<title>DOMString</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<div id="hidden" style="visibility: hidden; position: absolute; width: 0; height: 0; overflow: hidden">
+  <span id="span" class="abc def" data-test=""></span>
+</div>
+
+<script>
+// 4.2.16 DOMString
+//
+// Conversion to DOMString uses the ECMAScript ToString() operation.
+
+var span = document.getElementById("span");
+var attr = span.getAttributeNode("data-test");
+
+var values = [
+  undefined,           "undefined",          "undefined",
+  null,                "null",               "null",
+  false,               "false",              "false",
+  true,                "true",               "true",
+  0,                   "0",                  "0",
+  1,                   "1",                  "1",
+  -1,                  "-1",                 "-1",
+  0.5,                 "0.5",                "0.5",
+  Infinity,            "Infinity",           "Infinity",
+  -Infinity,           "-Infinity",          "-Infinity",
+  NaN,                 "NaN",                "NaN",
+  -0,                  "0",                  "-0",
+  "",                  "",                   '""',
+  "1",                 "1",                  '"1"',
+  "hello",             "hello",              '"hello"',
+  "a\0b",              "a\0b",               '"a\\0b"',
+  "a\uDC00a",          "a\uDC00a",           '"a\uDC00a"',
+  "a\uD800\uDC00a",    "a\uD800\uDC00a",     '"a\uD800\uDC00a"',
+  { },                 "[object Object]",    "{ }",
+  [],                  "",                   "[]",
+  [1, 2],              "1,2",                "[1, 2]",
+  /abc/,               "/abc/",              "/abc/",
+  window,              "[object Window]",    "window",
+  -2147483648,         "-2147483648",        "-2147483648",
+  -2147483649,         "-2147483649",        "-2147483649",
+  4294967295,          "4294967295",         "4294967295",
+  4294967296,          "4294967296",         "4294967296",
+  4294967297,          "4294967297",         "4294967297",
+  -0.5,                "-0.5",               "-0.5",
+  -1.5,                "-1.5",               "-1.5",
+  1.5,                 "1.5",                "1.5",
+  1.1,                 "1.1",                "1.1",
+  1e309,               "Infinity",           "1e39",
+  1.0000001788139343,  "1.0000001788139343", "1.0000001788139343",
+  span.classList,      "abc def",            "span.classList"
+];
+
+for (var i = 0; i < values.length; i += 3) {
+  var value = values[i];
+  var expected = values[i + 1];
+  var desc = values[i + 2];
+  test(function() {
+    attr.value = value;
+    assert_equals(attr.value, expected);
+  }, "assigning " + desc + " to Attr.value coerces the value to an IDL DOMString correctly");
+}
+
+for (var i = 0; i < values.length; i += 3) {
+  var value = values[i];
+  var expected = values[i + 1];
+  var desc = values[i + 2];
+  test(function() {
+    var objectValue = { valueOf: function() { return value; }, toString: function() { return { } } };
+    if (value === null || typeof value != "object") {
+      attr.value = objectValue;
+      assert_equals(attr.value, expected);
+    } else {
+      // ToPrimitive() will throw a TypeError if valueOf and toString both return an object.
+      assert_throws({ name: "TypeError" }, function() { attr.value = objectValue; });
+    }
+  }, "assigning { valueOf: function() { return " + desc + " } } to Attr.value coerces the value to an IDL DOMString correctly");
+}
+
+for (var i = 0; i < values.length; i += 3) {
+  var value = values[i];
+  var expected = values[i + 1];
+  var desc = values[i + 2];
+  test(function() {
+    var objectValue = { valueOf: function() { return { } }, toString: function() { return value; } };
+    if (value === null || typeof value != "object") {
+      attr.value = objectValue;
+      assert_equals(attr.value, expected);
+    } else {
+      // ToPrimitive() will throw a TypeError if valueOf and toString both return an object.
+      assert_throws({ name: "TypeError" }, function() { attr.value = objectValue; });
+    }
+  }, "assigning { toString: function() { return " + desc + " } } to Attr.value coerces the value to an IDL DOMString correctly");
+}
+
+test(function() {
+  assert_throws({ name: "SomeError" }, function() { attr.value = { toString: function() { throw { name: "SomeError" }; } }; });
+}, "assigning { toString: function() { throw ... } } to Attr.value will propagate the exception");
+</script>

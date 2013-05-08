@@ -19,6 +19,8 @@ any-001.html
 boolean-001.html
 byte-001.html
 class-string-001.html
+double-001.html
+double-002.html
 extensible-001.html
 float-001.html
 float-002.html

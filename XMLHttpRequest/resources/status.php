@@ -17,6 +17,8 @@
   header("HTTP/1.1 " . $code . " " . $text);
   header("Status: " . $code . " " . $text);
   header("Content-Type:" . $type);
+  header("X-Request-Method: " . (isset($_SERVER["REQUEST_METHOD"]) ? $_SERVER["REQUEST_METHOD"] : "NO"));
+
   echo $content;
   exit;
 ?>

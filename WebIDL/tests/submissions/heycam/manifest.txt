@@ -29,6 +29,7 @@ long-001.html
 long-002.html
 octet-001.html
 short-001.html
+unrestricted-float-001.html
 unsigned-long-001.html
 unsigned-long-002.html
 unsigned-short-001.html

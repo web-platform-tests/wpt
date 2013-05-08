@@ -38,6 +38,8 @@ interface-type-002.html
 interface-type-003.html
 long-001.html
 long-002.html
+nullable-001.html
+nullable-002.html
 object-001.html
 octet-001.html
 short-001.html

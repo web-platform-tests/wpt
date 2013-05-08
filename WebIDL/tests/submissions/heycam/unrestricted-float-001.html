@@ -53,7 +53,7 @@ for (var i = 0; i < values.length; i += 3) {
   test(function() {
     a[0] = value;
     assert_equals(a[0], expected);
-  }, "passing " + desc + " through an Float32Array indexed property setter coerces the value to an IDL unrestricted float correctly");
+  }, "passing " + desc + " through a Float32Array indexed property setter coerces the value to an IDL unrestricted float correctly");
 }
 
 for (var i = 0; i < values.length; i += 3) {
@@ -69,7 +69,7 @@ for (var i = 0; i < values.length; i += 3) {
       // ToPrimitive() will throw a TypeError if valueOf and toString both return an object.
       assert_throws({ name: "TypeError" }, function() { a[0] = objectValue; });
     }
-  }, "passing { valueOf: function() { return " + desc + " } } through an Float32Array indexed property setter coerces the value to an IDL unrestricted float correctly");
+  }, "passing { valueOf: function() { return " + desc + " } } through a Float32Array indexed property setter coerces the value to an IDL unrestricted float correctly");
 }
 
 for (var i = 0; i < values.length; i += 3) {
@@ -85,7 +85,7 @@ for (var i = 0; i < values.length; i += 3) {
       // ToPrimitive() will throw a TypeError if valueOf and toString both return an object.
       assert_throws({ name: "TypeError" }, function() { a[0] = objectValue; });
     }
-  }, "passing { toString: function() { return " + desc + " } } through an Float32Array indexed property setter coerces the value to an IDL unrestricted float correctly");
+  }, "passing { toString: function() { return " + desc + " } } through a Float32Array indexed property setter coerces the value to an IDL unrestricted float correctly");
 }
 
 test(function() {

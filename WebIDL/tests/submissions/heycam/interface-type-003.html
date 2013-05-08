@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<title>Interface types for callback interfaces</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.2.18 Interface types
+//
+// If the value being converted to an interface type is not an object, a
+// TypeError exception is thrown.
+//
+// For a single operation callback interface, any object that is not a native
+// Date object and a native RegExp object is accepted.  That includes platform
+// objects.
+//
+// We are using EventTarget.addEventListener() for this test, which has an
+// "EventListener?" argument.
+
+function dispatchEvent(target) {
+  var event = document.createEvent("Event");
+  event.initEvent("test", false, false);
+  target.dispatchEvent(event);
+}
+
+test(function() {
+  var invoked = false;
+  var span = document.createElement("span");
+  span.addEventListener("test", function() { invoked = true; }, false);
+  dispatchEvent(span);
+  assert_true(invoked);
+}, "passing a native Function object to EventTarget.addEventListener");
+
+test(function() {
+  var span = document.createElement("span");
+  assert_throws({ name: "TypeError" }, function() { span.addEventListener("test", false, false); });
+}, "passing false to EventTarget.addEventListener");
+
+test(function() {
+  var span = document.createElement("span");
+  assert_throws({ name: "TypeError" }, function() { span.addEventListener("test", 0, false); });
+}, "passing 0 to EventTarget.addEventListener");
+
+test(function() {
+  var span = document.createElement("span");
+  assert_throws({ name: "TypeError" }, function() { span.addEventListener("test", "", false); });
+}, "passing \"\" to EventTarget.addEventListener");
+
+test(function() {
+  var invoked = false;
+  var span = document.createElement("span");
+  span.addEventListener("test", { }, false);
+  dispatchEvent(span);
+  assert_true(!invoked);
+}, "passing { } to EventTarget.addEventListener");
+
+test(function() {
+  var invoked = false;
+  var span = document.createElement("span");
+  span.addEventListener("test", [], false);
+  dispatchEvent(span);
+  assert_true(!invoked);
+}, "passing [] to EventTarget.addEventListener");
+
+test(function() {
+  var invoked = false;
+  var span = document.createElement("span");
+  span.addEventListener("test", { handleEvent: function() { invoked = true; } }, false);
+  dispatchEvent(span);
+  assert_true(invoked);
+}, "passing { handleEvent } to EventTarget.addEventListener");
+
+test(function() {
+  var invoked = false;
+  var span = document.createElement("span");
+  var object = [];
+  object.handleEvent = function() { invoked = true; };
+  span.addEventListener("test", object, false);
+  dispatchEvent(span);
+  assert_true(invoked);
+}, "passing [ handleEvent ] to EventTarget.addEventListener");
+
+test(function() {
+  var invoked = false;
+  var span = document.createElement("span");
+  var object = Object.create({ handleEvent: function() { invoked = true; } });
+  span.addEventListener("test", object, false);
+  dispatchEvent(span);
+  assert_true(invoked);
+}, "passing { } -> { handleEvent } to EventTarget.addEventListener");
+
+test(function() {
+  var span = document.createElement("span");
+  var regexp = /abc/;
+  regexp.handleEvent = function() { };
+  assert_throws({ name: "TypeError" }, function() { span.addEventListener("test", regexp, false); });
+}, "passing /abc/ to EventTarget.addEventListener");
+
+test(function() {
+  var span = document.createElement("span");
+  var date = new Date();
+  date.handleEvent = function() { };
+  assert_throws({ name: "TypeError" }, function() { span.addEventListener("test", date, false); });
+}, "passing Date object to EventTarget.addEventListener");
+
+test(function() {
+  var invoked = false;
+  var span = document.createElement("span");
+  var object = Object.create(/abc/);
+  object.handleEvent = function() { invoked = true; };
+  span.addEventListener("test", object, false);
+  dispatchEvent(span);
+  assert_true(invoked);
+}, "passing { handleEvent } -> /abc/ to EventTarget.addEventListener");
+
+test(function() {
+  var invoked = false;
+  var span = document.createElement("span");
+  window.handleEvent = function() { invoked = true; };
+  span.addEventListener("test", window, false);
+  dispatchEvent(span);
+  delete window.handleEvent;
+  assert_true(invoked);
+}, "passing window to EventTarget.addEventListener");
+
+test(function() {
+  var invoked = false;
+  var span = document.createElement("span");
+  span.addEventListener("test", Image, false);
+  dispatchEvent(span);
+  assert_true(!invoked);
+}, "passing Image to EventTarget.addEventListener");
+
+test(function() {
+  var invoked = false;
+  var span = document.createElement("span");
+  span.addEventListener("test", Node.prototype.appendChild, false);
+  dispatchEvent(span);
+  assert_true(!invoked);
+}, "passing Node.prototype.appendChild to EventTarget.addEventListener");
+
+test(function() {
+  var span = document.createElement("span");
+  var text = document.createTextNode("a");
+  span.addEventListener("test", span.appendChild.bind(span, text), false);
+  dispatchEvent(span);
+  assert_true(!!document.firstChild);
+}, "passing span.appendChild.bind(span, text) to EventTarget.addEventListener");
+
+test(function() {
+  var invoked = false;
+  var got = false;
+  var span = document.createElement("span");
+  var object = { };
+  Object.defineProperty(object, "handleEvent", { get: function() { got = true; return function() { invoked = true; }; } });
+  span.addEventListener("test", object, false);
+  assert_true(!got);
+  dispatchEvent(span);
+  assert_true(got);
+  assert_true(invoked);
+}, "passing { handleEvent getter } to EventTarget.addEventListener");
+</script>

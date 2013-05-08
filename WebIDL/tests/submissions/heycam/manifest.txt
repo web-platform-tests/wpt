@@ -29,6 +29,9 @@ float-002.html
 functions-001.html
 initial-001.html
 initial-002.html
+interface-type-001.html
+interface-type-002.html
+interface-type-003.html
 long-001.html
 long-002.html
 object-001.html

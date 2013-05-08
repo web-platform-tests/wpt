@@ -24,6 +24,7 @@ class-string-001.html
 dictionary-type-001.html
 double-001.html
 double-002.html
+enum-type-001.html
 extensible-001.html
 float-001.html
 float-002.html

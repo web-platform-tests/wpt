@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<title>Interface object property</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.4 Interfaces
+//
+// For each interface object that isn't [NoInterfaceObject], there's a property
+// on the global object that is writable, unenumerable and configurable.
+
+var interfaces = ["DOMImplementation", "HTMLCollection", "Element", "UIEvent", "NodeFilter"];
+
+for (var i = 0; i < interfaces.length; i++) {
+  var name = interfaces[i];
+  test(function() {
+    assert_property(window, name, { writable: true, enumerable: false, configurable: true }, "window." + name);
+  }, "property for " + name + " interface object exists");
+}
+</script>

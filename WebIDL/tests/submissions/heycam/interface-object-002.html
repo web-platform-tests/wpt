@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<title>Interface object property for a callback interface</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.4.1 Interface object
+//
+// The interface object for a callback interface (which exists due to their
+// being constants on the interface) does not have a "prototype" property,
+// and is not a function object.
+
+test(function() {
+  assert_true(!NodeFilter.hasOwnProperty("prototype"));
+}, "window.NodeFilter does not have a \"prototype\" property");
+
+test(function() {
+  assert_equals(Object.getPrototypeOf(NodeFilter), Object.prototype);
+}, "window.NodeFilter.[[Prototype]] is correct");
+
+test(function() {
+  assert_equals(typeof window.NodeFilter, "object");
+}, "typeof window.NodeFilter is correct");
+</script>

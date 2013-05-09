@@ -5,6 +5,7 @@ dir events
 historical.html
 interface-objects.html
 interfaces.html
+dir lists
 dir nodes
 dir ranges
 dir traversal

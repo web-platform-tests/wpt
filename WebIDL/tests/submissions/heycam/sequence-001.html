@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<title>Sequence types</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.2.23 Sequences – sequence<T>
+//
+// Any object can be treated as a sequence except for a native Date object.
+// A platform array object will have its elements taken out internally, and
+// then converted to JS values and then back to the right type of IDL values.
+// Other objects will have [[Get]] called on their "length" property, and then
+// [[Get]] on each array index element.
+
+function testArray(array, expected, desc) {
+  doTest(array, array, expected, null, null, null, desc);
+}
+
+function testArrayException(array, expectedException, desc) {
+  doTest(array, null, null, null, null, expectedException, desc);
+}
+
+function testArrayAndAccessOrder(array, set, expected, order, expectedOrder, desc) {
+  doTest(array, set, expected, order, expectedOrder, null, desc);
+}
+
+function doTest(array, set, expected, order, expectedOrder, expectedException, desc) {
+  async_test(function(t) {
+    var span = document.createElement("span");
+    var changed = { };
+    var obs1 = new MutationObserver(function(records) {
+      for (var i = 0; i < records.length; i++) {
+        var name = records[i].attributeName;
+        if (name != "done") {
+          changed[name] = true;
+        }
+      }
+    });
+    var obs2 = new MutationObserver(function(records) {
+      for (var i = 0; i < records.length; i++) {
+        if (records[i].attributeName == "done") {
+          t.step(function() {
+            assert_array_equals(Object.keys(changed).sort(), expected.sort());
+            assert_true(!changed.other);
+            if (order) {
+              assert_array_equals(order, expectedOrder);
+            }
+            t.done();
+          });
+          return;
+        }
+      }
+    });
+    if (expectedException) {
+      assert_throws(expectedException, function() { obs1.observe(span, { attributes: true, attributeFilter: array }); });
+      t.done();
+      return;
+    }
+    obs1.observe(span, { attributes: true, attributeFilter: array });
+    obs2.observe(span, { attributes: true });
+    for (var i = 0; i < set.length; i++) {
+      span.setAttribute(set[i], "x");
+    }
+    span.setAttribute("other", "x");
+    span.setAttribute("done", "x");
+  }, "passing " + desc + " as MutationObserverInit.attributeFilter converts to an IDL sequence<DOMString> type correctly");
+}
+
+testArray([], [], "[]");
+testArray(["a1"], ["a1"], '["a1"]');
+testArray([false, null, undefined], ["false", "null", "undefined"], '[false, null, undefined]');
+testArray([, "a1"], ["undefined", "a1"], '[, "a1"]');
+testArray([{ toString: function() { return "a1"; } }], ["a1"], '[{ toString ... }]');
+testArray({ length: 1 }, ["undefined"], '{ length: 1 }');
+testArray({ length: 1.9, "0": "a1" }, ["a1"], '{ length: 1.9, "0": "a1" }');
+testArray({ length: 2, "0": "a1" }, ["a1", "undefined"], '{ length: 2, 0: "a1" }');
+testArray({ length: 1, "1": "a1" }, ["undefined"], '{ length: 1, 1: "a1" }');
+
+var c = Object.create(["a1", "a2"]);
+c[0] = "a3";
+c.length = 3;
+testArray(c, ["a2", "a3", "undefined"], '{ } -> []');
+
+var span = document.createElement("span");
+span.setAttribute("class", "a1 a2");
+testArray(span.classList, ["a1", "a2"], 'DOMTokenList');
+
+var d = { };
+var d_order = [];
+Object.defineProperty(d, "length", { get: function() { d_order.push("length"); return 2; } });
+Object.defineProperty(d, "1", { get: function() { d_order.push("1"); return "a1"; } });
+Object.defineProperty(d, "0", { get: function() { d_order.push("0"); return "a2"; } });
+testArrayAndAccessOrder(d, ["a1", "a2"], ["a1", "a2"], d_order, ["length", "0", "1"], '{ getters }');
+
+try {
+  Array.prototype[0] = "a2";
+  testArray([, "a1"], ["a1", "a2"], '[] -> Array.prototype { 0 }');
+} finally {
+  delete Array.prototype[0];
+}
+
+var e = { };
+Object.defineProperty(e, "length", { get: function() { return 1; } });
+Object.defineProperty(e, "0", { get: function() { throw { name: "SomeError" }; } });
+testArrayException(e, { name: "SomeError" }, '{ length getter, 0 getter throws }');
+
+var f = new Float32Array(2);
+f[0] = NaN;
+f[1] = Infinity;
+testArray(f, ["nan", "infinity"], 'a Float32Array');
+</script>

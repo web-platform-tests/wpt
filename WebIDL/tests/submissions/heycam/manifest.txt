@@ -42,6 +42,7 @@ nullable-001.html
 nullable-002.html
 object-001.html
 octet-001.html
+sequence-001.html
 short-001.html
 unrestricted-float-001.html
 unrestricted-double-001.html

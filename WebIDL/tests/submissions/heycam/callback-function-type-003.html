@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<title>Callback function types</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<div id="hidden" style="visibility: hidden; position: absolute; width: 0; height: 0; overflow: hidden">
+  <canvas id="canvas" width="100" height="100"></canvas>
+</div>
+
+<script>
+// 4.2.21 Callback function types
+//
+// IDL callback function types are represented as JS object references to
+// a callable object.
+
+test(function() {
+  var e = document.createElement("span");
+  e.onclick = function() { };
+  assert_equals(typeof e.onclick, "function");
+}, "GlobalEventHandlers.onclick returns a value of the correct type");
+</script>

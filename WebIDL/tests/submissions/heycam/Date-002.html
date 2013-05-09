@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<title>Date</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.2.26 Date
+//
+// IDL Date values are represented as JS object references to a Date object.
+// A new object is returned each time.
+
+test(function() {
+  var input = document.createElement("input");
+  input.type = "date";
+  input.value = "2011-01-01";
+  assert_equals(typeof input.valueAsDate, "object");
+  assert_true(Object.getPrototypeOf(input.valueAsDate), Date.prototype);
+  assert_true(input.valueAsDate != input.valueAsDate);
+}, "HTMLInputElement.valueAsDate returns a value of the correct type");
+</script>

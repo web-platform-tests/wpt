@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<title>object</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.2.17 object
+//
+// IDL object values are represented with JS object references.
+
+test(function() {
+  var e = new TrackEvent("test", { track: { } });
+  assert_true(typeof e.track == "object" || typeof e.track == "function");
+}, "TrackEvent.track returns a value of the correct type");
+</script>

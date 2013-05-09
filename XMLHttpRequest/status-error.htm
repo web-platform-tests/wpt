@@ -10,10 +10,8 @@
     <p>This shouldn't be tested inside a tunnel.</p>
     <div id="log"></div>
     <script>
-      var counter = 0;
       function noError(method, code) {
-        counter++
-        var test = async_test(document.title + " " + counter + " " + method + " " + code)
+        var test = async_test(document.title + " " + method + " " + code)
 
         test.step(function() {
           var client = new XMLHttpRequest()

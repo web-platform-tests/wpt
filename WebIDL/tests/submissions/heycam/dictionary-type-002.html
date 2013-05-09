@@ -19,14 +19,15 @@
 
 test(function() {
   var canvas = document.getElementById("canvas");
-  var ctx = canvas.getContext("webgl");
+  var ctx = canvas.getContext("webgl") ||
+            canvas.getContext("experimental-webgl");
   var attrs = ctx.getContextAttributes();
   assert_equals(Object.getPrototypeOf(attrs), Object.prototype);
-  assert_property(attr, "alpha", { value: true, writable: true, enumerable: true, configurable: true });
-  assert_property(attr, "depth", { value: true, writable: true, enumerable: true, configurable: true });
-  assert_property(attr, "stencil", { value: false, writable: true, enumerable: true, configurable: true });
-  assert_property(attr, "antialias", { value: true, writable: true, enumerable: true, configurable: true });
-  assert_property(attr, "premultipliedAlpha", { value: true, writable: true, enumerable: true, configurable: true });
-  assert_property(attr, "preserveDrawingBuffer", { value: false, writable: true, enumerable: true, configurable: true });
+  assert_property(attrs, "alpha", { value: true, writable: true, enumerable: true, configurable: true }, "attrs.alpha");
+  assert_property(attrs, "depth", { value: true, writable: true, enumerable: true, configurable: true }, "attrs.depth");
+  assert_property(attrs, "stencil", { value: false, writable: true, enumerable: true, configurable: true }, "attrs.stencil");
+  assert_property(attrs, "antialias", { value: true, writable: true, enumerable: true, configurable: true }, "attrs.antialias");
+  assert_property(attrs, "premultipliedAlpha", { value: true, writable: true, enumerable: true, configurable: true }, "attrs.premultipliedAlpha");
+  assert_property(attrs, "preserveDrawingBuffer", { value: false, writable: true, enumerable: true, configurable: true }, "attrs.preserveDrawingBuffer");
 }, "WebGLRenderingContext.getContextAttributes() returns a dictionary value correctly");
 </script>

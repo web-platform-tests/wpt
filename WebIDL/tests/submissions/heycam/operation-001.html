@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<title>Regular operations</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.4.7 Operations
+//
+// Regular operations correspond to properties on the interface prototype
+// object, which are writable, enumerable and configurable.  The .length
+// property on the Function object is the shortest valid argument for the
+// operation.
+
+var operations = [
+  "HTMLElement", "click", 0,
+  "Node", "appendChild", 1,
+  "Document", "write", 0,
+  "Window", "setTimeout", 1,
+  "Window", "postMessage", 2,
+  "DOMImplementation", "createHTMLDocument", 0,
+  "Node", "cloneNode", 0,
+  "CanvasRenderingContext2D", "drawImage", 3,
+  "FormData", "append", 2
+];
+
+for (var i = 0; i < operations.length; i+= 3) {
+  var intf = operations[i];
+  var name = operations[i + 1];
+  var length = operations[i + 2];
+
+  test(function() {
+    assert_property(window[intf].prototype, name, { writable: true, enumerable: true, configurable: true });
+  }, "the " + intf + ".prototype." + name + " property has the right attributes");
+
+  test(function() {
+    assert_equals(typeof window[intf].prototype[name], "function");
+  }, intf + ".prototype." + name + " property is a function");
+
+  test(function() {
+    assert_property(window[intf].prototype[name], "length", { writable: false, enumerable: false, configurable: false, value: length });
+  }, intf + ".prototype." + name + ".length  has correct length property");
+}
+</script>

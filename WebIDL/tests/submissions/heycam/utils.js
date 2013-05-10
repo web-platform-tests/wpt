@@ -24,11 +24,16 @@ function operation(interfaceName, operationName, w) {
   return function() { return Object.getOwnPropertyDescriptor((w || window)[interfaceName].prototype, operationName).value; }
 }
 
+function staticOperation(interfaceName, operationName, w) {
+  return function() { return Object.getOwnPropertyDescriptor((w || window)[interfaceName], operationName).value; }
+}
+
 function stringifier(interfaceName, w) {
   return operation(interfaceName, "toString", w);
 }
 
 function assert_descriptor(desc1, desc2, description) {
+  description = description || "property";
   assert_true(!!desc1, description + " exists");
   if ("value" in desc2) {
     assert_equals(desc1.value, desc2.value, description + " [[Value]]");

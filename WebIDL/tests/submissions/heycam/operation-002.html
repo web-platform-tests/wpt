@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<title>Invoking regular operations without overloading but with optional arguments</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<div id="hidden" style="visibility: hidden; position: absolute; width: 0; height: 0; overflow: hidden">
+  <iframe id="iframe"></iframe>
+</div>
+
+<script>
+// 4.4.7 Operations
+//
+// Here we're invoking regular operations that do not use overloading
+// but which do have optional arguments.  When too few arguments are passed,
+// a TypeError is thrown.  When too many arguments are passed, the
+// extra ones are ignored.  Argument types are not used to eliminate
+// the single entry in the effective overload set.  The function can
+// be applied to objects of the right type from other windows.
+// Calling it with a bad this object value will throw a TypeError.
+
+test(function() {
+  assert_throws(new TypeError(), function() { window.postMessage(); });
+}, "Window.postMessage throws when no arguments passed");
+
+test(function() {
+  assert_throws(new TypeError(), function() { window.postMessage("test"); });
+}, "Window.postMessage throws when one argument passed");
+
+async_test(function(t) {
+  var invoked = false;
+  window.onmessage = function() { invoked = true; };
+  window.postMessage("test", "*", [], "extra");
+  setTimeout(function() { t.step(function() { assert_true(invoked); t.done(); }); }, 1);
+}, "extra argument passed to Window.postMessage is ignored");
+
+async_test(function(t) {
+  var invoked = false;
+  var w = document.getElementById("iframe").contentWindow;
+  w.onmessage = function() { invoked = true; };
+  window.postMessage.call(w, "test", "*");
+  w.setTimeout(function() { t.step(function() { assert_true(invoked); t.done(); }); }, 1);
+}, "Window.postMessage can be applied to other objects");
+
+test(function() {
+  assert_throws(new TypeError(), function() { window.postMessage.call(null); });
+}, "Window.postMessage throws a TypeError when called with a null this-value");
+
+test(function() {
+  assert_throws(new TypeError(), function() { window.postMessage.call(document); });
+}, "Window.postMessage throws a TypeError when called with a bad this-value");
+
+
+test(function() {
+  var doc = document.implementation.createHTMLDocument("test", "extra");
+  assert_equals(doc.title, "test");
+}, "extra argument passed to DOMImplementation.createHTMLDocument is ignored");
+
+test(function() {
+  var doc = document.implementation.createHTMLDocument.call(document.getElementById("iframe").contentDocument.implementation, "test");
+  assert_equals(doc.title, "test");
+}, "DOMImplementation.createHTMLDocument can be applied to objects from other windows");
+
+test(function() {
+  assert_throws(new TypeError(), function() { document.implementation.createHTMLDocument.call(null); });
+}, "DOMImplementation.createHTMLDocument throws a TypeError when called with a null this-value");
+
+test(function() {
+  assert_throws(new TypeError(), function() { document.implementation.createHTMLDocument.call(document); });
+}, "DOMImplementation.createHTMLDocument throws a TypeError when called with a bad this-value");
+</script>

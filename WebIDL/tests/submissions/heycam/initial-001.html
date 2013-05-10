@@ -52,6 +52,9 @@ function runTest(iframe) {
     operation("HTMLElement", "click"), operation("HTMLElement", "click", w), "HTMLElement.click function",
     operation("Node", "appendChild"), operation("Node", "appendChild", w), "Node.appendChild function",
 
+    // static operation function
+    staticOperation("URL", "createObjectURL"), staticOperation("URL", "createObjectURL", w), "URL.createObjectURL function",
+
     // stringifier function
     stringifier("DOMTokenList"), stringifier("DOMTokenList", w), "DOMTokenList stringifier function",
 

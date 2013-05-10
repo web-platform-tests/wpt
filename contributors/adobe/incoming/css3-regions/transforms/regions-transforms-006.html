@@ -8,22 +8,14 @@
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
     <link rel="help" href="http://www.w3.org/TR/css3-2d-transforms/#transform-functions">
     <link rel="match" href="reference/regions-transforms-green-square-100x100-ref.html">
-    <meta name="assert" content="CSS scalex 2D transform and transform-origin applied to parent and child named flow content. Named flow content is transformed, and parent and child nodes render as siblings.">
+    <meta name="assert" content="CSS scaleX 2D transform and transform-origin applied to parent and child named flow content. Named flow content is transformed, and parent and child nodes render as siblings.">
     <style>
-    #source {
+    #parent, #source {
         width: 50px;
         height: 50px;
         background-color: green;
         -webkit-flow-into: f;
-        -webkit-transform: scalex(2);
-        -webkit-transform-origin: left top;
-    }
-    #parent {
-        width: 50px;
-        height: 50px;
-        background-color: green;
-        -webkit-flow-into: f;
-        -webkit-transform: scalex(2);
+        -webkit-transform: scaleX(2);
         -webkit-transform-origin: left top;
     }
     #region {
@@ -35,7 +27,7 @@
     </style>
 </head>
 <body>
-    <p>The test passes if there is a green square and no red.</p>
+    <p>The test passes if you see a green square and no red.</p>
     <div id="parent">
         <div id="source"></div>
     </div>

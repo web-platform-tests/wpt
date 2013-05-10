@@ -4,20 +4,7 @@
     <title>CSS Reftest Reference</title>
     <link rel="author" title="David Alcala" href="mailto:dalcala@adobe.com">
     <style type="text/css">
-    #green-square1 {
-        width: 80px;
-        height: 80px;
-        float: left;
-        background-color: green;
-    }
-    #green-square2 {
-        width: 80px;
-        height: 80px;
-        margin-left: 10px;
-        float: left;
-        background-color: green;
-    }
-    #green-square3 {
+    .green-square {
         width: 80px;
         height: 80px;
         margin-left: 10px;
@@ -27,9 +14,9 @@
     </style>
 </head>
 <body>
-    <p>The test passes if there are three green squares and no red.</p>
-    <div id="green-square1"></div>
-    <div id="green-square2"></div>
-    <div id="green-square2"></div>
+    <p>The test passes if you see three green squares and no red.</p>
+    <div class="green-square"></div>
+    <div class="green-square"></div>
+    <div class="green-square"></div>
 </body>
 </html>

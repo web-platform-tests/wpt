@@ -8,14 +8,14 @@
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
     <link rel="help" href="http://www.w3.org/TR/css3-2d-transforms/#transform-functions">
     <link rel="match" href="reference/regions-transforms-green-square-100x100-ref.html">
-    <meta name="assert" content="CSS 2D translateX transform applied to a named flow transforms the content node.">
+    <meta name="assert" content="CSS translateX 2D transform applied to a named flow transforms the content node.">
     <style>
     #source {
         width: 100px;
         height: 100px;
         background-color: red;
         -webkit-flow-into: f;
-        -webkit-transform: translatex(100px);
+        -webkit-transform: translateX(100px);
     }
     #region {
         width: 100px;
@@ -26,7 +26,7 @@
     </style>
 </head>
 <body>
-    <p>The test passes if there is a green square and no red.</p>
+    <p>The test passes if you see a green square and no red.</p>
     <div id="source"></div>
     <div id="region"></div>
 </body>

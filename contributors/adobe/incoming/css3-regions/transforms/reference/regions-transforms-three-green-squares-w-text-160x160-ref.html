@@ -12,25 +12,23 @@
     .green-square{
         width: 160px;
         height: 160px;
+        margin-left: 10px;
         float: left;
         background-color: green;
-    }
-    .green-square-after-first {
-        margin-left: 10px;
     }
     </style>
 </head>
 <body>
     <ul>
-        <li>The test passes if there are three green squares with text inside and no red.</li>
+        <li>The test passes if you see three green squares with text inside and no red.</li>
         <li>In the first square, the numbers should go up from "one" to "seventeen".</li>
-        <li>In the second square, the numbers should go up from "one" to "seventeen".</li>
-        <li>In the third square, the numbers should go up from "eighteen" to "twenty-six".</li>
+        <li>In the upper half of the second square, the numbers should go up from "eighteen" to "twenty-two". In the lower half of the second square, the numbers should go up from "one" to "eleven".</li>
+        <li>In the third square, the numbers should go up from "twelve" to "twenty-two".</li>
         <li>The numbers should go up sequentially by one.</li>
-        <li>None of the words should be cutoff and no text should be outside the green boxes.</li>
+        <li>None of the words should be cutoff and no text should be outside the green/blue boxes.</li>
     </ul>
     <div class="green-square">One two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen</div>
-    <div class="green-square green-square-after-first">One two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen</div>
-    <div class="green-square green-square-after-first">eighteen nineteen twenty twenty-one twenty-two twenty-three twenty-four twenty-five twenty-six</div>
+    <div class="green-square">eighteen nineteen twenty twenty-one twenty-two<br> One two three four five six seven eight nine ten eleven</div>
+    <div class="green-square">twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen twenty twenty-one twenty-two</div>
 </body>
 </html>

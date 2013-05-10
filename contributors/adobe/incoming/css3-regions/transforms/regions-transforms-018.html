@@ -2,16 +2,16 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>CSS Regions: Transformed named flow content and transformed regions: translate</title>
+    <title>CSS Regions: Transformed named flow content and transformed regions</title>
     <link rel="author" title="David Alcala" href="mailto:dalcala@adobe.com">
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
     <link rel="help" href="http://www.w3.org/TR/css3-2d-transforms/#transform-functions">
-    <link rel="match" href="reference/regions-transforms-green-square-100x100-l58-t100-ref.html">
-    <meta name="assert" content="CSS translate transform applied to named flow content and to region transforms the content node two times.">
+    <link rel="match" href="reference/regions-transforms-green-square-blue-square-100x100-l58-t100-ref.html">
+    <meta name="assert" content="CSS translate 2D transform applied to named flow content and to region causes the content node to render as if the transforms were set on it.">
     <style>
     #source {
-        background-color: red;
+        background-color: blue;
         width: 100px;
         height: 100px;
         -webkit-flow-into: f;
@@ -24,19 +24,33 @@
         -webkit-flow-from: f;
         -webkit-transform: translate(50px, 50px);
     }
-    #div-red {
+    #div-red-parent {
+        position: relative;
+    }
+    #div-red1 {
         width: 98px;
         height: 98px;
         background-color: red;
         position: absolute;
-        left: 59px;
-        top: 101px;
+        left: 51px;
+        top: 51px;
+    }
+    #div-red2 {
+        width: 98px;
+        height: 98px;
+        background-color: red;
+        position: absolute;
+        left: 151px;
+        top: 151px;
     }
     </style>
 </head>
 <body>
-    <p>The test passes if there is a green square and no red.</p>
-    <div id="div-red"></div>
+    <p>The test passes if you see a green square, a blue square diagonally to the lower right of the green square, and no red.</p>
+    <div id="div-red-parent">
+        <div id="div-red1"></div>
+        <div id="div-red2"></div>
+    </div>
     <div id="source"></div>
     <div id="region"></div>
 </body>

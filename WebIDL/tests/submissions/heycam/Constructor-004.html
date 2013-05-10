@@ -88,4 +88,10 @@ test(function() {
   var a = new Uint8Array(buffer, 0, 2, "extra");
   assert_equals(a.length, 2);
 }, "passing (ArrayBuffer, Number, Number, String) to the Uint8Array constructor selects the (ArrayBuffer, optional unsigned long, optional unsigned long) overload");
+
+test(function() {
+  var buffer = new ArrayBuffer(5);
+  var a = new Uint8Array(buffer, undefined, undefined);
+  assert_equals(a.length, 0);
+}, "passing (ArrayBuffer, undefined, undefined) to the Uint8Array constructor selects the (ArrayBuffer, optional unsigned long, optional unsigned long) overload with three arguments");
 </script>

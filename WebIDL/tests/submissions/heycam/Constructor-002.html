@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<title>Invoking constructors without overloading or optional arguments</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.4.1.1 Interface object [[Call]] method
+//
+// In this test we're invoking simple constructors -- ones that do not use
+// overloading or optional arguments.  When too few arguments are passed,
+// a TypeError is thrown.  When too many arguments are passed, the extra
+// ones are ignored.  Argument types are not used to eliminate the single
+// entry in the effective overload set.
+
+test(function() {
+  assert_throws({ name: "TypeError" }, function() { new ArrayBuffer(); });
+}, "passing too few arguments to ArrayBuffer constructor throws");
+
+test(function() {
+  var buffer = new ArrayBuffer(undefined);
+  assert_equals(buffer.byteLength, 0);
+}, "passing undefined to ArrayBuffer constructor succeeds");
+
+test(function() {
+  var buffer = new ArrayBuffer(10, 20);
+  assert_equals(buffer.byteLength, 10);
+}, "additional arguments passed to ArrayBuffer constructor are ignored");
+
+test(function() {
+  var range = new Range("test");
+  assert_true(!!range);
+}, "additional arguments passed to Range constructor are ignored");
+</script>

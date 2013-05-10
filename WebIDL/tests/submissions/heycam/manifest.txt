@@ -1,6 +1,9 @@
 ArrayClass-001.html
 Clamp-001.html
 Constructor-001.html
+Constructor-002.html
+Constructor-003.html
+Constructor-004.html
 DOMString-001.html
 DOMString-002.html
 DOMString-003.html

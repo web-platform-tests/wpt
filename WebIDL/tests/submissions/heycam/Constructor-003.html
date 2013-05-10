@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<title>Invoking constructors without overloading but with optional arguments</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.4.1.1 Interface object [[Call]] method
+//
+// In this test we're invoking constructors with no overloading but which
+// do have optional arguments.  When too few arguments are passed, a TypeError
+// is thrown.  When too many arguments are passed, the extra ones are ignored.
+// Argument types are not used to eliminate the single entry in the effective
+// overload set that remains after discarding others due to incorrect argument
+// list length.  Optional argument default values are also filled in for
+// trailing missing arguments.
+
+test(function() {
+  assert_throws({ name: "TypeError" }, function() { new Event(); });
+}, "passing too few arguments to Event constructor throws");
+
+test(function() {
+  var e1 = new Event("click");
+  var e2 = new Event("click", { });
+  assert_equals(e1.bubbles, e2.bubbles);
+  assert_equals(e1.cancelable, e2.cancelable);
+}, "passing one argument to Event constructor will use the default argument value");
+
+test(function() {
+  assert_throws({ name: "TypeError" }, function() { new Event("click", false); });
+}, "passing a bad type as the Event constructor optional argument value throws an exception");
+
+test(function() {
+  var e = new Event("click", { }, "ignored");
+  assert_true(!!e);
+}, "extra arguments passed to Event constructor are ignored");
+
+test(function() {
+  assert_throws({ name: "TypeError" }, function() { new WebSocket(); });
+}, "passing too few arguments to WebSocket constructor throws");
+
+test(function() {
+  var ws = new WebSocket("wss://test.invalid");
+  assert_true(!!ws);
+}, "omitting an optional argument in the WebSocket constructor works");
+
+test(function() {
+  var ws = new WebSocket("wss://test.invalid", "protocol", "ignored");
+  assert_true(!!ws);
+}, "additional arguments passed to the WebSocket constructor are ignored");
+</script>

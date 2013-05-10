@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<title>Invoking constructors with overloading</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.4.1.1 Interface object [[Call]] method
+//
+// In this test we're invoking constructors with overloading.  When too few
+// arguments are passed, a TypeError is thrown.  When too many arguments are
+// passed, the extra ones are ignored.  Candidate overloads are first chosen
+// based on how many arguments were passed.  Then, a specific argument is used
+// as the one that distinguishes between the different candidate overloads.
+// Values before this distinguishing argument are converted to IDL values before
+// the distinguishing argument is inspected.  Looking at the distinguishing
+// argument might then cause the call to fail (and a TypeError to be thrown) if
+// there is not an appropriate value passed in that position.
+//
+// With Uint8Array, which is what we are using in this test, it's not possible
+// to test the "arguments before the distinguishing argument are converted
+// before possibly throwing due to an invalid value in that argument position"
+// since the distinguishing argument index is 0.
+
+test(function() {
+  assert_throws({ name: "TypeError" }, function() { new Uint8Array(); });
+}, "passing too few arguments to Uint8Array constructor throws");
+
+test(function() {
+  var a = new Uint8Array(3);
+  assert_equals(a.length, 3);
+}, "passing a Number as the only argument to the Uint8Array constructor selects the (unsigned long) overload");
+
+test(function() {
+  var a1 = new Uint8Array(4);
+  var a2 = new Uint8Array(a2);
+  assert_equals(a2.length, 4);
+}, "passing a Uint8Array as the only argument to the Uint8Array constructor selects the (Uint8Array) overload");
+
+test(function() {
+  var a = new Uint8Array([9, 9, 9]);
+  assert_equals(a.length, 3);
+  assert_equals(a[0], 9);
+}, "passing an Array as the only argument to the Uint8Array constructor selects the (octet[]) overload");
+
+test(function() {
+  var a = new Uint8Array({ length: 3, "0": 9 });
+  assert_equals(a.length, 3);
+  assert_equals(a[0], 9);
+}, "passing { length: 3, \"0\": 9 } as the only argument to the Uint8Array constructor selects the (octet[]) overload");
+
+test(function() {
+  var buffer = new ArrayBuffer(5);
+  var a = new Uint8Array(buffer);
+  assert_equals(a.length, 5);
+}, "passing an ArrayBuffer as the only argument to the Uint8Array constructor selects the (ArrayBuffer, optional unsigned long, optional unsigned long) overload");
+
+test(function() {
+  assert_throws({ name: "TypeError" }, function() { new Uint8Array(3, "extra"); });
+}, "passing (Number, String) to the Uint8Array constructor selects the (ArrayBuffer, optional unsigned long, optional unsigned long) overload, and then throws due to the conversion of the Number to an ArrayBuffer");
+
+test(function() {
+  var a1 = new Uint8Array(4);
+  assert_throws({ name: "TypeError" }, function() { new Uint8Array(a1, "extra"); });
+}, "passing (Uint8Array, String) to the Uint8Array constructor selects the (ArrayBuffer, optional unsigned long, optional unsigned long) overload, and then throws due to the conversion of the Uint8Array to an ArrayBuffer");
+
+test(function() {
+  assert_throws({ name: "TypeError" }, function() { new Uint8Array([9, 9, 9], "extra"); });
+}, "passing (Array, String) to the Uint8Array constructor selects the (ArrayBuffer, optional unsigned long, optional unsigned long) overload, and then throws due to the conversion of the Array to an ArrayBuffer");
+
+test(function() {
+  var buffer = new ArrayBuffer(5);
+  var a1 = new Uint8Array(buffer);
+  a1[0] = 123;
+  var a2 = new Uint8Array(buffer, "hello");  // the "hello" converts to 0
+  assert_equals(a2[0], 123);
+}, "passing (ArrayBuffer, String) to the Uint8Array constructor selects the (ArrayBuffer, optional unsigned long, optional unsigned long) overload");
+
+test(function() {
+  var buffer = new ArrayBuffer(5);
+  var a = new Uint8Array(buffer, 0, { valueOf: function() { return 2; } });
+  assert_equals(a.length, 2);
+}, "passing (ArrayBuffer, Number, { valueOf }) to the Uint8Array constructor selects the (ArrayBuffer, optional unsigned long, optional unsigned long) overload");
+
+test(function() {
+  var buffer = new ArrayBuffer(5);
+  var a = new Uint8Array(buffer, 0, 2, "extra");
+  assert_equals(a.length, 2);
+}, "passing (ArrayBuffer, Number, Number, String) to the Uint8Array constructor selects the (ArrayBuffer, optional unsigned long, optional unsigned long) overload");
+</script>

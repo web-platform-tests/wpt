@@ -24,6 +24,12 @@ TreatNullAs-001.html
 TreatNullAs-002.html
 Unforgeable-001.html
 any-001.html
+attribute-001.html
+attribute-002.html
+attribute-003.html
+attribute-004.html
+attribute-005.html
+attribute-006.html
 boolean-001.html
 boolean-002.html
 byte-001.html

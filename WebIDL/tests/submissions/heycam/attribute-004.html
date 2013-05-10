@@ -20,7 +20,8 @@
 // object and are enumerable and configurable.  These are accessor properties
 // always have a getter.  The getter expects no arguments, and will ignore
 // extra ones.  The getter can be applied to objects of the right type
-// from other windows.
+// from other windows.  Calling it with a bad this object value will throw
+// a TypeError.
 
 var form = document.getElementById("form");
 

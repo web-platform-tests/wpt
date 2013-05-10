@@ -17,7 +17,8 @@
 // and have a setter if they are not read only.  The setter expects one
 // argument, and will ignore extra ones.  If no argument is passed, a TypeError
 // is thrown.  The setter can be applied to objects of the right type from
-// other windows.
+// other windows.  Calling it with a bad this object value will throw
+// a TypeError.
 
 test(function() {
   var desc = Object.getOwnPropertyDescriptor(Document.prototype, "title");

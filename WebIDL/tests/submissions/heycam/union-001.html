@@ -84,7 +84,7 @@ test(function() {
 test(function() {
   var select = makeSelect();
   var option = document.createElement("option");
-  assert_throws({ name: "TypeError" }, function() { select.add(option, { toString: function() { return { }; } }); });
+  assert_throws(new TypeError(), function() { select.add(option, { toString: function() { return { }; } }); });
 }, 'passing { toString: return { } } to HTMLSelectElement.add as the before argument correctly converts to "(HTMLElement or long)?"');
 
 test(function() {

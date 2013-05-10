@@ -57,7 +57,7 @@ for (var i = 0; i < values.length; i += 3) {
       var m = matrix.translate(value, 0);
       assert_equals(m.e, expected);
     } else {
-      assert_throws({ name: "TypeError" }, function() { matrix.translate(value, 0); });
+      assert_throws(new TypeError(), function() { matrix.translate(value, 0); });
     }
   }, "passing " + desc + " to SVGMatrix.translate coerces the value to an IDL float correctly");
 }
@@ -73,11 +73,11 @@ for (var i = 0; i < values.length; i += 3) {
         var m = matrix.translate(objectValue, 0);
         assert_equals(m.e, expected);
       } else {
-        assert_throws({ name: "TypeError" }, function() { matrix.translate(objectValue, 0); });
+        assert_throws(new TypeError(), function() { matrix.translate(objectValue, 0); });
       }
     } else {
       // ToPrimitive() will throw a TypeError if valueOf and toString both return an object.
-      assert_throws({ name: "TypeError" }, function() { matrix.translate(objectValue, 0); });
+      assert_throws(new TypeError(), function() { matrix.translate(objectValue, 0); });
     }
   }, "passing { valueOf: function() { return " + desc + " } } to SVGMatrix.translate coerces the value to an IDL float correctly");
 }
@@ -93,11 +93,11 @@ for (var i = 0; i < values.length; i += 3) {
         var m = matrix.translate(objectValue, 0);
         assert_equals(m.e, expected);
       } else {
-        assert_throws({ name: "TypeError" }, function() { matrix.translate(objectValue, 0); });
+        assert_throws(new TypeError(), function() { matrix.translate(objectValue, 0); });
       }
     } else {
       // ToPrimitive() will throw a TypeError if valueOf and toString both return an object.
-      assert_throws({ name: "TypeError" }, function() { matrix.translate(objectValue, 0); });
+      assert_throws(new TypeError(), function() { matrix.translate(objectValue, 0); });
     }
   }, "passing { toString: function() { return " + desc + " } } to SVGMatrix.translate coerces the value to an IDL float correctly");
 }

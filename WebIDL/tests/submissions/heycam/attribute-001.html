@@ -37,13 +37,13 @@ test(function() {
 test(function() {
   var desc = Object.getOwnPropertyDescriptor(Document.prototype, "title");
   assert_true(!!desc);
-  assert_throws({ name: "TypeError" }, function() { desc.get.call(null); });
+  assert_throws(new TypeError(), function() { desc.get.call(null); });
 }, "calling Document.title getter with a null this-value throws");
 
 test(function() {
   var desc = Object.getOwnPropertyDescriptor(Document.prototype, "title");
   assert_true(!!desc);
-  assert_throws({ name: "TypeError" }, function() { desc.get.call(document.documentElement); });
+  assert_throws(new TypeError(), function() { desc.get.call(document.documentElement); });
 }, "calling Document.title getter with a non-Document object this-value throws");
 
 test(function() {

@@ -48,13 +48,13 @@ test(function() {
 test(function() {
   var desc = Object.getOwnPropertyDescriptor(HTMLFormElement.prototype, "length");
   assert_true(!!desc);
-  assert_throws({ name: "TypeError" }, function() { desc.get.call(null); });
+  assert_throws(new TypeError(), function() { desc.get.call(null); });
 }, "calling HTMLFormElement.length getter with a null this-value throws");
 
 test(function() {
   var desc = Object.getOwnPropertyDescriptor(HTMLFormElement.prototype, "length");
   assert_true(!!desc);
-  assert_throws({ name: "TypeError" }, function() { desc.get.call(document); });
+  assert_throws(new TypeError(), function() { desc.get.call(document); });
 }, "calling HTMLFormElement.length getter with a non-HTMLFormElement object this-value throws");
 
 test(function() {

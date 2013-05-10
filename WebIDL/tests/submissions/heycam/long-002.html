@@ -62,7 +62,7 @@ for (var i = 0; i < values.length; i += 3) {
       assert_equals(+span.getAttribute("tabindex"), expected);
     } else {
       // ToPrimitive() will throw a TypeError if valueOf and toString both return an object.
-      assert_throws({ name: "TypeError" }, function() { span.tabIndex = objectValue; });
+      assert_throws(new TypeError(), function() { span.tabIndex = objectValue; });
     }
   }, "assigning { valueOf: function() { return " + desc + " } } to HTMLElement.tabIndex coerces the value to an IDL long correctly");
 }
@@ -78,7 +78,7 @@ for (var i = 0; i < values.length; i += 3) {
       assert_equals(+span.getAttribute("tabindex"), expected);
     } else {
       // ToPrimitive() will throw a TypeError if valueOf and toString both return an object.
-      assert_throws({ name: "TypeError" }, function() { span.tabIndex = objectValue; });
+      assert_throws(new TypeError(), function() { span.tabIndex = objectValue; });
     }
   }, "assigning { toString: function() { return " + desc + " } } to HTMLElement.tabIndex coerces the value to an IDL long correctly");
 }

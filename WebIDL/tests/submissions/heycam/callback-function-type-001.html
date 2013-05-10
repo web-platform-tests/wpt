@@ -21,27 +21,27 @@ async_test(function(t) {
 }, "passing a Function object to the MutationObserver constructor converts to an IDL callback function type correctly");
 
 test(function() {
-  assert_throws({ name: "TypeError" }, function() { new MutationObserver(undefined); });
+  assert_throws(new TypeError(), function() { new MutationObserver(undefined); });
 }, "passing undefined to the MutationObserver constructor coverts to an IDL callback function type correctly");
 
 test(function() {
-  assert_throws({ name: "TypeError" }, function() { new MutationObserver(null); });
+  assert_throws(new TypeError(), function() { new MutationObserver(null); });
 }, "passing null to the MutationObserver constructor coverts to an IDL callback function type correctly");
 
 test(function() {
-  assert_throws({ name: "TypeError" }, function() { new MutationObserver(true); });
+  assert_throws(new TypeError(), function() { new MutationObserver(true); });
 }, "passing true to the MutationObserver constructor coverts to an IDL callback function type correctly");
 
 test(function() {
-  assert_throws({ name: "TypeError" }, function() { new MutationObserver(123); });
+  assert_throws(new TypeError(), function() { new MutationObserver(123); });
 }, "passing 123 to the MutationObserver constructor coverts to an IDL callback function type correctly");
 
 test(function() {
-  assert_throws({ name: "TypeError" }, function() { new MutationObserver("abc"); });
+  assert_throws(new TypeError(), function() { new MutationObserver("abc"); });
 }, "passing \"abc\" to the MutationObserver constructor coverts to an IDL callback function type correctly");
 
 test(function() {
-  assert_throws({ name: "TypeError" }, function() { new MutationObserver({ }); });
+  assert_throws(new TypeError(), function() { new MutationObserver({ }); });
 }, "passing { } to the MutationObserver constructor coverts to an IDL callback function type correctly");
 
 test(function() {

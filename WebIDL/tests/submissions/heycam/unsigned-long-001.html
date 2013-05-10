@@ -62,7 +62,7 @@ for (var i = 0; i < values.length; i += 3) {
       assert_equals(it.whatToShow, expected);
     } else {
       // ToPrimitive() will throw a TypeError if valueOf and toString both return an object.
-      assert_throws({ name: "TypeError" }, function() { document.createNodeIterator(document, objectValue, null); });
+      assert_throws(new TypeError(), function() { document.createNodeIterator(document, objectValue, null); });
     }
   }, "passing { valueOf: function() { return " + desc + " } } to Document.createNodeIterator coerces the value to an IDL unsigned long correctly");
 }
@@ -78,7 +78,7 @@ for (var i = 0; i < values.length; i += 3) {
       assert_equals(it.whatToShow, expected);
     } else {
       // ToPrimitive() will throw a TypeError if valueOf and toString both return an object.
-      assert_throws({ name: "TypeError" }, function() { document.createNodeIterator(document, objectValue, null); });
+      assert_throws(new TypeError(), function() { document.createNodeIterator(document, objectValue, null); });
     }
   }, "passing { toString: function() { return " + desc + " } } to Document.createNodeIterator coerces the value to an IDL unsigned long correctly");
 }

@@ -55,7 +55,7 @@ function runTests() {
       if (expected !== undefined) {
         assert_true(point.matrixTransform(value) instanceof expected);
       } else {
-        assert_throws({ name: "TypeError" }, function() { point.matrixTransform(point); });
+        assert_throws(new TypeError(), function() { point.matrixTransform(point); });
       }
     }, "passing " + desc + " to SVGPoint.matrixTransform() correctly converts to an IDL SVGMatrix value");
   }

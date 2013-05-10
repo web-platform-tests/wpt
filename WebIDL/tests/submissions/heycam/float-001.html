@@ -57,7 +57,7 @@ for (var i = 0; i < values.length; i += 3) {
       number.value = value;
       assert_equals(number.value, expected);
     } else {
-      assert_throws({ name: "TypeError" }, function() { number.value = value; });
+      assert_throws(new TypeError(), function() { number.value = value; });
     }
   }, "assigning " + desc + " to SVGNumber.value coerces the value to an IDL float correctly");
 }
@@ -73,11 +73,11 @@ for (var i = 0; i < values.length; i += 3) {
         number.value = objectValue;
         assert_equals(number.value, expected);
       } else {
-        assert_throws({ name: "TypeError" }, function() { number.value = objectValue; });
+        assert_throws(new TypeError(), function() { number.value = objectValue; });
       }
     } else {
       // ToPrimitive() will throw a TypeError if valueOf and toString both return an object.
-      assert_throws({ name: "TypeError" }, function() { number.value = objectValue; });
+      assert_throws(new TypeError(), function() { number.value = objectValue; });
     }
   }, "assigning { valueOf: function() { return " + desc + " } } to SVGNumber.value coerces the value to an IDL float correctly");
 }
@@ -93,11 +93,11 @@ for (var i = 0; i < values.length; i += 3) {
         number.value = objectValue;
         assert_equals(number.value, expected);
       } else {
-        assert_throws({ name: "TypeError" }, function() { number.value = objectValue; });
+        assert_throws(new TypeError(), function() { number.value = objectValue; });
       }
     } else {
       // ToPrimitive() will throw a TypeError if valueOf and toString both return an object.
-      assert_throws({ name: "TypeError" }, function() { number.value = objectValue; });
+      assert_throws(new TypeError(), function() { number.value = objectValue; });
     }
   }, "assigning { toString: function() { return " + desc + " } } to SVGNumber.value coerces the value to an IDL float correctly");
 }

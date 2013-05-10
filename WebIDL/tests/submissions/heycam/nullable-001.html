@@ -69,6 +69,6 @@ test(function() {
   var span = document.createElement("span");
   span.textContent = "test";
   assert_equals(span.textContent, "test");
-  assert_throws({ name: "TypeError" }, function() { span.textContent = { toString: function() { return { }; } } });
+  assert_throws(new TypeError(), function() { span.textContent = { toString: function() { return { }; } } });
 }, "assigning { toString: ... { } } to Node.textContent converts to an IDL \"DOMString?\" type correctly");
 </script>

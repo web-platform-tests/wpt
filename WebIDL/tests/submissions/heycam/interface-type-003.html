@@ -34,17 +34,17 @@ test(function() {
 
 test(function() {
   var span = document.createElement("span");
-  assert_throws({ name: "TypeError" }, function() { span.addEventListener("test", false, false); });
+  assert_throws(new TypeError(), function() { span.addEventListener("test", false, false); });
 }, "passing false to EventTarget.addEventListener");
 
 test(function() {
   var span = document.createElement("span");
-  assert_throws({ name: "TypeError" }, function() { span.addEventListener("test", 0, false); });
+  assert_throws(new TypeError(), function() { span.addEventListener("test", 0, false); });
 }, "passing 0 to EventTarget.addEventListener");
 
 test(function() {
   var span = document.createElement("span");
-  assert_throws({ name: "TypeError" }, function() { span.addEventListener("test", "", false); });
+  assert_throws(new TypeError(), function() { span.addEventListener("test", "", false); });
 }, "passing \"\" to EventTarget.addEventListener");
 
 test(function() {
@@ -94,14 +94,14 @@ test(function() {
   var span = document.createElement("span");
   var regexp = /abc/;
   regexp.handleEvent = function() { };
-  assert_throws({ name: "TypeError" }, function() { span.addEventListener("test", regexp, false); });
+  assert_throws(new TypeError(), function() { span.addEventListener("test", regexp, false); });
 }, "passing /abc/ to EventTarget.addEventListener");
 
 test(function() {
   var span = document.createElement("span");
   var date = new Date();
   date.handleEvent = function() { };
-  assert_throws({ name: "TypeError" }, function() { span.addEventListener("test", date, false); });
+  assert_throws(new TypeError(), function() { span.addEventListener("test", date, false); });
 }, "passing Date object to EventTarget.addEventListener");
 
 test(function() {

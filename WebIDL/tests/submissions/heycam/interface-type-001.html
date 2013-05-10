@@ -54,7 +54,7 @@ function runTests() {
         div.appendChild(value);
         assert_equals(div.firstChild, expected);
       } else {
-        assert_throws({ name: "TypeError" }, function() { div.appendChild(value); });
+        assert_throws(new TypeError(), function() { div.appendChild(value); });
       }
     }, "passing " + desc + " to Node.appendChild() correctly converts to an IDL Node value");
   }

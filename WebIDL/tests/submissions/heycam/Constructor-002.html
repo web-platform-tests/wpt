@@ -15,7 +15,7 @@
 // entry in the effective overload set.
 
 test(function() {
-  assert_throws({ name: "TypeError" }, function() { new ArrayBuffer(); });
+  assert_throws(new TypeError(), function() { new ArrayBuffer(); });
 }, "passing too few arguments to ArrayBuffer constructor throws");
 
 test(function() {

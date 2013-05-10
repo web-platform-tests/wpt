@@ -29,13 +29,13 @@ test(function() {
 test(function() {
   var desc = Object.getOwnPropertyDescriptor(Document.prototype, "title");
   assert_true(!!desc);
-  assert_throws({ name: "TypeError" }, function() { desc.set.call(null); });
+  assert_throws(new TypeError(), function() { desc.set.call(null); });
 }, "calling Document.title setter with a null this-value throws");
 
 test(function() {
   var desc = Object.getOwnPropertyDescriptor(Document.prototype, "title");
   assert_true(!!desc);
-  assert_throws({ name: "TypeError" }, function() { desc.set.call(document.documentElement); });
+  assert_throws(new TypeError(), function() { desc.set.call(document.documentElement); });
 }, "calling Document.title setter with a non-Document object this-value throws");
 
 test(function() {
@@ -69,6 +69,6 @@ test(function() {
 test(function() {
   var doc = document.implementation.createHTMLDocument("test");
   var desc = Object.getOwnPropertyDescriptor(Document.prototype, "title");
-  assert_throws({ name: "TypeError" }, function() { desc.set.call(doc); });
+  assert_throws(new TypeError(), function() { desc.set.call(doc); });
 }, "passing no arguments to Document.title setter will throw");
 </script>

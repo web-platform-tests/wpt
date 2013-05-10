@@ -61,7 +61,7 @@ for (var i = 0; i < values.length; i += 3) {
       assert_equals(e.code, expected);
     } else {
       // ToPrimitive() will throw a TypeError if valueOf and toString both return an object.
-      assert_throws({ name: "TypeError" }, function() { new CloseEvent("test", { code: objectValue }); });
+      assert_throws(new TypeError(), function() { new CloseEvent("test", { code: objectValue }); });
     }
   }, "passing { valueOf: function() { return " + desc + " } } to CloseEvent constructor coerces the value to an IDL unsigned short correctly");
 }
@@ -77,7 +77,7 @@ for (var i = 0; i < values.length; i += 3) {
       assert_equals(e.code, expected);
     } else {
       // ToPrimitive() will throw a TypeError if valueOf and toString both return an object.
-      assert_throws({ name: "TypeError" }, function() { new CloseEvent("test", { code: objectValue }); });
+      assert_throws(new TypeError(), function() { new CloseEvent("test", { code: objectValue }); });
     }
   }, "passing { toString: function() { return " + desc + " } } to CloseEvent constructor coerces the value to an IDL unsigned short correctly");
 }

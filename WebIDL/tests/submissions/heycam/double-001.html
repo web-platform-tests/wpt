@@ -54,7 +54,7 @@ for (var i = 0; i < values.length; i += 3) {
       progress.value = value;
       assert_equals(progress.getAttribute("value"), String(expected));
     } else {
-      assert_throws({ name: "TypeError" }, function() { progress.value = value; });
+      assert_throws(new TypeError(), function() { progress.value = value; });
     }
   }, "assigning " + desc + " to HTMLProgressElement.value coerces the value to an IDL double correctly");
 }
@@ -70,11 +70,11 @@ for (var i = 0; i < values.length; i += 3) {
         progress.value = objectValue;
         assert_equals(progress.getAttribute("value"), String(expected));
       } else {
-      assert_throws({ name: "TypeError" }, function() { progress.value = objectValue; });
+      assert_throws(new TypeError(), function() { progress.value = objectValue; });
       }
     } else {
       // ToPrimitive() will throw a TypeError if valueOf and toString both return an object.
-      assert_throws({ name: "TypeError" }, function() { progress.value = objectValue; });
+      assert_throws(new TypeError(), function() { progress.value = objectValue; });
     }
   }, "assigning { valueOf: function() { return " + desc + " } } to HTMLProgressElement.value coerces the value to an IDL double correctly");
 }
@@ -90,11 +90,11 @@ for (var i = 0; i < values.length; i += 3) {
         progress.value = objectValue;
         assert_equals(progress.getAttribute("value"), String(expected));
       } else {
-      assert_throws({ name: "TypeError" }, function() { progress.value = objectValue; });
+      assert_throws(new TypeError(), function() { progress.value = objectValue; });
       }
     } else {
       // ToPrimitive() will throw a TypeError if valueOf and toString both return an object.
-      assert_throws({ name: "TypeError" }, function() { progress.value = objectValue; });
+      assert_throws(new TypeError(), function() { progress.value = objectValue; });
     }
   }, "assigning { toString: function() { return " + desc + " } } to HTMLProgressElement.value coerces the value to an IDL double correctly");
 }

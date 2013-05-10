@@ -54,7 +54,7 @@ for (var i = 0; i < values.length; i += 3) {
       meter.min = value;
       assert_equals(meter.getAttribute("min"), String(expected));
     } else {
-      assert_throws({ name: "TypeError" }, function() { meter.min = value; });
+      assert_throws(new TypeError(), function() { meter.min = value; });
     }
   }, "assigning " + desc + " to HTMLMeterElement.min coerces the value to an IDL double correctly");
 }
@@ -70,11 +70,11 @@ for (var i = 0; i < values.length; i += 3) {
         meter.min = objectValue;
         assert_equals(meter.getAttribute("min"), String(expected));
       } else {
-      assert_throws({ name: "TypeError" }, function() { meter.min = objectValue; });
+      assert_throws(new TypeError(), function() { meter.min = objectValue; });
       }
     } else {
       // ToPrimitive() will throw a TypeError if valueOf and toString both return an object.
-      assert_throws({ name: "TypeError" }, function() { meter.min = objectValue; });
+      assert_throws(new TypeError(), function() { meter.min = objectValue; });
     }
   }, "assigning { valueOf: function() { return " + desc + " } } to HTMLMeterElement.min coerces the value to an IDL double correctly");
 }
@@ -90,11 +90,11 @@ for (var i = 0; i < values.length; i += 3) {
         meter.min = objectValue;
         assert_equals(meter.getAttribute("min"), String(expected));
       } else {
-      assert_throws({ name: "TypeError" }, function() { meter.min = objectValue; });
+      assert_throws(new TypeError(), function() { meter.min = objectValue; });
       }
     } else {
       // ToPrimitive() will throw a TypeError if valueOf and toString both return an object.
-      assert_throws({ name: "TypeError" }, function() { meter.min = objectValue; });
+      assert_throws(new TypeError(), function() { meter.min = objectValue; });
     }
   }, "assigning { toString: function() { return " + desc + " } } to HTMLMeterElement.min coerces the value to an IDL double correctly");
 }

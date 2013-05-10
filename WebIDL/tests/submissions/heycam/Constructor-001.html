@@ -14,7 +14,7 @@
 // also be a "length" property on the interface object.
 
 test(function() {
-  assert_throws({ name: "TypeError" }, function() { new Element(); }, "new Element()");
+  assert_throws(new TypeError(), function() { new Element(); }, "new Element()");
 }, "Calling new on an interface object whose interface does not have [Constructor]")
 
 test(function() {

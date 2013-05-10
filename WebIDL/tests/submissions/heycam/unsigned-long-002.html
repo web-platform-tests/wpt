@@ -62,7 +62,7 @@ for (var i = 0; i < values.length; i += 3) {
       assert_equals(e.deltaMode, expected);
     } else {
       // ToPrimitive() will throw a TypeError if valueOf and toString both return an object.
-      assert_throws({ name: "TypeError" }, function() { new WheelEvent("test", { deltaMode: objectValue }); });
+      assert_throws(new TypeError(), function() { new WheelEvent("test", { deltaMode: objectValue }); });
     }
   }, "passing { valueOf: function() { return " + desc + " } } through WheelEvent constructor coerces the value to an IDL unsigned long correctly");
 }
@@ -78,7 +78,7 @@ for (var i = 0; i < values.length; i += 3) {
       assert_equals(e.deltaMode, expected);
     } else {
       // ToPrimitive() will throw a TypeError if valueOf and toString both return an object.
-      assert_throws({ name: "TypeError" }, function() { new WheelEvent("test", { deltaMode: objectValue }); });
+      assert_throws(new TypeError(), function() { new WheelEvent("test", { deltaMode: objectValue }); });
     }
   }, "passing { toString: function() { return " + desc + " } } through WheelEvent constructor coerces the value to an IDL unsigned long correctly");
 }

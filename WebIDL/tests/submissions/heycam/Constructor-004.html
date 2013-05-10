@@ -24,7 +24,7 @@
 // argument position" since the distinguishing argument index is < 1.
 
 test(function() {
-  assert_throws({ name: "TypeError" }, function() { new Uint8Array(); });
+  assert_throws(new TypeError(), function() { new Uint8Array(); });
 }, "passing too few arguments to Uint8Array constructor throws");
 
 test(function() {
@@ -57,16 +57,16 @@ test(function() {
 }, "passing an ArrayBuffer as the only argument to the Uint8Array constructor selects the (ArrayBuffer, optional unsigned long, optional unsigned long) overload");
 
 test(function() {
-  assert_throws({ name: "TypeError" }, function() { new Uint8Array(3, "extra"); });
+  assert_throws(new TypeError(), function() { new Uint8Array(3, "extra"); });
 }, "passing (Number, String) to the Uint8Array constructor selects the (ArrayBuffer, optional unsigned long, optional unsigned long) overload, and then throws due to the conversion of the Number to an ArrayBuffer");
 
 test(function() {
   var a1 = new Uint8Array(4);
-  assert_throws({ name: "TypeError" }, function() { new Uint8Array(a1, "extra"); });
+  assert_throws(new TypeError(), function() { new Uint8Array(a1, "extra"); });
 }, "passing (Uint8Array, String) to the Uint8Array constructor selects the (ArrayBuffer, optional unsigned long, optional unsigned long) overload, and then throws due to the conversion of the Uint8Array to an ArrayBuffer");
 
 test(function() {
-  assert_throws({ name: "TypeError" }, function() { new Uint8Array([9, 9, 9], "extra"); });
+  assert_throws(new TypeError(), function() { new Uint8Array([9, 9, 9], "extra"); });
 }, "passing (Array, String) to the Uint8Array constructor selects the (ArrayBuffer, optional unsigned long, optional unsigned long) overload, and then throws due to the conversion of the Array to an ArrayBuffer");
 
 test(function() {

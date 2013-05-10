@@ -40,7 +40,7 @@ for (var i = 0; i < values.length; i += 3) {
       var e = new TrackEvent("test", { track: value });
       assert_equals(e.track, expected);
     } else {
-      assert_throws({ name: "TypeError" }, function() { new TrackEvent("test", { track: value }); });
+      assert_throws(new TypeError(), function() { new TrackEvent("test", { track: value }); });
     }
   }, "passing " + desc + " to the TrackEvent constructor correctly converts to an IDL object? value");
 }

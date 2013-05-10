@@ -33,11 +33,11 @@ test(function() {
 }, "passing null to CustomEvent constructor");
 
 test(function() {
-  assert_throws({ name: "TypeError" }, function() { new CustomEvent("test", false); });
+  assert_throws(new TypeError(), function() { new CustomEvent("test", false); });
 }, "passing false to CustomEvent constructor");
 
 test(function() {
-  assert_throws({ name: "TypeError" }, function() { new CustomEvent("test", "hello"); });
+  assert_throws(new TypeError(), function() { new CustomEvent("test", "hello"); });
 }, "passing \"hello\" to CustomEvent constructor");
 
 test(function() {

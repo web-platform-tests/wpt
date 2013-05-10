@@ -119,7 +119,7 @@ for (var i = 0; i < values.length; i += 3) {
       }
     } else {
       // ToPrimitive() will throw a TypeError if valueOf and toString both return an object.
-      assert_throws({ name: "TypeError" }, function() { rangePairs[0].a.compareBoundaryPoints(objectValue, rangePairs[0].b); });
+      assert_throws(new TypeError(), function() { rangePairs[0].a.compareBoundaryPoints(objectValue, rangePairs[0].b); });
     }
   }, "passing { valueOf: function() { return " + desc + " } } as the \"how\" argument of Range.compareBoundaryPoints() coerces the value to an IDL unsigned short correctly");
 }
@@ -140,7 +140,7 @@ for (var i = 0; i < values.length; i += 3) {
       }
     } else {
       // ToPrimitive() will throw a TypeError if valueOf and toString both return an object.
-      assert_throws({ name: "TypeError" }, function() { rangePairs[0].a.compareBoundaryPoints(objectValue, rangePairs[0].b); });
+      assert_throws(new TypeError(), function() { rangePairs[0].a.compareBoundaryPoints(objectValue, rangePairs[0].b); });
     }
   }, "passing { toString: function() { return " + desc + " } } as the \"how\" argument of Range.compareBoundaryPoints() coerces the value to an IDL unsigned short correctly");
 }

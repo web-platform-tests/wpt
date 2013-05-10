@@ -57,7 +57,7 @@ for (var i = 0; i < values.length; i += 3) {
       input.valueAsNumber = value;
       assert_equals(input.value, expected == expected ? String(expected) : "");
     } else {
-      assert_throws({ name: "TypeError" }, function() { input.valueAsNumber = value; });
+      assert_throws(new TypeError(), function() { input.valueAsNumber = value; });
     }
   }, "assigning " + desc + " to HTMLInputElement.valueAsNumber coerces the value to an IDL unrestricted double correctly");
 }
@@ -75,7 +75,7 @@ for (var i = 0; i < values.length; i += 3) {
       // ToPrimitive() will throw a TypeError if valueOf and toString both
       // return an object.  Also, Infinity and -Infinity will throw according
       // to HTMLInputNumber.valueAsNumber's behavior.
-      assert_throws({ name: "TypeError" }, function() { input.valueAsNumber = objectValue; });
+      assert_throws(new TypeError(), function() { input.valueAsNumber = objectValue; });
     }
   }, "assigning { valueOf: function() { return " + desc + " } } to HTMLInputElement.valueAsNumber coerces the value to an IDL unrestricted double correctly");
 }
@@ -93,7 +93,7 @@ for (var i = 0; i < values.length; i += 3) {
       // ToPrimitive() will throw a TypeError if valueOf and toString both
       // return an object.  Also, Infinity and -Infinity will throw according
       // to HTMLInputNumber.valueAsNumber's behavior.
-      assert_throws({ name: "TypeError" }, function() { input.valueAsNumber = objectValue; });
+      assert_throws(new TypeError(), function() { input.valueAsNumber = objectValue; });
     }
   }, "assigning { toString: function() { return " + desc + " } } to HTMLInputElement.valueAsNumber coerces the value to an IDL unrestricted double correctly");
 }

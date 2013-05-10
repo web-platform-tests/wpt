@@ -74,7 +74,7 @@ test(function() {
   var e = document.getElementById("span1");
   var desc = Object.getOwnPropertyDescriptor(HTMLElement.prototype, "style");
   assert_true(!!desc, "!!desc");
-  assert_throws({ name: "TypeError" }, function() {
+  assert_throws(new TypeError(), function() {
     desc.set.call(e.style);
   });
 }, "HTMLElement.prototype.style setter throws TypeError when called with no arguments");

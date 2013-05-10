@@ -56,7 +56,7 @@ test(function() {
   var span2 = document.createElement("span");
   div.appendChild(span1);
 
-  assert_throws({ name: "TypeError" }, function() { div.insertBefore(span2, window); });
+  assert_throws(new TypeError(), function() { div.insertBefore(span2, window); });
 }, "passing window to Node.insertBefore converts to an IDL \"Node?\" type correctly");
 
 test(function() {
@@ -65,7 +65,7 @@ test(function() {
   var span2 = document.createElement("span");
   div.appendChild(span1);
 
-  assert_throws({ name: "TypeError" }, function() { div.insertBefore(span2, false); });
+  assert_throws(new TypeError(), function() { div.insertBefore(span2, false); });
 }, "passing false to Node.insertBefore converts to an IDL \"Node?\" type correctly");
 
 test(function() {
@@ -74,7 +74,7 @@ test(function() {
   var span2 = document.createElement("span");
   div.appendChild(span1);
 
-  assert_throws({ name: "TypeError" }, function() { div.insertBefore(span2, { }); });
+  assert_throws(new TypeError(), function() { div.insertBefore(span2, { }); });
 }, "passing { } to Node.insertBefore converts to an IDL \"Node?\" type correctly");
 
 test(function() {
@@ -83,6 +83,6 @@ test(function() {
   var span2 = document.createElement("span");
   div.appendChild(span1);
 
-  assert_throws({ name: "TypeError" }, function() { div.insertBefore(span2, Image); });
+  assert_throws(new TypeError(), function() { div.insertBefore(span2, Image); });
 }, "passing Image to Node.insertBefore converts to an IDL \"Node?\" type correctly");
 </script>

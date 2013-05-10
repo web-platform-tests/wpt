@@ -55,19 +55,19 @@ test(function() {
 test(function() {
   var input = document.createElement("input");
   input.type = "date";
-  assert_throws({ name: "TypeError" }, function() { input.valueAsDate = Object.create(new Date()); });
+  assert_throws(new TypeError(), function() { input.valueAsDate = Object.create(new Date()); });
 }, "test assigning { } -> Date to HTMLInputElement.valueAsDate");
 
 test(function() {
   var input = document.createElement("input");
   input.type = "date";
-  assert_throws({ name: "TypeError" }, function() { input.valueAsDate = 123; });
+  assert_throws(new TypeError(), function() { input.valueAsDate = 123; });
 }, "test assigning 123 to HTMLInputElement.valueAsDate");
 
 test(function() {
   var input = document.createElement("input");
   input.type = "date";
-  assert_throws({ name: "TypeError" }, function() { input.valueAsDate = "2011-01-01"; });
+  assert_throws(new TypeError(), function() { input.valueAsDate = "2011-01-01"; });
 }, "test assigning \"2011-01-01\" to HTMLInputElement.valueAsDate");
 
 test(function() {

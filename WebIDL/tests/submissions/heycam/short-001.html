@@ -63,7 +63,7 @@ for (var i = 0; i < values.length; i += 3) {
       assert_equals(a[0], expected);
     } else {
       // ToPrimitive() will throw a TypeError if valueOf and toString both return an object.
-      assert_throws({ name: "TypeError" }, function() { a[0] = objectValue; });
+      assert_throws(new TypeError(), function() { a[0] = objectValue; });
     }
   }, "passing { valueOf: function() { return " + desc + " } } through an Int16Array indexed property setter coerces the value to an IDL short correctly");
 }
@@ -79,7 +79,7 @@ for (var i = 0; i < values.length; i += 3) {
       assert_equals(a[0], expected);
     } else {
       // ToPrimitive() will throw a TypeError if valueOf and toString both return an object.
-      assert_throws({ name: "TypeError" }, function() { a[0] = objectValue; });
+      assert_throws(new TypeError(), function() { a[0] = objectValue; });
     }
   }, "passing { toString: function() { return " + desc + " } } through an Int16Array indexed property setter coerces the value to an IDL short correctly");
 }

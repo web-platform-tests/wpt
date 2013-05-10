@@ -76,7 +76,7 @@ for (var i = 0; i < values.length; i += 3) {
       assert_equals(attr.value, expected);
     } else {
       // ToPrimitive() will throw a TypeError if valueOf and toString both return an object.
-      assert_throws({ name: "TypeError" }, function() { attr.value = objectValue; });
+      assert_throws(new TypeError(), function() { attr.value = objectValue; });
     }
   }, "assigning { valueOf: function() { return " + desc + " } } to Attr.value coerces the value to an IDL DOMString correctly");
 }
@@ -92,7 +92,7 @@ for (var i = 0; i < values.length; i += 3) {
       assert_equals(attr.value, expected);
     } else {
       // ToPrimitive() will throw a TypeError if valueOf and toString both return an object.
-      assert_throws({ name: "TypeError" }, function() { attr.value = objectValue; });
+      assert_throws(new TypeError(), function() { attr.value = objectValue; });
     }
   }, "assigning { toString: function() { return " + desc + " } } to Attr.value coerces the value to an IDL DOMString correctly");
 }

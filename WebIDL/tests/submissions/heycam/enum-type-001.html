@@ -36,11 +36,11 @@ test(function() {
 }, "passing \"evenodd\" to CanvasRenderingContext2D.fill() converts to the CanvasFillRule enum correctly");
 
 test(function() {
-  assert_throws({ name: "TypeError" }, function() { drawAndGetPixel("evenodd "); });
+  assert_throws(new TypeError(), function() { drawAndGetPixel("evenodd "); });
 }, "passing \"evenodd \" to CanvasRenderingContext2D.fill() converts to the CanvasFillRule enum correctly");
 
 test(function() {
-  assert_throws({ name: "TypeError" }, function() { drawAndGetPixel("Evenodd"); });
+  assert_throws(new TypeError(), function() { drawAndGetPixel("Evenodd"); });
 }, "passing \"Evenodd\" to CanvasRenderingContext2D.fill() converts to the CanvasFillRule enum correctly");
 
 test(function() {

@@ -62,7 +62,7 @@ for (var i = 0; i < values.length; i += 3) {
       assert_equals(+pre.getAttribute("width"), expected);
     } else {
       // ToPrimitive() will throw a TypeError if valueOf and toString both return an object.
-      assert_throws({ name: "TypeError" }, function() { pre.width = objectValue; });
+      assert_throws(new TypeError(), function() { pre.width = objectValue; });
     }
   }, "assigning { valueOf: function() { return " + desc + " } } to HTMLPreElement.width coerces the value to an IDL long correctly");
 }
@@ -78,7 +78,7 @@ for (var i = 0; i < values.length; i += 3) {
       assert_equals(+pre.getAttribute("width"), expected);
     } else {
       // ToPrimitive() will throw a TypeError if valueOf and toString both return an object.
-      assert_throws({ name: "TypeError" }, function() { pre.width = objectValue; });
+      assert_throws(new TypeError(), function() { pre.width = objectValue; });
     }
   }, "assigning { toString: function() { return " + desc + " } } to HTMLPreElement.width coerces the value to an IDL long correctly");
 }

@@ -18,10 +18,10 @@
 // argument might then cause the call to fail (and a TypeError to be thrown) if
 // there is not an appropriate value passed in that position.
 //
-// With Uint8Array, which is what we are using in this test, it's not possible
-// to test the "arguments before the distinguishing argument are converted
-// before possibly throwing due to an invalid value in that argument position"
-// since the distinguishing argument index is 0.
+// With both Uint8Array and Blob, the two interfaces we are using in this test,
+// it's not possible to test the "arguments before the distinguishing argument
+// are converted before possibly throwing due to an invalid value in that
+// argument position" since the distinguishing argument index is < 1.
 
 test(function() {
   assert_throws({ name: "TypeError" }, function() { new Uint8Array(); });
@@ -94,4 +94,27 @@ test(function() {
   var a = new Uint8Array(buffer, undefined, undefined);
   assert_equals(a.length, 0);
 }, "passing (ArrayBuffer, undefined, undefined) to the Uint8Array constructor selects the (ArrayBuffer, optional unsigned long, optional unsigned long) overload with three arguments");
+
+
+test(function() {
+  var b = new Blob();
+  assert_equals(b.size, 0);
+}, "passing no arguments to the Blob constructor selects the () overload");
+
+test(function() {
+  var b1 = new Blob([]);
+  var b2 = new Blob([], { });
+  assert_equals(b1.size, 0);
+  assert_equals(b1.type, b2.type);
+}, "passing an Array object as the only argument to the Blob constructor selects the (sequence<...>, optional BlobPropertyBag) overload");
+
+test(function() {
+  var b = new Blob({ size: 3, "0": "a" });
+  assert_equals(b.size, "aundefinedundefined".size);
+}, "passing { size: 3, \"0\": \"a\" } as the only argument to the Blob constructor selects the (sequence<...>, optional BlobPropertyBag) overload");
+
+test(function() {
+  var b = new Blob(["abc"], { }, "extra");
+  assert_equals(b.size, 3);
+}, "passing ([\"abc\"], { }, \"extra\") to the Blob constructor selects the (sequence<...>, optional BlobPropertyBag) overload");
 </script>

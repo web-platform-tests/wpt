@@ -32,6 +32,9 @@ callback-function-type-001.html
 callback-function-type-002.html
 callback-function-type-003.html
 class-string-001.html
+constant-001.html
+constant-002.html
+constant-003.html
 dictionary-type-001.html
 dictionary-type-002.html
 double-001.html

@@ -71,6 +71,10 @@ object-001.html
 object-002.html
 octet-001.html
 octet-002.html
+operation-001.html
+operation-002.html
+operation-003.html
+operation-004.html
 sequence-001.html
 sequence-002.html
 short-001.html

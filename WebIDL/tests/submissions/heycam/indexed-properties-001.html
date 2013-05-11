@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<title>Fixing objects that support indexed properties</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.6.1 Indexed and named properties
+//
+// Attempts to fix an object that supports indexed properties by calling
+// Object.freeze, Object.seal or Object.preventExtensions on it must fail and
+// throw a TypeError.
+
+test(function() {
+  var e = document.createElement("span");
+  assert_throws(new TypeError(), function() { Object.freeze(e.childNodes); });
+}, "Object.freeze must fail on a NodeList since it supports indexed properties");
+
+test(function() {
+  var e = document.createElement("span");
+  assert_throws(new TypeError(), function() { Object.seal(e.childNodes); });
+}, "Object.seal must fail on a NodeList since it supports indexed properties");
+
+test(function() {
+  var e = document.createElement("span");
+  assert_throws(new TypeError(), function() { Object.preventExtensions(e.childNodes); });
+}, "Object.preventExtensions must fail on a NodeList since it supports indexed properties");
+
+
+test(function() {
+  var a = new Uint8Array(1);
+  assert_throws(new TypeError(), function() { Object.freeze(a); });
+}, "Object.freeze must fail on a Uint8Array since it supports indexed properties");
+
+test(function() {
+  var a = new Uint8Array(1);
+  assert_throws(new TypeError(), function() { Object.seal(a); });
+}, "Object.seal must fail on a Uint8Array since it supports indexed properties");
+
+test(function() {
+  var a = new Uint8Array(1);
+  assert_throws(new TypeError(), function() { Object.preventExtensions(a); });
+}, "Object.preventExtensions must fail on a Uint8Array since it supports indexed properties");
+</script>

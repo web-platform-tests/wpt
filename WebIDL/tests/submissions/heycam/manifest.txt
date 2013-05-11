@@ -79,6 +79,8 @@ sequence-001.html
 sequence-002.html
 short-001.html
 short-002.html
+stringifier-001.html
+stringifier-002.html
 union-001.html
 unrestricted-double-001.html
 unrestricted-double-002.html

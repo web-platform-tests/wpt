@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<title>Throwing exceptions</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<div id="hidden" style="visibility: hidden; position: absolute; width: 0; height: 0; overflow: hidden">
+  <iframe id="iframe"></iframe>
+</div>
+
+<script>
+// 4.11 Throwing exceptions
+//
+// When an exception is thrown, it is associated with a particular
+// global environment.
+
+var iframe = document.getElementById("iframe");
+
+test(function() {
+  var desc = Object.getOwnPropertyDescriptor(iframe.contentWindow.HTMLSelectElement, "length");
+  try {
+    desc.get.call(document);
+  } catch (e) {
+    assert_equals(Object.getPrototypeOf(e), iframe.contentWindow.TypeError.prototype);
+  }
+  assert_unreached("exception should have been thrown");
+}, "exception thrown from attribute getter is associated with the correct global environment");
+
+test(function() {
+  var func = iframe.contentWindow.Node.prototype.appendChild;
+  try {
+    func.call(new Range());
+  } catch (e) {
+    assert_equals(Object.getPrototypeOf(e), iframe.contentWindow.TypeError.prototype);
+  }
+  assert_unreached("exception should have been thrown");
+}, "exception thrown from operation is associated with the correct global environment");
+
+test(function() {
+  var a = new iframe.contentWindow.Uint8Array(1);
+  try {
+    a[0] = { toString: function() { return { }; }, valueOf: function() { return { }; } };
+  } catch (e) {
+    assert_equals(Object.getPrototypeOf(e), iframe.contentWindow.TypeError.prototype);
+  }
+  assert_unreached("exception should have been thrown");
+}, "exception thrown from indexed property is associated with the correct global environment");
+
+test(function() {
+  try {
+    new iframe.contentWindow.Event();
+  } catch (e) {
+    assert_equals(Object.getPrototypeOf(e), iframe.contentWindow.TypeError.prototype);
+  }
+  assert_unreached("exception should have been thrown");
+}, "exception thrown from constructor is associated with the correct global environment");
+
+test(function() {
+  try {
+    new iframe.contentWindow.Image({ toString: function() { return { } }, value: function() { return { } } });
+  } catch (e) {
+    assert_equals(Object.getPrototypeOf(e), iframe.contentWindow.TypeError.prototype);
+  }
+  assert_unreached("exception should have been thrown");
+}, "exception thrown from named constructor is associated with the correct global environment");
+
+test(function() {
+  try {
+    iframe.contentWindow.Location.prototype.toString.call(document);
+  } catch (e) {
+    assert_equals(Object.getPrototypeOf(e), iframe.contentWindow.TypeError.prototype);
+  }
+  assert_unreached("exception should have been thrown");
+}, "exception thrown from stringifier is associated with the correct global environment");
+</script>

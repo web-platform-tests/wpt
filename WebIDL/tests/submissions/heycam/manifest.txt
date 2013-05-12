@@ -103,6 +103,7 @@ short-001.html
 short-002.html
 stringifier-001.html
 stringifier-002.html
+throwing-001.html
 union-001.html
 unrestricted-double-001.html
 unrestricted-double-002.html

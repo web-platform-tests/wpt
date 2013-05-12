@@ -20,6 +20,13 @@ async_test(function(t) {
   span.setAttribute("data-test", "value");
 }, "passing a Function object to the MutationObserver constructor converts to an IDL callback function type correctly");
 
+async_test(function(t) {
+  var span = document.createElement("span");
+  var obs = new MutationObserver(function() { var callbackThis = this; t.step(function() { assert_equals(callbackThis, obs); t.done(); }); });
+  obs.observe(span, { attributes: true });
+  span.setAttribute("data-test", "value");
+}, "callback this value set appropriately for MutationObserver callback function");
+
 test(function() {
   assert_throws(new TypeError(), function() { new MutationObserver(undefined); });
 }, "passing undefined to the MutationObserver constructor coverts to an IDL callback function type correctly");

@@ -20,6 +20,15 @@ async_test(function(t) {
   span.dispatchEvent(event);
 }, "assigning a Function object to HTMLElement.onclick converts to an IDL callback function type correctly");
 
+async_test(function(t) {
+  var invoked = false;
+  var span = document.createElement("span");
+  span.onclick = function(e) { var callbackThis = this; t.step(function() { assert_equals(callbackThis, e.currentTarget); t.done(); }); };
+  var event = document.createEvent("Event");
+  event.initEvent("click", false, false);
+  span.dispatchEvent(event);
+}, "callback this value set appropriately for HTMLElement.onclick callback function");
+
 test(function() {
   var span = document.createElement("span");
   span.onclick = Node.prototype.appendChild;

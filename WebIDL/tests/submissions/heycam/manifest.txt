@@ -56,6 +56,9 @@ functions-001.html
 implements-001.html
 indexed-properties-001.html
 indexed-properties-002.html
+indexed-properties-003.html
+indexed-properties-004.html
+indexed-properties-005.html
 initial-001.html
 initial-002.html
 interface-001.html
@@ -70,6 +73,8 @@ long-002.html
 long-003.html
 named-properties-001.html
 named-properties-002.html
+named-properties-003.html
+named-properties-004.html
 nullable-001.html
 nullable-002.html
 nullable-003.html

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<title>Setting named properties</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.6.3 Platform object [[DefineOwnProperty]] method
+//
+// If an object supports named properties, and a named property
+// creator is available, then attempting to set a property with a name that
+// is not a supported property name will invoke the creator.
+
+test(function() {
+  var span = document.createElement("span");
+  span.dataset.hello1 = "test";
+  assert_property(span.dataset, "hello1", { writable: true, enumerable: true, configurable: true, value: "test" });
+}, "invoking the named property creator by assigning to a property on a DOMStringMap works");
+
+test(function() {
+  var span = document.createElement("span");
+  Object.defineProperty(span.dataset, "hello2", { writable: false, enumerable: false, configurable: false, value: "test" });
+  assert_property(span.dataset, "hello2", { writable: true, enumerable: true, configurable: true, value: "test" });
+}, "invoking the named property creator by defining a property on a DOMStringMap works");
+
+test(function() {
+  var span = document.createElement("span");
+  Object.defineProperty(DOMStringMap.prototype, "hello3", { get: function() { }, set: function() { throw { name: "SomeError" }; } });
+  try {
+    assert_throws({ name: "SomeError" }, function() { span.dataset.hello3 = "test"; });
+  } finally {
+    delete DOMStringMap.prototype.hello2;
+  }
+}, "assigning to a property (on an DOMStringMap) that is not a supported property name and which corresponds to an accessor property on the prototype will invoke that property's setter");
+
+test(function() {
+  var span = document.createElement("span");
+  Object.defineProperty(DOMStringMap.prototype, "hello4", { get: function() { }, set: function() { throw { name: "SomeError" }; } });
+  try {
+    Object.defineProperty(span.dataset, "hello4", { value: "test" });
+    assert_property(span.dataset, "hello4", { writable: true, enumerable: true, configurable: true, value: "test" });
+  } finally {
+    delete DOMStringMap.prototype.hello4;
+  }
+}, "defining a property (on an DOMStringMap) that is not a supported property name and which corresponds to an accessor property on the prototype will invoke the named property setter");
+
+
+test(function() {
+  window.localStorage.hello1 = "test";
+  assert_property(window.localStorage, "hello1", { writable: true, enumerable: true, configurable: true, value: "test" });
+}, "invoking the named property creator by assigning to a property on a Storage works");
+
+test(function() {
+  Object.defineProperty(window.localStorage, "hello2", { writable: false, enumerable: false, configurable: false, value: "test" });
+  assert_property(window.localStorage, "hello2", { writable: true, enumerable: true, configurable: true, value: "test" });
+}, "invoking the named property creator by defining a property on a Storage works");
+
+test(function() {
+  Object.defineProperty(Storage.prototype, "hello3", { get: function() { }, set: function() { throw { name: "SomeError" }; } });
+  try {
+    assert_throws({ name: "SomeError" }, function() { window.localStorage.hello3 = "test"; });
+  } finally {
+    delete Storage.prototype.hello2;
+  }
+}, "assigning to a property (on an Storage) that is not a supported property name and which corresponds to an accessor property on the prototype will invoke that property's setter");
+
+test(function() {
+  Object.defineProperty(Storage.prototype, "hello4", { get: function() { }, set: function() { throw { name: "SomeError" }; } });
+  try {
+    Object.defineProperty(window.localStorage, "hello4", { value: "test" });
+    assert_property(window.localStorage, "hello4", { writable: true, enumerable: true, configurable: true, value: "test" });
+  } finally {
+    delete Storage.prototype.hello4;
+  }
+}, "defining a property (on an Storage) that is not a supported property name and which corresponds to an accessor property on the prototype will invoke the named property setter");
+</script>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<title>Setting indexed properties</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.6.3 Platform object [[DefineOwnProperty]] method
+//
+// If an object supports indexed properties, and an indexed property
+// setter is available, then attempting to set a property with a name that
+// is not a supported property name will fail.  If Object.defineProperty()
+// is used with data property descriptor, then the writable, enumerable
+// and configurable attributes will be ignored; the value is used to invoke
+// the indexed property setter, and subsequent [[GetOwnProperty]] calls will
+// return a wrtiable, enumerable, configurable property.
+
+test(function() {
+  var a = new Uint8Array(1);
+  a[0] = 1;
+  assert_property(a, "0", { writable: true, enumerable: true, configurable: true, value: 1 });
+}, "assigning to an indexed property on a Uint8Array works");
+
+test(function() {
+  var a = new Uint8Array(1);
+  Object.defineProperty(a, "0", { writable: false, enumerable: false, configurable: false, value: 2 });
+  assert_property(a, "0", { writable: true, enumerable: true, configurable: true, value: 2 });
+}, "defining over an indexed property on a Uint8Array works");
+
+test(function() {
+  var a = new Uint8Array(1);
+  a[1] = 3;
+  assert_true(!Object.hasOwnProperty(a, "1"));
+}, "assigning to a property with an array index property name and which is not a supported property index on a Uint8Array is ignored");
+
+test(function() {
+  var a = new Uint8Array(1);
+  assert_throws(new TypeError(), function() { "use strict"; a[1] = 4; });
+}, "assigning to a property with an array index property name and which is not a supported property index on a Uint8Array throws in strict mode");
+
+test(function() {
+  var a = new Uint8Array(1);
+  Object.defineProperty(a, "1", { writable: false, enumerable: false, configurable: false, value: 5 });
+  assert_true(!Object.hasOwnProperty(a, "1"));
+}, "defining a property with an array index property name and which is not a supported property index on a Uint8Array is ignored");
+
+test(function() {
+  var a = new Uint8Array(1);
+  assert_throws(new TypeError(), function() { "use strict"; Object.defineProperty(a, "1", { writable: false, enumerable: false, configurable: false, value: 6 }); });
+}, "defining a property with an array index property name and which is not a supported property index on a Uint8Array throws in strict mode");
+
+test(function() {
+  var a = new Uint8Array(1);
+  assert_throws({ name: "SomeError" }, function() { a[0] = { valueOF: function() { throw { name: "SomeError" }; } }; });
+}, "invoking the indexed property setter by assigning to a property on a Uint8Array propagates an exception thrown from the type conversion");
+
+test(function() {
+  var a = new Uint8Array(1);
+  assert_throws({ name: "SomeError" }, function() { Object.defineProperty(a, "0", { value: { valueOf: function() { throw { name: "SomeError" }; } } }); });
+}, "invoking the indexed property setter by defining a property on a Uint8Array propagates an exception thrown from the type conversion");
+</script>

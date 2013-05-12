@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<title>Exception interface prototype object</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.9.2 Exception interface prototype object
+//
+// The [[Prototype]] of an exception interface prototype object is
+// Error.prototype, if the exception is not declared to inherit from
+// another.  The exception interface prototype object has a
+// "name" property set to the identifier of the exception.  It also
+// has a "constructor" property pointing to the exception interface
+// object.
+
+test(function() {
+  assert_equals(Object.getPrototypeOf(DOMException.prototype), Error.prototype);
+}, "DOMException.prototype has the right [[Prototype]]");
+
+test(function() {
+  assert_property(DOMException.prototype, "name", { writable: true, enumerable: false, configurable: true, value: "DOMException" });
+}, "DOMException.prototype.name has the right attributes and value");
+
+test(function() {
+  assert_property(DOMException.prototype, "constructor", { writable: true, enumerable: false, configurable: true, value: DOMException });
+}, "DOMException.prototype.constructor has the right attributes and value");
+</script>

@@ -75,6 +75,7 @@ named-properties-001.html
 named-properties-002.html
 named-properties-003.html
 named-properties-004.html
+named-properties-005.html
 nullable-001.html
 nullable-002.html
 nullable-003.html

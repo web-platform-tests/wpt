@@ -49,6 +49,7 @@ double-002.html
 double-003.html
 enum-type-001.html
 exception-001.html
+exception-field-001.html
 exception-interface-object-001.html
 exception-interface-object-002.html
 exception-interface-prototype-object-001.html

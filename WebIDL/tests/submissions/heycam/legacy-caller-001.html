@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<title>Legacy callers</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.6.5 Platform object [[Call]] method
+//
+// Objects that implement an interface that has a legacy caller have an
+// internal [[Call]] method that invokes the caller behavior.
+
+test(function() {
+  var object = document.createElement("object");
+  assert_equals(typeof object, "function");
+}, "typeof HTMLObjectElement is correct");
+
+test(function() {
+  var object = document.createElement("object");
+  assert_throws("NotSupportedError", function() { object(); });
+}, "an HTMLObjectElement can be called");
+
+test(function() {
+  var object = document.createElement("object");
+  assert_throws("NotSupportedError", function() { Function.prototype.call.call(object); });
+}, "Function.prototype.call can be applied to an HTMLObjectElement");
+</script>

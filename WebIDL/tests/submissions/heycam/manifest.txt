@@ -68,6 +68,7 @@ interface-type-001.html
 interface-type-002.html
 interface-type-003.html
 interface-type-004.html
+legacy-caller-001.html
 long-001.html
 long-002.html
 long-003.html

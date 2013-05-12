@@ -88,6 +88,7 @@ operation-001.html
 operation-002.html
 operation-003.html
 operation-004.html
+property-enumeration-001.html
 sequence-001.html
 sequence-002.html
 short-001.html

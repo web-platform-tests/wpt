@@ -68,6 +68,7 @@ initial-002.html
 interface-001.html
 interface-object-001.html
 interface-object-002.html
+interface-protoype-object-001.html
 interface-type-001.html
 interface-type-002.html
 interface-type-003.html

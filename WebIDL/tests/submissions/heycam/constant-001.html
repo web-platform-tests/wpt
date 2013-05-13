@@ -11,6 +11,8 @@
 // Constants are exposed as non-writable, enumerable, non-configurable
 // properties on interface objects and interface prototype objects.
 
+// feature: HTMLMediaElement.NETWORK_IDLE (constant)
+
 test(function() {
   assert_property(HTMLMediaElement, "NETWORK_IDLE", { writable: false, enumerable: true, configurable: false, value: 1 });
 }, "HTMLMediaElement.NETWORK_IDLE has correct attributes and value");
@@ -18,6 +20,8 @@ test(function() {
 test(function() {
   assert_property(HTMLMediaElement.prototype, "NETWORK_IDLE", { writable: false, enumerable: true, configurable: false, value: 1 });
 }, "HTMLMediaElement.prototype.NETWORK_IDLE has correct attributes and value");
+
+// feature: SVGLength.SVG_LENGTHTYPE_NUMBER (constant)
 
 test(function() {
   assert_property(SVGLength, "SVG_LENGTHTYPE_NUMBER", { writable: false, enumerable: true, configurable: false, value: 1 });

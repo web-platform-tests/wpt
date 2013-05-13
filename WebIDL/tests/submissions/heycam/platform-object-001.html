@@ -12,9 +12,17 @@
 // interface prototype object of its primary interface.
 
 var objects = [
+
+  // DOMImplementation (interface) (without inheritance, primary interface)
   function() { return document.implementation; }, "DOMImplementation",
+
+  // HTMLCollection (interface) (without inheritance, primary interface)
   function() { return document.forms; }, "HTMLCollection",
+
+  // HTMLSpanElement (interface) (with inheritance, primary interface)
   function() { return document.createElement("span"); }, "HTMLSpanElement",
+
+  // UIEvent (interface) (with inheritance, primary interface)
   function() { return document.createEvent("UIEvent"); }, "UIEvent"
 ];
 

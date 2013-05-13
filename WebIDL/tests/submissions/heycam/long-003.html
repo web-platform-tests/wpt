@@ -11,11 +11,15 @@
 // IDL long values are represented as integer JS Number values in the
 // range [-2147483648, 2147483647].
 
+// feature: HTMLPreElement.width (attribute) (of type long)
+
 test(function() {
   var e = document.createElement("pre");
   assert_equals(typeof e.width, "number");
   assert_true(e.width == Math.floor(e.width) && e.width >= -2147483648 && e.width <= 2147483647);
 }, "HTMLPreElement.width returns a value of the correct type");
+
+// feature: HTMLElement.tabIndex (attribute) (of type long)
 
 test(function() {
   var e = document.createElement("span");

@@ -18,6 +18,8 @@
 // We are using EventTarget.addEventListener() for this test, which has an
 // "EventListener?" argument.
 
+// feature: EventTarget.addEventListener (operation) (with argument of a single operation callback interface type)
+
 function dispatchEvent(target) {
   var event = document.createEvent("Event");
   event.initEvent("test", false, false);

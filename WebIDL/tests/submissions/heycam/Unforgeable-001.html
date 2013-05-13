@@ -11,9 +11,13 @@
 // Attributes that are [Unforgeable] exist on the instance rather than on
 // the prototype.  They are unconfigurable.
 
+// feature: Window.document (attribute) (with [Unforgeable])
+
 test(function() {
   assert_property(window, "document", { enumerable: true, configurable: false }, "window.document");
 }, "\"document\" is an own, enumerable, non-configurable property on window");
+
+// feature: Event.isTrusted (attribute) (with [Unforgeable])
 
 test(function() {
   var e = document.createEvent("Event");

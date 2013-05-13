@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>Getters for writable attributes</title>
+<title>Getters for read only attributes</title>
 <script src="http://w3c-test.org/resources/testharness.js"></script>
 <script src="http://w3c-test.org/resources/testharnessreport.js"></script>
 <script src="utils.js"></script>
@@ -22,6 +22,8 @@
 // extra ones.  The getter can be applied to objects of the right type
 // from other windows.  Calling it with a bad this object value will throw
 // a TypeError.
+
+// feature: HTMLFormElement (attribute) (read only, without [Unforgeable])
 
 var form = document.getElementById("form");
 

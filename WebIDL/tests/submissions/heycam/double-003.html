@@ -10,6 +10,8 @@
 //
 // IDL double values are represented with finite JS Number values.
 
+// feature: HTMLProgressElement.value (attribute) (of type double)
+
 test(function() {
   var e = document.createElement("progress");
   assert_equals(typeof e.value, "number");
@@ -20,5 +22,5 @@ test(function() {
   var e = document.createElement("meter");
   assert_equals(typeof e.min, "number");
   assert_true(e.min * 0 == 0);
-}, "HTMLMeterElement.value returns a value of the correct type");
+}, "HTMLMeterElement.min returns a value of the correct type");
 </script>

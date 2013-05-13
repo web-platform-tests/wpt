@@ -24,7 +24,7 @@
 // exposed, even if it doesn't currently correspond to a supported index
 // property.
 
-// DOMStringMap: HTMLElement.dataset (has a getter and setter)
+// feature: DOMStringMap (named property getter) (has a named property setter)
 
 test(function() {
   var span = document.createElement("span");
@@ -85,7 +85,7 @@ test(function() {
 }, "DOMStringMap exposes named properties if there was a same named property on Object.prototype that was deleted");
 
 
-// HTMLCollection: Document.forms (has a getter but not setter)
+// feature: HTMLCollection (named property getter) (does not have a named property setter, supports indexed properties)
 
 var container = document.getElementById("container");
 

@@ -19,6 +19,8 @@
 // from other windows.  Calling it with a bad this object value will throw
 // a TypeError.
 
+// feature: Node.parentNode (attribute) (read only, without [Unforgeable])
+
 test(function() {
   assert_true(!document.documentElement.hasOwnProperty("parentNode"));
 }, "HTMLHtmlElement object does not have own property \"parentNode\"");

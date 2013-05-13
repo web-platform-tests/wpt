@@ -12,6 +12,8 @@
 // Object.freeze, Object.seal or Object.preventExtensions on it must fail and
 // throw a TypeError.
 
+// feature: NodeList (interface) (supports indexed properties)
+
 test(function() {
   var e = document.createElement("span");
   assert_throws(new TypeError(), function() { Object.freeze(e.childNodes); });
@@ -27,6 +29,8 @@ test(function() {
   assert_throws(new TypeError(), function() { Object.preventExtensions(e.childNodes); });
 }, "Object.preventExtensions must fail on a NodeList since it supports indexed properties");
 
+
+// feature: Uint8Array (interface) (supports indexed properties)
 
 test(function() {
   var a = new Uint8Array(1);

@@ -11,7 +11,23 @@
 // For each interface that isn't [NoInterfaceObject], there's a property
 // on the global object that is writable, unenumerable and configurable.
 
-var interfaces = ["DOMImplementation", "HTMLCollection", "Element", "UIEvent", "NodeFilter"];
+var interfaces = [
+
+  // feature: DOMImplementation (interface) (without inheritance, without [NoInterfaceObject])
+  "DOMImplementation",
+
+  // feature: HTMLCollection (interface) (without inheritance, without [NoInterfaceObject])
+  "HTMLCollection",
+
+  // feature: Element (interface) (with inheritance, without [NoInterfaceObject])
+  "Element",
+
+  // feature: UIEvent (interface) (with inheritance, without [NoInterfaceObject])
+  "UIEvent",
+
+  // feature: NodeFilter (callback interface) (with constants)
+  "NodeFilter"
+];
 
 for (var i = 0; i < interfaces.length; i++) {
   var name = interfaces[i];

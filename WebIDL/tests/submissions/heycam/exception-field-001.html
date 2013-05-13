@@ -11,6 +11,8 @@
 // Exception fields are exposed as accessor properties on the exception
 // interface prototype object.
 
+// feature: DOMException.code (exception field)
+
 test(function() {
   var desc = Object.getOwnPropertyDescriptor(DOMException.prototype, "code");
   assert_descriptor(desc, { enumerable: true, configurable: true });

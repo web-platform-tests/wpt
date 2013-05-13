@@ -23,6 +23,8 @@
 // are converted before possibly throwing due to an invalid value in that
 // argument position" since the distinguishing argument index is < 1.
 
+// feature Uint8Array (interface) (with [Constructor] and overloading)
+
 test(function() {
   assert_throws(new TypeError(), function() { new Uint8Array(); });
 }, "passing too few arguments to Uint8Array constructor throws");
@@ -95,6 +97,8 @@ test(function() {
   assert_equals(a.length, 0);
 }, "passing (ArrayBuffer, undefined, undefined) to the Uint8Array constructor selects the (ArrayBuffer, optional unsigned long, optional unsigned long) overload with three arguments");
 
+
+// feature Blob (interface) (with [Constructor] and overloading)
 
 test(function() {
   var b = new Blob();

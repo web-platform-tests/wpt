@@ -20,6 +20,8 @@
 // be applied to objects of the right type from other windows.
 // Calling it with a bad this object value will throw a TypeError.
 
+// feature: Window.postMessage (operation) (with optional argument)
+
 test(function() {
   assert_throws(new TypeError(), function() { window.postMessage(); });
 }, "Window.postMessage throws when no arguments passed");
@@ -51,6 +53,8 @@ test(function() {
   assert_throws(new TypeError(), function() { window.postMessage.call(document); });
 }, "Window.postMessage throws a TypeError when called with a bad this-value");
 
+
+// feature: DOMImplementation.createHTMLDocument (operation) (with optional argument)
 
 test(function() {
   var doc = document.implementation.createHTMLDocument("test", "extra");

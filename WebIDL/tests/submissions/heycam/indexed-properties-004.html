@@ -16,6 +16,8 @@
 // the indexed property setter, and subsequent [[GetOwnProperty]] calls will
 // return a wrtiable, enumerable, configurable property.
 
+// feature: Uint8Array (interface) (supports indexed properties, has an indexed property setter, does not have an indexed property creator)
+
 test(function() {
   var a = new Uint8Array(1);
   a[0] = 1;

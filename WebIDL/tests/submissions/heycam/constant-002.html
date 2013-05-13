@@ -11,6 +11,8 @@
 // Constants on callback interfaces are exposed as non-writable, enumerable,
 // non-configurable properties on the interface object.
 
+// feature: NodeFilter.SHOW_ALL (constant) (on a callback interface)
+
 test(function() {
   assert_property(NodeFilter, "SHOW_ALL", { writable: false, enumerable: true, configurable: false, value: 0xFFFFFFFF });
 }, "NodeFilter.SHOW_ALL has correct attributes and value");

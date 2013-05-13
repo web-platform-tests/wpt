@@ -13,6 +13,8 @@
 // appear on those objects for the LHS interface.  If they values of the
 // properties are objects, they do not refer to the same object.
 
+// feature: URLUtils (interface) (used on RHS of implements statement)
+
 test(function() {
   var desc1 = Object.getOwnPropertyDescriptor(HTMLAnchorElement.prototype, "href");
   var desc2 = Object.getOwnPropertyDescriptor(HTMLAreaElement.prototype, "href");

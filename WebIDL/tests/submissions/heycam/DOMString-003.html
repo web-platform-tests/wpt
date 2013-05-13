@@ -10,12 +10,16 @@
 //
 // IDL DOMString values are represented with JS string values.
 
+// feature: Attr.value (attribute) (of type DOMString)
+
 test(function() {
   var e = document.createElement("span");
   e.setAttribute("data-test", "test");
   var a = e.getAttributeNode("data-test");
   assert_equals(typeof a.value, "string");
 }, "Attr.value returns a value of the correct type");
+
+// feature: Node.nodeName (attribute) (of type DOMString)
 
 test(function() {
   assert_equals(typeof document.nodeName, "string");

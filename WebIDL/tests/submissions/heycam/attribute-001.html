@@ -19,6 +19,8 @@
 // from other windows.  Calling it with a bad this object value will throw
 // a TypeError.
 
+// feature: Document.title (attribute) (writable, without [Unforgeable])
+
 test(function() {
   assert_true(!document.hasOwnProperty("title"));
 }, "document object does not have own property \"title\"");

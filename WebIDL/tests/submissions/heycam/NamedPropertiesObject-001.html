@@ -11,7 +11,10 @@
 // Its [[Prototype]] points to the interface prototype object of any
 // interface the one [[Prototype]] is on inherits from, or Object.prototype.
 
+// feature: Window (interface) (with [NamedPropertiesObject])
+
 // window -> Window.prototype -> [named properties] -> EventTarget.prototype -> Object.prototype
+
 var chain = prototypeChain(window);
 
 test(function() {

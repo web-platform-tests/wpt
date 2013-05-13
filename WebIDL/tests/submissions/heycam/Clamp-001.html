@@ -11,6 +11,8 @@
 // When [Clamp] is on an operation argument whose type is an integer type, then
 // values outside the range of the integer will be clamped to be valid.
 
+// feature: Uint8ClampedArray (indexed property setter) (with [Clamp])
+
 test(function() {
   var a = new Uint8ClampedArray(1);
   a[0] = 128;
@@ -35,6 +37,8 @@ test(function() {
   a[0] = NaN;
   assert_equals(a[0], 0);
 }, "correct conversion of Number values to a [Clamp]ed octet");
+
+// feature: WebSocket.close (operation) (with [Clamp] on an argument)
 
 test(function() {
   var ws = new WebSocket("wss://test.invalid");

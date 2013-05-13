@@ -15,6 +15,8 @@
 function noop1() { }
 function noop2() { }
 
+// feature: Document.onreadystatechange (attribute) (with [LenientThis])
+
 test(function() {
   var desc = Object.getOwnPropertyDescriptor(Document.prototype, "onreadystatechange");
 
@@ -35,6 +37,8 @@ test(function() {
   assert_equals(desc.set.call({ }, noop2), undefined, "document.onreadystatechange setter.call({}) == undefined");
   assert_equals(document.onreadystatechange, noop1, "document.onreadystatechange == noop1 (still)");
 }, "invoking Document.onreadystatechange's setter with an invalid this object does nothing and returns undefined");
+
+// feature: GlobalEventHandlers.onmouseenter (attribute) (with [LenientThis])
 
 test(function() {
   var desc = Object.getOwnPropertyDescriptor(Document.prototype, "onmouseenter");

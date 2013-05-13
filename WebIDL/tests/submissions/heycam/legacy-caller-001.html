@@ -11,6 +11,8 @@
 // Objects that implement an interface that has a legacy caller have an
 // internal [[Call]] method that invokes the caller behavior.
 
+// feature: HTMLObjectElement (interface) (with a legacy caller)
+
 test(function() {
   var object = document.createElement("object");
   assert_equals(typeof object, "function");

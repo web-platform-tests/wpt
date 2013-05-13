@@ -13,9 +13,13 @@
 // thrown.  The returned object must implement the interface.  There must
 // also be a "length" property on the interface object.
 
+// feature: Element (interface) (without [Constructor])
+
 test(function() {
   assert_throws(new TypeError(), function() { new Element(); }, "new Element()");
 }, "Calling new on an interface object whose interface does not have [Constructor]")
+
+// feature: Event (interface) (with [Constructor])
 
 test(function() {
   assert_true(new Event("test") instanceof Event, "new Event(...) instanceof Event");
@@ -24,6 +28,8 @@ test(function() {
 test(function() {
   assert_true(Event("test") instanceof Event, "Event(...) instanceof Event");
 }, "Event constructor called as a function returns an object that is instanceof Event");
+
+// feature: XMLHttpRequest (interface) (with [Constructor])
 
 test(function() {
   assert_true(new XMLHttpRequest() instanceof XMLHttpRequest, "new XMLHttpRequest() instanceof XMLHttpRequest");

@@ -13,6 +13,8 @@
 // exposed through [[GetOwnProperty]] as being enumerable, configurable,
 // and writable if there is also an indexed property setter.
 
+// feature: NodeList (indexed property getter) (does not have an indexed property setter)
+
 function makeSpan() {
   var e = document.createElement("span");
   e.appendChild(document.createElement("span"));
@@ -43,6 +45,8 @@ test(function() {
   }
 }, "NodeList allows properties with names that are array index property names to show through from the prototype");
 
+
+// feature: HTMLSelectElement (indexed property getter) (has an indexed property setter)
 
 function makeSelect() {
   var e = document.createElement("select");

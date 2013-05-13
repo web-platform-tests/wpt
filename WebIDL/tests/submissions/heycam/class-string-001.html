@@ -14,62 +14,120 @@
 var objects = [
 
   // interface object
+
+  // feature: DOMImplementation (interface) (without inheritance, without [NoInterfaceObject])
   interfaceObject("DOMImplementation"), "Function", "DOMImplementation interface object",
+  // feature: HTMLCollection (interface) (without inheritance, without [NoInterfaceObject])
   interfaceObject("HTMLCollection"), "Function", "HTMLCollection interface object",
 
+
   // interface object for inherited interface
+
+  // feature: Element (interface) (with inheritance, without [NoInterfaceObject])
   interfaceObject("Element"), "Function", "Element interface object",
+  // feature: UIEvent (interface) (with inheritance, without [NoInterfaceObject])
   interfaceObject("UIEvent"), "Function", "UIEvent interface object",
 
+
   // interface prototype object
+
+  // feature: DOMImplementation (interface) (without inheritance)
   interfacePrototypeObject("DOMImplementation"), "DOMImplementationPrototype", "DOMImplementation interface prototype object",
+  // feature: HTMLCollection (interface) (without inheritance)
   interfacePrototypeObject("HTMLCollection"), "HTMLCollectionPrototype", "HTMLCollection interface prototype object",
 
+
   // interface prototype object for inherited interface
+
+  // feature: Element (interface) (with inheritance)
   interfacePrototypeObject("Element"), "ElementPrototype", "Element interface prototype object",
+  // feature: UIEvent (interface) (with inheritance)
   interfacePrototypeObject("UIEvent"), "UIEventPrototype", "UIEvent interface prototype object",
 
+
   // named constructor object
+
+  // feature: HTMLImageElement (interface) (with [NamedConstructor])
   namedConstructorObject("Image"), "Function", "Image named constructor object",
+  // feature: HTMLAudioElement (interface) (with [NamedConstructor])
   namedConstructorObject("Audio"), "Function", "Audio named constructor object",
 
+
   // attribute getter
+
+  // feature: Document.title (attribute) (writable)
   getter("Document", "title"), "Function", "Document.title attribute getter",
+  // feature: HTMLSelectElement.length (attribute) (writable)
   getter("HTMLSelectElement", "length"), "Function", "HTMLSelectElement.length attribute getter",
 
+
   // read only attribute getter
+
+  // feature: Node.parentNode (attribute) (read only)
   getter("Node", "parentNode"), "Function", "Node.parentNode attribute getter",
+  // feature: HTMLFormElement.length (attribute) (read only)
   getter("HTMLFormElement", "length"), "Function", "HTMLFormElement.length attribute getter",
 
+
   // attribute setter
+
+  // feature: Document.title (attribute) (writable)
   setter("Document", "title"), "Function", "Document.title attribute setter",
+  // feature: HTMLSelectElement.length (attribute) (writable)
   setter("HTMLSelectElement", "length"), "Function", "HTMLSelectElement.length attribute setter",
 
+
   // operation function
+
+  // feature: HTMLElement.click (operation)
   operation("HTMLElement", "click"), "Function", "HTMLElement.click function",
+  // feature: Node.appendChild (operation)
   operation("Node", "appendChild"), "Function", "Node.appendChild function",
 
+
   // stringifier function
+
+  // feature: DOMTokenList (stringifier)
   stringifier("DOMTokenList"), "Function", "DOMTokenList stringifier function",
 
+
   // exception interface object
+
+  // feature: DOMException (exception) (without [NoInterfaceObject])
   interfaceObject("DOMException"), "Function", "DOMException exception interface object",
 
+
   // exception interface prototype object
+
+  // feature: DOMException (exception)
   interfacePrototypeObject("DOMException"), "DOMException", "DOMException exception interface prototype object",
 
+
   // exception field getter
+
+  // feature: DOMException.code (exception field)
   getter("DOMException", "code"), "Function", "DOMException.code exception field getter",
 
+
   // platform object implementing an interface
+
+  // feature: DOMImplementation (interface) (without inheritance, primary interface)
   function() { return document.implementation; }, "DOMImplementation", "a platform object implementing DOMImplementation",
+  // feature: HTMLCollection (interface) (without inheritance, primary interface)
   function() { return document.getElementsByTagName("div"); }, "HTMLCollection", "a platform object implementing HTMLCollection",
 
+
   // platform object implementing an inherited interface
+
+  // feature: HTMLDivElement (interface) (with inheritance, primary interface)
   function() { return document.createElement("div"); }, "HTMLDivElement", "a platform object implementing Element",
+  // feature: UIEvent (interface) (with inheritance, primary interface)
   function() { return document.createEvent("UIEvent"); }, "UIEvent", "a platform object implementing UIEvent",
 
+
   // platform object representing an exception
+
+  // feature: DOMException (exception)
   function() {
     try {
       document.appendChild(document);
@@ -78,10 +136,14 @@ var objects = [
     }
   }, "DOMException", "a platform object representing a DOMException",
 
+
   // platform array object
   // XXX
 
+
   // named properties object
+
+  // feature: Window (interface) (with [NamedPropertiesObject])
   function() { return Object.getPrototypeOf(Window.prototype); }, "WindowProperties", "named properties object"
 ];
 

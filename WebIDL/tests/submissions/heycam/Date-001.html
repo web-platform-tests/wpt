@@ -6,11 +6,13 @@
 <div id="log"></div>
 
 <script>
-// 4.2.27 Date
+// 4.2.26 Date
 //
 // Converting any JS value other than a Date object will throw a TypeError.
 // Returning a Date object from an attribute will create a new object
 // every time.
+
+// feature: HTMLInputElement.valueAsDate (attribute) (of type Date)
 
 test(function() {
   var input = document.createElement("input");

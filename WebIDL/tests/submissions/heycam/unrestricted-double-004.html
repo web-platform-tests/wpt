@@ -10,11 +10,15 @@
 //
 // IDL unrestricted double values are represented with JS number values.
 
+// feature: HTMLInputElement.number (attribute) (of type unrestricted double)
+
 test(function() {
   var e = document.createElement("input");
   e.type = "number";
   assert_equals(typeof e.valueAsNumber, "number");
 }, "HTMLInputElement.valueAsNumber returns a value of the correct type");
+
+// feature: Float64Array (indexed property getter) (of type unrestricted double)
 
 test(function() {
   var a = new Float64Array(1);

@@ -17,6 +17,8 @@
 
 var iframe = document.getElementById("iframe");
 
+// feature: HTMLSelectElement.length (attribute)
+
 test(function() {
   var desc = Object.getOwnPropertyDescriptor(iframe.contentWindow.HTMLSelectElement, "length");
   try {
@@ -26,6 +28,8 @@ test(function() {
   }
   assert_unreached("exception should have been thrown");
 }, "exception thrown from attribute getter is associated with the correct global environment");
+
+// feature: Node.appendChild (operation)
 
 test(function() {
   var func = iframe.contentWindow.Node.prototype.appendChild;
@@ -37,6 +41,8 @@ test(function() {
   assert_unreached("exception should have been thrown");
 }, "exception thrown from operation is associated with the correct global environment");
 
+// feature: Uint8Array (indexed property setter)
+
 test(function() {
   var a = new iframe.contentWindow.Uint8Array(1);
   try {
@@ -47,6 +53,8 @@ test(function() {
   assert_unreached("exception should have been thrown");
 }, "exception thrown from indexed property is associated with the correct global environment");
 
+// feature: Event (interface) (with [Constructor])
+
 test(function() {
   try {
     new iframe.contentWindow.Event();
@@ -56,6 +64,8 @@ test(function() {
   assert_unreached("exception should have been thrown");
 }, "exception thrown from constructor is associated with the correct global environment");
 
+// feature: HTMLImageElement (interface) (with [NamedConstructor])
+
 test(function() {
   try {
     new iframe.contentWindow.Image({ toString: function() { return { } }, value: function() { return { } } });
@@ -64,6 +74,8 @@ test(function() {
   }
   assert_unreached("exception should have been thrown");
 }, "exception thrown from named constructor is associated with the correct global environment");
+
+// feature: Location (stringifier)
 
 test(function() {
   try {

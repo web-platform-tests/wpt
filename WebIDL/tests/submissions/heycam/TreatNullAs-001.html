@@ -12,6 +12,8 @@
 // "null".  If [TreatNullAs=EmptyString] is on the attribute, null will be
 // converted to "" instead.
 
+// feature: Element.className (attribute) (without [TreatNullAs])
+
 test(function() {
   var e = document.createElement("span");
   e.className = "hello";
@@ -20,12 +22,16 @@ test(function() {
   assert_equals(e.className, "null", "e.className");
 }, "assigning to Element.className converts null to \"null\"");
 
+// feature: CharacterData.data (attribute) (with [TreatNullAs=EmptyString])
+
 test(function() {
   var n = document.createTextNode("hello");
   assert_equals(n.data, "hello", "n.data");
   n.data = null;
   assert_equals(n.data, "", "n.data");
 }, "assigning to CharacterData.data converts null to \"\"");
+
+// feature: HTMLFrameElement.marginWidth (attribute) (with [TreatNullAs=EmptyString])
 
 test(function() {
   var e = document.createElement("frame");

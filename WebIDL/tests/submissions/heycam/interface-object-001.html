@@ -12,6 +12,8 @@
 // property (non-writable, non-enumerable, non-configurable), since it is
 // a function object.  Its value is the interface prototype object.
 
+// feature: DOMImplementation (interface)
+
 test(function() {
   assert_property(DOMImplementation, "prototype", { writable: false, enumerable: false, configurable: false }, "DOMImplementation.prototype");
 }, "DOMImplementation.prototype has the right attributes");
@@ -23,6 +25,8 @@ test(function() {
 test(function() {
   assert_equals(typeof DOMImplementation, "function");
 }, "typeof DOMImplementation is correct");
+
+// feature: HTMLCollection (interface)
 
 test(function() {
   assert_property(HTMLCollection, "prototype", { writable: false, enumerable: false, configurable: false }, "HTMLCollection.prototype");

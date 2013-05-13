@@ -12,6 +12,8 @@
 // non-configurable properties on the exception interface object and
 // exception interface prototype.
 
+// feature: DOMException.INVALID_STATE_ERR (constant) (on an exception)
+
 test(function() {
   assert_property(DOMException, "INVALID_STATE_ERR", { writable: false, enumerable: true, configurable: false, value: 11 });
 }, "DOMException.INVALID_STATE_ERR has correct attributes and value");

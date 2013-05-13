@@ -17,6 +17,8 @@
 // beyond those explicitly listed in the IDL are passed in are converted
 // to the variadic argument type.
 
+// feature: DOMTokenList.add (operation) (variadic)
+
 test(function() {
   var span = document.createElement("span");
   span.setAttribute("class", "abc");
@@ -41,6 +43,8 @@ test(function() {
   assert_array_equals(order, ["first", "second"]);
 }, "passing multiple arguments corresponding to the variadic argument of DOMTokenList.add works");
 
+
+// feature: WindowTimers.setTimeout (operation) (variadic)
 
 test(function() {
   assert_throws(new TypeError(), function() { window.setTimeout(); });

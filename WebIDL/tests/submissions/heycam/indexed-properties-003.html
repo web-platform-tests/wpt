@@ -12,6 +12,8 @@
 // creator/setter is not available, then attempting to set a property with
 // an array property index name will fail.
 
+// feature: NodeList (interface) (supports indexed properties, does not have an indexed property setter, does not have an indexed property creator)
+
 function makeSpan() {
   var e = document.createElement("span");
   e.appendChild(document.createElement("span"));
@@ -71,6 +73,8 @@ test(function() {
   assert_throws(new TypeError(), function() { "use strict"; Object.defineProperty(nl, "2", { value: "123" }); });
 }, "attempting to define a property with an array index property name (but which is not a supported property index) on a NodeList will throw in strict mode");
 
+
+// feature: DOMTokenList (interface) (supports indexed properties, does not have an indexed property setter)
 
 test(function() {
   var span = document.createElement("span");

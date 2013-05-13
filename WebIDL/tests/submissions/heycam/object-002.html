@@ -10,6 +10,8 @@
 //
 // IDL object values are represented with JS object references.
 
+// feature: TrackEvent.track (attribute) (of type object?)
+
 test(function() {
   var e = new TrackEvent("test", { track: { } });
   assert_true(typeof e.track == "object" || typeof e.track == "function");

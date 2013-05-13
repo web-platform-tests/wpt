@@ -16,6 +16,8 @@
 // list length.  Optional argument default values are also filled in for
 // trailing missing arguments.
 
+// feature: Event (interface) (with [Constructor] and optional arguments)
+
 test(function() {
   assert_throws(new TypeError(), function() { new Event(); });
 }, "passing too few arguments to Event constructor throws");
@@ -35,6 +37,8 @@ test(function() {
   var e = new Event("click", { }, "ignored");
   assert_true(!!e);
 }, "extra arguments passed to Event constructor are ignored");
+
+// feature: WebSocket (interface) (with [Constructor] and optional arguments)
 
 test(function() {
   assert_throws(new TypeError(), function() { new WebSocket(); });

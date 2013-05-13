@@ -12,6 +12,8 @@
 // property (non-writable, non-enumerable, non-configurable), since it is
 // a function object.  Its value is the exception interface prototype object.
 
+// feature: DOMException (exception)
+
 test(function() {
   assert_property(DOMException, "prototype", { writable: false, enumerable: false, configurable: false }, "DOMException.prototype");
 }, "DOMException.prototype has the right attributes");

@@ -10,6 +10,8 @@
 //
 // [ArrayClass] on an interface means that its [[Prototype]] is Array.prototype.
 
+// feature: NodeList (interface) (with [ArrayClass])
+
 test(function() {
   assert_true(NodeList.prototype == Array.prototype, "NodeList.prototype == Array.prototype");
 }, "NodeList being [ArrayClass] implies NodeList.prototype == Array.prototype");

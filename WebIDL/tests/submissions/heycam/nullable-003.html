@@ -13,6 +13,8 @@
 // IDL nullable types are represented as the JS null value, if the IDL
 // value is null, or of a type appropriate for the inner type otherwise.
 
+// feature: Document.getElementById (operation) (with a nullable return type)
+
 test(function() {
   var e = document.getElementById("span");
   assert_equals(typeof e, "object");

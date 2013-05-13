@@ -11,11 +11,15 @@
 // IDL unsigned short values are represented as integer JS Number values in the
 // range [0, 65536].
 
+// feature: CloseEvent.code (attribute) (of type unsigned short)
+
 test(function() {
   var event = new CloseEvent("test");
   assert_equals(typeof event.code, "number");
   assert_true(event.code == Math.floor(event.code) && event.code >= 0 && event.code <= 65535);
 }, "CloseEvent.code returns a value of the correct type");
+
+// feature: WebSocket.readyState (attribute) (of type unsigned short)
 
 test(function() {
   var ws = new WebSocket("wss://test.invalid");

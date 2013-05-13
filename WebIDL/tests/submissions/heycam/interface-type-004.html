@@ -11,11 +11,15 @@
 // IDL values of an interface type are represented with JS object references
 // to platform objects that implement the interface.
 
+// feature: Node.parentNode (attribute) (of an interface type)
+
 test(function() {
   var n = document.body.parentNode;
   assert_equals(typeof n, "object");
   assert_true(n instanceof Node);
 }, "Node.parentNode returns a value of the correct type");
+
+// feature: SVGSVGElement.createSVGPoint (operation) (with interface type return type)
 
 test(function() {
   var p = document.createElementNS("http://www.w3.org/2000/svg", "svg").createSVGPoint();

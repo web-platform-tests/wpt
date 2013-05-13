@@ -11,11 +11,15 @@
 // IDL unsigned long values are represented as integer JS Number values in the
 // range [0, 4294967295].
 
+// feature: HTMLCollection.length (attribute) (of type unsigned long)
+
 test(function() {
   var collection = document.getElementsByTagName("div");
   assert_equals(typeof collection.length, "number");
   assert_true(collection.length == Math.floor(collection.length) && collection.length >= 0 && collection.length <= 4294967296);
 }, "HTMLCollection.length returns a value of the correct type");
+
+// feature: WheelEvent.deltaMode (attribute) (of type unsigned long)
 
 test(function() {
   var e = new WheelEvent("test");

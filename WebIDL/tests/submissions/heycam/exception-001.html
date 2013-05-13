@@ -11,6 +11,8 @@
 // For each interface object that isn't [NoInterfaceObject], there's a property
 // on the global object that is writable, unenumerable and configurable.
 
+// feature: DOMException (exception) (without [NoInterfaceObject])
+
 test(function() {
   assert_property(window, "DOMException", { writable: true, enumerable: false, configurable: true });
 }, "property for DOMException exception interface object exists");

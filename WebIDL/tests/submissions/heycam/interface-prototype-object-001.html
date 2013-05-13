@@ -15,9 +15,17 @@
 // [NoInterfaceObject].
 
 var interfaces = [
+
+  // feature: DOMImplementation (interface) (without inheritance, without [NoInterfaceObject])
   "DOMImplementation", "Object",
+
+  // feature: HTMLCollection (interface) (without inheritance, without [NoInterfaceObject])
   "HTMLCollection", "Object",
+
+  // feature: Element (interface) (with inheritance, without [NoInterfaceObject])
   "Element", "Node",
+
+  // feature: UIEvent (interface) (with inheritance, without [NoInterfaceObject])
   "UIEvent", "Event"
 ];
 

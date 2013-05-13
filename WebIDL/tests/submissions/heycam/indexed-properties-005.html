@@ -12,6 +12,8 @@
 // creator is available, then attempting to set a property with a name that
 // is not a supported property index will invoke the creator.
 
+// feature: HTMLSelectElement (indexed property creator)
+
 test(function() {
   var select = document.createElement("select");
   select[0] = document.createElement("option");
@@ -32,7 +34,7 @@ test(function() {
   } finally {
     delete HTMLSelectElement.prototype[10];
   }
-}, "assigning to an array index property (on an HTMLSelectElement) that is not a supported property index and which corresponds to an accessor property on the prototype will invoke that property's setter");
+}, "assigning to an array index property (on an HTMLSelectElement) that is not a supported property index and which corresponds to an accessor property on the prototype will invoke that property's creator");
 
 test(function() {
   var select = document.createElement("select");
@@ -43,8 +45,10 @@ test(function() {
   } finally {
     delete HTMLSelectElement.prototype[20];
   }
-}, "defining an array index property (on an HTMLSelectElement) that is not a supported property index and which corresponds to an accessor property on the prototype will invoke the indexed property setter");
+}, "defining an array index property (on an HTMLSelectElement) that is not a supported property index and which corresponds to an accessor property on the prototype will invoke the indexed property creator");
 
+
+// feature: HTMLOptionsCollection (indexed property creator)
 
 test(function() {
   var select = document.createElement("select");
@@ -66,7 +70,7 @@ test(function() {
   } finally {
     delete HTMLOptionsCollection.prototype[10];
   }
-}, "assigning to an array index property (on an HTMLOptionsCollection) that is not a supported property index and which corresponds to an accessor property on the prototype will invoke that property's setter");
+}, "assigning to an array index property (on an HTMLOptionsCollection) that is not a supported property index and which corresponds to an accessor property on the prototype will invoke that property's creator");
 
 test(function() {
   var select = document.createElement("select");
@@ -77,5 +81,5 @@ test(function() {
   } finally {
     delete HTMLOptionsCollection.prototype[20];
   }
-}, "defining an array index property (on an HTMLOptionsCollection) that is not a supported property index and which corresponds to an accessor property on the prototype will invoke the indexed property setter");
+}, "defining an array index property (on an HTMLOptionsCollection) that is not a supported property index and which corresponds to an accessor property on the prototype will invoke the indexed property creator");
 </script>

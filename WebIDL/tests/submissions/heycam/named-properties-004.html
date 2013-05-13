@@ -12,6 +12,8 @@
 // creator is available, then attempting to set a property with a name that
 // is not a supported property name will invoke the creator.
 
+// feature: DOMStringMap (named property creator)
+
 test(function() {
   var span = document.createElement("span");
   span.dataset.hello1 = "test";
@@ -32,7 +34,7 @@ test(function() {
   } finally {
     delete DOMStringMap.prototype.hello2;
   }
-}, "assigning to a property (on an DOMStringMap) that is not a supported property name and which corresponds to an accessor property on the prototype will invoke that property's setter");
+}, "assigning to a property (on an DOMStringMap) that is not a supported property name and which corresponds to an accessor property on the prototype will invoke that property's creator");
 
 test(function() {
   var span = document.createElement("span");
@@ -43,8 +45,10 @@ test(function() {
   } finally {
     delete DOMStringMap.prototype.hello4;
   }
-}, "defining a property (on an DOMStringMap) that is not a supported property name and which corresponds to an accessor property on the prototype will invoke the named property setter");
+}, "defining a property (on an DOMStringMap) that is not a supported property name and which corresponds to an accessor property on the prototype will invoke the named property creator");
 
+
+// feature: Storage (named property creator)
 
 test(function() {
   window.localStorage.hello1 = "test";
@@ -63,7 +67,7 @@ test(function() {
   } finally {
     delete Storage.prototype.hello2;
   }
-}, "assigning to a property (on an Storage) that is not a supported property name and which corresponds to an accessor property on the prototype will invoke that property's setter");
+}, "assigning to a property (on an Storage) that is not a supported property name and which corresponds to an accessor property on the prototype will invoke that property's creator");
 
 test(function() {
   Object.defineProperty(Storage.prototype, "hello4", { get: function() { }, set: function() { throw { name: "SomeError" }; } });
@@ -73,5 +77,5 @@ test(function() {
   } finally {
     delete Storage.prototype.hello4;
   }
-}, "defining a property (on an Storage) that is not a supported property name and which corresponds to an accessor property on the prototype will invoke the named property setter");
+}, "defining a property (on an Storage) that is not a supported property name and which corresponds to an accessor property on the prototype will invoke the named property creator");
 </script>

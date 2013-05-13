@@ -23,6 +23,8 @@
 // accessor property.  HTMLElement.style is not [Unforgeable], so
 // it will have an accessor property on HTMLElement.prototype.
 
+// feature: Document.location (attribute) (with [PutForwards])
+
 async_test(function(t) {
   var iframe = document.getElementById("iframe");
   var locationObject = iframe.contentDocument.location;
@@ -40,6 +42,8 @@ async_test(function(t) {
   };
   iframe.contentDocument.location = newHref;
 }, "Document.location assignment forwards property assignment");
+
+// feature: HTMLElement.style (attribute) (with [PutForwards])
 
 test(function() {
   var desc = Object.getOwnPropertyDescriptor(HTMLElement.prototype, "style");

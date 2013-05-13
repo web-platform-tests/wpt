@@ -25,6 +25,8 @@
 // EventTarget.prototype and Object.prototype, not to be visible on the named
 // properties object.
 
+// feature: Window (interface) (with [NamedPropertiesObject])
+
 test(function() {
   assert_true("document" in window, '"document" in window');
   assert_true(!("document" in Window.prototype), '!("document" in Window.prototype)');

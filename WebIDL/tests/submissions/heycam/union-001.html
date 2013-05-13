@@ -24,6 +24,8 @@
 // In this test we're using the second argument of HTMLSelectElement.add,
 // which is of type (HTMLElement or long)?.
 
+// feature: HTMLSelectElement.add (operation) (with argument of a union type)
+
 function makeSelect() {
   var select = document.createElement("select");
   select.appendChild(document.createElement("option"));

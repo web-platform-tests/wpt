@@ -14,6 +14,8 @@
 // Other objects will have [[Get]] called on their "length" property, and then
 // [[Get]] on each array index element.
 
+// feature: MutationObserverInit.attributeFilter (dictionary member) (of a sequence type)
+
 function testArray(array, expected, desc) {
   doTest(array, array, expected, null, null, null, desc);
 }

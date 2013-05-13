@@ -20,6 +20,8 @@
 // other windows.  Calling it with a bad this object value will throw
 // a TypeError.
 
+// feature: Document.title (attribute) (writable, without [Unforgeable])
+
 test(function() {
   var desc = Object.getOwnPropertyDescriptor(Document.prototype, "title");
   assert_equals(typeof desc.set, "function");

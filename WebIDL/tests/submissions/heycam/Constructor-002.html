@@ -14,6 +14,8 @@
 // ones are ignored.  Argument types are not used to eliminate the single
 // entry in the effective overload set.
 
+// feature: ArrayBuffer (interface) (with [Constructor], and no overloading or optional arguments)
+
 test(function() {
   assert_throws(new TypeError(), function() { new ArrayBuffer(); });
 }, "passing too few arguments to ArrayBuffer constructor throws");
@@ -27,6 +29,8 @@ test(function() {
   var buffer = new ArrayBuffer(10, 20);
   assert_equals(buffer.byteLength, 10);
 }, "additional arguments passed to ArrayBuffer constructor are ignored");
+
+// feature: Range (interface) (with [Constructor], and no overloading or optional arguments)
 
 test(function() {
   var range = new Range("test");

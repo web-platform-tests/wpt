@@ -11,6 +11,8 @@
 // When called, exception interface objects construct and return a new
 // platform exception object.
 
+// feature: DOMException (exception)
+
 test(function() {
   var e = new DOMException();
   assert_equals(Object.getPrototypeOf(e), DOMException.prototype);

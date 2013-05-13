@@ -22,6 +22,8 @@
 // argument might then cause the call to fail (and a TypeError to be thrown) if
 // there is not an appropriate value passed in that position.
 
+// feature: CanvasRenderingContext2D.drawImage (operation) (overloaded)
+
 //   void drawImage(CanvasImageSource image, unrestricted double dx, unrestricted double dy);
 //   void drawImage(CanvasImageSource image, unrestricted double dx, unrestricted double dy, unrestricted double dw, unrestricted double dh);
 //   void drawImage(CanvasImageSource image, unrestricted double sx, unrestricted double sy, unrestricted double sw, unrestricted double sh, unrestricted double dx, unrestricted double dy, unrestricted double dw, unrestricted double dh);
@@ -119,6 +121,9 @@ test(function() {
 test(function() {
   assert_throws(new TypeError(), function() { CanvasRenderingContext2D.prototype.drawImage.call(document, 0, { valueOf: function() { throw "something"; } }); });
 }, "CanvasRenderingContext2D.drawImage() throws when called with a bad this-value");
+
+
+// feature: CanvasRenderingContext2D.createImageData (operation) (overloaded)
 
 //   ImageData createImageData(double sw, double sh);
 //   ImageData createImageData(ImageData imagedata);

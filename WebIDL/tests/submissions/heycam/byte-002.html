@@ -11,6 +11,8 @@
 // IDL byte values are represented as integer JS Number values in the range
 // [-128, 127]
 
+// feature: Int8Array (indexed property getter) (of type byte)
+
 test(function() {
   var a = new Int8Array(1);
   assert_equals(typeof a[0], "number");

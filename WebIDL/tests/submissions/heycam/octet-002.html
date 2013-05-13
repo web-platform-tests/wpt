@@ -11,6 +11,8 @@
 // IDL octet values are represented as integer JS Number values in the range
 // [0, 255].
 
+// feature: Uint8Array (indexed property getter) (of type octet)
+
 test(function() {
   var a = new Uint8Array(1);
   assert_equals(typeof a[0], "number");

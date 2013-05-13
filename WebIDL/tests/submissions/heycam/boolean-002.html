@@ -10,10 +10,14 @@
 //
 // IDL boolean values are represented as JS Boolean values.
 
+// feature: Event.bubbles (attribute) (of type boolean)
+
 test(function() {
   var e = document.createEvent("Event");
   assert_equals(typeof e.bubbles, "boolean");
 }, "Event.bubbles returns a value of the correct type");
+
+// feature: Document.hasFocus (operation) (with return type boolean)
 
 test(function() {
   assert_equals(typeof document.hasFocus(), "boolean");

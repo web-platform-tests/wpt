@@ -19,6 +19,8 @@
 // of supported property names.  Finally, any own properties and properties
 // from the prototype are enumerated, in an unspecified order.
 
+// feature: HTMLCollection (interface) (supports indexed properties, supports named properties)
+
 test(function() {
   document.forms.some = 1;
   document.forms.thing = 1;
@@ -49,6 +51,9 @@ test(function() {
   assert_array_equals(actualOrder, expectedOrder);
 }, "HTMLCollection enumerates properties in the right order");
 
+
+// feature: Uint8Array (interface) (supports indexed properties, does not support named properties)
+
 test(function() {
   var a = new Uint8Array(3);
   a.something = 1;
@@ -68,6 +73,9 @@ test(function() {
 
   assert_array_equals(actualOrder, expectedOrder);
 }, "Uint8Array enumerates properties in the right order");
+
+
+// feature: DOMStringMap (interface) (does not support indexed properties, supports named properties)
 
 test(function() {
   try {

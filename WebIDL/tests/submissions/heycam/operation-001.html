@@ -14,14 +14,35 @@
 // operation.
 
 var operations = [
+
+  // feature: HTMLElement.click (operation)
   "HTMLElement", "click", 0,
+
+  // feature: Node.appendChild (operation)
   "Node", "appendChild", 1,
+
+  // feature: DOMTokenList.add (operation) (variadic)
   "DOMTokenList", "add", 0,
+
+  // feature: Window.setTimeout (operation) (variadic)
   "Window", "setTimeout", 1,
+
+  // feature: Window.postMessage (operation) (with optional argument)
   "Window", "postMessage", 2,
+
+  // feature: DOMImplementation.createHTMLDocument (operation) (with optional argument)
   "DOMImplementation", "createHTMLDocument", 0,
+
+  // feature: Node.cloneNode (operation) (with optional argument default value)
   "Node", "cloneNode", 0,
+
+  // feature: HTMLSelectElement.add (operation) (with optional argument default value)
+  "HTMLSelectElement", "add", 1,
+
+  // feature: CanvasRenderingContext2D.drawImage (operation) (overloaded)
   "CanvasRenderingContext2D", "drawImage", 3,
+
+  // feature: FormData.append (operation) (overloaded)
   "FormData", "append", 2
 ];
 

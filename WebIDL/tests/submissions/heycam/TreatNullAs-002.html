@@ -12,6 +12,8 @@
 // convert null to "null".  If [TreatNullAs=EmptyString] is on the argument,
 // null will be converted to "" instead.
 
+// feature: DOMImplementation.createDocument (operation) (with [TreatNullAs=EmptyString] on an argument)
+
 test(function() {
   var doc;
   doc = document.implementation.createDocument(null, "test", null);

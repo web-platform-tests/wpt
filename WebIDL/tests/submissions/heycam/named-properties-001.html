@@ -16,6 +16,8 @@
 // Object.freeze, Object.seal or Object.preventExtensions on it must fail and
 // throw a TypeError.
 
+// feature: Storage (interface) (supports named properties)
+
 test(function() {
   var storage = document.getElementById("iframe").contentWindow.localStorage;
   assert_throws(new TypeError(), function() { Object.freeze(storage); });
@@ -31,6 +33,8 @@ test(function() {
   assert_throws(new TypeError(), function() { Object.preventExtensions(storage); });
 }, "Object.preventExtensions must fail on a Storage since it supports named properties");
 
+
+// feature: DOMStringMap (interface) (supports named properties)
 
 test(function() {
   var dataset = document.createElement("span").dataset;

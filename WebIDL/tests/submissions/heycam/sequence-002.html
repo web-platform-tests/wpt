@@ -12,6 +12,8 @@
 // which have had their array index properties set as own, writable, enumerable,
 // configurable properties.
 
+// feature: MutationCallback (operation) (on a callback interface, of a sequence type)
+
 async_test(function(t) {
   var span = document.createElement("span");
   var obs = new MutationObserver(function(records) {

@@ -67,6 +67,7 @@ indexed-properties-004.html
 indexed-properties-005.html
 initial-001.html
 initial-002.html
+instanceof-001.html
 interface-001.html
 interface-object-001.html
 interface-object-002.html

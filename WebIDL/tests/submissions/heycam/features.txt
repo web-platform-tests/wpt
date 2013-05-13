@@ -68,6 +68,7 @@ DOMException.code (exception field)
     initial-001.html
     initial-002.html
 DOMImplementation (interface)
+    instanceof-001.html
     interface-object-001.html
   without inheritance
     class-string-001.html
@@ -158,6 +159,7 @@ Document.title (attribute)
     attribute-001.html
     attribute-005.html
 Element (interface)
+    instanceof-001.html
   with inheritance
     class-string-001.html
     extensible-001.html

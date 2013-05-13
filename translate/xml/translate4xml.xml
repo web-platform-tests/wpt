@@ -3,6 +3,7 @@
   <title>The Life of a Simple Man</title>
  </head>
  <body>
+  <img src="smiley.gif" alt="Smiley face" width="42" height="42"/>
   <p>Everything started when Zebulon discovered that he had 
    a <fexp its:translate="no">doppelgänger</fexp> who was a
    serious baseball <fexp its:translate="no">aficionado</fexp>.</p>

@@ -8,11 +8,18 @@
   <body>
     <div id="log"></div>
     <script>
+    // TODO: this needs to test that fragment is not sent in the request..
       test(function() {
         var client = new XMLHttpRequest()
         client.open("GET", "folder.txt#foobar", false)
         client.send(null)
         assert_equals(client.responseText, "top\n")
+      })
+      test(function() {
+        var client = new XMLHttpRequest()
+        client.open("GET", "resources/requri.php#foobar", false)
+        client.send(null)
+        assert_regexp_match(client.responseText, /XMLHttpRequest\/resources\/requri\.php$/)
       })
     </script>
   </body>

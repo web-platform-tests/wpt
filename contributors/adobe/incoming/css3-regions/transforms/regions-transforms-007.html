@@ -2,67 +2,77 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title></title>
-    <title>CSS Regions: Transformed content in named flows using 3D transform and perspective</title>
+    <title>CSS Regions: Transformed regions with content and text that gets fragmented</title>
     <link rel="author" title="David Alcala" href="mailto:dalcala@adobe.com">
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
     <link rel="help" href="http://www.w3.org/TR/css3-2d-transforms/#transform-functions">
-    <link rel="match" href="reference/regions-transforms-rotatex-perspective-ref.html">
-    <meta name="assert" content="CSS rotateX and perspective 3D transform applied to a named flow transforms the content node.">
+    <link rel="help" href="http://dev.w3.org/csswg/css-break/#transforms">
+    <link rel="match" href="reference/regions-transforms-006-ref.html">
+    <meta name="assert" content="CSS translateX 2D transform applied to regions. Transformed content has text and spans multiple regions.">
     <style>
-    #region {
-        width: 300px;
-        height: 300px;
-        position: relative;
-        -webkit-flow-from: f;
-    }
     #source {
-        width: 200px;
-        height: 200px;
-        margin: 0 auto 60px;
+        width: 160px;
+        height: 160px;
         background-color: green;
+        font-family: monospace;
+        font-size: 16px;
+        line-height: 20px;
         -webkit-flow-into: f;
-        -webkit-transform: perspective(600px) rotateX(45deg);
+    }
+    .region {
+        width: 160px;
+        height: 160px;
+        float: left;
+        -webkit-flow-from: f;
+        -webkit-transform: translateX(50px);
+    }
+    #region1 {
+        margin-left: -40px;
+        background-color: red;
+    }
+    #region2 {
+        margin-left: 10px;
+        background-color: green;
+        overflow: hidden;
     }
     #div-red-parent {
         position: relative;
     }
-    .div-red {
-        width: 48px;
-        height: 48px;
-        position: absolute;
-        background-color: red;
-    }
     #div-red1 {
-        left: 64px;
-        top: 38px;
+        width: 158px;
+        height: 158px;
+        background-color: red;
+        position: absolute;
+        left: 10px;
+        top: 1px;
     }
     #div-red2 {
-        left: 191px;
-        top: 38px;
-    }
-    #div-red3 {
-        left: 48px;
-        top: 131px;
-    }
-    #div-red4 {
-        left: 207px;
-        top: 131px;
+        width: 158px;
+        height: 158px;
+        background-color: red;
+        position: absolute;
+        left: 181px;
+        top: 1px;
     }
     </style>
 </head>
 <body>
-    <p>The test passes if you see a green polygon and no red.</p>
-    <!-- This test fails in WebKit.  See this bug: [CSS Regions] Incorrect polygon shape when using rotateX and perspective 3D transforms on content node - https://bugs.webkit.org/show_bug.cgi?id=114293 -->
+    <ul>
+        <li>The test passes if you see two green squares with text inside and no red.</li>
+        <li>In the first square, the numbers should go up from "one" to "seventeen".</li>
+        <li>In the second square, the numbers should go up from "eighteen" to "twenty-six".</li>
+        <li>The numbers should go up sequentially by one.</li>
+        <li>None of the words should be cutoff and no text should be outside the green boxes.</li>
+    </ul>
     <div id="div-red-parent">
-        <div class="div-red" id="div-red1"></div>
-        <div class="div-red" id="div-red2"></div>
-        <div class="div-red" id="div-red3"></div>
-        <div class="div-red" id="div-red4"></div>
+        <div id="div-red1"></div>
+        <div id="div-red2"></div>
     </div>
-    <div id="source"></div>
-    <div id="region"></div>
-
+    <div id="source">
+        One two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen twenty twenty-one twenty-two twenty-three twenty-four twenty-five twenty-six twenty-seven twenty-eight twenty-nine thirty
+    </div>
+    <div class="region" id="region1"></div>
+    <div class="region" id="region2"></div>
 </body>
 </html>

@@ -2,77 +2,45 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>CSS Regions: Transformed regions with content and text that gets fragmented</title>
+    <title>CSS Regions: Transformed content in named flows using 2D transform that overflows region box</title>
     <link rel="author" title="David Alcala" href="mailto:dalcala@adobe.com">
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
     <link rel="help" href="http://www.w3.org/TR/css3-2d-transforms/#transform-functions">
-    <link rel="help" href="http://dev.w3.org/csswg/css-break/#transforms">
-    <link rel="match" href="reference/regions-transforms-two-green-squares-w-text-160x160-ref.html">
-    <meta name="assert" content="CSS translateX 2D transform applied to regions. Transformed content has text and spans multiple regions.">
+    <link rel="match" href="reference/regions-transforms-017-ref.html">
+    <meta name="assert" content="CSS scaleY 2D transform applied to a named flow transforms the content node. Transformed named flow content overflows the region box.">
     <style>
-    #source {
-        width: 160px;
-        height: 160px;
-        background-color: green;
-        font-family: monospace;
-        font-size: 16px;
-        line-height: 20px;
+    #sourceParent {
+        width: 100px;
+        height: 100px;
         -webkit-flow-into: f;
+        -webkit-transform: scaleY(2);
+        -webkit-transform-origin: top left;
     }
-    .region {
-        width: 160px;
-        height: 160px;
-        float: left;
-        -webkit-flow-from: f;
-        -webkit-transform: translateX(50px);
-    }
-    #region1 {
-        margin-left: -40px;
-        background-color: red;
-    }
-    #region2 {
-        margin-left: 10px;
+    #source1 {
+        width: 100px;
+        height: 50px;
         background-color: green;
-        overflow: hidden;
     }
-    #div-red-parent {
-        position: relative;
+    #source2 {
+        width: 100px;
+        height: 50px;
+        background-color: blue;
     }
-    #div-red1 {
-        width: 158px;
-        height: 158px;
+    #region {
+        width: 100px;
+        height: 100px;
         background-color: red;
-        position: absolute;
-        left: 10px;
-        top: 1px;
-    }
-    #div-red2 {
-        width: 158px;
-        height: 158px;
-        background-color: red;
-        position: absolute;
-        left: 181px;
-        top: 1px;
+        -webkit-flow-from: f;
     }
     </style>
 </head>
 <body>
-    <ul>
-        <li>The test passes if you see two green squares with text inside and no red.</li>
-        <li>In the first square, the numbers should go up from "one" to "seventeen".</li>
-        <li>In the second square, the numbers should go up from "eighteen" to "twenty-six".</li>
-        <li>The numbers should go up sequentially by one.</li>
-        <li>None of the words should be cutoff and no text should be outside the green boxes.</li>
-    </ul>
-    <div id="div-red-parent">
-        <div id="div-red1"></div>
-        <div id="div-red2"></div>
+    <p>The test passes if you see a green square and a blue square below it, and no red.</p>
+    <div id="sourceParent">
+        <div id="source1"></div>
+        <div id="source2"></div>
     </div>
-    <div id="source">
-        One two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen twenty twenty-one twenty-two twenty-three twenty-four twenty-five twenty-six twenty-seven twenty-eight twenty-nine thirty
-    </div>
-    <div class="region" id="region1"></div>
-    <div class="region" id="region2"></div>
+    <div id="region"></div>
 </body>
 </html>

@@ -2,60 +2,45 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>CSS Regions: Transformed regions with content that gets fragmented</title>
+    <title>CSS Regions: Transformed regions using 2D transform, transform-origin, and position: absolute for region</title>
     <link rel="author" title="David Alcala" href="mailto:dalcala@adobe.com">
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
     <link rel="help" href="http://www.w3.org/TR/css3-2d-transforms/#transform-functions">
-    <link rel="help" href="http://dev.w3.org/csswg/css-break/#transforms">
-    <link rel="match" href="reference/regions-transforms-two-green-squares-100x100-ref.html">
-    <meta name="assert" content="CSS scaleY 2D transform applied to regions. Transformed content spans multiple regions.">
+    <link rel="match" href="reference/regions-transforms-015-ref.html">
+    <meta name="assert" content="CSS scale 2D transform and transform-origin applied to a region with absolute positioning causes the content node to render as if the transform was set on it.">
     <style>
     #source {
-        width: 100px;
-        height: 100px;
+        width: 50px;
+        height: 50px;
         background-color: green;
         -webkit-flow-into: f;
     }
-    .region {
-        width: 100px;
+    #region {
+        width: 50px;
         height: 50px;
-        margin-left: 10px;
-        float: left;
         background-color: red;
+        position: absolute;
+        left: 58px;
+        top: 100px;
         -webkit-flow-from: f;
-        -webkit-transform: scaleY(2);
-        -webkit-transform-origin: top left;
+        -webkit-transform: scale(2);
+        -webkit-transform-origin: left top;
     }
-    #div-red-parent {
-        position: relative;
-    }
-    #div-red1 {
+    #div-red {
         width: 98px;
         height: 98px;
         background-color: red;
         position: absolute;
-        left: 11px;
-        top: 1px;
-    }
-    #div-red2 {
-        width: 98px;
-        height: 98px;
-        background-color: red;
-        position: absolute;
-        left: 121px;
-        top: 1px;
+        left: 59px;
+        top: 101px;
     }
     </style>
 </head>
 <body>
-    <p>The test passes if you see two green squares and no red.</p>
-    <div id="div-red-parent">
-        <div id="div-red1"></div>
-        <div id="div-red2"></div>
-    </div>
+    <p>The test passes if you see a green square and no red.</p>
+    <div id="div-red"></div>
     <div id="source"></div>
-    <div class="region"></div>
-    <div class="region"></div>
+    <div id="region"></div>
 </body>
 </html>

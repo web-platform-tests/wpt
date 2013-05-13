@@ -9,6 +9,7 @@ DOMString-002.html
 DOMString-003.html
 Date-001.html
 Date-002.html
+EnforceRange-001.html
 LenientThis-001.html
 NamedConstructor-001.html
 NamedPropertiesObject-001.html

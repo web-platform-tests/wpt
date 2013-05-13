@@ -364,6 +364,9 @@ HTMLSelectElement.length (attribute)
 HTMSelectLElement.add (operation)
   with return type void
     void-001.html
+IDBFactory.open (operation)
+  with [EnforceRange] on an argument
+    EnforceRange-001.html
 Int16Array (indexed property getter)
   of type short
     short-002.html

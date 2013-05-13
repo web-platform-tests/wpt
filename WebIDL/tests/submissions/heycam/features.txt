@@ -45,7 +45,7 @@ attribute that inherits its getter
   ??
 
 stringifier on DOMString attribute
-  URLUtils.href - http://url.spec.whatwg.org/#urlutils
+  URLUtils.href (HTMLAnchorElement) - http://url.spec.whatwg.org/#urlutils
   ??
 
 regular operation
@@ -53,11 +53,12 @@ regular operation
   Node.appendChild - http://dom.spec.whatwg.org/#node
 
 static operation
-  ??
+  URL.createObjectURL - File API
+  CSS.supports - ...
 
 variadic operation
-  Document.write - http://www.whatwg.org/specs/web-apps/current-work/#document
-  ParentNode.append - http://dom.spec.whatwg.org/#parentnode  (too new?)
+  DOMTokenList.add - ...
+  WindowTimers.setTimeout - ...
 
 optional argument
   Window.postMessage - http://www.whatwg.org/specs/web-apps/current-work/#window
@@ -277,6 +278,7 @@ operation argument extended attributes:
     Uint8ClampedArray.set - http://www.khronos.org/registry/typedarray/specs/latest/#7.1
 
   [EnforceRange]
+    (there are some uses in IndexedDB)
     ??
 
   [TreatNullAs]
@@ -335,9 +337,121 @@ Binding
 
 4.2 ECMAScript type mapping
 
-* any, void, boolean, byte, octet, short, unsigned short, long, unsigned long, long long, unsigned long long, float, unrestricted float, double, unrestricted double, DOMString, object, interface type, dictionary type (order of member evaluation), enumeration type, callback function type, nullable, sequence, array, union, Date, 
+* any
+    CustomEvent.initCustomEvent - http://dom.spec.whatwg.org/#interface-customevent
+    CustomEvent.detail - http://dom.spec.whatwg.org/#interface-customevent
 
-  TBD
+* void
+    * operations returning void return undefined
+
+* boolean
+    Event.initEvent - http://dom.spec.whatwg.org/#event
+    Event.bubbles - http://dom.spec.whatwg.org/#event
+    Document.hasFocus - http://www.whatwg.org/specs/web-apps/current-work/#document
+
+* byte
+    Int8Array indexed property getter and setter - http://www.khronos.org/registry/typedarray/specs/latest/#7
+    ??
+
+* octet
+    Uint8Array indexed property getter and setter - http://www.khronos.org/registry/typedarray/specs/latest/#7
+    ??
+
+* short
+    Int16Array indexed property getter and setter - http://www.khronos.org/registry/typedarray/specs/latest/#7
+    ??
+
+* unsigned short
+    CloseEvent constructor, code - http://www.whatwg.org/specs/web-apps/current-work/#event-definitions-3
+    Range.compareBoundaryPoints - http://dom.spec.whatwg.org/#range
+    WebSocket.readyState - http://www.whatwg.org/specs/web-apps/current-work/#websocket
+
+* long
+    HTMLPreElement.width - http://www.whatwg.org/specs/web-apps/current-work/#other-elements,-attributes-and-apis
+    HTMLElement.tabIndex - http://www.whatwg.org/specs/web-apps/current-work/#htmlelement
+
+* unsigned long
+    Document.createNodeIterator - http://dom.spec.whatwg.org/#document
+    WheelEvent constructor and .deltaMode - http://www.w3.org/TR/DOM-Level-3-Events/#events-WheelEvent
+    HTMLCollection.length - ...
+
+* long long
+    ??
+
+* unsigned long long
+    (IDBVersionChangeEvent has an unsigned long long member, but the constructor for this event doesn't seem to be implemented anywhere yet)
+    ??
+
+* float
+    SVGNumber.value - https://svgwg.org/svg2-draft/types.html#InterfaceSVGNumber
+    SVGMatrix.{translate,e} - https://svgwg.org/svg2-draft/coords.html#InterfaceSVGMatrix
+    
+* unrestricted float
+    Float32Array indexed property getter and setter - http://www.khronos.org/registry/typedarray/specs/latest/#7
+    ??
+
+* double
+    HTMLProgressElement.value - http://www.whatwg.org/specs/web-apps/current-work/#htmlprogresselement
+    HTMLMeterElement.min - http://www.whatwg.org/specs/web-apps/current-work/#htmlmeterelement
+
+* unrestricted double
+    HTMLInputElement.valueAsNumber - http://www.whatwg.org/specs/web-apps/current-work/#htmlelement
+    Float64Array indexed property getter and setter - http://www.khronos.org/registry/typedarray/specs/latest/#7
+
+* DOMString
+    Attr.value - http://dom.spec.whatwg.org/#interface-attr
+    CharacterData.appendData - http://dom.spec.whatwg.org/#characterdata
+    Node.nodeName - http://dom.spec.whatwg.org/#interface-node
+
+* object
+    TrackEvent.track - http://www.whatwg.org/specs/web-apps/current-work/#event-definitions
+    ??
+
+* interface type
+    Node.appendChild - http://dom.spec.whatwg.org/#node
+    SVGPoint.matrixTransform - https://svgwg.org/svg2-draft/coords.html#InterfaceSVGPoint
+    EventTarget.addEventListener - http://dom.spec.whatwg.org/#eventtarget
+    Node.parentNode - ...
+    SVGSVGElement.createSVGPoint - ...
+
+    is there a multiple operation callback interface we can use?
+
+* dictionary type
+    CustomEvent constructor - ...
+    WebGLRenderingContext.getContextAttributes() - http://www.khronos.org/registry/webgl/specs/latest/#5.2 
+    (would be good to test partial dictionaries, but the only one I'm aware of is MouseEvent in HTML, but that's not implemented)
+
+* enumeration type
+    CanvasFillRule - http://www.whatwg.org/specs/web-apps/current-work/#canvasfillrule
+    (is there a writable attribute of an enum type to test?)
+    (and one to test returning enum alues)
+
+* callback function type
+    MutationObserver constructor - http://dom.spec.whatwg.org/#mutationobserver
+    GlobalEventHandlers.onclick - http://www.whatwg.org/specs/web-apps/current-work/#idl-definitions
+
+* nullable
+    Node.textContent - http://dom.spec.whatwg.org/#node
+    Node.insertBefore - http://dom.spec.whatwg.org/#node
+    Document.getElementById - ...
+
+* sequence
+    MutationObserverInit - http://dom.spec.whatwg.org/#mutationobserver (would be nice to have platform array object to pass in)
+    MutationCallback - ...
+    ??
+
+* array
+    ??
+
+* union
+    HTMLSelectElement.add - http://www.whatwg.org/specs/web-apps/current-work/#htmlselectelement
+    ??
+
+* Date
+    HTMLInputElement.valueAsDate - http://www.whatwg.org/specs/web-apps/current-work/#htmlinputelement
+    ??
+
+  DONE
 
 4.2.24.1 Platform array object [[GetOwnProperty]] method
 
@@ -346,7 +460,7 @@ Binding
 * invalid array index
 * other properties
 
-  TBD
+   ??
 
 4.2.24.2 Platform array object [[DefineOwnProperty]] method
 
@@ -355,13 +469,12 @@ Binding
 * invalid array index
 * other properties
 
-  TBD
+   ??
 
 4.2.24.3 Platform array object [[Delete]] method
 
 ...
-
-  TBD
+   ??
 
 4.3 [ArrayClass]
 4.3.2 [Clamp]
@@ -400,7 +513,21 @@ Binding
 * if [Constructor], .length is [[Writable]] = false, [[Enumerable]] = false, [[Configurable]] = false, Number.
 * .length is 0 if not [Constructor]   ** how can this be?
 
+  simple constructors (with no overloading or optional arguments)
+    ArrayBuffer - ...
+    Range - ...
+
+  simple constructors (no overloading but with optional arguments)
+    Event - ...
+    WebSocket - ...
+
+  overloaded constructors
+    Uint8Array
+    Blob - File API
+
 4.4.1.2 Interface object [[HasInstance]] method
+
+  TBD
 
 4.4.2 Named constructors
 
@@ -443,6 +570,8 @@ Binding
 * assigning invalid enumeration types is ignored
 * .length = 1
 
+  nothing for assigning to an enum
+
 4.4.7 Operations
 
 * property exists on the interface prototype object (if regular) or interface object (if static)
@@ -455,7 +584,13 @@ Binding
 * stringifier on attribute calls [[Get]] with the attribute's property name
 * stringifier on an operation gets the function with [[Get]] and calls it
 
+  nothing to test for a distinguishing argument index > 0
+  nothing to test for "stringifier" on an operation
+
 4.5 Implements statement
+
+  URLUtils.href
+  afaict there isn't a use of implements with more than one consequential interface
 
 4.6 Platform objects implementing interfaces
 
@@ -469,10 +604,13 @@ Binding
 * named property visibility algorithm, looks at [Unforgeable], supported property name, [OverrideBuiltins], ...
 
 4.6.2 Platform object [[GetOwnProperty]] method
-4.6.2 Platform object [[DefineOwnProperty]] method
-4.6.3 Platform object [[Delete]] method
+4.6.3 Platform object [[DefineOwnProperty]] method
+4.6.4 Platform object [[Delete]] method
 
 * ... indexed, named properties ...
+
+  can't test an object with a named property setter but no creator
+  can't test indexed property deleter
 
 4.6.5 Platform object [[Call]] method
 
@@ -567,6 +705,7 @@ named constructor object
 attribute getter
 attribute setter
 operation Function
+static operation Function
 stringifier Function
 exception interface object
 exception interface prototype object

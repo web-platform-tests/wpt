@@ -220,12 +220,6 @@ GlobalEventHandlers.onclick (attribute)
 GlobalEventHandlers.onmouseenter (attribute)
   with [LenientThis]
     LenientThis-001.html
-HTMLAnchorElement (stringifier)
-    functions-001.html
-    initial-001.html
-    initial-002.html
-    stringifier-001.html
-    stringifier-002.html
 HTMLAudioElement (interface)
   with [NamedConstructor]
     class-string-001.html
@@ -506,6 +500,12 @@ URL.createObjectURL (static operation)
 URLUtils (interface)
   used on RHS of implements statement
     implements-001.html
+URLUtils (stringifier)
+    functions-001.html
+    initial-001.html
+    initial-002.html
+    stringifier-001.html
+    stringifier-002.html
 Uint8Array (indexed property getter)
   of type octet
     octet-002.html

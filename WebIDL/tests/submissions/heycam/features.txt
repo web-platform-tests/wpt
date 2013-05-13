@@ -494,12 +494,11 @@ UIEvent (interface)
   with inheritance, without [NoInterfaceObject]
     class-string-001.html
     extensible-001.html
+    functions-001.html
     initial-001.html
     initial-002.html
     interface-001.html
     interface-prototype-object-001.html
-  witih inheritance, without [NoInterfaceObject]
-    functions-001.html
 URL.createObjectURL (static operation)
     functions-001.html
     initial-001.html

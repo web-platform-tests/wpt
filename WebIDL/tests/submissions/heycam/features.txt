@@ -406,8 +406,8 @@ Node.appendChild (operation)
 Node.cloneNode (operation)
   with optional argument default value
     operation-001.html
-Node.insertBefore (attribute)
-  writable, of a nullable interface type
+Node.insertBefore (operation)
+  with an argument of a nullable interface type
     nullable-002.html
 Node.nodeName (attribute)
   of type DOMString

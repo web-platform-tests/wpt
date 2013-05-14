@@ -7,7 +7,8 @@
         <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
         <link rel="help" href="http://www.w3.org/TR/css3-regions/#relation-to-document-events">
         <meta name="assert" content="CSS regions module does not alter the normal processing of events in the document
-         tree. Therefore, onkeydown and onkeyup events from Delete key inside and outside a named flow should function correctly.">
+         tree. Therefore, onkeydown and onkeyup events inside and outside a named flow should be raised when the Delete
+         key is pressed and released.">
         <meta name="flags" content="dom interact">
         <link href="support/css/regions-keyboard.css" rel="stylesheet" type="text/css">
         <link href="/resources/testharness.css" rel="stylesheet" type="text/css">
@@ -16,7 +17,12 @@
         <script src="support/js/regions-keyboard-events-test-helper.js"></script>
     </head>
     <body>
-        <p id="msg">Highlight all of the text inside in the text field in the black div and press the Delete key to delete the contents of the the text field.  Then, highlight all of the text inside in the text field in the orange div and press the Delete key to delete the contents of the the text field.</p>
+        <ol id="msg">
+            <li>Highlight all of the text inside in the text field in the black div</li> 
+            <li>Press the Delete key to delete the contents of the text field.</li>
+            <li>Highlight all of the text inside in the text field in the orange div</li>
+            <li>Press the Delete key to delete the contents of the the text field.</li>
+        </ol>
         <div id="content">
             <div class="block"></div>
             <div class="block"></div>

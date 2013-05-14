@@ -1,5 +1,5 @@
 <?php
-  $filter_value = $_GET["filter_value"] ? $_GET["filter_value"] : "";
+  $filter_value = isset($_GET["filter_value"]) && $_GET["filter_value"] ? $_GET["filter_value"] : "";
   $result = "";
   foreach (getallheaders() as $name => $value) {
     if($filter_value != "") {

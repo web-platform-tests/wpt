@@ -8,7 +8,6 @@
   <body>
     <div id="log"></div>
     <script>
-    // TODO: this needs to test that fragment is not sent in the request..
       test(function() {
         var client = new XMLHttpRequest()
         client.open("GET", "folder.txt#foobar", false)
@@ -20,7 +19,19 @@
         client.open("GET", "resources/requri.php#foobar", false)
         client.send(null)
         assert_regexp_match(client.responseText, /XMLHttpRequest\/resources\/requri\.php$/)
-      })
+      }, 'make sure fragment is removed from URL before request')
+      test(function() {
+        var client = new XMLHttpRequest()
+        client.open("GET", "resources/requri.php?help=#foobar", false)
+        client.send(null)
+        assert_regexp_match(client.responseText, /XMLHttpRequest\/resources\/requri\.php\?help=$/)
+      }, 'make sure fragment is removed from URL before request (with query string)')
+      test(function() {
+        var client = new XMLHttpRequest()
+        client.open("GET", "resources/requri.php?" +encodeURIComponent("#foobar"), false)
+        client.send(null)
+        assert_regexp_match(client.responseText, /XMLHttpRequest\/resources\/requri\.php\?%23foobar$/)
+      }, 'make sure escaped # is not removed')
     </script>
   </body>
 </html>

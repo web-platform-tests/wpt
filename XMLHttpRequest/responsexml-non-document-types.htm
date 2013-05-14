@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+  <head>
+    <title>XMLHttpRequest: responseXML non document responseType</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-responsexml-attribute" data-tested-assertations="following::ol[1]/li[1]" />
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-responsetype-attribute" data-tested-assertations="following::ol[1]/li[4]" />
+  </head>
+  <body>
+    <div id="log"></div>
+    <script>
+      function request(type) {
+        test(function() {
+          var client = new XMLHttpRequest()
+          client.responseType = type
+          client.open("GET", "resources/well-formed.xml", false)
+          client.send(null)
+          assert_throws("INVALID_STATE_ERR", function() {var x = client.responseXML}, 'throw for '+type)
+        })
+      }
+      request("arraybuffer")
+      request("blob")
+      request("json")
+      request("text")
+    </script>
+  </body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>CSS Regions Test: flowing dialog elements in region</title>
+		<link rel="author" title="Catalin Badea" href="mailto:badea@adobe.com">
+		<link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
+		<link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
+		<meta name="flags" content="dom">
+		<meta name="assert" content="Test checks that dialog elements are correctly flowed into a region.">
+		<link rel="match" href="reference/regions-dialog-002-ref.html">
+		<style>
+      #content {
+        -webkit-flow-into: f;
+        width: 30px;
+        height: 30px;
+        background-color: green;
+
+        position: relative;
+        display: block;
+        margin: 10px;
+      }
+      #region {
+        width: 100px;
+        height: 100px;
+        background-color: gray;
+        border-style: solid;
+        border-width: thin;
+        -webkit-flow-from: f;
+      }
+	  </style>
+	</head>
+	<body>
+		<ol>
+			<li>Test passes if you see a green square inside a gray square.</li>
+      <li>You shouldn't see any red.</li>
+		</ol>
+		<dialog id="content"></dialog>
+    <div id="region">
+      <div style="width: 100px; height: 100px; background-color: red;"></div>
+    </div>
+	</body>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      var dialog = document.getElementsByTagName('dialog')[0];
+      dialog.show();
+    });
+  </script>
+</html>

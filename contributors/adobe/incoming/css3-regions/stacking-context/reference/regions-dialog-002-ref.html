@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>CSS Reftest Reference</title>
+		<link rel="author" title="Catalin Badea" href="mailto:badea@adobe.com">
+		<style>
+      #content {
+        width: 30px;
+        height: 30px;
+        background-color: green;
+
+        position: relative;
+        display: block;
+        margin: 10px;
+      }
+      #region {
+        width: 100px;
+        height: 100px;
+        background-color: gray;
+        border-style: solid;
+        border-width: thin;
+      }
+		</style>
+	</head>
+	<body>
+		<ol>
+			<li>Test passes if you see a green square inside a gray square.</li>
+      <li>You shouldn't see any red.</li>
+		</ol>
+    <div id="region">
+		  <dialog id="content"></dialog>
+    </div>
+	</body>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      var dialog = document.getElementsByTagName('dialog')[0];
+      dialog.show();
+    });
+  </script>
+</html>

@@ -2,77 +2,70 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>CSS Regions: Transformed regions with content and text that gets fragmented</title>
+    <title>CSS Regions: Transformed regions with content and text that gets fragmented and overflows</title>
+    <link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
     <link rel="author" title="David Alcala" href="mailto:dalcala@adobe.com">
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-functions">
-    <link rel="help" href="http://dev.w3.org/csswg/css-break/#transforms">
+    <link rel="help" href="http://www.w3.org/TR/css3-break/#transforms">
     <link rel="match" href="reference/regions-transforms-006-ref.html">
-    <meta name="assert" content="CSS translateX 2D transform applied to regions. Transformed content has text and spans multiple regions.">
+    <meta name="assert" content="This test checks that regions are transformed when the content spans multiple regions and the overflow remains visible.">
     <style>
+    .ahem {
+        font-family: Ahem;
+        font-size: 10px;
+        line-height: 20px; 
+    }
     #source {
-        width: 160px;
-        height: 160px;
-        background-color: green;
-        font-family: monospace;
-        font-size: 16px;
-        line-height: 20px;
+        color: green;
         -webkit-flow-into: f;
     }
     .region {
-        width: 160px;
-        height: 160px;
-        float: left;
         -webkit-flow-from: f;
         -webkit-transform: translateX(50px);
-    }
-    #region1 {
-        margin-left: -40px;
-        background-color: red;
-    }
-    #region2 {
+        width: 100px;
+        height: 100px;
+        float: left;
         margin-left: 10px;
-        background-color: green;
-        overflow: hidden;
+        border: 1px solid black;
     }
-    #div-red-parent {
-        position: relative;
-    }
-    #div-red1 {
-        width: 158px;
-        height: 158px;
-        background-color: red;
+    .failure {
         position: absolute;
-        left: 10px;
-        top: 1px;
+        width: 102px;
+        height: 102px;
+        margin-top: 1px;
+        margin-left: 10px;
+        padding-left: 1px;
+        color: red;
+        z-index: -1;
     }
-    #div-red2 {
-        width: 158px;
-        height: 158px;
-        background-color: red;
-        position: absolute;
-        left: 181px;
-        top: 1px;
+    .r-left {
+        margin-left: -40px;
+    }
+    .f-left {
+        left: 8px;
+    }
+    .f-right {
+        left: 120px;
     }
     </style>
 </head>
 <body>
-    <ul>
-        <li>The test passes if you see two green squares with text inside and no red.</li>
-        <li>In the first square, the numbers should go up from "one" to "seventeen".</li>
-        <li>In the second square, the numbers should go up from "eighteen" to "twenty-six".</li>
-        <li>The numbers should go up sequentially by one.</li>
-        <li>None of the words should be cutoff and no text should be outside the green boxes.</li>
-    </ul>
-    <div id="div-red-parent">
-        <div id="div-red1"></div>
-        <div id="div-red2"></div>
-    </div>
-    <div id="source">
-        One two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen twenty twenty-one twenty-two twenty-three twenty-four twenty-five twenty-six twenty-seven twenty-eight twenty-nine thirty
-    </div>
-    <div class="region" id="region1"></div>
-    <div class="region" id="region2"></div>
+    <p>The test passes if:</p>
+      <ul> 
+          <li>The two squares each contain five green horizontal stripes</li>
+          <li>There are two green horizontal stripes below the square on right</li>
+          <li>There is no red</li>
+      </ul>
+      <div id="source" class="ahem">XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX</div>
+      <div class="region r-left"></div>
+      <div class="region"></div>
+      <div class="ahem failure f-left">
+          XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX
+      </div>
+      <div class="ahem failure f-right">
+          XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX
+      </div>
 </body>
 </html>

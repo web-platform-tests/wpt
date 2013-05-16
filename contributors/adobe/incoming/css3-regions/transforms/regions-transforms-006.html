@@ -2,46 +2,71 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>CSS Regions: Transformed content in named flows using 2D transform spans regions with text</title>
+    <title>CSS Regions: Transformed content in named flow that spans multiple regions and overflows</title>
+    <link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
     <link rel="author" title="David Alcala" href="mailto:dalcala@adobe.com">
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-functions">
-    <link rel="help" href="http://dev.w3.org/csswg/css-break/#transforms">
+    <link rel="help" href="http://www.w3.org/TR/css3-break/#transforms">
     <link rel="match" href="reference/regions-transforms-006-ref.html">
-    <meta name="assert" content="CSS translateX 2D transform applied to a named flow transforms the content node and its text. Transformed named flow content spans multiple regions.">
+    <meta name="assert" content="This test checks that the content node of a named flow is transformed and the overflow remains visible when the content spans multiple regions.">
     <style>
+    .ahem {
+        font-family: Ahem;
+        font-size: 10px;
+        line-height: 20px; 
+    }
     #source {
-        width: 160px;
-        height: 320px;
-        background-color: green;
-        font-family: monospace;
-        font-size: 16px;
-        line-height: 20px;
+        color: green;
         margin-left: -50px;
         -webkit-transform: translateX(50px);
         -webkit-flow-into: f;
     }
     .region {
         -webkit-flow-from: f;
-        width: 160px;
-        height: 160px;
+        width: 100px;
+        height: 100px;
         margin-left: 10px;
         float: left;
-        background-color: red;
+        border: 1px solid black;
+    }
+    .failure {
+        position: absolute;
+        width: 102px;
+        height: 102px;
+        margin-top: 1px;
+        margin-left: 10px;
+        padding-left: 1px;
+        color: red;
+        z-index: -1;
+    }
+    .left {
+        left: 8px;
+    }
+    .right {
+        left: 120px;
     }
     </style>
 </head>
 <body>
-    <ul>
-        <li>The test passes if you see two green squares with text inside and no red.</li>
-        <li>In the first square, the numbers should go up from "one" to "seventeen".</li>
-        <li>In the second square, the numbers should go up from "eighteen" to "twenty-six".</li>
-        <li>The numbers should go up sequentially by one.</li>
-        <li>None of the words should be cutoff and no text should be outside the green boxes.</li>
+    <p>The test passes if:</p>
+    <ul> 
+        <li>The two squares each contain five green horizontal stripes</li>
+        <li>There are two green horizontal stripes below the square on right</li>
+        <li>There is no red</li>
     </ul>
-    <div id="source">One two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen twenty twenty-one twenty-two twenty-three twenty-four twenty-five twenty-six twenty-seven twenty-eight twenty-nine thirty</div>
+    <div id="source" class="ahem">XXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXX</div>
     <div class="region"></div>
     <div class="region"></div>
+    
+    <div class="ahem failure left">
+        XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX
+    </div>
+    <div class="ahem failure right">
+        XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX
+    </div>
+    
+    
 </body>
 </html>

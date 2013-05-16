@@ -7,15 +7,18 @@
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-functions">
-    <link rel="help" href="http://dev.w3.org/csswg/css-break/#transforms">
+    <link rel="help" href="http://www.w3.org/TR/css3-break/#transforms">
     <link rel="match" href="reference/regions-transforms-004-ref.html">
-    <meta name="assert" content="CSS scaleY 2D transform applied to regions. Transformed content spans multiple regions.">
+    <meta name="assert" content="This test checks that the transform applied to regions that contain source content spanning multiple regions.">
     <style>
     #source {
         width: 100px;
         height: 100px;
-        background-color: green;
         -webkit-flow-into: f;
+    }
+    .src-child {
+        height: 50px;
+        background-color: green;
     }
     .region {
         width: 100px;
@@ -27,35 +30,29 @@
         -webkit-transform: scaleY(2);
         -webkit-transform-origin: top left;
     }
-    #div-red-parent {
-        position: relative;
-    }
-    #div-red1 {
+
+    .failure-div {
+        position: absolute;
+        margin-left: 10px;
+        background-color: red;
         width: 98px;
         height: 98px;
-        background-color: red;
-        position: absolute;
-        left: 11px;
-        top: 1px;
     }
-    #div-red2 {
-        width: 98px;
-        height: 98px;
-        background-color: red;
-        position: absolute;
-        left: 121px;
-        top: 1px;
+    .right {
+        left: 119px;
     }
     </style>
 </head>
 <body>
     <p>The test passes if you see two green squares and no red.</p>
-    <div id="div-red-parent">
-        <div id="div-red1"></div>
-        <div id="div-red2"></div>
+    <div class="failure-div"></div>
+    <div class="failure-div right"></div>
+    <div id="source">
+        <div class="src-child"></div>
+        <div class="src-child"></div>
     </div>
-    <div id="source"></div>
     <div class="region"></div>
     <div class="region"></div>
+    
 </body>
 </html>

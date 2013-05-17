@@ -1,3 +1,13 @@
+support xmlhttprequest-timeout-aborted.js
+support xmlhttprequest-timeout-abortedonmain.js
+support xmlhttprequest-timeout-overrides.js
+support xmlhttprequest-timeout-overridesexpires.js
+support xmlhttprequest-timeout-runner.js
+support xmlhttprequest-timeout-simple.js
+support xmlhttprequest-timeout-synconmain.js
+support xmlhttprequest-timeout-synconworker.js
+support xmlhttprequest-timeout-twice.js
+support xmlhttprequest-timeout.js
 abort-after-send.htm
 abort-during-done.htm
 abort-during-open.htm
@@ -80,4 +90,17 @@ xmlhttprequest-basic.htm
 xmlhttprequest-eventtarget.htm
 xmlhttprequest-network-error-sync.htm
 xmlhttprequest-network-error.htm
+xmlhttprequest-timeout-aborted.html
+xmlhttprequest-timeout-abortedonmain.html
+xmlhttprequest-timeout-overrides.html
+xmlhttprequest-timeout-overridesexpires.html
+xmlhttprequest-timeout-simple.html
+xmlhttprequest-timeout-synconmain.html
+xmlhttprequest-timeout-twice.html
+xmlhttprequest-timeout-worker-aborted.html
+xmlhttprequest-timeout-worker-overrides.html
+xmlhttprequest-timeout-worker-overridesexpires.html
+xmlhttprequest-timeout-worker-simple.html
+xmlhttprequest-timeout-worker-synconworker.html
+xmlhttprequest-timeout-worker-twice.html
 xmlhttprequest-unsent.htm

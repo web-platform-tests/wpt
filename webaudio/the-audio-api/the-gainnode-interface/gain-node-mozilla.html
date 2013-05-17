@@ -39,32 +39,6 @@ setup(function() {
   sourceNode.start(0);
 });
 
-function checkGainBuffer(event) {
-  scriptProcessor.onaudioprocess = null;
-  assert_equals(event.inputBuffer.numberOfChannels, 1, "event.inputBuffer.numberOfChannels");
-  assert_equals(event.inputBuffer.getChannelData(0).length,
-                expectedBuffer.getChannelData(0).length,
-                "expected buffer length");
-  assert_true(compareBuffers(event.inputBuffer.getChannelData(0),
-                             expectedBuffer.getChannelData(0)),
-              "compareBuffers");
-  t.done();
-}
-
-test(function() {
-  assert_equals(gainNode.numberOfInputs, 1, "gainNode.numberOfInputs");
-}, "gainNode.numberOfInputs should be 1 by default");
-
-test(function() {
-  assert_equals(gainNode.numberOfOutputs, 1, "gainNode.numberOfOutputs");
-}, "gainNode.numberOfOutputs should be 1 by default");
-
-test(function() {
-  assert_has_property(gainNode, "gain", "gainNode should have gain");
-}, "gainNode should have gain");
-
-test_implements_audio_param_interface(gainNode.gain);
-
   </script>
  </body>
 </html>

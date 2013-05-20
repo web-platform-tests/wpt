@@ -13,24 +13,38 @@
     <meta name="assert" content="CSS translateY 2D transform applied to a content node transforms the content node. Transformed named flow content spans multiple regions.">
     <style>
     .content {
-        width: 80px;
-        height: 80px;
+        float: left;
         background-color: green;
-        -webkit-transform-origin: top left;
+        -webkit-transform-origin: center center;
         -webkit-flow-into: f;
     }
     #source1 {
-        -webkit-transform: scaleY(1.75);
+        -webkit-transform: rotate(90deg);
+        width: 20px;
+        height: 80px;
+    }
+    
+    #source1:hover {
+        -webkit-transform: rotate(90deg);
+        -webkit-transition: 1s;
     }
     #source2 {
-        -webkit-transform: translateY(60px) scaleY(1.25);
+        -webkit-transform: scaleY(2);
+        width: 80px;
+        height: 10px;
+        margin-top: 35px;
+    }
+    #source2:hover {
+        -webkit-transform: scaleY(2);
+        -webkit-transition: 1s;
     }
     .region {
         width: 80px;
         height: 80px;
         margin-left: 10px;
         float: left;
-        background-color: red;
+        border: 1px solid black;
+        /*background-color: red;*/
         -webkit-flow-from: f;
     }
     </style>
@@ -42,5 +56,6 @@
     <div class="region"></div>
     <div class="region"></div>
     <div class="region"></div>
+    
 </body>
 </html>

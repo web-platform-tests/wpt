@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>CSS Regions: Fragmented content with transformations on each fragment</title>
     <link rel="author" title="David Alcala" href="mailto:dalcala@adobe.com">
+    <link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-functions">
@@ -17,19 +18,19 @@
         -webkit-flow-into: f;
     }
     #source1 {
-        -webkit-transform: scale(2);
-        -webkit-transform-origin: center center;
         margin-top: 25px;
         margin-left: 25px;
         width: 50px;
         height: 50px;
+        -webkit-transform: scale(2);
+        -webkit-transform-origin: center center;
     }
     #source2 {
-        -webkit-transform-origin: top left;
-        -webkit-transform: scaleY(2);
         width: 100px;
         height: 50px;
         margin-top: 25px;
+        -webkit-transform-origin: top left;
+        -webkit-transform: scaleY(2);
     }
     .region {
         width: 100px;

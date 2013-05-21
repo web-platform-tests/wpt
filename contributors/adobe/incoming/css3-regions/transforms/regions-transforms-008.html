@@ -8,7 +8,7 @@
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-functions">
-    <link rel="help" href="http://www.w3.org/TR/css3-break/#transforms">
+    <link rel="help" href="http://dev.w3.org/csswg/css-break/#transforms">
     <link rel="match" href="reference/regions-transforms-007-ref.html">
     <meta name="flags" content="ahem">
     <meta name="assert" content="This test checks that regions are transformed when the content spans multiple regions and the overflow remains visible.">
@@ -23,13 +23,13 @@
         -webkit-flow-into: f;
     }
     .region {
-        -webkit-flow-from: f;
-        -webkit-transform: translateX(50px);
         width: 100px;
         height: 100px;
         float: left;
         margin-left: 10px;
         border: 1px solid black;
+        -webkit-flow-from: f;
+        -webkit-transform: translateX(50px);
     }
     .failure {
         position: absolute;

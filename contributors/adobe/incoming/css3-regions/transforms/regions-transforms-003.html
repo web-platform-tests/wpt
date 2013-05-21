@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>CSS Regions: Content in named flow that has transformed parent outside the named flow using 2D transform</title>
     <link rel="author" title="David Alcala" href="mailto:dalcala@adobe.com">
+    <link rel="reviewer" title="Mihai Balan" href="mailto:mibalan@adobe.com">
+    <link rel="reviewer" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-functions">
@@ -12,10 +14,10 @@
     <style>
     #parent {
         margin-top: -10px;
-        -webkit-transform: translateX(-50px);
         width: 10px;
         height: 10px;
         background-color: red;
+        -webkit-transform: translateX(-50px);
     }
     #child {
         background-color: green;

@@ -398,9 +398,8 @@ policies and contribution forms [3].
     function next_default_name()
     {
         //Don't use document.title to work around an Opera bug in XHTML documents
-        var prefix = document.getElementsByTagName("title").length > 0 ?
-                         document.getElementsByTagName("title")[0].textContent :
-                         "Untitled";
+        var title = document.getElementsByTagName("title")[0];
+        var prefix = (title && title.firstChild && title.firstChild.data) || "Untitled";
         var suffix = name_counter > 0 ? " " + name_counter : "";
         name_counter++;
         return prefix + suffix;

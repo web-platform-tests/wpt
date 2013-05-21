@@ -118,7 +118,7 @@
             "TOKENS" : "dom",
             "ASSERTION" : "Setting max-zoom in @viewport to 50% will not affect width.",
             "VIEWPORT_DESC" : "max-zoom: 50%",
-            "TEST_FUNCTION" : "assert_equals(viewport.zoom, 0.5); assert_equals(viewport.actualWidth, viewport.initialWidth);"
+            "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, viewport.initialWidth);"
         },
         {
             "DESCRIPTION" : "@viewport constrained - zoom greater than max-zoom.",
@@ -126,8 +126,8 @@
             "AUTHOR_EMAIL" : "rune@opera.com",
             "TOKENS" : "dom",
             "ASSERTION" : "Setting zoom greater than max-zoom will set zoom to max-zoom.",
-            "VIEWPORT_DESC" : "max-zoom: 50%; zoom: 150%",
-            "TEST_FUNCTION" : "assert_equals(viewport.zoom, 0.5);"
+            "VIEWPORT_DESC" : "max-zoom: 150%; zoom: 200%",
+            "TEST_FUNCTION" : "assert_equals(viewport.zoom, 1.5);"
         },
         {
             "DESCRIPTION" : "@viewport constrained - zoom less than min-zoom.",

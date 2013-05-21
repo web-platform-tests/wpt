@@ -1,58 +1,38 @@
 http://www.w3.org/TR/css3-text/#intro	1	 Introduction
-http://www.w3.org/TR/css3-text/#script-groups	1.1	Script Categorization
-http://www.w3.org/TR/css3-text/#conformance	2	 Conformance
-http://www.w3.org/TR/css3-text/#partial-impl	2.1	 Partial and Experimental Implementations
-http://www.w3.org/TR/css3-text/#transforming	3	 Transforming Text
-http://www.w3.org/TR/css3-text/#text-transform	3.1	 Transforming Text: the &lsquo;text-transform&rsquo; property
-http://www.w3.org/TR/css3-text/#white-space-processing	4	 White Space Processing
-http://www.w3.org/TR/css3-text/#white-space-collapsing	4.1	 White Space Collapsing: the &lsquo;bikeshedding&rsquo; property
-http://www.w3.org/TR/css3-text/#tab-size	4.2	 Tab Character Size: the &lsquo;tab-size&rsquo; property
-http://www.w3.org/TR/css3-text/#white-space-rules	4.3	 The White Space Processing Rules
-http://www.w3.org/TR/css3-text/#egbidiwscollapse	4.3.1	 Example of bidirectionality with white space collapsing
-http://www.w3.org/TR/css3-text/#line-break-transform	4.3.2	 Line Feed Transformation Rules
-http://www.w3.org/TR/css3-text/#white-space-summary	4.3.3	 Informative Summary of White Space Collapsing Effects
-http://www.w3.org/TR/css3-text/#white-space	4.4	 White Space and Text Wrapping Shorthand: the &lsquo;white-space&rsquo; property
+http://www.w3.org/TR/css3-text/#placement	1.1	 Module Interactions
+http://www.w3.org/TR/css3-text/#values	1.2	 Values
+http://www.w3.org/TR/css3-text/#terms	1.3	 Terminology
+http://www.w3.org/TR/css3-text/#transforming	2	 Transforming Text
+http://www.w3.org/TR/css3-text/#text-transform	2.1	 Transforming Text: the ‘text-transform’ property
+http://www.w3.org/TR/css3-text/#white-space	3	 White Space and Wrapping: the ‘white-space’ property
+http://www.w3.org/TR/css3-text/#white-space-processing	4	 White Space Processing Details
+http://www.w3.org/TR/css3-text/#white-space-rules	4.1	 The White Space Processing Rules
+http://www.w3.org/TR/css3-text/#egbidiwscollapse	4.1.1	 Example of bidirectionality with white space collapsing
+http://www.w3.org/TR/css3-text/#line-break-transform	4.1.2	 Line Break Transformation Rules
+http://www.w3.org/TR/css3-text/#tab-size	4.2	 Tab Character Size: the ‘tab-size’ property
 http://www.w3.org/TR/css3-text/#line-breaking	5	 Line Breaking and Word Boundaries
-http://www.w3.org/TR/css3-text/#line-break	5.1	 Line Breaking Strictness: the &lsquo;line-break&rsquo; property
-http://www.w3.org/TR/css3-text/#word-break	5.2	 Word Breaking Rules: the &lsquo;word-break&rsquo; property
+http://www.w3.org/TR/css3-text/#line-break-details	5.1	 Line Breaking Details
+http://www.w3.org/TR/css3-text/#line-break	5.2	 Breaking Rules for Punctuation: the ‘line-break’ property
+http://www.w3.org/TR/css3-text/#word-break	5.3	 Breaking Rules for Letters: the ‘word-break’ property
 http://www.w3.org/TR/css3-text/#hyphenation	6	Hyphenation
-http://www.w3.org/TR/css3-text/#hyphens	6.1	Hyphenation Control: the &lsquo;hyphens&rsquo; property
-http://www.w3.org/TR/css3-text/#hyphenate-character	6.2	 Hyphens: the &lsquo;hyphenate-character&rsquo; property
-http://www.w3.org/TR/css3-text/#hyphenate-size-limits	6.3	 Hyphenation Size Limit: the &lsquo;hyphenate-limit-zone&rsquo; property
-http://www.w3.org/TR/css3-text/#hyphenate-char-limits	6.4	 Hyphenation Character Limits: the &lsquo;hyphenate-limit-word&rsquo; property
-http://www.w3.org/TR/css3-text/#hyphenate-line-limits	6.5	 Hyphenation Line Limits: the &lsquo;hyphenate-limit-lines&rsquo; and &lsquo;hyphenate-limit-last&rsquo; properties
-http://www.w3.org/TR/css3-text/#hyphenation-resource	6.6	 Hyphenation Resources
-http://www.w3.org/TR/css3-text/#at-hyphenate-resource	6.6.1	The &lsquo;@hyphenate-resource&rsquo; rule 
-http://www.w3.org/TR/css3-text/#the-hyphenate-resource	6.6.2	The &lsquo;hyphenate-resource&rsquo; property
-http://www.w3.org/TR/css3-text/#wrapping	7	 Text Wrapping
-http://www.w3.org/TR/css3-text/#text-wrap	7.1	 Text Wrap Settings: the &lsquo;text-wrap&rsquo; property
-http://www.w3.org/TR/css3-text/#example-avoid	7.1.1	Example of using &lsquo;text-wrap: avoid&rsquo; in presenting a footer
-http://www.w3.org/TR/css3-text/#word-wrap	7.2	 Emergency Wrapping: the &lsquo;word-wrap&rsquo; property
-http://www.w3.org/TR/css3-text/#justification	8	 Alignment and Justification
-http://www.w3.org/TR/css3-text/#text-align	8.1	 Text Alignment: the &lsquo;text-align&rsquo; property
-http://www.w3.org/TR/css3-text/#character-alignment	8.1.1	Details on Character-based Alignment in a Table Column
-http://www.w3.org/TR/css3-text/#text-align-last	8.2	 Last Line Alignment: the &lsquo;text-align-last&rsquo; property
-http://www.w3.org/TR/css3-text/#text-justify	8.3	 Justification Method: the &lsquo;text-justify&rsquo; property
-http://www.w3.org/TR/css3-text/#spacing	9	 Spacing
-http://www.w3.org/TR/css3-text/#word-spacing	9.1	 Word Spacing: the &lsquo;word-spacing&rsquo; property
-http://www.w3.org/TR/css3-text/#letter-spacing	9.2	 Tracking: the &lsquo;letter-spacing&rsquo; property
-http://www.w3.org/TR/css3-text/#text-trim-prop	9.3	 Fullwidth Kerning: the &lsquo;text-trim&rsquo; property
-http://www.w3.org/TR/css3-text/#text-autospace-prop	9.4	 Adding space: the &lsquo;text-autospace&rsquo; property
-http://www.w3.org/TR/css3-text/#edge-effects	10	 Edge Effects
-http://www.w3.org/TR/css3-text/#text-indent	10.1	 First Line Indentation: the &lsquo;text-indent&rsquo; property
-http://www.w3.org/TR/css3-text/#hanging-punctuation	10.2	 Hanging Punctuation: the &lsquo;hanging-punctuation&rsquo; property
-http://www.w3.org/TR/css3-text/#decoration	11	 Text Decoration
-http://www.w3.org/TR/css3-text/#line-decoration	11.1	 Line Decoration: Underline, Overline, and Strike-Through
-http://www.w3.org/TR/css3-text/#text-decoration-line	11.1.1	 Text Decoration Lines: the &lsquo;text-decoration-line&rsquo; property
-http://www.w3.org/TR/css3-text/#text-decoration-color	11.1.2	 Text Decoration Color: the &lsquo;text-decoration-color&rsquo; property
-http://www.w3.org/TR/css3-text/#text-decoration-style	11.1.3	 Text Decoration Style: the &lsquo;text-decoration-style&rsquo; property
-http://www.w3.org/TR/css3-text/#text-decoration	11.1.4	 Text Decoration Shorthand: the &lsquo;text-decoration&rsquo; property
-http://www.w3.org/TR/css3-text/#text-decoration-skip	11.1.5	 Text Decoration Line Continuity: the &lsquo;text-decoration-skip&rsquo; property
-http://www.w3.org/TR/css3-text/#text-underline-position	11.1.6	 Text Underline Position: the &lsquo;text-underline-position&rsquo; property
-http://www.w3.org/TR/css3-text/#emphasis-marks	11.2	 Emphasis Marks
-http://www.w3.org/TR/css3-text/#text-emphasis-style	11.2.1	 Emphasis Mark Style: the &lsquo;text-emphasis-style&rsquo; property
-http://www.w3.org/TR/css3-text/#text-emphasis-color	11.2.2	 Emphasis Mark Color: the &lsquo;text-emphasis-color&rsquo; property
-http://www.w3.org/TR/css3-text/#text-emphasis	11.2.3	 Emphasis Mark Shorthand: the &lsquo;text-emphasis&rsquo; property
-http://www.w3.org/TR/css3-text/#text-emphasis-position	11.2.4	 Emphasis Mark Position: the &lsquo;text-emphasis-position&rsquo; property
-http://www.w3.org/TR/css3-text/#text-shadow	11.3	 Text Shadows: the &lsquo;text-shadow&rsquo; property
-http://www.w3.org/TR/css3-text/#text-outline	11.4	 Text Outlines: the &lsquo;text-outline&rsquo; property
+http://www.w3.org/TR/css3-text/#hyphens	6.1	Hyphenation Control: the ‘hyphens’ property
+http://www.w3.org/TR/css3-text/#overflow-wrap	6.2	 Overflow Wrapping: the ‘word-wrap’/‘overflow-wrap’ property
+http://www.w3.org/TR/css3-text/#justification	7	 Alignment and Justification
+http://www.w3.org/TR/css3-text/#text-align	7.1	 Text Alignment: the ‘text-align’ property
+http://www.w3.org/TR/css3-text/#bidi-linebox	7.1.1	 Bidirectionality and Line Boxes
+http://www.w3.org/TR/css3-text/#character-alignment	7.1.2	Character-based Alignment in a Table Column
+http://www.w3.org/TR/css3-text/#text-align-last	7.2	 Last Line Alignment: the ‘text-align-last’ property
+http://www.w3.org/TR/css3-text/#text-justify	7.3	 Justification Method: the ‘text-justify’ property
+http://www.w3.org/TR/css3-text/#spacing	8	 Spacing
+http://www.w3.org/TR/css3-text/#word-spacing	8.1	 Word Spacing: the ‘word-spacing’ property
+http://www.w3.org/TR/css3-text/#letter-spacing	8.2	 Tracking: the ‘letter-spacing’ property
+http://www.w3.org/TR/css3-text/#edge-effects	9	 Edge Effects
+http://www.w3.org/TR/css3-text/#text-indent	9.1	 First Line Indentation: the ‘text-indent’ property
+http://www.w3.org/TR/css3-text/#hanging-punctuation	9.2	 Hanging Punctuation: the ‘hanging-punctuation’ property
+http://www.w3.org/TR/css3-text/#conformance	10	 Conformance
+http://www.w3.org/TR/css3-text/#conventions	10.1	 Document Conventions
+http://www.w3.org/TR/css3-text/#conformance-classes	10.2	 Conformance Classes
+http://www.w3.org/TR/css3-text/#partial	10.3	 Partial Implementations
+http://www.w3.org/TR/css3-text/#experimental	10.4	 Experimental Implementations
+http://www.w3.org/TR/css3-text/#testing	10.5	Non-Experimental Implementations
+http://www.w3.org/TR/css3-text/#cr-exit-criteria	10.6	 CR Exit Criteria

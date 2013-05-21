@@ -1,9 +1,9 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-abort()-method" />
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-abort()-method" data-tested-assertations="following-sibling::ol/li[4]/ol/li[5]" />
     <script src="/resources/testharness.js"></script>
-    <title>XMLHttpRequest L2: The abort() method: abort and loadend events</title>
+    <title>XMLHttpRequest: The abort() method: abort and loadend events</title>
 </head>
 
 <body>
@@ -15,8 +15,7 @@
         test.step(function()
         {
             var xhr = new XMLHttpRequest();
-            var initialized = false;
-            var expect = [4, "upload.abort", "upload.loadend", "abort", "loadend"];
+            var expect = [4, "abort", "loadend", "upload.abort", "upload.loadend"];
             var actual = [];
 
             xhr.onreadystatechange = function()
@@ -27,23 +26,19 @@
                     
                     if (readyState == 1)
                     {
-                        if (initialized) 
-                        {
-                            xhr.abort();
-                        }
-                        initialized = true;
+                        xhr.abort();
                     }
-                    else if (readyState == 4) 
+                    else if (readyState == 4)
                     {
                         actual.push(readyState);
                     }
                 });
             };
             
-            xhr.onloadend          = function(e){ actual.push(e.type); VerifyResult()};     
+            xhr.onloadend          = function(e){ actual.push(e.type); };
             xhr.onabort            = function(e){ actual.push(e.type); };
 
-            xhr.upload.onloadend   = function(e){ actual.push("upload." + e.type);};
+            xhr.upload.onloadend   = function(e){ actual.push("upload." + e.type); VerifyResult() };
             xhr.upload.onabort     = function(e){ actual.push("upload." + e.type); };
 
             function VerifyResult()
@@ -55,7 +50,7 @@
                 });
             };
 
-            xhr.open("POST", "./support/echo.php", true);
+            xhr.open("POST", "./resources/content.php", true);
             xhr.send("Test Message");
         });
     </script>

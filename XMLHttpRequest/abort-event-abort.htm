@@ -1,9 +1,9 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-abort()-method" />
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-abort()-method" data-tested-assertations="following-sibling::ol/li[4]/ol/li[5]" />
     <script src="/resources/testharness.js"></script>
-    <title>XMLHttpRequest L2: The abort() method: Fire a progress event named abort</title>
+    <title>XMLHttpRequest: The abort() method: Fire a progress event named abort</title>
 </head>
 
 <body>
@@ -15,34 +15,29 @@
         test.step(function()
         {
             var xhr = new XMLHttpRequest();
-            var initialized = false;
 
-            xhr.onreadystatechange = function() 
+            xhr.onreadystatechange = function()
             {
-                test.step(function() 
+                test.step(function()
                 {
-                    if (xhr.readyState == 1) 
+                    if (xhr.readyState == 1)
                     {
-                        if (initialized) 
-                        {
-                            xhr.abort();
-                        }
-                        initialized = true;
+                        xhr.abort();
                     }
                 });
             };
 
-            xhr.onabort = function(e) 
+            xhr.onabort = function(e)
             {
-                test.step(function() 
+                test.step(function()
                 {
                     assert_true(e instanceof ProgressEvent);
                     assert_equals(e.type, "abort");
-                    test.done(); 
+                    test.done();
                 });
             };
 
-            xhr.open("GET", "./support/echo.php", true);
+            xhr.open("GET", "./resources/content.php", true);
             xhr.send();
         });
     </script>

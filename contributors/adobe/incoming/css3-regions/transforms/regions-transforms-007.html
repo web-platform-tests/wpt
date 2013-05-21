@@ -2,16 +2,16 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>CSS Regions: Transformed regions with content and text that gets fragmented and overflows</title>
+    <title>CSS Regions: Transformed content in named flow that spans multiple regions and overflows</title>
     <link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
     <link rel="author" title="David Alcala" href="mailto:dalcala@adobe.com">
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-functions">
     <link rel="help" href="http://www.w3.org/TR/css3-break/#transforms">
-    <link rel="match" href="reference/regions-transforms-006-ref.html">
+    <link rel="match" href="reference/regions-transforms-007-ref.html">
     <meta name="flags" content="ahem">
-    <meta name="assert" content="This test checks that regions are transformed when the content spans multiple regions and the overflow remains visible.">
+    <meta name="assert" content="This test checks that the content node of a named flow is transformed and the overflow remains visible when the content spans multiple regions.">
     <style>
     .ahem {
         font-family: Ahem;
@@ -20,15 +20,16 @@
     }
     #source {
         color: green;
+        margin-left: -50px;
+        -webkit-transform: translateX(50px);
         -webkit-flow-into: f;
     }
     .region {
         -webkit-flow-from: f;
-        -webkit-transform: translateX(50px);
         width: 100px;
         height: 100px;
-        float: left;
         margin-left: 10px;
+        float: left;
         border: 1px solid black;
     }
     .failure {
@@ -41,32 +42,32 @@
         color: red;
         z-index: -1;
     }
-    .r-left {
-        margin-left: -40px;
-    }
-    .f-left {
+    .left {
         left: 8px;
     }
-    .f-right {
+    .right {
         left: 120px;
     }
     </style>
 </head>
 <body>
     <p>The test passes if:</p>
-      <ul> 
-          <li>The two squares each contain five green horizontal stripes</li>
-          <li>There are two green horizontal stripes below the square on right</li>
-          <li>There is no red</li>
-      </ul>
-      <div id="source" class="ahem">XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX</div>
-      <div class="region r-left"></div>
-      <div class="region"></div>
-      <div class="ahem failure f-left">
-          XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX
-      </div>
-      <div class="ahem failure f-right">
-          XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX
-      </div>
+    <ul> 
+        <li>The two squares each contain five green horizontal stripes</li>
+        <li>There are two green horizontal stripes below the square on right</li>
+        <li>There is no red</li>
+    </ul>
+    <div id="source" class="ahem">XXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXX</div>
+    <div class="region"></div>
+    <div class="region"></div>
+    
+    <div class="ahem failure left">
+        XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX
+    </div>
+    <div class="ahem failure right">
+        XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX
+    </div>
+    
+    
 </body>
 </html>

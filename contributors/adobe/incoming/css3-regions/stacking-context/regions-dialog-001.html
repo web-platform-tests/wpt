@@ -9,24 +9,24 @@
 		<meta name="assert" content="Test checks that content is correctly flowed into dialog elements.">
 		<link rel="match" href="reference/regions-dialog-001-ref.html">
 		<style>
-      #content {
-        background-color: green;
-        width: 100px;
-        height: 100px;
-        -flow-into: f;
-      }
-      #region {
-        width: 150px;
-        height: 150px;
-        background-color: gray;
-        -flow-from: f;
-      }
-      .red {
-        width: 100px;
-        height: 100px;
-        background-color: red;
-      }
-	  </style>
+			#content {
+				background-color: green;
+				width: 100px;
+				height: 100px;
+				-flow-into: f;
+			}
+			#region {
+				width: 150px;
+				height: 150px;
+				background-color: gray;
+				-flow-from: f;
+			}
+			.red {
+				width: 100px;
+				height: 100px;
+				background-color: red;
+			}
+		</style>
 	</head>
 	<body>
 		<ol>
@@ -35,13 +35,13 @@
 		</ol>
 		<div id="content"></div>
 		<dialog id="region">
-      <div class="red"></div>
-    </dialog>
+			<div class="red"></div>
+		</dialog>
 	</body>
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      var dialog = document.getElementsByTagName('dialog')[0];
-      dialog.show();
-    });
-  </script>
+	<script>
+		document.addEventListener("DOMContentLoaded", function() {
+			var dialog = document.getElementsByTagName('dialog')[0];
+			dialog.show();
+		});
+	</script>
 </html>

@@ -9,24 +9,23 @@
 		<meta name="assert" content="Test checks that content is correctly flowed into modal dialog elements.">
 		<link rel="match" href="reference/regions-modal-dialog-001-ref.html">
 		<style>
-      #content {
-        width: 100px;
-        height: 100px;
-        background-color: green;
-        -flow-into: f;
-      }
-      #region {
-        width: 100px;
-        height: 100px;
-        background-color: gray;
-        -flow-from: f;
-      }
-      .red {
-        width: 100px;
-        height: 100px;
-        background-color: red;
-      }
-	  </style>
+			#content {
+				width: 100px;
+				height: 100px;
+				background-color: green;
+				-flow-into: f;
+			}
+			#region {
+				width: 100px;
+				height: 100px;
+				background-color: gray;
+				-flow-from: f;
+			}
+			.red {
+				width: 100px;
+				height: 100px;
+				background-color: red;
+			}
 		</style>
 	</head>
 	<body>
@@ -36,13 +35,13 @@
 		</ol>
 		<div id="content"></div>
 		<dialog id="region">
-      <div class="red"></div>
-    </dialog>
+			<div class="red"></div>
+		</dialog>
 	</body>
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      var dialog = document.getElementsByTagName('dialog')[0];
-      dialog.showModal();
-    });
-  </script>
+	<script>
+		document.addEventListener("DOMContentLoaded", function() {
+			var dialog = document.getElementsByTagName('dialog')[0];
+			dialog.showModal();
+		});
+	</script>
 </html>

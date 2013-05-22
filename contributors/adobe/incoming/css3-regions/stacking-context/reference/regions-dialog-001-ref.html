@@ -4,16 +4,16 @@
 		<title>CSS Reftest Reference</title>
 		<link rel="author" title="Catalin Badea" href="mailto:badea@adobe.com">
 		<style>
-      #content {
-        background-color: green;
-        width: 100px;
-        height: 100px;
-      }
-      #region {
-        width: 150px;
-        height: 150px;
-        background-color: gray;
-      }
+			#content {
+				background-color: green;
+				width: 100px;
+				height: 100px;
+			}
+			#region {
+				width: 150px;
+				height: 150px;
+				background-color: gray;
+			}
 		</style>
 	</head>
 	<body>
@@ -22,13 +22,13 @@
 			<li>You should see no red.</li>
 		</ol>
 		<dialog id="region">
-		  <div id="content"></div>
-    </dialog>
+			<div id="content"></div>
+		</dialog>
 	</body>
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      var dialog = document.getElementsByTagName('dialog')[0];
-      dialog.show();
-    });
-  </script>
+	<script>
+		document.addEventListener("DOMContentLoaded", function() {
+			var dialog = document.getElementsByTagName('dialog')[0];
+			dialog.show();
+		});
+	</script>
 </html>

@@ -2,72 +2,81 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>CSS Regions: Transformed content in named flow that spans multiple regions and overflows</title>
+    <title>CSS Regions: Transforms on multiple named flow (text) content nodes that break across multiple regions</title>
     <link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
     <link rel="author" title="David Alcala" href="mailto:dalcala@adobe.com">
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-functions">
-    <link rel="help" href="http://dev.w3.org/csswg/css-break//#transforms">
-    <link rel="match" href="reference/regions-transforms-007-ref.html">
+    <link rel="help" href="http://www.w3.org/TR/css-break/css-break/#transforms">
+    <link rel="match" href="reference/regions-transforms-004-ref.html">
     <meta name="flags" content="ahem">
-    <meta name="assert" content="This test checks that the content node of a named flow is transformed and the overflow remains visible when the content spans multiple regions.">
+    <meta name="assert" content="This test checks that separate transforms can be applied to each named flow content text node that breaks across multiple regions">
     <style>
-    .ahem {
-        font-family: Ahem;
-        font-size: 10px;
-        line-height: 20px; 
-    }
-    #source {
+    .source {
+        width: 100px;
         color: green;
+        -webkit-flow-into: f;
+    }
+    #source1 {
         margin-left: -50px;
         -webkit-transform: translateX(50px);
-        -webkit-flow-into: f;
+    }
+    #source2 {
+        -webkit-transform: rotate(90deg);
     }
     .region {
         width: 100px;
         height: 100px;
         margin-left: 10px;
         float: left;
-        border: 1px solid black;
         -webkit-flow-from: f;
     }
+    .ahem {
+        font-family: Ahem;
+        font-size: 10px;
+        line-height: 20px;
+    }
     .failure {
+        width: 100px;
+        height: 100px;
         position: absolute;
-        width: 102px;
-        height: 102px;
-        margin-top: 1px;
+        float: left;
         margin-left: 10px;
-        padding-left: 1px;
-        color: red;
+        background-color: green;
         z-index: -1;
     }
     .left {
-        left: 8px;
+        color: red;
     }
     .right {
-        left: 120px;
+        left: 118px;
+    }
+    .vertical-bar {
+        width: 10px;
+        height: 100px;
+        float: left;
+        background-color: red;
+        margin-left: 5px;
+        margin-right: 5px;
     }
     </style>
 </head>
 <body>
-    <p>The test passes if:</p>
-    <ul> 
-        <li>The two squares each contain five green horizontal stripes</li>
-        <li>There are two green horizontal stripes below the square on right</li>
-        <li>There is no red</li>
-    </ul>
-    <div id="source" class="ahem">XXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXX</div>
+    <p>The test passes if you see two green squares and no red</p>
+    <div class="ahem source" id="source1">XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX</div>
+    <div class="ahem source" id="source2">XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX</div>
     <div class="region"></div>
     <div class="region"></div>
-    
     <div class="ahem failure left">
         XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX
     </div>
     <div class="ahem failure right">
-        XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX
+        <div class="vertical-bar"></div>
+        <div class="vertical-bar"></div>
+        <div class="vertical-bar"></div>
+        <div class="vertical-bar"></div>
+        <div class="vertical-bar"></div>
     </div>
-    
-    
 </body>
 </html>

@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>CSS Regions: Content in named flow that has transformed parent outside the named flow using 2D transform</title>
+    <title>CSS Regions: Named flow content that has a transformed parent outside of the named flow</title>
     <link rel="author" title="David Alcala" href="mailto:dalcala@adobe.com">
     <link rel="reviewer" title="Mihai Balan" href="mailto:mibalan@adobe.com">
     <link rel="reviewer" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
@@ -10,7 +10,7 @@
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-functions">
     <link rel="match" href="reference/regions-transforms-001-ref.html">
-    <meta name="assert" content="This tests checks when a transform is applied to a parent of a child that is in a named flow, the child is not transformed along with the parent.">
+    <meta name="assert" content="This tests checks that when a transform is applied to a parent outside of the named flow but has child in the named flow, the child is not transformed along with the parent.">
     <style>
     #parent {
         margin-top: -10px;

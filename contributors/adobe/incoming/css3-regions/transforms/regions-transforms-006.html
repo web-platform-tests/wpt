@@ -2,17 +2,18 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>CSS Regions: Fragmented content with transformations on each fragment</title>
+    <title>CSS Regions: Transforms on multiple named flow (non-text) content nodes that break across multiple regions</title>
     <link rel="author" title="David Alcala" href="mailto:dalcala@adobe.com">
     <link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-functions">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-origin-property">
     <link rel="help" href="http://dev.w3.org/csswg/css-break/#transforms">
     <link rel="match" href="reference/regions-transforms-004-ref.html">
-    <meta name="assert" content="This test checks that transforms are applied separately to each fragment when the content flows across multiple regions and that each fragment has its own transform origin.">
+    <meta name="assert" content="This test checks that separate transforms can be applied to each named flow content node that breaks across multiple regions and that each fragment has its own transform origin.">
     <style>
-    .content {
+    .source {
         float: left;
         background-color: green;
         -webkit-flow-into: f;
@@ -44,8 +45,8 @@
 </head>
 <body>
     <p>The test passes if you see two green squares and no red.</p>
-    <div class="content" id="source1"></div>
-    <div class="content" id="source2"></div>
+    <div class="source" id="source1"></div>
+    <div class="source" id="source2"></div>
     <div class="region"></div>
     <div class="region"></div>
 </body>

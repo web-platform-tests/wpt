@@ -2,17 +2,21 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>CSS Regions: Transformed content in named flows that spans multiple regions</title>
+    <title>CSS Regions: Transformed named flow (monolithic) content that breaks across multiple regions</title>
     <link rel="author" title="David Alcala" href="mailto:dalcala@adobe.com">
     <link rel="reviewer" title="Mihai Balan" href="mailto:mibalan@adobe.com">
     <link rel="reviewer" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-functions">
-    <link rel="help" href="http://dev.w3.org/csswg/css-break/#monolithic">
-    <link rel="help" href="http://dev.w3.org/csswg/css-break/#transforms">
+    <link rel="help" href="http://www.w3.org/TR/css-break/#transforms">
+    <link rel="help" href="http://www.w3.org/TR/css-break/#breaking-rules">
+    <link rel="help" href="http://www.w3.org/TR/css-break/#monolithic">
+    <!-- This reference is for UAs that slice content -->
     <link rel="match" href="reference/regions-transforms-004-ref.html">
-    <meta name="assert" content="This test checks that the content node is transformed when the transform is applied a named flow that spans multiple regions.">
+    <!-- TODO: This reference is for UAs that overflow content -->
+    <link rel="match" href="reference/regions-transforms-004-alt-ref.html">
+    <meta name="assert" content="This test checks that the named flow content that is monolithic is transformed when it breaks across multiple regions whether it is sliced or overflowed at the fragmentainer edge.">
     <style>
     #source {
         width: 100px;

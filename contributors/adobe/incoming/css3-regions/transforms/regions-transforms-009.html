@@ -2,56 +2,71 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>CSS Regions: Named flow with 2D transformed content and readable text from multiple sources spans regions</title>
+    <title>CSS Regions: Transformed region with named flow (text) content that breaks across multiple regions and overflows</title>
+    <link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
     <link rel="author" title="David Alcala" href="mailto:dalcala@adobe.com">
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-functions">
-    <link rel="help" href="http://dev.w3.org/csswg/css-break/#transforms">
-    <link rel="match" href="reference/regions-transforms-009-ref.html">
-    <meta name="assert" content="Two different CSS translateX 2D transforms applied to named flow transforms two different content nodes with readable text. Transformed named flow content spans multiple regions.">
+    <link rel="help" href="http://www.w3.org/TR/css-break/#transforms">
+    <link rel="match" href="reference/regions-transforms-007-ref.html">
+    <meta name="flags" content="ahem">
+    <meta name="assert" content="This test checks that the regions are transformed when named flow text content breaks across multiple regions and that the overflow remains visible.">
     <style>
-    .source {
-        width: 160px;
-        font-family: monospace;
-        font-size: 16px;
-        line-height: 20px;
+    .ahem {
+        font-family: Ahem;
+        font-size: 10px;
+        line-height: 20px; 
     }
-    #source1 {
-        margin-left: -50px;
-        background-color: green;
-        -webkit-transform: translateX(50px);
-        -webkit-flow-into: f;
-    }
-    #source2 {
-        margin-left: -100px;
-        background-color: green;
-        -webkit-transform: translateX(100px);
+    #source {
+        color: green;
         -webkit-flow-into: f;
     }
     .region {
-        width: 160px;
-        height: 160px;
-        margin-left: 10px;
+        width: 100px;
+        height: 100px;
         float: left;
-        background-color: red;
+        margin-left: 10px;
+        border: 1px solid black;
         -webkit-flow-from: f;
+        -webkit-transform: translateX(50px);
+    }
+    .failure {
+        position: absolute;
+        width: 102px;
+        height: 102px;
+        margin-top: 1px;
+        margin-left: 10px;
+        padding-left: 1px;
+        color: red;
+        z-index: -1;
+    }
+    .r-left {
+        margin-left: -40px;
+    }
+    .f-left {
+        left: 8px;
+    }
+    .f-right {
+        left: 120px;
     }
     </style>
 </head>
 <body>
-    <ul>
-        <li>The test passes if you see three green squares with text inside and no red.</li>
-        <li>In the first square, the numbers should go up from "one" to "seventeen".</li>
-        <li>In the upper half of the second square, the numbers should go up from "eighteen" to "twenty-two". In the lower half of the second square, the numbers should go up from "one" to "eleven".</li>
-        <li>In the third square, the numbers should go up from "twelve" to "twenty-two".</li>
-        <li>The numbers should go up sequentially by one.</li>
-        <li>None of the words should be cutoff and no text should be outside the green/blue boxes.</li>
-    </ul>
-    <div class="source" id="source1">One two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen twenty twenty-one twenty-two</div>
-    <div class="source" id="source2">One two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen twenty twenty-one twenty-two twenty-three twenty-four twenty-five twenty-six twenty-seven twenty-eight twenty-nine thirty</div>
-    <div class="region"></div>
-    <div class="region"></div>
-    <div class="region"></div>
+    <p>The test passes if:</p>
+      <ul> 
+          <li>The two squares each contain five green horizontal stripes</li>
+          <li>There are two green horizontal stripes below the square on right</li>
+          <li>There is no red</li>
+      </ul>
+      <div id="source" class="ahem">XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX</div>
+      <div class="region r-left"></div>
+      <div class="region"></div>
+      <div class="ahem failure f-left">
+          XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX
+      </div>
+      <div class="ahem failure f-right">
+          XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX
+      </div>
 </body>
 </html>

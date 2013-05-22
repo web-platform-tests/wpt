@@ -10,22 +10,24 @@
 		<link rel="match" href="reference/regions-dialog-002-ref.html">
 		<style>
       #content {
-        -webkit-flow-into: f;
+        position: static;
+        display: block;
         width: 30px;
         height: 30px;
+        margin: 0px;
         background-color: green;
-
-        position: relative;
-        display: block;
-        margin: 10px;
+        -flow-into: f;
       }
       #region {
         width: 100px;
         height: 100px;
         background-color: gray;
-        border-style: solid;
-        border-width: thin;
-        -webkit-flow-from: f;
+        -flow-from: f;
+      }
+      .red {
+        width: 100px;
+        height: 100px;
+        background-color: red;
       }
 	  </style>
 	</head>
@@ -36,7 +38,7 @@
 		</ol>
 		<dialog id="content"></dialog>
     <div id="region">
-      <div style="width: 100px; height: 100px; background-color: red;"></div>
+      <div class="red"></div>
     </div>
 	</body>
   <script>

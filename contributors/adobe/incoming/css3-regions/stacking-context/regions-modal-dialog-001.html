@@ -5,23 +5,28 @@
 		<link rel="author" title="Catalin Badea" href="mailto:badea@adobe.com">
 		<link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
 		<link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
-		<meta name="flags" content="ahem dom">
+		<meta name="flags" content="dom">
 		<meta name="assert" content="Test checks that content is correctly flowed into modal dialog elements.">
 		<link rel="match" href="reference/regions-modal-dialog-001-ref.html">
 		<style>
       #content {
-        font-family: Ahem;
-        font-size: 20px;
-        line-height: 1em;
+        width: 100px;
+        height: 100px;
         background-color: green;
-        -webkit-flow-into: f;
+        -flow-into: f;
       }
       #region {
         width: 100px;
         height: 100px;
         background-color: gray;
-        -webkit-flow-from: f;
+        -flow-from: f;
       }
+      .red {
+        width: 100px;
+        height: 100px;
+        background-color: red;
+      }
+	  </style>
 		</style>
 	</head>
 	<body>
@@ -29,15 +34,9 @@
 			<li>Test passes if you see a green square in the gray box.</li>
 			<li>You should see no red.</li>
 		</ol>
-		<div id="content">
-      xxxxx<br>
-      xxxxx<br>
-      xxxxx<br>
-      xxxxx<br>
-      xxxxx
-    </div>
+		<div id="content"></div>
 		<dialog id="region">
-      <div style="width: 100px; height: 100px; background-color: red;"></div>
+      <div class="red"></div>
     </dialog>
 	</body>
   <script>

@@ -9,15 +9,15 @@
 		<meta name="assert" content="Test checks that modal dialog elements are correctly flowed into a region.">
 		<link rel="match" href="reference/regions-modal-dialog-002-ref.html">
 		<style>
-		#content {
-			-webkit-flow-into: f;
-      width: 30px;
-      height: 30px;
-      background-color: green;
-		}
-		#region {
-			-webkit-flow-from: f;
-		}
+      #content {
+        width: 30px;
+        height: 30px;
+        background-color: green;
+        -flow-into: f;
+      }
+      #region {
+        -flow-from: f;
+      }
 		</style>
 	</head>
 	<body>

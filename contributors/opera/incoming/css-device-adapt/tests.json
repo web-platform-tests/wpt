@@ -145,7 +145,7 @@
             "TOKENS" : "dom",
             "ASSERTION" : "Setting width and not height will set a height that makes the actual width/height and initial width/height have the same aspect ratio.",
             "VIEWPORT_DESC" : "width: 10000px",
-            "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, 10000); assert_equals(viewport.actualHeight, Math.round(10000*viewport.initialHeight/viewport.initialWidth));"
+            "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, 10000); assert_equals(Math.round(viewport.actualHeight), Math.round(10000*viewport.initialHeight/viewport.initialWidth));"
         },
         {
             "DESCRIPTION" : "@viewport constrained - width deduced from height and aspect ratio.",
@@ -154,7 +154,7 @@
             "TOKENS" : "dom",
             "ASSERTION" : "Setting height and not width will set a width that makes the actual width/height and initial width/height have the same aspect ratio.",
             "VIEWPORT_DESC" : "height: 10000px",
-            "TEST_FUNCTION" : "assert_equals(viewport.actualHeight, 10000); assert_equals(viewport.actualWidth, Math.round(10000*viewport.initialWidth/viewport.initialHeight));"
+            "TEST_FUNCTION" : "assert_equals(viewport.actualHeight, 10000); assert_equals(Math.round(viewport.actualWidth), Math.round(10000*viewport.initialWidth/viewport.initialHeight));"
         },
         {
             "DESCRIPTION" : "@viewport constrained - width is device-width.",

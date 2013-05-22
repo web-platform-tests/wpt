@@ -2,17 +2,18 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>CSS Regions: Transformed regions using 2D transform and position relative</title>
+    <title>CSS Regions: Transformed region with position: relative</title>
+    <link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
     <link rel="author" title="David Alcala" href="mailto:dalcala@adobe.com">
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-functions">
     <link rel="match" href="reference/regions-transforms-010-ref.html">
-    <meta name="assert" content="CSS skewX 2D transform applied to a region with postion:relative transforms the content node.">
+    <meta name="assert" content="This test checks that the transform can be applied on relative positioned region.">
     <style>
     #source {
-        width: 200px;
-        height: 200px;
+        width: 100px;
+        height: 100px;
         background-color: green;
         -webkit-flow-into: f;
     }
@@ -20,53 +21,24 @@
         width: 200px;
         height: 200px;
         position: relative;
-        left: 100px;
+        left: -50px;
         -webkit-flow-from: f;
-        -webkit-transform: skewX(45deg);
+        -webkit-transform: rotate(90deg);
     }
-    #container {
-        width: 400px;
-        height: 400px;
-        background-color: green;
-    }
-    #div-red-parent {
-        position: relative;
-    }
-    .div-red {
-        width: 48px;
-        height: 48px;
+    #failure {
         position: absolute;
+        width: 98px;
+        height: 98px;
+        left: 60px;
+        top: 50px;
         background-color: red;
-    }
-    #div-red1 {
-        left: 51px;
-        top: 1px;
-    }
-    #div-red2 {
-        left: 151px;
-        top: 1px;
-    }
-    #div-red3 {
-        left: 201px;
-        top: 151px;
-    }
-    #div-red4 {
-        left: 302px;
-        top: 151px;
     }
     </style>
 </head>
 <body>
     <p>The test passes if you see a green square and no red.</p>
+    <div id="failure"></div>
     <div id="source"></div>
-    <div id="div-red-parent">
-        <div class="div-red" id="div-red1"></div>
-        <div class="div-red" id="div-red2"></div>
-        <div class="div-red" id="div-red3"></div>
-        <div class="div-red" id="div-red4"></div>
-    </div>
-    <div id="container">
-        <div id="region"></div>
-    </div>
+    <div id="region"></div>
 </body>
 </html>

@@ -22,7 +22,7 @@
                 pass = true;
             };
 
-            xhr.open("POST", "./support/echo.php", false);
+            xhr.open("POST", "./resources/content.php", false);
             xhr.send();
 
             assert_equals(xhr.response, "");

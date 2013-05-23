@@ -1,0 +1,54 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <title>Cookie Header is not sent if withCredentials is false for XHR requests</title>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+        <meta description="Cookie Header is not sent if withCredentials is false for XHR requests" />
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://dev.w3.org/2006/webapi/XMLHttpRequest-2/#the-withcredentials-attribute"/>
+        <script src="http://w3c-test.org/resources/testharness.js"></script>
+        <script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+        <script src="SetCORSUrls.js"></script>
+    </head>
+    <body>
+        <div id=log></div>
+        <script type="text/javascript">
+            // Create an IFRAME to set a cookie for Cross-Origin server domain
+            var cookieFrame = document.createElement("iframe");
+            cookieFrame.style.display = "none";
+            cookieFrame.onload = RunTest;
+            cookieFrame.src = CORS_SET_COOKIE_URL;
+            document.body.appendChild(cookieFrame);
+        
+            var t = async_test("Cookie Header is not sent if withCredentials is false for XHR requests");
+            function RunTest()
+            {
+                var xhr = new XMLHttpRequest();
+                if('withCredentials' in xhr)
+                {
+                    var url = CORS_SERVER_URL + "?TestID=8"
+                    xhr.open("GET", url, true);
+                    xhr.withCredentials = false;
+                    xhr.onreadystatechange = function(e)
+                    {
+                        if (xhr.readyState == 4)
+                        {
+                            // Because withCredentials is set to false, credentials should not be
+                            // included in the request.
+                            // If the 'cookie' header is present in the HTTP request headers
+                            // the server responds back with 'fail'. Else it responds back 'pass'
+                            t.step(function(){assert_true(xhr.status === 200 && xhr.responseText === "pass")});
+                            t.done();
+                        }
+                    }
+                }
+                else
+                {
+                    t.step(function(){assert_unreached("[Cross-Origin XMLHttpRequests are not supported]")});
+                    t.done();
+                }
+                xhr.send();
+            }
+        </script>
+    </body>
+</html>

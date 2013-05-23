@@ -133,3 +133,4 @@ xmlhttprequest-timeout-worker-simple.html
 xmlhttprequest-timeout-worker-synconworker.html
 xmlhttprequest-timeout-worker-twice.html
 xmlhttprequest-unsent.htm
+manual send-authentication-existing-session-interactive.htm

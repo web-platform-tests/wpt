@@ -1,0 +1,50 @@
+<html>
+<body>
+ <script src="/resources/testharness.js"></script>
+ <script src="/resources/testharnessreport.js"></script>
+ <script src="support.js"></script>
+<pre id='console'></pre>
+<div  id=log></div>
+
+<script type="text/javascript">
+function log(message)
+{
+    document.getElementById('console').appendChild(document.createTextNode(message + "\n"));
+}
+
+if (window.layoutTestController)
+    layoutTestController.dumpAsText();
+
+var accessControlBasicAllow = function() {
+    var xhr = new XMLHttpRequest;
+
+    try {
+        xhr.open("GET", CROSSDOMAIN +  "/resources/access-control-basic-allow.php", false);
+
+    } catch(e) {
+        log("FAIL: Exception thrown. Cross-domain access is not allowed in 'open'. [" + e.message + "].");
+        assert_true(false);
+        return;
+    }
+
+    try {
+        xhr.send();
+        console.log(xhr.responseText);
+        assert_equals(xhr.responseText,"PASS: Cross-domain access allowed.", "test for cross domain" );
+    } catch(e) {
+        log("FAIL: Exception thrown. Cross-domain access is not allowed in 'send'. [" + e.message + "].");
+        assert_true(false);
+        return;
+    }
+
+    //log(xhr.responseText);
+};
+
+test(accessControlBasicAllow, "access-control-basic-allow")
+
+
+if (window.layoutTestController)
+    layoutTestController.notifyDone();  
+</script>
+</body>
+</html>

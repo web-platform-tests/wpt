@@ -48,6 +48,11 @@
 <img name=y>
 <form><!-- a child node --></form>
 <img name=z>
+<input form=a name=b>
+<form id=a></form>
+<input form=c name=d>
+<input form=c name=d>
+<form id=c></form>
 <script>
 test(function() {
   var form = document.getElementsByTagName("form")[0]
@@ -129,4 +134,28 @@ test(function() {
   assert_equals(form[0], undefined, "The form should not have supported property indices")
   assert_equals(form.length, 0)
 }, "Named items outside the form should not be returned (one child)")
+test(function() {
+  var form = document.getElementsByTagName("form")[4]
+  assert_equals(form.id, "a")
+
+  var input = document.getElementsByName("b")[0]
+  assert_equals(input.localName, "input")
+  assert_equals(input.getAttribute("form"), "a")
+
+  assert_equals(form.b, input);
+}, "The form attribute should be taken into account for named getters (single element)")
+test(function() {
+  var form = document.getElementsByTagName("form")[5]
+  assert_equals(form.id, "c")
+
+  var input1 = document.getElementsByName("d")[0]
+  assert_equals(input1.localName, "input")
+  assert_equals(input1.getAttribute("form"), "c")
+
+  var input2 = document.getElementsByName("d")[1]
+  assert_equals(input2.localName, "input")
+  assert_equals(input2.getAttribute("form"), "c")
+
+  assert_array_equals(form.d, [input1, input2])
+}, "The form attribute should be taken into account for named getters (multiple elements)")
 </script>

@@ -158,4 +158,14 @@ test(function() {
 
   assert_array_equals(form.d, [input1, input2])
 }, "The form attribute should be taken into account for named getters (multiple elements)")
+test(function() {
+  var f = document.body.appendChild(document.createElement("form"))
+  f.id = "f"
+  var g = f.appendChild(document.createElement("form"))
+  g.id = "g"
+  var input = g.appendChild(document.createElement("input"))
+  input.name = "x"
+  assert_equals(f.x, undefined)
+  assert_equals(g.x, input)
+}, "Input should only be a named property on the innermost form that contains it")
 </script>

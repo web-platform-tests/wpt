@@ -9,7 +9,7 @@ header("Pragma: no-cache");
 header("Content-Type: text/javascript");
 
 
-print("(function () { test(function() {assert_true(" . $_GET["varName"] . ")}, \"assert_true with varName\"); })();");
+print("(function () { test(function() {assert_true( (typeof " . $_GET["varName"] . " === 'undefined') ? false : " . $_GET["varName"] . ")}, \"assert_true with " . $_GET["varName"] . "\"); })();");
 
 ?>
 

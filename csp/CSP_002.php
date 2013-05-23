@@ -1,7 +1,10 @@
 <?php
-header("Content-Security-Policy: default-src 'self'");
-header("X-Content-Security-Policy: default-src 'self'");
-header("X-WebKit-CSP: default-src 'self'");
+$policy_string = "default-src 'self'";
+header("Content-Security-Policy: $policy_string");
+if($_GET['prefixed'] == 'true') {
+	header("X-Content-Security-Policy: $policy_string");
+	header("X-Webkit-CSP: $policy_string");
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -15,10 +18,12 @@ header("X-WebKit-CSP: default-src 'self'");
 		<script src="CSP_passTest001.php"></script>
 	</head>
 	<body>
+	<h1>Verify that inline script does not run when a CSP specifies "default-src: 'self'" but not 'unsafe-inline'.</h1>
+
 		<div id=log></div>
 	</body>
 
 	<script>
-		test(function() {assert_true(false)}, "assert_true with false from unsafe inline script");
+		test(function() {assert_false(true, "Unsafe unline script ran.")});
 	</script>
 </html>

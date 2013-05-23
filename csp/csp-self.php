@@ -1,5 +1,10 @@
 <?php
-header("X-Content-Security-Policy: allow 'self'");
+$policy_string = "default-src 'self'";
+header("Content-Security-Policy: $policy_string");
+if($_GET['prefixed'] == 'true') {
+	header("X-Content-Security-Policy: $policy_string");
+	header("X-Webkit-CSP: $policy_string");
+
 ?>
 <!doctype html>
 <html>

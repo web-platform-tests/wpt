@@ -46,6 +46,8 @@
 <img name=x>
 <form></form><!-- no child nodes -->
 <img name=y>
+<form><!-- a child node --></form>
+<img name=z>
 <script>
 test(function() {
   var form = document.getElementsByTagName("form")[0]
@@ -113,9 +115,18 @@ test(function() {
 }, "Named elements should override builtins")
 test(function() {
   var form = document.getElementsByTagName("form")[2]
-  assert_equals(form.x, undefined, "x should not be associated with the form");
-  assert_equals(form.y, undefined, "y should not be associated with the form");
-  assert_equals(form[0], undefined, "The form should not have supported property indices");
-  assert_equals(form.length, 0);
-}, "Named items outside the form should not be returned")
+  assert_equals(form.x, undefined, "x should not be associated with the form")
+  assert_equals(form.y, undefined, "y should not be associated with the form")
+  assert_equals(form.z, undefined, "z should not be associated with the form")
+  assert_equals(form[0], undefined, "The form should not have supported property indices")
+  assert_equals(form.length, 0)
+}, "Named items outside the form should not be returned (no children)")
+test(function() {
+  var form = document.getElementsByTagName("form")[3]
+  assert_equals(form.x, undefined, "x should not be associated with the form")
+  assert_equals(form.y, undefined, "y should not be associated with the form")
+  assert_equals(form.z, undefined, "z should not be associated with the form")
+  assert_equals(form[0], undefined, "The form should not have supported property indices")
+  assert_equals(form.length, 0)
+}, "Named items outside the form should not be returned (one child)")
 </script>

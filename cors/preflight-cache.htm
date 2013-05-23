@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>CORS - preflight cache</title>
+<meta name=author title="Odin Hørthe Omdal" href="mailto:odiho@opera.com">
+
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=support.js></script>
+
+<h1>Preflight cache</h1>
+
+<div id=log></div>
+<script>
+
+/*
+ * Cache
+ */
+
+function did_preflight(expect, client, ident, settings) {
+    if(!settings)
+        settings = {}
+
+    set = {
+        method: 'method' in settings ? settings.method : 'GET',
+        extra: 'extra' in settings ? '&' + settings.extra : ''
+    }
+
+    client.open(set.method,
+            CROSSDOMAIN + 'resources/preflight.php?ident=' + ident + set.extra,
+            false)
+    client.setRequestHeader('x-print', ident)
+    client.send()
+
+    client.open('GET', 'resources/checkandremovefromlog.php?ident=' + ident, false)
+    client.send()
+    assert_equals(client.response, expect === true ? '1' : '0', "did preflight")
+}
+
+/*
+ * Should run preflight
+ */
+var test_c = 0;
+
+test(function() {
+    test_c++;
+    var time = new Date().getTime()
+    var client = new XMLHttpRequest()
+    did_preflight(true, client, test_c + '_' + time)
+},
+'Test preflight')
+
+test(function() {
+    test_c++;
+    var time = new Date().getTime()
+    var client = new XMLHttpRequest()
+
+    did_preflight(true,  client, test_c + '_' + time)
+    did_preflight(false, client, test_c + '_' + time)
+},
+'preflight for x-print should be cached')
+
+test(function() {
+    test_c++;
+    var time = new Date().getTime()
+    var client = new XMLHttpRequest()
+
+    did_preflight(true, client, test_c + '_' + time, {extra:'max_age=0'})
+    did_preflight(true, client, test_c + '_' + time, {extra:'max_age=0'})
+},
+'age = 0, should not be cached')
+
+test(function() {
+    test_c++;
+    var time = new Date().getTime()
+    var client = new XMLHttpRequest()
+
+    did_preflight(true, client, test_c + '_' + time, {extra:'max_age=-1'})
+    did_preflight(true, client, test_c + '_' + time, {extra:'max_age=-1'})
+},
+'age = -1, should not be cached')
+
+;(function() {
+    test_c++;
+    var test = async_test("preflight first request, second from cache, wait, third should preflight again", { timeout: 6000 }),
+        time = new Date().getTime(),
+        dothing = function (url, msg, set_request, func) {
+            client = new XMLHttpRequest(),
+            client.open('GET', url + test_c + "_" + time, true)
+            if (set_request)
+                client.setRequestHeader('x-print', msg)
+            client.onreadystatechange = test.step_func(function() {
+                if(client.readyState >= 4) {
+                    assert_equals(client.response, msg, "response")
+                    if (func)
+                        test.step(func)
+                }
+            })
+            client.onerror = test.step_func(function(e) {
+                assert_unreached("Got unexpected error event on the XHR object")
+            })
+            client.send()
+        }
+
+    test.step(function() {
+        /* First cycle, gets x-print into the cache, with timeout 1 */
+        dothing(CROSSDOMAIN + 'resources/preflight.php?max_age=1&ident=',
+        'first', true, function(){
+            test = test;
+
+            /* Check if we did a preflight like we expected */
+            dothing('resources/checkandremovefromlog.php?1&ident=',
+            '1', false, function(){
+                test = test;
+                dothing(CROSSDOMAIN + 'resources/preflight.php?max_age=1&ident=',
+                'second', true, function() {
+                    test = test;
+
+                    /* Check that we didn't do a preflight (hasn't gone 1 second yet) */
+                    dothing('resources/checkandremovefromlog.php?2&ident=',
+                    '0', false, function(){
+                        test = test;
+
+                        /* Wait until the preflight cache age is old (and thus cleared) */
+                        setTimeout(test.step_func(function(){
+                            dothing(CROSSDOMAIN + 'resources/preflight.php?max_age=1&ident=',
+                            'third', true, function(){
+                                test = test;
+
+                                /* Expect that we did indeed do a preflight */
+                                dothing('resources/checkandremovefromlog.php?3&ident=',
+                                '1', false, function(){
+                                    test.done()
+                                })
+                            })
+                        }), 1500)
+                    })
+                })
+            })
+        })
+    })
+})();
+
+</script>

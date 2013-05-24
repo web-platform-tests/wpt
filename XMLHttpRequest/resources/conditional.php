@@ -10,7 +10,8 @@
   }
   if((!empty($match) && $match == $tag) ||
      (!empty($modified) && $modified == $date)) {
-    header("HTTP/1.1 304 SUPERCOOL");
+    //header("HTTP/1.1 304 SUPERCOOL");
+    header("SUPERCOOL", true, 304); // try to make w3c-test.org play along..
     exit;
   }
   header("Content-Type:text/plain");

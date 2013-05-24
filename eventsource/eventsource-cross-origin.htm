@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>EventSource: cross-origin</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <script>
+      var crossdomain = location.href
+                    .replace('://', '://crosssite.')
+                    .replace(/\/[^\/]*$/, '/')
+
+      function doCORS(url, title) {
+        var test = async_test(document.title + " " + title)
+        test.step(function() {
+          var source = new EventSource(url, { withCredentials: true })
+          source.onmessage = test.step_func(function(e) {
+            assert_equals(e.data, "data")
+            source.close()
+            test.done()
+          })
+        })
+      }
+
+      doCORS(crossdomain + "resources/cors.php?run=message.php",
+        "basic use")
+      doCORS(crossdomain + "resources/cors.php?run=redirect.php",
+        "redirect use")
+      doCORS(crossdomain + "resources/cors.php?run=status-reconnect.php&status=200",
+        "redirect use recon")
+
+      function failCORS(url, title) {
+        var test = async_test(document.title + " " + title)
+        test.step(function() {
+          var source = new EventSource(url)
+          source.onerror = test.step_func(function(e) {
+            assert_equals(source.readyState, source.CLOSED, 'readyState')
+            assert_false(e.hasOwnProperty('data'))
+            source.close()
+            test.done()
+          })
+
+          /* Shouldn't happen */
+          source.onmessage = test.step_func(function(e) {
+            source.close()
+            assert_unreached("shouldn't fire message event")
+            test.done()
+          })
+        })
+      }
+
+      failCORS(crossdomain + "resources/cors.php?run=message.php?credentials=none",
+        "no Allow-Credentials header should fail")
+      failCORS(crossdomain + "resources/cors.php?run=message.php&origin=http://example.org",
+        "allow-origin: http://example.org should fail")
+      failCORS(crossdomain + "resources/cors.php?run=message.php&origin=",
+        "allow-origin:'' should fail")
+    </script>
+  </body>
+</html>
+

@@ -2,9 +2,10 @@
 <html>
 <head>
     <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method" />
-    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-response-attribute" />
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-responsetype-attribute"  data-tested-assertations="following::ol[1]/li[4]"/>
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-response-attribute"  data-tested-assertations="following::a[contains(@href,'#blob-response-entity-body')]/.." />
     <script src="/resources/testharness.js"></script>
-    <title>XMLHttpRequest L2: The response attribute: Blob data</title>
+    <title>XMLHttpRequest: The response attribute: Blob data</title>
 </head>
 
 <body>
@@ -43,7 +44,7 @@
                 }
             }
             
-            xhr.open("GET", "./support/echo.php?content=" + content, true);
+            xhr.open("GET", "./resources/content.php?content=" + content, true);
             xhr.responseType = "blob";
             xhr.send();
         });

@@ -12,7 +12,7 @@
         var client = new XMLHttpRequest()
         client.open("POST", "resources/content.php", false)
         client.send(null)
-        assert_equals(client.getResponseHeader("x-request-content-length"), "0")  
+        assert_equals(client.getResponseHeader("x-request-content-length"), "0")
         assert_equals(client.getResponseHeader("x-request-content-type"), "NO")
       })
     </script>

@@ -1,9 +1,11 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method" />
     <script src="/resources/testharness.js"></script>
     <title>XMLHttpRequest: The send() method: Fire a progress event named loadend (no response entity body)</title>
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#handler-xhr-onloadend" data-tested-assertations="/../.." />
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#event-xhr-loadend" data-tested-assertations="/../.." />
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#infrastructure-for-the-send()-method" data-tested-assertations="/following-sibling::ol/li[10]" />
 </head>
 
 <body>
@@ -12,24 +14,24 @@
     <script type="text/javascript">
         var test = async_test();
 
-        test.step(function () 
+        test.step(function ()
         {
             var xhr = new XMLHttpRequest();
 
-            xhr.onreadystatechange = function() 
+            xhr.onreadystatechange = function()
             {
-                test.step(function() 
+                test.step(function()
                 {
-                    if (xhr.readyState == 4) 
+                    if (xhr.readyState == 4)
                     {
                         assert_equals(xhr.response, "");
                     }
                 });
             };
 
-            xhr.onloadend = function(e) 
+            xhr.onloadend = function(e)
             {
-                test.step(function() 
+                test.step(function()
                 {
                     assert_true(e instanceof ProgressEvent);
                     assert_equals(e.type, "loadend");

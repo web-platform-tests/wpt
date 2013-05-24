@@ -1,7 +1,14 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method" />
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#handler-xhr-onloadstart" data-tested-assertations="../.." />
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#handler-xhr-onloadend" data-tested-assertations="../.." />
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#event-xhr-loadstart" data-tested-assertations="../.." />
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#event-xhr-loadend" data-tested-assertations="../.." />
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method" data-tested-assertations="following-sibling::ol/li[9]/ol/li[2]" />
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#infrastructure-for-the-send()-method" data-tested-assertations="following::a[contains(@href, '#switch-done')]/.." />
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#switch-done" data-tested-assertations="following::ol[1]/li[3] following::ol[1]/li[4] following::ol[1]/li[6] following::ol[1]/li[7]" />
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-response-attribute" data-tested-assertations="following-sibling::ol/li[1]" />
     <script src="/resources/testharness.js"></script>
     <title>XMLHttpRequest: The send() method: event order when there is no response entity body</title>
 </head>
@@ -37,9 +44,9 @@
             xhr.onload             = function(e){ actual.push(e.type); };
             xhr.onloadend          = function(e){ actual.push(e.type); VerifyResult()};
             
-            xhr.upload.onloadstart = function(e){ actual.push(e.type); };
-            xhr.upload.onload      = function(e){ actual.push(e.type); };
-            xhr.upload.onloadend   = function(e){ actual.push(e.type); };
+            xhr.upload.onloadstart = function(e){ assert_unreached('upload.'+e.type); };
+            xhr.upload.onload      = function(e){ assert_unreached('upload.'+e.type); };
+            xhr.upload.onloadend   = function(e){ assert_unreached('upload.'+e.type); };
 
             function VerifyResult()
             {

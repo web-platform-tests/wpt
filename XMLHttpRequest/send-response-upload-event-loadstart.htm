@@ -1,9 +1,12 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method" />
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#handler-xhr-onloadstart" data-tested-assertations="../.." />
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#event-xhr-loadstart" data-tested-assertations="../.." />
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method" data-tested-assertations="following-sibling::ol/li[9]/ol/li[2]" />
+
     <script src="/resources/testharness.js"></script>
-    <title>XMLHttpRequest L2: The send() method: Fire a progress event named loadstart on the XMLHttpRequestUpload (synchronous flag is unset)</title>
+    <title>XMLHttpRequest: The send() method: Fire a progress event named loadstart on the XMLHttpRequestUpload (synchronous flag is unset)</title>
 </head>
 
 <body>
@@ -27,7 +30,7 @@
                 });
             };
 
-            xhr.open("POST", "./support/echo.php", true);
+            xhr.open("POST", "./resources/content.php", true);
             xhr.send("Test Message");
         });
     </script>

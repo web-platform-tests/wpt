@@ -1,9 +1,11 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method" />
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method"  data-tested-assertations="following::ol[1]/li[4] following::ol[1]/li[4]/dl[1]/dd[1]"/>
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-status-attribute"  data-tested-assertations="following::ol[1]/li[3]"/>
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-response-attribute"  data-tested-assertations="following::ol[1]/li[3]"/>
     <script src="/resources/testharness.js"></script>
-    <title>XMLHttpRequest L2: The send() method: ArrayBuffer data</title>
+    <title>XMLHttpRequest: The send() method: ArrayBuffer data</title>
 </head>
 
 <body>
@@ -37,7 +39,7 @@
                 }
             };
 
-            xhr.open("POST", "./support/echo.php", true);
+            xhr.open("POST", "./resources/content.php", true);
             xhr.send(buf);
         });
     </script>

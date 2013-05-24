@@ -100,7 +100,7 @@
             "TOKENS" : "dom",
             "ASSERTION" : "Setting zoom in @viewport to 200% will not affect the actual viewport width.",
             "VIEWPORT_DESC" : "zoom: 200%",
-            "TEST_FUNCTION" : "assert_equals(viewport.zoom, 2); assert_equals(viewport.actualWidth, viewport.initialWidth);"
+            "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, viewport.initialWidth);"
         },
         {
             "DESCRIPTION" : "@viewport constrained - min-zoom not affecting width.",
@@ -109,7 +109,7 @@
             "TOKENS" : "dom",
             "ASSERTION" : "Setting min-zoom in @viewport to 200% will not affect width.",
             "VIEWPORT_DESC" : "min-zoom: 200%",
-            "TEST_FUNCTION" : "assert_equals(viewport.zoom, 2); assert_equals(viewport.actualWidth, viewport.initialWidth);"
+            "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, viewport.initialWidth);"
         },
         {
             "DESCRIPTION" : "@viewport constrained - max-zoom not affecting width.",

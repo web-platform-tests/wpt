@@ -5,16 +5,26 @@
     <link rel="author" title="David Alcala" href="mailto:dalcala@adobe.com">
     <style type="text/css">
     #green-square {
-        width: 200px;
-        height: 200px;
-        margin-left: 100px;
+        width: 100px;
+        height: 100px;
         background-color: green;
-        -webkit-transform: perspective(600px) rotateX(45deg);
+        position: absolute;
+        left: 58px;
+        top: 100px;
+    }
+    #blue-square {
+        width: 100px;
+        height: 100px;
+        background-color: blue;
+        position: absolute;
+        left: 158px;
+        top: 200px;
     }
     </style>
 </head>
 <body>
-    <p>The test passes if you see a green polygon and no red.</p>
+    <p>The test passes if you see a green square, a blue square diagonally to the lower right of the green square, and no red.</p>
     <div id="green-square"></div>
+    <div id="blue-square"></div>
 </body>
 </html>

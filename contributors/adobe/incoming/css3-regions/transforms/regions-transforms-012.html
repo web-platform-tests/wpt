@@ -2,55 +2,67 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>CSS Regions: Transformed regions where parent and child are both flowed into same named flow</title>
+    <title>CSS Regions: Transformed regions using 3D Transform and perspective</title>
     <link rel="author" title="David Alcala" href="mailto:dalcala@adobe.com">
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-functions">
-    <link rel="match" href="reference/regions-transforms-011-ref.html">
-    <meta name="assert" content="Parent content node and child content node are both flowed into same named flow. CSS rotate 2D transform and transform-origin applied to region transforms the parent and child nodes, and parent and child nodes render as siblings.">
+    <link rel="match" href="reference/regions-transforms-013-ref.html">
+    <meta name="assert" content="CSS rotateX and perspective 3D transform applied to a region causes the content node to render as if the transform was set on it.">
     <style>
-    #parent {
-        width: 100px;
-        height: 50px;
-        background-color: green;
-        -webkit-flow-into: f;
-    }
     #source {
-        width: 100px;
-        height: 50px;
+        width: 200px;
+        height: 200px;
+        margin: 0 auto;
         background-color: green;
         -webkit-flow-into: f;
     }
     #region {
-        width: 100px;
-        height: 100px;
-        background-color: red;
+        width: 200px;
+        height: 200px;
+        position: relative;
+        left: 100px;
         -webkit-flow-from: f;
-        -webkit-transform: rotate(90deg);
-        -webkit-transform-origin: right bottom;
+        -webkit-transform: perspective(600px) rotateX(45deg);
     }
     #div-red-parent {
         position: relative;
     }
-    #div-red {
-        width: 98px;
-        height: 98px;
+    .div-red {
+        width: 48px;
+        height: 48px;
         background-color: red;
         position: absolute;
-        left: 101px;
-        top: 1px;
+    }
+    #div-red1 {
+        left: 120px;
+        top: 88px;
+    }
+    #div-red2 {
+        left: 249px;
+        top: 88px;
+    }
+    #div-red3 {
+        left: 104px;
+        top: 181px;
+    }
+    #div-red4 {
+        left: 264px;
+        top: 181px;
     }
     </style>
 </head>
 <body>
-    <p>The test passes if you see a green square and no red.</p>
-    <div id="div-red-parent">
-        <div id="div-red"></div>
+    <p>The test passes if you see a green polygon and no red.</p>
+    <div id="source"></div>
+    <!--
+    <div class="div-red-parent">
+        <div class="div-red" id="div-red1"></div>
+        <div class="div-red" id="div-red2"></div>
+        <div class="div-red" id="div-red3"></div>
+        <div class="div-red" id="div-red4"></div>
     </div>
-    <div id="parent">
-        <div id="source"></div>
-    </div>
+    -->
     <div id="region"></div>
 </body>
 </html>

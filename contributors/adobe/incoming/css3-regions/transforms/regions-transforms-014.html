@@ -2,55 +2,44 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>CSS Regions: Transformed named flow content and transformed regions</title>
+    <title>CSS Regions: Transformed regions using 2D transform, transform-origin, and position: absolute for region</title>
     <link rel="author" title="David Alcala" href="mailto:dalcala@adobe.com">
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-functions">
     <link rel="match" href="reference/regions-transforms-014-ref.html">
-    <meta name="assert" content="CSS translate 2D transform applied to named flow content and to region causes the content node to render as if the transforms were set on it.">
+    <meta name="assert" content="CSS scale 2D transform and transform-origin applied to a region with absolute positioning causes the content node to render as if the transform was set on it.">
     <style>
     #source {
-        background-color: blue;
-        width: 100px;
-        height: 100px;
+        width: 50px;
+        height: 50px;
+        background-color: green;
         -webkit-flow-into: f;
-        -webkit-transform: translate(100px, 100px);
     }
     #region {
-        width: 100px;
-        height: 100px;
-        background-color: green;
+        width: 50px;
+        height: 50px;
+        background-color: red;
+        position: absolute;
+        left: 58px;
+        top: 100px;
         -webkit-flow-from: f;
-        -webkit-transform: translate(50px, 50px);
+        -webkit-transform: scale(2);
+        -webkit-transform-origin: left top;
     }
-    #div-red-parent {
-        position: relative;
-    }
-    #div-red1 {
+    #div-red {
         width: 98px;
         height: 98px;
         background-color: red;
         position: absolute;
-        left: 51px;
-        top: 51px;
-    }
-    #div-red2 {
-        width: 98px;
-        height: 98px;
-        background-color: red;
-        position: absolute;
-        left: 151px;
-        top: 151px;
+        left: 59px;
+        top: 101px;
     }
     </style>
 </head>
 <body>
-    <p>The test passes if you see a green square, a blue square diagonally to the lower right of the green square, and no red.</p>
-    <div id="div-red-parent">
-        <div id="div-red1"></div>
-        <div id="div-red2"></div>
-    </div>
+    <p>The test passes if you see a green square and no red.</p>
+    <div id="div-red"></div>
     <div id="source"></div>
     <div id="region"></div>
 </body>

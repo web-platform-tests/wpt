@@ -12,7 +12,7 @@
       function redirect(code, location) {
         test(function() {
           var client = new XMLHttpRequest()
-          client.open("GET", "resources/redirect.php?location=" + location + "&code=" + code)
+          client.open("GET", "resources/redirect.php?location=" + location + "&code=" + code, false)
           assert_throws("NETWORK_ERR", function() { client.send(null) })
         }, document.title + " (" + code + ": " + location + ")")
       }

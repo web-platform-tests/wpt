@@ -10,59 +10,53 @@
     <link rel="match" href="reference/regions-transforms-013-ref.html">
     <meta name="assert" content="CSS rotateX and perspective 3D transform applied to a region causes the content node to render as if the transform was set on it.">
     <style>
+   
     #source {
-        width: 200px;
-        height: 200px;
-        margin: 0 auto;
-        background-color: green;
+        width: 75px;
+        height: 75px;
+        background-color: red;
+        border-top: 25px solid green;
+        border-right: 25px solid green;
         -webkit-flow-into: f;
     }
     #region {
-        width: 200px;
-        height: 200px;
-        position: relative;
-        left: 100px;
-        -webkit-flow-from: f;
-        -webkit-transform: perspective(600px) rotateX(45deg);
-    }
-    #div-red-parent {
-        position: relative;
-    }
-    .div-red {
-        width: 48px;
-        height: 48px;
+        width: 100px;
+        height: 100px;
+        margin
         background-color: red;
+        -webkit-flow-from: f;
+        -webkit-transform:  rotate3d(1,1,0,180deg);
+    }
+    #square {
         position: absolute;
+        left: 33px;
+        top: 50px;
+        width: 75px;
+        height: 75px;
+        background-color: green;
     }
-    #div-red1 {
-        left: 120px;
-        top: 88px;
+    #failure1, #failure2 {
+        position: absolute;
+        background-color: red;
     }
-    #div-red2 {
-        left: 249px;
-        top: 88px;
+    #failure1 {
+        width: 25px;
+        height: 100px;
     }
-    #div-red3 {
-        left: 104px;
-        top: 181px;
-    }
-    #div-red4 {
-        left: 264px;
-        top: 181px;
+    #failure2 {
+        width: 100px;
+        height: 25px;
+        top: 125px;
     }
     </style>
 </head>
 <body>
-    <p>The test passes if you see a green polygon and no red.</p>
+    <p>The test passes if you see a green square and no red.</p>
+    
+    <div id="failure1"></div>
+    <div id="failure2"></div>
     <div id="source"></div>
-    <!--
-    <div class="div-red-parent">
-        <div class="div-red" id="div-red1"></div>
-        <div class="div-red" id="div-red2"></div>
-        <div class="div-red" id="div-red3"></div>
-        <div class="div-red" id="div-red4"></div>
-    </div>
-    -->
     <div id="region"></div>
+    <div id="square"></div>
 </body>
 </html>

@@ -13,7 +13,7 @@
     <audio id="m" controls volume=0.0>The user agent doesn't support media element.</audio>
     <script type="text/javascript">
         var media = document.getElementById("m");
-        media.src = getAudioURI("http://media.w3.org/2010/05/sound/sound_5") + "?" + new Date() + Math.random();
+        media.src = getAudioURI("/media/sound_5") + "?" + new Date() + Math.random();
         media.volume = 0.0;
         media.play();
     </script>

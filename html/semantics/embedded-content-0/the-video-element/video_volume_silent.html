@@ -13,7 +13,7 @@
     <video id="m" controls volume=0.0>The user agent doesn't support media element.</video>
     <script type="text/javascript">
         var media = document.getElementById("m");
-        media.src = getVideoURI("http://media.w3.org/2010/05/video/movie_5") + "?" + new Date() + Math.random();
+        media.src = getVideoURI("/media/movie_5") + "?" + new Date() + Math.random();
         media.volume = 0.0;
         media.play();
     </script>

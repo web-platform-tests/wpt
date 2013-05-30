@@ -8,7 +8,7 @@
             "AUTHOR_NAME" : "Rune Lillesveen",
             "AUTHOR_EMAIL" : "rune@opera.com",
             "TOKENS" : "dom",
-            "ASSERTION" : "Setting max-width in @viewport to a length smaller than the initial viewport width will set the actual viewport width to that length",
+            "ASSERTION" : "Setting max-width in @viewport to a length smaller than the initial viewport width will set the actual viewport width to that length.",
             "VIEWPORT_DESC" : "max-width: 200px",
             "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, 200);"
         },
@@ -40,7 +40,7 @@
             "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, 10000);"
         },
         {
-            "DESCRIPTION" : "@viewport constrained - min-width greater than max-width.",
+            "DESCRIPTION" : "@viewport constrained - min-width greater than max-width",
             "AUTHOR_NAME" : "Rune Lillesveen",
             "AUTHOR_EMAIL" : "rune@opera.com",
             "TOKENS" : "dom",
@@ -103,7 +103,7 @@
             "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, viewport.initialWidth);"
         },
         {
-            "DESCRIPTION" : "@viewport constrained - min-zoom not affecting width.",
+            "DESCRIPTION" : "@viewport constrained - min-zoom not affecting width",
             "AUTHOR_NAME" : "Rune Lillesveen",
             "AUTHOR_EMAIL" : "rune@opera.com",
             "TOKENS" : "dom",
@@ -112,7 +112,7 @@
             "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, viewport.initialWidth);"
         },
         {
-            "DESCRIPTION" : "@viewport constrained - max-zoom not affecting width.",
+            "DESCRIPTION" : "@viewport constrained - max-zoom not affecting width",
             "AUTHOR_NAME" : "Rune Lillesveen",
             "AUTHOR_EMAIL" : "rune@opera.com",
             "TOKENS" : "dom",
@@ -121,7 +121,7 @@
             "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, viewport.initialWidth);"
         },
         {
-            "DESCRIPTION" : "@viewport constrained - zoom greater than max-zoom.",
+            "DESCRIPTION" : "@viewport constrained - zoom greater than max-zoom",
             "AUTHOR_NAME" : "Rune Lillesveen",
             "AUTHOR_EMAIL" : "rune@opera.com",
             "TOKENS" : "dom",
@@ -130,7 +130,7 @@
             "TEST_FUNCTION" : "assert_equals(viewport.zoom, 1);"
         },
         {
-            "DESCRIPTION" : "@viewport constrained - zoom less than min-zoom.",
+            "DESCRIPTION" : "@viewport constrained - zoom less than min-zoom",
             "AUTHOR_NAME" : "Rune Lillesveen",
             "AUTHOR_EMAIL" : "rune@opera.com",
             "TOKENS" : "dom",
@@ -139,7 +139,7 @@
             "TEST_FUNCTION" : "assert_equals(viewport.zoom, 2);"
         },
         {
-            "DESCRIPTION" : "@viewport constrained - height deduced from width and aspect ratio.",
+            "DESCRIPTION" : "@viewport constrained - height deduced from width and aspect ratio",
             "AUTHOR_NAME" : "Rune Lillesveen",
             "AUTHOR_EMAIL" : "rune@opera.com",
             "TOKENS" : "dom",
@@ -148,7 +148,7 @@
             "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, 10000); assert_equals(Math.round(viewport.actualHeight), Math.round(10000*viewport.initialHeight/viewport.initialWidth));"
         },
         {
-            "DESCRIPTION" : "@viewport constrained - width deduced from height and aspect ratio.",
+            "DESCRIPTION" : "@viewport constrained - width deduced from height and aspect ratio",
             "AUTHOR_NAME" : "Rune Lillesveen",
             "AUTHOR_EMAIL" : "rune@opera.com",
             "TOKENS" : "dom",
@@ -157,34 +157,16 @@
             "TEST_FUNCTION" : "assert_equals(viewport.actualHeight, 10000); assert_equals(Math.round(viewport.actualWidth), Math.round(10000*viewport.initialWidth/viewport.initialHeight));"
         },
         {
-            "DESCRIPTION" : "@viewport constrained - width is device-width.",
+            "DESCRIPTION" : "@viewport constrained - used width can be zero",
             "AUTHOR_NAME" : "Rune Lillesveen",
             "AUTHOR_EMAIL" : "rune@opera.com",
             "TOKENS" : "dom",
-            "ASSERTION" : "When width is set to device-width, the device-width media feature will match when the actual viewport width is the value.",
-            "VIEWPORT_DESC" : "width: device-width",
-            "TEST_FUNCTION" : "var mq = window.matchMedia(\"(device-width: \"+viewport.actualWidth+\"px)\"); assert_true(mq.matches);"
-        },
-        {
-            "DESCRIPTION" : "@viewport constrained - height is device-height.",
-            "AUTHOR_NAME" : "Rune Lillesveen",
-            "AUTHOR_EMAIL" : "rune@opera.com",
-            "TOKENS" : "dom",
-            "ASSERTION" : "When height is set to device-height, the device-height media feature will match when the actual viewport height is the value.",
-            "VIEWPORT_DESC" : "height: device-height",
-            "TEST_FUNCTION" : "var mq = window.matchMedia(\"(device-height: \"+viewport.actualHeight+\"px)\"); assert_true(mq.matches);"
-        },
-        {
-            "DESCRIPTION" : "@viewport constrained - used width can be zero.",
-            "AUTHOR_NAME" : "Rune Lillesveen",
-            "AUTHOR_EMAIL" : "rune@opera.com",
-            "TOKENS" : "dom",
-            "ASSERTION" : "Check that zero length is allowed for width",
+            "ASSERTION" : "Check that zero length is allowed for width.",
             "VIEWPORT_DESC" : "width: 0em",
             "TEST_FUNCTION" : "assert_equals(viewport.actualWidth, 0);"
         },
         {
-            "DESCRIPTION" : "@viewport constrained - used height can be zero.",
+            "DESCRIPTION" : "@viewport constrained - used height can be zero",
             "AUTHOR_NAME" : "Rune Lillesveen",
             "AUTHOR_EMAIL" : "rune@opera.com",
             "TOKENS" : "dom",
@@ -346,6 +328,24 @@
             "ASSERTION" : "Zoom factor descriptors must allow zero numbers and percentages.",
             "VIEWPORT_DESC" : "min-zoom: 0; max-zoom: 0%; zoom: 0",
             "TEST_FUNCTION" : "assert_equals(testStyleSheet.cssRules.item(0).style.length, 3);"
+        },
+        {
+            "DESCRIPTION" : "@viewport device-width invalid length",
+            "AUTHOR_NAME" : "Rune Lillesveen",
+            "AUTHOR_EMAIL" : "rune@opera.com",
+            "TOKENS" : "dom",
+            "ASSERTION" : "device-width is not a valid <viewport-length> value.",
+            "VIEWPORT_DESC" : "width: device-width; height: device-width",
+            "TEST_FUNCTION" : "assert_equals(testStyleSheet.cssRules.item(0).style.length, 0);"
+        },
+        {
+            "DESCRIPTION" : "@viewport device-height invalid length",
+            "AUTHOR_NAME" : "Rune Lillesveen",
+            "AUTHOR_EMAIL" : "rune@opera.com",
+            "TOKENS" : "dom",
+            "ASSERTION" : "device-height is not a valid <viewport-length> value.",
+            "VIEWPORT_DESC" : "height: device-height; width: device-height",
+            "TEST_FUNCTION" : "assert_equals(testStyleSheet.cssRules.item(0).style.length, 0);"
         }]
     }]
 }

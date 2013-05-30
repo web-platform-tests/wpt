@@ -8,7 +8,7 @@
   header('Access-Control-Allow-Origin: *');
   header('Access-Control-Allow-Credentials: true');
   header('Access-Control-Allow-Methods: GET');
-  header('Access-Control-Allow-Headers: authorization, origin, x-user, x-pass');
+  header('Access-Control-Allow-Headers: authorization, x-user, x-pass');
   header('Access-Control-Expose-Headers: x-challenge, xhr-user, ses-user');
   if(empty($session_user) && empty($session_pass)) {
     if(file_exists($file)) {

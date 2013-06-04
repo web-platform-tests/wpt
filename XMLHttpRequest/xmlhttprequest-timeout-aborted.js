@@ -8,7 +8,7 @@ After a 1 second delay, the test asserts that no load/error/timeout/abort events
 Second request will be aborted immediately after send(), test asserts that abort fired
 
 Third request is set up to call abort() after a 1 second delay, but it also has a 400ms timeout. Asserts that timeout fired.
-(abort() is called 600ms later and should not fire an abort event per spec. Untested.)
+(abort() is called 600ms later and should not fire an abort event per spec. This is untested!)
 */
 runTestRequests([ new AbortedRequest(false),
 		  new AbortedRequest(true, -1),

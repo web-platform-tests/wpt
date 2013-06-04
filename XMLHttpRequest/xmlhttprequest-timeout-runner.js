@@ -18,8 +18,3 @@ window.addEventListener("message", testResultCallbackHandler);
 // Setting up testharness.js
 setup({ explicit_done: true, timeout: 30 * 1000 });
 
-// Abort test execution if an individual test case fails.
-add_result_callback(function (t) {
-    if (t.status == t.FAIL)
-        done();
-});

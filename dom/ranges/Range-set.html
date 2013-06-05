@@ -155,56 +155,6 @@ function testSetEndAfter(range, node) {
 }
 
 
-test(function() {
-	for (var i = 0; i < testPoints.length; i++) {
-		var point = eval(testPoints[i]);
-		assert_throws("INVALID_STATE_ERR", function() {
-			var range = document.createRange();
-			range.detach();
-
-			range.setStart(point[0], point[1]);
-		}, "setStart(" + testPoints[i] + ")");
-
-		assert_throws("INVALID_STATE_ERR", function() {
-			var range = document.createRange();
-			range.detach();
-
-			range.setEnd(point[0], point[1]);
-		}, "setEnd(" + testPoints[i] + ")");
-	}
-
-	for (var i = 0; i < testNodes.length; i++) {
-		var node = eval(testNodes[i]);
-		assert_throws("INVALID_STATE_ERR", function() {
-			var range = document.createRange();
-			range.detach();
-
-			range.setStartBefore(node);
-		}, "setStartBefore(" + testNodes[i] + ")");
-
-		assert_throws("INVALID_STATE_ERR", function() {
-			var range = document.createRange();
-			range.detach();
-
-			range.setStartAfter(node);
-		}, "setStartAfter(" + testNodes[i] + "");
-
-		assert_throws("INVALID_STATE_ERR", function() {
-			var range = document.createRange();
-			range.detach();
-
-			range.setEndBefore(node);
-		}, "setEndBefore(" + testNodes[i] + ")");
-
-		assert_throws("INVALID_STATE_ERR", function() {
-			var range = document.createRange();
-			range.detach();
-
-			range.setStartAfter(node);
-		}, "setEndAfter(" + testNodes[i] + ")");
-	}
-}, "Setting boundary points on a detached Range must throw INVALID_STATE_ERR");
-
 var startTests = [];
 var endTests = [];
 var startBeforeTests = [];

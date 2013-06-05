@@ -190,9 +190,7 @@ setup({timeout: 60000});
 test(function() {
 	var range = document.createRange();
 	range.detach();
-	assert_throws("INVALID_STATE_ERR", function() {
-		range.extractContents();
-	}, "Detached Range must throw INVALID_STATE_ERR on .extractContents()");
+	assert_array_equals(range.extractContents().childNodes, []);
 }, "Detached Range");
 
 var domTests = [];

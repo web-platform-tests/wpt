@@ -2,8 +2,8 @@ Description
 ===========
 
 This is the test suites from a number of W3C Working Groups, including the HTML
-Working Group, the Web Apps Working Group, the Device APIs Working Group, the
-Web Apps Security Working Group.
+Working Group, the Web Apps Working Group, the Device APIs Working Group, and 
+the Web Apps Security Working Group.
 
 Publication
 ===========
@@ -63,7 +63,7 @@ You may wish to read the details below, but the **simplest thing to know** is
 this:
 
 * if the company you work for is already a member of the Working Group
-  responsible for the specification, then you don't need to worry; you're 
+  responsible for the specification, then you don't need to worry; you're
   already covered
 * if not, you will need to [fill out this form](http://www.w3.org/2002/09/wbs/1/testgrants2-200409/)
 

@@ -42,6 +42,37 @@ var HTML5_ELEMENT_NAMES = [
 var HTML5_FORM_ASSOCIATED_ELEMENTS = ['button', 'fieldset', 'input', 'keygen', 'label',
                                       'object', 'output', 'select', 'textarea'];
 
+// Whether to work around vendor prefixes.
+var USE_VENDOR_SPECIFIC_WORKAROUND = true;
+
+function activateVendorSpecificWorkaround() {
+    if (Element.prototype.webkitCreateShadowRoot &&
+        !Element.prototype.createShadowRoot) {
+        Element.prototype.createShadowRoot =
+            Element.prototype.webkitCreateShadowRoot;
+
+        Object.defineProperty(Element.prototype, 'pseudo', {
+            get: function () { return this.webkitPseudo; },
+            set: function (value) { return this.webkitPseudo = value; }
+        });
+
+        Object.defineProperty(Element.prototype, 'shadowRoot', {
+            get: function () { return this.webkitShadowRoot; }
+        });
+    }
+}
+
+if (USE_VENDOR_SPECIFIC_WORKAROUND)
+    activateVendorSpecificWorkaround();
+
+// ----------------------------------------------------------------------------
+// Deprecated: The code below is preserved only for the existing tests that are
+// using it. Now vendor prefixes are handled in a way that does not require
+// manual intervention. New tests should just use unprefixed APIs and you
+// are all set.
+//
+// These functions will eventually be removed when no tests use them.
+
 function ShadowDomNotSupportedError() {
     this.message = "Shadow DOM is not supported";
 }
@@ -137,6 +168,9 @@ function newRenderedHTMLDocument(ctx) {
     addDocumentPrefixed(d);
     return d;    
 }
+
+// End deprecated.
+// ----------------------------------------------------------------------------
 
 function newContext() {
     return {iframes:[]};

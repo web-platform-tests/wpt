@@ -8,8 +8,11 @@
       </title>
    </head>
    <body>
-      <div id="test" role="combobox" aria-autocomplete="list">Placeholder content</div>
-      <div id="obj1">obj1</div>
-      <div id="obj2">obj2</div>
+     <input type="text" aria-label="Tag" role="combobox"
+      aria-autocomplete="list" aria-owns="owned_listbox" aria-activedescendant="selected_option" aria-expanded="true">
+     <ul role="listbox" id="owned_listbox">
+         <li role="option">Zebra</li>
+         <li role="option" id="selected_option">Zoom</li>
+     </ul>
    </body>
 </html>

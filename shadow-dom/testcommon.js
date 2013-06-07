@@ -72,22 +72,6 @@ function addDocumentPrefixed(d) {
 }
 
 
-function PROPS(assertion, properties) {
-    var res = Object(), attr;
-    for (attr in assertion) {
-        if (assertion.hasOwnProperty(attr)) {
-            res[attr] = assertion[attr];
-        }
-    }
-    for (attr in properties) {
-        if (properties.hasOwnProperty(attr)) {
-            res[attr] = properties[attr];
-        }
-    }
-    return res;
-
-}
-
 function rethrowInternalErrors(e) {
     if (e instanceof ShadowDomNotSupportedError) {
         throw e;
@@ -174,15 +158,6 @@ function step_unit(f, ctx, t) {
             cleanContext(ctx);
         }
     }
-}
-
-
-// helper method for debugging
-function obj_dump(p) {
-    for (var o in p) {
-        console.log(o + ': ' + p[o] + '; ');
-    }
-
 }
 
 function assert_nodelist_contents_equal_noorder(actual, expected, message) {

@@ -1,21 +1,29 @@
 Description
 ===========
 
-This is the test suites from a number of W3C Working Groups, including the HTML Working Group, the Web Apps Working, the Device APIs Working Group.
+This is the test suites from a number of W3C Working Groups, including the HTML
+Working Group, the Web Apps Working Group, the Device APIs Working Group, the
+Web Apps Security Working Group.
 
 Publication
 ===========
 
 The master branch is automatically synced to: http://w3c-test.org/web-platform-tests/master/.
-Likewise the CR branch (that matches the test suites used for the Candidate Recommendations of HTML5, Canvas 2D and Microdata) to: http://w3c-test.org/web-platform-tests/CR/.
+Likewise the CR branch (that matches the test suites used for the Candidate
+Recommendations of HTML5, Canvas 2D and Microdata) to: http://w3c-test.org/web-platform-tests/CR/.
 
-Pull requests that have been checked are automatically mirrored to https://w3c-test.org/web-platform-tests/submissions/
+Pull requests that have been checked are automatically mirrored to
+https://w3c-test.org/web-platform-tests/submissions/
 
 Finding Things
 ==============
-Each top-level directory represents a W3C specification: the name matches the shortname used after the canonical address of the said specification under http://www.w3.org/TR/ .
+Each top-level directory represents a W3C specification: the name matches the
+shortname used after the canonical address of the said specification under
+http://www.w3.org/TR/ .
 
-For some of the specifications, the tree uner the top-level directory represents the sections of the respective documents, using the section IDs for directory names, with a maximum of three levels deep. 
+For some of the specifications, the tree under the top-level directory
+represents the sections of the respective documents, using the section IDs for
+directory names, with a maximum of three levels deep.
 
 So if you're looking for tests in HTML for "The History interface",
 they will be under `html/browsers/history/the-history-interface/`.
@@ -51,10 +59,12 @@ Save the Web, Write Some Tests!
 
 Let's get the legalese out of the way:
 
-You may wish to read the details below, but the **simplest thing to know** is this:
+You may wish to read the details below, but the **simplest thing to know** is
+this:
 
-* if the company you work for is already a member of the Working Group responsible for the specification, then you don't need 
-  to worry; you're already covered
+* if the company you work for is already a member of the Working Group
+  responsible for the specification, then you don't need to worry; you're 
+  already covered
 * if not, you will need to [fill out this form](http://www.w3.org/2002/09/wbs/1/testgrants2-200409/)
 
 ### Grant of License for Contributed Test Cases Published Outside a W3C Recommendation

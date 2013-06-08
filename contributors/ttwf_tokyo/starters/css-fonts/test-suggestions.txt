@@ -1,12 +1,21 @@
 Suggested tests to write for CSS Fonts at Test the Web Forward Tokyo:
 
+Getting started:
+
+Try writing a very simple test using the test harness, just to get used to the infrastructure.
 
 Simple tests:
 
-
+Test parsing of the @font-face rule (chapter 4). Try various combinations of descriptors, and get them using JavaScript. (E. g. using document.styleSheets[0].cssRules[0].cssText).
 
 Moderate tests:
 
-
+Look in https://github.com/mozilla/mozilla-central/tree/master/layout/reftests/ (search for "fonts") for Mozilla tests that can be converted to W3C tests to check the spec.
 
 Difficult tests:
+
+Chapter 6–7 about Font Features. If you're interested, ask Experts for help!
+
+Notes:
+
+In Mozilla's repository, layout/style/test/property_database.js has a property reference you can use instead of reading the spec.

@@ -25,8 +25,6 @@ video {
 
 var t = async_test("Test MediaStream.currentTime", {timeout:10000});
 
-//navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia
-
 t.step(function() {
 	navigator.getUserMedia(
 		{video: true},

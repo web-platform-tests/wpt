@@ -25,13 +25,15 @@ video {
 
 var t = async_test("Test MediaStream.currentTime", {timeout:10000});
 
+navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia
+
 t.step(function() {
 	navigator.getUserMedia(
 		{video: true},
 		t.step_func(function(stream) {
 			assert_true(stream.currentTime >= 0, "Test MediaStream.currentTime is an interger >= 0")
 			stream.currentTime = 1000
-			assert_true(stream.currentTime !== 1000, "Test MediaStream.currentTime is read only")
+			assert_true(stream.currentTime < 1000, "Test MediaStream.currentTime is read only")
 			t.done();
 		}),
 		t.step_func(function() {

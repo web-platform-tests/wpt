@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Access to sandbox="allow-same-origin" iframe</title>
+    <title>DOM access in sandbox="allow-same-origin" iframe</title>
     <link rel="author" title="Kinuko Yasuda" href="mailto:kinuko@chromium.org">
     <link rel="help" href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#sandboxing">
     <script src="/resources/testharness.js"></script>
@@ -9,9 +9,9 @@
   </head>
 
   <body>
-    <h1>Access to sandbox="allow-same-origin" iframe</h1>
+    <h1>DOM access in sandbox="allow-same-origin" iframe</h1>
     <script type="text/javascript">
-      var t = async_test("Access to sandbox='allow-same-origin' iframe is allowed")
+      var t = async_test("DOM access in sandbox='allow-same-origin' iframe is allowed")
       var called = 0;
       function calledFromIframe() {
         called++;
@@ -24,5 +24,8 @@
     </script>
 
     <iframe src="/html/browsers/sandboxing/inner-iframe.html" style="visibility:hidden;display:none" sandbox="allow-same-origin" id="sandboxedframe" onload="loaded();"></iframe>
+
+    </div>
+    <div id="log"></div>
   </body>
 </html>

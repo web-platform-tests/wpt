@@ -3,35 +3,69 @@
 
   <head>
     <title>Input Range</title>
-     <meta name=viewport content="width=device-width, maximum-scale=1.0, user-scalable=no" />
- 	  <link rel="author" title="Fabrice Clari" href="mailto:f.clari@inno-group.com">
- 	  <link rel="author" title="Dimitri Bocquet" href="mailto:Dimitri.Bocquet@mosquito-fp7.eu">
-	  <link rel="help" href="http://www.w3.org/TR/html5/the-input-element.html#the-input-element">
-   <script src="/resources/testharness.js"></script>
+    <meta name=viewport content="width=device-width, maximum-scale=1.0, user-scalable=no" />
+    <link rel="author" title="Fabrice Clari" href="mailto:f.clari@inno-group.com">
+    <link rel="author" title="Dimitri Bocquet" href="mailto:Dimitri.Bocquet@mosquito-fp7.eu">
+    <link rel="author" title="Tomoyuki SHIMIZU" href="mailto:tomoyuki.labs@gmail.com">
+    <link rel="help" href="http://www.w3.org/TR/html5/the-input-element.html#the-input-element">
+    <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
   </head>
 
   <body>
 
-  
-  		<h1>Input Range</h1>
-  		<input type="range" style="display:none" min=0 max=5 />
+    
+    <h1>Input Range</h1>
+    <input type="range" style="display:none" min=0 max=5 />
+    <input type="range" style="display:none" min=0 max=5 value=-10 />
+    <input type="range" style="display:none" min=0 max=5 value=7 />
+    <input type="range" style="display:none" />
+    <input type="range" style="display:none" min=2 max=6 />
+    <input type="range" style="display:none" min=0 max=7 step=2 />
+    <input type="range" style="display:none" min=2 max=-3 />
+    <input type="range" style="display:none" min=5 max=12.6 value=6.7 />
+    <input type="range" style="display:none" min=5.3 max=12 value=6.7 />
+    <input type="range" style="display:none" min=5 max=12.6 step=0.5 value=6.7 />
+    <input type="range" style="display:none" min=5.3 max=12 step=0.5 value=6.7 />
 
     <div id="log">
     </div>
-	
-	<script type="text/javascript">
-		
+    
+    <script type="text/javascript">
+      
 
-		test(function() {assert_equals(document.getElementsByTagName("input")[0].type, "range")}, "range type support on input element", {
-		  "help" : "http://www.w3.org/TR/html5/the-input-element.html#dom-input-type" });
-		test(function() {assert_equals(document.getElementsByTagName("input")[0].min, "0")}, "min attribute support on input element", {
-		"help" : "http://www.w3.org/TR/html5/the-input-element.html#dom-input-min" });
-		test(function() {assert_equals(document.getElementsByTagName("input")[0].max, "5")}, "max attribute support on input element", {
-		  "help" : "http://www.w3.org/TR/html5/the-input-element.html#dom-input-max" });
-		  
-	</script>
-	
+      test(function() {assert_equals(document.getElementsByTagName("input")[0].type, "range")}, "range type support on input element", {
+      "help" : "http://www.w3.org/TR/html5/the-input-element.html#dom-input-type" });
+      test(function() {assert_equals(document.getElementsByTagName("input")[0].min, "0")}, "min attribute support on input element", {
+      "help" : "http://www.w3.org/TR/html5/the-input-element.html#dom-input-min" });
+      test(function() {assert_equals(document.getElementsByTagName("input")[0].max, "5")}, "max attribute support on input element", {
+      "help" : "http://www.w3.org/TR/html5/the-input-element.html#dom-input-max" });
+      test(function() {assert_equals(document.getElementsByTagName("input")[1].value, "0")}, "the value is set to min when a smaller value than min attribute is given", {
+      "help" : "http://www.w3.org/TR/html5/forms.html#range-state-(type=range)" });
+      test(function() {assert_equals(document.getElementsByTagName("input")[2].value, "5")}, "the value is set to max when a larger value than max attribute is given", {
+      "help" : "http://www.w3.org/TR/html5/forms.html#range-state-(type=range)" });
+      test(function() {assert_equals(document.getElementsByTagName("input")[3].min, "0")}, "default value of min attribute in input type=range", {
+      "help" : "http://www.w3.org/TR/html5/the-input-element.html#dom-input-min" });
+      test(function() {assert_equals(document.getElementsByTagName("input")[3].max, "100")}, "default value of max attribute in input type=range", {
+      "help" : "http://www.w3.org/TR/html5/the-input-element.html#dom-input-max" });
+      test(function() {assert_equals(document.getElementsByTagName("input")[4].value, "4")}, "default value when min and max attributes are given (= min plus half the difference between min and max)", {
+      "help" : "http://www.w3.org/TR/html5/forms.html#range-state-(type=range)" });
+      test(function() {assert_equals(document.getElementsByTagName("input")[5].value, "4")}, "default value with step control when both min and max attributes are given", {
+      "help" : "http://www.w3.org/TR/html5/forms.html#range-state-(type=range)" });
+      test(function() {assert_equals(document.getElementsByTagName("input")[6].value, "2")}, "default value when both min and max attributes are given, while min > max", {
+      "help" : "http://www.w3.org/TR/html5/forms.html#range-state-(type=range)" });
+      test(function() {assert_equals(document.getElementsByTagName("input")[7].value, "7")}, "The default step scale factor is 1, unless min attribute has non-integer value", {
+      "help" : "http://www.w3.org/TR/html5/forms.html#range-state-(type=range)" });
+      test(function() {assert_equals(document.getElementsByTagName("input")[8].value, "6.3")}, "Step scale factor behavior when min attribute has integer value but max attribute is non-integer ", {
+      "help" : "http://www.w3.org/TR/html5/forms.html#range-state-(type=range)" });
+      test(function() {assert_equals(document.getElementsByTagName("input")[9].step, "1")}, "The default scale factor is 1 even if step attribute is explicitly set to non-integer value, unless min attribute has non-integer value", {
+      "help" : "http://www.w3.org/TR/html5/forms.html#range-state-(type=range)" });
+      test(function() {assert_equals(document.getElementsByTagName("input")[10].step, "0.5")}, "Solving the step mismatch", {
+      "help" : "http://www.w3.org/TR/html5/forms.html#range-state-(type=range)" });
+
+      
+    </script>
+    
   </body>
   
 </html>

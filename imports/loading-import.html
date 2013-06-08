@@ -21,30 +21,24 @@ test(function() {
   assert_equals(linkImport1.import, linkImport2.import);
   assert_true(linkImport1.import != null);
 }, 
-"Check on sharing imports",
-{
-  "assert": "If LOCATION is already in the loaded import list, let FRAGMENT be the imported fragment for LOCATION and stop."
-});
+"Check on sharing imports. Imports in same location should be represented as same object."
+);
 
 test(function() {
   var link = document.getElementById("linkToTypicalHtml");
   assert_equals(link.import.querySelector("p2").parentNode, 
                 link.import.querySelector("parent"));
 }, 
-"Check on HTML Parsing",
-{
-  "assert": "Let PARSER be a new HTML parser"
-});
+"Check on HTML Parsing. An HTML parser should be used to parse the import."
+);
 
 test(function() {
   var parent = document.getElementById("linkIncludingSubImport");
   var child = parent.import.querySelector("link").imports;
   assert_equals(child.title, "Hello");
 }, 
-"Check on sub-imports",
-{
-  "assert": "Obtain the import resources using LINK and import fetching algorithm."
-});
+"Check on sub-imports. Sub-improts should be loaded as usual imports."
+);
 
 </script>
 </body>

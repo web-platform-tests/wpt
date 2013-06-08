@@ -17,25 +17,18 @@ test(function() {
   assert_true(linkImport.import instanceof DocumentFragment);
   assert_true(linkImport.import.querySelector("#target") instanceof DocumentFragment);
 }, 
-"Check on loaded import",
-{
-  "assert": "Otherwise, the attribute must return the imported fragment for the import, represented by the link element."
-});
+"Check on loaded import. It must return the imported fragment for the import, represented by the link element."
+);
 
 test(function() {
   var linkImport = document.getElementById("linkImport");
   assert_equals(linkImport.import, linkImport.import);
 }, 
-"Check on object identity",
-{
-  "assert": "The same object must be returned each time."
-});
+"Check on object identity. The same object must be returned each time."
+);
 
 var frameTest = async_test(
-  "Check on blocking script import on parent",
-  { 
-    "assert": "A Document has an import that is blocking scripts if there is either a an import that is blocking scripts in the context of that Document, or if that Document is in a browsing context that has a parent browsing context, and the active document of that parent browsing context itself has an import that is blocking scripts."
-  }
+  "Check on blocking script import on parent. Imports in the parent frame should block scripts in chlid documents."
 );
 
 function checkFromFrame() {
@@ -55,10 +48,7 @@ function checkFromFrame() {
 <script>
 
 var insertionTest = async_test(
-  "Check on dynamically inserted element",
-  {
-    "assert": "when its element is inserted into a document."
-  }
+  "Check on dynamically inserted element. The import should be loaded even for dynamically added links."
 );
 
 insertionTest.step(function() {

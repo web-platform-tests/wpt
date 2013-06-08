@@ -16,24 +16,16 @@
 test(function() {
   var linkNotImport = document.getElementById("linkNotImport");
   assert_equals(linkNotImport.import, null);
-
-  var linkNotFound = document.getElementById("linkNotFound");
-  assert_equals(linkNotFound.import, null);
-
 }, 
-"Check on style link",
-{
-  "assert": "On getting, the import attribute must return null, if....The link does not represent an import"
-});
+"Check on style link. It should be null if the resource refers style thus doesn't represent any import."
+);
 
 test(function() {
   var linkNotFound = document.getElementById("linkNotFound");
   assert_equals(linkNotFound.import, null);
 }, 
-"Check on non existing resource",
-{
-  "assert": "On getting, the import attribute must return null, if....The link does not represent an import"
-});
+"Check on non existing resource. It should be null if the resource isn't found thus doesn't represent any import."
+);
 
 // FIXME: should have "the resource is CORS-cross-origin" case.
 
@@ -44,10 +36,8 @@ test(function() {
   assert_equals(linkOutOfTree.import, null);
   // FIXME: test if the import is available after tree insertion.
 }, 
-"Check on out of document element",
-{
-  "assert": "On getting, the import attribute must return null, if....the link element is not in a Document"
-});
+"Check on out of document element. It should be null when the element is out of document"
+);
 
 test(function() {
   var linkToBeRemoved = document.getElementById("linkToBeRemoved");
@@ -55,10 +45,8 @@ test(function() {
   linkToBeRemoved.parentNode.removeChild(linkToBeRemoved);
   assert_equals(linkToBeRemoved.import, null);
 }, 
-"Check on  removed element",
-{
-  "assert": "On getting, the import attribute must return null, if....the link element is not in a Document"
-});
+"Check on  removed element. It should be null when it is removed from the document and becomes out of document."
+);
 
 </script>
 </body>

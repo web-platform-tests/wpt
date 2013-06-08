@@ -33,7 +33,8 @@ rmtree('dist/css3-flexbox');
 
 ###############################################################################
 # Mozilla
-    
+push @dirs, 'contributors/mozilla/submitted/mozilla-central-reftests/flexbox';
+
 ###############################################################################
 # Eira Monstad
 

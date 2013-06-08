@@ -67,7 +67,7 @@ for path in unreviewed:
     suite.addReftests(basepath(path), basename(path))
   else:
     def grep(file):
-      if not file.endswith('.xht'):
+      if not (file.endswith('.xht') or file.endswith('.html')):
         return False
       for line in open(join(path, file)):
         if line.find(suite.specroot) != -1:

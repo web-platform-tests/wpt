@@ -44,6 +44,7 @@ push @dirs, 'contributors/mozilla/submitted/first-letter-characters';
 # Managed auto-import from mozilla.org repos
 
 push @dirs, 'contributors/mozilla/submitted/css2.1/*';
+push @dirs, 'contributors/mozilla/submitted/mozilla-central-reftests/css21/pagination';
 
 ###############################################################################
 # Eira Monstad

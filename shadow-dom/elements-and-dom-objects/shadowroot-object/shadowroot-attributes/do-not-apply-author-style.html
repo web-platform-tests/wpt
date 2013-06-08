@@ -1,0 +1,51 @@
+<!DOCTYPE HTML>
+<html>
+ <head>
+  <title>Shadow DOM Test - ApplyAuthorStyle attribute</title>
+  <link rel="author" title="thujikun" href="mailto:tsuji.0107@gmail.com" />
+  <link rel="help" href="http://www.w3.org/TR/shadow-dom/" />
+  <meta name="assert" content="ShadowRoot Object: attribute bool applyAuthorStyles attribute. If true, the author styles are not applied">
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="../../../testcommon.js"></script>
+ </head>
+ <body>
+    <h1>nested shadow trees level 2</h1>
+
+    <style>
+      #shadow {
+        display: none;
+      }
+    </style>
+    <div id="wrap"></div>
+    <template id="shadow-template">
+      <style>
+        #shadow {
+          width: 100px;
+          height: 100px;
+          background: #00ff00;
+        }
+      </style>
+      <div id="shadow">
+      </div>
+    </template>
+
+    <div id="log"></div>
+
+    <script>
+        test(function() {
+            var wrap = document.getElementById('wrap'),
+                shadowRoot = createSR(wrap),
+                shadow = document.getElementById('shadow-template').content,
+                getComputedStyle = document.defaultView.getComputedStyle;
+
+            shadowRoot.applyAuthorStyle = false;
+
+            shadowRoot.appendChild(shadow);
+
+            assert_equals(getComputedStyle(shadowRoot.querySelector('#shadow')).display, 'block');
+
+        }, 'apply author style to shadow dom');
+    </script>
+ </body>
+</html>

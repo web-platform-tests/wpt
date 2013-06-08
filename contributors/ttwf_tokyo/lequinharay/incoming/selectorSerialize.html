@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>CSSOM Test: UNIQUE TEST DESCRIPTION</title>
+        <title>CSSOM Test: test serialized selector which is only one simple selector in the sequence of simple selectors</title>
         <link rel="author" title="T.Nishitani" href="mailto:lequinharay@gmail.com">
         <!-- You must have at least one spec link, but may have as many as are covered in the test. -->
         <!-- Be sure to make the main testing area first in the order -->
@@ -23,7 +23,7 @@
               assert_equals(sheet.cssRules[0].selectorText, expected_result);
             }
 
-            function assert_selector_with_arguments_serializes_to(source) {
+            function run_tests_on_anplusb_selector(source) {
                 assert_selector_serializes_to(source + '( even   )', source + '(2n)');
                 assert_selector_serializes_to(source + '(   odd )', source + '(2n+1)');
                 assert_selector_serializes_to(source + '( +10  )', source + '(10)');
@@ -77,19 +77,19 @@
 
 
             test(function(){
-                assert_selector_with_arguments_serializes_to(':nth-child');
+                run_tests_on_anplusb_selector(':nth-child');
             }, 'single pseudo (simple) selector "nth-child" which accepts arguments in the sequence of simple selectors that is not a universal selector')
 
             test(function(){
-                assert_selector_with_arguments_serializes_to(':nth-last-child');
+                run_tests_on_anplusb_selector(':nth-last-child');
             }, 'single pseudo (simple) selector "nth-last-child" which accepts arguments in the sequence of simple selectors that is not a universal selector')
 
             test(function(){
-                assert_selector_with_arguments_serializes_to(':nth-of-type');
+                run_tests_on_anplusb_selector(':nth-of-type');
             }, 'single pseudo (simple) selector "nth-of-child" which accepts arguments in the sequence of simple selectors that is not a universal selector')
 
             test(function(){
-                assert_selector_with_arguments_serializes_to(':nth-last-of-type');
+                run_tests_on_anplusb_selector(':nth-last-of-type');
             }, 'single pseudo (simple) selector ":nth-last-of-type" which accepts arguments in the sequence of simple selectors that is not a universal selector')
 
             test(function(){

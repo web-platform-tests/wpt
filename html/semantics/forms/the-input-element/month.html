@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Month Inputs</title>
+    <meta name=viewport content="width=device-width, maximum-scale=1.0, user-scalable=no" />
+    <link rel="author" title="kaseijin" href="mailto:pcmkas@gmail.com">
+    <link rel="help" href="http://www.w3.org/html/wg/drafts/html/master/forms.html#month-state-(type=month)">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <h1>Month Inputs</h1>
+    <div style="display: none">
+      <input id="valid_value" type="month" value="2013-06" />
+      <input id="value_can_be_empty_string" type="month" value="2013-06" />
+      <input id="invalid_value_with_two_digits_year" type="month" value="13-06" />
+      <input id="invalid_value_is_set" type="month" />
+      <input id="invalid_value_is_set_to_valid_value" type="month" value="2013-05" />
+      <input id="step_attribute_is_invalid_value" type="month" value="2013-06" step="invalid_step_value" />
+    </div>
+
+    <div id="log"></div>
+    <script>
+      test(function() {
+        assert_equals(document.getElementById("valid_value").value, "2013-06")}, "When month value is valid, it must return valid value.");
+
+      test(function() {
+        document.getElementById("value_can_be_empty_string").value = "";
+        assert_equals(document.getElementById("value_can_be_empty_string").value, "")}, "Month value can be empty string.");
+
+      test(function() {
+        assert_equals(document.getElementById("invalid_value_with_two_digits_year").value, "")}, "When value attribute has two digits year value, the value,which is invalid, must return empty string.");
+
+      test(function() {
+        document.getElementById("invalid_value_is_set").value = "invalid value";
+        assert_equals(document.getElementById("invalid_value_is_set").value, "")}, "When value is set with invalid value, the value must return empty string.");
+
+      test(function() {
+        document.getElementById("invalid_value_is_set_to_valid_value").value = "invalid value";
+        assert_equals(document.getElementById("invalid_value_is_set_to_valid_value").value, "2013-05")}, "When value is given invalid value to non-empty valid string, the value must be same as before.");
+
+      test(function() {
+        document.getElementById("step_attribute_is_invalid_value").stepUp();
+        assert_equals(document.getElementById("step_attribute_is_invalid_value").value, "2013-07")}, "When step attribute is given invalid value, it must ignore the invalid value and use defaul value instead.");
+    </script>
+  </body>
+</html>

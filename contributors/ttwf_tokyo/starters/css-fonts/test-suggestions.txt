@@ -10,11 +10,11 @@ Test parsing of the @font-face rule (chapter 4). Try various combinations of des
 
 Moderate tests:
 
-Look in https://github.com/mozilla/mozilla-central/tree/master/layout/reftests/ (search for "fonts") for Mozilla tests that can be converted to W3C tests to check the spec.
+Look in https://github.com/mozilla/mozilla-central/tree/master/layout/reftests/ and https://github.com/mozilla/mozilla-central/tree/master/layout/style/test (search for "font") for Mozilla tests that can be converted to W3C tests to check the spec.
 
 Difficult tests:
 
-Chapter 6–7 about Font Features. If you're interested, ask Experts for help!
+Chapter 6-7 about Font Features. If you're interested, ask Experts for help!
 
 Notes:
 

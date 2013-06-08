@@ -1,0 +1,32 @@
+<html>
+<head>
+    <title></title>
+    <style>
+        .container {
+            display: -webkit-flex;
+            display: flex;
+            -webkit-flex-direction: row;
+            border: thin solid black;
+        }
+        .vertical {
+            -webkit-writing-mode: vertical-rl;
+        }
+        .item {
+            border: thin solid gray;
+        }
+        .horizontal {
+            -webkit-align-self: stretch;            
+        }
+    </style>
+</head>
+<body>
+    BUG!
+    <div class="container">
+        <div class="horizontal item"><p>A</p><p>B</p><p>C</p></div>
+        <div class="vertical item"><p>A</p><p>B</p><p>C</p></div>
+        <div class="horizontal item"><p>A</p><p>B</p></div>
+        <div class="vertical item"><p>A</p><p>B</p></div>
+    </div>
+    All of these items should fill the physical height of the container
+</body>
+</html>

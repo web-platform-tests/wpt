@@ -29,7 +29,7 @@
         client.onabort = test.step_func(function () {
             // this should not fire!
 
-            assert_unreached("abort should not cause the about event to fire");
+            assert_unreached("abort() should not cause the abort event to fire");
         });
 
         client.open("GET", "resources/well-formed.xml", true);

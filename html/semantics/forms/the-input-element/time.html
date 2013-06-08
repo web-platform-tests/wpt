@@ -11,11 +11,13 @@
 
   <body>
   		<h1>Input Time</h1>
-			<input id="chkDefaultValue"     type="time" />
-			<input id="chkStep"             type="time" />
-			<input id="chkSetValueTest"     type="time" />
-			<input id="chkSupportAttribute" type="time" min="01:01:01.001" max="12:12:12.012" step="600" /> 
-    <div id="log">
+			<div style="display:none;">
+							<input type="time "id="chkDefaultValue" />
+							<input type="time" id="chkStep" />
+							<input type="time" id="chkSetValueTest" />
+							<input type="time" id="chkSupportAttribute" min="01:01:01.001" max="12:12:12.012" step="600" /> 
+    	</div>
+		<div id="log">
     </div>
 	
 	<script type="text/javascript">
@@ -153,25 +155,41 @@ test(function(){
 test(function(){
 	_StepTest.max = "15:00";
 	_StepTest.value = "15:00";
-	assert_true(typeof(_StepTest.stepUp) ==="function");
-	assert_throws("InvalidStateError", function(){ _StepTest.stepUp(); });
+	_StepTest.stepUp();
+	assert_equals(_StepTest.value, "15:00");
 	_StepTest.max = "";
-} , "InvalidStateError if step Up above the maximam value");
+} , "stepUp stop because it exceeds the maximum value");
 test(function(){
-	_StepTest.max = "13:00";
+	_StepTest.min = "13:00";
 	_StepTest.value = "13:00";
-	assert_true(typeof(_StepTest.stepDown) ==="function");
-	assert_throws("InvalidStateError", function(){ _StepTest.stepDown(); });
+	_StepTest.stepDown();
+	assert_equals(_StepTest.value, "13:00");
 	_StepTest.min="";
-} , "InvalidStateError if step down below the minimum value");
+} , "stepDown Stop so lower than the minimum value");
+
+test(function(){
+	_StepTest.max = "15:01";
+	_StepTest.value = "15:00";
+	_StepTest.step = "120";
+	_StepTest.stepUp();
+	assert_equals(_StepTest.value, "15:01");
+	_StepTest.max = "";
+} , "stop at border on stepUp");
+test(function(){
+	_StepTest.min = "12:59";
+	_StepTest.value = "13:00";
+	_StepTest.step = "120";
+	_StepTest.stepDown();
+	assert_equals(_StepTest.value, "12:59");
+	_StepTest.min="";
+} , "stop at border on stepDown");
+
 test(function(){
 	_StepTest.value = "";
-	assert_equals(_StepTest.value, "");
-	_StepTest.step = "300";
-  assert_throws("InvalidStateError", function(){ _StepTest.stepUp(); });
-} , " empty value of step UP");
-
-
+	_StepTest.step = "60";
+  _StepTest.stepUp();
+	assert_equals(_StepTest.value, "00:01");
+} , " empty value of stepUp");
 
 
 /* set value test */
@@ -180,7 +198,7 @@ test(function(){
 	_time.value = "12:00:00.000";
 	assert_equals(_time.value, "12:00:00.000");
 	_time.value = "hh:mi:ss.sss";
-	assert_not_equals(_time.value, "hh:mi:ss.sss");
+	assert_equals(_time.value, "");
 }, "set value on not time format value");
 
 

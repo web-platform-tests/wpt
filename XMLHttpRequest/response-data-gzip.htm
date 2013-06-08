@@ -12,6 +12,7 @@
         var test = async_test();
         test.step(function() {
           var client = new XMLHttpRequest()
+
           client.open("POST", "resources/gzip.php", false);
 
           client.onreadystatechange = test.step_func(function () {

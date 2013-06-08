@@ -17,7 +17,7 @@
       <input id="invalid_value" type="month" value="invalid-month" min="2011-01" max="2011-12"/>
       <input id="invalid_min" type="month" value="2011-01" min="invalid_min" max="2011-12"/>
       <input id="invalid_max" type="month" value="2011-01" min="2011-01" max="invalid_max"/>
-      <input id="invalid_min_and_max" type="month" value="2011-01" min="2099-01" max="2011-12"/>
+      <input id="min_larger_than_max" type="month" value="2011-01" min="2099-01" max="2011-12"/>
 
       <input id="value_can_be_empty_string" type="month" value="2013-06" />
       <input id="invalid_value_with_two_digits_year" type="month" value="13-06" />
@@ -39,28 +39,29 @@
 
 	  test(function() {
         assert_equals(document.getElementById("valid").value, "2011-11"),
-        assert_not_equals(document.getElementById("too_small_value").value, "1999-01"),//spec is not clear
-        assert_not_equals(document.getElementById("too_large_value").value, "2099-01")},//spec is not clear
+        assert_equals(document.getElementById("too_small_value").value, "2011-01"),
+        assert_equals(document.getElementById("too_large_value").value, "2011-12")},
       "The value attribute, if specified and not empty, must have a value that is a valid month string", {
 	    "help" : "http://www.w3.org/html/wg/drafts/html/master/forms.html#month-state-(type=month)" });
 
 	  test(function() {
         assert_equals(document.getElementById("valid").min, "2011-01"),
-        assert_not_equals(document.getElementById("invalid_min").min, "invalid_min")
+        assert_equals(document.getElementById("invalid_min").min, "")
         },
       "The min attribute, if specified, must have a value that is a valid month string.", {
 	    "help" : "http://www.w3.org/html/wg/drafts/html/master/forms.html#month-state-(type=month)" });
 
 	  test(function() {
         assert_equals(document.getElementById("valid").max, "2011-12"),
-        assert_not_equals(document.getElementById("invalid_max").max, "invalid_max"),
-        assert_not_equals(document.getElementById("invalid_min_and_max").max, "2011-12")
+        assert_equals(document.getElementById("min_larger_than_max").max, "2099-01"),
+        assert_equals(document.getElementById("invalid_max").max, "")
+
       },
       "The max attribute, if specified, must have a value that is a valid month string", {
 	    "help" : "http://www.w3.org/html/wg/drafts/html/master/forms.html#month-state-(type=month)" });
 
       test(function() {
-        assert_not_equals(document.getElementById("invalid_value").value, "invalid-month")
+        assert_equals(document.getElementById("invalid_value").value, "")
       },
       "User agents must not allow the user to set the value to a non-empty string that is not a valid month string.", {
         "help" : "http://www.w3.org/html/wg/drafts/html/master/forms.html#month-state-(type=month)" });

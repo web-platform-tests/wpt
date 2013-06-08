@@ -1,20 +1,23 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-    <title>CSS Flexbox Test: Vertical writing mode items stretch correctly</title>
-    <link rel="author" title="Alan Stearns" href="mailto:stearns@adobe.com">
-    <link rel="help" href="http://www.w3.org/TR/css3-flexbox/#align-items-property">
-    <link rel="match" href="writing-mode-stretch-ref.html"/>
-    <meta name="flags" content="">
-    <meta name="assert" content="Vertical writing mode flex items stretch in the flex container's cross-axis direction">
+    <title>CSS Test: writing-mode vertical-lr and vertical-rl</title>
+    <link rel="author" title="Mitsuteru Sawa" href="mailto:mitsuteru.s@gmail.com">
+    <link rel="reviewer" title="Tab Atkins Jr." href="mailto:jackalmage@gmail.com">
+    <link rel="help" href="http://dev.w3.org/csswg/css-flexbox/#align-stretch">
+    <link rel="match" href="writing-mode-stretch-001-ref.html">
+    <meta name="assert" content="vertical-writing-mode flex items should stretch">
     <style>
         .container {
             display: -webkit-flex;
             display: flex;
-            width: 150px;
+            width: 250px;
         }
-        .vertical {
+        .vertical-rl {
             -webkit-writing-mode: vertical-rl;
+        }
+        .vertical-lr {
+            -webkit-writing-mode: vertical-lr;
         }
         .item {
             background-color: green;
@@ -27,7 +30,7 @@
             position: absolute;
             background-color: red;
             height: 100px;
-            width: 150px;
+            width: 250px;
             z-index: -1;
         }
     </style>
@@ -41,7 +44,11 @@
                 <div class="square"></div>
                 <div class="square"></div>
             </div>
-            <div class="vertical item">
+            <div class="vertical-rl item">
+                <div class="square"></div>
+                <div class="square"></div>
+            </div>
+            <div class="vertical-lr item">
                 <div class="square"></div>
                 <div class="square"></div>
             </div>

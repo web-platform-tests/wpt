@@ -1,37 +1,29 @@
 <!DOCTYPE HTML>
 <html>
  <head>
-  <title>ShadowRoot Object: Don`t apply author style</title>
+  <title>ShadowRoot Object: Reset style inheritance</title>
   <link rel="author" title="thujikun" href="mailto:tsuji.0107@gmail.com" />
   <link rel="help" href="http://www.w3.org/TR/shadow-dom/" />
-  <meta name="assert" content="ShadowRoot Object: attribute bool applyAuthorStyles attribute. If true, the author styles are not applied">
+<meta name="assert" content="ShadowRoot Object: attribute bool resetStyleInheritance. If true, the properties don`t continue to inherit CSS styles">
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <script src="../../../testcommon.js"></script>
  </head>
  <body>
-    <h1>ShadowRoot Object: Don`t apply author style</h1>
+    <h1>ShadowRoot Object: Reset style inheritance</h1>
 
     <style>
-      #shadow {
-        display: none;
+      #wrap {
+        font-size: 50px;
       }
     </style>
     <div id="wrap"></div>
     <template id="shadow-template">
-      <style>
-        #shadow {
-          width: 100px;
-          height: 100px;
-          background: #00ff00;
-        }
-      </style>
       <div id="shadow">
       </div>
     </template>
 
     <div id="log"></div>
-
     <script>
         test(function() {
             var wrap = document.getElementById('wrap'),
@@ -39,13 +31,13 @@
                 shadow = document.getElementById('shadow-template').content,
                 getComputedStyle = document.defaultView.getComputedStyle;
 
-            shadowRoot.applyAuthorStyle = false;
-
             shadowRoot.appendChild(shadow);
 
-            assert_equals(getComputedStyle(shadowRoot.querySelector('#shadow')).display, 'block');
+            shadowRoot.resetStyleInheritance = true;
 
-        }, 'apply author style to shadow dom');
+            assert_not_equals(getComputedStyle(shadowRoot.querySelector('#shadow')).fontSize, '50px');
+
+        }, 'reset style inheritance');
     </script>
  </body>
 </html>

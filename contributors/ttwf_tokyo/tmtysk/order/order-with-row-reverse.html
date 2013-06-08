@@ -20,20 +20,20 @@
     }
 
     #middle {
-      order:0;
+      order: 0;
     }
 
     #rightmost {
-      order:-1;
+      order: -1;
     }
   </style>
  </head>
  <body>
   <p>Test passes if the paragraph below reads 'First,Second,Third' from leftmost.</p>
   <div id="test">
-    <p id="rightmost">Third</p>
-    <p id="middle">Second,</p>
     <p id="leftmost">First,</p>
+    <p id="middle">Second,</p>
+    <p id="rightmost">Third</p>
   </div>
  </body>
 </html>

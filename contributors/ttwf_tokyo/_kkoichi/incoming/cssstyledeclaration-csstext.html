@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>CSSOM Test: UNIQUE TEST DESCRIPTION</title>
+        <link rel="author" title="_kkoichi" href="coarse.ground@gmail.com">
+        <!-- You must have at least one spec link, but may have as many as are covered in the test. -->
+        <!-- Be sure to make the main testing area first in the order -->
+        <link rel="help" href="http://dev.w3.org/csswg/cssom/#dom-cssstyledeclaration-csstext">
+        <meta name="assert" content="STATEMENT OF THE ASSERTION THAT THIS TEST IS MAKING">
+        <meta name="flags" content="dom">
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+        <style id="teststyles">
+
+        </style>
+    </head>
+    <body>
+    <div id="log"></div>
+    <div id="box"></div>
+    <script>
+        function newElm() {
+            return document.body.appendChild(document.createElement('div'));
+        }
+
+        test(function(){
+            var style = newElm().style;
+            style.COLOR = 'red';
+
+            assert_equals(style.cssText, '');
+
+        }, 'uppercase property');
+
+        test(function(){
+            var style = newElm().style;
+            style.color = 'RED';
+
+            assert_equals(style.cssText, 'color: red;');
+
+        }, 'uppercase value');
+
+        test(function(){
+            var style = newElm().style;
+
+            style.color = 'red';
+
+            style.color = 'unknown color';
+
+            assert_equals(style.cssText, 'color: red;');
+
+        }, 'overwriting with invalid value');
+
+        test(function(){
+            var style = newElm().style;
+            style.color = 'rgb(255, 0, 0)';
+
+            assert_equals(style.cssText, 'color: rgb(255, 0, 0);');
+
+        }, 'use rgb');
+
+        test(function(){
+            var e = newElm();
+            var style = e.style;
+            style.color = 'red';
+            style.fontSize = '10pt';
+            style.fontWeight = 'bold';
+
+            assert_equals(style.cssText, 'color: red; font-size: 10pt; font-weight: bold;');
+
+        }, 'cssText order');
+
+        test(function(){
+            var e = newElm();
+            var style = e.style;
+
+            style.cssText = 'font-weight: bold; color: red; font-size: 10pt;';
+            assert_equals(style.cssText, 'font-weight: bold; color: red; font-size: 10pt;');
+
+        }, 'another cssText order');
+
+        test(function(){
+            var style = newElm().style;
+
+            style.color = '   red';
+            style.fontSize = '10pt   ';
+
+            assert_equals(style.cssText, 'color: red; font-size: 10pt;');
+
+        }, 'whitespaces in value');
+
+        test(function(){
+            var style = newElm().style;
+
+            style.color = 'red';
+            style.unknown = 'unknown';
+            style.fontSize = '10pt';
+            // assert_equals(style.unknown, 'unknown');    // is this right?
+            assert_equals(style.cssText, 'color: red; font-size: 10pt;');
+
+        }, 'invalid property does not appear');
+
+    </script>
+    </body>
+</html>

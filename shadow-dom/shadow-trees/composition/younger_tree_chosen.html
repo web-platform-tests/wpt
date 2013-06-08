@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Shadow DOM / Composition - Youger Tree Chosen Test</title>
+    <link rel="author" title="Kazumasa Kohtaka" href="mailto:kkohtaka@gmail.com">
+    <link rel="help" href="http://www.w3.org/TR/2013/WD-shadow-dom-20130514/#composition">
+    <style>
+      li { background-color: red; }
+      li.shadow { background-color: green; }
+    </style>
+  </head>
+  <body>
+    <div>
+      <p>Younger Shadow Root should be chosen.</p>
+      <ul id="host">
+        <li id="li1" class="shadow">
+          <a id="a11" class="cl1" href="#">Link11 Shadow</a>
+          <a id="a12" class="cl2" href="#">Link12 Shadow</a>
+          <a id="a13" class="cl1" href="#">Link13 Shadow</a>
+        </li>
+        <li id="li2">
+          <a id="a21" href="#">Link21</a>
+          <a id="a22" href="#">Link22</a>
+        </li>
+        <li id="li3" class="shadow">
+          <a id="a31" href="#">Link31 Shadow</a>
+          <a id="a32" href="#">Link32 Shadow</a>
+        </li>
+        <li id="li4" class="shadow2">
+          <a id="a41" href="#">Link41 Shadow 2</a>
+          <a id="a42" href="#">Link42 Shadow 2</a>
+        </li>
+        <li id="li5" class="shadow2">
+          <a id="a51" href="#">Link51 Shadow 2</a>
+          <a id="a52" href="#">Link52 Shadow 2</a>
+        </li>
+      </ul>
+    </div>
+    <script src="../../testcommon.js"></script>
+    <script>
+      var d = window.document;
+
+      //Shadow root to play with
+      var ul = d.querySelector('#host');
+
+      //make an old shadow tree
+      var s2 = createSR(ul);
+      var div2 = d.createElement('ul');
+      div2.innerHTML = '<content select=".shadow2"></content>';
+      s2.appendChild(div2);
+
+      //make a young shadow tree
+      var s = createSR(ul);
+      var div3 = d.createElement('ul');
+      div3.innerHTML = '<content select=".shadow"></content>';
+      s.appendChild(div3);
+    </script>
+  </body>
+</html>

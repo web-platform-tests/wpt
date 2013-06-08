@@ -6,7 +6,7 @@
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         
         <script type="text/javascript" src="/resources/testharness.js"></script>
-        <script type="text/javascript" src="/webperf/tests/resources/pagevistestharness.js"></script>
+        <script type="text/javascript" src="resources/pagevistestharness.js"></script>
         
         <script type="text/javascript" >
             setup({explicit_done: true});
@@ -14,7 +14,7 @@
             function onload_test()
             {
                 // inject a windowless subdocument as a child of the root document <html> element
-                var subDoc = document.implementation.createDocument('/webperf/tests/resources/blank_page_green.htm', 'html', null);
+                var subDoc = document.implementation.createDocument('resources/blank_page_green.html', 'html', null);
 
                 // Test precondition: ensure subdocument has a null default view
                 test_true(subDoc.defaultView == null, "windowless subdocument generated for test has a null default view");

@@ -41,82 +41,233 @@
     
     <script type="text/javascript">
       
+      test(
+        function() {
+          assert_equals(document.getElementsByTagName("input")[0].type, "range");
+        },
+        "range type support on input element",
+        {
+          "help" : "http://www.w3.org/TR/html5/the-input-element.html#dom-input-type"
+        }
+      );
 
-      test(function() {assert_equals(document.getElementsByTagName("input")[0].type, "range")}, "range type support on input element", {
-      "help" : "http://www.w3.org/TR/html5/the-input-element.html#dom-input-type" });
-      test(function() {assert_equals(document.getElementsByTagName("input")[0].min, "0")}, "min attribute support on input element", {
-      "help" : "http://www.w3.org/TR/html5/the-input-element.html#dom-input-min" });
-      test(function() {assert_equals(document.getElementsByTagName("input")[0].max, "5")}, "max attribute support on input element", {
-      "help" : "http://www.w3.org/TR/html5/the-input-element.html#dom-input-max" });
+      test(
+        function() {
+          assert_equals(document.getElementsByTagName("input")[0].min, "0")
+        },
+        "min attribute support on input element",
+        {
+          "help" : "http://www.w3.org/TR/html5/the-input-element.html#dom-input-min"
+        }
+      );
+
+      test(
+        function() {
+          assert_equals(document.getElementsByTagName("input")[0].max, "5")
+        },
+        "max attribute support on input element", 
+        {
+          "help" : "http://www.w3.org/TR/html5/the-input-element.html#dom-input-max"
+        }
+      );
 
       // HTML5 spec says the default vaules of min and max attributes are 0 and 100 respectively,
       // however, Chrome, Opera and Firefox would not give any default value at all...
-      test(function() {assert_equals(document.getElementsByTagName("input")[15].min, "0")}, "Illegal value of min attribute", {
-      "help" : "http://www.w3.org/TR/html5/forms.html#range-state-(type=range)" });
-      test(function() {assert_equals(document.getElementsByTagName("input")[15].max, "100")}, "Illegal value of max attribute", {
-      "help" : "http://www.w3.org/TR/html5/forms.html#range-state-(type=range)" });
+      test(
+        function() {
+          assert_equals(document.getElementsByTagName("input")[15].min, "0")
+        },
+        "Illegal value of min attribute",
+        {
+          "help" : "http://www.w3.org/TR/html5/forms.html#range-state-(type=range)"
+        }
+      );
 
-      test(function() {assert_equals(document.getElementsByTagName("input")[16].value, "3")}, "Converting an illegal string to the default value", {
-      "help" : "http://www.w3.org/TR/html5/forms.html#range-state-(type=range)" });
-      test(function() {assert_equals(document.getElementsByTagName("input")[16].step, "1")}, "Converting an illegal string to the default step", {
-      "help" : "http://www.w3.org/TR/html5/forms.html#range-state-(type=range)" });
-      test(function() {assert_equals(document.getElementsByTagName("input")[1].value, "0")}, "the value is set to min when a smaller value than min attribute is given", {
-      "help" : "http://www.w3.org/TR/html5/forms.html#range-state-(type=range)" });
-      test(function() {assert_equals(document.getElementsByTagName("input")[2].value, "5")}, "the value is set to max when a larger value than max attribute is given", {
-      "help" : "http://www.w3.org/TR/html5/forms.html#range-state-(type=range)" });
-      test(function() {assert_equals(document.getElementsByTagName("input")[3].min, "0")}, "default value of min attribute in input type=range", {
-      "help" : "http://www.w3.org/TR/html5/the-input-element.html#dom-input-min" });
-      test(function() {assert_equals(document.getElementsByTagName("input")[3].max, "100")}, "default value of max attribute in input type=range", {
-      "help" : "http://www.w3.org/TR/html5/the-input-element.html#dom-input-max" });
-      test(function() {assert_equals(document.getElementsByTagName("input")[4].value, "4")}, "default value when min and max attributes are given (= min plus half the difference between min and max)", {
-      "help" : "http://www.w3.org/TR/html5/forms.html#range-state-(type=range)" });
-      test(function() {assert_equals(document.getElementsByTagName("input")[5].value, "4")}, "default value with step control when both min and max attributes are given", {
-      "help" : "http://www.w3.org/TR/html5/forms.html#range-state-(type=range)" });
+      test(
+        function() {
+          assert_equals(document.getElementsByTagName("input")[15].max, "100")
+        },
+        "Illegal value of max attribute", 
+        { "help" : "http://www.w3.org/TR/html5/forms.html#range-state-(type=range)" }
+      );
+
+      test(
+        function() {
+          assert_equals(document.getElementsByTagName("input")[16].value, "3")
+        },
+        "Converting an illegal string to the default value",
+        {
+          "help" : "http://www.w3.org/TR/html5/forms.html#range-state-(type=range)"
+        }
+      );
+
+      test(
+        function() {
+          assert_equals(document.getElementsByTagName("input")[16].step, "1")
+        },
+        "Converting an illegal string to the default step",
+        { "help" : "http://www.w3.org/TR/html5/forms.html#range-state-(type=range)" }
+      );
+
+      test(
+        function() {
+          assert_equals(document.getElementsByTagName("input")[1].value, "0")
+        }, 
+        "the value is set to min when a smaller value than min attribute is given", 
+        {
+          "help" : "http://www.w3.org/TR/html5/forms.html#range-state-(type=range)"
+        }
+      );
+
+      test(
+        function() {
+          assert_equals(document.getElementsByTagName("input")[2].value, "5")
+        },
+        "the value is set to max when a larger value than max attribute is given",
+        {
+          "help" : "http://www.w3.org/TR/html5/forms.html#range-state-(type=range)"
+        }
+      );
+
+      test(
+        function() {
+          assert_equals(document.getElementsByTagName("input")[3].min, "0")
+        },
+        "default value of min attribute in input type=range",
+        { "help" : "http://www.w3.org/TR/html5/the-input-element.html#dom-input-min" }
+      );
+
+      test(
+        function() {
+          assert_equals(document.getElementsByTagName("input")[3].max, "100")
+        },
+        "default value of max attribute in input type=range", 
+        {
+          "help" : "http://www.w3.org/TR/html5/the-input-element.html#dom-input-max"
+        }
+      );
+
+      test(
+        function() {
+          assert_equals(document.getElementsByTagName("input")[4].value, "4")
+        },
+        "default value when min and max attributes are given (= min plus half the difference between min and max)",
+        {
+          "help" : "http://www.w3.org/TR/html5/forms.html#range-state-(type=range)"
+        }
+      );
+
+      test(
+        function() {
+          assert_equals(document.getElementsByTagName("input")[5].value, "4")
+        },
+        "default value with step control when both min and max attributes are given",
+        {
+          "help" : "http://www.w3.org/TR/html5/forms.html#range-state-(type=range)"
+        }
+      );
 
       // Chrome would result in different value out of the range between min and max. Why?
-      test(function() {assert_equals(document.getElementsByTagName("input")[6].value, "2")}, "default value when both min and max attributes are given, while min > max", {
-      "help" : "http://www.w3.org/TR/html5/forms.html#range-state-(type=range)" });
+      test(
+        function() {
+          assert_equals(document.getElementsByTagName("input")[6].value, "2")
+        },
+        "default value when both min and max attributes are given, while min > max",
+        {
+          "help" : "http://www.w3.org/TR/html5/forms.html#range-state-(type=range)" 
+        }
+      );
 
-      test(function() {assert_equals(document.getElementsByTagName("input")[7].value, "7")}, "The default step scale factor is 1, unless min attribute has non-integer value", {
-      "help" : "http://www.w3.org/TR/html5/forms.html#range-state-(type=range)" });
-      test(function() {assert_equals(document.getElementsByTagName("input")[8].value, "6.3")}, "Step scale factor behavior when min attribute has integer value but max attribute is non-integer ", {
-      "help" : "http://www.w3.org/TR/html5/forms.html#range-state-(type=range)" });
-      test(function() {assert_equals(document.getElementsByTagName("input")[9].step, "1")}, "The default scale factor is 1 even if step attribute is explicitly set to non-integer value, unless min attribute has non-integer value", {
-      "help" : "http://www.w3.org/TR/html5/forms.html#range-state-(type=range)" });
-      test(function() {assert_equals(document.getElementsByTagName("input")[10].value, "6.8")}, "Solving the step mismatch", {
-      "help" : "http://www.w3.org/TR/html5/forms.html#range-state-(type=range)" });
+      test(
+        function() {
+          assert_equals(document.getElementsByTagName("input")[7].value, "7")
+        },
+        "The default step scale factor is 1, unless min attribute has non-integer value",
+        {
+          "help" : "http://www.w3.org/TR/html5/forms.html#range-state-(type=range)"
+        }
+      );
+
+      test(
+        function() {
+          assert_equals(document.getElementsByTagName("input")[8].value, "6.3")
+        },
+        "Step scale factor behavior when min attribute has integer value but max attribute is non-integer ",
+        {
+          "help" : "http://www.w3.org/TR/html5/forms.html#range-state-(type=range)" }
+      );
+
+      test(
+        function() {
+          assert_equals(document.getElementsByTagName("input")[9].step, "1")
+        },
+        "The default scale factor is 1 even if step attribute is explicitly set to non-integer value, unless min attribute has non-integer value",
+        {
+          "help" : "http://www.w3.org/TR/html5/forms.html#range-state-(type=range)" 
+        }
+      );
+
+      test(
+        function() {
+          assert_equals(document.getElementsByTagName("input")[10].value, "6.8")
+        },
+        "Solving the step mismatch",
+        {
+          "help" : "http://www.w3.org/TR/html5/forms.html#range-state-(type=range)"
+        }
+      );
 
       // Firefox Nightly (24.0a1) would result in the possible maximum value in this range... (i.e. 12)
-      test(function() {
-      var e = document.getElementsByTagName("input")[11];
-      e.stepUp();
-      assert_equals(e.value, "9")}, "Performing stepUp()", {
-      "help" : "http://www.w3.org/html/wg/drafts/html/master/forms.html#dom-input-stepup" });
+      test(
+        function() {
+          var e = document.getElementsByTagName("input")[11];
+          e.stepUp();
+          assert_equals(e.value, "9")
+        },
+        "Performing stepUp()",
+        {
+          "help" : "http://www.w3.org/html/wg/drafts/html/master/forms.html#dom-input-stepup"
+        }
+      );
 
       // Firefox Nightly (24.0a1) would result in the possible minimum value in this range... (i.e. 3)
-      test(function() {
-      var e = document.getElementsByTagName("input")[12];
-      e.stepDown();
-      assert_equals(e.value, "6")}, "Performing stepDown()", {
-      "help" : "http://www.w3.org/html/wg/drafts/html/master/forms.html#dom-input-stepdown" });
+      test(
+        function() {
+          var e = document.getElementsByTagName("input")[12];
+          e.stepDown();
+          assert_equals(e.value, "6")
+        },
+        "Performing stepDown()",
+        {
+          "help" : "http://www.w3.org/html/wg/drafts/html/master/forms.html#dom-input-stepdown"
+        }
+      );
 
       // Chrome and Opera would throw DOM Exception 11 (InvalidStateError)
       // Firefox Nightly gives the correct result
-      test(function() {
-      var e = document.getElementsByTagName("input")[13];
-      e.stepUp(2);
-      assert_equals(e.value, "12")}, "Performing stepUp() beyond the value of the max attribute", {
-      "help" : "http://www.w3.org/html/wg/drafts/html/master/forms.html#dom-input-stepup" });
+      test(
+        function() {
+          var e = document.getElementsByTagName("input")[13];
+          e.stepUp(2);
+          assert_equals(e.value, "12")
+        },
+        "Performing stepUp() beyond the value of the max attribute",
+        {
+          "help" : "http://www.w3.org/html/wg/drafts/html/master/forms.html#dom-input-stepup"
+        }
+      );
 
       // Chrome and Opera would throw DOM Exception 11 (InvalidStateError)
       // Firefox Nightly gives the correct result
-      test(function() {
-      var e = document.getElementsByTagName("input")[14];
-      e.stepDown(2);
-      assert_equals(e.value, "3")}, "Performing stepDown() beyond the value of the min attribute", {
-      "help" : "http://www.w3.org/html/wg/drafts/html/master/forms.html#dom-input-stepdown" });
-
-
+      test(
+        function() {
+          var e = document.getElementsByTagName("input")[14];
+          e.stepDown(2);
+          assert_equals(e.value, "3")
+        }, "Performing stepDown() beyond the value of the min attribute", {
+          "help" : "http://www.w3.org/html/wg/drafts/html/master/forms.html#dom-input-stepdown"
+        }
+      );
 
     </script>
     

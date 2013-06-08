@@ -19,14 +19,18 @@
         var timeoutFired = false;
 
         var client = new XMLHttpRequest();
+
+        assert_true('timeout' in client, 'xhr.timeout is not supported in this user agent');
+
         client.timeout = 100;
 
         setTimeout(test.step_func(function() {
+            assert_true(timeoutFired);
+
             // abort should not cause the "abort" event to fire
 
             client.abort();
 
-            assert_true(timeoutFired);
             assert_equals(client.readyState, 0);
 
             test.done();

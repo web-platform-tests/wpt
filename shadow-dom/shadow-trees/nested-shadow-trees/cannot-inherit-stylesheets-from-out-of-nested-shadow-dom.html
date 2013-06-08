@@ -1,0 +1,65 @@
+<!DOCTYPE HTML>
+<html>
+ <head>
+  <title>Shadow DOM - cannot inherit stylesheets from out of nested shadow dom</title>
+  <link rel="author" title="thujikun" href="tsuji.0107@gmail.com" />
+  <link rel="help" href="http://www.w3.org/TR/shadow-dom/" />
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+ </head>
+ <body>
+    <h1>nested shadow trees level 2</h1>
+
+    <style>
+      #level0 {
+        font-size: 50px;
+      }
+    </style>
+    <div id="level0"></div>
+
+    <div id="log"></div>
+    <template id="level1-template">
+      <style>
+        #level1 {
+          font-size: 30px;
+        }
+      </style>
+
+      <div id="level1">
+        <div id="level2-root"></div>
+      </div>
+
+    </template>
+    <template id="level2-template">
+      <style>
+      </style>
+      <div id="level2">
+        level2
+      </div>
+    </template>
+    <script>
+        test(function() {
+            var level0 = document.getElementById('level0'),
+                shadowLevel1 = level0.webkitCreateShadowRoot(),
+                shadowLevel2,
+                level1 = document.getElementById('level1-template').content,
+                level2 = document.getElementById('level2-template').content,
+                getComputedStyle = document.defaultView.getComputedStyle;
+
+            shadowLevel1.appendChild(level1);
+
+            shadowLevel1.resetStyleInheritance = true;
+
+            shadowLevel2 = shadowLevel1.getElementById('level2-root').webkitCreateShadowRoot();
+
+            shadowLevel2.resetStyleInheritance = true;
+
+            shadowLevel2.appendChild(level2);
+
+            assert_not_equals(getComputedStyle(shadowLevel2.querySelector('#level2')).fontSize, '50px');
+            assert_not_equals(getComputedStyle(shadowLevel2.querySelector('#level2')).fontSize, '30px');
+
+        }, 'cannot inherit stylesheets from out of nested shadow dom');
+    </script>
+ </body>
+</html>

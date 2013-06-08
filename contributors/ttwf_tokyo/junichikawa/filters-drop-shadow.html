@@ -6,9 +6,10 @@
     <link rel="reviewer" title="Dirk Schulze" href="mailto:dschulze@adobe.com">
     <link rel="help" href="https://dvcs.w3.org/hg/FXTF/raw-file/default/filters/index.html#drop-shadowltlengthgt23-ltcolorgt">
     <link rel="help" href="https://dvcs.w3.org/hg/FXTF/raw-file/default/filters/index.html#dropshadowEquivalent">
-    <link rel="match" href="reference/svg-filters-ref-drop-shadow.html">
+    <link rel="match" href="filters-ref-drop-shadow.html">
     <meta name="flags" content="">
-    <meta name="assert" content="This test verifies that the drop-shadow shorthand works. Green box with green shadow. The shadows appear 10px down and 20px right under the Green box. The red box must not appear under the Green box.">
+    <meta name="assert" content="This test verifies that the drop-shadow shorthand works. Green box with green shadow. 
+    The shadows appear 10px down and 20px right under the Green box. The red box must not appear under the Green box.">
     <style type="text/css">
    
         #ok {
@@ -18,7 +19,7 @@
             width: 200px;
             height: 200px;
             background-color: rgb(0, 255,0);
-            -webkit-filter: drop-shadow(20px 10px rgb(0, 255, 0));
+            filter: drop-shadow(20px 10px rgb(0, 255, 0));
         }
         #ng {
             position: absolute;
@@ -31,7 +32,7 @@
     </style>
 </head>
 <body>
-    <p>You should see two green overlspping rectangles and no red.</p>
+    <p>You should see two green overlapping rectangles and no red.</p>
     <div id="ng"></div>
     <div id="ok"></div>
     

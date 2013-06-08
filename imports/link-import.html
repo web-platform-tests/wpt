@@ -5,6 +5,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <link rel="author" title="Hajime Morrita" href="mailto:morrita@google.com">
+<link rel="help" href="https://dvcs.w3.org/hg/webcomponents/raw-file/tip/spec/imports/index.html#loading-imports">
 <link id="linkImport" rel="import" href="resources/hello.html" />
 </head>
 <body>
@@ -18,7 +19,6 @@ test(function() {
 }, 
 "Check on loaded import",
 {
-  "help": ["https://dvcs.w3.org/hg/webcomponents/raw-file/tip/spec/imports/index.html#interface-import"],
   "assert": "Otherwise, the attribute must return the imported fragment for the import, represented by the link element."
 });
 
@@ -28,14 +28,12 @@ test(function() {
 }, 
 "Check on object identity",
 {
-  "help": ["https://dvcs.w3.org/hg/webcomponents/raw-file/tip/spec/imports/index.html#interface-import"],
   "assert": "The same object must be returned each time."
 });
 
 var frameTest = async_test(
   "Check on blocking script import on parent",
   { 
-    "help": ["https://dvcs.w3.org/hg/webcomponents/raw-file/tip/spec/imports/index.html#interface-import"],
     "assert": "A Document has an import that is blocking scripts if there is either a an import that is blocking scripts in the context of that Document, or if that Document is in a browsing context that has a parent browsing context, and the active document of that parent browsing context itself has an import that is blocking scripts."
   }
 );
@@ -59,7 +57,6 @@ function checkFromFrame() {
 var insertionTest = async_test(
   "Check on dynamically inserted element",
   {
-    "help": ["https://dvcs.w3.org/hg/webcomponents/raw-file/tip/spec/imports/index.html#interface-import"],
     "assert": "when its element is inserted into a document."
   }
 );

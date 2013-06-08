@@ -5,6 +5,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <link rel="author" title="Hajime Morrita" href="mailto:morrita@google.com">
+<link rel="help" href="https://dvcs.w3.org/hg/webcomponents/raw-file/tip/spec/imports/index.html#loading-imports">
 <link id="linkNotImport" rel="style" href="resources/fake.css" />
 <link id="linkNotFound" rel="import" href="resources/no-such-file.html" />
 <link id="linkToBeRemoved" rel="import" href="resources/hello.html" />
@@ -22,7 +23,6 @@ test(function() {
 }, 
 "Check on style link",
 {
-  "help": ["https://dvcs.w3.org/hg/webcomponents/raw-file/tip/spec/imports/index.html#interface-import"],
   "assert": "On getting, the import attribute must return null, if....The link does not represent an import"
 });
 
@@ -32,7 +32,6 @@ test(function() {
 }, 
 "Check on non existing resource",
 {
-  "help": ["https://dvcs.w3.org/hg/webcomponents/raw-file/tip/spec/imports/index.html#interface-import"],
   "assert": "On getting, the import attribute must return null, if....The link does not represent an import"
 });
 
@@ -47,7 +46,6 @@ test(function() {
 }, 
 "Check on out of document element",
 {
-  "help": ["https://dvcs.w3.org/hg/webcomponents/raw-file/tip/spec/imports/index.html#interface-import"],
   "assert": "On getting, the import attribute must return null, if....the link element is not in a Document"
 });
 
@@ -59,7 +57,6 @@ test(function() {
 }, 
 "Check on  removed element",
 {
-  "help": ["https://dvcs.w3.org/hg/webcomponents/raw-file/tip/spec/imports/index.html#interface-import"],
   "assert": "On getting, the import attribute must return null, if....the link element is not in a Document"
 });
 

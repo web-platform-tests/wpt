@@ -5,6 +5,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <link rel="author" title="Hajime Morrita" href="mailto:morrita@google.com">
+<link rel="help" href="https://dvcs.w3.org/hg/webcomponents/raw-file/tip/spec/imports/index.html#loading-imports">
 <link id="linkImport1" rel="import" href="resources/hello.html" />
 <link id="linkImport2" rel="import" href="resources/hello.html" />
 <link id="linkToTypicalHtml" rel="import" href="resources/typical.html" />
@@ -22,7 +23,6 @@ test(function() {
 }, 
 "Check on sharing imports",
 {
-  "help": ["https://dvcs.w3.org/hg/webcomponents/raw-file/tip/spec/imports/index.html#loading-imports"],
   "assert": "If LOCATION is already in the loaded import list, let FRAGMENT be the imported fragment for LOCATION and stop."
 });
 
@@ -33,7 +33,6 @@ test(function() {
 }, 
 "Check on HTML Parsing",
 {
-  "help": ["https://dvcs.w3.org/hg/webcomponents/raw-file/tip/spec/imports/index.html#loading-imports"],
   "assert": "Let PARSER be a new HTML parser"
 });
 
@@ -44,7 +43,6 @@ test(function() {
 }, 
 "Check on sub-imports",
 {
-  "help": ["https://dvcs.w3.org/hg/webcomponents/raw-file/tip/spec/imports/index.html#loading-imports"],
   "assert": "Obtain the import resources using LINK and import fetching algorithm."
 });
 

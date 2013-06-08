@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>HTML Test: bdo: has dir=ltr</title>
+    <link rel="reference" href="bdo-auto-dir-default-ref.html"/>
+    <link rel="author" title="Shuichi Takaya" href="mailto:takayashuichi@hotmail.com"/>
+    <link rel="help" href="http://dev.w3.org/html5/spec/Overview.html#the-bdo-element"/>
+    <meta name="assert" content="
+      'The dir global attribute defaults to this element (it never inherits from the parent
+      element like with other elements).'"/>
+    <style>
+      body{
+        font-size:2em;
+      }
+      .test, .ref {
+        border: medium solid gray;
+        width: 500px;
+        margin: 20px;
+      	}
+      .comments { display: none; }
+    </style>
+  </head>
+  <body>
+    <div class="instructions"><p>Test passes if the two boxes below look exactly the same.</p></div>
+    <div class="comments">
+      Key to entities used below:
+        &#x202D; - The LRO (left-to-right override) formatting character.
+        &#x202C; - The PDF (pop directional formatting) formatting character; closes LRO.
+        &#12486;&#12473;&#12488; - This means test in Japanese.
+        &#1575;&#1582;&#1578;&#1576;&#1575;&#1585; - This means test in Arabic. 
+    </div>
+    <div class="test">
+      <div dir="ltr"><bdo dir="ltr">test</bdo></div>
+      <div dir="rtl"><bdo dir="ltr">test</bdo></div>
+      <div dir="ltr"><bdo dir="ltr">テスト</bdo></div>
+      <div dir="rtl"><bdo dir="ltr">テスト</bdo></div>
+      <div dir="ltr"><bdo dir="ltr">اختبار</bdo></div>
+      <div dir="rtl"><bdo dir="ltr">اختبار</bdo></div>
+    </div>
+    <div class="ref">
+      <div dir="ltr">&#x202D;test&#x202C;</div>
+      <div dir="rtl">&#x202D;test&#x202C;</div>
+      <div dir="ltr">&#x202D;&#12486;&#12473;&#12488;&#x202C;</div>
+      <div dir="rtl">&#x202D;&#12486;&#12473;&#12488;&#x202C;</div>
+      <div dir="ltr">&#x202D;&#1575;&#1582;&#1578;&#1576;&#1575;&#1585;&#x202C;</div>
+      <div dir="rtl">&#x202D;&#1575;&#1582;&#1578;&#1576;&#1575;&#1585;&#x202C;</div>
+    </div>
+  </body>
+</html>

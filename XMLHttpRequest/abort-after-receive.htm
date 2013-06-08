@@ -12,29 +12,25 @@
       var test = async_test();
 
       test.step(function() {
-        var client = new XMLHttpRequest(),
-            control_state = 0;
+        var client = new XMLHttpRequest();
 
-        client.onreadystatechange = function() {
-          test.step(function() {
-            if (client.readyState == 4) {
-              control_state = 1;
+        client.onreadystatechange = test.step_func(function() {
+          if (client.readyState == 4) {
+            // abort should not cause the "abort" event to fire
 
-              // abort should not cause the "abort" event to fire
-              client.abort();
+            client.abort();
 
-              assert_equals(control_state, 1);
+            assert_equals(client.readyState, 0);
 
-              test.done();
-            }
-          })
-        };
+            test.done();
+          }
+        });
 
-        client.onabort = function () {
+        client.onabort = test.step_func(function () {
             // this should not fire!
 
-            control_state = 2;
-        };
+            assert_unreached("abort should not cause the about event to fire");
+        });
 
         client.open("GET", "resources/well-formed.xml", true);
         client.send(null);

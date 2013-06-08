@@ -12,7 +12,8 @@ policies and contribution forms [3].
 <head>
 <title>Shadow DOM Test: A_04_04_01</title>
 <link rel="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
-<link rel="help" href="http://www.w3.org/TR/2013/WD-shadow-dom-20130514/#selecting-nodes-distributed-to-insertion-points">
+<link rel="author" title="Tetsuharu OHZEKI" href="mailto:saneyuki.snyk@gmail.com">
+<link rel="help" href="http://www.w3.org/TR/2013/WD-shadow-dom-20130514/#distributed-pseudo-element">
 <meta name="assert" content="Matching Children, Distributed To Insertion Points">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -23,10 +24,6 @@ policies and contribution forms [3].
 <div id="log"></div>
 <script>
 var A_04_04_01_T1 = async_test('A_04_04_01_T01');
-
-
-// Reference combinators are not implemented yet, so the test shouldn't work for now
-// See the progress at  http://wkb.ug/82169
 
 A_04_04_01_T1.step(function () {
     var iframe = document.createElement('iframe');
@@ -45,7 +42,8 @@ A_04_04_01_T1.step(function () {
             s.appendChild(subdiv1);
 
             var style = d.createElement('style');
-            style.innerHTML = 'ul.stories/select/li.shadow {display:none}';
+            style.innerHTML = 'li { display: block; }' +
+                              '::distributed(li.shadow) { display:none; }';
             d.head.appendChild(style);
 
             //TODO (sgrekhov). Should we add the test for
@@ -54,20 +52,25 @@ A_04_04_01_T1.step(function () {
 
             //The order of DOM elements should be the following:
             //li3, li6 - invisible. Other elements visible
-            assert_equals(d.querySelector('#li3').offsetTop, 0,
-	            'Point 1: Elements that don\'t mach insertion point criteria participate in distribution');
-	        assert_equals(d.querySelector('#li6').offsetTop, 0,
-	            'Point 2: Elements that don\'t mach insertion point criteria participate in distribution');
+            var li3 = d.querySelector('#li3');
+            var li6 = d.querySelector('#li6');
+            assert_equals(window.getComputedStyle(li3).display, "none",
+              'Point 1: Elements that don\'t mach insertion point criteria participate in distribution');
+            assert_equals(window.getComputedStyle(li6).display, "none",
+              'Point 2: Elements that don\'t mach insertion point criteria participate in distribution');
 
-
-            assert_true(d.querySelector('#li1').offsetTop > 0,
-            	'Point 3: Reference combinators should be a valid insertion point matching criteria, element should be visible');
-            assert_true(d.querySelector('#li1').offsetTop < d.querySelector('#li2').offsetTop,
-                'Point 4: Reference combinators should be a valid insertion point matching criteria');
-            assert_true(d.querySelector('#li2').offsetTop < d.querySelector('#li4').offsetTop,
-            	'Point 5: Reference combinators should be a valid insertion point matching criteria');
-            assert_true(d.querySelector('#li4').offsetTop < d.querySelector('#li5').offsetTop,
-            	'Point 6: Reference combinators should be a valid insertion point matching criteria');
+            var li1 = d.querySelector('#li1');
+            var li2 = d.querySelector('#li2');
+            var li4 = d.querySelector('#li4');
+            var li5 = d.querySelector('#li5');
+            assert_equals(window.getComputedStyle(li1).display, "block",
+              'Point 3: ::distributed() pseudo-element should be a valid insertion point matching criteria, element should be visible');
+            assert_equals(window.getComputedStyle(li2).display, "block",
+              'Point 4: ::distributed() pseudo-element should be a valid insertion point matching criteria, element should be visible');
+            assert_equals(window.getComputedStyle(li4).display, "block",
+              'Point 5: ::distributed() pseudo-element should be a valid insertion point matching criteria, element should be visible');
+            assert_equals(window.getComputedStyle(li5).display, "block",
+              'Point 6: ::distributed() pseudo-element should be a valid insertion point matching criteria, element should be visible');
         } finally {
             iframe.parentNode.removeChild(iframe);
         }

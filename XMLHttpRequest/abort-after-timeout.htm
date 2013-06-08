@@ -16,6 +16,8 @@
         // the download would otherwise take 500ms
         // we check after 300ms to make sure abort does not fire an "abort" event
 
+        var timeoutFired = false;
+
         var client = new XMLHttpRequest();
         client.timeout = 100;
 
@@ -24,10 +26,15 @@
 
             client.abort();
 
+            assert_true(timeoutFired);
             assert_equals(client.readyState, 0);
 
             test.done();
         }), 300);
+
+        client.ontimeout = function () {
+            timeoutFired = true;
+        };
 
         client.onabort = test.step_func(function () {
             // this should not fire!

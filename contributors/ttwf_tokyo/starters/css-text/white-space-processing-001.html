@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+		<head>
+				<title>CSS Text Test: The White Space Processing Rules (property:normal)</title>
+				<link rel="author" title="Ryoya Kawai" href="mailto:ryoya.kawai@gmail.com">
+				<link rel="help" href="http://dev.w3.org/csswg/css-text/#white-space-rules">
+				<link rel="match" href="white-space-processing-001-ref.html">
+				<meta name="flags" content="ahem">
+				<meta name="assert" content="All spaces immediately preceding or following a segment break are removed in property of white-space is normal.">
+				<style type="text/css">
+						.white-space_normal {
+        font: 16px/1em Ahem;
+				    white-space: normal
+						}
+				</style>
+		</head>
+		<body>
+    <p>Test passed if there are space between boxes.(w/o segment break)</p>
+    <p class="white-space_normal">X    
+						X</p>
+		</body>
+</html>

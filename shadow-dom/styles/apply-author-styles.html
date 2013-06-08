@@ -16,34 +16,34 @@ div.box {
   color: red !important;
 }
 div.green {
-  border: 1px solid green;
-  color: green;
+  border: 1px solid green !important;
+  color: green !important;
 }
   </style>
 </head>
 <body>
-  <div id="valDefault" class="host">
+  <div id="valDefault">
   </div>
-  <div id="valTrue" class="host">
+  <div id="valTrue">
   </div>
-  <div id="valFalse" class="host">
+  <div id="valFalse">
   </div>
   <script type="text/javascript">
     var sDefault = createSR(valDefault);
     var divDefault = document.createElement("div");
-    divDefault.innerHTML = '<div class="box" style="border:1px solid green;color: green;">This is the shadow tree. (applyAuthorStyles = default)</div>';
+    divDefault.innerHTML = '<div class="box" style="border:1px solid green; color: green;">This is the shadow tree. (applyAuthorStyles = default)</div>';
     sDefault.appendChild(divDefault);
 
     var sTrue = createSR(valTrue);
     sTrue.applyAuthorStyles = true; // set applyAuthorStylse -> true
     var divTrue = document.createElement("div");
-    divTrue.innerHTML = '<div class="green">This is the shadow tree. (applyAuthorStyles = true)</div>';
+    divTrue.innerHTML = '<div class="green" style="border:1px solid red; color: red;">This is the shadow tree. (applyAuthorStyles = true)</div>';
     sTrue.appendChild(divTrue);
 
     var sFalse = createSR(valFalse);
     sFalse.applyAuthorStyles = false; // set applyAuthorStyles -> false
     var divFalse = document.createElement("div");
-    divFalse.innerHTML = '<div class="box" style="border:1px solid green;color: green;">This is the shadow tree. (applyAuthorStyles = false)</div>';
+    divFalse.innerHTML = '<div class="box" style="border:1px solid green; color: green;">This is the shadow tree. (applyAuthorStyles = false)</div>';
     sFalse.appendChild(divFalse);
   </script>
 </body>

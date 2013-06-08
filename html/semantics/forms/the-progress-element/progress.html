@@ -18,14 +18,11 @@
 test(function() {
 	assert_equals(indeterminate.position, -1);
 }, "Indeterminate progress bar should have position -1");
-/*
-test(function() {
-	assert_equals(quarter.position, 0.25);
-}, "Determinate progress bar should have fractional position");
-*/
+
 test(function() {
 	assert_equals(quarter.position, quarter.value / quarter.max);
 }, "Determinate progress bar should have fractional position");
+
 test(function() {
 	assert_equals(indeterminate.value, 0);
 }, "Indeterminate progress bar should have value 0");

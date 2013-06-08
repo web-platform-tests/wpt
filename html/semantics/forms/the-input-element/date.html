@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <title>Inputs Date</title>
+	  <link rel="author" title="Morishita Hiromitsu" href="mailto:hero@asterisk-works.jp">
+	  <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/forms.html#date-state-(type=date)">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+
+  		<h1>Inputs Date</h1>
+  		<div style="display: none">
+	  		<input id="valid" type="date" value="2011-11-01" min="2011-01-01" max="2011-12-31" />
+        <input id="too_small_value" type="date" value="1999-01-31" min="2011-01-01" max="2011-12-31"/>
+        <input id="too_large_value" type="date" value="2099-01-31" min="2011-01-01" max="2011-12-31"/>
+
+        <input id="invalid_min" type="date" value="2011-01-01" min="1999-1" max="2011-12-31"/>
+        <input id="invalid_max" type="date" value="2011-01-01" min="2011-01-01" max="2011-13-162-777"/>
+        <input id="min_larger_than_max" type="date" value="2011-01-01" min="2099-01" max="2011-12-31"/>
+        <input id="invalid_value" type="date" value="invalid-date" min="2011-01-01" max="2011-12-31"/>
+		</div>
+		
+    <div id="log">
+    </div>
+	
+	<script type="text/javascript">
+
+		test(function() {assert_equals(document.getElementById("valid").type, "date")},
+        "date type support on input element", {
+		  "help" : "http://www.w3.org/html/wg/drafts/html/CR/forms.html#date-state-(type=date)" });
+
+		test(function() {
+          assert_equals(document.getElementById("valid").value, "2011-01-01");
+          assert_equals(document.getElementById("too_small_value").value, "2011-01-01");
+          assert_equals(document.getElementById("too_large_value").value, "2011-12-31");
+        },
+        "The value attribute, if specified and not empty, must have a value that is a valid date string.");
+
+		test(function() {
+          assert_equals(document.getElementById("valid").min, "2011-01-01"),
+          assert_equals(document.getElementById("invalid_min").min, "")
+          },
+        "The min attribute, if specified, must have a value that is a valid date string.");
+
+		test(function() {
+          assert_equals(document.getElementById("valid").max, "2011-12-31"),
+          assert_equals(document.getElementById("min_larger_than_max").max, "2099-01"),
+          assert_equals(document.getElementById("invalid_max").max, "")
+        },
+        "The max attribute, if specified, must have a value that is a valid date string.");
+
+    test(function() {
+          assert_equals(document.getElementById("invalid_value").value, "");
+        },
+        "User agents must not allow the user to set the value to a non-empty string that is not a valid date string.");
+	</script>
+	
+  </body>
+  
+</html>

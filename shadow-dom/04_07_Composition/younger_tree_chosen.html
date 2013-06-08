@@ -23,10 +23,10 @@
         </li>
         <li id="li4" class="shadow2">
           <a id="a41" href="#">Link41 Shadow 2</a>
-          <a id="a42" href="#">Link22 Shadow 2</a>
+          <a id="a42" href="#">Link42 Shadow 2</a>
         </li>
         <li id="li5" class="shadow2">
-          <a id="a51" href="#">Link51 Shadow</a>
+          <a id="a51" href="#">Link51 Shadow 2</a>
           <a id="a52" href="#">Link52 Shadow 2</a>
         </li>
       </ul>
@@ -40,15 +40,15 @@
 
       //make an old shadow tree
       var s2 = createSR(ul);
-      var div2 = d.createElement('div');
-      div2.innerHTML = '<ul><content select=".shadow2"></content></ul>';
+      var div2 = d.createElement('ul');
+      div2.innerHTML = '<content select=".shadow2"></content>';
       s2.appendChild(div2);
 
       //make a young shadow tree
-      var s3 = createSR(ul);
-      var div3 = d.createElement('div');
-      div3.innerHTML = '<ul><content select=".shadow"></content></ul>';
-      s3.appendChild(div3);
+      var s = createSR(ul);
+      var div3 = d.createElement('ul');
+      div3.innerHTML = '<content select=".shadow"></content>';
+      s.appendChild(div3);
     </script>
   </body>
 </html>

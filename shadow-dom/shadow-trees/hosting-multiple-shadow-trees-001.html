@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Shadow DOM Test - Tests the youngest shadow tree is used.</title>
+    <link rel="reference" href="hosting-multiple-shadow-trees-001-ref.html" />
+    <link rel="author" title="Hiroyuki Hayashi" href="mailto:hyshhryk@gmail.com" />
+    <link rel="help" href="http://www.w3.org/TR/shadow-dom/#multiple-shadow-trees" />
+    <script src="../testcommon.js"></script>
+    <meta name="assert" content="
+      The youngest shadow tree is used when the multiple shadow tree is attached to the same shadow host." />
+  </head>
+  <body>
+    <div id='host'>
+    </div>
+  <script>
+    var shadowRoot = createSR(host);
+    shadowRoot.innerHTML = '<div>Hello the oldest shadow tree.</div>';
+    var shadowRoot = createSR(host);
+    shadowRoot.innerHTML = '<div>Hello a second shadow tree.</div>';
+    var shadowRoot = createSR(host);
+    shadowRoot.innerHTML = '<div>Hello the youngest shadow tree.</div>';
+  </script>
+  </body>
+</html>

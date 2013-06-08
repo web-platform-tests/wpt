@@ -17,12 +17,12 @@
         called++;
       }
       function loaded() {
-        assert_equals(called, 0);
+        assert_equals(called, 1);
         t.done();
       }
     </script>
 
-    <iframe src="/html/browsers/sandboxing/inner-iframe.html" style="visibility:hidden;display:none" sandbox="scripts-allowed same-origin-allowed" id="sandboxedframe" onload="loaded();"></iframe>
+    <iframe src="/html/browsers/sandboxing/inner-iframe.html" style="visibility:hidden;display:none" sandbox="allow-scripts allow-same-origin" id="sandboxedframe" onload="loaded();"></iframe>
 
     </div>
     <div id="log"></div>

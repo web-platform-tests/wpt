@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>CSS Reftest Reference</title>
+    <link rel="author" title="Tsutomu ogaoga Ogasawara" href="mailto:info@ogaoga.org">
+    <style type="text/css">
+        .container {
+            -webkit-writing-mode: vertical-rl;
+            writing-mode: vertical-rl;
+
+            color: white;
+            position: relative;
+            width: 250px;
+        }
+        .item {
+            position: absolute;
+            left: 0px;
+            background-color: green;
+            height: 150px;
+            width: 250px;
+        }
+        .i1 {
+            top: 0px;
+        }
+        .i2 {
+            top: 150px;
+        }
+        .i3 {
+            top: 300px;
+        }
+        .error {
+            position: absolute;
+            background-color: red;
+            height: 450px;
+            width: 250px;
+            z-index: -1;
+        }   
+    </style>
+</head>
+<body>
+
+  <p>The test passes if you see vertical aligned 3 boxes including vertical text from right side</p>
+
+  <div class="error"></div>
+  <div class="container">
+    <div class="item i1">あいう<br />えお</div>
+    <div class="item i2">かきく<br />けこ</div>
+    <div class="item i3">さしす<br />せそ</div>
+  </div>
+
+</body>
+</html>

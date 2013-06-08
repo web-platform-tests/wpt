@@ -1,0 +1,52 @@
+<!DOCTYPE html> <!-- coding:utf-8 -->
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>CSS Flexbox Test: flex direction: row, writing mode vertical</title>
+    <link rel="author" title="Tsutomu ogaoga Ogasawara" href="mailto:info@ogaoga.org">
+    <!-- You must have at least one spec link, but may have as many as are covered in the test. -->
+    <!-- Be sure to make the main testing area first in the order -->
+    <link rel="help" href="http://www.w3.org/TR/css3-flexbox/#flex-flow">
+    <!-- The match link is only required if this is a reftest -->
+    <link rel="match" href="css-flexbox-test2-ref.html">
+    <meta name="flags" content="">
+    <meta name="assert" content="The test passes if you see vertical aligned 3 boxes including vertical text from right side">
+    <style type="text/css">
+        .container {
+            display: -webkit-flex;
+            display: flex;
+            -webkit-flex-flow: row wrap;
+            flex-flow: row wrap;
+            -webkit-writing-mode: vertical-rl;
+            writing-mode: vertical-rl;
+
+            color: white;
+            width: 250px;
+        }
+        .item {
+            background-color: green;
+            height: 150px;
+            width: 250px;
+        }
+        .error {
+            position: absolute;
+            background-color: red;
+            height: 450px;
+            width: 250px;
+            z-index: -1;
+        }   
+    </style>
+</head>
+<body>
+
+  <p>The test passes if you see vertical aligned 3 boxes including vertical text from right side</p>
+
+  <div class="error"></div>
+  <div class="container">
+    <div class="item">あいう<br />えお</div>
+    <div class="item">かきく<br />けこ</div>
+    <div class="item">さしす<br />せそ</div>
+  </div>
+
+</body>
+</html>

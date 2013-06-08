@@ -1,0 +1,45 @@
+<html>
+<head>
+    <title></title>
+    <style>
+        .container {
+            display: -webkit-flex;
+            display: flex;
+            width: 150px;
+        }
+        .vertical {
+            -webkit-writing-mode: vertical-rl;
+        }
+        .item {
+            background-color: green;
+        }
+        .square {
+            height: 50px;
+            width: 50px;
+        }
+        .error {
+            position: absolute;
+            background-color: red;
+            height: 100px;
+            width: 150px;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <p>The test passes if you see a green rectangle and no red.</p>
+    <div class="test">
+        <div class="error"></div>
+        <div class="container">
+            <div class="horizontal item">
+                <div class="square"></div>
+                <div class="square"></div>
+            </div>
+            <div class="vertical item">
+                <div class="square"></div>
+                <div class="square"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

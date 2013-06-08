@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Shadow DOM Test: Styles applyAuthorStyles</title>
+  <link rel="author" title="Yoshiharu Kamata" href="mailto:yoshi6jp@gmai.com">
+  <style type="text/css">
+span.success {
+  color: green;
+}
+  </style>
+</head>
+<body>
+  <div id="valDefault">
+    <div>
+      <span>This is the shadow tree. (applyAuthorStyles = default)</span>
+    </div>
+  </div>
+  <div id="valTrue">
+    <div>
+      <span class="success">This is the shadow tree. (applyAuthorStyles = true)</span>
+    </div>
+  </div>
+  <div id="valFalse">
+    <div>
+      <span>This is the shadow tree. (applyAuthorStyles = false)</span>
+    </div>
+  </div>
+</body>
+</html>

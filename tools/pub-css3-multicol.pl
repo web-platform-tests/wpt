@@ -30,6 +30,7 @@ rmtree('dist/css3-multicol');
 
 ###############################################################################
 # Mozilla
+push @dirs, 'contributors/mozilla/submitted/mozilla-central-reftests/multicol3';
 
 ###############################################################################
 # Eira Monstad

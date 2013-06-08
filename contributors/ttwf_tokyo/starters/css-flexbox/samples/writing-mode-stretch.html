@@ -1,0 +1,51 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>CSS Flexbox Test: Vertical writing mode items stretch correctly</title>
+    <link rel="author" title="Alan Stearns" href="mailto:stearns@adobe.com">
+    <link rel="help" href="http://www.w3.org/TR/css3-flexbox/#align-items-property">
+    <link rel="match" href="writing-mode-stretch-ref.html"/>
+    <meta name="flags" content="">
+    <meta name="assert" content="Vertical writing mode flex items stretch in the flex container's cross-axis direction">
+    <style>
+        .container {
+            display: -webkit-flex;
+            display: flex;
+            width: 150px;
+        }
+        .vertical {
+            -webkit-writing-mode: vertical-rl;
+        }
+        .item {
+            background-color: green;
+        }
+        .square {
+            height: 50px;
+            width: 50px;
+        }
+        .error {
+            position: absolute;
+            background-color: red;
+            height: 100px;
+            width: 150px;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <p>The test passes if you see a green rectangle and no red.</p>
+    <div class="test">
+        <div class="error"></div>
+        <div class="container">
+            <div class="horizontal item">
+                <div class="square"></div>
+                <div class="square"></div>
+            </div>
+            <div class="vertical item">
+                <div class="square"></div>
+                <div class="square"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

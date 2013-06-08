@@ -3,9 +3,10 @@
 <head>
   <meta charset="utf-8">
   <title>Shadow DOM Test: Styles applyAuthorStyles</title>
-  <link rel="author" title="Yoshiharu Kamata" href="mailto:yoshi6jp@gmai.com">
+  <link rel="author" title="Yoshiharu Kamata" href="mailto:yoshi6jp@gmail.com" />
   <style type="text/css">
-span.success {
+div.box{
+  border: 1px solid green;
   color: green;
 }
   </style>
@@ -13,17 +14,17 @@ span.success {
 <body>
   <div id="valDefault">
     <div>
-      <span>This is the shadow tree. (applyAuthorStyles = default)</span>
+      <div class="box">This is the shadow tree. (applyAuthorStyles = default)</div>
     </div>
   </div>
   <div id="valTrue">
     <div>
-      <span class="success">This is the shadow tree. (applyAuthorStyles = true)</span>
+      <div class="box">This is the shadow tree. (applyAuthorStyles = true)</div>
     </div>
   </div>
   <div id="valFalse">
     <div>
-      <span>This is the shadow tree. (applyAuthorStyles = false)</span>
+      <div class="box">This is the shadow tree. (applyAuthorStyles = false)</div>
     </div>
   </div>
 </body>

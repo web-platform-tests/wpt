@@ -4,44 +4,46 @@
   <meta charset="utf-8">
   <title>Shadow DOM Test: Styles applyAuthorStyles</title>
   <link rel="reference" href="apply-author-styles-ref.html" />
-  <link rel="author" title="Yoshiharu Kamata" href="mailto:yoshi6jp@gmai.com">
+  <link rel="author" title="Yoshiharu Kamata" href="mailto:yoshi6jp@gmail.com"/>
   <link rel="help" href="https://dvcs.w3.org/hg/webcomponents/raw-file/tip/spec/shadow/index.html#styles">
   <script type="text/javascript" src="../testcommon.js"></script>
   <meta name="assert" content="
 To enforce upper-boundary encapsulation, CSS rules declared in an enclosing tree must not apply in a shadow tree, except when the apply-author-styles flag is set for this tree. The flag signals that the rules declared in the enclosing trees are applicable in the shadow tree.
   " />
   <style type="text/css">
-span {
-  color: red;
+div.box {
+  border: 1px solid red !important;
+  color: red !important;
 }
-span.success {
+div.green {
+  border: 1px solid green;
   color: green;
 }
   </style>
 </head>
 <body>
-  <div id="valDefault">
+  <div id="valDefault" class="host">
   </div>
-  <div id="valTrue">
+  <div id="valTrue" class="host">
   </div>
-  <div id="valFalse">
+  <div id="valFalse" class="host">
   </div>
   <script type="text/javascript">
     var sDefault = createSR(valDefault);
     var divDefault = document.createElement("div");
-    divDefault.innerHTML = '<span>This is the shadow tree. (applyAuthorStyles = default)</span>';
+    divDefault.innerHTML = '<div class="box" style="border:1px solid green;color: green;">This is the shadow tree. (applyAuthorStyles = default)</div>';
     sDefault.appendChild(divDefault);
 
     var sTrue = createSR(valTrue);
     sTrue.applyAuthorStyles = true; // set applyAuthorStylse -> true
     var divTrue = document.createElement("div");
-    divTrue.innerHTML = '<span class="success">This is the shadow tree. (applyAuthorStyles = true)</span>';
+    divTrue.innerHTML = '<div class="green">This is the shadow tree. (applyAuthorStyles = true)</div>';
     sTrue.appendChild(divTrue);
 
     var sFalse = createSR(valFalse);
     sFalse.applyAuthorStyles = false; // set applyAuthorStyles -> false
     var divFalse = document.createElement("div");
-    divFalse.innerHTML = '<span>This is the shadow tree. (applyAuthorStyles = false)</span>';
+    divFalse.innerHTML = '<div class="box" style="border:1px solid green;color: green;">This is the shadow tree. (applyAuthorStyles = false)</div>';
     sFalse.appendChild(divFalse);
   </script>
 </body>

@@ -23,7 +23,7 @@
     var TARGET1 = document.querySelectorAll("iframe")[0];
     var TARGET2 = document.querySelectorAll("iframe")[1];
     var XORIGIN = "http://www1.w3c-test.org";
-    var SORIGIN = "http://" + location.hostname;
+    var SORIGIN = "http://" + location.host;
     var ExpectedResult = ["#1", XORIGIN, "#2", SORIGIN];
     var ActualResult = [];
     var loaded = 0;

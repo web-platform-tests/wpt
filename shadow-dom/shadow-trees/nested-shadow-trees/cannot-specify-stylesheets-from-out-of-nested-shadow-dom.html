@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
  <head>
-  <title>Shadow DOM - don`t inherit stylesheets from out of nested shadow dom</title>
+  <title>Shadow DOM - cannot specify stylesheets from out of nested shadow dom</title>
   <link rel="author" title="thujikun" href="tsuji.0107@gmail.com" />
   <link rel="help" href="http://www.w3.org/TR/shadow-dom/" />
   <script src="/resources/testharness.js"></script>
@@ -25,7 +25,7 @@
         #level2-blue {
           width: 100px;
           height: 100px;
-          background: #ff0000;
+          background: #0000ff;
         }
       </style>
 
@@ -68,7 +68,7 @@
             assert_not_equals(getComputedStyle(shadowLevel2.querySelector('#level2-blue')).backgroundColor, 'rgb(0, 0, 255)');
             assert_equals(getComputedStyle(shadowLevel2.querySelector('#level2-green')).backgroundColor, 'rgb(0, 255, 0)');
 
-        }, 'don`t inherit stylesheets from out of nested shadow dom');
+        }, 'cannot specify stylesheets from out of nested shadow dom');
     </script>
  </body>
 </html>

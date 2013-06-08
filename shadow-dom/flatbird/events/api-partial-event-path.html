@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Shadow DOM Test: TODO</title>
+        <link rel="author" title="Masakazu Hattori" href="mailto:mshattori@gmail.com">
+        <!-- You must have at least one spec link, but may have as many as are covered in the test. -->
+        <!-- Be sure to make the main testing area first in the order -->
+        <link rel="help" href="https://dvcs.w3.org/hg/webcomponents/raw-file/tip/spec/shadow/index.html">
+        <link rel="help" href="https://dvcs.w3.org/hg/webcomponents/raw-file/tip/spec/shadow/index.html#partial-event-attributes">
+        <meta name="assert" content="Event path attribute test for Shadow DOM">
+        <meta name="flags" content="dom">
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+    </head>
+    <body>
+        <div id="log"></div>
+        <section id="shadhow-host" style='display:none'>
+            <button id="a-child">test it</button>
+        </section>
+        <script>
+            var t = async_test("Event path attribute test for Shadow DOM");
+
+            var host = document.getElementById('shadhow-host');
+            var child = document.getElementById('a-child');
+
+            var root = host.webkitCreateShadowRoot();
+            var shadowDiv = document.createElement('div');
+            shadowDiv.id = "shadow-div";
+            shadowDiv.innerHTML = '<content></content>';
+            root.appendChild(shadowDiv);
+
+            var verifyCount = 0;
+            host.addEventListener('click', 
+                verifier(
+                    ['button#a-child', 'section#shadhow-host'], // expected
+                    ['div#shadow-div'] // unexpected
+                ),
+                false);
+            shadowDiv.addEventListener('click',
+                verifier(
+                    ['button#a-child', 'div#shadow-div', 'section#shadhow-host'], // expected
+                    [] // unexpected
+                ),
+                false);
+            child.addEventListener('click',
+                verifier(
+                    ['button#a-child', 'section#shadhow-host'], // expected
+                    ['div#shadow-div'] // unexpected
+                ),
+                false);
+            child.click();
+
+            function verifier(expected, unexpected) {
+                verifyCount += 1;
+                return function (evt) {
+                    var self = this;
+                    t.step(function() {
+                        var path = evt.path;
+                        for (var i = 0; i < path.length; i++) {
+                            var thisName = toName(self);
+                            var p = path[i];
+                            var pName = toName(p);
+                            console.log(thisName + ': ' + pName);
+                            if (expected.indexOf(pName) >= 0) {
+                                var msg = pName + ' is expected in path of ' + thisName;
+                                console.log(msg);
+                                assert_true(true, msg);
+                            }
+                            if (unexpected.indexOf(pName) >= 0) {
+                                var msg = pName + ' is unexpected in path of ' + thisName;
+                                console.log(msg);
+                                assert_unreached(msg);
+                            }
+                        }
+                        verifyCount -= 1;
+                        if (verifyCount <= 0) {
+                            t.done();
+                        }
+                    }); 
+                };
+            }
+            function toName(e) {
+                return e.localName + '#' + e.id;
+            }
+        </script>
+    </body>
+</html>

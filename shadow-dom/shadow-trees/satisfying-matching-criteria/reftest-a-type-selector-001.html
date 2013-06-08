@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Shadow DOM Test - Tests a Satisfying Matching Criteria - Contain a type selector.</title>
+    <link rel="reference" href="reftest-a-type-selector-001-ref.html" />
+    <link rel="author" title="Naoki Sekiguchi" href="mailto:na-sekiguchi@kddilabs.jp" />
+    <link rel="help" href="https://dvcs.w3.org/hg/webcomponents/raw-file/tip/spec/shadow/index.html#satisfying-matching-criteria" />
+    <script src="../../testcommon.js"></script>
+    <meta name="assert" content="Matching Insertion Points: A valid selector fragment may contain a type selector" />
+  </head>
+  <body>
+    <div id='host'>
+      <span>Hello</span>
+      shadow dom.
+    </div>
+  <script>
+    var host = document.querySelector('#host'); 
+    var shadowRoot = createSR(host);
+    var div = document.createElement('div');
+    div.innerHTML = '<content select="span"></content>'
+    shadowRoot.appendChild(div);
+  </script>
+  </body>
+</html>

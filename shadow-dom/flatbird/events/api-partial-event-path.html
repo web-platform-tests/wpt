@@ -14,13 +14,13 @@
     </head>
     <body>
         <div id="log"></div>
-        <section id="shadhow-host" style='display:none'>
+        <section id="shadow-host" style='display:none'>
             <button id="a-child">test it</button>
         </section>
         <script>
             var t = async_test("Event path attribute test for Shadow DOM");
 
-            var host = document.getElementById('shadhow-host');
+            var host = document.getElementById('shadow-host');
             var child = document.getElementById('a-child');
 
             var root = host.webkitCreateShadowRoot();
@@ -32,20 +32,20 @@
             var verifyCount = 0;
             host.addEventListener('click', 
                 verifier(
-                    ['button#a-child', 'section#shadhow-host'], // expected
-                    ['div#shadow-div'] // unexpected
+                    [toName(child), toName(host)], // expected
+                    [toName(shadowDiv)] // unexpected
                 ),
                 false);
             shadowDiv.addEventListener('click',
                 verifier(
-                    ['button#a-child', 'div#shadow-div', 'section#shadhow-host'], // expected
+                    [toName(child), toName(host), toName(shadowDiv)], // expected
                     [] // unexpected
                 ),
                 false);
             child.addEventListener('click',
                 verifier(
-                    ['button#a-child', 'section#shadhow-host'], // expected
-                    ['div#shadow-div'] // unexpected
+                    [toName(child), toName(host)], // expected
+                    [toName(shadowDiv)] // unexpected
                 ),
                 false);
             child.click();
@@ -60,15 +60,12 @@
                             var thisName = toName(self);
                             var p = path[i];
                             var pName = toName(p);
-                            console.log(thisName + ': ' + pName);
                             if (expected.indexOf(pName) >= 0) {
                                 var msg = pName + ' is expected in path of ' + thisName;
-                                console.log(msg);
                                 assert_true(true, msg);
                             }
                             if (unexpected.indexOf(pName) >= 0) {
                                 var msg = pName + ' is unexpected in path of ' + thisName;
-                                console.log(msg);
                                 assert_unreached(msg);
                             }
                         }

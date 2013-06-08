@@ -1,0 +1,190 @@
+<!DOCTYPE HTML>
+<title>Test of text field setSelectionRange</title>
+<link rel="author" title="Takeharu.Oshida" href="mailto:georgeosddev@gmail.com">
+<link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/forms.html#dom-textarea/input-setselectionrange">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<div id="hide" style="display: block">
+  <input id="a" type="text" value="abcde">
+  <textarea id="b">abcde</textarea>
+</div>
+<script>
+  var input = document.getElementById("a");
+  test(function() {
+    assert_equals(typeof(input.setSelectionRange), "function", "element must have 'setSelectionRange' function");
+  });
+
+  test(function() {
+    assert_equals(input.setSelectionRange(0,1,"forward"),undefined,"setSelectionRange is void functuon");
+  });
+
+  test(function() {
+    input.setSelectionRange(0,1);
+    assert_equals(input.selectionStart, 0, "element.selectionStart should be 0");
+    assert_equals(input.selectionEnd, 1, "element.selectionEnd should be 1");
+  });
+
+  test(function() {
+    input.setSelectionRange(0,input.value.length+1);
+    assert_equals(input.selectionEnd, input.value.length, "Arguments greater than the length of the value of the text field must be treated as pointing at the end of the text field");
+  });
+  test(function() {
+    input.setSelectionRange(2,2);
+    assert_equals(input.selectionStart, 2, "If end is less than or equal to start then the start of the selection and the end of the selection must both be placed immediately before the character with offset end");
+    assert_equals(input.selectionEnd, 2, "If end is less than or equal to start then the start of the selection and the end of the selection must both be placed immediately before the character with offset end");
+  });
+  test(function() {
+    input.setSelectionRange(2,1);
+    assert_equals(input.selectionStart, 1, "If end is less than or equal to start then the start of the selection and the end of the selection must both be placed immediately before the character with offset end");
+    assert_equals(input.selectionEnd, 1, "If end is less than or equal to start then the start of the selection and the end of the selection must both be placed immediately before the character with offset end");
+  });
+
+  test(function() {
+    input.setSelectionRange(0,1,"backward");
+    assert_equals(input.selectionDirection, "backward", 'The direction of the selection must be set to backward if direction is a case-sensitive match for the string "backward"');
+  });
+
+  test(function() {
+    input.setSelectionRange(0,1,"forward");
+    assert_equals(input.selectionDirection, "forward", 'The direction of the selection must be set to forward if direction is a case-sensitive match for the string "forward"');
+  });
+
+  test(function() {
+    input.setSelectionRange(0,1,"none");
+    assert_equals(input.selectionDirection, "none", 'The direction of the selection must be set to forward if direction is a case-sensitive match for the string "none"');
+  });
+
+  test(function() {
+    input.setSelectionRange(0,1,"hoge");
+    assert_equals(input.selectionDirection, "none", "otherwise");
+  });
+
+  test(function() {
+    input.setSelectionRange(0,1,"BACKWARD");
+    assert_equals(input.selectionDirection, "none", "selectionDirection should be 'none'");
+  });
+
+  test(function() {
+    input.setSelectionRange(0,1);
+    assert_equals(input.selectionDirection, "none", "if the argument is omitted");
+  });
+
+  test(function() {
+    input.setSelectionRange("string",1);
+    assert_equals(input.selectionStart, 0, "element.selectionStart should be not change");
+  });
+  test(function() {
+    input.setSelectionRange(true,1);
+    assert_equals(input.selectionStart, 0, "element.selectionStart should be not change");
+  });
+  test(function() {
+    input.setSelectionRange([],1);
+    assert_equals(input.selectionStart, 0, "element.selectionStart should be not change");
+  });
+  test(function() {
+    input.setSelectionRange({},1);
+    assert_equals(input.selectionStart, 0, "element.selectionStart should be not change");
+  });
+  test(function() {
+    input.setSelectionRange(NaN,1);
+    assert_equals(input.selectionStart, 0, "element.selectionStart should be not change");
+  });
+  test(function() {
+    input.setSelectionRange(null,1);
+    assert_equals(input.selectionStart, 0, "element.selectionStart should be not change");
+  });
+  test(function() {
+    input.setSelectionRange(undefined,1);
+    assert_equals(input.selectionStart, 0, "element.selectionStart should be not change");
+  });
+
+  var textarea = document.getElementById("b");
+  test(function() {
+    assert_equals(typeof(textarea.setSelectionRange), "function", "element must have 'setSelectionRange' function");
+  });
+
+  test(function() {
+    assert_equals(textarea.setSelectionRange(0,1,"forward"),undefined,"setSelectionRange is void functuon");
+  });
+
+  test(function() {
+    textarea.setSelectionRange(0,1)
+    assert_equals(textarea.selectionStart, 0, "element.selectionStart should be 0");
+    assert_equals(textarea.selectionEnd, 1, "element.selectionEnd should be 1");
+  });
+
+  test(function() {
+    textarea.setSelectionRange(0,textarea.value.length+1)
+    assert_equals(textarea.selectionEnd, textarea.value.length, "Arguments greater than the length of the value of the text field must be treated as pointing at the end of the text field");
+  });
+  test(function() {
+    textarea.setSelectionRange(2,2)
+    assert_equals(textarea.selectionStart, 2, "If end is less than or equal to start then the start of the selection and the end of the selection must both be placed immediately before the character with offset end");
+    assert_equals(textarea.selectionEnd, 2, "If end is less than or equal to start then the start of the selection and the end of the selection must both be placed immediately before the character with offset end");
+  });
+  test(function() {
+    textarea.setSelectionRange(2,1)
+    assert_equals(textarea.selectionStart, 1, "If end is less than or equal to start then the start of the selection and the end of the selection must both be placed immediately before the character with offset end");
+    assert_equals(textarea.selectionEnd, 1, "If end is less than or equal to start then the start of the selection and the end of the selection must both be placed immediately before the character with offset end");
+  });
+
+  test(function() {
+    textarea.setSelectionRange(0,1,"backward")
+    assert_equals(textarea.selectionDirection, "backward", 'The direction of the selection must be set to backward if direction is a case-sensitive match for the string "backward"');
+  });
+
+  test(function() {
+    textarea.setSelectionRange(0,1,"forward")
+    assert_equals(textarea.selectionDirection, "forward", 'The direction of the selection must be set to forward if direction is a case-sensitive match for the string "forward"');
+  });
+
+  test(function() {
+    textarea.setSelectionRange(0,1,"none")
+    assert_equals(textarea.selectionDirection, "none", 'The direction of the selection must be set to forward if direction is a case-sensitive match for the string "none"');
+  });
+
+  test(function() {
+    textarea.setSelectionRange(0,1,"hoge")
+    assert_equals(textarea.selectionDirection, "none", "otherwise");
+  });
+
+  test(function() {
+    textarea.setSelectionRange(0,1,"BACKWARD")
+    assert_equals(textarea.selectionDirection, "none", "selectionDirection should be 'none'");
+  });
+
+  test(function() {
+    textarea.setSelectionRange(0,1)
+    assert_equals(textarea.selectionDirection, "none", "if the argument is omitted");
+  });
+
+  test(function() {
+    textarea.setSelectionRange("string",1);
+    assert_equals(textarea.selectionStart, 0, "element.selectionStart should be not change");
+  });
+  test(function() {
+    textarea.setSelectionRange(true,1);
+    assert_equals(textarea.selectionStart, 0, "element.selectionStart should be not change");
+  });
+  test(function() {
+    textarea.setSelectionRange([],1);
+    assert_equals(textarea.selectionStart, 0, "element.selectionStart should be not change");
+  });
+  test(function() {
+    textarea.setSelectionRange({},1);
+    assert_equals(textarea.selectionStart, 0, "element.selectionStart should be not change");
+  });
+  test(function() {
+    textarea.setSelectionRange(NaN,1);
+    assert_equals(textarea.selectionStart, 0, "element.selectionStart should be not change");
+  });
+  test(function() {
+    textarea.setSelectionRange(null,1);
+    assert_equals(textarea.selectionStart, 0, "element.selectionStart should be not change");
+  });
+  test(function() {
+    textarea.setSelectionRange(undefined,1);
+    assert_equals(textarea.selectionStart, 0, "element.selectionStart should be not change");
+  });
+  </script>

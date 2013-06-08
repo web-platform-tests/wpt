@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
  <head>
-  <title>Shadow DOM - inherit stylesheets from out of nested shadow dom</title>
+  <title>Shadow DOM - do not reset style inheritance</title>
   <link rel="author" title="thujikun" href="mailto:tsuji.0107@gmail.com" />
   <link rel="help" href="http://www.w3.org/TR/shadow-dom/" />
   <meta name="assert" content="Nested tree: attribute bool resetStyleInheritance attribute. If true, not reset inheritance">
@@ -42,7 +42,7 @@
     <script>
         test(function() {
             var level0 = document.getElementById('level0'),
-                shadowLevel1 = level0.webkitCreateShadowRoot(),
+                shadowLevel1 = createSR(level0),
                 shadowLevel2,
                 level1 = document.getElementById('level1-template').content,
                 level2 = document.getElementById('level2-template').content,
@@ -61,7 +61,7 @@
             assert_not_equals(getComputedStyle(shadowLevel2.querySelector('#level2')).fontSize, '50px');
             assert_equals(getComputedStyle(shadowLevel2.querySelector('#level2')).fontSize, '30px');
 
-        }, 'inherit stylesheets from out of nested shadow dom');
+        }, 'not reset inhretance on nested tree');
     </script>
  </body>
 </html>

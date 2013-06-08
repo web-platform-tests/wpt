@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
  <head>
-  <title>Shadow DOM - cannot specify stylesheets from out of nested shadow dom</title>
+  <title>Shadow DOM - do not apply author style</title>
   <link rel="author" title="thujikun" href="mailto:tsuji.0107@gmail.com" />
   <link rel="help" href="http://www.w3.org/TR/shadow-dom/" />
   <meta name="assert" content="Nested tree: attribute bool applyAuthorStyle attribute. If true, the author styles are not applied">
@@ -54,7 +54,7 @@
     <script>
         test(function() {
             var level0 = document.getElementById('level0'),
-                shadowLevel1 = level0.webkitCreateShadowRoot(),
+                shadowLevel1 = createSR(level0),
                 shadowLevel2,
                 level1 = document.getElementById('level1-template').content,
                 level2 = document.getElementById('level2-template').content,
@@ -70,7 +70,7 @@
             assert_not_equals(getComputedStyle(shadowLevel2.querySelector('#level2-blue')).backgroundColor, 'rgb(0, 0, 255)');
             assert_equals(getComputedStyle(shadowLevel2.querySelector('#level2-green')).backgroundColor, 'rgb(0, 255, 0)');
 
-        }, 'cannot specify stylesheets from out of nested shadow dom');
+        }, 'do not apply author style on nested tree');
     </script>
  </body>
 </html>

@@ -3,32 +3,32 @@
  <head>
   <title>CSS Test: flex container layout lowest order with column-reverse direction</title>
   <link rel="author" title="tmtysk" href="tmtysk@gmail.com">
-  <link rel="reviewer" title="" href="">
+  <link rel="reviewer" title="Tab Atkins" href="mailto:jackalmage@gmail.com">
   <style>
     #test {
       display: flex;
       flex-direction: column-reverse;
     }
 
-    #top {
+    #first {
+      order: 3;
+    }
+
+    #second {
+      order: 2;
+    }
+
+    #third {
       order: 1;
-    }
-
-    #middle {
-      order: 0;
-    }
-
-    #bottom {
-      order: -1;
     }
   </style>
  </head>
  <body>
   <p>Test passes if the paragraph below reads 'First,Second,Third' from top.</p>
   <div id="test">
-    <p id="top">First,</p>
-    <p id="middle">Second,</p>
-    <p id="bottom">Third</p>
+    <p id="second">Second,</p>
+    <p id="first">First,</p>
+    <p id="third">Third</p>
   </div>
  </body>
 </html>

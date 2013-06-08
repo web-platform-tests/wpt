@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Shadow DOM Test - Tests a content element.</title>
+    <link rel="reference" href="shadow-root-002-ref.html" />
+    <link rel="author" title="Anna Ogawa" href="mailto:anna.ogawa.0219@gmail.com" />
+    <link rel="help" href="https://dvcs.w3.org/hg/webcomponents/raw-file/tip/spec/shadow/index.html#shadow-trees" />
+    <script src="../testcommon.js"></script>
+    <meta name="assert" content="
+      When a shadow root is attached, a content element in a shadow tree is used." />
+  </head>
+  <body>
+    <div id='host'>
+      <div>Apple.</div>
+      <div>Orange.</div>
+    </div>
+    
+  <script>
+     var shadowRoot = createSR(host);
+     shadowRoot.innerHTML = '<div>Hello a Shadow Root.</div><div><content></content></div>';
+  </script>
+  </body>
+</html>

@@ -3,7 +3,6 @@
 
   <head>
     <title>Inputs Date</title>
-    <meta name=viewport content="width=device-width, maximum-scale=1.0, user-scalable=no" />
 	  <link rel="author" title="Morishita Hiromitsu" href="mailto:hero@asterisk-works.jp">
 	  <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/forms.html#date-state-(type=date)">
     <script src="/resources/testharness.js"></script>
@@ -13,7 +12,7 @@
 
   		<h1>Inputs Date</h1>
   		<div style="display: none">
-	  		<input id="valid" type="date" value="2011-11-01" min="2011-01-01" max="2011-12-31-31" />
+	  		<input id="valid" type="date" value="2011-11-01" min="2011-01-01" max="2011-12-31" />
         <input id="too_small_value" type="date" value="1999-01-31" min="2011-01-01" max="2011-12-31"/>
         <input id="too_large_value" type="date" value="2099-01-31" min="2011-01-01" max="2011-12-31"/>
 

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>getUserMedia: test the success callback is triggered when user allows access to video stream</title>
+<link rel="author" title="Kyle Barrow" href="mailto:kyle@barrow.io">
+<link rel="help" href="http://dev.w3.org/2011/webrtc/editor/getusermedia.html">
+<meta name="assert" content="the success callback is triggered when user allows access to video stream">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+
+</head>
+<body>
+<p>When prompted, <strong>please allow</strong> access to the video stream.</p>
+
+<div id="log"></div>
+<script>
+
+navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia)
+
+var t = async_test("Test the success callback is triggered when user allows access to video stream", {timeout:10000});
+
+t.step(function() {
+	navigator.getUserMedia(
+		{video: true},
+		t.step_func(function() {
+    		assert_true(true);
+   			t.done();
+  		}),
+  		t.step_func(function() {
+    		assert_unreached("The error callback should not have been triggered since access is to be allowed");
+    		t.done();
+  		})
+  	);
+});
+
+
+
+</script>
+</body>
+</html>

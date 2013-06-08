@@ -1,6 +1,6 @@
 Suggested tests to write for CSSOM at Test the Web Forward Tokyo:
 
-Serializing
+*** SERIALIZING ***
 
 (1) media queries
 
@@ -53,3 +53,35 @@ then test sereialized declaration with
 
 var test = document.getElementById('test');
 test.style.cssText
+
+*** ALTERNATIVE STYLE SHEETS ***
+
+• Document.selectedStyleSheetSet
+• Document.lastStyleSheetSet
+• Document.preferredStyleSheetSet
+• Document.styleSheetSets
+• Document.enableStyleSheetForSet()
+
+see https://dvcs.w3.org/hg/csswg/raw-file/tip/cssom/Overview.html#extensions-to-the-document-interface
+
+*** GETCOMPUTEDSTYLE() ***
+
+• test pseudoElt parameter
+
+  - different cases (upper, lower, mixed)
+  - whitespace padding
+  - different values than ::before and ::after
+
+• test on element that hasn't been added into document
+
+• test on element in different document
+
+see https://dvcs.w3.org/hg/csswg/raw-file/tip/cssom/Overview.html#dom-window-getcomputedstyle
+
+*** INSERTRULE() ***
+
+• insert followed by delete - did it appear then disapper in rules list?
+• insert multiple - does order of entries in rules list match insertion order?
+• insertion livenewss - is cssRules[] live with respect to insertions and deletions?
+
+see https://dvcs.w3.org/hg/csswg/raw-file/tip/cssom/Overview.html#dom-stylesheet-insertrule

@@ -11,10 +11,9 @@ policies and contribution forms [3].
 <html>
 <head>
 <title>Shadow DOM Test: A_04_04_01</title>
-<link rel="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
 <link rel="author" title="Tetsuharu OHZEKI" href="mailto:saneyuki.snyk@gmail.com">
 <link rel="help" href="http://www.w3.org/TR/2013/WD-shadow-dom-20130514/#distributed-pseudo-element">
-<meta name="assert" content="Matching Children, Distributed To Insertion Points">
+<meta name="assert" content="::distributed() pseudo-element with the selector which represents an insertion point">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="../../testcommon.js"></script>
@@ -23,29 +22,35 @@ policies and contribution forms [3].
 <body>
 <div id="log"></div>
 <script>
-var A_04_04_01_T1 = async_test('A_04_04_01_T01');
+var A_04_04_01_T4 = async_test('A_04_04_01_T04');
 
-A_04_04_01_T1.step(function () {
+A_04_04_01_T4.step(function () {
     var iframe = document.createElement('iframe');
     iframe.src = '../../resources/bobs_page.html';
     document.body.appendChild(iframe);
 
-    iframe.onload = A_04_04_01_T1.step_func(function () {
+    iframe.onload = A_04_04_01_T4.step_func(function () {
         try {
             var d = iframe.contentDocument;
-            var ul = d.querySelector('ul.stories');
-            var s = createSR(ul);
 
-            //make shadow subtree
+            //make shadow tree 1
+            var ul1 = d.querySelector('ul.stories');
+            var s1 = createSR(ul1);
             var subdiv1 = d.createElement('div');
-            subdiv1.innerHTML = '<ul><content select="li"></content></ul>';
-            s.appendChild(subdiv1);
+            subdiv1.innerHTML = '<ul><content class="target" select="li"></content></ul>';
+            s1.appendChild(subdiv1);
+
+            //make shadow tree 2
+            var ul2 = d.querySelector('#ul2');
+            var s2 = createSR(ul2);
+            var subdiv2 = d.createElement('div');
+            subdiv2.innerHTML = '<ul><content select="li"></content></ul>';
+            s2.appendChild(subdiv1);
 
             var style = d.createElement('style');
-            style.innerHTML = 'li { display: block; }' +
-                              '::distributed(li.shadow) { display:none; }';
+            style.innerHTML = '::distributed(.shadow) { display:block; }' +
+                              '.target::distributed(.shadow) { display:none; }';
             d.head.appendChild(style);
-
 
             //The order of DOM elements should be the following:
             //li3, li6 - invisible. Other elements visible
@@ -56,22 +61,16 @@ A_04_04_01_T1.step(function () {
             assert_equals(window.getComputedStyle(li6).display, "none",
               'Point 2: Elements that don\'t mach insertion point criteria participate in distribution');
 
-            var li1 = d.querySelector('#li1');
-            var li2 = d.querySelector('#li2');
-            var li4 = d.querySelector('#li4');
-            var li5 = d.querySelector('#li5');
-            assert_equals(window.getComputedStyle(li1).display, "block",
-              'Point 3: ::distributed() pseudo-element should be a valid insertion point matching criteria, element should be visible');
-            assert_equals(window.getComputedStyle(li2).display, "block",
-              'Point 4: ::distributed() pseudo-element should be a valid insertion point matching criteria, element should be visible');
-            assert_equals(window.getComputedStyle(li4).display, "block",
-              'Point 5: ::distributed() pseudo-element should be a valid insertion point matching criteria, element should be visible');
-            assert_equals(window.getComputedStyle(li5).display, "block",
-              'Point 6: ::distributed() pseudo-element should be a valid insertion point matching criteria, element should be visible');
+            var li13 = d.querySelector('#li13');
+            var li16 = d.querySelector('#li16');
+            assert_equals(window.getComputedStyle(li13).display, "block",
+              'Point 3: ::distributed() pseudo-element with descendant selector should be a valid insertion point matching criteria, element should be visible');
+            assert_equals(window.getComputedStyle(li16).display, "block",
+              'Point 4: ::distributed() pseudo-element with descendant selector should be a valid insertion point matching criteria, element should be visible');
         } finally {
             iframe.parentNode.removeChild(iframe);
         }
-        A_04_04_01_T1.done();
+        A_04_04_01_T4.done();
     });
 });
 </script>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Shadow DOM / Composition - Youger Tree Chosen Test</title>
+    <link rel="author" title="Kazumasa Kohtaka" href="mailto:kkohtaka@gmail.com">
+    <link rel="help" href="http://www.w3.org/TR/2013/WD-shadow-dom-20130514/#reprojection">
+    <style>
+      li { background-color: red; }
+    </style>
+  </head>
+  <body>
+    <div>
+      <p>The reprojection occurs but no element matches to the selector.</p>
+      <ul id="host">
+        <li id="li1" class="shadow">
+          <a id="a11" class="cl1" href="#">Link11 Shadow</a>
+          <a id="a12" class="cl2" href="#">Link12 Shadow</a>
+          <a id="a13" class="cl1" href="#">Link13 Shadow</a>
+        </li>
+        <li id="li2">
+          <a id="a21" href="#">Link21</a>
+          <a id="a22" href="#">Link22</a>
+        </li>
+        <li id="li3" class="shadow">
+          <a id="a31" href="#">Link31 Shadow</a>
+          <a id="a32" href="#">Link32 Shadow</a>
+        </li>
+        <li id="li4" class="shadow2">
+          <a id="a41" href="#">Link41 Shadow 2</a>
+          <a id="a42" href="#">Link42 Shadow 2</a>
+        </li>
+        <li id="li5" class="shadow2">
+          <a id="a51" href="#">Link51 Shadow 2</a>
+          <a id="a52" href="#">Link52 Shadow 2</a>
+        </li>
+      </ul>
+      <p><small>No lists shoud be displayed.</small></p>
+    </div>
+    <script src="../../testcommon.js"></script>
+    <script>
+      var d = window.document;
+
+      //Shadow root to play with
+      var ul = d.querySelector('#host');
+
+      var s1 = createSR(ul);
+      var ul1 = d.createElement('ul');
+      ul1.innerHTML = '<content select=".shadow2"></content>';
+      s1.appendChild(ul1);
+
+      var s2 = createSR(ul1);
+      var ul2 = d.createElement('ul');
+      ul2.innerHTML = '<content select=".shadow"></content>';
+      s2.appendChild(ul2);
+    </script>
+  </body>
+</html>

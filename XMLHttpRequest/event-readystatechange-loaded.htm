@@ -24,7 +24,7 @@ test.step(function() {
         }
 
         if (client.readyState === 4) {
-            assert_true(countedLoading === 1, "LOADING state change may only be emitted once");
+            assert_equals(countedLoading, 1, "LOADING state change may only be emitted once");
 
             test.done();
         }

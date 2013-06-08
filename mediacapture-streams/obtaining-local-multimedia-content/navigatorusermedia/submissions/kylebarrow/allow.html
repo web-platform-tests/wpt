@@ -17,8 +17,6 @@
 <div id="log"></div>
 <script>
 
-navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia)
-
 var t = async_test("Test the success callback is triggered when user allows access to video stream", {timeout:10000});
 
 t.step(function() {

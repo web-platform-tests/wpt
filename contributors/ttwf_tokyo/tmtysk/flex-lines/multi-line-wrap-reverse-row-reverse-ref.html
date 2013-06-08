@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
  <head>
-  <title>CSS Test Reference: flex container multiline wrapping in column-reverse direction</title>
+  <title>CSS Test Reference: flex container multiline wrapping-reverse in row-reverse direction</title>
   <link rel="author" title="tmtysk" href="mailto:tmtysk@gmail.com">
   <link rel="reviewer" title="" href="mailto:">
   <style>
@@ -9,8 +9,6 @@
 
     .test {
       width: 300px;
-      float: left;
-      width: 33.3%;
     }
 
     p {
@@ -20,27 +18,33 @@
     }
 
     #row1-col1 {
-        height: 90px;
+        width: 90px;
+        float: left;
     }
 
     #row1-col2 {
-        height: 90px;
+        width: 90px;
+        float: left;
     }
 
     #row1-col3 {
-        height: 90px;
+        width: 90px;
+        float: left;
     }
 
     #row2-col1 {
-        height: 140px;
+        width: 140px;
+        float: left;
     }
 
     #row2-col2 {
-        height: 140px;
+        width: 140px;
+        float: left;
     }
 
     #row3-col1 {
-        height: 290px;
+        width: 290px;
+        float: left;
     }
 
     .clear {
@@ -55,10 +59,12 @@
     <p id="row1-col2">1-2</p>
     <p id="row1-col3">1-3</p>
   </div>
+  <div class="clear"></div>
   <div class="test">
     <p id="row2-col1">2-1</p>
     <p id="row2-col2">2-2</p>
   </div>
+  <div class="clear"></div>
   <div class="test">
     <p id="row3-col1">3-1</p>
   </div>

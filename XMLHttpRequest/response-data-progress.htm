@@ -34,7 +34,7 @@ test.step(function() {
 
     client.onreadystatechange = test.step_func(function() {
         if (client.readyState === 4) {
-            assert_unreached("onprogress not called.");
+            assert_unreached("onprogress not called multiple times, or response body did not grow.");
         }
     });
 

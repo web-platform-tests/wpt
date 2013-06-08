@@ -9,7 +9,7 @@
     <!-- Be sure to make the main testing area first in the order -->
     <link rel="help" href="http://www.w3.org/TR/css3-flexbox/#flex-flow">
     <!-- The match link is only required if this is a reftest -->
-    <link rel="match" href="css-flexbox-test1-ref.html">
+    <link rel="match" href="css-flexbox-row-ref.html">
     <meta name="flags" content="">
     <meta name="assert" content="Test checks that when writing mode is vertical and flex-flow: row, the flex container is vertical.">
     <style type="text/css">
@@ -21,11 +21,13 @@
             -webkit-writing-mode: vertical-rl;
             writing-mode: vertical-rl;
             color: white;
+
+            height: 9em;
         }
         .item {
             background: green;
             height: 3em;
-            width: 3em;
+            width: 1.5em;
 
             /* make sure UA that doesn't support writing mode and flexbox fails. */
             float: right;
@@ -44,9 +46,12 @@
 
   <div class="error"></div>
   <div class="container">
-    <div class="item">１２３<br />ａｂｃ</div>
-    <div class="item">４５６<br />ｄｅｆ</div>
-    <div class="item">７８９<br />ｇｈｉ</div>
+    <div class="item">１２３</div>
+    <div class="item">４５６</div>
+    <div class="item">７８９</div>
+    <div class="item">ａｂｃ</div>
+    <div class="item">ｄｅｆ</div>
+    <div class="item">ｇｈｉ</div>
   </div>
 </body>
 </html>

@@ -1,14 +1,19 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8">
     <title>Shadow DOM Test</title>
-    <link rel="author" title="Naoki Sekiguchi" href="mailto:na-sekiguchi@kddilabs.jp" />
+    <link rel="author" title="Naoki Sekiguchi" href="mailto:na-sekiguchi@kddilabs.jp">
   </head>
+  <style>
+    .greenCharacter{
+      color:green;
+    }
+  </style>
   <body>
-    <p>The test passes if there is only green characters 'Hello', not red.</p>
-    <div style="color:green;">
-      <span>Hello</span>
+    <p>The test passes if there is only green characters 'Select a span tag.'.</p>
+    <div class="greenCharacter">
+      <span>Select a span tag.</span>
     </div>
   </body>
 </html>

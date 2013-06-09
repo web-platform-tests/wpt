@@ -52,12 +52,13 @@ test(unit(function (ctx) {
         };
     }
 
+    var inner_html = 'div::x-thumb { font-size: 30px; } '
+                   + 'div::xthumb { font-size: 30px; } '
+                   + 'div::-thumb { font-size: 30px; } '
+                   + 'div::thumb { font-size: 30px; }';
+
     style = d.createElement('style');
-    style.innerHTML = '';
-    style.innerHTML += 'div::x-thumb { font-size: 30px; }';
-    style.innerHTML += 'div::xthumb { font-size: 30px; }';
-    style.innerHTML += 'div::-thumb { font-size: 30px; }';
-    style.innerHTML += 'div::thumb { font-size: 30px; }';
+    style.innerHTML = inner_html;
     d.body.appendChild(style);
 
     for (var val in elems) {

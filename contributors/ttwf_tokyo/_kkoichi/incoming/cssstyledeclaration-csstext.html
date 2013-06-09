@@ -75,7 +75,7 @@
             style.cssText = 'font-weight: bold; color: red; font-size: 10pt;';
             assert_equals(style.cssText, 'font-weight: bold; color: red; font-size: 10pt;');
 
-        }, 'another cssText order');
+        }, 'another cssText order (non-alphabetical order)');
 
         test(function(){
             var style = newElm().style;
@@ -93,7 +93,6 @@
             style.color = 'red';
             style.unknown = 'unknown';
             style.fontSize = '10pt';
-            // assert_equals(style.unknown, 'unknown');    // is this right?
             assert_equals(style.cssText, 'color: red; font-size: 10pt;');
 
         }, 'invalid property does not appear');

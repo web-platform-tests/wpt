@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<!--
+Distributed under both the W3C Test Suite License [1] and the W3C
+3-clause BSD License [2]. To contribute to a W3C Test Suite, see the
+policies and contribution forms [3].
+
+[1] http://www.w3.org/Consortium/Legal/2008/04-testsuite-license
+[2] http://www.w3.org/Consortium/Legal/2008/03-bsd-license
+[3] http://www.w3.org/2004/10/27-testcases
+-->
+<html>
+<head>
+<title>Shadow DOM Test: The matching specificity of CSS rules for @host @-rule</title>
+<link rel="author" title="Moto Ishizawa" href="mailto:summerwind.jp@gmail.com">
+<link rel="help" href="http://www.w3.org/TR/2013/WD-shadow-dom-20130514/#host-at-rule">
+<meta name="assert" content="@host @-rule: Test the matching specificity of CSS rules for @host">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../../testcommon.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+<style>
+    #test-id    { display: block; }
+    .test-class { display: block; }
+    li          { display: block; }
+</style>
+</head>
+<body>
+<div id="log"></div>
+<script>
+test(unit(function (ctx) {
+    var d = newRenderedHTMLDocument(ctx);
+
+    d.body.innerHTML =
+        '<ul id="host">' +
+           '<li>1</li>' +
+            '<li id="test-id">2</li>' +
+            '<li class="test-class">3</li>' +
+            '<li id="test-id" class="test-class">4</li>' +
+            '<li style="display: block;">5</li>' +
+        '</ul>';
+
+    var host = d.querySelector('#host');
+    var s = createSR(host);
+
+    var div = d.createElement('div');
+    div.innerHTML = '<div id="shDiv"><span>Div in the Shadow tree</span></div>'
+                  + '<ul><content></content></ul>';
+    s.appendChild(div);
+
+    var style = d.createElement('style');
+    style.textContent = '@host {'
+                      + 'li { display: none; }'
+                      + '}';
+    s.appendChild(style);
+
+    var li_list = d.querySelectorAll('#host li');
+    assert_equals(li_list[0].offsetHeight, 0, 'Point 1: @host rules applies');
+    assert_equals(li_list[1].offsetHeight, 0, 'Point 2: @host rules applies');
+    assert_equals(li_list[2].offsetHeight, 0, 'Point 3: @host rules applies');
+    assert_equals(li_list[3].offsetHeight, 0, 'Point 4: @host rules applies');
+    assert_not_equals(li_list[4].offsetHeight, 0, 'Point 5: style attribute value applies');
+}), 'Only the last "li" element of shadow trees is displayed');
+</script>
+</body>

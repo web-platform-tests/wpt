@@ -18,7 +18,7 @@
         client.setRequestHeader("x-pass", 'pass')
         client.send(null)
         assert_equals(client.responseText, 'user' + "\n" + 'pass')
-        assert_equals(client.getResponseHeader('x-challenge'), 'DID')
+        assert_equals(client.getResponseHeader('x-challenge'), 'DID-NOT')
       }, document.title)
     </script>
   </body>

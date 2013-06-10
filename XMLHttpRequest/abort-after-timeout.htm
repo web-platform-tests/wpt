@@ -4,7 +4,8 @@
     <title>XMLHttpRequest: abort() after a timeout should not fire "abort" event</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
-    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-abort()-method" />
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-abort()-method" data-tested-assertations="following::ol[1]/li[4] following::ol[1]/li[5]"/>
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-timeout-attribute" data-tested-assertations="following::ol[1]/li[2]"/>
 </head>
 <body>
 <div id="log"></div>
@@ -29,7 +30,9 @@
 
             // abort should not cause the "abort" event to fire
 
-            client.abort();
+            setTimeout(function(){ // use a timeout to catch any implementation that might queue an abort event for later - just in case
+              test.step(function(){test.done();});
+            }, 200);
 
             assert_equals(client.readyState, 0);
 

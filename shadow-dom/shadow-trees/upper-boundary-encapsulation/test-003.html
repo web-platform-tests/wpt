@@ -80,15 +80,15 @@ test(unit(function (ctx) {
     var s = createSR(d.documentElement);
 
     var i;
-    for (i=0; i<HTML5_TAG.length; i++){
-    	var shadowElement = d.createElement(HTML5_TAG[i]);
-    	var id = 'id of '+ HTML5_TAG[i];
+    for (i=0; i<HTML5_ELEMENT_NAMES.length; i++){
+    	var shadowElement = d.createElement(HTML5_ELEMENT_NAMES[i]);
+    	var id = 'id of '+ HTML5_ELEMENT_NAMES[i];
     	shadowElement.id = id;
     	d.body.appendChild(shadowElement);
 
     	s.appendChild(shadowElement);
 
-    	assert_false(id in f.contentWindow, 'element '+HTML5_TAG[i]+' with id must not appear in window object named properties');
+    	assert_false(id in f.contentWindow, 'element '+HTML5_ELEMENT_NAMES[i]+' with id must not appear in window object named properties');
     }
 
 

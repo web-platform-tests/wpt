@@ -141,11 +141,11 @@ test(function () {
 // shadow tree: any HTML5 element
 test(function(){
 	var i;
-	for (i=0; i<HTML5_TAG.length; i++){
+	for (i=0; i<HTML5_ELEMENT_NAMES.length; i++){
 		var d1 = newHTMLDocument();
 		var d2 = newHTMLDocument();
 
-		var hostElement = d1.createElement(HTML5_TAG[i]);
+		var hostElement = d1.createElement(HTML5_ELEMENT_NAMES[i]);
 		try {
 			var shadowRoot = createSR(hostElement);
 		} catch (e) {
@@ -153,8 +153,8 @@ test(function(){
 			continue;
 		}
 		var k;
-		for (k=0; k<HTML5_TAG.length; k++){
-			var shadowElement = d2.createElement(HTML5_TAG[k]);
+		for (k=0; k<HTML5_ELEMENT_NAMES.length; k++){
+			var shadowElement = d2.createElement(HTML5_ELEMENT_NAMES[k]);
 			shadowRoot.appendChild(shadowElement);
 			A_04_01_01.checkOwnerDocument(shadowElement, d1);
 		}

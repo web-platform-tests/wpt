@@ -1,20 +1,77 @@
 // Copyright 2012 Google Inc. All Rights Reserved.
 
+/*
+Distributed under both the W3C Test Suite License [1] and the W3C
+3-clause BSD License [2]. To contribute to a W3C Test Suite, see the
+policies and contribution forms [3].
+
+[1] http://www.w3.org/Consortium/Legal/2008/04-testsuite-license
+[2] http://www.w3.org/Consortium/Legal/2008/03-bsd-license
+[3] http://www.w3.org/2004/10/27-testcases
+*/
+
 "use strict";
 
-var HTML5_TAG = [
-		'a','abbr','address','area','article','aside','audio','b','base','bdi','bdo','blockquote','body','br','button',
-		'canvas','caption','cite','code','col','colgroup','command','datalist','dd','del','details','dfn','dialog','div',
-		'dl','dt','em','embed','fieldset','figcaption','figure','footer','form','h1','h2','h3','h4','h5','h6','head','header',
-		'hgroup','hr','html','i','iframe','img','input','ins','kbd','keygen','label','legend','li','link','map','mark','menu',
-		'meta','meter','nav','noscript','object','ol','optgroup','option','output','p','param','pre','progress','q','rp','rt',
-		'ruby','s','samp','script','section','select','small','source','span','strong','style','sub','table','tbody','td','textarea',
-		'tfoot','th','thead','time','title','tr','track','u','ul','var','video','wbr'];
-
+var HTML5_ELEMENT_NAMES = [
+    'a', 'abbr', 'address', 'area', 'article', 'aside', 'audio',
+    'b', 'base', 'bdi', 'bdo', 'blockquote', 'body', 'br', 'button',
+    'canvas', 'caption', 'cite', 'code', 'col', 'colgroup', 'command',
+    'datalist', 'dd', 'del', 'details', 'dfn', 'dialog', 'div', 'dl', 'dt',
+    'em', 'embed',
+    'fieldset', 'figcaption', 'figure', 'footer', 'form',
+    'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'header', 'hgroup', 'hr',
+    'html',
+    'i', 'iframe', 'img', 'input', 'ins', 'kbd', 'keygen',
+    'label', 'legend', 'li', 'link',
+    'map', 'mark', 'menu', 'meta', 'meter',
+    'nav', 'noscript',
+    'object', 'ol', 'optgroup', 'option', 'output',
+    'p', 'param', 'pre', 'progress',
+    'q',
+    'rp', 'rt', 'ruby',
+    's', 'samp', 'script', 'section', 'select', 'small', 'source', 'span',
+    'strong', 'style', 'sub',
+    'table', 'tbody', 'td', 'textarea', 'tfoot', 'th', 'thead', 'time',
+    'title', 'tr', 'track',
+    'u', 'ul',
+    'var', 'video',
+    'wbr'
+];
 
 // http://www.whatwg.org/specs/web-apps/current-work/multipage/forms.html#form-associated-element
 var HTML5_FORM_ASSOCIATED_ELEMENTS = ['button', 'fieldset', 'input', 'keygen', 'label',
                                       'object', 'output', 'select', 'textarea'];
+
+// Whether to work around vendor prefixes.
+var USE_VENDOR_SPECIFIC_WORKAROUND = true;
+
+function activateVendorSpecificWorkaround() {
+    if (Element.prototype.webkitCreateShadowRoot &&
+        !Element.prototype.createShadowRoot) {
+        Element.prototype.createShadowRoot =
+            Element.prototype.webkitCreateShadowRoot;
+
+        Object.defineProperty(Element.prototype, 'pseudo', {
+            get: function () { return this.webkitPseudo; },
+            set: function (value) { return this.webkitPseudo = value; }
+        });
+
+        Object.defineProperty(Element.prototype, 'shadowRoot', {
+            get: function () { return this.webkitShadowRoot; }
+        });
+    }
+}
+
+if (USE_VENDOR_SPECIFIC_WORKAROUND)
+    activateVendorSpecificWorkaround();
+
+// ----------------------------------------------------------------------------
+// Deprecated: The code below is preserved only for the existing tests that are
+// using it. Now vendor prefixes are handled in a way that does not require
+// manual intervention. New tests should just use unprefixed APIs and you
+// are all set.
+//
+// These functions will eventually be removed when no tests use them.
 
 function ShadowDomNotSupportedError() {
     this.message = "Shadow DOM is not supported";
@@ -61,22 +118,6 @@ function addDocumentPrefixed(d) {
 	}	
 }
 
-
-function PROPS(assertion, properties) {
-    var res = Object(), attr;
-    for (attr in assertion) {
-        if (assertion.hasOwnProperty(attr)) {
-            res[attr] = assertion[attr];
-        }
-    }
-    for (attr in properties) {
-        if (properties.hasOwnProperty(attr)) {
-            res[attr] = properties[attr];
-        }
-    }
-    return res;
-
-}
 
 function rethrowInternalErrors(e) {
     if (e instanceof ShadowDomNotSupportedError) {
@@ -128,6 +169,9 @@ function newRenderedHTMLDocument(ctx) {
     return d;    
 }
 
+// End deprecated.
+// ----------------------------------------------------------------------------
+
 function newContext() {
     return {iframes:[]};
 }
@@ -164,15 +208,6 @@ function step_unit(f, ctx, t) {
             cleanContext(ctx);
         }
     }
-}
-
-
-// helper method for debugging
-function obj_dump(p) {
-    for (var o in p) {
-        console.log(o + ': ' + p[o] + '; ');
-    }
-
 }
 
 function assert_nodelist_contents_equal_noorder(actual, expected, message) {

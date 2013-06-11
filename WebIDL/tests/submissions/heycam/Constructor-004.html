@@ -113,9 +113,9 @@ test(function() {
 }, "passing an Array object as the only argument to the Blob constructor selects the (sequence<...>, optional BlobPropertyBag) overload");
 
 test(function() {
-  var b = new Blob({ size: 3, "0": "a" });
-  assert_equals(b.size, "aundefinedundefined".size);
-}, "passing { size: 3, \"0\": \"a\" } as the only argument to the Blob constructor selects the (sequence<...>, optional BlobPropertyBag) overload");
+  var b = new Blob({ length: 3, "0": "a" });
+  assert_equals(b.size, "aundefinedundefined".length);
+}, "passing { length: 3, \"0\": \"a\" } as the only argument to the Blob constructor selects the (sequence<...>, optional BlobPropertyBag) overload");
 
 test(function() {
   var b = new Blob(["abc"], { }, "extra");

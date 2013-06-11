@@ -36,7 +36,7 @@ test(function() {
 
 test(function() {
   var a1 = new Uint8Array(4);
-  var a2 = new Uint8Array(a2);
+  var a2 = new Uint8Array(a1);
   assert_equals(a2.length, 4);
 }, "passing a Uint8Array as the only argument to the Uint8Array constructor selects the (Uint8Array) overload");
 

@@ -16,7 +16,8 @@
 							<input type="time" id="chkStep" />
 							<input type="time" id="chkSetValueTest" />
 							<input type="time" id="chkSupportAttribute" min="01:01:01.001" max="12:12:12.012" step="600" /> 
-    	</div>
+							<input type="time" id="chkConvert" />
+			</div>
 		<div id="log">
     </div>
 	
@@ -200,6 +201,13 @@ test(function(){
 	_time.value = "hh:mi:ss.sss";
 	assert_equals(_time.value, "");
 }, "set value on not time format value");
+
+/* algorithm to convert test */
+var _ConvertTest = document.getElementById("chkConvert");
+test(function(){
+	_ConvertTest.value = "60000"; /* 60 second */
+	assert_equals(_ConvertTest.value, "00:01");
+} , "algorithm to convert a string to a number ");
 
 
 	</script>

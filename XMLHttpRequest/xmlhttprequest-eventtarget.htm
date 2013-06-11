@@ -35,7 +35,6 @@
             if(x.readyState == 2)
               x.removeEventListener("readystatechange", callback, false)
             if(x.readyState == 4) {
-              console.log(result)
               assert_array_equals(result, expected)
               test.done()
             }

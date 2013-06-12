@@ -193,14 +193,14 @@
 	test(function(){
 		var rule = document.styleSheets[0].cssRules[1];
 		assert_equals(rule.cssText,
-		              "@supports ((border: black) and (padding: 0) and (width: 0)) {\n"
+		              "@supports (border: black) and (padding: 0) and (width: 0) {\n"
 		             +"  dfn { width: 0px; }\n"
 		             +"}");
 	}, "'and' arguments in @supports serialize in the correct order and with extra parentheses");
 	test(function(){
 		var rule = document.styleSheets[0].cssRules[2];
 		assert_equals(rule.cssText,
-		              "@supports ((border: black) or (padding: 0) or (width: 0)) {\n"
+		              "@supports (border: black) or (padding: 0) or (width: 0) {\n"
 		             +"  dfn { width: 0px; }\n"
 		             +"}");
 	}, "'or' arguments in @supports serialize in the correct order and with extra parentheses");

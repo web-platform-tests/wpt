@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" >
+		<title>Text Decoration Line-through Test</title>
+		<link rel="reference" href="text-decoration-ref.html">
+		<link rel="author" title="Masaya Iseki" href="mailto:iseki.m.aa@gmail.com">
+		<link rel="help" href="https://www.w3.org/TR/shadow-dom/#text-decoration-property">
+		<meta name="assert" content="When shadow host has text-decoration, shadow tree is not affected.">
+	</head>
+	<body>
+		<div id="line-through" style="text-decoration: line-through">
+		</div>
+		<div id="overline" style="text-decoration: overline">
+		</div>
+		<div id="underline" style="text-decoration: underline">
+		</div>
+		<div id="blink" style="text-decoration: blink">
+		</div>
+		<script>
+			var parent = document.getElementById('line-through');
+			var shadow = parent.webkitCreateShadowRoot();
+			var child = document.createElement('span');
+			child.textContent = "if NOT line throughed, it is success.";
+			shadow.appendChild(child);
+
+			parent = document.getElementById('overline');
+			shadow = parent.webkitCreateShadowRoot();
+			child = document.createElement('span');
+			child.textContent = "if NOT overlined, it is success.";
+			shadow.appendChild(child);
+
+			parent = document.getElementById('underline');
+			shadow = parent.webkitCreateShadowRoot();
+			child = document.createElement('span');
+			child.textContent = "if NOT underlined, it is success.";
+			shadow.appendChild(child);
+
+			parent = document.getElementById('blink');
+			shadow = parent.webkitCreateShadowRoot();
+			child = document.createElement('span');
+			child.textContent = "if NOT blinked, it is success.";
+			shadow.appendChild(child);
+		</script>
+	</body>
+</html>

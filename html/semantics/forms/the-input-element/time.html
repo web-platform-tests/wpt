@@ -205,10 +205,26 @@ test(function(){
 /* algorithm to convert test */
 var _ConvertTest = document.getElementById("chkConvert");
 test(function(){
-	_ConvertTest.value = "60000"; /* 60 second */
+	_ConvertTest.valueAsNumber = "60000"; /* 60 second */
 	assert_equals(_ConvertTest.value, "00:01");
 } , "algorithm to convert a string to a number ");
 
+test(function(){
+	_ConvertTest.valueAsNumber = 120000; /* 120 second */
+	assert_equals(_ConvertTest.value, "00:02");
+} , "algorithm to convert a number to a string");
+
+test(function(){
+  var timeString = "2013/06/07 18:30:15.321";
+	_ConvertTest.valueAsDate = timeString; 
+	assert_equals(_ConvertTest.value, "18:30:15.321");
+} , "The algorithm to convert a string to a Date object");
+
+test(function(){
+	var wkTime = new Date(2013,6,7,11,45,25,432)
+	_ConvertTest.valueAsDate = wkTime; 
+	assert_equals(_ConvertTest.value, "11:45:25.432");
+} , "The algorithm to convert a Date object to a string");
 
 	</script>
   </body>

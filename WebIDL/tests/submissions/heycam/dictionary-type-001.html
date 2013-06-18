@@ -141,4 +141,9 @@ test(function() {
   Object.defineProperty(object, "detail", { get: function() { throw { name: "SomeError" }; } });
   assert_throws({ name: "SomeError" }, function() { new CustomEvent("test", object); });
 }, "passing { throwing detail getter } to CustomEvent constructor");
+
+test(function() {
+  var e = new CustomEvent("test", { detail: undefined });
+  assert_equals(e.detail, null);
+}, "passing { detail: undefined } to CustomEvent constructor");
 </script>

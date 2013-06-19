@@ -20,20 +20,20 @@
       }
       test.step(function() {
         var client = new XMLHttpRequest()
-        client.open("GET", "resources/delay.php?ms=1000")
+        client.open("POST", "resources/delay.php?ms=1000")
         client.addEventListener('progress', logEvt)
         client.addEventListener('abort', logEvt)
-        client.addEventListener('loadend', logEvt)
-        client.upload.addEventListener('progress', logEvt)
-        client.upload.addEventListener('abort', logEvt)
-        client.upload.addEventListener('loadend', function (e) {
+        client.addEventListener('loadend', function (e) {
           logEvt(e)
           test.step(function() {
             assert_equals(client.readyState, 0)
-            assert_array_equals(result, expected)
+            assert_array_equals(result, expected, result)
             test.done()
           })
         })
+        client.upload.addEventListener('loadend', logEvt)
+        client.upload.addEventListener('progress', logEvt)
+        client.upload.addEventListener('abort', logEvt)
         client.send((new Array(10000)).join('a'))
         client.abort();
       })

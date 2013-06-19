@@ -27,7 +27,7 @@
           logEvt(e)
           test.step(function() {
             assert_equals(client.readyState, 0)
-            assert_array_equals(result, expected, result)
+            assert_array_equals(result, expected)
             test.done()
           })
         })

@@ -1,0 +1,168 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+  <title>ARIA 1.0 Test Case: ARIA used as CSS Selectors for updating background image</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      
+    <style type="text/css">
+      
+ul {list-style:none;}
+ul > li {
+  background-image: url(default.png);
+  background-repeat: no-repeat;
+  background-position: left center;
+  padding-left: 32px;
+  font-size: 150%;
+}
+
+.state-2,
+.state-3,
+.state-4 {
+  display: none;
+}
+
+[aria-checked='true'],
+li[aria-expanded='true'],
+ul > li[aria-hidden='true'],
+[aria-invalid='true'],
+[aria-pressed='true'],
+[aria-required='true'],
+[aria-selected='true'],
+[aria-sort='ascending'],
+[aria-disabled='true'] {
+  background-image: url(state-1.png);
+}
+
+[aria-checked='false'],
+li[aria-expanded='false'],
+ul > li[aria-hidden='false'],
+[aria-invalid='false'],
+[aria-pressed='false'],
+[aria-required='false'],
+[aria-selected='false'],
+[aria-sort='descending'],
+[aria-disabled='false'] {
+  background-image: url(state-2.png);
+}
+
+[aria-checked='mixed'],
+[aria-invalid='spelling'],
+[aria-sort='other'],
+[aria-pressed='mixed'] {
+  background-image: url(state-3.png);
+}
+
+[aria-checked=''],
+[aria-expanded=''],
+[aria-hidden=''],
+[aria-invalid='grammar'],
+[aria-pressed=''],
+[aria-required=''],
+[aria-selected=''],
+[aria-sort=''],
+[aria-disabled=''] {
+  background-image: url(state-4.png);
+}
+
+
+<!--  
+[aria-selected=""]
+-->
+      
+    </style>  
+
+      <script type="text/javascript">
+     
+      var state = 1;
+      var state_id = 'state-1';
+      
+      function nextState() {
+      
+        state += 1;
+        if (state > 4) state = 1;
+        
+        var node = document.getElementById('state');
+        
+        var text = document.createTextNode(state.toString());
+        
+        while (node.firstChild) {
+          node.removeChild(node.firstChild);
+        }
+        
+        node.appendChild(text);        
+
+        state_id = 'state-' + state;
+        
+        setDisplayByClassName('state-1', 'none');
+        setDisplayByClassName('state-2', 'none');
+        setDisplayByClassName('state-3', 'none');
+        setDisplayByClassName('state-4', 'none');
+
+        setDisplayByClassName(state_id, 'inline');
+        
+        updateARIAStateValue(state_id);
+        
+        
+        
+      }
+      
+      function setDisplayByClassName(class_name, value) {
+
+        var nodes = document.getElementsByClassName(class_name); 
+        
+        for (var i = 0; i < nodes.length; i++ ) {
+        
+           nodes[i].style.display = value;
+        
+        }
+        
+      }  
+        
+      function updateARIAStateValue(class_name) {
+
+        var nodes = document.getElementsByClassName(class_name); 
+        
+        for (var i = 0; i < nodes.length; i++ ) {
+        
+           var node = nodes[i];
+        
+           var value = node.textContent;
+           
+           var parent = node.parentNode;
+           
+           var attribute = parent.getElementsByClassName('aria_state')[0].textContent;
+           
+           parent.setAttribute(attribute, value);
+
+        }
+        
+      }
+
+    </script>
+      
+  </head>
+  <body>
+    <h1>ARIA 1.0 Test Case: ARIA used as CSS Selectors for updating background image</h1>
+
+    <h2>Description</h2>
+    
+    <p>Current State: <span id="state">1</span></p>
+    <button onclick="nextState()">Next State</button>
+    
+    
+<ul>
+  <li   aria-checked="true"><span class="aria_state">aria-checked</span>=<span class="state-1">true</span><span class="state-2">false</span><span class="state-3">mixed</span><span class="state-4"></span></li>
+  <li  aria-disabled="true"><span class="aria_state">aria-disabled</span>=<span class="state-1">true</span><span class="state-2">false</span><span class="state-3"></span></li>
+  <li  aria-expanded="true"><span class="aria_state">aria-expanded</span>=<span class="state-1">true</span><span class="state-2">false</span><span class="state-3"></span></li>
+  <li    aria-hidden="true"><span class="aria_state">aria-hidden</span>=<span class="state-1">true</span><span class="state-2">false</span><span class="state-3"></span></li>
+  <li   aria-invalid="true"><span class="aria_state">aria-invalid</span>=<span class="state-1">true</span><span class="state-2">false</span><span class="state-3">spelling</span><span class="state-4">grammar</span></li>
+  <li   aria-pressed="true"><span class="aria_state">aria-pressed</span>=<span class="state-1">true</span><span class="state-2">false</span><span class="state-3">mixed</span><span class="state-4"></span></li>
+  <li  aria-selected="true"><span class="aria_state">aria-selected</span>=<span class="state-1">true</span><span class="state-2">false</span><span class="state-3"></span></li>
+  <li  aria-required="true"><span class="aria_state">aria-required</span>=<span class="state-1">true</span><span class="state-2">false</span><span class="state-3"></span></li>
+  <li aria-sort="ascending"><span class="aria_state">aria-sort</span>=<span class="state-1">ascending</span><span class="state-2">descending</span><span class="state-3">other</span><span class="state-4"></span></li>
+</ul>
+
+    
+    
+
+  </body>
+</html>

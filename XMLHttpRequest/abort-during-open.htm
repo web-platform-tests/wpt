@@ -21,7 +21,7 @@
         }
         client.abort();
         assert_equals(client.readyState, 0)
-        assert_throws("INVALID_STATE_ERR", function() { client.send("test") }, "calling send() after abort()")
+        assert_throws("InvalidStateError", function() { client.send("test") }, "calling send() after abort()")
       })
       test.done()
     </script>

@@ -36,7 +36,7 @@
             };
 
             xhr.open("GET", "./resources/content.php", true); // This should cause a readystatechange event that calls abort()
-            assert_throws("INVALID_STATE_ERR", function(){ xhr.send(); });
+            assert_throws("InvalidStateError", function(){ xhr.send(); });
             test.done();
         });
     </script>

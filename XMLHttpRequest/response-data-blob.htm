@@ -17,7 +17,6 @@
         test.step(function()
         {
             var xhr = new XMLHttpRequest();
-            var xhr2 = new XMLHttpRequest();
             var content = "Hello";
             var blob;
 
@@ -43,7 +42,7 @@
                     });
                 }
             }
-            
+
             xhr.open("GET", "./resources/content.php?content=" + content, true);
             xhr.responseType = "blob";
             xhr.send();

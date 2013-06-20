@@ -1,37 +1,40 @@
 Description
 ===========
 
-This is the HTML Working Group's test suite for HTML, Canvas, and Microdata
-(any version — 5.0, 5.1, LS, etc.). It is maintained by the HTML Test Suite
-Task Force, which for all that it has "Task Force" in its name is really a
-bunch of cool froods.
+This is the test suites from a number of W3C Working Groups, including the HTML
+Working Group, the Web Apps Working Group, the Device APIs Working Group, and 
+the Web Apps Security Working Group.
 
 Publication
 ===========
 
-The master branch is synced every ten minutes to: http://w3c-test.org/web-platform-tests/master/.
-Likewise the CR branch to: http://w3c-test.org/web-platform-tests/CR/.
+The master branch is automatically synced to: http://w3c-test.org/web-platform-tests/master/.
+Likewise the CR branch (that matches the test suites used for the Candidate
+Recommendations of HTML5, Canvas 2D and Microdata) to: http://w3c-test.org/web-platform-tests/CR/.
+
+Pull requests that have been checked are automatically mirrored to
+https://w3c-test.org/web-platform-tests/submissions/
 
 Finding Things
 ==============
+Each top-level directory represents a W3C specification: the name matches the
+shortname used after the canonical address of the said specification under
+http://www.w3.org/TR/ .
 
-Tests are under `html` (for the HTML specification), `canvas` (for the
-Canvas specification), and `microdata` (Surprise test! Which specification
-are these tests for?).
+For some of the specifications, the tree under the top-level directory
+represents the sections of the respective documents, using the section IDs for
+directory names, with a maximum of three levels deep.
 
-Inside the specification directories, the tree represents the sections of the
-respective documents, using the section IDs for directory names, with a maximum
-of three levels deep. So if you're looking for tests for "The History interface",
+So if you're looking for tests in HTML for "The History interface",
 they will be under `html/browsers/history/the-history-interface/`.
 
 Various resources that tests depend on are in `common`, `images`, and `fonts`.
 
 In order to function properly, tests need to be run from a web server that has
-testharness.js in `/resources/`.
+[testharness.js](https://github.com/w3c/testharness.js) in `/resources/`.
 
 If you're looking at a section of the specification and can't figure out where
 the directory is for it in the tree, just run:
-
     node tools/scripts/id2path.js your-id
 
 Branches
@@ -56,10 +59,12 @@ Save the Web, Write Some Tests!
 
 Let's get the legalese out of the way:
 
-You may wish to read the details below, but the **simplest thing to know** is this:
+You may wish to read the details below, but the **simplest thing to know** is
+this:
 
-* if the company you work for is already a member of the HTML WG, then you don't need 
-  to worry; you're already covered
+* if the company you work for is already a member of the Working Group
+  responsible for the specification, then you don't need to worry; you're
+  already covered
 * if not, you will need to [fill out this form](http://www.w3.org/2002/09/wbs/1/testgrants2-200409/)
 
 ### Grant of License for Contributed Test Cases Published Outside a W3C Recommendation

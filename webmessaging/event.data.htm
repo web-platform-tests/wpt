@@ -43,13 +43,15 @@
     
     window.onmessage = t.step_func(function(e)
     {
-        ActualResult.push(e.data, typeof(e.data));
+        if (e.data.toString() === "STRING") {
+        	ActualResult.push(e.data, typeof(e.data));
         
-        if (ActualResult.length >= ExpectedResult.length)
-        {
-            assert_array_equals(ActualResult, ExpectedResult, "ActualResult");
-            t.done();
-        }
+	        if (ActualResult.length >= ExpectedResult.length)
+	        {
+	            assert_array_equals(ActualResult, ExpectedResult, "ActualResult");
+	            t.done();
+	        }
+		}
     });
 </script>
 </body>

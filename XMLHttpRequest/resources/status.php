@@ -15,7 +15,6 @@
   $content = $_GET["content"] ? $_GET["content"] : "";
   $type = $_GET["type"] ? $_GET["type"] : "";
   header("HTTP/1.1 " . $code . " " . $text);
-  header("Status: " . $code . " " . $text);
   header("Content-Type:" . $type);
   header("X-Request-Method: " . (isset($_SERVER["REQUEST_METHOD"]) ? $_SERVER["REQUEST_METHOD"] : "NO"));
 

@@ -94,8 +94,8 @@ test(function() {
 test(function() {
   var buffer = new ArrayBuffer(5);
   var a = new Uint8Array(buffer, undefined, undefined);
-  assert_equals(a.length, 0);
-}, "passing (ArrayBuffer, undefined, undefined) to the Uint8Array constructor selects the (ArrayBuffer, optional unsigned long, optional unsigned long) overload with three arguments");
+  assert_equals(a.length, 5);
+}, "passing (ArrayBuffer, undefined, undefined) to the Uint8Array constructor selects the (ArrayBuffer, optional unsigned long, optional unsigned long) overload with three arguments and treats the undefineds as missing arguments");
 
 
 // feature Blob (interface) (with [Constructor] and overloading)

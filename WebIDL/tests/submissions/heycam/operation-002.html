@@ -15,10 +15,11 @@
 // Here we're invoking regular operations that do not use overloading
 // but which do have optional arguments.  When too few arguments are passed,
 // a TypeError is thrown.  When too many arguments are passed, the
-// extra ones are ignored.  Argument types are not used to eliminate
-// the single entry in the effective overload set.  The function can
-// be applied to objects of the right type from other windows.
-// Calling it with a bad this object value will throw a TypeError.
+// extra ones are ignored.  Undefined is treated as a missing optional
+// argument.  Argument types are not used to eliminate the single entry in the
+// effective overload set.  The function can be applied to objects of the right
+// type from other windows. Calling it with a bad this object value will throw
+// a TypeError.
 
 // feature: Window.postMessage (operation) (with optional argument)
 
@@ -93,8 +94,8 @@ test(function() {
 
 test(function() {
   var div = makeDivSpan(document);
-  assert_equals(div.cloneNode(undefined).firstChild, null);
-}, "passing undefined to Node.cloneNode is correctly converted to an IDL boolean");
+  assert_not_equals(div.cloneNode(undefined).firstChild, null);
+}, "passing undefined to Node.cloneNode is treated as a missing optional argument");
 
 test(function() {
   var div = makeDivSpan(document.getElementById("iframe").contentDocument);
@@ -141,7 +142,7 @@ test(function() {
   var option = document.createElement("option");
   select.add(option, undefined);
   assert_equals(select.lastChild, option);
-}, "passing undefined to HTMLSelectElement.add is correctly converted to an IDL \"(HTMLElement or long)?\" type");
+}, "passing undefined to HTMLSelectElement.add is treated as a missing optional argument");
 
 test(function() {
   var doc = document.getElementById("iframe").contentDocument;

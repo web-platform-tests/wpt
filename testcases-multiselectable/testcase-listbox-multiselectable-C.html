@@ -39,8 +39,9 @@
       
      function setFocus() {
        var node = document.getElementById('ID_TARGET');  
-       node.focus();
        node.setAttribute("aria-selected","true");
+       node.focus();
+       //node.setAttribute("aria-selected","true");
      }
      
      window.addEventListener('load', setFocus);

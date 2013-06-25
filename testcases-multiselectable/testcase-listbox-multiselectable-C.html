@@ -2,6 +2,9 @@
 <html><head>
     <title>ARIA 1.0 Test Case: Listbox role with multiseclect</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <style type="text/css">
+      [aria-selected="true"] { font-weight: bold; }
+    </style>
   </head>
   <body>
     <h1>ARIA 1.0 Test Case: Listbox role with multiseclect</h1>
@@ -12,6 +15,7 @@
       <div role="option" aria-selected="false" id="ID_TARGET" tabindex="0">Option 3 (test for selected)</div> 
       <div role="option">Option 4</div> 
     </div>
+    <p><button onclick="toggleSelectedState();">Toggle Option 3 Selected State</button>
     
     <h2>Description</h2>
     <p>A DIV element with role role "listbox" has an aria-multiselect attribute set to "true".
@@ -37,12 +41,21 @@
     
     <script type="text/javascript">  
       
-     function setFocus() {
+     function setSelection() {
        var node = document.getElementById('ID_TARGET');  
        node.setAttribute("aria-selected","true");
      }
      
-     window.addEventListener('load', setFocus);
+     window.addEventListener('load', setSelection);
+     
+     function toggleSelectedState() {
+       var el = document.getElementById('ID_TARGET');
+       if (el.getAttribute('aria-selected') == 'true')
+         el.setAttribute('aria-selected', 'false');
+       else
+         el.setAttribute('aria-selected', 'true');
+     }
+     
     </script>
   
   

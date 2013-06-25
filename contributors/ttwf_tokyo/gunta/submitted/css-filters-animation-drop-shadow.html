@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>CSS Filters Animation: Hue-rotate</title>
+    <title>CSS Filters Animation: Drop Shadow</title>
     <link rel="author" title="Gunther Brunner" href="mailto:takeshimiya@gmail.com">
     <link rel="reviewer" title="Dirk Schulze" href="mailto:dschulze@adobe.com">
     <link rel="help" href="http://www.w3.org/TR/filter-effects/">
     <link rel="help" href="http://www.w3.org/TR/css3-animations/#animations">
-    <link rel="match" href="css-filters-animation-hue-rotate-ref.html">
-    <meta name="assert" content="The blue square should be violet">
+    <link rel="match" href="css-filters-animation-drop-shadow-ref.html">
+    <meta name="assert" content="The blue square should be in top of a gray one">
     <style type="text/css">
         @keyframes animate {
             0% {
-                filter: hue-rotate(90deg);
+                filter: drop-shadow(30px 30px 0px black);
             }
             100% {
                 filter: none;
@@ -31,7 +31,7 @@
     </style>
 </head>
 <body>
-<p>You should see a violet rectangle. Neither red nor blue.</p>
+<p>You should see a blue rectangle in top of a gray one.</p>
 <div class="square"></div>
 </body>
 </html>

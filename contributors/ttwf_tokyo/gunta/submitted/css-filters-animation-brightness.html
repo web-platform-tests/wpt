@@ -7,7 +7,6 @@
     <link rel="help" href="http://www.w3.org/TR/filter-effects/">
     <link rel="help" href="http://www.w3.org/TR/css3-animations/#animations">
     <link rel="match" href="css-filters-animation-brightness-ref.html">
-    <meta name="flags" content="filters, animation">
     <meta name="assert" content="The blue square should be dark blue">
     <style type="text/css">
         @keyframes animate {
@@ -19,7 +18,7 @@
             }
         }
 
-        .blueSquare {
+        .square {
             width: 100px;
             height: 100px;
             background: blue;
@@ -27,11 +26,12 @@
             animation-play-state: paused;
             animation-delay: -2s;
             animation-duration: 4s;
+            animation-timing-function: linear;
         }
     </style>
 </head>
 <body>
 <p>You should see a dark blue rectangle. Neither black nor blue.</p>
-<div class="blueSquare"></div>
+<div class="square"></div>
 </body>
 </html>

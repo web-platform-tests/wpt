@@ -1,5 +1,5 @@
-
-# Updating the coverage data
+Updating the coverage data
+==========================
 
 Make sure you have [node][1] and [phantomjs][2] installed.
 

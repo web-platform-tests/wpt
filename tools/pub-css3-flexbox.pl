@@ -84,6 +84,10 @@ push @dirs, 'contributors/ttwf_bj/winter/submitted/';
 push @dirs, 'contributors/ttwf_bj/yugang/submitted/css3-flexbox/';
 push @dirs, 'contributors/ttwf_bj/zhouli/submitted/';
 
+push @dirs, 'contributors/ttwf_tokyo/ogaoga/submitted';
+push @dirs, 'contributors/ttwf_tokyo/tmtysk/submitted/flex-lines';
+push @dirs, 'contributors/ttwf_tokyo/tmtysk/submitted/order';
+
 
 
 $dirlist = join ' ', @dirs;

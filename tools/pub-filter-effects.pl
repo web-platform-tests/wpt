@@ -75,9 +75,10 @@ push @dirs, 'contributors/adobe/submitted/filter-effects';
 push @dirs, 'contributors/ttwf_tokyo/ultimatezen/submitted';
 push @dirs, 'contributors/ttwf_tokyo/yomotsu/submitted';
 push @dirs, 'contributors/ttwf_tokyo/sparkgene/submitted';
-push @dirs, 'contributors/ttwf_tokyo/takakiyasuma/submitted';
 push @dirs, 'contributors/ttwf_tokyo/nakajmg/submitted';
-
+push @dirs, 'contributors/ttwf_tokyo/gunta/submitted';
+push @dirs, 'contributors/ttwf_tokyo/takenspc/submitted';
+push @dirs, 'contributors/ttwf_tokyo/Tayatt/submitted';
 
 
 $dirlist = join ' ', @dirs;

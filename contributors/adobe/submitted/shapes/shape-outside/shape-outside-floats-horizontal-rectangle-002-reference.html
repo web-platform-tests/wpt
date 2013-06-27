@@ -1,13 +1,16 @@
 <!DOCTYPE html>
-<title>CSS Test: vertical rectangle shape-outside on floats</title>
+<title>CSS RefTest Reference</title>
 <link rel="author" title="Bem Jones-Bey" href="mailto:bjonesbe@adobe.com">
+<meta name="flags" content="ahem">
 <style>
 .container {
     width: 75px;
     height: 100px;
     font: 25px/1 Ahem;
+    line-height: 25px;
     border: 10px solid black;
     display: inline-block;
+    writing-mode: vertical-rl;
 }
 
 .left-text {
@@ -32,20 +35,18 @@
 </style>
 </head>
 <body>
-    <p>Test passes if you see two black rectangle boxes with a smaller white rectangle in one corner.</p>
+    <p>Test passes if you see two black rectangle boxes with a smaller white rectangle in one corner of each.</p>
     <div class="container left-text">
         <div class="left"></div>
         X<br/>
         X<br/>
-        X<br/>
-        XXX<br/>
+        XXXX<br/>
     </div>
 
     <div class="container right-text">
         <div class="right"></div>
         X<br/>
         X<br/>
-        X<br/>
-        XXX<br/>
+        XXXX<br/>
     </div>
 </body>

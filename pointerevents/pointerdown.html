@@ -17,7 +17,7 @@
 	add_completion_callback(showPointerTypes);
 
 	// Check for conformance to PointerEvent interface
-	// TA: 1.1, 1.2, 1.6, 1.7, 1.8, 1.9, 1.10, 1.11, 1.12, 1.13
+	// TA: 1.1, 1.2, 1.6, 1.7, 1.8, 1.9, 1.10, 1.13
 	function check_PointerEvent(event) {
 		test(function() {
 			assert_true(event instanceof PointerEvent,
@@ -94,24 +94,15 @@
 
 		// Check mouse-specific properties
 		if ( event.pointerType === "mouse" ) {
-			// TA: 1.9, 1.10, 1.11, 1.13
+			// TA: 1.9, 1.10, 1.13
 			test(function() {
 				assert_equals(event.tiltX, 0,
 					event.type + ".tiltX is 0 for mouse");
 				assert_equals(event.tiltY, 0,
 					event.type + ".tiltY is 0 for mouse");
-				assert_equals(event.pointerId, 1,
-					event.type + ".pointerId is 1 for mouse");
 				assert_true(event.isPrimary,
 					event.type + ".isPrimary is true for mouse");
 			}, event.type + " properties for pointerType=mouse");
-		// Check properties for pointers other than mouse
-		} else {
-			// TA: 1.12
-			test(function() {
-				assert_true(event.pointerId !== 1,
-					event.type + ".pointerId is not 1 for " + event.pointerType);
-			}, event.type + " properties for pointerType=" + event.pointerType);
 		}
 	}
 

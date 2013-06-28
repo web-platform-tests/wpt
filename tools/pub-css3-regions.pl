@@ -17,8 +17,11 @@ rmtree('dist/css3-regions');
 # Adobe
 push @dirs, 'contributors/adobe/submitted/regions';
 push @dirs, 'contributors/adobe/submitted/regions/counters';
+push @dirs, 'contributors/adobe/submitted/regions/interactivity/mouse';
 push @dirs, 'contributors/adobe/submitted/regions/interactivity/selection';
 push @dirs, 'contributors/adobe/submitted/regions/writing-modes';
+push @dirs, 'contributors/adobe/submitted/regions/stacking-context';
+
 
 ###############################################################################
 # Apple - No CSS2.1 tests

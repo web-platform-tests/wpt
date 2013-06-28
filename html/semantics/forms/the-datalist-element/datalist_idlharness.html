@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>HTML Test: datalist_idlharness</title>
+    <link rel="author" title="Intel" href="http://www.intel.com/">
+    <link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/forms.html#the-datalist-element">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/resources/webidl2/lib/webidl2.js"></script>
+    <script src="/resources/idlharness.js"></script>
+  </head>
+  <body>
+    <p>This test verifies the HTMLDataListElement interface included in the HTML5.0 specification</p>
+
+    <pre id='untested_idl' style='display:none'>
+      interface HTMLElement {
+      };
+      interface HTMLCollection {
+      };
+    </pre>
+
+    <pre id='idl' style='display:none'>
+      interface HTMLDataListElement : HTMLElement {
+       readonly attribute HTMLCollection options;
+      };
+    </pre>
+
+    <div>
+      <form style='display:none'>
+        <datalist id="testdatalist">
+          <option>TEST1</option>
+          <option>TEST2</option>
+        </datalist>
+      </form>
+    </div>
+
+    <div id="log"></div>
+
+    <script>
+        (function() {
+            var idl_array = new IdlArray();
+
+            idl_array.add_untested_idls(document.getElementById("untested_idl").textContent);
+            idl_array.add_idls(document.getElementById("idl").textContent);
+
+            var testElement = document.getElementById("testdatalist");
+
+            idl_array.add_objects({HTMLDataListElement: [testElement]});
+
+            idl_array.test();
+        })();
+    </script>
+  </body>
+</html>

@@ -1,22 +1,16 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>CSSOM Test: UNIQUE TEST DESCRIPTION</title>
+        <title>CSSOM Test: CSSStyleDeclaration.cssText Test</title>
         <link rel="author" title="_kkoichi" href="coarse.ground@gmail.com">
-        <!-- You must have at least one spec link, but may have as many as are covered in the test. -->
-        <!-- Be sure to make the main testing area first in the order -->
         <link rel="help" href="http://dev.w3.org/csswg/cssom/#dom-cssstyledeclaration-csstext">
-        <meta name="assert" content="STATEMENT OF THE ASSERTION THAT THIS TEST IS MAKING">
+        <meta name="assert" content="CSS declarations is serialized as expected">
         <meta name="flags" content="dom">
         <script src="/resources/testharness.js"></script>
         <script src="/resources/testharnessreport.js"></script>
-        <style id="teststyles">
-
-        </style>
     </head>
     <body>
     <div id="log"></div>
-    <div id="box"></div>
     <script>
         function newElm() {
             return document.body.appendChild(document.createElement('div'));
@@ -60,6 +54,7 @@
         test(function(){
             var e = newElm();
             var style = e.style;
+            
             style.color = 'red';
             style.fontSize = '10pt';
             style.fontWeight = 'bold';
@@ -72,7 +67,10 @@
             var e = newElm();
             var style = e.style;
 
-            style.cssText = 'font-weight: bold; color: red; font-size: 10pt;';
+            style.fontWeight = 'bold';
+            style.color = 'red';
+            style.fontSize = '10pt';
+
             assert_equals(style.cssText, 'font-weight: bold; color: red; font-size: 10pt;');
 
         }, 'another cssText order (non-alphabetical order)');

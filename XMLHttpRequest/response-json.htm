@@ -15,7 +15,7 @@
     <script>
       function setupXHR () {
         var client = new XMLHttpRequest()
-        client.open('GET', "resources/content.php", false)
+        client.open('POST', "resources/content.php", false)
         client.responseType = 'json'
         return client
       }

@@ -4,7 +4,8 @@
     <title>XMLHttpRequest: send() with document.domain set</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
-    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method" data-tested-assertations="following::code[contains(text(),'*/*')]/.. following::code[contains(text(),'Accept')]/.. following::code[contains(text(),'Accept')]/../following::ul[1]/li[1]" />
+    <!-- The spec doesn't seem to explicitly cover this case (as of June 2013) -->
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-open()-method" data-tested-assertations="following::ol[1]/li[2]/ol[1]/li[3]" />
   </head>
   <body>
     <div id="log"></div>

@@ -32,24 +32,3 @@ xhr3.onreadystatechange = function(){
 }
 xhr3.open('GET', 'requri.php?full', true)
 xhr3.send()
-
-// On the other hand, when the origin is the origin of this script,
-// we should not be allowed to load the URL of the owner page..
-// this code requests a URL that gets passed from the owner page,
-// i.e. one of the owner's origin, and is expected to throw
-self.onmessage = function(e){
-	if(e && e.url){
-		var xhr4 = new XMLHttpRequest()
-		xhr4.open('GET', e.url, true)
-		xhr4.onreadystatechange = function(){
-			if(xhr4.readyState == 4){
-				self.postMessage({test: 'Request URL test 2', result:'Reached unreachable code'})
-			}
-		}
-		try{
-			xhr4.send()
-		}catch(e){
-			self.postMessage({test: 'Request URL test 2', result:'PASSED'})
-		}
-	}
-}

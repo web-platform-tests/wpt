@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>CSS Reftest Reference</title>
+        <link rel="author" title="Mihai Balan" href="mailto:mibalan@adobe.com">
+        <style>
+        .transform {
+            transform: rotate(-45deg);
+        }
+        .reverse-transform {
+            transform: rotate(45deg);
+        }
+
+        .flow {
+            width: 100px;
+            height: 200px;
+            background-color: green;
+        }
+        .region {
+            width: 100px;
+            height: 200px;
+        }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if you see a green rectangle and no red.</p>
+        
+        <div class="region reverse-transform">
+            <div class="flow transform"></div>
+        </div>
+    </body>
+</html>

@@ -18,7 +18,7 @@
             
             xhr.open("POST", "http://nonexistent-origin.w3c-test.org", false);
             
-            assert_throws("NETWORK_ERR", function()
+            assert_throws("NetworkError", function()
             {
                 xhr.send("Test Message");
             });

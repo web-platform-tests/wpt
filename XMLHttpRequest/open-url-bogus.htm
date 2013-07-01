@@ -12,7 +12,7 @@
       function url(url) {
         test(function() {
           var client = new XMLHttpRequest()
-          assert_throws("SYNTAX_ERR", function() { client.open("GET", url) })
+          assert_throws("SyntaxError", function() { client.open("GET", url) })
         }, document.title + " (" + url + ")")
       }
       url("http:")

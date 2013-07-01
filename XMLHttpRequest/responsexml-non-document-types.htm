@@ -17,8 +17,8 @@
           client.responseType = type
           client.open("GET", "resources/well-formed.xml", false)
           client.send(null)
-          if(type !== 'document')assert_throws("INVALID_STATE_ERR", function() {var x = client.responseXML}, 'responseXML throw for '+type)
-          if(type !== 'text')assert_throws("INVALID_STATE_ERR", function() {var x = client.responseText}, 'responseText throws for '+type)
+          if(type !== 'document')assert_throws("InvalidStateError", function() {var x = client.responseXML}, 'responseXML throw for '+type)
+          if(type !== 'text')assert_throws("InvalidStateError", function() {var x = client.responseText}, 'responseText throws for '+type)
         }, document.title+' ('+type+')')
       }
       request("arraybuffer")

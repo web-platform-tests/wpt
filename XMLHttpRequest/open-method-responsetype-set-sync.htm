@@ -14,7 +14,7 @@
         test(function() {
           var client = new XMLHttpRequest()
           client.responseType = type
-          assert_throws("INVALID_ACCESS_ERR", function() { client.open('GET', "...", false) })
+          assert_throws("InvalidAccessError", function() { client.open('GET', "...", false) })
         }, document.title + " (" + type + ")")
       }
       request("arraybuffer")

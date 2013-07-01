@@ -14,7 +14,7 @@
         test(function() {
           var client = new XMLHttpRequest()
           client.open("GET", "...")
-          assert_throws("SYNTAX_ERR", function() { client.setRequestHeader(name, 'x-value') })
+          assert_throws("SyntaxError", function() { client.setRequestHeader(name, 'x-value') })
         })
       }
       try_name("")

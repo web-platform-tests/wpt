@@ -16,7 +16,7 @@
         var client = new XMLHttpRequest(),
           urlstart = location.host + location.pathname.replace(/\/[^\/]*$/, '/')
         client.open("GET", location.protocol+'//www1.'+urlstart + "resources/auth2/corsenabled.php", false)
-        client.withCredentials = true;
+        client.withCredentials = true
         client.setRequestHeader("x-user", 'user')
         client.setRequestHeader("x-pass", 'pass')
         client.setRequestHeader('Authorization', 'Basic dXNlcjpwYXNz')

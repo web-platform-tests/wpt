@@ -15,12 +15,21 @@
       test.step(function() {
         var client = new XMLHttpRequest(),
           urlstart = location.host + location.pathname.replace(/\/[^\/]*$/, '/')
-        client.open("GET", location.protocol+'//'+urlstart + "resources/auth4/auth.php", false, 'open-user', 'open-pass') // initial request - this will get a 401 response and cache HTTP auth
+        // Initial request: no information is known to the UA about whether resources/auth4/auth.php requires authentication,
+        // hence it first sends a normal request, gets a 401 response that will not be passed on to the JS, and sends a new 
+        // request with an Authorization header before returning
+        // (Note: this test will only work as expected if run once per browsing session)
+        client.open("GET", location.protocol+'//'+urlstart + "resources/auth4/auth.php", false, 'open-user', 'open-pass') 
+        // initial request - this will get a 401 response and re-try with HTTP auth
         client.send(null)
         assert_equals(client.responseText, 'open-user\nopen-pass')
         assert_equals(client.status, 200)
-
-        client.open("GET", location.protocol+'//'+urlstart + "resources/auth4/auth.php", true) // another request, this time user,pass is omitted and an Authorization header set explicitly
+        assert_equals(client.getResponseHeader('x-challenge'), 'DID-NOT')
+        // Another request, this time user,pass is omitted and an Authorization header set explicitly
+        // Here the URL is known to require authentication (from the request above), and the UA has cached open-user:open-pass credentials
+        // However, these session credentials should now be overridden by the setRequestHeader() call so the UA should immediately
+        // send basic Authorization header with credentials user:pass. (This part is perhaps not well specified anywhere)
+        client.open("GET", location.protocol+'//'+urlstart + "resources/auth4/auth.php", true) 
         client.setRequestHeader("x-user", 'user')
         client.setRequestHeader("x-pass", 'pass')
         client.setRequestHeader('Authorization', 'Basic dXNlcjpwYXNz')
@@ -36,5 +45,6 @@
         client.send(null) 
       })
     </script>
+    <p>Note: this test will only work as expected once per browsing session. Restart browser to re-test.</p>
   </body>
 </html>

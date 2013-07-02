@@ -18,8 +18,9 @@
         client.setRequestHeader("x-pass", 'pass')
         client.send(null)
         assert_equals(client.responseText, 'user' + "\n" + 'pass')
-        assert_equals(client.getResponseHeader('x-challenge'), 'DID-NOT')
+        assert_equals(client.getResponseHeader('x-challenge'), 'DID')
       }, document.title)
     </script>
+    <p>Note: this test will only work as expected once per browsing session. Restart browser to re-test.</p>
   </body>
 </html>

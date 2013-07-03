@@ -29,12 +29,12 @@
         // Here the URL is known to require authentication (from the request above), and the UA has cached open-user:open-pass credentials
         // However, these session credentials should now be overridden by the setRequestHeader() call so the UA should immediately
         // send basic Authorization header with credentials user:pass. (This part is perhaps not well specified anywhere)
-        client.open("GET", location.protocol+'//'+urlstart + "resources/auth4/auth.php", true) 
+        client.open("GET", location.protocol+'//'+urlstart + "resources/auth4/auth.php", true)
         client.setRequestHeader("x-user", 'user')
         client.setRequestHeader("x-pass", 'pass')
         client.setRequestHeader('Authorization', 'Basic dXNlcjpwYXNz')
         client.onreadystatechange = function () {
-          if (client.readyState < 4) {return};
+          if (client.readyState < 4) {return}
           test.step( function () {
             assert_equals(client.responseText, 'user\npass')
             assert_equals(client.status, 200)

@@ -12,9 +12,9 @@
   <body>
     <div id="log"></div>
     <script>
-    var counter = 0;
+    var counter = 0
       function statusRequest(method, code, text, content, type) {
-        counter++;
+        counter++
         test(function() {
           var client = new XMLHttpRequest()
           client.open(method, "resources/status.php?code=" + code + "&text=" + encodeURIComponent(text) + "&content=" + encodeURIComponent(content) + "&type=" + encodeURIComponent(type), false)

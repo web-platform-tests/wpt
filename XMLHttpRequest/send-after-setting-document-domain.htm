@@ -13,7 +13,7 @@
       // first make sure we actually run off a domain with at least three parts, in order to be able to shorten it..
       if (location.hostname.split(/\./).length < 3) {
         location.href = location.protocol+'//www2.'+location.hostname+location.pathname
-      };
+      }
 
       test(function() {
         document.domain = document.domain // this is not a noop, it does actually change the security context

@@ -12,13 +12,13 @@
     <div id="log"></div>
     <script type="text/javascript">
         var test = async_test()
-        var worker = new Worker("resources/workerxhr-simple.js");
+        var worker = new Worker("resources/workerxhr-simple.js")
     	worker.onmessage = function (e) {
             test.step(function(){
                 assert_equals(e.data, 'PASSED')
                 test.done()
             })
-        };
+        }
         worker.postMessage('start')
     </script>
 </body>

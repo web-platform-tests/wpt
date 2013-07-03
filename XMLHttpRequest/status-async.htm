@@ -12,9 +12,9 @@
   <body>
     <div id="log"></div>
     <script>
-      var counter=0;
+      var counter=0
       function statusRequest(method, code, text, content, type) {
-        counter++;
+        counter++
         var test = async_test(document.title +' '+ counter+" (" + method + " " + code + ")")
         test.step(function() {
           var client = new XMLHttpRequest()

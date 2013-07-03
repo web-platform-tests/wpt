@@ -21,7 +21,7 @@
         client.setRequestHeader("x-pass", 'pass')
         client.setRequestHeader('Authorization', 'Basic dXNlcjpwYXNz')
         client.onreadystatechange = function () {
-          if (client.readyState < 4) {return};
+          if (client.readyState < 4) {return}
           test.step( function () {
             assert_equals(client.responseText, 'user\npass')
             assert_equals(client.status, 200)

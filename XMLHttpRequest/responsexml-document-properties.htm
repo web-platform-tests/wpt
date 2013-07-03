@@ -30,15 +30,15 @@
         all:undefined,
         links: undefined,
         cookie:''
-      };
+      }
 
       for (var name in expected) {
         runTest(name, expected[name])
-      };
+      }
 
       function runTest(name, value){
         test(function(){
-          assert_equals(client.responseXML[name], value);
+          assert_equals(client.responseXML[name], value)
         }, name)
       }
 

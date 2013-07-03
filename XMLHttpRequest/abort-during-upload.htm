@@ -11,7 +11,7 @@
     <div id="log"></div>
     <script>
       var test = async_test(document.title, {timeout:1100})
-      var result = [];
+      var result = []
       var expected = ['progress on XHR Upload', 'abort on XHR Upload', 'loadend on XHR Upload', 'progress on XHR', 'abort on XHR', 'loadend on XHR']
       function logEvt (e) {
         var str = e.type+' on '
@@ -35,7 +35,7 @@
         client.upload.addEventListener('progress', logEvt)
         client.upload.addEventListener('abort', logEvt)
         client.send((new Array(10000)).join('a'))
-        client.abort();
+        client.abort()
       })
     </script>
   </body>

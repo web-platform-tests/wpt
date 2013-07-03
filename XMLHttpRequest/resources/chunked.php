@@ -1,4 +1,10 @@
 <?php
+	// This code to turn gzip off is at attempt to get the test to run better on w3c-test.org
+    if(ini_get('zlib.output_compression')){ 
+        ini_set('zlib.output_compression', 'Off'); 
+    }
+    @apache_setenv('no-gzip', 1);
+    // Done (hopefully) disabling gzip
 	$chunks = Array(
 		"First chunk\r\n",
 		"Second chunk\r\n",

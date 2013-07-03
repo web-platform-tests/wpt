@@ -1,0 +1,155 @@
+<!doctype html>
+<html class="a">
+ <head>
+  <title>GainNode IDL Test</title>
+  <script src=/resources/testharness.js></script>
+  <script src=/resources/testharnessreport.js></script>
+  <script src=/resources/idlharness.js></script>
+  <script src=/resources/webidl2/lib/webidl2.js></script>
+  <script src="/webaudio/js/lodash.js"></script>
+  <script src="/webaudio/js/vendor-prefixes.js"></script>
+  <script src="/webaudio/js/helpers.js"></script>
+
+  <style type="text/css">
+    #event_target_idl,
+    #audio_context_idl,
+    #audio_node_idl,
+    #audio_param_idl
+    { visibility:hidden; height: 0px;}
+  </style>
+ </head>
+ <body class="a">
+
+   <pre id="event_target_idl">
+interface EventTarget {
+  void addEventListener(DOMString type, EventListener? callback, optional boolean capture = false);
+  void removeEventListener(DOMString type, EventListener? callback, optional boolean capture = false);
+  boolean dispatchEvent(Event event);
+};
+
+/*
+callback interface EventListener {
+  void handleEvent(Event event);
+};
+*/
+// Callback interfaces are not supported yet, but that's ok
+interface EventListener {};
+   </pre>
+
+   <pre id="audio_context_idl">
+callback DecodeSuccessCallback = void (AudioBuffer decodedData);
+callback DecodeErrorCallback = void ();
+
+[Constructor]
+interface AudioContext {
+
+    readonly attribute AudioDestinationNode destination;
+    readonly attribute float sampleRate;
+    readonly attribute double currentTime;
+    readonly attribute AudioListener listener;
+    readonly attribute unsigned long activeSourceCount;
+
+    AudioBuffer createBuffer(unsigned long numberOfChannels, unsigned long length, float sampleRate);
+
+    AudioBuffer createBuffer(ArrayBuffer buffer, boolean mixToMono);
+
+    void decodeAudioData(ArrayBuffer audioData,
+                         DecodeSuccessCallback successCallback,
+                         optional DecodeErrorCallback errorCallback);
+
+
+    // AudioNode creation
+    AudioBufferSourceNode createBufferSource();
+
+    MediaElementAudioSourceNode createMediaElementSource(HTMLMediaElement mediaElement);
+
+    MediaStreamAudioSourceNode createMediaStreamSource(MediaStream mediaStream);
+    MediaStreamAudioDestinationNode createMediaStreamDestination();
+
+    ScriptProcessorNode createScriptProcessor(unsigned long bufferSize,
+                                              optional unsigned long numberOfInputChannels = 2,
+                                              optional unsigned long numberOfOutputChannels = 2);
+
+    AnalyserNode createAnalyser();
+    GainNode createGain();
+    DelayNode createDelay(optional double maxDelayTime = 1.0);
+    BiquadFilterNode createBiquadFilter();
+    WaveShaperNode createWaveShaper();
+    PannerNode createPanner();
+    ConvolverNode createConvolver();
+
+    ChannelSplitterNode createChannelSplitter(optional unsigned long numberOfOutputs = 6);
+    ChannelMergerNode createChannelMerger(optional unsigned long numberOfInputs = 6);
+
+    DynamicsCompressorNode createDynamicsCompressor();
+
+    OscillatorNode createOscillator();
+    WaveTable createWaveTable(Float32Array real, Float32Array imag);
+
+};
+   </pre>
+
+   <pre id="audio_node_idl">
+[NoInterfaceObject]
+interface AudioNode : EventTarget {
+
+    void connect(AudioNode destination, optional unsigned long output = 0, optional unsigned long input = 0);
+    void connect(AudioParam destination, optional unsigned long output = 0);
+    void disconnect(optional unsigned long output = 0);
+
+    readonly attribute AudioContext context;
+    readonly attribute unsigned long numberOfInputs;
+    readonly attribute unsigned long numberOfOutputs;
+
+};
+   </pre>
+
+   <pre id="audio_param_idl">
+interface AudioParam {
+
+    attribute float value;
+    readonly attribute float computedValue;
+    readonly attribute float minValue;
+    readonly attribute float maxValue;
+    readonly attribute float defaultValue;
+
+    void setValueAtTime(float value, double startTime);
+    void linearRampToValueAtTime(float value, double endTime);
+    void exponentialRampToValueAtTime(float value, double endTime);
+
+    void setTargetAtTime(float target, double startTime, double timeConstant);
+
+    void setValueCurveAtTime(Float32Array values, double startTime, double duration);
+
+    void cancelScheduledValues(double startTime);
+
+};
+   </pre>
+
+<pre id="gain_node_idl">
+interface GainNode : AudioNode {
+
+    readonly attribute AudioParam gain;
+
+};
+</pre>
+
+  <div id="log"></div>
+
+  <script>
+(function() {
+  var idl_array = new IdlArray();
+  idl_array.add_untested_idls(document.getElementById("event_target_idl").textContent);
+  idl_array.add_untested_idls(document.getElementById("audio_context_idl").textContent);
+  idl_array.add_untested_idls(document.getElementById("audio_node_idl").textContent);
+  idl_array.add_untested_idls(document.getElementById("audio_param_idl").textContent);
+  idl_array.add_idls(document.getElementById("gain_node_idl").textContent);
+
+  gain_node = (new AudioContext).createGain();
+
+  idl_array.add_objects({GainNode: ["gain_node"]});
+  idl_array.test();
+})();
+  </script>
+ </body>
+</html>

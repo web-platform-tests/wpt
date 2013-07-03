@@ -14,7 +14,7 @@
         var test = async_test() // This "test" does not actually do any assertations. It's just there to have multiple, separate, asyncronous sub-tests.
         var expectations = {
             'Referer header': 'referer: '+(location.href.replace(/[^/]*$/, ''))+"resources/workerxhr-origin-referrer.js\n",
-            'Origin header': 'origin: '+location.protocol+'//'+location.hostname+'/',
+            'Origin header': 'origin: '+location.protocol+'//'+location.hostname+'/\n',
             'Request URL test' : (location.href.replace(/[^/]*$/, ''))+'resources/requri.php?full'
         }
         // now start the worker

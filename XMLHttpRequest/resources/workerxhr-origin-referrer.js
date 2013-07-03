@@ -17,7 +17,7 @@ xhr2.onreadystatechange = function(){
 		self.postMessage(obj)
 	}
 }
-xhr2.open('GET', 'inspect-headers.php?filter_name=origin', true)
+xhr2.open('GET', location.protocol + '//www2.'+location.hostname+(location.pathname.replace(/[^/]*$/, ''))+'inspect-headers.php?filter_name=origin&cors', true)
 xhr2.send()
 
 // If "origin" / base URL is the origin of this JS file, we can load files 

@@ -16,10 +16,10 @@
         var client = new XMLHttpRequest(),
           urlstart = location.host + location.pathname.replace(/\/[^\/]*$/, '/')
         // Initial request: no information is known to the UA about whether resources/auth4/auth.php requires authentication,
-        // hence it first sends a normal request, gets a 401 response that will not be passed on to the JS, and sends a new 
+        // hence it first sends a normal request, gets a 401 response that will not be passed on to the JS, and sends a new
         // request with an Authorization header before returning
         // (Note: this test will only work as expected if run once per browsing session)
-        client.open("GET", location.protocol+'//'+urlstart + "resources/auth4/auth.php", false, 'open-user', 'open-pass') 
+        client.open("GET", location.protocol+'//'+urlstart + "resources/auth4/auth.php", false, 'open-user', 'open-pass')
         // initial request - this will get a 401 response and re-try with HTTP auth
         client.send(null)
         assert_equals(client.responseText, 'open-user\nopen-pass')

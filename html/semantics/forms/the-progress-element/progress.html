@@ -9,23 +9,42 @@
 
 <progress id=indeterminate></progress>
 <progress id=quarter value=1 max=4></progress>
-
+<progress id=invalidmax value=1 max=a></progress>
+<progress id=negativemax value=1 max=-1></progress>
+<progress id=invalidvalue value=a></progress>
+<progress id=negativevalue value=-1></progress>
 <script>
 
 test(function() {
 	assert_equals(indeterminate.position, -1);
-}, "indeterminate progress bar should have position -1");
+}, "Indeterminate progress bar should have position -1");
 
 test(function() {
-	assert_equals(quarter.position, 0.25);
-}, "determinate progress bar should have fractional position");
+	assert_equals(quarter.position, quarter.value / quarter.max);
+}, "Determinate progress bar should have fractional position");
 
 test(function() {
 	assert_equals(indeterminate.value, 0);
-}, "indeterminate progress bar should have value 0");
+}, "Indeterminate progress bar should have value 0");
 
 test(function() {
 	assert_equals(indeterminate.max, 1);
-}, "max should be 1 by default");
+}, "Max should be 1 by default");
+
+test(function() {
+	assert_equals(invalidmax.max, 1);
+}, "Max should be 1 if max value is invalid");
+
+test(function() {
+	assert_equals(negativemax.max, 1);
+}, "Max should be 1 if the parsed max value is less than or equal to zero");
+
+test(function() {
+	assert_equals(invalidvalue.value, 0);
+}, "Value should be 0 if value is invalid");
+
+test(function() {
+	assert_equals(negativevalue.value, 0);
+}, "Value should be 0 if the parsed value is less than or equal to zero");
 
 </script>

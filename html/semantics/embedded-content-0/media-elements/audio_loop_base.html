@@ -8,7 +8,7 @@
     <meta name="assert" content="Check if audio.loop is set to true that expecting the seeking event is fired more than once" />
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
-    <script src="../../../../../common/media.js"></script>
+    <script src="../../../../common/media.js"></script>
   </head>
   <body>
     <div id="log"></div>
@@ -35,7 +35,7 @@
 
         media.addEventListener("seeking", startTest, false);
         media.loop = true;
-        media.src = getAudioURI("http://media.w3.org/2010/05/sound/sound_5") + "?" + new Date() + Math.random();
+        media.src = getAudioURI("/media/sound_5") + "?" + new Date() + Math.random();
         media.play();
     </script>
   </body>

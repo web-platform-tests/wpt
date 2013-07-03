@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<!--
+Distributed under both the W3C Test Suite License [1] and the W3C
+3-clause BSD License [2]. To contribute to a W3C Test Suite, see the
+policies and contribution forms [3].
+
+[1] http://www.w3.org/Consortium/Legal/2008/04-testsuite-license
+[2] http://www.w3.org/Consortium/Legal/2008/03-bsd-license
+[3] http://www.w3.org/2004/10/27-testcases
+-->
+<html>
+<head>
+<title>Shadow DOM Test: A_10_01_01_01_03</title>
+<link rel="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<link rel="help" href="http://www.w3.org/TR/2013/WD-shadow-dom-20130514/#shadow-root-attributes">
+<meta name="assert" content="ShadowRoot Object: attribute bool applyAuthorStyles attribute. Test setter and getter">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../../../testcommon.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+</head>
+<body>
+<div id="log"></div>
+<script>
+test(unit(function (ctx) {
+
+    var d = newRenderedHTMLDocument(ctx);
+
+    var host = d.createElement('div');
+    d.body.appendChild(host);
+
+	var s = createSR(host);
+	s.applyAuthorStyles = true;
+
+	assert_equals(s.applyAuthorStyles, true, 'attribute must return the current value of the ' +
+			'apply-author-styles flag');
+
+}), 'A_10_01_01_01_03_T01');
+
+
+test(unit(function (ctx) {
+
+    var d = newRenderedHTMLDocument(ctx);
+
+    var host = d.createElement('div');
+    d.body.appendChild(host);
+
+	var s = createSR(host);
+	s.applyAuthorStyles = false;
+
+	assert_equals(s.applyAuthorStyles, false, 'attribute must return the current value of the ' +
+			'apply-author-styles flag');
+
+}), 'A_10_01_01_01_03_T02');
+
+test(unit(function (ctx) {
+
+    var d = newRenderedHTMLDocument(ctx);
+
+    var host = d.createElement('div');
+    d.body.appendChild(host);
+
+	var s = createSR(host);
+
+	assert_equals(s.applyAuthorStyles, false, 'attribute must the default value (false) of the ' +
+			'apply-author-styles flag');
+
+	s.applyAuthorStyles = true;
+
+	assert_equals(s.applyAuthorStyles, true, 'attribute must return the current value of the ' +
+			'apply-author-styles flag');
+
+	s.applyAuthorStyles = false;
+
+	assert_equals(s.applyAuthorStyles, false, 'attribute must change the value of the ' +
+			'apply-author-styles flag');
+
+}), 'A_10_01_01_01_03_T03');
+</script>
+</body>
+</html>

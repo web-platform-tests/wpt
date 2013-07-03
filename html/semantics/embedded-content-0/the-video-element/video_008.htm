@@ -6,7 +6,7 @@
   <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
   <link rel="help" href="http://www.w3.org/TR/html5/video.html#the-source-element" />
   <meta name="assert" content="'media' attribute is 'all' by default." />
-  <script type="text/javascript" src="../../../../../common/media.js"></script>
+  <script type="text/javascript" src="../../../../common/media.js"></script>
   <script type="text/javascript">
 
 function do_play(event)
@@ -54,11 +54,11 @@ by default the media resource is suitable for all media.
     <script type="text/javascript">
     
         document.write(
-            "<source src='" + getVideoURI("http://media.w3.org/2010/05/video/movie_300") + "'" + 
+            "<source src='" + getVideoURI("/media/movie_300") + "'" + 
             " type='application/octet-stream' />"
             );
         document.write(
-            "<source src='" + getVideoURI("http://media.w3.org/2010/05/video/movie_5") + "'" + 
+            "<source src='" + getVideoURI("/media/movie_5") + "'" + 
             " type='application/octet-stream' media='all' />"
             );
     

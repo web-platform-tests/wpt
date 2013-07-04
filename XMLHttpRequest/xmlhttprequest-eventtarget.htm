@@ -4,13 +4,15 @@
     <title>XMLHttpRequest: implements EventTarget</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#xmlhttprequesteventtarget" data-tested-assertations=".." />
+    <!-- Obviously, most of the stuff actually being tested here is covered in the DOM events spec, not in the XHR spec -->
   </head>
   <body>
     <div id="log"></div>
     <script>
       var test = async_test(),
           x = null,
-          expected = ["a1", "b1", "c1", "a1", "b1", "c1", "a2", "b2", "c2", "a3", "c3", "a4", "c4"],
+          expected = ["a1", "b1", "c1", "a2", "b2", "c2", "a3", "c3", "a4", "c4"],
           result = []
       function callback(e) {
         result.push("b" + x.readyState)

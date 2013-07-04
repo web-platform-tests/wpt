@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+  <head>
+    <title>XMLHttpRequest: responseType json</title>
+    <meta charset="utf-8">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+        <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-responsetype-attribute" data-tested-assertations="following::OL[1]/LI[4]" />
+        <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-responsetype-attribute" data-tested-assertations="following::dt[2]/dt[4] following::dt[2]/dt[4]/following::dd[1]" />
+        <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#json-response-entity-body" data-tested-assertations="following::ol[1]/li[1] following::ol[1]/li[2] following::ol[1]/li[3]" />
+
+  </head>
+  <body>
+    <div id="log"></div>
+    <script>
+      function setupXHR () {
+        var client = new XMLHttpRequest()
+        client.open('POST', "resources/content.php", false)
+        client.responseType = 'json'
+        return client
+      }
+
+      // no data
+      test(function(){
+        var client = setupXHR()
+        assert_equals(client.responseType, 'json')
+        client.send("") 
+        assert_equals(client.response, null)
+      }, 'json response with no data: response property is null')
+      // malformed
+      test(function(){
+        var client = setupXHR()
+        client.send('{"test":"foo"') 
+        assert_equals(client.response, null)
+      }, 'json response with malformed data: response property is null')
+      // real object
+      var obj = {alpha:'a-z', integer:15003, negated:-20, b1:true, b2:false, myAr:['a', 'b', 'c', 1, 2, 3]}
+      test(function(){
+        var client = setupXHR()
+        client.send(JSON.stringify(obj))
+        assert_equals(typeof client.response, 'object')
+        for(var prop in obj){
+          if (obj[prop] instanceof Array) {
+            assert_array_equals(obj[prop], client.response[prop])
+          }else{
+            assert_equals(obj[prop], client.response[prop])
+          }
+        }
+      }, 'JSON object roundtrip')
+      test(function(){
+        var client = setupXHR()
+        client.send('{"日本語":"にほんご"}')
+        assert_equals(client.response['日本語'], 'にほんご')
+      }, 'JSON roundtrip with Japanese text')
+    </script>
+  </body>
+</html>

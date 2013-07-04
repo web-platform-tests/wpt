@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#infrastructure-for-the-send()-method" data-tested-assertations="following::dd[4]/p" />
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#infrastructure-for-the-send()-method" data-tested-assertations="following::dt[4] following::dd[4]/p" />
     <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#network-error" data-tested-assertations=".." />
     <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#request-error" data-tested-assertations="following::ol[1]/li[4] following::ol[1]/li[5]" />
     <script src="/resources/testharness.js"></script>
@@ -18,7 +18,7 @@
             
             xhr.open("POST", "http://nonexistent-origin.w3c-test.org", false);
             
-            assert_throws("NETWORK_ERR", function()
+            assert_throws("NetworkError", function()
             {
                 xhr.send("Test Message");
             });

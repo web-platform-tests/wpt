@@ -59,13 +59,13 @@ policies and contribution forms [3].
  * would run test_function with a timeout of 1s.
  *
  * Additionally, test-specific metadata can be passed in the properties. These
- * are used when the individual test has different metadata from that stored 
+ * are used when the individual test has different metadata from that stored
  * in the <head>.
  * The recognized metadata properties are:
  *
  *    help - The url of the part of the specification being tested
  *
- *    assert - A human readable description of what the test is attempting 
+ *    assert - A human readable description of what the test is attempting
  *             to prove
  *
  *    author - Name and contact information for the author of the test in the
@@ -201,7 +201,7 @@ policies and contribution forms [3].
  * Note that the first item in each parameter list corresponds to the name of
  * the test.
  *
- * The properties argument is identical to that for test(). This may be a 
+ * The properties argument is identical to that for test(). This may be a
  * single object (used for all generated tests) or an array.
  *
  * == Callback API ==
@@ -340,7 +340,7 @@ policies and contribution forms [3].
  *   is true for some expected_array_N in expected_array. This only works for assert_func
  *   with signature assert_func(actual, expected, args_1, ..., args_N). Note that tests
  *   with multiple allowed pass conditions are bad practice unless the spec specifically
- *   allows multiple behaviours. Test authors should not use this method simply to hide 
+ *   allows multiple behaviours. Test authors should not use this method simply to hide
  *   UA bugs.
  *
  * assert_exists(object, property_name, description)
@@ -459,8 +459,8 @@ policies and contribution forms [3].
                     test(function()
                          {
                              func.apply(this, x.slice(1));
-                         }, 
-                         name, 
+                         },
+                         name,
                          Array.isArray(properties) ? properties[i] : properties);
                 });
     }
@@ -1042,12 +1042,12 @@ policies and contribution forms [3].
     }
     expose(assert_unreached, "assert_unreached");
 
-    function assert_any(assert_func, actual, expected_array) 
+    function assert_any(assert_func, actual, expected_array)
     {
         var args = [].slice.call(arguments, 3)
         var errors = []
         var passed = false;
-        forEach(expected_array, 
+        forEach(expected_array,
                 function(expected)
                 {
                     try {
@@ -1780,7 +1780,7 @@ policies and contribution forms [3].
             }
             return false;
         }
-        
+
         function get_assertion(test)
         {
             if (test.properties.hasOwnProperty("assert")) {
@@ -1791,7 +1791,7 @@ policies and contribution forms [3].
             }
             return '';
         }
-        
+
         log.appendChild(document.createElementNS(xhtml_ns, "section"));
         var assertions = has_assertions();
         var html = "<h2>Details</h2><table id='results' " + (assertions ? "class='assertions'" : "" ) + ">"

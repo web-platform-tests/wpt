@@ -163,6 +163,10 @@ policies and contribution forms [3].
  *                    use when integrating with some existing test framework
  *                    that has its own timeout mechanism).
  *
+ * allow_uncaught_exception - don't treat an uncaught exception as an error;
+ *                            needed when e.g. testing the window.onerror
+ *                            handler.
+ *
  * == Determining when all tests are complete ==
  *
  * By default the test harness will assume there are no more results to come
@@ -1272,6 +1276,8 @@ policies and contribution forms [3].
         this.wait_for_finish = false;
         this.processing_callbacks = false;
 
+        this.allow_uncaught_exception = false;
+
         this.timeout_length = settings.timeout;
         this.timeout_id = null;
 
@@ -1307,24 +1313,28 @@ policies and contribution forms [3].
             this.phase = this.phases.SETUP;
         }
 
+        this.properties = properties;
+
         for (var p in properties)
         {
             if (properties.hasOwnProperty(p))
             {
-                this.properties[p] = properties[p];
+                var value = properties[p]
+                if (p == "timeout")
+                {
+                    this.timeout_length = value;
+                }
+                else if (p == "allow_uncaught_exception") {
+                    this.allow_uncaught_exception = value;
+                }
+                else if (p == "explicit_done" && value)
+                {
+                    this.wait_for_finish = true;
+                }
+                else if (p == "explicit_timeout" && value) {
+                    this.timeout_length = null;
+                }
             }
-        }
-
-        if (properties.timeout)
-        {
-            this.timeout_length = properties.timeout;
-        }
-        if (properties.explicit_done)
-        {
-            this.wait_for_finish = true;
-        }
-        if (properties.explicit_timeout) {
-            this.timeout_length = null;
         }
 
         if (func)
@@ -1538,6 +1548,15 @@ policies and contribution forms [3].
 
     var tests = new Tests();
 
+    window.onerror = function(msg) {
+        if (!tests.allow_uncaught_exception)
+        {
+            tests.status.status = tests.status.ERROR;
+            tests.status.message = msg;
+            tests.complete();
+        }
+    }
+
     function timeout() {
         if (tests.timeout_length === null)
         {
@@ -1691,6 +1710,11 @@ policies and contribution forms [3].
             }
         }
 
+        var status_text_harness = {};
+        status_text_harness[harness_status.OK] = "OK";
+        status_text_harness[harness_status.ERROR] = "Error";
+        status_text_harness[harness_status.TIMEOUT] = "Timeout";
+
         var status_text = {};
         status_text[Test.prototype.PASS] = "Pass";
         status_text[Test.prototype.FAIL] = "Fail";
@@ -1715,6 +1739,34 @@ policies and contribution forms [3].
 
         var summary_template = ["section", {"id":"summary"},
                                 ["h2", {}, "Summary"],
+                                function(vars)
+                                {
+                                    if (harness_status.status === harness_status.OK)
+                                    {
+                                        return null;
+                                    }
+                                    else
+                                    {
+                                        var status = status_text_harness[harness_status.status];
+                                        var rv = [["p", {"class":status_class(status)}]];
+
+                                        if (harness_status.status === harness_status.ERROR)
+                                        {
+                                            rv[0].push("Harness encountered an error:");
+                                            rv.push(["pre", {}, harness_status.message]);
+                                        }
+                                        else if (harness_status.status === harness_status.TIMEOUT)
+                                        {
+                                            rv[0].push("Harness timed out.");
+                                        }
+                                        else
+                                        {
+                                            rv[0].push("Harness got an unexpected status.");
+                                        }
+
+                                        return rv;
+                                    }
+                                },
                                 ["p", {}, "Found ${num_tests} tests"],
                                 function(vars) {
                                     var rv = [["div", {}]];

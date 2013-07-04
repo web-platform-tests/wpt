@@ -4,6 +4,7 @@
     <title>XMLHttpRequest: open() - "insecure" methods</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-open()-method" data-tested-assertations="following::ol/li[5] following::ol/li[6]" />
   </head>
   <body>
     <div id="log"></div>
@@ -11,7 +12,7 @@
       function method(method) {
         test(function() {
           var client = new XMLHttpRequest()
-          assert_throws("SECURITY_ERR", function() { client.open(method, "...") })
+          assert_throws("SecurityError", function() { client.open(method, "...") })
         }, document.title + " (" + method + ")")
       }
       method("track")

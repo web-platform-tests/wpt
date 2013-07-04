@@ -14,7 +14,7 @@
       var client = new XMLHttpRequest();
       client.onreadystatechange = test.step_func( function() {
         if (client.readyState !== 4) return;
-        assert_throws("INVALID_STATE_ERR", function() { client.overrideMimeType('application/xml;charset=Shift-JIS'); });
+        assert_throws("InvalidStateError", function() { client.overrideMimeType('application/xml;charset=Shift-JIS'); });
         assert_equals(client.responseXML, null);
         test.done();
       });

@@ -4,16 +4,18 @@
     <title>XMLHttpRequest: status/statusText - various responses</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
-    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-status-attribute" data-tested-assertations="/following::ol/li[3]" />  
-    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-statustext-attribute" data-tested-assertations="/following::ol/li[3]" />  
-    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-getresponseheader()-method" data-tested-assertations="/following::ol/li[5]" />  
-    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-responsetext-attribute" data-tested-assertations="/following::ol/li[4]" />  
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-status-attribute" data-tested-assertations="following::ol/li[1] following::ol/li[3]" />
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-statustext-attribute" data-tested-assertations="following::ol/li[1] following::ol/li[3]" />
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-getresponseheader()-method" data-tested-assertations="following::ol/li[5]" />
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-responsetext-attribute" data-tested-assertations="following::ol/li[4]" />
   </head>
   <body>
     <div id="log"></div>
     <script>
+      var counter=0
       function statusRequest(method, code, text, content, type) {
-        var test = async_test(document.title + " (" + method + " " + code + ")")
+        counter++
+        var test = async_test(document.title +' '+ counter+" (" + method + " " + code + ")")
         test.step(function() {
           var client = new XMLHttpRequest()
           client.onreadystatechange = function(e) {
@@ -31,10 +33,13 @@
                   }
                   test.done()
                 }
+              }else{
+                assert_equals(client.status, 0)
+                assert_equals(client.statusText, "")
               }
             }, this)
           }
-          client.open(method, "resources/status.php?code=" + code + "&text=" + text + "&content=" + content + "&type=" + type)
+          client.open(method, "resources/status.php?code=" + encodeURIComponent(code) + "&text=" + text + "&content=" + encodeURIComponent(content) + "&type=" + encodeURIComponent(type))
           client.send(null)
         })
       }

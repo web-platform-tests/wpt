@@ -15,7 +15,7 @@
         var client = new XMLHttpRequest();
         client.onreadystatechange = function() {
           if (client.readyState === 3){
-            assert_throws("INVALID_STATE_ERR", function() {  client.overrideMimeType('application/xml;charset=Shift-JIS'); });
+            assert_throws("InvalidStateError", function() {  client.overrideMimeType('application/xml;charset=Shift-JIS'); });
           }else if(client.readyState===4){
             assert_equals(client.responseXML, null);
             test.done();

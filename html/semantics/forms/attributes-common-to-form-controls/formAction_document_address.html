@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>HTML Test: formAction_document_address</title>
+    <link rel="author" title="Intel" href="http://www.intel.com/">
+    <link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/forms.html#dom-fs-formaction">
+    <link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/dom.html#the-document's-address">
+    <link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/forms.html#the-button-element">
+    <link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/forms.html#the-input-element">
+    <meta name="assert" content="On getting the formAction IDL attribute, when the content attribute is missing or its value is the empty string, the document's address must be returned instead.">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <div>
+      <form style="display:none">
+        <button id="testButton" type="submit" formaction>Submit</button>
+        <input id="testInput" type="submit" name="submit" formaction>
+      </form>
+    </div>
+    <script>
+        var button = document.getElementById("testButton");
+        var input = document.getElementById("testInput");
+        var url = document.location.href;
+
+        test(function() {
+            assert_equals(button.formAction, url);
+        }, "Check if button.formAction is the document's address when formAction content attribute is missing");
+
+        button.formAction = "";
+        test(function() {
+            assert_equals(button.formAction, url);
+        }, "Check if button.formAction is the document's address when formAction content attribute is empty string");
+
+        test(function() {
+            assert_equals(input.formAction, url);
+        }, "Check if input.formAction is the document's address when formAction content attribute is missing");
+
+        input.formAction = "";
+        test(function() {
+            assert_equals(input.formAction, url);
+        }, "Check if input.formAction is the document's address when formAction content attribute is empty string");
+    </script>
+  </body>
+</html>

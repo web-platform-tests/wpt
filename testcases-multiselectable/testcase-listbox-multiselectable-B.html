@@ -37,12 +37,14 @@
     
     <script type="text/javascript">  
       
-     function setFocus() {
-       var node = document.getElementById('ID_TARGET');  
-       node.setAttribute("aria-selected","false");
+     function clearSelection() {
+       myVar=setTimeout(function(){var node = document.getElementById('ID_TARGET');node.setAttribute("aria-selected","false");} ,3000)       
+//var node = document.getElementById('ID_TARGET');  
+
+  //     node.setAttribute("aria-selected","false");
      }
      
-     window.addEventListener('load', setFocus);
+     window.addEventListener('load', clearSelection);
     </script>
   
   

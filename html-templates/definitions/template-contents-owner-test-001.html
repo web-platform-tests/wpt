@@ -14,7 +14,7 @@
 <div id="log"></div>
 <script type="text/javascript">
 
-//document content owner is the current document (has no browsing content)
+
 test(function() {
     var doc = newHTMLDocument();
     var template = doc.createElement('template');
@@ -23,10 +23,11 @@ test(function() {
 
     assert_equals(template.content.ownerDocument, doc, 'Wrong template content owner');
 
-}, 'The template contents owner document (no browsing context)');
+}, 'Test the template contents owner document when enclosing document has '
+    + 'no browsing content. Template element is created by createElement()');
 
-//document content owner is the current document (has no browsing content)
-//using innerHTML to create template
+
+
 test(function() {
     var doc = newHTMLDocument();
 
@@ -36,7 +37,8 @@ test(function() {
 
     assert_equals(template.content.ownerDocument, doc, 'Wrong template content owner');
 
-}, 'The template contents owner document (no browsing context) using innerHTML');
+}, 'Test the template contents owner document when enclosing document has '
+    + 'no browsing content. Template element is created by innerHTML');
 
 </script>
 </body>

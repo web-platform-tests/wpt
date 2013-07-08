@@ -14,14 +14,14 @@
 <div id="log"></div>
 <script type="text/javascript">
 
-//empty template
+
 test(function() {
     var doc = newHTMLDocument();
     var template = doc.createElement('template');
 
     doc.body.appendChild(template);
 
-    assert_equals(template.content.nodeName, '#document-fragment',
+    assert_equals(template.content.nodeType, Node.DOCUMENT_FRAGMENT_NODE,
             'Template content should be a DocumentFragment');
 
     assert_class_string(template.content, 'DocumentFragment',
@@ -29,7 +29,7 @@ test(function() {
 
 }, 'The template contents must be a DocumentFragment (empty template)');
 
-// non empty template
+
 test(function() {
     var doc = newHTMLDocument();
     var template = doc.createElement('template');
@@ -38,7 +38,7 @@ test(function() {
 
     doc.body.appendChild(template);
 
-    assert_equals(template.content.nodeName, '#document-fragment',
+    assert_equals(template.content.nodeType, Node.DOCUMENT_FRAGMENT_NODE,
             'Template content should be a DocumentFragment');
 
     assert_class_string(template.content, 'DocumentFragment',
@@ -46,8 +46,8 @@ test(function() {
 
 }, 'The template contents must be a DocumentFragment (non empty template)');
 
-// non empty template containing div which is a Node element, not the document
-// fragment
+
+
 test(function() {
     var doc = newHTMLDocument();
     var template = doc.createElement('template');
@@ -56,13 +56,13 @@ test(function() {
 
     doc.body.appendChild(template);
 
-    assert_equals(template.content.nodeName, '#document-fragment',
+    assert_equals(template.content.nodeType, Node.DOCUMENT_FRAGMENT_NODE,
             'Template content should be a documentFragment');
 
 }, 'The template contents must be a DocumentFragment (non empty template '
-        + 'containing div which is a Node element, not the document fragment)');
+        + 'containing div which is an Element instance)');
 
-// not empty template containing text node
+
 test(function() {
     var doc = newHTMLDocument();
     var template = doc.createElement('template');
@@ -71,7 +71,7 @@ test(function() {
 
     doc.body.appendChild(template);
 
-    assert_equals(template.content.nodeName, '#document-fragment',
+    assert_equals(template.content.nodeType, Node.DOCUMENT_FRAGMENT_NODE,
             'Template content should be a documentFragment');
 
     assert_class_string(template.content, 'DocumentFragment',
@@ -80,7 +80,7 @@ test(function() {
 }, 'The template contents must be a DocumentFragment (not empty template '
         + 'containing text node)');
 
-// nested template containing a text node
+
 test(function() {
     var doc = newHTMLDocument();
     var template = doc.createElement('template');
@@ -89,29 +89,29 @@ test(function() {
 
     doc.body.appendChild(template);
 
-    assert_equals(template.content.nodeName, '#document-fragment',
+    assert_equals(template.content.nodeType, Node.DOCUMENT_FRAGMENT_NODE,
             'Template content should be a documentFragment');
     assert_class_string(template.content, 'DocumentFragment',
             'Template content class should be a DocumentFragment');
 
     var nestedTemplate = template.content.querySelector("#t2");
-    assert_equals(nestedTemplate.content.nodeName, '#document-fragment',
+    assert_equals(nestedTemplate.content.nodeType, Node.DOCUMENT_FRAGMENT_NODE,
             'Nested template content should be a documentFragment');
 
     assert_class_string(nestedTemplate.content, 'DocumentFragment',
-            'Template content class should be a DocumentFragment');
+            'Nested template content class should be a DocumentFragment');
 
 
 }, 'The template contents must be a DocumentFragment (nested template '
         + 'containing a text node)');
 
-// the empty template tag inside HTML file loaded in iframe
+
 testInIFrame('../resources/template-contents-empty.html', function(context) {
     var doc = context.iframes[0].contentDocument;
 
     var template = doc.querySelector('template');
 
-    assert_equals(template.content.nodeName, '#document-fragment',
+    assert_equals(template.content.nodeType, Node.DOCUMENT_FRAGMENT_NODE,
             'Template content should be a documentFragment');
     assert_class_string(template.content, 'DocumentFragment',
             'Template content class should be a DocumentFragment');
@@ -120,13 +120,13 @@ testInIFrame('../resources/template-contents-empty.html', function(context) {
 }, 'The template contents must be a DocumentFragment (the empty template tag '
         + 'inside HTML file loaded in iframe)');
 
-// non empty template tag inside HTML file loaded in iframe
+
 testInIFrame('../resources/template-contents.html', function(context) {
     var doc = context.iframes[0].contentDocument;
 
     var template = doc.querySelector('template');
 
-    assert_equals(template.content.nodeName, '#document-fragment',
+    assert_equals(template.content.nodeType, Node.DOCUMENT_FRAGMENT_NODE,
             'Template content should be a documentFragment');
     assert_class_string(template.content, 'DocumentFragment',
             'Template content class should be a DocumentFragment');
@@ -134,13 +134,13 @@ testInIFrame('../resources/template-contents.html', function(context) {
 }, 'The template contents must be a DocumentFragment (non empty template '
         + 'tag inside HTML file loaded in iframe)');
 
-// the template tag with some text inside HTML file loaded in iframe
+
 testInIFrame('../resources/template-contents-text.html', function(context) {
     var doc = context.iframes[0].contentDocument;
 
     var template = doc.querySelector('template');
 
-    assert_equals(template.content.nodeName, '#document-fragment',
+    assert_equals(template.content.nodeType, Node.DOCUMENT_FRAGMENT_NODE,
             'Template content should be a documentFragment');
     assert_class_string(template.content, 'DocumentFragment',
             'Template content class should be a DocumentFragment');
@@ -148,23 +148,23 @@ testInIFrame('../resources/template-contents-text.html', function(context) {
 }, 'The template contents must be a DocumentFragment (the template tag '
         + 'with some text inside HTML file loaded in iframe)');
 
-// the template tag with nested template tag inside HTML file loaded in iframe
+
 testInIFrame('../resources/template-contents-nested.html', function(context) {
     var doc = context.iframes[0].contentDocument;
 
     var template = doc.querySelector('template');
 
-    assert_equals(template.content.nodeName, '#document-fragment',
+    assert_equals(template.content.nodeType, Node.DOCUMENT_FRAGMENT_NODE,
             'Template content should be a documentFragment');
     assert_class_string(template.content, 'DocumentFragment',
             'Template content class should be a DocumentFragment');
 
     var nestedTemplate = template.content.querySelector("template");
 
-    assert_equals(nestedTemplate.content.nodeName, '#document-fragment',
+    assert_equals(nestedTemplate.content.nodeType, Node.DOCUMENT_FRAGMENT_NODE,
             'Nested template content should be a documentFragment');
     assert_class_string(nestedTemplate.content, 'DocumentFragment',
-            'Template content class should be a DocumentFragment');
+            'Nested template content class should be a DocumentFragment');
 
 }, 'The template contents must be a DocumentFragment (the template tag '
         + 'with nested template tag inside HTML file loaded in iframe)');

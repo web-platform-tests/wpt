@@ -66,7 +66,7 @@ function newXHTMLDocument() {
 }
 
 function newIFrame(ctx, src) {
-    if (typeof (ctx) == 'undefined' || typeof (ctx.iframes) != 'object') {
+    if (typeof (ctx) === 'undefined' || typeof (ctx.iframes) !== 'object') {
         assert_unreached('Illegal context object in newIFrame');
     }
 

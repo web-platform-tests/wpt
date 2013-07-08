@@ -3,7 +3,7 @@
 <head>
 <title>HTML Templates: The template contents owner document (there's browsing context)</title>
 <meta name="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
-<meta name="assert" content="If template's enclosing document has browsing context, then templates content owner be a new Document node">
+<meta name="assert" content="If template's enclosing document has browsing context, then templates content owner must be a new Document node without browsing context">
 <link rel="help" href="http://www.w3.org/TR/2013/WD-html-templates-20130214/#definitions">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -14,7 +14,7 @@
 <div id="log"></div>
 <script type="text/javascript">
 
-//test document in iframe which has browsing context
+
 testInIFrame(null, function(context) {
     var doc = context.iframes[0].contentDocument;
     var template = doc.createElement('template');
@@ -29,12 +29,13 @@ testInIFrame(null, function(context) {
 
     // doc has browsing context. There should be another document as a template
     // content owner
-    assert_true(template.content.ownerDocument != doc, 'Wrong template owner document');
+    assert_not_equals(template.content.ownerDocument, doc, 'Wrong template owner document');
 
-}, 'The template contents owner document (there\'s browsing context)');
+}, 'The template contents owner document must be different from template owner document,' +
+     ' which has browsing context. Template element is created by createElement()');
 
-//test document in iframe which has browsing context
-// using innerHTML to create template element
+
+
 testInIFrame(null, function(context) {
     var doc = context.iframes[0].contentDocument;
 
@@ -44,12 +45,13 @@ testInIFrame(null, function(context) {
 
     // doc has browsing context. There should be another document as a template
     // content owner
-    assert_true(template.content.ownerDocument != doc, 'Wrong template owner document');
+    assert_not_equals(template.content.ownerDocument, doc, 'Wrong template owner document');
 
-}, 'The template contents owner document (there\'s browsing context), using innerHTML');
+}, 'The template contents owner document must be different from template owner document,' +
+     ' which has browsing context. Template element is created via innerHTML');
 
-//test document in iframe which has browsing context
-// loading document from file
+
+
 testInIFrame('../resources/template-contents.html', function(context) {
     var doc = context.iframes[0].contentDocument;
 
@@ -57,9 +59,10 @@ testInIFrame('../resources/template-contents.html', function(context) {
 
     // doc has browsing context. There should be another document as a template
     // content owner
-    assert_true(template.content.ownerDocument != doc, 'Wrong template owner document');
+    assert_not_equals(template.content.ownerDocument, doc, 'Wrong template owner document');
 
-}, 'The template contents owner document (there\'s browsing context), loading document from file');
+}, 'The template contents owner document must be different from template owner document,' +
+     ' which has browsing context. Template element is created by HTML parser');
 
 </script>
 </body>

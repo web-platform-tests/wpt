@@ -1053,7 +1053,7 @@ IdlInterface.prototype.is_callback = function()
 IdlInterface.prototype.has_constants = function()
 //@{
 {
-    return this.members.any(function(member) {
+    return this.members.some(function(member) {
         return member.type === "const";
     });
 };

@@ -270,6 +270,10 @@ public class Driver {
                 PATH + "../xhtml5full-xhtml.rnc"));
         checkDirectory(new File(PATH + "assertions/"), new File(
                 PATH + "../xhtml5full-xhtml.rnc"));
+        checkDirectory(new File(PATH + "html5full-rdfa/"), new File(
+                PATH + "../html5full-rdfa.rnc"));
+        checkDirectory(new File(PATH + "html5full-rdfalite/"), new File(
+                PATH + "../html5full-rdfalite.rnc"));
 
         checkDirectory(new File(PATH + "tables/"), new File(PATH + "../xhtml5full-xhtml.rnc"));
         checkDirectory(new File(PATH + "media-queries/"), new File(PATH + "../html5full.rnc"));

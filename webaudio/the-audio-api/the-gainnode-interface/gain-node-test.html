@@ -59,12 +59,12 @@ function playNote(time, gain) {
   source.connect(gainNode);
   gainNode.connect(context.destination);
 
-  source.noteOn(time);
+  source.start(time);
 }
 
 setup( function() {
   // Create offline audio context.
-  context = new webkitOfflineAudioContext(2, sampleRate * lengthInSeconds, sampleRate);
+  context = new OfflineAudioContext(2, sampleRate * lengthInSeconds, sampleRate);
 
   // Create a buffer for a short "note".
   sinWaveBuffer = createSinWaveBuffer(bufferDurationSeconds, 880.0);
@@ -77,29 +77,33 @@ setup( function() {
     playNote(time, gain);
   }
 
-  context.oncomplete = compareWithExpectedBuffer;
+  context.oncomplete = loadExpectedBuffer;
   context.startRendering();
 });
 
-function compareWithExpectedBuffer(event) {
+function loadExpectedBuffer(event) {
   actualBuffer = event.renderedBuffer;
 
   bufferLoader = new BufferLoader(
     context,
     ['/webaudio/the-audio-api/the-gainnode-interface/gain-expected.wav'],
-    finishAudioTest
+    bufferLoadCompleted
   );
   bufferLoader.load();
-}
+};
 
-function finishAudioTest(expected) {
+function bufferLoadCompleted(buffer) {
+  compareExpectedWithActualBuffer(buffer);
+};
+
+function compareExpectedWithActualBuffer(expected) {
   expectedBuffer = expected[0];
 
   assert_true(compareBuffers(expectedBuffer.getChannelData(0), actualBuffer.getChannelData(0)), "compareBuffers (channel 0)");
   assert_true(compareBuffers(expectedBuffer.getChannelData(1), actualBuffer.getChannelData(1)), "compareBuffers (channel 1)");
 
   gainNodeTest.done();
-}
+};
   </script>
  </body>
 </html>

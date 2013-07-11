@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>CSS Regions: perspective property set on region applies to content flowed into it</title>
+		<link rel="author" title="Mihai Balan" href="mailto:mibalan@adobe.com">
+		<link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
+		<link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
+		<link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-functions">
+		<!-- TODO: Link to fragmentation spec section about perspective, fragments and fragmentainers - once this gets in the spec. -->
+		<meta name="assert" content="Test checks that content that has a 3D transform applied to it respects the perspective set on the fragmentainer.">
+		<meta name="flags" content="ahem">
+		<link rel="match" href="reference/regions-transforms-019-ref.html">
+		<style>
+		.transformed {
+			transform: rotateY(45deg);
+		}
+		.flow {
+			flow-into: f;
+			color: green;
+			font-family: Ahem;
+			font-size: 20px;
+			line-height: 1em;
+		}
+		.perspective {
+			perspective: 200px;
+			perspective-origin: 100% 50%;
+		}
+		.region {
+			flow-from: f;
+			width: 100px;
+			height: 100px;
+			margin: 20px;
+		}
+		.region p {
+			background-color: red;
+			height: 50%;
+		}
+		</style>
+	</head>
+	<body>
+		<p>Test passes if you see a green trapeze and no red.</p>
+		<div class="flow transformed">
+			xxxxx<br>
+			xxxxx<br>
+			xxxxx<br>
+			xxxxx<br>
+			xxxxx<br>
+		</div>
+		<div class="region perspective">
+			<p>&nbsp;</p>
+		</div>
+	</body>
+</html>

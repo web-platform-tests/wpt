@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>CSS Regions: Content that has a 3D transform flowed in a region does not clip</title>
+		<link rel="author" title="Mihai Balan" href="mailto:mibalan@adobe.com">
+		<link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
+		<link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
+		<link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-functions">
+		<meta name="assert" content="Test checks that content that is transformed does not clip when flowed in a region.">
+		<meta name="flags" content="ahem">
+		<link rel="match" href="reference/regions-transforms-018-ref.html">
+		<style>
+		.transformed {
+			transform: rotateZ(45deg);
+		}
+		.flow {
+			flow-into: f;
+			color: green;
+			font-family: Ahem;
+			font-size: 20px;
+			line-height: 1em;
+		}
+		.region {
+			flow-from: f;
+			background-color: lightblue;
+			width: 100px;
+			height: 100px;
+			margin: 20px;
+		}
+		.region p {
+			background-color: red;
+			height: 50%;
+		}
+		</style>
+	</head>
+	<body>
+		<p>Test passes if you see no red and a green square rotated 45 degrees on top of a blue square.</p>
+		<div class="flow transformed">
+			xxxxx<br>
+			xxxxx<br>
+			xxxxx<br>
+			xxxxx<br>
+			xxxxx<br>
+		</div>
+		<div class="region">
+			<p>&nbsp;</p>
+		</div>
+	</body>
+</html>

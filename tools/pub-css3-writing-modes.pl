@@ -85,6 +85,11 @@ push @dirs, 'contributors/ktakemura/submitted';
 # Opera
 
 ###############################################################################
+# TestTWF
+
+###############################################################################
+push @dirs, 'contributors/ttwf_tokyo/mittel/submitted';
+
 
 $dirlist = join ' ', @dirs;
 print `python tools/build-css3-writing-modes.py $dirlist 2>&1`;

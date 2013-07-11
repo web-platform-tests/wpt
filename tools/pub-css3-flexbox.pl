@@ -33,7 +33,8 @@ rmtree('dist/css3-flexbox');
 
 ###############################################################################
 # Mozilla
-    
+push @dirs, 'contributors/mozilla/submitted/mozilla-central-reftests/flexbox';
+
 ###############################################################################
 # Eira Monstad
 
@@ -82,6 +83,10 @@ push @dirs, 'contributors/ttwf_bj/ttwfbj_gmail/xiaoxia/submitted/';
 push @dirs, 'contributors/ttwf_bj/winter/submitted/';
 push @dirs, 'contributors/ttwf_bj/yugang/submitted/css3-flexbox/';
 push @dirs, 'contributors/ttwf_bj/zhouli/submitted/';
+
+push @dirs, 'contributors/ttwf_tokyo/ogaoga/submitted';
+push @dirs, 'contributors/ttwf_tokyo/tmtysk/submitted/flex-lines';
+push @dirs, 'contributors/ttwf_tokyo/tmtysk/submitted/order';
 
 
 

@@ -33,9 +33,11 @@ for dir in dirs:
   if dir in skipDirs or rawDirs.has_key(dir): continue
   testroot = join(root, dir)
   suite.addTestsByExt(testroot, '.xht')
+  suite.addTestsByExt(testroot, '.html')
   if exists(join(testroot, reftestPath)):
     suite.addReftests(testroot, reftestPath)
 suite.addTestsByExt(root, '.xht')
+suite.addTestsByExt(root, '.html')
 if exists(join(root, reftestPath)):
   suite.addReftests(root, reftestPath)
 for src, dst in rawDirs.items():
@@ -49,7 +51,7 @@ for path in unreviewed:
     suite.addReftests(basepath(path), basename(path))
   else:
     def grep(file):
-      if not file.endswith('.xht'):
+      if not (file.endswith('.xht') or file.endswith('.html')):
         return False
       for line in open(join(path, file)):
         if line.find(suite.specroot) != -1:

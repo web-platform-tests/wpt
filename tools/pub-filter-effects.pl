@@ -69,6 +69,17 @@ push @dirs, 'contributors/adobe/submitted/filter-effects';
 # Opera
 
 ###############################################################################
+# TestTWF 
+
+###############################################################################
+push @dirs, 'contributors/ttwf_tokyo/ultimatezen/submitted';
+push @dirs, 'contributors/ttwf_tokyo/yomotsu/submitted';
+push @dirs, 'contributors/ttwf_tokyo/sparkgene/submitted';
+push @dirs, 'contributors/ttwf_tokyo/nakajmg/submitted';
+push @dirs, 'contributors/ttwf_tokyo/gunta/submitted';
+push @dirs, 'contributors/ttwf_tokyo/takenspc/submitted';
+push @dirs, 'contributors/ttwf_tokyo/Tayatt/submitted';
+
 
 $dirlist = join ' ', @dirs;
 print `python tools/build-filter-effects.py $dirlist 2>&1`;

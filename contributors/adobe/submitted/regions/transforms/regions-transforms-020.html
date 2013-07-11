@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>CSS Regions: perspective property set on the content nodes' parent does not apply when content is flowed in a region</title>
+		<link rel="author" title="Mihai Balan" href="mailto:mibalan@adobe.com">
+		<link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
+		<link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
+		<link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-functions">
+		<!-- TODO: Link to fragmentation spec section about perspective, fragments and fragmentainers - once this gets in the spec. -->
+		<meta name="assert" content="Test checks that content that has a 3D transform does not respect the perspective set on its parent when flowed in a region.">
+		<meta name="flags" content="ahem">
+		<link rel="match" href="reference/regions-transforms-020-ref.html">
+		<style>
+		#parent {
+			width: 100px;
+			height: 100px;
+		}
+		
+		.perspective {
+			perspective: 200px;
+			perspective-origin: 100% 50%;
+		}
+		.transformed {
+			transform: rotateY(45deg);
+		}
+		.flow {
+			flow-into: f;
+			color: green;
+			font-family: Ahem;
+			font-size: 20px;
+			line-height: 1em;
+		}
+
+		.region {
+			flow-from: f;
+			width: 100px;
+			height: 100px;
+			background-color: lightblue;
+		}
+		.region p {
+			background-color: red;
+			height: 50%;
+		}
+		</style>
+	</head>
+	<body>
+		<p>Test passes if you see a green rectangle with blue vertical borders and no red.</p>
+		
+		<div class="region">
+			<p>&nbsp;</p>
+		</div>
+
+		<div id="parent" class="perspective">
+			<div class="flow transformed">
+				xxxxx<br>
+				xxxxx<br>
+				xxxxx<br>
+				xxxxx<br>
+				xxxxx<br>
+			</div>
+		</div>
+	</body>
+</html>

@@ -10,26 +10,17 @@
         <style type="text/css">
             div
             {
-                height: 1in;
-            }
-            #div1
-            {
-                border: 3px solid orange;
-                width: 1.16in;
-            }
-            div div
-            {
-                background-image: url("support/black15x15.png");
+                background-image: url("support/black20x20.png");
                 background-position: 1in;
                 background-repeat: no-repeat;
-                width: 2in;
+                border: orange solid 3px;
+                height: 96px;
+                width: 116px; /* 96px plus 20px */
             }
         </style>
     </head>
     <body>
         <p>Test passes if the black square below is vertically centered and on the right inner edge of the orange box.</p>
-        <div id="div1">
-            <div></div>
-        </div>
+        <div></div>
     </body>
 </html>

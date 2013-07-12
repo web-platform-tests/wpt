@@ -95,7 +95,7 @@ setup( function() {
 
   context.oncomplete = loadExpectedBuffer;
   context.startRendering();
-});
+}, {timeout: 10000});
 
 function compareExpectedWithActualBuffer(expected) {
   var expectedBuffer = expected[0];

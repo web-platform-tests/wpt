@@ -46,6 +46,22 @@ class NaturalNonVisibleElementsTest(base_test.WebDriverBaseTest):
     def test_parent_node_visible_when_all_children_are_absolutely_positioned_and_overflow_is_hidden(self):
         pass
 
+    def test_parent_of_absolutely_positioned_elements_visible_where_ancestor_overflow_is_hidden(self):
+        """When a parent's ancestor hides any overflow, absolutely positioned child elements are
+        still visible.  The parent container is also considered visible by webdriver for this
+        reason because it is interactable."""
+
+        self.driver.get(self.webserver.where_is("element_state/absolute-children-ancestor-hidden-overflow.html"))
+
+        ancestor = self.driver.find_element_by_tag_name("body")
+        assert not ancestor.is_displayed()
+
+        children = self.driver.find_elements_by_class("child")
+        assert all(child.is_displayed() for child in children)
+
+        parent = self.driver.find_element_by_id("parent")
+        assert parent.is_displayed()
+
     def test_element_hidden_by_overflow_x_is_not_visible(self):
         # TODO(andreastt): This test should probably be split in three.  Also it's making two
         # assertions.

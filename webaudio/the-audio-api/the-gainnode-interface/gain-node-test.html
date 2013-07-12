@@ -5,7 +5,8 @@ Tests that GainNode is properly scaling the gain.
 We'll render 11 notes, starting at a gain of 1.0, decreasing in gain by 0.1.
 The 11th note will be of gain 0.0, so it should be silent (at the end in the rendered output).
 
-Ported from WebKit test suite (https://github.com/WebKit/webkit/blob/master/LayoutTests/webaudio/gain.html)
+Based on a test from the WebKit test suite
+(https://github.com/WebKit/webkit/blob/master/LayoutTests/webaudio/gain.html)
 -->
 
 <html class="a">
@@ -21,7 +22,7 @@ Ported from WebKit test suite (https://github.com/WebKit/webkit/blob/master/Layo
  <body class="a">
   <div id="log"></div>
   <script>
-var gainNodeTest = async_test("GainNode test");
+var gainNodeTest = async_test("GainNode");
 
 var sampleRate = 44100.0;
 var bufferDurationSeconds = 0.125;
@@ -62,6 +63,21 @@ function playNote(time, gain) {
   source.start(time);
 }
 
+function loadExpectedBuffer(event) {
+  actualBuffer = event.renderedBuffer;
+
+  bufferLoader = new BufferLoader(
+    context,
+    ['/webaudio/the-audio-api/the-gainnode-interface/gain-expected.wav'],
+    bufferLoadCompleted
+  );
+  bufferLoader.load();
+};
+
+function bufferLoadCompleted(buffer) {
+  compareExpectedWithActualBuffer(buffer);
+};
+
 setup( function() {
   // Create offline audio context.
   context = new OfflineAudioContext(2, sampleRate * lengthInSeconds, sampleRate);
@@ -81,26 +97,22 @@ setup( function() {
   context.startRendering();
 });
 
-function loadExpectedBuffer(event) {
-  actualBuffer = event.renderedBuffer;
-
-  bufferLoader = new BufferLoader(
-    context,
-    ['/webaudio/the-audio-api/the-gainnode-interface/gain-expected.wav'],
-    bufferLoadCompleted
-  );
-  bufferLoader.load();
-};
-
-function bufferLoadCompleted(buffer) {
-  compareExpectedWithActualBuffer(buffer);
-};
-
 function compareExpectedWithActualBuffer(expected) {
-  expectedBuffer = expected[0];
+  var expectedBuffer = expected[0];
 
-  assert_true(compareBuffers(expectedBuffer.getChannelData(0), actualBuffer.getChannelData(0)), "compareBuffers (channel 0)");
-  assert_true(compareBuffers(expectedBuffer.getChannelData(1), actualBuffer.getChannelData(1)), "compareBuffers (channel 1)");
+  gainNodeTest.step(function() {
+    assert_array_approx_equals(expectedBuffer.getChannelData(0),
+                               actualBuffer.getChannelData(0),
+                               1e-4,
+                               "comparing expected and rendered buffers (channel 0)");
+  });
+
+  gainNodeTest.step(function() {
+    assert_array_approx_equals(expectedBuffer.getChannelData(1),
+                               actualBuffer.getChannelData(1),
+                               1e-4,
+                               "comparing expected and rendered buffers (channel 1)");
+  });
 
   gainNodeTest.done();
 };

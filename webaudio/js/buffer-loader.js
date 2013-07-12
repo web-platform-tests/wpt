@@ -18,25 +18,22 @@ BufferLoader.prototype.loadBuffer = function(url, index) {
   var loader = this;
 
   request.onload = function() {
-    var buffer;
-    try {
-      buffer = loader.context.createBuffer(request.response, false);
-    } catch(e) {
-      alert('error decoding file data: ' + url);
-    }
-
-    try {
-      loader.bufferList[index] = buffer;
-      if (++loader.loadCount == loader.urlList.length)
-        loader.onload(loader.bufferList);
-    } catch(e) {
-      alert('BufferLoader: callback problem');
-    }
-  }
+    loader.context.decodeAudioData(request.response, decodeSuccessCallback, decodeErrorCallback);
+  };
 
   request.onerror = function() {
     alert('BufferLoader: XHR error');
-  }
+  };
+
+  var decodeSuccessCallback = function(buffer) {
+    loader.bufferList[index] = buffer;
+    if (++loader.loadCount == loader.urlList.length)
+      loader.onload(loader.bufferList);
+  };
+
+  var decodeErrorCallback = function() {
+    alert('decodeErrorCallback: decode error');
+  };
 
   request.send();
 }

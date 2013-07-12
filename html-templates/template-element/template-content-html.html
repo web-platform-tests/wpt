@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>HTML Templates: HTML element cannot be content of TEMPLATE element</title>
+<meta name="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<meta name="author" title="Aleksei Yu. Semenov" href="mailto:a.semenov@unipro.ru">
+<meta name="assert" content="HTML element cannot be content of TEMPLATE element">
+<link rel="help" href="http://www.w3.org/TR/2013/WD-html-templates-20130214/#template-element">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src='../testcommon.js'></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+</head>
+<body>
+<div id="log"></div>
+<script type="text/javascript">
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var template = doc.createElement('template');
+
+    template.innerHTML = '<html><body></body></html>';
+
+    doc.body.appendChild(template);
+
+    assert_equals(template.content.childNodes.length, 0,
+            'Template cannot contain HTML element');
+
+}, 'HTML element cannot be content of TEMPLATE element. '
+    + 'Test HTML element assigned to template innerHTML');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var template = doc.createElement('template');
+
+    template.innerHTML = '<div id="dv">Some text</div><html><body></body></html>';
+
+    doc.body.appendChild(template);
+
+    assert_equals(template.content.childNodes.length, 1,
+            'Template cannot contain HTML element');
+    assert_true(template.content.querySelector('#dv') != null,
+            'Template should contain valid element');
+
+}, 'HTML element cannot be content of TEMPLATE element. '
+    + 'Test HTML element and some valid element before it, assigned to template innerHTML');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var template = doc.createElement('template');
+
+    template.innerHTML = '<html><body></body></html><div id="dv">Some text</div>';
+
+    doc.body.appendChild(template);
+
+    assert_equals(template.content.childNodes.length, 1,
+            'Template cannot contain HTML element');
+    assert_true(template.content.querySelector('#dv') != null,
+            'Template should contain valid element');
+
+}, 'HTML element cannot be content of TEMPLATE element. '
+    + 'Test HEAD element and some valid element after it, assigned to template innerHTML');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var template = doc.createElement('template');
+
+    template.innerHTML = '<template id="t2"><html><body></body></html></template>';
+
+    doc.body.appendChild(template);
+
+    assert_equals(template.content.childNodes.length, 1,
+            'Template should contain nested template');
+    assert_true(template.content.querySelector('#t2') != null,
+            'Template should contain nested element');
+
+    var nestedTemplate = template.content.querySelector('#t2');
+
+    assert_equals(nestedTemplate.content.childNodes.length, 0,
+            'Template cannot contain HTML element');
+
+}, 'HTML element cannot be content of TEMPLATE element. '
+    + 'Test HTML tag inside template tag assigned to another template\'s innerHTML');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var template = doc.createElement('template');
+
+    template.innerHTML = '<html><div id="dv">Some text</div></html>';
+
+    doc.body.appendChild(template);
+
+    assert_equals(template.content.childNodes.length, 1,
+            'Template cannot contain HTML element');
+    assert_true(template.content.querySelector('#dv') != null,
+            'Template should contain a valid element');
+
+}, 'HTML element cannot be content of TEMPLATE element. '
+    + 'Test some valid element inside HTML element');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var template = doc.createElement('template');
+
+    template.innerHTML = '<html><body><div id="dv">Some text</div><body></html>';
+
+    doc.body.appendChild(template);
+
+    assert_equals(template.content.childNodes.length, 1,
+            'Template cannot contain HTML element');
+    assert_true(template.content.querySelector('#dv') != null,
+            'Template should contain valid element');
+
+}, 'HTML element cannot be content of TEMPLATE element. '
+    + 'Test valid element inside HTML and BODY elements');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var template = doc.createElement('template');
+
+    template.innerHTML = '<html><span id="spn">Span</span><body><div id="dv">Some text</div><body></html>';
+
+    doc.body.appendChild(template);
+
+    assert_equals(template.content.childNodes.length, 2,
+            'Template cannot contain HTML element');
+    assert_true(template.content.querySelector('#dv') != null,
+            'Template should contain valid DIV element');
+
+    assert_true(template.content.querySelector('#spn') != null,
+            'Template should contain valid SPAN element');
+
+}, 'HTML element cannot be content of TEMPLATE element. '
+    + 'Test valid element inside and between HTML and BODY elements');
+
+
+testInIFrame('../resources/template-contents-html.html', function(ctx) {
+    var doc = ctx.iframes[0].contentDocument;
+
+    var template = doc.body.querySelector('template');
+
+    assert_equals(template.content.childNodes.length, 0,
+            'Template cannot contain HTML element');
+
+}, 'HTML element cannot be content of TEMPLATE element. '
+   + 'Test loading a HTML file with HTML tag inside template');
+
+</script>
+</body>
+</html>

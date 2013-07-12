@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>HTML Templates: Content attribute of template element is read-only</title>
+<meta name="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<meta name="author" title="Aleksei Yu. Semenov" href="mailto:a.semenov@unipro.ru">
+<meta name="assert" content="Content attribute of template element is read-only">
+<link rel="help" href="http://www.w3.org/TR/2013/WD-html-templates-20130214/#template-element">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src='../testcommon.js'></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+</head>
+<body>
+<div id="log"></div>
+<script type="text/javascript">
+
+test(function() {
+    var doc = newHTMLDocument();
+    var template = doc.createElement('template');
+    var el1 = doc.createElement('div');
+    var el2 = doc.createElement('span');
+    el1.appendChild(el2);
+
+    var valueBeforeChange = template.content;
+    template.content = el1;
+
+    assert_equals(template.content, valueBeforeChange,
+            'Content attribute of template element should be read-only');
+
+}, 'Content attribute of template element is read-only. ' +
+    'Assigning value to content property of template should be ignored');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    doc.body.innerHTML = '<template id="tmpl1" content="<div id=div1>Div content</div>"></template>';
+
+    var template = doc.querySelector('#tmpl1');
+
+    assert_equals(template.content.childNodes.length, 0,
+            'Content attribute of template element should be read-only');
+
+}, 'Content attribute of template element is read-only. ' +
+    'HTML value of content attribute of template tag should be ignored');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    doc.body.innerHTML = '<template id="tmpl1" content="Some text as a content"></template>';
+
+    var template = doc.querySelector('#tmpl1');
+
+    assert_equals(template.content.childNodes.length, 0,
+            'Content attribute of template element should be read-only');
+
+}, 'Content attribute of template element is read-only. ' +
+    'Text value of content attribute of template tag should be ignored');
+
+
+testInIFrame('../resources/template-contents-attribute.html', function(ctx){
+    var doc = ctx.iframes[0].contentDocument;
+
+    var template = doc.body.querySelector('template');
+
+    assert_equals(template.content.childNodes.length, 0,
+            'Content attribute of template element should be read-only');
+
+}, 'Content attribute of template element is read-only. '
+    + 'Text value of content attribute of template tag should be ignored, '
+    + 'when loading document from file');
+
+</script>
+</body>
+</html>

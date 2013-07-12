@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>HTML Templates: BODY element cannot be content of TEMPLATE element</title>
+<meta name="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<meta name="author" title="Aleksei Yu. Semenov" href="mailto:a.semenov@unipro.ru">
+<meta name="assert" content="BODY element cannot be content of TEMPLATE element">
+<link rel="help" href="http://www.w3.org/TR/2013/WD-html-templates-20130214/#template-element">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src='../testcommon.js'></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+</head>
+<body>
+<div id="log"></div>
+<script type="text/javascript">
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var template = doc.createElement('template');
+
+    template.innerHTML = '<body></body>';
+
+    doc.body.appendChild(template);
+
+    assert_equals(template.content.childNodes.length, 0,
+            'Template cannot contain BODY element');
+
+}, 'BODY element cannot be content of TEMPLATE element. '
+    + 'Test empty BODY element assigned to template innerHTML');
+
+test(function() {
+    var doc = newHTMLDocument();
+    var template = doc.createElement('template');
+
+    template.innerHTML = '<body><div>Some content</div></body>';
+
+    doc.body.appendChild(template);
+
+    assert_equals(template.content.childNodes.length, 1,
+            'Wrong number of template content children');
+    assert_equals(template.content.firstChild.nodeName, 'DIV',
+            'Template should contain children of ignored BODY element');
+
+}, 'BODY element cannot be content of TEMPLATE element.'
+    + 'Test not empty BODY element assigned to template innerHTML');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var template = doc.createElement('template');
+
+    template.innerHTML = '<body><div <div id="dv1">Some content</div></body><div id="dv2">Some valid content</div>';
+
+    doc.body.appendChild(template);
+
+    assert_equals(template.content.childNodes.length, 2,
+            'Wrong number of template content children');
+    assert_true(template.content.querySelector('#dv1') != null,
+            'Template should contain children of the ignored BODY element');
+    assert_true(template.content.querySelector('#dv2') != null,
+            'Template should contain valid element');
+
+}, 'BODY element cannot be content of TEMPLATE element. '
+        + 'Test BODY element and some valid element after BODY tag assigned to template innerHTML');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var template = doc.createElement('template');
+
+    template.innerHTML = '<div id="dv1">Some valid content</div><body><div id="dv2">Some content</div></body>';
+
+    doc.body.appendChild(template);
+
+    assert_equals(template.content.childNodes.length, 2,
+            'Template cannot contain BODY element');
+    assert_true(template.content.querySelector('#dv1') != null,
+            'Template should contain valid element');
+    assert_true(template.content.querySelector('#dv2') != null,
+            'Template should contain children of the ignored BODY element');
+
+}, 'BODY element cannot be content of TEMPLATE element. '
+        + 'Test BODY element and some valid element before BODY tag assigned to template innerHTML');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var template = doc.createElement('template');
+
+    template.innerHTML = '<template id="t2"><body><span>Body!<span></body></template>';
+
+    doc.body.appendChild(template);
+
+    assert_equals(template.content.childNodes.length, 1,
+            'Template should contain nested template');
+    assert_true(template.content.querySelector('#t2') != null,
+            'Template should contain nested element');
+
+    var nestedTemplate = template.content.querySelector('#t2');
+
+    assert_equals(nestedTemplate.content.childNodes.length, 1,
+            'Template cannot contain BODY element');
+    assert_equals(nestedTemplate.content.firstChild.nodeName, 'SPAN',
+            'Template cannot contain BODY element');
+
+}, 'BODY element cannot be content of TEMPLATE element. '
+    + 'Test template with not empty BODY element inside assigned to another '
+    + 'template\'s innerHTML');
+
+
+testInIFrame('../resources/template-contents-body.html', function(ctx){
+    var doc = ctx.iframes[0].contentDocument;
+
+    var template = doc.body.querySelector('template');
+
+    assert_equals(template.content.childNodes.length, 0,
+            'Template cannot contain BODY element');
+}, 'BODY element cannot be content of TEMPLATE element. '
+    + 'Test loading a HTML file with BODY tag inside template');
+
+</script>
+</body>
+</html>

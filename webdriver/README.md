@@ -15,7 +15,9 @@ whether they meet the recognized standard.
 4. `source bin/activate` to activate the local Python installation
 5. `pip install selenium` or `easy_install selenium`
 6. `cd _WEBDRIVER_TEST_ROOT_`
-6. `python test_example.py`
+7. `python runtests.py`
+
+To be run a specific test file you can just run `python test_file.py`
 
 ## Updating configuration
 
@@ -30,4 +32,4 @@ be picked up by WebDriverBaseTest when tests are run.
    files that will be used for testing.  HTML files are not to be
    reused between tests.
 3. Test name should explain the intention of the test e.g. `def
-   test_navigate_and_return_title(self):`.
+   test_navigate_and_return_title(self):`

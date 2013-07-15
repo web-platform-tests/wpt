@@ -6,21 +6,19 @@ import ConfigParser
 from webserver import Httpd
 from selenium import webdriver
 
+
 class WebDriverBaseTest(unittest.TestCase):
-    
-    def __init__(self, methodName):
-        unittest.TestCase.__init__(self, methodName)
-        self.driver = None
-        self.webserver = None
-    
-    def setUp(self):
+
+    @classmethod
+    def setUpClass(cls):
         config = ConfigParser.ConfigParser()
         config.read('webdriver.cfg')
-        self.driver_class = getattr(webdriver, config.get("Default", 'browser')) 
-        self.driver = self.driver_class()
-        self.webserver = Httpd()
-        self.webserver.start()
+        cls.driver_class = getattr(webdriver, config.get("Default", 'browser'))
+        cls.driver = cls.driver_class()
+        cls.webserver = Httpd()
+        cls.webserver.start()
 
-    def tearDown(self):
-        self.driver.quit()
-        self.webserver.stop()
+    @classmethod
+    def tearDownClass(cls):
+        cls.driver.quit()
+        cls.webserver.stop()

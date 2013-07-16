@@ -7,23 +7,22 @@
 <link rel='help' href='http://www.w3.org/TR/html5/dom.html#the-translate-attribute'>
 <script src="http://w3c-test.org/resources/testharness.js"></script>
 <script src="http://w3c-test.org/resources/testharnessreport.js"></script>
-<link rel="stylesheet" href="http://w3c-test.org/resource/testharness.css">
 <meta name="assert" content="If the translate attribute is set to no, javascript will detect the translation mode of elements inside that element with no translate flag as no-translate.">
 <style type='text/css'>
-/* the CSS below is not part of the test */
+
 		.test { border: 0; }
 		.test div { color:white; padding: 5px; background-color: red; height: 90px; width: 90px; }
 
 		</style>
 </head>
 <body>
-<p class="instructions">Test passes if you see a green square.</p>
+
 
 
 <div class="test"><div id="box" translate="no">Fail <span id="spantest">&nbsp;</span></div></div>
 
 
-<script>pass = false; if (document.getElementById('spantest').translate == false) {  pass=true; }
+<script>var pass = false; if (document.getElementById('spantest').translate === false) {  pass=true; }
 if (pass) {  box.style.backgroundColor = '#00FF00';  box.style.color = 'white'; box.innerHTML = 'Pass'; box.style.height = '100px'; box.style.width = '100px'; }
 test(function () {
     assert_true(pass);

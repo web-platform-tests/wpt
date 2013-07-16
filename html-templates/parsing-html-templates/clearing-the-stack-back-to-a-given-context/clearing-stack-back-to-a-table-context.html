@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>HTML Templates: Clearing stack back to a table context</title>
+<meta name="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<meta name="assert" content="Clearing the stack back to a table context must be aborted if the current node is template">
+<link rel="help" href="http://www.w3.org/TR/2013/WD-html-templates-20130214/#clearing-the-stack">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src='../../testcommon.js'></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+</head>
+<body>
+<div id="log"></div>
+<script type="text/javascript">
+
+function doTest(doc, templateInnerHTML, id, tagName) {
+    
+    doc.body.innerHTML = '' +
+        '<table id="tbl">' +
+        '<template id="tmpl1">' +
+        // When parser meets <caption>, <colgroup>, <tbody>, <tfoot>, <thead>, <col>
+        // stack must be cleared back to table context.
+        //But <template> tag should abort this process
+        templateInnerHTML + 
+        '</template>' +
+        '<tr id="tr">' +
+        '<td id="td">' +
+        '</td>' +
+        '</tr>' + 
+        '</table>';
+    
+    var table = doc.querySelector('#tbl');
+    var tr = doc.querySelector('#tr');
+    var td = doc.querySelector('#td');
+    var template = doc.querySelector('#tmpl1');
+    
+    assert_equals(table.rows.length, 1, 'Wrong number of table rows');
+    assert_equals(table.rows[0].cells.length, 1, 'Wrong number of table cells');
+    assert_equals(template.parentNode, table, 'Wrong template parent');
+    assert_true(template.content.querySelector('#' + id) != null,
+                'Element should present in the template content');
+    assert_equals(template.content.querySelector('#' + id).tagName, tagName,
+                'Wrong element in the template content');
+}
+
+
+test(function () {
+    var doc = newHTMLDocument();
+    
+    doTest(doc, '<caption id="cptn">Table caption</caption>', 'cptn', 'CAPTION');
+    
+    assert_true(doc.querySelector('#tbl').caption == null, 'Table should have no caption');
+    
+}, 'Clearing stack back to a table context. Test <caption>');
+
+
+test(function () {
+    var doc = newHTMLDocument();
+    
+    doTest(doc, '<colgroup id="cgp" width="100%"/>', 'cgp', 'COLGROUP');
+        
+}, 'Clearing stack back to a table context. Test <colgroup>');
+
+
+
+test(function () {
+    var doc = newHTMLDocument();
+    
+    doTest(doc, '<tbody id="tbd"></tbody>', 'tbd', 'TBODY');
+    
+    assert_equals(doc.querySelector('#tbl').tBodies.length, 1, 'Table should have no more than one body');
+    
+}, 'Clearing stack back to a table context. Test <tbody>');
+
+
+
+test(function () {
+    var doc = newHTMLDocument();
+    
+    doTest(doc, '<tfoot id="tft"></tfoot>', 'tft', 'TFOOT');
+        
+    assert_true(doc.querySelector('#tbl').tFoot == null, 'Table should have no footer');
+    
+}, 'Clearing stack back to a table context. Test <tfoot>');
+
+
+
+test(function () {
+    var doc = newHTMLDocument();
+    
+    doTest(doc, '<thead id="thd"></thead>', 'thd', 'THEAD');
+    
+    assert_true(doc.querySelector('#tbl').tHead == null, 'Table should have no header');
+    
+}, 'Clearing stack back to a table context. Test <thead>');
+
+
+
+
+test(function () {
+    var doc = newHTMLDocument();
+    
+    doTest(doc, '<col id="cl" width="100%"/>', 'cl', 'COL');
+        
+}, 'Clearing stack back to a table context. Test <col>');
+
+</script>
+</body>
+</html>

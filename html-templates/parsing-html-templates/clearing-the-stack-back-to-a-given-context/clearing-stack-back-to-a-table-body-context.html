@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>HTML Templates: Clearing stack back to a table body context</title>
+<meta name="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<meta name="assert" content="Clearing the stack back to a table body context must be aborted if the current node is template">
+<link rel="help" href="http://www.w3.org/TR/2013/WD-html-templates-20130214/#clearing-the-stack">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src='../../testcommon.js'></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+</head>
+<body>
+<div id="log"></div>
+<script type="text/javascript">
+
+function doTest(doc, tagToTest, templateInnerHTML, id, tagName) {
+    
+    doc.body.innerHTML = '' +
+        '<table id="tbl">' +
+        '<' + tagToTest + '>' +
+        '<template id="tmpl1">' +
+        // When parser meets <tr>, </tbody>, </tfoot>, </thead>, <caption>, <col>,
+        // <colgroup>, <tbody>, <tfoot>, <thead>, </table>
+        // stack must be cleared back to table body context. But <template> tag should
+        // abort this
+        templateInnerHTML + 
+        '</template>' +
+        '<tr id="tr">' +
+        '<td id="td">' +
+        '</td>' +
+        '</tr>' + 
+        '</' + tagToTest + '>' +
+        '</table>';
+    
+    var table = doc.querySelector('#tbl');
+    var tr = doc.querySelector('#tr');
+    var td = doc.querySelector('#td');
+    var template = doc.querySelector('#tmpl1');
+    
+    assert_equals(table.rows.length, 1, 'Wrong number of table rows');
+    assert_equals(table.rows[0].cells.length, 1, 'Wrong number of table cells');
+    if (id != null) {
+        assert_true(template.content.querySelector('#' + id) != null,
+                'Element should present in the template content');
+    }
+    if (tagName != null) {
+        assert_equals(template.content.querySelector('#' + id).tagName, tagName,
+                'Wrong element in the template content');
+    }
+}
+
+
+test(function () {
+    var doc = newHTMLDocument();
+            
+    doTest(doc, 'tbody', '<tr id="tr1"><td>Cell content</td></tr>', 'tr1', 'TR');
+    
+}, 'Clearing stack back to a table body context. Test <tr> in <tbody>');
+
+
+test(function () {
+    var doc = newHTMLDocument();
+            
+    doTest(doc, 'thead', '<tr id="tr1"><td>Cell content</td></tr>', 'tr1', 'TR');
+    
+}, 'Clearing stack back to a table body context. Test <tr> in <thead>');
+
+
+test(function () {
+    var doc = newHTMLDocument();
+            
+    doTest(doc, 'tfoot', '<tr id="tr1"><td>Cell content</td></tr>', 'tr1', 'TR');
+    
+}, 'Clearing stack back to a table body context. Test <tr> in <tfoot>');
+
+
+
+test(function () {
+    var doc = newHTMLDocument();
+            
+    doTest(doc, 'tbody', '</tbody>', null, null);
+    
+}, 'Clearing stack back to a table body context. Test </tbody>');
+
+
+test(function () {
+    var doc = newHTMLDocument();
+            
+    doTest(doc, 'thead', '</thead>', null, null);
+    
+}, 'Clearing stack back to a table body context. Test </thead>');
+
+
+
+test(function () {
+    var doc = newHTMLDocument();
+            
+    doTest(doc, 'tfoot', '</tfoot>', null, null);
+    
+}, 'Clearing stack back to a table body context. Test </tfoot>');
+
+
+test(function () {
+    var doc = newHTMLDocument();
+            
+    doTest(doc, 'tbody', '<caption id="cptn">Table Caption</caption>', 'cptn', 'CAPTION');
+    
+    assert_true(doc.querySelector('#tbl').caption == null, 'Table should have no caption');
+    
+}, 'Clearing stack back to a table body context. Test <caption> in <tbody>');
+
+
+test(function () {
+    var doc = newHTMLDocument();
+            
+    doTest(doc, 'tfoot', '<caption id="cptn">Table Caption</caption>', 'cptn', 'CAPTION');
+    
+    assert_true(doc.querySelector('#tbl').caption == null, 'Table should have no caption');
+    
+}, 'Clearing stack back to a table body context. Test <caption> in <tfoot>');
+
+
+
+test(function () {
+    var doc = newHTMLDocument();
+            
+    doTest(doc, 'thead', '<caption id="cptn">Table Caption</caption>', 'cptn', 'CAPTION');
+    
+    assert_true(doc.querySelector('#tbl').caption == null, 'Table should have no caption');
+    
+}, 'Clearing stack back to a table body context. Test <caption> in <thead>');
+
+
+
+test(function () {
+    var doc = newHTMLDocument();
+            
+    doTest(doc, 'tbody', '<col id="col" width="150"/>', 'col', 'COL');
+    
+}, 'Clearing stack back to a table body context. Test <col> in <tbody>');
+
+
+test(function () {
+    var doc = newHTMLDocument();
+            
+    doTest(doc, 'tfoot', '<col id="col" width="150"/>', 'col', 'COL');
+    
+}, 'Clearing stack back to a table body context. Test <col> in <tfoot>');
+
+
+
+test(function () {
+    var doc = newHTMLDocument();
+            
+    doTest(doc, 'thead', '<col id="col" width="150"/>', 'col', 'COL');
+    
+}, 'Clearing stack back to a table body context. Test <col> in <thead>');
+
+
+
+test(function () {
+    var doc = newHTMLDocument();
+            
+    doTest(doc, 'tbody', '<colgroup id="clg" width="150"/>', 'clg', 'COLGROUP');
+    
+}, 'Clearing stack back to a table body context. Test <colgroup> in <tbody>');
+
+
+test(function () {
+    var doc = newHTMLDocument();
+            
+    doTest(doc, 'tfoot', '<colgroup id="clg" width="150"/>', 'clg', 'COLGROUP');
+    
+}, 'Clearing stack back to a table body context. Test <colgroup> in <tfoot>');
+
+
+
+test(function () {
+    var doc = newHTMLDocument();
+            
+    doTest(doc, 'thead', '<colgroup id="clg" width="150"/>', 'clg', 'COLGROUP');
+    
+}, 'Clearing stack back to a table body context. Test <colgroup> in <thead>');
+
+
+test(function () {
+    var doc = newHTMLDocument();
+            
+    doTest(doc, 'tbody', '<tbody id="tbd"></tbody>', 'tbd', 'TBODY');
+    
+    assert_equals(doc.querySelector('#tbl').tBodies.length, 1, 'Table should have no more than one body');
+    
+}, 'Clearing stack back to a table body context. Test <tbody> in <tbody>');
+
+
+test(function () {
+    var doc = newHTMLDocument();
+            
+    doTest(doc, 'tfoot', '<tbody id="tbd"></tbody>', 'tbd', 'TBODY');
+    
+    assert_equals(doc.querySelector('#tbl').tBodies.length, 0, 'Table should have no tbody');
+    
+}, 'Clearing stack back to a table body context. Test <tbody> in <tfoot>');
+
+
+
+test(function () {
+    var doc = newHTMLDocument();
+            
+    doTest(doc, 'thead', '<tbody id="tbd"></tbody>', 'tbd', 'TBODY');
+    
+    assert_equals(doc.querySelector('#tbl').tBodies.length, 0, 'Table should have no tbody');
+    
+}, 'Clearing stack back to a table body context. Test <tbody> in <thead>');
+
+
+
+test(function () {
+    var doc = newHTMLDocument();
+            
+    doTest(doc, 'tbody', '<tfoot id="tft"></tfoot>', 'tft', 'TFOOT');
+    
+    assert_true(doc.querySelector('#tbl').tFoot == null, 'Table should have no footer');
+    
+}, 'Clearing stack back to a table body context. Test <tfoot> in <tbody>');
+
+
+test(function () {
+    var doc = newHTMLDocument();
+            
+    doTest(doc, 'tfoot', '<tfoot id="tft"></tfoot>', 'tft', 'TFOOT');
+    
+    assert_true(doc.querySelector('#tbl').tFoot.id != 'tft', 'Table should have no footer with id="tft"');
+    
+}, 'Clearing stack back to a table body context. Test <tfoot> in <tfoot>');
+
+
+
+test(function () {
+    var doc = newHTMLDocument();
+            
+    doTest(doc, 'thead', '<tfoot id="tft"></tfoot>', 'tft', 'TFOOT');
+    
+    assert_true(doc.querySelector('#tbl').tFoot == null, 'Table should have no footer');
+    
+}, 'Clearing stack back to a table body context. Test <tfoot> in <thead>');
+
+
+
+test(function () {
+    var doc = newHTMLDocument();
+            
+    doTest(doc, 'tbody', '<thead id="thd"></thead>', 'thd', 'THEAD');
+    
+    assert_true(doc.querySelector('#tbl').tHead == null, 'Table should have no header');
+    
+}, 'Clearing stack back to a table body context. Test <thead> in <tbody>');
+
+
+test(function () {
+    var doc = newHTMLDocument();
+            
+    doTest(doc, 'tfoot', '<thead id="thd"></thead>', 'thd', 'THEAD');
+    
+    assert_true(doc.querySelector('#tbl').tHead == null, 'Table should have no header'); 
+    
+}, 'Clearing stack back to a table body context. Test <thead> in <tfoot>');
+
+
+
+test(function () {
+    var doc = newHTMLDocument();
+            
+    doTest(doc, 'thead', '<thead id="thd"></thead>', 'thd', 'THEAD');
+    
+    assert_true(doc.querySelector('#tbl').tHead.id != 'thd', 'Table should have no header with id="thd"');
+    
+}, 'Clearing stack back to a table body context. Test <thead> in <thead>');
+
+
+
+test(function () {
+    var doc = newHTMLDocument();
+            
+    doTest(doc, 'tbody', '</table>', null, null);
+    
+    assert_true(doc.querySelector('#tbl').tHead == null, 'Table should have no header');
+    
+}, 'Clearing stack back to a table body context. Test </table> in <tbody>');
+
+
+test(function () {
+    var doc = newHTMLDocument();
+            
+    doTest(doc, 'tfoot', '</table>', null, null);
+    
+    assert_true(doc.querySelector('#tbl').tHead == null, 'Table should have no header');
+    
+}, 'Clearing stack back to a table body context. Test </table> in <tfoot>');
+
+
+
+test(function () {
+    var doc = newHTMLDocument();
+            
+    doTest(doc, 'thead', '</table>', null, null);
+    
+}, 'Clearing stack back to a table body context. Test </table> in <thead>');
+
+
+
+test(function () {
+    var doc = newHTMLDocument();
+            
+    doTest(doc, 'thead', '</tbody>', null, null);
+    
+}, 'Clearing stack back to a table body context. Test </tbody> in <thead>');
+
+
+test(function () {
+    var doc = newHTMLDocument();
+            
+    doTest(doc, 'tfoot', '</tbody>', null, null);
+    
+}, 'Clearing stack back to a table body context. Test </tbody> in <tfoot>');
+
+
+test(function () {
+    var doc = newHTMLDocument();
+            
+    doTest(doc, 'tbody', '</thead>', null, null);
+    
+}, 'Clearing stack back to a table body context. Test </thead> in <tbody>');
+
+
+test(function () {
+    var doc = newHTMLDocument();
+            
+    doTest(doc, 'tfoot', '</thead>', null, null);
+    
+}, 'Clearing stack back to a table body context. Test </thead> in <tfoot>');
+
+
+test(function () {
+    var doc = newHTMLDocument();
+            
+    doTest(doc, 'thead', '</tfoot>', null, null);
+    
+}, 'Clearing stack back to a table body context. Test </tfoot> in <thead>');
+
+
+test(function () {
+    var doc = newHTMLDocument();
+            
+    doTest(doc, 'tbody', '</tfoot>', null, null);
+    
+}, 'Clearing stack back to a table body context. Test </tfoot> in <tbody>');
+
+</script>
+</body>
+</html>

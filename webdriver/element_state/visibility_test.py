@@ -9,6 +9,7 @@ from selenium.common.exceptions import ElementNotVisibleException
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
 import base_test
 
+
 class NaturalNonVisibleElementsTest(base_test.WebDriverBaseTest):
     def test_0x0_pixel_element_is_not_visible(self):
         self.driver.get(self.webserver.where_is("element_state/0x0-pixels.html"))
@@ -73,7 +74,7 @@ class NaturalNonVisibleElementsTest(base_test.WebDriverBaseTest):
             self.driver.get(self.webserver.where_is(page))
             right = self.driver.find_element_by_id("right")
             bottom_right = self.driver.find_element_by_id("bottom-right")
-            
+
             self.assertFalse(right.is_displayed())
             self.assertFalse(bottom_right.is_displayed())
 
@@ -91,7 +92,7 @@ class NaturalNonVisibleElementsTest(base_test.WebDriverBaseTest):
 
             self.assertFalse(bottom.is_displayed())
             self.assertFalse(bottom_right.is_displayed())
-    
+
     def test_parent_node_visible_when_all_children_are_absolutely_position_and_overflow_is_hidden(self):
         pass
 
@@ -124,7 +125,7 @@ class NaturalNonVisibleElementsTest(base_test.WebDriverBaseTest):
 
         self.assertTrue(overlay.is_displayed())
         self.assertFalse(hidden.is_displayed())
-                        
+
     def test_element_partially_hidden_by_other_element(self):
         self.driver.get(self.webserver.where_is("element_state/element-partially-hidden-by-other-element.html"))
         partial = self.driver.find_element_by_id("partial")
@@ -175,7 +176,8 @@ class NaturalNonVisibleElementsTest(base_test.WebDriverBaseTest):
         self.driver.get(self.webserver.where_is("element_state/element-with-same-color-as-parent-background.html"))
         hidden = self.driver.find_element_by_id("hidden")
         self.assertFalse(hidden.is_displayed())
-    
+
+
 class DisplayTest(base_test.WebDriverBaseTest):
     def test_display_block(self):
         self.driver.get(self.webserver.where_is("element_state/display-block.html"))
@@ -219,7 +221,8 @@ class DisplayTest(base_test.WebDriverBaseTest):
         self.driver.get(self.webserver.where_is("element_state/display-none-dynamic.html"))
         hidden = self.driver.find_element_by_id("hidden")
         self.assertFalse(hidden.is_displayed())
-    
+
+
 class VisibilityTest(base_test.WebDriverBaseTest):
     def test_element_state_hidden(self):
         self.driver.get(self.webserver.where_is("element_state/visibility-hidden.html"))
@@ -230,7 +233,7 @@ class VisibilityTest(base_test.WebDriverBaseTest):
         self.driver.get(self.webserver.where_is("element_state/visibility-visible.html"))
         el = self.driver.find_element_by_tag_name("p")
         self.assertTrue(el.is_displayed())
-    
+
     def test_visibility_hidden_hides_child_node(self):
         self.driver.get(self.webserver.where_is("element_state/visibility-child.html"))
         parent = self.driver.find_element_by_id("parent")
@@ -266,6 +269,7 @@ class VisibilityTest(base_test.WebDriverBaseTest):
     def test_visibility_hidden_set_dynamically(self):
         pass
 
+
 class VisibilityInteractionTest(base_test.WebDriverBaseTest):
     def test_input_hidden_is_unclickable(self):
         self.driver.get(self.webserver.where_is("element_state/input-type-hidden-unclickable.html"))
@@ -287,6 +291,7 @@ class VisibilityInteractionTest(base_test.WebDriverBaseTest):
 
         with self.assertRaises(ElementNotVisibleException):
             textfield.send_keys("Koha is a popular Indian cheese")
+
 
 class OpacityTest(base_test.WebDriverBaseTest):
     pass

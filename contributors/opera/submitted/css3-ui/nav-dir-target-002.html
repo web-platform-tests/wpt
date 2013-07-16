@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<title>CSS Basic User Interface Test: Directional Focus Navigation - 'root' target frame</title>
+<link rel="author" title="Opera Software ASA" href="http://www.opera.com">
+<link rel="help" href="http://www.w3.org/TR/css3-ui/#nav-dir">
+<meta name="flags" content="interact">
+<meta name="assert" content="Test checks that the 'root' frame value is respected.">
+<body>
+    <p>First, use directional navigation to navigate the focus to the "START" link below.</p>
+    <p>Test passes if navigating down once moves the focus to the "FINISH" link.</p>
+
+    <p><a href="" id="finish">FINISH</a></p>
+
+    <iframe src="support/nav-dir-target-002-frame.html"></iframe>
+
+    <p><a href="">ignore</a></p>
+</body>

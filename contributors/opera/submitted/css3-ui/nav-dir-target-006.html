@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<title>CSS Basic User Interface Test: Directional Focus Navigation - missing target element</title>
+<link rel="author" title="Opera Software ASA" href="http://www.opera.com">
+<link rel="help" href="http://www.w3.org/TR/css3-ui/#nav-dir">
+<meta name="flags" content="interact">
+<meta name="assert" content="Test checks that focus does not change to a different frame if the identifier is missing from the target frame.">
+<style>
+    #start {
+        nav-left: #finish current;
+    }
+</style>
+<body>
+    <p>First, use directional navigation to navigate the focus to the "START" link below.</p>
+    <p>Test passes if navigating left once moves the focus to the "FINISH" link.</p>
+
+    <p><a href="">FINISH</a> <a href="" id="start">START</a></p>
+
+    <iframe src="support/nav-dir-target-001-frame.html"></iframe>
+</body>

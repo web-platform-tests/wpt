@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<title>CSS Basic User Interface Test: Directional Focus Navigation - floating elements</title>
+<link rel="author" title="Opera Software ASA" href="http://www.opera.com">
+<link rel="help" href="http://www.w3.org/TR/css3-ui/#nav-dir">
+<meta name="flags" content="interact">
+<meta name="assert" content="Test checks that directional focus navigation properties work on floating elements.">
+<style>
+    #container > div {
+        clear: left;
+    }
+    #container > div > a {
+        float: left;
+        margin-right: 1ex;
+    }
+    #start {
+        nav-left: #finish;
+    }
+</style>
+<body>
+    <p>First, use directional navigation to navigate the focus to the "START" link below.</p>
+    <p>Test passes if navigating left once moves the focus to the "FINISH" input.</p>
+
+    <div id="container">
+        <div><a href="">ignore</a> <a href="" id="start">START</a> <a href="">ignore</a></div>
+
+        <div><a href="">ignore</a> <a href="">ignore</a> <a href="">ignore</a></div>
+
+        <div><a href="">ignore</a> <a href="" id="finish">FINISH</a> <a href="">ignore</a></div>
+    </div>
+</body>

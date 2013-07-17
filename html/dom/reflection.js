@@ -176,7 +176,10 @@ ReflectionTests.typeMap = {
 		"jsType": "string",
 		"defaultVal": "",
 		"domTests": ["", " " + binaryString + " foo ", undefined, 7, 1.5, true,
-			false, {"test": 6}, NaN, +Infinity, -Infinity, "\0", null],
+			     false, {"test": 6}, NaN, +Infinity, -Infinity, "\0", null,
+			     {"toString":function(){return "test-toString";}},
+			     {"valueOf":function(){return "test-valueOf";}}
+			    ],
 	},
 	/**
 	 * "If a reflecting IDL attribute is a DOMString attribute whose content
@@ -192,8 +195,10 @@ ReflectionTests.typeMap = {
 		"jsType": "string",
 		"defaultVal": "",
 		"domTests": ["", " foo ", "http://site.example/",
-			"//site.example/path???@#l", binaryString, undefined, 7, 1.5, true,
-			false, {"test": 6}, NaN, +Infinity, -Infinity, "\0", null],
+			     "//site.example/path???@#l", binaryString, undefined, 7, 1.5, true,
+			     false, {"test": 6}, NaN, +Infinity, -Infinity, "\0", null,
+			     {"toString":function(){return "test-toString";}},
+			     {"valueOf":function(){return "test-valueOf";}}],
 		"domExpected": ReflectionTests.resolveUrl,
 		"idlIdlExpected": ReflectionTests.resolveUrl,
 	},
@@ -215,8 +220,10 @@ ReflectionTests.typeMap = {
 		"jsType": "string",
 		"defaultVal": "",
 		"domTests": ["", " foo   ", "http://site.example/ foo  bar   baz",
-			"//site.example/path???@#l", binaryString, undefined, 7, 1.5, true,
-			false, {"test": 6}, NaN, +Infinity, -Infinity, "\0", null],
+			     "//site.example/path???@#l", binaryString, undefined, 7, 1.5, true,
+			     false, {"test": 6}, NaN, +Infinity, -Infinity, "\0", null,
+			     {"toString":function(){return "test-toString";}},
+			     {"valueOf":function(){return "test-valueOf";}}],
 		"domExpected": ReflectionTests.urlsExpected,
 		"idlIdlExpected": ReflectionTests.urlsExpected,
 	},
@@ -278,7 +285,9 @@ ReflectionTests.typeMap = {
 		"jsType": "string",
 		"defaultVal": "",
 		"domTests": ["", " " + binaryString + " foo ", undefined, 7, 1.5, true,
-			false, {"test": 6}, NaN, +Infinity, -Infinity, "\0", null],
+			     false, {"test": 6}, NaN, +Infinity, -Infinity, "\0", null,
+			     {"toString":function(){return "test-toString";}},
+			     {"valueOf":function(){return "test-valueOf";}}]
 	},
 	/**
 	 * "If a reflecting IDL attribute is a boolean attribute, then on getting
@@ -292,7 +301,9 @@ ReflectionTests.typeMap = {
 		"jsType": "boolean",
 		"defaultVal": false,
 		"domTests": ["", " foo ", undefined, null, 7, 1.5, true, false,
-			{"test": 6}, NaN, +Infinity, -Infinity, "\0"],
+			     {"test": 6}, NaN, +Infinity, -Infinity, "\0",
+			     {"toString":function(){return "test-toString";}},
+			     {"valueOf":function(){return "test-valueOf";}}],
 		"domExpected": function(val) {
 			return true;
 		},

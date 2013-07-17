@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html  lang="en" >
+<head>
+ <meta charset="iso-8859-15" ><meta http-equiv="content-type" content="text/html;charset=iso-8859-1" > <title>meta charset, then meta content</title>
+<link rel='author' title='Richard Ishida' href='mailto:ishida@w3.org'>
+<link rel='help' href='http://www.w3.org/TR/html5/syntax.html#the-input-byte-stream'>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<meta name='flags' content='http'>
+<style type='text/css'>
+.test div { width: 90px; }
+</style>
+<link rel="stylesheet" type="text/css" href="support/encodingtests-15.css">
+</head>
+<body>
+
+
+
+<div class='test'><div id='box' class='ýäè'>&nbsp;</div></div>
+
+
+<script>
+test(function() {
+assert_true(window.getComputedStyle(document.getElementById('box')).getPropertyValue('width') == '100px');
+}, "An encoding declaration in a meta charset attribute has a higher precedence than a following encoding declaration in a meta charset attribute.");
+</script>
+
+<div id='log'></div>
+
+</body>
+</html>

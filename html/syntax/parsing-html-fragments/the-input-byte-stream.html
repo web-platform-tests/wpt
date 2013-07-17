@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html  lang="en" >
+<head>
+  <title>HTTP charset</title>
+<link rel='author' title='Richard Ishida' href='mailto:ishida@w3.org'>
+<link rel='help' href='http://www.w3.org/TR/html5/syntax.html#the-input-byte-stream'>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<link rel="stylesheet" href="http://w3c-test.org/resource/testharness.css">
+<meta name="assert" content="Setting the HTTP header charset declaration will affect the encoding of a page.">
+<style type='text/css'>
+/* the CSS below is not part of the test */
+.test { border:0; }
+.test div { color:white; padding: 5px; background-color: red; height: 90px; width: 90px; }
+</style>
+<link rel="stylesheet" type="text/css" href="support/encodingtests-15.css">
+</head>
+<body>
+<p class='instructions'>Test passes if you see a green square.</p>
+
+
+<div class='test'><div id='box' class='ýäè'>Fail</div></div>
+
+
+<script>elem = document.getElementById('box'); 
+height = window.getComputedStyle(elem).getPropertyValue('height'); 
+if (height == '100px') { elem.innerHTML = 'Pass'; }
+test(function () {
+    assert_true(height == '100px');
+	}, 'xxx');
+</script><!-- Notes:<p>The test contains a div with a class name that contains the following sequence of bytes: 0xC3 0xBD 0xC3 0xA4 0xC3 0xA8. These represent different sequences of characters in ISO 8859-15, ISO 8859-1 and UTF-8. The external, UTF-8-encoded stylesheet contains a selector <code>.test div.&#x00C3;&#x0153;&#x00C3;&#x20AC;&#x00C3;&#x0161;</code>. This matches the sequence of bytes above when they are interpreted as ISO 8859-15. If the class name matches the selector then the box will turn green.</p><p>The only character encoding declaration for this HTML file is in the HTTP header, which sets the encoding to ISO 8859-15. (This test needs to be run from a server, since otherwise the HTTP information is absent.)</p>-->
+<div id='log'>  </div></body>
+</html>

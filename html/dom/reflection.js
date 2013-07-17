@@ -721,7 +721,7 @@ ReflectionTests.doReflects = function(data, idlName, idlObj, domName, domObj) {
     }
 
     for (var i = 0; i < idlTests.length; i++) {
-        if (idlDomExpected[i] === null) {
+        if (idlDomExpected[i] === null && data.type != "enum") {
             ReflectionHarness.testException("INDEX_SIZE_ERR", function() {
                 idlObj[idlName] = idlTests[i];
             }, "IDL set to " + ReflectionHarness.stringRep(idlTests[i]) + " must throw INDEX_SIZE_ERR");

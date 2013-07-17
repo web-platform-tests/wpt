@@ -9,7 +9,7 @@ var metadataElements = {
 	link: {
 		// Conforming
 		href: "url",
-		crossOrigin: {type: "enum", keywords: ["", "anonymous", "use-credentials"]},
+		crossOrigin: {type: "enum", keywords: ["anonymous", "use-credentials"], nonCanon:{"":"anonymous"}},
 		rel: "string",
 		relList: {type: "tokenlist", domAttrName: "rel"},
 		media: "string",

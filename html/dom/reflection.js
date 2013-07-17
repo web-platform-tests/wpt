@@ -276,7 +276,7 @@ ReflectionTests.typeMap = {
      *   "defaultVal": missing value default (defaults to "")
      *   "invalidVal": invalid value default (defaults to defaultVal)
      *   "keywords": array of keywords as given by the spec (required)
-     *   "noncanon": dictionary mapping non-canonical values to their
+     *   "nonCanon": dictionary mapping non-canonical values to their
      *     canonical equivalents (defaults to {})
      *
      * Tests are mostly hardcoded into reflects(), since they depend on the
@@ -507,14 +507,14 @@ ReflectionTests.typeMap = {
             {toString:function() {return 2;}},
             {valueOf:function() {return 3;}}],
         "domExpected": [minInt - 1, minInt, -36, -1, 0, 1, maxInt,
-			maxInt + 1, maxUnsigned, maxUnsigned + 1, null,
-			// Leading whitespace tests
-			//7, null, 7, 7, null, null,
-			//7, 7, null, null, null, null,
-			//null, null, null, null, null, null,
-			//null, null, null, null, null, null,
-			//null,
-			// End leading whitespace tests
+                        maxInt + 1, maxUnsigned, maxUnsigned + 1, null,
+                        // Leading whitespace tests
+                        //7, null, 7, 7, null, null,
+                        //7, 7, null, null, null, null,
+                        //null, null, null, null, null, null,
+                        //null, null, null, null, null, null,
+                        //null,
+                        // End leading whitespace tests
                         null, null, 1.5, null, null,
                         null, null, null, null, null,
                         2, 3],

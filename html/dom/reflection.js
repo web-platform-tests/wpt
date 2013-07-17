@@ -340,7 +340,8 @@ ReflectionTests.typeMap = {
                      //"\u20067", "\u20077", "\u20087", "\u20097", "\u200A7", "\u202F7",
                      //"\u30007",
                      undefined, 1.5, true, false, {"test": 6}, NaN, +Infinity,
-                     -Infinity, "\0"],
+                     -Infinity, "\0", {toString:function() {return 2;}},
+                     {valueOf:function() {return 3;}}],
         "domExpected": function(val) {
             var parsed = ReflectionTests.parseInt(val + "");
             if (parsed === false || parsed > maxInt || parsed < minInt) {
@@ -369,15 +370,16 @@ ReflectionTests.typeMap = {
         "jsType": "number",
         "defaultVal": -1,
         "domTests": [minInt - 1, minInt, -36, -1, -0, 0, 1, maxInt, maxInt + 1,
-		     maxUnsigned, maxUnsigned + 1, "", "-1", "-0", "0", "1",
-		     " " + binaryString + " foo ",
-		     //"\u00097", "\u000B7", "\u000C7", "\u00207", "\u00A07", "\uFEFF7",
-		     //"\u000A7", "\u000D7", "\u20287", "\u20297", "\u16807", "\u180E7",
-		     //"\u20007", "\u20017", "\u20027", "\u20037", "\u20047", "\u20057",
-		     //"\u20067", "\u20077", "\u20087", "\u20097", "\u200A7", "\u202F7",
-		     //"\u30007",
-		     undefined, 1.5, true, false, {"test": 6}, NaN, +Infinity,
-		     -Infinity, "\0"],
+                     maxUnsigned, maxUnsigned + 1, "", "-1", "-0", "0", "1",
+                     " " + binaryString + " foo ",
+                     //"\u00097", "\u000B7", "\u000C7", "\u00207", "\u00A07", "\uFEFF7",
+                     //"\u000A7", "\u000D7", "\u20287", "\u20297", "\u16807", "\u180E7",
+                     //"\u20007", "\u20017", "\u20027", "\u20037", "\u20047", "\u20057",
+                     //"\u20067", "\u20077", "\u20087", "\u20097", "\u200A7", "\u202F7",
+                     //"\u30007",
+                     undefined, 1.5, true, false, {"test": 6}, NaN, +Infinity,
+                     -Infinity, "\0", {toString:function() {return 2;}},
+                     {valueOf:function() {return 3;}}],
         "domExpected": function(val) {
             var parsed = ReflectionTests.parseNonneg(val + "");
             if (parsed === false || parsed > maxInt || parsed < minInt) {
@@ -411,7 +413,9 @@ ReflectionTests.typeMap = {
                      //"\u20067", "\u20077", "\u20087", "\u20097", "\u200A7", "\u202F7",
                      //"\u30007",
                      " " + binaryString + " foo ", undefined, 1.5, true, false,
-                     {"test": 6}, NaN, +Infinity, -Infinity, "\0"],
+                     {"test": 6}, NaN, +Infinity, -Infinity, "\0",
+                     {toString:function() {return 2;}},
+                     {valueOf:function() {return 3;}}],
         "domExpected": function(val) {
             var parsed = ReflectionTests.parseNonneg(val + "");
             // Note maxInt, not maxUnsigned.
@@ -443,14 +447,16 @@ ReflectionTests.typeMap = {
         "jsType": "number",
         "defaultVal": 1,
         "domTests": [minInt - 1, minInt, -36,  -1,   0,    1, maxInt,
-		     maxInt + 1, maxUnsigned, maxUnsigned + 1, "", "-1", "-0", "0", "1",
-		     //"\u00097", "\u000B7", "\u000C7", "\u00207", "\u00A07", "\uFEFF7",
-		     //"\u000A7", "\u000D7", "\u20287", "\u20297", "\u16807", "\u180E7",
-		     //"\u20007", "\u20017", "\u20027", "\u20037", "\u20047", "\u20057",
-		     //"\u20067", "\u20077", "\u20087", "\u20097", "\u200A7", "\u202F7",
-		     //"\u30007",
-		     " " + binaryString + " foo ", undefined, 1.5, true, false,
-		     {"test": 6}, NaN, +Infinity, -Infinity, "\0"],
+                     maxInt + 1, maxUnsigned, maxUnsigned + 1, "", "-1", "-0", "0", "1",
+                     //"\u00097", "\u000B7", "\u000C7", "\u00207", "\u00A07", "\uFEFF7",
+                     //"\u000A7", "\u000D7", "\u20287", "\u20297", "\u16807", "\u180E7",
+                     //"\u20007", "\u20017", "\u20027", "\u20037", "\u20047", "\u20057",
+                     //"\u20067", "\u20077", "\u20087", "\u20097", "\u200A7", "\u202F7",
+                     //"\u30007",
+                     " " + binaryString + " foo ", undefined, 1.5, true, false,
+                     {"test": 6}, NaN, +Infinity, -Infinity, "\0",
+                     {toString:function() {return 2;}},
+                     {valueOf:function() {return 3;}}],
         "domExpected": function(val) {
             var parsed = ReflectionTests.parseNonneg(val + "");
             // Note maxInt, not maxUnsigned.
@@ -497,18 +503,21 @@ ReflectionTests.typeMap = {
             //"\u20067", "\u20077", "\u20087", "\u20097", "\u200A7", "\u202F7",
             //"\u30007",
             " " + binaryString + " foo ", undefined, 1.5, true, false,
-            {"test": 6}, NaN, +Infinity, -Infinity, "\0"],
+            {"test": 6}, NaN, +Infinity, -Infinity, "\0",
+            {toString:function() {return 2;}},
+            {valueOf:function() {return 3;}}],
         "domExpected": [minInt - 1, minInt, -36, -1, 0, 1, maxInt,
-            maxInt + 1, maxUnsigned, maxUnsigned + 1, null,
-            // Leading whitespace tests
-            //7, null, 7, 7, null, null,
-            //7, 7, null, null, null, null,
-            //null, null, null, null, null, null,
-            //null, null, null, null, null, null,
-            //null,
-            // End leading whitespace tests
-            null, null, 1.5, null, null,
-            null, null, null, null, null],
+			maxInt + 1, maxUnsigned, maxUnsigned + 1, null,
+			// Leading whitespace tests
+			//7, null, 7, 7, null, null,
+			//7, 7, null, null, null, null,
+			//null, null, null, null, null, null,
+			//null, null, null, null, null, null,
+			//null,
+			// End leading whitespace tests
+                        null, null, 1.5, null, null,
+                        null, null, null, null, null,
+                        2, 3],
         // I checked that ES ToString is well-defined for all of these (I
         // think).  Yes, String(-0) == "0".
         "idlTests":       [ -10000000000,   -1,  -0,   0,   1,   10000000000],

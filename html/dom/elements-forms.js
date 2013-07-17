@@ -98,6 +98,8 @@ var formElements = {
 		defaultSelected: {type: "boolean", domAttrName: "selected"},
 	},
 	textarea: {
+		// TODO: autocomplete is special.
+		// autocomplete: {type: "enum", keywords: ["on", "off"], defaultVal: "on"},
 		autofocus: "boolean",
 		cols: {type: "limited unsigned long", defaultVal: 20},
 		dirName: "string",

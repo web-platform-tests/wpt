@@ -85,7 +85,7 @@ var formElements = {
 		disabled: "boolean",
 		multiple: "boolean",
 		name: "string",
-		required: "string",
+		required: "boolean",
 		size: {type: "unsigned long", defaultVal: 0},
 	},
 	datalist: {},

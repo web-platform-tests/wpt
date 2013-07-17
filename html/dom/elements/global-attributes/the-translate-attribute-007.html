@@ -2,30 +2,28 @@
 <html  lang="en" >
 <head>
 <meta charset="utf-8"/>
-<title>translate-enabled state, default</title>
+<title>no translate attribute</title>
 <link rel='author' title='Richard Ishida' href='mailto:ishida@w3.org'>
 <link rel='help' href='http://www.w3.org/TR/html5/dom.html#the-translate-attribute'>
-<script src="http://w3c-test.org/resources/testharness.js"></script>
-<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
-<meta name="assert" content="In the default case, ie. with no translate attribute in the page, javascript will detect the translation mode of text as translate-enabled.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
 <style type='text/css'>
-
-		.test { border: 0; }
-		.test div { color:white; padding: 5px; background-color: red; height: 90px; width: 90px; }
-
-		</style>
+</style>
 </head>
 <body>
 
 
 
-<div class="test"><div id="box">Fail</div></div>
+<div class="test"><div id="box">&nbsp;</div></div>
 
 
-<script>var pass = false; if (document.getElementById('box').translate === true) {  pass=true; }
-if (pass) {  box.style.backgroundColor = '#00FF00';  box.style.color = 'white'; box.innerHTML = 'Pass'; box.style.height = '100px'; box.style.width = '100px'; }
-test(function () {
-    assert_true(pass);
-	}, '');
-</script><div id='log'></div></body>
+<script>
+test(function() {
+assert_true(document.getElementById('box').translate);
+}, "In the default case, ie. with no translate attribute in the page, javascript will detect the translation mode of text as translate-enabled.");
+</script>
+
+<div id='log'></div>
+
+</body>
 </html>

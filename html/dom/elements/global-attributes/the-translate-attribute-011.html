@@ -2,30 +2,28 @@
 <html  lang="en" >
 <head>
 <meta charset="utf-8"/>
-<title>translate-enabled state, yes inside no</title>
+<title>translate=yes inside translate=no</title>
 <link rel='author' title='Richard Ishida' href='mailto:ishida@w3.org'>
 <link rel='help' href='http://www.w3.org/TR/html5/dom.html#the-translate-attribute'>
-<script src="http://w3c-test.org/resources/testharness.js"></script>
-<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
-<meta name="assert" content="If the translate attribute is set to &quot;yes&quot; on an element inside an element with the translate attribute set to &quot;no&quot;, javascript will detect the translation mode of text in the inner element as translate-enabled.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
 <style type='text/css'>
-
-		.test { border: 0; }
-		.test div { color:white; padding: 5px; background-color: red; height: 90px; width: 90px; }
-
-		</style>
+</style>
 </head>
 <body>
 
 
 
-<div class="test"><div id="box" translate="no">Fail <span id="spantest" translate="yes">&nbsp;</span></div></div>
+<div class="test"><div id="box" translate="no">&nbsp; <span id="spantest" translate="yes">&nbsp;</span></div></div>
 
 
-<script>var pass = false; if (document.getElementById('spantest').translate === true) {  pass=true; }
-if (pass) {  box.style.backgroundColor = '#00FF00';  box.style.color = 'white'; box.innerHTML = 'Pass'; box.style.height = '100px'; box.style.width = '100px'; }
-test(function () {
-    assert_true(pass);
-	}, '');
-</script><div id='log'></div></body>
+<script>
+test(function() {
+assert_true(document.getElementById('spantest').translate);
+}, "If the translate attribute is set to yes on an element inside an element with the translate attribute set to no, javascript will detect the translation mode of text in the inner element as translate-enabled.");
+</script>
+
+<div id='log'></div>
+
+</body>
 </html>

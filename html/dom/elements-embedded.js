@@ -35,7 +35,7 @@ var embeddedElements = {
 		frameBorder: "string",
 		longDesc: "url",
 		marginHeight: {type: "string", treatNullAsEmptyString: true},
-		marginWidth: {type: "string", treatNullAsEmptyString: true},
+		marginWidth: {type: "string", treatNullAsEmptyString: true}
 	},
 	embed: {
 		// Conforming
@@ -46,7 +46,7 @@ var embeddedElements = {
 
 		// Obsolete
 		align: "string",
-		name: "string",
+		name: "string"
 	},
 	object: {
 		// Conforming
@@ -68,7 +68,7 @@ var embeddedElements = {
 		vspace: "unsigned long",
 		codeBase: "url",
 		codeType: "string",
-		border: {type: "string", treatNullAsEmptyString: true},
+		border: {type: "string", treatNullAsEmptyString: true}
 	},
 	param: {
 		// Conforming
@@ -77,7 +77,7 @@ var embeddedElements = {
 
 		// Obsolete
 		type: "string",
-		valueType: "string",
+		valueType: "string"
 	},
 	video: {
 		// HTMLMediaElement
@@ -93,7 +93,7 @@ var embeddedElements = {
 
 		width: "unsigned long",
 		height: "unsigned long",
-		poster: "url",
+		poster: "url"
 	},
 	audio: {
 		// HTMLMediaElement
@@ -105,33 +105,32 @@ var embeddedElements = {
 		loop: "boolean",
 		mediaGroup: "string",
 		controls: "boolean",
-		defaultMuted: {type: "boolean", domAttrName: "muted"},
+		defaultMuted: {type: "boolean", domAttrName: "muted"}
 	},
 	source: {
 		src: "url",
 		type: "string",
-		media: "string",
+		media: "string"
 	},
 	track: {
 		kind: {type: "enum", keywords: ["subtitles", "captions", "descriptions", "chapters", "metadata"], defaultVal: "captions"},
 		src: "url",
 		srclang: "string",
 		label: "string",
-		"default": "boolean",
+		"default": "boolean"
 	},
 	canvas: {
 		width: {type: "unsigned long", defaultVal: 300},
-		height: {type: "unsigned long", defaultVal: 150},
+		height: {type: "unsigned long", defaultVal: 150}
 	},
 	map: {
-		name: "string",
+		name: "string"
 	},
 	area: {
 		// Conforming
 		alt: "string",
 		coords: "string",
 		shape: "string",
-		href: "url",
 		target: "string",
 		download: "string",
 		ping: "urls",
@@ -140,8 +139,11 @@ var embeddedElements = {
 		hreflang: "string",
 		type: "string",
 
+	        //URLUtils
+		href: "url",
+
 		// Obsolete
-		noHref: "boolean",
+		noHref: "boolean"
 	},
 };
 

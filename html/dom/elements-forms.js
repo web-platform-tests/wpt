@@ -35,8 +35,8 @@ var formElements = {
 		disabled: "boolean",
 		// TODO: formAction is special
 		// formAction: "url",
-		formEnctype: {type: "enum", keywords: ["application/x-www-form-urlencoded", "multipart/form-data", "text/plain"], defaultVal: "application/x-www-form-urlencoded"},
-		formMethod: {type: "enum", keywords: ["get", "post"], defaultVal: "get"},
+		formEnctype: {type: "enum", keywords: ["application/x-www-form-urlencoded", "multipart/form-data", "text/plain"], invalidVal: "application/x-www-form-urlencoded"},
+		formMethod: {type: "enum", keywords: ["get", "post"], invalidVal: "get"},
 		formNoValidate: "boolean",
 		formTarget: "string",
 		height: "unsigned long",
@@ -71,8 +71,8 @@ var formElements = {
 		disabled: "boolean",
 		// TODO: formAction is special
 		// formAction: "url",
-		formEnctype: {type: "enum", keywords: ["application/x-www-form-urlencoded", "multipart/form-data", "text/plain"], defaultVal: "application/x-www-form-urlencoded"},
-		formMethod: {type: "enum", keywords: ["get", "post", "dialog"], defaultVal: "get"},
+		formEnctype: {type: "enum", keywords: ["application/x-www-form-urlencoded", "multipart/form-data", "text/plain"], invalidVal: "application/x-www-form-urlencoded"},
+		formMethod: {type: "enum", keywords: ["get", "post", "dialog"], invalidVal: "get"},
 		formNoValidate: "boolean",
 		formTarget: "string",
 		name: "string",

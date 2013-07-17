@@ -180,7 +180,7 @@ ReflectionTests.typeMap = {
         "domTests": ["", " " + binaryString + " foo ", undefined, 7, 1.5, true,
                      false, {"test": 6}, NaN, +Infinity, -Infinity, "\0", null,
                      {"toString":function(){return "test-toString";}},
-                     {"valueOf":function(){return "test-valueOf";}}
+                     {"valueOf":function(){return "test-valueOf";}, toString:null}
                 ]
     },
     /**
@@ -200,7 +200,7 @@ ReflectionTests.typeMap = {
                      "//site.example/path???@#l", binaryString, undefined, 7, 1.5, true,
                      false, {"test": 6}, NaN, +Infinity, -Infinity, "\0", null,
                      {"toString":function(){return "test-toString";}},
-                     {"valueOf":function(){return "test-valueOf";}}],
+                     {"valueOf":function(){return "test-valueOf";}, toString:null}],
         "domExpected": ReflectionTests.resolveUrl,
         "idlIdlExpected": ReflectionTests.resolveUrl
     },
@@ -225,7 +225,7 @@ ReflectionTests.typeMap = {
                      "//site.example/path???@#l", binaryString, undefined, 7, 1.5, true,
                      false, {"test": 6}, NaN, +Infinity, -Infinity, "\0", null,
                      {"toString":function(){return "test-toString";}},
-                     {"valueOf":function(){return "test-valueOf";}}],
+                     {"valueOf":function(){return "test-valueOf";}, toString:null}],
         "domExpected": ReflectionTests.urlsExpected,
         "idlIdlExpected": ReflectionTests.urlsExpected
     },
@@ -289,7 +289,7 @@ ReflectionTests.typeMap = {
         "domTests": ["", " " + binaryString + " foo ", undefined, 7, 1.5, true,
                  false, {"test": 6}, NaN, +Infinity, -Infinity, "\0", null,
                  {"toString":function(){return "test-toString";}},
-                 {"valueOf":function(){return "test-valueOf";}}]
+                 {"valueOf":function(){return "test-valueOf";}, toString:null}]
     },
     /**
      * "If a reflecting IDL attribute is a boolean attribute, then on getting
@@ -305,7 +305,7 @@ ReflectionTests.typeMap = {
         "domTests": ["", " foo ", undefined, null, 7, 1.5, true, false,
                      {"test": 6}, NaN, +Infinity, -Infinity, "\0",
                      {"toString":function(){return "test-toString";}},
-                     {"valueOf":function(){return "test-valueOf";}}],
+                     {"valueOf":function(){return "test-valueOf";}, toString:null}],
         "domExpected": function(val) {
             return true;
         }

@@ -141,8 +141,8 @@ test(function() {
     + 'Test valid element inside and between HTML and BODY elements');
 
 
-testInIFrame('../resources/template-contents-html.html', function(ctx) {
-    var doc = ctx.iframes[0].contentDocument;
+testInIFrame('../resources/template-contents-html.html', function(context) {
+    var doc = context.iframes[0].contentDocument;
 
     var template = doc.body.querySelector('template');
 

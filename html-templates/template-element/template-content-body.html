@@ -110,8 +110,8 @@ test(function() {
     + 'template\'s innerHTML');
 
 
-testInIFrame('../resources/template-contents-body.html', function(ctx){
-    var doc = ctx.iframes[0].contentDocument;
+testInIFrame('../resources/template-contents-body.html', function(context){
+    var doc = context.iframes[0].contentDocument;
 
     var template = doc.body.querySelector('template');
 

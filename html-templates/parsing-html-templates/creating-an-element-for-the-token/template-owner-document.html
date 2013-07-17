@@ -107,8 +107,8 @@ test(function () {
 
 
 
-testInIFrame('../../resources/template-contents.html', function(ctx){
-    var doc = ctx.iframes[0].contentDocument;
+testInIFrame('../../resources/template-contents.html', function(context){
+    var doc = context.iframes[0].contentDocument;
 
     var template = doc.querySelector('template');
 
@@ -122,8 +122,8 @@ testInIFrame('../../resources/template-contents.html', function(ctx){
 
 
 
-testInIFrame('../../resources/template-contents-nested.html', function(ctx){
-    var doc = ctx.iframes[0].contentDocument;
+testInIFrame('../../resources/template-contents-nested.html', function(context){
+    var doc = context.iframes[0].contentDocument;
 
     var template = doc.querySelector('template');
 
@@ -142,8 +142,8 @@ testInIFrame('../../resources/template-contents-nested.html', function(ctx){
 
 
 
-testInIFrame('../../resources/two-templates.html', function(ctx){
-    var doc = ctx.iframes[0].contentDocument;
+testInIFrame('../../resources/two-templates.html', function(context){
+    var doc = context.iframes[0].contentDocument;
 
     var template1 = doc.querySelector('#template1');
     var div1 = template1.content.querySelector('div');
@@ -183,8 +183,8 @@ test(function() {
        + 'Current DOCUMENT has no browsing context.');
 
 
-testInIFrame('../../resources/template-contents-text.html', function(ctx){
-    var doc = ctx.iframes[0].contentDocument;
+testInIFrame('../../resources/template-contents-text.html', function(context){
+    var doc = context.iframes[0].contentDocument;
 
     HTML5_TAG.forEach(function(value) {
         if (value != 'body' && value != 'html' && value != 'head'

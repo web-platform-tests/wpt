@@ -58,8 +58,8 @@ test(function() {
     'Text value of content attribute of template tag should be ignored');
 
 
-testInIFrame('../resources/template-contents-attribute.html', function(ctx){
-    var doc = ctx.iframes[0].contentDocument;
+testInIFrame('../resources/template-contents-attribute.html', function(context){
+    var doc = context.iframes[0].contentDocument;
 
     var template = doc.body.querySelector('template');
 

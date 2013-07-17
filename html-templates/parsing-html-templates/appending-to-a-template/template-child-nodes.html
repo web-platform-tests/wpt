@@ -77,8 +77,8 @@ test(function () {
 
 
 
-testInIFrame('../../resources/template-contents.html', function(ctx){
-    var doc = ctx.iframes[0].contentDocument;
+testInIFrame('../../resources/template-contents.html', function(context){
+    var doc = context.iframes[0].contentDocument;
 
     var template = doc.querySelector('template');
 
@@ -91,8 +91,8 @@ testInIFrame('../../resources/template-contents.html', function(ctx){
     + 'Load HTML document from a file');
 
 
-testInIFrame('../../resources/template-contents-nested.html', function(ctx){
-    var doc = ctx.iframes[0].contentDocument;
+testInIFrame('../../resources/template-contents-nested.html', function(context){
+    var doc = context.iframes[0].contentDocument;
 
     var template = doc.querySelector('template');
 

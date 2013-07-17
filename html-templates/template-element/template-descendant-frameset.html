@@ -14,8 +14,8 @@
 <div id="log"></div>
 <script type="text/javascript">
 
-testInIFrame('../resources/template-descendant-frameset.html', function(ctx) {
-    var doc = ctx.iframes[0].contentDocument;
+testInIFrame('../resources/template-descendant-frameset.html', function(context) {
+    var doc = context.iframes[0].contentDocument;
 
     var frameset = doc.querySelector('frameset');
 
@@ -25,8 +25,8 @@ testInIFrame('../resources/template-descendant-frameset.html', function(ctx) {
 }, 'Template element as a descendant of the frameset element. Test loading from a file');
 
 
-testInIFrame('../resources/template-descendant-frameset.html', function(ctx) {
-    var doc = ctx.iframes[0].contentDocument;
+testInIFrame('../resources/template-descendant-frameset.html', function(context) {
+    var doc = context.iframes[0].contentDocument;
 
     var frameset = doc.querySelector('frameset');
 
@@ -43,8 +43,8 @@ testInIFrame('../resources/template-descendant-frameset.html', function(ctx) {
     + 'Test template element is assigned to frameset\'s innerHTML)');
 
 
-testInIFrame('../resources/template-descendant-frameset.html', function(ctx) {
-    var doc = ctx.iframes[0].contentDocument;
+testInIFrame('../resources/template-descendant-frameset.html', function(context) {
+    var doc = context.iframes[0].contentDocument;
 
     var frameset = doc.querySelector('frameset');
 

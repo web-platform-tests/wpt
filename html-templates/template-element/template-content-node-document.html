@@ -67,8 +67,8 @@ test(function() {
 }, 'Node document of the template content attribute must be template contents owner. ' +
     'Nested template element created by innerHTML');
 
-testInIFrame('../resources/two-templates.html', function(ctx) {
-    var doc = ctx.iframes[0].contentDocument;
+testInIFrame('../resources/two-templates.html', function(context) {
+    var doc = context.iframes[0].contentDocument;
 
     var template1 = doc.querySelector('#template1');
     var template2 = doc.querySelector('#template2');

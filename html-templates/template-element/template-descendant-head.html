@@ -14,8 +14,8 @@
 <div id="log"></div>
 <script type="text/javascript">
 
-testInIFrame('../resources/template-descendant-head.html', function(ctx) {
-    var doc = ctx.iframes[0].contentDocument;
+testInIFrame('../resources/template-descendant-head.html', function(context) {
+    var doc = context.iframes[0].contentDocument;
 
     assert_true(doc.head.querySelector('template') != null,
         'Template element should be a descendant of the head element');

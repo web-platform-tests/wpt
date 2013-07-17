@@ -105,8 +105,8 @@ test(function() {
 }, 'Template owner document change. Test nested templates');
 
 
-testInIFrame('../resources/template-contents.html', function(ctx){
-    var doc1 = ctx.iframes[0].contentDocument;
+testInIFrame('../resources/template-contents.html', function(context){
+    var doc1 = context.iframes[0].contentDocument;
 
     var template = doc1.body.querySelector('template');
 
@@ -123,8 +123,8 @@ testInIFrame('../resources/template-contents.html', function(ctx){
 }, 'Template owner document change. Test loading document from a file');
 
 
-testInIFrame('../resources/template-contents.html', function(ctx){
-    var doc1 = ctx.iframes[0].contentDocument;
+testInIFrame('../resources/template-contents.html', function(context){
+    var doc1 = context.iframes[0].contentDocument;
 
     var doc2 = newHTMLDocument();
     var template = doc2.createElement('template');
@@ -152,8 +152,8 @@ testInIFrame('../resources/template-contents.html', function(ctx){
 }, 'Template owner document change. Test appending to a document loaded from a file');
 
 
-testInIFrame('../resources/template-contents.html', function(ctx){
-    var doc1 = ctx.iframes[0].contentDocument;
+testInIFrame('../resources/template-contents.html', function(context){
+    var doc1 = context.iframes[0].contentDocument;
 
     var template = doc1.querySelector('template');
     var div = template.content.querySelector('div');

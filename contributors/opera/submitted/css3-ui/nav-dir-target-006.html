@@ -9,12 +9,17 @@
     #start {
         nav-left: #finish current;
     }
+    #intermediate {
+        nav-left: #end;
+    }
 </style>
 <body>
     <p>First, use directional navigation to navigate the focus to the "START" link below.</p>
-    <p>Test passes if navigating left once moves the focus to the "FINISH" link.</p>
+    <p>Test passes if navigating left twice moves the focus to the "FINISH" link.</p>
 
-    <p><a href="">FINISH</a> <a href="" id="start">START</a></p>
+    <p><a href="">ignore</a> <a href="" id="intermediate">ignore</a> <a href="" id="start">START</a></p>
 
     <iframe src="support/nav-dir-target-001-frame.html"></iframe>
+
+    <p><a href="" id="end">FINISH</a></p>
 </body>

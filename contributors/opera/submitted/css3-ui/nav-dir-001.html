@@ -9,10 +9,15 @@
     #parent {
         nav-left: #finish;
     }
+    #intermediate {
+        nav-left: #end;
+    }
 </style>
 <body>
     <p>First, use directional navigation to navigate the focus to the "START" link below.</p>
-    <p>Test passes if navigating left once moves the focus to the "FINISH" link.</p>
+    <p>Test passes if navigating left twice moves the focus to the "FINISH" link.</p>
 
-    <div id="parent"><a href="">FINISH</a> <a href="">START</a> <a href="" id="finish">ignore</a></div>
+    <div id="parent"><a href="">ignore</a> <a href="" id="intermediate">ignore</a> <a href="">START</a> <a href="" id="finish">ignore</a></div>
+
+    <div><a href="">ignore</a> <a href="" id="end">FINISH</a></div>
 </body>

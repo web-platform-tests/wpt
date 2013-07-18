@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>CSS Regions: Auto-height regions inside a fixed sized flexbox with column wrap flow</title>
+		<link rel="author" title="Catalin Badea" href="mailto:badea@adobe.com">
+		<link rel="help" href="http://www.w3.org/TR/css3-regions">
+		<link rel="help" href="http://www.w3.org/TR/css3-regions/#rfcb-flow-fragment-height-resolution">
+		<link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
+		<link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
+		<link rel="help" href="http://www.w3.org/TR/css3-flexbox">
+		<link rel="help" href="http://www.w3.org/TR/css3-flexbox/#flex-wrap">
+		<meta name="flags" content="ahem">
+		<meta name="assert" content="Test checks the layout of auto-height regions placed inside a flexbox with a fixed size and column wrap flow.">
+		<link rel="match" href="reference/autoheight-regions-in-fixed-sized-flexbox-003-ref.html">
+		<style>
+			.content {
+				font-family: Ahem;
+				line-height: 20px;
+				font-size: 20px;
+			}
+
+			#c1 {
+				flow-into: f1;
+				color: green;
+			}
+
+			#c2 {
+				flow-into: f2;
+				color: blue;
+			}
+
+			.flex {
+				height: 120px;
+				width: 200px;
+				display: flex;
+				flex-direction: column;
+				flex-wrap: wrap;
+			}
+
+			.region_1 {
+				flow-from: f1;
+				width: 100px;
+			}
+
+			.region_2 {
+				flow-from: f2;
+				break-after: always;
+				width: 100px;
+			}
+
+			.break {
+				region-break-after: always;
+			}
+		</style>
+	</head>
+	<body>
+		<ol>
+			<li>The green and blue rectangles are regions placed inside a flexbox with column wrap flow.</li>
+			<li>Test passes if you see two columns with a total of 6 alternating green and blue stripes.</li>
+		</ol>
+		<div class="content" id="c1">
+			XXXXX<br>
+			XXXXX
+			<div class="break"></div>
+			XXXXX<br>
+			XXXXX
+			<div class="break"></div>
+			XXXXX<br>
+			XXXXX
+		</div>
+		</div>
+		<div class="content" id="c2">
+			XXXXX<br>
+			XXXXX
+			<div class="break"></div>
+			XXXXX<br>
+			XXXXX
+			<div class="break"></div>
+			XXXXX<br>
+			XXXXX
+		</div>
+		<div class="flex">
+			<div class="region_1">
+			</div>
+			<div class="region_2">
+			</div>
+			<div class="region_1">
+			</div>
+			<div class="region_2">
+			</div>
+			<div class="region_1">
+			</div>
+			<div class="region_2">
+			</div>
+		</div>
+	</body>
+</html>

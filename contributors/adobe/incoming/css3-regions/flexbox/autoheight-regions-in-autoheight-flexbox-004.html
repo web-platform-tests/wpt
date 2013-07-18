@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>CSS Regions: nested regions in flexbox</title>
+		<link rel="author" title="Catalin Badea" href="mailto:badea@adobe.com">
+		<link rel="help" href="http://www.w3.org/TR/css3-regions">
+		<link rel="help" href="http://www.w3.org/TR/css3-regions/#rfcb-flow-fragment-height-resolution">
+		<link rel="help" href="http://www.w3.org/TR/css3-flexbox">
+		<link rel="help" href="http://www.w3.org/TR/css3-flexbox/#flex-direction">
+		<meta name="flags" content="ahem">
+		<meta name="assert" content="Test checks that nested regions placed in flexbox containers are laid out properly.">
+		<link rel="match" href="reference/autoheight-regions-in-autoheight-flexbox-004-ref.html">
+		<style>
+			#c1, #c2 {
+				font-family: Ahem;
+				font-size: 20px;
+				line-height: 1em;
+			}
+
+			#c1 {
+				color: blue;
+				flow-into: f1;
+			}
+
+			#c2 {
+				color: green;
+				flow-into: f2;
+			}
+
+			.flex {
+				display: flex;
+				flex-direction: column;
+			}
+
+			.r1 {
+				flow-from: f1;
+			}
+			.r2 {
+				flow-from: f2;
+			}
+		</style>
+	</head>
+	<body>
+		<ol>
+			<li>Test passes if you see three stripes with colors in the following order: green, blue, green.</li>
+		</ol>
+		<div id="c1">
+			<br>
+			XXX<br>
+			<br>
+		</div>
+		<div id="c2">
+			<div class="flex">
+				XXX
+				<div class="r1"></div>
+			</div>
+			XXX
+		</div>
+		<div class="flex">
+			<div class="r2"> </div>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>CSS Regions: Auto-height regions in fixed sized flexboxes with align-items and justify-content</title>
+		<link rel="author" title="Catalin Badea" href="mailto:badea@adobe.com">
+		<style>
+			.content {
+				line-height: 1em;
+				font-size: 20px;
+				font-family: Ahem;
+				color: green;
+			}
+
+			.flex {
+				display: flex;
+				align-items: center;
+				justify-content: space-around;
+				height: 100px;
+				width: 420px;
+			}
+		</style>
+	</head>
+	<body>
+		<ol>
+			<li>Test passes if you see three green stripes.</li>
+		</ol>
+		<div class="flex">
+			<div class="region">
+				<div class="content">XXXX</div>
+			</div>
+			<div class="region">
+				<div class="content">XXXX</div>
+			</div>
+			<div class="region">
+				<div class="content">XXXX</div>
+			</div>
+		</div>
+	</body>
+</html>

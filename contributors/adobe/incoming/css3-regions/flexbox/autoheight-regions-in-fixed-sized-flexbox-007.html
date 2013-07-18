@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>CSS Regions: regions inside fixed sized flexbox</title>
+		<link rel="author" title="Catalin Badea" href="mailto:badea@adobe.com">
+		<link rel="help" href="http://www.w3.org/TR/css3-regions">
+		<link rel="help" href="http://www.w3.org/TR/css3-regions/#rfcb-flow-fragment-height-resolution">
+		<link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
+		<link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
+		<link rel="help" href="http://www.w3.org/TR/css3-flexbox">
+		<meta name="flags" content="ahem">
+		<meta name="assert" content="Test that using the flex-basis property sizes the flex items to a percentage of the flexbox container's height.">
+		<link rel="match" href="reference/autoheight-regions-in-fixed-sized-flexbox-007-ref.html">
+		<style>
+			.content {
+				font-family: Ahem;
+				font-size: 20px;
+				line-height: 1em;
+				color: green;
+				flow-into: flow;
+			}
+
+			.flex {
+				display: flex;
+				flex-direction: column;
+				justify-content: space-around;
+				height: 200px;
+				width: 80px;
+			}
+
+			.region {
+				flex-basis: 10%;
+				flow-from: flow;
+			}
+
+		</style>
+	</head>
+	<body>
+		<ol>
+			<li>Test passes if you see you three identical green stripes.</li>
+		</ol>
+		<div class="content">
+			XXXX<br>
+			XXXX<br>
+			XXXX<br>
+			XXXX<br>
+		</div>
+		<div class="flex">
+			<div class="region"></div>
+			<div class="region"></div>
+			<div class="region"></div>
+		</div>
+		<div class="region"></div>
+	</body>
+</html>

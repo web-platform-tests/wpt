@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>CSS Reftest Reference</title>
+		<link rel="author" title="Catalin Badea" href="mailto:badea@adobe.com">
+		<style>
+			.row {
+				display: inline-block;
+			}
+
+			.green {
+				width: 100px;
+				height: 40px;
+				background-color: green;
+			}
+
+			.blue {
+				width: 100px;
+				height: 40px;
+				background-color: blue;
+			}
+		</style>
+	</head>
+	<body>
+		<ol>
+			<li>The green and blue rectangles are regions placed inside a flexbox with column wrap flow.</li>
+			<li>Test passes if you see two columns with a total of 6 alternating green and blue stripes.</li>
+		</ol>
+		<div class="row">
+			<div class="green"></div>
+			<div class="blue"></div>
+			<div class="green"></div>
+		</div><div class="row">
+			<div class="blue"></div>
+			<div class="green"></div>
+			<div class="blue"></div>
+		</div>
+
+	</body>
+</html>

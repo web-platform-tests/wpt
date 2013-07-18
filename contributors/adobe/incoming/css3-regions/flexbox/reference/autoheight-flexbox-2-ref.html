@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>CSS Reftest Reference</title>
+		<link rel="author" title="Catalin Badea" href="mailto:badea@adobe.com">
+		<style>
+			.flex {
+				display: flex;
+				font-family: Ahem;
+				font-size: 20px;
+				line-height: 20px;
+				color: green;
+			}
+
+			.region {
+				width: 100px;
+				padding: 10px;
+				background-color: gray;
+			}
+		</style>
+	</head>
+	<body>
+		<ul>
+			<li>Test passes if you see a green square inside a gray rectangle.</li>
+		</ul>
+		<div class="region">
+			<div class="flex">
+				XXXXX<br>
+				XXXXX<br>
+				XXXXX<br>
+				XXXXX<br>
+				XXXXX
+			</div>
+		</div>
+	</body>
+</html>

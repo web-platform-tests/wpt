@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>CSS Regions: flowing flexbox elements in region</title>
+		<link rel="author" title="Catalin Badea" href="mailto:badea@adobe.com">
+		<link rel="help" href="http://www.w3.org/TR/css3-regions">
+		<link rel="help" href="http://www.w3.org/TR/css3-flexbox">
+		<meta name="assert" content="Test that flexbox elements are flowed inside a namedflow.">
+		<link rel="match" href="reference/regions-flexbox-1-ref.html">
+		<style>
+			.flex {
+				display: flex;
+				height: 100px;
+				width: 100px;
+				background-color: green;
+				flow-into: flow;
+			}
+
+			.region {
+				height: 150px;
+				width: 200px;
+				background-color: gray;
+				flow-from: flow;
+			}
+		</style>
+	</head>
+	<body>
+		<ul>
+			<li>Test passes if you see a green square inside a gray rectangle.</li>
+		</ul>
+		<div class="flex">
+		</div>
+		<div class="region">
+		</div>
+	</body>
+</html>

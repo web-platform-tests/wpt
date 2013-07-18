@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>CSS Regions: regions with max height in fixed sized flexbox</title>
+		<link rel="author" title="Catalin Badea" href="mailto:badea@adobe.com">
+		<style>
+			.content {
+				font-family: Ahem;
+				font-size: 20px;
+				line-height: 1em;
+				color: green;
+			}
+
+			.flex {
+				display: flex;
+				flex-direction: column;
+				justify-content: space-between;
+				height: 200px;
+				width: 100px;
+			}
+
+			.region {
+				max-height: 20px;
+				flex: auto;
+			}
+		</style>
+	</head>
+	<body>
+		<ol>
+			<li>Test passes if you see three green stripes.</li>
+		</ol>
+		<div class="flex">
+			<div class="region">
+				<div class="content">
+					XXXX<br>
+				</div>
+			</div>
+			<div class="region">
+				<div class="content">
+					XXXX<br>
+				</div>
+			</div>
+			<div class="region">
+				<div class="content">
+					XXXX<br>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

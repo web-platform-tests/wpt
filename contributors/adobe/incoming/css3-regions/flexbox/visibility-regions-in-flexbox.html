@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>CSS Regions: Flexbox regions collapsed</title>
+		<link rel="author" title="Catalin Badea" href="mailto:badea@adobe.com">
+		<link rel="help" href="http://www.w3.org/TR/css3-regions">
+		<link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
+		<link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
+		<link rel="help" href="http://www.w3.org/TR/css3-flexbox">
+		<link rel="help" href="http://www.w3.org/TR/css3-flexbox/#visibility-collapse">
+		<meta name="flags" content="ahem">
+		<meta name="assert" content="Test checks that the flexbox collapsed property works on region flex items.">
+		<link rel="match" href="reference/visibility-regions-in-flexbox-ref.html">
+		<style>
+			.content {
+				font-family: Ahem;
+				font-size: 20px;
+				line-height: 1em;
+				color: green;
+				flow-into: flow;
+			}
+
+			.flex {
+				display: flex;
+			}
+
+			.region {
+				flow-from: flow;
+			}
+
+			.break {
+				region-break-after: always;
+			}
+
+			#r2 {
+				visibility: collapse;
+				height: 100px;
+			}
+		</style>
+	</head>
+	<body>
+		<ol>
+			<li>Test passes if you see a single green stripe.</li>
+		</ol>
+		<div class="content">
+			XXXXX<br><div class="break"></div>
+			XXXXX<div class="break"></div>
+			XXXXX<br>
+		</div>
+		<div class="flex">
+			<div class="region" id="r1">Test failed.</div>
+			<div class="region" id="r2"></div>
+			<div class="region" id="r3"></div>
+		</div>
+	</body>
+</html>

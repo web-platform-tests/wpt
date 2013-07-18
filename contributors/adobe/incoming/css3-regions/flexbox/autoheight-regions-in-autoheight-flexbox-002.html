@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>CSS Regions: Auto-height regions with vertical writing mode in auto-height flexbox</title>
+		<link rel="author" title="Catalin Badea" href="mailto:badea@adobe.com">
+		<link rel="help" href="http://www.w3.org/TR/css3-regions">
+		<link rel="help" href="http://www.w3.org/TR/css3-regions/#rfcb-flow-fragment-height-resolution">
+		<link rel="help" href="http://www.w3.org/TR/css3-flexbox">
+		<link rel="help" href="http://www.w3.org/TR/css3-writing-modes">
+		<meta name="assert" content="Test checks that auto-height regions having content with vertical writing mode are sized correctly when placed inside a flexbox container.">
+		<link rel="match" href="reference/autoheight-regions-in-autoheight-flexbox-002-ref.html">
+		<style>
+			.content {
+				font-size: 20px;
+				line-height: 1em;
+				color: green;
+				background-color: green;
+				flow-into: flow;
+				writing-mode: vertical-rl;
+			}
+
+			.flexbox {
+				display: flex;
+				flex-flow: row;
+			}
+
+			.region {
+				bakground-color: green;
+				flow-from: flow;
+			}
+
+		</style>
+	</head>
+	<body>
+		<ol>
+			<li>Test passes if you see a green stripe.</li>
+		</ol>
+		<div class="content">
+			XX<br>
+			XX<br>
+			XX<br>
+			XX<br>
+			XX
+		</div>
+		<div class="flexbox">
+			<div class="region"> </div>
+		</div>
+	</body>
+</html>

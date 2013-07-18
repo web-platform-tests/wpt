@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>CSS Regions: Auto-height regions in fixed sized flexboxes with align-items and justify-content</title>
+		<link rel="author" title="Catalin Badea" href="mailto:badea@adobe.com">
+		<link rel="help" href="http://www.w3.org/TR/css3-regions">
+		<link rel="help" href="http://www.w3.org/TR/css3-regions/#rfcb-flow-fragment-height-resolution">
+		<link rel="help" href="http://www.w3.org/TR/css3-flexbox">
+		<meta name="assert" content="Test checks auto-height regions' layout when placed inside a flexbox with using align-items and justify-content properties.">
+		<link rel="match" href="reference/autoheight-regions-in-fixed-sized-flexbox-005-ref.html">
+		<style>
+			.content {
+				line-height: 1em;
+				font-size: 20px;
+				font-family: Ahem;
+				color: green;
+				flow-into: flow;
+			}
+
+			.flex {
+				display: flex;
+				align-items: center;
+				justify-content: space-around;
+				height: 100px;
+				width: 420px;
+			}
+
+			.region {
+				flow-from: flow;
+			}
+
+			.break {
+				region-break-after: always;
+			}
+		</style>
+	</head>
+	<body>
+		<ol>
+			<li>Test passes if you see three green stripes.</li>
+		</ol>
+		<div class="content">
+			<div class="break">XXXX</div>
+			<div class="break">XXXX</div>
+			<div class="break">XXXX</div>
+		</div>
+		<div class="flex">
+			<div class="region">XXXX</div>
+			<div class="region">XXXX</div>
+			<div class="region">XXXX</div>
+		</div>
+	</body>
+</html>

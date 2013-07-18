@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>CSS Regions: column flexbox fragmentation</title>
+		<link rel="author" title="Catalin Badea" href="mailto:badea@adobe.com">
+		<link rel="help" href="http://www.w3.org/TR/css3-regions">
+		<link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
+		<link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
+		<link rel="help" href="http://www.w3.org/TR/css3-flexbox">
+		<meta name="flags" content="ahem">
+		<meta name="assert" content="Test checks that a flexbox container with column flow is split between regions.">
+		<link rel="match" href="reference/column-flexbox-break-ref.html">
+		<style>
+			.flex {
+				display: flex;
+				flex-direction: column;
+				flow-into: flow;
+			}
+
+			.region {
+				flow-from: flow;
+				height: 40px;
+			}
+
+			.item {
+				font-family: Ahem;
+				font-size: 20px;
+				line-height: 1em;
+				color: green;
+			}
+		</style>
+	</head>
+	<body>
+		<ol>
+			<li>Test passes if you see two green stripes.</li>
+		</ol>
+		<div class="flex">
+			<div class="item">XXXX<br>XXXX</div>
+			<div class="item">XXXX<br>XXXX</div>
+		</div>
+		<div class="region"></div>
+		<br>
+		<div class="region"></div>
+	</body>
+</html>

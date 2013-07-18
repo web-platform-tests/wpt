@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>CSS Regions: Auto-height regions inside fixed sized flexbox</title>
+		<link rel="author" title="Catalin Badea" href="mailto:badea@adobe.com">
+		<link rel="help" href="http://www.w3.org/TR/css3-regions">
+		<link rel="help" href="http://www.w3.org/TR/css3-regions/#rfcb-flow-fragment-height-resolution">
+		<link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
+		<link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
+		<link rel="help" href="http://www.w3.org/TR/css3-flexbox">
+		<link rel="help" href="http://www.w3.org/TR/css3-flexbox/#flex-grow">
+		<meta name="flags" content="ahem">
+		<meta name="assert" content="Test checks that auto-height regions respect the flex grow property when placed inside a fixed sized flexbox with a single row.">
+		<link rel="match" href="reference/autoheight-regions-in-fixed-sized-flexbox-001-ref.html">
+		<style>
+			.content_1, .content_2 {
+				font-family: Ahem;
+				line-height: 20px;
+				font-size: 20px;
+			}
+			.content_1 {
+				color: green;
+				flow-into: flow_1;
+			}
+
+			.content_2 {
+				color: blue;
+				flow-into: flow_2;
+			}
+
+			#fixed {
+				height: 200px;
+				width: 100px;
+				background-color: blue;
+			}
+
+			.flex {
+				display: flex;
+				height: 200px;
+				width: 500px;
+			}
+
+			.region_1 {
+				flow-from: flow_1;
+				flex-grow: 0;
+			}
+
+			.region_2 {
+				flow-from: flow_2;
+				flex-grow: 1;
+			}
+		</style>
+	</head>
+	<body>
+		<ul>
+			<li>Test passes if you can see two squares, each having one half colored green and the other half colored blue.</li>
+		</ul>
+		<div class="content_1">
+			XXXXX<br>XXXXX<br>XXXXX<br>XXXXX<br>
+			XXXXX<br>XXXXX<br>XXXXX<br>XXXXX<br>
+			XXXXX<br>XXXXX<br>XXXXX<br>XXXXX<br>
+			XXXXX<br>XXXXX<br>XXXXX<br>XXXXX<br>
+			XXXXX<br>XXXXX<br>XXXXX<br>XXXXX<br>
+		</div>
+		<div class="content_2">
+			XXXXX<br>XXXXX<br>XXXXX<br>XXXXX<br>
+			XXXXX<br>XXXXX<br>XXXXX<br>XXXXX<br>
+			XXXXX<br>XXXXX<br>
+		</div>
+		<div class="flex">
+			<div class="region_1">
+			</div>
+			<div class="region_2">
+			</div>
+			<div id='fixed'>
+			</div>
+			<div class="region_1">
+			</div>
+		</div>
+	</body>
+</html>

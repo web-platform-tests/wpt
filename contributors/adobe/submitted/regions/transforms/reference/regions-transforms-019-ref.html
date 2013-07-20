@@ -6,6 +6,7 @@
 		<style>
 		.transformed {
 			transform: rotateY(45deg);
+			transition: 2s;
 		}
 		.flow {
 			color: green;
@@ -22,10 +23,24 @@
 			height: 100px;
 			margin: 20px;
 		}
+		
+		
+		#failure {
+		    position: absolute;
+		    left: 25px;
+		    width: 10px;
+		    height: 112px;
+		    background-color: red;
+		    z-index: -1;
+		}
+		
+		
+		
 		</style>
 	</head>
 	<body>
-		<p>Test passes if you see a green trapeze and no red.</p>
+		<p>Test passes if you see a green trapezoid and no red.</p>
+		<div id="failure"></div>
 		<div class="region perspective">
 			<div class="flow transformed">
 				xxxxx<br>

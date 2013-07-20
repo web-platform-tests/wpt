@@ -3,27 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <title></title>
-    <title>CSS Regions: Transformed content in named flows using 3D transform and perspective</title>
+    <title>CSS Regions: 3D transform on named flow content with perspective()</title>
     <link rel="author" title="David Alcala" href="mailto:dalcala@adobe.com">
+    <link rel="reviewer" title="Rebecca Hauck" href="mailto:rhauck@adobe.com"> <!-- 07-15-2013 -->
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
-    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-functions">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#three-d-transform-functions">
     <link rel="match" href="reference/regions-transforms-016-ref.html">
-    <meta name="assert" content="CSS rotateX and perspective 3D transform applied to a named flow transforms the content node.">
+    <meta name="assert" content="This test checks that a 3D transform is applied with perspective to named flow content.">
     <style>
     #region {
         width: 300px;
         height: 300px;
         position: relative;
-        -webkit-flow-from: f;
+        flow-from: f;
     }
-    #source {
+    #named-flow {
         width: 200px;
         height: 200px;
         margin: 0 auto 60px;
         background-color: green;
-        -webkit-flow-into: f;
-        -webkit-transform: perspective(600px) rotateX(45deg);
+        flow-into: f;
+        transform: perspective(600px) rotateX(45deg);
     }
     #div-red-parent {
         position: relative;
@@ -53,15 +54,15 @@
     </style>
 </head>
 <body>
-    <p>The test passes if you see a green polygon and no red.</p>
-    <!-- This test fails in WebKit.  See this bug: [CSS Regions] Incorrect polygon shape when using rotateX and perspective 3D transforms on content node - https://bugs.webkit.org/show_bug.cgi?id=114293 -->
+    <p>The test passes if you see a green trapezoid and no red.</p>
+    <!-- This test fails in WebKit.  See this bug: https://bugs.webkit.org/show_bug.cgi?id=114293 -->
     <div id="div-red-parent">
         <div class="div-red" id="div-red1"></div>
         <div class="div-red" id="div-red2"></div>
         <div class="div-red" id="div-red3"></div>
         <div class="div-red" id="div-red4"></div>
     </div>
-    <div id="source"></div>
+    <div id="named-flow"></div>
     <div id="region"></div>
 
 </body>

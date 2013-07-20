@@ -1,49 +1,49 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>CSS Regions: Content that has a 3D transform flowed in a region does not clip</title>
+		<title>CSS Regions: 3D transform on named flow (text) content that overflows a region</title>
+		<link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
 		<link rel="author" title="Mihai Balan" href="mailto:mibalan@adobe.com">
 		<link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
 		<link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
-		<link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-functions">
+        <link rel="help" href="http://www.w3.org/TR/css3-transforms/#three-d-transform-functions">
 		<meta name="assert" content="Test checks that content that is transformed does not clip when flowed in a region.">
 		<meta name="flags" content="ahem">
 		<link rel="match" href="reference/regions-transforms-018-ref.html">
 		<style>
-		.transformed {
-			transform: rotateZ(45deg);
-		}
-		.flow {
-			flow-into: f;
-			color: green;
+		.ahem {
 			font-family: Ahem;
 			font-size: 20px;
-			line-height: 1em;
+			line-height: 100px;
+        }
+    	#named-flow {
+			flow-into: f;
+			transform: rotateZ(90deg);
+            color: green;
 		}
-		.region {
+		#region {
 			flow-from: f;
-			background-color: lightblue;
+			border-bottom: 20px solid green;
 			width: 100px;
-			height: 100px;
-			margin: 20px;
+			height: 80px;
 		}
-		.region p {
-			background-color: red;
-			height: 50%;
+		#failure {
+		    position: absolute;
+		    width: 18px;
+		    height: 78px;
+		    background-color: red;
+		    top: 151px;
+		    left: 49px;
+		    z-index: -1;
 		}
 		</style>
 	</head>
 	<body>
-		<p>Test passes if you see no red and a green square rotated 45 degrees on top of a blue square.</p>
-		<div class="flow transformed">
-			xxxxx<br>
-			xxxxx<br>
-			xxxxx<br>
-			xxxxx<br>
-			xxxxx<br>
+		<p>The test passes if you see a green cross and no red.</p>
+		<div id="named-flow" class="ahem">
+			XXXXXXXXX
 		</div>
-		<div class="region">
-			<p>&nbsp;</p>
-		</div>
+		<div id="region"></div>
+		<div id="failure"></div>
 	</body>
 </html>

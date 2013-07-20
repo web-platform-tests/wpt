@@ -7,20 +7,21 @@
     <link rel="author" title="David Alcala" href="mailto:dalcala@adobe.com">
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
-    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-functions">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions">
     <link rel="help" href="http://www.w3.org/TR/css-break/#transforms">
     <link rel="match" href="reference/regions-transforms-008-ref.html">
     <meta name="flags" content="ahem">
-    <meta name="assert" content="This test checks that the regions are transformed when named flow text content breaks across multiple regions and that the overflow remains visible.">
+    <meta name="assert" content="This test checks that the regions are transformed when named flow text content breaks 
+                                 across multiple regions and that the overflow remains visible.">
     <style>
     .ahem {
         font-family: Ahem;
         font-size: 10px;
         line-height: 20px; 
     }
-    #source {
+    #named-flow {
         color: green;
-        -webkit-flow-into: f;
+        flow-into: f;
     }
     .region {
         width: 100px;
@@ -28,8 +29,8 @@
         float: left;
         margin-left: 10px;
         border: 1px solid black;
-        -webkit-flow-from: f;
-        -webkit-transform: translateX(50px);
+        flow-from: f;
+        transform: translateX(50px);
     }
     .failure-left,
     .failure-right {
@@ -60,7 +61,7 @@
           <li>There are two green horizontal stripes below the square on right</li>
           <li>There is no red</li>
       </ul>
-      <div id="source" class="ahem">XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX</div>
+      <div id="named-flow" class="ahem">XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX</div>
       <div class="region left"></div>
       <div class="region"></div>
       <div class="ahem failure-left">

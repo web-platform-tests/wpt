@@ -4,28 +4,29 @@
     <meta charset="UTF-8">
     <title>CSS Regions: Transformed region using a 3D transform</title>
     <link rel="author" title="David Alcala" href="mailto:dalcala@adobe.com">
+    <link rel="reviewer" title="Rebecca Hauck" href="mailto:rhauck@adobe.com"> <!-- 07-15-2013 -->
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
-    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-functions">
-    <link rel="match" href="reference/regions-transforms-013-ref.html">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#three-d-transform-functions">
+    <link rel="match" href="reference/regions-transforms-001-ref.html">
     <meta name="assert" content="This test checks that a 3D transform can be applied to a region">
     <style>
    
-    #source {
+    #named-flow {
         width: 75px;
         height: 75px;
         background-color: red;
         border-top: 25px solid green;
         border-right: 25px solid green;
-        -webkit-flow-into: f;
+        flow-into: f;
     }
     #region {
         width: 100px;
         height: 100px;
         margin
         background-color: red;
-        -webkit-flow-from: f;
-        -webkit-transform:  rotate3d(1,1,0,180deg);
+        flow-from: f;
+        transform:  rotate3d(1,1,0,180deg);
     }
     #square {
         position: absolute;
@@ -55,7 +56,7 @@
     
     <div id="failure1"></div>
     <div id="failure2"></div>
-    <div id="source"></div>
+    <div id="named-flow"></div>
     <div id="region"></div>
     <div id="square"></div>
 </body>

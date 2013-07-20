@@ -1,37 +1,21 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>CSS Reftest Reference</title>
-		<link rel="author" title="Mihai Balan" href="mailto:mibalan@adobe.com">
-		<style>
-		.transformed {
-			transform: rotateY(45deg);
-		}
-		.flow {
-			color: green;
-			font-family: Ahem;
-			font-size: 20px;
-			line-height: 1em;
-		}
-
-		.region {
-			width: 100px;
-			height: 100px;
-			background-color: lightblue;
-		}
-		</style>
-	</head>
-	<body>
-		<p>Test passes if you see a green rectangle with blue vertical borders and no red.</p>
-		
-		<div class="region">
-			<div class="flow transformed">
-				xxxxx<br>
-				xxxxx<br>
-				xxxxx<br>
-				xxxxx<br>
-				xxxxx<br>
-			</div>
-		</div>
-	</body>
+<head>
+    <title>CSS Reftest Reference</title>
+    <link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
+    <style type="text/css">
+    .green-square {
+        width: 100px;
+        height: 100px;
+        margin-left: 10px;
+        float: left;
+        background-color: green;
+    }
+    </style>
+</head>
+<body>
+    <p>The test passes if you see two green squares and no red.</p>
+    <div class="green-square"></div>
+    <div class="green-square"></div>
+</body>
 </html>

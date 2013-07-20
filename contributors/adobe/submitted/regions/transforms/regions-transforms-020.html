@@ -1,63 +1,61 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html>
-	<head>
-		<title>CSS Regions: perspective property set on the content nodes' parent does not apply when content is flowed in a region</title>
-		<link rel="author" title="Mihai Balan" href="mailto:mibalan@adobe.com">
-		<link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
-		<link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
-		<link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-functions">
-		<!-- TODO: Link to fragmentation spec section about perspective, fragments and fragmentainers - once this gets in the spec. -->
-		<meta name="assert" content="Test checks that content that has a 3D transform does not respect the perspective set on its parent when flowed in a region.">
-		<meta name="flags" content="ahem">
-		<link rel="match" href="reference/regions-transforms-020-ref.html">
-		<style>
-		#parent {
-			width: 100px;
-			height: 100px;
-		}
-		
-		.perspective {
-			perspective: 200px;
-			perspective-origin: 100% 50%;
-		}
-		.transformed {
-			transform: rotateY(45deg);
-		}
-		.flow {
-			flow-into: f;
-			color: green;
-			font-family: Ahem;
-			font-size: 20px;
-			line-height: 1em;
-		}
+<head>
+    <meta charset="UTF-8">
+    <title>CSS Regions: Transformed region with named flow (fragmentable) content that breaks across multiple regions</title>
+    <link rel="author" title="David Alcala" href="mailto:dalcala@adobe.com">
+    <link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
+    <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
+    <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions">
+    <link rel="help" href="http://www.w3.org/TR/css-break/#transforms">
+    <link rel="help" href="http://www.w3.org/TR/css-break/#breaking-rules">
+    <link rel="match" href="reference/regions-transforms-020-ref.html">
+    <meta name="assert" content="This test checks that the named flow content that is fragmentable (has a break point)
+                                 is transformed when it breaks across multiple regions.">
+    <style>
+    #named-flow {
+        width: 100px;
+        height: 100px;
+        flow-into: f;
+    }
+    .src-child {
+        height: 50px;
+        background-color: green;
+    }
+    .region {
+        width: 100px;
+        height: 50px;
+        margin-left: 10px;
+        float: left;
+        background-color: red;
+        flow-from: f;
+        transform: scaleY(2);
+        transform-origin: top left;
+    }
 
-		.region {
-			flow-from: f;
-			width: 100px;
-			height: 100px;
-			background-color: lightblue;
-		}
-		.region p {
-			background-color: red;
-			height: 50%;
-		}
-		</style>
-	</head>
-	<body>
-		<p>Test passes if you see a green rectangle with blue vertical borders and no red.</p>
-		
-		<div class="region">
-			<p>&nbsp;</p>
-		</div>
-
-		<div id="parent" class="perspective">
-			<div class="flow transformed">
-				xxxxx<br>
-				xxxxx<br>
-				xxxxx<br>
-				xxxxx<br>
-				xxxxx<br>
-			</div>
-		</div>
-	</body>
+    .failure-div {
+        position: absolute;
+        margin-left: 10px;
+        background-color: red;
+        width: 98px;
+        height: 98px;
+    }
+    .right {
+        left: 119px;
+    }
+    </style>
+</head>
+<body>
+    <p>The test passes if you see two green squares and no red.</p>
+    <div class="failure-div"></div>
+    <div class="failure-div right"></div>
+    <div id="named-flow">
+        <div class="src-child"></div>
+        <div class="src-child"></div>
+    </div>
+    <div class="region"></div>
+    <div class="region"></div>
+    
+</body>
 </html>

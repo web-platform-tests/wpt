@@ -2,35 +2,28 @@
 <html>
 	<head>
 		<title>CSS Reftest Reference</title>
-		<link rel="author" title="Mihai Balan" href="mailto:mibalan@adobe.com">
-		<style>
-		.transformed {
-			transform: rotateZ(45deg);
-		}
-		.flow {
-			color: green;
-			font-family: Ahem;
-			font-size: 20px;
-			line-height: 1em;
-		}
-		.region {
-			background-color: lightblue;
-			width: 100px;
-			height: 100px;
-			margin: 20px;
-		}
-		</style>
-	</head>
-	<body>
-		<p>Test passes if you see no red and a green square rotated 45 degrees on top of a blue square.</p>
-		<div class="region">
-			<div class="flow transformed">
-				xxxxx<br>
-				xxxxx<br>
-				xxxxx<br>
-				xxxxx<br>
-				xxxxx<br>
-			</div>
-		</div>
-	</body>
-</html>
+		<link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
+	    	<style>
+    		#vertical {
+    			color: green;
+    			font-family: Ahem;
+    			font-size: 20px;
+    			line-height: 100px;
+    	        transform: rotateZ(90deg);
+    		}
+    		#horizontal {
+    			border-bottom: 20px solid green;
+    			width: 100px;
+    			height: 80px;
+    		}
+    		</style>
+    	</head>
+    	<body>
+    		<p>The test passes if you see a green cross and no red.</p>
+    		<div id="horizontal">
+        		<div id="vertical">
+        			XXXXXXXXX
+        		</div>
+        	</div>
+    	</body>
+    </html>

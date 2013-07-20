@@ -7,23 +7,23 @@
     <link rel="author" title="David Alcala" href="mailto:dalcala@adobe.com">
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
     <link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
-    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-functions">
+    <link rel="help" href="http://www.w3.org/TR/css3-transforms/#two-d-transform-functions">
     <link rel="match" href="reference/regions-transforms-010-ref.html">
     <meta name="assert" content="This test checks that the transform can be applied on relative positioned region.">
     <style>
-    #source {
+    #named-flow {
         width: 100px;
         height: 100px;
         background-color: green;
-        -webkit-flow-into: f;
+        flow-into: f;
     }
     #region {
         width: 200px;
         height: 200px;
         position: relative;
         left: -50px;
-        -webkit-flow-from: f;
-        -webkit-transform: rotate(90deg);
+        flow-from: f;
+        transform: rotate(90deg);
     }
     #failure {
         position: absolute;
@@ -38,7 +38,7 @@
 <body>
     <p>The test passes if you see a green square and no red.</p>
     <div id="failure"></div>
-    <div id="source"></div>
+    <div id="named-flow"></div>
     <div id="region"></div>
 </body>
 </html>

@@ -8,7 +8,6 @@ import os.path
 skipDirs = ('support')
 reftestPath = 'reftest.list'
 rawDirs = {'other-formats':'other'}
-specDraft = 'http://dev.w3.org/csswg/css-shapes-1/'
 
 import sys
 from os.path import join, exists, basename
@@ -57,8 +56,6 @@ for path in unreviewed:
         return False
       for line in open(join(path, file)):
         if line.find(suite.specroot) != -1:
-          return True
-        if line.find(specDraft) != -1:
           return True
       return False
     files = listfiles(path)

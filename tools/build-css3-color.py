@@ -24,7 +24,7 @@ unreviewed = sys.argv[1:]
 print "Requested unreviewed source directories."
 
 # Set up
-suite = TestSuite('css3-color', 'CSS Color Module Level 3 Test Suite', 'http://www.w3.org/TR/css3-color/')
+suite = TestSuite('css-color-3_dev', 'CSS Color Module Level 3 Test Suite', 'http://www.w3.org/TR/css3-color/')
 
 # Add approved tests
 root = join('approved', 'css3-color', 'src')

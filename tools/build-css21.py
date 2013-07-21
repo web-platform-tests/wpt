@@ -42,7 +42,7 @@ unreviewed = sys.argv[1:]
 print "Requested unreviewed source directories."
 
 # Set up
-suite = TestSuite(suiteName, 'CSS2.1 Test Suite', 'http://www.w3.org/TR/CSS21/')
+suite = TestSuite('css21_dev', 'CSS2.1 Test Suite', 'http://www.w3.org/TR/CSS21/')
 
 # Add approved tests
 root = join('approved', 'css2.1', 'src')

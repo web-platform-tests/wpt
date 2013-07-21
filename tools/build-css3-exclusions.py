@@ -24,7 +24,7 @@ unreviewed = sys.argv[1:]
 print "Requested unreviewed source directories."
 
 # Set up
-suite = TestSuite('css3-exclusions', 'CSS Exclusions Module Test Suite', 'http://www.w3.org/TR/css3-exclusions/')
+suite = TestSuite('css-exclusions-1_dev', 'CSS Exclusions Module Test Suite', 'http://www.w3.org/TR/css3-exclusions/')
 suite.setFormats(('html5', 'xhtml1', 'xhtml1print'))
 
 # Add approved tests

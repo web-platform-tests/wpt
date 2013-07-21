@@ -24,7 +24,7 @@ unreviewed = sys.argv[1:]
 print "Requested unreviewed source directories."
 
 # Set up
-suite = TestSuite('css-style-attr', 'CSS Style Attributes Module Test Suite', 'http://www.w3.org/TR/css-style-attr/')
+suite = TestSuite('css-style-attr-1_dev', 'CSS Style Attributes Module Test Suite', 'http://www.w3.org/TR/css-style-attr/')
 
 # Add approved tests
 root = join('approved', 'css-style-attr', 'src')

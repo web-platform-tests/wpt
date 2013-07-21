@@ -24,7 +24,7 @@ unreviewed = sys.argv[1:]
 print "Requested unreviewed source directories."
 
 # Set up
-suite = TestSuite('css3-transforms', 'CSS Transforms Module Test Suite', 'http://www.w3.org/TR/css3-transforms/')
+suite = TestSuite('css-transforms-1_dev', 'CSS Transforms Module Test Suite', 'http://www.w3.org/TR/css3-transforms/')
 suite.setFormats(('html5', 'xhtml1'))
 
 # Add approved tests

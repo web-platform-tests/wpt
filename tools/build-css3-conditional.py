@@ -24,7 +24,7 @@ unreviewed = sys.argv[1:]
 print "Requested unreviewed source directories."
 
 # Set up
-suite = TestSuite('css3-conditional', 'CSS Conditional Module Test Suite', 'http://www.w3.org/TR/css3-conditional/')
+suite = TestSuite('css-conditional-3_dev', 'CSS Conditional Module Test Suite', 'http://www.w3.org/TR/css3-conditional/')
 suite.setFormats(('html5', 'xhtml1'))
 
 # Add approved tests

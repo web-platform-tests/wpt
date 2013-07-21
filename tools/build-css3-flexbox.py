@@ -24,7 +24,7 @@ unreviewed = sys.argv[1:]
 print "Requested unreviewed source directories."
 
 # Set up
-suite = TestSuite('css3-flexbox', 'CSS Flexbox Module Test Suite', 'http://www.w3.org/TR/css3-flexbox/')
+suite = TestSuite('css-flexbox-1_dev', 'CSS Flexbox Module Test Suite', 'http://www.w3.org/TR/css3-flexbox/')
 suite.setFormats(('html5', 'xhtml1'))
 
 # Add approved tests

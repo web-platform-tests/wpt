@@ -24,7 +24,7 @@ unreviewed = sys.argv[1:]
 print "Requested unreviewed source directories."
 
 # Set up
-suite = TestSuite('css3-background', 'CSS Backgrounds and Borders Module Test Suite', 'http://www.w3.org/TR/css3-background/')
+suite = TestSuite('css-backgrounds-3_dev', 'CSS Backgrounds and Borders Module Test Suite', 'http://www.w3.org/TR/css3-background/')
 
 # Add approved tests
 root = join('approved', 'css3-background', 'src')

@@ -24,7 +24,7 @@ unreviewed = sys.argv[1:]
 print "Requested unreviewed source directories."
 
 # Set up
-suite = TestSuite('css3-multicol', 'CSS Multi-column Layout Module Test Suite', 'http://www.w3.org/TR/css3-multicol/')
+suite = TestSuite('css-multicol-1_dev', 'CSS Multi-column Layout Module Test Suite', 'http://www.w3.org/TR/css3-multicol/')
 
 # Add approved tests
 root = join('approved', 'css3-multicol', 'src')

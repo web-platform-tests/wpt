@@ -24,7 +24,7 @@ unreviewed = sys.argv[1:]
 print "Requested unreviewed source directories."
 
 # Set up
-suite = TestSuite('css-masking', 'CSS Masking Module Test Suite', 'http://www.w3.org/TR/css-masking/')
+suite = TestSuite('css-masking-1_dev', 'CSS Masking Module Test Suite', 'http://www.w3.org/TR/css-masking/')
 suite.setFormats(('html5', 'xhtml1', 'xhtml1print'))
 
 # Add approved tests

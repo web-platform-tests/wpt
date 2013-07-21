@@ -24,7 +24,7 @@ unreviewed = sys.argv[1:]
 print "Requested unreviewed source directories."
 
 # Set up
-suite = TestSuite('filter-effects', 'Filter Effects 1.0 Test Suite', 'http://www.w3.org/TR/filter-effects/')
+suite = TestSuite('filters-1_dev', 'Filter Effects 1.0 Test Suite', 'http://www.w3.org/TR/filter-effects/')
 suite.setFormats(('html5', 'xhtml1'))
 
 # Add approved tests

@@ -30,6 +30,7 @@ Web IDL features that are not used in specific interesting ways:
 
   * implements statement, with more than one consequential interface
   * operation overloading with distinguishing index > 0
+  * operation overloading distinguishing between boolean, numeric types and DOMString
   * callback interface with multiple operations
   * callback interface with attribute
   * exception inheritance
@@ -40,6 +41,7 @@ Web IDL features that are not used in specific interesting ways:
   * enum type as an operation return type or attribute type (IDL -> JS conversion)
   * stringifier on an operation
   * interface with a named property setter but not a named property creator
+  * optional arguments not just in trailing positions
 
 Web IDL features that are not used at all:
 

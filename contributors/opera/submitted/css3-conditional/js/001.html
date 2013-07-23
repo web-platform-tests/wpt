@@ -36,9 +36,9 @@
 	 * specified to a sufficient degree of presition, this should be
 	 * replaced by a strict textual comparison with assert_equals.
 	 */
-	funtion assert_equals_normalized(a, b) {
+	function assert_equals_normalized(a, b) {
 		var normal_a = a.replace(/\s+/g, " ");
-		var normal b = b.replace(/\s+/g, " ");
+		var normal_b = b.replace(/\s+/g, " ");
 		assert_equals(normal_a, normal_b);
 	}
 	test(function(){

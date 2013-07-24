@@ -137,7 +137,13 @@ var data = [
   ["nextid", "Unknown"],
   ["rb", "Unknown"],
   ["bdi", ""],
-  ["data", "Data"]
+  ["data", "Data"],
+  ["a", "Anchor"],
+  ["area", "Area"],
+  ["dialog", "Dialog"],
+  ["figcaption", ""],
+  ["summary", ""],
+  ["track", "Track"]
 ];
 </script>
 <div id="log"></div>
@@ -154,7 +160,7 @@ test(function() {
                   "Element " + a[0] + " should implement Element.");
       assert_true(e instanceof Node,
                   "Element " + a[0] + " should implement Node.");
-      var str = e.toString().substring(8);
+      var str = Object.prototype.toString.call(e).substring(8);
       str = str.substring(0, str.indexOf(' ') !== -1 ? str.indexOf(' ') : str.indexOf(']'));
       assert_equals(str, i);
     }, "Interfaces for " + a[0])

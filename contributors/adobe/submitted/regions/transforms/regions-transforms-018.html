@@ -2,8 +2,9 @@
 <html>
 	<head>
 		<title>CSS Regions: 3D transform on named flow (text) content that overflows a region</title>
-		<link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
 		<link rel="author" title="Mihai Balan" href="mailto:mibalan@adobe.com">
+		<link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
+		<link rel="reviewer" title="Mihai Balan" href="mailto:mibalan@adobe.com"> <!-- 2013-07-24 -->
 		<link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
 		<link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
         <link rel="help" href="http://www.w3.org/TR/css3-transforms/#three-d-transform-functions">
@@ -15,11 +16,11 @@
 			font-family: Ahem;
 			font-size: 20px;
 			line-height: 100px;
-        }
-    	#named-flow {
+		}
+		#named-flow {
 			flow-into: f;
 			transform: rotateZ(90deg);
-            color: green;
+			color: green;
 		}
 		#region {
 			flow-from: f;
@@ -28,13 +29,13 @@
 			height: 80px;
 		}
 		#failure {
-		    position: absolute;
-		    width: 18px;
-		    height: 78px;
-		    background-color: red;
-		    top: 151px;
-		    left: 49px;
-		    z-index: -1;
+			position: absolute;
+			width: 18px;
+			height: 78px;
+			background-color: red;
+			top: 151px;
+			left: 49px;
+			z-index: -1;
 		}
 		</style>
 	</head>

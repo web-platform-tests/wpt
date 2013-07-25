@@ -1,30 +1,34 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>CSS Regions: auto height region inside an auto height flexbox</title>
+		<title>CSS Regions: auto height region inside a fixed sized flexbox</title>
 		<link rel="author" title="Catalin Badea" href="mailto:badea@adobe.com">
 		<link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
 		<link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
 		<link rel="help" href="http://www.w3.org/TR/css3-regions/#rfcb-flow-fragment-height-resolution">
-		<link rel="help" href="http://www.w3.org/TR/css3-flexbox">
+		<link rel="help" href="http://www.w3.org/TR/css3-flexbox/#layout-algorithm">
 		<meta name="flags" content="ahem">
-		<meta name="assert" content="Test that an auto height region inside a flexbox container with auto height is displayed properly. The flexbox should have its height large enough to fit the region.">
-		<link rel="match" href="reference/autoheight-flexbox-4-ref.html">
+		<meta name="assert" content="Test that an auto-height region inside a flexbox is stretched to match the flexbox
+		container's cross size.">
+		<link rel="match" href="reference/autoheight-flexbox-003-ref.html">
 		<style>
 			.content {
 				font-family: Ahem;
 				font-size: 20px;
-				line-height: 20px;
+				line-height: 1em;
 				color: green;
 				flow-into: flow;
 			}
 			.region {
 				flow-from: flow;
-				background-color: red;
 			}
 			.flex {
 				display: flex;
+				height: 100px;
 				width: 100px;
+			}
+
+			.red {
 				background-color: red;
 			}
 		</style>
@@ -43,6 +47,7 @@
 		</div>
 		<div class="flex">
 			<div class="region">
+				<p class="red">&nbsp;</p>
 			</div>
 		</div>
 	</body>

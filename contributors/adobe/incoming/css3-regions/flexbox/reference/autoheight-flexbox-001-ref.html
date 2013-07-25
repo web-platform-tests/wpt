@@ -5,22 +5,21 @@
 		<link rel="author" title="Catalin Badea" href="mailto:badea@adobe.com">
 		<style>
 			.flex {
-				display: flex;
 				height: 100px;
 				width: 100px;
 				background-color: green;
 			}
-
 			.region {
-				height: 150px;
-				width: 200px;
+				width: 100px;
 				background-color: gray;
+				padding: 10px;
 			}
 		</style>
 	</head>
 	<body>
 		<ul>
-			<li>Test passes if you see a green square inside a gray rectangle.</li>
+			<li>Test passes if you see a green square inside a gray square.</li>
+			<li>You shouldn't see any red.</li>
 		</ul>
 		<div class="region">
 			<div class="flex">

@@ -4,36 +4,32 @@
 		<title>CSS Reftest Reference</title>
 		<link rel="author" title="Catalin Badea" href="mailto:badea@adobe.com">
 		<style>
-			.content {
+			.flex {
 				font-family: Ahem;
 				font-size: 20px;
-				line-height: 20px;
+				line-height: 1em;
 				color: green;
 			}
+
 			.region {
-				background-color: red;
-			}
-			.flex {
-				display: flex;
 				width: 100px;
-				background-color: red;
+				padding: 10px;
+				background-color: gray;
 			}
 		</style>
 	</head>
 	<body>
 		<ul>
-			<li>Test passes if you see a green square.</li>
+			<li>Test passes if you see a green square inside a gray rectangle.</li>
 			<li>You shouldn't see any red.</li>
 		</ul>
-		<div class="flex">
-			<div class="region">
-				<div class="content">
-					XXXXX<br>
-					XXXXX<br>
-					XXXXX<br>
-					XXXXX<br>
-					XXXXX
-				</div>
+		<div class="region">
+			<div class="flex">
+				XXXXX<br>
+				XXXXX<br>
+				XXXXX<br>
+				XXXXX<br>
+				XXXXX
 			</div>
 		</div>
 	</body>

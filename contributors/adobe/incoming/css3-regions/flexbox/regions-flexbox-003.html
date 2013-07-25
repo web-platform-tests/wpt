@@ -8,33 +8,35 @@
 		<link rel="help" href="http://www.w3.org/TR/css3-flexbox">
 		<meta name="flags" content="ahem">
 		<meta name="assert" content="Test that content is flowed in a region placed inside a flexbox.">
-		<link rel="match" href="reference/regions-flexbox-3-ref.html">
+		<link rel="match" href="reference/regions-flexbox-001-ref.html">
 		<style>
 			.content {
 				font-family: Ahem;
 				font-size: 20px;
-				line-height: 20px;
+				line-height: 1em;
 				color: green;
 				flow-into: flow;
 			}
 			.region {
 				width: 100px;
 				height: 100px;
-				background-color: red;
 				flow-from: flow;
 			}
 			.flex {
 				display: flex;
 				height: 150px;
 				width: 150px;
-				border: thin black solid;
 				background-color: gray;
+			}
+
+			.red {
+				background-color: red;
 			}
 		</style>
 	</head>
 	<body>
 		<ul>
-			<li>Test passes if you see a green square inside a gray square.</li>
+			<li>Test passes if you see a green square inside a gray square positioned at its top left corner.</li>
 			<li>You shouldn't see any red.</li>
 		</ul>
 		<div class="content">
@@ -46,6 +48,7 @@
 		</div>
 		<div class="flex">
 			<div class="region">
+				<p class="red">&nbsp;</p>
 			</div>
 		</div>
 	</body>

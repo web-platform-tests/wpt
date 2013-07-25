@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>CSS Regions: regions with max height in fixed sized flexbox</title>
+		<title>CSS Regions: auto-height regions with max height in fixed sized flexbox</title>
 		<link rel="author" title="Catalin Badea" href="mailto:badea@adobe.com">
-		<link rel="help" href="http://www.w3.org/TR/css3-regions">
 		<link rel="help" href="http://www.w3.org/TR/css3-regions/#rfcb-flow-fragment-height-resolution">
 		<link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
 		<link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
-		<link rel="help" href="http://www.w3.org/TR/css3-flexbox">
+		<link rel="help" href="http://www.w3.org/TR/css3-flexbox/#layout-algorithm">
 		<meta name="flags" content="ahem">
-		<meta name="assert" content="Test whether the max-height property is applied to regions placed inside a fixed sized flexbox with a column flow.">
+		<meta name="assert" content="Test that the max-height property is applied to regions placed inside a fixed
+		sized flexbox with a column flow. The flex container should not flex the region flex items beyond their
+		max height value.">
 		<link rel="match" href="reference/autoheight-regions-in-fixed-sized-flexbox-008-ref.html">
 		<style>
 			.content {
@@ -18,12 +19,12 @@
 				line-height: 1em;
 				color: green;
 				flow-into: flow;
+				font-smoothing: none;
 			}
 
 			.flex {
 				display: flex;
 				flex-direction: column;
-				justify-content: space-between;
 				height: 200px;
 				width: 100px;
 			}
@@ -32,22 +33,28 @@
 				max-height: 20px;
 				flex: auto;
 				flow-from: flow;
+				margin-bottom: 20px;
+			}
+
+			.red {
+				background-color: red;
 			}
 		</style>
 	</head>
 	<body>
-		<ol>
-			<li>Test passes if you see three green stripes.</li>
-		</ol>
+		<ul>
+			<li>Test passes if you see three horizontal green stripes.</li>
+			<li>You shouldn't see any red.</li>
+		</ul>
 		<div class="content">
 			XXXX<br>
 			XXXX<br>
-			XXXX<br>
+			XXXX
 		</div>
 		<div class="flex">
 			<div class="region"></div>
 			<div class="region"></div>
-			<div class="region"></div>
+			<div class="region"><p class="red">&nbsp;</p></div>
 		</div>
 	</body>
 </html>

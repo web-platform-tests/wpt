@@ -1,29 +1,30 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>CSS Regions: regions inside a flexbox container with fixed size</title>
+		<title>CSS Regions: auto-height regions inside a flexbox container with fixed size</title>
 		<link rel="author" title="Catalin Badea" href="mailto:badea@adobe.com">
-		<link rel="help" href="http://www.w3.org/TR/css3-regions">
 		<link rel="help" href="http://www.w3.org/TR/css3-regions/#rfcb-flow-fragment-height-resolution">
 		<link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
 		<link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
-		<link rel="help" href="http://www.w3.org/TR/css3-flexbox">
+		<link rel="help" href="http://www.w3.org/TR/css3-flexbox/#layout-algorithm">
 		<link rel="help" href="http://www.w3.org/TR/css3-flexbox/#flex-wrap">
-		<meta name="assert" content="Test that the flexbox container stretches a flex item with a height smaller than the flexbox container's inner cross size.">
+		<meta name="assert" content="Test that the flex container stretches a region flex item with a height smaller than
+		the flex container's inner cross size.">
 		<link rel="match" href="reference/autoheight-regions-in-fixed-sized-flexbox-006-ref.html">
 		<style>
 			#c1, #c2 {
 				font-family: Ahem;
 				font-size: 20px;
 				line-height: 1em;
+				font-smoothing: none;
 			}
 			#c1 {
 				color: green;
-				flow-into: flow_1;
+				flow-into: flow1;
 			}
 			#c2 {
 				color: blue;
-				flow-into: flow_2;
+				flow-into: flow2;
 			}
 
 			.flex {
@@ -33,35 +34,38 @@
 				height: 80px;
 				width: 200px;
 			}
-			.region_1 {
-				flow-from: flow_1;
+			.region1 {
+				flow-from: flow1;
 				background-color: green;
 			}
-			.region_2 {
-				flow-from: flow_2;
+			.region2 {
+				flow-from: flow2;
+			}
+
+			.red {
+				background-color: red;
 			}
 		</style>
 	</head>
 	<body>
-		<ol>
-			<li>Test passes if you see a green square and a blue square with the same size.</li>
-		</ol>
+		<ul>
+			<li>Test passes if you see a rectangle having the left half colored green and the right half colored
+				blue.</li>
+			<li>You shouldn't see any red.</li>
+		</ul>
 		<div id="c1">
 			XXXX<br>
-			XXXX<br>
+			XXXX
 		</div>
 		<div id="c2">
 			XXXX<br>
 			XXXX<br>
 			XXXX<br>
-			XXXX<br>
-			XXXX<br>
-
+			XXXX
 		</div>
 		<div class="flex">
-			<div class="region_1"></div>
-			<div class="region_2"></div>
+			<div class="region1"></div>
+			<div class="region2"><p class="red">&nbsp;</p></div>
 		</div>
-		<div class="region_2"></div>
 	</body>
 </html>

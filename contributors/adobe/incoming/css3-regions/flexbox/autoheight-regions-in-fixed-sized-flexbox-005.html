@@ -3,18 +3,20 @@
 	<head>
 		<title>CSS Regions: Auto-height regions in fixed sized flexboxes with align-items and justify-content</title>
 		<link rel="author" title="Catalin Badea" href="mailto:badea@adobe.com">
-		<link rel="help" href="http://www.w3.org/TR/css3-regions">
 		<link rel="help" href="http://www.w3.org/TR/css3-regions/#rfcb-flow-fragment-height-resolution">
-		<link rel="help" href="http://www.w3.org/TR/css3-flexbox">
-		<meta name="assert" content="Test checks auto-height regions' layout when placed inside a flexbox with using align-items and justify-content properties.">
+		<link rel="help" href="http://www.w3.org/TR/css3-flexbox/#layout-algorithm">
+		<meta name="assert" content="Test checks auto-height regions' layout when placed inside a flexbox with using
+		align-items and justify-content properties. The flowed content should be fragmented between the three regions
+		and flex container should distribute the remaining horizontal space evenly around the regions.">
 		<link rel="match" href="reference/autoheight-regions-in-fixed-sized-flexbox-005-ref.html">
 		<style>
 			.content {
-				line-height: 1em;
-				font-size: 20px;
 				font-family: Ahem;
+				font-size: 20px;
+				line-height: 1em;
 				color: green;
 				flow-into: flow;
+				font-smoothing: none;
 			}
 
 			.flex {
@@ -30,23 +32,31 @@
 			}
 
 			.break {
+				/* Current (Jul 2013) standard way of region breaking */
+				break-after: region;
+				/* Old, non-standard but implemented way of region breaking */
 				region-break-after: always;
+			}
+
+			.red {
+				background-color: red;
 			}
 		</style>
 	</head>
 	<body>
-		<ol>
-			<li>Test passes if you see three green stripes.</li>
-		</ol>
+		<ul>
+			<li>Test passes if you see three horizontal green stripes.</li>
+			<li>You shouldn't see any red.</li>
+		</ul>
 		<div class="content">
 			<div class="break">XXXX</div>
 			<div class="break">XXXX</div>
 			<div class="break">XXXX</div>
 		</div>
 		<div class="flex">
-			<div class="region">XXXX</div>
-			<div class="region">XXXX</div>
-			<div class="region">XXXX</div>
+			<div class="region"></div>
+			<div class="region"></div>
+			<div class="region"><p class="red">&nbsp;</p></div>
 		</div>
 	</body>
 </html>

@@ -4,48 +4,22 @@
 		<title>CSS Reftest Reference</title>
 		<link rel="author" title="Catalin Badea" href="mailto:badea@adobe.com">
 		<style>
-			.content {
-				line-height: 1em;
-				font-size: 20px;
-				font-family: Ahem;
-				color: green;
-			}
-
 			.fixed {
-				height: 60px;
-				width: 100px;
-			}
-
-			.region {
 				height: 40px;
 				width: 100px;
-			}
-
-			#second {
-				height: 100px;
+				margin-bottom: 20px;
+				background-color: green;
+				position: relative;
+				top: 60px;
 			}
 		</style>
 	</head>
 	<body>
-		<ol>
+		<ul>
 			<li>Test passes if you see two green stripes.</li>
 			<li>You should not see any red.</li>
-		</ol>
-		<div class="flex">
-			<div class="fixed"></div>
-			<div class="region">
-				<div class="content">
-					XXXXX<br>
-					XXXXX<br>
-				</div>
-			</div>
-		</div>
-		<br>
-		<div class="region" id="second">
-			<div class="content">
-				XXXXX<br>
-				XXXXX<br>
-			</div>
-		</div>
+		</ul>
+		<div class="fixed"></div>
+		<div class="fixed"></div>
 	</body>
 </html>

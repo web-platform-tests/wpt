@@ -1,14 +1,13 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>CSS Regions: column flexbox fragmentation</title>
+		<title>CSS Regions: fragmenting a flex container with column flow </title>
 		<link rel="author" title="Catalin Badea" href="mailto:badea@adobe.com">
-		<link rel="help" href="http://www.w3.org/TR/css3-regions">
 		<link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
 		<link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
 		<link rel="help" href="http://www.w3.org/TR/css3-flexbox">
 		<meta name="flags" content="ahem">
-		<meta name="assert" content="Test checks that a flexbox container with column flow is split between regions.">
+		<meta name="assert" content="Test checks that a flex container with column flow is fragmented between regions.">
 		<link rel="match" href="reference/column-flexbox-break-ref.html">
 		<style>
 			.flex {
@@ -19,7 +18,8 @@
 
 			.region {
 				flow-from: flow;
-				height: 40px;
+				height: 45px;
+				margin-bottom: 20px;
 			}
 
 			.item {
@@ -28,18 +28,22 @@
 				line-height: 1em;
 				color: green;
 			}
+
+			.red {
+				background-color: red;
+			}
 		</style>
 	</head>
 	<body>
-		<ol>
-			<li>Test passes if you see two green stripes.</li>
-		</ol>
+		<ul>
+			<li>Test passes if you see two horizontal green stripes.</li>
+			<li>You shouldn't see any red.</li>
+		</ul>
 		<div class="flex">
 			<div class="item">XXXX<br>XXXX</div>
 			<div class="item">XXXX<br>XXXX</div>
 		</div>
 		<div class="region"></div>
-		<br>
-		<div class="region"></div>
+		<div class="region"><p class="red">&nbsp;</p></div>
 	</body>
 </html>

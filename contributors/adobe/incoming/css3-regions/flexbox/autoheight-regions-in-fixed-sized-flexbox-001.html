@@ -3,29 +3,30 @@
 	<head>
 		<title>CSS Regions: Auto-height regions inside fixed sized flexbox</title>
 		<link rel="author" title="Catalin Badea" href="mailto:badea@adobe.com">
-		<link rel="help" href="http://www.w3.org/TR/css3-regions">
 		<link rel="help" href="http://www.w3.org/TR/css3-regions/#rfcb-flow-fragment-height-resolution">
 		<link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
 		<link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-from-property">
-		<link rel="help" href="http://www.w3.org/TR/css3-flexbox">
+		<link rel="help" href="http://www.w3.org/TR/css3-flexbox/#layout-algorithm">
 		<link rel="help" href="http://www.w3.org/TR/css3-flexbox/#flex-grow">
 		<meta name="flags" content="ahem">
-		<meta name="assert" content="Test checks that auto-height regions respect the flex grow property when placed inside a fixed sized flexbox with a single row.">
+		<meta name="assert" content="Test checks that auto-height regions respect the flex grow property when placed
+		inside a fixed sized flexbox with a single row.">
 		<link rel="match" href="reference/autoheight-regions-in-fixed-sized-flexbox-001-ref.html">
 		<style>
-			.content_1, .content_2 {
+			.content1, .content2 {
 				font-family: Ahem;
-				line-height: 20px;
+				line-height: 1em;
 				font-size: 20px;
+				font-smoothing: none;
 			}
-			.content_1 {
+			.content1 {
 				color: green;
-				flow-into: flow_1;
+				flow-into: flow1;
 			}
 
-			.content_2 {
+			.content2 {
 				color: blue;
-				flow-into: flow_2;
+				flow-into: flow2;
 			}
 
 			#fixed {
@@ -40,41 +41,49 @@
 				width: 500px;
 			}
 
-			.region_1 {
-				flow-from: flow_1;
+			.fromFlow1 {
+				flow-from: flow1;
 				flex-grow: 0;
 			}
 
-			.region_2 {
-				flow-from: flow_2;
+			.fromFlow2 {
+				flow-from: flow2;
 				flex-grow: 1;
+			}
+
+			.red {
+				background-color: red;
 			}
 		</style>
 	</head>
 	<body>
 		<ul>
-			<li>Test passes if you can see two squares, each having one half colored green and the other half colored blue.</li>
+			<li>Test passes if you can see two squares placed on the same horizontal line. Each square consists of two
+				vertical halves. The left square has the left half colored green and the right half colored blue.
+				The right square has left half colored blue and the right half colored green.</li>
+			<li>You shouldn't see any red.</li>
 		</ul>
-		<div class="content_1">
+		<div class="content1">
 			XXXXX<br>XXXXX<br>XXXXX<br>XXXXX<br>
 			XXXXX<br>XXXXX<br>XXXXX<br>XXXXX<br>
 			XXXXX<br>XXXXX<br>XXXXX<br>XXXXX<br>
 			XXXXX<br>XXXXX<br>XXXXX<br>XXXXX<br>
 			XXXXX<br>XXXXX<br>XXXXX<br>XXXXX<br>
 		</div>
-		<div class="content_2">
+		<div class="content2">
 			XXXXX<br>XXXXX<br>XXXXX<br>XXXXX<br>
 			XXXXX<br>XXXXX<br>XXXXX<br>XXXXX<br>
 			XXXXX<br>XXXXX<br>
 		</div>
 		<div class="flex">
-			<div class="region_1">
+			<div class="fromFlow1">
 			</div>
-			<div class="region_2">
+			<div class="fromFlow2">
 			</div>
 			<div id='fixed'>
 			</div>
-			<div class="region_1">
+			<div class="fromFlow1">
+				<p class="red">&nbsp;</p>
 			</div>
 		</div>
 	</body>

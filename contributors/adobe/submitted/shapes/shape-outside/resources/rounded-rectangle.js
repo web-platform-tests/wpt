@@ -12,12 +12,12 @@ function scanConvertRoundedRectangleOutside(r, height, lineHeight)
             continue;
 
         if (y + lineHeight < r.y + r.ry) {
-            // within the upper rounded corner part of the rectangle
+            // within the upper rounded corner of the rectangle
             var dx = ellipseXIntercept(y + lineHeight - r.y - r.ry, r.rx, r.ry);
             intervals.push( { y: y, left: r.x + r.rx - dx, right: r.x + r.width - r.rx + dx} );
         }
         else if (y > r.y + r.height - r.ry) {
-            // within the lower rounded corner part of the rectangle
+            // within the lower rounded corner of the rectangle
             var dx = ellipseXIntercept(y - (r.y + r.height - r.ry), r.rx, r.ry);
             intervals.push( { y: y, left: r.x + r.rx - dx, right: r.x + r.width - r.rx + dx} );
         }

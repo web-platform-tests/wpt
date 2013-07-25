@@ -1,20 +1,24 @@
 <!DOCTYPE HTML>
 <html>
     <head>
-        <title>CSS Shapes Test: shape-inside affects child layout in vertical text</title>
+        <title>CSS Shapes Test: shape-outside on right float</title>
         <link rel="author" title="Alan Stearns" href="mailto:stearns@adobe.com">
         <link rel="reviewer" title="Daniel Glazman" href="mailto:daniel.glazman@disruptive-innovations.com" /> <!-- 2012-10-27 -->
-        <link rel="help" href="http://www.w3.org/TR/css-shapes/#shapes">
+        <link rel="help" href="http://www.w3.org/TR/css-shapes-1/#shapes">
         <link rel="match" href="shape-ref.html"/>
         <meta name="flags" content="">
-        <meta name="assert" content="Vertical-RL inline-block children should lay out inside shape-inside boundary.">
+        <meta name="assert" content="Inline-block children should lay out inside shape-inside boundary.">
         <style>
           .container {
-            width: 150px;
+            width: 200px;
             line-height: 0;
             position: relative;
-            writing-mode: vertical-rl;
-            shape-inside: rectangle(0px, 0px, 100px, 100px);
+          }
+          .float-right {
+            float: right;
+            width: 25px;
+            height: 125px;
+            shape-outside: rectangle(-50px, 0px, 75px, 125px);
           }
           .inline-square {
             display: inline-block;
@@ -36,6 +40,7 @@
         <p>Test passes if there is a green square and no red.</p>
         <div class="container">
             <div class="error-square"></div>
+            <div class="float-right"></div>
             <div class="inline-square">
             </div><div class="inline-square">
             </div><div class="inline-square">

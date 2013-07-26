@@ -15,6 +15,9 @@ import java.net.MalformedURLException;
 
 import nu.validator.gnu.xml.aelfred2.SAXDriver;
 import nu.validator.htmlparser.sax.HtmlParser;
+import nu.validator.htmlparser.common.XmlViolationPolicy;
+import nu.validator.xml.dataattributes.DataAttributeDroppingSchemaWrapper;
+import nu.validator.xml.langattributes.XmlLangAttributeDroppingSchemaWrapper;
 import nu.validator.xml.IdFilter;
 import nu.validator.xml.SystemErrErrorHandler;
 
@@ -154,18 +157,22 @@ public class Driver {
         File[] files = directory.listFiles();
         for (int i = 0; i < files.length; i++) {
             File file = files[i];
-            if (isCheckableFile(file)) {
-                errorHandler.reset();
-                try {
-                    checkFile(file);
-                } catch (IOException e) {
-                } catch (SAXException e) {
-                }
-                if (errorHandler.isInError()) {
-                    failed = true;
-                }
-            } else if (file.isDirectory()) {
+            if (file.isDirectory()) {
                 checkValidFiles(file);
+            } else {
+                if (isCheckableFile(file)) {
+                    errorHandler.reset();
+                    try {
+                        checkFile(file);
+                    } catch (IOException e) {
+                    } catch (SAXException e) {
+                    }
+                    if (errorHandler.isInError()) {
+                        failed = true;
+                    }
+                } else if (file.isDirectory()) {
+                    checkValidFiles(file);
+                }
             }
         }
     }
@@ -174,25 +181,29 @@ public class Driver {
         File[] files = directory.listFiles();
         for (int i = 0; i < files.length; i++) {
             File file = files[i];
-            if (isCheckableFile(file)) {
-                countingErrorHandler.reset();
-                try {
-                    checkFile(file);
-                } catch (IOException e) {
-                } catch (SAXException e) {
-                }
-                if (!countingErrorHandler.getHadErrorOrFatalError()) {
-                    failed = true;
-                    try {
-                        err.println(file.toURL().toString()
-                                + " was supposed to be invalid but was not.");
-                        err.flush();
-                    } catch (MalformedURLException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            } else if (file.isDirectory()) {
+            if (file.isDirectory()) {
                 checkInvalidFiles(file);
+            } else {
+                if (isCheckableFile(file)) {
+                    countingErrorHandler.reset();
+                    try {
+                        checkFile(file);
+                    } catch (IOException e) {
+                    } catch (SAXException e) {
+                    }
+                    if (!countingErrorHandler.getHadErrorOrFatalError()) {
+                        failed = true;
+                        try {
+                            err.println(file.toURL().toString()
+                                    + " was supposed to be invalid but was not.");
+                            err.flush();
+                        } catch (MalformedURLException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                } else if (file.isDirectory()) {
+                    checkInvalidFiles(file);
+                }
             }
         }
     }
@@ -200,6 +211,8 @@ public class Driver {
     private void checkDirectory(File directory, File schema) throws SAXException {
         try {
             mainSchema = schemaByFilename(schema);
+            mainSchema = new DataAttributeDroppingSchemaWrapper(mainSchema);
+            mainSchema = new XmlLangAttributeDroppingSchemaWrapper(mainSchema);
         } catch (Exception e) {
             err.println("Reading schema failed. Skipping test directory.");
             e.printStackTrace();
@@ -248,6 +261,7 @@ public class Driver {
         xmlParser.setContentHandler(validator.getContentHandler());
         xmlParser.setErrorHandler(eh);
         xmlParser.setFeature("http://xml.org/sax/features/unicode-normalization-checking", true);
+        htmlParser.setNamePolicy(XmlViolationPolicy.ALLOW);
         htmlParser.setMappingLangToXmlLang(true);
     }
 

@@ -157,22 +157,18 @@ public class Driver {
         File[] files = directory.listFiles();
         for (int i = 0; i < files.length; i++) {
             File file = files[i];
-            if (file.isDirectory()) {
-                checkValidFiles(file);
-            } else {
-                if (isCheckableFile(file)) {
-                    errorHandler.reset();
-                    try {
-                        checkFile(file);
-                    } catch (IOException e) {
-                    } catch (SAXException e) {
-                    }
-                    if (errorHandler.isInError()) {
-                        failed = true;
-                    }
-                } else if (file.isDirectory()) {
-                    checkValidFiles(file);
+            if (isCheckableFile(file)) {
+                errorHandler.reset();
+                try {
+                    checkFile(file);
+                } catch (IOException e) {
+                } catch (SAXException e) {
                 }
+                if (errorHandler.isInError()) {
+                    failed = true;
+                }
+            } else if (file.isDirectory()) {
+                checkValidFiles(file);
             }
         }
     }
@@ -181,29 +177,25 @@ public class Driver {
         File[] files = directory.listFiles();
         for (int i = 0; i < files.length; i++) {
             File file = files[i];
-            if (file.isDirectory()) {
-                checkInvalidFiles(file);
-            } else {
-                if (isCheckableFile(file)) {
-                    countingErrorHandler.reset();
-                    try {
-                        checkFile(file);
-                    } catch (IOException e) {
-                    } catch (SAXException e) {
-                    }
-                    if (!countingErrorHandler.getHadErrorOrFatalError()) {
-                        failed = true;
-                        try {
-                            err.println(file.toURL().toString()
-                                    + " was supposed to be invalid but was not.");
-                            err.flush();
-                        } catch (MalformedURLException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                } else if (file.isDirectory()) {
-                    checkInvalidFiles(file);
+            if (isCheckableFile(file)) {
+                countingErrorHandler.reset();
+                try {
+                    checkFile(file);
+                } catch (IOException e) {
+                } catch (SAXException e) {
                 }
+                if (!countingErrorHandler.getHadErrorOrFatalError()) {
+                    failed = true;
+                    try {
+                        err.println(file.toURL().toString()
+                                + " was supposed to be invalid but was not.");
+                        err.flush();
+                    } catch (MalformedURLException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            } else if (file.isDirectory()) {
+                checkInvalidFiles(file);
             }
         }
     }

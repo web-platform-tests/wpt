@@ -5,6 +5,7 @@
 		<link rel="author" title="Catalin Badea" href="mailto:badea@adobe.com">
 		<link rel="help" href="http://www.w3.org/TR/css3-regions/#rfcb-flow-fragment-height-resolution">
 		<link rel="help" href="http://www.w3.org/TR/css3-flexbox/#layout-algorithm">
+		<link rel="help" href="http://www.w3.org/TR/css3-flexbox/#flex-direction-property">
 		<link rel="help" href="http://www.w3.org/TR/css3-writing-modes">
 		<meta name="flags" content="ahem">
 		<meta name="assert" content="Test checks that auto-height regions having content with vertical writing mode are
@@ -17,7 +18,7 @@
 				line-height: 1em;
 				color: green;
 				font-family: Ahem;
-				flowinto: flow;
+				flow-into: flow;
 				writing-mode: vertical-rl;
 			}
 
@@ -27,7 +28,7 @@
 			}
 
 			.region {
-				bakground-color: green;
+				background-color: green;
 				flow-from: flow;
 			}
 

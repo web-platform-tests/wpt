@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>AnimationTiming Test: idlharness</title>
+    <link rel="author" title="Intel" href="http://www.intel.com">
+    <link rel="help" href="https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/RequestAnimationFrame/Overview.html#conformance">
+    <link rel="help" href="https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/RequestAnimationFrame/Overview.html#Window-interface-extensions">
+    <link rel="help" href="https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/HighResolutionTime/Overview.html#sec-DOMHighResTimeStamp">
+    <meta name="assert" content="The IDL fragment in section 4 of this specification must be interpreted as required for conforming IDL fragments, as described in the Web IDL specification.">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/resources/webidl2/lib/webidl2.js"></script>
+    <script src="/resources/idlharness.js"></script>
+  </head>
+  <body>
+    <h1>idlharness test</h1>
+    <p>This test validates the WebIDL included in the Animation Timing specification.</p>
+
+    <pre id="untested_idl" style="display: none">
+      interface Window {
+      };
+    </pre>
+
+    <pre id="idl">
+      typedef double DOMHighResTimeStamp;
+
+      partial interface Window {
+        long requestAnimationFrame(FrameRequestCallback callback);
+        void cancelAnimationFrame(long handle);
+      };
+
+      callback FrameRequestCallback = void (DOMHighResTimeStamp time);
+    </pre>
+
+    <div id="log"></div>
+
+    <script>
+      (function() {
+        var idl_array = new IdlArray();
+
+        idl_array.add_untested_idls(document.getElementById("untested_idl").textContent);
+        idl_array.add_idls(document.getElementById("idl").textContent);
+
+        idl_array.add_objects({WindowAnimationTiming: ["window"]});
+
+        idl_array.test();
+      })();
+    </script>
+  </body>
+</html>

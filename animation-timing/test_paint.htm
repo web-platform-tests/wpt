@@ -1,0 +1,58 @@
+﻿<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+        <title>Paint Notification API Test Suite</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        
+        <script type="text/javascript" src="/resources/testharness.js"></script>
+        <link rel="stylesheet" href="/resources/testharness.css" />
+        <script type="text/javascript" src="paintnotificationharness.js"></script>
+        
+        <style type="text/css">
+            #div1
+            {
+                position:absolute;
+                background-color:Blue;
+                height:50px;
+                width:50px;
+            }
+        </style>
+        
+    </head>
+    <body onload="DoTest();">
+        <h1>Description</h1>
+        <p>This test validates the existence and functionality of the 
+            <a href="http://www.w3.org/TR/animation-timing/">WindowAnimationTiming</a> interface
+           (window.requestAnimationFrame).</p>
+           
+        <p><b>Note:</b> 60Hz is assumed to be the refresh rate of the display.  
+           When verifying that the callbacks align with the display refresh rate, a delta of 5 is permitted.
+        </p>
+        
+        <div id="log"></div>
+        
+        <script type="text/javascript" >
+            setup({ explicit_done: true, timeout:20*1000 });
+
+            function DoTest()
+            {
+                test_paint_interface();
+                
+                if (reqAnimAPI !== undefined)
+                {
+                    RunTests();
+                    CallbackAlignment();
+                    setTimeout(done, (SampleSize + 1) * 1500);
+                }
+                else
+                {
+                    done();
+                }
+            }
+            
+        </script>
+        
+        <div id="div1"></div>
+    </body>
+</html>

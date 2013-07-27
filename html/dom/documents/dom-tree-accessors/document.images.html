@@ -13,16 +13,28 @@
 <input type=image name=input>
 </div>
 <script>
-test(function() {
-  var div = document.getElementById("test");
-  var images = [].slice.call(div.getElementsByTagName("img"));
+function assert_all(aAssertFunc, aCollection) {
+  for (var i = 0; i < aCollection.length; ++i) {
+    aAssertFunc(aCollection[i]);
+  }
+}
 
+test(function() {
+  var XHTML = "http://www.w3.org/1999/xhtml";
+  var div = document.getElementById("test");
   var foreign =
     div.appendChild(document.createElementNS("http://example.org", "img"));
   foreign.setAttribute("id", "f");
 
+  var images = [].slice.call(div.getElementsByTagNameNS(XHTML, "img"));
+
   var c = document.images;
+  assert_equals(c.length, 10);
   assert_array_equals(c, images);
+
+  assert_all(function (aElement) {
+    assert_equals(aElement.namespaceURI, XHTML);
+  }, c);
 
   assert_equals(c.x, images[1]);
   assert_equals(c.namedItem("x"), images[1]);
@@ -55,6 +67,10 @@ test(function() {
   assert_equals(c.input, undefined);
   assert_equals(c.namedItem("input"), null);
   assert_false("input" in c, '"input" in c');
+  var input = div.getElementsByTagName("input")[0];
+  assert_all(function (aElement) {
+    assert_not_equals(aElement.namespaceURI, input);
+  }, c);
 
   assert_equals(c[""], undefined);
   assert_equals(c.namedItem(""), null);

@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import nu.validator.gnu.xml.aelfred2.SAXDriver;
 import nu.validator.htmlparser.sax.HtmlParser;
@@ -109,7 +111,7 @@ public class Driver {
 
         InputSource schemaInput;
         try {
-            schemaInput = new InputSource(name.toURL().toString());
+            schemaInput = new InputSource(name.toURI().toURL().toString());
         } catch (MalformedURLException e1) {
             System.err.println();
             e1.printStackTrace(err);
@@ -128,7 +130,7 @@ public class Driver {
     private void checkFile(File file) throws IOException, SAXException {
         validator.reset();
         InputSource is = new InputSource(new FileInputStream(file));
-        is.setSystemId(file.toURL().toString());
+        is.setSystemId(file.toURI().toURL().toString());
         String name = file.getName();
         if (name.endsWith(".html") || name.endsWith(".htm")) {
             is.setEncoding("UTF-8");
@@ -153,49 +155,37 @@ public class Driver {
                         || name.endsWith(".xhtml") || name.endsWith(".xht"));
     }
 
-    private void checkValidFiles(File directory) {
-        File[] files = directory.listFiles();
-        for (int i = 0; i < files.length; i++) {
-            File file = files[i];
-            if (isCheckableFile(file)) {
-                errorHandler.reset();
-                try {
-                    checkFile(file);
-                } catch (IOException e) {
-                } catch (SAXException e) {
-                }
-                if (errorHandler.isInError()) {
-                    failed = true;
-                }
-            } else if (file.isDirectory()) {
-                checkValidFiles(file);
+    private void checkValidFiles(List<File> files) {
+        for (File file : files) {
+            errorHandler.reset();
+            try {
+                checkFile(file);
+            } catch (IOException e) {
+            } catch (SAXException e) {
+            }
+            if (errorHandler.isInError()) {
+                failed = true;
             }
         }
     }
 
-    private void checkInvalidFiles(File directory) {
-        File[] files = directory.listFiles();
-        for (int i = 0; i < files.length; i++) {
-            File file = files[i];
-            if (isCheckableFile(file)) {
-                countingErrorHandler.reset();
+    private void checkInvalidFiles(List<File> files) {
+        for (File file : files) {
+            countingErrorHandler.reset();
+            try {
+                checkFile(file);
+            } catch (IOException e) {
+            } catch (SAXException e) {
+            }
+            if (!countingErrorHandler.getHadErrorOrFatalError()) {
+                failed = true;
                 try {
-                    checkFile(file);
-                } catch (IOException e) {
-                } catch (SAXException e) {
+                    err.println(file.toURI().toURL().toString()
+                            + " was supposed to be invalid but was not.");
+                    err.flush();
+                } catch (MalformedURLException e) {
+                    throw new RuntimeException(e);
                 }
-                if (!countingErrorHandler.getHadErrorOrFatalError()) {
-                    failed = true;
-                    try {
-                        err.println(file.toURL().toString()
-                                + " was supposed to be invalid but was not.");
-                        err.flush();
-                    } catch (MalformedURLException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            } else if (file.isDirectory()) {
-                checkInvalidFiles(file);
             }
         }
     }
@@ -211,16 +201,37 @@ public class Driver {
             err.flush();
             return;
         }
+        checkFiles(directory);
+    }
+
+    private void checkFiles(File directory) throws SAXException {
         File[] files = directory.listFiles();
+        List<File> validFiles = new ArrayList<File>();
+        List<File> invalidFiles = new ArrayList<File>();
         for (int i = 0; i < files.length; i++) {
             File file = files[i];
-            if ("valid".equals(file.getName())) {
-                setup(errorHandler);
-                checkValidFiles(file);
-            } else if ("invalid".equals(file.getName())) {
-                setup(countingErrorHandler);
-                checkInvalidFiles(file);
+            if (file.isDirectory()) {
+                checkFiles(file);
+            } else if (isCheckableFile(file)) {
+                /*
+                 * Make the string "invalid" anywhere in a pathname/filename
+                 * (e.g., "001.invalid.html" or "html5full/invalid/001.html")
+                 * cause the file to be treated as invalid.
+                 */
+                if (file.getPath().indexOf("invalid") > 0) {
+                    invalidFiles.add(file);
+                } else {
+                    validFiles.add(file);
+                }
             }
+        }
+        if (validFiles.size() > 0) {
+            setup(errorHandler);
+            checkValidFiles(validFiles);
+        }
+        if (invalidFiles.size() > 0) {
+            setup(countingErrorHandler);
+            checkInvalidFiles(invalidFiles);
         }
     }
 

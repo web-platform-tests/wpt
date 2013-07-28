@@ -190,7 +190,12 @@ public class Driver {
         }
     }
 
-    private void checkDirectory(File directory, File schema) throws SAXException {
+    private enum State {
+        EXPECTING_INVALID_FILES, EXPECTING_VALID_FILES, EXPECTING_ANYTHING
+    }
+
+    private void checkDirectory(File directory, File schema)
+            throws SAXException {
         try {
             mainSchema = schemaByFilename(schema);
             mainSchema = new DataAttributeDroppingSchemaWrapper(mainSchema);
@@ -201,24 +206,32 @@ public class Driver {
             err.flush();
             return;
         }
-        checkFiles(directory);
+        checkFiles(directory, State.EXPECTING_ANYTHING);
     }
 
-    private void checkFiles(File directory) throws SAXException {
+    private void checkFiles(File directory, State state)
+            throws SAXException {
         File[] files = directory.listFiles();
         List<File> validFiles = new ArrayList<File>();
         List<File> invalidFiles = new ArrayList<File>();
         for (int i = 0; i < files.length; i++) {
             File file = files[i];
             if (file.isDirectory()) {
-                checkFiles(file);
+                if (state != State.EXPECTING_ANYTHING) {
+                    checkFiles(file, state);
+                } else if ("invalid".equals(file.getName())) {
+                    checkFiles(file, State.EXPECTING_INVALID_FILES);
+                } else if ("valid".equals(file.getName())) {
+                    checkFiles(file, State.EXPECTING_VALID_FILES);
+                } else {
+                    checkFiles(file, State.EXPECTING_ANYTHING);
+                }
             } else if (isCheckableFile(file)) {
-                /*
-                 * Make the string "invalid" anywhere in a pathname/filename
-                 * (e.g., "001.invalid.html" or "html5full/invalid/001.html")
-                 * cause the file to be treated as invalid.
-                 */
-                if (file.getPath().indexOf("invalid") > 0) {
+                if (state == State.EXPECTING_INVALID_FILES) {
+                    invalidFiles.add(file);
+                } else if (state == State.EXPECTING_VALID_FILES) {
+                    validFiles.add(file);
+                } else if (file.getPath().indexOf("invalid") > 0) {
                     invalidFiles.add(file);
                 } else {
                     validFiles.add(file);

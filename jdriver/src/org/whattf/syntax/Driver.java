@@ -291,23 +291,19 @@ public class Driver {
             return false;
         }
 
-        checkDirectory(new File(PATH + "html5core/"), new File(PATH + "../xhtml5core.rnc"));
+        checkDirectory(new File(PATH + "html5core/"), new File(PATH
+                + "../xhtml5core.rnc"));
         checkDirectory(new File(PATH + "html5core-plus-web-forms2/"), new File(
                 PATH + "../xhtml5core-plus-web-forms2.rnc"));
-        checkDirectory(new File(PATH + "html5full/"), new File(
-                PATH + "../html5full.rnc"));
-        checkDirectory(new File(PATH + "xhtml5full/"), new File(
-                PATH + "../xhtml5full-xhtml.rnc"));
-        checkDirectory(new File(PATH + "assertions/"), new File(
-                PATH + "../xhtml5full-xhtml.rnc"));
-        checkDirectory(new File(PATH + "html5full-rdfa/"), new File(
-                PATH + "../html5full-rdfa.rnc"));
-        checkDirectory(new File(PATH + "html5full-rdfalite/"), new File(
-                PATH + "../html5full-rdfalite.rnc"));
+        checkDirectory(new File(PATH + "html/"), new File(PATH
+                + "../html5full.rnc"));
+        checkDirectory(new File(PATH + "xhtml/"), new File(PATH
+                + "../xhtml5full-xhtml.rnc"));
+        checkDirectory(new File(PATH + "html-rdfa/"), new File(PATH
+                + "../html5full-rdfa.rnc"));
+        checkDirectory(new File(PATH + "html-rdfalite/"), new File(PATH
+                + "../html5full-rdfalite.rnc"));
 
-        checkDirectory(new File(PATH + "tables/"), new File(PATH + "../xhtml5full-xhtml.rnc"));
-        checkDirectory(new File(PATH + "media-queries/"), new File(PATH + "../html5full.rnc"));
-        checkDirectory(new File(PATH + "mime-types/"), new File(PATH + "../html5full.rnc"));
         if (verbose) {
             if (failed) {
                 out.println("Failure!");

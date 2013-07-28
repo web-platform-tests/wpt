@@ -214,6 +214,13 @@ public class Driver {
         File[] files = directory.listFiles();
         List<File> validFiles = new ArrayList<File>();
         List<File> invalidFiles = new ArrayList<File>();
+        if (files == null) {
+            if (verbose) {
+                out.println("Warning: No files found in " + directory);
+                out.flush();
+            }
+            return;
+        }
         for (int i = 0; i < files.length; i++) {
             File file = files[i];
             if (file.isDirectory()) {
@@ -299,6 +306,8 @@ public class Driver {
                 + "../html5full.rnc"));
         checkDirectory(new File(PATH + "xhtml/"), new File(PATH
                 + "../xhtml5full-xhtml.rnc"));
+        checkDirectory(new File(PATH + "html-its/"), new File(PATH
+                + "../html5full-rdfa.rnc"));
         checkDirectory(new File(PATH + "html-rdfa/"), new File(PATH
                 + "../html5full-rdfa.rnc"));
         checkDirectory(new File(PATH + "html-rdfalite/"), new File(PATH

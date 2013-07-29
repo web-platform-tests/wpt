@@ -102,6 +102,11 @@ public class Driver {
     }
 
     private Schema schemaByFilename(File name) throws Exception {
+        if ("html5full-rdfa.rnc".equals(name.getName())) {
+            System.setProperty("nu.validator.schema.rev-allowed", "1");
+        } else {
+            System.setProperty("nu.validator.schema.rev-allowed", "0");
+        }
         PropertyMapBuilder pmb = new PropertyMapBuilder();
         pmb.put(ValidateProperty.ERROR_HANDLER, errorHandler);
         pmb.put(ValidateProperty.XML_READER_CREATOR,

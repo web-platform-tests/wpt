@@ -10,8 +10,8 @@
    div    { margin: 0; background: url(support/swatch-red.png) center repeat-y; font-size: 10px; }
    .a img { display: block; margin-right: auto; margin-left: auto; width: auto; }
    .b     { text-align: center; }
-   .b img { vertical-align: top; }
-   .c     { text-align: center; font: 15px/1 Ahem; color: blue; }
+   .b img { vertical-align: top; height: 20px; width: 20px; }
+   .c     { text-align: center; font: 20px/1 Ahem; color: blue; }
   ]]></style>
   <link rel="help" href="http://www.w3.org/TR/CSS21/text.html#alignment-prop" title="16.2 Alignment: the 'text-align' property"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#block-replaced-width" title="10.3.4 Block-level, replaced elements in normal flow"/>
@@ -20,7 +20,7 @@
  </head>
  <body>
   <p>There should be a single small column of blue below with no red:</p>
-  <div class="a"><img src="support/swatch-blue.png" alt="FAIL: Replaced content did not get replaced."/></div>
+  <div class="a"><img src="support/blue20x20.png" alt="FAIL: Replaced content did not get replaced."/></div>
   <div class="b"><img src="support/swatch-blue.png" alt="FAIL: Replaced content did not get replaced."/></div>
   <div class="c">X</div>
  </body>

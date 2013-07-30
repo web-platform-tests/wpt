@@ -18,11 +18,11 @@
 
 test(function () {
     var doc = newHTMLDocument();
-    doc.body.innerHTML = '<div><template id="tmpl1"><div id="dv">DIV</div></template></div>';
+    doc.body.innerHTML = '<div><template id="tmpl1"><div id="div">DIV</div></template></div>';
 
     var template = doc.querySelector('#tmpl1');
 
-    var div = template.content.querySelector('#dv');
+    var div = template.content.querySelector('#div');
 
     assert_equals(div.ownerDocument, template.content.ownerDocument,
             'Wrong ownerDocument of the element in template');
@@ -34,11 +34,11 @@ test(function () {
 
 test(function () {
     var doc = newHTMLDocument();
-    doc.body.innerHTML = '<template id="tmpl1"><div id="dv">DIV</div></template>';
+    doc.body.innerHTML = '<template id="tmpl1"><div id="div">DIV</div></template>';
 
     var template = doc.querySelector('#tmpl1');
 
-    var div = template.content.querySelector('#dv');
+    var div = template.content.querySelector('#div');
 
     assert_equals(div.ownerDocument, template.content.ownerDocument,
             'Wrong ownerDocument of the element in template');
@@ -51,11 +51,11 @@ test(function () {
 
 test(function () {
     var doc = newHTMLDocument();
-    doc.head.innerHTML = '<template id="tmpl1"><div id="dv">DIV</div></template>';
+    doc.head.innerHTML = '<template id="tmpl1"><div id="div">DIV</div></template>';
 
     var template = doc.querySelector('#tmpl1');
 
-    var div = template.content.querySelector('#dv');
+    var div = template.content.querySelector('#div');
 
     assert_equals(div.ownerDocument, template.content.ownerDocument,
             'Wrong ownerDocument of the element in template');
@@ -70,12 +70,12 @@ test(function () {
     var doc = newHTMLDocument();
 
     doc.open();
-    doc.write('<frameset><template id="tmpl1"><div id="dv">DIV</div></template></frameset>');
+    doc.write('<frameset><template id="tmpl1"><div id="div">DIV</div></template></frameset>');
     doc.close();
 
     var template = doc.querySelector('#tmpl1');
 
-    var div = template.content.querySelector('#dv');
+    var div = template.content.querySelector('#div');
 
     assert_equals(div.ownerDocument, template.content.ownerDocument,
             'Wrong ownerDocument of the element in template');
@@ -89,7 +89,7 @@ test(function () {
 test(function () {
     var doc = newHTMLDocument();
     doc.body.innerHTML = '<template id="tmpl1">'
-        + '<template id="tmpl2"><div id="dv">DIV</div></template></template>';
+        + '<template id="tmpl2"><div id="div">DIV</div></template></template>';
 
     var template = doc.querySelector('#tmpl1');
 
@@ -98,7 +98,7 @@ test(function () {
     assert_equals(nestedTemplate.ownerDocument, template.content.ownerDocument,
             'Wrong nested template owner document');
 
-    var div = nestedTemplate.content.querySelector('#dv');
+    var div = nestedTemplate.content.querySelector('#div');
 
     assert_equals(div.ownerDocument, nestedTemplate.content.ownerDocument,
             'Wrong div ownerDocument');
@@ -107,7 +107,7 @@ test(function () {
 
 
 
-testInIFrame('../../resources/template-contents.html', function(context){
+testInIFrame('../../resources/template-contents.html', function(context) {
     var doc = context.iframes[0].contentDocument;
 
     var template = doc.querySelector('template');
@@ -122,7 +122,7 @@ testInIFrame('../../resources/template-contents.html', function(context){
 
 
 
-testInIFrame('../../resources/template-contents-nested.html', function(context){
+testInIFrame('../../resources/template-contents-nested.html', function(context) {
     var doc = context.iframes[0].contentDocument;
 
     var template = doc.querySelector('template');
@@ -142,7 +142,7 @@ testInIFrame('../../resources/template-contents-nested.html', function(context){
 
 
 
-testInIFrame('../../resources/two-templates.html', function(context){
+testInIFrame('../../resources/two-templates.html', function(context) {
     var doc = context.iframes[0].contentDocument;
 
     var template1 = doc.querySelector('#template1');
@@ -161,48 +161,76 @@ testInIFrame('../../resources/two-templates.html', function(context){
     + 'Load HTML document from a file, current DOCUMENT has browsing context');
 
 
+var parameters = [];
 
-test(function() {
-    var doc = newHTMLDocument();
+HTML5_ELEMENTS.forEach(function(value) {
+    if (value !== 'body' && value !== 'html' && value !== 'head' && value !== 'frameset') {
 
-    HTML5_TAG.forEach(function(value) {
-        if (value != 'body' && value != 'html' && value != 'head'
-                && value != 'frameset') {
+        var doc = newHTMLDocument();
 
+        if (isVoidElement(value)) {
+            doc.body.innerHTML = '<template><' + value + '/></template>';
+        } else {
             doc.body.innerHTML = '<template><' + value + '></' + value + '></template>';
+        }
+
+        var template = doc.querySelector('template');
+        var element = template.content.querySelector(value);
+
+        doc.body.appendChild(template);
+
+        parameters.push([
+                'Test ownerDocument for the element ' + value + ' in the template',
+                element.ownerDocument,
+                template.content.ownerDocument
+            ]);
+    }
+});
+generate_tests(assert_equals, parameters,
+        'Test ownerDocument property of all HTML5 elements in a template. '
+            + 'Current DOCUMENT has no browsing context.');
+
+var context = newContext();
+parameters = [];
+
+try {
+
+    HTML5_ELEMENTS.forEach(function(value) {
+
+        if (value !== 'body' && value !== 'html' && value !== 'head' && value !== 'frameset') {
+
+            var doc = newRenderedHTMLDocument(context);
+
+            if (isVoidElement(value)) {
+                doc.body.innerHTML = '<template><' + value + '/></template>';
+            } else {
+                doc.body.innerHTML = '<template><' + value + '></' + value + '></template>';
+            }
 
             var template = doc.querySelector('template');
             var element = template.content.querySelector(value);
 
-            assert_equals(element.ownerDocument, template.content.ownerDocument,
-                'Wrong ownerDocument for the element ' + value + ' in template');
+            doc.body.appendChild(template);
+
+            parameters.push([
+                    'Test ownerDocument for the element ' + value + ' in the template. '
+                        + 'Document has browsing context',
+                    element.ownerDocument,
+                    template.content.ownerDocument
+                ]);
         }
     });
+    generate_tests(assert_equals, parameters,
+            'Test ownerDocument property of all HTML5 elements in a template. '
+                + 'Current DOCUMENT has browsing context.');
 
-}, 'Test ownerDocument property of all HTML5 elements in a template. '
-       + 'Current DOCUMENT has no browsing context.');
-
-
-testInIFrame('../../resources/template-contents-text.html', function(context){
-    var doc = context.iframes[0].contentDocument;
-
-    HTML5_TAG.forEach(function(value) {
-        if (value != 'body' && value != 'html' && value != 'head'
-                && value != 'frameset') {
-
-            doc.body.innerHTML = '<template><' + value + '></' + value + '></template>';
-
-            var template = doc.querySelector('template');
-            var element = template.content.querySelector(value);
-
-            assert_equals(element.ownerDocument, template.content.ownerDocument,
-                'Wrong ownerDocument for the element ' + value + ' in template');
-
-        }
-    });
-
-}, 'Test ownerDocument property of all HTML5 elements in a template. '
-    + 'Load HTML document from a file, current DOCUMENT has browsing context');
+} finally {
+    try {
+        cleanContext(context);
+    } catch (e) {
+        //do nothing
+    }
+}
 
 </script>
 </body>

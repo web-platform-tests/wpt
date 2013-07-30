@@ -1,7 +1,8 @@
 Grant of License
 ----------------
 
-By contributing to this repository, you grant to the W3C a perpetual,
+By contributing to this repository, you and the company you represent, if the
+company holds any copyrights in the contribution, grant to the W3C a perpetual,
 non-exclusive, royalty-free, world-wide right and license under all of your
 copyrights in this contribution to copy, publish, use, and modify the
 contribution and to distribute the contribution under a BSD License or one with
@@ -11,7 +12,7 @@ of the contribution. You further agree that any derivative works of this
 contribution prepared by the W3C shall be solely owned by the W3C.
 
 You state, to the best of your knowledge, that you, or the company you
-represent, have all rights necessary to contribute the Materials.
+represent, have all rights necessary to contribute the materials.
 
 W3C will retain attribution of initial authorship to you. The W3C makes no
 a-priori commitment to support or distribute contributions.

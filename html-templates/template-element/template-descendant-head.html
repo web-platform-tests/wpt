@@ -17,37 +17,10 @@
 testInIFrame('../resources/template-descendant-head.html', function(context) {
     var doc = context.iframes[0].contentDocument;
 
-    assert_true(doc.head.querySelector('template') != null,
+    assert_not_equals(doc.head.querySelector('template'), null,
         'Template element should be a descendant of the head element');
 
 }, 'Template element as a descendant of the head element. Test loading from a file');
-
-
-test(function() {
-    var doc = newHTMLDocument();
-
-    doc.head.innerHTML = '<template>some text</template>';
-
-    assert_true(doc.head.querySelector('template') != null,
-        'Template element should be a descendant of the head element');
-
-}, 'Template element as a descendant of the head element. '
-    + 'The template element is assigned to head\'s innerHTML');
-
-
-test(function() {
-    var doc = newHTMLDocument();
-
-    var template = doc.createElement('template');
-
-    doc.head.appendChild(template);
-
-    assert_true(doc.head.querySelector('template') != null,
-        'Template element should be a descendant of the head element');
-
-}, 'Template element as a descendant of the head element. '
-    + 'Test template element appended to head element by appendChild()');
-
 
 </script>
 </body>

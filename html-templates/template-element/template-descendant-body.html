@@ -17,39 +17,10 @@
 testInIFrame('../resources/template-contents.html', function(ctx) {
     var doc = ctx.iframes[0].contentDocument;
 
-    assert_true(doc.body.querySelector('template') != null,
+    assert_not_equals(doc.body.querySelector('template'), null,
         'Template element should be a descendant of the body element');
 
 }, 'Template element as a descendant of the body element. Test loading from a file');
-
-
-
-test(function() {
-    var doc = newHTMLDocument();
-
-    doc.body.innerHTML = '<template>some text</template>';
-
-    assert_true(doc.body.querySelector('template') != null,
-        'Template element should be a descendant of the body element');
-
-}, 'Template element as a descendant of the body element. '
-    + 'Template element is assigned to body\'s innerHTML');
-
-
-
-test(function() {
-    var doc = newHTMLDocument();
-
-    var template = doc.createElement('template');
-
-    doc.body.appendChild(template);
-
-    assert_true(doc.body.querySelector('template') != null,
-        'Template element should be a descendant of the body element');
-
-}, 'Template element as a descendant of the body element. '
-    + 'Test template element appended to body by appendChild()');
-
 
 </script>
 </body>

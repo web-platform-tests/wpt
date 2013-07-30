@@ -10,36 +10,25 @@ policies and contribution forms [3].
 
 "use strict";
 
-var HTML5_TAG = [ 'a', 'abbr', 'address', 'area', 'article', 'aside', 'audio',
-        'b', 'base', 'bdi', 'bdo', 'blockquote', 'body', 'br', 'button',
-        'canvas', 'caption', 'cite', 'code', 'col', 'colgroup', 'command',
-        'datalist', 'dd', 'del', 'details', 'dfn', 'dialog', 'div', 'dl', 'dt',
-        'em', 'embed', 'fieldset', 'figcaption', 'figure', 'footer', 'form',
-        'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'header', 'hgroup', 'hr',
-        'html', 'i', 'iframe', 'img', 'input', 'ins', 'kbd', 'keygen', 'label',
-        'legend', 'li', 'link', 'map', 'mark', 'menu', 'meta', 'meter', 'nav',
-        'noscript', 'object', 'ol', 'optgroup', 'option', 'output', 'p',
-        'param', 'pre', 'progress', 'q', 'rp', 'rt', 'ruby', 's', 'samp',
-        'script', 'section', 'select', 'small', 'source', 'span', 'strong',
-        'style', 'sub', 'table', 'tbody', 'td', 'textarea', 'tfoot', 'th',
-        'thead', 'time', 'title', 'tr', 'track', 'u', 'ul', 'var', 'video',
-        'wbr' ];
+var HTML5_ELEMENTS = [ 'a', 'abbr', 'address', 'area', 'article', 'aside',
+        'audio', 'b', 'base', 'bdi', 'bdo', 'blockquote', 'body', 'br',
+        'button', 'canvas', 'caption', 'cite', 'code', 'col', 'colgroup',
+        'command', 'datalist', 'dd', 'del', 'details', 'dfn', 'dialog', 'div',
+        'dl', 'dt', 'em', 'embed', 'fieldset', 'figcaption', 'figure',
+        'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'header',
+        'hgroup', 'hr', 'html', 'i', 'iframe', 'img', 'input', 'ins', 'kbd',
+        'keygen', 'label', 'legend', 'li', 'link', 'map', 'mark', 'menu',
+        'meta', 'meter', 'nav', 'noscript', 'object', 'ol', 'optgroup',
+        'option', 'output', 'p', 'param', 'pre', 'progress', 'q', 'rp', 'rt',
+        'ruby', 's', 'samp', 'script', 'section', 'select', 'small', 'source',
+        'span', 'strong', 'style', 'sub', 'table', 'tbody', 'td', 'textarea',
+        'tfoot', 'th', 'thead', 'time', 'title', 'tr', 'track', 'u', 'ul',
+        'var', 'video', 'wbr' ];
 
-// only those HTML5 tags which can have end ones
-var HTML5_END_TAG = [ 'a', 'abbr', 'address', 'area', 'article', 'aside',
-        'audio', 'b', 'base', 'bdi', 'bdo', 'blockquote', 'body', 'button',
-        'canvas', 'caption', 'cite', 'code', 'col', 'colgroup', 'command',
-        'datalist', 'dd', 'del', 'details', 'dfn', 'dialog', 'div', 'dl', 'dt',
-        'em', 'embed', 'fieldset', 'figcaption', 'figure', 'footer', 'form',
-        'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'header', 'hgroup', 'hr',
-        'html', 'i', 'iframe', 'img', 'input', 'ins', 'kbd', 'keygen', 'label',
-        'legend', 'li', 'link', 'map', 'mark', 'menu', 'meta', 'meter', 'nav',
-        'noscript', 'object', 'ol', 'optgroup', 'option', 'output', 'p',
-        'param', 'pre', 'progress', 'q', 'rp', 'rt', 'ruby', 's', 'samp',
-        'script', 'section', 'select', 'small', 'source', 'span', 'strong',
-        'style', 'sub', 'table', 'tbody', 'td', 'textarea', 'tfoot', 'th',
-        'thead', 'time', 'title', 'tr', 'track', 'u', 'ul', 'var', 'video',
-        'wbr' ];
+// only void (without end tag) HTML5 elements
+var HTML5_VOID_ELEMENTS = [ 'area', 'base', 'br', 'col', 'command', 'embed',
+        'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source',
+        'track', 'wbr' ];
 
 // http://www.whatwg.org/specs/web-apps/current-work/multipage/forms.html#form-associated-element
 var HTML5_FORM_ASSOCIATED_ELEMENTS = [ 'button', 'fieldset', 'input', 'keygen',
@@ -65,8 +54,8 @@ function newXHTMLDocument() {
     return d;
 }
 
-function newIFrame(ctx, src) {
-    if (typeof (ctx) === 'undefined' || typeof (ctx.iframes) !== 'object') {
+function newIFrame(context, src) {
+    if (typeof (context) === 'undefined' || typeof (context.iframes) !== 'object') {
         assert_unreached('Illegal context object in newIFrame');
     }
 
@@ -77,7 +66,7 @@ function newIFrame(ctx, src) {
         iframe.src = src;
     }
     document.body.appendChild(iframe);
-    ctx.iframes.push(iframe);
+    context.iframes.push(iframe);
 
     assert_true(typeof (iframe.contentWindow) != 'undefined'
             && typeof (iframe.contentWindow.document) != 'undefined'
@@ -86,8 +75,8 @@ function newIFrame(ctx, src) {
     return iframe;
 }
 
-function newRenderedHTMLDocument(ctx) {
-    var frame = newIFrame(ctx);
+function newRenderedHTMLDocument(context) {
+    var frame = newIFrame(context);
     var d = frame.contentWindow.document;
     return d;
 }
@@ -98,8 +87,8 @@ function newContext() {
     };
 }
 
-function cleanContext(ctx) {
-    ctx.iframes.forEach(function(e) {
+function cleanContext(context) {
+    context.iframes.forEach(function(e) {
         e.parentNode.removeChild(e);
     });
 }
@@ -108,11 +97,11 @@ function cleanContext(ctx) {
 // the context is cleaned up after test completes.
 function inContext(f) {
     return function() {
-        var ctx = newContext();
+        var context = newContext();
         try {
-            f(ctx);
+            f(context);
         } finally {
-            cleanContext(ctx);
+            cleanContext(context);
         }
     };
 }
@@ -126,21 +115,21 @@ function testInIFrame(url, f, testName, testProps) {
     if (url) {
         var t = async_test(testName, testProps);
         t.step(function() {
-            var ctx = newContext();
-            var iframe = newIFrame(ctx, url);
+            var context = newContext();
+            var iframe = newIFrame(context, url);
             iframe.onload = t.step_func(function() {
                 try {
-                    f(ctx);
+                    f(context);
                     t.done();
                 } finally {
-                    cleanContext(ctx);
+                    cleanContext(context);
                 }
             });
         });
     } else {
-        test(inContext(function(ctx) {
-            newRenderedHTMLDocument(ctx);
-            f(ctx);
+        test(inContext(function(context) {
+            newRenderedHTMLDocument(context);
+            f(context);
         }), testName, testProps);
     }
 }
@@ -169,6 +158,10 @@ function assert_nodelist_contents_equal_noorder(actual, expected, message) {
 
 function isVisible(el) {
     return el.offsetTop != 0;
+}
+
+function isVoidElement(elementName) {
+    return HTML5_VOID_ELEMENTS.indexOf(elementName)>=0;
 }
 
 function checkTemplateContent(d, obj, html, id, nodeName) {

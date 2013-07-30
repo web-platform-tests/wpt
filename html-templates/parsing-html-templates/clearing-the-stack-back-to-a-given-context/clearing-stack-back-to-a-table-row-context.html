@@ -14,27 +14,27 @@
 <div id="log"></div>
 <script type="text/javascript">
 
-function doTest(doc, templateInnerHTML, id, tagName) {
-    
+function doTest(doc, templateInnerHTML, id, tagName, elementId) {
+
     doc.body.innerHTML = '' +
         '<table id="tbl">' +
-        '<tr id="tr">' +        
+        '<tr id="tr">' +
         '<template id="tmpl1">' +
-        // When parser meets <th>, <td>, </tr> stack must be cleared
+        // When parser meets <th>, <td>, </tr>, stack must be cleared
         // back to table row context.
         // But <template> tag should abort this
-        templateInnerHTML + 
+        templateInnerHTML +
         '</template>' +
         '<td id="td">' +
         '</td>' +
-        '</tr>' + 
+        '</tr>' +
         '</table>';
-    
+
     var table = doc.querySelector('#tbl');
     var tr = doc.querySelector('#tr');
     var td = doc.querySelector('#td');
     var template = doc.querySelector('#tmpl1');
-    
+
     assert_equals(table.rows.length, 1, 'Wrong number of table rows');
     assert_equals(table.rows[0].cells.length, 1, 'Wrong number of table cells');
     assert_equals(template.parentNode, tr, 'Wrong template parent');
@@ -46,37 +46,26 @@ function doTest(doc, templateInnerHTML, id, tagName) {
         assert_equals(template.content.querySelector('#' + id).tagName, tagName,
                 'Wrong element in the template content');
     }
+    if (elementId) {
+        assert_equals(doc.querySelector('#' + elementId), null,
+                'Table should have no element with ID ' + elementId);
+    }
 }
 
 
-test(function () {
-    var doc = newHTMLDocument();
-    
-    doTest(doc, '<th id="thdr">Table header</th>', 'thdr', 'TH');
-    
-    assert_true(doc.querySelector('#thdr') == null, 'Table should have no TH element');
-    
-}, 'Clearing stack back to a table row context. Test <th>');
+var doc = newHTMLDocument();
+var parameters = [
+    ['Clearing stack back to a table row context. Test <th>',
+     doc, '<th id="th1">Table header</th>', 'th1', 'TH', 'th1'],
 
+    ['Clearing stack back to a table row context. Test <td>',
+     doc, '<td id="td1">Table cell</td>', 'td1', 'TD', 'td1'],
 
+     ['Clearing stack back to a table row context. Test </tr>',
+      doc, '</tr>', null, null]
+];
 
-test(function () {
-    var doc = newHTMLDocument();
-    
-    doTest(doc, '<td id="td2">Table cell</td>', 'td2', 'TD');
-    
-    assert_true(doc.querySelector('#td2') == null, 'Table should have no additional TD element');
-    
-}, 'Clearing stack back to a table row context. Test <td>');
-
-
-
-test(function () {
-    var doc = newHTMLDocument();
-    
-    doTest(doc, '</tr>', null, null);
-    
-}, 'Clearing stack back to a table row context. Test </tr>');
+generate_tests(doTest, parameters, 'Clearing stack back to a table body context.');
 
 </script>
 </body>

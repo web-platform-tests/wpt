@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>CSS Test: inset rectangle shape-outside on floats</title>
+<title>CSS Test: inset rectangle percentage shape-outside on floats</title>
 <link rel="author" title="Bem Jones-Bey" href="mailto:bjonesbe@adobe.com">
 <link rel="help" href="http://dev.w3.org/csswg/css-shapes-1/#shape-outside-property">
 <link rel="match" href="shape-outside-floats-inset-rectangle-000-ref.html">
@@ -20,16 +20,16 @@
         height: 40px;
     }
     .exclusion-top {
-        shape-outside: inset-rectangle(21px, 0, 0, 0);
+        shape-outside: inset-rectangle(52%, 0, 0, 0);
     }
     .exclusion-right {
-        shape-outside: inset-rectangle(0, 20px, 0, 0);
+        shape-outside: inset-rectangle(0, 50%, 0, 0);
     }
     .exclusion-bottom {
-        shape-outside: inset-rectangle(0, 0, 20px, 0);
+        shape-outside: inset-rectangle(0, 0, 50%, 0);
     }
     .exclusion-left {
-        shape-outside: inset-rectangle(0, 0, 0, 20px);
+        shape-outside: inset-rectangle(0, 0, 0, 50%);
     }
 </style>
 <body>
@@ -70,3 +70,4 @@
       XXX
     </div>
 </body>
+

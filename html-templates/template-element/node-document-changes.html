@@ -1,14 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>
-    HTML Templates: When a template element's node document changes,
-    the template element's content DocumentFragment must be adopted into
-    the new node document's template contents owner document
-</title>
+<title>HTML Templates: When node's document changes its owner document should be changed</title>
 <meta name="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
 <meta name="author" title="Aleksei Yu. Semenov" href="mailto:a.semenov@unipro.ru">
-<meta name="assert" content="When node's document changes its owner document should be changed too">
+<meta name="assert" content="When a template element's node document changes, the template element's content DocumentFragment must be adopted into the new node document's template contents owner document">
 <link rel="help" href="http://www.w3.org/TR/2013/WD-html-templates-20130214/#template-element">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -29,14 +25,16 @@ test(function() {
             'Wrong template content owner document');
 
     var doc2 = newHTMLDocument();
+    var template2 = doc2.createElement('template');
     doc2.body.appendChild(template);
 
-    assert_equals(template.ownerDocument, doc2,
+    assert_equals(template.ownerDocument, template2.ownerDocument,
             'Template node owner document should be changed');
-    assert_equals(template.content.ownerDocument, doc2,
+    assert_equals(template.content.ownerDocument, template2.content.ownerDocument,
             'Template content owner document should be changed');
 
-}, 'Template owner document change. Test ownerDocument of an empty template and its content');
+}, 'Changing of template element\'s node document. ' +
+    'Test that ownerDocument of an empty template and its content changes');
 
 
 test(function() {
@@ -51,17 +49,20 @@ test(function() {
             'Wrong template content owner document');
 
     var doc2 = newHTMLDocument();
+    var template2 = doc2.createElement('template');
     doc2.body.appendChild(template);
 
-    assert_equals(template.ownerDocument, doc2,
+    assert_equals(template.ownerDocument, template2.ownerDocument,
             'Template node owner document should be changed');
-    assert_equals(template.content.ownerDocument, doc2,
+    assert_equals(template.content.ownerDocument, template2.content.ownerDocument,
             'Template content owner document should be changed');
 
-    assert_equals(template.content.querySelector('div').ownerDocument, doc2,
+    assert_equals(template.content.querySelector('div').ownerDocument,
+            template2.content.ownerDocument,
             'Template content descendants owner document should be changed');
 
-}, 'Template owner document change. Test not empty template and its content');
+}, 'Changing of template element\'s node document. ' +
+    'Test that ownerDocument of a not empty template and its content changes');
 
 
 test(function() {
@@ -85,45 +86,54 @@ test(function() {
             'Wrong nested template content owner document');
 
     var doc2 = newHTMLDocument();
+    var template2 = doc2.createElement('template');
     doc2.body.appendChild(template);
 
-    assert_equals(template.ownerDocument, doc2,
+    assert_equals(template.ownerDocument, template2.ownerDocument,
             'Template node owner document should be changed');
-    assert_equals(template.content.ownerDocument, doc2,
+    assert_equals(template.content.ownerDocument, template2.content.ownerDocument,
             'Template content owner document should be changed');
-    assert_equals(template.content.querySelector('div').ownerDocument, doc2,
+    assert_equals(template.content.querySelector('div').ownerDocument,
+            template2.content.ownerDocument,
             'Template content descendants owner document should be changed');
 
-
-    assert_equals(nestedTemplate.ownerDocument, doc2,
+    assert_equals(nestedTemplate.ownerDocument,
+            template2.content.ownerDocument,
             'Nested template node owner document should be changed');
-    assert_equals(nestedTemplate.content.ownerDocument, doc2,
+    assert_equals(nestedTemplate.content.ownerDocument,
+            template2.content.ownerDocument,
             'Nested template content owner document should be changed');
-    assert_equals(nestedTemplate.content.querySelector('div').ownerDocument, doc2,
-            'Nested template content descendants owner document should be changed');
+    assert_equals(nestedTemplate.content.querySelector('div').ownerDocument,
+            template2.content.ownerDocument,
+            'Owner document of the nested template content descendants should be changed');
 
-}, 'Template owner document change. Test nested templates');
+}, 'Changing of template element\'s node document. ' +
+    'Test that ownerDocument of nested template and its content changes');
 
 
-testInIFrame('../resources/template-contents.html', function(context){
+testInIFrame('../resources/template-contents.html', function(context) {
     var doc1 = context.iframes[0].contentDocument;
 
     var template = doc1.body.querySelector('template');
 
     var doc2 = newHTMLDocument();
+    var template2 = doc2.createElement('template');
     doc2.body.appendChild(template);
 
-    assert_equals(template.ownerDocument, doc2,
+    assert_equals(template.ownerDocument, template2.ownerDocument,
             'Template node owner document should be changed');
-    assert_equals(template.content.ownerDocument, doc2,
+    assert_equals(template.content.ownerDocument,
+            template2.content.ownerDocument,
             'Template content owner document should be changed');
-    assert_equals(template.content.querySelector('div').ownerDocument, doc2,
+    assert_equals(template.content.querySelector('div').ownerDocument,
+            template2.content.ownerDocument,
             'Template content descendants owner document should be changed');
 
-}, 'Template owner document change. Test loading document from a file');
+}, 'Changing of template element\'s node document. ' +
+    'Test document loaded from a file');
 
 
-testInIFrame('../resources/template-contents.html', function(context){
+testInIFrame('../resources/template-contents.html', function(context) {
     var doc1 = context.iframes[0].contentDocument;
 
     var doc2 = newHTMLDocument();
@@ -149,10 +159,11 @@ testInIFrame('../resources/template-contents.html', function(context){
             'Template content descendants owner document should be ' +
             'template content document owner');
 
-}, 'Template owner document change. Test appending to a document loaded from a file');
+}, 'Changing of template element\'s node document. ' +
+    'Adobt template element into a document that has a browsing context');
 
 
-testInIFrame('../resources/template-contents.html', function(context){
+testInIFrame('../resources/template-contents.html', function(context) {
     var doc1 = context.iframes[0].contentDocument;
 
     var template = doc1.querySelector('template');
@@ -180,7 +191,9 @@ testInIFrame('../resources/template-contents.html', function(context){
             'Template content descendants owner document should be ' +
             'template content document owner');
 
-}, 'Template owner document change. Test appending from and to documents loaded from a file');
+}, 'Changing of template element\'s node document. ' +
+    'Test the case when both old and new owner documents of template element ' +
+    'have browsing context');
 
 </script>
 </body>

@@ -62,7 +62,7 @@ test(function () {
     + 'Test nested template');
 
 
-testInIFrame('../resources/template-contents.html', function(context){
+testInIFrame('../resources/template-contents.html', function(context) {
     var doc = context.iframes[0].contentDocument;
 
     var template = doc.querySelector('template');

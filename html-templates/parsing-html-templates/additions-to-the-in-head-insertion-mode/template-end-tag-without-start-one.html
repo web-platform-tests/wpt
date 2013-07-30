@@ -4,7 +4,7 @@
 <title>HTML Templates: Template end tag without start one. Element should be ignored</title>
 <meta name="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
 <meta name="author" title="Aleksei Yu. Semenov" href="a.semenov@unipro.ru">
-<meta name="assert" content="If parser in 'in head' insertion mode meet template end tag and if the stack of open elements has no template element in html scope, then this is a parse error; ignore the token">
+<meta name="assert" content="If parser in 'in head' insertion mode meets template end tag and if the stack of open elements has no template element in html scope, then this is a parse error; ignore the token">
 <link rel="help" href="http://www.w3.org/TR/2013/WD-html-templates-20130214/#in-head-addition">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -84,7 +84,7 @@ test(function () {
     + 'Test valid <template> element, <title> element and </template> tag after them');
 
 
-testInIFrame('../../resources/end-template-tag-in-head.html', function(context){
+testInIFrame('../../resources/end-template-tag-in-head.html', function(context) {
     var doc = context.iframes[0].contentDocument;
 
     assert_null(doc.head.querySelector('template'), '</template> must be ignored');

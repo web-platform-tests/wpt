@@ -1,20 +1,27 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>HTML Templates: HEAD element cannot be content of TEMPLATE element</title>
+<title>HTML Templates: In body insertion mode: parser should ignore HEAD token</title>
 <meta name="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
 <meta name="author" title="Aleksei Yu. Semenov" href="mailto:a.semenov@unipro.ru">
-<meta name="assert" content="HEAD element cannot be content of TEMPLATE element">
-<link rel="help" href="http://www.w3.org/TR/2013/WD-html-templates-20130214/#template-element">
+<meta name="assert" content="If parser is in 'in body' insertion mode and meets HEAD token it should be ignored">
+<link rel="help" href="http://www.w3.org/TR/2013/WD-html-templates-20130214/#in-body-addition">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src='../testcommon.js'></script>
+<script src='../../testcommon.js'></script>
 <link rel="stylesheet" href="/resources/testharness.css">
 </head>
 <body>
 <div id="log"></div>
 <script type="text/javascript">
 
+/*
+ * According to http://www.w3.org/TR/2013/WD-html-templates-20130214/#template-contents-insertion-mode
+ * when parser is in "template content" mode and meets <head> tag it should be switched to
+ * "in body" insertion mode.
+ * According to http://www.w3.org/html/wg/drafts/html/master/syntax.html#parsing-main-inbody
+ * this token (HEAD) should be ignored
+ */
 
 test(function() {
     var doc = newHTMLDocument();
@@ -27,8 +34,7 @@ test(function() {
     assert_equals(template.content.childNodes.length, 0,
             'Template cannot contain HEAD element');
 
-}, 'HEAD element cannot be content of TEMPLATE element. '
-    + 'Test empty HEAD element assigned to template innerHTML');
+}, 'Ignore HEAD token. Test empty HEAD element assigned to template innerHTML');
 
 
 test(function() {
@@ -44,26 +50,25 @@ test(function() {
     assert_equals(template.content.firstChild.nodeName, 'TITLE',
             'Template should contain children of ignored HEAD element');
 
-}, 'HEAD element cannot be content of TEMPLATE element. '
-    + 'Test not empty HEAD element assigned to template innerHTML');
+}, 'Ignore HEAD token. Test not empty HEAD element assigned to template innerHTML');
 
 
 test(function() {
     var doc = newHTMLDocument();
     var template = doc.createElement('template');
 
-    template.innerHTML = '<div id="dv">Some text</div><head><title>test</title></head>';
+    template.innerHTML = '<div id="div1">Some text</div><head><title>test</title></head>';
 
     doc.body.appendChild(template);
 
     assert_equals(template.content.childNodes.length, 2,
             'Wrong number of template content children');
-    assert_true(template.content.querySelector('#dv') != null,
+    assert_true(template.content.querySelector('#div1') != null,
             'Template should contain valid element');
     assert_equals(template.content.lastChild.tagName, 'TITLE',
             'Template should contain children of ignored HEAD element');
 
-}, 'HEAD element cannot be content of TEMPLATE element. '
+}, 'Ignore HEAD token. '
     + 'Test HEAD element and some valid element before it, assigned to template innerHTML');
 
 
@@ -71,7 +76,7 @@ test(function() {
     var doc = newHTMLDocument();
     var template = doc.createElement('template');
 
-    template.innerHTML = '<head><title>test</title></head><div id="dv">Some text</div>';
+    template.innerHTML = '<head><title>test</title></head><div id="div1">Some text</div>';
 
     doc.body.appendChild(template);
 
@@ -79,10 +84,10 @@ test(function() {
             'Wrong number of template content children');
     assert_equals(template.content.firstChild.tagName, 'TITLE',
             'Template should contain children of ignored HEAD element');
-    assert_true(template.content.querySelector('#dv') != null,
+    assert_true(template.content.querySelector('#div1') != null,
             'Template should contain valid element');
 
-}, 'HEAD element cannot be content of TEMPLATE element. '
+}, 'Ignore HEAD token. '
     + 'Test HEAD element and some valid element after it, assigned to template innerHTML');
 
 
@@ -106,19 +111,19 @@ test(function() {
     assert_equals(nestedTemplate.content.firstChild.tagName, 'TITLE',
             'Template should contain children of ignored HEAD element');
 
-}, 'HEAD element cannot be content of TEMPLATE element. '
+}, 'Ignore HEAD token. '
     + 'Test HEAD tag inside template tag assigned to another template\'s innerHTML');
 
 
-testInIFrame('../resources/template-contents-head.html', function(context){
+testInIFrame('../../resources/template-contents-head.html', function(context) {
     var doc = context.iframes[0].contentDocument;
 
     var template = doc.body.querySelector('template');
 
     assert_equals(template.content.childNodes.length, 0,
             'Template cannot contain HEAD element');
-}, 'HEAD element cannot be content of TEMPLATE element. '
-    + 'Test loading a HTML file with HEAD tag inside template');
+
+}, 'Ignore HEAD token. Test loading a HTML file with HEAD tag inside template');
 
 </script>
 </body>

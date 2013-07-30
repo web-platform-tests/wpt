@@ -1,20 +1,27 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>HTML Templates: FRAMESET element cannot be content of TEMPLATE element</title>
+<title>HTML Templates: In body insertion mode: parser should ignore FRAMESET token</title>
 <meta name="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
 <meta name="author" title="Aleksei Yu. Semenov" href="mailto:a.semenov@unipro.ru">
-<meta name="assert" content="FRAMESET element cannot be content of TEMPLATE element">
-<link rel="help" href="http://www.w3.org/TR/2013/WD-html-templates-20130214/#template-element">
+<meta name="assert" content="If parser is in 'in body' insertion mode and meets HTML token it should be ignored">
+<link rel="help" href="http://www.w3.org/TR/2013/WD-html-templates-20130214/#in-body-addition">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src='../testcommon.js'></script>
+<script src='../../testcommon.js'></script>
 <link rel="stylesheet" href="/resources/testharness.css">
 </head>
 <body>
 <div id="log"></div>
 <script type="text/javascript">
 
+/*
+ * According to http://www.w3.org/TR/2013/WD-html-templates-20130214/#template-contents-insertion-mode
+ * when parser is in "template content" mode and meets <frameset> tag it should be switched to
+ * "in body" insertion mode.
+ * According to http://www.w3.org/html/wg/drafts/html/master/syntax.html#parsing-main-inbody
+ * this token (FRAMESET) should be ignored
+ */
 
 test(function() {
     var doc = newHTMLDocument();
@@ -30,15 +37,14 @@ test(function() {
     assert_equals(template.content.childNodes.length, 0,
             'Template cannot contain FRAMESET element');
 
-}, 'FRAMESET element cannot be content of TEMPLATE element. '
-    + 'Test FRAMESET element assigned to template innerHTML');
+}, 'Ignore frameset token. Test FRAMESET element assigned to template innerHTML');
 
 
 test(function() {
     var doc = newHTMLDocument();
     var template = doc.createElement('template');
 
-    template.innerHTML = '<div id="dv">Some text</div>'
+    template.innerHTML = '<div id="div1">Some text</div>'
         + '<frameset cols="25%,*,25%">'
         + '<frame src="frame_a.htm">'
         + '<frame src="frame_b.htm">'
@@ -49,10 +55,10 @@ test(function() {
 
     assert_equals(template.content.childNodes.length, 1,
             'Template cannot contain FRAMESET element');
-    assert_true(template.content.querySelector('#dv') != null,
+    assert_true(template.content.querySelector('#div1') != null,
             'Template should contain valid element');
 
-}, 'FRAMESET element cannot be content of TEMPLATE element. '
+}, 'Ignore frameset token. '
     + 'Test FRAMESET element and some valid element before it, assigned '
     + 'to the template\'s innerHTML');
 
@@ -65,16 +71,16 @@ test(function() {
         + '<frame src="frame_a.htm">'
         + '<frame src="frame_b.htm">'
         + '<frame src="frame_c.htm">'
-        + '</frameset><div id="dv">Some text</div>';
+        + '</frameset><div id="div1">Some text</div>';
 
     doc.body.appendChild(template);
 
     assert_equals(template.content.childNodes.length, 1,
             'Template cannot contain FRAMESET element');
-    assert_true(template.content.querySelector('#dv') != null,
+    assert_true(template.content.querySelector('#div1') != null,
             'Template should contain valid element');
 
-}, 'FRAMESET element cannot be content of TEMPLATE element. '
+}, 'Ignore frameset token. '
     + 'Test FRAMESET element and some valid element after it, assigned '
     + 'to the template\'s innerHTML');
 
@@ -102,19 +108,18 @@ test(function() {
     assert_equals(nestedTemplate.content.childNodes.length, 0,
             'Template cannot contain FRAMESET element');
 
-}, 'FRAMESET element cannot be content of TEMPLATE element. '
+}, 'Ignore frameset token. '
     + 'Test FRAMESET tag inside template tag assigned to another template\'s innerHTML');
 
 
-testInIFrame('../resources/template-contents-frameset.html', function(context){
+testInIFrame('../../resources/template-contents-frameset.html', function(context) {
     var doc = context.iframes[0].contentDocument;
 
     var template = doc.body.querySelector('template');
 
     assert_equals(template.content.childNodes.length, 0,
             'Template cannot contain FRAMESET element');
-}, 'FRAMESET element cannot be content of TEMPLATE element. '
-    + 'Test loading a HTML file with FRAMESET tag inside template');
+}, 'Ignore frameset token. Test loading a HTML file with FRAMESET tag inside template');
 
 </script>
 </body>

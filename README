@@ -14,25 +14,14 @@ or Peer.
 
 tools/ is random scripts that may be useful when administering tests.
  
-Legal Stuff
------------
- 
-These tests are copyright by W3C and/or the author listed in the test
-file. The tests are dual-licensed under the W3C Test Suite License:
-  http://www.w3.org/Consortium/Legal/2008/04-testsuite-license
-and the BSD 3-clause License:
-  http://www.w3.org/Consortium/Legal/2008/03-bsd-license
-under W3C's test suite licensing policy:
-  http://www.w3.org/Consortium/Legal/2008/04-testsuite-copyright
+Contributing
+-------------
 
-Contributions to this repository are governed by the W3C's Policies
-for Contribution of Testcases to W3C:
-  http://www.w3.org/2004/10/27-testcases
-
-Contributors who are not members of the CSS Working Group must agree
-to the terms of Grant II by filling out this form:
-  http://www.w3.org/2002/09/wbs/1/testgrants2-200409/
-before submitting any tests to this repository.
+Absolutely everyone is welcome (and even encouraged) to contribute to test
+development, so long as you fulfill the contribution requirements detailed
+in the [Contributing Guidelines][contributing]. No test is too small or too
+simple, especially if it corresponds to something for which you've noted an
+interoperability bug in a browser.
 
 Write Access
 ------------
@@ -45,3 +34,5 @@ https://test.csswg.org/shepherd/account/access/
 
 You will be notified by email when your request is processed.
 
+
+[contributing]: https://github.com/rhauck/csswg-test/blob/master/CONTRIBUTING.md

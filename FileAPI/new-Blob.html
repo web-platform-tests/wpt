@@ -17,6 +17,7 @@
         assert_equals(b.size, 0, 'b.size');
         assert_equals(b.type, '', 'b.type');
     }, document.title+', no args');
+
     var t_transparent = async_test(document.title+', transparent endings');
     t_transparent.step(function(){
         var b1 = new Blob(['\r\r\n\n']);
@@ -38,6 +39,7 @@
         });
         reader.readAsText(b1);
     });
+
     test(function() {
         assert_throws(new TypeError(), function() { new Blob("foo"); });
         // assert_throws(new TypeError(), function() { new Blob({"0": "foo", "length":1}); }); // https://www.w3.org/Bugs/Public/show_bug.cgi?id=16767
@@ -55,11 +57,13 @@
         var b_select = new Blob(select);
         assert_equals(b_select.size, '[object HTMLOptionElement]'.length, 'select');
     }, document.title+', platform object that supports indexed properties');
+
     test(function() {
         var list = document.body.children;
-        Object.defineProperty(list, "length", {get: function() { throw {name:7}; }}); 
+        Object.defineProperty(list, "length", {get: function() { throw {name:7}; }});
         assert_throws({name:7}, function(){ new Blob(list); });
     }, document.title+', platform object that supports indexed properties, overwriting "length"');
+
     var t_ports = async_test(document.title+', MessagePort[] (platform array object)');
     t_ports.step(function() {
         var channel = new MessageChannel();
@@ -71,6 +75,7 @@
         var channel2 = new MessageChannel();
         channel.port1.postMessage('', [channel2.port1]);
     });
+
     test(function() {
         var elm = document.createElement('div');
         elm.setAttribute('foo', 'bar');
@@ -89,18 +94,20 @@
         assert_equals(b4.type, '\uD801\uDC7E', 'b4');
         var b5 = new Blob([], {type:' image/gif '});
         assert_equals(b5.type, ' image/gif ', 'b5');
-
     }, document.title+', type');
+
     test(function() {
         var b1 = new Blob(['foo']);
         var b2 = new Blob([b1, b1]);
         assert_equals(b2.size, 6);
     }, document.title+', Blob in first argument');
+
     test(function() {
         var view = new Uint8Array([0, 255, 0]);
         var b1 = new Blob([view.buffer, view.buffer]);
         assert_equals(b1.size, 6);
     }, document.title+', ArrayBuffer in first argument');
+
     test(function() {
         var view = new Uint8Array([0, 255, 0, 4]);
         var b1 = new Blob([view, view]);
@@ -109,16 +116,19 @@
         var b2 = new Blob([view1, view.buffer, view1]);
         assert_equals(b2.size, 2 + 4 + 2);
     }, document.title+', ArrayBufferView in first argument');
+
     test(function() {
         var view = new Uint8Array([0]);
         var b1 = new Blob(['fo']);
         var b2 = new Blob([view.buffer, b1, "foo"]);
         assert_equals(b2.size, 6);
     }, document.title+', mixed types in first argument');
+
     test(function() {
         var b1 = new Blob([null, undefined]);
         assert_equals(b1.size, "nullundefined".length);
     }, document.title+', null/undefined in first argument');
+
     var t_slice = async_test(document.title+', slice');
     t_slice.step(function(){
         var view = new Uint8Array([0, 255, 0]);

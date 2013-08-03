@@ -150,6 +150,11 @@ public class Driver {
                 out.flush();
             }
             xmlParser.parse(is);
+        } else {
+            err.println("Warning: " + file.toURI().toURL().toString()
+                    + " was not checked. Files must have the extension"
+                    + " .html, .xhtml, .htm, or .xht");
+            err.flush();
         }
     }
 
@@ -293,7 +298,7 @@ public class Driver {
         htmlParser.setMappingLangToXmlLang(true);
     }
 
-    public boolean check() throws SAXException {
+    public boolean runTestSuite() throws SAXException {
         try {
             assertionSchema = CheckerSchema.ASSERTION_SCH;
         } catch (Exception e) {
@@ -330,17 +335,53 @@ public class Driver {
         return !failed;
     }
 
+    private boolean validate(List<File> files, File schema)
+            throws SAXException, Exception {
+        try {
+            assertionSchema = CheckerSchema.ASSERTION_SCH;
+        } catch (Exception e) {
+            err.println("Reading schema failed. Terminating.");
+            e.printStackTrace();
+            err.flush();
+            return false;
+        }
+        mainSchema = schemaByFilename(schema);
+        mainSchema = new DataAttributeDroppingSchemaWrapper(mainSchema);
+        mainSchema = new XmlLangAttributeDroppingSchemaWrapper(mainSchema);
+        setup(errorHandler);
+        checkValidFiles(files);
+        err.flush();
+        out.flush();
+        return !failed;
+    }
+
     /**
      * @param args
      * @throws SAXException 
      */
-    public static void main(String[] args) throws SAXException {
+    public static void main(String[] args) throws SAXException, Exception {
         boolean verbose = ((args.length == 1) && "-v".equals(args[0]));
         Driver d = new Driver(verbose);
-        if (d.check()) {
-            System.exit(0);
+        if (args.length > 1) {
+            // java org.whattf.syntax.Driver SCHEMA FILENAMES
+            // (validate one or more arbitrary documents)
+            File schema = new File(args[0]);
+            List<File> files = new ArrayList<File>();
+            for (int i = 1; i < args.length; i++) {
+                files.add(new File(args[i]));
+            }
+            if (d.validate(files, schema)) {
+                System.exit(0);
+            } else {
+                System.exit(-1);
+            }
         } else {
-            System.exit(-1);
+            // java org.whattf.syntax.Driver [-v]
+            if (d.runTestSuite()) {
+                System.exit(0);
+            } else {
+                System.exit(-1);
+            }
         }
     }
 }

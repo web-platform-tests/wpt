@@ -21,13 +21,13 @@ div.multicol {
   column-rule: 10px inset lime;
 }
 
-td { border-right: 10px inset lime }
+td { border-right: 10px inset lime; padding: 0 }
 td + td { border-left: 10px inset lime; border-right: none }
 </style>
 </head>
 <body>
-The two horizontal bars below should be identical.
-<div class="multicol">0<br/>0</div>
-<div class="multicol">0<br/>0</div>
+The two horizontal bars below should look the same.
+<table><tr><td>0</td><td>0</td></tr></table>
+<table><tr><td>0</td><td>0</td></tr></table>
 </body>
 </html>

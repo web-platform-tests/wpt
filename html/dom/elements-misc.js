@@ -13,7 +13,7 @@ var miscElements = {
 		charset: "string",
 		// TODO: async attribute (complicated).
 		defer: "boolean",
-		crossOrigin: {type: "enum", keywords: ["", "anonymous", "use-credentials"]},
+		crossOrigin: {type: "enum", keywords: ["anonymous", "use-credentials"], nonCanon:{"": "anonymous"}},
 	},
 	noscript: {},
 

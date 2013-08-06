@@ -104,17 +104,6 @@ for (var i = 0; i < testRangesCached.length; i++) {
 					}
 				}
 
-				// Now to the actual algorithm.
-				// "If context object's or sourceRange's detached flag is set,
-				// throw an "InvalidStateError" exception and terminate these
-				// steps."
-				if (i == 0 || j == 0) {
-					assert_throws("INVALID_STATE_ERR", function() {
-						range1.compareBoundaryPoints(how, range2);
-					}, "InvalidStateError required if one of the ranges is detached");
-					return;
-				}
-
 				// "If how is not one of
 				//   START_TO_START,
 				//   START_TO_END,

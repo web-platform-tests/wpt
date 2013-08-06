@@ -64,8 +64,6 @@ function testSelectNode(range, node) {
 var range = document.createRange();
 var foreignRange = foreignDoc.createRange();
 var xmlRange = xmlDoc.createRange();
-var detachedRange = document.createRange();
-detachedRange.detach();
 var tests = [];
 function testTree(root, marker) {
 	if (root.nodeType == Node.ELEMENT_NODE && root.id == "log") {
@@ -75,7 +73,6 @@ function testTree(root, marker) {
 	tests.push([marker + root.nodeName.toLowerCase() + " node, current doc's range, type " + root.nodeType, range, root]);
 	tests.push([marker + root.nodeName.toLowerCase() + " node, foreign doc's range, type " + root.nodeType, foreignRange, root]);
 	tests.push([marker + root.nodeName.toLowerCase() + " node, XML doc's range, type " + root.nodeType, xmlRange, root]);
-	tests.push([marker + root.nodeName.toLowerCase() + " node, detached range, type " + root.nodeType, detachedRange, root]);
 	for (var i = 0; i < root.childNodes.length; i++) {
 		testTree(root.childNodes[i], "**" + marker);
 	}

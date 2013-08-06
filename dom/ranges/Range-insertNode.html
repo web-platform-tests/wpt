@@ -51,8 +51,6 @@ function testInsertNode(i, j) {
 	var actualRoots = [];
 	var expectedRoots = [];
 
-	var detached = false;
-
 	domTests[i][j].step(function() {
 		restoreIframe(actualIframe, i, j);
 		restoreIframe(expectedIframe, i, j);
@@ -61,12 +59,6 @@ function testInsertNode(i, j) {
 		expectedRange = expectedIframe.contentWindow.testRange;
 		actualNode = actualIframe.contentWindow.testNode;
 		expectedNode = expectedIframe.contentWindow.testNode;
-
-		try {
-			actualRange.collapsed;
-		} catch (e) {
-			detached = true;
-		}
 
 		assert_equals(actualIframe.contentWindow.unexpectedException, null,
 			"Unexpected exception thrown when setting up Range for actual insertNode()");
@@ -93,15 +85,8 @@ function testInsertNode(i, j) {
 		// also the trees containing the moved nodes.  These might not be the
 		// same, if we're inserting a node from a detached tree or a different
 		// document.
-		//
-		// Detached ranges are always in the contentDocument.
-		if (detached) {
-			actualRoots.push(actualIframe.contentDocument);
-			expectedRoots.push(expectedIframe.contentDocument);
-		} else {
-			actualRoots.push(furthestAncestor(actualRange.startContainer));
-			expectedRoots.push(furthestAncestor(expectedRange.startContainer));
-		}
+		actualRoots.push(furthestAncestor(actualRange.startContainer));
+		expectedRoots.push(furthestAncestor(expectedRange.startContainer));
 
 		if (furthestAncestor(actualNode) != actualRoots[0]) {
 			actualRoots.push(furthestAncestor(actualNode));
@@ -197,11 +182,6 @@ function testInsertNode(i, j) {
 			assertNodesEqual(actualRoots[k], expectedRoots[k], k ? "moved node's tree root" : "range's tree root");
 		}
 
-		if (detached) {
-			// No further tests we can do
-			return;
-		}
-
 		assert_equals(actualRange.startOffset, expectedRange.startOffset,
 			"Unexpected startOffset after insertNode()");
 		assert_equals(actualRange.endOffset, expectedRange.endOffset,
@@ -232,8 +212,6 @@ function testInsertNode(i, j) {
 	});
 	positionTests[i][j].done();
 }
-
-testRanges.unshift('"detached"');
 
 var iStart = 0;
 var iStop = testRanges.length;

@@ -35,15 +35,9 @@ function run() {
 			rangeEndpoints = eval(window.testRangeInput);
 		}
 
-		var range;
-		if (rangeEndpoints == "detached") {
-			range = document.createRange();
-			range.detach();
-		} else {
-			range = ownerDocument(rangeEndpoints[0]).createRange();
-			range.setStart(rangeEndpoints[0], rangeEndpoints[1]);
-			range.setEnd(rangeEndpoints[2], rangeEndpoints[3]);
-		}
+		var range = ownerDocument(rangeEndpoints[0]).createRange();
+		range.setStart(rangeEndpoints[0], rangeEndpoints[1]);
+		range.setEnd(rangeEndpoints[2], rangeEndpoints[3]);
 
 		window.testRange = range;
 	} catch(e) {

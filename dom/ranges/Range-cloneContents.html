@@ -392,15 +392,6 @@ function onLoadExpected(i) {
 
 setup({timeout: 60000});
 
-// First test a detached Range, synchronously
-test(function() {
-	var range = document.createRange();
-	range.detach();
-	assert_throws("INVALID_STATE_ERR", function() {
-		range.cloneContents();
-	}, "Detached Range must throw INVALID_STATE_ERR on .cloneContents()");
-}, "Detached Range");
-
 var domTests = [];
 var positionTests = [];
 var fragTests = [];

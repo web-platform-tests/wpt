@@ -22,16 +22,6 @@ for (var i = 0; i < testPoints.length; i++) {
 		normalizedOffset += Math.pow(2, 32);
 	}
 
-	// "If the detached flag is set, throw an "InvalidStateError" exception and
-	// terminate these steps."
-	test(function() {
-		var range = document.createRange();
-		range.detach();
-		assert_throws("INVALID_STATE_ERR", function() {
-			range.comparePoint(node, offset);
-		}, "Must throw InvalidStateError if range is detached");
-	}, "Point " + i + " " + testPoints[i] + ", detached range");
-
 	for (var j = 0; j < testRanges.length; j++) {
 		test(function() {
 			if (testRangesCached[j] === undefined) {

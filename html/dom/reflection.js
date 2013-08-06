@@ -340,7 +340,8 @@ ReflectionTests.typeMap = {
                      //"\u20067", "\u20077", "\u20087", "\u20097", "\u200A7", "\u202F7",
                      //"\u30007",
                      undefined, 1.5, true, false, {"test": 6}, NaN, +Infinity,
-                     -Infinity, "\0", {toString:function() {return 2;}},
+                     -Infinity, "\0",
+                     {toString:function() {return 2;}, valueOf: null},
                      {valueOf:function() {return 3;}}],
         "domExpected": function(val) {
             var parsed = ReflectionTests.parseInt(val + "");
@@ -378,7 +379,8 @@ ReflectionTests.typeMap = {
                      //"\u20067", "\u20077", "\u20087", "\u20097", "\u200A7", "\u202F7",
                      //"\u30007",
                      undefined, 1.5, true, false, {"test": 6}, NaN, +Infinity,
-                     -Infinity, "\0", {toString:function() {return 2;}},
+                     -Infinity, "\0",
+                     {toString:function() {return 2;}, valueOf: null},
                      {valueOf:function() {return 3;}}],
         "domExpected": function(val) {
             var parsed = ReflectionTests.parseNonneg(val + "");
@@ -414,7 +416,7 @@ ReflectionTests.typeMap = {
                      //"\u30007",
                      " " + binaryString + " foo ", undefined, 1.5, true, false,
                      {"test": 6}, NaN, +Infinity, -Infinity, "\0",
-                     {toString:function() {return 2;}},
+                     {toString:function() {return 2;}, valueOf: null},
                      {valueOf:function() {return 3;}}],
         "domExpected": function(val) {
             var parsed = ReflectionTests.parseNonneg(val + "");
@@ -455,7 +457,7 @@ ReflectionTests.typeMap = {
                      //"\u30007",
                      " " + binaryString + " foo ", undefined, 1.5, true, false,
                      {"test": 6}, NaN, +Infinity, -Infinity, "\0",
-                     {toString:function() {return 2;}},
+                     {toString:function() {return 2;}, valueOf: null},
                      {valueOf:function() {return 3;}}],
         "domExpected": function(val) {
             var parsed = ReflectionTests.parseNonneg(val + "");
@@ -504,7 +506,7 @@ ReflectionTests.typeMap = {
             //"\u30007",
             " " + binaryString + " foo ", undefined, 1.5, true, false,
             {"test": 6}, NaN, +Infinity, -Infinity, "\0",
-            {toString:function() {return 2;}},
+            {toString:function() {return 2;}, valueOf: null},
             {valueOf:function() {return 3;}}],
         "domExpected": [minInt - 1, minInt, -36, -1, 0, 1, maxInt,
                         maxInt + 1, maxUnsigned, maxUnsigned + 1, null,

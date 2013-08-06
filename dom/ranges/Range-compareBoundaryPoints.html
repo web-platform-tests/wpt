@@ -11,9 +11,9 @@
 var testRangesCached = [];
 testRangesCached.push(document.createRange());
 testRangesCached[0].detach();
-for (var i = 0; i < testRanges.length; i++) {
+for (var i = 0; i < testRangesShort.length; i++) {
 	try {
-		testRangesCached.push(rangeFromEndpoints(eval(testRanges[i])));
+		testRangesCached.push(rangeFromEndpoints(eval(testRangesShort[i])));
 	} catch(e) {
 		testRangesCached.push(null);
 	}

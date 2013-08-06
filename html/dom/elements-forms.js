@@ -39,7 +39,8 @@ var formElements = {
 		formMethod: {type: "enum", keywords: ["get", "post"], invalidVal: "get"},
 		formNoValidate: "boolean",
 		formTarget: "string",
-		height: "unsigned long",
+		//TODO: only reflected on setting
+		//height: "unsigned long",
 		inputMode: {type: "enum", keywords: ["verbatim", "latin", "latin-name", "latin-prose", "full-width-latin", "kana", "katakana", "numeric", "tel", "email", "url"]},
 		max: "string",
 		maxLength: "limited long",
@@ -59,7 +60,8 @@ var formElements = {
 			"time", "datetime-local", "number", "range", "color", "checkbox",
 			"radio", "file", "submit", "image", "reset", "button"], defaultVal:
 			"text"},
-		width: "unsigned long",
+		//TODO: only reflected on setting
+		//width: "unsigned long",
 		defaultValue: {type: "string", domAttrName: "value"},
 
 		// Obsolete

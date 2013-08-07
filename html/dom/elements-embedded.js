@@ -98,7 +98,7 @@ var embeddedElements = {
 	audio: {
 		// HTMLMediaElement
 		src: "url",
-		crossOrigin: {type: "enum", keywords: ["", "anonymous", "use-credentials"]},
+		crossOrigin: {type: "enum", keywords: ["anonymous", "use-credentials"], nonCanon:{"": "anonymous"}},
 		// As with "keytype", we have no missing value default defined here.
 		preload: {type: "enum", keywords: ["none", "metadata", "auto"], nonCanon: {"": "auto"}, defaultVal: null},
 		autoplay: "boolean",

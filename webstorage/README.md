@@ -1,4 +1,4 @@
-This directory contains the Web Storage test suite. This test suite was used to test the spec's Candidate Recommendation and the test suite is considered "complete". 
+This directory contains the Web Storage test suite.
 
 The spec's Implementation Report contains a list of each test file in the test suite and the results of running the test file on several browsers <http://www.w3.org/wiki/Webapps/Interop/WebStorage>.
 

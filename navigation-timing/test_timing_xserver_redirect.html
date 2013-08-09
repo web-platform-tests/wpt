@@ -63,8 +63,8 @@
             test_equals(document.location.hostname, pageOrigin, 'Starting document.location.hostname is correct (' + pageOrigin + ')');
 
             // combine the page origin and redirect origin into the IFRAME's src URL
-            var destUrl = 'http://' + redirectOrigin + '/web-platform-tests/navigation-timing/resources/redirect.php';
-            destUrl    += '?location=http://' + pageOrigin + '/web-platform-tests/navigation-timing/resources/blank_page_green.htm';
+            var destUrl = 'http://' + redirectOrigin + '/web-platform-tests/master/navigation-timing/resources/redirect.php';
+            destUrl    += '?location=http://' + pageOrigin + '/web-platform-tests/master/navigation-timing/resources/blank_page_green.html';
 
             var frameContext = document.getElementById("frameContext");
             frameContext.onload = onload_test;

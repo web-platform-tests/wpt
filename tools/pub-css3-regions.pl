@@ -17,11 +17,13 @@ rmtree('dist/css3-regions');
 # Adobe
 push @dirs, 'contributors/adobe/submitted/regions';
 push @dirs, 'contributors/adobe/submitted/regions/counters';
+push @dirs, 'contributors/adobe/submitted/regions/flexbox';
+push @dirs, 'contributors/adobe/submitted/regions/interactivity/hit-testing';
+push @dirs, 'contributors/adobe/submitted/regions/interactivity/keyboard';
 push @dirs, 'contributors/adobe/submitted/regions/interactivity/mouse';
 push @dirs, 'contributors/adobe/submitted/regions/interactivity/selection';
 push @dirs, 'contributors/adobe/submitted/regions/writing-modes';
 push @dirs, 'contributors/adobe/submitted/regions/stacking-context';
-
 
 ###############################################################################
 # Apple - No CSS2.1 tests
@@ -73,6 +75,10 @@ push @dirs, 'contributors/adobe/submitted/regions/stacking-context';
 
 ###############################################################################
 # Opera
+
+###############################################################################
+# TestTWF
+push @dirs, 'contributors/ttwf_tokyo/andyhall/submitted';
 
 ###############################################################################
 

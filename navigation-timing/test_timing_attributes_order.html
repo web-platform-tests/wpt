@@ -7,7 +7,7 @@
 	<link rel="help" href="http://www.w3.org/TR/navigation-timing/#sec-navigation-timing-interface"/>        
         <script src="/resources/testharness.js"></script>
         <script src="/resources/testharnessreport.js"></script>
-        <script src="/webperf/tests/resources/webperftestharness.js"></script>
+        <script src="resources/webperftestharness.js"></script>
         <link rel="stylesheet" href="/resources/testharness.css" />
         <script>
             setup({explicit_done: true});
@@ -30,7 +30,7 @@
                 {
                     case 1:
                     {
-                        navigation_frame.location.href = '/webperf/tests/resources/blank_page_green.htm';
+                        navigation_frame.location.href = '/web-platform-tests/navigation-timing/resources/blank_page_green.htm';
                         step++;
                         break;
                     }
@@ -104,7 +104,7 @@
                 onload="/* Need to make sure we don't examine loadEventEnd
                            until after the load event has finished firing */
                         setTimeout(onload_test, 0);"
-                src="/webperf/tests/resources/blank_page_unload.htm"
+                src="resources/blank_page_unload.html"
                 style="width: 250px; height: 250px;"></iframe>
     </body>
 </html>

@@ -7,7 +7,7 @@
 	<link rel="help" href="http://www.w3.org/TR/navigation-timing/#sec-navigation-timing-interface"/>
         <script src="/resources/testharness.js"></script>
         <script src="/resources/testharnessreport.js"></script>
-        <script src="/webperf/tests/resources/webperftestharness.js"></script>
+        <script src="resources/webperftestharness.js"></script>
         <script>
             setup({explicit_done: true});
 
@@ -63,8 +63,8 @@
             test_equals(document.location.hostname, pageOrigin, 'Starting document.location.hostname is correct (' + pageOrigin + ')');
 
             // combine the page origin and redirect origin into the IFRAME's src URL
-            var destUrl = 'http://' + redirectOrigin + '/webperf/tests/resources/redirect.php';
-            destUrl    += '?location=http://' + pageOrigin + '/webperf/tests/resources/blank_page_green.htm';
+            var destUrl = 'http://' + redirectOrigin + '/web-platform-tests/navigation-timing/resources/redirect.php';
+            destUrl    += '?location=http://' + pageOrigin + '/web-platform-tests/navigation-timing/resources/blank_page_green.htm';
 
             var frameContext = document.getElementById("frameContext");
             frameContext.onload = onload_test;

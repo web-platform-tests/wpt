@@ -7,7 +7,7 @@
 	<link rel="help" href="http://www.w3.org/TR/navigation-timing/#sec-navigation-info-interface"/>
         <script src="/resources/testharness.js"></script>
         <script src="/resources/testharnessreport.js"></script>
-        <script src="/webperf/tests/resources/webperftestharness.js"></script>
+        <script src="resources/webperftestharness.js"></script>
         <link rel="stylesheet" href="/resources/testharness.css" />
         <script>
             setup({explicit_done: true});
@@ -36,7 +36,7 @@
                 {
                     case 1:
                     {
-                        navigation_frame.location.href = '/webperf/tests/resources/blank_page_green_with_onunload.htm';
+                        navigation_frame.location.href = '/web-platform-tests/navigation-timing/resources/blank_page_green_with_onunload.htm';
                         step++;
                         break;
                     }
@@ -91,6 +91,6 @@
 
         <div id="log"></div>
         <br />
-        <iframe id="frameContext" onload="onload_test();" src="/webperf/tests/resources/blank_page_yellow_with_onunload.htm" style="width: 250px; height: 250px;"></iframe>
+        <iframe id="frameContext" onload="onload_test();" src="resources/blank_page_yellow_with_onunload.html" style="width: 250px; height: 250px;"></iframe>
     </body>
 </html>

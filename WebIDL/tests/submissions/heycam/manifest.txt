@@ -10,14 +10,14 @@ DOMString-003.html
 Date-001.html
 Date-002.html
 EnforceRange-001.html
-LenientThis-001.html
-NamedConstructor-001.html
 Global-001.html
 Global-002.html
 Global-003.html
 Global-004.html
 Global-005.html
 Global-006.html
+LenientThis-001.html
+NamedConstructor-001.html
 NoInterfaceObject-001.html
 OverrideBuiltins-001.html
 OverrideBuiltins-002.html
@@ -74,7 +74,7 @@ instanceof-001.html
 interface-001.html
 interface-object-001.html
 interface-object-002.html
-interface-protoype-object-001.html
+interface-prototype-object-001.html
 interface-type-001.html
 interface-type-002.html
 interface-type-003.html

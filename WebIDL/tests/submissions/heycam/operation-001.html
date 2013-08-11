@@ -9,9 +9,10 @@
 // 4.4.7 Operations
 //
 // Regular operations correspond to properties on the interface prototype
-// object, which are writable, enumerable and configurable.  The .length
-// property on the Function object is the shortest valid argument for the
-// operation.
+// object, which are writable, enumerable and configurable.  If they're on
+// the [Global] object, then the properties will be on the instance instead.
+// The .length property on the Function object is the shortest valid argument
+// for the operation.
 
 var operations = [
 
@@ -46,21 +47,29 @@ var operations = [
   "FormData", "append", 2
 ];
 
+function operationHome(intf) {
+}
+
+function operationHomeName(intf) {
+}
+
 for (var i = 0; i < operations.length; i+= 3) {
   var intf = operations[i];
   var name = operations[i + 1];
   var length = operations[i + 2];
+  var object = interfaceMemberHome(intf);
+  var objectName = interfaceMemberHomeName(intf);
 
   test(function() {
-    assert_property(window[intf].prototype, name, { writable: true, enumerable: true, configurable: true });
-  }, "the " + intf + ".prototype." + name + " property has the right attributes");
+    assert_property(object, name, { writable: true, enumerable: true, configurable: true });
+  }, "the " + objectName + " " + name + " property has the right attributes");
 
   test(function() {
     assert_equals(typeof window[intf].prototype[name], "function");
-  }, intf + ".prototype." + name + " property is a function");
+  }, objectName + " " + name + " property is a function");
 
   test(function() {
     assert_property(window[intf].prototype[name], "length", { writable: false, enumerable: false, configurable: false, value: length });
-  }, intf + ".prototype." + name + ".length  has correct length property");
+  }, objectName + " " + name + ".length  has correct length property");
 }
 </script>

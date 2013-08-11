@@ -13,9 +13,10 @@
 // 4.4.6 Attributes
 //
 // Properties for non-[Unforgeable] attributes exist on the interface prototype
-// object and are enumerable and configurable.  These are accessor properties
-// always have a getter.  The getter expects no arguments, and will ignore
-// extra ones.  The getter can be applied to objects of the right type
+// object and are enumerable and configurable.  If they're on the [Global] object,
+// then the properties will be on the instance instead.  These are accessor
+// properties always have a getter.  The getter expects no arguments, and will
+// ignore extra ones.  The getter can be applied to objects of the right type
 // from other windows.  Calling it with a bad this object value will throw
 // a TypeError.
 
@@ -65,4 +66,50 @@ test(function() {
   var desc = Object.getOwnPropertyDescriptor(Document.prototype, "title");
   assert_equals(desc.get.call(document, "extra"), "Getters for writable attributes");
 }, "arguments passed to Document.title getter are ignored");
+
+// feature: Window.name (attribute) (writable, without [Unforgeable])
+
+test(function() {
+  assert_true(window.hasOwnProperty("name"));
+}, "window has own property \"name\"");
+
+test(function() {
+  assert_true(!Window.prototype.hasOwnProperty("name"));
+}, "Window.prototype does not have own property \"name\"");
+
+test(function() {
+  var desc = Object.getOwnPropertyDescriptor(window, "name");
+  assert_descriptor(desc, { enumerable: true, configurable: true });
+}, "window.name has correct property attributes");
+
+test(function() {
+  var desc = Object.getOwnPropertyDescriptor(window, "name");
+  assert_equals(typeof desc.get, "function");
+  assert_equals(desc.get.length, 0);
+}, "window.name has a getter function with the right length");
+
+test(function() {
+  var desc = Object.getOwnPropertyDescriptor(window, "name");
+  assert_true(!!desc);
+  assert_throws(new TypeError(), function() { desc.get.call(document.documentElement); });
+}, "calling Window.name getter with a non-Window object this-value throws");
+
+test(function() {
+  var win = document.getElementById("iframe").contentWindow;
+  var desc = Object.getOwnPropertyDescriptor(window, "name");
+  assert_equals(desc.get.call(win), "");
+}, "calling Window.name getter on a different window object works");
+
+test(function() {
+  var win = document.getElementById("iframe").contentWindow;
+  win.name = "test";
+  var desc = Object.getOwnPropertyDescriptor(window, "name");
+  assert_equals(desc.get.call(win), "test");
+}, "calling Window.name getter on an object from a different window works");
+
+test(function() {
+  var desc = Object.getOwnPropertyDescriptor(window, "name");
+  assert_equals(desc.get.call(window, "extra"), "Getters for writable attributes");
+}, "arguments passed to Window.name getter are ignored");
+
 </script>

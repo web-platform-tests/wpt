@@ -61,3 +61,17 @@ function prototypeChain(o) {
   } while (o);
   return a;
 }
+
+function interfaceMemberHome(intf) {
+  if (intf == 'Window') {
+    return window;
+  }
+  return window[intf].prototype;
+}
+
+function interfaceMemberHomeName(intf) {
+  if (intf == 'Window') {
+    return "window instance";
+  }
+  return intf + ".prototype";
+}

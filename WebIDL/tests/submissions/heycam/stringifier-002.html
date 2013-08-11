@@ -8,10 +8,11 @@
 <script>
 // 4.4.7 Operations
 //
-// Stringifiers that appear on an attribute invoke the [[Get]] internal method
-// on the object to get the value of the IDL attribute it is on.  The toString
-// Function ignores any arguments passed to it.  If applied to the wrong kind
-// of object, a TypeError is thrown.
+// Stringifiers that appear on an attribute do not invoke the [[Get]] internal
+// method on the object to get the value of the IDL attribute it is on.  Instead,
+// it just performs the same behavior as getting the attribute, internally.
+// The toString Function ignores any arguments passed to it.  If applied to the
+// wrong kind of object, a TypeError is thrown.
 
 // feature: URLUtils (stringifier)
 
@@ -35,20 +36,13 @@ test(function() {
   var a = document.createElement("a");
   a.setAttribute("href", url);
   Object.defineProperty(a, "href", { value: 123 });
-  assert_equals(String(a), "123");
-}, "the HTMLAnchorElement stringifier gets the value of the \"href\" property");
-
-test(function() {
-  var a = document.createElement("a");
-  a.setAttribute("href", url);
-  Object.defineProperty(a, "href", { value: { toString: function() { return "hello"; } } });
-  assert_equals(String(a), "hello");
-}, "the HTMLAnchorElement stringifier calls ToString on the value it gets from the \"href\" property");
+  assert_equals(String(a), url);
+}, "the HTMLAnchorElement stringifier does not call [[Get]](\"href\")");
 
 test(function() {
   var a = document.createElement("a");
   a.setAttribute("href", url);
   Object.defineProperty(a, "href", { get: function() { throw { name: "Something" }; } });
-  assert_throws({ name: "Something" }, function() { a + ""; });
-}, "the HTMLAnchorElement stringifier invokes an \"href\" accessor property");
+  assert_equals(String(a), url);
+}, "the HTMLAnchorElement stringifier does not invoke an \"href\" accessor property");
 </script>

@@ -552,6 +552,8 @@ Window (interface)
     Global-002.html
     Global-003.html
     Global-004.html
+    Global-005.html
+    Global-006.html
   with [NamedPropertiesObject]
     class-string-001.html
     extensible-001.html

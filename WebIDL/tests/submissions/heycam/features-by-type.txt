@@ -38,6 +38,7 @@ attribute
   WheelEvent.deltaMode (of type unsigned long - unsigned-long-003.html)
   Window.document (with [Unforgeable] - Unforgeable-001.html)
   Window.length (with [Replaceable] - Replaceable-001.html)
+  Window.name (writable, without [Unforgeable] - attribute-001.html)
   Window.self (with [Replaceable] - Replaceable-001.html)
 callback interface
   NodeFilter (with constants - interface-001.html, interface-object-002.html)
@@ -96,7 +97,7 @@ interface
   Uint8Array (supports indexed properties - indexed-properties-001.html) (supports indexed properties, does not support named properties - property-enumeration-001.html) (supports indexed properties, has an indexed property setter, does not have an indexed property creator - indexed-properties-004.html)
   WebSocket (with [Constructor] and optional arguments - Constructor-003.html)
   WheelEvent (with constructor with argument of type unsigned long - unsigned-long-002.html)
-  Window (with [NamedPropertiesObject] - class-string-001.html, extensible-001.html, initial-001.html, initial-002.html, NamedPropertiesObject-001.html, NamedPropertiesObject-002.html, NamedPropertiesObject-003.html, NamedPropertiesObject-004.html)
+  Window (with [Global] - Global-001.html, Global-002.html, Global-003.html, Global-004.html) (with [NamedPropertiesObject] - class-string-001.html, extensible-001.html, initial-001.html, initial-002.html)
   WindowTimers (with [NoInterfaceObject] - NoInterfaceObject-001.html)
   XMLHttpRequest (with [Constructor] - Constructor-001.html) (with inheritance, with [Constructor] - functions-001.html)
 named property creator

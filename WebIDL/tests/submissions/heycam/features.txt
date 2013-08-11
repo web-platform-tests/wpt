@@ -547,21 +547,25 @@ WheelEvent.deltaMode (attribute)
   of type unsigned long
     unsigned-long-003.html
 Window (interface)
+  with [Global]
+    Global-001.html
+    Global-002.html
+    Global-003.html
+    Global-004.html
   with [NamedPropertiesObject]
     class-string-001.html
     extensible-001.html
     initial-001.html
     initial-002.html
-    NamedPropertiesObject-001.html
-    NamedPropertiesObject-002.html
-    NamedPropertiesObject-003.html
-    NamedPropertiesObject-004.html
 Window.document (attribute)
   with [Unforgeable]
     Unforgeable-001.html
 Window.length (attribute)
   with [Replaceable]
     Replaceable-001.html
+Window.name (attribute)
+  writable, without [Unforgeable]
+    attribute-001.html
 Window.postMessage (operation)
   with optional argument
     operation-001.html

@@ -12,10 +12,12 @@ Date-002.html
 EnforceRange-001.html
 LenientThis-001.html
 NamedConstructor-001.html
-NamedPropertiesObject-001.html
-NamedPropertiesObject-002.html
-NamedPropertiesObject-003.html
-NamedPropertiesObject-004.html
+Global-001.html
+Global-002.html
+Global-003.html
+Global-004.html
+Global-005.html
+Global-006.html
 NoInterfaceObject-001.html
 OverrideBuiltins-001.html
 OverrideBuiltins-002.html

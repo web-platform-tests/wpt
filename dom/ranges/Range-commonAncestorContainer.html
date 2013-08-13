@@ -20,15 +20,6 @@ for (var i = 0; i < testRanges.length; i++) {
 			range = rangeFromEndpoints(eval(testRanges[i]));
 		}
 
-		// "If the detached flag is set, throw an "InvalidStateError" exception
-		// and terminate these steps."
-		if (i == 0) {
-			assert_throws("INVALID_STATE_ERR", function() {
-				range.commonAncestorContainer;
-			}, "Detached range must throw InvalidStateError");
-			return;
-		}
-
 		// "Let container be start node."
 		var container = range.startContainer;
 

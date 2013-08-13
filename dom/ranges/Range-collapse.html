@@ -13,12 +13,9 @@ function testCollapse(rangeEndpoints, toStart) {
 	if (rangeEndpoints == "detached") {
 		range = document.createRange();
 		range.detach();
-		assert_throws("INVALID_STATE_ERR", function() {
-			range.collapse(toStart);
-		}, "Detached Range must throw INVALID_STATE_ERR on .collapse()");
-		assert_throws("INVALID_STATE_ERR", function() {
-			range.collapsed;
-		}, "Detached Range must throw INVALID_STATE_ERR on .collapsed access");
+		range.collapse(toStart);
+		assert_true(range.collapsed,
+			".collapsed must be set after .collapsed()");
 		return;
 	}
 

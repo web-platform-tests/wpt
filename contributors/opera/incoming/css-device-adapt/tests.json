@@ -279,6 +279,15 @@
             "ASSERTION" : "CSSRule.VIEWPORT_RULE has the value 15, and the stylesheet contains a CSSViewportRule with type value 15.",
             "VIEWPORT_DESC" : "width: auto 1200px; min-height: 700px; max-zoom: 100%",
             "TEST_FUNCTION" : "assert_equals(CSSRule.VIEWPORT_RULE, 15); assert_equals(testStyleSheet.cssRules.item(0).type, 15);"
+        },
+        {
+            "DESCRIPTION" : "@viewport CSSOM - Setting CSSViewportRule.style.width",
+            "AUTHOR_NAME" : "Rune Lillesveen",
+            "AUTHOR_EMAIL" : "rune@opera.com",
+            "TOKENS" : "dom",
+            "ASSERTION" : "When the min/max-width descriptors of the @viewport rule is changed through CSSOM, the offsetWidth of the documentElement changes accordingly.",
+            "VIEWPORT_DESC" : "width: 1200px",
+            "TEST_FUNCTION" : "assert_equals(document.documentElement.offsetWidth, 1200); testStyleSheet.cssRules.item(0).style.width = '600px'; assert_equals(document.documentElement.offsetWidth, 600);"
         }]
     },
     {

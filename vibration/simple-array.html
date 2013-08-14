@@ -26,7 +26,9 @@
     <script>
       if (supportsVibration()) {
           document.getElementById("vib").onclick = function () {
-              navigator.vibrate([2000]);
+	      test(function () { 
+                  assert_true(navigator.vibrate([2000]), "vibrate() returns a boolean");
+              }, "Calling vibrate returns true");
           };
       }
     </script>

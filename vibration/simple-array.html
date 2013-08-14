@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns='http://www.w3.org/1999/xhtml' lang='en'>
+  <head>
+    <meta charset='utf-8'/>
+    <title>Vibration API: test a simple array parameter to vibrate()</title>
+    <link rel='author' title='Robin Berjon' href='mailto:robin@berjon.com'/>
+    <link rel='help' href='http://www.w3.org/TR/vibration/#methods'/>
+    <meta name='flags' content='vendor-prefix, dom, interact'/>
+    <!-- 
+      When you review this test, please add
+      <link rel='reviewer' title='Your Name' href='mailto:your-email-address'/>
+    -->
+    <link rel='stylesheet' href='/resources/testharness.css' media='all'/>
+  </head>
+  <body>
+    <h1>Description</h1>
+    <p>
+      After hitting the button below, your device must vibrate continuously for about two seconds, once.
+    </p>
+    <button id='vib'>Vibrate!</button>
+    <div id='log'></div>
+    <script src='/resources/testharness.js'></script>
+    <!-- When this test gets approved, remove a "../" below -->
+    <script src='support/feature-detection.js'></script>
+    <script src='support/helpers.js'></script>
+    <script>
+      if (supportsVibration()) {
+          var t = async_test("Tests that vibrate returns true", {timeout: 10000});
+
+          document.getElementById("vib").onclick = t.step_func(function () {
+              assert_true(navigator.vibrate([2000]), "vibrate() returns a boolean");
+          }, "Calling vibrate returns true");
+      }
+    </script>
+  </body>
+</html>

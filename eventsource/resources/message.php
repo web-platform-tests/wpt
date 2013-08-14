@@ -4,5 +4,6 @@
   $newline = !empty($_GET["newline"]) ? ($_GET["newline"] == "none" ? "" : $_GET["newline"]) : "\n\n";
   header("Content-Type: " . $mime);
   echo $message . $newline;
+  echo "\n";
+  exit();
 ?>
-

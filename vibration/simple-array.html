@@ -25,11 +25,11 @@
     <script src='support/helpers.js'></script>
     <script>
       if (supportsVibration()) {
-          document.getElementById("vib").onclick = function () {
-	      test(function () { 
-                  assert_true(navigator.vibrate([2000]), "vibrate() returns a boolean");
-              }, "Calling vibrate returns true");
-          };
+          var t = async_test("Tests that vibrate returns true", {timeout: 10000});
+
+          document.getElementById("vib").onclick = t.step_func(function () {
+              assert_true(navigator.vibrate([2000]), "vibrate() returns a boolean");
+          }, "Calling vibrate returns true");
       }
     </script>
   </body>

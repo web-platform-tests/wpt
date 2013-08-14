@@ -1,4 +1,0 @@
----+ TODO
-  
-   * proper {level | chargingtime | dischargingtime}change tests
-   * validate tests on a real device and tweak timeouts for async tests

@@ -23,22 +23,13 @@
     </p>
     <div id='log'></div>
     <script src='/resources/testharness.js'></script>
-    <!-- When this test gets approved, remove a "../" below -->
     <script src='support/feature-detection.js'></script>
     <script src='support/helpers.js'></script>
     <script>
       if (supportsVibration()) {
-          test(function () {
-              var ok = false;
-              try {
-                  navigator.vibrate(1000);
-                  ok = true;
-              }
-              catch (e) {
-                  ok = false;
-              }
-              assert_true(ok, "vibrate() should not throw");
-          }, "Calling vibrate does not throw.");
+	  test(function () { 
+              assert_true(navgator.vibrate(1000), "vibrate() returns true when vibration is not supported");
+          }, "Calling vibrate returns true");
       }
     </script>
   </body>

@@ -8,7 +8,7 @@
   <body>
     <div id="log"></div>
     <script>
-      var test = async_test("", {timeout: 2500});
+      var test = async_test(document.title, {timeout: 2500});
       test.step(function() {
         var timeoutms = 2000,
             timeoutstr = "02000", // 1024 in octal, but should be 2000

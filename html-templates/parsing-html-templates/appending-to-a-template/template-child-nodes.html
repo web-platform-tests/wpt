@@ -29,9 +29,9 @@ test(function () {
     assert_equals(template.content.childNodes.length, 2,
             'Wrong number of template content child nodes');
 
-    assert_true(template.content.querySelector('#div1') !== null,
+    assert_not_null(template.content.querySelector('#div1'),
             'Element is absent in the template content');
-    assert_true(template.content.querySelector('#div2') !== null,
+    assert_not_null(template.content.querySelector('#div2'),
             'Element is absent in the template content');
 
 }, 'Template child nodes must be appended to template content node');
@@ -56,9 +56,9 @@ test(function () {
     assert_equals(template.content.childNodes.length, 3,
             'Wrong number of template content child nodes');
 
-    assert_true(template.content.querySelector('#div1') !== null,
+    assert_not_null(template.content.querySelector('#div1'),
             'Element is absent in the template content');
-    assert_true(template.content.querySelector('#div2') !== null,
+    assert_not_null(template.content.querySelector('#div2'),
             'Element is absent in the template content');
 
     var nestedTemplate = template.content.querySelector('#tmpl2');
@@ -68,9 +68,9 @@ test(function () {
     assert_equals(nestedTemplate.content.childNodes.length, 2,
             'Wrong number of nested template content child nodes');
 
-    assert_true(nestedTemplate.content.querySelector('#div3') !== null,
+    assert_not_null(nestedTemplate.content.querySelector('#div3'),
             'Element is absent in the template content');
-    assert_true(nestedTemplate.content.querySelector('#div4') !== null,
+    assert_not_null(nestedTemplate.content.querySelector('#div4'),
             'Element is absent in the template content');
 
 }, 'Template child nodes must be appended to template content. Test nested template');
@@ -84,7 +84,7 @@ testInIFrame('../../resources/template-contents.html', function(context) {
 
     assert_equals(template.childNodes.length, 0, 'Wrong number of template child nodes');
 
-    assert_true(template.content.querySelector('div') !== null,
+    assert_not_null(template.content.querySelector('div'),
             'Element is absent in the template content');
 
 }, 'Template child nodes must be appended to template content node. '
@@ -100,13 +100,13 @@ testInIFrame('../../resources/template-contents-nested.html', function(context) 
 
     var nestedTemplate = template.content.querySelector('template');
 
-    assert_true(nestedTemplate !== null,
+    assert_not_null(nestedTemplate,
             'Element is absent in the template content');
 
     assert_equals(nestedTemplate.childNodes.length, 0, 
             'Wrong number of template child nodes');
 
-    assert_true(nestedTemplate.content.querySelector('div') !== null,
+    assert_not_null(nestedTemplate.content.querySelector('div'),
             'Element is absent in the template content');
 
 }, 'Template child nodes must be appended to nested template content node. '

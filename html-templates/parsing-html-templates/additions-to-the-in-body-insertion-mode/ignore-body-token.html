@@ -64,9 +64,9 @@ test(function() {
 
     assert_equals(template.content.childNodes.length, 2,
             'Wrong number of template content children');
-    assert_true(template.content.querySelector('#div1') != null,
+    assert_not_null(template.content.querySelector('#div1'),
             'Template should contain children of the ignored BODY element');
-    assert_true(template.content.querySelector('#div2') != null,
+    assert_not_null(template.content.querySelector('#div2'),
             'Template should contain valid element');
 
 }, 'Ignore BODY token. '
@@ -83,9 +83,9 @@ test(function() {
 
     assert_equals(template.content.childNodes.length, 2,
             'Template cannot contain BODY element');
-    assert_true(template.content.querySelector('#div1') != null,
+    assert_not_null(template.content.querySelector('#div1'),
             'Template should contain valid element');
-    assert_true(template.content.querySelector('#div2') != null,
+    assert_not_null(template.content.querySelector('#div2'),
             'Template should contain children of the ignored BODY element');
 
 }, 'Ignore BODY token. '
@@ -102,7 +102,7 @@ test(function() {
 
     assert_equals(template.content.childNodes.length, 1,
             'Template should contain nested template');
-    assert_true(template.content.querySelector('#t2') != null,
+    assert_not_null(template.content.querySelector('#t2'),
             'Template should contain nested element');
 
     var nestedTemplate = template.content.querySelector('#t2');

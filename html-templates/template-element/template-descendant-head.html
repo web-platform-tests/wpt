@@ -17,7 +17,7 @@
 testInIFrame('../resources/template-descendant-head.html', function(context) {
     var doc = context.iframes[0].contentDocument;
 
-    assert_not_equals(doc.head.querySelector('template'), null,
+    assert_not_null(doc.head.querySelector('template'),
         'Template element should be a descendant of the head element');
 
 }, 'Template element as a descendant of the head element. Test loading from a file');

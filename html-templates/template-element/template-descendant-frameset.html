@@ -19,7 +19,7 @@ testInIFrame('../resources/template-descendant-frameset.html', function(context)
 
     var frameset = doc.querySelector('frameset');
 
-    assert_not_equals(frameset.querySelector('template'), null,
+    assert_not_null(frameset.querySelector('template'),
         'Template element should be a descendant of the frameset element');
 
 }, 'Template element as a descendant of the frameset element. Test loading from a file');
@@ -31,12 +31,12 @@ testInIFrame('../resources/template-descendant-frameset.html', function(context)
     var frameset = doc.querySelector('frameset');
 
     frameset.innerHTML = '';
-    assert_equals(doc.querySelector('template'), null,
+    assert_null(doc.querySelector('template'),
             'Initial conditions are not satisfied');
 
     frameset.innerHTML = '<template>some text</template>';
 
-    assert_not_equals(frameset.querySelector('template'), null,
+    assert_not_null(frameset.querySelector('template'),
         'Template element should be a descendant of the frameset element');
 
 }, 'Template element as a descendant of the frameset element. '

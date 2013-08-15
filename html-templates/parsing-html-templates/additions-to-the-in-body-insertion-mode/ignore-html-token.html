@@ -47,7 +47,7 @@ test(function() {
 
     assert_equals(template.content.childNodes.length, 1,
             'Template cannot contain HTML element');
-    assert_true(template.content.querySelector('#div1') != null,
+    assert_not_null(template.content.querySelector('#div1'),
             'Template should contain valid element');
 
 }, 'Ignore HTML token.'
@@ -64,7 +64,7 @@ test(function() {
 
     assert_equals(template.content.childNodes.length, 1,
             'Template cannot contain HTML element');
-    assert_true(template.content.querySelector('#div1') != null,
+    assert_not_null(template.content.querySelector('#div1'),
             'Template should contain valid element');
 
 }, 'Ignore HTML token. '
@@ -81,7 +81,7 @@ test(function() {
 
     assert_equals(template.content.childNodes.length, 1,
             'Template should contain nested template');
-    assert_true(template.content.querySelector('#t2') != null,
+    assert_not_null(template.content.querySelector('#t2'),
             'Template should contain nested element');
 
     var nestedTemplate = template.content.querySelector('#t2');
@@ -103,7 +103,7 @@ test(function() {
 
     assert_equals(template.content.childNodes.length, 1,
             'Template cannot contain HTML element');
-    assert_true(template.content.querySelector('#div1') != null,
+    assert_not_null(template.content.querySelector('#div1'),
             'Template should contain a valid element');
 
 }, 'Ignore HTML token. Test some valid element inside HTML element');
@@ -119,7 +119,7 @@ test(function() {
 
     assert_equals(template.content.childNodes.length, 1,
             'Template cannot contain HTML element');
-    assert_true(template.content.querySelector('#div1') != null,
+    assert_not_null(template.content.querySelector('#div1'),
             'Template should contain valid element');
 
 }, 'Ignore HTML token. Test valid element inside HTML and BODY elements');
@@ -135,10 +135,10 @@ test(function() {
 
     assert_equals(template.content.childNodes.length, 2,
             'Template cannot contain HTML element');
-    assert_true(template.content.querySelector('#div1') != null,
+    assert_not_null(template.content.querySelector('#div1'),
             'Template should contain valid DIV element');
 
-    assert_true(template.content.querySelector('#span1') != null,
+    assert_not_null(template.content.querySelector('#span1'),
             'Template should contain valid SPAN element');
 
 }, 'Ignore HTML token. Test valid element inside and between HTML and BODY elements');

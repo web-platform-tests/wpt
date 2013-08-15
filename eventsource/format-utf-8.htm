@@ -9,20 +9,16 @@
   <body>
     <div id="log"></div>
     <script>
-      var test = async_test()
-      test.step(function() {
-        var source = new EventSource("resources/message.php?mime=text/event-stream;charset=windows-1252&message=data%3A%E2%80%A6")
-        source.onmessage = function(e) {
-          test.step(function() {
-            assert_unreached()
-            this.close()
-          }, this)
-          test.done()
-        }
-        source.onerror = function() {
-          test.step(function() { assert_equals(this.readyState, this.CLOSED) }, this)
-          test.done()
-        }
+      async_test().step(function() {
+        var source = new EventSource("resources/message.php?mime=text/event-stream;charset=windows-1252&message=data%3Aok%E2%80%A6")
+        source.onmessage = this.step_func(function(e) {
+          assert_equals('ok…', e.data, 'decoded data')
+          source.close()
+          this.done()
+        })
+        source.onerror = this.step_func(function() {
+          assert_unreached("Got error event")
+        })
       })
     </script>
   </body>

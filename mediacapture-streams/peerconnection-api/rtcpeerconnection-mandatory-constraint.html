@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+<head>
+<title>Mandatory constraint in RTCPeerConnection</title>
+<link rel='stylesheet' href='/resources/testharness.css' media='all'/>
+</head>
+<body>
+<h1>Description</h1>
+<p>This test checks that setting a trivial mandatory constraint (iceServers) in RTCPeerConnection is required</p>
+
+<div id='log'></div>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=../featuredetection.js></script>
+<script src=prefix.js></script>
+<script>
+var t = async_test("", {timeout: 10000});
+t.step(function () {
+	var peer1, peer2;
+
+	function anotherTry() {
+		t.step(function() {
+			try{
+				peer2 = new window.RTCPeerConnection();
+			} catch(e){
+				if(peer2 == undefined) {
+					t.done();
+				}
+				assert_unreached("peer can be created without STUN server");
+				t.done();
+			}
+		}, "ICE connection required");
+	}
+
+	peer1 = new window.RTCPeerConnection({"iceServers": [{"url": "stun:stun.l.google.com:19302"}]});
+	if(peer1.hasOwnProperty("iceConnectionState")) {
+		anotherTry();
+	}
+});
+</script>
+</body>
+</html>

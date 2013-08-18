@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>FileAPI Test: filereader_abort</title>
+    <link rel="author" title="Intel" href="http://www.intel.com">
+    <link rel="help" href="http://www.w3.org/TR/FileAPI/#abort">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+
+    <script>
+      var blob = new Blob(["TEST THE ABORT METHOD"]);
+      var readerNoRead = new FileReader();
+      var readerAbort = new FileReader();
+
+      setup({explicit_done: true});
+
+      try {
+        readerNoRead.abort();
+      } catch (e) {
+        test(function() {
+          assert_unreached("Exception thrown");
+        }, "Exception thrown when call abort method");
+      }
+
+      test(function() {
+        assert_equals(readerNoRead.readyState, readerNoRead.EMPTY, "The readyState is " + readerNoRead.EMPTY);
+      }, "Check if readyState is EMPTY when abort called and no reads called");
+
+      test(function() {
+        assert_equals(readerNoRead.result, null, "The result is null");
+      }, "Check if the result is null when abort called and no reads called");
+
+
+      on_event(readerAbort, "abort", function(evt) {
+        test(function() {
+          assert_equals(readerAbort.readyState, readerAbort.DONE, "The readyState is " + readerAbort.DONE);
+        }, "Check if abort event occurred");
+      });
+
+      on_event(readerAbort, "loadstart", function(evt) {        
+        readerAbort.abort();
+      });
+
+      on_event(readerAbort, "loadend", function(evt) {
+        test(function() {
+          assert_equals(readerAbort.result, null, "The result is null");
+        }, "Check if the result is null when abort");
+
+        test(function() {
+          assert_equals(readerAbort.readyState, readerAbort.DONE, "The readyState is " + readerAbort.DONE);
+        }, "Check if the readyState is DONE when abort");
+
+        done();
+      });
+
+      readerAbort.readAsText(blob);
+    </script>
+  </body>
+</html>

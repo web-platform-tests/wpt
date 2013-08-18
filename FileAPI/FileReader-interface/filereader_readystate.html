@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>FileAPI Test: filereader_readystate</title>
+    <link rel="author" title="Intel" href="http://www.intel.com">
+    <link rel="help" href="http://www.w3.org/TR/FileAPI/#blobreader-state">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+
+    <script>
+      var blob = new Blob(["THIS TEST THE READYSTATE WHEN READ BLOB"]);
+      var reader = new FileReader();
+      var readyState = reader.readyState;
+
+      setup({explicit_done: true});
+      setup({explicit_timeout: true});
+
+      test(function() {
+        assert_equals(reader.readyState, reader.EMPTY, "The readyState is " + reader.EMPTY);
+      }, "Check if the readyState is EMPTY when no read invoked");
+
+      on_event(reader, "loadstart", function() {
+        test(function() {
+          assert_equals(reader.readyState, reader.LOADING, "The readyState is " + reader.LOADING);
+        }, "Check if the readyState is LOADING when reading blob");
+      });
+
+      on_event(reader, "loadend", function() {
+        test(function() {
+          assert_equals(reader.readyState, reader.DONE, "The readyState is " + reader.DONE);
+        }, "Check if the readyState is DONE when the entire File or Blob has been read into memory");
+
+        done();
+      });
+
+      reader.readAsDataURL(blob);
+    </script>
+  </body>
+</html>

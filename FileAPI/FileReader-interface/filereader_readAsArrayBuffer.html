@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>FileAPI Test: filereader_readAsArrayBuffer</title>
+    <link rel="author" title="Intel" href="http://www.intel.com">
+    <link rel="help" href="http://www.w3.org/TR/FileAPI/#readAsArrayBuffer">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+
+    <script>
+      var blob = new Blob(["TEST"]);
+      var reader = new FileReader();
+
+      setup({explicit_done: true});
+
+      on_event(reader, "load", function() {
+        test(function() {
+          assert_equals(reader.result.byteLength, 4, "The byteLength is 4");
+          assert_true(reader.result instanceof ArrayBuffer, "The result is instanceof ArrayBuffer");
+        }, "Check if the readAsArrayBuffer method returns ArrayBuffer");
+
+        test(function() {
+          assert_equals(reader.readyState, reader.DONE, "The readyState");
+        }, "Check if the load event occurred");
+
+        done();
+      });
+
+      on_event(reader, "loadstart", function() {
+        test(function() {
+          assert_equals(reader.readyState, reader.LOADING, "The readyState");
+        }, "Check if the read processing starts");
+      });
+
+      on_event(reader, "progress", function() {
+        test(function() {
+          assert_equals(reader.readyState, reader.LOADING, "The readyState");
+        }, "Check if the read processing is working");
+      });
+
+      reader.readAsArrayBuffer(blob);
+    </script>
+  </body>
+</html>

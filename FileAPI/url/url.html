@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>File API: url</title>
+    <link rel="author" title="Intel" href="www.intel.com">
+    <link rel="help" href="http://www.w3.org/TR/FileAPI/#creating-revoking">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+
+    <script>
+       test(function() {
+         assert_true("URL" in window, "window has an URL property");
+       }, "Check if window has an URL interface");
+
+       test(function() {
+         assert_true("createObjectURL" in window.URL, "URL has a createObjectURL property");
+       }, "Check if URL URL has a createObjectURL property");
+
+       test(function() {
+         assert_true(window.URL.createObjectURL instanceof Function, "createObjectURL is instanceof Function");
+       }, "Check if createObjectURL is instanceof Function");
+
+       test(function() {
+         assert_true("revokeObjectURL" in window.URL, "URL has a revokeObjectURL property");
+       }, "Check if URL has a revokeObjectURL property");
+
+       test(function() {
+         assert_true(window.URL.revokeObjectURL instanceof Function, "revokeObjectURL is instanceof Function");
+       }, "Check if revokeObjectURL is instanceof Function");
+    </script>
+  </body>
+</html>

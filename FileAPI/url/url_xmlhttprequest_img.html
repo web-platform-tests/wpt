@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>File API: url_xmlhttprequest_img</title>
+    <link rel="author" title="Intel" href="www.intel.com">
+    <link rel="help" href="http://www.w3.org/TR/FileAPI/#creating-revoking">
+    <link rel="help" href="http://www.w3.org/TR/XMLHttpRequest2/#interface-xmlhttprequest">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <p>Test passes if an image displays below</p>
+
+    <p>
+      <img id="fileDisplay"></img>
+    </p>
+
+    <script>
+      var http = new XMLHttpRequest();
+      http.open("GET", "test.png", true);
+      http.responseType = "blob";
+
+      on_event(http, "loadend", function(evt) {
+        var fileDisplay = document.querySelector("#fileDisplay");
+        fileDisplay.src = window.URL.createObjectURL(http.response);
+      });
+
+      http.send();
+    </script>
+  </body>
+</html>

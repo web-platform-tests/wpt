@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>File API: url</title>
+    <link rel="author" title="Intel" href="www.intel.com">
+    <link rel="help" href="http://www.w3.org/TR/FileAPI/#dfn-createObjectURL">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+
+    <script>
+      var blob = new Blob(["Test Blob"]);
+
+      test(function() {
+        var temp = window.URL.createObjectURL(blob);
+        assert_equals(typeof temp, "string", "Blob URI is typeof string");
+      }, "Check if the Blob URI is typeof string");
+
+      test(function() {
+        var temp = window.URL.createObjectURL(blob);
+        assert_equals(temp.indexOf("blob"), 0, "Blob URI starts with 'blob'");
+      }, "Check if the Blob URI starts with 'blob' without 'autoRevoke'");
+
+      test(function() {
+        try {
+          var temp = window.URL.createObjectURL(blob, {autoRevoke: false});
+           assert_equals(typeof temp, "string", "Blob URI is typeof string");
+        } catch(e) {
+          assert_unreached("Error caught");
+        }
+      }, "Check if the Blob URI is typeof string with autoRevoke is false");
+
+      test(function() {
+        try {
+          var temp = window.URL.createObjectURL(blob, {autoRevoke: false});
+          assert_equals(temp.indexOf("blob"), 0, "Blob URI starts with 'blob'");
+        } catch(e) {
+          assert_unreached("Error caught");
+        }
+      }, "Check if the Blob URI starts with 'blob' with autoRevoke is false");
+    </script>
+  </body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>File API Blob Testing</title>
+	<link rel="author" title="Huang Xin" href="mailto:huangxin03@baidu.com" />
+	<link rel="help" href="http://www.w3.org/TR/FileAPI/#dfn-Blob" />
+	<link rel="stylesheet" href="http://www.w3.org/TR/FileAPI/#dfn-slice" />
+	<link rel="stylesheet" href="/resources/testharness.css" />
+	<meta name="flags" content="dom"/>
+	<script type="text/javascript" src="/resources/testharness.js"></script>
+	<script type="text/javascript" src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+	<div id="log"></div>
+	
+	<script type="text/javascript">
+		
+		test(function(){
+			assert_true("Blob" in window, 'Bolb Constructor');
+			assert_equals(typeof Blob, "function", "Bolb Constructor should be a function");
+		}, "Blob Interface Test");
+		
+		test(function() {
+			var blob = new Blob();
+			assert_true(blob instanceof Blob);
+			assert_equals(blob.size, 0);
+			assert_equals(blob.type, "");
+		}, "Blob constructor with 'new'");
+		
+		test(function() {
+			var blob = Blob();
+			assert_true(blob instanceof Blob);
+			assert_equals(blob.size, 0);
+			assert_equals(blob.type, "");
+		}, "Blob constructor without 'new'");
+
+		test(function() {
+			var blob = new Blob;
+			assert_true(blob instanceof Blob);
+			assert_equals(blob.size, 0);
+			assert_equals(blob.type, "");
+		}, "Blob constructor without brackets");
+		
+		test(function(){
+			var parts = ['test'];
+			var MIME = { "type" : "text\/plain" };
+			var blob1 = new Blob(parts, MIME);
+			assert_equals(blob1.size, 4);
+			assert_equals(blob1.type, "text/plain");
+		}, "Blob object size and type Test");
+		
+		test(function() {
+			var args = [ null, undefined, true, false, 0, 1, 1.5, {}, { 0: "TEST", length: 1 }, "TEST", new Uint8Array(8) ];
+			args.forEach(function(arg) {
+				assert_throws(new TypeError(), function() {
+				  new Blob(arg);
+				});
+			});
+		}, "Passing non-arrays for blobParts should throw a TypeError.");
+		
+		var TestingBlobAccess = async_test('Testing Blob Access');
+		TestingBlobAccess.step(function(){
+			var blob = new Blob(["Test", "The", "Web", "Forward"]);
+			var fr = new FileReader();
+			fr.onload = TestingBlobAccess.step_func(function(event) {
+				assert_equals(this.result, "TestTheWebForward");
+				TestingBlobAccess.done();
+			}, fr);
+			fr.readAsText(blob);
+		});
+		
+		test(function(){
+			var blob = new Blob(["Test", "The", "Web", "Forward"]);
+			var slicedBlob = blob.slice(0,4);
+			assert_equals(slicedBlob.size, 4);
+			assert_equals(slicedBlob.type, "");
+		}, "Blob slice method should return a Blob object");
+		
+		
+		var TestingBlobSlice = async_test("Testing Blob Slice");
+		TestingBlobSlice.step(function(){
+			var blob = new Blob(["Test", "The", "Web", "Forward"]);
+			var slicedBlob = blob.slice(0,4);
+			
+			var fr = new FileReader();
+			fr.onload = TestingBlobSlice.step_func(function(event) {
+				assert_equals(this.result, "Test");
+				TestingBlobSlice.done();
+			}, fr);
+			fr.readAsText(slicedBlob);
+		});
+		
+		test(function(){
+			var blob = new Blob(["Test", "The", "Web", "Forward"]);
+			var slicedBlob = blob.slice();
+			blob.close();
+			assert_equals(slicedBlob.size, 17);
+		}, "The closed blob should not affect the sliced blob object.");
+		
+	</script>
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>FileAPI Test: idlharness</title>
+    <link rel="author" title="Intel" href="http://www.intel.com">
+    <link rel="help" href="http://www.w3.org/TR/FileAPI/">
+    <link rel="help" href="http://www.w3.org/TR/FileAPI/#conformance">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/resources/webidl2/lib/webidl2.js"></script>
+    <script src="/resources/idlharness.js"></script>
+  </head>
+  <body>
+    <h1>idlharness test</h1>
+    <p>This test validates the WebIDL included in the FileAPI specification.</p>
+
+    <pre id="untested_idl" style="display: none">
+      interface ArrayBuffer {
+      };
+
+      interface ArrayBufferView {
+      };
+
+      dictionary BlobPropertyBag {
+      };
+
+      interface EventTarget {
+      };
+
+      interface Window {
+      };
+
+      interface WorkerGlobalScope {
+      };
+    </pre>
+
+    <pre id="idl" style="display: none">
+      [Constructor,
+      Constructor(sequence<(ArrayBuffer or ArrayBufferView or Blob or DOMString)> blobParts, optional BlobPropertyBag options)]
+      interface Blob {
+
+        readonly attribute unsigned long long size;
+        readonly attribute DOMString type;
+
+        //slice Blob into byte-ranged chunks
+
+        Blob slice(optional long long start,
+                   optional long long end,
+                   optional DOMString contentType);
+        void close();
+      };
+
+      interface File : Blob {
+        readonly attribute DOMString name;
+        readonly attribute Date lastModifiedDate;
+      };
+
+      interface FileList {
+        getter File? item(unsigned long index);
+        readonly attribute unsigned long length;
+      };
+
+      [Constructor]
+      interface FileReader: EventTarget {
+
+        // async read methods
+        void readAsArrayBuffer(Blob blob);
+        void readAsText(Blob blob, optional DOMString encoding);
+        void readAsDataURL(Blob blob);
+
+        void abort();
+
+        // states
+        const unsigned short EMPTY = 0;
+        const unsigned short LOADING = 1;
+        const unsigned short DONE = 2;
+
+
+        readonly attribute unsigned short readyState;
+
+        // File or Blob data
+        readonly attribute (DOMString or ArrayBuffer)? result;
+
+        readonly attribute DOMError error;
+
+        // event handler attributes
+        [TreatNonCallableAsNull] attribute Function? onloadstart;
+        [TreatNonCallableAsNull] attribute Function? onprogress;
+        [TreatNonCallableAsNull] attribute Function? onload;
+        [TreatNonCallableAsNull] attribute Function? onabort;
+        [TreatNonCallableAsNull] attribute Function? onerror;
+        [TreatNonCallableAsNull] attribute Function? onloadend;
+      };
+
+      // This interface is removed by http://dev.w3.org/2006/webapi/FileAPI/
+      // [NoInterfaceObject] interface LineEndings {
+      //   DOMString toNativeLineEndings(DOMString string);
+      // };
+      // Window implements LineEndings;
+      // WorkerGlobalScope implements LineEndings;
+    </pre>
+
+    <form name='uploadData'>
+      <input type='file' id='fileChooser'>
+    </form>
+
+    <div>
+      <p>Test steps:</p>
+      <ol>
+        <li>Download <a href='support/upload.txt'>upload.txt</a> to local.</li>
+        <li>Select the local upload.txt file to run the test.</li>
+      </ol>
+    </div>
+
+    <div id="log"></div>
+
+    <script>
+      var button = document.querySelector("input");
+
+      setup({explicit_done: true});
+      setup({explicit_timeout: true});
+
+      on_event(button, "change", function(evt) {
+        var idl_array = new IdlArray();
+        idl_array.add_untested_idls(document.getElementById("untested_idl").textContent);
+        idl_array.add_idls(document.getElementById("idl").textContent);
+
+        var testFileList = button.files;
+        var testFile = button.files[0];
+
+        idl_array.add_objects({Blob : [new Blob(["TEST"])],
+                               FileList: [testFileList],
+                               File: [testFile],
+                               FileReader: [new FileReader()],
+                               LineEndings: ["window"]});
+        idl_array.test();
+
+        done();
+      });
+    </script>
+  </body>
+</html>

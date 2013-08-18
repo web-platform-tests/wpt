@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CSS Grid Layout Test: grid lines</title>
+    <link rel="author" title="Leo Deng" href="mailto:myst.dg@gmail.com">
+    <link rel="help" href="http://www.w3.org/TR/css3-grid-layout/#grid-line">
+    <link rel="match" href="reference/grid-layout-basic-ref.html">
+    <meta name="assert" content="the subgrid layout should behave the same as reference.">
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      #caseTitle {
+        margin: 10px;
+        height: 40px;
+      }
+      #grid {
+        height: 300px;
+        width: 400px;
+        background: #eee;
+        display: grid;
+        display: -ms-grid;
+        grid-definition-columns: "left" 100px "center" 1fr "right";
+        -ms-grid-columns: "left" 100px "center" 1fr "right";
+        grid-definition-rows: "one" 80px "two" 1fr "three" 50px "four";
+        -ms-grid-rows: "one" 80px "two" 1fr "three" 50px "four";
+      }
+      .a {
+        background: blue;
+        grid-start: "left";
+        -ms-grid-start: "left";
+        grid-end: "center";
+        -ms-grid-end: "center";
+        grid-before: "one";
+        -ms-grid-before: "one";
+        grid-after: "three";
+        -ms-grid-after: "three";
+      }
+      .b {
+        background: yellow;
+        grid-start: "center";
+        -ms-grid-start: "center";
+        grid-end: "right";
+        -ms-grid-end: "right";
+        grid-before: "two";
+        -ms-grid-before: "two";
+        grid-after: "three";
+        -ms-grid-after: "three";
+      }
+      .c {
+        background: pink;
+        grid-start: "left";
+        -ms-grid-start: "left";
+        grid-end: "right";
+        -ms-grid-end: "right";
+        grid-before: "three";
+        -ms-grid-before: "three";
+        grid-after: "four";
+        -ms-grid-after: "four";
+      }
+    </style>
+  </head>
+  <body>
+    <p id="caseTitle">The test passes if it has the same visual effect as reference.</p>
+    <div id="grid">
+      <div class="a">a</div>
+      <div class="b">b</div>
+      <div class="c">c</div>
+    </div>
+  </body>
+</html>

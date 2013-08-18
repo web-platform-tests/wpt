@@ -3,7 +3,7 @@
   <head>
     <title>CSS Grid Layout Test: subgrid</title>
     <link rel="author" title="Leo Deng" href="mailto:myst.dg@gmail.com">
-    <link rel="help" href="http://www.w3.org/TR/css3-grid-layout/">
+    <link rel="help" href="http://www.w3.org/TR/css3-grid-layout/#subgrids-the-subgrid-display-value">
     <link rel="match" href="reference/grid-layout-subgrid-ref.html">
     <meta name="assert" content="the subgrid layout should behave the same as reference.">
     <style>
@@ -20,37 +20,54 @@
         width: 400px;
         background: #eee;
         display: grid;
+        display: -ms-grid;
         grid-definition-columns: 100px 1fr;
+        -ms-grid-columns: 100px 1fr;
         grid-definition-rows: 1fr 50px;
+        -ms-grid-rows: 1fr 50px;
       }
       .a {
         background: blue;
         grid-column: 1;
+        -ms-grid-column: 1;
         grid-row: 1;
+        -ms-grid-row: 1;
       }
       .b {
         background: yellow;
         grid-column: 2;
+        -ms-grid-column: 2;
         grid-row: 1;
+        -ms-grid-row: 1;
         display: grid;
+        display: -ms-grid;
         grid-definition-columns: 50px 1fr;
+        -ms-grid-columns: 50px 1fr;
         grid-definition-rows: 1fr 30px;
+        -ms-grid-rows: 1fr 30px;
       }
       .b1 {
         background: orange;
         grid-column: 1;
+        -ms-grid-column: 1;
         grid-row: 1;
+        -ms-grid-row: 1;
       }
       .b2 {
         background: cyan;
         grid-column: 2;
+        -ms-grid-column: 2;
         grid-row: 2;
+        -ms-grid-row: 2;
       }
       .c {
         background: pink;
         grid-column: 1;
+        -ms-grid-column: 1;
         grid-column-span: 2;
+        -ms-grid-column-span: 2;
         grid-row: 2;
+        -ms-grid-row: 2;
       }
     </style>
   </head>

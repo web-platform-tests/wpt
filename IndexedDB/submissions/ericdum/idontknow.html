@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Just Try It... Exceptions</title>
+        <link rel="author" title="ericdum" href="mailto:formateric@gmail.com"/>
+        <link rel=help href="http://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#introduction">
+        <meta name="flags" content="introduction" />
+        <meta name="assert" content="introduction running fine"/>
+        <script src="./resources/testharness.js"></script>
+        <script src="./resources/testharnessreport.js"></script>
+        <script src="./resources/underscore.js"></script>
+        <script src="support.js"></script>
+
+        <script>
+            var db_name = generate_unique_name("test_");
+            var ostore_name = generate_unique_name();
+            var ostore_deleted = {};
+            var ostore_k_name = {};
+            var ostore_k_v_name = {};
+
+            test(function(){
+                try{
+                    request = indexedDB.open(db_name, 0);
+                }catch(e){
+                    assert_true(e instanceof TypeError, "should throw TypeError");
+                }
+            }, "indexedDb open with version 0 throw TypeError");
+
+            //var st = async_test("k");
+            var case1 = async_test("Create Exsists Object Store throw ConstraintError");
+            var case2 = async_test("Attampt Create Exsists Object Store With Difference keyPath throw ConstraintError");
+            var case3 = async_test("Valid KeyPath");
+            var case4 = async_test("Invalid KeyPath");
+            var case10 = async_test("Create Object Stores in onsuccess Throw InvalidStateError");
+
+            var request = indexedDB.open(db_name);
+
+            request.onupgradeneeded = function() {
+                var db = this.result;
+
+                var dbName1 = generate_unique_name();
+                db.createObjectStore(dbName1);
+
+                case1.step(function(){
+                    assert_throws("ConstraintError", function(){
+                        db.createObjectStore(dbName1);
+                    }, "Shoukd throw ConstraintError");
+                });
+                case1.done();
+
+                case2.step(function(){
+                    assert_throws("ConstraintError", function(){
+                        db.createObjectStore(dbName1, {
+                            keyPath: "key1",
+                        });
+                    }, "Shoukd throw ConstraintError");
+                });
+                case2.done();
+
+                case3.step(function(){
+                    try{
+                        db.createObjectStore(generate_unique_name(), {
+                            keyPath: "",
+                        });
+                    }catch(e){
+                        assert_false(false, "empty string");
+                    }
+                    try{
+                        db.createObjectStore(generate_unique_name(), {
+                            keyPath: [],
+                        });
+                    }catch(e){
+                        assert_false(false, "empty array");
+                    }
+                    try{
+                        db.createObjectStore(generate_unique_name(), {
+                            keyPath: ["a"],
+                        });
+                    }catch(e){
+                        assert_false(false, "a string in array");
+                    }
+                    try{
+                        db.createObjectStore(generate_unique_name(), {
+                            keyPath: ["a", "b"],
+                        });
+                    }catch(e){
+                        assert_false(false, "two string in array");
+                    }
+                    try{
+                        db.createObjectStore(generate_unique_name(), {
+                            keyPath: "a._b",
+                        });
+                    }catch(e){
+                        assert_false(false, "a._b");
+                    }
+                    try{
+                        db.createObjectStore(generate_unique_name(), {
+                            keyPath: "a.b.c",
+                        });
+                    }catch(e){
+                        assert_false(false, "a.b.c");
+                    }
+                });
+                case3.done();
+
+                case4.step(function(){
+                    assert_throws("SyntaxError", function(){
+                        db.createObjectStore(generate_unique_name(), {
+                            keyPath: " ",
+                        });
+                    }, "space");
+                    assert_throws("SyntaxError", function(){
+                        db.createObjectStore(generate_unique_name(), {
+                            keyPath: ".",
+                        });
+                    }, "period alone");
+                    assert_throws("SyntaxError", function(){
+                        db.createObjectStore(generate_unique_name(), {
+                            keyPath: ".a",
+                        });
+                    }, "period empty left aside");
+                    assert_throws("SyntaxError", function(){
+                        db.createObjectStore(generate_unique_name(), {
+                            keyPath: "a.",
+                        });
+                    }, "period empty right aside");
+                    assert_throws("SyntaxError", function(){
+                        db.createObjectStore(generate_unique_name(), {
+                            keyPath: "0a",
+                        });
+                    }, "invalid identifier 0a");
+                    assert_throws("SyntaxError", function(){
+                        db.createObjectStore(generate_unique_name(), {
+                            keyPath: 1,
+                        });
+                    }, "invalid identifier 1");
+                    assert_throws("SyntaxError", function(){
+                        db.createObjectStore(generate_unique_name(), {
+                            keyPath: {},
+                        });
+                    }, "invalid identifier {}");
+                    assert_throws("SyntaxError", function(){
+                        db.createObjectStore(generate_unique_name(), {
+                            keyPath: "@",
+                        });
+                    }, "@");
+                });
+                case4.done();
+
+                test(function(){
+                    assert_throws("InvalidAccessError", function(){
+                        db.createObjectStore(generate_unique_name(), {
+                            keyPath: "",
+                            autoIncrement: true
+                        });
+                    }, "empty");
+                }, "autoIncrement set to true but empty keyPath throw InvalidAccessError");
+                test(function(){
+                    db.createObjectStore(generate_unique_name(), {
+                        autoIncrement: true
+                    });
+                    assert_true(true, "not set keypath");
+                }, "autoIncrement set to true but no set keyPath, it's fine");
+
+                test(function(){
+                    assert_throws("NotFoundError", function(){
+                        db.deleteObjectStore("");
+                    }, "empty");
+                    assert_throws("NotFoundError", function(){
+                        db.deleteObjectStore(generate_unique_name());
+                    }, "not exsists object store");
+                    assert_throws("NotFoundError", function(){
+                        db.deleteObjectStore(ostore_name.toLowerCase());
+                    }, "case-sensitive");
+                }, "deleteObjectStore throw NotFoundError");
+                
+                var tobe_delete_name = generate_unique_name();
+                ostore_deleted = db.createObjectStore(tobe_delete_name);
+                test(function(){
+                    try{
+                        db.deleteObjectStore(tobe_delete_name);
+                        assert_true(true, "should be fine");
+                    }catch(e){
+                        assert_true(e, "should be fine");
+                    }
+                }, "deleteObjectStore");
+
+                var ostore = db.createObjectStore(ostore_name);
+                db.createObjectStore(ostore_k_name = generate_unique_name(), {
+                    keyPath: "eric.dum"
+                });
+                db.createObjectStore(ostore_k_a_name = generate_unique_name(), {
+                    keyPath: "eric.dum",
+                    autoIncrement: true
+                });
+                test(function(){
+                    assert_throws("InvalidStateError", function(){
+                        db.transaction(ostore_name);
+                    }, "not exsists object store");
+                }, "called on IDBDatabase object for which a versionchange transaction is still running throw InvalidStateError");
+
+                /**
+                 *
+                 * IDBObjectStore.createIndex
+                 *
+                 */
+                ostore.createIndex("a", "a");
+                test(function(){
+                    assert_throws("ConstraintError", function(){
+                        ostore.createIndex("a", "a");
+                    }, "throw a DOMException of type ConstraintError");
+                }, "IDBObjectStore.createIndex:  If an index with the name name already exists in this object store, the implementation must throw a DOMException of type ConstraintError.");
+                test(function(){
+                    assert_throws("SyntaxError", function(){
+                        ostore.createIndex("ab", ".");
+                    }, "throw a DOMException of type SyntaxError");
+                    assert_throws("SyntaxError", function(){
+                        ostore.createIndex("abcd", "@");
+                    }, "throw a DOMException of type SyntaxError");
+                }, "IDBObjectStore.createIndex:  If keyPath is not a valid key path, the implementation must throw a DOMException of type SyntaxError.");
+                test(function(){
+                    assert_throws("InvalidAccessError", function(){
+                        ostore.createIndex("abc", ["d"], {multiEntry:true});
+                    }, "throw a DOMException of type InvalidAccessError");
+                }, "IDBObjectStore.createIndex: If keyPath is a sequence<DOMString> and the multiEntry property in the optionalParameters is true, the implementation must throw a DOMException of type InvalidAccessError.");
+            }
+
+            request.onsuccess = function(e) {
+                var db = this.result;
+                var dbName1 = generate_unique_name();
+
+                /*
+                 * transaction
+                 */
+                test(function(){
+                    assert_throws("InvalidAccessError", function(){
+                        db.transaction([]);
+                    }, "throw a DOMException of type InvalidAccessError");
+                }, "If storeNames is an empty list, the implementation must throw a DOMException of type InvalidAccessError");
+
+                test(function(){
+                    assert_throws("NotFoundError", function(){
+                        db.transaction(generate_unique_name());
+                    }, "not found name");
+                    assert_throws("NotFoundError", function(){
+                        db.transaction("");
+                    }, "empty");
+                }, "transaction a not exsists object store throw NotFoundError");
+
+                test(function(){
+                    try{
+                        db.transaction([ostore_name]);
+                        assert_true(true, "list of name should fine");
+                        db.transaction(ostore_name);
+                        assert_true(true, "string should fine");
+                        db.transaction([ostore_name, ostore_name]);
+                        assert_true(true, "string should fine");
+                    }catch(e){
+                        assert_true(e, "should be fine");
+                    }
+                }, "transaction valid objectStore");
+
+                test(function(){
+                    try{
+                        db.transaction(ostore_name, "invalidmode");
+                        assert_true(false, "should throw TypeError");
+                    }catch(e){
+                        assert_true(e instanceof TypeError, "should throw TypeError");
+                    }
+                }, "transaction a object store with invalid mode");
+
+                var ostore = db.transaction(ostore_name).objectStore(ostore_name)
+
+                /*
+                 * IDBObjectStore......ReadOnlyError
+                 */
+                test(function(){
+                    assert_throws("ReadOnlyError", function(){
+                        ostore.add("a",1);
+                    }, "throw a DOMException of type ReadOnlyError");
+                }, "IDBObjectStore.add: If the transaction this IDBObjectStore belongs to has its mode set to readonly, throw ReadOnlyError.");
+
+                test(function(){
+                    assert_throws("ReadOnlyError", function(){
+                        ostore.clear();
+                    }, "throw a DOMException of type ReadOnlyError");
+                }, "IDBObjectStore.clear: If the transaction this IDBObjectStore belongs to has its mode set to readonly, throw ReadOnlyError.");
+
+                test(function(){
+                    assert_throws("ReadOnlyError", function(){
+                        ostore.delete("a");
+                    }, "throw a DOMException of type ReadOnlyError");
+                }, "IDBObjectStore.delete: If the transaction this IDBObjectStore belongs to has its mode set to readonly, throw ReadOnlyError.");
+
+                test(function(){
+                    assert_throws("ReadOnlyError", function(){
+                        ostore.put("a");
+                    }, "throw a DOMException of type ReadOnlyError");
+                }, "IDBObjectStore.put: If the transaction this IDBObjectStore belongs to has its mode set to readonly, throw ReadOnlyError.");
+
+                /*
+                 * IDBObjectStore......Operate Deleted
+                 */
+                test(function(){
+                    assert_throws("InvalidStateError", function(){
+                        ostore_deleted.add("a",1);
+                    }, "throw a DOMException of type InvalidStateError");
+                }, "IDBObjectStore.add: If the object store has been deleted, the implementation must throw a DOMException of type InvalidStateError.");
+                test(function(){
+                    assert_throws("InvalidStateError", function(){
+                        ostore_deleted.clear();
+                    }, "throw a DOMException of type InvalidStateError");
+                }, "IDBObjectStore.clear: If the object store has been deleted, the implementation must throw a DOMException of type InvalidStateError.");
+                test(function(){
+                    assert_throws("InvalidStateError", function(){
+                        ostore_deleted.count();
+                    }, "throw a DOMException of type InvalidStateError");
+                }, "IDBObjectStore.count: If the object store has been deleted, the implementation must throw a DOMException of type InvalidStateError.");
+                test(function(){
+                    assert_throws("InvalidStateError", function(){
+                        ostore_deleted.delete("a");
+                    }, "throw a DOMException of type InvalidStateError");
+                }, "IDBObjectStore.delete: If the object store has been deleted, the implementation must throw a DOMException of type InvalidStateError.");
+                test(function(){
+                    assert_throws("InvalidStateError", function(){
+                        ostore_deleted.put("a",1);
+                    }, "throw a DOMException of type InvalidStateError");
+                }, "IDBObjectStore.put: If the object store has been deleted, the implementation must throw a DOMException of type InvalidStateError.");
+                test(function(){
+                    assert_throws("InvalidStateError", function(){
+                        ostore_deleted.createIndex("a",1);
+                    }, "throw a DOMException of type InvalidStateError");
+                }, "IDBObjectStore.createIndex: If the object store has been deleted, the implementation must throw a DOMException of type InvalidStateError.");
+
+                /*
+                test(function(){
+                    assert_throws("TransactionInactiveError", function(){
+                        ostore_k.add("a");
+                    }, "DataError");
+                }, "the implementation must throw a DOMException of type DataError.");
+                */
+
+                var ostore = db.transaction(ostore_name, "readwrite").objectStore(ostore_name)
+                var ostore_k = db.transaction(ostore_k_name, "readwrite").objectStore(ostore_k_name)
+                var ostore_k_a = db.transaction(ostore_k_a_name, "readwrite").objectStore(ostore_k_a_name)
+                test(function(){
+                    assert_throws("DataError", function(){
+                        ostore_k.add("a", 1);
+                    }, "The object store uses in-line keys and the key parameter was provided");
+
+                    assert_throws("DataError", function(){
+                        ostore.add("a");
+                    }, "The object store uses out-of-line keys and has no key generator and the key parameter was not provided");
+
+                }, "the implementation must throw a DOMException of type DataError.");
+
+
+                /*
+                 * IDBObjectStore......Operate out versionchange
+                 */
+                test(function(){
+                    assert_throws("InvalidStateError", function(){
+                        ostore.createIndex("a", "b");
+                    }, "should throw InvalidStateError");
+                }, "IDBObjectStore.createIndex: Operate out versionchange throw InvalidStateError.");
+
+                test(function(){
+                    assert_throws("InvalidStateError", function(){
+                        db.deleteObjectStore(ostore_name);
+                    }, "throw a DOMException of type InvalidStateError");
+                }, "IDBDatabase.deleteObjectStore: Operate out versionchange throw InvalidStateError.");
+
+
+                case10.step(function(){
+                    assert_throws("InvalidStateError", function(){
+                        db.createObjectStore(dbName1, { 
+                            keyPath: "myKey" 
+                        });
+                    }, "If the transaction this IDBObjectStore belongs to is not active, the implementation must throw a DOMException of type TransactionInactiveError.");
+                });
+                case10.done();
+
+                indexedDB.deleteDatabase(db_name);
+            }
+        </script>
+    </head>
+
+    <body>
+        <div id="log"></div>
+    </body>
+</html>

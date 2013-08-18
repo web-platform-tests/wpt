@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>CSS Grid Layout Test: subgrid</title>
+    <title>CSS Grid Layout Test: grid span</title>
     <link rel="author" title="Leo Deng" href="mailto:myst.dg@gmail.com">
-    <link rel="help" href="http://www.w3.org/TR/css3-grid-layout/#subgrids-the-subgrid-display-value">
-    <link rel="match" href="reference/grid-layout-subgrid-ref.html">
-    <meta name="assert" content="the subgrid layout should behave the same as reference.">
+    <link rel="help" href="http://www.w3.org/TR/css3-grid-layout/#grid-span">
+    <link rel="match" href="reference/grid-layout-grid-span-ref.html">
+    <meta name="assert" content="the layout should behave the same as reference.">
     <style>
       body {
         margin: 0;
@@ -23,8 +23,8 @@
         display: -ms-grid;
         grid-definition-columns: 100px 300px;
         -ms-grid-columns: 100px 300px;
-        grid-definition-rows: 250px 50px;
-        -ms-grid-rows: 250px 50px;
+        grid-definition-rows: 80px 170px 50px;
+        -ms-grid-rows: 80px 170px 50px;
       }
       .a {
         background: blue;
@@ -32,29 +32,11 @@
         -ms-grid-column: 1;
         grid-row: 1;
         -ms-grid-row: 1;
+        grid-row-span: 2;
+        -ms-grid-row-span: 2;
       }
       .b {
         background: yellow;
-        grid-column: 2;
-        -ms-grid-column: 2;
-        grid-row: 1;
-        -ms-grid-row: 1;
-        display: grid;
-        display: -ms-grid;
-        grid-definition-columns: 50px 250px;
-        -ms-grid-columns: 50px 250px;
-        grid-definition-rows: 220px 30px;
-        -ms-grid-rows: 220px 30px;
-      }
-      .b1 {
-        background: orange;
-        grid-column: 1;
-        -ms-grid-column: 1;
-        grid-row: 1;
-        -ms-grid-row: 1;
-      }
-      .b2 {
-        background: cyan;
         grid-column: 2;
         -ms-grid-column: 2;
         grid-row: 2;
@@ -66,8 +48,8 @@
         -ms-grid-column: 1;
         grid-column-span: 2;
         -ms-grid-column-span: 2;
-        grid-row: 2;
-        -ms-grid-row: 2;
+        grid-row: 3;
+        -ms-grid-row: 3;
       }
     </style>
   </head>
@@ -75,10 +57,7 @@
     <p id="caseTitle">The test passes if it has the same visual effect as reference.</p>
     <div id="grid">
       <div class="a">a</div>
-      <div class="b">
-        <div class="b1">b1</div>
-        <div class="b2">b2</div>
-      </div>
+      <div class="b">b</div>
       <div class="c">c</div>
     </div>
   </body>

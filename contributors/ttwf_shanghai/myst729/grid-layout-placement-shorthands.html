@@ -4,7 +4,7 @@
     <title>CSS Grid Layout Test: placement shorthand</title>
     <link rel="author" title="Leo Deng" href="mailto:myst.dg@gmail.com">
     <link rel="help" href="http://www.w3.org/TR/css3-grid-layout/#placement-shorthands">
-    <link rel="match" href="reference/grid-layout-basic-ref.html">
+    <link rel="match" href="reference/grid-layout-grid-span-ref.html">
     <meta name="assert" content="the layout should behave the same as reference.">
     <style>
       body {
@@ -21,10 +21,10 @@
         background: #eee;
         display: grid;
         display: -ms-grid;
-        grid-definition-columns: 100px 1fr;
-        -ms-grid-columns: 100px 1fr;
-        grid-definition-rows: 80px 1fr 50px;
-        -ms-grid-rows: 80px 1fr 50px;
+        grid-definition-columns: 100px 300px;
+        -ms-grid-columns: 100px 300px;
+        grid-definition-rows: 80px 170px 50px;
+        -ms-grid-rows: 80px 170px 50px;
       }
       .a {
         background: blue;

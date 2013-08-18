@@ -15,34 +15,36 @@
       }
       #grid {
         margin: 0;
-        height: 300px;
-        width: 400px;
-        background: #eee;
-        position: relative;
+        width: 300px;
       }
       .a {
         background: blue;
-        height: 80px;
+        height: 100px;
         width: 100px;
-        position: absolute;
-        top: 0;
-        left: 0;
+        float: left;
       }
       .b {
         background: yellow;
-        width: 300px;
-        height: 170px;
-        position: absolute;
-        top: 80px;
-        left: 100px;
+        height: 100px;
+        width: 50px;
+        float: left;
       }
       .c {
         background: pink;
         width: 100px;
         height: 50px;
-        position: absolute;
-        top: 250px;
-        left: 0;
+        clear: both;
+      }
+      .d {
+        background: green;
+        width: 50px;
+        margin-left: 100px;
+        float: left;
+      }
+      .e {
+        background: cyan;
+        width: 100px;
+        clear: both;
       }
     </style>
   </head>
@@ -52,6 +54,8 @@
       <div class="a">a</div>
       <div class="b">b</div>
       <div class="c">c</div>
+      <div class="d">d</div>
+      <div class="e">e</div>
     </div>
   </body>
 </html>

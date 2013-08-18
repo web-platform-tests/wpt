@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Line Endings</title>
+<link rel=help href="http://www.w3.org/TR/FileAPI/#convenienceAPI">
+<link rel=author title="Breezewish" href="mailto:me@breeswish.org">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../support/platform_detection.js"></script>
+<div id="log"></div>
+<script>
+
+
+
+//an implement for reference:
+
+/*
+function toNativeLineEndings(str) {
+
+    if (navigator.appVersion.indexOf("Win") != -1) {
+
+        return str.replace(/[^\r]\n/g, "\r\n");
+
+    } else {
+
+        return str.replace(/\r\n/g, "\n");
+
+    }
+
+}
+*/
+
+test(function() {
+    assert_true("toNativeLineEndings" in window, "window should have a 'toNativeLineEndings' function.");
+    assert_true(toNativeLineEndings instanceof Function, "toNativeLineEndings should be a function.");
+}, "toNativeLineEndings function");
+
+
+test(function() {
+    var test_string = "Hello world 世界你好";
+    var expected_string = "Hello world 世界你好";
+
+    assert_equals(toNativeLineEndings(test_string), expected_string, "There should be no changes");
+}, "toNativeLineEndings: no \\r or \\n in the string");
+
+test(function() {
+    var test_string = "Hello\rworld";
+    var expected_string = "Hello\rworld";
+
+    assert_equals(toNativeLineEndings(test_string), expected_string, "There should be no changes");
+}, "toNativeLineEndings: single \\r in the string");
+
+test(function() {
+    var test_string = "世界\r你好";
+    var expected_string = "世界\r你好";
+
+    assert_equals(toNativeLineEndings(test_string), expected_string, "There should be no changes");
+}, "toNativeLineEndings: single \\r in an unicode string");
+
+test(function() {
+    var test_string = "Hello\n\rworld";
+    var expected_string = returnByPlatform({
+        win: "Hello\r\n\rworld",
+        unix: "Hello\n\rworld"
+    })
+
+    assert_equals(toNativeLineEndings(test_string), expected_string, "\\n\\r should be converted to \\r\\n\\r in Windows and no changes in unix-like OS");
+}, "toNativeLineEndings: \\n\\r in string");
+
+
+
+
+
+
+test(function() {
+    var test_string = "Hello\nworld";
+    var expected_string = returnByPlatform({
+        win: "Hello\r\nworld",
+        unix: "Hello\nworld"
+    });
+
+    assert_equals(toNativeLineEndings(test_string), expected_string, "\\n should be converted to \\r\\n in Windows and no changes in unix-like OS");
+}, "toNativeLineEndings: \\n at the middle of string");
+
+test(function() {
+    var test_string = "Hello\r\nworld";
+    var expected_string = returnByPlatform({
+        win: "Hello\r\nworld",
+        unix: "Hello\nworld"
+    });
+
+    assert_equals(toNativeLineEndings(test_string), expected_string, "\\r\\n should be converted to \\n in unix-like OS and no changes in Windows");
+}, "toNativeLineEndings: \\r\\n at the middle of string");
+
+test(function() {
+    var test_string = "世界\n你好";
+    var expected_string = returnByPlatform({
+        win: "世界\r\n你好",
+        unix: "世界\n你好"
+    });
+
+    assert_equals(toNativeLineEndings(test_string), expected_string, "\\n should be converted to \\r\\n in Windows and no changes in unix-like OS");
+}, "toNativeLineEndings: \\n at the middle of an unicode string");
+
+test(function() {
+    var test_string = "世界\r\n你好";
+    var expected_string = returnByPlatform({
+        win: "世界\r\n你好",
+        unix: "世界\n你好"
+    });
+
+    assert_equals(toNativeLineEndings(test_string), expected_string, "\\r\\n should be converted to \\n in unix-like OS and no changes in Windows");
+}, "toNativeLineEndings: \\r\\n at the middle of an unicode string");
+
+
+
+
+
+
+
+test(function() {
+    var test_string = "Helloworld\n";
+    var expected_string = returnByPlatform({
+        win: "Helloworld\r\n",
+        unix: "Helloworld\n"
+    });
+
+    assert_equals(toNativeLineEndings(test_string), expected_string, "\\n should be converted to \\r\\n in Windows and no changes in unix-like OS");
+}, "toNativeLineEndings: \\n at the end of string");
+
+test(function() {
+    var test_string = "Helloworld\r\n";
+    var expected_string = returnByPlatform({
+        win: "Helloworld\r\n",
+        unix: "Helloworld\n"
+    });
+
+    assert_equals(toNativeLineEndings(test_string), expected_string, "\\r\\n should be converted to \\n in unix-like OS and no changes in Windows");
+}, "toNativeLineEndings: \\r\\n at the end of string");
+
+test(function() {
+    var test_string = "世界你好\n";
+    var expected_string = returnByPlatform({
+        win: "世界你好\r\n",
+        unix: "世界你好\n"
+    });
+
+    assert_equals(toNativeLineEndings(test_string), expected_string, "\\n should be converted to \\r\\n in Windows and no changes in unix-like OS");
+}, "toNativeLineEndings: \\n at the end of an unicode string");
+
+test(function() {
+    var test_string = "世界你好\r\n";
+    var expected_string = returnByPlatform({
+        win: "世界你好\r\n",
+        unix: "世界你好\n"
+    });
+
+    assert_equals(toNativeLineEndings(test_string), expected_string, "\\r\\n should be converted to \\n in unix-like OS and no changes in Windows");
+}, "toNativeLineEndings: \\r\\n at the end of an unicode string");
+
+
+
+
+
+
+test(function() {
+    var test_string = "\nHelloworld";
+    var expected_string = returnByPlatform({
+        win: "\r\nHelloworld",
+        unix: "\nHelloworld"
+    });
+
+    assert_equals(toNativeLineEndings(test_string), expected_string, "\\n should be converted to \\r\\n in Windows and no changes in unix-like OS");
+}, "toNativeLineEndings: \\n at the start of string");
+
+test(function() {
+    var test_string = "\r\nHelloworld";
+    var expected_string = returnByPlatform({
+        win: "\r\nHelloworld",
+        unix: "\nHelloworld"
+    });
+
+    assert_equals(toNativeLineEndings(test_string), expected_string, "\\r\\n should be converted to \\n in unix-like OS and no changes in Windows");
+}, "toNativeLineEndings: \\r\\n at the start of string");
+
+test(function() {
+    var test_string = "\n世界你好";
+    var expected_string = returnByPlatform({
+        win: "\r\n世界你好",
+        unix: "\n世界你好"
+    });
+
+    assert_equals(toNativeLineEndings(test_string), expected_string, "\\n should be converted to \\r\\n in Windows and no changes in unix-like OS");
+}, "toNativeLineEndings: \\n at the start of an unicode string");
+
+test(function() {
+    var test_string = "\r\n世界你好";
+    var expected_string = returnByPlatform({
+        win: "\r\n世界你好",
+        unix: "\n世界你好"
+    });
+
+    assert_equals(toNativeLineEndings(test_string), expected_string, "\\r\\n should be converted to \\n in unix-like OS and no changes in Windows");
+}, "toNativeLineEndings: \\r\\n at the start of an unicode string");
+
+
+
+
+
+</script>

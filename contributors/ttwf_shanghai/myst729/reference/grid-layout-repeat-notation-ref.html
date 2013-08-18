@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CSS Grid Layout Reference</title>
+    <link rel="author" title="Leo Deng" href="mailto:myst.dg@gmail.com">
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      #caseTitle {
+        margin: 10px;
+        height: 40px;
+      }
+      #grid {
+        height: 100px;
+        width: 450px;
+        position: relative;
+      }
+      .a {
+        background: blue;
+        width: 100px;
+        height: 100px;
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+      .b {
+        background: yellow;
+        width: 100px;
+        height: 100px;
+        position: absolute;
+        top: 0;
+        left: 100px;
+      }
+      .c {
+        background: orange;
+        width: 100px;
+        height: 100px;
+        position: absolute;
+        top: 0;
+        left: 200px;
+      }
+      .d {
+        background: cyan;
+        width: 100px;
+        height: 100px;
+        position: absolute;
+        top: 0;
+        left: 300px;
+      }
+      .e {
+        background: pink;
+        width: 50px;
+        height: 100px;
+        position: absolute;
+        top: 0;
+        left: 400px;
+      }
+    </style>
+  </head>
+  <body>
+    <p id="caseTitle">The test passes if it has the same visual effect as reference.</p>
+    <div id="grid">
+      <div class="a">a</div>
+      <div class="b">b</div>
+      <div class="c">c</div>
+      <div class="d">d</div>
+      <div class="e">e</div>
+    </div>
+  </body>
+</html>

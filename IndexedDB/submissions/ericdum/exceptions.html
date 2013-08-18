@@ -1,13 +1,12 @@
-<!DOCTYPE html>
 <html>
     <head>
         <title>Exceptions of indexedDB</title>
         <link rel="author" title="ericdum" href="mailto:formateric@gmail.com"/>
-        <link rel=help href="http://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#introduction">
+        <link rel=help href="https://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#requests">
         <meta name="flags" content="exception, indexedDB" />
         <meta name="assert" content="Exceptions Will be running fine"/>
-        <script src="/resources/testharness.js"></script>
-        <script src="/resources/testharnessreport.js"></script>
+        <script src="resources/testharness.js"></script>
+        <script src="resources/testharnessreport.js"></script>
         <script src="support.js"></script>
 
         <script>
@@ -29,7 +28,7 @@
             var case1 = async_test("Create Exsists Object Store throw ConstraintError");
             var case2 = async_test("Attampt Create Exsists Object Store With Difference keyPath throw ConstraintError");
             var case3 = async_test("Valid KeyPath");
-            var case4 = async_test("Invalid KeyPath");
+            //var case4 = async_test("Invalid KeyPath");
             var case10 = async_test("Create Object Stores in onsuccess Throw InvalidStateError");
 
             var request = indexedDB.open(db_name);
@@ -57,92 +56,45 @@
                 case2.done();
 
                 case3.step(function(){
-                    try{
-                        db.createObjectStore(generate_unique_name(), {
-                            keyPath: "",
-                        });
-                    }catch(e){
-                        assert_false(e, "empty string");
-                    }
-                    try{
-                        db.createObjectStore(generate_unique_name(), {
-                            keyPath: ["a"],
-                        });
-                    }catch(e){
-                        assert_false(e, "a string in array");
-                    }
-                    try{
-                        db.createObjectStore(generate_unique_name(), {
-                            keyPath: ["a", "b"],
-                        });
-                    }catch(e){
-                        assert_false(e, "two string in array");
-                    }
-                    try{
-                        db.createObjectStore(generate_unique_name(), {
-                            keyPath: "a._b",
-                        });
-                    }catch(e){
-                        assert_false(e, "a._b");
-                    }
-                    try{
-                        db.createObjectStore(generate_unique_name(), {
-                            keyPath: "a.b.c",
-                        });
-                    }catch(e){
-                        assert_false(e, "a.b.c");
-                    }
+                    var validKeyPaths = [ "", ["a"], ["a", "b"], "a._b", "a.b.c" ];
+                    for ( var i in validKeyPaths ) {
+                        try{
+                            db.createObjectStore(generate_unique_name(), {
+                                keyPath: validKeyPaths[i]
+                            });
+                        }catch(e){
+                            assert_false(e, JSON.stringify(validKeyPaths[i]));
+                        }
+                     }
                 });
                 case3.done();
 
-                case4.step(function(){
-                    assert_throws("SyntaxError", function(){
-                        db.createObjectStore(generate_unique_name(), {
-                            keyPath: " ",
-                        });
-                    }, "space");
-                    assert_throws("SyntaxError", function(){
-                        db.createObjectStore(generate_unique_name(), {
-                            keyPath: ".",
-                        });
-                    }, "period alone");
-                    assert_throws("SyntaxError", function(){
-                        db.createObjectStore(generate_unique_name(), {
-                            keyPath: ".a",
-                        });
-                    }, "period empty left aside");
-                    assert_throws("SyntaxError", function(){
-                        db.createObjectStore(generate_unique_name(), {
-                            keyPath: "a.",
-                        });
-                    }, "period empty right aside");
-                    assert_throws("SyntaxError", function(){
-                        db.createObjectStore(generate_unique_name(), {
-                            keyPath: "0a",
-                        });
-                    }, "invalid identifier 0a");
-                    assert_throws("SyntaxError", function(){
-                        db.createObjectStore(generate_unique_name(), {
-                            keyPath: 1,
-                        });
-                    }, "invalid identifier 1");
-                    assert_throws("SyntaxError", function(){
-                        db.createObjectStore(generate_unique_name(), {
-                            keyPath: {},
-                        });
-                    }, "invalid identifier {}");
-                    assert_throws("SyntaxError", function(){
-                        db.createObjectStore(generate_unique_name(), {
-                            keyPath: "@",
-                        });
-                    }, "@");
-                    assert_throws("SyntaxError", function(){
-                        db.createObjectStore(generate_unique_name(), {
-                            keyPath: [],
-                        });
-                    }, "empty array");
-                });
-                case4.done();
+                //case4.step(function(){
+                    var invalidKeyPaths = [
+                        ".a",
+                        "0a",
+                        {},
+                        {a:"a"},
+                        [],
+                    ];
+                    var valid = /[a-zA-Z_$]/;
+                    for(var i = 0; i<255; i++) {
+                        var c = String.fromCharCode(i);
+                        if( ! c.match(valid) ){
+                            invalidKeyPaths.push(c);
+                        }
+                    }
+                    for ( var i in invalidKeyPaths ) {
+                        test(function(){
+                            assert_throws("SyntaxError", function(){
+                                db.createObjectStore(generate_unique_name(), {
+                                    keyPath: invalidKeyPaths[i],
+                                });
+                            }, JSON.stringify(invalidKeyPaths[i]));
+                        }, "Invalid KeyPaths:" + JSON.stringify(invalidKeyPaths[i]));
+                    }
+                //});
+                //case4.done();
 
                 test(function(){
                     assert_throws("InvalidAccessError", function(){

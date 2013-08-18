@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <meta charset=utf-8>
-<title>Blob Determing Encoding</title>
+<title>FileAPI Test: Blob Determing Encoding</title>
 <link ref="author" title="march1993" href="mailto:march511@gmail.com">
-<link rel=help href="http://dev.w3.org/2006/webapi/FileAPI/#constructorBlob">
+<link rel=help href="http://www.w3.org/TR/FileAPI/#enctypes">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="../support/Blob.js"></script>
@@ -10,6 +10,7 @@
 <script>
 var t = async_test("Blob Determing Encoding with encoding argument");
 t.step(function() {
+    // string 'hello'
     var data = [0xFE,0xFF,0x00,0x68,0x00,0x65,0x00,0x6C,0x00,0x6C,0x00,0x6F];
     var testStringArray = new ArrayBuffer(data.length);
     var dataView = new DataView(testStringArray);

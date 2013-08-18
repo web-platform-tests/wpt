@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>FileAPI Test: file</title>
+    <link rel="author" title="Intel" href="http://www.intel.com">
+    <link rel="help" href="http://www.w3.org/TR/FileAPI/#file">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <meta name="assert" content="Test checks that the implementation of the file interface">
+  </head>
+  <body>
+    <p>Select any file from local device through the File Upload Flag below</p>
+    <p><input type="file"></input></p>
+
+    <div id="log"></div>
+
+    <script>
+      var input = document.querySelector("input");
+
+      setup({explicit_done: true});
+      setup({explicit_timeout: true});
+
+      on_event(input, "change", function(evt) {
+        var file = document.querySelector("input").files.item(0);
+        var value = input.value;
+
+        test(function () {
+          assert_throws(new TypeError(), function() {
+            new File()}, "Should throw TypeError");
+        }, 'Check if new File() returns TypeError');
+
+        test(function() {
+          assert_equals(typeof(file.name), "string", "The type of the name attribute returns string");
+        }, "Check if the type of the name attribute is string");
+
+        test(function() {
+          assert_true(file.lastModifiedDate instanceof Date, "The lastModifiedDate attribute returns Date");
+        }, "Check if the lastModifiedDate attribute is instance of Date");
+
+        file.name = "wrongfilename";
+        file.lastModifiedDate = Date(0);
+        test(function () {
+          assert_not_equals(file.name, "wrongfilename", "Check if File.name is immutatble");
+          assert_not_equals(file.lastModifiedDate, Date(0), "Check if File.lastModifiedDate is immutatble")
+        }, "Check if File object is immutatble");
+
+        test(function() {
+          assert_not_equals(value.lastIndexOf(file.name), -1, "Check if file name returned correctly");
+        }, "Check if file name returns correctly");
+        done();
+      });
+    </script>
+  </body>
+</html>

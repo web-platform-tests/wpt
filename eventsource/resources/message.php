@@ -6,6 +6,8 @@
   header("Content-Type: " . $mime);
   echo $message . $newline;
   echo "\n";
-  usleep($sleep * 1000);
+  if ($sleep != 0) {
+    usleep($sleep * 1000);
+  }
   exit();
 ?>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CSS Grid Layout Test: basic</title>
+    <link rel="author" title="Leo Deng" href="mailto:myst.dg@gmail.com">
+    <link rel="help" href="http://www.w3.org/TR/css3-grid-layout/">
+    <link rel="match" href="reference/grid-layout-basic-rel.html">
+    <meta name="assert" content="the layout should behave the same as reference.">
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      #caseTitle {
+        margin: 10px;
+        height: 40px;
+      }
+      #grid {
+        height: 300px;
+        width: 400px;
+        background: #eee;
+        display: -ms-grid;
+        -ms-grid-columns: 100px 1fr;
+        /* grid-definition-columns: 100px 1fr; */
+        -ms-grid-rows: 80px 1fr 50px;
+        /* grid-definition-rows: 80px 1fr 50px; */
+      }
+      .a {
+        background: blue;
+        -ms-grid-column: 1;
+        -ms-grid-row: 1;
+        -ms-grid-row-span: 2;
+      }
+      .b {
+        background: yellow;
+        -ms-grid-column: 2;
+        -ms-grid-row: 2;
+      }
+      .c {
+        background: pink;
+        -ms-grid-column: 1;
+        -ms-grid-column-span: 2;
+        -ms-grid-row: 3;
+      }
+    </style>
+  </head>
+  <body>
+    <p id="caseTitle">The test passes if it has the same visual effect as reference.</p>
+    <div id="grid">
+      <div class="a">a</div>
+      <div class="b">b</div>
+      <div class="c">c</div>
+    </div>
+  </body>
+</html>

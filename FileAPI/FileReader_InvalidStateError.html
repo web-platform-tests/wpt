@@ -44,4 +44,32 @@ test(function() {
 		reader.readAsArrayBuffer(blob_2)
 	}, "InvalidStateError DOM exception.")
 }, 'test FileReader InvalidStateError exception for readAsArrayBuffer');
+
+test(function() {
+	var blob_1 = new Blob(['TEST000000001'])
+	var blob_2 = new Blob(['TEST000000002'])
+	var reader = new FileReader();
+	assert_true(reader !== undefined && reader !== null);
+	reader.onloadstart = function() {
+		assert_throws("InvalidStateError", function () { 
+			reader.readAsArrayBuffer(blob_2)		
+		}, "InvalidStateError DOM exception.")
+	}
+	reader.readAsArrayBuffer(blob_1)
+	assert_true(reader.readyState === FileReader.LOADING)
+}, 'test FileReader InvalidStateError exception in onloadstart event for readAsArrayBuffer');
+
+test(function() {
+	var blob_1 = new Blob(['TEST000000001'])
+	var blob_2 = new Blob(['TEST000000002'])
+	var reader = new FileReader();
+	assert_true(reader !== undefined && reader !== null);
+	reader.onloadend = function(){
+		reader.readAsArrayBuffer(blob_2)
+		assert_true(reader.readyState === FileReader.LOADING)
+	}
+	reader.readAsArrayBuffer(blob_1)
+	assert_true(reader.readyState === FileReader.LOADING)
+}, 'test FileReader no InvalidStateError exception in onloadstart event for readAsArrayBuffer');
+
 </script>

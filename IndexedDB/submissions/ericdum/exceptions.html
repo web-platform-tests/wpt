@@ -6,9 +6,8 @@
         <link rel=help href="http://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#introduction">
         <meta name="flags" content="exception, indexedDB" />
         <meta name="assert" content="Exceptions Will be running fine"/>
-        <script src="./resources/testharness.js"></script>
-        <script src="./resources/testharnessreport.js"></script>
-        <script src="./resources/underscore.js"></script>
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
         <script src="support.js"></script>
 
         <script>
@@ -63,42 +62,35 @@
                             keyPath: "",
                         });
                     }catch(e){
-                        assert_false(false, "empty string");
-                    }
-                    try{
-                        db.createObjectStore(generate_unique_name(), {
-                            keyPath: [],
-                        });
-                    }catch(e){
-                        assert_false(false, "empty array");
+                        assert_false(e, "empty string");
                     }
                     try{
                         db.createObjectStore(generate_unique_name(), {
                             keyPath: ["a"],
                         });
                     }catch(e){
-                        assert_false(false, "a string in array");
+                        assert_false(e, "a string in array");
                     }
                     try{
                         db.createObjectStore(generate_unique_name(), {
                             keyPath: ["a", "b"],
                         });
                     }catch(e){
-                        assert_false(false, "two string in array");
+                        assert_false(e, "two string in array");
                     }
                     try{
                         db.createObjectStore(generate_unique_name(), {
                             keyPath: "a._b",
                         });
                     }catch(e){
-                        assert_false(false, "a._b");
+                        assert_false(e, "a._b");
                     }
                     try{
                         db.createObjectStore(generate_unique_name(), {
                             keyPath: "a.b.c",
                         });
                     }catch(e){
-                        assert_false(false, "a.b.c");
+                        assert_false(e, "a.b.c");
                     }
                 });
                 case3.done();
@@ -144,6 +136,11 @@
                             keyPath: "@",
                         });
                     }, "@");
+                    assert_throws("SyntaxError", function(){
+                        db.createObjectStore(generate_unique_name(), {
+                            keyPath: [],
+                        });
+                    }, "empty array");
                 });
                 case4.done();
 

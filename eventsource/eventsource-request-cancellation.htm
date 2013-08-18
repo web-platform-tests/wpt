@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>EventSource: request cancellation</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <script>
+      var test = async_test(null, {timeout: 2000});
+      var url = "resources/message.php?sleep=1000&message=" + encodeURIComponent("retry:1000\ndata:abc\n\n");
+      var es = new EventSource(url);
+      var active = false;
+      var errorWasFired = false;
+      es.onerror = function () {
+        if (es.readyState === EventSource.CLOSED) {
+          errorWasFired = true;
+        }
+      };
+      setTimeout(function () {
+        setTimeout(function () {
+          es.onmessage = function () {
+            active = true;
+          };
+        }, 500);
+        window.stop();
+      }, 100);
+      setTimeout(function () {
+        test.step(function () {
+          if (es.readyState === EventSource.CLOSED) {
+            assert_true(!active && errorWasFired);
+          } else {
+            assert_true(active);
+          }
+        });
+        test.done();
+      }, 2000);
+    </script>
+  </body>
+</html>

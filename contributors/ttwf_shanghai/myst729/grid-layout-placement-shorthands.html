@@ -4,7 +4,7 @@
     <title>CSS Grid Layout Test: placement shorthand</title>
     <link rel="author" title="Leo Deng" href="mailto:myst.dg@gmail.com">
     <link rel="help" href="http://www.w3.org/TR/css3-grid-layout/#placement-shorthands">
-    <link rel="match" href="reference/grid-layout-grid-span-ref.html">
+    <link rel="match" href="reference/grid-layout-basic-ref.html">
     <meta name="assert" content="the layout should behave the same as reference.">
     <style>
       body {
@@ -16,45 +16,34 @@
         height: 40px;
       }
       #grid {
-        height: 300px;
-        width: 400px;
+        width: 150px;
         background: #eee;
         display: grid;
         display: -ms-grid;
-        grid-definition-columns: 100px 300px;
-        -ms-grid-columns: 100px 300px;
-        grid-definition-rows: 80px 170px 50px;
-        -ms-grid-rows: 80px 170px 50px;
+        grid-definition-columns: 50px 50px 50px;
+        -ms-grid-columns: 50px 50px 50px;
       }
       .a {
         background: blue;
-        grid-column: 1;
-        -ms-grid-column: 1;
-        grid-row: 1 / span 2;
-        -ms-grid-row: 1 / span 2;
+        grid-column: 1 / span 2;
+        -ms-grid-column: 1 / span 2;
+        grid-row: 1;
+        -ms-grid-row: 1;
       }
       .b {
         background: yellow;
-        grid-column: 2;
-        -ms-grid-column: 2;
-        grid-row: 2;
-        -ms-grid-row: 2;
-      }
-      .c {
-        background: pink;
-        grid-column: 1 / span 2;
-        -ms-grid-column: 1 / span 2;
-        grid-row: 3;
-        -ms-grid-row: 3;
+        grid-column: 3;
+        -ms-grid-column: 3;
+        grid-row: 1;
+        -ms-grid-row: 1;
       }
     </style>
   </head>
   <body>
     <p id="caseTitle">The test passes if it has the same visual effect as reference.</p>
     <div id="grid">
-      <div class="a">a</div>
-      <div class="b">b</div>
-      <div class="c">c</div>
+      <div class="a">&nbsp;</div>
+      <div class="b">&nbsp;</div>
     </div>
   </body>
 </html>

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>CSS Grid Layout Test: subgrid</title>
+    <title>CSS Grid Layout Test: grid in grid</title>
     <link rel="author" title="Leo Deng" href="mailto:myst.dg@gmail.com">
     <link rel="help" href="http://www.w3.org/TR/css3-grid-layout/#subgrids-the-subgrid-display-value">
-    <link rel="match" href="reference/grid-layout-subgrid-ref.html">
+    <link rel="match" href="reference/grid-layout-grid-in-grid-ref.html">
     <meta name="assert" content="the subgrid layout should behave the same as reference.">
     <style>
       body {
@@ -16,15 +16,15 @@
         height: 40px;
       }
       #grid {
-        height: 300px;
-        width: 400px;
+        height: 150px;
+        width: 150px;
         background: #eee;
         display: grid;
         display: -ms-grid;
-        grid-definition-columns: 100px 300px;
-        -ms-grid-columns: 100px 300px;
-        grid-definition-rows: 250px 50px;
-        -ms-grid-rows: 250px 50px;
+        grid-definition-columns: 50px 100px;
+        -ms-grid-columns:  50px 100px;
+        grid-definition-rows: 100px 50px;
+        -ms-grid-rows: 100px 50px;
       }
       .a {
         background: blue;
@@ -41,10 +41,10 @@
         -ms-grid-row: 1;
         display: grid;
         display: -ms-grid;
-        grid-definition-columns: 50px 250px;
-        -ms-grid-columns: 50px 250px;
-        grid-definition-rows: 220px 30px;
-        -ms-grid-rows: 220px 30px;
+        grid-definition-columns: 50px 50px;
+        -ms-grid-columns: 50px 50px;
+        grid-definition-rows: 50px 50px;
+        -ms-grid-rows:50px 50px;
       }
       .b1 {
         background: orange;
@@ -62,11 +62,9 @@
       }
       .c {
         background: pink;
-        grid-column: 1;
-        -ms-grid-column: 1;
-        grid-column-span: 2;
-        -ms-grid-column-span: 2;
-        grid-row: 2;
+        grid-column: 2;
+        -ms-grid-column: 2;
+        grid-row: 2;  
         -ms-grid-row: 2;
       }
     </style>
@@ -74,12 +72,12 @@
   <body>
     <p id="caseTitle">The test passes if it has the same visual effect as reference.</p>
     <div id="grid">
-      <div class="a">a</div>
+      <div class="a"><div style="height:100px;">&nbsp;</div></div>
       <div class="b">
-        <div class="b1">b1</div>
-        <div class="b2">b2</div>
+        <div class="b1"><div style="height:50px;">&nbsp;</div></div>
+        <div class="b2"><div style="height:50px;">&nbsp;</div></div>
       </div>
-      <div class="c">c</div>
+      <div class="c"><div style="height:50px;">&nbsp;</div></div>
     </div>
   </body>
 </html>

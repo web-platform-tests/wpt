@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>CSS Grid Layout Test: free space unit</title>
+    <title>CSS Grid Layout Test: z order</title>
     <link rel="author" title="Leo Deng" href="mailto:myst.dg@gmail.com">
-    <link rel="help" href="http://www.w3.org/TR/css3-grid-layout/#free-space">
-    <link rel="match" href="reference/grid-layout-basic-ref.html">
+    <link rel="help" href="http://www.w3.org/TR/css3-grid-layout/#z-order">
+    <link rel="match" href="reference/grid-layout-z-order-ref.html">
     <meta name="assert" content="the layout should behave the same as reference.">
     <style>
       body {
@@ -20,30 +20,33 @@
         background: #eee;
         display: grid;
         display: -ms-grid;
-        grid-definition-columns: 1fr 50px;
-        -ms-grid-columns: 1fr 50px;
+        grid-definition-columns: 50px 50px 50px;
+        -ms-grid-columns: 50px 50px 50px;
+        color:white;
       }
       .a {
         background: blue;
         grid-column: 1;
         -ms-grid-column: 1;
-        grid-row: 1;
-        -ms-grid-row: 1;
+        grid-column-span: 2;
+        -ms-grid-column-span: 2;
+        z-index:10
       }
       .b {
         background: yellow;
         grid-column: 2;
         -ms-grid-column: 2;
-        grid-row: 1;
-        -ms-grid-row: 1;
+        grid-column-span: 2;
+        -ms-grid-column-span: 2;
+        z-index:1
       }
     </style>
   </head>
   <body>
     <p id="caseTitle">The test passes if it has the same visual effect as reference.</p>
     <div id="grid">
-      <div class="a">&nbsp;</div>
-      <div class="b">&nbsp;</div>
+      <div class="b">down</div>
+      <div class="a">up</div>
     </div>
   </body>
 </html>

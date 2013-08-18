@@ -16,61 +16,48 @@
         height: 40px;
       }
       #grid {
-        height: 100px;
         width: 450px;
         background: #eee;
         display: grid;
         display: -ms-grid;
         grid-definition-columns: repeat(4, 100px) 50px;
         -ms-grid-columns: repeat(4, 100px) 50px;
-        grid-definition-rows: 100px;
-        -ms-grid-rows: 100px;
       }
       .a {
         background: blue;
         grid-column: 1;
         -ms-grid-column: 1;
-        grid-row: 1;
-        -ms-grid-row: 1;
       }
       .b {
         background: yellow;
         grid-column: 2;
         -ms-grid-column: 2;
-        grid-row: 1;
-        -ms-grid-row: 1;
       }
       .c {
         background: orange;
         grid-column: 3;
         -ms-grid-column: 3;
-        grid-row: 1;
-        -ms-grid-row: 1;
       }
       .d {
         background: cyan;
         grid-column: 4;
         -ms-grid-column: 4;
-        grid-row: 1;
-        -ms-grid-row: 1;
       }
       .e {
         background: pink;
         grid-column: 5;
         -ms-grid-column: 5;
-        grid-row: 1;
-        -ms-grid-row: 1;
       }
     </style>
   </head>
   <body>
     <p id="caseTitle">The test passes if it has the same visual effect as reference.</p>
     <div id="grid">
-      <div class="a">a</div>
-      <div class="b">b</div>
-      <div class="c">c</div>
-      <div class="d">d</div>
-      <div class="e">c</div>
+      <div class="a">&nbsp;</div>
+      <div class="b">&nbsp;</div>
+      <div class="c">&nbsp;</div>
+      <div class="d">&nbsp;</div>
+      <div class="e">&nbsp;</div>
     </div>
   </body>
 </html>

@@ -9,21 +9,32 @@
   <meta name="assert" content="scale x 2"/>
   <style type="text/css">
       .container {
-          border: 1px solid black;
+        z-index: 11;
+        position: absolute;
           height: 100px;
           width: 100px;
-          background-color:#fff;
           margin-left: 500px;
           transform: scaleX(2);
           //-webkit-transform: scaleX(2);
+          background-color: green;
+      }
+
+       .hidden {
+        z-index: 10;
+        background-color: red;
+          position: absolute;
+          height: 100px;
+          width: 200px;
+          margin-left: 450px;
       }
   </style>
   
  </head>
  <body>
-  <p>There should be one box with height 100px, width 200px; and border-right and border-left should be 2 px</p>
+  <p>You should see only 1 green area, no red area.</p>
   <div class="container">
   </div>
- 
+ <div class="hidden">
+  </div>
 </body>
 </html>

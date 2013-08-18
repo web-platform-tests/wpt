@@ -9,20 +9,33 @@
   <meta name="assert" content="scale y 2"/>
   <style type="text/css">
       .container {
-          border: 1px solid black;
+        position: absolute;
+        z-index: 11;
           height: 100px;
           width: 100px;
-          background-color:#fff;
+          background-color:green;
           margin-top: 200px;
           transform: scaleY(2);
           //-webkit-transform: scaleY(2);
+      }
+
+      .hidden {
+        position: absolute;
+        z-index: 10;
+          height: 200px;
+          width: 100px;
+          background-color:red;
+          margin-top: 150px;
       }
   </style>
   
  </head>
  <body>
-   <p style="margin-top:70px;">There should be one box with height 200px, width 100px; and border-top and border-bottom should be 2 px</p>
+   <p style="margin-top:70px;">You should see only 1 green area</p>
   <div class="container">
+  </div>
+
+  <div class="hidden">
   </div>
 
 </body>

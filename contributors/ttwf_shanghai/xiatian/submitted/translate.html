@@ -15,6 +15,8 @@
       }
 
       .inner {
+        z-index: 98;
+        position: relative;
            width: 100px;
            height: 100px;
            background-color: green;
@@ -26,14 +28,26 @@
 
           transform: translate(100px, 100px);
       }
+
+      .hidden {
+          z-index: 67;
+          position: relative;
+          left: 100px;
+            width: 100px;
+           height: 100px;
+           background-color: red;
+      }
   </style>
   
  </head>
  <body>
-  <p style="margin-top:70px;">There should be one green area, which is located at (100px, 100px) relative to the outer box</p>
+  <p style="margin-top:70px;">You should see only one green area, no red area</p>
   
   <div class="container">
+      
       <div class="inner">
+      </div>
+      <div class="hidden">
       </div>
   </div>
  

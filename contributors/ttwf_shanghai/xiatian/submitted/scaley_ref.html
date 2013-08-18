@@ -8,22 +8,29 @@
   <meta name="assert" content="scale y 2"/>
   <style type="text/css">
      .container {
-          border-top: 2px solid black;
-          border-right: 1px solid black;
-          border-bottom: 2px solid black;
-          border-left: 1px solid black;
+          position: absolute;
+          border: 1px solid green;
           height: 200px;
           width: 100px;
-          background-color:#fff;
+          background-color:green;
+          margin-top: 150px;
+
+      }
+
+      .hidden {
+          position: absolute;
+          border: 2px solid red;
+          height: 200px;
+          width: 100px;
+          background-color:red;
           margin-top: 150px;
       }
   </style>
   
  </head>
  <body>
-  <p>There should be one box with height 200px, width 100px; and border-top and border-bottom should be 2 px</p>
+  <p>You should see only 1 green box.</p>
   <div class="container">
   </div>
-  
 </body>
 </html>

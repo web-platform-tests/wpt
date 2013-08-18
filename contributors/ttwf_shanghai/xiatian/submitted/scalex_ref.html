@@ -8,20 +8,16 @@
   <meta name="assert" content="scale x 2"/>
   <style type="text/css">
      .container {
-          border-top: 1px solid black;
-          border-right: 2px solid black;
-          border-bottom: 1px solid black;
-          border-left: 2px solid black;
+        background-color: green;
           height: 100px;
           width: 200px;
-          background-color:#fff;
           margin-left: 450px;
       }
   </style>
   
  </head>
  <body>
-  <p>There should be one box with height 100px, width 200px; and border-right and border-left should be 2 px</p>
+  <p>You should see only 1 green area, no red area.</p>
   <div class="container">
     <div class="transformed"></div>
   </div>

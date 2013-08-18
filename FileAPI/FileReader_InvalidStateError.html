@@ -15,7 +15,7 @@ test(function() {
 	var reader = new FileReader();
 	assert_true(reader !== undefined && reader !== null);
 	reader.readAsText(blob_1)
-	assert_true(reader.readyState === FileReader.LOADING)
+	assert_equals(reader.readyState, FileReader.LOADING, "readyState Must be LOADING")
 	assert_throws("InvalidStateError", function () { 
 		reader.readAsText(blob_2)
 	}, "InvalidStateError DOM exception.")
@@ -27,7 +27,7 @@ test(function() {
 	var reader = new FileReader();
 	assert_true(reader !== undefined && reader !== null);
 	reader.readAsDataURL(blob_1)
-	assert_true(reader.readyState === FileReader.LOADING)
+	assert_equals(reader.readyState, FileReader.LOADING, "readyState Must be LOADING")
 	assert_throws("InvalidStateError", function () { 
 		reader.readAsDataURL(blob_2)
 	}, "InvalidStateError DOM exception.")
@@ -39,7 +39,7 @@ test(function() {
 	var reader = new FileReader();
 	assert_true(reader !== undefined && reader !== null);
 	reader.readAsArrayBuffer(blob_1)
-	assert_true(reader.readyState === FileReader.LOADING)
+	assert_equals(reader.readyState, FileReader.LOADING, "readyState Must be LOADING")
 	assert_throws("InvalidStateError", function () { 
 		reader.readAsArrayBuffer(blob_2)
 	}, "InvalidStateError DOM exception.")
@@ -56,7 +56,7 @@ test(function() {
 		}, "InvalidStateError DOM exception.")
 	}
 	reader.readAsArrayBuffer(blob_1)
-	assert_true(reader.readyState === FileReader.LOADING)
+	assert_equals(reader.readyState, FileReader.LOADING, "readyState Must be LOADING")
 }, 'test FileReader InvalidStateError exception in onloadstart event for readAsArrayBuffer');
 
 test(function() {
@@ -66,10 +66,10 @@ test(function() {
 	assert_true(reader !== undefined && reader !== null);
 	reader.onloadend = function(){
 		reader.readAsArrayBuffer(blob_2)
-		assert_true(reader.readyState === FileReader.LOADING)
+		assert_equals(reader.readyState, FileReader.LOADING, "readyState Must be LOADING")
 	}
 	reader.readAsArrayBuffer(blob_1)
-	assert_true(reader.readyState === FileReader.LOADING)
+	assert_equals(reader.readyState, FileReader.LOADING, "readyState Must be LOADING")
 }, 'test FileReader no InvalidStateError exception in onloadstart event for readAsArrayBuffer');
 
 </script>

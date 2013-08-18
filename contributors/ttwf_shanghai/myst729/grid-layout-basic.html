@@ -19,28 +19,26 @@
         height: 300px;
         width: 400px;
         background: #eee;
-        display: -ms-grid;
-        -ms-grid-columns: 100px 1fr;
-        /* grid-definition-columns: 100px 1fr; */
-        -ms-grid-rows: 80px 1fr 50px;
-        /* grid-definition-rows: 80px 1fr 50px; */
+        display: grid;
+        grid-definition-columns: 100px 1fr;
+        grid-definition-rows: 80px 1fr 50px;
       }
       .a {
         background: blue;
-        -ms-grid-column: 1;
-        -ms-grid-row: 1;
-        -ms-grid-row-span: 2;
+        grid-column: 1;
+        grid-row: 1;
+        grid-row-span: 2;
       }
       .b {
         background: yellow;
-        -ms-grid-column: 2;
-        -ms-grid-row: 2;
+        grid-column: 2;
+        grid-row: 2;
       }
       .c {
         background: pink;
-        -ms-grid-column: 1;
-        -ms-grid-column-span: 2;
-        -ms-grid-row: 3;
+        grid-column: 1;
+        grid-column-span: 2;
+        grid-row: 3;
       }
     </style>
   </head>

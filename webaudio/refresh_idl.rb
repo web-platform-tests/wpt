@@ -10,7 +10,7 @@ def output_directory
 end
 
 def specification
-  file = File.open(File.join(output_directory, 'specification.html'))
+  file = File.open(File.join(base_dir, 'specification.html'))
   doc = Nokogiri::XML(file)
   file.close
   doc

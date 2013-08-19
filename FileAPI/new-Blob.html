@@ -103,7 +103,8 @@
 
     type_tests.forEach(function(t) {
         test(function() {
-            var b = new Blob(t[0], {type:t[1]});
+            var arr = new Uint8Array([t[0]]).buffer;
+            var b = new Blob([arr], {type:t[1]});
             assert_equals(b.type, t[2]);
         }, document.title+', type: '+t[1]);
     });

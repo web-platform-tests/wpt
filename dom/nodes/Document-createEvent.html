@@ -55,5 +55,9 @@ test(function() {
     // 'LATIN CAPITAL LETTER I WITH DOT ABOVE' (U+0130)
     var evt = document.createEvent("U\u0130Event");
   });
+  assert_throws("NOT_SUPPORTED_ERR", function() {
+    // 'LATIN SMALL LETTER DOTLESS I' (U+0131)
+    var evt = document.createEvent("U\u0131Event");
+  });
 }, "Should throw NOT_SUPPORTED_ERR for unrecognized arguments");
 </script>

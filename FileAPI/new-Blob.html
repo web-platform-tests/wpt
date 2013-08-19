@@ -37,10 +37,15 @@
 
     test(function() {
         assert_throws(new TypeError(), function() { new Blob("foo"); });
-        // assert_throws(new TypeError(), function() { new Blob({"0": "foo", "length":1}); }); // https://www.w3.org/Bugs/Public/show_bug.cgi?id=16767
         assert_throws(new TypeError(), function() { new Blob(document.createElement("div")); });
         assert_throws(new TypeError(), function() { new Blob([{toString:null, valueOf:null}]); });
     }, document.title+', wrong first arg');
+
+    test(function() {
+        var b = new Blob({"0": "foo", "length":1});
+        assert_equals(b.size, 3);
+    }, document.title+', object with properties "0" and "length"');
+
     test(function() {
         var b_window = new Blob(window);
         assert_equals(b_window.size, '[object Window]'.length, 'window');

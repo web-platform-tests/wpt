@@ -1,22 +1,39 @@
 <!DOCTYPE html>
 <meta charset=utf-8>
 <title>Document.createEvent</title>
-<link rel=help href="http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createevent">
+<link rel=help href="http://dom.spec.whatwg.org/#dom-document-createevent">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
 <script>
-// TODO: values of attributes
 function testAlias(arg, iface) {
+  var ev;
   test(function() {
-    if (iface === "Event" || iface in window) {
-      var ev = document.createEvent(arg);
-      assert_true(ev instanceof window[iface]);
-      assert_true(ev instanceof Event);
-    }
+    ev = document.createEvent(arg);
+    assert_true(ev instanceof window[iface]);
+    assert_true(ev instanceof Event);
   }, arg + " should be an alias for " + iface + ".");
+  test(function() {
+    assert_equals(ev.type, "",
+                  "type should be initialized to the empty string");
+    assert_equals(ev.target, null,
+                  "target should be initialized to null");
+    assert_equals(ev.currentTarget, null,
+                  "currentTarget should be initialized to null");
+    assert_equals(ev.eventPhase, 0,
+                  "eventPhase should be initialized to NONE (0)");
+    assert_equals(ev.bubbles, false,
+                  "bubbles should be initialized to false");
+    assert_equals(ev.cancelable, false,
+                  "cancelable should be initialized to false");
+    assert_equals(ev.defaultPrevented, false,
+                  "defaultPrevented should be initialized to false");
+    assert_equals(ev.isTrusted, false,
+                  "isTrusted should be initialized to false");
+  }, "createEvent('" + arg + "') should be initialized correctly.");
 }
 [
+  ["CustomEvent", "CustomEvent"],
   ["Event", "Event"],
   ["Events", "Event"],
   ["HTMLEvents", "Event"],

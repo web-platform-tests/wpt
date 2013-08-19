@@ -1,24 +1,16 @@
-<!doctype html>
+<!DOCTYPE html>
 <html class="a">
- <head>
-  <title>GainNode IDL Test</title>
-  <script src=/resources/testharness.js></script>
-  <script src=/resources/testharnessreport.js></script>
-  <script src=/resources/idlharness.js></script>
-  <script src=/resources/webidl2/lib/webidl2.js></script>
-  <script src="/webaudio/js/lodash.js"></script>
-  <script src="/webaudio/js/vendor-prefixes.js"></script>
-  <script src="/webaudio/js/helpers.js"></script>
-
-  <style type="text/css">
+<head>
+<title>GainNode IDL Test</title>
+<script src="/resources/testharness.js"></script><script src="/resources/testharnessreport.js"></script><script src="/resources/idlharness.js"></script><script src="/resources/webidl2/lib/webidl2.js"></script><script src="/webaudio/js/lodash.js"></script><script src="/webaudio/js/vendor-prefixes.js"></script><script src="/webaudio/js/helpers.js"></script><style type="text/css">
     #event_target_idl,
     #audio_context_idl,
     #audio_node_idl,
     #audio_param_idl
     { visibility:hidden; height: 0px;}
   </style>
- </head>
- <body class="a">
+</head>
+<body class="a">
 
    <pre id="event_target_idl">
 interface EventTarget {
@@ -151,5 +143,5 @@ interface GainNode : AudioNode {
   idl_array.test();
 })();
   </script>
- </body>
+</body>
 </html>

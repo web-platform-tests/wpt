@@ -37,6 +37,7 @@ end
 idl_test_files = [
   File.join(base_dir, 'the-audio-api', 'the-gainnode-interface', 'idl-test.html'),
   File.join(base_dir, 'the-audio-api', 'the-audiodestinationnode-interface', 'idl-test.html'),
+  File.join(base_dir, 'the-audio-api', 'the-delaynode-interface', 'idl-test.html'),
 ]
 
 idl_test_files.each do |fn|

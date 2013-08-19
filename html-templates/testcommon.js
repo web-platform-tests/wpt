@@ -55,7 +55,8 @@ function newXHTMLDocument() {
 }
 
 function newIFrame(context, src) {
-    if (typeof (context) === 'undefined' || typeof (context.iframes) !== 'object') {
+    if (typeof (context) === 'undefined'
+            || typeof (context.iframes) !== 'object') {
         assert_unreached('Illegal context object in newIFrame');
     }
 
@@ -161,7 +162,7 @@ function isVisible(el) {
 }
 
 function isVoidElement(elementName) {
-    return HTML5_VOID_ELEMENTS.indexOf(elementName)>=0;
+    return HTML5_VOID_ELEMENTS.indexOf(elementName) >= 0;
 }
 
 function checkTemplateContent(d, obj, html, id, nodeName) {
@@ -190,9 +191,17 @@ function checkHeadTemplateContent(d, html, id, nodeName) {
 }
 
 function assert_null(value, description) {
-    assert_true(value == null, description);
+    assert_true(value === null, description);
 }
 
 function assert_not_null(value, description) {
-    assert_false(value == null, description);
+    assert_false(value === null, description);
+}
+
+function assert_undefined(value, description) {
+    assert_true(value === undefined, description);
+}
+
+function assert_not_undefined(value, description) {
+    assert_false(value === undefined, description);
 }

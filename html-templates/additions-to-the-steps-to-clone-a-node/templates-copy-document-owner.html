@@ -16,13 +16,13 @@
 <script type="text/javascript">
 
 function checkOwnerDocument(node, doc) {
-    if (node != null) {
+    if ((node !== null) && (node !== undefined)) {
         assert_equals(node.ownerDocument, doc,
                 'Wrong ownerDocument of the template copy\'s node ' + node.nodeName);
         for (var i = 0; i < node.childNodes.length; i++) {
-            if (node.childNodes[i].nodeType == Node.ELEMENT_NODE) {
+            if (node.childNodes[i].nodeType === Node.ELEMENT_NODE) {
                 checkOwnerDocument(node.childNodes[i], doc);
-                if (node.childNodes[i].nodeName == 'TEMPLATE') {
+                if (node.childNodes[i].nodeName === 'TEMPLATE') {
                     checkOwnerDocument(node.childNodes[i].content, doc);
                 }
             }

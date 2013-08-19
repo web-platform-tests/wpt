@@ -41,11 +41,11 @@ function doTest(doc, tagToTest, templateInnerHTML, id, tagName, bodiesNum, foote
 
     assert_equals(table.rows.length, 1, 'Wrong number of table rows');
     assert_equals(table.rows[0].cells.length, 1, 'Wrong number of table cells');
-    if (id != null) {
+    if (id !== null) {
         assert_not_null(template.content.querySelector('#' + id),
                 'Element should present in the template content');
     }
-    if (tagName != null) {
+    if (tagName !== null) {
         assert_equals(template.content.querySelector('#' + id).tagName, tagName,
                 'Wrong element in the template content');
     }

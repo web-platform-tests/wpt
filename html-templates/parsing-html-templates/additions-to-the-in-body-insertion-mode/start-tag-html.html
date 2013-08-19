@@ -28,7 +28,7 @@ testInIFrame('../../resources/html-start-tag.html', function(context) {
     assert_equals(html.getAttribute('tabindex'), '5', 'Attribute should be accessible');
     assert_equals(html.getAttribute('id'), 'htmlId',
             'Attribute \'id\' should be added and accessible');
-    assert_null(html.getAttribute('class'), 'Attribute \'class\' should be ignored');
+    assert_false(html.hasAttribute('class'), 'Attribute \'class\' should be ignored');
     assert_equals(template.content.childNodes.length, 0, 'Template should not contain HTML element');
 
 

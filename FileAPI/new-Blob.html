@@ -9,7 +9,6 @@
   <div id="log"></div>
   <iframe style=display:none></iframe><!-- used by "platform object that supports indexed properties" test -->
   <script>
-    var isWin = navigator.platform.substr(0, 3) == 'Win';
     test(function(){
         var b = new Blob();
         assert_true(b instanceof Blob, 'b instanceof Blob');
@@ -18,17 +17,9 @@
         assert_equals(b.type, '', 'b.type');
     }, document.title+', no args');
 
-    var t_transparent = async_test(document.title+', transparent endings');
-    t_transparent.step(function(){
-        var b1 = new Blob(['\r\r\n\n']);
-        assert_equals(b1.size, 4, 'omitted second arg');
-        var b2 = new Blob(['\r\r\n\n'], {});
-        assert_equals(b2.size, 4, 'empty dict');
-        //assert_throws(new TypeError(), function(){ var b3 = new Blob(['\r\r\n\n'], {endings:"NATIVE"}); });
-        var b3 = new Blob(['\r\r\n\n'], {endings:"NATIVE"});
-        assert_equals(b3.size, 4, 'endings:"NATIVE"');
-        var b4 = new Blob(['\r\r\n\n'], {ENDINGS:"native"});
-        assert_equals(b2.size, 4, 'ENDINGS:"native"');
+    async_test(function(){
+        var b1 = new Blob(['\r\r\n\n'], {endings:'native'});
+        assert_equals(b1.size, 4);
         var reader = new FileReader();
         reader.onload = this.step_func(function(e) {
             assert_equals(reader.result, '\r\r\n\n');
@@ -38,7 +29,11 @@
             assert_unreached('got error event on FileReader');
         });
         reader.readAsText(b1);
-    });
+    }, document.title+', non-support for obsolete "endings" thing');
+    
+    test(function(){
+        assert_false('toNativeLineEndings' in window);
+    }, document.title+', non-support for obsolete "toNativeLineEndings" thing');
 
     test(function() {
         assert_throws(new TypeError(), function() { new Blob("foo"); });

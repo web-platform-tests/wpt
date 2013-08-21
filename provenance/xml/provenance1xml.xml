@@ -25,8 +25,8 @@
   </its:rules>
   <title>Translation Revision Provenance Agent: Global Test in XML</title>
   <body>
-    <par xml:id="#pr1"> This paragraph was translated from the machine.</par>
-    <legalnotice xml:id="#pr2">This text was
+    <par xml:id="A" provenanceRecordsRef="#pr1"> This paragraph was translated from the machine.</par>
+    <legalnotice xml:id="B" provenanceRecordsRef="#pr2">This text was
       translated directly by a person.</legalnotice>
   </body>
 </text>

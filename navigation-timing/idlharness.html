@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>idlharness test</title>
+<link rel="author" title="W3C" href="http://www.w3.org/" />
+<link rel="help" href="http://www.w3.org/TR/navigation-timing/#sec-navigation-timing-interface"/>
+<link rel="help" href="http://www.w3.org/TR/navigation-timing/#sec-navigation-info-interface"/>
+<link rel="help" href="http://www.w3.org/TR/navigation-timing/#sec-window.performance-attribute"/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/WebIDLParser.js"></script>
+<script src="/resources/idlharness.js"></script>
+</head>
+<body>
+<h1>idlharness test</h1>
+<p>This test validates the WebIDL included in the Navigation Timing specification.</p>
+
+<pre id='untested_idl' style='display:none'>
+
+interface Window {
+};
+
+</pre>
+
+<pre id='idl'>
+interface PerformanceTiming {
+  readonly attribute unsigned long long navigationStart;
+  readonly attribute unsigned long long unloadEventStart;
+  readonly attribute unsigned long long unloadEventEnd;
+  readonly attribute unsigned long long redirectStart;
+  readonly attribute unsigned long long redirectEnd;
+  readonly attribute unsigned long long fetchStart;
+  readonly attribute unsigned long long domainLookupStart;
+  readonly attribute unsigned long long domainLookupEnd;
+  readonly attribute unsigned long long connectStart;
+  readonly attribute unsigned long long connectEnd;
+  readonly attribute unsigned long long secureConnectionStart;
+  readonly attribute unsigned long long requestStart;
+  readonly attribute unsigned long long responseStart;
+  readonly attribute unsigned long long responseEnd;
+  readonly attribute unsigned long long domLoading;
+  readonly attribute unsigned long long domInteractive;
+  readonly attribute unsigned long long domContentLoadedEventStart;
+  readonly attribute unsigned long long domContentLoadedEventEnd;
+  readonly attribute unsigned long long domComplete;
+  readonly attribute unsigned long long loadEventStart;
+  readonly attribute unsigned long long loadEventEnd;
+};
+
+interface PerformanceNavigation {
+  const unsigned short TYPE_NAVIGATE = 0;
+  const unsigned short TYPE_RELOAD = 1;
+  const unsigned short TYPE_BACK_FORWARD = 2;
+  const unsigned short TYPE_RESERVED = 255;
+  readonly attribute unsigned short type;
+  readonly attribute unsigned short redirectCount;
+};
+
+interface Performance {
+  readonly attribute PerformanceTiming timing;
+  readonly attribute PerformanceNavigation navigation;
+};
+
+partial interface Window {
+  [Replaceable] readonly attribute Performance performance;
+};
+</pre>
+
+<script>
+(function() {
+  var idl_array = new IdlArray();
+
+  idl_array.add_untested_idls(document.getElementById("untested_idl").textContent);
+  idl_array.add_idls(document.getElementById("idl").textContent);
+
+  idl_array.add_objects({Window: ["window"],
+                         Performance: ["window.performance"],
+                         PerformanceNavigation: ["window.performance.navigation"],
+                         PerformanceTiming: ["window.performance.timing"]});
+
+  idl_array.test();
+})();
+</script>
+
+<div id="log"></div>
+
+</body>
+</html>

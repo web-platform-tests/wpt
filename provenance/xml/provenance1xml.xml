@@ -18,15 +18,11 @@
       provRef="http://www.examplelsp.com/excontent987/legal/prov/e6354 http://www.vistatec.com/job-12-7-15-X31/reviewed/prov/re8573469"/>
   </its:provenanceRecords>
   <its:rules version="2.0">
-    <its:provRule selector="/text/body/par"
-      provenanceRecordsRefPointer="@xml:id"/>
-    <its:provRule selector="/text/body/legalnotice"
-      provenanceRecordsRefPointer="@xml:id"/>
+    <its:provRule selector="//*[@ref]" provenanceRecordsRefPointer="@ref"/>
   </its:rules>
   <title>Translation Revision Provenance Agent: Global Test in XML</title>
   <body>
-    <par xml:id="A" provenanceRecordsRef="#pr1"> This paragraph was translated from the machine.</par>
-    <legalnotice xml:id="B" provenanceRecordsRef="#pr2">This text was
-      translated directly by a person.</legalnotice>
+    <par ref="#pr1"> This paragraph was translated from the machine.</par>
+    <legalnotice ref="#pr2">This text was translated directly by a person.</legalnotice>
   </body>
 </text>

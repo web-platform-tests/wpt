@@ -19,15 +19,12 @@
   </its:provenanceRecords>
   <its:rules version="2.0">
     <its:param name="provenanceParam">#pr1</its:param>
-    <its:provRule selector="/text/body/par[@xml:id=$provenanceParam]"
-      provenanceRecordsRefPointer="@xml:id"/>
-    <its:provRule selector="/text/body/legalnotice"
-      provenanceRecordsRefPointer="@xml:id"/>
+    <its:provRule selector="//*[@ref=$provenanceParam]" provenanceRecordsRefPointer="@ref"/> 
   </its:rules>
   <title>Translation Revision Provenance Agent: Global Test in XML</title>
   <body>
-    <par xml:id="#pr1"> This paragraph was translated from the machine.</par>
-    <legalnotice xml:id="#pr2">This text was
+    <par ref="#pr1"> This paragraph was translated from the machine.</par>
+    <legalnotice ref="#pr2">This text was
       translated directly by a person.</legalnotice>
   </body>
 </text>

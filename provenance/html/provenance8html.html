@@ -25,16 +25,13 @@
     </script>
     <script type="application/its+xml">   
      <its:rules xmlns:its="http://www.w3.org/2005/11/its" xmlns:h="http://www.w3.org/1999/xhtml" version="2.0">
-      <its:param name="provenanceParam">#pr1</its:param>
-      <its:provRule selector="/h:html/h:body/h:p[@id=$provenanceParam]"
-      provenanceRecordsRefPointer="@id"/>
-     <its:provRule selector="/h:html/h:body/h:p[@id='#pr2']"
-      provenanceRecordsRefPointer="@id"/>
+     <its:param name="provenanceParam">prov-records-ref1</its:param>
+	<its:provRule selector="//*[@class=$provenanceParam]" provenanceRecordsRefPointer="h:a/@href"/>
      </its:rules>
     </script>
   </head>
   <body>
-    <p id="#pr1">This paragraph was translated from the machine.</p>
-    <p id="#pr2">This text was translated directly by a person.</p>
+    <p class="prov-records-ref1"><a href="#pr1"></a>This paragraph was translated from the machine.</p>
+    <p class="prov-records-ref2"><a href="#pr2"></a>This text was translated directly by a person.</p>
   </body>
 </html>

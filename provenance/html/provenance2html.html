@@ -4,9 +4,8 @@
     <meta charset=utf-8>
     <title>Test</title>
 	<script type="application/its+xml">
-		<its:rules xmlns:its="http://www.w3.org/2005/11/its" xmlns:h="http://www.w3.org/1999/xhtml" version="2.0">
-		<its:provRule selector="/h:html/h:body/h:p[@id]"
-			provenanceRecordsRefPointer="@id"/>
+		<its:rules xmlns:its="http://www.w3.org/2005/11/its" version="2.0" xmlns:h="http://www.w3.org/1999/xhtml">
+			<its:provRule selector="//*[@class='prov-records-ref']" provenanceRecordsRefPointer="h:a/@href"/>
 		</its:rules>
 	</script>
     <script id="pr1" type="application/its+xml">
@@ -31,7 +30,7 @@
     </script>
   </head>
   <body>
-    <p id="#pr1">This paragraph was translated from the machine.</p>
-    <p id="#pr2">This text was translated directly by a person.</p>
+    <p class="prov-records-ref"><a href="#pr1"></a>This paragraph was translated from the machine.</p>
+    <p class="prov-records-ref"><a href="#pr2"></a>This text was translated directly by a person.</p>
   </body>
 </html>

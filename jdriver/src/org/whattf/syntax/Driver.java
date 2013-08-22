@@ -20,6 +20,7 @@ import nu.validator.htmlparser.sax.HtmlParser;
 import nu.validator.htmlparser.common.XmlViolationPolicy;
 import nu.validator.xml.dataattributes.DataAttributeDroppingSchemaWrapper;
 import nu.validator.xml.langattributes.XmlLangAttributeDroppingSchemaWrapper;
+import nu.validator.xml.roleattributes.RoleAttributeFilteringSchemaWrapper;
 import nu.validator.xml.IdFilter;
 import nu.validator.xml.SystemErrErrorHandler;
 
@@ -210,6 +211,7 @@ public class Driver {
             mainSchema = schemaByFilename(schema);
             mainSchema = new DataAttributeDroppingSchemaWrapper(mainSchema);
             mainSchema = new XmlLangAttributeDroppingSchemaWrapper(mainSchema);
+            mainSchema = new RoleAttributeFilteringSchemaWrapper(mainSchema);
         } catch (Exception e) {
             err.println("Reading schema failed. Skipping test directory.");
             e.printStackTrace();
@@ -249,6 +251,8 @@ public class Driver {
                 } else if (state == State.EXPECTING_VALID_FILES) {
                     validFiles.add(file);
                 } else if (file.getPath().indexOf("invalid") > 0) {
+                    invalidFiles.add(file);
+                } else if (file.getPath().indexOf("notvalid") > 0) {
                     invalidFiles.add(file);
                 } else {
                     validFiles.add(file);

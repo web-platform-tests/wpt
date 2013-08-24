@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <title>HTML Media Capture Test: capture_image_multiple_device</title>
+    <link rel='author' title='Intel' href='http://www.intel.com'>
+    <link rel='help' href='http://www.w3.org/TR/html-media-capture/#the-capture-attribute'>
+    <link rel='help' href='http://www.w3.org/TR/html-media-capture/#security'>
+  </head>
+  <body>
+    <p><strong>This test is only useful on devices that supports multiple cameras (e.g. a front-facing camera in addition to a primary camera).</strong></p>
+
+    <p>Click the button, allow camera access, and start to capture an image.</p>
+
+    <p>Test passes</p>
+    <ol>
+      <li>if there appears an image capture screen,</li>
+      <li>if there is a way to change camera, and</li>
+      <li>if there is a way to stop the image capture.</li>
+    </ol>
+
+    <input type='file' accept='image/*' capture>
+  </body>
+</html>

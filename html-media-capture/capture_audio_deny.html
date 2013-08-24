@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <title>HTML Media Capture Test: capture_audio_deny</title>
+    <link rel='author' title='Intel' href='http://www.intel.com'>
+    <link rel='help' href='http://www.w3.org/TR/html-media-capture/#security'>
+    <link rel='help' href='http://www.w3.org/TR/html-media-capture/#the-capture-attribute'>
+  </head>
+  <body>
+    <p><strong>Make sure that there is no granted microphone access.</strong></p>
+
+    <p>Click the button, <strong>deny</strong> microphone access.</p>
+
+    <p>Test passes</p>
+    <ol>
+      <li>if there appears <strong>no</strong> audio record screen, and</li>
+      <li>if there is <strong>no</strong> way to upload audio file.</li>
+    </ol>
+
+    <input type='file' accept='audio/*' capture>
+  </body>
+</html>

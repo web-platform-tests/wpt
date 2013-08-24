@@ -18,11 +18,14 @@ import java.util.List;
 import nu.validator.gnu.xml.aelfred2.SAXDriver;
 import nu.validator.htmlparser.sax.HtmlParser;
 import nu.validator.htmlparser.common.XmlViolationPolicy;
+import nu.validator.localentities.LocalCacheEntityResolver;
 import nu.validator.xml.dataattributes.DataAttributeDroppingSchemaWrapper;
 import nu.validator.xml.langattributes.XmlLangAttributeDroppingSchemaWrapper;
 import nu.validator.xml.roleattributes.RoleAttributeFilteringSchemaWrapper;
 import nu.validator.xml.IdFilter;
+import nu.validator.xml.NullEntityResolver;
 import nu.validator.xml.SystemErrErrorHandler;
+import nu.validator.xml.TypedInputSource;
 
 import org.whattf.checker.NormalizationChecker;
 import org.whattf.checker.TextContentChecker;
@@ -32,6 +35,7 @@ import org.whattf.checker.table.TableChecker;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.XMLReader;
 
@@ -56,6 +60,8 @@ import com.thaiopensource.xml.sax.Jaxp11XMLReaderCreator;
  */
 public class Driver {
 
+    private LocalCacheEntityResolver entityResolver;
+
     private static final String PATH = "syntax/relaxng/tests/";
     
     private PrintWriter err;
@@ -76,6 +82,16 @@ public class Driver {
 
     private XMLReader xmlParser;
 
+    private boolean hasHtml5Schema;
+
+    private void setHasHtml5Schema() {
+        this.hasHtml5Schema = true;
+    }
+
+    private boolean hasHtml5Schema() {
+        return this.hasHtml5Schema;
+    }
+
     private boolean failed = false;
 
     private boolean verbose;
@@ -85,6 +101,8 @@ public class Driver {
      */
     public Driver(boolean verbose) {
         this.verbose = verbose;
+        this.entityResolver = new LocalCacheEntityResolver(new NullEntityResolver());
+        this.entityResolver.setAllowRnc(true);
         try {
             this.err = new PrintWriter(new OutputStreamWriter(System.err,
                     "UTF-8"));
@@ -102,30 +120,24 @@ public class Driver {
         }
     }
 
-    private Schema schemaByFilename(File name) throws Exception {
-        if ("html5full-rdfa.rnc".equals(name.getName())) {
+    private Schema schemaByUrl(String schemaUrl) throws Exception {
+        if ("http://s.validator.nu/html5/html5full-rdfa.rnc".equals(schemaUrl)) {
             System.setProperty("nu.validator.schema.rev-allowed", "1");
         } else {
             System.setProperty("nu.validator.schema.rev-allowed", "0");
         }
         PropertyMapBuilder pmb = new PropertyMapBuilder();
         pmb.put(ValidateProperty.ERROR_HANDLER, errorHandler);
+        pmb.put(ValidateProperty.ENTITY_RESOLVER, entityResolver);
         pmb.put(ValidateProperty.XML_READER_CREATOR,
                 new Jaxp11XMLReaderCreator());
         RngProperty.CHECK_ID_IDREF.add(pmb);
         PropertyMap jingPropertyMap = pmb.toPropertyMap();
 
-        InputSource schemaInput;
-        try {
-            schemaInput = new InputSource(name.toURI().toURL().toString());
-        } catch (MalformedURLException e1) {
-            System.err.println();
-            e1.printStackTrace(err);
-            failed = true;
-            return null;
-        }
+        TypedInputSource schemaInput = (TypedInputSource) entityResolver.resolveEntity(
+                null, schemaUrl);
         SchemaReader sr;
-        if (name.getName().endsWith(".rnc")) {
+        if ("application/relax-ng-compact-syntax".equals(schemaInput.getType())) {
             sr = CompactSchemaReader.getInstance();
         } else {
             sr = new AutoSchemaReader();
@@ -133,44 +145,86 @@ public class Driver {
         return sr.createSchema(schemaInput, jingPropertyMap);
     }
 
-    private void checkFile(File file) throws IOException, SAXException {
+    private void checkFile(File file, boolean asUTF8, boolean asXml)
+            throws IOException, SAXException {
         validator.reset();
         InputSource is = new InputSource(new FileInputStream(file));
         is.setSystemId(file.toURI().toURL().toString());
-        String name = file.getName();
-        if (name.endsWith(".html") || name.endsWith(".htm")) {
+        if (asUTF8) {
             is.setEncoding("UTF-8");
-            if (verbose) {
-                out.println(file);
-                out.flush();
-            }
-            htmlParser.parse(is);
-        } else if (name.endsWith(".xhtml") || name.endsWith(".xht")) {
-            if (verbose) {
-                out.println(file);
-                out.flush();
-            }
+        }
+        if (asXml) {
             xmlParser.parse(is);
         } else {
-            err.println("Warning: " + file.toURI().toURL().toString()
-                    + " was not checked. Files must have the extension"
-                    + " .html, .xhtml, .htm, or .xht");
-            err.flush();
+            htmlParser.parse(is);
         }
     }
 
-    private boolean isCheckableFile(File file) {
-        String name = file.getName();
-        return file.isFile()
-                && (name.endsWith(".html") || name.endsWith(".htm")
-                        || name.endsWith(".xhtml") || name.endsWith(".xht"));
+    private void checkHtmlFile(File file) throws IOException, SAXException {
+        if (!file.exists()) {
+            if (verbose) {
+                out.println(String.format("\"%s\": warning: File not found.",
+                        file.toURI().toURL().toString()));
+                out.flush();
+            }
+            return;
+        }
+        if (verbose) {
+            out.println(file);
+            out.flush();
+        }
+        if (isXhtml(file)) {
+            checkFile(file, false, true);
+        } else if (isHtml(file)) {
+            checkFile(file, true, false);
+        } else {
+            if (verbose) {
+                out.println(String.format(
+                        "\"%s\": warning: File was not checked."
+                                + " Files must have a .html, .xhtml, .htm,"
+                                + " or .xht extension.",
+                        file.toURI().toURL().toString()));
+                out.flush();
+            }
+        }
     }
 
-    private void checkValidFiles(List<File> files) {
+    private boolean isXhtml(File file) {
+        String name = file.getName();
+        return name.endsWith(".xhtml") || name.endsWith(".xht");
+    }
+
+    private boolean isHtml(File file) {
+        String name = file.getName();
+        return name.endsWith(".html") || name.endsWith(".htm");
+    }
+
+    private boolean isCheckableFile(File file) {
+        return file.isFile() && (isHtml(file) || isXhtml(file));
+    }
+
+    private void recurseDirectory(File directory) throws SAXException,
+            IOException {
+        File[] files = directory.listFiles();
+        for (int i = 0; i < files.length; i++) {
+            File file = files[i];
+            if (file.isDirectory()) {
+                recurseDirectory(file);
+            } else {
+                checkHtmlFile(file);
+            }
+        }
+    }
+
+    private void checkFiles(List<File> files) {
         for (File file : files) {
             errorHandler.reset();
             try {
-                checkFile(file);
+                if (file.isDirectory()) {
+                    recurseDirectory(file);
+                } else {
+                    checkHtmlFile(file);
+                }
             } catch (IOException e) {
             } catch (SAXException e) {
             }
@@ -184,15 +238,21 @@ public class Driver {
         for (File file : files) {
             countingErrorHandler.reset();
             try {
-                checkFile(file);
+                if (file.isDirectory()) {
+                    recurseDirectory(file);
+                } else {
+                    checkHtmlFile(file);
+                }
             } catch (IOException e) {
             } catch (SAXException e) {
             }
             if (!countingErrorHandler.getHadErrorOrFatalError()) {
                 failed = true;
                 try {
-                    err.println(file.toURI().toURL().toString()
-                            + " was supposed to be invalid but was not.");
+                    err.println(String.format(
+                            "\"%s\": error: Document was supposed to be"
+                                    + " invalid but was not.",
+                            file.toURI().toURL().toString()));
                     err.flush();
                 } catch (MalformedURLException e) {
                     throw new RuntimeException(e);
@@ -205,31 +265,27 @@ public class Driver {
         EXPECTING_INVALID_FILES, EXPECTING_VALID_FILES, EXPECTING_ANYTHING
     }
 
-    private void checkDirectory(File directory, File schema)
-            throws SAXException {
-        try {
-            mainSchema = schemaByFilename(schema);
-            mainSchema = new DataAttributeDroppingSchemaWrapper(mainSchema);
-            mainSchema = new XmlLangAttributeDroppingSchemaWrapper(mainSchema);
-            mainSchema = new RoleAttributeFilteringSchemaWrapper(mainSchema);
-        } catch (Exception e) {
-            err.println("Reading schema failed. Skipping test directory.");
-            e.printStackTrace();
-            err.flush();
-            return;
-        }
-        checkFiles(directory, State.EXPECTING_ANYTHING);
+    private void checkTestDirectoryAgainstSchema(File directory,
+            String schemaUrl) throws SAXException, Exception {
+        setUpSchema(schemaUrl);
+        checkTestFiles(directory, State.EXPECTING_ANYTHING);
     }
 
-    private void checkFiles(File directory, State state)
+    private void checkTestFiles(File directory, State state)
             throws SAXException {
         File[] files = directory.listFiles();
         List<File> validFiles = new ArrayList<File>();
         List<File> invalidFiles = new ArrayList<File>();
         if (files == null) {
             if (verbose) {
-                out.println("Warning: No files found in " + directory);
-                out.flush();
+                try {
+                    out.println(String.format(
+                            "\"%s\": warning: No files found in directory.",
+                            directory.toURI().toURL().toString()));
+                    out.flush();
+                } catch (MalformedURLException mue) {
+                    throw new RuntimeException(mue);
+                }
             }
             return;
         }
@@ -237,13 +293,13 @@ public class Driver {
             File file = files[i];
             if (file.isDirectory()) {
                 if (state != State.EXPECTING_ANYTHING) {
-                    checkFiles(file, state);
+                    checkTestFiles(file, state);
                 } else if ("invalid".equals(file.getName())) {
-                    checkFiles(file, State.EXPECTING_INVALID_FILES);
+                    checkTestFiles(file, State.EXPECTING_INVALID_FILES);
                 } else if ("valid".equals(file.getName())) {
-                    checkFiles(file, State.EXPECTING_VALID_FILES);
+                    checkTestFiles(file, State.EXPECTING_VALID_FILES);
                 } else {
-                    checkFiles(file, State.EXPECTING_ANYTHING);
+                    checkTestFiles(file, State.EXPECTING_ANYTHING);
                 }
             } else if (isCheckableFile(file)) {
                 if (state == State.EXPECTING_INVALID_FILES) {
@@ -258,12 +314,30 @@ public class Driver {
             }
         }
         if (validFiles.size() > 0) {
-            setup(errorHandler);
-            checkValidFiles(validFiles);
+            setUpParser(errorHandler);
+            checkFiles(validFiles);
         }
         if (invalidFiles.size() > 0) {
-            setup(countingErrorHandler);
+            setUpParser(countingErrorHandler);
             checkInvalidFiles(invalidFiles);
+        }
+    }
+
+    private void setUpSchema(String schemaUrl) throws SAXException, Exception {
+        mainSchema = schemaByUrl(schemaUrl);
+        if (schemaUrl.contains("html5")) {
+            try {
+                assertionSchema = CheckerSchema.ASSERTION_SCH;
+            } catch (Exception e) {
+                errorHandler.fatalError(new SAXParseException(
+                        "error: Reading schema failed. Terminating.", null));
+                e.printStackTrace();
+                System.exit(-1);
+            }
+            mainSchema = new DataAttributeDroppingSchemaWrapper(mainSchema);
+            mainSchema = new XmlLangAttributeDroppingSchemaWrapper(mainSchema);
+            mainSchema = new RoleAttributeFilteringSchemaWrapper(mainSchema);
+            setHasHtml5Schema();
         }
     }
 
@@ -272,7 +346,7 @@ public class Driver {
      * @throws SAXdException 
      * 
      */
-    private void setup(ErrorHandler eh) throws SAXException {
+    private void setUpParser(ErrorHandler eh) throws SAXException {
         PropertyMapBuilder pmb = new PropertyMapBuilder();
         pmb.put(ValidateProperty.ERROR_HANDLER, eh);
         pmb.put(ValidateProperty.XML_READER_CREATOR,
@@ -281,14 +355,17 @@ public class Driver {
         PropertyMap jingPropertyMap = pmb.toPropertyMap();
 
         validator = mainSchema.createValidator(jingPropertyMap);
-        Validator assertionValidator = assertionSchema.createValidator(jingPropertyMap);
-        validator = new CombineValidator(validator, assertionValidator);
-        validator = new CombineValidator(validator, new CheckerValidator(
-                new TableChecker(), jingPropertyMap));
-        validator = new CombineValidator(validator, new CheckerValidator(
-                new NormalizationChecker(), jingPropertyMap));
-        validator = new CombineValidator(validator, new CheckerValidator(
-                new TextContentChecker(), jingPropertyMap));
+
+        if (hasHtml5Schema()) {
+            Validator assertionValidator = assertionSchema.createValidator(jingPropertyMap);
+            validator = new CombineValidator(validator, assertionValidator);
+            validator = new CombineValidator(validator, new CheckerValidator(
+                    new TableChecker(), jingPropertyMap));
+            validator = new CombineValidator(validator, new CheckerValidator(
+                    new NormalizationChecker(), jingPropertyMap));
+            validator = new CombineValidator(validator, new CheckerValidator(
+                    new TextContentChecker(), jingPropertyMap));
+        }
 
         htmlParser.setContentHandler(validator.getContentHandler());
         htmlParser.setErrorHandler(eh);
@@ -300,60 +377,38 @@ public class Driver {
         htmlParser.setMappingLangToXmlLang(true);
     }
 
-    public boolean runTestSuite() throws SAXException {
-        try {
-            assertionSchema = CheckerSchema.ASSERTION_SCH;
-        } catch (Exception e) {
-            err.println("Reading schema failed. Terminating.");
-            e.printStackTrace();
-            err.flush();
-            return false;
-        }
-
-        checkDirectory(new File(PATH + "html5core/"), new File(PATH
-                + "../xhtml5core.rnc"));
-        checkDirectory(new File(PATH + "html5core-plus-web-forms2/"), new File(
-                PATH + "../xhtml5core-plus-web-forms2.rnc"));
-        checkDirectory(new File(PATH + "html/"), new File(PATH
-                + "../html5full.rnc"));
-        checkDirectory(new File(PATH + "xhtml/"), new File(PATH
-                + "../xhtml5full-xhtml.rnc"));
-        checkDirectory(new File(PATH + "html-its/"), new File(PATH
-                + "../html5full-rdfa.rnc"));
-        checkDirectory(new File(PATH + "html-rdfa/"), new File(PATH
-                + "../html5full-rdfa.rnc"));
-        checkDirectory(new File(PATH + "html-rdfalite/"), new File(PATH
-                + "../html5full-rdfalite.rnc"));
+    public boolean runTestSuite() throws SAXException, Exception {
+        checkTestDirectoryAgainstSchema(new File(PATH
+                + "html5core-plus-web-forms2/"),
+                "http://s.validator.nu/html5/xhtml5core-plus-web-forms2.rnc");
+        checkTestDirectoryAgainstSchema(new File(PATH + "html/"),
+                "http://s.validator.nu/html5/html5full.rnc");
+        checkTestDirectoryAgainstSchema(new File(PATH + "xhtml/"),
+                "http://s.validator.nu/html5/xhtml5full-xhtml.rnc");
+        checkTestDirectoryAgainstSchema(new File(PATH + "html-its/"),
+                "http://s.validator.nu/html5/html5full-rdfa.rnc");
+        checkTestDirectoryAgainstSchema(new File(PATH + "html-rdfa/"),
+                "http://s.validator.nu/html5/html5full-rdfa.rnc");
+        checkTestDirectoryAgainstSchema(new File(PATH + "html-rdfalite/"),
+                "http://s.validator.nu/html5/html5full-rdfalite.rnc");
 
         if (verbose) {
             if (failed) {
                 out.println("Failure!");
+                out.flush();
             } else {
                 out.println("Success!");
+                out.flush();
             }
         }
-        err.flush();
-        out.flush();
         return !failed;
     }
 
-    private boolean validate(List<File> files, File schema)
-            throws SAXException, Exception {
-        try {
-            assertionSchema = CheckerSchema.ASSERTION_SCH;
-        } catch (Exception e) {
-            err.println("Reading schema failed. Terminating.");
-            e.printStackTrace();
-            err.flush();
-            return false;
-        }
-        mainSchema = schemaByFilename(schema);
-        mainSchema = new DataAttributeDroppingSchemaWrapper(mainSchema);
-        mainSchema = new XmlLangAttributeDroppingSchemaWrapper(mainSchema);
-        setup(errorHandler);
-        checkValidFiles(files);
-        err.flush();
-        out.flush();
+    private boolean validateFilesAgainstSchema(List<File> files,
+            String schemaUrl) throws SAXException, Exception {
+        setUpSchema(schemaUrl);
+        setUpParser(errorHandler);
+        checkFiles(files);
         return !failed;
     }
 
@@ -362,23 +417,38 @@ public class Driver {
      * @throws SAXException 
      */
     public static void main(String[] args) throws SAXException, Exception {
-        boolean verbose = ((args.length == 1) && "-v".equals(args[0]));
-        Driver d = new Driver(verbose);
-        if (args.length > 1) {
-            // java org.whattf.syntax.Driver SCHEMA FILENAMES
+        boolean verbose = false;
+        boolean hasFileArgs = false;
+        int fileArgsStart = 0;
+        for (int i = 0; i < args.length; i++) {
+            if (!args[i].startsWith("-")) {
+                hasFileArgs = true;
+                fileArgsStart = i;
+                break;
+            } else {
+                if ("-v".equals(args[i])) {
+                    verbose = true;
+                }
+            }
+        }
+        if (hasFileArgs) {
+            // java org.whattf.syntax.Driver OPTIONS FILENAMES
             // (validate one or more arbitrary documents)
-            File schema = new File(args[0]);
+            String schemaUrl = "http://s.validator.nu/html5/html5full-rdfa.rnc";
             List<File> files = new ArrayList<File>();
-            for (int i = 1; i < args.length; i++) {
+            for (int i = fileArgsStart; i < args.length; i++) {
                 files.add(new File(args[i]));
             }
-            if (d.validate(files, schema)) {
+            Driver d = new Driver(verbose);
+            if (d.validateFilesAgainstSchema(files, schemaUrl)) {
                 System.exit(0);
             } else {
                 System.exit(-1);
             }
         } else {
+            verbose = ((args.length == 1) && "-v".equals(args[0]));
             // java org.whattf.syntax.Driver [-v]
+            Driver d = new Driver(verbose);
             if (d.runTestSuite()) {
                 System.exit(0);
             } else {

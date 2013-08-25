@@ -229,15 +229,15 @@ public class Driver {
                 + "html5core-plus-web-forms2/"),
                 "http://s.validator.nu/html5/xhtml5core-plus-web-forms2.rnc");
         checkTestDirectoryAgainstSchema(new File(PATH + "html/"),
-                "http://s.validator.nu/html5/html5full.rnc");
+                "http://s.validator.nu/html5-all.rnc");
         checkTestDirectoryAgainstSchema(new File(PATH + "xhtml/"),
-                "http://s.validator.nu/html5/xhtml5full-xhtml.rnc");
+                "http://s.validator.nu/xhtml5-all.rnc");
         checkTestDirectoryAgainstSchema(new File(PATH + "html-its/"),
-                "http://s.validator.nu/html5/html5full-rdfa.rnc");
+                "http://s.validator.nu/html5-all.rnc");
         checkTestDirectoryAgainstSchema(new File(PATH + "html-rdfa/"),
-                "http://s.validator.nu/html5/html5full-rdfa.rnc");
+                "http://s.validator.nu/html5-all.rnc");
         checkTestDirectoryAgainstSchema(new File(PATH + "html-rdfalite/"),
-                "http://s.validator.nu/html5/html5full-rdfalite.rnc");
+                "http://s.validator.nu/html5-rdfalite.rnc");
 
         if (verbose) {
             if (failed) {

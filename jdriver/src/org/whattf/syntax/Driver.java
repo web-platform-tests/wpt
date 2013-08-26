@@ -36,9 +36,9 @@ public class Driver {
 
     private PrintWriter out;
 
-    private SystemErrErrorHandler errorHandler = new SystemErrErrorHandler();
+    private SystemErrErrorHandler errorHandler;
 
-    private CountingErrorHandler countingErrorHandler = new CountingErrorHandler();
+    private CountingErrorHandler countingErrorHandler;
 
     private boolean failed = false;
 
@@ -47,7 +47,9 @@ public class Driver {
     /**
      * @param basePath
      */
-    public Driver(boolean verbose) {
+    public Driver(boolean verbose) throws IOException {
+        this.errorHandler = new SystemErrErrorHandler();
+        this.countingErrorHandler = new CountingErrorHandler();
         this.verbose = verbose;
         validator = new SimpleValidator();
         try {
@@ -75,9 +77,9 @@ public class Driver {
             out.flush();
         }
         if (isHtml(file)) {
-            validator.checkFile(file, true, true);
+            validator.checkHtmlFile(file, true);
         } else if (isXhtml(file)) {
-            validator.checkFile(file, false, false);
+            validator.checkXmlFile(file);
         } else {
             if (verbose) {
                 out.println(String.format(
@@ -168,7 +170,7 @@ public class Driver {
 
     private void checkTestDirectoryAgainstSchema(File directory,
             String schemaUrl) throws SAXException, Exception {
-        validator.setUpSchema(schemaUrl);
+        validator.setUpMainSchema(schemaUrl);
         checkTestFiles(directory, State.EXPECTING_ANYTHING);
     }
 
@@ -215,11 +217,11 @@ public class Driver {
             }
         }
         if (validFiles.size() > 0) {
-            validator.setUpParser(errorHandler);
+            validator.setUpValidatorAndParsers(errorHandler, false);
             checkFiles(validFiles);
         }
         if (invalidFiles.size() > 0) {
-            validator.setUpParser(countingErrorHandler);
+            validator.setUpValidatorAndParsers(countingErrorHandler, false);
             checkInvalidFiles(invalidFiles);
         }
     }

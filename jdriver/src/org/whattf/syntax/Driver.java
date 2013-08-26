@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nu.validator.validation.SimpleValidator;
+import nu.validator.validation.SimpleValidator.DocParseException;
 import nu.validator.xml.SystemErrErrorHandler;
 
 import org.xml.sax.SAXException;
@@ -63,7 +64,8 @@ public class Driver {
         }
     }
 
-    private void checkHtmlFile(File file) throws IOException, SAXException {
+    private void checkHtmlFile(File file) throws IOException, SAXException,
+            DocParseException {
         if (!file.exists()) {
             if (verbose) {
                 out.println(String.format("\"%s\": warning: File not found.",
@@ -107,7 +109,7 @@ public class Driver {
     }
 
     private void recurseDirectory(File directory) throws SAXException,
-            IOException {
+            IOException, DocParseException {
         File[] files = directory.listFiles();
         for (int i = 0; i < files.length; i++) {
             File file = files[i];
@@ -119,7 +121,7 @@ public class Driver {
         }
     }
 
-    private void checkFiles(List<File> files) {
+    private void checkFiles(List<File> files) throws DocParseException {
         for (File file : files) {
             errorHandler.reset();
             try {
@@ -137,7 +139,7 @@ public class Driver {
         }
     }
 
-    private void checkInvalidFiles(List<File> files) {
+    private void checkInvalidFiles(List<File> files) throws DocParseException {
         for (File file : files) {
             countingErrorHandler.reset();
             try {
@@ -170,12 +172,12 @@ public class Driver {
 
     private void checkTestDirectoryAgainstSchema(File directory,
             String schemaUrl) throws SAXException, Exception {
-        validator.setUpMainSchema(schemaUrl);
+        validator.setUpMainSchema(schemaUrl, errorHandler);
         checkTestFiles(directory, State.EXPECTING_ANYTHING);
     }
 
     private void checkTestFiles(File directory, State state)
-            throws SAXException {
+            throws SAXException, DocParseException {
         File[] files = directory.listFiles();
         List<File> validFiles = new ArrayList<File>();
         List<File> invalidFiles = new ArrayList<File>();

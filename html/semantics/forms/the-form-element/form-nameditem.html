@@ -10,23 +10,28 @@
 <input type=radio name=radio value=y>
 <input type=radio name=radio value=z>
 </form>
+
 <form>
 <!-- EventTarget -->
 <input type=radio name=addEventListener>
 <input type=radio name=removeEventListener>
 <input type=radio name=dispatchEvent>
+
 <!-- Node -->
 <input type=radio name=nodeType>
 <input type=radio name=nodeName>
 <input type=radio name=ownerDocument>
+
 <!-- Element -->
 <input type=radio name=namespaceURI>
 <input type=radio name=prefix>
 <input type=radio name=localName>
+
 <!-- HTMLElement -->
 <input type=radio name=title>
 <input type=radio name=lang>
 <input type=radio name=dir>
+
 <!-- HTMLFormElement -->
 <input type=radio name=acceptCharset>
 <input type=radio name=action>
@@ -43,11 +48,13 @@
 <input type=radio name=reset>
 <input type=radio name=checkValidity>
 </form>
+
 <img name=x>
 <form></form><!-- no child nodes -->
 <img name=y>
 <form><!-- a child node --></form>
 <img name=z>
+
 <input form=a name=b>
 <form id=a></form>
 <input form=c name=d>
@@ -59,11 +66,13 @@ test(function() {
   assert_equals(form.item, undefined)
   assert_false("item" in form)
 }, "Forms should not have an item method")
+
 test(function() {
   var form = document.getElementsByTagName("form")[0]
   assert_equals(form.namedItem, undefined)
   assert_false("namedItem" in form)
 }, "Forms should not have a namedItem method")
+
 test(function() {
   var form = document.getElementsByTagName("form")[0]
   var button = document.getElementsByTagName("input")[0]
@@ -71,6 +80,7 @@ test(function() {
   assert_equals(form.button, button)
   assert_equals(form.button.length, undefined)
 }, "Name for a single element should work")
+
 test(function() {
   var form = document.getElementsByTagName("form")[0]
   assert_equals(form.radio.item(-1), null)
@@ -79,6 +89,7 @@ test(function() {
   }), ["x", "y", "z"])
   assert_equals(form.radio.item(3), null)
 }, "Calling item() on the NodeList returned from the named getter should work")
+
 test(function() {
   var form = document.getElementsByTagName("form")[0]
   assert_equals(form.radio.length, 3)
@@ -88,6 +99,7 @@ test(function() {
   }), ["x", "y", "z"])
   assert_equals(form.radio[3], undefined)
 }, "Indexed getter on the NodeList returned from the named getter should work")
+
 test(function() {
   var form = document.getElementsByTagName("form")[0]
   var indices = [-1, 0, 1, 2, 3]
@@ -98,6 +110,7 @@ test(function() {
   })
 }, "Invoking a legacycaller on the NodeList returned from the named getter " +
    "should not work")
+
 test(function() {
   var names = [
     // EventTarget
@@ -118,6 +131,7 @@ test(function() {
     assert_equals(form[name], form.children[i])
   })
 }, "Named elements should override builtins")
+
 test(function() {
   var form = document.getElementsByTagName("form")[2]
   assert_equals(form.x, undefined, "x should not be associated with the form")
@@ -126,6 +140,7 @@ test(function() {
   assert_equals(form[0], undefined, "The form should not have supported property indices")
   assert_equals(form.length, 0)
 }, "Named items outside the form should not be returned (no children)")
+
 test(function() {
   var form = document.getElementsByTagName("form")[3]
   assert_equals(form.x, undefined, "x should not be associated with the form")
@@ -134,6 +149,7 @@ test(function() {
   assert_equals(form[0], undefined, "The form should not have supported property indices")
   assert_equals(form.length, 0)
 }, "Named items outside the form should not be returned (one child)")
+
 test(function() {
   var form = document.getElementsByTagName("form")[4]
   assert_equals(form.id, "a")
@@ -144,6 +160,7 @@ test(function() {
 
   assert_equals(form.b, input);
 }, "The form attribute should be taken into account for named getters (single element)")
+
 test(function() {
   var form = document.getElementsByTagName("form")[5]
   assert_equals(form.id, "c")
@@ -158,6 +175,7 @@ test(function() {
 
   assert_array_equals(form.d, [input1, input2])
 }, "The form attribute should be taken into account for named getters (multiple elements)")
+
 test(function() {
   var f = document.body.appendChild(document.createElement("form"))
   f.id = "f"

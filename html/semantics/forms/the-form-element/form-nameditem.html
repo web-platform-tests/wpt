@@ -173,6 +173,7 @@ test(function() {
   assert_equals(input2.localName, "input")
   assert_equals(input2.getAttribute("form"), "c")
 
+  assert_true(form.d instanceof NodeList, "form.d should be a NodeList")
   assert_array_equals(form.d, [input1, input2])
 }, "The form attribute should be taken into account for named getters (multiple elements)")
 

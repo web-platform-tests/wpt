@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nu.validator.validation.SimpleValidator;
-import nu.validator.validation.SimpleValidator.DocParseException;
 import nu.validator.xml.SystemErrErrorHandler;
 
 import org.xml.sax.SAXException;
@@ -64,8 +63,7 @@ public class Driver {
         }
     }
 
-    private void checkHtmlFile(File file) throws IOException, SAXException,
-            DocParseException {
+    private void checkHtmlFile(File file) throws IOException, SAXException {
         if (!file.exists()) {
             if (verbose) {
                 out.println(String.format("\"%s\": warning: File not found.",
@@ -109,7 +107,7 @@ public class Driver {
     }
 
     private void recurseDirectory(File directory) throws SAXException,
-            IOException, DocParseException {
+            IOException {
         File[] files = directory.listFiles();
         for (int i = 0; i < files.length; i++) {
             File file = files[i];
@@ -121,7 +119,7 @@ public class Driver {
         }
     }
 
-    private void checkFiles(List<File> files) throws DocParseException {
+    private void checkFiles(List<File> files) {
         for (File file : files) {
             errorHandler.reset();
             try {
@@ -139,7 +137,7 @@ public class Driver {
         }
     }
 
-    private void checkInvalidFiles(List<File> files) throws DocParseException {
+    private void checkInvalidFiles(List<File> files) {
         for (File file : files) {
             countingErrorHandler.reset();
             try {
@@ -177,7 +175,7 @@ public class Driver {
     }
 
     private void checkTestFiles(File directory, State state)
-            throws SAXException, DocParseException {
+            throws SAXException {
         File[] files = directory.listFiles();
         List<File> validFiles = new ArrayList<File>();
         List<File> invalidFiles = new ArrayList<File>();

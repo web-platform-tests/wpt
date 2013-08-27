@@ -269,6 +269,16 @@ class VisibilityTest(base_test.WebDriverBaseTest):
     def test_visibility_hidden_set_dynamically(self):
         pass
 
+    def test_should_show_element_not_visible_with_hidden_attribute(self):
+        self.driver.get(self.webserver.where_is("element_state/hidden.html"))
+        singleHidden = self.driver.find_element('id', 'singleHidden')
+        self.assertFalse(singleHidden.is_displayed())
+
+    def test_should_show_element_not_visible_when_parent_element_has_hidden_attribute(self):
+        self.driver.get(self.webserver.where_is("element_state/hidden.html"))
+        child = self.driver.find_element('id', 'child')
+        self.assertFalse(child.is_displayed())
+
 
 class VisibilityInteractionTest(base_test.WebDriverBaseTest):
     def test_input_hidden_is_unclickable(self):

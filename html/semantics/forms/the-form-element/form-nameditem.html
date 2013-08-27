@@ -4,12 +4,48 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id=log></div>
+<!-- XXX Nothing tests id attributes yet. -->
+<!-- XXX Keygen. -->
 <!-- XXX We also need tests for moving inputs and forms in the DOM. -->
 <form>
 <input type=button name=button>
 <input type=radio name=radio value=x>
 <input type=radio name=radio value=y>
 <input type=radio name=radio value=z>
+</form>
+
+<form>
+<button name=l1></button>
+<fieldset name=l2></fieldset>
+<input type=hidden name=l3>
+<input type=text name=l4>
+<input type=search name=l5>
+<input type=tel name=l6>
+<input type=url name=l7>
+<input type=email name=l8>
+<input type=password name=l9>
+<input type=datetime name=l10>
+<input type=date name=l11>
+<input type=month name=l12>
+<input type=week name=l13>
+<input type=time name=l14>
+<input type=datetime-local name=l15>
+<input type=number name=l16>
+<input type=range name=l17>
+<input type=color name=l18>
+<input type=checkbox name=l19>
+<input type=radio name=l20>
+<input type=file name=l21>
+<input type=submit name=l22>
+<input type=image name=l23>
+<input type=reset name=l24>
+<input type=button name=l25>
+<input type=foo name=l26>
+<input name=l27>
+<object name=l28></object>
+<output name=l29></output>
+<select name=l30></select>
+<textarea name=l31></textarea>
 </form>
 
 <form>
@@ -113,6 +149,18 @@ test(function() {
    "should not work")
 
 test(function() {
+  var form = document.getElementsByTagName("form")[1]
+  for (var i = 1; i <= 31; ++i) {
+    if (i == 23) {
+      // input type=image
+      assert_equals(form["l" + i], undefined)
+    } else {
+      assert_equals(form["l" + i], form.children[i - 1])
+    }
+  }
+}, "All listed elements except input type=image should be present in the form")
+
+test(function() {
   var names = [
     // EventTarget
     "addEventListener", "removeEventListener", "dispatchEvent",
@@ -127,20 +175,11 @@ test(function() {
     "name", "noValidate", "target", "elements", "length", "submit", "reset",
     "checkValidity"
   ]
-  var form = document.getElementsByTagName("form")[1]
+  var form = document.getElementsByTagName("form")[2]
   names.forEach(function(name, i) {
     assert_equals(form[name], form.children[i])
   })
 }, "Named elements should override builtins")
-
-test(function() {
-  var form = document.getElementsByTagName("form")[2]
-  assert_equals(form.x, undefined, "x should not be associated with the form")
-  assert_equals(form.y, undefined, "y should not be associated with the form")
-  assert_equals(form.z, undefined, "z should not be associated with the form")
-  assert_equals(form[0], undefined, "The form should not have supported property indices")
-  assert_equals(form.length, 0)
-}, "Named items outside the form should not be returned (no children)")
 
 test(function() {
   var form = document.getElementsByTagName("form")[3]
@@ -149,10 +188,19 @@ test(function() {
   assert_equals(form.z, undefined, "z should not be associated with the form")
   assert_equals(form[0], undefined, "The form should not have supported property indices")
   assert_equals(form.length, 0)
-}, "Named items outside the form should not be returned (one child)")
+}, "Named items outside the form should not be returned (no children)")
 
 test(function() {
   var form = document.getElementsByTagName("form")[4]
+  assert_equals(form.x, undefined, "x should not be associated with the form")
+  assert_equals(form.y, undefined, "y should not be associated with the form")
+  assert_equals(form.z, undefined, "z should not be associated with the form")
+  assert_equals(form[0], undefined, "The form should not have supported property indices")
+  assert_equals(form.length, 0)
+}, "Named items outside the form should not be returned (one child)")
+
+test(function() {
+  var form = document.getElementsByTagName("form")[5]
   assert_equals(form.id, "a")
 
   var input = document.getElementsByName("b")[0]
@@ -163,7 +211,7 @@ test(function() {
 }, "The form attribute should be taken into account for named getters (single element)")
 
 test(function() {
-  var form = document.getElementsByTagName("form")[5]
+  var form = document.getElementsByTagName("form")[6]
   assert_equals(form.id, "c")
 
   var input1 = document.getElementsByName("d")[0]

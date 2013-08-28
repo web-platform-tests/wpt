@@ -14,7 +14,7 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import nu.validator.validation.SimpleValidator;
+import nu.validator.validation.SimpleDocumentValidator;
 import nu.validator.xml.SystemErrErrorHandler;
 
 import org.xml.sax.SAXException;
@@ -28,7 +28,7 @@ import com.thaiopensource.xml.sax.CountingErrorHandler;
  */
 public class Driver {
 
-    private SimpleValidator validator;
+    private SimpleDocumentValidator validator;
 
     private static final String PATH = "syntax/relaxng/tests/";
 
@@ -51,7 +51,7 @@ public class Driver {
         this.errorHandler = new SystemErrErrorHandler();
         this.countingErrorHandler = new CountingErrorHandler();
         this.verbose = verbose;
-        validator = new SimpleValidator();
+        validator = new SimpleDocumentValidator();
         try {
             this.err = new PrintWriter(new OutputStreamWriter(System.err,
                     "UTF-8"));

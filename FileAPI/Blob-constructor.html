@@ -4,6 +4,7 @@
 <link rel=help href="http://dev.w3.org/2006/webapi/FileAPI/#constructorBlob">
 <link rel=help href="http://dev.w3.org/2006/webapi/WebIDL/#es-union">
 <link rel=help href="http://dev.w3.org/2006/webapi/WebIDL/#es-dictionary">
+<link rel=help href="http://dev.w3.org/2006/webapi/WebIDL/#es-sequence">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="support/Blob.js"></script>
@@ -35,7 +36,7 @@ test(function() {
   assert_equals(blob.type, "");
 }, "no-argument Blob constructor without brackets");
 
-// blobParts argument.
+// blobParts argument (WebIDL).
 test(function() {
   var args = [
     null,
@@ -45,17 +46,47 @@ test(function() {
     0,
     1,
     1.5,
-    {},
-    { 0: "FAIL", length: 1 },
     "FAIL",
-    new Uint8Array(8)
+    new Date(),
+    new RegExp(),
   ];
   args.forEach(function(arg) {
     assert_throws(new TypeError(), function() {
       new Blob(arg);
     }, "Should throw for argument " + format_value(arg) + ".");
   });
-}, "Passing non-arrays for blobParts should throw a TypeError.");
+}, "Passing non-objects, Dates and RegExps for blobParts should throw a TypeError.");
+
+test_blob(function() {
+  return new Blob({});
+}, {
+  expected: "",
+  type: "",
+  desc: "A plain object should be treated as a sequence for the blobParts argument."
+});
+test_blob(function() {
+  return new Blob({ 0: "PASS", length: 1 });
+}, {
+  expected: "PASS",
+  type: "",
+  desc: "A plain object with a length property should be treated as a sequence for the blobParts argument."
+});
+test_blob(function() {
+  return new Blob(new String("xyz"));
+}, {
+  expected: "xyz",
+  type: "",
+  desc: "A String object should be treated as a sequence for the blobParts argument."
+});
+test_blob(function() {
+  return new Blob(new Uint8Array([1, 2, 3]));
+}, {
+  expected: "123",
+  type: "",
+  desc: "A Uint8Array object should be treated as a sequence for the blobParts argument."
+});
+
+// XXX should add tests for throwing length, 0..n,  ToUint32(length) throwing
 
 var test_error = { name: "test" };
 test(function() {

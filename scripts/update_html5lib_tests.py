@@ -83,8 +83,8 @@ def make_tests(script_dir, out_dir, input_file_name, test_data):
                           })
     path_normal = None
     if tests:
-        path_normal = write_test_file(script_dir, out_dir, 
-                                      tests, "html5lib_%s"%input_file_name, 
+        path_normal = write_test_file(script_dir, out_dir,
+                                      tests, "html5lib_%s"%input_file_name,
                                       "html5lib_test.xml")
     path_innerHTML = None
     if innerHTML_tests:
@@ -100,13 +100,13 @@ def write_test_file(script_dir, out_dir, tests, file_name, template_file_name):
 
     with open(os.path.join(script_dir, template_file_name)) as f:
         template = MarkupTemplate(f)
-    
+
     stream = template.generate(file_name=short_name, tests=tests,
                                file_timeout=min(1000*len(tests), 60*1000),
                                test_timeout=1000)
 
     with open(file_name, "w") as f:
-        f.write(stream.render('html', doctype='html5', 
+        f.write(stream.render('html', doctype='html5',
                               encoding="utf8"))
     return file_name
 
@@ -125,14 +125,14 @@ def main():
 
     if len(sys.argv) > 2:
         test_iterator = itertools.izip(
-            itertools.repeat(False), 
-            sorted(os.path.abspath(item) for item in 
+            itertools.repeat(False),
+            sorted(os.path.abspath(item) for item in
                    glob.glob(os.path.join(sys.argv[2], "*.dat"))))
     else:
         test_iterator = itertools.chain(
-            itertools.izip(itertools.repeat(False), 
+            itertools.izip(itertools.repeat(False),
                            sorted(support.get_data_files("tree-construction"))),
-            itertools.izip(itertools.repeat(True), 
+            itertools.izip(itertools.repeat(True),
                            sorted(support.get_data_files(
                         os.path.join("tree-construction", "scripted")))))
 
@@ -141,7 +141,7 @@ def main():
         if scripted:
             input_file_name = "scripted_" + input_file_name
         test_data = support.TestData(test_file)
-        test_filename, inner_html_file_name = make_tests(script_dir, out_dir, 
+        test_filename, inner_html_file_name = make_tests(script_dir, out_dir,
                                                          input_file_name, test_data)
         if test_filename is not None:
             test_files.append(test_filename)

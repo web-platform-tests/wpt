@@ -12,9 +12,8 @@
 <div id=log></div>
 <script>
 setup({timeout: 30000})
-
 function statusRequest(method, code, text, content, type) {
-    async_test("Status on " + method + " " + code, { timeout: 15000 })
+    async_test("Status on " + method + " " + code)
     .step(function() {
         var client = new XMLHttpRequest()
         client.open(method, CROSSDOMAIN + "resources/status.php?code="
@@ -24,7 +23,10 @@ function statusRequest(method, code, text, content, type) {
                 return
 
             assert_equals(client.status, code, 'response status')
-            assert_equals(client.statusText, text, 'response status text')
+            assert_true((client.statusText == text), 
+			'response status text ' + client.statusText + " vs. " + text)
+            //assert_true((client.statusText == text.split("/")[0] || client.statusText == text.split("/")[1]), 
+//			'response status text ' + client.statusText + " vs. " + text.split("/")[0])
             assert_equals(client.getResponseHeader("X-Request-Method"), method, 'method')
             if(method != "HEAD") {
                 if(type == "text/xml") {
@@ -42,17 +44,25 @@ function statusRequest(method, code, text, content, type) {
 
   /*            method     code text  content        type */
   statusRequest("GET",     200, 'OK', 'Not today.',  '')
+  statusRequest("GET",     201, 'OK/Created', 'Not today 01.',  '')
+  statusRequest("GET",     202, 'OK/Accepted', 'Not today 02.',  '')
+  statusRequest("GET",     203, 'OK/Non-Authoritative Information', 'Not today 03.',  '')
+  statusRequest("GET",     204, 'OK/No Content', '',  '') // specifically no-content
+  statusRequest("GET",     205, 'OK/Reset Content', '',  '') // specifically no-content
+  statusRequest("GET",     206, 'OK/Partial Content', 'Not today 06.',  '')
+  statusRequest("GET",     209, 'OK', 'Not today 09.',  '')
+  statusRequest("GET",     299, 'OK', 'Not today 99.',  '')
   statusRequest("POST",    200, 'OK', '<x>402<\/x>', 'text/xml')
   statusRequest("HEAD",    200, 'OK', 'Nice!',       'text/doesnotmatter')
   statusRequest("PUT",     200, 'OK', '400',         'text/plain')
   statusRequest("CHICKEN", 200, 'OK', 'bah',         '')
 
 
-function statusRequest2(method, code, expect_code, nonsimple) {
+function statusRequestFail(method, code, expect_code, nonsimple) {
     if (expect_code === undefined)
         expect_code = code
 
-    async_test("Status on " + method + " " + code + (nonsimple?' (nonsimple)':''), { timeout: 15000 })
+    async_test("Status on " + method + " " + code + (nonsimple?' (nonsimple)':''))
     .step(function() {
         var client = new XMLHttpRequest()
 
@@ -63,15 +73,11 @@ function statusRequest2(method, code, expect_code, nonsimple) {
             client.setRequestHeader('x-nonsimple', true)
 
         client.onreadystatechange = this.step_func(function() {
-            if (client.readyState < client.HEADERS_RECEIVED)
+            if (client.readyState < client.HEADERS_RECIEVED)
                 return
             assert_equals(client.response, "", "response data")
             assert_equals(client.status, expect_code, "response status")
-            /* Response code 200 forces webserver to send OK(?) */
-            if(expect_code == 200)
-                assert_equals(client.statusText, "OK", "response statusText")
-            else
-                assert_equals(client.statusText, (expect_code == 0 ? "" : "OHAI"), "response statusText")
+            assert_equals(client.statusText, (expect_code == 0 ? "" : "OHAI"), "response statusText")
             if (client.readyState == client.DONE)
                 this.done()
         })
@@ -86,27 +92,21 @@ function statusRequest2(method, code, expect_code, nonsimple) {
 
   /*                                 expect
                     method     code  status */
-  statusRequest2("GET",     201)
-  statusRequest2("GET",     204)
-  statusRequest2("GET",     299)
-  statusRequest2("GET",     400)
-  statusRequest2("HEAD",    401)
-  statusRequest2("POST",    404)
-  statusRequest2("POST",    500)
+  statusRequestFail("GET",     400)
+  statusRequestFail("HEAD",    401)
+  statusRequestFail("POST",    404)
+  statusRequestFail("POST",    500)
 
   /* Preflight response status is not 200, so the algorithm set status to 0. */
-  statusRequest2("PUT",     699,  0)
-  statusRequest2("CHICKEN", 501,  0)
+  statusRequestFail("PUT",     699,  0)
+  statusRequestFail("CHICKEN", 501,  0)
 
-  /*                                 preflight */
-  statusRequest2("GET",     201,  0, true)
-  statusRequest2("GET",     203,  0, true)
-  statusRequest2("GET",     204,  0, true)
-  statusRequest2("GET",     299,  0, true)
-  statusRequest2("GET",     400,  0, true)
-  statusRequest2("HEAD",    401,  0, true)
-  statusRequest2("POST",    404,  0, true)
-  statusRequest2("PUT",     699,  0, true)
-  statusRequest2("CHICKEN", 501,  0, true)
+  /*                                    "forced"
+                                        preflight */
+  statusRequestFail("GET",     400,  0, true)
+  statusRequestFail("HEAD",    401,  0, true)
+  statusRequestFail("POST",    404,  0, true)
+  statusRequestFail("PUT",     699,  0, true)
+  statusRequestFail("CHICKEN", 501,  0, true)
 
 </script>

@@ -23,6 +23,8 @@ function statusAfterPreflight(method, code) {
 
         client.setRequestHeader('x-nonsimple', true)
         client.onreadystatechange = this.step_func(function() {
+            if (client.readyState < client.HEADERS_RECEIVED)
+                return
             assert_equals(client.response, "", "response data")
             assert_equals(client.status, code, "response status")
             if (client.readyState == client.DONE)

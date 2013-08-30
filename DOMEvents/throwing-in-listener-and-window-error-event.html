@@ -25,7 +25,7 @@
 
         element.click();
 
-        assert_true(typeof errorEvent === 'object');
+        assert_equals(typeof errorEvent, 'object');
         t.done();
     });
 </script>

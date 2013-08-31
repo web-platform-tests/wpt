@@ -217,11 +217,12 @@ public class Driver {
             }
         }
         if (validFiles.size() > 0) {
-            validator.setUpValidatorAndParsers(errorHandler, false);
+            validator.setUpValidatorAndParsers(errorHandler, false, false);
             checkFiles(validFiles);
         }
         if (invalidFiles.size() > 0) {
-            validator.setUpValidatorAndParsers(countingErrorHandler, false);
+            validator.setUpValidatorAndParsers(countingErrorHandler, false,
+                    false);
             checkInvalidFiles(invalidFiles);
         }
     }

@@ -1,41 +1,36 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title>multicolumn | column-count</title>
-<link rel="author" title="Opera Software ASA" href="http://www.opera.com/"/>
-<link rel="help" href="http://www.w3.org/TR/css3-multicol/#the-number-and-width-of-columns"/>
-<link rel="match" href="multicol-count-002-ref.xht"/>
-<meta name="flags" content=""/>
-<style type="text/css"><![CDATA[
-body {
-	width: 40em;
-}
-div {
-	font-family: monospace;
-	font-size: 1em;
-	line-height: 1em;
-	color: black;
-	background: yellow;
-	orphans: 1;
-	widows: 1;
-	column-count: 5;
-	column-gap: 0;
-}
-]]></style>
-</head>
+ <head>
+  <title>CSS Multi-column Layout Test: column-count (basic)</title>
+  <link rel="author" title="Opera Software ASA" href="http://www.opera.com/" />
+  <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2013-07-27 -->
+  <link rel="help" href="http://www.w3.org/TR/css3-multicol/#cc" title="3.2 'column-count'" />
+  <link rel="match" href="multicol-count-002-ref.xht" />
+  <meta name="flags" content="ahem" />
+  <meta name="assert" content="This test checks that setting 'column-count' should accordingly create 4 column boxes. In this test, each column box should be exactly 5em wide." />
+  <style type="text/css"><![CDATA[
+  html {background-color: white;}
 
-<body>
+  body
+  {
+  background-color: black;
+  font: 1.25em/1 Ahem;
+  padding-right: 1em;
+  width: 20em;
+  }
 
-<div>
-	one two three four
-	five six seven eight
-	nineten eleven twelve
-	thirtn fourtnfiftn sixtn
-	seventn eightn ninetn twenty
-	hundred thousand million billion
-	trillion
-</div>
+  div
+  {
+  background-color: yellow;
+  color: black;
 
-</body>
+  column-count: 4;
+  column-gap: 0;
+  }
+  ]]></style>
+ </head>
+ <body>
+  <div>55555 1&nbsp;&nbsp;&nbsp; 1 22&nbsp; 1 22&nbsp; 1&nbsp;&nbsp;&nbsp; 1 333 1 333 1 333 55555 55555 1&nbsp;&nbsp;&nbsp; 1 22&nbsp; 1 22&nbsp; 1&nbsp;&nbsp;&nbsp; 1 22&nbsp; 1 22&nbsp; 1 22&nbsp; 55555 55555 1&nbsp;&nbsp;&nbsp; 1 333 1 333 1&nbsp;&nbsp;&nbsp; 4444 4444 1&nbsp;&nbsp;&nbsp; 55555 55555 1&nbsp;&nbsp;&nbsp; 1 333 1 333 1&nbsp;&nbsp;&nbsp; 4444 4444 1&nbsp;&nbsp;&nbsp; 55555
+  </div>
+ </body>
 </html>

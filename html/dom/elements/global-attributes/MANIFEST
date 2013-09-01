@@ -3,7 +3,7 @@ dataset-delete.html
 dataset-enumeration.html
 dataset-get.html
 dataset.html
-dataset-instanceof.html
+dataset-prototype.html
 dataset-set.html
 ref dir_auto-contained-bdi-L.html == dir_auto-contained-bdi-L-ref.html
 ref dir_auto-contained-bdi-R.html == dir_auto-contained-bdi-R-ref.html

@@ -209,7 +209,7 @@ public class Driver {
                     invalidFiles.add(file);
                 } else if (state == State.EXPECTING_VALID_FILES) {
                     validFiles.add(file);
-                } else if (file.getPath().indexOf("notvalid") > 0) {
+                } else if (file.getPath().indexOf("novalid") > 0) {
                     invalidFiles.add(file);
                 } else {
                     validFiles.add(file);

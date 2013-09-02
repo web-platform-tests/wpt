@@ -4,8 +4,7 @@
     <meta charset="utf-8">
     <title>FileAPI Test: idlharness</title>
     <link rel="author" title="Intel" href="http://www.intel.com">
-    <link rel="help" href="http://www.w3.org/TR/FileAPI/">
-    <link rel="help" href="http://www.w3.org/TR/FileAPI/#conformance">
+    <link rel="help" href="http://dev.w3.org/2006/webapi/FileAPI/#conformance">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <script src="/resources/webidl2/lib/webidl2.js"></script>
@@ -22,24 +21,29 @@
       interface ArrayBufferView {
       };
 
-      dictionary BlobPropertyBag {
+      interface URL {
       };
 
       interface EventTarget {
       };
 
-      interface Window {
+      interface Event {
       };
 
-      interface WorkerGlobalScope {
-      };
+      [TreatNonCallableAsNull]
+      callback EventHandlerNonNull = any (Event event);
+      typedef EventHandlerNonNull? EventHandler;
     </pre>
 
     <pre id="idl" style="display: none">
-      [Constructor,
-      Constructor(sequence<(ArrayBuffer or ArrayBufferView or Blob or DOMString)> blobParts, optional BlobPropertyBag options)]
-      interface Blob {
+      interface FileList {
+        getter File? item(unsigned long index);
+        readonly attribute unsigned long length;
+      };
 
+      [Constructor, 
+       Constructor(sequence<(ArrayBuffer or ArrayBufferView or Blob or DOMString)> blobParts, optional BlobPropertyBag options)] 
+      interface Blob {
         readonly attribute unsigned long long size;
         readonly attribute DOMString type;
 
@@ -51,22 +55,21 @@
         void close();
       };
 
+      dictionary BlobPropertyBag {
+        DOMString type = "";
+      };
+
+      [Constructor(Blob fileBits, DOMString fileName)]
       interface File : Blob {
         readonly attribute DOMString name;
         readonly attribute Date lastModifiedDate;
       };
 
-      interface FileList {
-        getter File? item(unsigned long index);
-        readonly attribute unsigned long length;
-      };
-
       [Constructor]
       interface FileReader: EventTarget {
-
         // async read methods
         void readAsArrayBuffer(Blob blob);
-        void readAsText(Blob blob, optional DOMString encoding);
+        void readAsText(Blob blob, optional DOMString label);
         void readAsDataURL(Blob blob);
 
         void abort();
@@ -76,29 +79,35 @@
         const unsigned short LOADING = 1;
         const unsigned short DONE = 2;
 
-
         readonly attribute unsigned short readyState;
 
         // File or Blob data
         readonly attribute (DOMString or ArrayBuffer)? result;
 
-        readonly attribute DOMError error;
+        readonly attribute DOMError? error;
 
         // event handler attributes
-        [TreatNonCallableAsNull] attribute Function? onloadstart;
-        [TreatNonCallableAsNull] attribute Function? onprogress;
-        [TreatNonCallableAsNull] attribute Function? onload;
-        [TreatNonCallableAsNull] attribute Function? onabort;
-        [TreatNonCallableAsNull] attribute Function? onerror;
-        [TreatNonCallableAsNull] attribute Function? onloadend;
+        attribute EventHandler onloadstart;
+        attribute EventHandler onprogress;
+        attribute EventHandler onload;
+        attribute EventHandler onabort;
+        attribute EventHandler onerror;
+        attribute EventHandler onloadend;
       };
 
-      // This interface is removed by http://dev.w3.org/2006/webapi/FileAPI/
-      // [NoInterfaceObject] interface LineEndings {
-      //   DOMString toNativeLineEndings(DOMString string);
-      // };
-      // Window implements LineEndings;
-      // WorkerGlobalScope implements LineEndings;
+      [Constructor]
+      interface FileReaderSync {
+        // Synchronously return strings
+        ArrayBuffer readAsArrayBuffer(Blob blob); 
+        DOMString readAsText(Blob blob, optional DOMString label);
+        DOMString readAsDataURL(Blob blob);
+      };
+
+      partial interface URL {
+        static DOMString? createObjectURL(Blob blob);
+        static DOMString? createFor(Blob blob); // static DOMString? createFor()Blob blob);
+        static void revokeObjectURL(DOMString url);
+      };
     </pre>
 
     <form name='uploadData'>
@@ -116,24 +125,23 @@
     <div id="log"></div>
 
     <script>
-      var button = document.querySelector("input");
+      var fileInput;
 
-      setup({explicit_done: true});
-      setup({explicit_timeout: true});
+      setup(function() {
+        fileInput = document.querySelector("#fileChooser")
+      }, {explicit_done: true, explicit_timeout: true});
 
-      on_event(button, "change", function(evt) {
+      on_event(fileInput, "change", function(evt) {
         var idl_array = new IdlArray();
         idl_array.add_untested_idls(document.getElementById("untested_idl").textContent);
         idl_array.add_idls(document.getElementById("idl").textContent);
 
-        var testFileList = button.files;
-        var testFile = button.files[0];
-
-        idl_array.add_objects({Blob : [new Blob(["TEST"])],
-                               FileList: [testFileList],
-                               File: [testFile],
+        idl_array.add_objects({Blob: [new Blob(["TEST"])],
+                               FileList: [fileInput.files],
+                               File: [fileInput.files[0]],
                                FileReader: [new FileReader()],
-                               LineEndings: ["window"]});
+                               FileReaderSync: [],
+                               URL: []});
         idl_array.test();
 
         done();

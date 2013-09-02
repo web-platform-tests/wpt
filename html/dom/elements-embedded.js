@@ -12,6 +12,7 @@ var embeddedElements = {
 
 		// Obsolete
 		name: "string",
+		lowsrc: {type: "url"},
 		align: "string",
 		hspace: "unsigned long",
 		vspace: "unsigned long",

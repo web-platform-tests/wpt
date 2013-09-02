@@ -86,9 +86,79 @@ test_blob(function() {
   desc: "A Uint8Array object should be treated as a sequence for the blobParts argument."
 });
 
-// XXX should add tests for throwing length, 0..n,  ToUint32(length) throwing
-
 var test_error = { name: "test" };
+
+test(function() {
+  var obj = {
+    get length() { throw test_error; }
+  };
+  assert_throws(test_error, function() {
+    new Blob(obj);
+  });
+}, "The length getter should be invoked and any exceptions should be propagated.");
+
+test(function() {
+  assert_throws(test_error, function() {
+    var obj = {
+      length: {
+        valueOf: null,
+        toString: function() { throw test_error; }
+      }
+    };
+    new Blob(obj);
+  });
+  assert_throws(test_error, function() {
+    var obj = {
+      length: { valueOf: function() { throw test_error; } }
+    };
+    new Blob(obj);
+  });
+}, "ToUint32 should be applied to the length and any exceptions should be propagated.");
+
+test(function() {
+  var received = [];
+  var obj = {
+    get length() {
+      received.push("length getter");
+      return {
+        valueOf: function() {
+          received.push("length valueOf");
+          return 3;
+        }
+      };
+    },
+    get 0() {
+      received.push("0 getter");
+      return {
+        toString: function() {
+          received.push("0 toString");
+          return "a";
+        }
+      };
+    },
+    get 1() {
+      received.push("1 getter");
+      throw test_error;
+    },
+    get 2() {
+      received.push("2 getter");
+      assert_unreached("Should not call valueOf if toString is present.");
+    }
+  };
+  assert_throws(test_error, function() {
+    new Blob(obj);
+  });
+  assert_array_equals(received, [
+    "length getter",
+    "length valueOf",
+    "0 getter",
+    "0 toString",
+    "1 getter"
+  ]);
+}, "Getters and value conversions should happen in order until an exception is thrown.");
+
+// XXX should add tests edge cases of ToUint32(length)
+
 test(function() {
   assert_throws(test_error, function() {
     new Blob([{ toString: function() { throw test_error; } }]);

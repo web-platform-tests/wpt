@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CSS Test: One named flow, non-text fragmentable content + multicolumn 
+                     region element flowing into another element in the region 
+                     chain</title>
+    <link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com"/>
+    <link rel="help" href="http://www.w3.org/TR/css3-regions/#multi-column-regions"/>
+    <link rel="help" href="http://www.w3.org/TR/css3-multicol/#columns"/>
+    <link rel="match" href="reference/regions-multicol-008-ref.html"/>
+    <meta name="assert" content="This test checks that the named flow non-text
+                                 fragmentable content flows through multicolumn 
+                                 layout that is applied to the first region in 
+                                 the region chain, then through the second 
+                                 region in the chain."/>
+    <style type="text/css">
+        #named-flow {
+            width: 100px;
+            height: 500px;
+            -webkit-flow-into: multicol;
+        }
+        #named-flow-child-1, #named-flow-child-1 {
+            width: 100px;
+            height: 200px;
+            background: green;
+        }
+        #named-flow-child-3 {
+            width: 100px;
+            height: 100px;
+            background: lightgreen;
+        }
+        #multicol-region {
+            position: absolute;
+            top: 70px;
+            left: 20px;
+            width: 230px;
+            height: 200px;
+            -webkit-columns: 2;
+            -webkit-column-gap: 30px;
+            -webkit-flow-from: multicol;
+        }
+        #remainder-region {
+            position: absolute;
+            top: 170px;
+            left: 280px;
+            width: 100px;
+            -webkit-flow-from: multicol;
+        }
+        .failure {
+            position: absolute;
+            background-color: red;
+            width: 100px;
+            z-index: -1;
+        }
+        #block-1, #block-2 {
+            top: 70px;
+            height: 200px;
+        }
+        #block-1 {
+            left: 20px;
+        }
+        #block-2 {
+            left: 150px;
+        }
+        #block-3 {
+            top: 170px;
+            left: 280px;
+            height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <p>The test passes if there are two vertical green rectangles with one light
+        green square to the right of them and no red.</p>
+    <div id="named-flow">
+        <div id="named-flow-child-1"></div>
+        <div id="named-flow-child-2"></div>
+        <div id="named-flow-child-3"></div>
+    </div>
+    <div id="multicol-region"></div>
+    <div id="remainder-region"></div>
+    <div class="failure" id="block-1"></div>
+    <div class="failure" id="block-2"></div>
+    <div class="failure" id="block-3"></div>
+</body>
+</html>

@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html prefix="air: http://www.daml.org/2001/10/html/airport-ont# bio: http://vocab.org/bio/0.1/ cal: http://www.w3.org/2002/12/cal/icaltzd# cc: http://creativecommons.org/ns# cert: http://www.w3.org/ns/auth/cert# contact: http://www.w3.org/2000/10/swap/pim/contact# dc: http://purl.org/dc/terms/ dct: http://purl.org/dc/terms/ earl: http://www.w3.org/ns/earl# example: http://example.org/ ex: http://example.org/ foaf: http://xmlns.com/foaf/0.1/ google: http://rdf.data-vocabulary.org/# ical: http://www.w3.org/2002/12/cal/icaltzd# openid: http://xmlns.openid.net/auth# owl: http://www.w3.org/2002/07/owl# rdfatest: http://rdfa.info/vocabs/rdfa-test# rdf: http://www.w3.org/1999/02/22-rdf-syntax-ns# rdfs: http://www.w3.org/2000/01/rdf-schema# rel: http://vocab.org/relationship/ rsa: http://www.w3.org/ns/auth/rsa# rss: http://web.resource.org/rss/1.0/ sioc: http://rdfs.org/sioc/ns# v: http://www.w3.org/2006/vcard/ns# wot: http://xmlns.com/wot/0.1/ xhv: http://www.w3.org/1999/xhtml/vocab# xsd: http://www.w3.org/2001/XMLSchema#">
+<head>
+   <title>RDFa 1.1 Benchmark File #1</title>
+</head>
+<body>
+   <p>This photo was taken by <span class="author" about="photo1.jpg" property="dc:creator">Mark Birbeck</span>.</p>
+		<p>
+			This photo was taken by
+			<a 	about="photo1.jpg" rel="dc:creator" rev="foaf:img"
+   				href="http://www.blogger.com/profile/1109404">Mark Birbeck</a>.
+		</p>	
+		<p>This photo was taken by
+			<a 	about="photo1.jpg" property="dc:title"
+   				content="Portrait of Mark" rel="dc:creator"
+      			rev="foaf:img" href="http://www.blogger.com/profile/1109404">Mark Birbeck</a>.
+		</p>	
+  	<p>This document is licensed under a
+  		<a 	about="" rel="cc:license"
+    		href="http://creativecommons.org/licenses/by-nc-nd/2.5/">
+       		Creative Commons
+  		</a>.
+  	</p>	
+  	<p></p>
+  	<p></p>
+  	<p></p>
+  	<p></p>
+  	<p>
+  		<span	about="http://example.org/foo"
+        		property="ex:bar" content="10" datatype="xsd:integer">ten</span>
+	</p>
+  	<p></p>
+  	 <p>
+          <span about="[_:a]" property="foaf:name">Manu Sporny</span>
+           <span about="[_:a]" rel="foaf:knows"
+resource="[_:b]">knows</span>
+           <span about="[_:b]" property="foaf:name">Ralph Swick</span>.
+        </p>
+  	<p>
+	  This photo was taken by
+	  <a about="photo1.jpg" rel="dc:creator"
+		 href="http://www.blogger.com/profile/1109404">Mark Birbeck</a>.
+	</p>	 
+    <div about="mailto:manu.sporny@digitalbazaar.com"
+      rel="foaf:knows" href="mailto:michael.hausenblas@joanneum.at"></div>
+    <div about="photo1.jpg">
+      <span class="attribution-line">this photo was taken by
+        <span property="dc:creator">Mark Birbeck</span>
+      </span>
+    </div>
+    <div>
+      <span class="attribution-line">this photo was taken by
+        <span property="dc:creator">Mark Birbeck</span>
+      </span>
+    </div>
+    <div id="photo1">
+      	This photo was taken by
+        <span property="dc:creator">Mark Birbeck</span> 
+    </div>
+  	<p>
+    	This paper was written by
+    	<span rel="dc:creator" resource="#me">
+      		<span property="foaf:name">Ben Adida</span>.
+    	</span>
+	</p>
+  	<p>
+		<span 	about="http://internet-apps.blogspot.com/"
+	      		property="dc:creator" content="Mark Birbeck" />
+	</p>	
+  	<p>
+    	<span 	about="http://internet-apps.blogspot.com/"
+       			property="dc:creator" content="Mark Birbeck">Mark B.
+		</span>
+	</p>	
+  	<p>
+    	<span 	about="http://example.org/foo"
+	      		property="dc:creator" datatype="xsd:string"><b>M</b>ark <b>B</b>irbeck</span>.
+	</p>	  
+  	<p>This document is licensed under a
+  		<a 	rel="cc:license"
+    		href="http://creativecommons.org/licenses/by-nc-nd/2.5/">
+       		Creative Commons License
+  		</a>.
+  	</p>	
+  	<p about="#wtw">
+  	  The book <b>Weaving the Web</b> (hardcover) has the ISBN
+  	  <span rel="dc:identifier" resource="urn:ISBN:0752820907">0752820907</span>.
+  	</p>	
+  	<p about="#wtw">
+  	  The book <b>Weaving the Web</b> (hardcover) has the ISBN
+  	  <a rel="dc:identifier" resource="urn:ISBN:0752820907" 
+  	  href="http://www.amazon.com/Weaving-Web-Tim-Berners-Lee/dp/0752820907">0752820907</a>.
+  	</p>
+  	<p>
+    	This paper was written by
+    	<span rel="dc:creator">
+      		<span property="foaf:name">Ben Adida</span>.
+    	</span>
+	</p>
+  	<div about="http://sw-app.org/mic.xhtml#i" rel="foaf:img">
+  	  <img 	src="http://sw-app.org/img/mic_2007_01.jpg" 
+  	   		alt="A photo depicting Michael" />
+  	</div>
+  	<div>
+      <img 	about="http://sw-app.org/mic.xhtml#i"
+  	   		rel="foaf:img"
+  	   		src="http://sw-app.org/img/mic_2007_01.jpg" 
+  	   		href="http://sw-app.org/img/mic_2006_03.jpg" 
+  	   		alt="A photo depicting Michael" />  	
+  	</div>
+  	<div>
+      <img 	about="http://sw-app.org/mic.xhtml#i"
+  	   		rel="foaf:img"
+  	   		src="http://sw-app.org/img/mic_2007_01.jpg" 
+  	   		resource="http://sw-app.org/img/mic_2006_03.jpg" 
+  	   		alt="A photo depicting Michael" />  	
+  	</div>
+  	<div>
+      <img 	about="http://sw-app.org/mic.xhtml#i"
+  	   		rel="foaf:img"
+  	   		src="http://sw-app.org/img/mic_2007_01.jpg" 
+  	   		href="http://sw-app.org/img/mic_2006_03.jpg"
+  	   		resource="http://sw-app.org/mic.xhtml#photo" 
+  	   		alt="A photo depicting Michael" />  	
+  	</div>
+  	<div about="http://sw-app.org/mic.xhtml#i" rev="foaf:depicts">
+  	  <img 	src="http://sw-app.org/img/mic_2007_01.jpg" 
+  	   		alt="A photo depicting Michael" />
+  	</div>
+  	<div>
+      <img 	about="http://sw-app.org/mic.xhtml#i"
+  	   		rev="foaf:depicts"
+  	   		src="http://sw-app.org/img/mic_2007_01.jpg" 
+  	   		href="http://sw-app.org/img/mic_2006_03.jpg" 
+  	   		alt="A photo depicting Michael" />  	
+  	</div>
+  	<div>
+     <img src="http://sw-app.org/img/mic_2007_01.jpg"
+           rev="alternate"
+           resource="http://sw-app.org/img/mic_2006_03.jpg"
+           alt="A photo depicting Michael" />	
+  	</div>
+  	<div>
+      <img 	about="http://sw-app.org/mic.xhtml#i"
+  	   		rev="foaf:depicts"
+  	   		src="http://sw-app.org/img/mic_2007_01.jpg" 
+  	   		href="http://sw-app.org/img/mic_2006_03.jpg"
+  	   		resource="http://sw-app.org/mic.xhtml#photo" 
+  	   		alt="A photo depicting Michael" />  	
+  	</div>
+  	<div>
+  	  <img 	rel="foaf:img"
+  	   		src="http://sw-app.org/img/mic_2007_01.jpg" 
+  	   		alt="A photo depicting Michael" />
+  	</div>
+  	<div rel="foaf:maker" typeof="foaf:Document">
+	    <p property="foaf:name">John Doe</p>
+   	</div>
+  	<div rel="foaf:maker" typeof="foaf:Document" resource="http://www.example.org/#me">
+	    <p property="foaf:name">John Doe</p>
+   	</div>
+  	<div about="http://www.example.org/#me" rel="foaf:knows" typeof="foaf:Person">
+	    <p property="foaf:name">John Doe</p>
+   	</div>
+  	<div about="http://www.example.org/#me" typeof="foaf:Person">
+	    <p property="foaf:name">John Doe</p>
+   	</div>
+  	<div typeof="foaf:Person">
+	    <p property="foaf:name">John Doe</p>
+   	</div>
+  	<p about="" typeof="foaf:Document" property="foaf:topic">John Doe</p>
+  	<p typeof="foaf:Person" resource="http://www.example.org/#me">
+	    John Doe
+   	</p>
+  	<p typeof="foaf:Person" resource="http://www.example.org/#me">
+	    <span property="foaf:name">John Doe</span>
+   	</p>
+  	<p>
+		This document was authored and published by  		
+		<span about="" property="dc:creator dc:publisher">Fabien Gandon</span>.
+  	</p>
+  	<p>
+		This document was authored and published by
+		<a about="" rel="dc:creator dc:publisher" href="http://www-sop.inria.fr/acacia/fabien/">Fabien Gandon</a>.
+	</p>
+    <div about="http://www.example.org/#ben" typeof="foaf:Person" rel="foaf:knows">
+      <p about="http://www.example.org/#mark" property="foaf:name">Mark Birbeck</p>
+    </div>
+    <div about="http://www.example.org/#ben" rel="foaf:knows">
+      <p about="http://www.example.org/#mark" property="foaf:name">Mark Birbeck</p>
+      <p about="http://www.example.org/#ivan" property="foaf:name">Ivan Herman</p>
+    </div>
+    <div about="http://www.example.org/#ben" rel="foaf:knows">
+      <p typeof="foaf:Person" property="foaf:name">Mark Birbeck</p>
+      <p typeof="foaf:Person" property="foaf:name">Ivan Herman</p>
+    </div>
+    <p>This document was authored and published by:</p>
+    <ul rel="dc:creator dc:publisher">
+      <li about="http://www.example.org/#manu" property="foaf:name">Manu Sporny</li>
+      <li about="http://www.example.org/#fabien" property="foaf:name">Fabien Gandon</li>
+    </ul>
+    <div about="http://www.example.org/#matsumoto-kimiko"
+         typeof="foaf:Person">
+      <p property="foaf:name">松本 后子</p>
+    </div>
+      <p>This is the first chapter in a series of chapters.</p>
+      <p>This is unit test #62. The next unit test is #63.</p>
+      <p>This is the 63<sup>rd</sup> test. The next test is #64.</p>
+    <p about="[_:michael]">Michael knows
+      <a rel="foaf:knows" href="http://digitalbazaar.com/people/manu">Manu</a>.
+    </p>
+    <div about="[_:manu]">
+      Manu Sporny can be reached via
+      <a rel="foaf:mbox" href="mailto:manu.sporny@digitalbazaar.com">email</a>.
+      <span rel="foaf:knows" resource="[_:michael]">He knows Michael.</span>
+    </div>
+
+    <div about="[_:michael]">
+      Michael can be reached via
+      <a rel="foaf:mbox" href="mailto:michael.hausenblas@joanneum.at">email</a>.
+    </div>
+      <p>This is test #66.</p>
+      <p>This is test #67.</p>
+      <p about="0067.html">
+         The previous test was
+         <span property="dc:title">Test 0067</span>.
+      </p>
+      <p>The next test will be
+         <a about="" rel="xhv:next" href="0070.html">Test 0070</a>.
+      </p>
+      <p>The previous test was
+         <span about="" rel="xhv:prev" resource="0069.html">Test 0069</span>.
+      </p>
+      <p>This page is under a Creative Commons
+         <a rel="cc:license"
+            href="http://creativecommons.org/licenses/by-nd/3.0/">
+          Attribution-No Derivatives 3.0 license</a>.
+      </p>
+      <p about="faq">
+         Learn more by reading the example.org
+         <span property="dc:title">Example FAQ</span>.
+      </p>
+      <p>
+        This article was written by
+      	<span rel="dc:creator" resource="jane">Jane</span>.
+      </p>
+     <p>
+     	This article was written by
+      	<a rel="dc:creator" href="jane">Jane</a>.
+	 </p>
+   	<p>
+    	This page is under a Creative Commons
+        <a rel="license" href="http://creativecommons.org/licenses/by-nd/3.0/">Attribution-No Derivatives 3.0 license</a>.
+    </p>
+      <p>
+         <a rel="alternate" href="http://example.org/alternate">alternate</a>
+         <a rel="appendix" href="http://example.org/appendix">appendix</a>
+         <a rel="bookmark" href="http://example.org/bookmark">bookmark</a>
+         <a rel="cite" href="http://example.org/cite">cite</a>
+         <a rel="chapter" href="http://example.org/chapter">chapter</a>
+         <a rel="contents" href="http://example.org/contents">contents</a>
+         <a rel="copyright" href="http://example.org/copyright">copyright</a>
+         <a rel="glossary" href="http://example.org/glossary">glossary</a>
+         <a rel="help" href="http://example.org/help">help</a>
+         <a rel="icon" href="http://example.org/icon">icon</a>
+         <a rel="index" href="http://example.org/index">index</a>
+         <a rel="last" href="http://example.org/last">last</a>
+         <a rel="license" href="http://example.org/license">license</a>
+         <a rel="meta" href="http://example.org/meta">meta</a>
+         <a rel="next" href="http://example.org/next">next</a>
+         <a rel="p3pv1" href="http://example.org/p3pv1">p3pv1</a>
+         <a rel="prev" href="http://example.org/prev">prev</a>
+         <a rel="role" href="http://example.org/role">role</a>
+         <a rel="section" href="http://example.org/section">section</a>
+         <a rel="subsection" href="http://example.org/subsection">subsection</a>
+         <a rel="start" href="http://example.org/start">start</a>
+		 <a rel="stylesheet" href="http://example.org/stylesheet">stylesheet</a>
+         <a rel="up" href="http://example.org/up">up</a>
+      </p>
+       <p>
+         <span about="http://example.org/alternate" rev="alternate"
+               href="0077.html">alternate</span>
+         <span about="http://example.org/appendix" rev="appendix"
+               href="0077.html">appendix</span>
+         <span about="http://example.org/bookmark" rev="bookmark"
+               href="0077.html">bookmark</span>
+         <span about="http://example.org/cite" rev="cite"
+               href="0077.html">cite</span>
+         <span about="http://example.org/chapter" rev="chapter"
+               href="0077.html">chapter</span>
+         <span about="http://example.org/contents" rev="contents"
+               href="0077.html">contents</span>
+         <span about="http://example.org/copyright" rev="copyright"
+               href="0077.html">copyright</span>
+         <span about="http://example.org/glossary" rev="glossary"
+               href="0077.html">glossary</span>
+         <span about="http://example.org/help" rev="help"
+               href="0077.html">help</span>
+         <span about="http://example.org/icon" rev="icon"
+               href="0077.html">icon</span>
+         <span about="http://example.org/index" rev="index"
+               href="0077.html">index</span>
+         <span about="http://example.org/first" rev="first"
+               href="0077.html">first</span>
+         <span about="http://example.org/last" rev="last"
+               href="0077.html">last</span>
+         <span about="http://example.org/license" rev="license"
+               href="0077.html">license</span>
+         <span about="http://example.org/meta" rev="meta"
+               href="0077.html">meta</span>
+         <span about="http://example.org/next" rev="next"
+               href="0077.html">next</span>
+         <span about="http://example.org/p3pv1" rev="p3pv1"
+               href="0077.html">p3pv1</span>
+         <span about="http://example.org/prev" rev="prev"
+               href="0077.html">prev</span>
+         <span about="http://example.org/role" rev="role"
+               href="0077.html">role</span>
+         <span about="http://example.org/section" rev="section"
+               href="0077.html">section</span>
+         <span about="http://example.org/subsection" rev="subsection"
+               href="0077.html">subsection</span>
+         <span about="http://example.org/start" rev="start"
+               href="0077.html">start</span>
+		<span about="http://example.org/stylesheet" rev="stylesheet"
+               href="0077.html">stylesheet</span>			   
+         <span about="http://example.org/up" rev="up"
+               href="0077.html">up</span>
+      </p>
+	<div about ="http://www.example.org/#somebody" rel="foaf:knows">
+	    <p property="foaf:name">Ivan Herman</p>
+		<p rel="foaf:mailbox" resource="mailto:ivan@w3.org">mailto:ivan@w3.org</p>
+		<p typeof="foaf:Person" property="foaf:name">Mark Birbeck</p>
+	</div>
+	<div about ="http://www.example.org/#somebody" rel="foaf:knows">
+	    <p resource="http://www.ivan-herman.org/Ivan_Herman">Ivan Herman</p>
+	    <p href="http://www.w3.org/People/Berners-Lee/card#i">Tim Berners Lee</p>
+	    <p resource="http://danbri.org/foaf.rdf#danbri" href="http://www.leobard.net/rdf/foaf.xml#me">Dan Brickley</p>
+	</div>
+	<div about ="http://www.example.org/#somebody" rel="foaf:knows">
+	    <p about="http://danbri.org/foaf.rdf#danbri" resource="http://www.leobard.net/rdf/foaf.xml#me">Dan Brickley</p>
+	</div>
+	<div about ="http://www.example.org/#somebody" rev="foaf:knows">
+	    <p property="foaf:name">Ivan Herman</p>
+		<p rel="foaf:mailbox" resource="mailto:ivan@w3.org">mailto:ivan@w3.org</p>
+		<p typeof="foaf:Person" property="foaf:name">Mark Birbeck</p>
+	</div>
+	<div about ="http://www.example.org/#somebody" rev="foaf:knows" rel="foaf:knows">
+	    <p property="foaf:name">Ivan Herman</p>
+		<p rel="foaf:mailbox" resource="mailto:ivan@w3.org">mailto:ivan@w3.org</p>
+		<p typeof="foaf:Person" property="foaf:name">Mark Birbeck</p>
+	</div>
+	<div about="http://www.example.org/#somebody" rel="foaf:knows">
+	    <p property="foaf:name">Ivan Herman</p>
+		<p rel="foaf:mailbox" resource="mailto:ivan@w3.org">mailto:ivan@w3.org</p>
+		<p about="http://danbri.org/foaf.rdf#danbri" typeof="foaf:Person" property="foaf:name">Dan Brickley</p>
+	</div>
+	<div about ="http://www.example.org/#somebody" rev="foaf:knows" rel="foaf:knows">
+	    <div>
+		    <p property="foaf:name">Ivan Herman</p>
+			<p rel="foaf:mailbox" resource="mailto:ivan@w3.org">mailto:ivan@w3.org</p>
+			<p about="http://danbri.org/foaf.rdf#danbri" typeof="foaf:Person" property="foaf:name">Dan Brickley</p>
+			
+		</div>
+	</div>
+	<div about ="http://www.example.org/#somebody" rel="foaf:knows">
+	   <div rel="foaf:knows">
+		    <p resource="http://www.ivan-herman.org/Ivan_Herman">Ivan Herman</p>
+		    <p href="http://www.w3.org/People/Berners-Lee/card#i">Tim Berners Lee</p>
+		    <p resource="http://danbri.org/foaf.rdf#danbri" href="http://www.leobard.net/rdf/foaf.xml#me">Dan Brickley</p>
+	   </div>
+	</div>
+      <p>
+         <a rel=":alternate" href="http://example.org/alternate">alternate</a>
+         <a rel=":appendix" href="http://example.org/appendix">appendix</a>
+         <a rel=":bookmark" href="http://example.org/bookmark">bookmark</a>
+         <a rel=":cite" href="http://example.org/cite">cite</a>
+         <a rel=":chapter" href="http://example.org/chapter">chapter</a>
+         <a rel=":contents" href="http://example.org/contents">contents</a>
+         <a rel=":copyright" href="http://example.org/copyright">copyright</a>
+         <a rel=":glossary" href="http://example.org/glossary">glossary</a>
+         <a rel=":help" href="http://example.org/help">help</a>
+         <a rel=":icon" href="http://example.org/icon">icon</a>
+         <a rel=":index" href="http://example.org/index">index</a>
+         <a rel=":first" href="http://example.org/first">first</a>
+         <a rel=":last" href="http://example.org/last">last</a>
+         <a rel=":license" href="http://example.org/license">license</a>
+         <a rel=":meta" href="http://example.org/meta">meta</a>
+         <a rel=":next" href="http://example.org/next">next</a>
+         <a rel=":p3pv1" href="http://example.org/p3pv1">p3pv1</a>
+         <a rel=":prev" href="http://example.org/prev">prev</a>
+         <a rel=":role" href="http://example.org/role">role</a>
+         <a rel=":section" href="http://example.org/section">section</a>
+         <a rel=":subsection" href="http://example.org/subsection">subsection</a>
+         <a rel=":start" href="http://example.org/start">start</a>
+         <a rel=":stylesheet" href="http://example.org/stylesheet">stylesheet</a>
+         <a rel=":up" href="http://example.org/up">up</a>
+      </p>
+	<div about ="http://www.example.org/#somebody" rel="foaf:knows">
+	    <p about="[_:]" property="foaf:name">Dan Brickley</p>
+	    <p about="[_:]" typeof="foaf:Person">Dan Brickley again:-)</p>
+	</div>
+      <div>
+      	<img src="http://example.org/example.png" typeof="foaf:Image" alt="example image" />
+      </div>
+      <div>
+      	<img	src="http://example.org/example.png"  
+				rel="license"
+           		href="http://creativecommons.org/licenses/by-nc-sa/2.0/"
+				alt="example image" />
+      </div>
+      <p about="[_:human]">
+         A human is
+         <span property=":definition">a bi-pedal primate</span>.
+         They are quite possibly one of the most
+         <span property=":note">confused animal</span>s residing in the 
+		 <span property=":foo">Milky Way</span>.
+      </p>
+  	<div about="">
+      Author: <span property="dc:creator">Albert Einstein</span>
+      <h2 property="dc:title" datatype="ex:XMLLiteral">E = mc<sup>2</sup>: The Most Urgent Problem of Our Time</h2>
+	</div>
+		<p about="http://www.cwi.nl/~steven/" property="example:likes">
+    We put thirty spokes together and call it a wheel;
+    But it is on the space where there is nothing that the usefulness of the wheel depends.
+    We turn clay to make a vessel;
+    But it is on the space where there is nothing that the usefulness of the vessel depends.
+    We pierce doors and windows to make a house;
+    And it is on these spaces where there is nothing that the usefulness of the house depends.
+    Therefore just as we take advantage of what is, we should recognize the usefulness of what is not.
+
+    Lao Tzu: Tao Te Ching</p>
+  	<p>
+    	The word "interfenestration" has 
+    	<span about="#interfenestration" rel="example:size">
+            <span property="rdf:value">17</span>
+            <span property="example:unit">character</span>s.
+    	</span>
+	</p>
+  	  <div about="" rel="dc:creator">
+         <a rel="" href="manu.html">Manu</a> created this page.
+      </div>
+  	  <div rel="next"></div>
+    <p about="http://example.org/node" property="ex:property"
+       datatype="" xml:lang="el">ελληνικό
+άσπρο   διάστημα
+</p>
+   	  <!-- This a NOT a valid XHTML document (due to @xml:base) -->
+      <div xml:base="http://example.org/invalid/">
+         <p about="">This is <span property="dc:title">Test 0109</span>.</p>
+      </div>
+    <div rel="xhv:next">
+      <div rel="xhv:next" />
+    </div>
+    <div rel="xhv:next">
+      <div rel="xhv:next">
+        <div rel="xhv:next" />
+      </div>
+    </div>
+  	  <p>
+      <span about="http://example.org/node" property="ex:property"
+            datatype="">not an XML Literal,
+whitespace     preserved
+</span>
+    </p>
+    <span about="#a" property="dc:title"></span>
+    <span about="#b" property="dc:title" />
+    <div>
+      <a rel="xhv:index" href="../../.././#">Test Suite</a>
+      <a rel="xhv:next" href="0115.html">Test Case 0115</a>
+      <a rel="xhv:up" href="./">Test Case 0114</a>
+      <a rel="cc:attributionURL" href="../../../../">RDFa Website</a>
+      <a rel="rdfatest:cornerCase1" href=".">Corner Case #1</a>
+      <a rel="rdfatest:cornerCase2" href="http://example.org/foo/..">Corner Case #2</a>
+      <a rel="rdfatest:cornerCase3" href="...">Corner Case #3</a>
+      <a rel="rdfatest:cornerCase4" href="?foo=bar../baz">Corner Case #4</a>
+      <a rel="rdfatest:cornerCase5" href="../..../../../.../.htaccess">Corner Case #5</a>
+    </div>
+      <p>Description: XML entities in the RDFa content</p>
+      <p>
+        <span property="ex:entity1">&gt;</span>
+        <span property="ex:entity2">Ben &amp; Co.</span>
+        <span property="ex:entity3">&#x40;</span>
+        <span property="ex:entity4">&#64;</span>
+      </p>
+      <p>
+		<span property="dc:contributor">Mark Birbeck</span>
+         added this triple test.
+      </p>
+      <p>
+         Check to see if parsers get confused when "" is
+         interpreted as NULL in some chaining cases.
+         <a href="http://example.org/ben.html"><span
+            about="" property="dc:creator">Ben</span></a>
+      </p>
+      <div>
+         <p about="[example:]">
+            The
+            <span property="dc:title">Example Website</span>
+            is used in many W3C tutorials.
+         </p>
+      </div>
+      <p about="[:]">
+	         The
+	         <span property="dc:title">The XHTML Vocabulary Document</span>
+	         is the default prefix for XHTML+RDFa 1.0.
+	      </p>
+    <div>
+	<p about="http://example.org/">
+		<span about="[]" property="dc:title">Test Case 0121</span>
+		checks to make sure RDFa processors resolve the empty CURIE correctly.
+		<p resource="[]">
+			<span property="dc:contributor">Shane McCarron</span>
+			contributed to this test.
+		</p>
+	</p>
+	</div>
+    <p about="http://example.org/section1.html">
+         This section is contained below <span rel="up" resource="[]">the main site</span>.
+      </p>
+      <div about="http://www.example.org/#article" typeof="foaf:Document sioc:Post">
+        <h1 property="dct:title">My article</h1>
+      </div>
+<p>Blank Nodes are not allowed to be predicate identifiers in RDF:</p>
+<p property="_:invalid">Test</p>
+<p xmlns:xmlzzz="http://example.org/" property="xmlzzz:test">Test</p>
+   <p>
+      This test ensures that single-character prefixes are allowed. 
+      My name is:
+      <span about="http://example.org/jd" property="v:fn">John Doe</span> 
+   </p>
+    <p about="_:gregg">My name is
+      <em property="http://xmlns.com/foaf/0.1/name">Gregg Kellogg</em>.
+    </p>
+    <div about="_:manu">
+      Manu can be reached via
+      <a rel="http://xmlns.com/foaf/0.1/mbox" href="mailto:manu.sporny@digitalbazaar.com">email</a>.
+      <span rel="http://xmlns.com/foaf/0.1/knows" resource="_:gregg">He knows Gregg.</span>
+      <span rev="http://xmlns.com/foaf/0.1/knows" resource="_:gregg">Who knows Manu.</span>
+    </div>
+
+    <div about="_:gregg">
+      Gregg can be reached via
+      <a rel="http://xmlns.com/foaf/0.1/mbox" href="mailto:gregg@kellogg-assoc.com">email</a>.
+    </div>
+    <div about ="#me" prefix="foaf: http://xmlns.com/foaf/0.1/" >
+        <p property="foaf:name">Ivan Herman</p>
+    </div>
+    <div about ="#this" prefix="foaf: http://xmlns.com/foaf/0.1/ dc: http://purl.org/dc/terms/" typeof="dc:Agent">
+        <p property="foaf:name">A particular agent</p>
+    </div>
+    <!-- prefix has a higher priority than xmlns -->
+  <div about ="#me" xmlns:foaf="http://www.example.com/wrong/foaf/uri" prefix="foaf: http://xmlns.com/foaf/0.1/" >
+      <p property="foaf:name">Ivan Herman</p>
+  </div>
+  <div about ="#me" prefix=": http://xmlns.com/foaf/0.1/" >
+      <p property=":name">Ivan Herman</p>
+  </div>
+  <div about ="http://www.example.org/software">
+      <p rel=":license" resource="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231">Ivan Herman</p>
+  </div>
+    <div prefix="foaf: http://example.org/wrong/foaf/uri/ dc: http://purl.org/dc/terms/" >
+      <div about ="#this" typeof="dc:Agent" prefix="foaf: http://xmlns.com/foaf/0.1/" >
+        <p property="foaf:name">A particular agent</p>
+      </div>
+    </div>
+  <div prefix="foaf: http://example.org/wrong/foaf/uri/ dc: http://purl.org/dc/terms/" >
+    <div about ="#this" typeof="dc:Agent" xmlns:foaf="http://xmlns.com/foaf/0.1/" >
+      <p property="foaf:name">A particular agent</p>
+    </div>
+  </div>
+  <div about ="#me" vocab="http://xmlns.com/foaf/0.1/" >
+    <p property="name">Ivan Herman</p>
+  </div>
+    <div vocab="http://example.org/wrong/foaf/uri/">
+      <div about ="#me" vocab="http://xmlns.com/foaf/0.1/" >
+        <p property="name">Ivan Herman</p>
+      </div>
+    </div>
+    <div vocab="http://xmlns.com/foaf/0.1/">
+      <div about ="#me">
+        <p property="name">Ivan Herman</p>
+      </div>
+    </div>
+    <div about ="http://www.example.org/software" vocab="http://www.example.org/vocab#">
+      <p rel="license" resource="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231">Ivan Herman</p>
+    </div>
+    <div about ="http://www.example.org/software">
+      <p rel="liCeNse" resource="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231">Ivan Herman</p>
+    </div>
+	<div about="http://www.example.org">
+    <p property="ex:xmllit" datatype="rdf:XMLLiteral">This is an XMLLiteral</p>
+    <p property="ex:plainlit">This is a <em>plain</em> literal</p>
+</div>
+  <p about="" typeof="class/Person" property="pred/name">Gregg Kellogg</p>
+  <p property="dc:language" datatype="pred/lang">Ruby</p>
+  <p rel="pred/rel" resource="http://kellogg-assoc.com/">Kellogg Associates</p>
+  <p rev="pred/rev" resource="http://github.org/gkellogg/rdf_context">Ruby Gem</p>
+      <div id="mark" about="#mark" typeof="foaf:Person">
+        <h2 property="foaf:name" datatype="rdf:XMLLiteral"><span 
+property="foaf:firstName">Mark</span> <span 
+property="foaf:surname">Birbeck</span></h2>
+      </div>
+	<p about ="xsd:maxExclusive" rel="rdf:type" resource="owl:DatatypeProperty">
+	    An OWL Axiom: "xsd:maxExclusive" is a Datatype Property in OWL.
+	</p>
+   <p about="#event1" typeof="cal:Vevent">
+       <b property="cal:summary">Weekend off in Iona</b>: 
+       <span property="cal:dtstart" content="2006-10-21" datatype="xsd:date">Oct 21st</span>
+       to <span property="cal:dtend" content="2006-10-23"  datatype="xsd:date">Oct 23rd</span>.
+       See <a rel="cal:url" href="http://freetime.example.org/">FreeTime.Example.org</a> for
+       info on <span property="cal:location">Iona, UK</span>.
+   </p>
+    <!-- @prefix should be ignored in the RDFa 1.0 case -->
+    <div about ="#me" prefix="foaf: http://xmlns.com/foaf/0.1/" >
+        <p property="foaf:name">Ivan Herman</p>
+    </div>
+    <!-- prefix has a higher priority than xmlns, but should be ignored because version is explicitly set to 1.0 -->
+  <div about ="#me" xmlns:foaf="http://www.example.com/wrong/foaf/uri/" prefix="foaf: http://xmlns.com/foaf/0.1/" >
+      <p property="foaf:name">Ivan Herman</p>
+  </div>
+    <!-- The version statement should be ignored with version set to 1.0 -->
+  <div about ="#me" vocab="http://xmlns.com/foaf/0.1/" >
+      <p property="foaf:name">Ivan Herman</p>
+  </div>
+	  <!-- In RDFa 1.0, if a literal contains XML elements, and no explicit datatype is set, the result is XMLLiteral -->
+  	<div about="http://www.example.org/">
+      <h2 property="dc:title">E = mc<sup>2</sup>: The Most Urgent Problem of Our Time</h2>
+	</div>
+    <!-- In RDFa 1.1, by default a plain literal is generated even if it contains XML elements -->
+  	<div about="http://www.example.org/">
+      <h2 property="dc:title">E = mc<sup>2</sup>: The Most Urgent Problem of Our Time</h2>
+	</div>
+   <p>This document has a title.</p>
+      <!-- Tests whether the Unicode (UTF-8 encoded) characters are properly handled even with a large set of properties
+	  in the html element, ie, when the content sniffing to find out the character encoding may not work -->
+	  <p about="http://www.ivan-herman.net/foaf#me" property="foaf:name">Iván</p>
+      <!-- Tests whether the Unicode (UTF-8 encoded) characters are properly handled even with a large set of properties
+	  in the html element, ie, when the content sniffing to find out the character encoding may not work -->
+	  <p about="http://www.ivan-herman.net/foaf#me" property="foaf:name">Iván</p>
+  <div about="#me" vocab="http://xmlns.com/foaf/0.1/" >
+    <p property="name">Gregg Kellogg</p>
+  </div>
+  <div about ="">
+    <p rel="rdf:value" inlist=""/>
+  </div>
+  <div about="">
+    <p property="rdf:value" inlist="">Foo</p>
+  </div>
+  <div about="">
+    <a rel="rdf:value" inlist="" href="foo">Foo</a>
+  </div>
+  <div about="">
+    <p property="rdf:value" inlist="">Foo</p>
+    <a rel="rdf:value" inlist="" href="foo">Foo</a>
+  </div>
+  <div about="">
+    <p property="rdf:value" inlist="">Foo</p>
+    <strong><p property="rdf:value" inlist="">Bar</p></strong>
+  </div>
+  <div about="">
+    <p property="rdf:value" inlist="">Foo</p>
+    <strong><p property="rdf:value" inlist="">Bar</p></strong>
+    <p property="rdf:value">Baz</p>
+  </div>
+  <div about="">
+    <ol rel="rdf:value" inlist="">
+      <li><a href="foo">Foo</a></li>
+      <li><a href="bar">Bar</a></li>
+    </ol>
+  </div>
+  <div about="foo">
+    <p property="rdf:value" inlist="">Foo</p>
+  </div>
+  <div about="foo">
+    <p property="rdf:value" inlist="">Bar</p>
+  </div>
+  <div about="">
+    <p property="rdf:value" inlist="">Foo</p>
+    <span rel="rdf:inlist" resource="res">
+      <p property="rdf:value" inlist="">Bar</p>
+    </span>
+  </div>
+  <div about="">
+    <p property="rdf:value" inlist="">Foo</p>
+    <span rel="rdf:inlist">
+      <p about="res" property="rdf:value" inlist="">Bar</p>
+    </span>
+  </div>
+  	<div>
+     <img src="http://sw-app.org/img/mic_2007_01.jpg"
+           rev="xhv:alternate"
+           resource="http://sw-app.org/img/mic_2006_03.jpg"
+           alt="A photo depicting Michael" />	
+  	</div>
+  	<div>
+  	  <img 	rel="foaf:img"
+  	   		src="http://sw-app.org/img/mic_2007_01.jpg" 
+  	   		alt="A photo depicting Michael" />
+  	</div>
+  <div>
+    <img
+      src="http://example.org/example.png"  
+      rel="license"
+      href="http://creativecommons.org/licenses/by-nc-sa/2.0/"
+      alt="example image" />
+  </div>
+  <div about="http://creativecommons.org/licenses/by-nc-sa/2.0/" rev="license">
+    <img src="http://example.org/example.png" alt="example image" />
+  </div>
+  	<div rel="foaf:maker" typeof="foaf:Person">
+	    <p property="foaf:name">John Doe</p>
+   	</div>
+  	<div rel="foaf:maker" typeof="foaf:Person" resource="http://www.example.org/#me">
+	    <p property="foaf:name">John Doe</p>
+   	</div>
+      <p>
+         <a rel="describedby" href="http://example.org/describedby">describedby</a>
+         <a rel="license" href="http://example.org/license">license</a>
+         <a rel="role" href="http://example.org/role">role</a>
+      </p>
+    <p>
+      The <span property="dc:title">rdfagraph</span> should not generate triples when
+      looking only at the processor graph.
+    </p>
+  	<p></p>
+  	<p></p>
+    <p about="http://example.org/node" property="ex:property"
+       datatype="" lang="el">ελληνικό
+άσπρο   διάστημα
+</p>
+  	<p></p>
+    <span about="#a" property="dc:title"></span>
+<p>Ensure that the "_" prefix is ignored.</p>
+<p xmlns:_="http://example.org/"
+   prefix="_: http://example.org/" 
+   xmlns:earl="http://www.w3.org/ns/earl#" 
+   rel="earl:testcase" resource="_:test">Test</p>
+  <div>
+    Vocabulary Prefixes
+    <span property="grddl:">GRDDL</span>
+    <span property="ma:">MA</span>
+    <span property="owl:">OWL</span>
+    <span property="rdf:">RDF</span>
+    <span property="rdfa:">RDFa</span>
+    <span property="rdfs:">RDFS</span>
+    <span property="rif:">RIF</span>
+    <span property="skos:">SKOS</span>
+    <span property="skosxl:">SKOS-XL</span>
+    <span property="wdr:">WDR</span>
+    <span property="void:">VOID</span>
+    <span property="wdrs:">WDRS</span>
+    <span property="xhv:">XHV</span>
+    <span property="xml:">XML</span>
+    <span property="xsd:">XSD</span>
+  </div>
+  <div>
+    Widely Used prefixes
+    <span property="cc:">CC</span>
+    <span property="ctag:">CTAG</span>
+    <span property="dc:">DC</span>
+    <span property="dcterms:">DCTERMS</span>
+    <span property="foaf:">FOAF</span>
+    <span property="gr:">GR</span>
+    <span property="ical:">ICAL</span>
+    <span property="og:">OG</span>
+    <span property="rev:">REV</span>
+    <span property="sioc:">SIOC</span>
+    <span property="v:">V</span>
+    <span property="vcard:">VCARD</span>
+    <span property="schema:">Schema</span>
+  </div>
+  <div>
+    Vocabulary Terms
+    <span property="describedby">DescribedBy</span>
+    <span property="license">License</span>
+    <span property="role">Role</span>
+  </div>
+  <div>
+    Vocabulary Terms
+    <span property="alternate">alternate</span>
+    <span property="appendix">appendix</span>
+    <span property="cite">cite</span>
+    <span property="bookmark">bookmark</span>
+    <span property="contents">contents</span>
+    <span property="chapter">chapter</span>
+    <span property="copyright">copyright</span>
+    <span property="first">first</span>
+    <span property="glossary">glossary</span>
+    <span property="help">help</span>
+    <span property="icon">icon</span>
+    <span property="index">index</span>
+    <span property="last">last</span>
+    <span property="license">license</span>
+    <span property="meta">meta</span>
+    <span property="next">next</span>
+    <span property="prev">prev</span>
+    <span property="previous">previous</span>
+    <span property="section">section</span>
+    <span property="start">start</span>
+    <span property="stylesheet">stylesheet</span>
+    <span property="subsection">subsection</span>
+    <span property="top">top</span>
+    <span property="up">up</span>
+    <span property="p3pv1">p3pv1</span>
+  </div>
+	<div about="http://www.example.org">
+    <p property="ex:xmllit" datatype="rdf:XMLLiteral">This is
+an XMLLiteral</p>
+</div>
+   <p>This photo was taken by <span class="author" about="photo1.jpg" property="    dc:creator
+">Mark Birbeck</span>.</p>
+  <p> </p>
+  <p> </p>
+  <p> </p>
+  <div about="http://www.w3.org/Person/Ivan#me">
+     <a href="http://www.ivan-herman.net/foaf#me" typeof="foaf:Person" property="owl:sameAs">Ivan Herman</a>
+  </div>
+  <div about="http://www.w3.org/Person/Ivan#me">
+     <p resource="http://www.ivan-herman.net/foaf#me" typeof="foaf:Person" property="owl:sameAs">Ivan Herman</p>
+  </div>
+  <div about="http://www.ivan-herman.net/foaf#me">
+     <img src="http://www.ivan-herman.net/Images/me2003-small.png" typeof="foaf:Image" property="foaf:depiction" />
+  </div>
+  <p> </p>
+  <p> </p>
+  <p> </p>
+  <time property="rdf:value" datetime="2012-03-18Z">18 March 2012</time>
+  <time property="rdf:value" datetime="00:00:00Z">midnight</time>
+  <time property="rdf:value" datetime="2012-03-18T00:00:00Z">18 March 2012 at midnight</time>
+  <time property="rdf:value">2012-03-18Z</time>
+  <time property="rdf:value">00:00:00Z</time>
+  <time property="rdf:value">2012-03-18T00:00:00Z</time>
+  <time property="rdf:value" datetime="2012-03-18" content="not this">18 March 2012</time>
+  <time property="rdf:value" datetime="2012-03-18T00:00:00Z" datatype="xsd:date">18 March 2012 at midnight</time>
+  <time property="rdf:value" datetime="P2011Y06M28DT00H00M00S">2011 years 6 months 28 days</time>
+  <time property="rdf:value" datetime="2012">Two Thousand Twelve</time>
+  <time property="rdf:value" datetime="2012-03">March, Two Thousand Twelve</time>
+  <time property="rdf:value"> 2012-03-18Z</time>
+  <time property="rdf:value" datatype="xsd:dateTime"> 2012-03-18Z</time>
+  <time property="rdf:value" lang="en" datetime="D-Day">
+    Non matching lexical value with language.
+  </time>
+  <data property="rdf:value" lang="lat" value="veni, vidi, vici" content="I came, I saw, I conquered">
+    @value overrides @content in the 'data' element.
+  </data>
+  <time property="rdf:value" datetime="2012-03-18T00:00:00-08:00">18 March 2012 at midnight in San Francisco</time>
+  <object property="rdf:value" data="http://example.com/"></object>
+  <h1>@href becomes subject when @property and @content are present</h1>
+  <a href="http://example.org/" property="rdf:value" content="value">ignored</a>
+  <h1>@href becomes subject when @property and @datatype are present</h1>
+  <a href="http://example.org/" property="rdf:value" datatype="">value</a>
+  <h1>@href as subject overridden by @about</h1>
+  <a about="http://example.net/" href="http://example.org/" property="rdf:value" content="value">ignored</a>
+  <h1>@about overriding @href as subject is used as parent resource</h1>
+  <a about="http://example.net/" href="http://example.org/" property="rdf:value" content="value one">
+    <span property="rdf:value">value two</span>
+  </a>
+  <h1>Testing the ':' character usage in a CURIE</h1>
+  <div prefix="ex: http://www.example.org/">
+     <p about="http://www.example.org" property="ex:column:test">Test</p>
+  </div>
+  <p>None of these triples should be generated in RDFa 1.0.</p>
+  <div>
+    Vocabulary Prefixes
+    <span property="grddl:">GRDDL</span>
+    <span property="ma:">MA</span>
+    <span property="owl:">OWL</span>
+    <span property="rdf:">RDF</span>
+    <span property="rdfa:">RDFa</span>
+    <span property="rdfs:">RDFS</span>
+    <span property="rif:">RIF</span>
+    <span property="skos:">SKOS</span>
+    <span property="skosxl:">SKOS-XL</span>
+    <span property="wdr:">WDR</span>
+    <span property="void:">VOID</span>
+    <span property="wdrs:">WDRS</span>
+    <span property="xhv:">XHV</span>
+    <span property="xml:">XML</span>
+    <span property="xsd:">XSD</span>
+  </div>
+  <div>
+    Widely Used prefixes
+    <span property="cc:">CC</span>
+    <span property="ctag:">CTAG</span>
+    <span property="dc:">DC</span>
+    <span property="dcterms:">DCTERMS</span>
+    <span property="foaf:">FOAF</span>
+    <span property="gr:">GR</span>
+    <span property="ical:">ICAL</span>
+    <span property="og:">OG</span>
+    <span property="rev:">REV</span>
+    <span property="sioc:">SIOC</span>
+    <span property="v:">V</span>
+    <span property="vcard:">VCARD</span>
+    <span property="schema:">Schema</span>
+  </div>
+  <div>
+    Vocabulary Terms
+    <span property="describedby">DescribedBy</span>
+  </div>
+</body>
+</html>

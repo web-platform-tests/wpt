@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>&lt;del&gt;</title>
+</head>
+<body>
+
+
+  <!-- can contain strictly inline while in strictly inline context -->
+  <p><dfn>strictly inline
+    <del>
+      <em>text</em>
+    </del>
+  </dfn></p>
+
+  <!-- can contain interactive if ancestor does not forbid it -->
+  <p>paragraph
+    <del>
+      <a>link</a>
+    </del>
+  </p>
+  <p><dfn>strictly inline
+    <del>
+      <a>link</a>
+    </del>
+  </dfn></p>
+</body>
+</html>

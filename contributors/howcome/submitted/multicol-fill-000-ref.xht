@@ -1,55 +1,52 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title>multicol-fill</title>
-<link rel="author" title="Hakon Wium Lie" href="mailto:howcome@opera.com"/>
-<style type="text/css">
-div, table {
-  font: 10px/10px Ahem;
-  margin: 1em 0;
+ <head>
+  <title>CSS Reftest Reference</title>
+  <link rel="author" title="Hakon Wium Lie" href="mailto:howcome@opera.com" />
+  <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2013-08-25 -->
+  <meta name="flags" content="ahem" />
+  <style type="text/css"><![CDATA[
+  table
+  {
+  background-color: yellow;
+  border-spacing: 0em;
   color: lime;
-  background: yellow;
-  width: 400px;
-}
+  margin: 1em 0em;
+  font: 1.25em/1 Ahem;
+  table-layout: fixed;
+  width: 18em;
+  }
 
-div.multicol { 
-  columns: 3;
-  column-gap: 0px;
-  column-rule: none;
-}
+  td {padding: 0em;}
+  ]]></style>
+ </head>
+ <body>
 
-table, tr, td, p {
-  border-collapse: collapse;
-  margin: 0; padding: 0; border: none;
-}
-</style>
-</head>
-<body>
-The three horizontal bars below should be identical.
+  <p>Test passes if the 3 horizontal bars are <strong>identical</strong>.</p>
 
-<table>
-<tr>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-</tr>
-</table>
+  <table>
+    <tr>
+      <td>G</td>
+      <td>H</td>
+      <td>I</td>
+    </tr>
+  </table>
 
-<table>
-<tr>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-</tr>
-</table>
+  <table>
+    <tr>
+      <td>G</td>
+      <td>H</td>
+      <td>I</td>
+    </tr>
+  </table>
 
-<table>
-<tr>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-</tr>
-</table>
+  <table>
+    <tr>
+      <td>G</td>
+      <td>H</td>
+      <td>I</td>
+    </tr>
+  </table>
 
-</body>
+ </body>
 </html>

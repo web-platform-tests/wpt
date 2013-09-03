@@ -3,26 +3,29 @@
  <head>
   <title>CSS Reftest Reference</title>
   <link rel="author" title="Opera Software ASA" href="http://www.opera.com/" />
+  <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2013-07-25 -->
   <meta name="flags" content="image" />
   <style type="text/css"><![CDATA[
-  body>div
+  div
   {
   background-color: black;
   border: black solid 1px;
   font: 1.25em/1 serif;
   padding: 1em;
   width: 8em;
-  height: 3em;
-  position: relative;
   }
 
+  img
+  {
+  position: relative;
+  vertical-align: top;
+  }
+
+  img + img + img {left: 2em;}
   ]]></style>
  </head>
  <body>
-   <div>
-     <div style="background: yellow; position: absolute; left: 1em; top: 1em; width: 3em; height: 1em"></div>
-     <div style="background: yellow; position: absolute; left: 3em; top: 1em; width: 1em; height: 3em"></div>
-     <div style="background: yellow; position: absolute; left: 6em; top: 1em; width: 1em; height: 3em"></div>
-   </div>
+  <div><img src="support/swatch-yellow.png" width="40" height="20" alt="Image download support must be enabled" /><img src="support/swatch-yellow.png" width="20" height="60" alt="Image download support must be enabled" /><img src="support/swatch-yellow.png" width="20" height="60" alt="Image download support must be enabled" />
+  </div>
  </body>
 </html>

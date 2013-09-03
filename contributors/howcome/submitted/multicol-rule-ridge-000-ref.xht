@@ -1,31 +1,30 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title>multicol-rule-ridge</title>
-<link rel="author" title="Hakon Wium Lie" href="mailto:howcome@opera.com"/>
-<style type="text/css">
-div {
-  font: 50px/50px Ahem;
-  margin: 10px 0;
+ <head>
+  <title>CSS Reftest Reference</title>
+  <link rel="author" title="Hakon Wium Lie" href="mailto:howcome@opera.com" />
+  <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2013-08-27 -->
+  <meta name="flags" content="ahem" />
+  <style type="text/css"><![CDATA[
+  div
+  {
+  background-color: black;
   color: black;
-  background: black;
-  width: 410px;
-}
+  font: 3.125em/1 Ahem;
+  margin-bottom: 0.2em;
+  width: 8.2em;
+  }
 
-div.multicol { 
-  columns: 2;
-  column-gap: 10px;
-  column-rule: 10px ridge lime;
-}
+  span {border-left: lime ridge 0.2em;}
+  ]]></style>
+ </head>
+ <body>
 
-div.ref span { 
-  border-left: 10px ridge lime;
-}
-</style>
-</head>
-<body>
-The two horizontal bars below should be identical.
-<div class="ref">0123<span>0123</span></div>
-<div class="ref">0123<span>0123</span></div>
-</body>
+  <p>Test passes if the 2 black stripes with vertical green bars are <strong>identical</strong>.</p>
+
+  <div>1234<span>5678</span></div>
+
+  <div>1234<span>5678</span></div>
+
+ </body>
 </html>

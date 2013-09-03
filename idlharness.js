@@ -1142,41 +1142,46 @@ IdlInterface.prototype.test_self = function()
         }
     }.bind(this), this.name + " interface: existence and properties of interface object");
 
-    if (this.has_extended_attribute("Constructor"))
-    {
-        test(function()
-        {
+    if (!this.is_callback()) {
+        test(function() {
+            // This function tests WebIDL as of 2013-08-25.
+            // http://dev.w3.org/2006/webapi/WebIDL/#es-interface-call
+
             assert_own_property(window, this.name,
                                 "window does not have own property " + format_value(this.name));
 
-            // "Interface objects for interfaces declared with a [Constructor]
-            // extended attribute must have a property named “length” with
-            // attributes { [[Writable]]: false, [[Enumerable]]: false,
-            // [[Configurable]]: false } whose value is a Number determined as
-            // follows: . . .
-            // "Return the length of the shortest argument list of the entries
-            // in S."
-            // TODO: Variadic constructors.  Should generalize this so that it
-            // works for testing operation length too (currently we just don't
-            // support multiple operations with the same identifier).
-            var expected_length = this.extAttrs
-                .filter(function(attr) { return attr.name == "Constructor"; })
-                .map(function(attr) {
-                    return attr.arguments ? attr.arguments.filter(
-                        function(arg) {
-                            return !arg.optional;
-                        }).length : 0;
-                })
-                .reduce(function(m, n) { return Math.min(m, n); });
+            // "Interface objects for non-callback interfaces MUST have a
+            // property named “length” with attributes { [[Writable]]: false,
+            // [[Enumerable]]: false, [[Configurable]]: false } whose value is
+            // a Number."
             assert_own_property(window[this.name], "length");
-            assert_equals(window[this.name].length, expected_length, "wrong value for " + this.name + ".length");
             var desc = Object.getOwnPropertyDescriptor(window[this.name], "length");
             assert_false("get" in desc, this.name + ".length has getter");
             assert_false("set" in desc, this.name + ".length has setter");
             assert_false(desc.writable, this.name + ".length is writable");
             assert_false(desc.enumerable, this.name + ".length is enumerable");
             assert_false(desc.configurable, this.name + ".length is configurable");
-        }.bind(this), this.name + " interface constructor");
+
+            var constructors = this.extAttrs
+                .filter(function(attr) { return attr.name == "Constructor"; });
+            var expected_length;
+            if (!constructors.length) {
+                // "If the [Constructor] extended attribute, does not appear on
+                // the interface definition, then the value is 0."
+                expected_length = 0;
+            } else {
+                // "Otherwise, the value is determined as follows: . . .
+                // "Return the length of the shortest argument list of the
+                // entries in S."
+                expected_length = constructors.map(function(attr) {
+                    return attr.arguments ? attr.arguments.filter(function(arg) {
+                        return !arg.optional;
+                    }).length : 0;
+                })
+                .reduce(function(m, n) { return Math.min(m, n); });
+            }
+            assert_equals(window[this.name].length, expected_length, "wrong value for " + this.name + ".length");
+        }.bind(this), this.name + " interface object length");
     }
 
     // TODO: Test named constructors if I find any interfaces that have them.

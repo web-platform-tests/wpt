@@ -1,0 +1,120 @@
+﻿<!doctype html>
+<html>
+    <head>
+        <title>Pointer Event: The pointerenter event does not bubble </title>
+        <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/"/>
+        <meta name="assert" content="The pointerenter event must not bubble up to parent elements."/>
+
+        <!-- http://w3c-test.org/resources/testharness.js -->
+	    <script src="http://w3c-test.org/resources/testharness.js"></script>
+		<!-- Additional helper script for common checks across event types -->
+        <script type="text/javascript" src="pointerevent_support.js"></script>
+        <script type="text/javascript">
+
+            setup({ explicit_done: true });
+
+            var detected_pointertypes = {};
+            add_completion_callback(showPointerTypes);
+
+            var target0;
+            var parent0;
+            var test_pointerEnter;
+
+            function run() {
+                target0 = document.getElementById("target0");
+                parent0 = document.getElementById("parent0");
+                test_pointerEnter = async_test("pointerEnter event does not bubble");  // set up test harness
+
+                on_event(target0, "pointerenter", function (event) {
+                    pointerenter_event = event;
+
+                    check_PointerEvent(event);
+                    test_pointerEnter.step(function () {
+                        assert_equals(event.type, "pointerenter", "pointer event received" + event.type);
+                        assert_false(event.bubbles, "pointerenter event.bublbes should be false: " + event.bubbles);
+                    });
+
+                    event.handled = false; // let it bubble
+                    detected_pointertypes[event.pointerType] = true;
+                });
+                on_event(target0, "pointerout", function (event) {
+                    test_pointerEnter.step(function () {
+                        assert_not_equals(pointerenter_event, null, "pointerout event was never received: ");
+                    });
+                    test_pointerEnter.done(); // complete test
+                });
+
+                // parent 
+                on_event(parent0, "pointerenter", function (event) {
+                    check_PointerEvent(event);
+                    test_pointerEnter.step(function () {
+                        assert_equals(event.target.id, "parent0", "Recieved " + event.type + " in parent for " + event.target.id);
+                    });
+                });
+            }
+
+            function showPointerTypes() {
+                var complete_notice = document.getElementById("complete-notice");
+                var pointertype_log = document.getElementById("pointertype-log");
+                var pointertypes = Object.keys(detected_pointertypes);
+                pointertype_log.innerHTML = pointertypes.length ? pointertypes.join(",") : "(none)";
+                if (test_pointerEnter.status == test_pointerEnter.NOTRUN
+                    || test_pointerEnter.status == test_pointerEnter.TIMEOUT) {
+                    complete_notice.innerHTML = "Test FAIL due to time out.  This is due to the browser not supporting pointer, or the manual steps were not run to completion.";
+                    complete_notice.style.background = "red";
+                }
+                complete_notice.style.display = "block";
+            }
+        </script>
+        <style>
+            div {
+                margin: 0em;
+                padding: 2em;
+            }
+            #target0 {
+                background: blue;
+                border: 1px solid orange; 
+                width:50px; 
+                height:50px;
+            }
+
+            #parent0 {
+                background: yellow;
+                border: 1px solid orange;
+                width:100px; 
+                height:100px;
+            }
+
+            #complete-notice {
+                border: 1px solid #0a0;
+                display: none;
+            }
+
+            #pointertype-log {
+                font-weight: bold;
+            }
+        </style>
+    </head>
+    <body onload="run()">
+        <h1> Pointer Event: pointerEnter does not bubble</h1>
+        <h4> 
+            Test Description: 
+            The pointerenter event must not bubble up to parent elements.  
+        </h4>
+        <div id="instructions">
+            Use the mouse, touch or pen to hover over then out of the blue box.
+        </div>
+        <div id="parent0">
+            <div id="target0"></div>
+        </div>
+        <div id="complete-notice">
+            <p>Test complete:  Scroll to Summary to view Pass/Fail Results.</p>
+            <p>The following pointer types were detected: <span id="pointertype-log"></span>.</p>
+            <p>Refresh the page to run the tests again with a different pointer type.</p>
+        </div>
+
+        <div id="log"></div>
+    </body>
+</html>
+

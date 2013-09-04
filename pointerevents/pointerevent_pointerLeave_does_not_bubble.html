@@ -1,0 +1,111 @@
+﻿<!doctype html>
+<html>
+    <head>
+        <title>Pointer Event: The pointerleave event does not bubble </title>
+        <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/"/>
+        <meta name="assert" content="The pointerleave event must not bubble up to parent elements."/>
+
+        <!-- http://w3c-test.org/resources/testharness.js -->
+	    <script src="http://w3c-test.org/resources/testharness.js"></script>
+		<!-- Additional helper script for common checks across event types -->
+        <script type="text/javascript" src="pointerevent_support.js"></script>
+        <script type="text/javascript">
+
+            setup({ explicit_done: true });
+
+            var detected_pointertypes = {};
+            add_completion_callback(showPointerTypes);
+
+            var target0;
+            var parent0;
+            var test_pointerLeave;
+
+            function run() {
+                target0 = document.getElementById("target0");
+                parent0 = document.getElementById("parent0");
+                test_pointerLeave = async_test("pointerLeave event does not bubble");  // set up test harness
+
+                on_event(target0, "pointerleave", function (event) {
+                    pointerleave_event = event;
+
+                    check_PointerEvent(event);
+                    test_pointerLeave.step(function () {
+                        assert_true(event.type == "pointerleave", "pointer event received" + event.type);
+                        assert_false(event.bubbles, "pointerleave event.bublbes should be false: " + event.bubbles);
+                    });
+
+                    detected_pointertypes[event.pointerType] = true;
+                });
+
+                on_event(parent0, "pointerleave", function (event) {
+                    test_pointerLeave.step(function () {
+                        assert_equals(event.target.id, "parent0", "Recieved " + event.type + " in parent for " + event.target.id);
+                    });
+                    test_pointerLeave.done(); // complete test
+                });
+            }
+
+            function showPointerTypes() {
+                var complete_notice = document.getElementById("complete-notice");
+                var pointertype_log = document.getElementById("pointertype-log");
+                var pointertypes = Object.keys(detected_pointertypes); pointertype_log.innerHTML = pointertypes.length ? pointertypes.join(",") : "(none)";
+                if (test_pointerLeave.status == test_pointerLeave.NOTRUN
+                    || test_pointerEnter.status == test_pointerLeave.TIMEOUT) {
+                    complete_notice.innerHTML = "Test FAIL due to time out.  This is due to the browser not supporting pointer, or the manual steps were not run to completion.";
+                    complete_notice.style.background = "red";
+                }
+                complete_notice.style.display = "block";
+            }
+        </script>
+        <style>
+            div {
+                margin: 0em;
+                padding: 2em;
+            }
+            #target0 {
+                background: blue;
+                border: 1px solid orange; 
+                width:50px; 
+                height:50px;
+            }
+
+            #parent0 {
+                background: yellow;
+                border: 1px solid orange;
+                width:100px; 
+                height:100px;
+            }
+
+            #complete-notice {
+                border: 1px solid #0a0;
+                display: none;
+            }
+
+            #pointertype-log {
+                font-weight: bold;
+            }
+        </style>
+    </head>
+    <body onload="run()">
+        <h1> Pointer Event: pointerLeave does not bubble</h1>
+        <h4> 
+            Test Description: 
+            The pointerleave event must not bubble up to parent elements.  
+        </h4>
+        <div id="instructions">
+            Use the mouse or pen to hover over then out of the blue box nested in the yellow box. Or with touch, tap on the blue box.
+        </div>
+        <div id="parent0">
+            <div id="target0"></div>
+        </div>
+        <div id="complete-notice">
+            <p>Test complete:  Scroll to Summary to view Pass/Fail Results.</p>
+            <p>The following pointer types were detected: <span id="pointertype-log"></span>.</p>
+            <p>Refresh the page to run the tests again with a different pointer type.</p>
+        </div>
+
+        <div id="log"></div>
+    </body>
+</html>
+

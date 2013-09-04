@@ -1,0 +1,96 @@
+﻿<!doctype html>
+<html>
+    <head>
+        <title>Pointer Event: If a pointer event is initiated by a pen device, then the pointerType must be "pen"</title>
+        <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/"/>
+        <meta name="assert" content="If a pointer event is initiated by a pen device, then the pointerType must be 'pen'."/>
+
+        <!-- http://w3c-test.org/resources/testharness.js -->
+	    <script src="http://w3c-test.org/resources/testharness.js"></script>
+		<!-- Additional helper script for common checks across event types -->
+        <script type="text/javascript" src="pointerevent_support.js"></script>
+		<script type="text/javascript">
+
+        setup({ explicit_done: true });
+
+        var detected_pointertypes = {};
+        add_completion_callback(showPointerTypes);
+
+        var test_pointerEvent_pen;
+
+        function eventHandler(event) {
+            //check_PointerEvent(event);
+            test_pointerEvent_pen.step(function () {
+                assert_true(event.pointerType == "pen", "Event with pointerType:" + event.pointerType + " received.  Expected event.pointerType to be 'pen'.");
+            });
+            detected_pointertypes[event.pointerType] = true;
+
+            if (event.type == "pointerleave") {
+                test_pointerEvent_pen.done(); // complete test
+            }
+        }
+
+        function showPointerTypes() {
+            var complete_notice = document.getElementById("complete-notice");
+            var pointertype_log = document.getElementById("pointertype-log");
+            var pointertypes = Object.keys(detected_pointertypes); pointertype_log.innerHTML = pointertypes.length ? pointertypes.join(",") : "(none)";
+            if (test_pointerEvent_pen.status == test_pointerEvent_pen.NOTRUN
+                || test_pointerEvent_pen.status == test_pointerEvent_pen.TIMEOUT) {
+                complete_notice.innerHTML = "Test FAIL due to time out.  This is due to the browser not supporting pointer, or the manual steps were not run to completion.";
+                complete_notice.style.background = "red";
+            }
+            complete_notice.style.display = "block";
+        }
+
+        function run() {
+            var target0 = document.getElementById("target0");
+            test_pointerEvent_pen = async_test("pointer event have pointerType as pen");  // set up test harness
+
+            // listen for all events.
+            for (var i = 0; i < All_Pointer_Events.length; i++) {
+                on_event(target0, All_Pointer_Events[i], eventHandler);
+            }
+        }
+		</script>
+
+		<style>
+			div {
+				margin: 0em;
+				padding: 2em;
+			}
+
+			#target0 {
+				background: yellow;
+				border: 1px solid orange;
+			}
+
+			#complete-notice {
+				border: 1px solid #0a0;
+				display: none;
+			}
+
+			#pointertype-log {
+				font-weight: bold;
+			}
+		</style>
+	</head>
+	<body onload="run()">
+		<h1>Pointer Event: Dispatch pointer events with pointerType equal to "pen"</h1>
+		<h4>Test Description: 
+				If a pointer event is initiated by a pen device, then the pointerType must be 'pen'. 
+		</h4>
+		<br />
+		<div id="target0">
+			Using pen, tap here.
+		</div>
+		<div id="complete-notice">
+			<p>Test complete:  Scroll to Summary to view Pass/Fail Results.</p>
+			<p>The following pointer types were detected: <span id="pointertype-log"></span>.</p>
+		</div>
+
+		<div id="log"></div>
+	</body>
+</html>
+
+

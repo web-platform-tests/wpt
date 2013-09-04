@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Node.textContent</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+// XXX: setting.
+// DocumentFragment, Element:
+test(function() {
+  var element = document.createElement("div")
+  assert_equals(element.textContent, "")
+}, "For an empty Element, textContent should be the empty string")
+
+test(function() {
+  assert_equals(document.createDocumentFragment().textContent, "")
+}, "For an empty DocumentFragment, textContent should be the empty string")
+
+test(function() {
+  var el = document.createElement("div")
+  el.appendChild(document.createComment(" abc "))
+  el.appendChild(document.createTextNode("\tDEF\t"))
+  el.appendChild(document.createProcessingInstruction("x", " ghi "))
+  assert_equals(el.textContent, "\tDEF\t")
+}, "Element with children")
+
+test(function() {
+  var el = document.createElement("div")
+  var child = document.createElement("div")
+  el.appendChild(child)
+  child.appendChild(document.createComment(" abc "))
+  child.appendChild(document.createTextNode("\tDEF\t"))
+  child.appendChild(document.createProcessingInstruction("x", " ghi "))
+  assert_equals(el.textContent, "\tDEF\t")
+}, "Element with descendants")
+
+test(function() {
+  var df = document.createDocumentFragment()
+  df.appendChild(document.createComment(" abc "))
+  df.appendChild(document.createTextNode("\tDEF\t"))
+  df.appendChild(document.createProcessingInstruction("x", " ghi "))
+  assert_equals(df.textContent, "\tDEF\t")
+}, "DocumentFragment with children")
+
+test(function() {
+  var df = document.createDocumentFragment()
+  var child = document.createElement("div")
+  df.appendChild(child)
+  child.appendChild(document.createComment(" abc "))
+  child.appendChild(document.createTextNode("\tDEF\t"))
+  child.appendChild(document.createProcessingInstruction("x", " ghi "))
+  assert_equals(df.textContent, "\tDEF\t")
+}, "DocumentFragment with descendants")
+
+// Text, ProcessingInstruction, Comment:
+test(function() {
+  assert_equals(document.createTextNode("").textContent, "")
+}, "For an empty Text, textContent should be the empty string")
+
+test(function() {
+  assert_equals(document.createProcessingInstruction("x", "").textContent, "")
+}, "For an empty ProcessingInstruction, textContent should be the empty string")
+
+test(function() {
+  assert_equals(document.createComment("").textContent, "")
+}, "For an empty Comment, textContent should be the empty string")
+
+test(function() {
+  assert_equals(document.createTextNode("abc").textContent, "abc")
+}, "For a Text with data, textContent should be that data")
+
+test(function() {
+  assert_equals(document.createProcessingInstruction("x", "abc").textContent,
+                "abc")
+}, "For a ProcessingInstruction with data, textContent should be that data")
+
+test(function() {
+  assert_equals(document.createComment("abc").textContent, "abc")
+}, "For a Comment with data, textContent should be that data")
+
+// Any other node:
+test(function() {
+  assert_equals(document.textContent, null)
+}, "For Documents, textContent should be null")
+
+test(function() {
+  assert_equals(document.doctype.textContent, null)
+}, "For DocumentType, textContent should be null")
+</script>

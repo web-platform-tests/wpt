@@ -1,10 +1,10 @@
 #!/usr/bin/perl
-# prep-css3-multicol
-# Script for cleaning up the repository prior to building the CSS3 Multicol test suite.
+# pub-css-transitions-1
+# Script for cleaning up the repository prior to building the CSS Transitions test suite.
 
 use File::Path;
 
-rmtree('dist/css3-multicol');
+rmtree('dist/css-transitions-1');
 
 # approved/ directory is ready already and built automatically
 
@@ -12,6 +12,9 @@ rmtree('dist/css3-multicol');
 @dirs = (); # extra (unreviewed test) directories
 
 # Prep by Contributor:
+
+###############################################################################
+# Adobe
 
 ###############################################################################
 # Apple - No CSS2.1 tests
@@ -29,8 +32,11 @@ rmtree('dist/css3-multicol');
 # David Baron
 
 ###############################################################################
+# Daniel Glazman
+push @dirs, 'contributors/ttwf_paris/glazou/submitted';
+
+###############################################################################
 # Mozilla
-push @dirs, 'contributors/mozilla/submitted/mozilla-central-reftests/multicol3';
 
 ###############################################################################
 # Eira Monstad
@@ -40,8 +46,6 @@ push @dirs, 'contributors/mozilla/submitted/mozilla-central-reftests/multicol3';
 
 ###############################################################################
 # Gérard Talbot
-
-push @dirs, 'contributors/gtalbot/submitted';
 
 ###############################################################################
 # Ian Hickson
@@ -66,12 +70,18 @@ push @dirs, 'contributors/gtalbot/submitted';
 
 ###############################################################################
 # Opera
-push @dirs, 'contributors/howcome/submitted';
-push @dirs, 'contributors/opera/submitted/multicol';
+
+###############################################################################
+# Rodney Rehm
+push @dirs, 'contributors/rodneyrehm/submitted/css3-transitions';
+
+###############################################################################
+# TTWF
+push @dirs, 'contributors/ttwf/jneiku/submitted';
 
 ###############################################################################
 
 $dirlist = join ' ', @dirs;
-print `python tools/build-css3-multicol.py $dirlist 2>&1`;
-print `find dist/css3-multicol -type f -exec chmod 644 {} \\;`;
+print `python tools/build-css-transitions-1.py $dirlist 2>&1`;
+print `find dist/css-transitions-1 -type f -exec chmod 644 {} \\;`;
 

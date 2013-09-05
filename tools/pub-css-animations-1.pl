@@ -1,10 +1,10 @@
 #!/usr/bin/perl
-# prep-css3-multicol
-# Script for cleaning up the repository prior to building the CSS3 Multicol test suite.
+# pub-css-animations-1
+# Script for cleaning up the repository prior to building the CSS Animations test suite.
 
 use File::Path;
 
-rmtree('dist/css3-multicol');
+rmtree('dist/css-animations-1');
 
 # approved/ directory is ready already and built automatically
 
@@ -12,6 +12,9 @@ rmtree('dist/css3-multicol');
 @dirs = (); # extra (unreviewed test) directories
 
 # Prep by Contributor:
+
+###############################################################################
+# Adobe
 
 ###############################################################################
 # Apple - No CSS2.1 tests
@@ -30,18 +33,16 @@ rmtree('dist/css3-multicol');
 
 ###############################################################################
 # Mozilla
-push @dirs, 'contributors/mozilla/submitted/mozilla-central-reftests/multicol3';
-
+    
 ###############################################################################
-# Eira Monstad
+# Francois Remy
+push @dirs, 'contributors/fremy/submitted';
 
 ###############################################################################
 # Gabriele Romanato
 
 ###############################################################################
 # Gérard Talbot
-
-push @dirs, 'contributors/gtalbot/submitted';
 
 ###############################################################################
 # Ian Hickson
@@ -66,12 +67,18 @@ push @dirs, 'contributors/gtalbot/submitted';
 
 ###############################################################################
 # Opera
-push @dirs, 'contributors/howcome/submitted';
-push @dirs, 'contributors/opera/submitted/multicol';
+
+###############################################################################
+# Nokia
+push @dirs, 'contributors/nokia/submitted/css3-animations';
+
+###############################################################################
+# TTWF
+push @dirs, 'contributors/ttwf_tokyo/gunta/submitted';
 
 ###############################################################################
 
 $dirlist = join ' ', @dirs;
-print `python tools/build-css3-multicol.py $dirlist 2>&1`;
-print `find dist/css3-multicol -type f -exec chmod 644 {} \\;`;
+print `python tools/build-css-animations-1.py $dirlist 2>&1`;
+print `find dist/css-animations-1 -type f -exec chmod 644 {} \\;`;
 

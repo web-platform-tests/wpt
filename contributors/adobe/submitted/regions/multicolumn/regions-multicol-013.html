@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CSS Test: One named flow, text content + multiple regions spanning 
+                     multiple columns + overflowing region</title>
+    <link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com"/>
+    <link rel="help" href="http://www.w3.org/TR/css3-regions/#multi-column-regions"/>
+    <link rel="help" href="http://www.w3.org/TR/css3-multicol/#columns"/>
+    <link rel="match" href="reference/regions-multicol-013-ref.html"/>
+    <meta name="flags" content="ahem"/>
+    <meta name="assert" content="This test checks that the named flow text
+                                 content flows through the regions in the
+                                 in the multicolumn layout that is applied to 
+                                 the regions' parent and that it overflows 
+                                 visibly into a fourth column."/>
+    <style type="text/css">
+        #named-flow {
+            font-family: Ahem;
+            font-size: 25px;
+            line-height: 1em;
+            color: green;
+            -webkit-flow-into: multicol;
+        }
+        #multicol-container {
+            position: absolute;
+            top: 50px;
+            left: 20px;
+            width: 170px;
+            height: 200px;
+            -webkit-columns: 3;
+            -webkit-column-gap: 10px;
+        }
+        #region-1 , #region-2, #region-3 {
+            width: 50px;
+            height: 200px;
+            -webkit-flow-from: multicol;
+        }
+        .failure {
+            position: absolute;
+            background-color: red;
+            top: 50px;
+            width: 50px;
+            height: 200px;
+            z-index: -1;
+        }
+        #bar-1 {
+            left: 20px;
+        }
+        #bar-2 {
+            left: 80px;
+        }
+        #bar-3 {
+            left: 140px;
+        }
+        #bar-4 {
+            left: 200px;
+        }
+    </style>
+</head>
+<body>
+   <p>The test passes if there are four green vertical bars and no red.</p>
+   <div id="named-flow">
+        XX XX XX XX XX XX XX XX
+        XX XX XX XX XX XX XX XX
+        XX XX XX XX XX XX XX XX
+        XX XX XX XX XX XX XX XX
+   </div>
+   <div id="multicol-container">
+       <div id="region-1"></div>
+       <div id="region-2"></div>
+       <div id="region-3"></div>
+   </div>
+   <div class="failure" id="bar-1"></div>
+   <div class="failure" id="bar-2"></div>
+   <div class="failure" id="bar-3"></div>
+   <div class="failure" id="bar-4"></div>
+</body>
+</html>

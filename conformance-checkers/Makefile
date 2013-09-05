@@ -5,6 +5,8 @@ FMT=fmt
 FMTFLAGS=-80
 EXPAND=expand
 EXPANDFLAGS=
+GIT=git
+GITFLAGS=
 
 all: README.md
 
@@ -15,3 +17,12 @@ README.md: index.html
 	    | $(FMT) $(FMTFLAGS) \
 	    | $(PERL) $(PERLFLAGS) -pe 'undef $$/; s/ +(\[[0-9]+\]:)\n +/\n   $$1 /g' \
 	    | $(EXPAND) $(EXPANDFLAGS) > $@
+
+push:
+	cd .. \
+	&& $(GIT) subtree push -P conformance-checkers/ -b conformance-checkers origin conformance-checkers \
+	&& cd -
+
+its-push:
+	cd ..\
+	&& $(GIT) subtree push -P conformance-checkers/html-its/ -b its-inputdata origin its-inputdata

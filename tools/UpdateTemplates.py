@@ -63,11 +63,11 @@ class UpdateTemplates(object): # dump spec section data in legacy format for bui
     def _user(self, user):
         if (user):
             data = user['full_name']
-            if (user['organization']):
+            if ('organization' in user):
                 data += ', ' + user['organization']
-            if (user['uri']):
+            if ('uri' in user):
                 data += ', ' + user['uri']
-            elif (user['email']):
+            elif ('email' in user):
                 data += ', &lt;' + user['email'].replace('@', ' @') + '&gt;'
             return data
         return 'None Yet'
@@ -82,7 +82,7 @@ class UpdateTemplates(object): # dump spec section data in legacy format for bui
             for suite in suites:
                 suite = suites[suite]
                 spec = specs['_' + suite['specs'][0]]
-                owner = suite['owners'][0] if (suite['owners']) else None
+                owner = suite['owners'][0] if ('owners' in suite) else None
                 out.write("  '" + suite['name'] + "' => { ")
                 out.write("title => '" + self._str(suite['title']) + "', ")
                 out.write("spec => '" + self._str(spec['title']) + "', ")

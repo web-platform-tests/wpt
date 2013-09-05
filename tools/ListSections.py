@@ -38,11 +38,10 @@ class ListSections(object): # dump spec section data in legacy format for build 
 
     def _printSections(self, sections):
         for section in sections:
-            if ('official' in section):
-                out = self.mBaseURI + section['uri'] + "\t" + section['name'] + "\t" + section['title']
-                print out.encode('utf-8')
-                if (section['children']):
-                    self._printSections(section['children'])
+            out = self.mBaseURI + section['uri'] + "\t" + section['name'] + "\t" + section['title']
+            print out.encode('utf-8')
+            if ('children' in section):
+                self._printSections(section['children'])
   
   
     def listSections(self, specName):

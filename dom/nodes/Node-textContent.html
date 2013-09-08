@@ -5,7 +5,10 @@
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
 <script>
-// XXX: setting.
+// XXX mutation observers?
+// XXX Range gravitation?
+
+// Getting
 // DocumentFragment, Element:
 test(function() {
   var element = document.createElement("div")
@@ -86,4 +89,134 @@ test(function() {
 test(function() {
   assert_equals(document.doctype.textContent, null)
 }, "For DocumentType, textContent should be null")
+
+
+// Setting
+// DocumentFragment, Element:
+var arguments = [
+  [null, null],
+  [undefined, null],
+  ["", null],
+  [42, "42"],
+  ["abc", "abc"],
+  ["<b>xyz<\/b>", "<b>xyz<\/b>"],
+  ["d\0e", "d\0e"]
+  // XXX unpaired surrogate?
+]
+arguments.forEach(function(aValue) {
+  var argument = aValue[0], expectation = aValue[1]
+  var check = function(aElementOrDocumentFragment) {
+    if (expectation === null) {
+      assert_equals(aElementOrDocumentFragment.textContent, "")
+      assert_equals(aElementOrDocumentFragment.firstChild, null)
+    } else {
+      assert_equals(aElementOrDocumentFragment.textContent, expectation)
+      assert_equals(aElementOrDocumentFragment.childNodes.length, 1,
+                    "Should have one child")
+      var firstChild = aElementOrDocumentFragment.firstChild
+      assert_true(firstChild instanceof Text, "child should be a Text")
+      assert_equals(firstChild.data, expectation, "Should have one child")
+    }
+  }
+
+  test(function() {
+    var el = document.createElement("div")
+    el.textContent = argument
+    check(el)
+  }, "Element without children set to " + format_value(argument))
+
+  test(function() {
+    var el = document.createElement("div")
+    el.appendChild(document.createComment(" abc "))
+    el.appendChild(document.createTextNode("\tDEF\t"))
+    el.appendChild(document.createProcessingInstruction("x", " ghi "))
+    el.textContent = argument
+    check(el)
+  }, "Element with children set to " + format_value(argument))
+
+  test(function() {
+    var el = document.createElement("div")
+    var child = document.createElement("div")
+    el.appendChild(child)
+    child.appendChild(document.createComment(" abc "))
+    child.appendChild(document.createTextNode("\tDEF\t"))
+    child.appendChild(document.createProcessingInstruction("x", " ghi "))
+    el.textContent = argument
+    check(el)
+    assert_equals(child.childNodes.length, 3,
+                  "Should not have changed the internal structure of the removed nodes.")
+  }, "Element with descendants set to " + format_value(argument))
+
+  test(function() {
+    var df = document.createDocumentFragment()
+    df.textContent = argument
+    check(df)
+  }, "DocumentFragment without children set to " + format_value(argument))
+
+  test(function() {
+    var df = document.createDocumentFragment()
+    df.appendChild(document.createComment(" abc "))
+    df.appendChild(document.createTextNode("\tDEF\t"))
+    df.appendChild(document.createProcessingInstruction("x", " ghi "))
+    df.textContent = argument
+    check(df)
+  }, "DocumentFragment with children set to " + format_value(argument))
+
+  test(function() {
+    var df = document.createDocumentFragment()
+    var child = document.createElement("div")
+    df.appendChild(child)
+    child.appendChild(document.createComment(" abc "))
+    child.appendChild(document.createTextNode("\tDEF\t"))
+    child.appendChild(document.createProcessingInstruction("x", " ghi "))
+    df.textContent = argument
+    check(df)
+    assert_equals(child.childNodes.length, 3,
+                  "Should not have changed the internal structure of the removed nodes.")
+  }, "DocumentFragment with descendants set to " + format_value(argument))
+})
+
+// Text, ProcessingInstruction, Comment:
+test(function() {
+  var text = document.createTextNode("abc")
+  text.textContent = "def"
+  assert_equals(text.textContent, "def")
+  assert_equals(text.data, "def")
+}, "For a Text, textContent should set the data")
+
+test(function() {
+  var pi = document.createProcessingInstruction("x", "abc")
+  pi.textContent = "def"
+  assert_equals(pi.textContent, "def")
+  assert_equals(pi.data, "def")
+}, "For a ProcessingInstruction, textContent should set the data")
+
+test(function() {
+  var comment = document.createComment("abc")
+  comment.textContent = "def"
+  assert_equals(comment.textContent, "def")
+  assert_equals(comment.data, "def")
+}, "For a Comment, textContent should set the data")
+
+// Any other node:
+test(function() {
+  var root = document.documentElement
+  document.textContent = "a"
+  assert_equals(document.textContent, null)
+  assert_equals(document.documentElement, root)
+}, "For Document, setting textContent should do nothing")
+
+test(function() {
+  var doctype = document.doctype
+  var props = {
+    name: doctype.name,
+    publicId: doctype.publicId,
+    systemId: doctype.systemId,
+  }
+  doctype.textContent = "b"
+  assert_equals(doctype.textContent, null)
+  assert_equals(doctype.name, props.name, "name should not change")
+  assert_equals(doctype.publicId, props.publicId, "publicId should not change")
+  assert_equals(doctype.systemId, props.systemId, "systemId should not change")
+}, "For DocumentType, setting textContent should do nothing")
 </script>

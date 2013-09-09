@@ -36,7 +36,7 @@ test(function () {
 
     var template = doc.querySelector('#tmpl');
 
-    assert_null(template.content.querySelector('body'),
+    assert_equals(template.content.querySelector('body'), null,
             '<body> element must be ignored');
     assert_equals(template.content.childNodes.length, 1, 'Text shouldn\'t be ignored');
     assert_equals(template.content.firstChild.nodeType, Node.TEXT_NODE,
@@ -57,13 +57,13 @@ test(function () {
 
     var template = doc.querySelector('#tmpl');
 
-    assert_null(template.content.querySelector('body'),
+    assert_equals(template.content.querySelector('body'), null,
             '<body> element must be ignored');
     assert_equals(template.content.childNodes.length, 2,
             'Only body tag should be ignored');
-    assert_not_null(template.content.querySelector('#div1'),
+    assert_not_equals(template.content.querySelector('#div1'), null,
             'Children of <body tag shouldn\'t be ignored');
-    assert_not_null(template.content.querySelector('#div2'),
+    assert_not_equals(template.content.querySelector('#div2'), null,
             'Children of <body tag shouldn\'t be ignored');
 
 }, 'In body insertion mode: Template contains a start tag whose tag name is body. '
@@ -81,13 +81,13 @@ test(function () {
 
     var template = doc.querySelector('#tmpl1').content.querySelector('#tmpl2');
 
-    assert_null(template.content.querySelector('body'),
+    assert_equals(template.content.querySelector('body'), null,
             '<body> element must be ignored');
     assert_equals(template.content.childNodes.length, 2,
             'Only body tag should be ignored');
-    assert_not_null(template.content.querySelector('#div1'),
+    assert_not_equals(template.content.querySelector('#div1'), null,
             'Children of <body tag shouldn\'t be ignored');
-    assert_not_null(template.content.querySelector('#div2'),
+    assert_not_equals(template.content.querySelector('#div2'), null,
             'Children of <body tag shouldn\'t be ignored');
 
 }, 'In body insertion mode: Template contains a start tag whose tag name is body. '

@@ -18,14 +18,14 @@
 function templateIsAChild(element) {
     element.innerHTML = '<template>some text</template>';
 
-    assert_not_null(element.querySelector('template'),
+    assert_not_equals(element.querySelector('template'), null,
         'Template element should be a descendant of the ' + element.tagName + ' element');
 }
 
 function templateIsAnIndirectChild(element) {
     element.innerHTML = '<div><template>some text</template></div>';
 
-    assert_not_null(element.querySelector('template'),
+    assert_not_equals(element.querySelector('template'), null,
         'Template element should be a descendant of the ' + element.tagName + ' element');
 }
 
@@ -34,7 +34,7 @@ function templateIsAnAppendedChild(doc, element) {
 
     element.appendChild(template);
 
-    assert_not_null(element.querySelector('template'),
+    assert_not_equals(element.querySelector('template'), null,
         'Template element should be a descendant of the ' + element.tagName + ' element');
 }
 
@@ -45,7 +45,7 @@ function templateIsAnAppendedIndirectChild(doc, element) {
 
     element.appendChild(div);
 
-    assert_not_null(element.querySelector('template'),
+    assert_not_equals(element.querySelector('template'), null,
         'Template element should be a descendant of the ' + element.tagName + ' element');
 }
 

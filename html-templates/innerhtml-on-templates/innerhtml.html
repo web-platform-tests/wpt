@@ -23,14 +23,14 @@ test(function () {
     div1.setAttribute('id', 'div1');
     template.content.appendChild(div1);
 
-    assert_not_null(template.content.querySelector('#div1'),
+    assert_not_equals(template.content.querySelector('#div1'), null,
             'Element should present in template content');
 
     template.innerHTML = '<div id="div2"></div>';
 
-    assert_null(template.content.querySelector('#div1'),
+    assert_equals(template.content.querySelector('#div1'), null,
             'Template content should be replaced by innerHTML');
-    assert_not_null(template.content.querySelector('#div2'),
+    assert_not_equals(template.content.querySelector('#div2'), null,
             'Element should present in template content');
 
 }, 'innerHTML of template element replaces all referenced by the content attribute');
@@ -48,14 +48,14 @@ test(function () {
     div1.setAttribute('id', 'div1');
     nestedTemplate.content.appendChild(div1);
 
-    assert_not_null(nestedTemplate.content.querySelector('#div1'),
+    assert_not_equals(nestedTemplate.content.querySelector('#div1'), null,
             'Element should present in template content');
 
     nestedTemplate.innerHTML = '<div id="div2"></div>';
 
-    assert_null(nestedTemplate.content.querySelector('#div1'),
+    assert_equals(nestedTemplate.content.querySelector('#div1'), null,
             'Template content should be replaced by innerHTML');
-    assert_not_null(nestedTemplate.content.querySelector('#div2'),
+    assert_not_equals(nestedTemplate.content.querySelector('#div2'), null,
             'Element should present in template content');
 
 }, 'innerHTML of template element replaces all referenced by the content attribute. '
@@ -66,15 +66,15 @@ testInIFrame('../resources/template-contents.html', function(context) {
     var doc = context.iframes[0].contentDocument;
 
     var template = doc.querySelector('template');
-    assert_not_null(template.content.querySelector('div'),
+    assert_not_equals(template.content.querySelector('div'), null,
            'Div element should present in template content');
 
     template.innerHTML = '<span>span internals</span>';
 
-    assert_null(template.content.querySelector('div'),
+    assert_equals(template.content.querySelector('div'), null,
            'div element should be replaced by span in template content');
 
-    assert_not_null(template.content.querySelector('span'),
+    assert_not_equals(template.content.querySelector('span'), null,
            'span element should present in template content');
 
 

@@ -189,19 +189,3 @@ function checkBodyTemplateContent(d, html, id, nodeName) {
 function checkHeadTemplateContent(d, html, id, nodeName) {
     checkTemplateContent(d, d.head, html, id, nodeName);
 }
-
-function assert_null(value, description) {
-    assert_true(value === null, description);
-}
-
-function assert_not_null(value, description) {
-    assert_false(value === null, description);
-}
-
-function assert_undefined(value, description) {
-    assert_true(value === undefined, description);
-}
-
-function assert_not_undefined(value, description) {
-    assert_false(value === undefined, description);
-}

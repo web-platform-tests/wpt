@@ -25,17 +25,17 @@ test(function () {
 
     var template = doc.querySelector('#tpl');
 
-    assert_not_null(template, 'Template element must be parsed');
+    assert_not_equals(template, null, 'Template element must be parsed');
 
-    assert_null(doc.querySelector('#tbl'), 'Table element should not be available');
-    assert_null(doc.querySelector('#tr'), 'TR element should not be available');
-    assert_null(doc.querySelector('#td'), 'TD element should not be available');
+    assert_equals(doc.querySelector('#tbl'), null, 'Table element should not be available');
+    assert_equals(doc.querySelector('#tr'), null, 'TR element should not be available');
+    assert_equals(doc.querySelector('#td'), null, 'TD element should not be available');
 
-    assert_not_null(template.content.querySelector('#tbl'),
+    assert_not_equals(template.content.querySelector('#tbl'), null,
             'Template should contain table element');
-    assert_not_null(template.content.querySelector('#tr'),
+    assert_not_equals(template.content.querySelector('#tr'), null,
             'Template should contain TR element');
-    assert_not_null(template.content.querySelector('#td'),
+    assert_not_equals(template.content.querySelector('#td'), null,
             'Template should contain TD element');
 
 }, 'Generating of implied end tags. Test table elements');
@@ -50,11 +50,11 @@ test(function () {
 
     var template = doc.querySelector('#tpl');
 
-    assert_not_null(template, 'Template element must be parsed');
+    assert_not_equals(template, null, 'Template element must be parsed');
 
-    assert_null(doc.querySelector('#dv'), 'DIV element should not be available');
+    assert_equals(doc.querySelector('#dv'), null, 'DIV element should not be available');
 
-    assert_not_null(template.content.querySelector('#dv'),
+    assert_not_equals(template.content.querySelector('#dv'), null,
             'Template should contain DIV element');
 
 }, 'Generating of implied end tags. Test DIV element');
@@ -68,13 +68,13 @@ test(function () {
 
     var template = doc.querySelector('#tpl');
 
-    assert_not_null(template, 'Template element must be parsed');
+    assert_not_equals(template, null, 'Template element must be parsed');
 
-    assert_null(doc.querySelector('#dv'), 'DIV element should not be available');
+    assert_equals(doc.querySelector('#dv'), null, 'DIV element should not be available');
 
     var div = template.content.querySelector('#dv');
 
-    assert_not_null( div, 'Template should contain DIV element');
+    assert_not_equals( div, null, 'Template should contain DIV element');
     assert_equals(div.innerText, 'Div content', 'Wrong template content inner text');
 
 }, 'Generating of implied end tags. Test some text and DIV element');
@@ -88,14 +88,14 @@ test(function () {
 
     var template = doc.querySelector('#tpl');
 
-    assert_not_null(template, 'Template element must be parsed');
+    assert_not_equals(template, null, 'Template element must be parsed');
 
     assert_equals(template.content.childNodes.length, 1,
             'Wrong number of template\'s children');
 
-    assert_null(doc.querySelector('#dv'), 'DIV element should not be available');
+    assert_equals(doc.querySelector('#dv'), null, 'DIV element should not be available');
 
-    assert_not_null(template.content.querySelector('#dv'),
+    assert_not_equals(template.content.querySelector('#dv'), null,
             'Template should contain DIV element');
     assert_equals(template.content.querySelector('#dv').innerText,
             'Div content', 'Wrong template content inner text');
@@ -108,11 +108,15 @@ testInIFrame('../../resources/head-template-contents-table-no-end-tag.html', fun
 
     var template = doc.head.querySelector('template');
 
-    assert_not_null(template, 'Template element must be parsed');
+    assert_not_equals(template, null,
+            'Template element must be parsed');
 
-    assert_not_null(template.content.querySelector('table'), 'Template should contain table element');
-    assert_not_null(template.content.querySelector('tr'), 'Template should contain TR element');
-    assert_not_null(template.content.querySelector('td'), 'Template should contain TD element');
+    assert_not_equals(template.content.querySelector('table'), null,
+            'Template should contain table element');
+    assert_not_equals(template.content.querySelector('tr'), null,
+            'Template should contain TR element');
+    assert_not_equals(template.content.querySelector('td'), null,
+            'Template should contain TD element');
 
 }, 'Generating of implied end tags. Test table elements. Load HTML document from file');
 
@@ -122,10 +126,10 @@ testInIFrame('../../resources/head-template-contents-div-no-end-tag.html', funct
 
     var template = doc.head.querySelector('template');
 
-    assert_not_null(template, 'Template element must be parsed');
+    assert_not_equals(template, null, 'Template element must be parsed');
 
     var div = template.content.querySelector('div');
-    assert_not_null(div, 'Template should contain div element');
+    assert_not_equals(div, null, 'Template should contain div element');
     assert_equals(div.innerText, 'Hello, template\n    ', 'Invalid div contents');
 
 }, 'Generating of implied end tags. Test div element. Load HTML document from file');

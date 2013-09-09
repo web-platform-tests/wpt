@@ -24,10 +24,10 @@ test(function() {
 
     var template = doc.querySelector('#tmpl');
 
-    assert_not_null(template, 'Template element should not be null');
-    assert_not_undefined(template.content,
+    assert_not_equals(template, null, 'Template element should not be null');
+    assert_not_equals(template.content, undefined,
             'Content attribute of template element should not be undefined');
-    assert_not_null(template.content,
+    assert_not_equals(template.content, null,
             'Content attribute of template element should not be null');
 
     assert_equals(template.ownerDocument, doc.body.ownerDocument,
@@ -51,10 +51,10 @@ test(function() {
     assert_equals(template.ownerDocument, doc.body.ownerDocument,
             'Wrong template node owner document');
 
-    assert_not_null(template, 'Template element should not be null');
-    assert_not_undefined(template.content,
+    assert_not_equals(template, null, 'Template element should not be null');
+    assert_not_equals(template.content, undefined,
             'Content attribute of template element should not be undefined');
-    assert_not_null(template.content,
+    assert_not_equals(template.content, null,
             'Content attribute of template element should not be null');
 
     var div = template.content.querySelector('div');
@@ -75,18 +75,18 @@ test(function() {
             + '</template>';
 
     var template = doc.querySelector('#tmpl');
-    assert_not_null(template, 'Template element should not be null');
+    assert_not_equals(template, null, 'Template element should not be null');
     assert_equals(template.ownerDocument, doc, 'Wrong template node owner document');
-    assert_not_undefined(template.content,
+    assert_not_equals(template.content, undefined,
             'Content attribute of template element should not be undefined');
-    assert_not_null(template.content,
+    assert_not_equals(template.content, null,
             'Content attribute of template element should not be null');
 
     var nestedTemplate = template.content.querySelector('#tmpl2');
-    assert_not_null(nestedTemplate, 'Nested template element should not be null');
-    assert_not_undefined(nestedTemplate.content,
+    assert_not_equals(nestedTemplate, null, 'Nested template element should not be null');
+    assert_not_equals(nestedTemplate.content, undefined,
             'Content attribute of nested template element should not be undefined');
-    assert_not_null(nestedTemplate.content,
+    assert_not_equals(nestedTemplate.content, null,
             'Content attribute of nested template element should not be null');
 
     assert_equals(nestedTemplate.ownerDocument, template.content.ownerDocument,
@@ -109,9 +109,9 @@ testInIFrame('../resources/template-child-nodes-div.xhtml', function(context) {
 
     assert_equals(template.ownerDocument, doc, 'Wrong template node owner document');
 
-    assert_not_undefined(template.content,
+    assert_not_equals(template.content, undefined,
             'Content attribute of template element should not be undefined');
-    assert_not_null(template.content,
+    assert_not_equals(template.content, null,
             'Content attribute of template element should not be null');
 
     var div = template.content.querySelector('div');

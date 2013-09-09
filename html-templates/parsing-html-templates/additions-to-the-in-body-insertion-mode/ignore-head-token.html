@@ -63,7 +63,7 @@ test(function() {
 
     assert_equals(template.content.childNodes.length, 2,
             'Wrong number of template content children');
-    assert_not_null(template.content.querySelector('#div1'),
+    assert_not_equals(template.content.querySelector('#div1'), null,
             'Template should contain valid element');
     assert_equals(template.content.lastChild.tagName, 'TITLE',
             'Template should contain children of ignored HEAD element');
@@ -84,7 +84,7 @@ test(function() {
             'Wrong number of template content children');
     assert_equals(template.content.firstChild.tagName, 'TITLE',
             'Template should contain children of ignored HEAD element');
-    assert_not_null(template.content.querySelector('#div1'),
+    assert_not_equals(template.content.querySelector('#div1'), null,
             'Template should contain valid element');
 
 }, 'Ignore HEAD token. '
@@ -101,7 +101,7 @@ test(function() {
 
     assert_equals(template.content.childNodes.length, 1,
             'Template should contain nested template');
-    assert_not_null(template.content.querySelector('#t2'),
+    assert_not_equals(template.content.querySelector('#t2'), null,
             'Template should contain nested element');
 
     var nestedTemplate = template.content.querySelector('#t2');

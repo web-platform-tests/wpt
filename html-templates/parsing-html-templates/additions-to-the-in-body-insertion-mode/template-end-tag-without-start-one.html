@@ -33,7 +33,8 @@ test(function () {
     doc.body.innerHTML = '<template id="tmpl"></template></template>';
 
     assert_equals(doc.body.childNodes.length, 1, 'Element must be ignored');
-    assert_not_null(doc.querySelector('#tmpl'), 'Element should present it document body');
+    assert_not_equals(doc.querySelector('#tmpl'), null,
+            'Element should present it document body');
 
 }, '</template> tag in HTML body without start one should be ignored. '
     + 'Test valid <template> element and </template> tag after it');
@@ -46,7 +47,8 @@ test(function () {
     doc.body.innerHTML = '</template><template id="tmpl"></template>';
 
     assert_equals(doc.body.childNodes.length, 1, 'Element must be ignored');
-    assert_not_null(doc.querySelector('#tmpl'), 'Element should present it document body');
+    assert_not_equals(doc.querySelector('#tmpl'), null,
+            'Element should present it document body');
 
 }, '</template> tag in HTML body without start one should be ignored. '
     + 'Test valid <template> element and </template> tag before it');
@@ -59,9 +61,9 @@ test(function () {
     doc.body.innerHTML = '</template><template id="tmpl"></template><title></title>';
 
     assert_equals(doc.body.childNodes.length, 2, 'Element must be ignored');
-    assert_not_null(doc.querySelector('#tmpl'),
+    assert_not_equals(doc.querySelector('#tmpl'), null,
             'Valid element should present it document body');
-    assert_not_null(doc.querySelector('title'),
+    assert_not_equals(doc.querySelector('title'), null,
             'Valid title element should present it document body');
 
 }, '</template> tag in HTML body without start one should be ignored. '
@@ -75,9 +77,9 @@ test(function () {
     doc.body.innerHTML = '<template id="tmpl"></template><title></title></template>';
 
     assert_equals(doc.body.childNodes.length, 2, 'Element must be ignored');
-    assert_not_null(doc.querySelector('#tmpl'),
+    assert_not_equals(doc.querySelector('#tmpl'), null,
             'Valid element should present it document body');
-    assert_not_null(doc.querySelector('title'),
+    assert_not_equals(doc.querySelector('title'), null,
             'Valid title element should present it document body');
 
 }, '</template> tag in HTML body without start one should be ignored. '
@@ -87,8 +89,10 @@ test(function () {
 testInIFrame('../../resources/end-template-tag-in-body.html', function(context) {
     var doc = context.iframes[0].contentDocument;
 
-    assert_null(doc.body.querySelector('template'), '</template> must be ignored');
-    assert_not_null(doc.body.querySelector('div'), 'Valid element should present it document body');
+    assert_equals(doc.body.querySelector('template'), null,
+            '</template> must be ignored');
+    assert_not_equals(doc.body.querySelector('div'), null,
+            'Valid element should present it document body');
 
 }, '</template> tag in HTML body without start one should be ignored. '
     + 'Test HTML document loaded from file');

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <title>HTML Test: dropzone_attribute_data_item_kind_string</title>
+    <link rel='author' title='Intel' href='http://www.intel.com'>
+    <link rel='help' href='http://www.w3.org/html/editing/dnd/the-datatransfer-interface/'>
+    <script src='/resources/testharness.js'></script>
+    <script src='/resources/testharnessreport.js'></script>
+    <style>
+      #drop {
+        border: 2px solid black;
+        width: 100px;
+        height: 100px;
+        padding: 20px;
+      }
+      #select {
+        color: blue;
+        margin: 20px auto;
+      }
+    </style>
+  </head>
+  
+  <body>
+    <div>Select and drag the blue text to rectangular box.</div>
+    <div id='drag' draggable>blue text</div>
+    <div id='drop' dropzone='copy string:text/plain'></div>
+    <div id='log'> </div>
+
+    <script>
+      var drop;
+      setup(function() {
+          drag = document.querySelector('#drag');
+      }, {explicit_done: true, explicit_timeout: true});
+      
+      on_event(drag, 'dragstart', function(event) {
+        var dataTransfer = event.dataTransfer;
+        test(function() {
+          assert_equals(dataTransfer.effectAllowed, '',  'effectAllowed show be empty');
+        }, 'effectAllowed show be empty');
+        done();
+      });
+    </script>
+  </body>
+</html>

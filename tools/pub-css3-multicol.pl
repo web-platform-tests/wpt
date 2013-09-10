@@ -41,6 +41,8 @@ push @dirs, 'contributors/mozilla/submitted/mozilla-central-reftests/multicol3';
 ###############################################################################
 # Gérard Talbot
 
+push @dirs, 'contributors/gtalbot/submitted';
+
 ###############################################################################
 # Ian Hickson
 

@@ -1,16 +1,33 @@
 http://www.w3.org/TR/css3-animations/#introduction	1	Introduction
-http://www.w3.org/TR/css3-animations/#keyframes-	2	 Keyframes 
-http://www.w3.org/TR/css3-animations/#timing-functions-for-keyframes-	2.1	 Timing functions for keyframes 
-http://www.w3.org/TR/css3-animations/#animations-	3	 Animations 
-http://www.w3.org/TR/css3-animations/#animation-behavior-	3.1	 Animation behavior 
-http://www.w3.org/TR/css3-animations/#the-animation-name-property-	3.2	 The &lsquo;animation-name&rsquo; Property 
-http://www.w3.org/TR/css3-animations/#the-animation-duration-property-	3.3	 The &lsquo;animation-duration&rsquo; Property 
-http://www.w3.org/TR/css3-animations/#animation-timing-function_tag	3.4	 The &lsquo;animation-timing-function&rsquo; Property 
-http://www.w3.org/TR/css3-animations/#the-animation-iteration-count-property-	3.5	 The &lsquo;animation-iteration-count&rsquo; Property 
-http://www.w3.org/TR/css3-animations/#the-animation-direction-property-	3.6	 The &lsquo;animation-direction&rsquo; Property 
-http://www.w3.org/TR/css3-animations/#the-animation-play-state-property-	3.7	 The &lsquo;animation-play-state&rsquo; Property 
-http://www.w3.org/TR/css3-animations/#the-animation-delay-property-	3.8	 The &lsquo;animation-delay&rsquo; Property 
-http://www.w3.org/TR/css3-animations/#the-animation-shorthand-property-	3.9	 The &lsquo;animation&rsquo; Shorthand Property 
-http://www.w3.org/TR/css3-animations/#animation-events-	4	 Animation Events 
-http://www.w3.org/TR/css3-animations/#dom-interfaces-	5	 DOM Interfaces 
-http://www.w3.org/TR/css3-animations/#references	6	References
+http://www.w3.org/TR/css3-animations/#values	2	Values
+http://www.w3.org/TR/css3-animations/#animations	3	Animations
+http://www.w3.org/TR/css3-animations/#keyframes	4	Keyframes
+http://www.w3.org/TR/css3-animations/#timing-functions	4.1	Timing functions for keyframes
+http://www.w3.org/TR/css3-animations/#animation-name-property	4.2	The ‘animation-name’ Property
+http://www.w3.org/TR/css3-animations/#animation-duration-property	4.3	The ‘animation-duration’ Property
+http://www.w3.org/TR/css3-animations/#animation-timing-function-property	4.4	The ‘animation-timing-function’ Property
+http://www.w3.org/TR/css3-animations/#animation-iteration-count-property	4.5	The ‘animation-iteration-count’ Property
+http://www.w3.org/TR/css3-animations/#animation-direction-property	4.6	The ‘animation-direction’ Property
+http://www.w3.org/TR/css3-animations/#animation-play-state-property	4.7	The ‘animation-play-state’ Property
+http://www.w3.org/TR/css3-animations/#animation-delay-property	4.8	The ‘animation-delay’ Property
+http://www.w3.org/TR/css3-animations/#animation-fill-mode-property	4.9	The ‘animation-fill-mode’ Property
+http://www.w3.org/TR/css3-animations/#animation-shorthand-property	4.10	The ‘animation’ Shorthand Property
+http://www.w3.org/TR/css3-animations/#animation-events	5	Animation Events
+http://www.w3.org/TR/css3-animations/#AnimationEvent-interface	5.1	Interface AnimationEvent
+http://www.w3.org/TR/css3-animations/#AnimationEvent-IDL	5.1.1	IDL Definition
+http://www.w3.org/TR/css3-animations/#AnimationEvent-attributes	5.1.2	Attributes
+http://www.w3.org/TR/css3-animations/#AnimationEvent-types	5.2	Types of AnimationEvent
+http://www.w3.org/TR/css3-animations/#dom-interfaces	6	DOM Interfaces
+http://www.w3.org/TR/css3-animations/#CSSRule-interface	6.1	Interface CSSRule
+http://www.w3.org/TR/css3-animations/#CSSRule-IDL	6.1.1	IDL Definition
+http://www.w3.org/TR/css3-animations/#CSSKeyframeRule-interface	6.2	Interface CSSKeyframeRule
+http://www.w3.org/TR/css3-animations/#CSSKeyframeRule-IDL	6.2.1	IDL Definition
+http://www.w3.org/TR/css3-animations/#CSSKeyframeRule-attributes	6.2.2	Attributes
+http://www.w3.org/TR/css3-animations/#CSSKeyframesRule-interface	6.3	Interface CSSKeyframesRule
+http://www.w3.org/TR/css3-animations/#CSSKeyframesRule-IDL	6.3.1	IDL Definition
+http://www.w3.org/TR/css3-animations/#CSSKeyframesRule-attributes	6.3.2	Attributes
+http://www.w3.org/TR/css3-animations/#CSSKeyframesRule-appendRule	6.3.3	The appendRule method
+http://www.w3.org/TR/css3-animations/#CSSKeyframesRules-deleteRule	6.3.4	The deleteRule method
+http://www.w3.org/TR/css3-animations/#CSSKeyframesRule-findRule	6.3.5	The findRule method
+http://www.w3.org/TR/css3-animations/#acknowledgments	7	Acknowledgments
+http://www.w3.org/TR/css3-animations/#references	8	References

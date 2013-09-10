@@ -1,28 +1,27 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title>multicol-rule-001</title>
-<link rel="author" title="Hakon Wium Lie" href="mailto:howcome@opera.com"/>
-<style type="text/css">
-div {
-  font: 10px/10px Ahem;
-  margin: 1em 0;
-  color: lime;
-  background: yellow;
-  width: 400px;
-}
+ <head>
+  <title>CSS Reftest Reference</title>
+  <link rel="author" title="Hakon Wium Lie" href="mailto:howcome@opera.com" />
+  <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2013-08-27 -->
+  <meta name="flags" content="ahem" />
+  <style type="text/css"><![CDATA[
+  div
+  {
+  color: green;
+  font: 1.25em/1 Ahem;
+  margin-bottom: 0.5em;
+  width: 20em;
+  }
+  ]]></style>
+ </head>
+ <body>
 
-div.multicol { 
-  columns: 2;
-  column-gap: 0px;
-  column-rule: 400px solid lime;
-}
+  <p>Test passes if there are 2 green bars and <strong>no red</strong>.</p>
 
-</style>
-</head>
-<body>
-The two horizontal bars below should be identical.
-<div class="ref">0123456789012345678901234567890123456789</div>
-<div class="ref">0123456789012345678901234567890123456789</div>
-</body>
+  <div>12345678901234567890</div>
+
+  <div>12345678901234567890</div>
+
+ </body>
 </html>

@@ -1,0 +1,22 @@
+<!doctype html><base href=http://w3c-test.org>
+<title>moving &lt;source> around</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script>
+var s;
+var t = async_test(function(t) {
+  var v = document.createElement('video');
+  s = document.createElement('source');
+  s.src = '/delay/?type=html&delay=50&content-type=video%2Fogg';
+  s.onerror = t.step_func(function() { window.onload = null; t.done(); });
+  v.appendChild(s);
+  document.body.appendChild(v); // invokes resource selection
+  onload = t.step_func(function() { assert_unreached(); });
+});
+</script>
+<script>
+t.step(function() {
+  document.body.appendChild(s);
+});
+</script>

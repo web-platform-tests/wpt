@@ -1,0 +1,22 @@
+<!doctype html><base href=http://w3c-test.org>
+<title>networkState</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script>
+var v;
+var t = async_test(function(t) {
+  v = document.createElement('video');
+  assert_equals(v.networkState, 0, 'networkState when creating the element');
+  document.body.appendChild(v); // runs resource selection algorithm
+  assert_equals(v.networkState, 3, 'networkState when inserting the element');
+});
+</script>
+<!-- now resource selection will continue its sync section -->
+<!-- will find neither src nor source, so sets networkState to NETWORK_EMPTY -->
+<script>
+t.step(function() {
+  assert_equals(v.networkState, 0, 'networkState after letting the sync section of resource selection run');
+  t.done();
+});
+</script>

@@ -1,0 +1,19 @@
+<!doctype html><base href=http://w3c-test.org>
+<title>invoking load by setting src when networkState is not NETWORK_EMPTY</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script>var loadstartCount = 0</script>
+<video onloadstart=loadstartCount++><source></video><!-- starts resource selection and sets networkState to NETWORK_NO_SOURCE -->
+<script>
+async_test(function(t) {
+  var v = document.querySelector('video');
+  v.setAttribute('src', '');
+  window.onload = t.step_func(function() {
+    assert_equals(loadstartCount, 2);
+    t.done();
+  });
+});
+</script>
+
+

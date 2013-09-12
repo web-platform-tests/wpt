@@ -1,0 +1,30 @@
+<!doctype html><base href=http://w3c-test.org>
+<title>inserting another source before the candidate</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script>
+var v;
+function createSource(src) {
+  var source = document.createElement('source');
+  source.src = src;
+  return source;
+}
+var t = async_test(function(t) {
+  v = document.createElement('video');
+  v.addEventListener('loadstart', t.step_func(function() {
+    assert_equals(v.currentSrc.substr(v.currentSrc.lastIndexOf('#')), '#a');
+    t.done();
+  }), false);
+  document.body.appendChild(v); // invokes resource selection
+  v.appendChild(createSource('#a'));
+});
+</script>
+<!-- now resource selection algorithm will continue its sync section -->
+<!-- #a is candidate -->
+<!-- pointer is between #a and the end of the list -->
+<script>
+t.step(function() {
+  v.insertBefore(createSource('#b'), v.firstChild); // pointer is unchanged, #a is still candidate
+});
+</script>

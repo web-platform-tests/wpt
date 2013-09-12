@@ -1,0 +1,23 @@
+<!doctype html><base href=http://w3c-test.org>
+<title>invoking resource selection with implicit pause() by removing from document</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<video src></video><!-- invokes resource selection; networkState is 3 -->
+<script>
+var v;
+var t = async_test(function(t) {
+  v = document.querySelector('video');
+  assert_equals(v.networkState, 3, 'networkState before removing src');
+  v.removeAttribute('src'); // no side-effects
+  assert_equals(v.networkState, 3, 'networkState after removing src');
+  v.parentNode.removeChild(v); // implicit pause() which ... does nothing
+  assert_equals(v.networkState, 3, 'networkState after removing v');
+});
+</script>
+<script>
+t.step(function() {
+  assert_equals(v.networkState, 3, 'networkState in separate script');
+  t.done();
+});
+</script>

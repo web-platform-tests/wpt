@@ -1,0 +1,27 @@
+<!doctype html><base href=http://w3c-test.org>
+<title>removing the candidate source, no listener</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script>
+var v;
+function createSource(src) {
+  var source = document.createElement('source');
+  source.src = src;
+  return source;
+}
+var t = async_test(function(t) {
+  v = document.createElement('video');
+  document.body.appendChild(v); // invokes resource selection
+  v.appendChild(createSource('/delay/?type=html&delay=50&content-type=video%2Fogg'));
+});
+</script>
+<!-- now resource selection algorithm will continue its sync section -->
+<!-- #a is candidate -->
+<!-- pointer is between #a and the end of the list -->
+<script>
+t.step(function() {
+  v.removeChild(v.firstChild); // just tests that we don't crash
+  setTimeout(t.step_func(function() { t.done(); }), 1000);
+});
+</script>

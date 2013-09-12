@@ -1,0 +1,16 @@
+<!doctype html><base href=http://w3c-test.org>
+<title>NOT invoking load by setting src in the wrong namespace</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<video></video><!-- invokes load but sets networkState to NETWORK_EMPTY again without firing any events -->
+<script>
+async_test(function(t) {
+  var v = document.querySelector('video');
+  var passed = true;
+  v.onloadstart = t.step_func(function() { assert_unreached(); });
+  v.setAttributeNS('bogus','src', '');
+  window.onload = t.step_func(function() { v.onloadstart = null; t.done(); });
+});
+</script>
+

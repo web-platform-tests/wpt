@@ -7,6 +7,8 @@ EXPAND=expand
 EXPANDFLAGS=
 GIT=git
 GITFLAGS=
+VNU_TEST_REPO=git@github.com:validator/tests.git
+ITS_REPO=git@github.com:w3c/its-2.0-testsuite-inputdata.git
 
 all: README.md
 
@@ -20,9 +22,10 @@ README.md: index.html
 
 push:
 	cd .. \
-	&& $(GIT) subtree push -P conformance-checkers/ -b conformance-checkers origin conformance-checkers \
-	&& cd -
+	  && $(GIT) subtree push -P conformance-checkers/ $(VNU_TEST_REPO) master \
+	  && cd -
 
 its-push:
 	cd ..\
-	&& $(GIT) subtree push -P conformance-checkers/html-its/ -b its-inputdata origin its-inputdata
+	  && $(GIT) subtree push -P conformance-checkers/html-its/ $(ITS_REPO) master \
+	  && cd -

@@ -4,6 +4,7 @@
     <title>XMLHttpRequest: send() - Redirects (bogus Location header; sync)</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#infrastructure-for-the-send()-method" data-tested-assertations="following::dl[1]/dt[2] following::dl[1]/dd[2]/ol/li[1] following::dl[1]/dd[2]/ol/li[3]" />
   </head>
   <body>
     <div id="log"></div>
@@ -11,14 +12,15 @@
       function redirect(code, location) {
         test(function() {
           var client = new XMLHttpRequest()
-          client.open("GET", "resources/redirect.php?location=" + location + "&code=" + code)
-          assert_throws("NETWORK_ERR", function() { client.send(null) })
+          client.open("GET", "resources/redirect.php?location=" + location + "&code=" + code, false)
+          assert_throws("NetworkError", function() { client.send(null) })
         }, document.title + " (" + code + ": " + location + ")")
       }
+      redirect("301", "foobar://abcd")
       redirect("302", "http://z")
       redirect("302", "mailto:someone@example.org")
       redirect("303", "http://z")
-      redirect("303", "mailto:someone@example.org")
+      redirect("303", "tel:1234567890")
     </script>
   </body>
 </html>

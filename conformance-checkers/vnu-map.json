@@ -1,0 +1,8 @@
+{
+  "html": "http://s.validator.nu/html5-all.rnc",
+  "html-aria": "http://s.validator.nu/html5-all.rnc",
+  "html-its": "http://s.validator.nu/html5-all.rnc",
+  "html-rdfa": "http://s.validator.nu/html5-all.rnc",
+  "html-rdfalite": "http://s.validator.nu/html5-rdfalite.rnc",
+  "xhtml": "http://s.validator.nu/xhtml5-all.rnc",
+}

@@ -23,7 +23,7 @@
         test.step(function()
         {
             var xhr = new XMLHttpRequest();
-            var expect =  ["loadstart", "upload.loadstart", "upload.progress", "upload.load", "upload.loadend", 4, "progress","load", "loadend"];
+            var expect =  ["loadstart", "upload.loadstart", "upload.progress", "upload.load", "upload.loadend", "progress", 4, "load", "loadend"];
             var actual = [];
 
             xhr.onreadystatechange = function()

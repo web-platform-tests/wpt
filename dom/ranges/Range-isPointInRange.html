@@ -8,8 +8,18 @@
 <script>
 "use strict";
 
-// Will be filled in on the first run for that range
 var testRangesCached = [];
+test(function() {
+	for (var j = 0; j < testRanges.length; j++) {
+		test(function() {
+			testRangesCached[j] = rangeFromEndpoints(eval(testRanges[j]));
+		}, "Set up for range " + j + " " + testRanges[j]);
+	}
+	var detachedRange = document.createRange();
+	detachedRange.detach();
+	testRanges.push("detached");
+	testRangesCached.push(detachedRange);
+}, "Setup");
 
 for (var i = 0; i < testPoints.length; i++) {
 	var node = eval(testPoints[i])[0];
@@ -22,28 +32,8 @@ for (var i = 0; i < testPoints.length; i++) {
 		normalizedOffset += Math.pow(2, 32);
 	}
 
-	// "If the detached flag is set, throw an "InvalidStateError" exception and
-	// terminate these steps."
-	test(function() {
-		var range = document.createRange();
-		range.detach();
-		assert_throws("INVALID_STATE_ERR", function() {
-			range.isPointInRange(node, offset);
-		}, "Must throw InvalidStateError if range is detached");
-	}, "Point " + i + " " + testPoints[i] + ", detached range");
-
 	for (var j = 0; j < testRanges.length; j++) {
 		test(function() {
-			if (testRangesCached[j] === undefined) {
-				try {
-					testRangesCached[j] = rangeFromEndpoints(eval(testRanges[i]));
-				} catch(e) {
-					testRangesCached[j] = null;
-				}
-			}
-			assert_not_equals(testRangesCached[j], null,
-				"Setting up the range failed");
-
 			var range = testRangesCached[j].cloneRange();
 
 			// "If node's root is different from the context object's root,

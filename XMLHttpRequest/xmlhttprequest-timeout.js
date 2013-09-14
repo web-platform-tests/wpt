@@ -272,7 +272,7 @@ var SyncRequestSettingTimeoutAfterOpen = {
     catch (e) {
       pass = true;
     }
-    ok(pass, "Synchronous XHR must not allow a timeout to be set");
+    ok(pass, "Synchronous XHR must not allow a timeout to be set - setting timeout must throw");
     TestCounter.testComplete();
   }
 };
@@ -288,7 +288,7 @@ var SyncRequestSettingTimeoutBeforeOpen = {
     catch (e) {
       pass = true;
     }
-    ok(pass, "Synchronous XHR must not allow a timeout to be set");
+    ok(pass, "Synchronous XHR must not allow a timeout to be set - calling open() after timeout is set must throw");
     TestCounter.testComplete();
   }
 };

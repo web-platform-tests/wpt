@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<!--
+Distributed under both the W3C Test Suite License [1] and the W3C
+3-clause BSD License [2]. To contribute to a W3C Test Suite, see the
+policies and contribution forms [3].
+
+[1] http://www.w3.org/Consortium/Legal/2008/04-testsuite-license
+[2] http://www.w3.org/Consortium/Legal/2008/03-bsd-license
+[3] http://www.w3.org/2004/10/27-testcases
+-->
+<html>
+  <head>
+    <title>Shadow DOM Test: Custom Pseudo Element must not apply child selector.</title>
+    <link rel="author" title="shingo.miyazawa" href="mailto:kumatronik@gmail.com">
+    <link rel="help" href="http://www.w3.org/TR/2013/WD-shadow-dom-20130514/#custom-pseudo-elements">
+    <meta name="assert" content="Custom Pseudo-Elements: child selector after pseudo style is not apply to element. (i.e. div::x-thumb > span  style does not apply <div><span></span></div>. above then the specified x-thumb pseudo in the tag.)">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="../../testcommon.js"></script>
+    <link rel="stylesheet" href="/resources/testharness.css">
+  </head>
+  <body>
+    <div id="log"></div>
+    <script>
+
+      function getFontSize(element) {
+        return window.getComputedStyle(element, null).getPropertyValue("font-size");
+      }
+
+      test(unit(function (ctx) {
+
+        var d = newRenderedHTMLDocument(ctx);
+
+        var widget = d.createElement('div');
+        d.body.appendChild(widget);
+
+        var s = createSR(widget);
+
+        var sdiv = d.createElement('div');
+        sdiv.pseudo = 'x-test';
+        s.appendChild(sdiv);
+
+        var schild = d.createElement('span');
+        schild.innerHTML = 'This is child of a pseudo-element';
+        sdiv.appendChild(schild);
+
+        var sstyle = d.createElement('style');
+        sstyle.innerHTML = 'div::x-test { font-size: 20px; }';
+        sstyle.innerHTML += 'div::x-test > span { font-size: 30px; }';
+        d.body.appendChild(sstyle);
+
+        assert_equals(getFontSize(sdiv), '20px', 'Pseudo-element style should be applied');
+        assert_equals(getFontSize(schild), '20px', 'Pseudo-element child selector style should not be applied');
+
+      }), 'Pseudo-element child selector style should not be applied.');
+
+    </script>
+  </body>
+</html>

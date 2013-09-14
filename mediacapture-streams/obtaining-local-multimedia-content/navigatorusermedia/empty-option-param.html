@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+<head>
+<title>getUserMedia({}) aborts with NOT_SUPPORTED_ERR</title>
+<link rel="author" title="Dominique Hazael-Massieux" href="mailto:dom@w3.org"/>
+<link rel="help" href="http://dev.w3.org/2011/webrtc/editor/getusermedia.html#navigatorusermedia">
+<link rel='stylesheet' href='/resources/testharness.css' media='all'/>
+</head>
+<body>
+<h1>Description</h1>
+<p>This test checks that getUserMedia with no value in the options parameter raises a NOT_SUPPORTED_ERR exception.</p>
+
+<div id='log'></div>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=../../featuredetection.js></script>
+<script src=prefix.js></script>
+<script>
+var t = async_test("Tests that getUserMedia raises a NOT_SUPPORTED_ERR exception when used with an empty options parameter");
+t.step( function () {
+  assert_throws("NOT_SUPPORTED_ERR", 
+    function () { 
+      navigator.getUserMedia({}, function (stream) {
+        assert_unreached("This should never be triggered since the constraints parameter is empty");
+        t.done();
+      }, function (error) {
+        assert_unreached("This should never be triggered since the constraints parameter is empty");
+         });
+  });
+  t.done();
+});
+
+</script>
+</body>
+</html>

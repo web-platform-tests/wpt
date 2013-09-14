@@ -5,7 +5,9 @@
 <script src=../constants.js></script>
 <div id=log></div>
 <script>
+var domain = SCHEME_DOMAIN_PORT.split('://')[1];
+
 test(function() {
-  assert_true(new WebSocket("ws://"+location.hostname+"/") instanceof WebSocket);
+  assert_true(new WebSocket("ws://"+domain+"/") instanceof WebSocket);
 });
 </script>

@@ -6,8 +6,10 @@
 <div id=log></div>
 <script>
 var tests = ['ws:', 'ws:/', 'wss:', 'wss:/'];
+var domain = SCHEME_DOMAIN_PORT.split('://')[1];
+
 //Pass condition is to not throw
 for (var i = 0; i < tests.length; ++i) {
-  test(function(){new WebSocket(tests[i]+location.hostname+'/ws/echo')}, tests[i]);
+  test(function(){new WebSocket(tests[i]+domain+'/ws/echo')}, tests[i]);
 }
 </script>

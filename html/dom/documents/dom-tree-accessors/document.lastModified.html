@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<title>document.lastModified</title>
+<link rel="author" title="kyo_ago" href="mailto:kyo.ago1983@gmail.com">
+<link rel="help" href="http://www.whatwg.org/specs/web-apps/current-work/multipage/dom.html#dom-document-lastmodified">
+<link rel="stylesheet" href="/resources/testharness.css">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+test(function() {
+  assert_regexp_match(
+    document.lastModified,
+    /\d\d\/\d\d\/\d{4} \d\d:\d\d:\d\d/
+  );
+}, 'Check format');
+
+test(function() {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', location.href, false);
+  xhr.send();
+  var lastModified = xhr.getResponseHeader("Last-Modified");
+
+  assert_equals(
+    formatDateTime(new Date(lastModified)),
+    formatDateTime(new Date(document.lastModified))
+  );
+}, 'Equals Last-Modified header');
+
+(function () {
+  var lmNullTest = async_test("Testing null lastModified");
+  var lmCurrentTest = async_test("Testing count up lastModified");
+
+  var htmlUrl = URL.createObjectURL(new Blob([[
+    '<!DOCTYPE html>',
+    '<html>',
+    '<head><title><\/title><\/head>',
+    '<body><\/body>',
+    '<\/html>'
+  ].join('\n')], { 'type' : 'text/html' }));
+  var iframe = document.createElement('iframe');
+  iframe.src = htmlUrl;
+  document.body.appendChild(iframe);
+
+  iframe.addEventListener('load', lmNullTest.step_func(assertLastModifiedNull));
+  iframe.addEventListener('load', lmCurrentTest.step_func(assertLastModifiedCountUp));
+
+  function assertLastModifiedNull () {
+    var lastModified = formatDateTime(new Date());
+    assert_equals(iframe.contentDocument.lastModified, lastModified);
+    lmNullTest.done();
+  }
+
+  function assertLastModifiedCountUp () {
+    setTimeout(lmCurrentTest.step_func(function () {
+      var lastModified = formatDateTime(new Date());
+      assert_equals(iframe.contentDocument.lastModified, lastModified);
+      lmNullTest.done();
+    }), 1100);
+  }
+})();
+
+function formatDateTime (now) {
+  //Format MM/DD/YYYY hh:mm:ss
+  var date = [
+    ('0' + (now.getMonth() + 1)).replace(/^0(\d\d)/, '$1'),
+    ('0' + now.getDate()).replace(/^0(\d\d)/, '$1'),
+    now.getFullYear()
+  ].join('/');
+  var time = [
+    ('0' + now.getHours()).replace(/^0(\d\d)/, '$1'),
+    ('0' + now.getMinutes()).replace(/^0(\d\d)/, '$1'),
+    ('0' + now.getSeconds()).replace(/^0(\d\d)/, '$1')
+  ].join(':');
+
+  return date + ' ' + time;
+}
+
+</script>

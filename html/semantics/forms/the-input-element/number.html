@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Input Number</title>
+     <meta name=viewport content="width=device-width, maximum-scale=1.0, user-scalable=no" />
+	  <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/forms.html#number-state-(type=number)">
+   <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+
+  <body>
+  		<h1>Input Time</h1>
+			<div style="display:none;">
+				<input type="number" id="chkDefaultValue" />
+				<input type="number" id="chkSupportAttribute"
+					 autocomplete="on" list="listSupportAttr" max="1000.001" min="-1000.001"
+					 placeholder="ABCDEFG HIJKLMN" readonly="true" step="10"
+					 value="500.001" required /> 
+				<datalist id="listSupportAttr">
+					<option value="LIST01"><option/>
+					<option value="LIST02"><option/>
+					<option value="LIST03"><option/>
+				</datalist>
+				<input type="number" id="chkStep" />
+				<input type="number" id="chkBoundary" max="10.001" min="-10.001" />
+    	</div>
+		<div id="log">
+    </div>
+	<script type="text/javascript">
+		
+/* check default value */
+var _chkDefVal = document.getElementById('chkDefaultValue');
+test(function() { assert_equals( _chkDefVal.value, "");}
+, "Number Element of default value");
+test(function() { assert_equals(_chkDefVal.step, "")}
+, "default value of the step attribute of the Number element is empty check");
+test(function(){assert_equals(_chkDefVal.max, "");}
+, "default value of the max attribute of the Number element is empty check");
+test(function(){assert_equals(_chkDefVal.min, "");}
+, "default value of the min attribute of the Number element is empty check");
+test(function(){assert_equals(_chkDefVal.list, null);}
+, "default value of the list attribute of the Number element is null check");
+test(function(){assert_equals(_chkDefVal.valueAsNumber, NaN);}
+, "default value of the valueAsNumber attribute of the Number element is NaN check");
+
+/* check common attribute apply */
+var _chkSupAttr = document.getElementById('chkSupportAttribute');
+test(function(){assert_equals(_chkSupAttr.type, "number")}
+, "Common attributes type exists.");
+test(function(){assert_equals(_chkSupAttr.autocomplete, "on")}
+, "Common attributes autocomplete exists.");
+test(function(){assert_equals(_chkSupAttr.max, "1000.001")}
+, "Common attributes max exists.");
+test(function(){assert_equals(_chkSupAttr.min, "-1000.001")}
+, "Common attributes min exists.");
+test(function(){assert_equals(_chkSupAttr.placeholder, "ABCDEFG HIJKLMN")}
+, "Common attributes placeholder exists.");
+test(function(){assert_equals(_chkSupAttr.readOnly, true)}
+, "Common attributes readonly exists.");
+test(function(){assert_equals(_chkSupAttr.step, "10")}
+, "Common attributes step exists.");
+test(function(){assert_equals(_chkSupAttr.value, "500.001")}
+, "Common attributes value exists.");
+test(function(){assert_equals(_chkSupAttr.required, true)}
+, "Common attributes required exists.");
+test(function(){assert_equals(_chkSupAttr.valueAsNumber, 500.001)}
+, "Common attributes valueAsNumber exists.");
+test(function(){assert_equals(_chkSupAttr.list, document.getElementById('listSupportAttr'))}
+, "Common attributes list exists.");
+
+/* check common method apply */
+test(function(){ assert_true(typeof(_chkSupAttr.stepUp) ==="function" ) }   , "stepUp function support on input Element");
+test(function(){ assert_true(typeof(_chkSupAttr.stepDown) ==="function" ) } , "stepDown function support on input Element");
+
+/* check step up / step down method */
+
+/*
+TODO Test
+http://www.w3.org/html/wg/drafts/html/CR/infrastructure.html#rules-for-parsing-floating-point-number-values
+Big Value test
+Big Value test
+Max StepUp test
+Min StepUp test
+*/
+
+var _chkStep = document.getElementById('chkStep');
+test(function(){
+	_chkStep.value = "10";
+	_chkStep.step = "";
+	_chkStep.stepUp();
+	assert_equals(_chkStep.value,"11");
+} , "stepUp step value empty on default step value ");
+test(function(){
+	_chkStep.value = "20";
+	_chkStep.step = "";
+	_chkStep.stepDown();
+	assert_equals(_chkStep.value,"19");
+}, "stepDown step value empty default step value");
+test(function(){
+	_chkStep.value = "10";
+	_chkStep.step = "-10";
+	_chkStep.stepUp();
+	assert_equals(_chkStep.value, "11");
+},"stepUp on step value minus");
+test(function(){
+	_chkStep.value = "10";
+	_chkStep.step = "-10";
+	_chkStep.stepDown();
+	assert_equals(_chkStep.value, "9");
+},"stepDown on step value minus");
+test(function(){
+	_chkStep.value = "10";
+	_chkStep.step = "0";
+	_chkStep.stepUp();
+	assert_equals(_chkStep.value, "11");
+} , "stepUp on step value zero ");
+test(function(){
+	_chkStep.value = "10";
+	_chkStep.step = "0";
+	_chkStep.stepDown();
+	assert_equals(_chkStep.value, "9");
+} , "stepDown on step value zero ");
+
+test(function(){
+	_chkStep.value = "100.001";
+	_chkStep.step = "0.001";
+	_chkStep.stepUp();
+	assert_equals(_chkStep.value, "100.002");
+} , "stepUp on step value Decimal");
+test(function(){
+	_chkStep.value = "100";
+	_chkStep.step = "0.011";
+	_chkStep.stepDown();
+	assert_equals(_chkStep.value, "99.989");
+} , "stepDown on step value Decimal");
+test(function(){
+	_chkStep.value = "10";
+	_chkStep.step = "5";
+	_chkStep.stepUp(100);
+	assert_equals(_chkStep.value, "110");
+}, "stepUp argment check");
+test(function(){
+	_chkStep.value = "500";
+	_chkStep.step = "1";
+	_chkStep.stepDown(100);
+	assert_equals(_chkStep.value, "400");
+}, "stepDown argment check");
+
+/* check boundary value (max="10.001" min="-10.001")*/
+var _chkBound = document.getElementById('chkBoundary');
+test(function(){
+	_chkBound.value = "10.001";
+	_chkBound.step = "1";
+	_chkBound.stepUp();
+	assert_equals(_chkBound.value, "10.001");
+} , "stepUp stop because it exceeds the maximum value");
+test(function(){
+	_chkBound.value = "-10.001";
+	_chkBound.step = "1";
+	_chkBound.stepDown();
+	assert_equals(_chkBound.value, "-10.001");
+} , "stepDown Stop so lower than the minimum value");
+
+test(function(){
+	_chkBound.value = "10";
+	_chkBound.step = "1";
+	_chkBound.stepUp();
+	assert_equals(_chkBound.value, "10.001");
+} , "stop at border on stepUp");
+test(function(){
+	_chkBound.value = "-10";
+	_chkBound.step = "1";
+	_chkBound.stepDown();
+	assert_equals(_chkBound.value, "-10.001");
+} , "stop at border on stepDown");
+
+	</script>
+  </body>
+</html>

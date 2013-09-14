@@ -6,7 +6,7 @@
     <link rel="help" href="http://www.w3.org/TR/selectors4/#dir-pseudo">
     <link rel="match" href="selectors-dir-selector-ref.html">
     <meta name="flags" content="">
-    <meta name="assert" content="The :dir(rtl) pseudo-class matches elements that has a directionality of right-to-left (rtl).">
+    <meta name="assert" content="The :dir(ltr) pseudo-class matches a element that has a directionality of (ltr). Since the div element has dir=ltr, the selector matches.">
     <style type="text/css">
        div {
            width: 100px;
@@ -15,12 +15,12 @@
        }
 
        div:dir(ltr) {
-       	   background-color: green;
+           background-color: green;
        }
     </style>
 </head>
 <body>
-	<p>Test passes if there is a <strong>filled green square</strong> and <strong>no red</strong>.</p>
+    <p>Test passes if there is a <strong>filled green square</strong> and <strong>no red</strong>.</p>
     <div dir="ltr"></div>
 </body>
 </html>

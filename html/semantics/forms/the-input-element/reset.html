@@ -65,7 +65,7 @@
         var elementUrlAnother = document.getElementById("checkResetFormUrlAnother");
         var elementEmailAnother = document.getElementById("checkResetFormEmailAnother");
         var elementPasswordAnother = document.getElementById("checkResetFormPasswordAnother");
-        var element3 = document.getElementById("checkResetFormSingle");
+        var elementSingle = document.getElementById("checkResetFormSingle");
         var inputValue = "1";
         elementText.value = inputValue;
         elementTel.value = inputValue;
@@ -78,7 +78,7 @@
         elementEmailAnother.value = inputValue;
         elementPasswordAnother.value = inputValue;
         element.click();
-        element3.click();
+        elementSingle.click();
         test(function(){
           assert_equals(elementText.value, "");
           assert_equals(elementTel.value, "");

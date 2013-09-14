@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Input Reset</title>
+    <link rel="author" title="Keiji Yoshida" href="mailto:yoshida.keiji.84@gmail.com">
+    <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/forms.html#reset-button-state-(type=reset)">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <h1>Input Reset</h1>
+    <div id="log">
+    </div>
+    <div style="display: none;">
+      <input type="reset" id="checkMutableReset">
+      <input type="reset" id="checkImmutableReset" disabled>
+      <form>
+        <input type="text" value="" id="checkResetFormText">
+        <input type="tel" value="" id="checkResetFormTel">
+        <input type="url" value="" id="checkResetFormUrl">
+        <input type="email" value="" id="checkResetFormEmail">
+        <input type="password" value="" id="checkResetFormPassword">
+        <input type="reset" id="checkResetForm">
+      </form>
+      <form>
+        <input type="text" value="" id="checkResetFormTextAnother">
+        <input type="tel" value="" id="checkResetFormTelAnother">
+        <input type="url" value="" id="checkResetFormUrlAnother">
+        <input type="email" value="" id="checkResetFormEmailAnother">
+        <input type="password" value="" id="checkResetFormPasswordAnother">
+      </form>
+      <input type="reset" id="checkResetFormSingle">
+    </div>
+    <script type="text/javascript">
+      (function(){
+        var element = document.getElementById("checkMutableReset");
+        var t = async_test("If the element is mutable and it is clicked, click event would be fired");
+        element.onclick = t.step_func(function(){
+          assert_true(true);
+          t.done();
+        });
+        element.click();
+      })();
+
+      (function(){
+        var element = document.getElementById("checkImmutableReset");
+        var t = async_test("If the element is immutable and it is clicked, click event would not be fired");
+        element.onclick = t.step_func(function(){
+          assert_unreached();
+          t.done();
+        });
+        element.click();
+        setTimeout(t.step_func(function(){t.done()}), 1000);
+      })();
+
+      (function(){
+        var element = document.getElementById("checkResetForm");
+        var elementText = document.getElementById("checkResetFormText");
+        var elementTel = document.getElementById("checkResetFormTel");
+        var elementUrl = document.getElementById("checkResetFormUrl");
+        var elementEmail = document.getElementById("checkResetFormEmail");
+        var elementPassword = document.getElementById("checkResetFormPassword");
+        var elementTextAnother = document.getElementById("checkResetFormTextAnother");
+        var elementTelAnother = document.getElementById("checkResetFormTelAnother");
+        var elementUrlAnother = document.getElementById("checkResetFormUrlAnother");
+        var elementEmailAnother = document.getElementById("checkResetFormEmailAnother");
+        var elementPasswordAnother = document.getElementById("checkResetFormPasswordAnother");
+        var element3 = document.getElementById("checkResetFormSingle");
+        var inputValue = "1";
+        elementText.value = inputValue;
+        elementTel.value = inputValue;
+        elementUrl.value = inputValue;
+        elementEmail.value = inputValue;
+        elementPassword.value = inputValue;
+        elementTextAnother.value = inputValue;
+        elementTelAnother.value = inputValue;
+        elementUrlAnother.value = inputValue;
+        elementEmailAnother.value = inputValue;
+        elementPasswordAnother.value = inputValue;
+        element.click();
+        element3.click();
+        test(function(){
+          assert_equals(elementText.value, "");
+          assert_equals(elementTel.value, "");
+          assert_equals(elementUrl.value, "");
+          assert_equals(elementEmail.value, "");
+          assert_equals(elementPassword.value, "");
+          assert_equals(elementTextAnother.value, inputValue);
+          assert_equals(elementTelAnother.value, inputValue);
+          assert_equals(elementUrlAnother.value, inputValue);
+          assert_equals(elementEmailAnother.value, inputValue);
+          assert_equals(elementPasswordAnother.value, inputValue);
+        }, "If the element is clicked, it would reset the form owner");
+      })();
+
+      test(function(){
+        var element = document.getElementById("checkMutableReset");
+        assert_own_property(element, "id");
+      }, "id attribute applies to the element");
+
+      var attributesNotApplied = ["accept", "alt", "autocomplete", "checked", "dirname", "formaction", "formenctype", "formmethod", "formnovalidate", "formtarget", "height", "list", "max", "maxlength", "min", "multiple", "pattern", "placeholder", "readonly", "required", "size", "src", "step", "width"];
+      for(var i = 0, l = attributesNotApplied.length; i < l; i++){
+        test(function(){
+          var element = document.getElementById("checkMutableReset");
+          assert_not_exists(element, attributesNotApplied[i]);
+        }, attributesNotApplied[i] + " attribute does not apply to the element");
+      }
+
+      var IDLAttributesNotApplied = ["checked", "files", "list", "selectionStart", "selectionEnd", "selectionDirection", "valueAsDate", "valueAsNumber"];
+      for(var i = 0, l = IDLAttributesNotApplied.length; i < l; i++){
+        test(function(){
+          var element = document.getElementById("checkMutableReset");
+          assert_not_exists(element, IDLAttributesNotApplied[i]);
+        }, IDLAttributesNotApplied[i] + " IDL attribute does not apply to the element");
+      }
+
+      var methodsNotApplied = ["select", "setRangeText", "setSelectionRange", "stepDown", "stepUp" ];
+      for(var i = 0, l = methodsNotApplied.length; i < l; i++){
+        test(function(){
+          var element = document.getElementById("checkMutableReset");
+          assert_not_exists(element, methodsNotApplied[i]);
+        }, methodsNotApplied[i] + " method does not apply to the element");
+      }
+    </script>
+  </body>
+</html>

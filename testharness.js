@@ -133,6 +133,15 @@ policies and contribution forms [3].
  *       asserts outside these places won't be detected correctly by the harness
  *       and may cause a file to stop testing.
  *
+ * == Harness Timeout ==
+ * 
+ * A timeout for the entire test harness may be set using a <meta> element 
+ * (this allows it to be inspected by outside tools such as test runners).
+ * The syntax is:
+ * <meta name="timeout" content="{timeout value in ms}"
+ * After this time, the harness will stop waiting for further async tests to
+ * complete.
+ *
  * == Setup ==
  *
  * Sometimes tests require non-trivial setup that may fail. For this purpose
@@ -146,9 +155,6 @@ policies and contribution forms [3].
  * any tests have returned results. Properties are global properties of the test
  * harness. Currently recognised properties are:
  *
- * timeout - The time in ms after which the harness should stop waiting for
- *           tests to complete (this is different to the per-test timeout
- *           because async tests do not start their timer until .step is called)
  *
  * explicit_done - Wait for an explicit call to done() before declaring all
  *                 tests complete (see below)

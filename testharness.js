@@ -138,7 +138,7 @@ policies and contribution forms [3].
  * A timeout for the entire test harness may be set using a <meta> element 
  * (this allows it to be inspected by outside tools such as test runners).
  * The syntax is:
- * <meta name="timeout" content="{timeout value in ms}"
+ * <meta name="timeout" content="{timeout value in ms}">
  * After this time, the harness will stop waiting for further async tests to
  * complete.
  *

@@ -1315,16 +1315,26 @@ policies and contribution forms [3].
 
         this.properties = properties;
 
+        var metas = document.getElementsByTagName("meta");
+        for (var i=0; i<metas.length; i++)
+        {
+            if (metas[i].name == "timeout")
+            {
+                var value = parseInt(metas[i].content);
+                if (value > 0)
+                {
+                    this.timeout_length = value;
+                }
+                break;
+            }
+        }
+
         for (var p in properties)
         {
             if (properties.hasOwnProperty(p))
             {
                 var value = properties[p]
-                if (p == "timeout")
-                {
-                    this.timeout_length = value;
-                }
-                else if (p == "allow_uncaught_exception") {
+                if (p == "allow_uncaught_exception") {
                     this.allow_uncaught_exception = value;
                 }
                 else if (p == "explicit_done" && value)

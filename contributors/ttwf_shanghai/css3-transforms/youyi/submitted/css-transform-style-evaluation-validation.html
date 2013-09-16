@@ -5,6 +5,7 @@
     <title>CSS Transforms Test: property</title>
     <link rel="author" title="Intel" href="http://www.intel.com">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms/#transform-property">
+    <meta name="flags" content="dom">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
   </head>
@@ -13,71 +14,67 @@
     <div id="log"></div>
     <script>
       test(function() {
-        assert_own_property(document.getElementById("test").style, "transform", "expect transform");
-      }, "Check the existence of Transform.");
-
-      document.getElementById("test").style.transform = "rotate(30deg),rotateX(60deg)";
-      test(function() {
+        document.getElementById("test").style.transform = "rotate(30deg),rotateX(60deg)"
         assert_equals(document.getElementById("test").style.transform, "", "expect NULL");
       }, "transform: Check bad-format multi-expr input.");
 
-      document.getElementById("test").style.transform = "rotate(30deg)|rotateX(60deg)";
       test(function() {
+        document.getElementById("test").style.transform = "rotate(30deg)|rotateX(60deg)";
         assert_equals(document.getElementById("test").style.transform, "", "expect not NULL");
       }, "transform: Check multi-expr input with tab.");
 
-      document.getElementById("test").style.transform = " rotate(30deg) rotateX(60deg) ";
       test(function() {
+        document.getElementById("test").style.transform = " rotate(30deg) rotateX(60deg) ";
         assert_not_equals(document.getElementById("test").style.transform, "", "expect not NULL");
       }, "transform: Check multi-expr input with spaces start and end.");
 
-      document.getElementById("test").style.transform = "rotate(30deg)  rotateX(60deg)";
       test(function() {
+        document.getElementById("test").style.transform = "rotate(30deg)  rotateX(60deg)";
         assert_not_equals(document.getElementById("test").style.transform, "", "expect not NULL");
-      }, "transform: Check multi-expr input with tab.");
+      }, "transform: Check multi-expr input with two spaces.");
 
-      document.getElementById("test").style.transform = "rotate(30deg) rotateX(60deg)";
       test(function() {
+        document.getElementById("test").style.transform = "rotate(30deg) rotateX(60deg)";
         assert_not_equals(document.getElementById("test").style.transform, "", "expect not NULL");
       }, "transform: Check valied multi-expr input.");
-
-      document.getElementById("test").style.transform = "rotate(0)";     
+    
       test(function() {
+        document.getElementById("test").style.transform = "rotate(0)";
         assert_not_equals(document.getElementById("test").style.transform, "", "expect not NULL");
       }, "transform: Check rotate(0) input.");
 
-      document.getElementById("test").style.transform = "rotateX(0)";
       test(function() {
+        document.getElementById("test").style.transform = "rotateX(0)";
         assert_not_equals(document.getElementById("test").style.transform, "", "expect not NULL");
       }, "transform: Check rotateX(0) input.");
 
-      document.getElementById("test").style.transform = "rotateY(0)";
       test(function() {
+        document.getElementById("test").style.transform = "rotateY(0)";
         assert_not_equals(document.getElementById("test").style.transform, "", "expect not NULL");
       }, "transform: Check rotateY(0) input.");
 
-      document.getElementById("test").style.transform = "rotateZ(0)";
       test(function() {
+        document.getElementById("test").style.transform = "rotateZ(0)";
         assert_not_equals(document.getElementById("test").style.transform, "", "expect not NULL");
       }, "transform: Check rotateZ(0) input.");
 
-      document.getElementById("test").style.transform = "rotate(string)";
       test(function() {
+        document.getElementById("test").style.transform = "rotate(string)";
         assert_not_equals(document.getElementById("test").style.transform, "", "expect not NULL");
       }, "transform: Check rotate(string) input.");
 
-      document.getElementById("test").style.transform = "rotateX(string)";
       test(function() {
+        document.getElementById("test").style.transform = "rotateX(string)";
         assert_not_equals(document.getElementById("test").style.transform, "", "expect not NULL");
       }, "transform: Check rotateX(string) input.");
 
-      document.getElementById("test").style.transform = "rotateY(string)";
       test(function() {
+        document.getElementById("test").style.transform = "rotateY(string)";
         assert_not_equals(document.getElementById("test").style.transform, "", "expect not NULL");
       }, "transform: Check rotateY(string) input.");
 
-      document.getElementById("test").style.transform = "rotateZ(string)";
       test(function() {
+        document.getElementById("test").style.transform = "rotateZ(string)";
         assert_not_equals(document.getElementById("test").style.transform, "", "expect not NULL");
       }, "transform: Check rotateZ(string) input.");
     </script>

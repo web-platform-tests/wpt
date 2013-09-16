@@ -5,6 +5,7 @@
     <title>CSS Transforms Test: property existence</title>
     <link rel="author" title="Intel" href="http://www.intel.com">
     <link rel="help" href="http://www.w3.org/TR/css3-transforms">
+    <meta name="flags" content="dom">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
   </head>
@@ -13,7 +14,7 @@
     <div id="log"></div>
     <script>
       test(function() {
-        assert_own_property(document.getElementById("test").style, "transform", "expect transform");
+        assert_not_equals(document.getElementById("test").style.transfor, undefined, "expect transform is not undefined");
       }, "Check the existence of transform.");
 
       test(function() {

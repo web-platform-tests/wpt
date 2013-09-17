@@ -24,7 +24,7 @@
   
         var timer = setTimeout(timeout, 8000);
         
-        // This test uses a script (delay.php) to change script order execution
+        // This test uses a script (log.py) to change script order execution
         // See async_003.htm and async_004.htm for how this works
         // In this test the 'log(2)' should run first, then the 'ordered script' and then the script for the load event
         //
@@ -47,7 +47,7 @@
             
             //Ordered Script
             var s1 = document.createElement("script");
-            s1.src = "http://w3c-test.org/html/tests/submission/Microsoft/async/delay.php?sec=2&id=1";
+            s1.src = "log.py?sec=2&id=1";
             document.head.appendChild(s1);
         </script>
         <script type="text/javascript">

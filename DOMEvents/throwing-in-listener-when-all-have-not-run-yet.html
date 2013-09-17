@@ -7,9 +7,10 @@
 <div id="log"></div>
 
 <script>
+    setup({allow_uncaught_exception:true})
     var t = async_test("Throwing in event listener");
 
-    document.addEventListener('DOMContentLoaded', function(){
+    document.addEventListener('DOMContentLoaded', t.step_func(function(){
         var element = document.getElementById('bim');
 
         var secondCalled = false;
@@ -23,7 +24,7 @@
 
         assert_true(secondCalled);
         t.done();
-    });
+    }));
 </script>
 
 <div id="bim">

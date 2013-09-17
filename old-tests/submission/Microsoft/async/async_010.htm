@@ -22,7 +22,7 @@
   
         var timer = setTimeout(timeout, 8000);
             
-        // This test uses a script (delay.php) to change script order execution
+        // This test uses a script (log.py) to change script order execution
         // See async_003.htm and async_004.htm for how this works
         // In this test the 'log(4)' script below will run first, then the s1, s2, s3 in order
         //
@@ -40,18 +40,18 @@
         <span style="display : none" id="testresult"></span>
         <script type="text/javascript">
             var s1 = document.createElement("script");
-            s1.src="http://w3c-test.org/html/tests/submission/Microsoft/async/delay.php?sec=2&id=1";
+            s1.src="log.py?sec=2&id=1";
             s1.async = false;
             document.body.appendChild(s1);
 
             var s2 = document.createElement("script");
-            s2.src="http://w3c-test.org/html/tests/submission/Microsoft/async/delay.php?sec=1&id=2";
+            s2.src="log.py?sec=1&id=2";
             s2.async = false;
             document.body.appendChild(s2);
 
             var s3 = document.createElement("script");
             s3.id = "s3";
-            s3.src="http://w3c-test.org/html/tests/submission/Microsoft/async/delay.php?sec=0&id=3";
+            s3.src="log.py?sec=0&id=3";
             s3.async = false;
             document.body.appendChild(s3);
 

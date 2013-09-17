@@ -11,7 +11,7 @@
       var test = async_test()
       test.step(function() {
         document.domain = document.domain
-        source = new EventSource("resources/message.php")
+        source = new EventSource("resources/message.py")
         source.onopen = function(e) {
           test.step(function() {
             assert_equals(source.readyState, source.OPEN)

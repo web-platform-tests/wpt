@@ -17,7 +17,7 @@ s1.src = "scripts/include-1.js";
 s1.async = false;
 
 var s = document.createElementNS("http://www.w3.org/2000/svg", "script");
-s.setAttributeNS("http://www.w3.org/1999/xlink", "href", "scripts/delay.php?url=include-2.js&time=2");
+s.setAttributeNS("http://www.w3.org/1999/xlink", "href", "scripts/include-2.js?pipe=trickle(d2)");
 
 document.getElementsByTagName("svg")[0].appendChild(s);
 document.getElementsByTagName("svg")[0].appendChild(s1);

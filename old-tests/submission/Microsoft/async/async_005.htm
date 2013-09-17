@@ -24,7 +24,7 @@
   
         var timer = setTimeout(timeout, 5000);
         
-        // This test uses a script (delay.php) to change script order execution
+        // This test uses a script (log.py) to change script order execution
         // See async_003.htm and async_004.htm for how this works
         // In this test 
         //  * The second script tag below should execute first
@@ -45,9 +45,9 @@
         
         <span style="display : none" id="testresult"></span>
 
-        <script type="text/javascript" src="http://w3c-test.org/html/tests/submission/Microsoft/async/delay.php?sec=1&id=1" defer async></script>
+        <script type="text/javascript" src="log.py?sec=1&id=1" defer async></script>
         <script type="text/javascript">log('2');</script>
-        <script type="text/javascript" src="http://w3c-test.org/html/tests/submission/Microsoft/async/delay.php?sec=3&id=3"></script>
+        <script type="text/javascript" src="log.py?sec=3&id=3"></script>
         <script type="text/javascript">log('4');</script>
     </body>
 </html>

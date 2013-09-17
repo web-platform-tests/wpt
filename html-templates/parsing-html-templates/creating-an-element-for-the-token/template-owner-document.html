@@ -181,12 +181,17 @@ HTML5_ELEMENTS.forEach(function(value) {
 
         parameters.push([
                 'Test ownerDocument for the element ' + value + ' in the template',
-                element.ownerDocument,
-                template.content.ownerDocument
+                element,
+                template
             ]);
     }
 });
-generate_tests(assert_equals, parameters,
+
+function compare_owners(element, template_content) {
+    assert_equals(element.ownerDocument, template_content.ownerDocument)
+}
+
+generate_tests(compare_owners, parameters,
         'Test ownerDocument property of all HTML5 elements in a template. '
             + 'Current DOCUMENT has no browsing context.');
 
@@ -215,12 +220,12 @@ try {
             parameters.push([
                     'Test ownerDocument for the element ' + value + ' in the template. '
                         + 'Document has browsing context',
-                    element.ownerDocument,
-                    template.content.ownerDocument
+                    element,
+                    template.content
                 ]);
         }
     });
-    generate_tests(assert_equals, parameters,
+    generate_tests(compare_owners, parameters,
             'Test ownerDocument property of all HTML5 elements in a template. '
                 + 'Current DOCUMENT has browsing context.');
 

@@ -10,7 +10,7 @@
     <script>
       var test = async_test()
       test.step(function() {
-        var source = new EventSource("resources/message.php?mime=x%20bogus")
+        var source = new EventSource("resources/message.py?mime=x%20bogus")
         source.onmessage = function() {
           test.step(function() {
             assert_unreached()

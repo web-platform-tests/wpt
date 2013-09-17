@@ -10,7 +10,7 @@
     <script>
       var test = async_test()
       test.step(function() {
-        var source = new EventSource("resources/message.php")
+        var source = new EventSource("resources/message.py")
         source.onopen = function() {
           test.step(function() {
             this.close()
@@ -23,7 +23,7 @@
       var test2 = async_test(document.title + ", test events", { timeout: 9000 });
       test2.step(function() {
         var count = 0, reconnected = false,
-            source = new EventSource("resources/reconnect-fail.php?id=" + new Date().getTime());
+            source = new EventSource("resources/reconnect-fail.py?id=" + new Date().getTime());
 
         source.onerror = this.step_func(function(e) {
           assert_equals(e.type, 'error');

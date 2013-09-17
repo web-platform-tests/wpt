@@ -24,7 +24,7 @@
   
         var timer = setTimeout(timeout, 8000);
         
-        // This test uses a script (delay.php) to change script order execution
+        // This test uses a script (log.py) to change script order execution
         // See async_003.htm and async_004.htm for how this works
         // In this test both dynamically created scripts have async set to 'false'
         // So when they are appended the run syncronously
@@ -42,12 +42,12 @@
         <span style="display : none" id="testresult"></span>
         <script type="text/javascript">
             var one = document.createElement("script");
-            one.src="http://w3c-test.org/html/tests/submission/Microsoft/async/delay.php?sec=3&id=1";
+            one.src="log.py?sec=3&id=1";
             one.async = false;
             document.head.appendChild(one);
 
             var two = document.createElement("script");
-            two.src="http://w3c-test.org/html/tests/submission/Microsoft/async/delay.php?sec=1&id=2";
+            two.src="log.py?sec=1&id=2";
             two.async = false;
             document.head.appendChild(two);
         </script>

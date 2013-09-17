@@ -16,7 +16,7 @@
           if (responseType !== undefined) {
             client.responseType = responseType
           }
-          client.open("GET", "resources/status.php?content=" + input + "&type=" + encodeURIComponent(type), false)
+          client.open("GET", "resources/status.py?content=" + input + "&type=" + encodeURIComponent(type), false)
           client.send(null)
           assert_equals(client.responseText, output)
         }, document.title + " (" + type + " " + input + ")")

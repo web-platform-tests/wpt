@@ -4,7 +4,7 @@
     <title>W3C WebSocket API - Send 65K binary data - ArrayBuffer - WebSocket</title>
     <script type="text/javascript" src="/resources/testharness.js"></script>
     <script type="text/javascript" src="/resources/testharnessreport.js"></script>
-    <script type="text/javascript" src="websocket.js"></script>
+    <script type="text/javascript" src="websocket.js?pipe=sub"></script>
 </head>
 <body>
     <div id="log"></div>
@@ -37,7 +37,6 @@
         wsocket.addEventListener('close', testClose.step_func(function (evt) {
             assert_true(isOpenCalled, "WebSocket connection should be open");
             assert_equals(evt.wasClean, true, "wasClean should be true");
-            clearTimeout(timeOut);
             testClose.done();
         }), true);
     </script>

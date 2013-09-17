@@ -24,11 +24,11 @@
         })
       }
 
-      doCORS(crossdomain + "resources/cors.php?run=message.php",
+      doCORS(crossdomain + "resources/cors.py?run=message",
         "basic use")
-      doCORS(crossdomain + "resources/cors.php?run=redirect.php",
+      doCORS(crossdomain + "resources/cors.py?run=redirect&location=/eventsource/resources/cors.py?run=message",
         "redirect use")
-      doCORS(crossdomain + "resources/cors.php?run=status-reconnect.php&status=200",
+      doCORS(crossdomain + "resources/cors.py?run=status-reconnect&status=200",
         "redirect use recon")
 
       function failCORS(url, title) {
@@ -51,11 +51,11 @@
         })
       }
 
-      failCORS(crossdomain + "resources/cors.php?run=message.php?credentials=none",
+      failCORS(crossdomain + "resources/cors.py?run=message?credentials=none",
         "no Allow-Credentials header should fail")
-      failCORS(crossdomain + "resources/cors.php?run=message.php&origin=http://example.org",
+      failCORS(crossdomain + "resources/cors.py?run=message&origin=http://example.org",
         "allow-origin: http://example.org should fail")
-      failCORS(crossdomain + "resources/cors.php?run=message.php&origin=",
+      failCORS(crossdomain + "resources/cors.py?run=message&origin=",
         "allow-origin:'' should fail")
     </script>
   </body>

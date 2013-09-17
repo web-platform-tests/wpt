@@ -22,7 +22,7 @@
               }
             })
           }
-          client.open("GET", "resources/redirect.php?location="+encodeURIComponent("http://www2."+location.hostname+(location.pathname.replace(/[^\/]+$/, ''))+'resources/corsenabled.php')+"&code=" + code)
+          client.open("GET", "resources/redirect.py?location="+encodeURIComponent("http://www2."+location.hostname+(location.pathname.replace(/[^\/]+$/, ''))+'resources/corsenabled.py')+"&code=" + code)
           client.setRequestHeader("Content-Type", "application/x-pony")
           client.send(null)
         })

@@ -12,7 +12,7 @@
       function request(data, expected_type) {
         test(function() {
           var client = new XMLHttpRequest()
-          client.open("POST", "resources/content.php", false)
+          client.open("POST", "resources/content.py", false)
           client.send(data)
           assert_equals(client.getResponseHeader("x-request-content-type"), expected_type)
         })

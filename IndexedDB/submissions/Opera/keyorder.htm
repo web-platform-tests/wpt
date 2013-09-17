@@ -1,13 +1,12 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <meta charset="utf-8">
 <title>Key sort order</title>
+<meta name=timeout content=long>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="support.js"></script>
 
 <script>
-    setup({timeout:20000});
-
     function keysort(desc, unsorted, expected) {
         var db,
           t = async_test("Database readback sort - " + desc, { timeout: 10000 });

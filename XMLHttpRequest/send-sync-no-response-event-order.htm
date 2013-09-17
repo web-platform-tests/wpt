@@ -39,7 +39,7 @@
             xhr.upload.onloadstart = function(e){ actual.push("upload." + e.type); };
             xhr.upload.onloadend   = function(e){ actual.push("upload." + e.type);};
 
-            xhr.open("POST", "./resources/content.php", false);
+            xhr.open("POST", "./resources/content.py", false);
             xhr.send();
 
             assert_equals(xhr.response, "");

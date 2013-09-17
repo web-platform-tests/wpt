@@ -21,7 +21,7 @@ var TIME_DELAY = 200;
 /*
  * This should point to a resource that responds with a text/plain resource after a delay of TIME_XHR_LOAD milliseconds.
  */
-var STALLED_REQUEST_URL = "resources/delay.php?ms=" + (TIME_XHR_LOAD * 1000);
+var STALLED_REQUEST_URL = "resources/delay.py?ms=" + (TIME_XHR_LOAD * 1000);
 
 var inWorker = false;
 try {

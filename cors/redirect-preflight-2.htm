@@ -5,7 +5,8 @@
 
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
-<script src=support.js></script>
+<script src=support.js?pipe=sub></script>
+<script src=/common/utils.js></script>
 
 <h1>Preflight after redirect</h1>
 
@@ -15,9 +16,9 @@
 async_test(function() {
     var test_id = "fail_" +  new Date().getTime()
     var client = new XMLHttpRequest()
-    var last_url = CROSSDOMAIN + 'resources/cors-makeheader.php?origin=*&ident=' + test_id
+    var last_url = CROSSDOMAIN + 'resources/cors-makeheader.py?origin=*&ident=' + test_id
 
-    client.open('GET', 'resources/cors-makeheader.php?origin=*&location=' + encodeURIComponent(last_url))
+    client.open('GET', 'resources/cors-makeheader.py?origin=*&location=' + encodeURIComponent(last_url))
     client.setRequestHeader('custom-header', 'admin')
     client.onerror = this.step_func(function() {
         this.done()
@@ -30,15 +31,16 @@ async_test(function() {
 async_test(function() {
     var test_id = "success_" +  new Date().getTime()
     var client = new XMLHttpRequest()
-    var last_url = CROSSDOMAIN + 'resources/cors-makeheader.php?headers=custom-header&origin=*&ident=' + test_id
+    var uuid_token = token();
+    var last_url = CROSSDOMAIN + 'resources/cors-makeheader.py?headers=custom-header&origin=*&token=' + uuid_token;
 
-    client.open('GET', 'resources/cors-makeheader.php?origin=*&location=' + encodeURIComponent(last_url))
+    client.open('GET', 'resources/cors-makeheader.py?origin=*&location=' + encodeURIComponent(last_url))
     client.setRequestHeader('custom-header', 'admin')
     client.onload = this.step_func(function() {
         // Test that I got custom-header
 
         /* To check whether we did a preflight */
-        client.open('GET', 'resources/checkandremovefromlog.php?ident=' + test_id)
+        client.open('GET', 'resources/cors-makeheader.py?check&token=' + uuid_token)
         client.onload = this.step_func(function() {
             assert_equals(client.response, "1", "did preflight")
             this.done()

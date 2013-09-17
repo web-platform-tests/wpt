@@ -5,7 +5,7 @@
 
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
-<script src=support.js></script>
+<script src=support.js?pipe=sub></script>
 
 <h1>CORS redirect handling</h1>
 
@@ -19,7 +19,7 @@
         origin         = location.protocol + "//" + location.host,
         remote_origin  = origin.replace('://', '://' + SUBDOMAIN + '.'),
 
-        local   = dirname(location.href) + 'resources/cors-makeheader.php',
+        local   = dirname(location.href) + 'resources/cors-makeheader.py',
         remote  = local.replace('://', '://' + SUBDOMAIN + '.'),
         remote2 = local.replace('://', '://' + SUBDOMAIN2 + '.');
 

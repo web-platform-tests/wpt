@@ -1,14 +1,13 @@
 <!doctype html>
 <title>document.characterSet normalization tests</title>
 <link rel=author title="Aryeh Gregor" href=ayg@aryeh.name>
+<meta name=timeout value=long>
 <div id=log></div>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <style>iframe { display: none }</style>
 <script>
 "use strict";
-
-setup({timeout: 15000});
 
 // Taken straight from the encoding spec.
 var encodingMap = {
@@ -353,7 +352,7 @@ Object.keys(encodingMap).forEach(function(name) {
     iframe.src = "data:text/html,<!doctype html>" + 
                  '<meta charset="' + label + '">';
     */
-    iframe.src = "encoding.php?label=" + label;
+    iframe.src = "encoding.py?label=" + label;
     iframe.onload = function() {
       t.step(function() {
         assert_equals(iframe.contentDocument.characterSet.toLowerCase(), name);

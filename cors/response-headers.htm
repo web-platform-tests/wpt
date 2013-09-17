@@ -5,7 +5,7 @@
 
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
-<script src=support.js></script>
+<script src=support.js?pipe=sub></script>
 
 <h1>Response headers</h1>
 <div id=log></div>
@@ -18,7 +18,7 @@
 function check_response_header(head, value, desc) {
     test(function() {
         var client = new XMLHttpRequest()
-        client.open('GET', CROSSDOMAIN + 'resources/cors-headers.php', false)
+        client.open('GET', CROSSDOMAIN + 'resources/cors-headers.py', false)
         client.send(null)
 
         if (typeof value === 'function')
@@ -57,7 +57,7 @@ async_test("getResponseHeader: Combined testing of cors response headers")
 .step(function()
 {
     var client = new XMLHttpRequest();
-    client.open("GET", CROSSDOMAIN + 'resources/cors-headers.php')
+    client.open("GET", CROSSDOMAIN + 'resources/cors-headers.py')
     window.c=client;
     client.onreadystatechange = this.step_func(function()
     {
@@ -84,7 +84,7 @@ async_test("getResponseHeader: Combined testing of cors response headers")
 
 test(function() {
     var client = new XMLHttpRequest()
-    client.open('GET', CROSSDOMAIN + 'resources/cors-headers.php', false)
+    client.open('GET', CROSSDOMAIN + 'resources/cors-headers.py', false)
     client.send(null)
     assert_equals(client.getResponseHeader("x-custom-header"), "test", 'x-custom-header')
     assert_equals(client.getResponseHeader("x-nonexposed"), null, 'x-nonexposed')
@@ -92,7 +92,7 @@ test(function() {
 
 test(function() {
     var client = new XMLHttpRequest()
-    client.open('GET', CROSSDOMAIN + 'resources/cors-headers.php', false)
+    client.open('GET', CROSSDOMAIN + 'resources/cors-headers.py', false)
     client.send(null)
 
     h = client.getAllResponseHeaders().toLowerCase()

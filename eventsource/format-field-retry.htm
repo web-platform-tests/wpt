@@ -12,7 +12,7 @@
       test.step(function() {
         var timeoutms = 2000,
             timeoutstr = "02000", // 1024 in octal, but should be 2000
-            source = new EventSource("resources/message.php?message=retry%3A" + timeoutstr + "%0Adata%3Ax"),
+            source = new EventSource("resources/message.py?message=retry%3A" + timeoutstr + "%0Adata%3Ax"),
             opened = 0
         source.onopen = function() {
           test.step(function() {

@@ -11,8 +11,8 @@
 	<script>
           var t = async_test();
 
-          var sources = ["scripts/delay.php?time=2&url=include-1.js",
-                          "scripts/include-2.js"]
+          var sources = ["scripts/include-1.js?pipe=trickle(d2)",
+                         "scripts/include-2.js"]
           var scripts = sources.map(function(x) {
             var script = document.createElement("script");
             script.src = x;

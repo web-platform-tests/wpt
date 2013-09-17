@@ -11,7 +11,7 @@
       function statusTest(status) {
         var test = async_test(document.title + " (" + status +")")
         test.step(function() {
-          var source = new EventSource("resources/status-error.php?status=" + status)
+          var source = new EventSource("resources/status-error.py?status=" + status)
           source.onmessage = function() {
             test.step(function() {
               assert_unreached()

@@ -25,7 +25,7 @@ tests.forEach(function(vars) {
 	    }
 	}, false);
 	node.preload = 'none';
-	node.src = '../resources/range-request.php?rate=100000&fileloc=preload.ogv&nocache=' + Math.random();
+	node.src = '../resources/preload.ogv?pipe=trickle(100000:d1:r2)&nocache=' + Math.random();
 
 	function endTest() {
 	    t.step(function() {

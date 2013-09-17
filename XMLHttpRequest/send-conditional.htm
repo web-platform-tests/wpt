@@ -13,7 +13,7 @@
         test(function() {
           var client = new XMLHttpRequest,
           identifier = type == "tag" ? Math.random() : new Date().toGMTString(),
-          url = "resources/conditional.php?" + type + "=" + identifier
+          url = "resources/conditional.py?" + type + "=" + identifier
           client.open("GET", url, false)
           client.send(null)
           assert_equals(client.status, 200)

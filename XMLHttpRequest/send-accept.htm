@@ -11,10 +11,10 @@
     <script>
       test(function() {
         var client = new XMLHttpRequest()
-        client.open("GET", "resources/accept.php", false)
+        client.open("GET", "resources/accept.py", false)
         client.send(null)
         assert_equals(client.responseText, "*/*")
-        client.open("GET", "resources/accept.php", false)
+        client.open("GET", "resources/accept.py", false)
         client.setRequestHeader("Accept", "x-something/vague, text/html5")
         client.send(null)
         assert_equals(client.responseText, "x-something/vague, text/html5")

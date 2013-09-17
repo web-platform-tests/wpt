@@ -14,7 +14,7 @@
       function redirect(code) {
         test(function() {
           var client = new XMLHttpRequest()
-          client.open("GET", "resources/infinite-redirects.php?type="+code, false)
+          client.open("GET", "resources/infinite-redirects.py?type="+code, false)
           assert_throws("NetworkError", function() { client.send(null) })
         }, document.title + " (" + code + ")")
       }

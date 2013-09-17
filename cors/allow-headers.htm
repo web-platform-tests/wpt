@@ -3,7 +3,7 @@
 <title>Access-Control-Allow-Headers handling</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
-<script src=support.js></script>
+<script src=support.js?pipe=sub></script>
 
 <h1>Access-Control-Allow-Headers handling</h1>
 
@@ -18,7 +18,7 @@ function shouldPass(origin) {
     test(function () {
         var client = new XMLHttpRequest()
         client.open('GET', CROSSDOMAIN
-                            + '/resources/cors-makeheader.php?origin='
+                            + '/resources/cors-makeheader.py?origin='
                             + encodeURIComponent(origin),
                     false)
         client.send()
@@ -41,11 +41,11 @@ function shouldFail(origin) {
     test(function () {
         var client = new XMLHttpRequest()
         client.open('GET', CROSSDOMAIN
-                            + '/resources/cors-makeheader.php?origin='
+                            + '/resources/cors-makeheader.py?origin='
                             + encodeURIComponent(origin),
                     false)
         assert_throws(null, function() { client.send() }, 'send')
-    }, 'Disallow origin: ' + origin);
+    }, 'Disallow origin: ' + origin.replace('\0', '\\0'));
 }
 
 shouldFail(location.protocol + "//" + SUBDOMAIN + "." + location.host)

@@ -12,44 +12,42 @@
     </head>
     <body>
         <div id=log></div>
-        <script type="text/javascript">        
-        
-  
+        <script type="text/javascript">
+
+
         var t = async_test("dynamically created external script executes asynchronously");
-  
+
         function timeout()
         {
             t.step(function(){ assert_equals(document.getElementById("testresult").innerHTML, "321")});
             t.done();
         }
-  
+
         var timer = setTimeout(timeout, 8000);
-        
-        // This test uses a script (delay.php) to change script order execution
-        // See async_003.htm and async_004.htm for how this works
-        // In this test 
+
+        // In this test
         //  * The third script tag below should execute first
         //  * Then second 'two' dynamically created script tag should execute since it only has a one second delay
         //  * Then first 'one' dynamically created script tag should execute since it has a three second delay
-        // 
+        //
         //  Thus the assert above is to check that the innerHTML == 321
         //
-        function log(text) 
+        function log(text)
         {
             var textNode = document.createTextNode(text);
             document.getElementById("testresult").appendChild(textNode);
         }
-        
+
         </script>
-        
+
         <span style="display : none" id="testresult"></span>
         <script type="text/javascript">
             var one = document.createElement("script");
-            one.src="http://w3c-test.org/html/tests/submission/Microsoft/async/delay.php?sec=3&id=1";
+            one.src="log.py?sec=3&id=1";
             document.head.appendChild(one);
 
             var two = document.createElement("script");
-            two.src="http://w3c-test.org/html/tests/submission/Microsoft/async/delay.php?sec=1&id=2";
+            two.src="log.py?sec=1&id=2";
             document.head.appendChild(two);
         </script>
         <script type="text/javascript">

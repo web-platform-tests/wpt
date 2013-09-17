@@ -1,3 +1,3 @@
-    #test {background-image:url("../scripts/delay.php?url=../css/1x1-green.png&time=2"); 
+    #test {background-image:url("1x1-green.png?pipe=trickle(d2)"); 
            background-repeat:repeat;
            background-color:orange;}

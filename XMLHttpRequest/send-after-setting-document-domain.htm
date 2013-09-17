@@ -18,18 +18,18 @@
       test(function() {
         document.domain = document.domain // this is not a noop, it does actually change the security context
         var client = new XMLHttpRequest()
-        client.open("GET", "resources/status.php?content=hello", false)
+        client.open("GET", "resources/status.py?content=hello", false)
         client.send(null)
         assert_equals(client.responseText, "hello")
         document.domain = document.domain.replace(/^\w+\./, '')
-        client.open("GET", "resources/status.php?content=hello2", false)
+        client.open("GET", "resources/status.py?content=hello2", false)
         client.send(null)
         assert_equals(client.responseText, "hello2")
       }, "loading documents from original origin after setting document.domain")
       // try to load a document from the origin document.domain was set to
       test(function () {
         var client = new XMLHttpRequest()
-        client.open("GET", location.protocol + '//' + document.domain + location.pathname.replace(/[^\/]*$/, '') + "resources/status.php?content=hello3", false)
+        client.open("GET", location.protocol + '//' + document.domain + location.pathname.replace(/[^\/]*$/, '') + "resources/status.py?content=hello3", false)
         // AFAIK this should throw
         assert_throws('NetworkError', function(){client.send(null)})
       }, "loading documents from the origin document.domain was set to should throw")

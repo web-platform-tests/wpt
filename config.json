@@ -1,0 +1,6 @@
+{"host": "web-platform.test",
+ "ports":{"http":[8000, "auto"],
+          "https":["auto"],
+          "ws":["auto"]},
+ "external_domain":"w3c-test.org",
+ "log_level":"debug"}

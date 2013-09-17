@@ -15,9 +15,9 @@
     function scriptLoadListener(){
       log( 'load on '+this.src.match( /include-\d\.js/ ) );
     }
-		var script=testlib.addScript('', { src:'scripts/delay.php?time=1&url=include-1.js?'+Math.random(), onload:scriptLoadListener }, document.getElementsByTagName('head')[0], false );
-		var script=testlib.addScript('', { src:'scripts/delay.php?time=3&url=include-2.js?'+Math.random(),onload:scriptLoadListener }, document.getElementsByTagName('head')[0], false );
-		var script=testlib.addScript('', { src:'scripts/delay.php?time=2&url=include-7.js?'+Math.random(), onload:scriptLoadListener }, document.getElementsByTagName('head')[0], false );
+		var script=testlib.addScript('', { src:'scripts/include-1.js?pipe=trickle(d1)&' + Math.random(), onload:scriptLoadListener }, document.getElementsByTagName('head')[0], false );
+		var script=testlib.addScript('', { src:'scripts/include-2.js?pipe=trickle(d3)&' + Math.random(), onload:scriptLoadListener }, document.getElementsByTagName('head')[0], false );
+		var script=testlib.addScript('', { src:'scripts/include-7.js?pipe=trickle(d2)&' + Math.random() , onload:scriptLoadListener }, document.getElementsByTagName('head')[0], false );
 		log('end script #1');
 	</script>
 	<script type="text/javascript">

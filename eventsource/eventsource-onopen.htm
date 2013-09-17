@@ -10,7 +10,7 @@
     <script>
       var test = async_test()
       test.step(function() {
-        source = new EventSource("resources/message.php")
+        source = new EventSource("resources/message.py")
         source.onopen = function(e) {
           test.step(function() {
             assert_equals(source.readyState, source.OPEN)

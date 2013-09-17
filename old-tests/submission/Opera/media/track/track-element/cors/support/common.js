@@ -1,15 +1,14 @@
 setup(function(){
-    window.id = location.pathname.substr(location.pathname.lastIndexOf('/')+1)+'.'+(new Date()-0)+'.'+Math.random();
+    window.id = token();
     var p = document.createElement('p');
     p.innerHTML = 'Test id: <samp>'+id+'</samp>';
     document.body.appendChild(p);
-    window.escapedId = encodeURIComponent(id);
     window.actual = {event:null, requests:[]};
     window.errors = [];
     window.origin = location.protocol+'//'+location.host;
     window.escapedOrigin = encodeURIComponent(origin);
-    window.sameOriginURL = location.href.replace(/\/[^\/]+$/, '/');
-    window.otherOriginURL = location.href.replace(/:\/\/(www\.)?/, '://www1.').replace(/\/[^\/]+$/, '/');
+    window.sameOriginURL = "http://{{domains[]}}:{{ports[http][0]}}" + location.pathname.replace(/\/[^\/]+$/, '/');
+    window.otherOriginURL = "http://{{domains[www1]}}:{{ports[http][0]}}" + location.pathname.replace(/\/[^\/]+$/, '/');
 }, {timeout:10000, explicit_done:true});
 
 onload = function() {
@@ -37,7 +36,7 @@ onload = function() {
 function setCrossDomainCookie() {
     var iframe = document.createElement('iframe');
     iframe.onload = this.step_func(loadTrack);
-    iframe.src = otherOriginURL + 'support/set-cookie.html#'+escapedId;
+    iframe.src = otherOriginURL + 'support/set-cookie.html#'+id;
     document.body.appendChild(iframe);
 }
 
@@ -57,7 +56,7 @@ function loadTrack() {
     var r;
     while (r = requests.pop()) {
         url = (r.sameOrigin ? sameOriginURL : otherOriginURL) +
-              'support/cors-tester.php?id=' + escapedId +
+              'support/cors-tester.py?id=' + id +
               (r.withHeaders ? '&origin=' + escapedOrigin : '') +
               (url === '' ? '' : '&redirect=' + encodeURIComponent(url));
     }
@@ -65,9 +64,8 @@ function loadTrack() {
     track.onerror = track.onload = this.step_func(function(e) {
         actual.event = e.type;
         var xhr = new XMLHttpRequest();
-        xhr.open('GET', 'support/logs/'+escapedId, true);
+        xhr.open('GET', 'support/cors-tester.py?read=true&id=' + id, true);
         xhr.onload = this.step_func(function() {
-            window.logExists = true;
             if (xhr.status == 200) {
                 var lines = xhr.responseText.split('\n');
                 lines.forEach(function(line) {
@@ -82,7 +80,7 @@ function loadTrack() {
                     });
                 });
             } else if (xhr.status == 404) {
-                logExists = false;
+                //No stash was found
             } else {
                 errors.push('got unexpected xhr status: '+xhr.status);
             }
@@ -98,11 +96,11 @@ function loadTrack() {
 
 function removeCookies() {
     document.cookie = id+'=;path=/;max-age=0';
-    var nextStep = logExists ? removeLog : checkData;
+    var nextStep = checkData;
     if (hasCrossDomainCookie) {
         var iframe = document.createElement('iframe');
         iframe.onload = this.step_func(nextStep);
-        iframe.src = otherOriginURL + 'support/remove-cookie.html#'+escapedId;
+        iframe.src = otherOriginURL + 'support/cors-tester.py?delete-cookie&id=' + id;
         document.body.appendChild(iframe);
     } else {
         this.step(nextStep);
@@ -111,7 +109,7 @@ function removeCookies() {
 
 function removeLog() {
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', 'support/delete-log.php?id='+escapedId, true);
+    xhr.open('GET', 'support/cors-tester.py?cleanup&id='+id, true);
     xhr.onload = this.step_func(function() {
         assert_equals(xhr.responseText, 'OK', 'failed to clean up log: '+id);
         this.step(checkData);

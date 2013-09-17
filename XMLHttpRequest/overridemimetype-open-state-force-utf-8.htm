@@ -18,7 +18,7 @@
           assert_equals( client.responseText, 'テスト' );
           test.done();
         };
-        client.open("GET", "resources/status.php?type="+encodeURIComponent('text/html;charset=Shift-JIS')+'&content='+encodeURIComponent('テスト'));
+        client.open("GET", "resources/status.py?type="+encodeURIComponent('text/html;charset=Shift-JIS')+'&content='+encodeURIComponent('テスト'));
         client.overrideMimeType('text/plain;charset=UTF-8');
         client.send( '' );
       });

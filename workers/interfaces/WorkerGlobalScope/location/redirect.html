@@ -8,7 +8,7 @@
 <div id="log"></div>
 <script>
 async_test(function() {
-  var worker = new Worker('helper-redirect.php?fail');
+  var worker = new Worker('helper-redirect.py?fail');
   worker.onmessage = this.step_func(function(e) {
     assert_equals(e.data[0], location.href.replace(/\/[^\/]+$/, '/post-location-members.js?a'));
     assert_equals(e.data[1], location.protocol);

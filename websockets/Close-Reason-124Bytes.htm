@@ -4,7 +4,7 @@
     <title>W3C WebSocket API - Close WebSocket - Reason is more than 123 bytes long</title>
     <script type="text/javascript" src="/resources/testharness.js"></script>
     <script type="text/javascript" src="/resources/testharnessreport.js"></script>
-    <script type="text/javascript" src="websocket.js"></script>
+    <script type="text/javascript" src="websocket.js?pipe=sub"></script>
 </head>
 <body>
     <div id="log"></div>
@@ -19,7 +19,6 @@
             var reason = "0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123";
             assert_equals(reason.length, 124);
             assert_throws("SYNTAX_ERR", function () { wsocket.close(1000, reason) });
-            clearTimeout(timeOut);
             test.done();
         }), true);
     </script>

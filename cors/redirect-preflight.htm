@@ -3,6 +3,8 @@
 <title>CORS - redirect with preflight</title>
 <meta name=author title="Odin Hørthe Omdal" href="mailto:odiho@opera.com">
 
+
+
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script src=support.js></script>
@@ -37,6 +39,7 @@ redir_preflight(301)
 redir_preflight(302)
 redir_preflight(303)
 redir_preflight(307)
+redir_preflight(308)
 
 /* Even thought the preflight was allowed (200), CORS should not follow
    a subsequent redirect */
@@ -59,5 +62,6 @@ redir_after_preflight(301)
 redir_after_preflight(302)
 redir_after_preflight(303)
 redir_after_preflight(307)
+redir_after_preflight(308)
 
 </script>

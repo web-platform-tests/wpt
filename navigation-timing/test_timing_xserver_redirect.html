@@ -8,6 +8,7 @@
         <script src="/resources/testharness.js"></script>
         <script src="/resources/testharnessreport.js"></script>
         <script src="resources/webperftestharness.js"></script>
+        <script src="/common/utils.js"></script>
         <script>
             setup({explicit_done: true});
 
@@ -15,11 +16,7 @@
             // Test configuration
             //
 
-            // the current page's origin
-            var pageOrigin = 'w3c-test.org';
-
-            // the origin to redirect through
-            var redirectOrigin = 'www.w3c-test.org';
+            var subdomain = "www";
 
             //
             // Tests
@@ -60,12 +57,13 @@
         <iframe id="frameContext" src="" style="width: 250px; height: 250px;"></iframe>
         <script>
             // ensure we're starting at the right origin
-            test_equals(document.location.hostname, pageOrigin, 'Starting document.location.hostname is correct (' + pageOrigin + ')');
 
             // combine the page origin and redirect origin into the IFRAME's src URL
-            var destUrl = 'http://' + redirectOrigin + '/web-platform-tests/master/navigation-timing/resources/redirect.php';
-            destUrl    += '?location=http://' + pageOrigin + '/web-platform-tests/master/navigation-timing/resources/blank_page_green.html';
-
+            var destUrl = make_absolute_url({subdomain: subdomain,
+                                             path: "/common/redirect.py",
+                                             query: "location=" + make_absolute_url(
+                                                         {path: "/navigation-timing/resources/blank_page_green.html"})
+                                             });
             var frameContext = document.getElementById("frameContext");
             frameContext.onload = onload_test;
             frameContext.src = destUrl;

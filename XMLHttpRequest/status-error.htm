@@ -16,7 +16,7 @@
 
         test.step(function() {
           var client = new XMLHttpRequest()
-          client.open(method, "resources/status.php?code=" + code, true)
+          client.open(method, "resources/status.py?code=" + code, true)
 
           client.onreadystatechange = test.step_func(function() {
             assert_equals(client.response, "", "response data")

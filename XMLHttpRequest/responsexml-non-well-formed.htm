@@ -13,7 +13,7 @@
       function request(content) {
         test(function() {
           var client = new XMLHttpRequest()
-          client.open("GET", "resources/status.php?type=text/xml&content=" + encodeURIComponent(content), false)
+          client.open("GET", "resources/status.py?type=text/xml&content=" + encodeURIComponent(content), false)
           client.send(null)
           assert_equals(client.responseXML, null)
         })

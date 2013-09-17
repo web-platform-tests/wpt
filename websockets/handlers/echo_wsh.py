@@ -6,8 +6,9 @@ _GOODBYE_MESSAGE = u'Goodbye'
 def web_socket_do_extra_handshake(request):
     # This example handler accepts any request. See origin_check_wsh.py for how
     # to reject access from untrusted scripts based on origin value.
-
-    pass  # Always accept.
+    if request.ws_requested_protocols:
+        if "echo" in request.ws_requested_protocols:
+            request.ws_protocol = "echo"
 
 
 def web_socket_transfer_data(request):

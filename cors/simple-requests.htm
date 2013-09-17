@@ -5,7 +5,8 @@
 
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
-<script src=support.js></script>
+<script src=support.js?pipe=sub></script>
+<script src=/common/utils.js></script>
 
 <h1>Simple requests</h1>
 <p>Simple requests shouldn't trigger preflight</p>
@@ -18,11 +19,10 @@ var test_c = 0;
 function check_simple(method, headers)
 {
     test(function() {
-        var time = new Date().getTime(),
             client = new XMLHttpRequest()
-        test_c++
-        client.open(method, CROSSDOMAIN + 'resources/preflight.php?ident='
-                            + test_c + time, false)
+        var uuid_token = token();
+        client.open(method, CROSSDOMAIN + 'resources/preflight.py?token='
+                            + uuid_token, false)
         for (head in headers)
             client.setRequestHeader(head, headers[head])
         client.send("data")
@@ -32,8 +32,8 @@ function check_simple(method, headers)
         else
             assert_equals(client.response, 'NO', 'response')
 
-        client.open('GET', 'resources/checkandremovefromlog.php?ident='
-                          + test_c + time, false)
+        client.open('GET', 'resources/preflight.py?check&token='
+                          + uuid_token, false)
         client.send("data")
         assert_equals(client.response, "0", "Found preflight log")
     },
@@ -71,8 +71,9 @@ var simple_async = async_test("Check simple headers (async)")
 simple_async.step(function (){
     var time = new Date().getTime(),
         client = new XMLHttpRequest()
-    client.open('POST', CROSSDOMAIN + 'resources/preflight.php?ident='
-                        + time, true)
+    var uuid_token = token();
+    client.open('POST', CROSSDOMAIN + 'resources/preflight.py?token='
+                        + uuid_token, true)
 
     client.setRequestHeader('Accept', 'jewelry')
     client.setRequestHeader('accept-language', 'nn_NO,nn,en')

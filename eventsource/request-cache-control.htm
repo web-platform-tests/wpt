@@ -29,8 +29,8 @@
         })
       }
 
-      cacheTest(true, "resources/cache-control.php")
-      cacheTest(true, crossdomain + "resources/cors.php?run=cache-control.php")
+      cacheTest(true, "resources/cache-control.event_stream?pipe=sub")
+      cacheTest(true, crossdomain + "resources/cors.py?run=cache-control")
     </script>
   </body>
 </html>

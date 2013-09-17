@@ -11,7 +11,7 @@
       var test = async_test()
       function init() {
         test.step(function() {
-          source = new self[0].EventSource("message.php")
+          source = new self[0].EventSource("message.py")
           source.onopen = function(e) {
             test.step(function() {
               assert_equals(source.readyState, source.OPEN)

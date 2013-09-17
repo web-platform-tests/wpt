@@ -20,14 +20,14 @@
         })
       }
 
-      doReconn("resources/status-reconnect.php?status=200",
+      doReconn("resources/status-reconnect.py?status=200",
         "200")
 
 
       var t = async_test(document.title + ", test reconnection events", { timeout: 9000 });
       t.step(function() {
         var opened = false, reconnected = false,
-            source = new EventSource("resources/status-reconnect.php?status=200&ok_first&id=2");
+            source = new EventSource("resources/status-reconnect.py?status=200&ok_first&id=2");
 
         source.onerror = t.step_func(function(e) {
           assert_equals(e.type, 'error');

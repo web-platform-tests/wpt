@@ -10,9 +10,7 @@
     <div id="log"></div>
 
     <script type="text/javascript">
-        var test = async_test();
-
-        test.step(function()
+        var test = async_test(function(test)
         {
             var xhr = new XMLHttpRequest();
 
@@ -37,7 +35,7 @@
                 });
             };
 
-            xhr.open("GET", "./resources/content.php", true);
+            xhr.open("GET", "resources/content.py", true);
             xhr.send();
         });
     </script>

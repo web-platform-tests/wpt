@@ -24,14 +24,14 @@
   
         var timer = setTimeout(timeout, 5000);
         
-        // This test uses a script (delay.php) to change script order execution
+        // This test uses a script (log.py) to change script order execution
         // The php script takes two parameters 
         //  * The first is for a the delay (sec=1 == sleep(1) in php)
         //  * The second is passed as a parameter to 'log()'
         //
         // The log function just appends to the testresult tag.
         //
-        // In this case the delay.php script tags have the 'async' attribute so the parser doesn't block execution
+        // In this case the log.py script tags have the 'async' attribute so the parser doesn't block execution
         // Because of the sleep in the php file the second script below executes before the first
         // 
         //  Thus the assert above is to check that the innerHTML == 21
@@ -47,7 +47,7 @@
         
         <span style="display : none" id="testresult"></span>
 
-        <script type="text/javascript" src="http://w3c-test.org/html/tests/submission/Microsoft/async/delay.php?sec=3&id=1" async></script>
-        <script type="text/javascript" src="http://w3c-test.org/html/tests/submission/Microsoft/async/delay.php?sec=1&id=2" async></script>
+        <script src="log.py?sec=3&id=1" async></script>
+        <script src="log.py?sec=1&id=2" async></script>
     </body>
 </html>

@@ -6,7 +6,7 @@
 
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
-<script src=support.js></script>
+<script src=support.js?pipe=sub></script>
 
 <h1>Status returned</h1>
 
@@ -17,7 +17,7 @@ function statusRequest(method, code, text, content, type) {
     async_test("Status on " + method + " " + code, { timeout: 15000 })
     .step(function() {
         var client = new XMLHttpRequest()
-        client.open(method, CROSSDOMAIN + "resources/status.php?code="
+        client.open(method, CROSSDOMAIN + "resources/status.py?code="
             + code + "&text=" + text + "&content=" + content + "&type=" + type, true)
         client.onreadystatechange = this.step_func(function() {
             if (client.readyState != client.DONE)
@@ -64,7 +64,7 @@ function statusRequestFail(method, code, expect_code, nonsimple) {
     .step(function() {
         var client = new XMLHttpRequest()
 
-        client.open(method, CROSSDOMAIN + "resources/status.php?code="
+        client.open(method, CROSSDOMAIN + "resources/status.py?code="
           + code + '&headers=x-nonsimple&text=OHAI', true)
 
         if (nonsimple)

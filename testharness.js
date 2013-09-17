@@ -135,12 +135,15 @@ policies and contribution forms [3].
  *
  * == Harness Timeout ==
  * 
- * A timeout for the entire test harness may be set using a <meta> element 
- * (this allows it to be inspected by outside tools such as test runners).
- * The syntax is:
- * <meta name="timeout" content="{timeout value in ms}">
- * After this time, the harness will stop waiting for further async tests to
- * complete.
+ * The overall harness admits two timeout values "normal" (the
+ * default) and "long", used for tests which have an unusually long
+ * runtime. After the timeout is reached, the harness will stop
+ * waiting for further async tests to complete. By default the
+ * timeouts are set to 10s and 60s, respectively, but may be changed
+ * when the test is run on hardware with different performance
+ * characteristics to a common desktop computer.  In order to opt-in
+ * to the longer test timeout, the test must specify a meta element:
+ * <meta name="timeout" content="long">
  *
  * == Setup ==
  *
@@ -172,6 +175,8 @@ policies and contribution forms [3].
  * allow_uncaught_exception - don't treat an uncaught exception as an error;
  *                            needed when e.g. testing the window.onerror
  *                            handler.
+ *
+ * timeout_multiplier - Multiplier to apply to per-test timeouts.
  *
  * == Determining when all tests are complete ==
  *
@@ -365,10 +370,11 @@ policies and contribution forms [3].
 (function ()
 {
     var debug = false;
-    // default timeout is 5 seconds, test can override if needed
+    // default timeout is 10 seconds, test can override if needed
     var settings = {
       output:true,
-      timeout:5000,
+      harness_timeout:{"normal":10000,
+                       "long":60000},
       test_timeout:2000
     };
 
@@ -1081,7 +1087,8 @@ policies and contribution forms [3].
         this.is_done = false;
 
         this.properties = properties;
-        this.timeout_length = properties.timeout ? properties.timeout : settings.test_timeout;
+        this.timeout_length = (properties.timeout ? properties.timeout :
+                               settings.test_timeout) * tests.timeout_multiplier;
 
         this.message = null;
 
@@ -1284,7 +1291,8 @@ policies and contribution forms [3].
 
         this.allow_uncaught_exception = false;
 
-        this.timeout_length = settings.timeout;
+        this.timeout_multiplier = 1;
+        this.timeout_length = this.get_timeout();
         this.timeout_id = null;
 
         this.start_callbacks = [];
@@ -1321,20 +1329,6 @@ policies and contribution forms [3].
 
         this.properties = properties;
 
-        var metas = document.getElementsByTagName("meta");
-        for (var i=0; i<metas.length; i++)
-        {
-            if (metas[i].name == "timeout")
-            {
-                var value = parseInt(metas[i].content);
-                if (value > 0)
-                {
-                    this.timeout_length = value;
-                }
-                break;
-            }
-        }
-
         for (var p in properties)
         {
             if (properties.hasOwnProperty(p))
@@ -1349,6 +1343,10 @@ policies and contribution forms [3].
                 }
                 else if (p == "explicit_timeout" && value) {
                     this.timeout_length = null;
+                }
+                else if (p == "timeout_multiplier")
+                {
+                    this.timeout_multiplier = value;
                 }
             }
         }
@@ -1366,6 +1364,23 @@ policies and contribution forms [3].
         }
         this.set_timeout();
     };
+
+    Tests.prototype.get_timeout = function()
+    {
+        var metas = document.getElementsByTagName("meta");
+        for (var i=0; i<metas.length; i++)
+        {
+            if (metas[i].name == "timeout")
+            {
+                if (metas[i].content == "long")
+                {
+                    return settings.harness_timeout.long;
+                }
+                break;
+            }
+        }
+        return settings.harness_timeout.normal;
+    }
 
     Tests.prototype.set_timeout = function()
     {

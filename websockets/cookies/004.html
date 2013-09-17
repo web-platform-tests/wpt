@@ -5,8 +5,6 @@
 <script src=../constants.js></script>
 <div id=log></div>
 <script>
-
-setup({timeout:10100,
 explicit_done:true})
 var cookie_id = ((new Date())-0) + '.' + Math.random();
 
@@ -26,5 +24,5 @@ var t = async_test(function(t) {
     iframe.onload = done;
   });
   document.body.appendChild(iframe);
-}, null, {timeout:10000})
+}, null, {timeout:9900})
 </script>

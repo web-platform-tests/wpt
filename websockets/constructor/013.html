@@ -1,12 +1,11 @@
 <!doctype html>
 <title>WebSockets: multiple WebSocket objects</title>
+<meta name=timeout content=long>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script src=../constants.js></script>
 <div id=log></div>
 <script>
-setup({timeout:25100});
-
 async_test(function(t) {
   // test that the events are fired as they should when opening 25 websockets and
   // sending a message on each and then closing when getting the message back

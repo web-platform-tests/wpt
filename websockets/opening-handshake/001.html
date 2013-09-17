@@ -5,8 +5,6 @@
 <script src=../constants.js></script>
 <div id=log></div>
 <script>
-setup({timeout:10010});
-
 async_test(function(t) {
   var ws = new WebSocket(SCHEME_AND_DOMAIN+'/ws/invalid');
   ws.onclose = t.step_func(function(e) {
@@ -15,5 +13,5 @@ async_test(function(t) {
     setTimeout(t.step_func(function() {t.done();}), 50)
   });
    ws.onmessage = ws.onopen = t.step_func(function() {assert_unreached()});
-}, null, {timeout:10000});
+}, null, {timeout:9900});
 </script>

@@ -2,6 +2,7 @@
 <meta charset=utf-8>
 <title>CORS - status</title>
 <meta name=author title="Odin Hørthe Omdal" href="mailto:odiho@opera.com">
+<meta name=timeout value=long>
 
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
@@ -11,7 +12,6 @@
 
 <div id=log></div>
 <script>
-setup({timeout: 30000})
 
 function statusRequest(method, code, text, content, type) {
     async_test("Status on " + method + " " + code, { timeout: 15000 })

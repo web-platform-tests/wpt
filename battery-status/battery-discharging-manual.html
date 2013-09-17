@@ -28,9 +28,7 @@
     <script>
     (function() {
 
-      var t = 5*60*1000;
-      setup({ timeout: t });
-      countdown({ timeout: t });
+      setup({ explicit_timeout: true });
       
       test(function() {
         assert_false(navigator.battery.charging);

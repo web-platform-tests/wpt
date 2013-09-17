@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <title>IDBDatabase.createObjectStore() - create 1000 object stores, add one item and delete</title>
+<meta name=timeout content=long>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="../support.js"></script>
 
 <script>
-
-setup({timeout: 600000})
-
 var db,
     t = async_test(document.title, {timeout: 600000}),
     open_rq = createdb(t)

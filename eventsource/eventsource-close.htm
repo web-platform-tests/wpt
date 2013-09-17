@@ -8,8 +8,6 @@
   <body>
     <div id="log"></div>
     <script>
-      setup({ timeout: 10000 });
-
       var test = async_test()
       test.step(function() {
         var source = new EventSource("resources/message.php")

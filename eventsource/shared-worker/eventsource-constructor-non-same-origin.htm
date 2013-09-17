@@ -19,12 +19,11 @@ try {
     <title>shared worker - EventSource: constructor (act as if there is a network error)</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
+    <meta name=timeout value=long>
   </head>
   <body>
     <div id="log"></div>
     <script>
-      setup({timeout: 21000})
-
       function fetchFail(url) {
         var test = async_test(document.title + " (" + url + ")", { timeout: 20000 })
         test.step(function() {

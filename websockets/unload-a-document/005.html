@@ -1,5 +1,6 @@
 <!doctype html>
 <title>WebSockets: navigating nested browsing context with a websocket in top-level</title>
+<meta name=timeout content=long>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script src=../constants.js></script>
@@ -7,7 +8,6 @@
 <p>Test requires popup blocker disabled</p>
 <div id=log></div>
 <script>
-setup({timeout:15000});
 var t = async_test(null, {timeout:15000});
 t.step(function() {
   var w = window.open("005-1.html");

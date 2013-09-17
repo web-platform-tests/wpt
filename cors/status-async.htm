@@ -13,9 +13,8 @@
 
 <div id=log></div>
 <script>
-setup({timeout: 30000})
 function statusRequest(method, code, text, content, type) {
-    async_test("Status on " + method + " " + code)
+    async_test("Status on " + method + " " + code, { timeout: 15000 })
     .step(function() {
         var client = new XMLHttpRequest()
         client.open(method, CROSSDOMAIN + "resources/status.php?code="
@@ -64,7 +63,7 @@ function statusRequestFail(method, code, expect_code, nonsimple) {
     if (expect_code === undefined)
         expect_code = code
 
-    async_test("Status on " + method + " " + code + (nonsimple?' (nonsimple)':''), { timeout : 15000 })
+    async_test("Status on " + method + " " + code + (nonsimple?' (nonsimple)':''), { timeout: 15000 })
     .step(function() {
         var client = new XMLHttpRequest()
 

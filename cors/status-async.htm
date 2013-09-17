@@ -64,7 +64,7 @@ function statusRequestFail(method, code, expect_code, nonsimple) {
     if (expect_code === undefined)
         expect_code = code
 
-    async_test("Status on " + method + " " + code + (nonsimple?' (nonsimple)':''))
+    async_test("Status on " + method + " " + code + (nonsimple?' (nonsimple)':''), { timeout : 15000 })
     .step(function() {
         var client = new XMLHttpRequest()
 
@@ -75,7 +75,7 @@ function statusRequestFail(method, code, expect_code, nonsimple) {
             client.setRequestHeader('x-nonsimple', true)
 
         client.onreadystatechange = this.step_func(function() {
-            if (client.readyState < client.HEADERS_RECIEVED)
+            if (client.readyState < client.HEADERS_RECEIVED)
                 return
             assert_equals(client.response, "", "response data")
             assert_equals(client.status, expect_code, "response status")

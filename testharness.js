@@ -375,7 +375,7 @@ policies and contribution forms [3].
       output:true,
       harness_timeout:{"normal":10000,
                        "long":60000},
-      test_timeout:2000
+      test_timeout:null
     };
 
     var xhtml_ns = "http://www.w3.org/1999/xhtml";
@@ -427,7 +427,7 @@ policies and contribution forms [3].
         properties = properties ? properties : {};
         var test_obj = new Test(test_name, properties);
         test_obj.step(func);
-        if (test_obj.status === test_obj.NOTRUN) {
+        if (test_obj.phase === test_obj.phases.STARTED) {
             test_obj.done();
         }
     }
@@ -1082,13 +1082,25 @@ policies and contribution forms [3].
     function Test(name, properties)
     {
         this.name = name;
+
+        this.phases = {
+            INITIAL:0,
+            STARTED:1,
+            HAS_RESULT:2,
+            COMPLETE:3
+        };
+        this.phase = this.phases.INITIAL;
+
         this.status = this.NOTRUN;
         this.timeout_id = null;
-        this.is_done = false;
 
         this.properties = properties;
-        this.timeout_length = (properties.timeout ? properties.timeout :
-                               settings.test_timeout) * tests.timeout_multiplier;
+        var timeout = properties.timeout ? properties.timeout : settings.test_timeout
+        if (timeout != null) {
+            this.timeout_length = timeout * tests.timeout_multiplier;
+        } else {
+            this.timeout_length = null;
+        }
 
         this.message = null;
 
@@ -1124,15 +1136,18 @@ policies and contribution forms [3].
 
     Test.prototype.step = function(func, this_obj)
     {
-        //In case the test has already failed
-        if (this.status !== this.NOTRUN)
+        if (this.phase > this.phases.STARTED)
         {
           return;
         }
+        this.phase = this.phases.STARTED;
+        //If we don't get a result before the harness times out that will be a test timout
+        this.set_status(this.TIMEOUT, "Test timed out");
 
         tests.started = true;
 
-        if (this.timeout_id === null) {
+        if (this.timeout_id === null)
+        {
             this.set_timeout();
         }
 
@@ -1149,25 +1164,21 @@ policies and contribution forms [3].
         }
         catch(e)
         {
-            //This can happen if something called synchronously invoked another
-            //step
-            if (this.status !== this.NOTRUN)
+            if (this.phase >= this.phases.HAS_RESULT)
             {
                 return;
             }
-            this.status = this.FAIL;
-            this.message = (typeof e === "object" && e !== null) ? e.message : e;
+            var message = (typeof e === "object" && e !== null) ? e.message : e;
             if (typeof e.stack != "undefined" && typeof e.message == "string") {
                 //Try to make it more informative for some exceptions, at least
                 //in Gecko and WebKit.  This results in a stack dump instead of
                 //just errors like "Cannot read property 'parentNode' of null"
                 //or "root is null".  Makes it a lot longer, of course.
-                this.message += "(stack: " + e.stack + ")";
+                message += "(stack: " + e.stack + ")";
             }
+            this.set_status(this.FAIL, message);
+            this.phase = this.phases.HAS_RESULT;
             this.done();
-            if (debug && e.constructor !== AssertionError) {
-                throw e;
-            }
         }
     };
 
@@ -1202,36 +1213,51 @@ policies and contribution forms [3].
                 Array.prototype.slice.call(arguments)));
             test_this.done();
         };
-    };
+    }
 
     Test.prototype.set_timeout = function()
     {
-        var this_obj = this;
-        this.timeout_id = setTimeout(function()
-                                     {
-                                         this_obj.timeout();
-                                     }, this.timeout_length);
-    };
+        if (this.timeout_length !== null)
+        {
+            var this_obj = this;
+            this.timeout_id = setTimeout(function()
+                                         {
+                                             this_obj.timeout();
+                                         }, this.timeout_length);
+        }
+    }
+
+    Test.prototype.set_status = function(status, message)
+    {
+        this.status = status;
+        this.message = message;
+    }
 
     Test.prototype.timeout = function()
     {
-        this.status = this.TIMEOUT;
         this.timeout_id = null;
-        this.message = "Test timed out";
+        this.set_status(this.TIMEOUT, "Test timed out")
+        this.phase = this.phases.HAS_RESULT;
         this.done();
     };
 
     Test.prototype.done = function()
     {
-        if (this.is_done) {
+        if (this.phase == this.phases.COMPLETE) {
             return;
-        }
-        clearTimeout(this.timeout_id);
-        if (this.status === this.NOTRUN)
+        } else if (this.phase <= this.phases.STARTED)
         {
-            this.status = this.PASS;
+            this.set_status(this.PASS, null);
         }
-        this.is_done = true;
+
+        if (this.status == this.NOTRUN)
+        {
+            alert(this.phase);
+        }
+
+        this.phase = this.phases.COMPLETE;
+
+        clearTimeout(this.timeout_id);
         tests.result(this);
     };
 
@@ -1661,7 +1687,7 @@ policies and contribution forms [3].
         if (typeof this.output_document === "function")
         {
             output_document = this.output_document.apply(undefined);
-        } else
+        } else 
         {
             output_document = this.output_document;
         }

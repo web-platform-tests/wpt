@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
     <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-abort()-method" data-tested-assertations="following-sibling::ol/li[4]/ol/li[5] following-sibling::ol/li[4]/ol/li[6] following-sibling::ol/li[4]/ol/li[7]/ol/li[3] following-sibling::ol/li[4]/ol/li[7]/ol/li[4]" />
@@ -22,19 +22,23 @@
             {
                 test.step(function()
                 {
+		    actual.push(readyState);
+                });
+            };
+            xhr.onloadstart = function()
+            {
+                test.step(function()
+                {
                     var readyState = xhr.readyState;
-                    
                     if (readyState == 1)
                     {
                         xhr.abort();
-                    }
-                    else if (readyState == 4)
-                    {
-                        actual.push(readyState);
-                    }
+                    }else{
+			assert_unreached('Loadstart event should not fire in readyState '+readyState);
+		    }
                 });
             };
-            
+
             xhr.onloadend          = function(e){ actual.push(e.type); };
             xhr.onabort            = function(e){ actual.push(e.type); };
 

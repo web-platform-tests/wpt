@@ -13,16 +13,10 @@ function make_absolute_url(options) {
     }
 
     var port = get(options, "port", loc.port)
-    if (!options.hasOwnProperty("port") &&
-        (protocol === "http" && port == 80 ||
-         protocol === "https" && port == 443)) {
-        port = null;
-    }
-
     var path = get(options, "path", loc.pathname);
     var query = get(options, "query", loc.search);
     var hash = get(options, "hash", loc.hash)
-    
+
     var url = protocol + "//" + hostname;
     if (port) {
         url += ":" + port;

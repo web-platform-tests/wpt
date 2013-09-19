@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-abort()-method" data-tested-assertations="following-sibling::ol/li[4]/ol/li[5] following-sibling::ol/li[4]/ol/li[6] following-sibling::ol/li[4]/ol/li[7]/ol/li[3] following-sibling::ol/li[4]/ol/li[7]/ol/li[4]" />
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-abort()-method" data-tested-assertations="following-sibling::ol/li[4]/ol/li[3] following-sibling::ol/li[4]/ol/li[5] following-sibling::ol/li[4]/ol/li[6] following-sibling::ol/li[4]/ol/li[7]/ol/li[3] following-sibling::ol/li[4]/ol/li[7]/ol/li[4] following-sibling::ol/li[5]" />
     <script src="/resources/testharness.js"></script>
     <title>XMLHttpRequest: The abort() method: abort and loadend events</title>
 </head>
@@ -15,14 +15,14 @@
         test.step(function()
         {
             var xhr = new XMLHttpRequest();
-            var expect = [4, "abort", "loadend", "upload.abort", "upload.loadend"];
+            var expect = [1, 4, "abort", "loadend", "upload.abort", "upload.loadend"];
             var actual = [];
 
             xhr.onreadystatechange = function()
             {
                 test.step(function()
                 {
-		    actual.push(xhr.readyState);
+                     actual.push(xhr.readyState);
                 });
             };
             xhr.onloadstart = function()
@@ -34,8 +34,8 @@
                     {
                         xhr.abort();
                     }else{
-			assert_unreached('Loadstart event should not fire in readyState '+readyState);
-		    }
+                        assert_unreached('Loadstart event should not fire in readyState '+readyState);
+                    }
                 });
             };
 
@@ -50,6 +50,7 @@
                 test.step(function()
                 {
                     assert_array_equals(actual, expect);
+                    assert_equals(xhr.readyState, 0, 'state should be UNSENT');
                     test.done();
                 });
             };

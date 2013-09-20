@@ -24,14 +24,14 @@
   
         var timer = setTimeout(timeout, 5000);
         
-        // This test uses a script (delay.php) to change script order execution
+        // This test uses a script (log.py) to change script order execution
         // The php script takes two parameters 
         //  * The first is for a the delay (sec=1 == sleep(1) in php)
         //  * The second is passed as a parameter to 'log()'
         //
         // The log function just appends to the testresult tag.
         //
-        // In this case the delay.php script tag has the 'async' attribute so the parser doesn't block
+        // In this case the log.py script tag has the 'async' attribute so the parser doesn't block
         // Because of the sleep in the php file the 'log(2)' function gets called and adds a '2' to the testresult tag
         // Then the php file actually gets downloaded and runs log(1) which appends a '1' to the testresult tag
         // 
@@ -48,8 +48,8 @@
         
         <span style="display : none" id="testresult"></span>
 
-        <script type="text/javascript" src="http://w3c-test.org/html/tests/submission/Microsoft/async/delay.php?sec=3&id=1" async></script>
-        <script type="text/javascript">
+        <script src="log.py?sec=3&id=1" async></script>
+        <script>
             log('2');
         </script>
     </body>

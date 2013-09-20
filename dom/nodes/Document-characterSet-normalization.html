@@ -352,7 +352,7 @@ Object.keys(encodingMap).forEach(function(name) {
     iframe.src = "data:text/html,<!doctype html>" + 
                  '<meta charset="' + label + '">';
     */
-    iframe.src = "encoding.php?label=" + label;
+    iframe.src = "encoding.py?label=" + label;
     iframe.onload = function() {
       t.step(function() {
         assert_equals(iframe.contentDocument.characterSet.toLowerCase(), name);

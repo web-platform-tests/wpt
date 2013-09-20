@@ -19,11 +19,11 @@
 
 			function test() {
                                 document.getElementById("log").textContent = "Please wait..."
-				var url = './scripts/delay.php?time=1&url=' + (location.href.replace( /\d*\.html$/, 'scripts/include-1.js'));
+				var url = 'scripts/include-1.js?pipe=trickle(d1)';
 				var script = createScript(url);
 				var script2 = createScript('', 'log("Script #2 ran")');
 				head.removeChild(script2);
-				url='./scripts/delay.php?time=2&url='+(location.href.replace( /\d*\.html$/, 'scripts/include-2.js' ));
+				var url = 'scripts/include-2.js?pipe=trickle(d2)';
 				var script3 = createScript(url);
 				head.removeChild(script3);
 

@@ -16,7 +16,7 @@ t.step(function() {
   script.removeAttribute("type");
   script.async = false;
   var marker = document.createElement("script");
-  marker.src = "scripts/delay.php?time=2&url=include-1.js";
+  marker.src = "scripts/include-1.js?pipe=trickle(d2)";
   marker.async = false;
   script.parentNode.appendChild(marker);
   script.appendChild(document.createTextNode(""));

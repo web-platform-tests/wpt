@@ -1,4 +1,5 @@
 	<!doctype html>
+	<title>Pointerup</title>
 	<head>
 	<meta name="viewport" content="width=device-width">
 	<script src="http://w3c-test.org/resources/testharness.js"></script>
@@ -12,18 +13,10 @@
 	<div id="target0" style="background:black"></div>	
 	<script>
 	var eventTested = false;
-	var checkTimer;
 	var detected_pointertypes = {};
 
     setup({ explicit_done: true });
 	add_completion_callback(showPointerTypes);
-
-	function check_PointerEvent(event) {
-	    test(function () {
-	        assert_true(event instanceof PointerEvent,
-				"event is a PointerEvent event");
-	    }, event.type + " event is a PointerEvent event");
-	}
 	
 	function run() {
 		var target0 = document.getElementById("target0");
@@ -37,30 +30,11 @@
 
 		on_event(target0, "pointerup", function (event) {
 		    if (eventTested == false) {
-		        check_PointerEvent(event);
-		        document.getElementById('target0').style.background = 'green';
-		        eventTested = true;
-
-		        test_pointerup.step(function () {
-		            assert_equals(event.pointerType, pointerover_event.pointerType,
-					"pointerType is same for pointerover and pointerup");
-		            assert_equals(event.isPrimary, pointerover_event.isPrimary,
-					"isPrimary is same for pointerover and pointerup");
-		        });
-
 		        detected_pointertypes[event.pointerType] = true;
 
 		        test_pointerup.done();
-		        done();
+		        eventTested = true;
 		    }
-		});
-		
-		on_event(target0, "mouseup", function(event) {
-			checkTimer = setTimeout(checkResult, 1000);
-		});
-		
-		on_event(target0, "touchend", function(event) {
-			checkTimer = setTimeout(checkResult, 1000);
 		});
 	}
 	
@@ -71,14 +45,6 @@
 		pointertype_log.innerHTML = pointertypes.length ?
 			pointertypes.join(",") : "(none)";
 		complete_notice.style.display = "block";
-	}
-	
-	function checkResult() {
-		if(eventTested == false) {
-		    document.getElementById('target0').style.background = 'red';
-		    setup({ timeout: 0 });
-		}
-		clearTimeout(checkTimer);
 	}
 	</script>
 	<style>

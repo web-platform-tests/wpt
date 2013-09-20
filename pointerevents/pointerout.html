@@ -1,4 +1,5 @@
 	<!doctype html>
+	<title>Pointerout</title>
 	<head>
 	<meta name="viewport" content="width=device-width">
 	<script src="http://w3c-test.org/resources/testharness.js"></script>
@@ -11,20 +12,13 @@
 	<p>	
 	<div id="target0" style="background:black"></div>	
 	<script>
+	var timeout = 0;
 	var eventTested = false;
-	var checkTimer;
+
 	var detected_pointertypes = {};
-	var rectangleTouched = false;
 
 	setup({ explicit_done: true });
 	add_completion_callback(showPointerTypes);
-
-	function check_PointerEvent(event) {
-	    test(function () {
-	        assert_true(event instanceof PointerEvent,
-				"event is a PointerEvent event");
-	    }, event.type + " event is a PointerEvent event");
-	}
 	
 	function run() {
 		var target0 = document.getElementById("target0");
@@ -38,38 +32,12 @@
 
 		on_event(target0, "pointerout", function (event) {
 		    if (eventTested == false) {
-		        check_PointerEvent(event);
-		        document.getElementById('target0').style.background = 'green';
-		        eventTested = true;
-
-		        test_pointerout.step(function () {
-		            assert_equals(event.pointerType, pointerover_event.pointerType,
-					"pointerType is same for pointerover and pointerout");
-		            assert_equals(event.isPrimary, pointerover_event.isPrimary,
-					"isPrimary is same for pointerover and pointerout");
-		        });
-
 		        detected_pointertypes[event.pointerType] = true;
 
 		        test_pointerout.done();
-		        done();
+				eventTested = true;
 		    }
 		});
-		
-		on_event(target0, "mouseout", function(event) {
-			checkTimer = setTimeout(checkResult, 1000);
-		});
-		
-		on_event(target0, "touchend", function(event) {
-			rectangleTouched = true;
-			event.stopPropagation();        });
-
-		on_event(target0, "touchend", function (event) {
-		    if (rectangleTouched) {
-		        checkTimer = setTimeout(checkResult, 1000);
-		    }
-		});
-
 	}
 	
 	function showPointerTypes() {
@@ -79,14 +47,6 @@
 		pointertype_log.innerHTML = pointertypes.length ?
 			pointertypes.join(",") : "(none)";
 		complete_notice.style.display = "block";
-	}
-	
-	function checkResult() {
-		if(eventTested == false) {
-		    document.getElementById('target0').style.background = 'red';
-		    setup({ timeout: 0 });
-		}
-		clearTimeout(checkTimer);
 	}
 	</script>
 	<style>

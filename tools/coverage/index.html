@@ -190,11 +190,23 @@
     <script src='coverage.js'></script>
     <script>
     $.getJSON("specs.json", function (data) {
-        cover(Object.keys(data).map(function(k) {
-            var spec = data[k];
-            spec.id = k;
-            return spec;
-        }), $("#output"));
+        var keys = Object.keys(data);
+        $.getJSON("https://specref.jit.su/bibrefs?refs=" + keys.join(','), function (specrefs) {
+          cover(keys.map(function(k) {
+              var spec = data[k];
+              spec.id = k;
+              var ref = specrefs[k];
+              while (ref.aliasOf) {
+                ref = specrefs[ref.aliasOf];
+              }
+              for (var prop in ref) {
+                  spec[prop] = ref[prop]
+              }
+              console.log(spec)
+              return spec;
+          }), $("#output"));
+        });
+
     });
     </script>
   </body>

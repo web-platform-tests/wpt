@@ -1,32 +1,3 @@
-/**
- * W3C 3-clause BSD License
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- * o Redistributions of works must retain the original copyright notice,
- *     this list of conditions and the following disclaimer.
- *
- * o Redistributions in binary form must reproduce the original copyright
- *     notice, this list of conditions and the following disclaimer in the
- *     documentation and/or other materials provided with the distribution.
- *
- * o Neither the name of the W3C nor the names of its contributors may be
- *     used to endorse or promote products derived from this work without
- *     specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
- * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- **/
-
  (function() {
   //inheritance tests
   test(function() {
@@ -41,7 +12,7 @@
 
   //Type attribute tests
   test(function() {
-    assert_throws(null, function() {
+    assert_throws(new TypeError(), function() {
       new DeviceLightEvent();
     }, 'First argument is required, so was expecting a TypeError.');
   }, 'Missing type argument');
@@ -94,7 +65,7 @@
   test(function() {
     var event = new DeviceLightEvent(new Boolean(true));
     assert_equals(event.type, 'true');
-  }, 'type argument is instance of boolean');
+  }, 'type argument is instance of Boolean (true)');
 
   test(function() {
     var event = new DeviceLightEvent(false);
@@ -104,17 +75,17 @@
   test(function() {
     var event = new DeviceLightEvent(new Boolean(false));
     assert_equals(event.type, 'false');
-  }, '');
+  }, 'type argument is instance of Boolean (false)');
 
   test(function() {
     var event = new DeviceLightEvent('test');
     assert_equals(event.type, 'test');
-  }, 'type argument is instance of boolean (false)');
+  }, 'type argument is string');
 
   test(function() {
     var event = new DeviceLightEvent(new String('test'));
     assert_equals(event.type, 'test');
-  }, 'type argument is string');
+  }, 'type argument is instance of String');
 
   test(function() {
     var event = new DeviceLightEvent(function test() {});
@@ -165,17 +136,20 @@
     var prop = {
       value: undefined
     };
-    assert_throws(null, function() {
-      new DeviceLightEvent('test', prop);
-    }, 'value of undefined resolves to NaN, expected type error.');
-  }, 'value of undefined resolves to NaN, expected type error.');
+    try {
+      var event = new DeviceLightEvent('test', prop);
+      assert_true(isNaN(event.value));
+    } catch(e) {
+      assert_unreached("error message: " + e.message);
+    }
+  }, 'value of undefined resolves to NaN');
 
   test(function() {
     var event = new DeviceLightEvent('test', {
       value: null
     });
     assert_equals(event.value, 0, 'value resolves to 0');
-  }, 'value resolves to 0');
+  }, 'value of null resolves to 0');
 
 
   test(function() {
@@ -183,21 +157,21 @@
       value: ''
     });
     assert_equals(event.value, 0, 'value must resolve to 0');
-  }, 'value must resolve to 0');
+  }, 'value of empty string must resolve to 0');
 
   test(function() {
     var event = new DeviceLightEvent('test', {
       value: '\u0020'
     });
     assert_equals(event.value, 0, 'value must resolve to 0');
-  }, 'value must resolve to 0');
+  }, 'value of U+0020 must resolve to 0');
 
   test(function() {
     var event = new DeviceLightEvent('test', {
       value: '\u0020\u0020\u0020\u0020\u0020\u0020'
     });
     assert_equals(event.value, 0, 'value must resolve to 0');
-  }, 'value must resolve to 0');
+  }, 'value of multiple U+0020 must resolve to 0');
 
   test(function() {
     var event = new DeviceLightEvent('test', {
@@ -218,10 +192,13 @@
     var prop = {
       value: {}
     };
-    assert_throws(null, function() {
-      new DeviceLightEvent('test', prop);
-    }, 'value of {} resolves to NaN');
-  }, 'value of {} resolves to NaN, expected type error');
+    try {
+      var event = new DeviceLightEvent('test', prop);
+      assert_true(isNaN(event.value));
+    } catch(e) {
+      assert_unreached("error message: " + e.message);
+    }
+  }, 'value of {} resolves to NaN');
 
   test(function() {
     var prop = {
@@ -229,10 +206,13 @@
         return NaN;
       }
     };
-    assert_throws(null, function() {
-      new DeviceLightEvent('test', prop);
-    }, 'value resolves to NaN');
-  }, 'value resolves to NaN, expected type error');
+    try {
+      var event = new DeviceLightEvent('test', prop);
+      assert_true(isNaN(event.value));
+    } catch(e) {
+      assert_unreached("error message: " + e.message);
+    }
+  }, 'value resolves to NaN');
 
   test(function() {
     var prop = {

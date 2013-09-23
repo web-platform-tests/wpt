@@ -40,7 +40,7 @@
 
     //Type attribute tests
     test(function() {
-        assert_throws(null, function() {
+        assert_throws(new TypeError(), function() {
             new UserProximityEvent();
         }, 'First argument is required, so was expecting a TypeError.');
     }, 'Missing type argument');
@@ -93,7 +93,7 @@
     test(function() {
         var event = new UserProximityEvent(new Boolean(true));
         assert_equals(event.type, 'true');
-    }, 'type argument is instance of boolean');
+    }, 'type argument is instance of Boolean (true)');
 
     test(function() {
         var event = new UserProximityEvent(false);
@@ -103,17 +103,17 @@
     test(function() {
         var event = new UserProximityEvent(new Boolean(false));
         assert_equals(event.type, 'false');
-    }, '');
+    }, 'type argument is instance of Boolean (false)');
 
     test(function() {
         var event = new UserProximityEvent('test');
         assert_equals(event.type, 'test');
-    }, 'type argument is instance of boolean (false)');
+    }, 'type argument is string');
 
     test(function() {
         var event = new UserProximityEvent(new String('test'));
         assert_equals(event.type, 'test');
-    }, 'type argument is string');
+    }, 'type argument is instance of String');
 
     test(function() {
         var event = new UserProximityEvent(function test() {});
@@ -170,56 +170,56 @@
             near: undefined
         });
         assert_equals(event.near, false, 'argument is truthy');
-    }, 'near set to a falsy object');
+    }, 'near set to undefined');
 
     test(function() {
         var event = new UserProximityEvent('test', {
             near: null
         });
         assert_equals(event.near, false, 'argument is flasy');
-    }, 'near set to a falsy object');
+    }, 'near set to null');
 
     test(function() {
         var event = new UserProximityEvent('test', {
             near: 0
         });
         assert_equals(event.near, false, 'argument is flasy');
-    }, 'near set to a falsy object');
+    }, 'near set to 0');
 
     test(function() {
         var event = new UserProximityEvent('test', {
             near: ''
         });
         assert_equals(event.near, false, 'argument is flasy');
-    }, 'near set to a falsy object');
+    }, 'near set to empty string');
 
     test(function() {
         var event = new UserProximityEvent('test', {
             near: '\u0020'
         });
         assert_equals(event.near, true, 'argument is truthy');
-    }, 'near set to a truthy object');
+    }, 'near set to U+0020');
 
     test(function() {
         var event = new UserProximityEvent('test', {
             near: 1
         });
         assert_equals(event.near, true, 'argument is truthy');
-    }, 'near set to a truthy object');
+    }, 'near set to 1');
 
     test(function() {
         var event = new UserProximityEvent('test', {
             near: []
         });
         assert_equals(event.near, true, 'argument is truthy');
-    }, 'near set to a truthy object');
+    }, 'near set to []');
 
     test(function() {
         var event = new UserProximityEvent('test', {
             near: {}
         });
         assert_equals(event.near, true, 'argument is truthy');
-    }, 'near set to a truthy object');
+    }, 'near set to {}');
 
     test(function() {
         var dict = {
@@ -247,7 +247,6 @@
         var desc = 'window.onuserproximity did not accept callable object',
             func = function() {},
             desc = 'onuserproximity does not exist';
-        assert_idl_attribute(window, 'onuserproximity', desc);
         window.onuserproximity = func;
         assert_equals(window.onuserproximity, func, desc);
     }, 'onuserproximity exists and can be set to a function');

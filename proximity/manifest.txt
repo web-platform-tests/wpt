@@ -1,3 +1,2 @@
-index.html							
-index.html							
+ProximityEvent_tests.html							
 

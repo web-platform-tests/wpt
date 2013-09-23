@@ -158,8 +158,8 @@
     test(function() {
         var desc = 'window.ondeviceproximity did not accept callable object',
             func = function() {},
-            desc = 'Expected to find ondeviceproximity attribute on window object';
-        assert_idl_attribute(window, 'ondeviceproximity', desc);
+            descidl = 'Expected to find ondeviceproximity attribute on window object';
+        assert_idl_attribute(window, 'ondeviceproximity', descidl);
         window.ondeviceproximity = func;
         assert_equals(window.ondeviceproximity, func, desc);
     }, 'ondeviceproximity is set to function');
@@ -216,7 +216,7 @@
     }, 'treat non-callable host object as null');
 
     //Async tests
-    var t = async_test('test if device proximity event recieved');
+    var t = async_test('test if device proximity event received');
     window.addEventListener('deviceproximity', function(e) {
         t.step(function() {
             var msg = 'expected instance of DeviceProximityEvent: ';
@@ -225,7 +225,7 @@
         t.done();
     });
 
-    var t2 = async_test('test if user proximity event recieved');
+    var t2 = async_test('test if user proximity event received');
     window.ondeviceproximity = function(e) {
         t2.step(function() {
             var msg = 'expected instance of DeviceProximityEvent: ';

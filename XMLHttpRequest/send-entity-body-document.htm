@@ -2,6 +2,7 @@
 <html>
   <head>
     <title>XMLHttpRequest: send() - Document</title>
+    <meta charset="utf-8">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method" data-tested-assertations="/following::ol/li[4]" />  
@@ -10,25 +11,41 @@
   <body>
     <div id="log"></div>
     <script>
-      function request(input, isHTML) {
+     var expectations = [
+      { isHTML: false, responseText : '<\u00FF\/>' },
+      { isHTML: true, responseText : '<body>\uFFFD<\/body>' }, /*invalid character code in document turns into FFFD*/
+      { isHTML: true, responseText : '<body>\u30C6\u30b9\u30c8<\/body>' } /* correctly serialized Shift-JIS */
+     ] 
+      
+      function request(input, number) {
         test(function() {
           var client = new XMLHttpRequest()
           client.open("POST", "resources/content.py", false)
           client.send(input)
-          if(isHTML){
-            assert_equals(client.responseText, "<html><head><\/head><body>\uFFFD<\/body><\/html>")
-            assert_regexp_match(client.getResponseHeader('X-Request-Content-Type'), /text\/html;\s?charset=UTF-8/i, 'HTML documents should be serialized and sent as text/html')
+          var exp = expectations[number]
+          if(exp.isHTML){
+            assert_regexp_match(client.getResponseHeader('X-Request-Content-Type'), /text\/html;\s?charset=UTF-8/i, 'HTML documents should be serialized and sent as text/html '+number)
           }else{
-            assert_true(client.responseText.indexOf("<\uFFFD\/>") != -1)
-            assert_regexp_match(client.getResponseHeader('X-Request-Content-Type'), /application\/xml;\s?charset=UTF-8/i, 'XML documents should be serialized and sent as application/xml')
-            
+            assert_regexp_match(client.getResponseHeader('X-Request-Content-Type'), /application\/xml;\s?charset=UTF-8/i, 'XML documents should be serialized and sent as application/xml '+number)
           }
+          // The indexOf() assertation will overlook some stuff, i.e. XML prologues that shouldn't be there (looking at you, Presto).
+          // However, arguably these things have little to do with the XHR functionality we're testing.
+          assert_true(client.responseText.indexOf(exp.responseText) != -1)
           assert_equals(client.responseXML, null)
         })
       }
-      function init(fr, isHTML) { request(fr.contentDocument, isHTML) }
+      function init(fr, number) { request(fr.contentDocument, number) }
     </script>
-    <iframe src='data:text/xml;charset=windows-1252,<%FF/>' onload="init(this, false)"></iframe>
-    <iframe src='data:text/html;charset=windows-1252,%FF' onload="init(this, true)"></iframe>
+    <!--
+        This test also tests how documents in various encodings are serialized.
+        The below IFRAMEs contain:
+          * one XML document parsed from a windows-1252 source - content is <ÿ/>
+          * one HTML-document parsed from an invalid UTF-8 source, will contain a basic HTML DOM 
+             with a U+FFFD replacement character for the invalid char
+          * one HTML document parsed from a valid Shift-JIS source
+     -->
+    <iframe src='data:text/xml;charset=windows-1252,<%FF/>' onload="init(this, 0)"></iframe>
+    <iframe src='data:text/html;charset=UTF-8,%FF' onload="init(this, 1)"></iframe>
+    <iframe src='data:text/html;charset=Shift-JIS,%83%65%83%58%83%67' onload="init(this, 2)"></iframe>
   </body>
 </html>

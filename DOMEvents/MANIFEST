@@ -1,6 +1,8 @@
-../DOMCore/events/Document-createEvent.html
-../DOMCore/events/Event-constants.html
-../DOMCore/events/Event-defaultPrevented.html
-../DOMCore/events/Event-initEvent.html
-../DOMCore/events/EventTarget-dispatchEvent.html
-../DOMCore/events/Event-type.html
+../dom/events/Document-createEvent.html
+../dom/events/Event-constants.html
+../dom/events/Event-defaultPrevented.html
+../dom/events/Event-initEvent.html
+../dom/events/EventTarget-addEventListener.html
+../dom/events/EventTarget-dispatchEvent.html
+../dom/events/EventTarget-removeEventListener.html
+../dom/events/Event-type.html

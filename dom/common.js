@@ -14,7 +14,7 @@ var testDiv, paras, detachedDiv, detachedPara1, detachedPara2,
 	detachedComment, foreignComment, detachedForeignComment, xmlComment,
 	detachedXmlComment, docfrag, foreignDocfrag, xmlDocfrag, doctype,
 	foreignDoctype, xmlDoctype;
-var testRanges, testPoints, testNodes;
+var testRangesShort, testRanges, testPoints, testNodesShort, testNodes;
 
 function setupRangeTests() {
 	selection = getSelection();
@@ -121,7 +121,7 @@ function setupRangeTests() {
 	doctype = document.doctype;
 	foreignDoctype = foreignDoc.doctype;
 
-	testRanges = [
+	testRangesShort = [
 		// Various ranges within the text node children of different
 		// paragraphs.  All should be valid.
 		"[paras[0].firstChild, 0, paras[0].firstChild, 0]",
@@ -129,14 +129,10 @@ function setupRangeTests() {
 		"[paras[0].firstChild, 2, paras[0].firstChild, 8]",
 		"[paras[0].firstChild, 2, paras[0].firstChild, 9]",
 		"[paras[1].firstChild, 0, paras[1].firstChild, 0]",
-		"[paras[1].firstChild, 0, paras[1].firstChild, 1]",
-		"[paras[1].firstChild, 2, paras[1].firstChild, 8]",
 		"[paras[1].firstChild, 2, paras[1].firstChild, 9]",
 		"[detachedPara1.firstChild, 0, detachedPara1.firstChild, 0]",
-		"[detachedPara1.firstChild, 0, detachedPara1.firstChild, 1]",
 		"[detachedPara1.firstChild, 2, detachedPara1.firstChild, 8]",
 		"[foreignPara1.firstChild, 0, foreignPara1.firstChild, 0]",
-		"[foreignPara1.firstChild, 0, foreignPara1.firstChild, 1]",
 		"[foreignPara1.firstChild, 2, foreignPara1.firstChild, 8]",
 		// Now try testing some elements, not just text nodes.
 		"[document.documentElement, 0, document.documentElement, 1]",
@@ -145,11 +141,7 @@ function setupRangeTests() {
 		"[document.head, 1, document.head, 1]",
 		"[document.body, 4, document.body, 5]",
 		"[foreignDoc.documentElement, 0, foreignDoc.documentElement, 1]",
-		"[foreignDoc.head, 1, foreignDoc.head, 1]",
-		"[foreignDoc.body, 0, foreignDoc.body, 0]",
-		"[paras[0], 0, paras[0], 0]",
 		"[paras[0], 0, paras[0], 1]",
-		"[detachedPara1, 0, detachedPara1, 0]",
 		"[detachedPara1, 0, detachedPara1, 1]",
 		// Now try some ranges that span elements.
 		"[paras[0].firstChild, 0, paras[1].firstChild, 0]",
@@ -158,38 +150,47 @@ function setupRangeTests() {
 		// How about something that spans a node and its descendant?
 		"[paras[0], 0, paras[0].firstChild, 7]",
 		"[testDiv, 2, paras[4], 1]",
-		"[testDiv, 1, paras[2].firstChild, 5]",
-		"[document.documentElement, 1, document.body, 0]",
-		"[foreignDoc.documentElement, 1, foreignDoc.body, 0]",
 		// Then a few more interesting things just for good measure.
 		"[document, 0, document, 1]",
 		"[document, 0, document, 2]",
-		"[document, 1, document, 2]",
 		"[comment, 2, comment, 3]",
 		"[testDiv, 0, comment, 5]",
+		"[foreignDoc, 1, foreignComment, 2]",
+		"[foreignDoc.body, 0, foreignTextNode, 36]",
+		"[xmlDoc, 1, xmlComment, 0]",
+		"[detachedTextNode, 0, detachedTextNode, 8]",
+		"[detachedForeignTextNode, 0, detachedForeignTextNode, 8]",
+		"[detachedXmlTextNode, 0, detachedXmlTextNode, 8]",
+		"[detachedComment, 3, detachedComment, 4]",
+		"[detachedForeignComment, 0, detachedForeignComment, 1]",
+		"[detachedXmlComment, 2, detachedXmlComment, 6]",
+		"[docfrag, 0, docfrag, 0]",
+	];
+
+	testRanges = testRangesShort.concat([
+		"[paras[1].firstChild, 0, paras[1].firstChild, 1]",
+		"[paras[1].firstChild, 2, paras[1].firstChild, 8]",
+		"[detachedPara1.firstChild, 0, detachedPara1.firstChild, 1]",
+		"[foreignPara1.firstChild, 0, foreignPara1.firstChild, 1]",
+		"[foreignDoc.head, 1, foreignDoc.head, 1]",
+		"[foreignDoc.body, 0, foreignDoc.body, 0]",
+		"[paras[0], 0, paras[0], 0]",
+		"[detachedPara1, 0, detachedPara1, 0]",
+		"[testDiv, 1, paras[2].firstChild, 5]",
+		"[document.documentElement, 1, document.body, 0]",
+		"[foreignDoc.documentElement, 1, foreignDoc.body, 0]",
+		"[document, 1, document, 2]",
 		"[paras[2].firstChild, 4, comment, 2]",
 		"[paras[3], 1, comment, 8]",
 		"[foreignDoc, 0, foreignDoc, 0]",
-		"[foreignDoc, 1, foreignComment, 2]",
-		"[foreignDoc.body, 0, foreignTextNode, 36]",
 		"[xmlDoc, 0, xmlDoc, 0]",
-		// Opera 11 crashes if you extractContents() a range that ends at offset
-		// zero in a comment.  Comment out this line to run the tests successfully.
-		"[xmlDoc, 1, xmlComment, 0]",
-		"[detachedTextNode, 0, detachedTextNode, 8]",
 		"[detachedForeignTextNode, 7, detachedForeignTextNode, 7]",
-		"[detachedForeignTextNode, 0, detachedForeignTextNode, 8]",
 		"[detachedXmlTextNode, 7, detachedXmlTextNode, 7]",
-		"[detachedXmlTextNode, 0, detachedXmlTextNode, 8]",
-		"[detachedComment, 3, detachedComment, 4]",
 		"[detachedComment, 5, detachedComment, 5]",
-		"[detachedForeignComment, 0, detachedForeignComment, 1]",
 		"[detachedForeignComment, 4, detachedForeignComment, 4]",
-		"[detachedXmlComment, 2, detachedXmlComment, 6]",
-		"[docfrag, 0, docfrag, 0]",
 		"[foreignDocfrag, 0, foreignDocfrag, 0]",
 		"[xmlDocfrag, 0, xmlDocfrag, 0]",
-	];
+	]);
 
 	testPoints = [
 		// Various positions within the page, some invalid.  Remember that
@@ -286,45 +287,48 @@ function setupRangeTests() {
 		"[xmlDoctype, 0]",
 	];
 
-	testNodes = [
+	testNodesShort = [
 		"paras[0]",
 		"paras[0].firstChild",
-		"paras[1]",
 		"paras[1].firstChild",
 		"foreignPara1",
 		"foreignPara1.firstChild",
 		"detachedPara1",
 		"detachedPara1.firstChild",
-		"detachedPara2",
-		"detachedPara2.firstChild",
-		"testDiv",
 		"document",
 		"detachedDiv",
 		"foreignDoc",
 		"foreignPara2",
 		"xmlDoc",
 		"xmlElement",
-		"detachedXmlElement",
 		"detachedTextNode",
 		"foreignTextNode",
-		"detachedForeignTextNode",
-		"xmlTextNode",
-		"detachedXmlTextNode",
 		"processingInstruction",
 		"detachedProcessingInstruction",
 		"comment",
 		"detachedComment",
-		"foreignComment",
-		"detachedForeignComment",
-		"xmlComment",
-		"detachedXmlComment",
 		"docfrag",
-		"foreignDocfrag",
-		"xmlDocfrag",
 		"doctype",
 		"foreignDoctype",
-		"xmlDoctype",
 	];
+
+	testNodes = testNodesShort.concat([
+		"paras[1]",
+		"detachedPara2",
+		"detachedPara2.firstChild",
+		"testDiv",
+		"detachedXmlElement",
+		"detachedForeignTextNode",
+		"xmlTextNode",
+		"detachedXmlTextNode",
+		"xmlComment",
+		"foreignComment",
+		"detachedForeignComment",
+		"detachedXmlComment",
+		"foreignDocfrag",
+		"xmlDocfrag",
+		"xmlDoctype",
+	]);
 }
 if ("setup" in window) {
 	setup(setupRangeTests);

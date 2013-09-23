@@ -1,7 +1,6 @@
+# Updating the coverage data #
 
-# Updating the coverage data
-
-Make sure you have [node][1] and [phantomjs][2] installed.
+Make _really sure_ you have [node][1] and [phantomjs][2] properly installed.
 
 In order to update the data on the tests that we have, run:
 

@@ -392,14 +392,12 @@ function onLoadExpected(i) {
 
 setup({timeout: 60000});
 
-// First test a detached Range, synchronously
+// First test a Range that has the no-op detach() called on it, synchronously
 test(function() {
 	var range = document.createRange();
 	range.detach();
-	assert_throws("INVALID_STATE_ERR", function() {
-		range.cloneContents();
-	}, "Detached Range must throw INVALID_STATE_ERR on .cloneContents()");
-}, "Detached Range");
+	assert_array_equals(range.cloneContents().childNodes, []);
+}, "Range.detach()");
 
 var domTests = [];
 var positionTests = [];

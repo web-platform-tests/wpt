@@ -19,9 +19,7 @@ for (var i = 0; i < testNodes.length; i++) {
 	test(function() {
 		var range = document.createRange();
 		range.detach();
-		assert_throws("INVALID_STATE_ERR", function() {
-			range.intersectsNode(node);
-		}, "Must throw InvalidStateError if range is detached");
+		assert_equals(range.intersectsNode(node), node === document);
 	}, "Node " + i + " " + testNodes[i] + ", detached range");
 
 	for (var j = 0; j < testRanges.length; j++) {

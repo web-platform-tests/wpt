@@ -4,26 +4,19 @@
     <title>XMLHttpRequest: open() resolving URLs (multi-Window; 2; evil)</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-open()-method" data-tested-assertations="following::ol[1]/li[2]/ol[1]/li[1]" />
   </head>
   <body>
     <div id="log"></div>
     <script>
-      var test = async_test()
-      function init() {
-        test.step(function() {
+    function init(){ // called from page inside IFRAME
+        test(function() {
           var client = new self[0].XMLHttpRequest()
-          client.onreadystatechange = function() {
-            test.step(function() {
-              if(client.readyState == 4) {
-                assert_equals(client.responseText, "bottom\n")
-                test.done()
-              }
-            })
-          }
           document.body.removeChild(document.getElementsByTagName("iframe")[0])
-          client.open("GET", "folder.txt")
-          client.send(null)
-        })
+          assert_throws("InvalidStateError", function() { 
+            client.open("GET", "folder.txt") 
+          }, "open() when associated document's IFRAME is removed")
+          })
       }
     </script>
     <iframe src="resources/init.htm"></iframe>

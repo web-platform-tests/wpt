@@ -44,7 +44,7 @@ t.step(function() {
       var stream5 = new MediaStream([audioTrack2]);
      assert_true(stream5.ended, "a MediaStream created using the MediaStream() constructor whose arguments are lists of MediaStreamTrack objects that are all ended, the MediaStream object MUST be created with its ended attribute set to true");
       t.done();
-    }, false);
+    }), false);
     audioTrack2.stop();
   }), function(error) {});
 });

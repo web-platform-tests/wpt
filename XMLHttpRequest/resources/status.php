@@ -10,12 +10,14 @@
   }
 
   // This should reasonably work for most response codes.
-  $code = ctype_digit($_GET["code"]) ? $_GET["code"] : "200";
-  $text = $_GET["text"] ? $_GET["text"] : "OMG";
+  $code = isset($_GET['code']) && ctype_digit($_GET["code"]) ? $_GET["code"] : "200";
+  $text = isset($_GET['text']) && $_GET["text"] ? $_GET["text"] : "OMG";
   $content = $_GET["content"] ? $_GET["content"] : "";
   $type = $_GET["type"] ? $_GET["type"] : "";
   header("HTTP/1.1 " . $code . " " . $text);
   header("Content-Type:" . $type);
+  header("X-Request-Method: " . (isset($_SERVER["REQUEST_METHOD"]) ? $_SERVER["REQUEST_METHOD"] : "NO"));
+
   echo $content;
   exit;
 ?>

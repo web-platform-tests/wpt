@@ -13,9 +13,15 @@ function testCloneRange(rangeEndpoints) {
 	if (rangeEndpoints == "detached") {
 		range = document.createRange();
 		range.detach();
-		assert_throws("INVALID_STATE_ERR", function() {
-			range.cloneRange();
-		}, "Detached Range must throw INVALID_STATE_ERR on .cloneRange()");
+		var clonedRange = range.cloneRange();
+		assert_equals(clonedRange.startContainer, range.startContainer,
+			"startContainers must be equal after cloneRange()");
+		assert_equals(clonedRange.startOffset, range.startOffset,
+			"startOffsets must be equal after cloneRange()");
+		assert_equals(clonedRange.endContainer, range.endContainer,
+			"endContainers must be equal after cloneRange()");
+		assert_equals(clonedRange.endOffset, range.endOffset,
+			"endOffsets must be equal after cloneRange()");
 		return;
 	}
 
@@ -92,67 +98,11 @@ function testCloneRange(rangeEndpoints) {
 		"Modifying a clone must not modify the original Range's endOffset");
 }
 
-var ranges = [
-	// Various ranges within the text node children of different paragraphs.
-	"[paras[0].firstChild, 0, paras[0].firstChild, 0]",
-	"[paras[0].firstChild, 0, paras[0].firstChild, 1]",
-	"[paras[0].firstChild, 2, paras[0].firstChild, 8]",
-	"[paras[0].firstChild, 2, paras[0].firstChild, 9]",
-	"[paras[1].firstChild, 0, paras[1].firstChild, 0]",
-	"[paras[1].firstChild, 0, paras[1].firstChild, 1]",
-	"[paras[1].firstChild, 2, paras[1].firstChild, 8]",
-	"[paras[1].firstChild, 2, paras[1].firstChild, 9]",
-	"[detachedPara1.firstChild, 0, detachedPara1.firstChild, 0]",
-	"[detachedPara1.firstChild, 0, detachedPara1.firstChild, 1]",
-	"[detachedPara1.firstChild, 2, detachedPara1.firstChild, 8]",
-	"[foreignPara1.firstChild, 0, foreignPara1.firstChild, 0]",
-	"[foreignPara1.firstChild, 0, foreignPara1.firstChild, 1]",
-	"[foreignPara1.firstChild, 2, foreignPara1.firstChild, 8]",
-	// Now try testing some elements, not just text nodes.
-	"[document.documentElement, 0, document.documentElement, 1]",
-	"[document.head, 1, document.head, 1]",
-	"[document.body, 4, document.body, 5]",
-	"[foreignDoc.documentElement, 0, foreignDoc.documentElement, 1]",
-	"[foreignDoc.head, 1, foreignDoc.head, 1]",
-	"[foreignDoc.body, 0, foreignDoc.body, 0]",
-	"[paras[0], 0, paras[0], 0]",
-	"[paras[0], 0, paras[0], 1]",
-	"[detachedPara1, 0, detachedPara1, 0]",
-	"[detachedPara1, 0, detachedPara1, 1]",
-	// Now try some ranges that span elements.
-	"[paras[0].firstChild, 0, paras[1].firstChild, 0]",
-	"[paras[0].firstChild, 0, paras[1].firstChild, 8]",
-	"[paras[0].firstChild, 3, paras[3], 1]",
-	// How about something that spans a node and its descendant?
-	"[paras[0], 0, paras[0].firstChild, 7]",
-	"[testDiv, 2, paras[4], 1]",
-	"[testDiv, 1, paras[2].firstChild, 5]",
-	"[foreignDoc.documentElement, 1, foreignDoc.body, 0]",
-	// Then a few silly things just for good measure.  (Well, document probably
-	// isn't entirely silly.)
-	"[document, 0, document, 1]",
-	"[foreignDoc, 0, foreignDoc, 0]",
-	"[xmlDoc, 0, xmlDoc, 0]",
-	"[detachedTextNode, 0, detachedTextNode, 8]",
-	"[foreignTextNode, 7, foreignTextNode, 7]",
-	"[foreignTextNode, 0, foreignTextNode, 8]",
-	"[xmlTextNode, 7, xmlTextNode, 7]",
-	"[xmlTextNode, 0, xmlTextNode, 8]",
-	"[comment, 5, comment, 5]",
-	"[foreignComment, 4, foreignComment, 4]",
-	"[xmlComment, 2, xmlComment, 6]",
-	"[docfrag, 0, docfrag, 0]",
-	"[foreignDocfrag, 0, foreignDocfrag, 0]",
-	"[xmlDocfrag, 0, xmlDocfrag, 0]",
-	// Magic keyword!
-	'"detached"'
-];
-
 var tests = [];
-for (var i = 0; i < ranges.length; i++) {
+for (var i = 0; i < testRanges.length; i++) {
 	tests.push([
-		"Range " + i + " " + ranges[i],
-		eval(ranges[i])
+		"Range " + i + " " + testRanges[i],
+		eval(testRanges[i])
 	]);
 }
 generate_tests(testCloneRange, tests);

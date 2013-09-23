@@ -6,8 +6,8 @@
 <div id=log></div>
 <script>
 test(function() {
-  var ws = new WebSocket(SCHEME_AND_DOMAIN+'/');
+  var ws = new WebSocket(SCHEME_DOMAIN_PORT+'/');
   delete ws.url;
-  assert_equals(ws.url, SCHEME_AND_DOMAIN+'/');
+  assert_equals(ws.url, SCHEME_DOMAIN_PORT+'/');
 });
 </script>

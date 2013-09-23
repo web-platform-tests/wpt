@@ -237,8 +237,8 @@
   test(function() {
     var desc = 'window.ondevicelight did not accept callable object',
       func = function() {},
-      desc = 'Expected to find ondevicelight attribute on window object';
-    assert_idl_attribute(window, 'ondevicelight', desc);
+      descidl = 'Expected to find ondevicelight attribute on window object';
+    assert_idl_attribute(window, 'ondevicelight', descidl);
     window.ondevicelight = func;
     assert_equals(window.ondevicelight, func, desc);
   }, 'expected ondevicelight on window and to be set to function');
@@ -295,7 +295,7 @@
   }, 'treat non-callable host object as null');
 
   //Async tests
-  var t = async_test('test if DeviceLightEvent recieved');
+  var t = async_test('test if DeviceLightEvent received');
   window.addEventListener('devicelight', function(e) {
     t.step(function() {
       var msg = 'expected instance of DeviceLightEvent: ';

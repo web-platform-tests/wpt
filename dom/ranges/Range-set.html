@@ -164,44 +164,44 @@ var endAfterTests = [];
 
 // Don't want to eval() each point a bazillion times
 var testPointsCached = testPoints.map(eval);
-var testNodesCached = testNodes.map(eval);
+var testNodesCached = testNodesShort.map(eval);
 
-for (var i = 0; i < testRanges.length; i++) {
-	var endpoints = eval(testRanges[i]);
+for (var i = 0; i < testRangesShort.length; i++) {
+	var endpoints = eval(testRangesShort[i]);
 	var range;
 	test(function() {
 		range = ownerDocument(endpoints[0]).createRange();
 		range.setStart(endpoints[0], endpoints[1]);
 		range.setEnd(endpoints[2], endpoints[3]);
-	}, "Set up range " + i + " " + testRanges[i]);
+	}, "Set up range " + i + " " + testRangesShort[i]);
 
 	for (var j = 0; j < testPoints.length; j++) {
-		startTests.push(["setStart() with range " + i + " " + testRanges[i] + ", point " + j + " " + testPoints[j],
+		startTests.push(["setStart() with range " + i + " " + testRangesShort[i] + ", point " + j + " " + testPoints[j],
 			range,
 			testPointsCached[j][0],
 			testPointsCached[j][1]
 		]);
-		endTests.push(["setEnd() with range " + i + " " + testRanges[i] + ", point " + j + " " + testPoints[j],
+		endTests.push(["setEnd() with range " + i + " " + testRangesShort[i] + ", point " + j + " " + testPoints[j],
 			range,
 			testPointsCached[j][0],
 			testPointsCached[j][1]
 		]);
 	}
 
-	for (var j = 0; j < testNodes.length; j++) {
-		startBeforeTests.push(["setStartBefore() with range " + i + " " + testRanges[i] + ", node " + j + " " + testNodes[j],
+	for (var j = 0; j < testNodesShort.length; j++) {
+		startBeforeTests.push(["setStartBefore() with range " + i + " " + testRangesShort[i] + ", node " + j + " " + testNodesShort[j],
 			range,
 			testNodesCached[j]
 		]);
-		startAfterTests.push(["setStartAfter() with range " + i + " " + testRanges[i] + ", node " + j + " " + testNodes[j],
+		startAfterTests.push(["setStartAfter() with range " + i + " " + testRangesShort[i] + ", node " + j + " " + testNodesShort[j],
 			range,
 			testNodesCached[j]
 		]);
-		endBeforeTests.push(["setEndBefore() with range " + i + " " + testRanges[i] + ", node " + j + " " + testNodes[j],
+		endBeforeTests.push(["setEndBefore() with range " + i + " " + testRangesShort[i] + ", node " + j + " " + testNodesShort[j],
 			range,
 			testNodesCached[j]
 		]);
-		endAfterTests.push(["setEndAfter() with range " + i + " " + testRanges[i] + ", node " + j + " " + testNodes[j],
+		endAfterTests.push(["setEndAfter() with range " + i + " " + testRangesShort[i] + ", node " + j + " " + testNodesShort[j],
 			range,
 			testNodesCached[j]
 		]);
@@ -212,8 +212,8 @@ generate_tests(testSetStart, startTests);
 generate_tests(testSetEnd, endTests);
 generate_tests(testSetStartBefore, startBeforeTests);
 generate_tests(testSetStartAfter, startAfterTests);
-generate_tests(testSetEndBefore, startBeforeTests);
-generate_tests(testSetEndAfter, startAfterTests);
+generate_tests(testSetEndBefore, endBeforeTests);
+generate_tests(testSetEndAfter, endAfterTests);
 
 testDiv.style.display = "none";
 </script>

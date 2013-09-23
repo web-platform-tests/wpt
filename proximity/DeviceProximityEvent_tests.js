@@ -12,7 +12,7 @@
 
     //Type attribute tests
     test(function() {
-        assert_throws(new TypeError(), function() {
+        assert_throws("TypeError", function() {
             new DeviceProximityEvent();
         }, 'First argument is required, so was expecting a TypeError.');
     }, 'Missing type argument');
@@ -102,7 +102,7 @@
     }, 'type argument is complext object, with toString method');
 
     test(function() {
-        assert_throws(null, function() {
+        assert_throws("TypeError", function() {
             new DeviceProximityEvent({
                 toString: function() {
                     return function() {}

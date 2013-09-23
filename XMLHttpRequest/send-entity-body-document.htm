@@ -15,10 +15,14 @@
           var client = new XMLHttpRequest()
           client.open("POST", "resources/content.py", false)
           client.send(input)
-          if(isHTML)
+          if(isHTML){
             assert_equals(client.responseText, "<html><head><\/head><body>\uFFFD<\/body><\/html>")
-          else
+            assert_regexp_match(client.getResponseHeader('X-Request-Content-Type'), /text\/html;\s?charset=UTF-8/i, 'HTML documents should be serialized and sent as text/html')
+          }else{
             assert_true(client.responseText.indexOf("<\uFFFD\/>") != -1)
+            assert_regexp_match(client.getResponseHeader('X-Request-Content-Type'), /application\/xml;\s?charset=UTF-8/i, 'XML documents should be serialized and sent as application/xml')
+            
+          }
           assert_equals(client.responseXML, null)
         })
       }

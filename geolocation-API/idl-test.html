@@ -1,0 +1,116 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Geolocation API Test</title>
+</head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<body>
+<h1>Geolocation API Test</h1>
+<div id="log"></div>
+<script>
+
+var geo=navigator.geolocation;
+function successCallback(position)
+{
+test(function() {assert_true(true)},"Success Callback called");
+
+/*	[NoInterfaceObject]
+  interface Position {
+    readonly attribute Coordinates coords;
+    readonly attribute DOMTimeStamp timestamp;
+  };
+*/
+
+	test(function() {assert_true(position.toString() == "[object Position]", "Position.toString should result in '[object Position]' was: "+ position.toString())},"Position toString");
+
+	test(function() {assert_true(position.coords.toString() == "[object Coordinates]", "position.coords.toString should result in '[object Coordinates]' was: "+ position.coords.toString())},"Position.coordinates toString");
+	
+//	test(function() {assert_true(position.toString() == "[object Position]", "Position.toString should result in '[object Position]' was: "+ position.toString())},"Position toString");
+
+	test(function() {assert_true(typeof(position.timestamp) == "number", "Position.timestamp should be of type 'number' was:" + typeof(position.timestamp))},"Timestamp is type number");
+
+// test the following block, all readonly doubles
+	/*  [NoInterfaceObject]
+	  interface Coordinates {
+	    readonly attribute double latitude;
+	    readonly attribute double longitude;
+	    readonly attribute double? altitude;
+	    readonly attribute double accuracy;
+	    readonly attribute double? altitudeAccuracy;
+	    readonly attribute double? heading;
+	    readonly attribute double? speed;
+	  };*/
+
+
+	for (var ii in position.coords)
+	{
+		// these four can be numbers or null
+		if (ii == "altitude" || ii == "altitudeAccuracy" || ii == "heading" || ii == "speed")
+		{
+			
+			test(function() {assert_true(position.coords[ii] == null || typeof(position.coords[ii]) == "number", ii+" must be null or 'number' type, was: " + typeof(position.coords[ii]))}, ii+ " is null or number");
+		} else {
+			test(function() {assert_true(typeof(position.coords[ii]) == "number" , ii+" should be type 'number' but typeof returned: " + typeof(position.coords[ii]))}, ii+ " is type number");
+			
+		}
+				
+		var oldval = position.coords[ii];
+		position.coords[ii] = 666;
+		
+		test(function() {assert_true(position.coords[ii] == oldval, ii+" should be readonly, wrote: " + position.coords[ii] + " old value was " + oldval )},ii+" readonly");
+		
+	}
+	
+	success.done();
+	
+}
+function BadSuccessCallback(position)
+{
+	test(function() {assert_true(false,"Success callback called in error","Success callback called in error")});
+}
+function BadErrorCallback(error)
+{
+	test(function() {assert_true(false,"Error callback called in error","Error callback success")});
+	
+}
+function errorCallback(error)
+{
+	test(function() {assert_true(true)},"Error Callback called");
+	
+	test(function() {assert_true(error.toString() == "[object PositionError]", "PositionError.toString should result in '[object PositionError]' was: " + error.toString())},"PositionError toString");
+	
+
+	test(function() {assert_true(1 == error.POSITION_DENIED, "POSITION_DENIED should be 1 was: " + error.POSITION_DENIED)},"POSITION_DENIED value is 1");
+	test(function() {assert_true(2 == error.POSITION_UNAVAILABLE, "PositionError is POSITION_UNAVAILABLE 2' was: " + error.POSITION_UNAVAILABLE)},"PositionError POSITION_UNAVAILABLE");
+	
+
+	test(function() {assert_true(3 == error.TIMEOUT, "TIMEOUT should be 3 was: " + error.TIMEOUT)},"TIMEOUT value is 3");
+	
+	fail.done();
+	
+}
+test(function() {assert_true(navigator.geolocation.toString() == "[object Geolocation]", "navigator.geolocation.toString should return '[Object Geolocation]'")},"Geolocation name");
+
+test(function() {assert_true(typeof(navigator.geolocation.clearWatch) == "function", "typeof clearWatch should be 'function'")},"clearWatch is function");
+
+test(function() {assert_true(typeof(navigator.geolocation.watchPosition) == "function", "typeof watchPosition should be 'function'")}, "watchPosition is function");
+
+test(function() {assert_true(typeof(navigator.geolocation.getCurrentPosition) == "function", "typeof getCurrentPosition should be 'function'")}, "getCurrentPosition is function");
+
+var success = async_test("Success callback tests", {timeout:1000000});
+
+// with a longer timeout and with the user accepting the position request, this should test the successcallback
+success.step(function() {navigator.geolocation.getCurrentPosition(successCallback,
+                   BadErrorCallback, {maximumAge:600000,timeout:10000})}, "getCurPos Success");
+
+var fail = async_test("Error callback tests");
+
+// with a timeout of 0 the error callback is hopefully consistently called
+fail.step(function() {navigator.geolocation.getCurrentPosition(BadSuccessCallback,
+				                   errorCallback, {maximumAge:00,timeout:0})}, "getCurPos Error",{timeout:100000});
+
+</script>
+</body>
+</html>

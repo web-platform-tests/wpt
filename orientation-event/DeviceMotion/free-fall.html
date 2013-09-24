@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+	<title>03 - A device in free-fall, with the screen horizontal and upmost:</title>
+	<script src="http://w3c-test.org/resources/testharness.js"></script>
+	<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+	<script src="http://w3c-test.org/resources/WebIDLParser.js"></script>
+	<script src="http://w3c-test.org/resources/idlharness.js"></script>
+  <link rel='author' title='Mosquito FP7'/>
+  </head>
+
+  <body>
+
+  
+  	<h1>03 - A device in free-fall, with the screen horizontal and upmost:</h1>
+	<div id="log">
+	</div>
+	
+	<script>
+	
+	function init(){
+	   if (window.DeviceMotionEvent) {
+			window.addEventListener('devicemotion', DeviceMotionHandler, false);
+			alert("Launch Test");
+		};
+	}
+	
+	function DeviceMotionHandler(eventData){
+			
+		var gravity = eventData.accelerationIncludingGravity;
+		// X : angle par rapport a x
+		x = gravity.x;
+		// Y : angle par rapport a y
+		y = gravity.y;
+		// Z : acceleromètre (de base : -9.81)
+		z = gravity.z;
+		
+		tx.step(function() {assert_approx_equals(x, 0, 1)});
+		ty.step(function() {assert_approx_equals(y, 0, 1)});
+		tz.step(function() {assert_approx_equals(z, 0, 1)});
+		tx.done();
+		ty.done();
+		tz.done();
+	}
+
+	init();
+	
+	var tx = async_test("X angle");
+	var ty = async_test("Y angle");
+	var tz = async_test("Free-fall");
+	</script>
+	
+  </body>
+  
+</html>

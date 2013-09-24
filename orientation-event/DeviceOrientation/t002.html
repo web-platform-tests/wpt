@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <title>The corresponding event must be of type DeviceOrientationEvent and must fire on the window object.:</title>
+	<meta name=viewport content="width=device-width, maximum-scale=1.0, user-scalable=no" />
+    <script src="http://w3c-test.org/resources/testharness.js"></script>
+    <script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+    <link rel='author' title='Mosquito FP7'/>
+  </head>
+
+  <body>
+
+  
+  		<h1>The corresponding event must be of type DeviceOrientationEvent and must fire on the window object.:</h1>
+    <div id="log">
+    </div>
+	
+	<script type="text/javascript">
+		t1 = async_test("The corresponding event must be of type DeviceOrientationEvent");
+		t2 = async_test("The corresponding event must fire on the window object");
+		etype = null;
+		ewin = null;
+		window.addEventListener('deviceorientation', function(e) {etype = e.type; ewin = this;}, false);
+		
+		setTimeout("testing()", 200);
+		
+		function testing(){
+			t1.step(function() {assert_equals(etype, "deviceorientation")});
+			t2.step(function() {assert_equals(ewin, window)});
+			t1.done();
+			t2.done();
+		}
+	</script>	
+  </body>
+  
+</html>

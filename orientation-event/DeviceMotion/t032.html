@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+	<title>Implementations that are unable to provide the rotationRate property must set the values to null:</title>
+	<meta name=viewport content="width=device-width, maximum-scale=1.0, user-scalable=no" />
+	<script src="http://w3c-test.org/resources/testharness.js"></script>
+	<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+	<script src="http://w3c-test.org/resources/WebIDLParser.js"></script>
+	<script src="http://w3c-test.org/resources/idlharness.js"></script>
+  <link rel='author' title='Mosquito FP7'/>
+  </head>
+
+  <body>
+
+  
+  	<h1>Implementations that are unable to provide the rotationRate property must set the values to null:</h1>
+	<div id="log">
+	</div>
+	
+	<script type="text/javascript">
+		trot = async_test("rotationRate property must be set to null");
+		talpha = async_test("alpha property of rotationRate must be set to null");
+		tbeta = async_test("beta property of rotationRate must be set to null");
+		tgamma = async_test("gamma property of rotationRate must be set to null");
+
+		vrot = "";
+		valpha = "";
+		vbeta = "";
+		vgamma = "";
+		window.addEventListener('devicemotion', function (e){
+			rot = e.rotationRate;
+			vrot = rot;
+			valpha = rot.alpha;
+			vbeta = rot.beta;
+			vgamma = rot.gamma;
+		}, false);
+		
+		setTimeout("testing()", 200);
+		
+		function testing(){
+			trot.step(function() {assert_equals(vrot, null)});
+			trot.done();
+			talpha.step(function() {assert_equals(valpha, null)});
+			talpha.done();
+			tbeta.step(function() {assert_equals(vbeta, null)});
+			tbeta.done();
+			tgamma.step(function() {assert_equals(vgamma, null)});				
+			tgamma.done();
+		}
+	</script>
+	
+  </body>
+  
+</html>

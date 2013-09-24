@@ -1,0 +1,9 @@
+angle-set-null.html		Unable to provide angles must set values to null:				Mosquito FP7	
+horizontal-surface.html		02 - A device lying flat on a horizontal surface:				Mosquito FP7	
+t001.html		User agents implementing this specification must provide a new DOM event, named deviceorientation:				Mosquito FP7	
+t002.html		The corresponding event must be of type DeviceOrientationEvent and must fire on the window object.:				Mosquito FP7	
+t003.html		User agents must also provide an event handler IDL attribute [HTML5] named ondeviceorientation on the window object:				Mosquito FP7	
+t006.html		Rotate the device frame around its z axis:				Mosquito FP7	
+t009.html		Rotate the device frame around its x axis:				Mosquito FP7	
+t010.html		Rotate the device frame around its y axis:				Mosquito FP7	
+t012.html		Implementations must set the values of the unknown angles to null:				Mosquito FP7	

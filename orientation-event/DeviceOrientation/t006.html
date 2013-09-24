@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <title>Rotate the device frame around its z axis:</title>
+	<meta name=viewport content="width=device-width, maximum-scale=1.0, user-scalable=no" />
+    <script src="http://w3c-test.org/resources/testharness.js"></script>
+    <script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+    <link rel='author' title='Mosquito FP7'/>
+  </head>
+
+  <body>
+
+  
+  		<h1>Rotate the device frame around its z axis:</h1>
+    <div id="log">
+    </div>
+	
+	<script>
+		window.addEventListener('deviceorientation', function(eventData) {
+			alpha = eventData.alpha;
+		}, false);
+
+		alert("Launch Test.");
+		
+		test(function() {assert_true(alpha > 0 && alpha < 360)},"Alpha is between 0 and 360");
+		test(function() {assert_approx_equals(alpha, 0, 2)},"Alpha is not around zero (between 0 and 2)");
+		  
+	</script>
+	
+  </body>
+  
+</html>

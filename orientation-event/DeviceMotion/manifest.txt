@@ -1,0 +1,13 @@
+free-fall.html		03 - A device in free-fall, with the screen horizontal and upmost:				Mosquito FP7	
+screen-upmost.html		02 - A device lying flat on a horizontal surface with the screen upmost:				Mosquito FP7	
+screen-upright.html		02 - A device with the screen upright:				Mosquito FP7	
+t021.html		User agents implementing this specification must provide a new DOM event, named devicemotion:				Mosquito FP7	
+t022.html		The corresponding event must be of type DeviceOrientationEvent and must fire on the window object:				Mosquito FP7	
+t023.html		User agents must also provide an event handler IDL attribute HTML5 named ondevicemotion on the window object:				Mosquito FP7	
+t025.html		Implementations that are unable to provide acceleration data without the effect of gravity may instead supply the acceleration including the effect of gravity:				Mosquito FP7	
+t026.html		The accelerationIncludingGravity property provide the acceleration plus the acceleration equal and opposite to the gravity:				Mosquito FP7	
+t028.html		The interval property must be expressed in milliseconds. It must be a constant, to simplify filtering of the data by the Web application:				Mosquito FP7	
+t030.html		Implementations that are unable to provide the acceleration property must set the values to null:				Mosquito FP7	
+t031.html		Implementations that are unable to provide the accelerationIncludingGravity property must set the values to null:				Mosquito FP7	
+t032.html		Implementations that are unable to provide the rotationRate property must set the values to null:				Mosquito FP7	
+values-null.html		values set to null:				Mosquito FP7	

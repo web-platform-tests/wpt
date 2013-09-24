@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <title>Rotate the device frame around its y axis:</title>
+	<meta name=viewport content="width=device-width, maximum-scale=1.0, user-scalable=no" /> 
+    <script src="http://w3c-test.org/resources/testharness.js"></script>
+    <script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+    <link rel='author' title='Mosquito FP7'/>
+  </head>
+
+  <body>
+
+  
+  		<h1>Rotate the device frame around its y axis:</h1>
+    <div id="log">
+    </div>
+	
+	<script>
+	  	window.addEventListener('deviceorientation', function(eventData) {
+			gamma = eventData.gamma;
+		}, false);
+			
+		alert("Launch Test.");
+		test(function() {assert_true(gamma > -90 && gamma < 90)},"gamma is between -90 and 90");
+		test(function() {assert_false(gamma > -2 && gamma < 2)},"Gamma is not around zero (between -2 and 2)");
+		  
+	</script>
+	
+  </body>
+  
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<!-- saved from url=(0050)http://dev.w3.org/geo/api/test-suite/Overview.html -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>DeviceOrientation Event Specification Testing</title>
+	<meta name=viewport content="width=device-height, maximum-scale=1.0, user-scalable=yes" />
+    <link type="text/css" href="http://www.w3.org/StyleSheets/base.css" />
+    <link rel="stylesheet" type="text/css" href="http://www.w3.org/StyleSheets/TR/base" />
+    <link href="style.css" rel="stylesheet" type="text/css"/>
+  </head>
+  <body>
+
+    <h1>DeviceOrientation Event Test Suite</h1>
+
+<!--
+<a href="http://dev.w3.org/geo/api/test-suite/test-suite.zip">A Zip archive of all the files</a> is also available.
+-->
+
+<h2>Introduction</h2>
+
+<p>This page links to a series of test cases for the <a href="http://dev.w3.org/geo/api/spec-source-orientation.html">W3C DeviceOrientation Event Specification</a>. It is organised by section, and (more or less) categorizes each test according to which statement in the specification it relates to.</p>
+
+<h2>Instructions</h2>
+
+<p>The tests are designed to be run manually.</p>
+
+<!-- ###################################################################### -->
+<hr>
+<h2>Tests</h2>
+
+<!-- ###################################################################### -->
+
+<h3><a href="http://dev.w3.org/geo/api/spec-source-orientation.html#description">4 Description</a></h3>
+
+<h4><a href="http://dev.w3.org/geo/api/spec-source-orientation.html#deviceorientation">4.1 deviceorientation Event</a></h4>
+<ul>
+
+<!--
+
+	<li>
+		<q></q>
+		<br><small><a href="../DeviceOrientation/t.html">Test </a>: </small>
+	</li>
+  
+-->
+
+  <li>
+    <q>User agents implementing this specification must provide a new DOM event, named deviceorientation.</q>
+    <br><small><a href="../DeviceOrientation/t001.html">Test 001</a>: checks the existence of a new DOM event named deviceorientation.</small>
+  </li>
+
+  <li>
+    <q>The corresponding event must be of type DeviceOrientationEvent and must fire on the window object.</q>
+    <br><small><a href="../DeviceOrientation/t002.html">Test 002</a>: checks if the event is of type DeviceOrientation and if the event is window fired the window object.</small>
+  </li>
+
+  <li>
+    <q>Registration for, and firing of the deviceorientation event must follow the usual behavior of DOM Level 2 Events, [DOMEVENTS].</q>
+    <br><small>No tests.</small>
+  </li>
+
+  <li>
+    <q>User agents must also provide an event handler IDL attribute [HTML5] named ondeviceorientation on the window object. The type of this event handler must be DeviceOrientationEvent.</q>
+    <br><small><a href="../DeviceOrientation/t003.html">Test 003</a>: checks if the event provides an event handler IDL attribute [HTML5] named ondeviceorientation and is of type 'DeviceOrientationEvent'.</small>
+  </li>
+
+  <li>
+    <q>Rotate the device frame around its z axis by alpha degrees, with alpha in [0, 360).</q>
+    <br><small><a href="../DeviceOrientation/t006.html">Test 006</a>: checks if alpha is between 0 and 360.</small>
+  </li>
+
+  <li>
+    <q>Rotate the device frame around its x axis by alpha degrees, with beta in [-180, 180).</q>
+    <br><small><a href="../DeviceOrientation/t009.html">Test 009</a>: checks if beta is between -180 and 180 and not defined at zero.</small>
+  </li>
+
+  <li>
+    <q>Rotate the device frame around its y axis by alpha degrees, with gamma in [-90, 90).</q>
+    <br><small><a href="../DeviceOrientation/t010.html">Test 010</a>: checks if gamma is between -90 and 90 and not defined at zero.</small>
+  </li>
+  
+	<li>
+		<q>Implementations that are unable to provide all three angles must set the values of the unknown angles to null. If any angles are provided, the absolute property must be set appropriately. If an implementation can never provide orientation information, the event should be fired with all properties set to null.</q>
+		<br><small><a href="../DeviceOrientation/t012.html">Test 012</a>: checks if angles set values are set to null (to be tested on devices where at least one date is missing).</small>
+	</li>
+</ul>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+
+<h4><a href="http://dev.w3.org/geo/api/spec-source-orientation.html#compassneedscalibration">4.2 compassneedscalibration Event</a></h4>
+<ul>
+
+  <li>
+    <q>User agents implementing this specification must provide a new DOM event, named compassneedscalibration.</q>
+    <br><small>No tests.</small>
+  </li>
+  
+  <li>
+    <q>This event must fire on the window object.</q>
+    <br><small>No tests.</small>
+  </li>
+  
+  <li>
+    <q>User agents must also provide an event handler IDL attribute [HTML5] named oncompassneedscalibration on the window object. The type of this event handler must be Event.</q>
+    <br><small>No tests.</small>
+  </li>
+  
+  <li>
+    <q>The default action of this event should be for the user agent to present the user with details of how to calibrate the compass. The event must be cancelable, so that web sites can provide their own alternative calibration UI.</q>
+    <br><small>No tests.</small>
+  </li>
+
+</ul>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+
+<h4><a href="http://dev.w3.org/geo/api/spec-source-orientation.html#devicemotion">4.3 devicemotion Event</a></h4>
+<ul>
+  <li>
+    <q>User agents implementing this specification must provide a new DOM event, named devicemotion.</q>
+    <br><small><a href="../DeviceMotion/t021.html">Test 021</a>: creates a new DOM event named devicemotion.</small>
+  </li>
+
+  <li>
+    <q>The corresponding event must be of type DeviceMotionEvent and must fire on the window object.</q>
+    <br><small><a href="../DeviceMotion/t022.html">Test 022</a>: checks if the event is of type devicemotion and if the event is the same that window.</small>
+  </li>
+
+  <li>
+    <q>Registration for, and firing of the devicemotion event must follow the usual behavior of DOM Level 2 Events, [DOMEVENTS].</q>
+    <br><small>No tests.</small>
+  </li>
+
+  <li>
+    <q>User agents must also provide an event handler IDL attribute [HTML5] named ondevicemotion on the window object. The type of this event handler must be DeviceMotionEvent.</q>
+    <br><small><a href="../DeviceMotion/t023.html">Test 023</a>: check if the event provide an event handler IDL attribute [HTML5] named ondevicemotion and is of type 'DeviceMotionEvent'.</small>
+  </li>
+  
+	<li>
+		<q>Implementations that are unable to provide acceleration data without the effect of gravity (due, for example, to the lack of a gyroscope) may instead supply the acceleration including the effect of gravity.</q>
+		<br><small><a href="../DeviceMotion/t025.html">Test 025</a>: checks if the event doesn't provide the acceleration property but provide the accelerationIncludingGravity property.</small>
+	</li>
+  
+	<li>
+		<q>The accelerationIncludingGravity property must provide the acceleration of the hosting device, plus an acceleration equal and opposite to the acceleration due to gravity.</q>
+		<br><small><a href="../DeviceMotion/t026.html">Test 026</a>: checks if the accelerationIncludingGravity property provide the acceleration plus the acceleration equal and opposite to the gravity.</small>
+	</li>
+  
+	<li>
+		<q>The rotationRate property must provide the rate of rotation of the hosting device in space. It must be expressed in deg/s.</q>
+		<br><small>No tests.</small>
+	</li>
+  
+	<li>
+		<q>The interval property must be expressed in milliseconds. It must be a constant, to simplify filtering of the data by the Web application.</q>
+		<br><small><a href="../DeviceMotion/t028.html">Tests 028</a>: check if the interval property is a constant.</small>
+	</li>
+  
+	<li>
+		<q>Implementations that are unable to provide all properties must set the values of the unknown properties to null. If an implementation can never provide motion information, the event should be fired with all properties set to null.</q>
+		<br><small><a href="../DeviceMotion/t030.html">Test 030</a>: The acceleration property must be set to null</small>
+		<br><small><a href="../DeviceMotion/t031.html">Test 031</a>: The accelerationIncludingGravity property must be set to null</small>
+		<br><small><a href="../DeviceMotion/t032.html">Test 032</a>: The rotationRate property must be set to null</small>
+	</li>
+</ul>
+
+</body>
+</html>

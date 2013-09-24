@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Geolocation API Specification Testing</title>
+    <link type="text/css" href="http://www.w3.org/StyleSheets/base.css" />
+    <link rel="stylesheet" type="text/css" href="http://www.w3.org/StyleSheets/TR/base" />
+    <link href="style.css" rel="stylesheet" type="text/css"/>
+  </head>
+  <body>
+
+    <h1>Geolocation API Test Suite</h1>
+
+
+<a href="http://dev.w3.org/geo/api/test-suite/test-suite.zip">A Zip archive of all the files</a> is also available.
+
+<h2>Introduction</h2>
+
+<p>This page links to a series of test cases for the <a href="http://dev.w3.org/geo/api/spec-source.html">W3C Geolocation API Specification</a>. It is organised by section, and (more or less) categorizes each test according to which statement in the specification it relates to.</p>
+
+<h2>Instructions</h2>
+
+<p>The tests are designed to be run manually, mostly because the specification expects user interaction for allowing the browser to access location information.</p>
+
+<!-- ###################################################################### -->
+<hr/>
+<h2>Tests</h2>
+
+<!-- ###################################################################### -->
+
+<h3><a href="http://dev.w3.org/geo/api/spec-source.html#privacy_for_uas">4 Security and privacy considerations</a></h3>
+
+<h4><a href="http://dev.w3.org/geo/api/spec-source.html#privacy_for_uas">4.1 Privacy considerations for implementors of the Geolocation API</a></h4>
+<ul>
+
+  <li>
+    <q>User agents must not send location information to Web sites without the express permission of the user. User agents must acquire permission through a user interface, unless they have prearranged trust relationships with users, as described below.</q>
+    <br/><small><a href="t.html?00001">Test 00001</a>: user denies access, check
+      that error callback is called with correct code</small>
+    <br/><small><a href="t.html?00002">Test 00002</a>: user allows access, check
+      that success callback is called or error callback is called with correct code.</small>
+  </li>
+
+  <li>
+    <q>The user interface must include the host component of the document's URI</q>
+    <br/><small><a href="t.html?00018">Test 00018</a>: call getCurrentPosition, check that there's UI appearing with the document host</small>
+    <br/><small><a href="t.html?00019">Test 00019</a>: call watchPosition, check that there's UI appearing with the document host</small>
+  </li>
+
+  <li>
+    <q>Those permissions that are acquired through the user interface and that are preserved beyond the current browsing session (i.e. beyond the time when the browsing context [BROWSINGCONTEXT] is navigated to another URL) must be revocable and user agents must respect revoked permissions.</q>
+    <br/><small><a href="t.html?00141">Test 00141</a>: user asked to approve/remember, then asked to revoke, then reload. The permission dialogue should reappear.</small>
+    <br/><small><a href="t.html?00142">Test 00142</a>: user asked to deny/remember, then ask to revoke, then reload. The permission dialogue should reappear</small>
+  </li>
+</ul>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+
+    <h3><a href="http://dev.w3.org/geo/api/spec-source.html#api_description">5 API Description</a></h3>
+
+    <h4><a href="http://dev.w3.org/geo/api/spec-source.html#geolocation_interface">5.1 Geolocation interface</a></h4>
+
+<ul>
+  <li>
+    <q>Objects implementing the Navigator interface (e.g. the window.navigator object) must also implement the NavigatorGeolocation interface. An instance of NavigatorGeolocation would be then obtained by using binding-specific casting methods on an instance of Navigator.</q>
+    <br/><small><a href="t.html?00026">Test 00026</a>: check that window.navigator.geolocation exists and is of type 'object'.</small>
+    <br/><small><a href="t.html?00150">Test 00150</a>: check that the geolocation property of window.navigator is enumerable.</small>
+  </li>
+
+  <li>
+    <q>The getCurrentPosition() method takes one, two or three arguments ... If successCallback is the null value, then throw a TypeError.</q>
+    <br/><small><a href="t.html?00027">Test 00027</a>: call getCurrentPosition without arguments, check that exception is thrown</small>
+    <br/><small><a href="t.html?00011">Test 00011</a>: call getCurrentPosition with null success callback, check that exception is thrown</small>
+    <br/><small><a href="t.html?00013">Test 00013</a>: call getCurrentPosition with null success and error callbacks, check that exception is thrown</small>
+    <br/><small><a href="t.html?00028">Test 00028</a>: call getCurrentPosition() with wrong type for first argument. Exception expected.</small>
+    <br/><small><a href="t.html?00029">Test 00029</a>: call getCurrentPosition() with wrong type for second argument. Exception expected.</small>
+    <br/><small><a href="t.html?00030">Test 00030</a>: call getCurrentPosition() with wrong type for third argument. No exception expected.</small>
+  </li>
+
+  <li>
+    <q>When called, [the getCurrentPosition() method] must immediately return and then asynchronously attempt to obtain the current location of the device.</q>
+    <br/><small><a href="t.html?00031">Test 00031</a>: Check that getCurrentPosition returns synchronously before any callbacks are invoked.</small>
+  </li>
+
+  <li>
+    <q>If the [location] attempt is successful, the successCallback is invoked (i.e. the handleEvent operation is called on the callback object) with a new Position object, reflecting the current location of the device.</q>
+    <br/><small>No tests</small>
+  </li>
+
+  <li>
+    <q>If the attempt fails, the errorCallback is invoked with a new PositionError object, reflecting the reason for the failure.</q>
+    <br/><small>No tests</small>
+  </li>
+
+  <li>
+    <q>The watchPosition() method takes one, two or three arguments ... If successCallback is the null value, then throw a TypeError.<q>
+    <br/><small><a href="t.html?00058">Test 00058</a>: call watchPosition with no arguments, check that exception is thrown</small>
+    <br/><small><a href="t.html?00015">Test 00015</a>: call watchPosition with null success callback, check that exception is thrown</small>
+    <br/><small><a href="t.html?00017">Test 00017</a>: call watchPosition with null success and error callbacks, check that exception is thrown</small>
+    <br/><small><a href="t.html?00059">Test 00059</a>: call watchPosition() with wrong type for first argument. Exception expected.</small>
+    <br/><small><a href="t.html?00060">Test 00060</a>: call watchPosition() with wrong type for second argument. Exception expected.</small>
+    <br/><small><a href="t.html?00061">Test 00061</a>: call watchPosition() with wrong type for third argument. No exception expected.</small>
+  </li>
+
+  <li>
+    <q>When called, [watchPosition] must immediately return a long value that uniquely identifies a watch operation and then asynchronously start the watch operation.</q>
+    <br/><small><a href="t.html?00062">Test 00062</a>: check that watchPosition returns synchronously before any callbacks are invoked.</small>
+    <br/><small><a href="t.html?00151">Test 00151</a>: check that watchPosition
+      returns a long.</small>
+  </li>
+
+  <li>
+    <q>This operation must first attempt to obtain the current location of the device and invoke the appropriate callback.</q>
+    <br/><small>No tests</small>
+  </li>
+
+  <li>
+    <q>It then must continue to monitor the position of the device and invoke the appropriate callback every time this position changes.</q>
+    <br/><small>No tests</small>
+  </li>
+
+  <li>
+    <q>The watch operation continues until the clearWatch method is called with the corresponding identifier</q>
+    <br/><small><a href="t.html?00080">Test 00080</a>: Test that calling
+      clearWatch with invalid watch IDs does not cause an exception.</small>
+  </li>
+
+  <li>
+    <q>The successCallback is only invoked when a new position is obtained and this position differs significantly from the previously reported position. The definition of what consitutes a significant difference is left to the implementation.</q>
+    <br/><small>No tests</small>
+  </li>
+
+  <li>
+    <q>For both getCurrentPosition  and watchPosition, the implementation must never invoke the successCallback without having first obtained permission from the user to share location</q>
+    <br/><small>See <a href="t.html?00001">Test 00001</a>, <a href="t.html?00002">Test 00002</a>, <a href="t.html?00018">Test 00018</a> and <a href="t.html?00019">Test 00019</a></small>
+  </li>
+
+  <li>
+    <q>If the user grants permission, the appropriate callback must be invoked as described above.</q>
+    <br/><small>See <a href="t.html?00002">Test 00002</a></small>
+  </li>
+
+  <li>
+    <q>If the user denies permission, the errorCallback (if present) must be invoked with code PERMISSION_DENIED.</q>
+    <br/><small>See <a href="t.html?00001">Test 00001</a></small>
+  </li>
+
+  <li>
+    <q>The time that is spent obtaining the user permission must not be included in the period covered by the timeout attribute of the PositionOptions  parameter. The timeout attribute must only apply to the location acquisition operation.</q>
+    <br/><small>No tests</small>
+  </li>
+
+  <li>
+    <q>If the user grants permission, the appropriate callback must be invoked as described above. If the user denies permission, the errorCallback (if present) must be invoked with code PERMISSION_DENIED, irrespective of any other errors encoutered in the above steps.</q>
+    <br/><small>No tests</small>
+  </li>
+
+  <li>
+    <q>The clearWatch() method takes one argument. When called, the watch process identified by the watchId argument will be stopped and should not invoke any further callbacks.</q>
+    <br/><small>No tests</small>
+  </li>
+</ul>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+
+<h4><a href="http://dev.w3.org/geo/api/spec-source.html#position_options_interface">5.2 PositionOptions interface</a></h4>
+<ul>
+
+  <li>
+    <q>In ECMAScript, the enableHighAccuracy, timeout and maximumAge properties are all optional: when creating a PositionOptions object, the developer may specify any of these properties.</q>
+    <br/><small>No tests</small>
+  </li>
+
+  <li>
+    <q>The enableHighAccuracy  attribute provides a hint that the application would like to receive the best possible results. This may result in slower response times or increased power consumption. The user might also deny this capability, or the device might not be able to provide more accurate results than if the flag wasn't specified.</q>
+    <br/><small><a href="t.html?00123">Test 00123</a>: call getCurrentPosition with wrong type for enableHighAccuracy. No exception expected.</small>
+    <br/><small><a href="t.html?00124">Test 00124</a>: call watchPosition with wrong type for enableHighAccuracy. No exception expected.</small>
+  </li>
+
+  <li>
+    <q>If the PositionOptions parameter to getCurrentPosition or watchPosition is omitted, the default value used for the enableHighAccuracy attribute is false. The same default value is used in ECMAScript when the enableHighAccuracy property is omitted. </q>
+    <br/><small>No tests</small>
+  </li>
+
+  <li>
+    <q>The timeout attribute denotes the maximum length of time (expressed in milliseconds) that is allowed to pass from the call to getCurrentPosition() or watchPosition() until the corresponding successCallback is invoked. If the implementation is unable to successfully acquire a new Position before the given timeout elapses, and no other errors have occurred in this interval, then the corresponding errorCallback must be invoked with a PositionError object whose code attribute is set to TIMEOUT.</q>
+    <br/><small><a href="t.html?00086">Test 00086</a>: set timeout and maximumAge to 0, check that timeout error raised (getCurrentPosition)</small>
+    <br/><small><a href="t.html?00088">Test 00088</a>: set timeout and maximumAge to 0, check that timeout error raised (watchPosition)</small>
+  </li>
+
+  <li>
+    <q>If the PositionOptions parameter to getCurrentPosition or watchPosition is omitted, the default value used for the timeout attribute is Infinity.</q>
+    <br/><small>No tests.</small>
+  </li>
+
+  <li>
+    <q>If a negative value is supplied, the timeout value is considered to be 0.</q>
+    <br/><small><a href="t.html?00091">Test 00091</a>: check that a negative timeout value is equivalent to a 0 timeout value (getCurrentLocation)</small>
+    <br/><small><a href="t.html?00092">Test 00092</a>: check that a negative timeout value is equivalent to a 0 timeout value (watchPosition)</small>
+  </li>
+
+  <li>
+    <q>The same default value is used in ECMAScript when the timeout property is omitted.</q>
+    <br/><small>No tests.</small>
+  </li>
+
+  <li>
+    <q>In case of a getCurrentPosition() call, the errorCallback would be invoked at most once</q>
+    <br/><small>No tests.</small>
+  </li>
+
+  <li>
+    <q>In case of a watchPosition(), the errorCallback could be invoked repeatedly: the first timeout is relative to the moment watchPosition()  was called or the moment the user's permission was obtained, if that was necessary. Subsequent timeouts are relative to the moment when the implementation determines that the position of the hosting device has changed and a new Position object must be acquired. </q>
+    <br/><small>No tests.</small>
+  </li>
+
+  <li>
+    <q>The maximumAge attribute indicates that the application is willing to accept a cached position whose age is no greater than the specified time in milliseconds. If maximumAge is set to 0, the implementation must immediately attempt to acquire a new position object. Setting the maximumAge to Infinity will force the implementation to return a cached position regardless of its age. If an implementation does not have a cached position available whose age is no greater than the specified maximumAge, then it must acquire a new position object. In case of a watchPosition(), the maximumAge refers to the first position object returned by the implementation.</q>
+    <br/><small>No tests.</small>
+  </li>
+
+  <li>
+    <q>If the PositionOptions parameter to getCurrentPosition or watchPosition is omitted, the default value used for the maximumAge  attribute is 0. If a negative value is supplied, the maximumAge value is considered to be 0. The same default value is used in ECMAScript when the maximumAge  property is omitted.</q>
+    <br/><small>No tests.</small>
+  </li>
+</ul>
+
+<!-- ###################################################################### -->
+
+<h4><a href="http://dev.w3.org/geo/api/spec-source.html#postion_interface">5.3 Position interface</a></h4>
+<ul>
+  <li>
+    <q>The timestamp attribute represents the time when the Position object was acquired and is represented as a DOMTimeStamp [DOMTIMESTAMP].</q>
+    <br/><small><a href="t.html?00095">Test 00095</a>: check existence of timestamp attribute, and correct type</small>
+  </li>
+</ul>
+
+<!-- ###################################################################### -->
+
+<h4><a href="http://dev.w3.org/geo/api/spec-source.html#coordinates_interface">5.4 Coordinates interface</a></h4>
+<ul>
+  <li>
+    <q>The latitude and longitude attributes are geographic coordinates specified in decimal degrees.</q>
+    <br/><small><a href="t.html?00152">Test 00152</a>: check for latitude and longitude.</small>
+  </li>
+
+  <li>
+    <q>The altitude attribute denotes the height of the position, specified in meters above the [WGS84] ellipsoid. If the implementation cannot provide altitude information, the value of this attribute must be null.</q>
+    <br/><small><a href="t.html?00104">Test 00104</a>: check type of altitude</small>
+  </li>
+
+  <li>
+    <q>The accuracy attribute denotes the accuracy level of the latitude and longitude coordinates. It is specified in meters and must be supported by all implementations. </q>
+    <br/><small><a href="t.html?00153">Test 00153</a>: check for accuracy property.</small>
+  </li>
+
+  <li>
+    <q>The altitudeAccuracy  attribute is specified in meters. If the implementation cannot provide altitude information, the value of this attribute must be null. </q>
+    <br/><small><a href="t.html?00105">Test 00105</a>: check type of altitudeAccuracy</small>
+  </li>
+
+  <li>
+    <q>The heading attribute denotes the direction of travel of the hosting
+      device and is specified in degrees counting clockwise relative to the true
+      north. If the implementation cannot provide heading information, the value
+      of this attribute must be null.</q>
+    <br/><small><a href="t.html?00106">Test 00106</a>: check type of heading</small>
+  </li>
+
+  <li>
+    <q>If the hosting device is stationary (i.e. the value of the speed attribute is 0), then the value of the heading attribute must be NaN.</q>
+    <br/><small>No tests.</small>
+  </li>
+
+  <li>
+    <q>The speed attribute denotes the current ground speed of the hosting device and is specified in meters per second. If the implementation cannot provide speed information, the value of this attribute must be null. </q>
+    <br/><small><a href="t.html?00107">Test 00107</a>: check type of speed</small>
+  </li>
+</ul>
+
+<!-- ###################################################################### -->
+
+<h4><a href="http://dev.w3.org/geo/api/spec-source.html#postion_error_interface">5.5 PositionError interface</a></h4>
+<ul>
+  <li>
+    <q>The code attribute must return the appropriate code from the following list:</q>
+    <br/><small><a href="t.html?00108">Test 00108</a>: check that the error type exists and that its attributes have the right numeric value</small>
+  </li>
+</ul>
+
+<address>
+Please send feedback, error reports, or new tests to public-geolocation@w3.org
+</address>
+
+</body>
+</html>

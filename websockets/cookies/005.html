@@ -3,7 +3,7 @@
 <meta name=timeout content=long>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
-<script src=../constants.js></script>
+<script src=../constants.js?pipe=config></script>
 <div id=log></div>
 <script>
 setup({explicit_done:true})
@@ -11,9 +11,9 @@ var cookie_id = ((new Date())-0) + '.' + Math.random();
 
 var t = async_test(function(t) {
   var iframe = document.createElement('iframe');
-  var ws = new WebSocket(SCHEME_DOMAIN_PORT+'/ws/set-cookie_http?'+cookie_id);
+  var ws = new WebSocket(SCHEME_DOMAIN_PORT+'/set-cookie_http?'+cookie_id);
   ws.onopen = t.step_func(function(e) {
-    var ws2 = new WebSocket(SCHEME_DOMAIN_PORT+'/ws/echo-cookie');
+    var ws2 = new WebSocket(SCHEME_DOMAIN_PORT+'/echo-cookie');
     ws2.onmessage = t.step_func(function(e) {
       ws.close();
       ws2.close();

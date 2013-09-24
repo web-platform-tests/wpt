@@ -2,13 +2,13 @@
 <title>WebSockets: uppercase 'WS:'</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
-<script src=../constants.js></script>
+<script src=../constants.js?pipe=config></script>
 <div id=log></div>
 <script>
 async_test(function(t) {
   var scheme = SCHEME_DOMAIN_PORT.split('://')[0];
   var domain = SCHEME_DOMAIN_PORT.split('://')[1];
-  var ws = new WebSocket(scheme.toUpperCase()+'://'+domain+'/ws/echo');
+  var ws = new WebSocket(scheme.toUpperCase()+'://'+domain+'/echo');
   ws.onopen = t.step_func(function(e) {
     ws.close();
     t.done();

@@ -2,12 +2,12 @@
 <title>WebSockets: delete bufferedAmount</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
-<script src=../../../constants.js></script>
+<script src=../../../constants.js?pipe=config></script>
 <div id=log></div>
 <script>
 test(function(){
   delete WebSocket.prototype.bufferedAmount;
-  var ws = new WebSocket(SCHEME_DOMAIN_PORT+'/ws/echo');
+  var ws = new WebSocket(SCHEME_DOMAIN_PORT+'/echo');
   assert_equals(ws.bufferedAmount, 0, 'after attempt to delete WebSocket.prototype.bufferedAmount');
   ws.close();
   delete ws.bufferedAmount;

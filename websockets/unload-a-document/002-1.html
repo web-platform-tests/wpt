@@ -1,6 +1,6 @@
 <!doctype html>
 <title>WebSockets: navigating top-level browsing context with closed websocket</title>
-<script src=../constants.js></script>
+<script src=../constants.js?pipe=config></script>
 <script>
 var controller = opener || parent;
 var t = controller.t;
@@ -13,7 +13,7 @@ t.step(function() {
     assert_unreached('document was discarded');
   } else {
     sessionStorage.second_run = 'true';
-    var ws = new WebSocket(SCHEME_AND_DOMAIN+'/ws/echo');
+    var ws = new WebSocket(SCHEME_AND_DOMAIN+'/echo');
     ws.onopen = t.step_func(function(e) {
       
       setTimeout(t.step_func(function() {

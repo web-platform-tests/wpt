@@ -2,11 +2,11 @@
 <title>WebSockets: wrong accept key</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
-<script src=../constants.js></script>
+<script src=../constants.js?pipe=config></script>
 <div id=log></div>
 <script>
 async_test(function(t) {
-  var ws = new WebSocket(SCHEME_AND_DOMAIN+'/ws/wrong_accept_key');
+  var ws = new WebSocket(SCHEME_AND_DOMAIN+'/wrong_accept_key');
   ws.onclose = function(e) {
       t.done();
   }

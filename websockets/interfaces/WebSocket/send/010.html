@@ -3,11 +3,11 @@
 
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
-<script src=../../../constants.js></script>
+<script src=../../../constants.js?pipe=config></script>
 <div id=log></div>
 <script>
 async_test(function(outer) {
-  var ws = new WebSocket(SCHEME_DOMAIN_PORT+'/ws/echo');
+  var ws = new WebSocket(SCHEME_DOMAIN_PORT+'/echo');
   var stuffToSend = [null, undefined, 1, window, document.body, {}, [], ws, function(){}, new Error()]
   var tests = [];
 

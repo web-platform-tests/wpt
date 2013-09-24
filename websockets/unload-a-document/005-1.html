@@ -1,12 +1,12 @@
 <!doctype html>
 <title>WebSockets: navigating nested browsing context with a websocket in top-level</title>
-<script src=../constants.js></script>
+<script src=../constants.js?pipe=config></script>
 <script>
 var t = opener.t;
 var assert_unreached = opener.assert_unreached;
 var hasRun = false;
 function run(){
-  var ws = new WebSocket(SCHEME_AND_DOMAIN+'/ws/echo');
+  var ws = new WebSocket(SCHEME_AND_DOMAIN+'/echo');
   ws.onopen = t.step_func(function(e) {
     setTimeout(t.step_func(function() {
       ws.send('test');

@@ -2,11 +2,11 @@
 <title>WebSockets: protocol mismatch</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
-<script src=../constants.js></script>
+<script src=../constants.js?pipe=config></script>
 <div id=log></div>
 <script>
 async_test(function(t) {
-  var ws = new WebSocket(SCHEME_DOMAIN_PORT+'/ws/handshake_protocol', 'FOOBAR');
+  var ws = new WebSocket(SCHEME_DOMAIN_PORT+'/handshake_protocol', 'FOOBAR');
   var gotOpen = false;
   var gotError = false;
   ws.onopen = t.step_func(function(e) {

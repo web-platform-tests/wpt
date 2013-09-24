@@ -2,11 +2,11 @@
 <title>WebSockets: client sends closing handshake</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
-<script src=../constants.js></script>
+<script src=../constants.js?pipe=config></script>
 <div id=log></div>
 <script>
 async_test(function(t) {
-  var ws = new WebSocket(SCHEME_DOMAIN_PORT + '/ws/echo');
+  var ws = new WebSocket(SCHEME_DOMAIN_PORT + '/echo');
   ws.onmessage = ws.onerror = t.step_func(function() {assert_unreached()});
   ws.onopen = function(e) {
     ws.close();

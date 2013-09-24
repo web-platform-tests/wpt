@@ -4,11 +4,11 @@
 <p>Note: This test takes 20 seconds to run.</p>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
-<script src=../constants.js></script>
+<script src=../constants.js?pipe=config></script>
 <div id=log></div>
 <script>
 async_test(function(t) {
-  var ws = new WebSocket(SCHEME_AND_DOMAIN+'/ws/echo');
+  var ws = new WebSocket(SCHEME_AND_DOMAIN+'/echo');
   ws.onclose = ws.onerror = ws.onmessage = t.step_func(function() {assert_unreached()});
   ws.onopen = t.step_func(function(e) {
     setTimeout(t.step_func(function() {

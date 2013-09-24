@@ -4,3 +4,6 @@
 [submodule "tools/wptserve"]
 	path = tools/wptserve
 	url = https://github.com/w3c/wptserve.git
+[submodule "tools/pywebsocket"]
+	path = tools/pywebsocket
+	url = https://github.com/w3c/pywebsocket.git

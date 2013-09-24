@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Shape Outside Inset Valid Formats</title>
+        <link rel="author" title="Adobe" href="http://html.adobe.com/">
+        <link rel="author" title="Bear Travis" href="mailto:betravis@adobe.com">
+        <link rel="help" href="http://dev.w3.org/csswg/css-shapes/#funcdef-inset">
+        <meta name="assert" content="An inset has 1 to 4 insets, and optional border radii that follow the border-radius format">
+        <meta name="flags" content="DOM">
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+        <script src="../resources/parsing-utils.js"></script>
+    </head>
+    <body>
+        <div id="log"></div>
+        <script type="text/javascript">
+            generate_tests(ParsingUtils.testInlineStyle, [
+                ["1 inset", "inset(10px)"],
+                ["2 insets", "inset(10px 20px)"],
+                ["3 insets", "inset(10px 20px 30px)"],
+                ["4 insets", "inset(10px 20px 30px 40px)"],
+                ["1 inset and round", "inset(10px round 20px)"],
+                ["2 insets and round", "inset(10px 20px round 30px)"],
+                ["3 insets and round", "inset(10px 20px 30px round 40px)"],
+                ["4 insets and round", "inset(10px 20px 30px 40px round 50px)"]
+            ]);
+        </script>
+    </body>
+</html>

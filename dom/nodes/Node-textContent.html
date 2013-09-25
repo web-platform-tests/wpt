@@ -8,6 +8,19 @@
 // XXX mutation observers?
 // XXX Range gravitation?
 
+var documents, doctypes;
+setup(function() {
+  documents = [
+    [document, "parser"],
+    [document.implementation.createDocument("", "test", null), "createDocument"],
+    [document.implementation.createHTMLDocument("title"), "createHTMLDocument"],
+  ]
+  doctypes = [
+    [document.doctype, "parser"],
+    [document.implementation.createDocumentType("x", "", ""), "script"],
+  ]
+})
+
 // Getting
 // DocumentFragment, Element:
 test(function() {
@@ -82,14 +95,19 @@ test(function() {
 }, "For a Comment with data, textContent should be that data")
 
 // Any other node:
-test(function() {
-  assert_equals(document.textContent, null)
-}, "For Documents, textContent should be null")
+documents.forEach(function(argument) {
+  var doc = argument[0], creator = argument[1]
+  test(function() {
+    assert_equals(doc.textContent, null)
+  }, "For Documents created by " + creator + ", textContent should be null")
+})
 
-test(function() {
-  assert_equals(document.doctype.textContent, null)
-}, "For DocumentType, textContent should be null")
-
+doctypes.forEach(function(argument) {
+  var doctype = argument[0], creator = argument[1]
+  test(function() {
+    assert_equals(doctype.textContent, null)
+  }, "For DocumentType created by " + creator + ", textContent should be null")
+})
 
 // Setting
 // DocumentFragment, Element:
@@ -115,7 +133,7 @@ arguments.forEach(function(aValue) {
                     "Should have one child")
       var firstChild = aElementOrDocumentFragment.firstChild
       assert_true(firstChild instanceof Text, "child should be a Text")
-      assert_equals(firstChild.data, expectation, "Should have one child")
+      assert_equals(firstChild.data, expectation)
     }
   }
 
@@ -124,6 +142,15 @@ arguments.forEach(function(aValue) {
     el.textContent = argument
     check(el)
   }, "Element without children set to " + format_value(argument))
+
+  test(function() {
+    var el = document.createElement("div")
+    var text = el.appendChild(document.createTextNode(""))
+    el.textContent = argument
+    check(el)
+    assert_equals(text.parentNode, null,
+                  "Preexisting Text should have been removed")
+  }, "Element with empty text node as child set to " + format_value(argument))
 
   test(function() {
     var el = document.createElement("div")
@@ -152,6 +179,15 @@ arguments.forEach(function(aValue) {
     df.textContent = argument
     check(df)
   }, "DocumentFragment without children set to " + format_value(argument))
+
+  test(function() {
+    var df = document.createDocumentFragment()
+    var text = df.appendChild(document.createTextNode(""))
+    df.textContent = argument
+    check(df)
+    assert_equals(text.parentNode, null,
+                  "Preexisting Text should have been removed")
+  }, "DocumentFragment with empty text node as child set to " + format_value(argument))
 
   test(function() {
     var df = document.createDocumentFragment()
@@ -189,6 +225,7 @@ test(function() {
   pi.textContent = "def"
   assert_equals(pi.textContent, "def")
   assert_equals(pi.data, "def")
+  assert_equals(pi.target, "x")
 }, "For a ProcessingInstruction, textContent should set the data")
 
 test(function() {
@@ -199,24 +236,30 @@ test(function() {
 }, "For a Comment, textContent should set the data")
 
 // Any other node:
-test(function() {
-  var root = document.documentElement
-  document.textContent = "a"
-  assert_equals(document.textContent, null)
-  assert_equals(document.documentElement, root)
-}, "For Document, setting textContent should do nothing")
+documents.forEach(function(argument) {
+  var doc = argument[0], creator = argument[1]
+  test(function() {
+    var root = doc.documentElement
+    doc.textContent = "a"
+    assert_equals(doc.textContent, null)
+    assert_equals(doc.documentElement, root)
+  }, "For Documents created by " + creator + ", setting textContent should do nothing")
+})
 
-test(function() {
-  var doctype = document.doctype
-  var props = {
-    name: doctype.name,
-    publicId: doctype.publicId,
-    systemId: doctype.systemId,
-  }
-  doctype.textContent = "b"
-  assert_equals(doctype.textContent, null)
-  assert_equals(doctype.name, props.name, "name should not change")
-  assert_equals(doctype.publicId, props.publicId, "publicId should not change")
-  assert_equals(doctype.systemId, props.systemId, "systemId should not change")
-}, "For DocumentType, setting textContent should do nothing")
+doctypes.forEach(function(argument) {
+  var doctype = argument[0], creator = argument[1]
+  test(function() {
+    var props = {
+      name: doctype.name,
+      publicId: doctype.publicId,
+      systemId: doctype.systemId,
+    }
+    doctype.textContent = "b"
+    assert_equals(doctype.textContent, null)
+    assert_equals(doctype.name, props.name, "name should not change")
+    assert_equals(doctype.publicId, props.publicId, "publicId should not change")
+    assert_equals(doctype.systemId, props.systemId, "systemId should not change")
+  }, "For DocumentType created by " + creator + ", setting textContent should do nothing")
+})
+
 </script>

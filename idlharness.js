@@ -14,7 +14,7 @@ policies and contribution forms [3].
  *
  *   <script src=/resources/testharness.js></script>
  *   <script src=/resources/testharnessreport.js></script>
- *   <script src=/resources/webidl2.js></script>
+ *   <script src=/resources/WebIDLParser.js></script>
  *   <script src=/resources/idlharness.js></script>
  *
  * Then you'll need some type of IDLs.  Here's some script that can be run on a

@@ -124,7 +124,9 @@ def start_http_server(config, port):
     return wptserve.WebTestServer(router,
                                   (config["host"], port),
                                   wptserve.WebTestRequestHandler,
-                                  config=config)
+                                  config=config,
+                                  use_ssl=False,
+                                  certificate=None)
 
 def start_https_server(config, port):
     return

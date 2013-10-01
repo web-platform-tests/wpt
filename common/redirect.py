@@ -13,5 +13,5 @@ def main(request, response):
     else:
         #Not really sure this is useful to a lot of tests
         location = request.path + "?followed"
-    
-    response.headers.append(("Location", location))
+
+    response.headers.set("Location", location)

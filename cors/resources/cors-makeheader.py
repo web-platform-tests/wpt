@@ -19,7 +19,7 @@ def main(request, response):
     if origin != 'none':
         response.headers.set("Access-Control-Allow-Origin", origin)
     if 'origin2' in request.GET:
-        response.headers.append("Access-Control-Allow-Origin", reqiest.GET.first('origin2'))
+        response.headers.append("Access-Control-Allow-Origin", request.GET.first('origin2'))
 
     #Preflight
     if 'headers' in request.GET:

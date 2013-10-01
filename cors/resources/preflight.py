@@ -17,8 +17,8 @@ def main(request, response):
             response.set_error(400, "No Access-Control-Request-Method header")
             return "ERROR: No access-control-request-method in preflight!"
 
-        headers.append(("Access-Control-Allow-Headers",
-                        "x-print, " + request.headers['Access-Control-Request-Method']))
+        headers.append(("Access-Control-Allow-Methods",
+                        request.headers['Access-Control-Request-Method']))
 
         if "max_age" in request.GET:
             headers.append(("Access-Control-Max-Age", request.GET['max_age']))
@@ -27,6 +27,7 @@ def main(request, response):
             request.server.stash.put(request.GET.first("token"), 1)
 
     headers.append(("Access-Control-Allow-Origin", "*"))
+    headers.append(("Access-Control-Allow-Headers", "x-print"))
 
     body = request.headers.get("x-print", "NO")
 

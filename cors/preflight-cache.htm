@@ -87,12 +87,10 @@ var test_c = 0;
             client.open('GET', url, true)
             if (set_request)
                 client.setRequestHeader('x-print', msg)
-            client.onreadystatechange = test.step_func(function() {
-                if(client.readyState >= 4) {
-                    assert_equals(client.response, msg, "response " + url)
-                    if (func)
-                        test.step(func)
-                }
+            client.onload = test.step_func(function() {
+                assert_equals(client.response, msg, "response " + url)
+                if (func)
+                    test.step(func)
             })
             client.onerror = test.step_func(function(e) {
                 assert_unreached("Got unexpected error event on the XHR object")
@@ -109,7 +107,7 @@ var test_c = 0;
             test = test;
 
             /* Check if we did a preflight like we expected */
-            dothing('resources/preflight.py?check=keep&1&token=' + token1,
+            dothing('resources/preflight.py?check&1&token=' + token1,
             '1', false, function() {
                 test = test;
                 dothing(request_url,
@@ -117,7 +115,7 @@ var test_c = 0;
                     test = test;
 
                     /* Check that we didn't do a preflight (hasn't gone 1 second yet) */
-                    dothing('resources/preflight.py?check=keep&2&token=' + token1,
+                    dothing('resources/preflight.py?check&2&token=' + token1,
                     '0', false, function() {
                         test = test;
 
@@ -128,7 +126,7 @@ var test_c = 0;
                                 test = test;
 
                                 /* Expect that we did indeed do a preflight */
-                                dothing('resources/preflight.py?3&token=' + token1,
+                                dothing('resources/preflight.py?check&3&token=' + token1,
                                 '1', false, function() {
                                     test.done()
                                 })

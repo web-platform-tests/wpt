@@ -45,7 +45,7 @@ function shouldFail(origin) {
                             + encodeURIComponent(origin),
                     false)
         assert_throws(null, function() { client.send() }, 'send')
-    }, 'Disallow origin: ' + origin);
+    }, 'Disallow origin: ' + origin.replace('\0', '\\0'));
 }
 
 shouldFail(location.protocol + "//" + SUBDOMAIN + "." + location.host)

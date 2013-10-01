@@ -5,6 +5,45 @@ This is the test suites from a number of W3C Working Groups, including the HTML
 Working Group, the Web Apps Working Group, the Device APIs Working Group, and 
 the Web Apps Security Working Group.
 
+Running the Tests
+=================
+
+The tests are designed to be run from your local computer. The test environment
+requires Python 2.7+ (but not Python 3.x).
+
+To get the tests running, you need to set up the test domains in your /etc/hosts
+(or platform-equivalent) file. The following entries are required:
+
+127.0.0.1	web-platform.test
+127.0.0.1	www.web-platform.test
+127.0.0.1	www1.web-platform.test
+127.0.0.1	www2.web-platform.test
+127.0.0.1	xn--n8j6ds53lwwkrqhv28a.web-platform.test
+127.0.0.1	xn--lve-6lad.web-platform.test
+
+Because web-platform-tests uses git submodules, you must ensure that
+these are up to date. In the root of your checkout, run:
+
+git submodule init
+git submodule update --recursive
+
+The test environment can then be started using
+
+python serve.py
+
+This will start HTTP servers on two ports and a websockets server on
+one port. By default these ports are randomly-chosen free ports.
+Tests must be loaded from the *first* HTTP server in the output. For
+convenience during development you may wish to change this to a known
+port. This can be done using the config.json file; change the entry
+like
+
+"http": ["auto", "auto"]
+
+to some port of your choice e.g.
+
+"http":[8000, "auto"]
+
 Publication
 ===========
 

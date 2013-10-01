@@ -17,7 +17,7 @@ window.onload = function () {
 	};
 	window.addEventListener('message',function (){
 		var xhr = new XMLHttpRequest();
-		xhr.open('GET','022-2.php',false);
+		xhr.open('GET','/common/blank.html?pipe=trickle(d5)',false);
 		xhr.send(null); //should not end within the lifetime of this document
 	},false);
 };

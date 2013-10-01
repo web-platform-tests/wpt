@@ -6,7 +6,7 @@
 
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
-<script src=support.js></script>
+<script src=support.js?pipe=sub></script>
 <div id=log></div>
 
 <script>
@@ -18,7 +18,7 @@ function cors(desc, url) {
         var client = new XMLHttpRequest();
         this.count = counter++;
 
-        client.open("GET", url + "resources/cors-makeheader.php?get_value=hest_er_best&origin=none&" + this.count);
+        client.open("GET", url + "resources/cors-makeheader.py?get_value=hest_er_best&origin=none&" + this.count);
 
         client.onreadystatechange = this.step_func(function(e) {
             // First request, test that it fails with no origin
@@ -29,7 +29,7 @@ function cors(desc, url) {
                 assert_false(!!client.response, "Got CORS-disallowed response");
 
             client = new XMLHttpRequest();
-            client.open("GET", url + "resources/cors-makeheader.php?get_value=hest_er_best&" + this.count);
+            client.open("GET", url + "resources/cors-makeheader.py?get_value=hest_er_best&" + this.count);
             client.onreadystatechange = this.step_func(function(e) {
                 // Second request, test that it passes with the allowed-origin
                 if (client.readyState < 4) return;

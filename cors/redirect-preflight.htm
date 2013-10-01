@@ -5,7 +5,7 @@
 
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
-<script src=support.js></script>
+<script src=support.js?pipe=sub></script>
 
 <h1>Redirect with preflight</h1>
 
@@ -21,9 +21,9 @@ var req_c = 0 // Request count for cache busting and easy identifying of request
 function redir_preflight(code) {
     test(function() {
         var client = new XMLHttpRequest(),
-            redirect = CROSSDOMAIN + 'resources/cors-makeheader.php?headers=x-test&' + req_c++
+            redirect = CROSSDOMAIN + 'resources/cors-makeheader.py?headers=x-test&' + req_c++
 
-        client.open('GET', CROSSDOMAIN + 'resources/cors-makeheader.php?'
+        client.open('GET', CROSSDOMAIN + 'resources/cors-makeheader.py?'
                            + 'headers=x-test&location=' + encodeURIComponent(redirect)
                            + '&code=' + code + '&preflight=' + code + '&' + req_c++,
                     false)
@@ -44,9 +44,9 @@ redir_preflight(308)
 function redir_after_preflight(code) {
     test(function() {
         var client = new XMLHttpRequest(),
-            redirect = CROSSDOMAIN + 'resources/cors-makeheader.php?headers=x-test&' + req_c++
+            redirect = CROSSDOMAIN + 'resources/cors-makeheader.py?headers=x-test&' + req_c++
 
-        client.open('GET', CROSSDOMAIN + 'resources/cors-makeheader.php?'
+        client.open('GET', CROSSDOMAIN + 'resources/cors-makeheader.py?'
                            + 'preflight=200&headers=x-test&location='
                            + encodeURIComponent(redirect) + '&code=' + code + '&' + req_c++,
                     false)

@@ -5,7 +5,7 @@
 
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
-<script src=support.js></script>
+<script src=support.js?pipe=sub></script>
 
 <h1>CORS userinfo redirect handling</h1>
 
@@ -17,28 +17,28 @@
     var num_test = 0
 
     shouldFail("Disallow redirect with userinfo (//user:pass@)", [
-                    CROSSDOMAIN + "resources/cors-makeheader.php?",
-                    CROSSDOMAIN.replace("http://", "http://test:test@") + "resources/cors-makeheader.php?"]);
+                    CROSSDOMAIN + "resources/cors-makeheader.py?",
+                    CROSSDOMAIN.replace("http://", "http://test:test@") + "resources/cors-makeheader.py?"]);
 
     shouldFail("Disallow redirect with userinfo (//user:@)", [
-                    CROSSDOMAIN + "resources/cors-makeheader.php?",
-                    CROSSDOMAIN.replace("http://", "http://user:@") + "resources/cors-makeheader.php?"]);
+                    CROSSDOMAIN + "resources/cors-makeheader.py?",
+                    CROSSDOMAIN.replace("http://", "http://user:@") + "resources/cors-makeheader.py?"]);
 
     shouldFail("Disallow redirect with userinfo (//user@)", [
-                    CROSSDOMAIN + "resources/cors-makeheader.php?",
-                    CROSSDOMAIN.replace("http://", "http://user:@") + "resources/cors-makeheader.php?"]);
+                    CROSSDOMAIN + "resources/cors-makeheader.py?",
+                    CROSSDOMAIN.replace("http://", "http://user:@") + "resources/cors-makeheader.py?"]);
 
     shouldFail("Disallow redirect with userinfo (//:@)", [
-                    CROSSDOMAIN + "resources/cors-makeheader.php?",
-                    CROSSDOMAIN.replace("http://", "http://:@") + "resources/cors-makeheader.php?"]);
+                    CROSSDOMAIN + "resources/cors-makeheader.py?",
+                    CROSSDOMAIN.replace("http://", "http://:@") + "resources/cors-makeheader.py?"]);
 
     shouldFail("Disallow redirect with userinfo (//:pass@)", [
-                    CROSSDOMAIN + "resources/cors-makeheader.php?",
-                    CROSSDOMAIN.replace("http://", "http://:pass@") + "resources/cors-makeheader.php?"]);
+                    CROSSDOMAIN + "resources/cors-makeheader.py?",
+                    CROSSDOMAIN.replace("http://", "http://:pass@") + "resources/cors-makeheader.py?"]);
 
     shouldPass("Allow redirect with userinfo (//@)", [
-                    CROSSDOMAIN + "resources/cors-makeheader.php?",
-                    CROSSDOMAIN.replace("http://", "http://@") + "resources/cors-makeheader.php?"]);
+                    CROSSDOMAIN + "resources/cors-makeheader.py?",
+                    CROSSDOMAIN.replace("http://", "http://@") + "resources/cors-makeheader.py?"]);
 
     function shouldFail(desc, urls) {
         var test_id = num_test,

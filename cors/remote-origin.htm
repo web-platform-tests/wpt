@@ -3,7 +3,7 @@
 <title>Access-Control-Allow-Origin handling</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
-<script src=support.js></script>
+<script src=support.js?pipe=sub></script>
 
 <h1>Access-Control-Allow-Origin handling</h1>
 
@@ -32,7 +32,7 @@ function reverseOrigin(expect_pass, origin)
                             .replace(/ /g, '_'));
     t.step(function() {
         this.test_url = dirname(location.href)
-                            + 'resources/cors-makeheader.php?origin='
+                            + 'resources/cors-makeheader.py?origin='
                             + encodeURIComponent(real_origin);
         iframe.contentWindow.postMessage({ url: this.test_url, origin: origin }, "*");
     });

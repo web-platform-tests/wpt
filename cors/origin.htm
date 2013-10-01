@@ -6,7 +6,7 @@
 
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
-<script src=support.js></script>
+<script src=support.js?pipe=sub></script>
 
 <h1>Access-Control-Allow-Origin handling</h1>
 
@@ -21,7 +21,7 @@ function shouldPass(origin) {
     test(function () {
         var client = new XMLHttpRequest()
         client.open('GET', CROSSDOMAIN
-                            + '/resources/cors-makeheader.php?origin='
+                            + '/resources/cors-makeheader.py?origin='
                             + encodeURIComponent(origin),
                     false)
         client.send()
@@ -44,7 +44,7 @@ function shouldFail(origin) {
     test(function () {
         var client = new XMLHttpRequest()
         client.open('GET', CROSSDOMAIN
-                            + '/resources/cors-makeheader.php?origin='
+                            + '/resources/cors-makeheader.pu?origin='
                             + encodeURIComponent(origin),
                     false)
         assert_throws(null, function() { client.send() }, 'send')
@@ -101,7 +101,7 @@ function doubleOrigin(origin, origin2) {
     test(function () {
         var client = new XMLHttpRequest()
         client.open('GET', CROSSDOMAIN
-                            + '/resources/cors-makeheader.php?origin='
+                            + '/resources/cors-makeheader.py?origin='
                             + encodeURIComponent(origin)
                             + '&origin2=' + encodeURIComponent(origin2),
                     false)

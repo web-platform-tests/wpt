@@ -317,8 +317,9 @@ IdlArray.prototype.internal_add_idls = function(parsed_idls)
             this.members[parsed_idl.name] = new IdlEnum(parsed_idl);
             break;
 
-        case "callback":
+        case "callback interface":
             // TODO
+            console.log("callback interface not yet supported");
             break;
 
         default:

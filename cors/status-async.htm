@@ -4,6 +4,8 @@
 <meta name=author title="Odin Hørthe Omdal" href="mailto:odiho@opera.com">
 
 <script src=/resources/testharness.js></script>
+
+
 <script src=/resources/testharnessreport.js></script>
 <script src=support.js></script>
 
@@ -24,7 +26,10 @@ function statusRequest(method, code, text, content, type) {
                 return
 
             assert_equals(client.status, code, 'response status')
-            assert_equals(client.statusText, text, 'response status text')
+            assert_true((client.statusText == text), 
+			'response status text ' + client.statusText + " vs. " + text)
+            //assert_true((client.statusText == text.split("/")[0] || client.statusText == text.split("/")[1]), 
+//			'response status text ' + client.statusText + " vs. " + text.split("/")[0])
             assert_equals(client.getResponseHeader("X-Request-Method"), method, 'method')
             if(method != "HEAD") {
                 if(type == "text/xml") {
@@ -75,11 +80,7 @@ function statusRequestFail(method, code, expect_code, nonsimple) {
                 return
             assert_equals(client.response, "", "response data")
             assert_equals(client.status, expect_code, "response status")
-            /* Response code 200 forces webserver to send OK(?) */
-            if(expect_code == 200)
-                assert_equals(client.statusText, "OK", "response statusText")
-            else
-                assert_equals(client.statusText, (expect_code == 0 ? "" : "OHAI"), "response statusText")
+            assert_equals(client.statusText, (expect_code == 0 ? "" : "OHAI"), "response statusText")
             if (client.readyState == client.DONE)
                 this.done()
         })

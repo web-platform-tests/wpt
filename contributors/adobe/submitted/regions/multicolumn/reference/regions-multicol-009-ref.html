@@ -9,19 +9,19 @@
            background-color: green;
            width: 100px;
         }
-        .square {
+        #square {
             top: 170px;
             left: 20px;
             height: 100px;
         }
-        .rect-1, .rect-2 {
+        #rect-1, #rect-2 {
             top: 70px;
             height: 200px;
         }
-        .rect-1 {
+        #rect-1 {
             left: 150px;
         }
-        .rect-2 {
+        #rect-2 {
             left: 280px;
         }
     </style>
@@ -29,8 +29,8 @@
 <body>
    <p>The test passes if there is one green square and two vertical 
       green rectangles to the right of it and no red.</p>
-   <div class="green square"></div>
-   <div class="green rect-1"></div>
-   <div class="green rect-2"></div>
+   <div class="green" id="square"></div>
+   <div class="green" id="rect-1"></div>
+   <div class="green" id="rect-2"></div>
 </body>
 </html>

@@ -15,7 +15,7 @@
         errorEvent = e;
     }
 
-    document.addEventListener('DOMContentLoaded', function(){
+    document.addEventListener('DOMContentLoaded', t.step_func(function(){
         var element = document.getElementById('bim');
 
         element.addEventListener('click', function(){
@@ -24,9 +24,9 @@
 
         element.click();
 
-        assert_equals(typeof errorEvent, 'object');
+        assert_equals(typeof errorEvent, 'string');
         t.done();
-    });
+    }));
 </script>
 
 <div id="bim">

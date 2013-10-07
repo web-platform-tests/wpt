@@ -4,9 +4,10 @@
 <link rel=help href="http://dev.w3.org/2006/webapi/FileAPI/#constructorBlob">
 <link rel=help href="http://dev.w3.org/2006/webapi/WebIDL/#es-union">
 <link rel=help href="http://dev.w3.org/2006/webapi/WebIDL/#es-dictionary">
+<link rel=help href="http://dev.w3.org/2006/webapi/WebIDL/#es-sequence">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="../support/Blob.js"></script>
+<script src="support/Blob.js"></script>
 <div id="log"></div>
 <script>
 test(function() {
@@ -35,7 +36,7 @@ test(function() {
   assert_equals(blob.type, "");
 }, "no-argument Blob constructor without brackets");
 
-// blobParts argument.
+// blobParts argument (WebIDL).
 test(function() {
   var args = [
     null,
@@ -45,19 +46,119 @@ test(function() {
     0,
     1,
     1.5,
-    {},
-    { 0: "FAIL", length: 1 },
     "FAIL",
-    new Uint8Array(8)
+    new Date(),
+    new RegExp(),
   ];
   args.forEach(function(arg) {
     assert_throws(new TypeError(), function() {
       new Blob(arg);
     }, "Should throw for argument " + format_value(arg) + ".");
   });
-}, "Passing non-arrays for blobParts should throw a TypeError.");
+}, "Passing non-objects, Dates and RegExps for blobParts should throw a TypeError.");
+
+test_blob(function() {
+  return new Blob({});
+}, {
+  expected: "",
+  type: "",
+  desc: "A plain object should be treated as a sequence for the blobParts argument."
+});
+test_blob(function() {
+  return new Blob({ 0: "PASS", length: 1 });
+}, {
+  expected: "PASS",
+  type: "",
+  desc: "A plain object with a length property should be treated as a sequence for the blobParts argument."
+});
+test_blob(function() {
+  return new Blob(new String("xyz"));
+}, {
+  expected: "xyz",
+  type: "",
+  desc: "A String object should be treated as a sequence for the blobParts argument."
+});
+test_blob(function() {
+  return new Blob(new Uint8Array([1, 2, 3]));
+}, {
+  expected: "123",
+  type: "",
+  desc: "A Uint8Array object should be treated as a sequence for the blobParts argument."
+});
 
 var test_error = { name: "test" };
+
+test(function() {
+  var obj = {
+    get length() { throw test_error; }
+  };
+  assert_throws(test_error, function() {
+    new Blob(obj);
+  });
+}, "The length getter should be invoked and any exceptions should be propagated.");
+
+test(function() {
+  assert_throws(test_error, function() {
+    var obj = {
+      length: {
+        valueOf: null,
+        toString: function() { throw test_error; }
+      }
+    };
+    new Blob(obj);
+  });
+  assert_throws(test_error, function() {
+    var obj = {
+      length: { valueOf: function() { throw test_error; } }
+    };
+    new Blob(obj);
+  });
+}, "ToUint32 should be applied to the length and any exceptions should be propagated.");
+
+test(function() {
+  var received = [];
+  var obj = {
+    get length() {
+      received.push("length getter");
+      return {
+        valueOf: function() {
+          received.push("length valueOf");
+          return 3;
+        }
+      };
+    },
+    get 0() {
+      received.push("0 getter");
+      return {
+        toString: function() {
+          received.push("0 toString");
+          return "a";
+        }
+      };
+    },
+    get 1() {
+      received.push("1 getter");
+      throw test_error;
+    },
+    get 2() {
+      received.push("2 getter");
+      assert_unreached("Should not call the getter for 2 if the getter for 1 threw.");
+    }
+  };
+  assert_throws(test_error, function() {
+    new Blob(obj);
+  });
+  assert_array_equals(received, [
+    "length getter",
+    "length valueOf",
+    "0 getter",
+    "0 toString",
+    "1 getter"
+  ]);
+}, "Getters and value conversions should happen in order until an exception is thrown.");
+
+// XXX should add tests edge cases of ToUint32(length)
+
 test(function() {
   assert_throws(test_error, function() {
     new Blob([{ toString: function() { throw test_error; } }]);

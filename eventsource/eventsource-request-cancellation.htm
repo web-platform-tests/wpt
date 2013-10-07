@@ -8,7 +8,7 @@
   <body>
     <div id="log"></div>
     <script>
-      var test = async_test(null, {timeout: 2000});
+      var test = async_test(null, {timeout: 5000});
       var url = "resources/message.php?sleep=1000&message=" + encodeURIComponent("retry:1000\ndata:abc\n\n");
       var es = new EventSource(url);
       var active = false;
@@ -28,11 +28,7 @@
       }, 100);
       setTimeout(function () {
         test.step(function () {
-          if (es.readyState === EventSource.CLOSED) {
-            assert_true(!active && errorWasFired);
-          } else {
-            assert_true(active);
-          }
+          assert_true(es.readyState === EventSource.CLOSED ? !active && errorWasFired : active);
         });
         test.done();
       }, 2000);

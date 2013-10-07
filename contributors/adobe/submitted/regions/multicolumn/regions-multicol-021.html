@@ -14,8 +14,8 @@
                                  into multiple overlapping regions."/>
     <style type="text/css">
         .named-flow-multicol {
-            -webkit-columns: 2;
-            -webkit-column-gap: 50px;
+            columns: 2;
+            column-gap: 50px;
         }
         .bar {
             width: 50px;
@@ -28,10 +28,10 @@
             background-color: blue;
         }
         #named-flow-1 {
-           -webkit-flow-into: multicol-1;
+           flow-into: multicol-1;
         }
         #named-flow-2 {
-           -webkit-flow-into: multicol-2;
+           flow-into: multicol-2;
         }
         #region-1, #region-2 {
             position: absolute;
@@ -40,11 +40,11 @@
         #region-1 {
             left: 20px;
             color: green;
-            -webkit-flow-from: multicol-1;
+            flow-from: multicol-1;
         }
         #region-2 {
             left: 70px;
-            -webkit-flow-from: multicol-2;
+            flow-from: multicol-2;
         }
         #failure {
             position: absolute;

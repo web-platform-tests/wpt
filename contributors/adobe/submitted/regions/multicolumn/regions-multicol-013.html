@@ -19,7 +19,7 @@
             font-size: 25px;
             line-height: 1em;
             color: green;
-            -webkit-flow-into: multicol;
+            flow-into: multicol;
         }
         #multicol-container {
             position: absolute;
@@ -27,13 +27,13 @@
             left: 20px;
             width: 170px;
             height: 200px;
-            -webkit-columns: 3;
-            -webkit-column-gap: 10px;
+            columns: 3;
+            column-gap: 10px;
         }
         #region-1 , #region-2, #region-3 {
             width: 50px;
             height: 200px;
-            -webkit-flow-from: multicol;
+            flow-from: multicol;
         }
         .failure {
             position: absolute;

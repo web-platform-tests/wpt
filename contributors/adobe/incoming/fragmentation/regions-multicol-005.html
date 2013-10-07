@@ -1,3 +1,13 @@
+<!-- 
+    RebeccaH: 10/7/2013:
+    This test was originally part of the Regions + Multicolumn suite
+    but was deemed not useful in the context of regions, possibly
+    better for fragmentation. Stashing it here to be revisited later
+    if we want to submit it for that spec 
+    
+    See:
+    https://github.com/w3c/csswg-test/pull/89#commitcomment-4184930
+-->
 <!DOCTYPE html>
 <html>
 <head>
@@ -26,6 +36,7 @@
             -webkit-columns: 3;
             -webkit-column-gap: 30px;
             -webkit-flow-from: multicol;
+            overflow: hidden;
         }
         .failure {
             position: absolute;

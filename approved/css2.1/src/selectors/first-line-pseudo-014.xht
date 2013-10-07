@@ -3,12 +3,18 @@
  <head>
   <title>CSS Test: vertical-align: top on :first-line</title>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
-  <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-06-27 -->
+  <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2013-10-06 -->
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/block/first-line/014.html" type="text/html"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-line-pseudo" />
   <link rel="match" href="first-line-pseudo-013-ref.xht" />
 
-  <meta name="flags" content="ahem" />
+  <meta name="flags" content="ahem may" />
+
+  <!--
+  vertical-align may apply to :first-line selector but is not required by the spec.
+  More info:
+  http://lists.w3.org/Archives/Public/public-css-testsuite/2013Oct/0000.html
+  -->
 
   <style type="text/css">
   p#expected-results {margin: 3px;}

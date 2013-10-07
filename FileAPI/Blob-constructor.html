@@ -142,7 +142,7 @@ test(function() {
     },
     get 2() {
       received.push("2 getter");
-      assert_unreached("Should not call valueOf if toString is present.");
+      assert_unreached("Should not call the getter for 2 if the getter for 1 threw.");
     }
   };
   assert_throws(test_error, function() {

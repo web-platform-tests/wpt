@@ -17,7 +17,7 @@
             if(client.readyState == 4) {
               assert_equals(client.getResponseHeader("x-custom-header "), null)
               assert_equals(client.getResponseHeader(" x-custom-header"), null)
-              assert_equals(client.getResponseHeader("x-custom-header-bytes"), "\u2026")
+              assert_equals(client.getResponseHeader("x-custom-header-bytes"), "\xE2\x80\xA6")
               assert_equals(client.getResponseHeader("x¾"), null)
               assert_equals(client.getResponseHeader("x-custom-header\n"), null)
               assert_equals(client.getResponseHeader("\nx-custom-header"), null)

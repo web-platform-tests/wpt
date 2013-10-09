@@ -24,6 +24,8 @@ policies and contribution forms [3].
 <body>
 <div id="log"></div>
 <script>
+var XHTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
+
 function createTextNode() {
     var doc = document.implementation.createHTMLDocument('Test Document');
     var node = doc.createTextNode('Text Node');
@@ -39,42 +41,42 @@ function createCommentNode() {
 }
 
 function createCDATASectionNode() {
-    var doc = document.implementation.createDocument();
+    var doc = document.implementation.createDocument(XHTML_NAMESPACE, 'html');
     var node = doc.createCDATASection('CDATA Section Node');
     doc.documentElement.appendChild(node);
     return node;
 }
 
 function createAttributeNode() {
-    var doc = document.implementation.createDocument();
+    var doc = document.implementation.createDocument(XHTML_NAMESPACE, 'html');
     var node = doc.createAttribute('attribute-node');
     doc.documentElement.setAttributeNode(node);
     return node;
 }
 
 function createDocumentFragmentNode() {
-    var doc = document.implementation.createDocument();
+    var doc = document.implementation.createDocument(XHTML_NAMESPACE, 'html');
     var node = doc.createDocumentFragment();
     doc.documentElement.appendChild(node);
     return node;
 }
 
 function createEntityReferenceNode() {
-    var doc = document.implementation.createDocument();
+    var doc = document.implementation.createDocument(XHTML_NAMESPACE, 'html');
     var node = doc.createEntityReference('entity-reference-node');
     doc.documentElement.appendChild(node);
     return node;
 }
 
 function createProcessingInstructionNode() {
-    var doc = document.implementation.createDocument();
+    var doc = document.implementation.createDocument(XHTML_NAMESPACE, 'html');
     var node = doc.createProcessingInstruction('processing-instruction-node');
     doc.documentElement.appendChild(node);
     return node;
 }
 
 function createDocumentNode() {
-    return document.implementation.createDocument();
+    return document.implementation.createDocument(XHTML_NAMESPACE, 'html');
 }
 
 var factories = [

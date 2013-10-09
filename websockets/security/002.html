@@ -11,7 +11,7 @@ async_test(function(t) {
     assert_equals(xhr.responseText, 'PASS');
     t.done();
   });
-  xhr.open("GET", "check.php", true);
+  xhr.open("GET", "check.py", true);
   xhr.setRequestHeader('Sec-WebSocket-Key', 'jW7qmdXj5Kk5jTClF1BN3');
   xhr.send(null);
 });

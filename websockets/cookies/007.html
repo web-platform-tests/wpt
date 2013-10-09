@@ -20,7 +20,7 @@ async_test(function(t) {
 
   // sleep for 2 seconds with sync xhr
   var sleep = new XMLHttpRequest();
-  sleep.open('GET', 'support/sleep_2.php', false);
+  sleep.open('GET', '/common/blank.html?pipe=trickle(d2)', false);
   sleep.send(null);
 
   if (new RegExp('ws_test_'+cookie_id+'=test').test(document.cookie)) {

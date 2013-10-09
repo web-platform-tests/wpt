@@ -24,7 +24,7 @@ var t = async_test(function(t) {
   ws.onclose = t.step_func(function() {assert_unreached()});
 
   add_result_callback(function() {
-    iframe.src = 'support/set-cookie.php?'+encodeURIComponent('ws_test_'+cookie_id+'=; Path=/; HttpOnly; Expires=Sun, 06 Nov 1994 08:49:37 GMT');
+    iframe.src = 'support/set-cookie.py?'+encodeURIComponent('ws_test_'+cookie_id+'=; Path=/; HttpOnly; Expires=Sun, 06 Nov 1994 08:49:37 GMT');
     iframe.onload = done;
   });
   document.body.appendChild(iframe);

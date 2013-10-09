@@ -15,7 +15,7 @@
     <script>
       var test = async_test(document.title)
       var client = new XMLHttpRequest()
-      client.open("GET", "http://www2."+location.hostname+(location.pathname.replace(/[^\/]+$/, '')+'resources/corsenabled.php')+"?delay=2&code=200")
+      client.open("GET", "http://www2."+location.hostname+(location.pathname.replace(/[^\/]+$/, '')+'resources/corsenabled.py')+"?delay=2&code=200")
       client.timeout = 100
       client.addEventListener('timeout', function (e) {
         test.step(function() {

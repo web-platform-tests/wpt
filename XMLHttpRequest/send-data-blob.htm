@@ -33,7 +33,7 @@
                         blob = xhr.response;
                         assert_true(blob instanceof Blob, "Blob from XHR Response");
                         
-                        xhr2.open("POST", "./resources/content.php", true);
+                        xhr2.open("POST", "./resources/content.py", true);
                         xhr2.send(blob);
                     });
                 }
@@ -52,7 +52,7 @@
                 }
             };
             
-            xhr.open("GET", "./resources/content.php?content=" + content, true);
+            xhr.open("GET", "./resources/content.py?content=" + content, true);
             xhr.responseType = "blob";
             xhr.send();
         });

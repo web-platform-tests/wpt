@@ -21,10 +21,10 @@
             }
           })
         }
-        client.open("GET", "resources/inspect-headers.php?filter=bar")
+        client.open("GET", "resources/inspect-headers.py?filter=bar")
         assert_equals(client.readyState, 1)
         client.setRequestHeader('X-foo', 'bar')
-        client.open("GET", "resources/inspect-headers.php?filter=bar")
+        client.open("GET", "resources/inspect-headers.py?filter=bar")
         assert_equals(client.readyState, 1)
         client.send()
       })

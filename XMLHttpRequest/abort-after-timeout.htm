@@ -50,7 +50,7 @@
             assert_unreached("abort() should not cause the abort event to fire");
         });
 
-        client.open("GET", "resources/delay.php?ms=500000", true);
+        client.open("GET", "/common/blank.html?pipe=trickle(d1)", true);
         client.send(null);
     });
 </script>

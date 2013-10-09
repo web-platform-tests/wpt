@@ -35,7 +35,7 @@
                 });
             };
 
-            xhr.open("GET", "./resources/content.php", true); // This should cause a readystatechange event that calls abort()
+            xhr.open("GET", "./resources/content.py", true); // This should cause a readystatechange event that calls abort()
             assert_throws("InvalidStateError", function(){ xhr.send() })
             test.done()
         });

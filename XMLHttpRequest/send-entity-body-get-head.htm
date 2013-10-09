@@ -17,7 +17,7 @@
             events.push(e.type)
           }
           var client = new XMLHttpRequest()
-          client.open(method, "resources/content.php", false)
+          client.open(method, "resources/content.py", false)
           client.send("TEST")
           client.upload.addEventListener('progress', logEvt)
           client.upload.addEventListener('loadend', logEvt)

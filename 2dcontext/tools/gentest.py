@@ -761,9 +761,9 @@ def write_annotated_spec():
     f = codecs.open('%s/canvas.html' % SPECOUTPUTDIR, 'w', 'utf-8')
     f.write(html5Serializer(doc))
 
-write_index()
-write_category_indexes()
 if not W3CMODE:
+    write_index()
+    write_category_indexes()
     write_reportgen()
     write_results()
     write_annotated_spec()

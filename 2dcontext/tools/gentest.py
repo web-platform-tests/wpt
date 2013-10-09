@@ -766,5 +766,5 @@ write_category_indexes()
 if not W3CMODE:
     write_reportgen()
     write_results()
-write_annotated_spec()
+    write_annotated_spec()
 

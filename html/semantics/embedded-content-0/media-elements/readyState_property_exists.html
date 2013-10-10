@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
  <head>
-  <title>audio.readyState - existence test</title>
+  <title>{audio,video}.readyState - existence test</title>
   <script src="/resources/testharness.js"></script>
   <script /resources/testharnessreport.js></script>
  </head>
@@ -9,13 +9,21 @@
   <p><a href="http://dev.w3.org/html5/spec/Overview.html#dom-media-networkstate">spec reference</a></p>
   <audio id="a">
   </audio>
+  <video id="v">
+  </video>
   <div id="log"></div>
   <script>
 test(function() {
  assert_true(
   "readyState" in document.getElementById("a"),
   "audioElement.readyState property exists");
-});
+}, "audio.readyState - existence test");
+
+test(function() {
+ assert_true(
+  "readyState" in document.getElementById("v"),
+  "videoElement.readyState property exists");
+}, "video.readyState - existence test");
   </script>
  </body>
 </html>

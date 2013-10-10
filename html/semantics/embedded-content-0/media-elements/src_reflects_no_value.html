@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
  <head>
-  <title>audio.src - empty if no source</title>
+  <title>{audio,video}.src - empty if no source</title>
   <script src="/resources/testharness.js"></script>
   <script /resources/testharnessreport.js></script>
  </head>
@@ -9,6 +9,8 @@
   <p><a href="http://dev.w3.org/html5/spec/Overview.html#dom-media-src">spec reference</a></p>
   <audio id="audio">
   </audio>
+  <video id="video">
+  </video>
   <div id="log"></div>
   <script>
 test(function() {
@@ -16,7 +18,15 @@ test(function() {
   document.getElementById("audio").src,
   "",
   "audioElement.src should be empty if there is no source");
-});
+}, "audio.src - empty if no source");
+
+test(function() {
+ assert_equals(
+  document.getElementById("video").src,
+  "",
+  "videoElement.src should be empty if there is no source");
+}, "video.src - empty if no source");
+  </script>
   </script>
  </body>
 </html>

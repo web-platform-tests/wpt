@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
  <head>
-  <title>audio.canPlayType() - application/octet-stream must always return the empty string</title>
+   <title>{audio,video}.canPlayType() - application/octet-stream must always return the empty string</title>
   <script src="/resources/testharness.js"></script>
   <script /resources/testharnessreport.js></script>
  </head>
@@ -9,13 +9,21 @@
   <p><a href="http://dev.w3.org/html5/spec/Overview.html#dom-navigator-canplaytype">spec reference</a></p>
   <audio id="a">
   </audio>
+  <video id="v">
+  </video>
   <div id="log"></div>
   <script>
 test(function() {
  assert_true(
   document.getElementById("a").canPlayType("application/octet-stream") == "",
   "audioElement.canPlayType('application/octet-stream') should return the empty string");
-});
+}, "audio.canPlayType() - application/octet-stream must always return the empty string");
+
+test(function() {
+ assert_true(
+  document.getElementById("v").canPlayType("application/octet-stream") == "",
+  "videoElement.canPlayType('application/octet-stream') should return the empty string");
+}, "video.canPlayType() - application/octet-stream must always return the empty string");
   </script>
  </body>
 </html>

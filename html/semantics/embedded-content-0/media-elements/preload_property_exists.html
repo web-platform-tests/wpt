@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
  <head>
-  <title>audio.preload - existence test</title>
+  <title>{audio,video}.preload - existence test</title>
   <script src="/resources/testharness.js"></script>
   <script /resources/testharnessreport.js></script>
  </head>
@@ -9,13 +9,21 @@
   <p><a href="http://dev.w3.org/html5/spec/Overview.html#dom-media-preload">spec reference</a></p>
   <audio id="audio">
   </audio>
+  <video id="video">
+  </video>
   <div id="log"></div>
   <script>
 test(function() {
  assert_true(
   "preload" in document.getElementById("audio"),
   "audioElement.preload property exists");
-});
+}, "audio.preload - existence test");
+
+test(function() {
+ assert_true(
+  "preload" in document.getElementById("video"),
+  "videoElement.preload property exists");
+}, "video.preload - existence test");
   </script>
  </body>
 </html>

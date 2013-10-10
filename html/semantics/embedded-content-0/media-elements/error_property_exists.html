@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
  <head>
-  <title>audio.error - existence test</title>
+   <title>{audio,video}.error - existence test</title>
   <script src="/resources/testharness.js"></script>
   <script /resources/testharnessreport.js></script>
  </head>
@@ -9,13 +9,21 @@
   <p><a href="http://dev.w3.org/html5/spec/Overview.html#dom-media-error">spec reference</a></p>
   <audio id="a">
   </audio>
+  <video id="v">
+  </video>
   <div id="log"></div>
   <script>
 test(function() {
  assert_true(
   "error" in document.getElementById("a"),
   "audioElement.error property exists");
-});
+}, "audio.error - existence test");
+
+test(function() {
+ assert_true(
+  "error" in document.getElementById("v"),
+  "videoElement.error property exists");
+}, "video.error - existence test");
   </script>
  </body>
 </html>

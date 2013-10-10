@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
  <head>
-  <title>audio.preload - reflection test</title>
+  <title>{audio,video}.preload - reflection test</title>
   <script src="/resources/testharness.js"></script>
   <script /resources/testharnessreport.js></script>
  </head>
@@ -9,6 +9,8 @@
   <p><a href="http://dev.w3.org/html5/spec/Overview.html#dom-media-preload">spec reference</a></p>
   <audio id="audio" preload="metadata">
   </audio>
+  <video id="video" preload="metadata">
+  </video>
   <div id="log"></div>
   <script>
 test(function() {
@@ -16,6 +18,13 @@ test(function() {
   document.getElementById("audio").preload,
   "metadata",
   "audioElement.preload reflects 'metadata' value");
+});
+
+test(function() {
+ assert_equals(
+  document.getElementById("video").preload,
+  "metadata",
+  "videoElement.preload reflects 'metadata' value");
 });
   </script>
  </body>

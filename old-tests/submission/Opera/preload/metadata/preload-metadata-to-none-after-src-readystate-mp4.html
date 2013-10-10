@@ -24,7 +24,7 @@ tests.forEach(function(vars) {
 		});
 	    }
 	}, false);
-	node.src = '../resources/range-request.php?rate=100000&fileloc=preload.mp4&nocache=' + Math.random();
+	node.src = '../resources/preload.mp4?pipe=trickle(100000:d1:r2)&nocache=' + Math.random();
 	node.preload = 'none';
 
 	function endTest() {

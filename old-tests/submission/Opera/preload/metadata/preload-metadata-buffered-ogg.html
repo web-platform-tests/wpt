@@ -23,7 +23,7 @@ tests.forEach(function(vars) {
 	    for (var e in events) {
 		node.addEventListener(events[e], handleEvent, false);
 	    }
-	    node.src = '../resources/range-request.php?rate=100000&fileloc=preload.ogv&nocache=' + Math.random();
+	    node.src = '../resources/preload.ogv?pipe=trickle(100000:d1:r2)&nocache=' + Math.random();
 	}
 
 	function handleEvent(e) {

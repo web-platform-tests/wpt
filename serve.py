@@ -167,10 +167,7 @@ def normalise_config(config, domains, ports):
             "domains":domains_,
             "ports": ports_}
 
-def main():
-    with open("config.json") as f:
-        config = json.load(f)
-
+def start(config):
     ports = get_ports(config)
     domains = probe_subdomains(config)
 
@@ -178,15 +175,24 @@ def main():
 
     servers = start_servers(config_, ports)
 
-    print "Everything is illuminated"
-    while any(item.isAlive() for item in iter_threads(servers)):
-        for item in iter_threads(servers):
-            item.join(1)
+    return config_, servers
+
 
 def iter_threads(servers):
     for servers in servers.values():
         for port, server in servers:
             yield server.thread
+
+def main():
+    with open("config.json") as f:
+        config = json.load(f)
+
+    config_, servers = start(config)
+
+    print "Everything is illuminated"
+    while any(item.isAlive() for item in iter_threads(servers)):
+        for item in iter_threads(servers):
+            item.join(1)
 
 if __name__ == "__main__":
     main()

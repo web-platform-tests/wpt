@@ -1,7 +1,7 @@
 import time
 
 def main(request, response):
-    delay = float(request.GET.first("ms", 5)) / 1E3
+    delay = float(request.GET.first("ms", 0.5)) / 1E3
     count = int(request.GET.first("count", 50))
     time.sleep(delay)
     response.headers.set("Content-type", "text/plain")

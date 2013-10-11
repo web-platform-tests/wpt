@@ -1388,16 +1388,24 @@ IdlInterface.prototype.test_members = function()
                                     "window does not have own property " + format_value(this.name));
                 assert_own_property(window[this.name], "prototype",
                                     'interface "' + this.name + '" does not have own property "prototype"');
-                assert_true(member.name in window[this.name].prototype,
-                            "The prototype object must have a property " +
-                            format_value(member.name));
 
-                // TODO: Needs to test for LenientThis.
-                assert_throws(new TypeError(), function() {
-                    window[this.name].prototype[member.name];
-                }.bind(this), "getting property on prototype object must throw TypeError");
+                if (member["static"]) {
+                    assert_own_property(window[this.name], member.name,
+                        "The interface object must have a property " +
+                        format_value(member.name));
+                }
+                else
+                {
+                    assert_true(member.name in window[this.name].prototype,
+                        "The prototype object must have a property " +
+                        format_value(member.name));
 
-                do_interface_attribute_asserts(window[this.name].prototype, member);
+                    // TODO: Needs to test for LenientThis.
+                    assert_throws(new TypeError(), function() {
+                        window[this.name].prototype[member.name];
+                    }.bind(this), "getting property on prototype object must throw TypeError");
+                    do_interface_attribute_asserts(window[this.name].prototype, member);
+                }
             }.bind(this), this.name + " interface: attribute " + member.name);
         }
         else if (member.type == "operation")
@@ -1431,11 +1439,20 @@ IdlInterface.prototype.test_members = function()
                 // and with an argument count of 0 (for the ECMAScript language
                 // binding) has no entries."
                 //
-                // TODO: The library doesn't seem to support static operations.
-                assert_own_property(window[this.name].prototype, member.name,
-                    "interface prototype object missing non-static operation");
+                var prototypeOrInterfaceObject;
+                if (member["static"]) {
+                    assert_own_property(window[this.name], member.name,
+                            "interface prototype object missing static operation");
+                    prototypeOrInterfaceObject = window[this.name];
+                }
+                else
+                {
+                    assert_own_property(window[this.name].prototype, member.name,
+                            "interface prototype object missing non-static operation");
+                    prototypeOrInterfaceObject = window[this.name].prototype;
+                }
 
-                var desc = Object.getOwnPropertyDescriptor(window[this.name].prototype, member.name);
+                var desc = Object.getOwnPropertyDescriptor(prototypeOrInterfaceObject, member.name);
                 // "The property has attributes { [[Writable]]: true,
                 // [[Enumerable]]: true, [[Configurable]]: true }."
                 assert_false("get" in desc, "property has getter");
@@ -1445,7 +1462,7 @@ IdlInterface.prototype.test_members = function()
                 assert_true(desc.configurable, "property is not configurable");
                 // "The value of the property is a Function object whose
                 // behavior is as follows . . ."
-                assert_equals(typeof window[this.name].prototype[member.name], "function",
+                assert_equals(typeof prototypeOrInterfaceObject[member.name], "function",
                               "property must be a function");
                 // "The value of the Function object’s “length” property is
                 // a Number determined as follows:
@@ -1454,7 +1471,7 @@ IdlInterface.prototype.test_members = function()
                 // entries in S."
                 //
                 // TODO: Doesn't handle overloading or variadic arguments.
-                assert_equals(window[this.name].prototype[member.name].length,
+                assert_equals(prototypeOrInterfaceObject[member.name].length,
                     member.arguments.filter(function(arg) {
                         return !arg.optional;
                     }).length,
@@ -1471,11 +1488,12 @@ IdlInterface.prototype.test_members = function()
                 // This should be hit if the operation is not static, there is
                 // no [ImplicitThis] attribute, and the this value is null.
                 //
-                // TODO: We currently ignore the static and [ImplicitThis]
-                // cases.
-                assert_throws(new TypeError(), function() {
-                    window[this.name].prototype[member.name].apply(null, args);
-                }, "calling operation with this = null didn't throw TypeError");
+                // TODO: We currently ignore the [ImplicitThis] case.
+                if (!member["static"]) {
+                    assert_throws(new TypeError(), function() {
+                        window[this.name].prototype[member.name].apply(null, args);
+                    }, "calling operation with this = null didn't throw TypeError");
+                }
 
                 // ". . . If O is not null and is also not a platform object
                 // that implements interface I, throw a TypeError."
@@ -1607,33 +1625,35 @@ IdlInterface.prototype.test_interface_of = function(desc, obj, exception, expect
             {
                 assert_equals(exception, null, "Unexpected exception when evaluating object");
                 assert_equals(typeof obj, expected_typeof, "wrong typeof object");
-                assert_inherits(obj, member.name);
-                if (member.type == "const")
-                {
-                    assert_equals(obj[member.name], constValue(member.value));
-                }
-                if (member.type == "attribute")
-                {
-                    // Attributes are accessor properties, so they might
-                    // legitimately throw an exception rather than returning
-                    // anything.
-                    var property, thrown = false;
-                    try
+                if (!member["static"]) {
+                    assert_inherits(obj, member.name);
+                    if (member.type == "const")
                     {
-                        property = obj[member.name];
+                        assert_equals(obj[member.name], constValue(member.value));
                     }
-                    catch (e)
+                    if (member.type == "attribute")
                     {
-                        thrown = true;
+                        // Attributes are accessor properties, so they might
+                        // legitimately throw an exception rather than returning
+                        // anything.
+                        var property, thrown = false;
+                        try
+                        {
+                            property = obj[member.name];
+                        }
+                        catch (e)
+                        {
+                            thrown = true;
+                        }
+                        if (!thrown)
+                        {
+                            this.array.assert_type_is(property, member.idlType);
+                        }
                     }
-                    if (!thrown)
+                    if (member.type == "operation")
                     {
-                        this.array.assert_type_is(property, member.idlType);
+                        assert_equals(typeof obj[member.name], "function");
                     }
-                }
-                if (member.type == "operation")
-                {
-                    assert_equals(typeof obj[member.name], "function");
                 }
             }.bind(this), this.name + " interface: " + desc + ' must inherit property "' + member.name + '" with the proper type (' + i + ')');
         }
@@ -1646,7 +1666,13 @@ IdlInterface.prototype.test_interface_of = function(desc, obj, exception, expect
             {
                 assert_equals(exception, null, "Unexpected exception when evaluating object");
                 assert_equals(typeof obj, expected_typeof, "wrong typeof object");
-                assert_inherits(obj, member.name);
+                if (!member["static"]) {
+                    assert_inherits(obj, member.name);
+                }
+                else
+                {
+                    assert_false(member.name in obj);
+                }
                 var args = [];
                 for (var i = 0; i < member.arguments.length; i++)
                 {

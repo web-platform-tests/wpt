@@ -17,17 +17,3 @@ button {
 	position: relative;
 	top: 15px;
 }
-
-/*
-#instructions :-webkit-full-screen  {
-	background: red;
-}
-
-:-webkit-full-screen-ancestor #instructions {
-	background: red;
-}
-
-#instructions :-webkit-fullscreen {
-	background: red;
-}
-*/

@@ -4,7 +4,7 @@
     <title>W3C WebSocket API - Close Secure WebSocket - Code is 3000 - verify code in CloseEvent is 3000</title>
     <script type="text/javascript" src="/resources/testharness.js"></script>
     <script type="text/javascript" src="/resources/testharnessreport.js"></script>
-    <script type="text/javascript" src="websocket.js"></script>
+    <script type="text/javascript" src="websocket.js?pipe=sub"></script>
 </head>
 <body>
     <div id="log"></div>
@@ -25,7 +25,6 @@
         wsocket.addEventListener('close', testClose.step_func(function (evt) {
             assert_true(isOpenCalled, "WebSocket connection should be open");
             assert_equals(evt.code, 3000, "CloseEvent.code should be 3000");
-            clearTimeout(timeOut);
             testClose.done();
         }), true);
 

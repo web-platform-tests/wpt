@@ -1,10 +1,8 @@
-﻿var __SERVER__NAME = "w3c-test.org";
-var __PORT = 8080;
-var __SECURE__PORT = 8443;
-// NOT ENABLED, NOT NEEDED AT THIS TIME
-var __NEW__PORT = 8081;
-// NOT ENABLED, NOT NEEDED AT THIS TIME
-var __NEW__SECURE__PORT = 8444;
+﻿var __SERVER__NAME = "{{host}}";
+var __PORT = {{ports[ws][0]}};
+var __SECURE__PORT = {{ports[ws][0]}}; //Should be wss
+var __NEW__PORT = __PORT; //All ports are non-default for now
+var __NEW_SECURE_PORT = __PORT; //All ports are non-default for now
 var __PATH = "echo";
 var __CONTROLPATH = "control";
 var __PROTOCOL = "echo";
@@ -17,8 +15,6 @@ var __FAIL = "Fail";
 var wsocket;
 var csocket;
 var data;
-var timeOut;
-var defaultTimeout = 12000;
 
 // variables for testing Close Browser/Navigate Away scenarios
 var isAssociated = false;
@@ -31,8 +27,6 @@ function IsWebSocket() {
     if (!window.WebSocket) {
         assert_true(false, "Browser does not support WebSocket");
     }
-
-    timeOut = setTimeout(OnTimeOutFail, defaultTimeout);
 }
 
 function CreateWebSocketNonAbsolute() {
@@ -111,24 +105,3 @@ function CreateControlWebSocket(isSecure) {
     return csocket;
 }
 
-function OnTimeOutFail() {
-    if (wsocket) {
-        wsocket.close();
-        wsocket.onopen = null;
-        wsocket.onclose = null;
-        wsocket.onerror = null;
-        wsocket.onmessage = null;
-        wsocket = null;
-    }
-
-    if (csocket) {
-        csocket.close();
-        csocket.onopen = null;
-        csocket.onclose = null;
-        csocket.onerror = null;
-        csocket.onmessage = null;
-        csocket = null;
-    }
-
-    assert_true(false, "TimeOut");   
-}

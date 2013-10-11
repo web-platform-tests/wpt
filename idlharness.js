@@ -1829,15 +1829,5 @@ function IdlEnum(obj)
 
 IdlEnum.prototype = Object.create(IdlObject.prototype);
 
-IdlEnum.prototype.test = function()
-//@{
-{
-            test(function()
-            {
-		// NOTHING to test
-		return;
-	    });
-}
-//@}
 }());
 // vim: set expandtab shiftwidth=4 tabstop=4 foldmarker=@{,@} foldmethod=marker:

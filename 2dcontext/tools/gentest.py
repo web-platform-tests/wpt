@@ -181,7 +181,8 @@ def make_flat_image(filename, w, h, r,g,b,a):
 testdirs = [TESTOUTPUTDIR, IMAGEOUTPUTDIR, MISCOUTPUTDIR]
 if not W3CMODE: testdirs.append('%s/mochitests' % MISCOUTPUTDIR)
 else:
-    for map_dir in mapping_dirs: testdirs.append("%s/%s" % (TESTOUTPUTDIR, map_dir))
+    for map_dir in mapping_dirs:
+        testdirs.append("%s/%s" % (TESTOUTPUTDIR, map_dir))
 for d in testdirs:
     try: os.mkdir(d)
     except: pass # ignore if it already exists

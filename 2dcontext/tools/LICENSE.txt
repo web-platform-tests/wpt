@@ -1,4 +1,4 @@
-HTML5 <canvas> test suite
+2DContext and <canvas> test suite
 
 Copyright (c) 2010 Philip Taylor
 

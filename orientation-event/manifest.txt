@@ -1,0 +1,17 @@
+horizontal-surface.html		DeviceOrientationEvent: A device lying flat on a horizontal surface				Mosquito FP7	
+t001.html		User agents implementing this specification must provide a new DOM event, named deviceorientation				Mosquito FP7	
+t002.html		The corresponding event must be of type DeviceOrientationEvent and must fire on the window object				Mosquito FP7	
+t003.html		User agents must also provide an event handler IDL attribute [HTML5] named ondeviceorientation on the window object				Mosquito FP7	
+t006.html		Rotate the device frame around its z axis				Mosquito FP7	
+t009.html		Rotate the device frame around its x axis				Mosquito FP7	
+t010.html		Rotate the device frame around its y axis				Mosquito FP7	
+t012.html		Implementations must set the values of the unknown angles to null				Mosquito FP7	
+free-fall.html		DeviceMotionEvent: A device in free-fall, with the screen horizontal and upmost				Mosquito FP7	
+screen-upmost.html		DeviceMotionEvent: A device lying flat on a horizontal surface with the screen upmost				Mosquito FP7	
+screen-upright.html		DeviceMotionEvent: A device with the screen upmost				Mosquito FP7	
+t021.html		User agents implementing this specification must provide a new DOM event, named devicemotion				Mosquito FP7	
+t022.html		The corresponding event must be of type DeviceOrientationEvent and must fire on the window object				Mosquito FP7	
+t023.html		User agents must also provide an event handler IDL attribute HTML5 named ondevicemotion on the window object				Mosquito FP7	
+t025.html		Implementations that are unable to provide acceleration data without the effect of gravity may instead supply the acceleration including the effect of gravity				Mosquito FP7	
+t026.html		The accelerationIncludingGravity property provide the acceleration plus the acceleration equal and opposite to the gravity				Mosquito FP7	
+t028.html		The interval property must be expressed in milliseconds. It must be a constant, to simplify filtering of the data by the Web application				Mosquito FP7		

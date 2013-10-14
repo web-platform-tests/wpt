@@ -1,0 +1,25 @@
+Testable assertions extracted from the specification,
+http://dev.w3.org/geo/api/spec-source-orientation.html
+
+* 4.1 deviceorientation Event
+  - Registration for, and firing of the deviceorientation event must follow the usual behavior of DOM4 Events, [DOM4].
+
+* 4.2 compassneedscalibration Event
+  - User agents implementing this specification must provide a new DOM event, named compassneedscalibration
+  - This event must fire on the window object.
+  - Registration for, and firing of the compassneedscalibration event must follow the usual behavior of DOM4 Events [DOM4].
+  - User agents must also provide an event handler IDL attribute [HTML5] named oncompassneedscalibration on the window object.
+  - The type of the corresponding event must be compassneedcalibration.
+  - This event must be fired when the user agent determines that a compass used to obtain orientation data is in need of calibration.
+  - The default action of this event should be for the user agent to present the user with details of how to calibrate the compass.
+  - The event must be cancelable, so that web sites can provide their own alternative calibration UI.
+
+* 4.3 devicemotion Event
+  - Registration for, and firing of the devicemotion event must follow the usual behavior of DOM4 Events, [DOM4].
+  - The rotationRate attribute must be initialized with the rate of rotation of the hosting device in space.
+    It must be expressed as the rate of change of the angles of the defined in section 4.1 and must be expressed in deg/s.
+  - The interval attribute must be initialized with the interval at which data is obtained from the underlying hardware
+    and must be expressed in milliseconds.
+    It must be a constant, to simplify filtering of the data by the Web application.
+  - Implementations that are unable to provide all attributes must initialize the values of the unknown attributes to null.
+    If an implementation can never provide motion information, the event should be fired with all attributes set to null.

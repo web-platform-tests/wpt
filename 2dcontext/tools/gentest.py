@@ -58,53 +58,12 @@ W3CMODE = True
 if '--standalone' in sys.argv:
     W3CMODE = False
 
-TESTOUTPUTDIR = '../../canvas'
-IMAGEOUTPUTDIR = '../../canvas'
+TESTOUTPUTDIR = '../../2dcontext'
+IMAGEOUTPUTDIR = '../../2dcontext'
 MISCOUTPUTDIR = './output'
 SPECOUTPUTDIR = '../../annotated-spec'
 
 SPECOUTPUTPATH = '../annotated-spec' # relative to TESTOUTPUTDIR
-
-# MAPPING:
-#   2d.transformation                   transformations
-#   2d.composite                        compositing
-#   2d.coordinatespace                  conformance-requirements
-#   2d.missingargs                      conformance-requirements
-#   2d.type.delete                      conformance-requirements
-#   2d.voidreturn                       conformance-requirements
-#   2d.drawImage                        drawing-images-to-the-canvas
-#   2d.clearRect                        drawing-rectangles-to-the-canvas
-#   2d.fillRect                         drawing-rectangles-to-the-canvas
-#   2d.strokeRect                       drawing-rectangles-to-the-canvas
-#   2d.text.draw                        drawing-text-to-the-canvas
-#   2d.text.draw.baseline.alphabetic    drawing-text-to-the-canvas
-#   2d.text.draw.space.basic            drawing-text-to-the-canvas
-#   2d.text.draw.space.collapse         drawing-text-to-the-canvas
-#   2d.text.measure                     drawing-text-to-the-canvas
-#   2d.fillStyle                        fill-and-stroke-styles
-#   2d.gradient                         fill-and-stroke-styles
-#   2d.pattern                          fill-and-stroke-styles
-#   2d.strokeRect                       fill-and-stroke-styles
-#   2d.strokeStyle                      fill-and-stroke-styles
-#   2d.line                             line-styles
-#   2d.path                             path-objects
-#   2d.imageData                        pixel-manipulation
-#   2d.shadow                           shadows
-#   2d.text.align                       text-styles
-#   2d.text.baseline                    text-styles
-#   2d.text.font                        text-styles
-#   2d.text.draw.baseline               text-styles
-#   2d.text.draw.space                  text-styles
-#   2d.text.measure.width.space         text-styles
-#   2d.state                            the-canvas-state
-#
-# check that the dirs exist, create them otherwise
-# protect this behind mode W3C
-# sort by max length
-# if match, move to that dir
-# it not, complain loudly
-# apply to both HTML and images
-# run first try against ../canvas instead of 2dcontext
 
 def simpleEscapeJS(str):
     return str.replace('\\', '\\\\').replace('"', '\\"')
@@ -169,8 +128,10 @@ if len(sys.argv) > 1 and sys.argv[1] == '--test':
     doctest.testmod()
     sys.exit()
 
-
 templates = yaml.load(open('templates.yaml').read())
+name_mapping = yaml.load(open('name2dir.yaml').read())
+mapping_dirs = set(name_mapping.values())
+mapping_keys = sorted(name_mapping.keys(), key=len, reverse=True)
 
 spec_assertions = []
 for s in yaml.load(open('spec.yaml').read())['assertions']:
@@ -219,6 +180,8 @@ def make_flat_image(filename, w, h, r,g,b,a):
 # Ensure the test output directories exist
 testdirs = [TESTOUTPUTDIR, IMAGEOUTPUTDIR, MISCOUTPUTDIR]
 if not W3CMODE: testdirs.append('%s/mochitests' % MISCOUTPUTDIR)
+else:
+    for map_dir in mapping_dirs: testdirs.append("%s/%s" % (TESTOUTPUTDIR, map_dir))
 for d in testdirs:
     try: os.mkdir(d)
     except: pass # ignore if it already exists
@@ -363,6 +326,15 @@ for i in range(len(tests)):
         print "Test %s is defined twice" % name
     used_tests[name] = 1
 
+    mapped_name = None
+    for mn in mapping_keys:
+        if name.startswith(mn):
+            mapped_name = "%s/%s" % (name_mapping[mn], name)
+            break
+    if not mapped_name:
+        print "LIKELY ERROR: %s has no defined target directory mapping" % name
+        mapped_name = name
+
     cat_total = ''
     for cat_part in [''] + name.split('.')[:-1]:
         cat_total += cat_part+'.'
@@ -431,7 +403,7 @@ for i in range(len(tests)):
             expected = re.sub(r'^size (\d+) (\d+)',
                 r'surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, \1, \2)\ncr = cairo.Context(surface)',
                 expected)
-            expected += "\nsurface.write_to_png('%s/%s.png')\n" % (IMAGEOUTPUTDIR, name)
+            expected += "\nsurface.write_to_png('%s/%s.png')\n" % (IMAGEOUTPUTDIR, mapped_name)
             eval(compile(expected, '<test %s>' % test['name'], 'exec'), {}, {'cairo':cairo})
             expected_img = "%s.png" % name
 
@@ -477,6 +449,7 @@ for i in range(len(tests)):
     escaped_desc = simpleEscapeJS(desc)
     template_params = {
         'name':name, 'name_wrapped':name_wrapped, 'backrefs':backref_html(name),
+        'mapped_name':mapped_name,
         'desc':desc, 'escaped_desc':escaped_desc,
         'prev':prev, 'next':next, 'refs':refs, 'notes':notes, 'images':images,
         'fonts':fonts, 'fonthack':fonthack,
@@ -487,7 +460,7 @@ for i in range(len(tests)):
     }
 
     if W3CMODE:
-        f = codecs.open('%s/%s.html' % (TESTOUTPUTDIR, name), 'w', 'utf-8')
+        f = codecs.open('%s/%s.html' % (TESTOUTPUTDIR, mapped_name), 'w', 'utf-8')
         f.write(templates['w3c'] % template_params)
     else:
         f = codecs.open('%s/%s.html' % (TESTOUTPUTDIR, name), 'w', 'utf-8')

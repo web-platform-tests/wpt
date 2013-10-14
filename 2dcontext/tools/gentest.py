@@ -7,7 +7,7 @@
 # http://philip.html5.org/tests/canvas/suite/tests/
 #
 # It has been adapted for use with the W3C HTML5 test suite at
-# http://dvcs.w3.org/hg/html/file/tip/tests/
+# https://github.com/w3c/web-platform-tests/
 #
 # The W3C version excludes a number of features (multiple versions of each test
 # case of varying verbosity, Mozilla mochitests, semi-automated test harness)
@@ -34,7 +34,7 @@
 # It will usually emit some warnings, which ideally should be fixed but can
 # generally be safely ignored.
 #
-# * Test the tests, add new ones to Hg, remove deleted ones from Hg, etc.
+# * Test the tests, add new ones to Git, remove deleted ones from Git, etc.
 
 import re
 import codecs

@@ -6,7 +6,7 @@
 # This was originally written for use at
 # http://philip.html5.org/tests/canvas/suite/tests/
 #
-# It has been adapted for use with the W3C HTML5 test suite at
+# It has been adapted for use with the Web Platform Test Suite suite at
 # https://github.com/w3c/web-platform-tests/
 #
 # The W3C version excludes a number of features (multiple versions of each test
@@ -601,7 +601,7 @@ def getNodeText(node):
         offsets += child_offsets
     return t, offsets
 
-def html5Serializer(element):
+def htmlSerializer(element):
     element.normalize()
     rv = []
     specialtext = ['style', 'script', 'xmp', 'iframe', 'noembed', 'noframes', 'noscript']
@@ -767,7 +767,7 @@ def write_annotated_spec():
         if s['id'] not in matched_assertions:
             print "Annotation incomplete: Unmatched spec statement %s" % s['id']
 
-    # Convert from XHTML5 back to HTML5
+    # Convert from XHTML back to HTML
     doc.documentElement.removeAttribute('xmlns')
     doc.documentElement.setAttribute('lang', doc.documentElement.getAttribute('xml:lang'))
 
@@ -775,7 +775,7 @@ def write_annotated_spec():
     head.insertBefore(doc.createElement('meta'), head.firstChild).setAttribute('charset', 'UTF-8')
 
     f = codecs.open('%s/canvas.html' % SPECOUTPUTDIR, 'w', 'utf-8')
-    f.write(html5Serializer(doc))
+    f.write(htmlSerializer(doc))
 
 if not W3CMODE:
     write_index()

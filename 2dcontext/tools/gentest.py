@@ -130,8 +130,6 @@ if len(sys.argv) > 1 and sys.argv[1] == '--test':
 
 templates = yaml.load(open('templates.yaml').read())
 name_mapping = yaml.load(open('name2dir.yaml').read())
-mapping_dirs = set(name_mapping.values())
-mapping_keys = sorted(name_mapping.keys(), key=len, reverse=True)
 
 spec_assertions = []
 for s in yaml.load(open('spec.yaml').read())['assertions']:
@@ -181,7 +179,7 @@ def make_flat_image(filename, w, h, r,g,b,a):
 testdirs = [TESTOUTPUTDIR, IMAGEOUTPUTDIR, MISCOUTPUTDIR]
 if not W3CMODE: testdirs.append('%s/mochitests' % MISCOUTPUTDIR)
 else:
-    for map_dir in mapping_dirs:
+    for map_dir in set(name_mapping.values()):
         testdirs.append("%s/%s" % (TESTOUTPUTDIR, map_dir))
 for d in testdirs:
     try: os.mkdir(d)
@@ -328,7 +326,7 @@ for i in range(len(tests)):
     used_tests[name] = 1
 
     mapped_name = None
-    for mn in mapping_keys:
+    for mn in sorted(name_mapping.keys(), key=len, reverse=True):
         if name.startswith(mn):
             mapped_name = "%s/%s" % (name_mapping[mn], name)
             break

@@ -396,8 +396,10 @@ for i in range(len(tests)):
         expected_img = None
         if expected == 'green':
             expected_img = make_flat_image('green-100x50.png', 100, 50, 0,1,0,1)
+            if W3CMODE: expected_img = "/images/" + expected_img
         elif expected == 'clear':
             expected_img = make_flat_image('clear-100x50.png', 100, 50, 0,0,0,0)
+            if W3CMODE: expected_img = "/images/" + expected_img
         else:
             if ';' in expected: print "Found semicolon in %s" % name
             expected = re.sub(r'^size (\d+) (\d+)',
@@ -432,6 +434,7 @@ for i in range(len(tests)):
             i = '../images/%s' % i
         images += '<img src="%s" id="%s" class="resource">\n' % (i,id)
     mochi_images = images.replace('../images/', 'image_')
+    if W3CMODE: images = images.replace("../images/", "/images/")
 
     fonts = ''
     fonthack = ''
@@ -781,4 +784,3 @@ if not W3CMODE:
     write_reportgen()
     write_results()
     write_annotated_spec()
-

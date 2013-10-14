@@ -89,8 +89,8 @@ w3c: |
     <meta name="author" content="Philip Taylor">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
-    <script src="../../common/canvas-tests.js"></script>
-    <link rel="stylesheet" href="../../common/canvas-tests.css">
+    <script src="/common/canvas-tests.js"></script>
+    <link rel="stylesheet" href="/common/canvas-tests.css">
     %(fonts)s<body class="show_output">
 
     <h1>%(backrefs)s</h1>
@@ -257,7 +257,7 @@ index.frame.item: |-
 index.w3c.frame: |
     <!DOCTYPE html>
     <title>Canvas tests - %(category)s.*</title>
-    <link rel="stylesheet" href="../common/canvas-frame.css">
+    <link rel="stylesheet" href="/common/canvas-frame.css">
     <p><a href="index.html">[index]</a>
     <h1>%(backrefs)s.*</h1>
     <p>
@@ -318,7 +318,7 @@ index: |
 index.w3c: |
     <!DOCTYPE html>
     <title>Canvas tests - index</title>
-    <link rel="stylesheet" href="../common/canvas-index.css">
+    <link rel="stylesheet" href="/common/canvas-index.css">
 
     <h1><code>&lt;canvas&gt;</code> tests</h1>
 

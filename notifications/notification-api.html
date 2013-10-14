@@ -18,17 +18,8 @@
 		}, 'The Notification constructor exists');
 
 		test(function(){
-			assert_own_property(Notification, 'permission');
-			assert_readonly(Notification, 'permission');
-		}, 'Notification has the static readonly attribute: permission');
-
-		test(function(){
 			assert_in_array(Notification.permission, ['default', 'denied', 'granted']);
 		}, 'The static permission attribute must return permission');
-
-		test(function(){
-			assert_own_property(Notification, 'requestPermission');
-		}, 'Notification has the static method: requestPermission');
 
 		var getPermission = async_test('get permission for Notification');
 		getPermission.step(function(){
@@ -56,68 +47,13 @@
 		}, 'Notification object can be created by its constructor');
 
 		test(function(){
-			assert_own_property(notification, 'onclick');
-			var onclickHandler = function(){
-				console.log('onclick handler');
-			};
-			notification.onclick = onclickHandler;
-			assert_equals(notification.onclick, onclickHandler);
-		}, 'Notification object supports click event handler as its attributes');
-
-		test(function(){
-			assert_own_property(notification, 'onshow');
-			var onshowHandler = function(){
-				console.log('onshow handler');
-			};
-			notification.onshow = onshowHandler;
-			assert_equals(notification.onshow, onshowHandler);
-		}, 'Notification object supports show event handler as its attributes');
-
-		test(function(){
-			assert_own_property(notification, 'onerror');
-			var onerrorHandler = function(){
-				console.log('onerror handler');
-			};
-			notification.onerror = onerrorHandler;
-			assert_equals(notification.onerror, onerrorHandler);
-		}, 'Notification object supports error event handler as its attributes');
-
-		test(function(){
-			assert_own_property(notification, 'onclose');
-			var oncloseHandler = function(){
-				console.log('onclose handler');
-			};
-			notification.onclose = oncloseHandler;
-			assert_equals(notification.onclose, oncloseHandler);
-		}, 'Notification object supports close event handler as its attributes');
-
-		test(function(){
-			assert_own_property(notification, 'close');
-		}, 'Notification object has close method');
-
-		test(function(){
-			assert_own_property(notification, 'dir');
-			assert_readonly(notification, 'dir');
-		}, 'Notification object has read-only attribute: dir');
-
-		test(function(){
 			assert_equals(notification.dir, 'auto');
 			assert_equals(emptyNotification.dir, 'auto');
 		}, 'The dir attribute must return the notification\'s direction.')
 
 		test(function(){
-			assert_own_property(notification, 'lang');
-			assert_readonly(notification, 'lang');
-		}, 'Notification object has read-only attribute: lang');
-
-		test(function(){
 			assert_equals(notification.lang, 'en');
 		}, 'The lang attribute must return the notification\'s language.');
-
-		test(function(){
-			assert_own_property(notification, 'body');
-			assert_readonly(notification, 'body');
-		}, 'Notification object has read-only attribute: body');
 
 		test(function(){
 			assert_equals(notification.body, 'test');
@@ -125,19 +61,9 @@
 		}, 'The body attribute must return the notification\'s body and the empty string otherwise.');
 
 		test(function(){
-			assert_own_property(notification, 'tag');
-			assert_readonly(notification, 'tag');
-		}, 'Notification object has read-only attribute: tag');
-
-		test(function(){
 			assert_equals(notification.tag, 'tag');
 			assert_equals(emptyNotification.tag, '');
 		}, 'The tag attribute must return the notification\'s tag and the empty string otherwise.');
-
-		test(function(){
-			assert_own_property(notification, 'icon');
-			assert_readonly(notification, 'icon');
-		}, 'Notification object has read-only attribute: icon');
 
 		test(function(){
 			assert_regexp_match(notification.icon, /(https?:\/\/[^\/]+)?\/media\/poster\.png/);

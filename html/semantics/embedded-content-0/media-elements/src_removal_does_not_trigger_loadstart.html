@@ -3,7 +3,7 @@
  <head>
   <title>{audio,video}.src - reflection test</title>
   <script src="/resources/testharness.js"></script>
-  <script /resources/testharnessreport.js></script>
+  <script src="/resources/testharnessreport.js"></script>
   <script src="../../../../common/media.js"></script>
  </head>
  <body>
@@ -15,7 +15,7 @@
   <div id="log"></div>
   <script>
 test(function() {
-  var t = async_test("removing src attribute should not trigger loadstart event", {timeout:10000});
+  var t = async_test("removing audioElement.src attribute should not trigger loadstart event", {timeout:10000});
   var removed_attr = false;
   var test_done = false;
   var v = document.getElementById("audio");
@@ -42,7 +42,7 @@ test(function() {
 }, "audio.src - reflection test");
 
 test(function() {
-  var t = async_test("removing src attribute should not trigger loadstart event", {timeout:10000});
+  var t = async_test("removing videoElement.src attribute should not trigger loadstart event", {timeout:10000});
   var removed_attr = false;
   var test_done = false;
   var v = document.getElementById("video");

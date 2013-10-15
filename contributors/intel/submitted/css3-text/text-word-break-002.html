@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>CSS Text Test: word-break - normal - the line includes Latin words break normally</title>
+    <link rel="author" title="Intel" href="http://www.intel.com">
+    <link rel="help" href="http://www.w3.org/TR/2012/WD-css3-text-20121113/#word-break">
+    <meta name="flags" content="">
+    <meta name="assert" content="Check that the line breaks correctly when word-break set normal.">
+    <style>
+      div {
+        border: solid 2px blue;
+        color: blue;
+        width: 200px;
+        word-break: normal;
+      }
+    </style>
+  </head>
+  <body>
+    <p>Test passes if <strong>all blue</strong> words below are <strong> not beyond the blue box</strong>.</p>
+    <div>Test the words will break normally, not beyond this blue box</div>
+  </body>
+</html>

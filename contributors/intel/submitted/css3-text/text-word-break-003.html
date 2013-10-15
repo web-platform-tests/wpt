@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>CSS Text Test: word-break - normal - the line containing signal string not break</title>
+    <link rel="author" title="Intel" href="http://www.intel.com">
+    <link rel="help" href="http://www.w3.org/TR/2012/WD-css3-text-20121113/#word-break">
+    <meta name="flags" content="">
+    <meta name="assert" content="Check that the line includes a long Latin string will not break when word-break set normal.">
+    <style>
+      div {
+        border: solid 2px blue;
+        color: blue;
+        width: 100px;
+        word-break: normal;
+      }
+    </style>
+  </head>
+  <body>
+    <p>Test passes if the <strong>blue 'abc...xyz</strong> string below is <strong> beyond </strong>the blue box.</p>
+    <div>abcdefghijklmnopqrstuvwxyz</div>
+  </body>
+</html>

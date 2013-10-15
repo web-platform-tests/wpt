@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>HTML Test: style_media_effect</title>
+    <link rel="author" title="Intel" href="http://www.intel.com/">
+    <link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/document-metadata.html#attr-style-scoped">
+    <link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/document-metadata.html#the-style-element">
+    <meta name="assert" content="Check if the media attribute works well">
+    <style>
+      #test {
+        background-color:green;
+        height:100px;
+        width:100px;
+      }
+    </style>
+    <style media="print">
+      #test {
+        background-color:red;
+      }
+    </style>
+  </head>
+  <body>
+    <p>Test passes if a green filled square is displayed.</p>
+    <div id="test"></div>
+  </body>
+</html>

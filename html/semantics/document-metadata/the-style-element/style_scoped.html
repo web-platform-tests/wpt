@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>HTML Test: style_scoped</title>
+    <link rel="author" title="Intel" href="http://www.intel.com/">
+    <link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/document-metadata.html#attr-style-scoped">
+    <link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/document-metadata.html#the-style-element">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <meta name="assert" content="Check if the scoped attribute is implemented.">
+    <style>
+      #test {
+        width: 50px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="log"></div>
+    <div id="test"></div>
+    <div>
+      <style id="style">
+        #test {
+          width: 100px;
+        }
+      </style>
+    <div>
+    <script>
+      test(function() {
+        var testElement = document.getElementById("test");
+        var style = document.getElementById("style");
+        var width1, width2;
+
+        width1 = getStyle(testElement, "width");
+        assert_equals(width1, "100px", "The style 'width' should be applied.");
+
+        style.scoped = true;
+        width2 = getStyle(testElement, "width");
+        assert_equals(width2, "50px", "The width should not be applied.");
+      }, "style_scoped");
+
+      function getStyle(obj, attr) {
+        return document.defaultView.getComputedStyle(obj, false)[attr];
+      }
+    </script>
+  </body>
+</html>

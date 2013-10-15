@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>HTML Test: style_events</title>
+    <link rel="author" title="Intel" href="http://www.intel.com/">
+    <link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/document-metadata.html#the-style-element">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script>
+      var tLoad = async_test("style_events_onload");
+      var tError = async_test("style_events_onerror");
+
+      function onstyleload() {
+        tLoad.done();
+      }
+
+      function onstyleerror() {
+        tError.done();
+      }
+    </script>
+    <style id="style1" onload="onstyleload()">
+      #test {
+        height:100px;
+        width:100px;
+      }
+    </style>
+    <style id="style2" onerror="onstyleerror()" type="text/css">
+      @import url(blue.css);
+    </style>
+  </head>
+  <body>
+    <div id="log"></div>
+    <div id="test"></div>
+  </body>
+</html>

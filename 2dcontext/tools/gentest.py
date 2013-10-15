@@ -333,6 +333,8 @@ for i in range(len(tests)):
     if not mapped_name:
         print "LIKELY ERROR: %s has no defined target directory mapping" % name
         mapped_name = name
+    if '@manual' in test['code']:
+        mapped_name += "-manual"
 
     cat_total = ''
     for cat_part in [''] + name.split('.')[:-1]:
@@ -406,7 +408,10 @@ for i in range(len(tests)):
                 expected)
             expected += "\nsurface.write_to_png('%s/%s.png')\n" % (IMAGEOUTPUTDIR, mapped_name)
             eval(compile(expected, '<test %s>' % test['name'], 'exec'), {}, {'cairo':cairo})
-            expected_img = "%s.png" % name
+            if '@manual' in test['code']:
+                expected_img = "%s-manual.png" % name
+            else:
+                expected_img = "%s.png" % name
 
         if expected_img:
             expectation_html = ('<p class="output expectedtext">Expected output:' +

@@ -1,2 +1,2 @@
-DeviceLight_tests.html							
-
+AmbientLight_tests.html							
+idlharness.html

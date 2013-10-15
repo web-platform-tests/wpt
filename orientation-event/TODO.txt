@@ -23,3 +23,4 @@ http://dev.w3.org/geo/api/spec-source-orientation.html
     It must be a constant, to simplify filtering of the data by the Web application.
   - Implementations that are unable to provide all attributes must initialize the values of the unknown attributes to null.
     If an implementation can never provide motion information, the event should be fired with all attributes set to null.
+

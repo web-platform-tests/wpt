@@ -15,3 +15,5 @@ t023.html		User agents must also provide an event handler IDL attribute HTML5 na
 t025.html		Implementations that are unable to provide acceleration data without the effect of gravity may instead supply the acceleration including the effect of gravity				Mosquito FP7	
 t026.html		The accelerationIncludingGravity property provide the acceleration plus the acceleration equal and opposite to the gravity				Mosquito FP7	
 t028.html		The interval property must be expressed in milliseconds. It must be a constant, to simplify filtering of the data by the Web application				Mosquito FP7		
+idlharness.html		DeviceOrientation Event IDL tests				Intel	
+

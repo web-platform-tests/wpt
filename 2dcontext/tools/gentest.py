@@ -333,6 +333,8 @@ for i in range(len(tests)):
     if not mapped_name:
         print "LIKELY ERROR: %s has no defined target directory mapping" % name
         mapped_name = name
+    if '@manual' in test['code']:
+        mapped_name += "-manual"
 
     cat_total = ''
     for cat_part in [''] + name.split('.')[:-1]:

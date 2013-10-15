@@ -7,8 +7,8 @@ setup(function(){
     window.errors = [];
     window.origin = location.protocol+'//'+location.host;
     window.escapedOrigin = encodeURIComponent(origin);
-    window.sameOriginURL = location.href.replace(/\/[^\/]+$/, '/');
-    window.otherOriginURL = location.href.replace(/:\/\/(www\.)?/, '://www1.').replace(/\/[^\/]+$/, '/');
+    window.sameOriginURL = "http://{{domains[]}}:{{ports[http][0]}}" + location.pathname.replace(/\/[^\/]+$/, '/');
+    window.otherOriginURL = "http://{{domains[www1]}}:{{ports[http][0]}}" + location.pathname.replace(/\/[^\/]+$/, '/');
 }, {timeout:10000, explicit_done:true});
 
 onload = function() {

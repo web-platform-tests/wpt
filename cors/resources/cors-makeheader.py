@@ -1,7 +1,6 @@
 import json
 
 def main(request, response):
-    print request.GET
     origin = request.GET.first("origin", request.headers.get('origin'))
 
     if "check" in request.GET:
@@ -45,7 +44,6 @@ def main(request, response):
 
         if code >= 300 and code < 400:
             response.headers.set("Location", request.GET.first('location'))
-            print response.headers
 
     headers = {}
     for name, values in request.headers.iteritems():

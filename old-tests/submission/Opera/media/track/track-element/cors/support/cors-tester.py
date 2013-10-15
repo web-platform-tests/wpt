@@ -13,6 +13,7 @@ def main(request, response):
     if "read" in request.GET:
         data = request.server.stash.take(id)
         if data is None:
+            response.status = 404
             data = ""
         return [("Content-Type", "text/plain")], data
 
@@ -29,12 +30,9 @@ def main(request, response):
         response.headers.set('Access-Control-Allow-Origin', request.GET['origin'])
         response.headers.set('Access-Control-Allow-Credentials', 'true')
 
-
     cors = request.headers.get("origin", "no")
 
-    print request.cookies
-
-    cookie = "yes" if id + "=yes" in request.headers.get("Cookie", "") else "no"
+    cookie = request.cookies.first(id, "no")
 
     line = 'cors = ' + cors + ' | cookie = ' + cookie;
 

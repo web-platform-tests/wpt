@@ -6,8 +6,6 @@ def main(request, response):
 
     cookie_name = "request" + name
 
-    print request.cookies
-
     if request.cookies.first(cookie_name, "") == status_code:
         status = 200
         response.delete_cookie(cookie_name)

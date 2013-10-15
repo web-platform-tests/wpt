@@ -1,4 +1,5 @@
 import os
+from wptserve import pipes
 
 def run_other(request, response, path):
     #This is a terrible hack
@@ -8,10 +9,6 @@ def run_other(request, response, path):
     return rv
 
 def main(request, response):
-
-    print request.request_line
-    print request._raw_headers
-
     origin = request.GET.first("origin", request.headers["origin"])
     credentials = request.GET.first("credentials", "true")
 
@@ -24,7 +21,11 @@ def main(request, response):
                    "redirect",
                    "cache-control"]:
         if handler == "cache-control":
-            return open("cache-control.event_source").read()
+            response.headers.set("Content-Type", "text/event-stream")
+            rv = open(os.path.join(request.doc_root, "eventsource", "resources", "cache-control.event_source")).read()
+            response.content = rv
+            pipes.sub(request, response)
+            return
         elif handler == "redirect":
             return run_other(request, response, os.path.join(request.doc_root, "common", "redirect.py"))
         else:

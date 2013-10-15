@@ -8,10 +8,10 @@ def main(request, response):
     elif date:
         response.headers.set("Last-Modified", date)
 
-  if ((match is not None and match == tag) or
-      (modified is not None and modified == date)):
-      response.status = (304, "SUPERCOOL")
-      return ""
-  else:
-      response.headers.set("Content-Type", "text/plain")
-      return "MAYBE NOT"
+    if ((match is not None and match == tag) or
+        (modified is not None and modified == date)):
+        response.status = (304, "SUPERCOOL")
+        return ""
+    else:
+        response.headers.set("Content-Type", "text/plain")
+        return "MAYBE NOT"

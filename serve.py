@@ -9,9 +9,7 @@ import threading
 from collections import defaultdict
 import urllib2
 import uuid
-
-logger = logging.getLogger(__name__)
-logging.basicConfig()
+import argparse
 
 repo_root = os.path.abspath(os.path.split(__file__)[0])
 
@@ -34,6 +32,13 @@ subdomains = [u"www",
               u"www2",
               u"天気の良い日",
               u"élève"]
+
+logger = None
+
+def default_logger(level):
+    logger = logging.getLogger("web-platform-tests")
+    logging.basicConfig(level=getattr(logging, level.upper()))
+    return logger
 
 def open_socket(port):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -74,7 +79,6 @@ def probe_subdomains(config):
     rv = {}
 
     for subdomain in subdomains:
-#        print "Probing for support of subdomain %s" % subdomain
         #This assumes that the tld is ascii-only or already in punycode
         punycode = subdomain.encode("idna")
         domain = "%s.%s" % (punycode, host)
@@ -83,10 +87,10 @@ def probe_subdomains(config):
         except Exception as e:
             if config["external_domain"]:
                 external = "%s.%s" % (punycode, config["external_domain"])
-                print "Using external server %s for subdomain %s" % (external, subdomain)
+                logger.warning("Using external server %s for subdomain %s" % (external, subdomain))
                 rv[subdomain] = external
             else:
-                print "Failed probing domain %s and no external fallback configured. You may need to edit /etc/hosts or similar." % domain
+                logger.critical("Failed probing domain %s and no external fallback configured. You may need to edit /etc/hosts or similar." % domain)
                 sys.exit(1)
         else:
             rv[subdomain] = "%s.%s" % (punycode, host)
@@ -115,7 +119,7 @@ def start_servers(config, ports):
             if daemon:
                 wrapper = ServerWrapper(daemon)
                 wrapper.start()
-                print "Started server at %s://%s:%s" % (scheme, config["host"], port)
+                logger.info("Started server at %s://%s:%s" % (scheme, config["host"], port))
                 servers[scheme].append((port, wrapper))
 
     return servers
@@ -135,7 +139,8 @@ def start_ws_server(config, port):
     opts, args  = pywebsocket._parse_args_and_config(["-H", config["host"],
                                                       "-p", str(port),
                                                       "-d", repo_root,
-                                                      "-w", os.path.join(repo_root, "websockets", "handlers")])
+                                                      "-w", os.path.join(repo_root, "websockets", "handlers"),
+                                                      "--log-level", "debug"])
 
     opts.cgi_directories = []
     opts.is_executable_method = None
@@ -184,12 +189,14 @@ def iter_threads(servers):
             yield server.thread
 
 def main():
+    global logger
     with open("config.json") as f:
         config = json.load(f)
 
+    logger = default_logger(config["log_level"])
+
     config_, servers = start(config)
 
-    print "Everything is illuminated"
     while any(item.isAlive() for item in iter_threads(servers)):
         for item in iter_threads(servers):
             item.join(1)

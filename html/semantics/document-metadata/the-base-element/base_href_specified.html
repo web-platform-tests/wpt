@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>HTML Test: base_href_specified</title>
+    <link rel="author" title="Intel" href="http://www.intel.com/">
+    <link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/document-metadata.html#attr-base-href">
+    <link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/document-metadata.html#the-base-element">
+    <base id="base" href="http://www.w3c-test.org/index.html">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <img id="test" src="test.ico" style="display:none">
+    <script>
+      var testElement;
+      var baseElement;
+
+      setup(function() {
+        testElement = document.getElementById("test");
+        baseElement = document.getElementById("base");
+      });
+
+      /*
+      Becasue the href attribute of base will impact on the script element also,
+      to ensure the tests work well, set "http://www.w3c-test.org/index.html" as the href attribute of base elements.
+      */
+      test(function() {
+        assert_equals(baseElement.href, "http://www.w3c-test.org/index.html", "The href of base element is incorrect.");
+      }, "base_href_specified_check_base.href");
+
+      test(function() {
+        assert_equals(testElement.src, "http://www.w3c-test.org/test.ico", "The src of img element is incorrect.");
+      }, "base_href_specified_check_img.src");
+    </script>
+  </body>
+</html>

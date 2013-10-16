@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>HTML Test: link_type_mismatch_source</title>
+    <link rel="author" title="Intel" href="http://www.intel.com/">
+    <link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/document-metadata.html#the -link-element">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <link rel="stylesheet" href="./support/unmatch.css" type="text/plain">
+  </head>
+  <body>
+    <div id="log"></div>
+    <div id="test"></div>
+    <script>
+      var t = async_test("link_type_mismatch_source");
+      var TIMEOUT = 3000;
+      setTimeout(function() {
+        t.step(function() {
+          testElement = document.getElementById("test");
+          assert_not_equals(getStyle(testElement, "width"), "100px", "The rules in 'unmatch.css' should not be applied.");
+        });
+        t.done();
+      }, TIMEOUT);
+
+      function getStyle(obj, attr) {
+        return document.defaultView.getComputedStyle(obj, false)[attr];
+      }
+    </script>
+  </body>
+</html>

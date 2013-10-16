@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>HTML Test: base_href_unspecified</title>
+    <link rel="author" title="Intel" href="http://www.intel.com/">
+    <link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/document-metadata.html#attr-base-href">
+    <link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/document-metadata.html#the-base-element">
+    <base id="base" target="_blank">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <img id="test" src="../../../../images/blue-100x100.png" style="display:none">
+    <a id="test1" href="\u0000"></a>
+    <script>
+      var testElement,
+          baseElement;
+
+      setup(function () {
+        testElement = document.getElementById("test");
+        baseElement = document.getElementById("base");
+      });
+
+      test(function() {
+        assert_equals(baseElement.href, document.location.href, "Return the document base URL if the base element has no href content attribute.");
+      }, "base_href_unspecified");
+
+      test(function() {
+        var exp = testElement.src.substring(0, testElement.src.lastIndexOf("/images/blue-100x100.png") + 1);
+        assert_true(baseElement.href.indexOf(exp) != -1, "The src of img element is incorrect.");
+      }, "base_href_unspecified_for_img");
+    </script>
+  </body>
+</html>

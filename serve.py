@@ -25,7 +25,7 @@ routes = [("*", "/tools.*", handlers.ErrorHandler(404)),
           ("GET", "/.*", handlers.file_handler),
           ]
 
-router = wptserve.Router(repo_root, routes)
+rewrites = [("GET", "/resources/WebIDLParser.js", "/resources/webidl2/lib/webidl2.js")]
 
 subdomains = [u"www",
               u"www1",
@@ -125,9 +125,12 @@ def start_servers(config, ports):
     return servers
 
 def start_http_server(config, port):
-    return wptserve.WebTestServer(router,
-                                  (config["host"], port),
+    router = wptserve.Router(repo_root, routes)
+    rewriter = wptserve.RequestRewriter(rewrites)
+    return wptserve.WebTestServer((config["host"], port),
                                   wptserve.WebTestRequestHandler,
+                                  router,
+                                  rewriter,
                                   config=config,
                                   use_ssl=False,
                                   certificate=None)

@@ -19,12 +19,12 @@
 			height: 100%;
 		}
 
-		#r1 {
+		#region1 {
 			width: 80%;
 			height: 40%;
 		}
 
-		#r2 {
+		#region2 {
 			margin-top: 10px;
 			width: auto;
 			height: auto;
@@ -32,10 +32,10 @@
 		</script>
 		<script src="support/util.js" type="text/javascript"></script>
 		<script type="text/javascript">
-		window.onload = function() {
+		window.addEventListener("load", function() {
 			injectStylesInFrame("#test-styles", "iframe");
 			resizeViewportTo("iframe", 100, 200);
-		}
+		})
 		</script>
 	</head>
 	<body>

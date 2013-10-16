@@ -21,10 +21,9 @@ if (window.parent != window) {
 	// we're in an iframe, so expose the bits that allow setting styles inside
 	window.addNewStyles = function (cssText) {
 		var styleTag = document.createElement("style"),
-			textNode = document.createTextNode(cssText),
-			head = document.head;
+			textNode = document.createTextNode(cssText);
 
 		styleTag.appendChild(textNode);
-		head.appendChild(styleTag);
+		document.head.appendChild(styleTag);
 	}
 }

@@ -304,8 +304,7 @@ IdlArray.prototype.internal_add_idls = function(parsed_idls)
             break;
 
         case "typedef":
-            // TODO
-            console.log("typedef not yet supported");
+            this.members[parsed_idl.name] = new IdlTypedef(parsed_idl);
             break;
 
         case "callback":
@@ -582,6 +581,10 @@ IdlArray.prototype.assert_type_is = function(value, type)
         assert_equals(typeof value, "string");
     }
     else if (this.members[type] instanceof IdlDictionary)
+    {
+        // TODO: Test when we actually have something to test this on
+    }
+    else if (this.members[type] instanceof IdlTypedef)
     {
         // TODO: Test when we actually have something to test this on
     }
@@ -1819,8 +1822,6 @@ function IdlEnum(obj)
     /** Self-explanatory. */
     this.name = obj.name;
 
-    console.log("Name is " + this.name);
-
     /** An array of values produced by the "enum" production. */
     this.values = obj.values;
 
@@ -1828,6 +1829,27 @@ function IdlEnum(obj)
 //@}
 
 IdlEnum.prototype = Object.create(IdlObject.prototype);
+
+/// IdlTypedef ///
+// Used for IdlArray.prototype.assert_type_is
+function IdlTypedef(obj)
+//@{
+{
+    /**
+     * obj is an object produced by the WebIDLParser.js "typedef"
+     * production.
+     */
+
+    /** Self-explanatory. */
+    this.name = obj.name;
+
+    /** An array of values produced by the "typedef" production. */
+    this.values = obj.values;
+
+}
+//@}
+
+IdlTypedef.prototype = Object.create(IdlObject.prototype);
 
 }());
 // vim: set expandtab shiftwidth=4 tabstop=4 foldmarker=@{,@} foldmethod=marker:

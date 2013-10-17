@@ -80,6 +80,24 @@
     assert_readonly(navigator.battery, 'charging', 'charging must be readonly')
   }, 'charging attribute is readonly');
 
+//https://dvcs.w3.org/hg/dap/raw-file/default/battery/Overview.html
+// section 6 
+
+//chargingTime must be set to 0
+test(function() {
+    assert_equals(navigator.battery.chargingTime, 0, 'chargingTime must be 0')
+  }, 'chargingTime must be 0');
+
+//charging must be set to true
+test(function() {
+    assert_equals(navigator.battery.charging, true, 'charging must be set to true')
+  }, 'charging must be set to true');
+
+//charging must be set to true
+test(function() {
+    assert_equals(navigator.battery.level, 1.0, 'BatteryManager level must be set to 1.0')
+  }, 'BatteryManager level must be set to 1.0');
+
   // readonly attribute unrestricted double chargingTime;
 
   test(function() {

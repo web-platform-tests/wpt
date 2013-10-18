@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>HTML Test: embed_represent_nothing_remove_src_and_type</title>
+    <link rel="author" title="Intel" href="http://www.intel.com">
+    <link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/embedded-content-0.html#the-embed-element">
+    <meta name="assert" content="Check if the embed element represents nothing when its src and type attributes are removed">
+    <style>
+      embed {
+        background-color:red;
+        height:100px;
+        width:100px;
+      }
+    </style>
+  </head>
+  <body>
+    <p>Test passes if there is <strong>no red</strong>.</p>
+    <embed id="embed" src="../../../../images/red-100x100.png" type="image/png">
+    <script>
+      document.getElementById("embed").removeAttribute("src");
+      document.getElementById("embed").removeAttribute("type");
+    </script>
+  </body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>HTML Test: time_datetime</title>
+    <link rel="author" title="Intel" href="http://www.intel.com/">
+    <link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/text-level-semantics.html#the-time-element">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <style>
+      time {
+        display:none;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="log"></div>
+    <time id="time1">2013-01</time>
+    <time id="time2" datetime="2006-09-23">a Saturday</time>
+    <script>
+      /*
+      The datetime value of a time element is the value of the element's datetime content attribute, if it has one,
+      or the element's textContent, if it does not.
+      */
+      test(function() {
+        assert_inherits(document.getElementById("time1"), "datetime", "The datetime attribute does not exist.");
+        assert_equals(document.getElementById("time1").datetime, time1.textContent, "The value of attribute datetime is incorrect.");
+      }, "Check if the datetime value of a time element is the element's textContent without datetime content attribute");
+
+      test(function() {
+        assert_inherits(document.getElementById("time2"), "datetime", "The datetime attribute does not exist.");
+        assert_equals(document.getElementById("time2").datetime, "2006-09-23", "The value of attribute datetime is incorrect.");
+      }, "Check if the datetime value of a time element is the value of the element's datetime content attribute");
+    </script>
+  </body>
+</html>

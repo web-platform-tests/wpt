@@ -543,6 +543,8 @@ IdlArray.prototype.assert_type_is = function(value, type)
 
         case "float":
         case "double":
+        case "unrestricted float":
+        case "unrestricted double":
             // TODO: distinguish these cases
             assert_equals(typeof value, "number");
             return;
@@ -1794,6 +1796,7 @@ function create_suitable_object(type)
         case "byte": case "octet": case "short": case "unsigned short":
         case "long": case "unsigned long": case "long long":
         case "unsigned long long": case "float": case "double":
+        case "unrestricted float": case "unrestricted double":
             return 7;
 
         case "DOMString":

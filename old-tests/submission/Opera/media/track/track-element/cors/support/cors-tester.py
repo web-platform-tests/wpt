@@ -13,9 +13,8 @@ def main(request, response):
     if "read" in request.GET:
         data = request.server.stash.take(id)
         if data is None:
-            response.status = 404
-            data = ""
-        return [("Content-Type", "text/plain")], data
+            response.set_error(400, "Tried to read data not yet set")
+            return
 
     elif "cleanup" in request.GET:
         request.server.stash.take(id)
@@ -34,7 +33,7 @@ def main(request, response):
 
     cookie = request.cookies.first(id, "no")
 
-    line = 'cors = ' + cors + ' | cookie = ' + cookie;
+    line = 'cors = ' + cors + ' | cookie = ' + cookie.value;
 
     data = request.server.stash.take(id)
     if data is not None:

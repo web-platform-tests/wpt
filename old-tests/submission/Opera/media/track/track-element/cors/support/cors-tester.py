@@ -15,7 +15,7 @@ def main(request, response):
         if data is None:
             response.set_error(404, "Tried to read data not yet set")
             return
-        return [("Content-Type": "text/plain")], data
+        return [("Content-Type", "text/plain")], data
 
     elif "cleanup" in request.GET:
         request.server.stash.take(id)

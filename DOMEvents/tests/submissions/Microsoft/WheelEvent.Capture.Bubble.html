@@ -1,25 +1,25 @@
 <!DOCTYPE html>
 <html>
-    <head>  
+    <head>
         <title id='desc'> WheelEvent: wheel Event capturing/bubbling </title>
         <script type="text/javascript">
             var PassTest = function()
             {
                 document.getElementById("testresult").firstChild.data = "PASS";
             }
-            
+
             var FailTest = function()
             {
                 document.getElementById("testresult").firstChild.data = "FAIL";
             }
-            
+
             function TestBubble(evt)
             {
                 if (EVENT == evt.type)
                 {
                     ActualResult.push(evt.currentTarget);
                 }
-            
+
                 if ((3 == evt.eventPhase) && (window === evt.currentTarget))
                 {
                     if (ExpectResult.toString() == ActualResult.toString())
@@ -30,7 +30,7 @@
                     {
                         FailTest();
                     }
-                    
+
                     for (var i=0; i < CURRENTTARGETS.length; i++)
                     {
                         CURRENTTARGETS[i].removeEventListener(EVENT, TestBubble, true);
@@ -38,12 +38,12 @@
                     }
                 }
             }
-            
+
             var EVENT = "wheel";
             var TARGET, PARENT, CURRENTTARGETS;
             var ExpectResult = [];
             var ActualResult = [];
-            
+
             window.onload = function()
             {
                 try
@@ -51,8 +51,8 @@
                     TARGET = document.getElementById("target");
                     PARENT = document.getElementById("parent");
                     CURRENTTARGETS = [window, document, document.body, PARENT, TARGET];
-                    ExpectResult = CURRENTTARGETS + "," + CURRENTTARGETS.reverse(); 
-            
+                    ExpectResult = CURRENTTARGETS + "," + CURRENTTARGETS.reverse();
+
                     for (var i=0; i < CURRENTTARGETS.length; i++)
                     {
                         CURRENTTARGETS[i].addEventListener(EVENT, TestBubble, true);
@@ -63,20 +63,20 @@
                 {
                     FailTest();
                 }
-            }  
-        </script>            
+            }
+        </script>
     </head>
     <body>
         <h3>DOM Events</h3>
         <h4>
             Test Description: WheelEvent - wheel event bubbles.
-        </h4> 
-        
+        </h4>
+
         <span id="parent">
             <textarea id="target" rows="5" cols="30">TOP TOP TOP TOP TOP TOP TOP  Scroll mouse wheel over here Scroll mouse wheel over here Scroll mouse wheel over here Scroll mouse wheel over here Scroll mouse wheel over here END END END END END END END </textarea>
         </span>
         <p id="manualsteps">
-            Steps: 
+            Steps:
             <ol>
                 <li> Note: an input device with scroll wheel support (e.g., mouse wheel) is required
                 <li> Move the mouse pointer over the above textarea

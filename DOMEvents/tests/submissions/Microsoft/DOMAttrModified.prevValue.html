@@ -1,18 +1,18 @@
 <!DOCTYPE HTML>
 <html>
     <head>
-        <title id='desc'> MutationEvent.prevValue for DOMAttrModified Event </title> 
+        <title id='desc'> MutationEvent.prevValue for DOMAttrModified Event </title>
         <script type="text/javascript">
             var PassTest = function()
             {
                 document.getElementById("testresult").firstChild.data = "PASS";
             }
-            
+
             var FailTest = function()
             {
                 document.getElementById("testresult").firstChild.data = "FAIL";
             }
-            
+
             var EVENT = "DOMAttrModified";
             var ATTR = "name";
             var TARGET;
@@ -25,7 +25,7 @@
                 {
                     TARGET = document.getElementById("target");
                     TARGET.addEventListener(EVENT, TestEvent, true);
-                    
+
                     TARGET.setAttribute(ATTR, "foo");
                     TARGET.setAttribute(ATTR, "bar");
                     TARGET.removeAttribute(ATTR);
@@ -35,31 +35,31 @@
                     FailTest();
                 }
             }
-            
-            function TestEvent(evt) 
+
+            function TestEvent(evt)
             {
-                if (evt.type == EVENT) 
+                if (evt.type == EVENT)
                 {
                     ActualResult.push(evt.prevValue);
                 }
-                
+
                 if (ExpectResult.toString() == ActualResult.toString())
                 {
                     PassTest();
                 }
             }
-        </script>            
+        </script>
     </head>
     <body>
         <h3>DOM Events</h3>
         <h4>
             Test Description: MutationEvent.prevValue indicates the previous value of the Attr node in DOMAttrModified events.
         </h4>
-        
+
         <div id="target"></div>
-                    
+
         <p>Test passes if the word "PASS" appears below.</p>
            <div>Test result: </div>
-        <div id='testresult'>FAIL</div> 
+        <div id='testresult'>FAIL</div>
     </body>
 </html>

@@ -10,7 +10,6 @@
 	<div id="log">FAILED (This TC requires JavaScript enabled)</div>
 	<div></div>
 	<script>
-        setup({timeout:5000})
 	var t = async_test(undefined, {timeout:5000})
         log('inline script #1');
 	testlib.addScript('', { src:'scripts/delay.php?time=1&url=include-1.js?'+Math.random() }, document.getElementsByTagName('head')[0], false );

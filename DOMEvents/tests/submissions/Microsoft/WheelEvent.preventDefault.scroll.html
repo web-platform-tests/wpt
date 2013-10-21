@@ -1,29 +1,29 @@
 <!DOCTYPE html>
 <html>
-    <head>  
+    <head>
         <title id='desc'> WheelEvent: wheel - preventDefault() for Scrolling </title>
         <script type="text/javascript">
             var PassTest = function()
             {
                 document.getElementById("testresult").firstChild.data = "PASS";
             }
-            
+
             var FailTest = function()
             {
                 document.getElementById("testresult").firstChild.data = "FAIL";
             }
-            
+
             function DisableScrolling()
             {
                 TARGET.scrollTop = 0;
                 BEFORE = TARGET.scrollTop;
                 DisableScroll = true;
             }
-            
+
             function VerifyResult()
             {
                 AFTER = TARGET.scrollTop;
-                
+
                 if ((true == DisableScroll) && (true == TestResult) && (BEFORE == AFTER))
                 {
                     PassTest();
@@ -33,7 +33,7 @@
                     FailTest();
                 }
             }
-            
+
             function TestEvent(evt)
             {
                 if ((true == DisableScroll) && (EVENT == evt.type))
@@ -42,13 +42,13 @@
                     TestResult = evt.defaultPrevented;
                 }
             }
-            
+
             var EVENT = "wheel";
             var BEFORE;
             var AFTER;
             var DisableScroll = false;
             var TestResult = false;
-            
+
             window.onload = function()
             {
                 try
@@ -61,20 +61,20 @@
                     FailTest();
                 }
             }
-        </script>            
+        </script>
     </head>
     <body>
         <h3>DOM Events</h3>
         <h4>
-            Test Description: The typical default action of the wheel event type is to scroll the document/element 
+            Test Description: The typical default action of the wheel event type is to scroll the document/element
             by the indicated amount. If this event is canceled, the implementation must not scroll document/element.
-        </h4> 
-        
+        </h4>
+
         <span id="parent">
             <textarea id="target" rows="5" cols="30">TOP TOP TOP TOP TOP TOP TOP  Scroll mouse wheel over here Scroll mouse wheel over here Scroll mouse wheel over here Scroll mouse wheel over here Scroll mouse wheel over here END END END END END END END </textarea>
         </span>
         <p id="manualsteps">
-            Steps: 
+            Steps:
             <ol>
                 <li> Note: an input device with scroll wheel support (e.g., mouse wheel) is required
                 <li> Make sure the above textarea can be scrolled by scrolling the mouse wheel over it

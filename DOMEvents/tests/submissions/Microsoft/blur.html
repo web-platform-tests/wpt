@@ -7,15 +7,15 @@
             {
                 document.getElementById("testresult").firstChild.data = "PASS";
             }
-            
+
             var FailTest = function()
             {
                 document.getElementById("testresult").firstChild.data = "FAIL";
             }
-            
+
             var EVENT = "blur";
             var TARGET;
-                    
+
             window.onload = function()
             {
                 try
@@ -28,9 +28,9 @@
                     FailTest();
                 }
             }
-            
-            function TestCapture(evt) 
-            {                                     
+
+            function TestCapture(evt)
+            {
                 if ((evt.type == EVENT) && (evt.currentTarget == TARGET))
                 {
                     PassTest();
@@ -49,9 +49,9 @@
             Click the textbox and then the button: <br />
             <input id="target" /> <button id="helper">Button</button>
         </div>
-        
+
         <p>Test passes if the word "PASS" appears below after clicking the above textbox and then the button.</p>
        	<div>Test result: </div>
-        <div id='testresult'>FAIL</div> 
+        <div id='testresult'>FAIL</div>
     </body>
 </html>

@@ -1,11 +1,11 @@
 <!doctype html>
 <title>WebSockets: valid handshake</title>
+<meta name=timeout content=long>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script src=../constants.js></script>
 <div id=log></div>
 <script>
-setup({timeout:10010});
 async_test(function(t) {
   var ws = new WebSocket(SCHEME_AND_DOMAIN+'/ws/echo');
   ws.onopen = t.step_func(function(e) {    
@@ -17,5 +17,5 @@ async_test(function(t) {
     ws.close();
   });
   ws.onerror = ws.onmessage = ws.onclose = t.step_func(function() {assert_unreached()});
-}, null, {timeout:10000});
+}, null, {timeout:9900});
 </script>

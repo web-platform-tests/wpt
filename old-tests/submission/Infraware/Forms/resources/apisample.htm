@@ -10,8 +10,7 @@
 <script src="testharnessreport.js"></script>
 <script>
     setup_run = false;
-    setup({timeout:6000},
-          function() {
+    setup(function() {
             setup_run = true;
           });
     test(function() {assert_true(setup_run)}, "Setup function ran");

@@ -7,15 +7,15 @@
             {
                 document.getElementById("testresult").firstChild.data = "PASS";
             }
-            
+
             var FailTest = function()
             {
                 document.getElementById("testresult").firstChild.data = "FAIL";
             }
-            
+
             var EVENT = "click";
             var TARGET;
-            
+
             window.onload = function()
             {
                 try
@@ -28,16 +28,16 @@
                     FailTest();
                 }
             }
-                
-            function TestCapture(evt) 
+
+            function TestCapture(evt)
             {
                 try
                 {
                     evt.preventDefault();
-                    
+
                     if ((evt.type == EVENT) && (evt.defaultPrevented == true))
                     {
-                        PassTest();    
+                        PassTest();
                     }
                     else
                     {
@@ -49,20 +49,20 @@
                     FailTest();
                 }
             }
-        </script>            
+        </script>
     </head>
     <body>
         <h4>
             Test Description:
-            Event listeners can cancel default actions of cancelable event objects by invoking the Event.preventDefault() 
+            Event listeners can cancel default actions of cancelable event objects by invoking the Event.preventDefault()
             method, and determine whether an event has been canceled through the Event.defaultPrevented attribute.
         </h4>
-        
-        Click the hyperlink: 
+
+        Click the hyperlink:
         <a href="http://samples.msdn.microsoft.com/ietestcenter/" id="target">http://samples.msdn.microsoft.com/ietestcenter</a>
-        
+
         <p>Test passes if the word "PASS" appears below after clicking the hyperlink and the page does not navigate away.</p>
        	<div>Test result: </div>
-        <div id='testresult'>FAIL</div> 
+        <div id='testresult'>FAIL</div>
     </body>
 </html>

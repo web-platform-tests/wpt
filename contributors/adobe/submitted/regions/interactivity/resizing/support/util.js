@@ -9,7 +9,7 @@ function resizeViewportTo(viewportSelector, width, height) {
 	iframe.contentWindow.document.body.offsetTop;
 }
 
-function injectStylesInFrame(styleSelector, frameSelector) {
+function injectStylesInIFrame(styleSelector, frameSelector) {
 	var style = document.querySelector(styleSelector),
 		frame = document.querySelector(frameSelector);
 	

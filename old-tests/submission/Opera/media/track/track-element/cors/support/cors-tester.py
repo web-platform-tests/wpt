@@ -13,7 +13,7 @@ def main(request, response):
     if "read" in request.GET:
         data = request.server.stash.take(id)
         if data is None:
-            response.set_error(400, "Tried to read data not yet set")
+            response.set_error(404, "Tried to read data not yet set")
             return
 
     elif "cleanup" in request.GET:

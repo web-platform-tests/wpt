@@ -24,7 +24,7 @@
       })
       test(function() {
         var client = new XMLHttpRequest()
-        client.open("GET", "resources/status.php?type=application/xml", false)
+        client.open("GET", "resources/status.py?type=application/xml", false)
         client.send(null)
         assert_equals(client.responseXML, null)
       }, 'responseXML on empty response documents')

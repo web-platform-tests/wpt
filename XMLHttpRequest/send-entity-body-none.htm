@@ -11,7 +11,7 @@
     <script>
       test(function() {
         var client = new XMLHttpRequest()
-        client.open("POST", "resources/content.php", false)
+        client.open("POST", "resources/content.py", false)
         client.upload.onloadstart = function(){assert_unreached('this event should not fire for null')}
         client.send(null)
         assert_equals(client.getResponseHeader("x-request-content-length"), "0")

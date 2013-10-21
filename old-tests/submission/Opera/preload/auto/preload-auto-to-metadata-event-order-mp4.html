@@ -28,7 +28,7 @@ tests.forEach(function(vars) {
 		});
 	    }
 	}, false);
-	node.src = '../resources/range-request.php?rate=100000&fileloc=preload.mp4&nocache=' + Math.random();
+	node.src = 'preload.mp4'
 
 	function startTest(e) {
 	    node.removeEventListener('loadstart', startTest, false);

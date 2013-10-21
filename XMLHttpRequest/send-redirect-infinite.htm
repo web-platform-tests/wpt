@@ -17,7 +17,7 @@
       var client = new XMLHttpRequest(),
         errorEventFired = false,
         code = 301
-      client.open("GET", "resources/infinite-redirects.php?type="+code)
+      client.open("GET", "resources/infinite-redirects.py?type="+code)
       client.onerror = function(){
         errorEventFired = true
       }

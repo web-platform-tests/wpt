@@ -15,7 +15,7 @@
         var expectations = {
             'Referer header': 'referer: '+(location.href.replace(/[^/]*$/, ''))+"resources/workerxhr-origin-referrer.js\n",
             'Origin header': 'origin: '+location.protocol+'//'+location.hostname+'\n',
-            'Request URL test' : (location.href.replace(/[^/]*$/, ''))+'resources/requri.php?full'
+            'Request URL test' : (location.href.replace(/[^/]*$/, ''))+'resources/requri.py?full'
         }
         // now start the worker
         var worker = new Worker("resources/workerxhr-origin-referrer.js", true)

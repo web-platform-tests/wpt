@@ -6,7 +6,7 @@
 
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="support.js"></script>
+<script src="support.js?pipe=sub"></script>
 
 <h1>The returned status code in different scenarios</h1>
 
@@ -23,7 +23,7 @@
             '.'
         ).step(function() {
             var client = new XMLHttpRequest()
-            client.open('GET', CROSSDOMAIN + 'resources/cors-makeheader.php?' + counter +
+            client.open('GET', CROSSDOMAIN + 'resources/cors-makeheader.py?' + counter +
                 (allow ? '&headers=x-custom': '&origin=none') +
                 (response ? '&code='+response : '') +
                 (preflight ? '&preflight='+preflight : '')

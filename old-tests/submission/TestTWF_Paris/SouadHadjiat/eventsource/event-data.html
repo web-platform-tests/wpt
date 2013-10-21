@@ -22,7 +22,7 @@ Process the field using the steps described below, using the whole line as the f
     <script>
       var test = async_test(document.title)
       test.step(function() {
-        var source = new EventSource("resources/message.php"),
+        var source = new EventSource("resources/message.py"),
         counter = 0
         source.onmessage = function(e) {
         test.step(function() {

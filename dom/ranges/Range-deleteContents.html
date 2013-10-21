@@ -1,6 +1,7 @@
 <!doctype html>
 <title>Range.deleteContents() tests</title>
-<link rel=author title="Aryeh Gregor" href=ayg@aryeh.name>
+<link rel="author" title="Aryeh Gregor" href=ayg@aryeh.name>
+<meta name=timeout content=long>
 <p>To debug test failures, look at the URL of the hidden iframes corresponding
 to the test at the end of the document, load those individually, and use your
 browser's debugging tools.
@@ -268,8 +269,6 @@ function onLoadExpected(i) {
 	});
 	positionTests[i].done();
 }
-
-setup({timeout: 60000});
 
 // First test a detached Range, synchronously
 test(function() {

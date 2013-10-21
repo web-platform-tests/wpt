@@ -9,14 +9,14 @@
 <script>
   var t = async_test(undefined, {timeout:4000});
 </script>
-<script id="test" type="text/plain" src="scripts/delay.php?time=1&url=include-2.js"></script>
+<script id="test" type="text/plain" src="scripts/include-2.js?pipe=trickle(d1)"></script>
 <script>
 t.step(function() {
   var script = document.getElementById("test");
   script.removeAttribute("type");
   script.async = false;
   var marker = document.createElement("script");
-  marker.src = "scripts/delay.php?time=2&url=include-1.js";
+  marker.src = "scripts/include-1.js?pipe=trickle(d2)";
   marker.async = false;
   script.parentNode.appendChild(marker);
   script.parentNode.appendChild(script);

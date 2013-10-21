@@ -6,11 +6,11 @@
   <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
   <link rel="help" href="http://www.w3.org/TR/html5/video.html#dom-media-seeking" />
   <meta name="assert" content="Seeking to a value less than 'initialTime' seeks to 'initialTime'." />
+  <meta name=timeout content=long>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
   <script type="text/javascript" src="../common/media.js"></script>
   <script type="text/javascript">
-            setup({timeout: 30000});
 	    var videotest = async_test("Seeking to a value less than 'initialTime' seeks to 'initialTime'.");
 
 function getTestVideoElement()

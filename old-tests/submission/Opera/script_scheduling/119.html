@@ -12,7 +12,7 @@
 	        
                 t.step(function() {
                   var range = document.createRange();
-                  var fragment = range.createContextualFragment("<script defer src='scripts/delay.php?file=include-1.js&time=1'><\/script>");
+                  var fragment = range.createContextualFragment("<script defer src='scripts/include-1.js?pipe=trickle(d1)'><\/script>");
                   document.body.appendChild(fragment.firstChild);
                 });
                   

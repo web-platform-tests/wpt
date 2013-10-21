@@ -11,7 +11,7 @@
     <script>
       var test = async_test()
       test.step(function() {
-        var source = new EventSource("resources/message.php?message=data%3A%00%0A%0A")
+        var source = new EventSource("resources/message.py?message=data%3A%00%0A%0A")
         source.onmessage = function(e) {
           test.step(function() {
             assert_equals("\x00", e.data)

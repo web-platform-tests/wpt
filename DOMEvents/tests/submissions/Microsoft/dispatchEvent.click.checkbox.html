@@ -1,22 +1,22 @@
 <!DOCTYPE html>
 <html>
-    <head>  
+    <head>
         <title id='desc'> MouseEvent: Default action and synthetic click event </title>
         <script type="text/javascript">
             var PassTest = function()
             {
                 document.getElementById("testresult").firstChild.data = "PASS";
             }
-            
+
             var FailTest = function()
             {
                 document.getElementById("testresult").firstChild.data = "FAIL";
             }
-            
+
             var EVENT = "click";
             var TARGET;
             var HELPER;
-            
+
             function TestEvent(evt)
             {
                 if (HELPER == evt.target)
@@ -38,7 +38,7 @@
                                      false,  /* metaKey */
                                      0,      /* button */
                                      null    /* relatedTarget */ );
-                                       
+
                     TARGET.dispatchEvent(e);
                 }
                 else if (TARGET == evt.target)
@@ -53,7 +53,7 @@
                     }
                 }
             }
-            
+
             window.onload = function()
             {
                 try
@@ -68,19 +68,19 @@
                     FailTest();
                 }
             }
-        </script>            
+        </script>
     </head>
     <body>
         <h3>DOM Events</h3>
         <h4>
             Test Description: MouseEvent: Default action is performed when a synthetic click event is dispatched on a checkbox element
         </h4>
-        
+
         <input type="checkbox" id="target">
         <button id="helper">Click Here</button>
-        
+
         <p id="manualsteps">
-            Steps: 
+            Steps:
             <ol>
                 <li> Click the button "Click Here"
             </ol>

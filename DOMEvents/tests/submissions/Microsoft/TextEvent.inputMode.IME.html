@@ -1,21 +1,21 @@
 ﻿<!DOCTYPE html>
 <html>
-    <head>  
+    <head>
         <title id='desc'> TextEvent: inputMode with DOM_INPUT_METHOD_IME </title>
         <script type="text/javascript">
             var PassTest = function()
             {
                 document.getElementById("testresult").firstChild.data = "PASS";
             }
-            
+
             var FailTest = function()
             {
                 document.getElementById("testresult").firstChild.data = "FAIL";
             }
-            
+
             var EVENT = "textInput";
             var TARGET;
-            
+
             function TestEvent(evt)
             {
                 TARGET.removeEventListener(EVENT, TestEvent, true);
@@ -28,7 +28,7 @@
                     FailTest();
                 }
             }
-            
+
             window.onload = function()
             {
                 try
@@ -41,21 +41,21 @@
                     FailTest();
                 }
             }
-        </script>            
+        </script>
     </head>
     <body>
         <h3>DOM Events</h3>
         <h4>
             Test Description: TextEvent.inputMode is DOM_INPUT_METHOD_IME  (0x04)
             when the text string was entered through an Input Method Editor.
-        </h4> 
-        
+        </h4>
+
         <span id="parent">
             <input id="target" type="text" />
         </span>
-        
+
         <p id="manualsteps">
-            Steps: 
+            Steps:
             <ol>
                 <li> Open Japanese Microsoft IME and select Hiragana input method
                 <li> Click at the above textbox and then type 'a' using keyboard

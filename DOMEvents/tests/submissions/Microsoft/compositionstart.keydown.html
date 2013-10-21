@@ -1,22 +1,22 @@
 <!DOCTYPE HTML>
 <html>
     <head>
-        <title id='desc'> compositionstart Event and keydown Event </title> 
+        <title id='desc'> compositionstart Event and keydown Event </title>
         <script type="text/javascript">
             var PassTest = function()
             {
                 document.getElementById("testresult").firstChild.data = "PASS";
             }
-            
+
             var FailTest = function()
             {
                 document.getElementById("testresult").firstChild.data = "FAIL";
             }
-            
+
             var TARGET;
             var ExpectResult = ["keydown", "compositionstart", "keyup"];
             var ActualResult = [];
-            
+
             window.onload = function(e)
             {
                 try
@@ -31,11 +31,11 @@
                     FailTest();
                 }
             }
-            
-            function TestEvent(evt) 
+
+            function TestEvent(evt)
             {
                 ActualResult.push(evt.type);
-                
+
                 if (evt.type == "keyup")
                 {
                     if (ExpectResult.toString() == ActualResult.toString())
@@ -51,26 +51,26 @@
                     TARGET.removeEventListener("keyup", TestEvent, true);
                 }
             }
-        </script>            
+        </script>
     </head>
-    <body>      
+    <body>
         <h3>DOM Events</h3>
         <h4>
-            Test Description: When a keyboard is used to feed an input method editor, 
+            Test Description: When a keyboard is used to feed an input method editor,
             compositionstart event type is generated after a keydown event.
         </h4>
-        
+
         <pre>
             <input id="target" value=""/>
-            
+
             Steps:
             1) Open Japanese Microsoft IME and select Hiragana input method
             2) Type 'a' in the above textbox using keyboard
             3) <a href="compositionstart.keydown.html">Click here</a> to test again if not following the steps exactly
         </pre>
-                
+
         <p>Test passes if the word "PASS" appears below after following the above steps.</p>
            <div>Test result: </div>
-        <div id='testresult'>FAIL</div> 
+        <div id='testresult'>FAIL</div>
     </body>
 </html>

@@ -14,32 +14,32 @@
         <td id="table-cell">Shady Grove</td>
         <td>Aeolian</td>
     </tr>
-    <tr id="parent">    
+    <tr id="parent">
         <td id="target">Over the river, Charlie</td>
         <td>Dorian</td>
     </tr>
     </tbody>
 </table>
-        
+
 <script>
-    
-    var EVENT = "foo";    
+
+    var EVENT = "foo";
     var TARGET = document.getElementById("target");
-    var PARENT = document.getElementById("parent"); 
+    var PARENT = document.getElementById("parent");
     var TBODY = document.getElementById("table-body");
     var TABLE = document.getElementById("table");
     var BODY = document.body;
-    var HTML = document.documentElement;                
+    var HTML = document.documentElement;
     var CurrentTargets = [TARGET, PARENT, TBODY, TABLE, BODY, HTML, document, window];
     var ExpectResult = CurrentTargets;
     var ActualResult = [];
     var ExpectPhases = [2,3,3,3,3,3,3,3];
     var ActualPhases = [];
 
-    var description = "Test Description: " + 
-                      "useCapture is an optional parameter for EventTarget.addEventListener and EventTarget.removeEventListener. " + 
+    var description = "Test Description: " +
+                      "useCapture is an optional parameter for EventTarget.addEventListener and EventTarget.removeEventListener. " +
                       "If it is not provided, both methods must behave as if useCapture were specified to be false.";
-    
+
     var EventHandlers = [ function(evt){ TestEvent(evt, 0); }, function(evt){ TestEvent(evt, 1); } ]
 
     test(function()
@@ -48,12 +48,12 @@
         {
             CurrentTargets[i].addEventListener(EVENT, TestEvent);
         }
-        
+
         var evt = document.createEvent("Event");
         evt.initEvent(EVENT, true, true);
-        
+
         TARGET.dispatchEvent(evt);
-        
+
         for (var i=0; i < CurrentTargets.length; i++)
         {
             CurrentTargets[i].removeEventListener(EVENT, TestEvent);
@@ -63,12 +63,12 @@
 
         assert_array_equals(ActualResult, ExpectResult, "ActualResult");
         assert_array_equals(ActualPhases, ExpectPhases, "ActualPhases");
-        
+
     }, description);
-         
+
     function TestEvent(evt, i)
     {
-        ActualResult.push(evt.currentTarget);         
+        ActualResult.push(evt.currentTarget);
         ActualPhases.push(evt.eventPhase);
     }
 </script>

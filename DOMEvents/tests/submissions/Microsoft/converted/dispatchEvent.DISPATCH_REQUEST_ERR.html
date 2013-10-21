@@ -14,29 +14,29 @@
         <td id="table-cell">Shady Grove</td>
         <td>Aeolian</td>
     </tr>
-    <tr id="parent">    
+    <tr id="parent">
         <td id="target">Over the river, Charlie</td>
         <td>Dorian</td>
     </tr>
     </tbody>
 </table>
-        
+
 <script>
-    
-    var EVENT = "foo";    
+
+    var EVENT = "foo";
     var TARGET = document.getElementById("target");
 
-    var description = "Test Description: " + 
+    var description = "Test Description: " +
                       "dispatchEvent() raises DISPATCH_REQUEST_ERR EventException if the Event object is already being dispatched.";
-    
+
     var t = async_test(description);
 
     var evt = document.createEvent("Event");
     evt.initEvent(EVENT, true, true);
-       
+
     TARGET.addEventListener(EVENT, t.step_func(TestEvent), true);
     TARGET.dispatchEvent(evt);
-         
+
     function TestEvent(evt)
     {
         assert_throws("DISPATCH_REQUEST_ERR", function()

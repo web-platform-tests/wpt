@@ -14,29 +14,29 @@
         <td id="table-cell">Shady Grove</td>
         <td>Aeolian</td>
     </tr>
-    <tr id="parent">    
+    <tr id="parent">
         <td id="target">Over the river, Charlie</td>
         <td>Dorian</td>
     </tr>
     </tbody>
 </table>
-        
+
 <script>
-    
+
     var EVENT = "foo";
     var TARGET = document.getElementById("target");
     var TestResult = false;
 
-    var description = "Test Description: " + 
+    var description = "Test Description: " +
                       "handleEvent - This method shall be called whenever an event occurs of the event type for " +
                       "which the EventListener interface was registered.";
-    
+
     var EventListener = {};
-    EventListener.handleEvent = function(evt) 
+    EventListener.handleEvent = function(evt)
     {
         if ((EVENT == evt.type) && (TARGET == evt.target) && (this === EventListener))
         {
-            TestResult = true;    
+            TestResult = true;
         }
         else
         {
@@ -48,7 +48,7 @@
     {
         var evt = document.createEvent("Event");
         evt.initEvent(EVENT, true, true);
-        
+
         TARGET.addEventListener(EVENT, EventListener, true);
         TARGET.dispatchEvent(evt);
         TARGET.removeEventListener(EVENT, EventListener, true);

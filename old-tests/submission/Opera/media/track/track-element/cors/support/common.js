@@ -66,7 +66,6 @@ function loadTrack() {
         var xhr = new XMLHttpRequest();
         xhr.open('GET', 'support/cors-tester.py?read=true&id=' + id, true);
         xhr.onload = this.step_func(function() {
-            window.logExists = true;
             if (xhr.status == 200) {
                 var lines = xhr.responseText.split('\n');
                 lines.forEach(function(line) {
@@ -81,7 +80,7 @@ function loadTrack() {
                     });
                 });
             } else if (xhr.status == 404) {
-                logExists = false;
+                //No stash was found
             } else {
                 errors.push('got unexpected xhr status: '+xhr.status);
             }
@@ -97,7 +96,7 @@ function loadTrack() {
 
 function removeCookies() {
     document.cookie = id+'=;path=/;max-age=0';
-    var nextStep = logExists ? removeLog : checkData;
+    var nextStep = checkData;
     if (hasCrossDomainCookie) {
         var iframe = document.createElement('iframe');
         iframe.onload = this.step_func(nextStep);

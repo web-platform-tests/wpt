@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
  <head>
-  <title>video.audio - reflection test</title>
+  <title>video.audio - set value</title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
  </head>
@@ -12,10 +12,9 @@
   <div id="log"></div>
   <script>
 test(function() {
- assert_equals(
-  document.getElementById("video").audio,
-  "",
-  "videoElement.audio reflects empty string if absent");
+  var v = document.getElementById("video");
+  v.audio = "muted";
+  assert_false(v.hasAttribute('audio'));
 });
   </script>
  </body>

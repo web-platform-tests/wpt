@@ -1,20 +1,21 @@
 <!doctype html>
 <html>
  <head>
-  <title>video.audio - existence test</title>
+  <title>video.audio - reflection test</title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
  </head>
  <body>
   <p><a href="http://dev.w3.org/html5/spec/Overview.html#attr-media-audio">spec reference</a></p>
-  <video id="video">
+  <video id="video" audio="">
   </video>
   <div id="log"></div>
   <script>
 test(function() {
- assert_true(
-  "audio" in document.getElementById("video"),
-  "videoElement.audio property exists");
+ assert_equals(
+  document.getElementById("video").audio,
+  undefined,
+  "videoElement.audio doesn't exist");
 });
   </script>
  </body>

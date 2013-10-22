@@ -1,0 +1,13 @@
+x<!DOCTYPE html>
+<title>Testing Alerts</title>
+<script type="text/javascript">
+    function setInnerText(id, value) {
+      document.getElementById(id).textContent = value;
+    }
+
+    function displayPrompt() {
+        setInnerText('text', prompt('Enter something', 'This is a default value'));
+    }
+</script>
+<div id='text'></div>
+<p>Let's make the <a href="#" id="prompt" onclick="displayPrompt();">prompt happen</a></p>

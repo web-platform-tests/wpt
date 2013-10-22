@@ -1,0 +1,8 @@
+<!DOCTYPE html>
+<title>Testing Alerts</title>
+<div id='alert'>Click me to throw an alert</div>
+<script type="text/javascript">
+    "use strict";
+    var alertElement = document.getElementById('alert');
+    alertElement.addEventListener('click', function() { alert()}, true);
+</script>

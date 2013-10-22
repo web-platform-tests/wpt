@@ -15,12 +15,9 @@
   <div id="log"></div>
   <script>
 test(function() {
-  var t = async_test("calling play() on audio should trigger playing event", {timeout:10000});
+  var t = async_test("calling play() on audio should trigger playing event", {timeout:5000});
   var a = document.getElementById("a");
   a.addEventListener("playing", function() {
-    t.step(function() {
-     assert_true(true);
-    });
     t.done();
     a.pause();
   });
@@ -29,12 +26,9 @@ test(function() {
 }, "audio events - playing");
 
 test(function() {
-  var t = async_test("calling play() on video should trigger playing event", {timeout:10000});
+  var t = async_test("calling play() on video should trigger playing event", {timeout:5000});
   var v = document.getElementById("v");
   v.addEventListener("playing", function() {
-    t.step(function() {
-     assert_true(true);
-    });
     t.done();
     v.pause();
   });

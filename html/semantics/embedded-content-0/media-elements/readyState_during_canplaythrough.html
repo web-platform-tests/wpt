@@ -15,7 +15,7 @@
   <div id="log"></div>
   <script>
 test(function() {
-  var t = async_test("audio.readyState should be HAVE_ENOUGH_DATA during canplaythrough event", {timeout:10000});
+  var t = async_test("audio.readyState should be HAVE_ENOUGH_DATA during canplaythrough event", {timeout:5000});
   var a = document.getElementById("a");
   a.addEventListener("canplaythrough", function() {
     t.step(function() {
@@ -29,7 +29,7 @@ test(function() {
 }, "audio events - readyState property during canplaythrough");
 
 test(function() {
-  var t = async_test("video.readyState should be HAVE_ENOUGH_DATA during canplaythrough event", {timeout:10000});
+  var t = async_test("video.readyState should be HAVE_ENOUGH_DATA during canplaythrough event", {timeout:5000});
   var v = document.getElementById("v");
   v.addEventListener("canplaythrough", function() {
     t.step(function() {

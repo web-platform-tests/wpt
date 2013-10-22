@@ -14,23 +14,17 @@
   </video>
   <div id="log"></div>
   <script>
-var ta = async_test("setting src attribute on a sufficiently long autoplay audio should trigger timeupdate event", {timeout:60000});
+var ta = async_test("setting src attribute on a sufficiently long autoplay audio should trigger timeupdate event", {timeout:5000});
 var a = document.getElementById("a");
 a.addEventListener("timeupdate", function() {
-  ta.step(function() {
-   assert_true(true);
-  });
   ta.done();
   a.pause();
 }, false);
 a.src = getAudioURI("/media/sound_5") + "?" + new Date() + Math.random();
 
-var tv = async_test("setting src attribute on a sufficiently long autoplay video should trigger timeupdate event", {timeout:60000});
+var tv = async_test("setting src attribute on a sufficiently long autoplay video should trigger timeupdate event", {timeout:5000});
 var v = document.getElementById("v");
 v.addEventListener("timeupdate", function() {
-  tv.step(function() {
-   assert_true(true);
-  });
   tv.done();
   v.pause();
 }, false);

@@ -14,9 +14,10 @@
   <div id="log"></div>
   <script>
 test(function() {
- assert_true(
-  !!document.getElementById("a").canPlayType,
-  "audioElement.canPlayType method exists");
+ assert_idl_attribute(
+   document.getElementById("a"),
+   "canPlayType",
+   "audioElement.canPlayType method exists");
 }, "audio.canPlayType() - existence of method");
 
 test(function() {

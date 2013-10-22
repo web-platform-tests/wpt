@@ -18,12 +18,14 @@ test(function() {
   assert_false("op1" in select);
   assert_equals(select.namedItem("op1"), select.children[0]);
 }, "Option with id")
+
 test(function() {
   var select = document.getElementById("select");
   assert_equals(select.op2, undefined);
   assert_false("op2" in select);
   assert_equals(select.namedItem("op2"), select.children[1]);
 }, "Option with name")
+
 test(function() {
   var select = document.getElementById("select");
   assert_equals(select.op3, undefined);
@@ -34,6 +36,7 @@ test(function() {
   assert_false("op4" in select);
   assert_equals(select.namedItem("op4"), select.children[2]);
 }, "Option with name and id")
+
 test(function() {
   var select = document.getElementById("select");
   assert_equals(select[""], undefined);

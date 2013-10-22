@@ -16,15 +16,15 @@
 test(function() {
  assert_equals(
   document.getElementById("audio").preload,
-  "auto",
-  "audioElement.preload absence reflects 'none' value");
+  "metadata",
+  "audioElement.preload absence reflects 'metadata' value");
 }, "audio.preload - reflection test");
 
 test(function() {
  assert_equals(
   document.getElementById("video").preload,
-  "auto",
-  "videoElement.preload absence reflects 'none' value");
+  "metadata",
+  "videoElement.preload absence reflects 'metadata' value");
 }, "video.preload - reflection test");
   </script>
  </body>

@@ -28,14 +28,13 @@ test(function() {
       window.setTimeout(function() {
        if (test_done) { return; }
        test_done = true;
-       t.step(function(){ assert_true(true); });
        t.done();
       }, 1000);
      return;
     }
     if (test_done) { return; }
     test_done = true;
-    t.step(function(){ assert_false(true); });
+    t.step(function(){ assert_unreached(); });
     t.done();
   }, false);
   v.src = getAudioURI("/media/sound_5") + "?" + new Date() + Math.random();
@@ -55,14 +54,13 @@ test(function() {
       window.setTimeout(function() {
        if (test_done) { return; }
        test_done = true;
-       t.step(function(){ assert_true(true); });
        t.done();
       }, 1000);
      return;
     }
     if (test_done) { return; }
     test_done = true;
-    t.step(function(){ assert_false(true); });
+    t.step(function(){ assert_unreached(); });
     t.done();
   }, false);
   v.src = getVideoURI("/media/movie_300") + "?" + new Date() + Math.random();

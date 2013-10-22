@@ -16,15 +16,17 @@
   <div id="log"></div>
   <script>
 test(function() {
- assert_true(
-  document.getElementById("audio").src.indexOf("barbaz") == -1,
-  "audioElement.src should reflect src attribute, not source child elements");
+ assert_equals(
+   document.getElementById("audio").src.indexOf("barbaz"),
+   -1,
+   "audioElement.src should reflect src attribute, not source child elements");
 }, "audio.src - reflection test");
 
 test(function() {
- assert_true(
-  document.getElementById("video").src.indexOf("barbaz") == -1,
-  "videoElement.src should reflect src attribute, not source child elements");
+ assert_equals(
+   document.getElementById("video").src.indexOf("barbaz"),
+   -1,
+   "videoElement.src should reflect src attribute, not source child elements");
 }, "video.src - reflection test");
   </script>
  </body>

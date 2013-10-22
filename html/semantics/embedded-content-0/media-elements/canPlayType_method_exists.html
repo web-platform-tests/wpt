@@ -20,9 +20,10 @@ test(function() {
 }, "audio.canPlayType() - existence of method");
 
 test(function() {
- assert_true(
-  "canPlayType" in document.getElementById("v"),
-  "videoElement.canPlayType method exists");
+ assert_idl_attribute(
+   document.getElementById("v"),
+   "canPlayType",
+   "videoElement.canPlayType method exists");
 }, "video.canPlayType() - existence of method");
   </script>
  </body>

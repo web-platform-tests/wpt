@@ -14,15 +14,17 @@
   <div id="log"></div>
   <script>
 test(function() {
- assert_true(
-  "error" in document.getElementById("a"),
-  "audioElement.error property exists");
+ assert_idl_attribute(
+   document.getElementById("a"),
+   "error",
+   "audioElement.error property exists");
 }, "audio.error - existence test");
 
 test(function() {
- assert_true(
-  "error" in document.getElementById("v"),
-  "videoElement.error property exists");
+ assert_idl_attribute(
+   document.getElementById("v"),
+   "error",
+   "videoElement.error property exists");
 }, "video.error - existence test");
   </script>
  </body>

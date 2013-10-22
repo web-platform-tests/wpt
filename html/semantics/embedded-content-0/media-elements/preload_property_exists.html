@@ -14,15 +14,17 @@
   <div id="log"></div>
   <script>
 test(function() {
- assert_true(
-  "preload" in document.getElementById("audio"),
-  "audioElement.preload property exists");
+ assert_idl_attribute(
+   document.getElementById("audio"),
+   "preload",
+   "audioElement.preload property exists");
 }, "audio.preload - existence test");
 
 test(function() {
- assert_true(
-  "preload" in document.getElementById("video"),
-  "videoElement.preload property exists");
+ assert_idl_attribute(
+   document.getElementById("video"),
+   "preload",
+   "videoElement.preload property exists");
 }, "video.preload - existence test");
   </script>
  </body>

@@ -14,14 +14,16 @@
   <div id="log"></div>
   <script>
 test(function() {
- assert_true(
-  "networkState" in document.getElementById("a"),
-  "audioElement.networkState property exists");
+ assert_idl_attribute(
+   document.getElementById("a"),
+   "networkState",
+   "audioElement.networkState property exists");
 }, "audio.networkState - existence test");
 test(function() {
- assert_true(
-  "networkState" in document.getElementById("v"),
-  "videoElement.networkState property exists");
+ assert_idl_attribute(
+   document.getElementById("v"),
+   "networkState",
+   "videoElement.networkState property exists");
 }, "video.networkState - existence test");
   </script>
  </body>

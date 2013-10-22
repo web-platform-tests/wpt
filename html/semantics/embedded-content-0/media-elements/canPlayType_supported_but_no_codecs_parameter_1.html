@@ -15,7 +15,7 @@
   <script>
 test(function() {
  var v = document.getElementById("a");
- if (v.canPlayType('audio/ogg; codecs="vorbis"') == "probably") {
+ if (v.canPlayType('audio/ogg; codecs="vorbis"') != "") {
   assert_equals(
    v.canPlayType("audio/ogg"),
    "maybe",
@@ -25,7 +25,7 @@ test(function() {
 
 test(function() {
  var v = document.getElementById("v");
- if (v.canPlayType('video/webm; codecs="vp8, vorbis"') == "probably") {
+ if (v.canPlayType('video/webm; codecs="vp8, vorbis"') != "") {
    assert_equals(
     v.canPlayType("video/webm"),
     "maybe",

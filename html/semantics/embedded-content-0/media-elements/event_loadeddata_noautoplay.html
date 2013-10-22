@@ -15,7 +15,7 @@
   <div id="log"></div>
   <script>
 test(function() {
-  var t = async_test("setting src attribute on non-autoplay audio should trigger loadeddata event", {timeout:30000});
+  var t = async_test("setting src attribute on non-autoplay audio should trigger loadeddata event", {timeout:10000});
   var a = document.getElementById("a");
   a.addEventListener("loadeddata", function() {
     t.step(function() {
@@ -27,7 +27,7 @@ test(function() {
 }, "audio events - loadeddata");
 
 test(function() {
-  var t = async_test("setting src attribute on non-autoplay video should trigger loadeddata event", {timeout:30000});
+  var t = async_test("setting src attribute on non-autoplay video should trigger loadeddata event", {timeout:10000});
   var v = document.getElementById("v");
   v.addEventListener("loadeddata", function() {
     t.step(function() {

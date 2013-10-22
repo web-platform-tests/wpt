@@ -13,7 +13,7 @@
   <script>
 test(function() {
  var v = document.getElementById("v");
- if (v.canPlayType('video/mp4; codecs="avc1.42E01E, mp4a.40.2"') == "probably") {
+ if (v.canPlayType('video/mp4; codecs="avc1.42E01E, mp4a.40.2"') != "") {
   assert_equals(
    v.canPlayType("video/mp4"),
    "maybe",

@@ -11,30 +11,34 @@
   <script>
 test(function() {
   var v = document.createElement("audio");
-  assert_true(
-   v.currentSrc == "",
-   "audioElement.currentSrc should be empty if there is no source");
+  assert_equals(
+    v.currentSrc,
+    "",
+    "audioElement.currentSrc should be empty if there is no source");
   v.src = ".";
   var t = async_test("audioElement.currentSrc should not be empty after setting src attribute (even to a bogus value)");
   window.setTimeout(function() {
    t.step(function() {
-    assert_false(
-     v.currentSrc == "")});
+    assert_not_equals(
+      v.currentSrc,
+      "")});
    t.done();
   }, 0);
 }, "audio.currentSrc - non-empty after setting src attribute");
 
 test(function() {
   var v = document.createElement("video");
-  assert_true(
-   v.currentSrc == "",
-   "videoElement.currentSrc should be empty if there is no source");
+  assert_equals(
+    v.currentSrc,
+    "",
+    "videoElement.currentSrc should be empty if there is no source");
   v.src = ".";
   var t = async_test("videoElement.currentSrc should not be empty after setting src attribute (even to a bogus value)");
   window.setTimeout(function() {
    t.step(function() {
-    assert_false(
-     v.currentSrc == "")});
+    assert_not_equals(
+      v.currentSrc,
+      "")});
    t.done();
   }, 0);
 }, "video.currentSrc - non-empty after setting src attribute");

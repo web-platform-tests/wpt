@@ -14,14 +14,16 @@
   <div id="log"></div>
   <script>
 test(function() {
- assert_true(
-  "readyState" in document.getElementById("a"),
+ assert_idl_attribute(
+  document.getElementById("a"),
+  "readyState",
   "audioElement.readyState property exists");
 }, "audio.readyState - existence test");
 
 test(function() {
- assert_true(
-  "readyState" in document.getElementById("v"),
+ assert_idl_attribute(
+  document.getElementById("v"),
+  "readyState",
   "videoElement.readyState property exists");
 }, "video.readyState - existence test");
   </script>

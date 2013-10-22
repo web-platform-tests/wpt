@@ -14,15 +14,17 @@
   <div id="log"></div>
   <script>
 test(function() {
- assert_true(
-  document.getElementById("a").canPlayType("application/octet-stream") == "",
-  "audioElement.canPlayType('application/octet-stream') should return the empty string");
+ assert_equals(
+   document.getElementById("a").canPlayType("application/octet-stream"),
+   "",
+   "audioElement.canPlayType('application/octet-stream') should return the empty string");
 }, "audio.canPlayType() - application/octet-stream must always return the empty string");
 
 test(function() {
- assert_true(
-  document.getElementById("v").canPlayType("application/octet-stream") == "",
-  "videoElement.canPlayType('application/octet-stream') should return the empty string");
+ assert_equals(
+   document.getElementById("v").canPlayType("application/octet-stream"),
+   "",
+   "videoElement.canPlayType('application/octet-stream') should return the empty string");
 }, "video.canPlayType() - application/octet-stream must always return the empty string");
   </script>
  </body>

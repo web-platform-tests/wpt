@@ -29,7 +29,6 @@ async_test(function() {
 
 
 async_test(function() {
-    var test_id = "success_" +  new Date().getTime()
     var client = new XMLHttpRequest()
     var uuid_token = token();
     var last_url = CROSSDOMAIN + 'resources/cors-makeheader.py?headers=custom-header&origin=*&token=' + uuid_token;

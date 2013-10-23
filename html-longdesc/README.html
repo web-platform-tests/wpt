@@ -24,67 +24,67 @@
 <h3>Longdesc value as data:URI</h3>
 
 <ul>
-<li><a href="data-uri-image-data-uri-description.html">data:URI image with data:URI description</a></li>
-<li><a href="empty-image-data-uri-description.html">Empty image with data:URI description</a></li>
-<li><a href="external-image-data-uri-description-girt-by-spaces.html">External image with data:URI description (with extra spaces)</a></li>
-<li><a href="external-image-data-uri-description.html">External image with data:URI description</a></li>
+<li><a href="data-uri-image-data-uri-description-manual.html">data:URI image with data:URI description</a></li>
+<li><a href="empty-image-data-uri-description-manual.html">Empty image with data:URI description</a></li>
+<li><a href="external-image-data-uri-description-girt-by-spaces-manual.html">External image with data:URI description (with extra spaces)</a></li>
+<li><a href="external-image-data-uri-description-manual.html">External image with data:URI description</a></li>
 </ul>
 
 
 <h3>Longdesc value as external URI</h3>
 
 <ul>
-<li><a href="data-uri-image-external-description.html">data:URI with External description</a></li>
-<li><a href="empty-image-external-description.html">Empty image with an External description</a></li>
-<li><a href="external-image-external-description-girt-by-spaces.html">External image with External description (with extra spaces)</a></li>
-<li><a href="external-image-external-description.html">External image with External description</a></li>
+<li><a href="data-uri-image-external-description-manual.html">data:URI with External description</a></li>
+<li><a href="empty-image-external-description-manual.html">Empty image with an External description</a></li>
+<li><a href="external-image-external-description-girt-by-spaces-manual.html">External image with External description (with extra spaces)</a></li>
+<li><a href="external-image-external-description-manual.html">External image with External description</a></li>
 </ul>
 
 
 <h3>Longdesc value as internal URI (same page link)</h3>
 
 <ul>
-<li><a href="data-uri-image-internal-description.html">data:URI with Internal description.html</a></li>
-<li><a href="empty-image-internal-description.html">Empty image with an Internal description.html</a></li>
-<li><a href="external-image-internal-description-girt-by-spaces.html">External image with an Internal description (with extra spaces)</a></li>
-<li><a href="external-image-internal-description.html">External image with an Internal description</a></li>
+<li><a href="data-uri-image-internal-description-manual.html">data:URI with Internal description</a></li>
+<li><a href="empty-image-internal-description-manual.html">Empty image with an Internal description</a></li>
+<li><a href="external-image-internal-description-girt-by-spaces-manual.html">External image with an Internal description (with extra spaces)</a></li>
+<li><a href="external-image-internal-description-manual.html">External image with an Internal description</a></li>
 </ul>
 
 
 <h3>Longdesc value as a fragment in an external resource</h3>
 
 <ul>
-<li><a href="data-uri-image-external-description-fragment.html">data:URI with External description fragment</a></li>
-<li><a href="empty-image-external-description-fragment.html">Empty image with an External description fragment</a></li>
-<li><a href="external-image-external-description-fragment-girt-by-spaces.html">External image with External description fragment (with extra spaces around the URL)</a></li>
-<li><a href="external-image-external-description-fragment.html">External image with External description fragment</a></li>
+<li><a href="data-uri-image-external-description-fragment-manual.html">data:URI with External description fragment</a></li>
+<li><a href="empty-image-external-description-fragment-manual.html">Empty image with an External description fragment</a></li>
+<li><a href="external-image-external-description-fragment-girt-by-spaces-manual.html">External image with External description fragment (with extra spaces around the URL)</a></li>
+<li><a href="external-image-external-description-fragment-manual.html">External image with External description fragment</a></li>
 </ul>
 
 
 <h3>Longdesc value as external URI in presence of <code>&lt;base&gt;</code> element</h3>
 
 <ul>
-<li><a href="external-image-with-relative-base-external-description.html">External image with External Description (relative base element set)</a></li>
-<li><a href="external-image-with-absolute-base-external-description.html">External image with External Description (absolute base element set)</a></li>
+<li><a href="external-image-with-relative-base-external-description-manual.html">External image with External Description (relative base element set)</a></li>
+<li><a href="external-image-with-absolute-base-external-description-manual.html">External image with External Description (absolute base element set)</a></li>
 </ul>
 
 
 <h3>Longdesc for an image within an iframe</h3>
 
 <ul>
-<li><a href="iframe-discoverability.html">Image in an <code>&lt;iframe&gt;</code> with External Description</a></li>
+<li><a href="iframe-discoverability-manual.html">Image in an <code>&lt;iframe&gt;</code> with External Description</a></li>
 </ul>
 
 
 <h2>Automated tests</h2>
 
-<p><a href="reflected-changing-longdesc.html">Longdesc value updated by javascript</a> tests that the HTML attribute reflects changes made by javascript. To pass, the browser must redirect to the "Longdesc test Pass Page" which has the word "Pass" as a heading, followed by a description of the image.  Displaying the "Longdesc test Fail Page" would indicate a failure of this test.</p>
+<p><a href="reflected-changing-longdesc-manual.html">Longdesc value updated by javascript</a> tests that the HTML attribute reflects changes made by javascript. To pass, the browser must redirect to the "Longdesc test Pass Page" which has the word "Pass" as a heading, followed by a description of the image.  Displaying the "Longdesc test Fail Page" would indicate a failure of this test.</p>
 
 <h2>Validation / Repair tool tests</h2>
 
-<p><a href="invalid-longdesc.html">Invalid long description (plain text)</a> contains an invalid long description (plain text) and can be used to test User Agent and validation tool handling. <em>NOTE: Handling of invalid longdescs by user agents is currently undefined.</em>
-<a href="empty-longdesc.html">Invalid long description (empty attribute)</a> contains an invalid long description (plain text) and can be used to test User Agent and validation tool handling. <em>NOTE: Handling of invalid longdescs by user agents is currently undefined.</em>
-<a href="fail-fragment-pointer.html">Pointer to an invalid long description (not contained in a well-formed fragment)</a> points to a long description in a <a href="fail-fragment-pointer.html">page fragment whose target is an empty element</a>. Validation tools should at least generate a warning, since an empty element is almost certainly not an adequate description, and is likely instead to reflect not passing the relevant authoring requirement.</p>
+<p><a href="invalid-longdesc-manual.html">Invalid long description (plain text)</a> contains an invalid long description (plain text) and can be used to test User Agent and validation tool handling. <em>NOTE: Handling of invalid longdescs by user agents is currently undefined.</em>
+<a href="empty-longdesc-manual.html">Invalid long description (empty attribute)</a> contains an invalid long description (plain text) and can be used to test User Agent and validation tool handling. <em>NOTE: Handling of invalid longdescs by user agents is currently undefined.</em>
+<a href="fail-fragment-pointer-manual.html">Pointer to an invalid long description (not contained in a well-formed fragment)</a> points to a long description in a <a href="fail-fragment-pointer-manual.html">page fragment whose target is an empty element</a>. Validation tools should at least generate a warning, since an empty element is almost certainly not an adequate description, and is likely instead to reflect not passing the relevant authoring requirement.</p>
 
 <h2>Test results</h2>
 

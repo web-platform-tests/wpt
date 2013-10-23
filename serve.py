@@ -13,14 +13,14 @@ import argparse
 
 repo_root = os.path.abspath(os.path.split(__file__)[0])
 
-sys.path.insert(1, os.path.join(repo_root, "tools"))
+sys.path.insert(1, os.path.join(repo_root, "tools", "wptserve"))
 from wptserve import server as wptserve, handlers
 sys.path.insert(1, os.path.join(repo_root, "tools", "pywebsocket", "src"))
 from mod_pywebsocket import standalone as pywebsocket
 
 routes = [("*", "/tools.*", handlers.ErrorHandler(404)),
           ("*", "/serve\.py", handlers.ErrorHandler(404)),
-          ("*", ".*\.py", handlers.python_handler),
+          ("*", ".*\.py", handlers.python_script_handler),
           ("GET", ".*\.asis", handlers.as_is_handler),
           ("GET", "/.*", handlers.file_handler),
           ]

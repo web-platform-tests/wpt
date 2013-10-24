@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>HTML Test: meta_content_missing</title>
+    <link rel="author" title="Intel" href="http://www.intel.com/">
+    <link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/document-metadata.html#the-meta-element">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <meta name="description" id="meta">
+    <meta name="asssert" content="Check if the value of content attribute is empty string when the attribute is missing.">
+  </head>
+  <body>
+    <div id="log"></div>
+    <script>
+      test(function() {
+        var meta = document.getElementById("meta");
+        assert_equals(meta.content, "", "The content attribute is incorrect.");
+      }, "meta_content_missing");
+    </script>
+  </body>
+</html>

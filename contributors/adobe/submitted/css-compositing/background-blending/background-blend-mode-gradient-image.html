@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>CSS Test: background-blend-mode between gradient and image</title>
+		<link rel="author" title="MIRELA BUDAES" href="mbudaes@adobe.com">
+		<link rel="help" href="http://dev.w3.org/fxtf/compositing-1/#background-blend-mode">
+		<meta name="flags" content="">
+		<meta name="assert" content="Test checks the background-blend-mode between gradient and image.">
+		<link rel="match" href="reference/background-blend-mode-gradient-image-ref.html">
+		<style>
+		    div {
+		        margin: 5px;
+		        width: 130px;
+		        height: 130px;
+		        background:  url('resources/red.png') no-repeat 0 0 /100% 100%, -webkit-linear-gradient(top, yellow 50%, green 51%);
+		        display: block;
+		        float: left;
+		        background-blend-mode: screen, normal;
+		    }
+		</style>
+	</head>
+	<body>
+		<p>Test passes if there is no red on the screen.</p>
+	    <div></div>
+	</body>
+</html>

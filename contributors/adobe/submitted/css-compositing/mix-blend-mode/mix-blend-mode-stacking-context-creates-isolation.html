@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>CSS Test: CSS Blending - mix-blend-mode stacking context isolated group</title>
-		<link rel="author" title="MIRELA BUDAES" href="mbudaes@adobe.com">
+		<title>CSS Compositing and Blending Test: stacking context creates isolated group</title>
+		<link rel="author" title="Mirela Budăeș" href="mailto:mbudaes@adobe.com">
 		<link rel="help" href="http://dev.w3.org/fxtf/compositing-1/#mix-blend-mode">
 		<meta name="flags" content="">
-		<meta name="assert" content="Test checks that operations that cause the creation of stacking context must cause a group to be isolated">
+		<meta name="assert" content="Test checks that properties that cause the creation of stacking context cause a group to be isolated">
 		<link rel="match" href="reference/mix-blend-mode-stacking-context-creates-isolation-ref.html">
 		<style>
 			.container{
@@ -13,30 +13,30 @@
 		        width: 130px;
 		        height: 130px;
 		        float: left;
-		        background: yellow;
+		        background: rgb(255,255,5);
 			}
-
 			.simple{
-			    background: green ;
+			    background: rgb(2,131,2);
 				width: 100px;
 				height: 100px;
 				position: fixed;
 			}
-
 			.mixed {
-				background: blue;
+				background: rgb(255,5,5);
 				margin-top: 20px;
 				margin-left: 20px;
 				width: 100px;
 				height: 100px;
+				mix-blend-mode: multiply;
 			}
 		</style>
 	</head>
 	<body>
-		<p>Test passes if the topmost div doesn't have only one color - blue.</p>
+		<p>Test passes if there is no red rectangle on the screen. <br>
+			You should see one black rectangle and some parts of the green, yellow and red rectangles.</p>
 		<div class="container">
 			<div class="simple">
-				<div class="mixed" style="mix-blend-mode: multiply"></div>
+				<div class="mixed"></div>
 			</div>
 		</div>
 	</body>

@@ -2,30 +2,28 @@
 <html>
 	<head>
 		<title>CSS Reftest Reference</title>
-		<link rel="author" title="MIRELA BUDAES" href="mbudaes@adobe.com">
+		<link rel="author" title="Mirela Budăeș" href="mailto:mbudaes@adobe.com">
 		<style>
-
 			.simple {
-			    background: green ;
+			    background: rgb(2,131,2) ;
 				width: 140px;
 				height: 140px;
 				display:inline-block;
 			}
-
 			.mixed {
-				background: black;
+				background: rgb(1,1,1);
 				margin-top: 20px;
 				margin-left: 20px;
 				width: 100px;
 				height: 100px;
 				}
-
 		</style>
 	</head>
 	<body>
-		<p>This test passes if there is no red on the page</p>
+		<p>Test passes if you see a black rectangle with large green borders.
+		You should not see a red rectangle on the page. </p>
 		<div class="simple">
-			<div class="mixed" style="mix-blend-mode: multiply"></div>
+			<div class="mixed"></div>
 		</div>
 	</body>
 </html>

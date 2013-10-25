@@ -5,21 +5,21 @@
     <title>HTML Test: embed_represent_nothing_object_ancestor</title>
     <link rel="author" title="Intel" href="http://www.intel.com">
     <link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/embedded-content-0.html#the-embed-element">
+    <link rel="match" href="embed_represent_nothing_ref.html">
     <meta name="assert" content="Check if the embed element represents nothing when it has a object ancestor is not showing its fallback content">
     <style>
       embed {
-        background-color:red;
-        height:100px;
-        width:100px;
+        background-color: red;
+        height: 100px;
+        width: 100px;
       }
     </style>
   </head>
   <body>
     <p>Test passes if there is <strong>no red</strong>.</p>
-
     <object type="application/x-shockwave-flash">
-      <embed src="../../../../images/red-100x100.png">
-      <p>Do not support flash.</p>
+      <embed src="images/red-16x16.png">
     </object>
   </body>
 </html>
+

@@ -12,7 +12,7 @@
     <div id="log"></div>
     <script>
       test(function() {
-        assert_equals(document.charset, "UTF-8", "The document charset should be UTF-8.");
+        assert_equals(document.characterSet.toUpperCase(), "UTF-8", "The document charset should be UTF-8.");
       }, "meta_charset");
     </script>
   </body>

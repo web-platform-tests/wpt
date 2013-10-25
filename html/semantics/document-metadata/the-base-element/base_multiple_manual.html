@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>HTML Test: base_multiple_elements</title>
+    <title>HTML Test: base_multiple_manual</title>
     <link rel="author" title="Intel" href="http://www.intel.com/">
     <link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/document-metadata.html#the-base-element">
     <base id="base" href="" target="_self">
@@ -10,9 +10,7 @@
     <meta name="assert" content="Check if the target attirbute of the first base element impacts the target attribute of 'a' elements">
   </head>
   <body>
-    <p>
-      Test passes if click blow links, the 'example.html' will be opened in a new window/tab.
-    </p>
+    <p>Click below links; test passes if there is a new page with 'PASS' opened.</p>
     <a id="test1" href="./support/example.html" target="_blank">One</a>
     <a id="test2" href="./support/example.html">Two</a>
     <script>
@@ -20,3 +18,4 @@
     </script>
   </body>
 </html>
+

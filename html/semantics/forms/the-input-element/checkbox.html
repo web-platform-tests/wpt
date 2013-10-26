@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <title>Inputs Chechbox</title>
+	  <link rel="author" title="Fumio SAGAWA" href="mailto:fumio.sagawa@gmail.com">
+	  <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/forms.html#checkbox-state-(type=checkbox)">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+
+  		<h1>Inputs Date</h1>
+  		<div style="display: none">
+        <input id="valid" type="checkbox" />
+        <input id="element-checked" type="checkbox" checked required />
+        <input id="element-checked-equals" type="checkbox" checked=checked required=required/>
+		  </div>  
+		
+      <div id="log">
+      </div>
+	
+	<script type="text/javascript">
+
+		test(function() {
+      assert_equals(document.getElementById("valid").type, "checkbox");
+    },
+    "checkbox type support on input element", {
+      "help" : "http://www.w3.org/html/wg/drafts/html/CR/forms.html#checkbox-state-(type=checkbox)" 
+    });
+
+    test(function() {
+      assert_equals(document.getElementById("valid").checked, false);
+      assert_equals(document.getElementById("valid").required, false);
+    },
+    "checkbox type support on input element", {
+      "help" : "http://www.w3.org/html/wg/drafts/html/CR/forms.html#checkbox-state-(type=checkbox)" 
+    });
+
+		test(function() {
+      assert_equals(document.getElementById("valid").value, "on");
+      assert_equals(document.getElementById("element-checked").value, "on");
+      assert_equals(document.getElementById("element-checked-equals").value, "on");
+    }, "The value attribute is in mode default/on");
+
+    test(function() {
+      assert_equals(document.getElementById("valid").checked, false);
+      assert_equals(document.getElementById("element-checked").checked, true);
+      assert_equals(document.getElementById("element-checked-equals").checked, true);
+    }, "The cheched attribute is true or false");
+
+    test(function() {
+      assert_equals(document.getElementById("valid").required, false);
+      assert_equals(document.getElementById("element-checked").required, true);
+      assert_equals(document.getElementById("element-checked-equals").required, true);
+    }, "The required attribute is true or false");
+
+	</script>
+	
+  </body>
+  
+</html>

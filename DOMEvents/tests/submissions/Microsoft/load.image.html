@@ -7,21 +7,21 @@
             {
                 document.getElementById("testresult").firstChild.data = "PASS";
             }
-            
+
             var FailTest = function()
             {
                 document.getElementById("testresult").firstChild.data = "FAIL";
             }
-            
-            function TestCapture(evt) 
+
+            function TestCapture(evt)
             {
                 if (evt.target.tagName == "IMG")
                 {
                     TARGET = document.getElementById("target");
-                    
+
                     if ((evt.type == EVENT) && (evt.currentTarget == document) && (evt.target == TARGET))
                     {
-                        TestResult = true;  
+                        TestResult = true;
                     }
                     else
                     {
@@ -29,7 +29,7 @@
                     }
                 }
             }
-            
+
             var EVENT = "load";
             var TARGET;
             var TestResult = false;
@@ -43,11 +43,11 @@
                 TestResult = false;
             }
 
-            window.onload = function() 
+            window.onload = function()
             {
                 if (true == TestResult)
                 {
-                    PassTest();    
+                    PassTest();
                 }
                 else
                 {
@@ -63,20 +63,20 @@
             }
         </script>
     </head>
-    <body>      
+    <body>
         <h4>
-            Test Description: 
-            load event fires when the DOM implementation finishes loading the resource (such as the document) 
+            Test Description:
+            load event fires when the DOM implementation finishes loading the resource (such as the document)
             and any dependent resources (such as images, style sheets, or scripts).
         </h4>
 
         <p><a id="link" href=""></a></p>
 
         <img id="target" src="./support/iepreview.png" width="300" height="300" onerror="ReloadPage()">
-        
+
         <p>Test passes if the word "PASS" appears below after the above image is loaded.</p>
        	<div>Test result: </div>
-        <div id='testresult'>FAIL</div> 
+        <div id='testresult'>FAIL</div>
 
     </body>
 </html>

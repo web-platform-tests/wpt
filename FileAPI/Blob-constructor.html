@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Blob constructor</title>
+<link rel=help href="http://dev.w3.org/2006/webapi/FileAPI/#constructorBlob">
+<link rel=help href="http://dev.w3.org/2006/webapi/WebIDL/#es-union">
+<link rel=help href="http://dev.w3.org/2006/webapi/WebIDL/#es-dictionary">
+<link rel=help href="http://dev.w3.org/2006/webapi/WebIDL/#es-sequence">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="support/Blob.js"></script>
+<div id="log"></div>
+<script>
+test(function() {
+  assert_true("Blob" in window, "window should have a Blob property.");
+  assert_equals(Blob.length, 2, "Blob.length should be 2.");
+  assert_true(Blob instanceof Function, "Blob should be a function.");
+}, "Blob interface object");
+
+// Step 1.
+test(function() {
+  var blob = new Blob();
+  assert_true(blob instanceof Blob);
+  assert_equals(blob.size, 0);
+  assert_equals(blob.type, "");
+}, "no-argument Blob constructor");
+test(function() {
+  var blob = Blob();
+  assert_true(blob instanceof Blob);
+  assert_equals(blob.size, 0);
+  assert_equals(blob.type, "");
+}, "no-argument Blob constructor without 'new'");
+test(function() {
+  var blob = new Blob;
+  assert_true(blob instanceof Blob);
+  assert_equals(blob.size, 0);
+  assert_equals(blob.type, "");
+}, "no-argument Blob constructor without brackets");
+
+// blobParts argument (WebIDL).
+test(function() {
+  var args = [
+    null,
+    undefined,
+    true,
+    false,
+    0,
+    1,
+    1.5,
+    "FAIL",
+    new Date(),
+    new RegExp(),
+  ];
+  args.forEach(function(arg) {
+    assert_throws(new TypeError(), function() {
+      new Blob(arg);
+    }, "Should throw for argument " + format_value(arg) + ".");
+  });
+}, "Passing non-objects, Dates and RegExps for blobParts should throw a TypeError.");
+
+test_blob(function() {
+  return new Blob({});
+}, {
+  expected: "",
+  type: "",
+  desc: "A plain object should be treated as a sequence for the blobParts argument."
+});
+test_blob(function() {
+  return new Blob({ 0: "PASS", length: 1 });
+}, {
+  expected: "PASS",
+  type: "",
+  desc: "A plain object with a length property should be treated as a sequence for the blobParts argument."
+});
+test_blob(function() {
+  return new Blob(new String("xyz"));
+}, {
+  expected: "xyz",
+  type: "",
+  desc: "A String object should be treated as a sequence for the blobParts argument."
+});
+test_blob(function() {
+  return new Blob(new Uint8Array([1, 2, 3]));
+}, {
+  expected: "123",
+  type: "",
+  desc: "A Uint8Array object should be treated as a sequence for the blobParts argument."
+});
+
+var test_error = { name: "test" };
+
+test(function() {
+  var obj = {
+    get length() { throw test_error; }
+  };
+  assert_throws(test_error, function() {
+    new Blob(obj);
+  });
+}, "The length getter should be invoked and any exceptions should be propagated.");
+
+test(function() {
+  assert_throws(test_error, function() {
+    var obj = {
+      length: {
+        valueOf: null,
+        toString: function() { throw test_error; }
+      }
+    };
+    new Blob(obj);
+  });
+  assert_throws(test_error, function() {
+    var obj = {
+      length: { valueOf: function() { throw test_error; } }
+    };
+    new Blob(obj);
+  });
+}, "ToUint32 should be applied to the length and any exceptions should be propagated.");
+
+test(function() {
+  var received = [];
+  var obj = {
+    get length() {
+      received.push("length getter");
+      return {
+        valueOf: function() {
+          received.push("length valueOf");
+          return 3;
+        }
+      };
+    },
+    get 0() {
+      received.push("0 getter");
+      return {
+        toString: function() {
+          received.push("0 toString");
+          return "a";
+        }
+      };
+    },
+    get 1() {
+      received.push("1 getter");
+      throw test_error;
+    },
+    get 2() {
+      received.push("2 getter");
+      assert_unreached("Should not call the getter for 2 if the getter for 1 threw.");
+    }
+  };
+  assert_throws(test_error, function() {
+    new Blob(obj);
+  });
+  assert_array_equals(received, [
+    "length getter",
+    "length valueOf",
+    "0 getter",
+    "0 toString",
+    "1 getter"
+  ]);
+}, "Getters and value conversions should happen in order until an exception is thrown.");
+
+// XXX should add tests edge cases of ToUint32(length)
+
+test(function() {
+  assert_throws(test_error, function() {
+    new Blob([{ toString: function() { throw test_error; } }]);
+  });
+  assert_throws(test_error, function() {
+    new Blob([{ toString: undefined, valueOf: function() { throw test_error; } }]);
+  });
+  assert_throws(test_error, function() {
+    new Blob([{
+      toString: function() { throw test_error; },
+      valueOf: function() { assert_unreached("Should not call valueOf if toString is present."); }
+    }]);
+  });
+}, "ToString should be called on elements of the blobParts array and any exceptions should be propagated.");
+
+test_blob(function() {
+  var arr = [
+    { toString: function() { arr.pop(); return "PASS"; } },
+    { toString: function() { assert_unreached("Should have removed the second element of the array rather than called toString() on it."); } }
+  ];
+  return new Blob(arr);
+}, {
+  expected: "PASSundefined",
+  type: "",
+  desc: "Changes to the blobParts array should be reflected in the returned Blob (pop)."
+});
+
+test_blob(function() {
+  var arr = [
+    {
+      toString: function() {
+        if (arr.length === 3) {
+          return "SS";
+        }
+        arr.unshift({
+          toString: function() {
+            assert_unreached("Should only access index 0 once.");
+          }
+        });
+        return "PA";
+      }
+    },
+    {
+      toString: function() {
+        assert_unreached("Should not access the final element.");
+      }
+    }
+  ];
+  return new Blob(arr);
+}, {
+  expected: "PASS",
+  type: "",
+  desc: "Changes to the blobParts array should be reflected in the returned Blob (unshift)."
+});
+
+test_blob(function() {
+  // https://www.w3.org/Bugs/Public/show_bug.cgi?id=17652
+  return new Blob([
+    null,
+    undefined,
+    true,
+    false,
+    0,
+    1,
+    new String("stringobject"),
+    [],
+    ['x', 'y'],
+    {},
+    { 0: "FAIL", length: 1 },
+    { toString: function() { return "stringA"; } },
+    { toString: undefined, valueOf: function() { return "stringB"; } },
+    { valueOf: function() { assert_unreached("Should not call valueOf if toString is present on the prototype."); } }
+  ]);
+}, {
+  expected: "nullundefinedtruefalse01stringobjectx,y[object Object][object Object]stringAstringB[object Object]",
+  type: "",
+  desc: "ToString should be called on elements of the blobParts array."
+});
+
+test_blob(function() {
+  return new Blob([
+    new ArrayBuffer(8)
+  ]);
+}, {
+  expected: "\0\0\0\0\0\0\0\0",
+  type: "",
+  desc: "ArrayBuffer elements of the blobParts array should be supported."
+});
+
+test_blob(function() {
+  return new Blob([
+    new Uint8Array([0x50, 0x41, 0x53, 0x53]),
+    new Int8Array([0x50, 0x41, 0x53, 0x53]),
+    new Uint16Array([0x4150, 0x5353]),
+    new Int16Array([0x4150, 0x5353]),
+    new Uint32Array([0x53534150]),
+    new Int32Array([0x53534150]),
+    new Float32Array([0xD341500000])
+  ]);
+}, {
+  expected: "PASSPASSPASSPASSPASSPASSPASS",
+  type: "",
+  desc: "Passing typed arrays as elements of the blobParts array should work."
+});
+test_blob(function() {
+  return new Blob([
+    // 0x535 3415053534150
+    // 0x535 = 0b010100110101 -> Sign = +, Exponent = 1333 - 1023 = 310
+    // 0x13415053534150 * 2**(-52)
+    // ==> 0x13415053534150 * 2**258 = 2510297372767036725005267563121821874921913208671273727396467555337665343087229079989707079680
+    new Float64Array([2510297372767036725005267563121821874921913208671273727396467555337665343087229079989707079680])
+  ]);
+}, {
+  expected: "PASSPASS",
+  type: "",
+  desc: "Passing a Float64Array as element of the blobParts array should work."
+});
+
+// options argument
+test(function() {
+  new Blob([], { endings: "invalidEnumValue" });
+  new Blob([], { endings: null });
+  new Blob([], { endings: undefined });
+  new Blob([], { endings: 0 });
+  new Blob([], { get endings() { assert_unreached("Should not call getter"); } });
+}, "The 'endings' property should be ignored.");
+
+test(function() {
+  assert_throws(test_error, function() {
+    new Blob([], {
+      get type() { throw test_error; }
+    });
+  });
+  assert_throws(test_error, function() {
+    new Blob([], {
+      type: { toString: function() { throw test_error; } }
+    });
+  });
+}, "options properties should be accessed in lexicographic order.");
+
+test(function() {
+  assert_throws(test_error, function() {
+    new Blob(
+      [{ toString: function() { throw test_error } }],
+      {
+        get type() { assert_unreached("type getter should not be called."); }
+      }
+    );
+  });
+}, "Arguments should be evaluated from left to right.");
+
+[
+  null,
+  undefined,
+  {},
+  { unrecognized: true },
+  /regex/,
+  function() {}
+].forEach(function(arg, idx) {
+  test_blob(function() {
+    return new Blob([], arg);
+  }, {
+    expected: "",
+    type: "",
+    desc: "Passing " + format_value(arg) + " (index " + idx + ") for options should use the defaults."
+  });
+  test_blob(function() {
+    return new Blob(["\na\r\nb\n\rc\r"], arg);
+  }, {
+    expected: "\na\r\nb\n\rc\r",
+    type: "",
+    desc: "Passing " + format_value(arg) + " (index " + idx + ") for options should use the defaults (with newlines)."
+  });
+});
+
+test_blob(function() {
+  return new Blob([], { type: "" });
+}, {
+  expected: "",
+  type: "",
+  desc: "Passing the empty string for type should not throw."
+});
+
+test_blob(function() {
+  return new Blob([], { type: "text/html" });
+}, {
+  expected: "",
+  type: "text/html",
+  desc: "Passing 'text/html' for type should not throw."
+});
+
+test_blob(function() {
+  return new Blob([], { type: "TEXT/HTML" });
+}, {
+  expected: "",
+  type: "text/html",
+  desc: "Passing 'TEXT/HTML' for type should return a 'text/html' for blob.type."
+});
+
+test_blob(function() {
+  return new Blob(["\na\r\nb\n\rc\r"], { endings: "transparent" });
+}, {
+  expected: "\na\r\nb\n\rc\r",
+  type: "",
+  desc: "Newlines should not change when endings is 'transparent'."
+});
+test_blob(function() {
+  return new Blob(["\na\r\nb\n\rc\r"], { endings: "native" });
+}, {
+  expected: "\na\r\nb\n\rc\r",
+  type: "",
+  desc: "Newlines should not change when endings is 'native'."
+});
+
+test(function() {
+  var blob1, blob2;
+
+  test_blob(function() {
+    return blob1 = new Blob(["squiggle"]);
+  }, {
+    expected: "squiggle",
+    type: "",
+    desc: "blob1."
+  });
+
+  test_blob(function() {
+    return blob2 = new Blob(["steak"], {type: "content/type"});
+  }, {
+    expected: "steak",
+    type: "content/type",
+    desc: "blob2."
+  });
+
+  var arrayBuffer = new ArrayBuffer(16);
+  var int8View = new Int8Array(arrayBuffer);
+  for (var i = 0; i < 16; i++) {
+    int8View[i] = i + 65;
+  }
+
+  var testData = [
+    // Test 3 strings
+    [
+      ["foo", "bar", "baz"],
+      {},
+      [{start: 0, length: 9, contents: "foobarbaz"},
+       {start: 0, length: 3, contents: "foo"},
+       {start: 3, length:6, contents:  "barbaz"},
+       {start: 6, length: 3, contents:  "baz"},
+       {start: 6, length: 6, contents: "baz"},
+       {start: 0, length: 9, contents:  "foobarbaz"},
+       {start: 0, length: 11, contents: "foobarbaz"},
+                             {start: 10, length: 5, contents: ""}]
+    ],
+
+    // Test string, Blob, string
+    [
+      ["foo", blob1, "baz"],
+      {},
+      [{start: 0, length: 3, contents:  "foo"},
+       {start: 3, length: 8, contents:  "squiggle"},
+       {start: 2, length: 2, contents:  "os"},
+       {start: 10, length: 2, contents: "eb"}]
+    ],
+
+    // Test blob, string, blob
+    [
+      [blob1, "foo", blob1],
+      {},
+      [{start: 0, length: 8, contents:  "squiggle"},
+       {start: 7, length: 2, contents:  "ef"},
+       {start: 10, length: 2, contents: "os"},
+       {start: 1, length: 3, contents:  "qui"},
+       {start: 12, length: 3, contents: "qui"},
+       {start: 40, length: 20, contents: ""}]
+    ],
+
+    // Test blobs all the way down
+    [
+      [blob2, blob1, blob2],
+      {},
+      [{start: 0, length: 5, contents:  "steak"},
+       {start: 5, length: 8, contents:  "squiggle"},
+       {start: 13, length: 5, contents: "steak"},
+       {start: 1, length: 2, contents:  "te"},
+       {start: 6, length: 4, contents:  "quig"}]
+    ],
+
+    // Test an ArrayBufferView
+    [
+      [int8View, blob1, "foo"],
+      {},
+      [{start: 0, length: 8, contents:  "ABCDEFGH"},
+       {start: 8, length:10, contents:  "IJKLMNOPsq"},
+       {start: 17, length: 3, contents: "qui"},
+       {start: 4, length: 8, contents:  "EFGHIJKL"}]
+    ],
+
+    // Test a partial ArrayBufferView
+    [
+      [new Uint8Array(arrayBuffer, 3, 5), blob1, "foo"],
+      {},
+      [{start: 0, length: 8, contents:  "DEFGHsqu"},
+       {start: 8, length:10, contents:  "igglefoo"},
+       {start: 4, length: 8, contents:  "Hsquiggl"}]
+    ],
+
+    // Test type coercion of a number
+    [
+      [3, int8View, "foo"],
+      {},
+      [{start: 0, length: 8, contents:  "3ABCDEFG"},
+       {start: 8, length:10, contents:  "HIJKLMNOPf"},
+       {start: 17, length: 4, contents: "foo"},
+       {start: 4, length: 8, contents:  "DEFGHIJK"}]
+    ]
+  ];
+
+  testData.forEach(function(data, i) {
+    var blobs = data[0], options = data[1], tests = data[2];
+    tests.forEach(function(expectations, j) {
+      test(function() {
+        var blob = new Blob(blobs, options);
+        assert_true(blob instanceof Blob);
+        assert_false(blob instanceof File);
+
+        test_blob(function() {
+          return blob.slice(expectations.start, expectations.start + expectations.length);
+        }, {
+          expected: expectations.contents,
+          type: "",
+          desc: "Slicing test: slice (" + i + "," + j + ")."
+        });
+      }, "Slicing test (" + i + "," + j + ").");
+    });
+  });
+}, "Slicing");
+</script>

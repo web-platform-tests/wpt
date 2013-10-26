@@ -6,8 +6,8 @@
 # This was originally written for use at
 # http://philip.html5.org/tests/canvas/suite/tests/
 #
-# It has been adapted for use with the W3C HTML5 test suite at
-# http://dvcs.w3.org/hg/html/file/tip/tests/
+# It has been adapted for use with the Web Platform Test Suite suite at
+# https://github.com/w3c/web-platform-tests/
 #
 # The W3C version excludes a number of features (multiple versions of each test
 # case of varying verbosity, Mozilla mochitests, semi-automated test harness)
@@ -34,7 +34,7 @@
 # It will usually emit some warnings, which ideally should be fixed but can
 # generally be safely ignored.
 #
-# * Test the tests, add new ones to Hg, remove deleted ones from Hg, etc.
+# * Test the tests, add new ones to Git, remove deleted ones from Git, etc.
 
 import re
 import codecs
@@ -58,8 +58,8 @@ W3CMODE = True
 if '--standalone' in sys.argv:
     W3CMODE = False
 
-TESTOUTPUTDIR = '../../canvas'
-IMAGEOUTPUTDIR = '../../canvas'
+TESTOUTPUTDIR = '../../2dcontext'
+IMAGEOUTPUTDIR = '../../2dcontext'
 MISCOUTPUTDIR = './output'
 SPECOUTPUTDIR = '../../annotated-spec'
 
@@ -128,8 +128,8 @@ if len(sys.argv) > 1 and sys.argv[1] == '--test':
     doctest.testmod()
     sys.exit()
 
-
 templates = yaml.load(open('templates.yaml').read())
+name_mapping = yaml.load(open('name2dir.yaml').read())
 
 spec_assertions = []
 for s in yaml.load(open('spec.yaml').read())['assertions']:
@@ -178,6 +178,9 @@ def make_flat_image(filename, w, h, r,g,b,a):
 # Ensure the test output directories exist
 testdirs = [TESTOUTPUTDIR, IMAGEOUTPUTDIR, MISCOUTPUTDIR]
 if not W3CMODE: testdirs.append('%s/mochitests' % MISCOUTPUTDIR)
+else:
+    for map_dir in set(name_mapping.values()):
+        testdirs.append("%s/%s" % (TESTOUTPUTDIR, map_dir))
 for d in testdirs:
     try: os.mkdir(d)
     except: pass # ignore if it already exists
@@ -322,6 +325,17 @@ for i in range(len(tests)):
         print "Test %s is defined twice" % name
     used_tests[name] = 1
 
+    mapped_name = None
+    for mn in sorted(name_mapping.keys(), key=len, reverse=True):
+        if name.startswith(mn):
+            mapped_name = "%s/%s" % (name_mapping[mn], name)
+            break
+    if not mapped_name:
+        print "LIKELY ERROR: %s has no defined target directory mapping" % name
+        mapped_name = name
+    if '@manual' in test['code']:
+        mapped_name += "-manual"
+
     cat_total = ''
     for cat_part in [''] + name.split('.')[:-1]:
         cat_total += cat_part+'.'
@@ -383,16 +397,21 @@ for i in range(len(tests)):
         expected_img = None
         if expected == 'green':
             expected_img = make_flat_image('green-100x50.png', 100, 50, 0,1,0,1)
+            if W3CMODE: expected_img = "/images/" + expected_img
         elif expected == 'clear':
             expected_img = make_flat_image('clear-100x50.png', 100, 50, 0,0,0,0)
+            if W3CMODE: expected_img = "/images/" + expected_img
         else:
             if ';' in expected: print "Found semicolon in %s" % name
             expected = re.sub(r'^size (\d+) (\d+)',
                 r'surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, \1, \2)\ncr = cairo.Context(surface)',
                 expected)
-            expected += "\nsurface.write_to_png('%s/%s.png')\n" % (IMAGEOUTPUTDIR, name)
+            expected += "\nsurface.write_to_png('%s/%s.png')\n" % (IMAGEOUTPUTDIR, mapped_name)
             eval(compile(expected, '<test %s>' % test['name'], 'exec'), {}, {'cairo':cairo})
-            expected_img = "%s.png" % name
+            if '@manual' in test['code']:
+                expected_img = "%s-manual.png" % name
+            else:
+                expected_img = "%s.png" % name
 
         if expected_img:
             expectation_html = ('<p class="output expectedtext">Expected output:' +
@@ -419,6 +438,7 @@ for i in range(len(tests)):
             i = '../images/%s' % i
         images += '<img src="%s" id="%s" class="resource">\n' % (i,id)
     mochi_images = images.replace('../images/', 'image_')
+    if W3CMODE: images = images.replace("../images/", "/images/")
 
     fonts = ''
     fonthack = ''
@@ -436,6 +456,7 @@ for i in range(len(tests)):
     escaped_desc = simpleEscapeJS(desc)
     template_params = {
         'name':name, 'name_wrapped':name_wrapped, 'backrefs':backref_html(name),
+        'mapped_name':mapped_name,
         'desc':desc, 'escaped_desc':escaped_desc,
         'prev':prev, 'next':next, 'refs':refs, 'notes':notes, 'images':images,
         'fonts':fonts, 'fonthack':fonthack,
@@ -446,7 +467,7 @@ for i in range(len(tests)):
     }
 
     if W3CMODE:
-        f = codecs.open('%s/%s.html' % (TESTOUTPUTDIR, name), 'w', 'utf-8')
+        f = codecs.open('%s/%s.html' % (TESTOUTPUTDIR, mapped_name), 'w', 'utf-8')
         f.write(templates['w3c'] % template_params)
     else:
         f = codecs.open('%s/%s.html' % (TESTOUTPUTDIR, name), 'w', 'utf-8')
@@ -585,7 +606,7 @@ def getNodeText(node):
         offsets += child_offsets
     return t, offsets
 
-def html5Serializer(element):
+def htmlSerializer(element):
     element.normalize()
     rv = []
     specialtext = ['style', 'script', 'xmp', 'iframe', 'noembed', 'noframes', 'noscript']
@@ -751,7 +772,7 @@ def write_annotated_spec():
         if s['id'] not in matched_assertions:
             print "Annotation incomplete: Unmatched spec statement %s" % s['id']
 
-    # Convert from XHTML5 back to HTML5
+    # Convert from XHTML back to HTML
     doc.documentElement.removeAttribute('xmlns')
     doc.documentElement.setAttribute('lang', doc.documentElement.getAttribute('xml:lang'))
 
@@ -759,12 +780,11 @@ def write_annotated_spec():
     head.insertBefore(doc.createElement('meta'), head.firstChild).setAttribute('charset', 'UTF-8')
 
     f = codecs.open('%s/canvas.html' % SPECOUTPUTDIR, 'w', 'utf-8')
-    f.write(html5Serializer(doc))
+    f.write(htmlSerializer(doc))
 
-write_index()
-write_category_indexes()
 if not W3CMODE:
+    write_index()
+    write_category_indexes()
     write_reportgen()
     write_results()
-write_annotated_spec()
-
+    write_annotated_spec()

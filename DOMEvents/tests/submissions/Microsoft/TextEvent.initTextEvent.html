@@ -1,34 +1,34 @@
 <!DOCTYPE html>
 <html>
-    <head>  
+    <head>
         <title id='desc'> TextEvent.initTextEvent() and Event.trusted </title>
         <script type="text/javascript">
             var PassTest = function()
             {
                 document.getElementById("testresult").firstChild.data = "PASS";
             }
-            
+
             var FailTest = function()
             {
                 document.getElementById("testresult").firstChild.data = "FAIL";
             }
-            
+
             var EVENT = "foo";
             var TARGET;
-            
+
             window.onload = function()
             {
                 try
                 {
                     TARGET = document.getElementById("target");
                     TARGET.addEventListener(EVENT, TestEvent, true);
-                    
+
                     var evt = document.createEvent("TextEvent");
                     evt.initTextEvent(EVENT,    /* type */
                                       true,     /* bubbles */
                                       true,     /* cancelable */
                                       window,   /* view */
-                                      "domstr", /* data*/ 
+                                      "domstr", /* data*/
                                       0         /* inputMode */ );
                     TARGET.dispatchEvent(evt);
                 }
@@ -36,10 +36,10 @@
                 {
                     FailTest();
                 }
-            
+
             }
-            
-            function TestEvent(evt) 
+
+            function TestEvent(evt)
             {
                 if ((EVENT == evt.type) && (false == evt.trusted))
                 {
@@ -50,14 +50,14 @@
                     FailTest();
                 }
             }
-        </script>            
+        </script>
     </head>
     <body>
         <h3>DOM Events</h3>
         <h4>
             Test Description: initTextEvent initializes attributes of a TextEvent object.
         </h4>
-        
+
         <input id="target" type="hidden" />
         <p>Test passes if the word "PASS" appears below.</p>
         <div>Test result: </div>

@@ -1,6 +1,8 @@
 <!doctype html>
 <title>Range.compareBoundaryPoints() tests</title>
-<link rel=author title="Aryeh Gregor" href=ayg@aryeh.name>
+<link rel="author" title="Aryeh Gregor" href=ayg@aryeh.name>
+<meta name=timeout content=long>
+
 <div id=log></div>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
@@ -11,9 +13,9 @@
 var testRangesCached = [];
 testRangesCached.push(document.createRange());
 testRangesCached[0].detach();
-for (var i = 0; i < testRanges.length; i++) {
+for (var i = 0; i < testRangesShort.length; i++) {
 	try {
-		testRangesCached.push(rangeFromEndpoints(eval(testRanges[i])));
+		testRangesCached.push(rangeFromEndpoints(eval(testRangesShort[i])));
 	} catch(e) {
 		testRangesCached.push(null);
 	}

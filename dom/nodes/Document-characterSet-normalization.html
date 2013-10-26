@@ -1,14 +1,13 @@
 <!doctype html>
 <title>document.characterSet normalization tests</title>
 <link rel=author title="Aryeh Gregor" href=ayg@aryeh.name>
+<meta name=timeout value=long>
 <div id=log></div>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <style>iframe { display: none }</style>
 <script>
 "use strict";
-
-setup({timeout: 15000});
 
 // Taken straight from the encoding spec.
 var encodingMap = {

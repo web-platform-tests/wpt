@@ -8,8 +8,6 @@
   <body>
     <div id="log"></div>
     <script>
-      setup({ timeout: 10000 })
-
       function doReconn(url, title) {
         var test = async_test(document.title + " " + title)
         test.step(function() {

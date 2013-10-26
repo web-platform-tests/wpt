@@ -7,30 +7,30 @@
             {
                 document.getElementById("testresult").firstChild.data = "PASS";
             }
-            
+
             var FailTest = function()
             {
                 document.getElementById("testresult").firstChild.data = "FAIL";
             }
-            
-            function TestCapture(evt) 
+
+            function TestCapture(evt)
             {
-                TARGET = document.getElementById("target");                          
-                
+                TARGET = document.getElementById("target");
+
                 if ((evt.type == EVENT) && (evt.currentTarget == window) && (evt.target == TARGET))
                 {
-                    TestResult = true;    
+                    TestResult = true;
                 }
                 else
                 {
-                    TestResult = false; 
+                    TestResult = false;
                 }
             }
-            
+
             var EVENT = "error";
             var TARGET;
             var TestResult = false;
-            
+
             try
             {
                 window.addEventListener(EVENT, TestCapture, true);
@@ -39,27 +39,27 @@
             {
                 TestResult = false;
             }
-            
+
             window.onload = function()
             {
                 if (true == TestResult)
                 {
-                    PassTest();    
+                    PassTest();
                 }
                 else
                 {
                     FailTest();
                 }
             }
-        </script>            
+        </script>
     </head>
-    <body>      
+    <body>
         <h4>Test Description: error event fires when an IMG resource failed to load.</h4>
 
         <img id="target" src="./support/InvalidBitMap.png" alt="ERROR">
-        
+
         <p>Test passes if the word "PASS" appears below.</p>
        	<div>Test result: </div>
-        <div id='testresult'>FAIL</div> 
+        <div id='testresult'>FAIL</div>
     </body>
 </html>

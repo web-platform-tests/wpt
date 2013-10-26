@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+ <head>
+  <title>video.audio - reflection test</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+ </head>
+ <body>
+  <p><a href="http://dev.w3.org/html5/spec/Overview.html#attr-media-audio">spec reference</a></p>
+  <video id="video" audio="muted">
+  </video>
+  <div id="log"></div>
+  <script>
+test(function() {
+ assert_equals(
+  document.getElementById("video").audio,
+  undefined,
+  "videoElement.audio doesn't exist");
+});
+  </script>
+ </body>
+</html>

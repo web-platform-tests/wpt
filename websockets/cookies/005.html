@@ -1,12 +1,12 @@
 <!doctype html>
 <title>WebSockets: setting HttpOnly cookies in ws response, checking ws request</title>
+<meta name=timeout content=long>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script src=../constants.js></script>
 <div id=log></div>
 <script>
-setup({timeout:15100,
-explicit_done:true})
+setup({explicit_done:true})
 var cookie_id = ((new Date())-0) + '.' + Math.random();
 
 var t = async_test(function(t) {

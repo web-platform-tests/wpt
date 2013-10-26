@@ -1,22 +1,22 @@
 <!DOCTYPE html>
 <html>
-    <head>  
+    <head>
         <title id='desc'> MutationEvent: DOMNodeRemoved Event Type </title>
         <script type="text/javascript">
             var PassTest = function()
             {
                 document.getElementById("testresult").firstChild.data = "PASS";
             }
-            
+
             var FailTest = function()
             {
                 document.getElementById("testresult").firstChild.data = "FAIL";
             }
-            
+
             var EVENT = "DOMNodeRemoved";
             var TARGET;
             var PARENT;
-            
+
             window.onload = function()
             {
                 try
@@ -31,8 +31,8 @@
                     FailTest();
                 }
             }
-            
-            function TestEvent(evt) 
+
+            function TestEvent(evt)
             {
                 if (EVENT == evt.type)
                 {
@@ -43,14 +43,14 @@
                     FailTest();
                 }
             }
-        </script>            
+        </script>
     </head>
     <body>
         <h3>DOM Events</h3>
         <h4>
             Test Description: DOMNodeRemoved event fires when a node is being removed from its parent node.
         </h4>
-        
+
         <span id="parent">
             <div id="target" style="border:solid 1px green; width:100px; height:100px">
             </div>

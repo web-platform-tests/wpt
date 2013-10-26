@@ -2,6 +2,7 @@
 <html>
   <head>
     <title>XMLHttpRequest: send() - Redirects (bogus Location header)</title>
+    <meta name=timeout content=long>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#infrastructure-for-the-send()-method" data-tested-assertations="following::dl[1]/dt[2] following::dl[1]/dd[2]/ol/li[1] following::dl[1]/dd[2]/ol/li[3]" />
@@ -9,8 +10,6 @@
   <body>
     <div id="log"></div>
     <script>
-      setup({timeout: 21000})
-
       function redirect(code, location) {
         var test = async_test(document.title + " (" + code + ": " + location + ")", {timeout: 20000})
         test.step(function() {

@@ -127,7 +127,8 @@ function rethrowInternalErrors(e) {
 }
 
 function newDocument() {
-    var d = document.implementation.createDocument();
+    var d = document.implementation.createDocument(
+        'http://www.w3.org/1999/xhtml', 'html');
     //FIXME remove the call below when non-prefixed API is used
     addDocumentPrefixed(d);
     return d;        

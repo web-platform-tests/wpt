@@ -29,3 +29,8 @@ its-push:
 	cd ..\
 	  && $(GIT) subtree push -P conformance-checkers/html-its/ $(ITS_REPO) master \
 	  && cd -
+
+its-pull:
+	cd .. \
+	  && $(GIT) pull -s subtree $(ITS_REPO) master \
+	  && cd -

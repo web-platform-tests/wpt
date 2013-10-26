@@ -16,7 +16,8 @@
 							<input type="time" id="chkStep" />
 							<input type="time" id="chkSetValueTest" />
 							<input type="time" id="chkSupportAttribute" min="01:01:01.001" max="12:12:12.012" step="600" /> 
-    	</div>
+							<input type="time" id="chkConvert" />
+			</div>
 		<div id="log">
     </div>
 	
@@ -201,6 +202,29 @@ test(function(){
 	assert_equals(_time.value, "");
 }, "set value on not time format value");
 
+/* algorithm to convert test */
+var _ConvertTest = document.getElementById("chkConvert");
+test(function(){
+	_ConvertTest.valueAsNumber = "60000"; /* 60 second */
+	assert_equals(_ConvertTest.value, "00:01");
+} , "algorithm to convert a string to a number ");
+
+test(function(){
+	_ConvertTest.valueAsNumber = 120000; /* 120 second */
+	assert_equals(_ConvertTest.value, "00:02");
+} , "algorithm to convert a number to a string");
+
+test(function(){
+  var timeString = "2013/06/07 18:30:15.321";
+	_ConvertTest.valueAsDate = timeString; 
+	assert_equals(_ConvertTest.value, "18:30:15.321");
+} , "The algorithm to convert a string to a Date object");
+
+test(function(){
+	var wkTime = new Date(2013,6,7,11,45,25,432)
+	_ConvertTest.valueAsDate = wkTime; 
+	assert_equals(_ConvertTest.value, "11:45:25.432");
+} , "The algorithm to convert a Date object to a string");
 
 	</script>
   </body>

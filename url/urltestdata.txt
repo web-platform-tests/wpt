@@ -105,7 +105,6 @@ C|/foo/bar  s:file p:/C:/foo/bar
 /\\server/file  s:file h:server p:/file
 file:///foo/bar.txt  s:file p:/foo/bar.txt
 file:///home/me  s:file p:/home/me
-file:c:\\foo\\bar.html  s:file p:/c:/foo/bar.html
 //  s:file p:/
 ///  s:file p:/
 ///test  s:file p:/test
@@ -134,7 +133,6 @@ http://example.com/foo/%2e./%2e%2e/.%2e/%2e.bar  s:http h:example.com p:/%2e.bar
 http://example.com////../..  s:http h:example.com p://
 http://example.com/foo/bar//../..  s:http h:example.com p:/foo/
 http://example.com/foo/bar//..  s:http h:example.com p:/foo/bar/
-http://example.com/foo/bar/..  s:http h:example.com p:/foo/
 http://example.com/foo  s:http h:example.com p:/foo
 http://example.com/%20foo  s:http h:example.com p:/%20foo
 http://example.com/foo%  s:http h:example.com p:/foo%
@@ -158,7 +156,7 @@ http://example.com/\u202E/foo/\u202D/bar  s:http h:example.com p:/%E2%80%AE/foo/
 # Based on http://trac.webkit.org/browser/trunk/LayoutTests/fast/url/script-tests/relative.js
 http://www.google.com/foo?bar=baz# about:blank s:http h:www.google.com p:/foo q:?bar=baz f:#
 http://www.google.com/foo?bar=baz#\s\u00BB  s:http h:www.google.com p:/foo q:?bar=baz f:#\s\u00BB
-http://[www.google.com]/  s:http h:[www.google.com] p:/
+http://[www.google.com]/
 http://www.google.com  s:http h:www.google.com p:/
 http://192.0x00A80001  s:http h:192.0x00a80001 p:/
 http://www/foo%2Ehtml  s:http h:www p:/foo%2Ehtml

@@ -3,7 +3,8 @@ not documented in detail, but is documented through urltestparser.js, which pars
 Documentation welcome!
 
 https://github.com/annevk/url/ hosts some other files that might be of interest if you
-want to create additional tests.
+want to create additional tests. Please try to keep urltestdata.txt in sync with that
+repository.
 
 Similar to a-element.html it would be trivial to add more tests for other objects that
 expose links (e.g. URL and <area>). There's also room for enhancement and bits that

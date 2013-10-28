@@ -2,19 +2,19 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>HTML Test: style_disabled</title>
+    <title>HTML Test: The style should not be applied if it is disabled</title>
     <link rel="author" title="Intel" href="http://www.intel.com/">
     <link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/document-metadata.html#the-style-element">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <style>
       #test {
-        width:100px;
+        width: 100px;
       }
     </style>
     <style id="style">
       #test {
-        width:50px;
+        width: 50px;
       }
     </style>
   </head>
@@ -33,17 +33,12 @@
         style.disabled = true;
         width2 = getStyle(testElement, "width");
         assert_equals(width2, "100px", "The style should not be applied.");
-      }, "style_disabled");
+      }, "The style is not applied when it is disabled");
 
-      /*function getStyle(obj, attr) {
-        if (obj.currentStyle)
-          return obj.currentStyle[attr];
-        else
-          return document.defaultView.getComputedStyle(obj, false)[attr];
-      }*/
       function getStyle(obj, attr) {
         return document.defaultView.getComputedStyle(obj, false)[attr];
       }
     </script>
   </body>
 </html>
+

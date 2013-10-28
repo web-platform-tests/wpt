@@ -2,8 +2,9 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>HTML Test: style_media</title>
+    <title>HTML Test: The style inforamtion must be applied to the environment specified by the media attribute</title>
     <link rel="author" title="Intel" href="http://www.intel.com/">
+    <link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/document-metadata.html#attr-style-media">
     <link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/document-metadata.html#the-style-element">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
@@ -33,7 +34,7 @@
         style.media = "print";
         width2 = getStyle(testElement, "width");
         assert_equals(width2, "100px", "The style should not be applied.");
-      }, "style_media");
+      }, "The style inforamtion must be applied to the environment specified by the media attribute");
 
       function getStyle(obj, attr) {
         return document.defaultView.getComputedStyle(obj, false)[attr];
@@ -41,3 +42,4 @@
     </script>
   </body>
 </html>
+

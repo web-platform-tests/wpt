@@ -2,14 +2,14 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>HTML Test: style_events</title>
+    <title>HTML Test: The style events</title>
     <link rel="author" title="Intel" href="http://www.intel.com/">
     <link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/document-metadata.html#the-style-element">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <script>
-      var tLoad = async_test("style_events_onload");
-      var tError = async_test("style_events_onerror");
+      var tLoad = async_test("If the style is loaded successfully, the 'load' event must be fired");
+      var tError = async_test("If the style is loaded unsuccessfully, the 'error' event must be fired");
 
       function onstyleload() {
         tLoad.done();
@@ -19,14 +19,14 @@
         tError.done();
       }
     </script>
-    <style id="style1" onload="onstyleload()">
+    <style onload="onstyleload()">
       #test {
-        height:100px;
-        width:100px;
+        height: 100px;
+        width: 100px;
       }
     </style>
-    <style id="style2" onerror="onstyleerror()" type="text/css">
-      @import url(blue.css);
+    <style onerror="onstyleerror()">
+      @import url(nonexistent.css);
     </style>
   </head>
   <body>
@@ -34,3 +34,4 @@
     <div id="test"></div>
   </body>
 </html>
+

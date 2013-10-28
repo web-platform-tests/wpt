@@ -2,30 +2,29 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>HTML Test: style_disabled_effect</title>
+    <title>HTML Test: The style should not be applied if it is disabled</title>
     <link rel="author" title="Intel" href="http://www.intel.com/">
     <link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/document-metadata.html#the-style-element">
-    <script src="/resources/testharness.js"></script>
-    <script src="/resources/testharnessreport.js"></script>
-    <meta name="assert" content="Check if the disabled attribute works well">
+    <meta name="assert" content="Check if the style should not be applied if it is disabled">
     <style>
       #test {
-        background-color:green;
-        height:100px;
-        width:100px;
+        background-color: green;
+        height: 100px;
+        width: 100px;
       }
     </style>
     <style id="style">
       #test {
-        background-color:red;
+        background-color: red;
       }
     </style>
   </head>
   <body>
-    <p>Test passes if a green filled square is displayed.</p>
+    <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
     <div id="test"></div>
     <script>
       document.getElementById("style").disabled = true;
     </script>
   </body>
 </html>
+

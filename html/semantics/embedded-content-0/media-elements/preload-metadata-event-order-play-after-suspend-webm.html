@@ -3,7 +3,7 @@
 <title>HTMLMediaElement.preload:metadata event order when media is played after suspend is fired - webm</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="../resources/common.js"></script>
+<script src="../../../../common/media-common.js"></script>
 <p id="log">FAIL (script didn't run)</p>
 <audio preload="metadata" controls></audio>
 <video preload="metadata" controls></video>
@@ -28,7 +28,7 @@ tests.forEach(function(vars) {
 		});
 	    }
 	}, false);
-	node.src = '../resources/range-request.php?rate=100000&fileloc=preload.webm&nocache=' + Math.random();
+	node.src = '../../../../common/range-request.php?rate=100000&fileloc=../media/preload.webm&nocache=' + Math.random();
 
 	function startTest(e) {
 	    node.removeEventListener('suspend', startTest, false);

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>CSS Compositing and Blending Test: parsing mix-blend-mode property</title>
+		<title>CSS Test: parsing mix-blend-mode property</title>
 		<link rel="author" title="Mirela Budăeș" href="mailto:mbudaes@adobe.com">
 		<link rel="help" href="http://dev.w3.org/fxtf/compositing-1/#mix-blend-mode">
 		<meta name="flags" content="dom">
@@ -13,18 +13,18 @@
 	<body>
 		<div id="log"></div>
 		<script type="text/javascript">
-            function testParse(declaration) {
-                var div = document.createElement("div");
-                div.setAttribute("style", declaration);
-                return div.style.mixBlendMode;
-            }
+			function testParse(declaration) {
+				var div = document.createElement("div");
+				div.setAttribute("style", declaration);
+				return div.style.mixBlendMode;
+			}
 
-            var blendModes = ["normal", "multiply", "screen", "overlay", "darken", "lighten", "color-dodge", "color-burn",
-                      "hard-light", "soft-light", "difference", "exclusion", "hue", "saturation", "color", "luminosity"];
+			var blendModes = ["normal", "multiply", "screen", "overlay", "darken", "lighten", "color-dodge", "color-burn",
+					  "hard-light", "soft-light", "difference", "exclusion", "hue", "saturation", "color", "luminosity"];
 
-            for (var i = 0; i < blendModes.length; i++) {
-            	test(function() {assert_equals(testParse("mix-blend-mode: " + blendModes[i]), blendModes[i] )}, "Mix-blend-mode " + blendModes[i]);
-            };
+			for (var i = 0; i < blendModes.length; i++) {
+				test(function() {assert_equals(testParse("mix-blend-mode: " + blendModes[i]), blendModes[i] )}, "Mix-blend-mode " + blendModes[i]);
+			};
 		</script>
 	</body>
 </html>

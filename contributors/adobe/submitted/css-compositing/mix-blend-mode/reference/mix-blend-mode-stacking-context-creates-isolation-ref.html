@@ -5,20 +5,20 @@
 		<link rel="author" title="Mirela Budăeș" href="mailto:mbudaes@adobe.com">
 		<style>
 			.container{
-		        margin: 30px;
-		        width: 130px;
-		        height: 130px;
-		        float: left;
-		        background: rgb(255,255,5);
+				margin: 30px;
+				width: 130px;
+				height: 130px;
+				float: left;
+				background: yellow;
 			}
 			.simple{
-			    background: rgb(2,131,2) ;
+				background: green;
 				width: 100px;
 				height: 100px;
 				position: fixed;
 			}
 			.mixed {
-				background: rgb(255,5,5);
+				background: blue;
 				margin-top: 20px;
 				margin-left: 20px;
 				width: 100px;
@@ -32,8 +32,9 @@
 		</style>
 	</head>
 	<body>
-		<p>Test passes if there is no red rectangle on the screen. <br>
-			You should see one black rectangle and some parts of the green, yellow and red rectangles.</p>
+		<p>Test passes if there is no red square on the screen. <br>
+		You should see two overlapping blue and green squares on top of a yellow one. <br>
+		At the intersection of the green and blue squares, a black square will be created. </p>
 		<div class="container">
 			<div class="simple">
 				<div class="mixed">

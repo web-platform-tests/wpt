@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>CSS Compositing and Blending Test: mix-blend-mode between a parent and a child element</title>
+		<title>CSS Test: mix-blend-mode between an element and its child</title>
 		<link rel="author" title="Mirela Budăeș" href="mailto:mbudaes@adobe.com">
 		<link rel="help" href="http://dev.w3.org/fxtf/compositing-1/#mix-blend-mode">
 		<meta name="flags" content="">
@@ -9,14 +9,14 @@
 		<link rel="match" href="reference/mix-blend-mode-stacking-context-001-ref.html">
 		<style>
 			.simple{
-			    background: rgb(2,131,2) ;
+				background: green;
 				width: 140px;
 				height: 140px;
 				display:inline-block;
 			}
 			.mixed {
 				opacity: 0.9;
-				background: rgb(255,5,5);
+				background: red;
 				margin-top: 20px;
 				margin-left: 20px;
 				width: 100px;

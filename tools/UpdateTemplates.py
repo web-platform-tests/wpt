@@ -33,7 +33,7 @@ class UpdateTemplates(object): # dump spec section data in legacy format for bui
         pass
 
     def _callAPI(self, uri):
-        request = urllib2.Request(os.path.join(self.mServer, 'api', uri), headers = { 'Accept' : 'application/json' })
+        request = urllib2.Request(os.path.join(self.mServer, 'api', uri), headers = { 'Accept' : 'application/vnd.csswg.shepherd.v1+json, application/json' })
         file = urllib2.urlopen(request)
         data = file.read()
         data = json.loads(data)

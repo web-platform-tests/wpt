@@ -33,8 +33,10 @@ class UpdateTemplates(object): # dump spec section data in legacy format for bui
         pass
 
     def _callAPI(self, uri):
-        file = urllib2.urlopen(os.path.join(self.mServer, 'api', uri))
-        data = json.load(file)
+        request = urllib2.Request(os.path.join(self.mServer, 'api', uri), headers = { 'Accept' : 'application/json' })
+        file = urllib2.urlopen(request)
+        data = file.read()
+        data = json.loads(data)
         file.close()
         return data
     

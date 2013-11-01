@@ -1,4 +1,4 @@
-﻿var __SERVER__NAME = "w3c-test.org";
+var __SERVER__NAME = "w3c-test.org";
 var __PORT = 8080;
 var __SECURE__PORT = 8443;
 // NOT ENABLED, NOT NEEDED AT THIS TIME

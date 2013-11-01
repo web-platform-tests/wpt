@@ -1,2 +1,3 @@
 ProximityEvent_tests.html							
+idlharness.html
 

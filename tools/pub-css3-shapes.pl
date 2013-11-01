@@ -15,7 +15,7 @@ rmtree('dist/css3-shapes');
 
 ###############################################################################
 # Adobe
-push @dirs, 'contributors/adobe/submitted/shapes/shape-outside';
+#push @dirs, 'contributors/adobe/submitted/shapes/shape-outside';
 
 ###############################################################################
 # Apple - No CSS2.1 tests

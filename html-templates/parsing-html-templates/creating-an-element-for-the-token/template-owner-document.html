@@ -187,8 +187,8 @@ HTML5_ELEMENTS.forEach(function(value) {
     }
 });
 
-function compare_owners(element, template_content) {
-    assert_equals(element.ownerDocument, template_content.ownerDocument)
+function compare_owners(element, template) {
+    assert_equals(element.ownerDocument, template.content.ownerDocument)
 }
 
 generate_tests(compare_owners, parameters,
@@ -221,7 +221,7 @@ try {
                     'Test ownerDocument for the element ' + value + ' in the template. '
                         + 'Document has browsing context',
                     element,
-                    template.content
+                    template
                 ]);
         }
     });

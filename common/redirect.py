@@ -1,4 +1,10 @@
 def main(request, response):
+    """Simple handler that causes redirection.
+
+    The request should typically have two query parameters:
+    status - The status to use for the redirection. Defaults to 302.
+    location - The resource to redirect to.
+    """
     status = 302
     if "status" in request.GET:
         try:
@@ -8,10 +14,6 @@ def main(request, response):
 
     response.status = status
 
-    if "location" in request.GET:
-        location = request.GET.first("location")
-    else:
-        #Not really sure this is useful to a lot of tests
-        location = request.path + "?followed"
+    location = request.GET.first("location")
 
     response.headers.set("Location", location)

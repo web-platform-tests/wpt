@@ -21,6 +21,7 @@
             test.step(function(){
                 if(type !== 'document')assert_throws("InvalidStateError", function() {var x = client.responseXML}, 'responseXML throw for '+type)
                 if(type !== 'text')assert_throws("InvalidStateError", function() {var x = client.responseText}, 'responseText throws for '+type)
+                test.done()
             })
           }
           client.send(null)

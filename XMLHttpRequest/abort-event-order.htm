@@ -15,7 +15,7 @@
         test.step(function()
         {
             var xhr = new XMLHttpRequest();
-            var expect = [1, 4, "abort", "loadend", "upload.abort", "upload.loadend"];
+            var expect = [1, 4, "upload.abort", "upload.loadend", "abort", "loadend"];
             var actual = [];
 
             xhr.onreadystatechange = function()

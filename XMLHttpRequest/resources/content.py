@@ -6,7 +6,7 @@ def main(request, response):
                ("X-Request-Content-Type", request.headers.get("Content-Type", "NO"))]
 
     if "content" in request.GET:
-        content = request.GET.first("content");
+        content = request.GET.first("content")
     else:
         content = request.body
 

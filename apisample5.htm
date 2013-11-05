@@ -10,7 +10,7 @@
 <div id="log"></div>
 <script>
 setup({allow_uncaught_exception:true});
-var t = async_test("setup({allow)uncaught_exception:true}) should allow tests to pass even if there is an exception");
+var t = async_test("setup({allow_uncaught_exception:true}) should allow tests to pass even if there is an exception");
 onerror = t.step_func(function() {t.done()});
 throw new Error("Example Error");
 </script>

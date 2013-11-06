@@ -27,7 +27,10 @@ to test authors.
 
 ## Introduction to wptserve ##
 
-wptserve
+wptserve is a python-based web server. By default it serves static
+files in the testsuite. For more sophisticated requirements, several
+mechanisms are available to take control of the response. These are
+outlined below.
 
 ## Pipes ##
 
@@ -49,7 +52,7 @@ should be a `|` serperated list of pipe functions. For example to
 return a `.html` file with the status code 410 and a Content-Type of
 text/plain, one might use:
 
-  /resources/example.html?pipe=status(410)|header(Content-Type,text/plain)
+    /resources/example.html?pipe=status(410)|header(Content-Type,text/plain)
 
 There are a selection of pipe functions provided with wptserve and
 more may be added if there are good use cases.
@@ -66,31 +69,31 @@ and `}}`. Inside the block the following variables are avalible:
 
 * `{{host}}` - the host name of the server exclusing any subdomain part.
 * `{{domains[]}}` - the domain name of a particular subdomain
-  e.g. `{{domains[www]}}` for the `www` subdomain.
+    e.g. `{{domains[www]}}` for the `www` subdomain.
 * `{{ports[][]}}` - The port number of servers, by protocol
-  e.g. `{{ports[http][1]}}` for the second (i.e. non-default) http
+    e.g. `{{ports[http][1]}}` for the second (i.e. non-default) http
   server.
 * `{{headers[]}}` - The HTTP headers in the request
-  e.g. `{{headers[X-Test]}}` for a hypothetical `X-Test` header.
+    e.g. `{{headers[X-Test]}}` for a hypothetical `X-Test` header.
 * `{{GET[]}}` - The query parameters for the request
-  e.g. `{{GET[id]}}` for an id parameter sent with the request.
+    e.g. `{{GET[id]}}` for an id parameter sent with the request.
 
 So, for example, to write a javascript file called `xhr.js` that does a
 cross domain XHR test to a different subdomain and port, one would
 write in the file:
 
-  var server_url = http://{{domains[www]}}:{{ports[http][1]}}/path/to/resource;
+    var server_url = http://{{domains[www]}}:{{ports[http][1]}}/path/to/resource;
   //Create the actual XHR and so on
 
 The file would then be included as:
 
-  <script src="xhr.js?pipe=sub"></script>
+    <script src="xhr.js?pipe=sub"></script>
 
 ### status ###
 
 Used to set the HTTP status of the response, for example:
 
-  example.js?pipe=status(410)
+    example.js?pipe=status(410)
 
 ### headers ###
 
@@ -99,12 +102,12 @@ three arguments; the header name, the header value and whether to
 append the header rather than replace an existing header (default:
 False). So, for example, a request for:
 
-  example.html?pipe=header(Content-Type,text/plain)
+    example.html?pipe=header(Content-Type,text/plain)
 
 causes example.html to be returned with a text/plain content type
 whereas:
 
-  example.html?pipe=header(Content-Type,text/plain,True)
+    example.html?pipe=header(Content-Type,text/plain,True)
 
 Will cause example.html to be returned with both text/html and
 text/plain content-type headers.
@@ -115,16 +118,16 @@ Used to send only part of a response body. Takes the start and,
 optionally, end bytes as arguments, although either can be null to
 indicate the start or end of the file, respectively. So for example:
 
-  example.txt?pipe=slice(10,20)
+    example.txt?pipe=slice(10,20)
 
 Would result in a response with a body containing 10 bytes of
 example.txt including byte 10 but excluding byte 20.
 
-  example.txt?pipe=slice(10)
+    example.txt?pipe=slice(10)
 
 Would cause all bytes from byte 10 of example.txt to be sent, but:
 
-  example.txt?pipe=slice(null,20)
+    example.txt?pipe=slice(null,20)
 
 Would send the first 20 bytes of example.txt.
 
@@ -139,22 +142,22 @@ commands. There are three types of commands:
 * Numbers prefixed `d` indicate a delay in seconds
 
 * Numbers prefixed `r` must only appear at the end of the command, and
-  indicate that the preceding N items must be repeated until there is
+    indicate that the preceding N items must be repeated until there is
   no more content to send.
 
 In the absence of a repetition command, the entire remainder of the content is
 sent at once when the command list id exhausted. So for example:
 
-  example.txt?pipe=trickle(d1)
+    example.txt?pipe=trickle(d1)
 
 causes a 1s delay before sending the entirety of example.txt.
 
-  example.txt?pipe=trickle(100:d1)
+    example.txt?pipe=trickle(100:d1)
 
 causes 100 bytes of example.txt to be sent, followed by a 1s delay,
 and then the remainder of the file to be sent. On the other hand:
 
-  example.txt?pipe=trickle(100:d1:r2)
+    example.txt?pipe=trickle(100:d1:r2)
 
 Will cause the file to be sent in 100 byte chunks separated by a 1s
 delay until the whole content has been sent.
@@ -186,8 +189,8 @@ technology. Unlike cgi or PHP, the file is not executed directly and
 does not produce output by writing to `stdout`. Instead files must
 contain (at least) a function named `main`, with the signature:
 
-  def main(request, response):
-      pass
+    def main(request, response):
+        pass
 
 Here `request` is a `Request` object that contains details of the
 request, and `response` is a `Response` object that can be used to set
@@ -201,21 +204,21 @@ it is interpreted as the response body. If two values are returned
 they are interpreted as headers and body, and three values are
 interpreted as status, headers, body. So, for example:
 
-  def main(request, response):
-      return "TEST"
+    def main(request, response):
+        return "TEST"
 
 creates a response with no non-default headers and the body
 `TEST`. Headers can be added as follows:
 
-  def main(request, response):
-      return ([("Content-Type", "text/plain"), ("X-Test", "test")],
-              "TEST")
+    def main(request, response):
+        return ([("Content-Type", "text/plain"), ("X-Test", "test")],
+                "TEST")
 
 And a status code as:
 
-  def main(request, response):
-      return (410,
-              [("Content-Type", "text/plain"), ("X-Test", "test")],
+    def main(request, response):
+        return (410,
+                [("Content-Type", "text/plain"), ("X-Test", "test")],
               "TEST")
 
 A custom status string may be returned by using a tuple `code, string`

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>canvas drawCustomFocusRing test</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <link rel="stylesheet" href="/resources/testharness.css" media="all"/>
+  </head>
+  <body>
+    <h1>Description</h1>
+    <p>This test checks whether drawCustomFocusRing return false if the element paased as an argument is not focused or is not a descendant of the element with whose context the method is associated.</p>
+    <div id="log"></div>
+    <div>
+      <input type="text" id="text0">
+      <canvas id="canvas"><input type="text" id="text1"></canvas>
+    </div>
+    <script>
+    (function() {
+      test(function() {
+          var canvas = document.getElementById('canvas');
+          var context = canvas.getContext('2d');
+          var text0 = document.getElementById('text0');
+          text0.focus(); // document.activeElement === text0;
+
+          var text1 = document.getElementById('text1');
+          assert_false(context.drawCustomFocusRing(text1));
+      }, 'drawCustomFocusRing must return false for an element that is not focused.');
+
+      test(function() {
+          var canvas = document.getElementById('canvas');
+          var context = canvas.getContext('2d');
+          var text0 = document.getElementById('text0');
+          text0.focus(); // document.activeElement === text0;
+
+          assert_false(context.drawCustomFocusRing(text0));
+      }, 'drawCustomFocusRing must return false for an element that is not a descendant of the canvas element.');
+    })();
+    </script>
+  </body>
+</html>

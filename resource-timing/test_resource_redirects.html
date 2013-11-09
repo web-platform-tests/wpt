@@ -25,7 +25,7 @@ function setup_iframe() {
         '<script src="' + pathname + 'resources/redirect.php?location=' + pathname + 'resources/generate_resource.php%3Ftype=script"></scr' + 'ipt>' +
         '<script>' +
         'var xhr = new XMLHttpRequest;' +
-        'xhr.open("GET", pathname + "resources/redirect.php?location=" + pathname + "resources/generate_resource.php%3Ftype=iframe%26id=xhr", false);' +
+        'xhr.open("GET", "' + pathname + 'resources/redirect.php?location=' + pathname + 'resources/generate_resource.php%3Ftype=iframe%26id=xhr", false);' +
         'xhr.send();' +
         '</scr' + 'ipt>';
     iframe = document.getElementById('frameContext');

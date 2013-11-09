@@ -42,6 +42,15 @@
 		}, 'The value attribute, if specified, must have a value that contains no "CR" (U+000D)');
 
 		test(function(){
+			element = document.getElementById('novalue');			
+			element.value = 'a\u000D\u000Aa';
+			assert_equals(element.value, 'aa');
+
+			element = document.getElementById('value_with_CRLF');
+			assert_equals(element.value, 'aa');
+		}, 'The value sanitization algorithm is as follows: Strip line breaks from the value');
+
+		test(function(){
 			element = document.getElementById('novalue');
 			element.value = ' aa ';
 			assert_equals(element.value, 'aa');

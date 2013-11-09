@@ -25,7 +25,7 @@ function setup_iframe() {
         '<script src="' + pathname + 'resources/generate_resource.php?type=script&id=3" async=false></scr' + 'ipt>' +
         '<script src="' + pathname + 'resources/generate_resource.php?type=script&id=4" defer></scr' + 'ipt>' +
         '<script>' +
-        'document.write("<script src=\\"" + pathname + "resources/generate_resource.php?type=script&id=5\\"></scr" + "ipt>");' +
+        'document.write("<script src=\\"' + pathname + 'resources/generate_resource.php?type=script&id=5\\"></scr" + "ipt>");' +
         'var s1 = document.createElement("script");' +
         's1.src = pathname + "resources/generate_resource.php?type=script&id=6";' +
         'document.getElementsByTagName("head")[0].appendChild(s1);' +

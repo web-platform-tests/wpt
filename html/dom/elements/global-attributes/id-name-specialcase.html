@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ï»¿<!DOCTYPE html>
 <title>HTML5: test id with none pure alpha characters </title>
 <link rel="author" title="justin.shen" href=mailto:cosmichut@msn.com">
 <link rel="help" href="http://www.w3.org/TR/html5/dom.html#the-id-attribute">
@@ -11,7 +11,7 @@
   <input id="1test" value="1test"></input>
   <input id="_test" value="_test"></input>
   <input id="." value="."></input>
-  <input id="ÖÐ¹ú" value="china"></input>
+  <input id="ä¸­å›½" value="china"></input>
 </div>
 <script>
 test(function() {
@@ -27,6 +27,6 @@ test(function() {
   assert_equals(document.getElementById(".").value, ".");
 },"id with punctuation only");
 test(function() {
-  assert_equals(document.getElementById("ÖÐ¹ú").value, "china");
+  assert_equals(document.getElementById("ä¸­å›½").value, "china");
 },"id with chinese character");
 </script>

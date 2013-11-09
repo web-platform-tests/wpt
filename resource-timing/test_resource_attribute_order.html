@@ -16,7 +16,7 @@ test_namespace("getEntriesByName");
 
 
 function setup_iframe() {
-    if (windows.performance.getEntriesByName !== undefined) {
+    if (window.performance.getEntriesByName !== undefined) {
       return;
     }
     iframe = document.getElementById('frameContext');
@@ -29,7 +29,7 @@ function setup_iframe() {
     body.appendChild(image);
 }
 function onload_test() {
-    if (windows.performance.getEntriesByName !== undefined) {
+    if (window.performance.getEntriesByName !== undefined) {
       return;
     }
     var context = new PerformanceContext(iframe.contentWindow.performance);

@@ -10,6 +10,10 @@
 <script src="resources/webperftestharness.js"></script>
 <script src="resources/webperftestharnessextension.js"></script>
 <script>
+// explicitly test the namespace before we start testing
+test_namespace("getEntriesByType");
+
+
 var iframe;
 function setup_iframe() {
     iframe = document.getElementById('frameContext');
@@ -19,11 +23,11 @@ function setup_iframe() {
 
     var style = d.createElement('link');
     style.rel = 'stylesheet';
-    style.href = 'resources/generate_resource.php?type=css';
+    style.href = 'generate_resource.php?type=css';
     body.appendChild(style);
 
     var image = d.createElement('img');
-    image.src = 'resources/generate_resource.php?type=image';
+    image.src = 'generate_resource.php?type=image';
     body.appendChild(image);
 
     var subframe = d.createElement('iframe');
@@ -31,6 +35,10 @@ function setup_iframe() {
     body.appendChild(subframe);
 }
 function onload_test() {
+    if (window.performance.getEntriesByType === undefined) {
+      done();
+      return;
+    }
     var context = new PerformanceContext(iframe.contentWindow.performance);
     var entries = context.getEntriesByType('resource');
 

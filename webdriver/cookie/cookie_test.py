@@ -13,6 +13,19 @@ import base_test
 
 class CookieTest( base_test.WebDriverBaseTest ):
 
+    def test_should_throw_an_exception_when_semicolon_exists_in_the_cookie_attribute(self):
+        invalid_name = 'foo;bar'
+        value = 'foobar'
+
+        self.driver.get( self.webserver.where_is( "cookie_test/cookie_container.html" ))
+
+        try:
+          self.driver.add_cookie({ 'name': invalid_name, 'value': value })
+          self.fail( 'should have thrown exceptions.' )
+
+        except UnableToSetCookieException, InvalidCookieDomainException:
+          pass
+
     def test_should_throw_an_exception_the_name_is_null(self):
         VAL = 'foobar'
 

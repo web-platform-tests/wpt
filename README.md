@@ -38,20 +38,19 @@ python serve.py
 ```
 
 This will start HTTP servers on two ports and a websockets server on
-one port. By default these ports are randomly-chosen free ports.
-Tests must be loaded from the *first* HTTP server in the output. For
-convenience during development you may wish to change this to a known
-port. This can be done using the config.json file; change the entry
-like
+one port. By default one web server starts on port 8000 and the other
+ports are randomly-chosen free ports. Tests must be loaded from the
+*first* HTTP server in the output. To change the ports, edit the
+`config.json` file, for example, replacing the part that reads:
 
 ```
-"http": ["auto", "auto"]
+"http": [8000, "auto"]
 ```
 
 to some port of your choice e.g.
 
 ```
-"http":[8000, "auto"]
+"http":[1234, "auto"]
 ```
 
 Publication

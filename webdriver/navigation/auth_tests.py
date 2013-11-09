@@ -9,6 +9,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.
 
 from webserver import Httpd
 from selenium import webdriver
+from selenium.common.exceptions import TimeoutException
 
 class WebDriverAuthTest(unittest.TestCase):
 
@@ -22,7 +23,6 @@ class WebDriverAuthTest(unittest.TestCase):
 		cls.driver = cls.driver_class()
 
 		def basic_response_func( request, *args ):
-				print "basic_response_func!!!"
 				return (401, {"WWW-Authenticate" : "Basic"}, None)
 
 		basic_auth_handler = { 'method': 'GET',
@@ -41,14 +41,15 @@ class WebDriverAuthTest(unittest.TestCase):
 	# Test that when 401 is seen by browser, a WebDriver response is still sent
 	def test_response_401_auth_basic(self):
 		page = self.webserver.where_is('navigation/auth_required_basic')
-		resp = self.driver.execute( "get", params={"url" : page})
-		print("resp = " + str(resp))
-		url = self.driver.current_url
-		print("URL = " + url)
-		self.assertTrue(True)
-
-
-
+		self.driver.set_page_load_timeout(5)
+		try:		
+			self.driver.get( page )
+			# if we got a responses instead of timeout, that's success
+			self.assertTrue(True)
+		except TimeoutException:
+			self.fail("Did not get response from browser.")
+		except:
+			self.fail("Unexpected failure. Please investigate.")
 
 if __name__ == "__main__":
     unittest.main()

@@ -82,8 +82,8 @@ So, for example, to write a javascript file called `xhr.js` that does a
 cross domain XHR test to a different subdomain and port, one would
 write in the file:
 
-    var server_url = http://{{domains[www]}}:{{ports[http][1]}}/path/to/resource;
-  //Create the actual XHR and so on
+    var server_url = "http://{{domains[www]}}:{{ports[http][1]}}/path/to/resource";
+    //Create the actual XHR and so on
 
 The file would then be included as:
 
@@ -146,7 +146,7 @@ commands. There are three types of commands:
   no more content to send.
 
 In the absence of a repetition command, the entire remainder of the content is
-sent at once when the command list id exhausted. So for example:
+sent at once when the command list is exhausted. So for example:
 
     example.txt?pipe=trickle(d1)
 

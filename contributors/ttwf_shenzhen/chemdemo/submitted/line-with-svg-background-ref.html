@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CSS mix-blend-mode API Test</title>
+    <link rel="author" title="dmyang" href="mailto:yangdemo@address.com">
+    <link rel="help" href="http://www.w3.org/TR/compositing-1/">
+    <meta name="flags" content="dom">
+    <!-- <script src="../../resources/testharness.js"></script>
+    <script src="../../resources/testharnessreport.js"></script> -->
+    <style type="text/css">
+      .svg {
+        background-color: #888;
+        width: 500px;
+        display: block;
+        height: 60px;
+        margin: 10px auto;
+      }
+      .svg text {
+        font-size: 25px;
+        line-height: 50px;
+        mix-blend-mode: normal;
+      }
+    </style>
+</head>
+<body>
+    <svg class="svg">
+        <line class="multiply" x1="10" y1="30" x2="300" y2="30" style="stroke:blue; stroke-width:20;" />
+    </svg>
+    <svg class="svg">
+        <line class="screen" x1="10" y1="30" x2="300" y2="30" style="stroke:blue; stroke-width:20;" />
+    </svg>
+    <svg class="svg">
+        <line class="overlay" x1="10" y1="30" x2="300" y2="30" style="stroke:blue; stroke-width:20;" />
+    </svg>
+    <svg class="svg">
+        <line class="darken" x1="10" y1="30" x2="300" y2="30" style="stroke:blue; stroke-width:20;" />
+    </svg>
+    <svg class="svg">
+        <line class="lighten" x1="10" y1="30" x2="300" y2="30" style="stroke:blue; stroke-width:20;" />
+    </svg>
+    <svg class="svg">
+        <line class="color-dodge" x1="10" y1="30" x2="300" y2="30" style="stroke:blue; stroke-width:20;" />
+    </svg>
+    <svg class="svg">
+        <line class="hard-light" x1="10" y1="30" x2="300" y2="30" style="stroke:blue; stroke-width:20;" />
+    </svg>
+    <svg class="svg">
+        <line class="soft-light" x1="10" y1="30" x2="300" y2="30" style="stroke:blue; stroke-width:20;" />
+    </svg>
+    <svg class="svg">
+        <line class="difference" x1="10" y1="30" x2="300" y2="30" style="stroke:blue; stroke-width:20;" />
+    </svg>
+    <svg class="svg">
+        <line class="exclusion" x1="10" y1="30" x2="300" y2="30" style="stroke:blue; stroke-width:20;" />
+    </svg>
+    <!-- <div id="log"></div>   -->
+</body>
+</html>

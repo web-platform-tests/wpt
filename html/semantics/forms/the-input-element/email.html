@@ -54,45 +54,51 @@
 		element.setAttribute('multiple', null);
 		element.value = '  user@example.com  , user2@example.com  ';
 		element.removeAttribute('multiple');
-		assert_equals(element.value, 'user@example.com');
-		assert_true(validEmailRegexp.test(element.value));
+		assert_equals(element.value, 'user@example.com,user2@example.com');
+		
 	}, 'When the multiple attribute is removed, the user agent must run the value sanitization algorithm');
 
 	// When the mutiple attribute is specified on the element
 	element = document.getElementById('multiple_email');
 	test(function(){
-		var values = element.values;
+		//	var values = element.values
+		var values = element.value.split(",");
 		assert_not_equals(typeof values, 'undefined', 'type of values');
 		assert_equals(values.length, 2);
 		assert_equals(values[0], 'user1@example.com');
 		assert_equals(values[1], 'user2@test.com');
 	}, 'The element\'s values are the result of splitting on commas the element\'s value.');
 	test(function(){
-		element.value = '';
-		var values = element.values;
-		assert_not_equals(typeof values, 'undefined', 'type of values');
-		values.push('user,@example.com');
-		assert_equals(values.length, 0);
+		//element.value = '';
+		//var values = element.value.split(",");
+		//assert_not_equals(typeof values, 'undefined', 'type of values');
+		//values  =  values==undefined||values==null||values.length==0?{}:values;
+		element.value = 'user,@example.com';
+		assert_false(element.checkValidity());
 	}, 'User agents must not allow users to set any individual value to a string containing "," (U+002C) character');
 	test(function(){
-		element.value = '';
-		var values = element.values;
+	/*	element.value = '';
+		var values = element.value.split(",");
 		assert_not_equals(typeof values, 'undefined', 'type of values');
-		values.push('user@e\u000Axample.com');
-		assert_equals(values.length, 0);			
+		values.push('user@example.com');
+		assert_equals(values.length, 0);	*/
+		element.value = 'user@e\\U000Axample.com';
+		assert_false(element.checkValidity());		
 	}, 'User agents must not allow users to set any individual value to a string containing "LF" (U+000A) character');
 	test(function(){
-		element.value = '';
-		var values = element.values;
+		/*element.value = '';
+		var values = element.value.split(",");
 		assert_not_equals(typeof values, 'undefined', 'type of values');			
-		values.push('user@e\u000Dxample.com');
-		assert_equals(values.length, 0);
+		values.push('user@example.com');
+		assert_equals(values.length, 0);*/
+				element.value = 'user@e\\U000Dxample.com';
+		assert_false(element.checkValidity());	
 	}, 'User agents must not allow users to set any individual value to a string containing "CR" (U+000D) character');		
 
 	// Whenever the user changes the element\'s values, the user agent must run the following steps
 	(function(){
 		element.value = '  user1@example.com  , user2@test.com, user3@test.com  ';
-		var values = element.values;
+		var values = element.value.split(",");
 		assert_not_equals(typeof values, 'undefined', 'type of values');			
 		test(function(){
 			assert_equals(values.length, 3);

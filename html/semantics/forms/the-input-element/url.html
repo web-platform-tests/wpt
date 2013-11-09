@@ -14,6 +14,7 @@
 	<input type="url" id="value_with_CR" value="a&#x000D;a" />
 	<input type="url" id="value_with_CRLF" value="a&#x000A;&#x000D;a" />
 	<input type="url" id="value_with_leading_trailing_white_space" value=" aa " />
+	<input type="url" id="value_with_leading_trailing_inner_white_space" value=" a a " />
 	<div id="log">
 	</div>
 
@@ -55,8 +56,14 @@
 			element.value = ' aa ';
 			assert_equals(element.value, 'aa');
 
+			element.value = ' a a ';
+			assert_equals(element.value, 'a a');
+
 			element = document.getElementById('value_with_leading_trailing_white_space');
 			assert_equals(element.value, 'aa');
+
+			element = document.getElementById('value_with_leading_trailing_inner_white_space');
+			assert_equals(element.value, 'a a');
 		}, 'The value sanitization algorithm is as follows: Strip leading and trailing whitespace from the value.');
 	</script>
 

@@ -31,6 +31,17 @@ class CookieTest( base_test.WebDriverBaseTest ):
         'secure': secure
       })
 
+    def test_secure_defaults_to_false( self ):
+      name = 'foo'
+      value = 'bar'
+
+      self.driver.add_cookie({
+        'name': name,
+        'value': value
+      })
+
+      self.assertEqual( self.driver.get_cookie( name )[ 'secure' ], True )
+
     def test_should_throw_an_exception_when_semicolon_exists_in_the_cookie_attribute(self):
         invalid_name = 'foo;bar'
         value = 'foobar'

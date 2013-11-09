@@ -7,8 +7,8 @@
   <meta name="Author" content="">
   <meta name="Keywords" content="">
   <meta name="Description" content="">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
+<script src="testharness.js"></script>
+<script src="testharnessreport.js"></script>
 
  </head>
 
@@ -16,7 +16,7 @@
   
 <div id="spaceship" data-ship-id="92432"
      data-weapons="laser 2" data-shields="50%"
-     data-x="30" data-y="10" data-z="90" data-bbb="����">
+     data-x="30" data-y="10" data-z="90" data-bbb="中文" >
  <!--
  <button class="fire"
          onclick="alert(this.parentNode.dataset.bbb)">
@@ -25,10 +25,14 @@
  -->
 </div>
  <script>
+
  test(function() {
     var spaceship = document.getElementById("spaceship");
-    assert_equals(spaceship.dataset.bbb, "����");
-	 }, "Test dataset.bbb equals to '����'");
+    assert_equals(spaceship.dataset.bbb, "中文");
+	 }, "Test dataset.bbb equals to '中文'");
+
+ 
+
  </script>
 
 <div id='log'></div>

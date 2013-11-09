@@ -20,7 +20,7 @@ var iframe;
 var iframeBody;
 function setup_iframe() {
 
-    var iframe_content = '<iframe id="innerFrame" src="resources/inject_resource_test.html"></iframe>';
+    var iframe_content = '<iframe id="innerFrame" src="inject_resource_test.html"></iframe>';
     iframe = document.getElementById('frameContext');
     d = iframe.contentWindow.document;
     d.write(iframe_content);

@@ -82,22 +82,22 @@ function perform_test() {
 
     var expected_entries = { };
 
-    expected_entries[ pathname + 'resources/Ahem.ttf ] = 'css';
-    expected_entries[ pathname + 'resources/1x1-blue.png ] = 'img';
-    expected_entries[ pathname + 'resources/blank_page_green.htm ] = 'iframe';
-    expected_entries[ pathname + 'resources/empty_script.js ] = 'script';
-    expected_entries[ pathname + 'resources/generate_resource.php?type=css&id=embed ] = 'embed';
-    expected_entries[ pathname + 'resources/generate_resource.php?type=css&id=n1 ] = 'css';
-    expected_entries[ pathname + 'resources/generate_resource.php?type=font&id=n1 ] = 'css';
-    expected_entries[ pathname + 'resources/generate_resource.php?type=image&id=1 ] = 'css';
-    expected_entries[ pathname + 'resources/generate_resource.php?type=image&id=2 ] = 'css';
-    expected_entries[ pathname + 'resources/generate_resource.php?type=image&id=async_xhr ] = 'xmlhttprequest';
-    expected_entries[ pathname + 'resources/generate_resource.php?type=image&id=body ] = 'body';
-    expected_entries[ pathname + 'resources/generate_resource.php?type=image&id=input ] = 'input';
-    expected_entries[ pathname + 'resources/generate_resource.php?type=image&id=n1 ] = 'css';
-    expected_entries[ pathname + 'resources/generate_resource.php?type=image&id=object ] = 'object';
-    expected_entries[ pathname + 'resources/generate_resource.php?type=image&id=poster ] = 'video';
-    expected_entries[ pathname + 'resources/nested.css ] = 'link';
+    expected_entries[ pathname + 'resources/Ahem.ttf' ] = 'css';
+    expected_entries[ pathname + 'resources/1x1-blue.png' ] = 'img';
+    expected_entries[ pathname + 'resources/blank_page_green.htm' ] = 'iframe';
+    expected_entries[ pathname + 'resources/empty_script.js' ] = 'script';
+    expected_entries[ pathname + 'resources/generate_resource.php?type=css&id=embed' ] = 'embed';
+    expected_entries[ pathname + 'resources/generate_resource.php?type=css&id=n1' ] = 'css';
+    expected_entries[ pathname + 'resources/generate_resource.php?type=font&id=n1' ] = 'css';
+    expected_entries[ pathname + 'resources/generate_resource.php?type=image&id=1' ] = 'css';
+    expected_entries[ pathname + 'resources/generate_resource.php?type=image&id=2' ] = 'css';
+    expected_entries[ pathname + 'resources/generate_resource.php?type=image&id=async_xhr' ] = 'xmlhttprequest';
+    expected_entries[ pathname + 'resources/generate_resource.php?type=image&id=body' ] = 'body';
+    expected_entries[ pathname + 'resources/generate_resource.php?type=image&id=input' ] = 'input';
+    expected_entries[ pathname + 'resources/generate_resource.php?type=image&id=n1' ] = 'css';
+    expected_entries[ pathname + 'resources/generate_resource.php?type=image&id=object' ] = 'object';
+    expected_entries[ pathname + 'resources/generate_resource.php?type=image&id=poster' ] = 'video';
+    expected_entries[ pathname + 'resources/nested.css' ] = 'link';
 
     test_resource_entries(entries, expected_entries);
     done();

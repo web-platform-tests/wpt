@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Basic User Interface Test: text-overflow - inherit - inherit clip value of parent's text-overflow property</title>
+<link rel="author" title="Intel" href="http://www.intel.com/">
+<link rel="author" title="Shiyou Tan" href="mailto:shiyoux.tan@intel.com">
+<link rel="help" title="8.2. Overflow Ellipsis: the 'text-overflow' property" href="http://www.w3.org/TR/css3-ui/#text-overflow">
+<meta name="flags" content="">
+<meta name="assert" content="Test checks that text-overflow inherits the parent' clip value when text-overflow set inherit">
+<style>
+  #container {
+    text-overflow: clip;
+  }
+  #test {
+    border: 2px solid;
+    font-size: 20px;
+    height: 20px;
+    overflow: hidden;
+    text-overflow: inherit;
+    width: 150px;
+  }
+</style>
+<body>
+  <p>Test passes if there are only there words <strong>Test checks the</strong> inside the black frame below and <strong>no</strong>
+  other characters outside.</p>
+  <div id="container">
+    <div id="test">Test checks the content broken if the content overflows the container</div>
+  </div>
+</body>

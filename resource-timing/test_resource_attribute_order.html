@@ -10,6 +10,11 @@
 <script src="resources/webperftestharness.js"></script>
 <script src="resources/webperftestharnessextension.js"></script>
 <script>
+
+// explicitly test the namespace before we start testing
+test_namespace("getEntriesByName");
+
+
 function setup_iframe() {
     iframe = document.getElementById('frameContext');
     var d = iframe.contentWindow.document;

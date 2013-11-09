@@ -142,118 +142,59 @@ PerformanceContext.prototype =
 
     initialMeasures: function(item, index, array)
     {
-        (this.performanceContext.measure     ||
-         this.performanceContext.mozMeasure  || 
-         this.performanceContext.msMeasure   ||
-         this.performanceContext.oMeasure    ||
-         this.performanceContext.webkitMeasure)
-        .apply(this.performanceContext, item);
+        this.performanceContext.measure.apply(this.performanceContext, item);
     },
 
     mark: function()
     {
-        (this.performanceContext.mark     ||
-         this.performanceContext.mozMark  || 
-         this.performanceContext.msMark   ||
-         this.performanceContext.oMark    ||
-         this.performanceContext.webkitMark)
-        .apply(this.performanceContext, arguments);
+        this.performanceContext.mark.apply(this.performanceContext, arguments);
     },
 
     measure: function()
     {
-        (this.performanceContext.measure     ||
-         this.performanceContext.mozMeasure  || 
-         this.performanceContext.msMeasure   ||
-         this.performanceContext.oMeasure    ||
-         this.performanceContext.webkitMeasure)
-        .apply(this.performanceContext, arguments);
+        this.performanceContext.measure.apply(this.performanceContext, arguments);
     },
 
     clearMarks: function()
     {
-        (this.performanceContext.clearMarks     ||
-         this.performanceContext.mozClearMarks  || 
-         this.performanceContext.msClearMarks   ||
-         this.performanceContext.oClearMarks    ||
-         this.performanceContext.webkitClearMarks)
-        .apply(this.performanceContext, arguments);
+        this.performanceContext.clearMarks.apply(this.performanceContext, arguments);
 
     },
 
     clearMeasures: function()
     {
-        (this.performanceContext.clearMeasures     ||
-         this.performanceContext.mozClearMeasures  || 
-         this.performanceContext.msClearMeasures   ||
-         this.performanceContext.oClearMeasures    ||
-         this.performanceContext.webkitClearMeasures)
-        .apply(this.performanceContext, arguments);
+        this.performanceContext.clearMeasures.apply(this.performanceContext, arguments);
 
     },
 
     getEntries: function()
     {
-        return (this.performanceContext.getEntries     ||
-                this.performanceContext.mozGetEntries  || 
-                this.performanceContext.msGetEntries   ||
-                this.performanceContext.oGetEntries    ||
-                this.performanceContext.webkitGetEntries)
-                .apply(this.performanceContext, arguments);
+        return this.performanceContext.getEntries.apply(this.performanceContext, arguments);
     },
 
     getEntriesByType: function()
     {
-        return (this.performanceContext.getEntriesByType     ||
-                this.performanceContext.mozGetEntriesByType  || 
-                this.performanceContext.msGetEntriesByType   ||
-                this.performanceContext.oGetEntriesByType    ||
-                this.performanceContext.webkitGetEntriesByType)
-                .apply(this.performanceContext, arguments);
+        return this.performanceContext.getEntriesByType.apply(this.performanceContext, arguments);
     },
 
     getEntriesByName: function()
     {
-        return (this.performanceContext.getEntriesByName     ||
-                this.performanceContext.mozGetEntriesByName  || 
-                this.performanceContext.msGetEntriesByName   ||
-                this.performanceContext.oGetEntriesByName    ||
-                this.performanceContext.webkitGetEntriesByName)
-                .apply(this.performanceContext, arguments);
+        return this.performanceContext.getEntriesByName.apply(this.performanceContext, arguments);
     },
 
     setResourceTimingBufferSize: function()
     {
-        return (this.performanceContext.setResourceTimingBufferSize     ||
-                this.performanceContext.mozSetResourceTimingBufferSize  || 
-                this.performanceContext.msSetResourceTimingBufferSize   ||
-                this.performanceContext.oSetResourceTimingBufferSize    ||
-                this.performanceContext.webkitSetResourceTimingBufferSize)
-                .apply(this.performanceContext, arguments);
+        return this.performanceContext.setResourceTimingBufferSize.apply(this.performanceContext, arguments);
     },
 
     registerResourceTimingBufferFullCallback: function(func)
     {
-        if (typeof this.performanceContext.onresourcetimingbufferfull !== "undefined")
-            this.performanceContext.onresourcetimingbufferfull = func;
-        else if (typeof this.performanceContext.onmozresourcetimingbufferfull !== "undefined")
-            this.performanceContext.onmozresourcetimingbufferfull = func;
-        else if (typeof this.performanceContext.onmsresourcetimingbufferfull !== "undefined")
-            this.performanceContext.onmsresourcetimingbufferfull = func;
-        else if (typeof this.performanceContext.onoresourcetimingbufferfull !== "undefined")
-            this.performanceContext.onoresourcetimingbufferfull = func;
-        else if (typeof this.performanceContext.onwebkitresourcetimingbufferfull !== "undefined")
-            this.performanceContext.onwebkitresourcetimingbufferfull = func;
+        this.performanceContext.onresourcetimingbufferfull = func;
     },
 
     clearResourceTimings: function()
     {
-        (this.performanceContext.clearResourceTimings     ||
-         this.performanceContext.mozClearResourceTimings  || 
-         this.performanceContext.msClearResourceTimings   ||
-         this.performanceContext.oClearResourceTimings    ||
-         this.performanceContext.webkitClearResourceTimings)
-        .apply(this.performanceContext, arguments);
+        this.performanceContext.clearResourceTimings.apply(this.performanceContext, arguments);
     }
 
 };

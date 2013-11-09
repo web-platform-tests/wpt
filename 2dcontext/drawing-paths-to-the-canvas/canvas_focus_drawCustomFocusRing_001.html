@@ -4,11 +4,13 @@
     <title>canvas drawCustomFocusRing() step1 test</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
-    <link rel="stylesheet" href="/resources/testharness.css" media="all"/>
+    <link rel="stylesheet" href="/resources/testharness.css" media="all">
+    <link rel="author" title="Takeshi Kurosawa" href="mailto:kurosawa-takeshi@mitsue.co.jp">
+    <link rel="help" href="http://www.w3.org/TR/2dcontext/#dom-context-2d-drawcustomfocusring">
   </head>
   <body>
     <h1>Description</h1>
-    <p>This test checks whether drawCustomFocusRing return false if the element passed as an argument is not focused or is not a descendant of the element with whose context the method is associated.</p>
+    <p>This test checks whether drawCustomFocusRing returns false if the element passed as an argument is not focused or is not a descendant of the element with whose context the method is associated.</p>
     <div id="log"></div>
     <div>
       <input type="text" id="text0">

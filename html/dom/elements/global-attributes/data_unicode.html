@@ -1,0 +1,35 @@
+<!DOCTYPE HTML>
+<html>
+ <head>
+  <title> New Document </title>
+  <meta name="Generator" content="EditPlus">
+  <meta name="Author" content="">
+  <meta name="Keywords" content="">
+  <meta name="Description" content="">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+ </head>
+
+ <body>
+  
+<div id="spaceship" data-ship-id="92432"
+     data-weapons="laser 2" data-shields="50%"
+     data-x="30" data-y="10" data-z="90" data-bbb="����">
+ <!--
+ <button class="fire"
+         onclick="alert(this.parentNode.dataset.bbb)">
+  Fire
+ </button>
+ -->
+</div>
+ <script>
+ test(function() {
+    var spaceship = document.getElementById("spaceship");
+    assert_equals(spaceship.dataset.bbb, "����");
+	 }, "Test dataset.bbb equals to '����'");
+ </script>
+
+<div id='log'></div>
+ </body>
+</html>

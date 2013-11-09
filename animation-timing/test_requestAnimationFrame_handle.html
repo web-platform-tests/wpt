@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>requestAnimationFrame returns integer value and unique identifier</title>
+<link rel="author" title="Kensaku Komatsu" href="mailto:kensaku.komatsu@gmail.com" />
+<link rel="help" href="http://www.w3.org/TR/animation-timing/#framerequestcallback"/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css" />
+<script>
+  setup({explicit_done: true});
+
+  // avoid script errors
+  if(window.requestAnimationFrame === undefined) {
+    done();
+    return;
+  }
+
+  var id0, id1; // store identifier for each FrameRequest
+  var count = 0; // check how many callback was called
+
+  // define FrameRequestCallback
+  // it will be called only twice.
+  var fr_callback = function(){
+    count++;
+    if(!!id1 === false) {
+      id1 = requestAnimationFrame(fr_callback);
+    }
+  }
+
+  id0 = requestAnimationFrame(fr_callback)
+  
+
+  // after 1 second, assert handle value
+  setTimeout(function(e){
+    var msg = "2 request were called.";
+    test(function(){
+      assert_true(!!id0, msg);
+      assert_true(!!id1, msg);
+      assert_equals(count, 2, msg);
+    }, msg);
+
+    msg = "Identifier for FrameRequest must be integer";
+    test(function(){
+      assert_equals(typeof(id0), "number", msg);
+      assert_equals(typeof(id1), "number", msg);
+      assert_equals(Math.floor(id0), id0, msg);
+      assert_equals(Math.floor(id1), id1, msg);
+      assert_true(id0 > 0, msg);
+      assert_true(id1 > 0, msg);
+    }, msg);
+
+
+    msg = "Identifier for FrameRequest must be unique";
+    test(function(){
+      assert_not_equals(id0, id1, msg);
+    }, msg);
+
+    done();
+  }, 1000);
+</script>
+</head>
+<body>
+<h1>Description</h1>
+<p>This test validates handle for FrameRequest.</p>
+
+<p>Handle must be integer greater than zero that uniquely identifies the entry.</p>
+
+<div id="log"></div>
+</body>
+</html>

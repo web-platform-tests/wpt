@@ -1,0 +1,31 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="UTF-8"></meta>
+		<title>Input form</title>
+		<script src="/resources/testharness.js"></script>
+		<script src="/resources/testharnessreport.js"></script>
+	</head>
+	<body>
+		<h1>Form Attribute</h1>
+		<form id="myForm">
+			<input type="date" value="2013/2/2" name="dateInput" id="dateInput"  />
+			
+		</form>
+		<input type="email" value="valid@hotmail.com" name="emailInput" id="emailInput" form="myForm"/>
+		
+		
+
+		<script>
+			test(function(){
+					assert_equals(document.getElementById("emailInput").getAttribute("form"),"myForm");
+				}, "form attribute is supported on input element"
+			);
+			test(function(){
+					assert_equals(document.getElementById("myForm").emailInput.value,"valid@hotmail.com");
+				}, "form attribute is supported on input element"
+			);
+		</script>
+		<div id="log"></div>
+	</body>
+</html>

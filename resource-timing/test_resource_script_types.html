@@ -27,18 +27,18 @@ function setup_iframe() {
         '<script>' +
         'document.write("<script src=\\"' + pathname + 'resources/generate_resource.php?type=script&id=5\\"></scr" + "ipt>");' +
         'var s1 = document.createElement("script");' +
-        's1.src = pathname + "resources/generate_resource.php?type=script&id=6";' +
+        's1.src = "' + pathname + 'resources/generate_resource.php?type=script&id=6";' +
         'document.getElementsByTagName("head")[0].appendChild(s1);' +
         'var s2 = document.createElement("script");' +
-        's2.src = pathname + "resources/generate_resource.php?type=script&id=7";' +
+        's2.src = "' + pathname + 'resources/generate_resource.php?type=script&id=7";' +
         's2.async = true;' +
         'document.getElementsByTagName("head")[0].appendChild(s2);' +
         'var s3 = document.createElement("script");' +
-        's3.src = pathname + "resources/generate_resource.php?type=script&id=8";' +
+        's3.src = "' + pathname + 'resources/generate_resource.php?type=script&id=8";' +
         's3.async = false;' +
         'document.getElementsByTagName("head")[0].appendChild(s3);' +
         'var s4 = document.createElement("script");' +
-        's4.src = pathname + "resources/generate_resource.php?type=script&id=9";' +
+        's4.src = "' + pathname + 'resources/generate_resource.php?type=script&id=9";' +
         's4.defer = true;' +
         'document.getElementsByTagName("head")[0].appendChild(s4);' +
         '</scr' + 'ipt>';

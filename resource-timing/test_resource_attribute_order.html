@@ -16,6 +16,9 @@ test_namespace("getEntriesByName");
 
 
 function setup_iframe() {
+    if (windows.performance.getEntriesByName !== undefined) {
+      return;
+    }
     iframe = document.getElementById('frameContext');
     var d = iframe.contentWindow.document;
     var body = d.createElement('body');
@@ -26,6 +29,9 @@ function setup_iframe() {
     body.appendChild(image);
 }
 function onload_test() {
+    if (windows.performance.getEntriesByName !== undefined) {
+      return;
+    }
     var context = new PerformanceContext(iframe.contentWindow.performance);
     var index = window.location.pathname.lastIndexOf('/');
     var pathname = window.location.pathname.substring(0, index) + '/';

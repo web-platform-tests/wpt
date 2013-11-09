@@ -8,18 +8,20 @@
     <meta name="flags" content="font">
     <meta name="assert" content="'text-overflow:ellipsis' renders U+2026 when text is overflowing.">
 	<style>
-	div { 
+	div {
+		font-size:10px;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
 		width: 50px;
 	}
+	span { font-family: Ahem; font-size:30px; }
 	</style>
 <body>
 	<p>PREREQUISITE: The font used must have a glyph for the U+2026 character.</p>
-	<p>Test passes if there is <strong>ellipsis</strong> after 'Test'.</p>
+	<p>Test passes if there is <strong>ellipsis</strong> after a black square.</p>
 	<div>
-		Test FAIL
+		<span>AAAA</span>
 	</div>
 </body>
 </html>

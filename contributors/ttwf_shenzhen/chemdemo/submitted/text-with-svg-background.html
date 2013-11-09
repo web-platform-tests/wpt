@@ -2,11 +2,9 @@
 <html>
 <head>
     <title>CSS mix-blend-mode API Test</title>
-    <link rel="author" title="dmyang" href="mailto:yangdemo@address.com">
+    <link rel="author" title="dmyang" href="mailto:yangdemo@gmail.com">
     <link rel="help" href="http://www.w3.org/TR/compositing-1/">
     <meta name="flags" content="dom">
-    <!-- <script src="../../resources/testharness.js"></script>
-    <script src="../../resources/testharnessreport.js"></script> -->
     <style type="text/css">
       .svg {
         background-color: #888;
@@ -19,57 +17,10 @@
         font-size: 25px;
         line-height: 20px;
       }
-      /*.multiply {mix-blend-mode: multiply;}
-      .screen {mix-blend-mode: screen;}
-      .overlay {mix-blend-mode: overlay;}
-      .darken {mix-blend-mode: darken;}
-      .darken {mix-blend-mode: darken;}
-      .darken {mix-blend-mode: darken;}
-      .color-dodge {mix-blend-mode: color-dodge;}
-      .color-burn {mix-blend-mode: color-burn;}
-      .hard-light {mix-blend-mode: hard-light;}
-      .soft-light {mix-blend-mode: soft-light;}
-      .difference {mix-blend-mode: difference;}
-      .exclusion {mix-blend-mode: exclusion;}*/
     </style>
     <style id="insert" type="text/css"></style>
 </head>
 <body>
-    <!-- <svg class="svg">
-        <text class="multiply" x="10" y="20">mix-blend-mode: multiply;</text>
-    </svg>
-    <svg class="svg">
-        <text class="screen" x="10" y="20">mix-blend-mode: screen;</text>
-    </svg>
-    <svg class="svg">
-        <text class="overlay" x="10" y="20">mix-blend-mode: overlay;</text>
-    </svg>
-    <svg class="svg">
-        <text class="darken" x="10" y="20">mix-blend-mode: darken;</text>
-    </svg>
-    <svg class="svg">
-        <text class="lighten" x="10" y="20">mix-blend-mode: lighten;</text>
-    </svg>
-    <svg class="svg">
-        <text class="color-dodge" x="10" y="20">mix-blend-mode: color-dodge;</text>
-    </svg>
-    <svg class="svg">
-        <text class="color-burn" x="10" y="20">mix-blend-mode: color-burn;</text>
-    </svg>
-    <svg class="svg">
-        <text class="hard-light" x="10" y="20">mix-blend-mode: hard-light;</text>
-    </svg>
-    <svg class="svg">
-        <text class="soft-light" x="10" y="20">mix-blend-mode: soft-light;</text>
-    </svg>
-    <svg class="svg">
-        <text class="difference" x="10" y="20">mix-blend-mode: difference;</text>
-    </svg>
-    <svg class="svg">
-        <text class="exclusion" x="10" y="20">mix-blend-mode: exclusion;</text>
-    </svg> -->
-    <!-- <div id="log"></div>   -->
-</body>
 <script>
 var SVG_NS = 'http://www.w3.org/2000/svg';
 var modes = [
@@ -100,4 +51,5 @@ while(mode = modes[i++]) {
 document.getElementById('insert').innerHTML = style;
 document.body.appendChild(flagment);
 </script>
+</body>
 </html>

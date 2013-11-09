@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>The constraint validation API Test: element.validity.rangeOverflow</title>
+<link rel="author" title="Intel" href="http://www.intel.com/">
+<link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/forms.html#dom-validitystate-rangeOverflow">
+<link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/forms.html#the-constraint-validation-api">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="support/validator.js"></script>
+<div id="log"></div>
+<form name="fm"></form>
+<script>
+  var testElements = [
+    {
+      tag: "input",
+      types: ["datetime"],
+      testData: [
+        {max: "", value: "2000-01-01T12:00:00Z", expected: false, name: "The max attribute is not set"},
+        {max: "2000-01-01T12:00:00Z", value: "", expected: false, name: "Value is empty string"},
+        {max: "2000-01-01  12:00:00Z", value: "2001-01-01T12:00:00Z", expected: false, name: "The max attribute is an invalid global date time string"},
+        {max: "2000-01-01T12:00:00Z", value: "2000-01-01T11:00:00Z", expected: false, name: "The max attribute is greater than the value attribute"},
+        {max: "2000-01-01T23:59:59Z", value: "2001-01-01T24:00:00Z", expected: false, name: "The value is an invalid datetime string(hour is greater than 23)"},
+        {max: "1970-01-01T12:00Z", value: "80-01-01T12:00Z", expected: false, name: "The value if an invalid date time string(year is two digits)"},
+        {max: "2000-01-01T12:00:00Z", value: "2001-01-01T13:00:00Z", expected: true, name: "The value is is greater than max"},
+        {max: "2000-01-01T12:00:00.1Z", value: "2000-01-01T12:00:00.2Z", expected: true, name: "The value is greater than max(with millisecond in 1 digit)"},
+        {max: "2000-01-01T12:00:00.01Z", value: "2000-01-01T12:00:00.02Z", expected: true, name: "The value is greater than max(with millisecond in 2 digits)"},
+        {max: "2000-01-01T12:00:00.001Z", value: "2000-01-01T12:00:00.002Z", expected: true, name: "The value is greater than max(with millisecond in 3 digits)"},
+        {max: "2000-01-01T12:00:00", value: "10000-01-01T12:00:00", expected: true, name: "The value is is greater than max(Year is 10000 should be valid)"},
+        {max: "8592-01-01T02:09+02:09", value: "8593-01-01T02:09+02:09", expected: true, name: "The value is is greater than max(with timezone)"}
+      ]
+    },
+    {
+      tag: "input",
+      types: ["date"],
+      testData: [
+        {max: "", value: "2000-01-01", expected: false, name: "The max attribute is not set"},
+        {max: "2000-01-01", value: "", expected: false, name: "Value is empty string"},
+        {max: "2000/01/01", value: "2002-01-01", expected: false, name: "The max attribute is an invalid date"},
+        {max: "2000-01-01", value: "2000-2-2", expected: false, name: "The value attribute is an invalid date"},
+        {max: "987-01-01", value: "988-01-01", expected: false, name: "The value is an invalid date(year is three digits)"},
+        {max: "2000-01-01", value: "2000-13-01", expected: false, name: "The value is an invalid date(month is greater than 12)"},
+        {max: "2000-01-01", value: "2000-02-30", expected: false, name: "The value is an invalid date(date is greater than 29 for Feb)"},
+        {max: "2000-12-01", value: "2000-01-01", expected: false, name: "The max attribute is greater than value attribute"},
+        {max: "2000-12-01", value: "2001-01-01", expected: true, name: "The value attribute is greater than max attribute"},
+        {max: "2000-01-01", value: "10000-01-01", expected: true, name: "The value attribute is greater than max attribute(Year is 10000 should be valid)"}
+      ]
+    },
+    {
+      tag: "input",
+      types: ["month"],
+      testData: [
+        {max: "", value: "2000-01", expected: false, name: "The max attribute is not set"},
+        {max: "2000-01", value: "", expected: false, name: "Value is empty string"},
+        {max: "2000/01", value: "2001-02", expected: false, name: "The max attribute is an invalid month string"},
+        {max: "2000-01", value: "2000-2", expected: false, name: "The value attribute is an invalid month string"},
+        {max: "987-01", value: "988-01", expected: false, name: "The value is an invalid month string(year is three digits)"},
+        {max: "2000-01", value: "2000-13", expected: false, name: "The value is an invalid month string(month is greater than 12)"},
+        {max: "2000-12", value: "2000-01", expected: false, name: "The max attribute is greater than value attribute"},
+        {max: "2000-01", value: "2000-12", expected: true, name: "The value attribute is greater than max attribute"},
+        {max: "2000-01", value: "10000-01", expected: true, name: "The value attribute is greater than max attribute(Year is 10000 should be valid)"}
+      ]
+    },
+    {
+      tag: "input",
+      types: ["week"],
+      testData: [
+        {max: "", value: "2000-W01", expected: false, name: "The max attribute is not set"},
+        {max: "2000-W01", value: "", expected: false, name: "Value is empty string"},
+        {max: "2000/W01", value: "2001-W02", expected: false, name: "The max attribute is an invalid week string"},
+        {max: "2000-W01", value: "2000-W2", expected: false, name: "The value attribute is an invalid week string"},
+        {max: "2000-W01", value: "2000-w02", expected: false, name: "The value attribute is an invalid week string(w is in lowercase)"},
+        {max: "987-W01", value: "988-W01", expected: false, name: "The value is an invalid week string(year is three digits)"},
+        {max: "2000-W01", value: "2000-W57", expected: false, name: "The value is an invalid week string(week is too greater)"},
+        {max: "2000-W12", value: "2000-W01", expected: false, name: "The max attribute is greater than value attribute"},
+        {max: "2000-W01", value: "2000-W12", expected: true, name: "The value attribute is greater than max attribute"},
+        {max: "2000-W01", value: "10000-W01", expected: true, name: "The value attribute is greater than max attribute(Year is 10000 should be valid)"}
+      ]
+    },
+    {
+      tag: "input",
+      types: ["time"],
+      testData: [
+        {max: "", value: "12:00:00", expected: false, name: "The max attribute is not set"},
+        {max: "12:00:00", value: "", expected: false, name: "Value is empty string"},
+        {max: "12.00.00", value: "12:00:01", expected: false, name: "The max attribute is an invalid time string"},
+        {max: "12:00:00", value: "12.00.01", expected: false, name: "The value attribute is an invalid time string"},
+        {max: "23:59:59", value: "24:00:00", expected: false, name: "The value attribute is an invalid time string(hour is greater than 23)"},
+        {max: "23:59:59", value: "23:60:00", expected: false, name: "The value attribute is an invalid time string(minute is greater than 59)"},
+        {max: "23:59:59", value: "23:59:60", expected: false, name: "The value attribute is an invalid time string(second is greater than 59)"},
+        {max: "13:00:00", value: "12:00:00", expected: false, name: "The max attribute is greater than value attribute"},
+        {max: "12:00:00", value: "13", expected: false, name: "The time missing second and minute parts is invalid"},
+        {max: "12:00:00", value: "12:00:02", expected: true, name: "The value attribute is greater than max attribute"},
+        {max: "12:00:00.1", value: "12:00:00.2", expected: true, name: "The value is greater than max(with millisecond in 1 digit)"},
+        {max: "12:00:00.01", value: "12:00:00.02", expected: true, name: "The value is greater than max(with millisecond in 2 digit)"},
+        {max: "12:00:00.001", value: "12:00:00.002", expected: true, name: "The value is greater than max(with millisecond in 3 digit)"},
+        {max: "12:00:00", value: "12:01", expected: true, name: "The time missing second part is valid"}
+      ]
+    },
+    {
+      tag: "input",
+      types: ["datetime-local"],
+      testData: [
+        {max: "", value: "12:00:00", expected: false, name: "The max attribute is not set"},
+        {max: "2000-01-01T12:00:00", value: "", expected: false, name: "Value is empty string"},
+        {max: "2000-01-01  12:00:00", value: "2001-01-01T12:00:00", expected: false, name: "The max attribute is an invalid local datetime string"},
+        {max: "2000-01-01T12:00:00", value: "2001-01-01  13:00:00", expected: false, name: "The value attribute is an invalid local datetime string"},
+        {max: "2000-01-01T23:59:59", value: "2001-01-01T24:00:00", expected: false, name: "The hour greater than 23 should be invalid"},
+        {max: "2000-01-01T23:59:59", value: "2001-01-01T23:60:00", expected: false, name: "The minute greater than 59 should be invalid"},
+        {max: "2000-01-01T23:59:59", value: "2001-01-01T23:59:60", expected: false, name: "The second greater than 59 should be invalid"},
+        {max: "2000-01-01T12:00:00", value: "2000-01-01T11:00:00", expected: false, name: "The max attribute is greater than value attribute"},
+        {max: "2000-01-01T12:01", value: "2000-01-01T12:02", expected: true, name: "The value attribute is greater than max attribute"},
+        {max: "9999-01-01T12:00:00", value: "10000-01-01T12:00:00", expected: true, name: "The value attribute is greater than max attribute(Year is 10000 should be valid)"},
+        {max: "2000-01-01T12:00:00.1", value: "2000-01-01T12:00:00.2", expected: true, name: "The value is greater than max(with millisecond in 1 digit)"},
+        {max: "2000-01-01T12:00:00.01", value: "2000-01-01T12:00:00.02", expected: true, name: "The value is greater than max(with millisecond in 2 digit)"},
+        {max: "2000-01-01T12:00:00.001", value: "2000-01-01T12:00:00.002", expected: true, name: "The value is greater than max(with millisecond in 3 digit)"}
+      ]
+    },
+    {
+      tag: "input",
+      types: ["number"],
+      testData: [
+        {max: "", value: "10", expected: false, name: "The max attribute is not set"},
+        {max: "5", value: "", expected: false, name: "Value is empty string"},
+        {max: "5", value: "4", expected: false, name: "The max is greater than value(integer)"},
+        {max: "-5.5", value: "-5.6", expected: false, name: "The max is greater than value(floaging number)"},
+        {max: "-0", value: "0", expected: false, name: "The max equals to value"},
+        {max: "5", value: "1abc", expected: false, name: "The value is not a number"},
+        {max: "5", value: "6", expected: true, name: "The value is greater than max(integer)"},
+        {max: "-5.5", value: "-5.4", expected: true, name: "The value is greater than max(floating number)"},
+        {max: "-5e-1", value: "5e+2", expected: true, name: "The value is greater than max(scientific notation)"}
+      ]
+    }
+   ];
+
+  for (var i = 0; i < testElements.length; i++) {
+    var ele = document.createElement(testElements[i].tag);
+    document.forms.fm.appendChild(ele);
+    if (testElements[i].types.length > 0) {
+      for (var typ in testElements[i].types) {
+        try {
+          ele.type = testElements[i].types[typ];
+        } catch (e) {
+          //Do nothing, avoid the runtime error breaking the test
+        }
+
+        if (ele.type != testElements[i].types[typ]) {
+          validator.test_support_type(
+            ele,
+            testElements[i].types[typ],
+            "The " + testElements[i].types[typ] + " type of " + ele.tagName.toUpperCase() + " element must be suppoorted."
+          );
+          continue;
+        }
+
+        for (var item in testElements[i].testData) {
+          validator.test_rangeOverflow(
+            ele,
+            testElements[i].testData[item].max,
+            testElements[i].testData[item].value,
+            testElements[i].testData[item].expected,
+            "[" + testElements[i].tag.toUpperCase() + " in " + testElements[i].types[typ].toUpperCase() + " status]: " + testElements[i].testData[item].name
+          );
+        }
+      }
+    } else {
+      for (var item in testElements[i].testData) {
+        validator.test_rangeOverflow(
+          ele,
+          testElements[i].testData[item].max,
+          testElements[i].testData[item].value,
+          testElements[i].testData[item].expected,
+          "[" + testElements[i].tag + "] " + testElements[i].testData[item].name
+        );
+      }
+    }
+  }
+</script>

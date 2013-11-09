@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>The constraint validation API Test: element.validity.rangeUnderflow</title>
+<link rel="author" title="Intel" href="http://www.intel.com/">
+<link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/forms.html#dom-validitystate-rangeUnderflow">
+<link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/forms.html#the-constraint-validation-api">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="support/validator.js"></script>
+<div id="log"></div>
+<form name="fm"></form>
+<script>
+  var testElements = [
+    {
+      tag: "input",
+      types: ["datetime"],
+      testData: [
+        {min: "", value: "2000-01-01T12:00:00Z", expected: false, name: "The min attribute is not set"},
+        {min: "2000-01-01T12:00:00Z", value: "", expected: false, name: "Value is empty string"},
+        {min: "2001-01-01  12:00:00Z", value: "2000-01-01T12:00:00Z", expected: false, name: "The min attribute is an invalid global date time string"},
+        {min: "2000-01-01T11:00:00Z", value: "2000-01-01T12:00:00Z", expected: false, name: "The min attribute is less than the value attribute"},
+        {min: "2001-01-01T23:59:59Z", value: "2000-01-01T24:00:00Z", expected: false, name: "The value is an invalid datetime string(hour is greater than 23)"},
+        {min: "1980-01-01T12:00Z", value: "79-01-01T12:00Z", expected: false, name: "The value if an invalid date time string(year is two digits)"},
+        {min: "2000-01-01T13:00:00Z", value: "2000-01-01T12:00:00Z", expected: true, name: "The value is is less than min"},
+        {min: "2000-01-01T12:00:00.2Z", value: "2000-01-01T12:00:00.1Z", expected: true, name: "The value is less than min(with millisecond in 1 digit)"},
+        {min: "2000-01-01T12:00:00.02Z", value: "2000-01-01T12:00:00.01Z", expected: true, name: "The value is less than min(with millisecond in 2 digits)"},
+        {min: "2000-01-01T12:00:00.002Z", value: "2000-01-01T12:00:00.001Z", expected: true, name: "The value is less than min(with millisecond in 3 digits)"},
+        {min: "10000-01-01T12:00:00Z", value: "2000-01-01T12:00:00Z", expected: true, name: "The value is is less than min(Year is 10000 should be valid)"},
+        {min: "8593-01-01T02:09+02:09", value: "8592-01-01T02:09+02:09", expected: true, name: "The value is is greater than max(with timezone)"}
+      ]
+    },
+    {
+      tag: "input",
+      types: ["date"],
+      testData: [
+        {min: "", value: "2000-01-01", expected: false, name: "The min attribute is not set"},
+        {min: "2000-01-01", value: "", expected: false, name: "Value is empty string"},
+        {min: "2001/01/01", value: "2000-01-01", expected: false, name: "The min attribute is an invalid date"},
+        {min: "2000-02-02", value: "2000-1-1", expected: false, name: "The value attribute is an invalid date"},
+        {min: "988-01-01", value: "987-01-01", expected: false, name: "The value is an invalid date(year is three digits)"},
+        {min: "2001-01-01", value: "2000-13-01", expected: false, name: "The value is an invalid date(month is less than 12)"},
+        {min: "2001-01-01", value: "2000-02-30", expected: false, name: "The value is an invalid date(date is less than 29 for Feb)"},
+        {min: "2000-01-01", value: "2000-12-01", expected: false, name: "The min attribute is less than value attribute"},
+        {min: "2000-12-01", value: "2000-01-01", expected: true, name: "The value attribute is less than min attribute"},
+        {min: "10000-01-01", value: "9999-01-01", expected: true, name: "The value attribute is less than min attribute(Year is 10000 should be valid)"}
+      ]
+    },
+    {
+      tag: "input",
+      types: ["month"],
+      testData: [
+        {min: "", value: "2000-01", expected: false, name: "The min attribute is not set"},
+        {min: "2000-01", value: "", expected: false, name: "Value is empty string"},
+        {min: "2001/01", value: "2000-02", expected: false, name: "The min attribute is an invalid month string"},
+        {min: "2000-02", value: "2000-1", expected: false, name: "The value attribute is an invalid month string"},
+        {min: "988-01", value: "987-01", expected: false, name: "The value is an invalid month string(year is three digits)"},
+        {min: "2001-01", value: "2000-13", expected: false, name: "The value is an invalid month string(month is less than 12)"},
+        {min: "2000-01", value: "2000-12", expected: false, name: "The min attribute is less than value attribute"},
+        {min: "2001-01", value: "2000-12", expected: true, name: "The value attribute is less than min attribute"},
+        {min: "10000-01", value: "2000-01", expected: true, name: "The value attribute is less than min attribute(Year is 10000 should be valid)"}
+      ]
+    },
+    {
+      tag: "input",
+      types: ["week"],
+      testData: [
+        {min: "", value: "2000-W01", expected: false, name: "The min attribute is not set"},
+        {min: "2000-W01", value: "", expected: false, name: "Value is empty string"},
+        {min: "2001/W02", value: "2000-W01", expected: false, name: "The min attribute is an invalid week string"},
+        {min: "2001-W02", value: "2000-W1", expected: false, name: "The value attribute is an invalid week string"},
+        {min: "2001-W02", value: "2000-w01", expected: false, name: "The value attribute is an invalid week string(w is in lowercase)"},
+        {min: "988-W01", value: "987-W01", expected: false, name: "The value is an invalid week string(year is three digits)"},
+        {min: "2001-W01", value: "2000-W57", expected: false, name: "The value is an invalid week string(week is too greater)"},
+        {min: "2000-W01", value: "2000-W12", expected: false, name: "The min attribute is less than value attribute"},
+        {min: "2000-W12", value: "2000-W01", expected: true, name: "The value attribute is less than min attribute"},
+        {min: "10000-W01", value: "2000-W01", expected: true, name: "The value attribute is less than min attribute(Year is 10000 should be valid)"}
+      ]
+    },
+    {
+      tag: "input",
+      types: ["time"],
+      testData: [
+        {min: "", value: "12:00:00", expected: false, name: "The min attribute is not set"},
+        {min: "12:00:00", value: "", expected: false, name: "Value is empty string"},
+        {min: "12.00.01", value: "12:00:00", expected: false, name: "The min attribute is an invalid time string"},
+        {min: "12:00:01", value: "12.00.00", expected: false, name: "The value attribute is an invalid time string"},
+        {min: "12:00:00", value: "13:00:00", expected: false, name: "The min attribute is less than value attribute"},
+        {min: "13:00:00", value: "12", expected: false, name: "The time missing second and minute parts is invalid"},
+        {min: "12:00:02", value: "12:00:00", expected: true, name: "The value attribute is less than min attribute"},
+        {min: "12:00:00.2", value: "12:00:00.1", expected: true, name: "The value is less than min(with millisecond in 1 digit)"},
+        {min: "12:00:00.02", value: "12:00:00.01", expected: true, name: "The value is less than min(with millisecond in 2 digit)"},
+        {min: "12:00:00.002", value: "12:00:00.001", expected: true, name: "The value is less than min(with millisecond in 3 digit)"},
+        {min: "12:00:00", value: "11:59", expected: true, name: "The time missing second part is valid"}
+      ]
+    },
+    {
+      tag: "input",
+      types: ["datetime-local"],
+      testData: [
+        {min: "", value: "12:00:00", expected: false, name: "The min attribute is not set"},
+        {min: "2000-01-01T12:00:00", value: "", expected: false, name: "Value is empty string"},
+        {min: "2001-01-01  12:00:00", value: "2000-01-01T12:00:00", expected: false, name: "The min attribute is an invalid local datetime string"},
+        {min: "2001-01-01T12:00:00", value: "2000-01-01  13:00:00", expected: false, name: "The value attribute is an invalid local datetime string"},
+        {min: "2001-01-01T23:59:59", value: "2000-01-01T24:00:00", expected: false, name: "The hour less than 23 should be invalid"},
+        {min: "2001-01-01T23:59:59", value: "2000-01-01T23:60:00", expected: false, name: "The minute less than 59 should be invalid"},
+        {min: "2001-01-01T23:59:59", value: "2000-01-01T23:59:60", expected: false, name: "The second less than 59 should be invalid"},                        
+        {min: "2000-01-01T11:00:00", value: "2000-01-01T12:00:00", expected: false, name: "The min attribute is less than value attribute"},
+        {min: "2000-01-01T12:02", value: "2000-01-01T12:01", expected: true, name: "The value attribute is less than min attribute"},
+        {min: "10000-01-01T12:00:00", value: "9999-01-01T12:00:00", expected: true, name: "The value attribute is less than min attribute(Year is 10000 should be valid)"},
+        {min: "2000-01-01T12:00:00.2", value: "2000-01-01T12:00:00.1", expected: true, name: "The value is less than min(with millisecond in 1 digit)"},
+        {min: "2000-01-01T12:00:00.02", value: "2000-01-01T12:00:00.01", expected: true, name: "The value is less than min(with millisecond in 2 digit)"},
+        {min: "2000-01-01T12:00:00.002", value: "2000-01-01T12:00:00.001", expected: true, name: "The value is less than min(with millisecond in 3 digit)"}
+      ]
+    },
+    {
+      tag: "input",
+      types: ["number"],
+      testData: [
+        {min: "", value: "10", expected: false, name: "The min attribute is not set"},
+        {min: "5", value: "", expected: false, name: "Value is empty string"},
+        {min: "4", value: "5", expected: false, name: "The min is less than value(integer)"},
+        {min: "-5.6", value: "-5.5", expected: false, name: "The min is less than value(floaging number)"},
+        {min: "0", value: "-0", expected: false, name: "The min equals to value"},
+        {min: "5", value: "6abc", expected: false, name: "The value is not a number"},
+        {min: "6", value: "5", expected: true, name: "The value is less than min(integer)"},
+        {min: "-5.4", value: "-5.5", expected: true, name: "The value is less than min(floating number)"},
+        {min: "5e+2", value: "-5e-1", expected: true, name: "The value is less than min(scientific notation)"}
+      ]
+    }
+  ];
+
+  for (var i = 0; i < testElements.length; i++) {
+    var ele = document.createElement(testElements[i].tag);
+    document.forms.fm.appendChild(ele);
+    if (testElements[i].types.length > 0) {
+      for (var typ in testElements[i].types) {
+        try {
+          ele.type = testElements[i].types[typ];
+        } catch (e) {
+          //Do nothing, avoid the runtime error breaking the test 
+        }
+
+        if (ele.type != testElements[i].types[typ]) {
+          validator.test_support_type(
+            ele,
+            testElements[i].types[typ],
+            "The " + testElements[i].types[typ] + " type of " + ele.tagName.toUpperCase() + " element must be suppoorted."
+          );
+          continue;
+        }
+
+        for (var item in testElements[i].testData) {
+          validator.test_rangeUnderflow(
+            ele,
+            testElements[i].testData[item].min,
+            testElements[i].testData[item].value,
+            testElements[i].testData[item].expected,
+            "[" + testElements[i].tag.toUpperCase() + " in " + testElements[i].types[typ].toUpperCase() + " status]: " + testElements[i].testData[item].name
+          );
+        }
+      }
+    } else {
+      for (var item in testElements[i].testData) {
+        validator.test_rangeUnderflow(
+          ele,
+          testElements[i].testData[item].min,
+          testElements[i].testData[item].value,
+          testElements[i].testData[item].expected,
+          "[" + testElements[i].tag + "] " + testElements[i].testData[item].name
+        );
+      }
+    }
+  }
+</script>

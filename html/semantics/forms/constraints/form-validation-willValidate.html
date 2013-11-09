@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>The constraint validation API Test: element.willValidate</title>
+<link rel="author" title="Intel" href="http://www.intel.com/">
+<link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/forms.html#dom-cva-willvalidate">
+<link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/forms.html#the-constraint-validation-api">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="support/validator.js"></script>
+<div id="log"></div>
+<form name="fm"></form>
+<script>
+  var testElements = [
+    {tag: "input", types: ["hidden", "text", "search", "tel", "url", "email", "password", "datetime", "date", "month", "week", "time", "datetime-local", "color", "file", "submit", "button", "reset"]},
+    {tag: "button", types: ["button", "submit", "reset"]},
+    {tag: "select", types: []},
+    {tag: "textarea", types: []},
+    {tag: "keygen", types: []},
+    {tag: "output", types: []},
+    {tag: "fieldset", types: []},
+    {tag: "object", types: []}
+  ];
+
+  for (var i = 0; i < testElements.length; i++) {
+    if (testElements[i].types.length > 0) {
+      for (var typ in testElements[i].types) {
+        var ele = document.createElement(testElements[i].tag);
+        try {
+          ele.type = testElements[i].types[typ];
+        } catch (e) {
+          //Do nothing, avoid the runtime error breaking the test
+        };
+
+        if (ele.type != testElements[i].types[typ]) {
+          validator.test_support_type(
+            ele,
+            testElements[i].types[typ],
+            "The " + testElements[i].types[typ] + " type of " + ele.tagName.toUpperCase() + " element must be suppoorted."
+          );
+          continue;
+        }
+
+        validator.test_willValidate(ele, "[" + testElements[i].tag.toUpperCase() + " in " + testElements[i].types[typ].toUpperCase() + " status]: ");
+      }
+    } else {
+      var ele = document.createElement(testElements[i].tag);
+      validator.test_willValidate(ele, "[" + testElements[i].tag.toUpperCase() + "] ");
+    }
+  }
+</script>

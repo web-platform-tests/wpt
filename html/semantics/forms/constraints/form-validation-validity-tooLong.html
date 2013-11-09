@@ -21,9 +21,9 @@
         {maxLength: "4", value: "abcd", expected: false, name: "Non-dirty value - length of value equals to maxlength"},
         {maxLength: "4", value: "abcde", expected: false, name: "Non-dirty value - length of value is greater than maxlength"},
         //Dirty value
-        {maxLength: "4", value: "abc", expected: false, name: "Dirty value - value is less than string", dirty: true},
+        {maxLength: "4", value: "abc", expected: false, name: "Dirty value - value is less than maxlength", dirty: true},
         {maxLength: "4", value: "\u0041\u0041\u0041", expected: false, name: "Dirty value - length of value(AAA) in unicode is less than maxlength", dirty: true},
-        {maxLength: "4", value: "abcd", expected: false, name: "Dirty value - value equals to string", dirty: true},
+        {maxLength: "4", value: "abcd", expected: false, name: "Dirty value - value equals to maxlength", dirty: true},
         {maxLength: "4", value: "abcde", expected: true, name: "Dirty value - length of value is greater than maxlength", dirty: true}
       ]
     },
@@ -37,9 +37,9 @@
         {maxLength: "4", value: "abcd", expected: false, name: "Non-dirty value - length of value equals to maxlength"},
         {maxLength: "4", value: "abcde", expected: false, name: "Non-dirty value - length of length of value is greater than maxlength"},
         //Dirty value
-        {maxLength: "4", value: "abc", expected: false, name: "Dirty value - value is less than string", dirty: true},
+        {maxLength: "4", value: "abc", expected: false, name: "Dirty value - value is less than maxlength", dirty: true},
         {maxLength: "4", value: "\u000D\u000A", expected: false, name: "Dirty value - length of value(LF, CRLF) in unicode is less than maxlength", dirty: true},
-        {maxLength: "4", value: "abcd", expected: false, name: "Dirty value - length of value equals to string", dirty: true},
+        {maxLength: "4", value: "abcd", expected: false, name: "Dirty value - length of value equals to maxlength", dirty: true},
         {maxLength: "4", value: "abcde", expected: true, name: "Dirty value - length of value is greater than maxlength", dirty: true}
       ]
     }

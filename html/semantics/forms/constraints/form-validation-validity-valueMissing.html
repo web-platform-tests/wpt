@@ -107,15 +107,14 @@
       types: ["datetime-local"],
       testData: [
         {required: false, value: "", expected: false, name: "The required attribute is not set"},
-        {required: true, value: "2000-12-10T12:00:00", expected: false, name: "valid local date and time string(12:00:00)"},
-        {required: true, value: "2000-12-10 12:00", expected: false, name: "valid local date and time string(12:00)"},
-        {required: true, value: "2000-12-10T12:00:00.001", expected: false, name: "invalid local date and time string(12:00:60.001)"},
-        {required: true, value: "8592-01-01T02:09+02:09", expected: false, name: "invalid local date and time string(12:00:60.01)"},
-        {required: true, value: "12:00:00.1", expected: false, name: "invalid local date and time string(12:00:60.1)"},
+        {required: true, value: "2000-12-10T12:00:00", expected: false, name: "valid local date and time string(2000-12-10T12:00:00)"},
+        {required: true, value: "2000-12-10 12:00", expected: false, name: "valid local date and time string(2000-12-10 12:00)"},
+        {required: true, value: "2000-12-10T12:00:00.001", expected: false, name: "invalid local date and time string(2000-12-10T12:00:00.001)"},
+        {required: true, value: "8592-01-01T02:09+02:09", expected: false, name: "invalid local date and time string(8592-01-01T02:09+02:09)"},
         {required: true, value: 1234567, expected: false, name: "The value attribute is a number(1234567)"},
         {required: true, value: new Date(), expected: false, name: "The value attribute is a Date object"},
-        {required: true, value: "1979-10-99 99:99", expected: true, name: "invalid local date and time string(25:00:00)"},
-        {required: true, value: "abc", expected: true, name: "invalid local date and time string(12:60:00)"},
+        {required: true, value: "1979-10-99 99:99", expected: true, name: "invalid local date and time string(1979-10-99 99:99)"},
+        {required: true, value: "abc", expected: true, name: "invalid local date and time string(abc)"},
         {required: true, value: "", expected: true, name: "The value attribute is empty string"}
       ]
     },

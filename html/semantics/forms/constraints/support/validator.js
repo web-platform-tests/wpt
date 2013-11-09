@@ -1,13 +1,15 @@
-var validator = new Object();
-validator = {
+var validator = {
   test_tooLong: function(ctl, len, value, expected, testName, isDirty) {
+    var self = this;
     test(function () {
-      validator.set_conditions(ctl, {maxLength: len, value: value});
+      self.set_conditions(ctl, {maxLength: len, value: value});
 
       if (isDirty) {
+        document.designMode = "on";
         ctl.value += "a";
         ctl.setSelectionRange(ctl.value.length, ctl.value.length);
         document.execCommand("Delete", true, null); //simulate the user interaction
+        document.designMode = "off";
       }
 
       if (expected)
@@ -18,8 +20,10 @@ validator = {
   },
 
   test_patternMismatch: function(ctl, pattern, value, expected, testName) {
+    var self = this;
     test(function () {
-      validator.set_conditions(ctl, {pattern: pattern, value: value});
+      self.set_conditions(ctl, {pattern: pattern, value: value});
+
       if (expected)
         assert_true(ctl.validity.patternMismatch, "The validity.patternMismatch should be true.");
       else
@@ -28,14 +32,16 @@ validator = {
   },
 
   test_valueMissing: function(ctl, required, value, expected, testName) {
+    var self = this;
     test(function () {
       if (ctl.type == "checkbox" || ctl.type == "radio") {
-        validator.set_conditions(ctl, {required: !!required, checked: value, name: "test"+ctl.type});
+        self.set_conditions(ctl, {required: !!required, checked: value, name: "test"+ctl.type});
       } else if(ctl.type == "file") {
-        validator.set_conditions(ctl, {required: !!required, files: value, name: "test"+ctl.type});
+        self.set_conditions(ctl, {required: !!required, files: value, name: "test"+ctl.type});
       } else  {
-        validator.set_conditions(ctl, {required: !!required, value: value, name: "test"+ctl.type});
+        self.set_conditions(ctl, {required: !!required, value: value, name: "test"+ctl.type});
       }
+
       if (expected)
         assert_true(ctl.validity.valueMissing, "The validity.valueMissing should be true.");
       else
@@ -44,8 +50,10 @@ validator = {
   },
 
   test_typeMismatch: function(ctl, multiple, value, expected, testName) {
+    var self = this;
     test(function () {
-      validator.set_conditions(ctl, {multiple: multiple, value: value});
+      self.set_conditions(ctl, {multiple: multiple, value: value});
+
       if (expected)
         assert_true(ctl.validity.typeMismatch, "The validity.typeMismatch should be true.");
       else
@@ -54,10 +62,12 @@ validator = {
   },
 
   test_rangeOverflow: function(ctl, max, value, expected, testName) {
+    var self = this;
     test(function () {
       ctl.max = null;
       ctl.removeAttribute("max");
-      validator.set_conditions(ctl, {value: value, max: max});
+      self.set_conditions(ctl, {value: value, max: max});
+
       if (expected)
         assert_true(ctl.validity.rangeOverflow, "The validity.rangeOverflow should be true.");
       else
@@ -66,10 +76,12 @@ validator = {
   },
 
   test_rangeUnderflow: function(ctl, min, value, expected, testName) {
+    var self = this;
     test(function () {
       ctl.min = null;
       ctl.removeAttribute("min");
-      validator.set_conditions(ctl, {value: value, min: min});
+
+      self.set_conditions(ctl, {value: value, min: min});
       if (expected)
         assert_true(ctl.validity.rangeUnderflow, "The validity.rangeUnderflow should be true.");
       else
@@ -78,11 +90,11 @@ validator = {
   },
 
   test_stepMismatch: function(ctl, step, value, expected, testName) {
-    ctl.step = "";
-    ctl.value = value;
-    ctl.step = step;
-
+    var self = this;
     test(function () {
+      ctl.step = "";
+      self.set_conditions(ctl, {value: value, step: step});
+      
       if (expected) {
         assert_true(ctl.validity.stepMismatch, "The validity.stepMismatch should be true.");
       } else {
@@ -131,7 +143,7 @@ validator = {
     }
   },
 
-  test_isValid: function (ctl, expected, testName) {    
+  test_isValid: function (ctl, expected, testName) {
     test(function () {
       if (expected) {
         assert_true(ctl.validity.valid, "The validity.valid should be true.");
@@ -146,7 +158,7 @@ validator = {
       assert_equals(ctl.type, typ, "The " + typ + " type should be supported.");
     }, testName);
   },
-  
+
   set_conditions: function (ctl, obj) {
     for (var attr in obj) {
       ctl[attr] = obj[attr];

@@ -35,25 +35,23 @@
     {
       tag: "input",
       types: ["email"],
-      checkPoints: ["tooLong", "patternMismatch", "typeMismatch", "valueMissing", "badInput"],
+      checkPoints: ["tooLong", "patternMismatch", "typeMismatch", "valueMissing"],
       testData: [
         {maxLength: "10", value: "test@example.com", expected: false, name: "validity.valid must be false if validity.tooLong is true"},
         {pattern: "test@example.com", value: "test@example.net", expected: false, name: "validity.valid must be false if validity.patternMismatch is true"},
         {value: "abc", expected: false, name: "validity.valid must be false if validity.typeMismatch is true"},
-        {required: true, value: "", expected: false, name: "validity.valid must be false if validity.valueMissing is true"},
-        {value: "abc", expected: false, name: "validity.valid must be false if validity.badInput is true"}
+        {required: true, value: "", expected: false, name: "validity.valid must be false if validity.valueMissing is true"}
       ]
     },
     {
       tag: "input",
       types: ["datetime"],
-      checkPoints: ["rangeOverflow", "rangeUnderflow", "stepMismatch", "valueMissing", "badInput"],
+      checkPoints: ["rangeOverflow", "rangeUnderflow", "stepMismatch", "valueMissing"],
       testData: [
         {max: "2000-01-01T12:00:00Z", value: "2001-01-01T12:00:00Z", expected: false, name: "validity.valid must be false if validity.rangeOverflow is true"},
         {min: "2001-01-01T12:00:00Z", value: "2000-01-01T12:00:00Z", expected: false, name: "validity.valid must be false if validity.rangeUnderflow is true"},
         {step: 2 * 60 * 1000, value: "2001-01-01T12:03:00Z", expected: false, name: "validity.valid must be false if validity.stepMismatch is true"},
-        {required: true, value: "", expected: false, name: "validity.valid must be false if validity.valueMissing is true"},
-        {value: "abc", expected: false, name: "validity.valid must be false if validity.badInput is true"}
+        {required: true, value: "", expected: false, name: "validity.valid must be false if validity.valueMissing is true"}
       ]
     },
     {
@@ -103,36 +101,23 @@
     {
       tag: "input",
       types: ["datetime-local"],
-      checkPoints: ["rangeOverflow", "rangeUnderflow", "stepMismatch", "valueMissing", "badInput"],
+      checkPoints: ["rangeOverflow", "rangeUnderflow", "stepMismatch", "valueMissing"],
       testData: [
         {max: "2000-01-01T12:00:00", value: "2001-01-01T12:00:00", expected: false, name: "validity.valid must be false if validity.rangeOverflow is true"},
         {min: "2001-01-01T12:00:00", value: "2000-01-01T12:00:00", expected: false, name: "validity.valid must be false if validity.rangeUnderflow is true"},
         {step: 2 * 60 * 1000, value: "2000-01-01T12:03:00", expected: false, name: "validity.valid must be false if validity.stepMismatch is true"},
-        {required: true, value: "", expected: false, name: "validity.valid must be false if validity.valueMissing is true"},        
-        {value: "abc", expected: false, name: "validity.valid must be false if validity.badInput is true"}
+        {required: true, value: "", expected: false, name: "validity.valid must be false if validity.valueMissing is true"}
       ]
     },
     {
       tag: "input",
       types: ["number"],
-      checkPoints: ["rangeOverflow", "rangeUnderflow", "stepMismatch", "valueMissing", "badInput"],
+      checkPoints: ["rangeOverflow", "rangeUnderflow", "stepMismatch", "valueMissing"],
       testData: [
         {max: "5", value: "6", expected: false, name: "validity.valid must be false if validity.rangeOverflow is true"},
         {min: "5", value: "4", expected: false, name: "validity.valid must be false if validity.rangeUnderflow is true"},
         {step: 2 * 1 * 1, value: "3", expected: false, name: "validity.valid must be false if validity.stepMismatch is true"},
-        {required: true, value: "", expected: false, name: "validity.valid must be false if validity.valueMissing is true"},
-        {value: "abc", expected: false, name: "validity.valid must be false if validity.badInput is true"}
-      ]
-    },
-    {
-      tag: "input",
-      types: ["range"],
-      checkPoints: ["rangeOverflow", "rangeUnderflow", "stepMismatch", "badInput"],
-      testData: [
-        {max: "5", value: "6", expected: false, name: "validity.valid must be false if validity.rangeOverflow is true"},
-        {min: "5", value: "4", expected: false, name: "validity.valid must be false if validity.rangeUnderflow is true"},
-        {step: 2 * 1 * 1, value: "3", expected: false, name: "validity.valid must be false if validity.stepMismatch is true"},
-        {value: "abc", expected: false, name: "validity.valid must be false if validity.badInput is true"}
+        {required: true, value: "", expected: false, name: "validity.valid must be false if validity.valueMissing is true"}
       ]
     },
     {
@@ -143,14 +128,6 @@
         {required: true, value: "", expected: false, name: "validity.valid must be false if validity.valueMissing is true"}
       ]
     },
-    {
-      tag: "input",
-      types: ["color"],
-      checkPoints: ["badInput"],
-      testData: [
-        {value: "abc", expected: false, name: "validity.valid must be false if validity.badInput is true"}
-      ]
-    },     
     {
       tag: "select",
       types: [],
@@ -223,9 +200,6 @@
               ele.step = testElements[i].testData[k].step;
               break;
             case "typeMismath":
-              break;
-            case "badInput":
-              
               break;
             default:
           }

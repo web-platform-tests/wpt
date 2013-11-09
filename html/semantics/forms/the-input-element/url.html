@@ -16,7 +16,7 @@
 	<input type="url" id="value_with_leading_trailing_white_space" value=" aa " />
 	<div id="log">
 	</div>
-	
+
 	<script type="text/javascript">
 		var element = document.getElementById('novalue');
 		test(function(){
@@ -42,7 +42,7 @@
 		}, 'The value attribute, if specified, must have a value that contains no "CR" (U+000D)');
 
 		test(function(){
-			element = document.getElementById('novalue');			
+			element = document.getElementById('novalue');
 			element.value = ' aa ';
 			assert_equals(element.value, 'aa');
 

@@ -45,8 +45,8 @@ function test_paint_interface()
     {
         assert_true(cancelAnimAPI !== undefined &&
                     cancelAnimAPI != null,
-                    "window.cancelRequestAnimationFrame is defined and not null.");
-    }, "window.cancelRequestAnimationFrame is defined and not null.");
+                    "window.cancelAnimationFrame is defined and not null.");
+    }, "window.cancelAnimationFrame is defined and not null.");
 }
 
 
@@ -114,14 +114,14 @@ function RunTests()
     }
     else
     {
-        var msg = "cancelRequestAnimationFrame is not defined.  Cannot perform cancel test.";
+        var msg = "cancelAnimationFrame is not defined.  Cannot perform cancel test.";
         test(function() { assert_true(false, msg); }, msg); 
     }
 
     //Schedule this verification before the final verification.  This should fire first.
     setTimeout(function()
                {
-                   var msg = "window.cancelRequestAnimationFrame cancels callbacks.";
+                   var msg = "window.cancelAnimationFrame cancels callbacks.";
                    test(function(){ assert_false(runCancelled, msg); }, msg);
                                 
                }, 100); // 100 ~= 16.6 ms per 60Hz frame * 6 expected callbacks
@@ -198,7 +198,7 @@ function CancelledCallback(timestamp)
     callbackCount++;
     runCancelled = true;
 
-    var msg = "window.cancelRequestAnimationFrame not honored. Callback still occurred.";
+    var msg = "window.cancelAnimationFrame not honored. Callback still occurred.";
     test(function(){ assert_false(true, msg); }, msg);
 }
 

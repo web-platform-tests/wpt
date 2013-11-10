@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="flags" content="dom">
-    <meta name="assert" content="shape-outside declaration is invalid if inset-rectangle shape function has an invalid top param">
-    <title>CSS Shapes Test: Inset Rectangles - invalid top</title>
+    <meta name="assert" content="shape-outside declaration is invalid if inset-rectangle shape function has an invalid right param">
+    <title>CSS Shapes Test: Inset Rectangles - invalid right</title>
     <link rel="author" title="Sherlock Zhong" href="mailto:sherlock.z0917@gmail.com">
     <link rel="help" href="http://www.w3.org/TR/css-shapes/#supported-basic-shapes">
     <script src="/resources/testharness.js"></script>
@@ -14,7 +14,7 @@
 #shape{
     width: 300px;
     height: 300px;
-    shape-outside: inset-rectangle(-50, -50px, 50px, 50px);
+    shape-outside: inset-rectangle(-50px, -50, 50px, 50px);
 }
     </style>
 </head>

@@ -1,0 +1,66 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Comment constructor</title>
+<link rel=help href="http://dom.spec.whatwg.org/#dom-comment">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+test(function() {
+  var comment = new Comment();
+  assert_equals(Object.getPrototypeOf(comment),
+                Comment.prototype, "Prototype chain: Comment");
+  assert_equals(Object.getPrototypeOf(Object.getPrototypeOf(comment)),
+                CharacterData.prototype, "Prototype chain: CharacterData");
+  assert_equals(Object.getPrototypeOf(Object.getPrototypeOf(Object.getPrototypeOf(comment))),
+                Node.prototype, "Prototype chain: Node");
+}, "new Comment(): prototype chain")
+test(function() {
+  var comment = new Comment();
+  assert_true(comment instanceof Node, "Should be a Node");
+  assert_true(comment instanceof CharacterData, "Should be a CharacterData");
+  assert_true(comment instanceof Comment, "Should be a Comment");
+}, "new Comment(): instanceof")
+test(function() {
+  var comment = new Comment();
+  assert_equals(comment.data, "");
+  assert_equals(comment.nodeValue, "");
+}, "new Comment(): no arguments")
+test(function() {
+  var comment = new Comment(undefined);
+  assert_equals(comment.data, "");
+  assert_equals(comment.nodeValue, "");
+}, "new Comment(): undefined")
+test(function() {
+  var comment = new Comment(null);
+  assert_equals(comment.data, "null");
+  assert_equals(comment.nodeValue, "null");
+}, "new Comment(): null")
+test(function() {
+  var comment = new Comment("");
+  assert_equals(comment.data, "");
+  assert_equals(comment.nodeValue, "");
+}, "new Comment(): empty string")
+test(function() {
+  var comment = new Comment(42);
+  assert_equals(comment.data, "42");
+  assert_equals(comment.nodeValue, "42");
+}, "new Comment(): 42")
+test(function() {
+  var called = [];
+  var comment = new Comment({
+    toString: function() {
+      called.push("first");
+      return "text";
+    }
+  }, {
+    toString: function() {
+      called.push("second");
+      assert_unreached("Should not look at the second argument.");
+    }
+  });
+  assert_equals(comment.data, "text");
+  assert_equals(comment.nodeValue, "text");
+  assert_array_equals(called, ["first"]);
+}, "new Comment(): two arguments")
+</script>

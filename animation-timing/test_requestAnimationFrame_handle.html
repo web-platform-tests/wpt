@@ -9,6 +9,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <link rel="stylesheet" href="/resources/testharness.css" />
 <script>
+(function(){
   setup({explicit_done: true});
 
   // avoid script errors
@@ -59,6 +60,7 @@
 
     done();
   }, 1000);
+}());
 </script>
 </head>
 <body>

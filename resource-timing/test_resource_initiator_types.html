@@ -58,7 +58,7 @@ function onload_test() {
     page_loaded = true;
 
     var image = document.createElement('img');
-    image.src = '/webperf/tests/resources/generate_resource.php?type=image&id=n1';
+    image.src = 'resources/generate_resource.php?type=image&id=n1';
     background_loaded = image.complete;
     if (!background_loaded) {
         image.onload = function() {

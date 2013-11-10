@@ -1362,13 +1362,11 @@ policies and contribution forms [3].
 
         if (func)
         {
-            try
-            {
+            try {
                 func();
-            } catch(e)
-            {
+            } catch (e) {
                 this.status.status = this.status.ERROR;
-                this.status.message = e;
+                this.status.message = String(e);
             };
         }
         this.set_timeout();

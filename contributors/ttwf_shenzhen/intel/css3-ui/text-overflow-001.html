@@ -4,21 +4,26 @@
 <link rel="author" title="Intel" href="http://www.intel.com/">
 <link rel="author" title="Shiyou Tan" href="mailto:shiyoux.tan@intel.com">
 <link rel="help" title="8.2. Overflow Ellipsis: the 'text-overflow' property" href="http://www.w3.org/TR/css3-ui/#text-overflow">
+<link rel="match" href="reference/text-overflow-001-ref.html">
 <meta name="flags" content="">
 <meta name="assert" content="Test checks that the inline content that overflows will be clipped. Characters may be only partially rendered when
 text-overflow set clip">
 <style>
-  #test {
-    border: 2px solid;
+  div {
     font-size: 20px;
-    height: 25px;
+    height: 40px;
     overflow: hidden;
     text-overflow: clip;
-    width: 150px;
+    width: 200px;
+  }
+  span {
+    font-family: Ahem;
+    font-size: 30px;
   }
 </style>
 <body>
-  <p>Test passes if there are only three words <strong>Test checks the</strong> inside the black frame below and <strong>no</strong>
-  other characters outside.</p>
-  <div id="test">Test checks the content broken if the content overflows the container</div>
+  <p>Test passes if there are only three words <strong>Test checks the</strong> below.</p>
+  <div>
+    <span>Test checks the content broken if the content overflows the container</span>
+  </div>
 </body>

@@ -4,20 +4,26 @@
 <link rel="author" title="Intel" href="http://www.intel.com/">
 <link rel="author" title="Shiyou Tan" href="mailto:shiyoux.tan@intel.com">
 <link rel="help" title="8.2. Overflow Ellipsis: the 'text-overflow' property" href="http://www.w3.org/TR/css3-ui/#text-overflow">
+<link rel="match" href="reference/text-overflow-002-ref.html">
 <meta name="flags" content="">
-<meta name="assert" content="Test checks that the broken textual content instead of ellipsis(...)">
+<meta name="assert" content="Test checks that the broken content replaced by ellipsis(...)">
 <style>
-  #test {
-    border: 2px solid;
+  div {
     font-size: 20px;
-    height: 25px;
+    height: 40px;
     overflow: hidden;
     text-overflow: ellipsis;
-    width: 132px;
+    width: 170px;
+  }
+  span {
+    font-family: Ahem;
+    font-size: 30px;
   }
 </style>
 <body>
-  <p>Test passes if there are characters <strong>TestChecksT...</strong> inside the black frame and <strong>no</strong>
-  other characters outside.</p>
-  <div id="test">TestChecksThatTheEllipsIsInsteadOfTheBrokenInlineContent</div>
+  <p>PREREQUISITE: The font used must have a glyph for the U+2026 character.</p>
+  <p>Test passes if there is <strong>ellipsis</strong> after characters <strong>TestChecks</strong> below.</p>
+  <div>
+    <span>TestChecksThatTheBrokenContentRepalcedByEllipsis</span>
+  </div>
 </body>

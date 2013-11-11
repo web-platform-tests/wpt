@@ -2,8 +2,8 @@
 <meta charset="utf-8">
 <title>The constraint validation API Test: element.validity.valid</title>
 <link rel="author" title="Intel" href="http://www.intel.com/">
-<link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/forms.html#dom-validitystate-valid">
-<link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/forms.html#the-constraint-validation-api">
+<link rel="help" href="http://www.w3.org/html/wg/drafts/html/master/forms.html#dom-validitystate-valid">
+<link rel="help" href="http://www.w3.org/html/wg/drafts/html/master/forms.html#the-constraint-validation-api">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="support/validator.js"></script>
@@ -16,9 +16,9 @@
       types: ["text", "search", "tel", "password"],
       checkPoints: ["tooLong", "patternMismatch", "valueMissing"],
       testData: [
-        {maxLength: "4", value: "abcdef", expected: false, name: "validity.valid must be false if validity.tooLong is true"},
-        {pattern: "[A-Z]", value: "abc", expected: false, name: "validity.valid must be false if validity.patternMismatch is true"},
-        {required: true, value: "", expected: false, name: "validity.valid must be false if validity.valueMissing is true"}
+        {conditions: {maxLength: "4", value: "abcdef"}, expected: false, name: "[target] validity.valid must be false if validity.tooLong is true", dirty: true},
+        {conditions: {pattern: "[A-Z]", value: "abc"}, expected: false, name: "[target] validity.valid must be false if validity.patternMismatch is true"},
+        {conditions: {required: true, value: ""}, expected: false, name: "[target] validity.valid must be false if validity.valueMissing is true"}
       ]
     },
     {
@@ -26,10 +26,10 @@
       types: ["url"],
       checkPoints: ["tooLong", "patternMismatch", "typeMismatch", "valueMissing"],
       testData: [
-        {maxLength: "20", value: "http://www.example.com", expected: false, name: "validity.valid must be false if validity.tooLong is true"},
-        {pattern: "http://www.example.com", value: "http://www.example.net", expected: false, name: "validity.valid must be false if validity.patternMismatch is true"},
-        {value: "abc", expected: false, name: "validity.valid must be false if validity.typeMismatch is true"},
-        {required: true, value: "", expected: false, name: "validity.valid must be false if validity.valueMissing is true"}
+        {conditions: {maxLength: "20", value: "http://www.example.com"}, expected: false, name: "[target] validity.valid must be false if validity.tooLong is true", dirty: true},
+        {conditions: {pattern: "http://www.example.com", value: "http://www.example.net"}, expected: false, name: "[target] validity.valid must be false if validity.patternMismatch is true"},
+        {conditions: {value: "abc"}, expected: false, name: "[target] validity.valid must be false if validity.typeMismatch is true"},
+        {conditions: {required: true, value: ""}, expected: false, name: "[target] validity.valid must be false if validity.valueMissing is true"}
       ]
     },
     {
@@ -37,10 +37,10 @@
       types: ["email"],
       checkPoints: ["tooLong", "patternMismatch", "typeMismatch", "valueMissing"],
       testData: [
-        {maxLength: "10", value: "test@example.com", expected: false, name: "validity.valid must be false if validity.tooLong is true"},
-        {pattern: "test@example.com", value: "test@example.net", expected: false, name: "validity.valid must be false if validity.patternMismatch is true"},
-        {value: "abc", expected: false, name: "validity.valid must be false if validity.typeMismatch is true"},
-        {required: true, value: "", expected: false, name: "validity.valid must be false if validity.valueMissing is true"}
+        {conditions: {maxLength: "10", value: "test@example.com"}, expected: false, name: "[target] validity.valid must be false if validity.tooLong is true", dirty: true},
+        {conditions: {pattern: "test@example.com", value: "test@example.net"}, expected: false, name: "[target] validity.valid must be false if validity.patternMismatch is true"},
+        {conditions: {value: "abc"}, expected: false, name: "[target] validity.valid must be false if validity.typeMismatch is true"},
+        {conditions: {required: true, value: ""}, expected: false, name: "[target] validity.valid must be false if validity.valueMissing is true"}
       ]
     },
     {
@@ -48,10 +48,10 @@
       types: ["datetime"],
       checkPoints: ["rangeOverflow", "rangeUnderflow", "stepMismatch", "valueMissing"],
       testData: [
-        {max: "2000-01-01T12:00:00Z", value: "2001-01-01T12:00:00Z", expected: false, name: "validity.valid must be false if validity.rangeOverflow is true"},
-        {min: "2001-01-01T12:00:00Z", value: "2000-01-01T12:00:00Z", expected: false, name: "validity.valid must be false if validity.rangeUnderflow is true"},
-        {step: 2 * 60 * 1000, value: "2001-01-01T12:03:00Z", expected: false, name: "validity.valid must be false if validity.stepMismatch is true"},
-        {required: true, value: "", expected: false, name: "validity.valid must be false if validity.valueMissing is true"}
+        {conditions: {max: "2000-01-01T12:00:00Z", value: "2001-01-01T12:00:00Z"}, expected: false, name: "[target] validity.valid must be false if validity.rangeOverflow is true"},
+        {conditions: {min: "2001-01-01T12:00:00Z", value: "2000-01-01T12:00:00Z"}, expected: false, name: "[target] validity.valid must be false if validity.rangeUnderflow is true"},
+        {conditions: {step: 2 * 60 * 1000, value: "2001-01-01T12:03:00Z"}, expected: false, name: "[target] validity.valid must be false if validity.stepMismatch is true"},
+        {conditions: {required: true, value: ""}, expected: false, name: "[target] validity.valid must be false if validity.valueMissing is true"}
       ]
     },
     {
@@ -59,10 +59,10 @@
       types: ["date"],
       checkPoints: ["rangeOverflow", "rangeUnderflow", "stepMismatch", "valueMissing"],
       testData: [
-        {max: "2000-01-01", value: "2001-01-01", expected: false, name: "validity.valid must be false if validity.rangeOverflow is true"},
-        {min: "2001-01-01", value: "2000-01-01", expected: false, name: "validity.valid must be false if validity.rangeUnderflow is true"},
-        {step: 2 * 1 * 86400000, value: "2001-01-03", expected: false, name: "validity.valid must be false if validity.stepMismatch is true"},
-        {required: true, value: "", expected: false, name: "validity.valid must be false if validity.valueMissing is true"}
+        {conditions: {max: "2000-01-01", value: "2001-01-01"}, expected: false, name: "[target] validity.valid must be false if validity.rangeOverflow is true"},
+        {conditions: {min: "2001-01-01", value: "2000-01-01"}, expected: false, name: "[target] validity.valid must be false if validity.rangeUnderflow is true"},
+        {conditions: {step: 2 * 1 * 86400000, value: "2001-01-03"}, expected: false, name: "[target] validity.valid must be false if validity.stepMismatch is true"},
+        {conditions: {required: true, value: ""}, expected: false, name: "[target] validity.valid must be false if validity.valueMissing is true"}
       ]
     },
     {
@@ -70,10 +70,10 @@
       types: ["month"],
       checkPoints: ["rangeOverflow", "rangeUnderflow", "stepMismatch", "valueMissing"],
       testData: [
-        {max: "2000-01", value: "2001-01", expected: false, name: "validity.valid must be false if validity.rangeOverflow is true"},
-        {min: "2001-01", value: "2000-01", expected: false, name: "validity.valid must be false if validity.rangeUnderflow is true"},
-        {step: 2 * 1 * 1, value: "2001-03", expected: false, name: "validity.valid must be false if validity.stepMismatch is true"},
-        {required: true, value: "", expected: false, name: "validity.valid must be false if validity.valueMissing is true"}
+        {conditions: {max: "2000-01", value: "2001-01"}, expected: false, name: "[target] validity.valid must be false if validity.rangeOverflow is true"},
+        {conditions: {min: "2001-01", value: "2000-01"}, expected: false, name: "[target] validity.valid must be false if validity.rangeUnderflow is true"},
+        {conditions: {step: 2 * 1 * 1, value: "2001-03"}, expected: false, name: "[target] validity.valid must be false if validity.stepMismatch is true"},
+        {conditions: {required: true, value: ""}, expected: false, name: "[target] validity.valid must be false if validity.valueMissing is true"}
       ]
     },
     {
@@ -81,10 +81,10 @@
       types: ["week"],
       checkPoints: ["rangeOverflow", "rangeUnderflow", "stepMismatch", "valueMissing"],
       testData: [
-        {max: "2000-W01", value: "2001-W01", expected: false, name: "validity.valid must be false if validity.rangeOverflow is true"},
-        {min: "2001-W01", value: "2000-W01", expected: false, name: "validity.valid must be false if validity.rangeUnderflow is true"},
-        {step: 2 * 1 * 604800000, value: "2001-W03", expected: false, name: "validity.valid must be false if validity.stepMismatch is true"},
-        {required: true, value: "", expected: false, name: "validity.valid must be false if validity.valueMissing is true"}
+        {conditions: {max: "2000-W01", value: "2001-W01"}, expected: false, name: "[target] validity.valid must be false if validity.rangeOverflow is true"},
+        {conditions: {min: "2001-W01", value: "2000-W01"}, expected: false, name: "[target] validity.valid must be false if validity.rangeUnderflow is true"},
+        {conditions: {step: 2 * 1 * 604800000, value: "2001-W03"}, expected: false, name: "[target] validity.valid must be false if validity.stepMismatch is true"},
+        {conditions: {required: true, value: ""}, expected: false, name: "[target] validity.valid must be false if validity.valueMissing is true"}
       ]
     },
     {
@@ -92,10 +92,10 @@
       types: ["time"],
       checkPoints: ["rangeOverflow", "rangeUnderflow", "stepMismatch", "valueMissing"],
       testData: [
-        {max: "12:00:00", value: "13:00:00", expected: false, name: "validity.valid must be false if validity.rangeOverflow is true"},
-        {min: "12:00:00", value: "11:00:00", expected: false, name: "validity.valid must be false if validity.rangeUnderflow is true"},
-        {step: 2 * 60 * 1000, value: "12:03:00", expected: false, name: "validity.valid must be false if validity.stepMismatch is true"},
-        {required: true, value: "", expected: false, name: "validity.valid must be false if validity.valueMissing is true"}       
+        {conditions: {max: "12:00:00", value: "13:00:00"}, expected: false, name: "[target] validity.valid must be false if validity.rangeOverflow is true"},
+        {conditions: {min: "12:00:00", value: "11:00:00"}, expected: false, name: "[target] validity.valid must be false if validity.rangeUnderflow is true"},
+        {conditions: {step: 2 * 60 * 1000, value: "12:03:00"}, expected: false, name: "[target] validity.valid must be false if validity.stepMismatch is true"},
+        {conditions: {required: true, value: ""}, expected: false, name: "[target] validity.valid must be false if validity.valueMissing is true"}       
       ]
     },
     {
@@ -103,10 +103,10 @@
       types: ["datetime-local"],
       checkPoints: ["rangeOverflow", "rangeUnderflow", "stepMismatch", "valueMissing"],
       testData: [
-        {max: "2000-01-01T12:00:00", value: "2001-01-01T12:00:00", expected: false, name: "validity.valid must be false if validity.rangeOverflow is true"},
-        {min: "2001-01-01T12:00:00", value: "2000-01-01T12:00:00", expected: false, name: "validity.valid must be false if validity.rangeUnderflow is true"},
-        {step: 2 * 60 * 1000, value: "2000-01-01T12:03:00", expected: false, name: "validity.valid must be false if validity.stepMismatch is true"},
-        {required: true, value: "", expected: false, name: "validity.valid must be false if validity.valueMissing is true"}
+        {conditions: {max: "2000-01-01T12:00:00", value: "2001-01-01T12:00:00"}, expected: false, name: "[target] validity.valid must be false if validity.rangeOverflow is true"},
+        {conditions: {min: "2001-01-01T12:00:00", value: "2000-01-01T12:00:00"}, expected: false, name: "[target] validity.valid must be false if validity.rangeUnderflow is true"},
+        {conditions: {step: 2 * 60 * 1000, value: "2000-01-01T12:03:00"}, expected: false, name: "[target] validity.valid must be false if validity.stepMismatch is true"},
+        {conditions: {required: true, value: ""}, expected: false, name: "[target] validity.valid must be false if validity.valueMissing is true"}
       ]
     },
     {
@@ -114,18 +114,26 @@
       types: ["number"],
       checkPoints: ["rangeOverflow", "rangeUnderflow", "stepMismatch", "valueMissing"],
       testData: [
-        {max: "5", value: "6", expected: false, name: "validity.valid must be false if validity.rangeOverflow is true"},
-        {min: "5", value: "4", expected: false, name: "validity.valid must be false if validity.rangeUnderflow is true"},
-        {step: 2 * 1 * 1, value: "3", expected: false, name: "validity.valid must be false if validity.stepMismatch is true"},
-        {required: true, value: "", expected: false, name: "validity.valid must be false if validity.valueMissing is true"}
+        {conditions: {max: "5", value: "6"}, expected: false, name: "[target] validity.valid must be false if validity.rangeOverflow is true"},
+        {conditions: {min: "5", value: "4"}, expected: false, name: "[target] validity.valid must be false if validity.rangeUnderflow is true"},
+        {conditions: {step: 2 * 1 * 1, value: "3"}, expected: false, name: "[target] validity.valid must be false if validity.stepMismatch is true"},
+        {conditions: {required: true, value: ""}, expected: false, name: "[target] validity.valid must be false if validity.valueMissing is true"}
       ]
     },
     {
       tag: "input",
-      types: ["file", "checkbox", "radio"],
+      types: ["checkbox", "radio"],
       checkPoints: ["valueMissing"],
       testData: [
-        {required: true, value: "", expected: false, name: "validity.valid must be false if validity.valueMissing is true"}
+        {conditions: {required: true, checked: false, name: "test1"}, expected: false, name: "[target] validity.valid must be false if validity.valueMissing is true"}
+      ]
+    },
+    {
+      tag: "input",
+      types: ["file"],
+      checkPoints: ["valueMissing"],
+      testData: [
+        {conditions: {required: true, files: null}, expected: false, name: "[target] validity.valid must be false if validity.valueMissing is true"}
       ]
     },
     {
@@ -133,86 +141,18 @@
       types: [],
       checkPoints: ["valueMissing"],
       testData: [
-        {required: true, value: "", expected: false, name: "validity.valid must be false if validity.valueMissing is true"}
+        {conditions: {required: true, value: ""}, expected: false, name: "[target] validity.valid must be false if validity.valueMissing is true"}
       ]
     },
     {
       tag: "textarea",
       types: [],
+      checkPoints: ["valueMissing"],
       testData: [
-        {required: true, value: "", expected: false, name: "validity.valid must be false if validity.valueMissing is true"}
+        {conditions: {required: true, value: ""}, expected: false, name: "[target] validity.valid must be false if validity.valueMissing is true"}
       ]
     }
   ];
 
-  for (var i = 0; i < testElements.length; i++) {
-    if (testElements[i].types.length > 0) {
-      for (var typ in testElements[i].types) {
-        var ele = document.createElement(testElements[i].tag);
-        document.forms.fm.appendChild(ele);
-        try {
-          ele.type = testElements[i].types[typ];
-        } catch (e) {
-          //Do nothing, avoid the runtime error breaking the test
-        }
-
-        if (ele.type != testElements[i].types[typ]) {
-          validator.test_support_type(
-            ele,
-            testElements[i].types[typ],
-            "The " + testElements[i].types[typ] + " type of " + ele.tagName.toUpperCase() + " element must be suppoorted."
-          );
-          continue;
-        }
-
-        for (var k = 0; k < testElements[i].checkPoints.length; k++) {
-          ele.value = "";
-          ele.removeAttribute("value");
-          if (ele.type == "checkbox" || ele.type == "radio") {
-            ele.checked = !!testElements[i].testData[k].value;
-            ele.name = "test" + ele.type;
-          } else if(ele.type == "file") {
-            ele.files = testElements[i].testData[k].value;
-          } else  {
-            ele.value = testElements[i].testData[k].value;
-          }
-          switch (testElements[i].checkPoints[k]) {
-            case "tooLong":
-              ele.maxLength = testElements[i].testData[k].maxLength;
-              ele.focus();
-              ele.setSelectionRange(ele.value.length, ele.value.length);
-              document.execCommand("Delete", true, null); //simulate the user interaction
-              break;
-            case "valueMissing":
-              ele.required = testElements[i].testData[k].required;
-              break;
-            case "patternMismatch":
-              ele.pattern = testElements[i].testData[k].pattern;
-              break;
-            case "rangeOverflow":
-              ele.max = testElements[i].testData[k].max;
-                
-              break;
-            case "rangeUnderflow":
-              ele.min = testElements[i].testData[k].min;
-              break;
-            case "stepMismatch":
-              ele.step = testElements[i].testData[k].step;
-              break;
-            case "typeMismath":
-              break;
-            default:
-          }
-
-          validator.test_isValid(
-            ele,
-            testElements[i].testData[k].expected,
-            "[" + testElements[i].tag.toUpperCase() + " in " + testElements[i].types[typ].toUpperCase() + " status]: " + testElements[i].testData[k].name
-          );
-        }
-      }
-    } else {
-
-    }
-  }
+  validator.run_test(testElements, "isValid");
 </script>

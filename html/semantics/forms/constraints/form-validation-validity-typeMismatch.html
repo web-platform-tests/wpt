@@ -2,8 +2,8 @@
 <meta charset="utf-8">
 <title>The constraint validation API Test: element.validity.typeMismatch</title>
 <link rel="author" title="Intel" href="http://www.intel.com/">
-<link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/forms.html#dom-validitystate-patternmismatch">
-<link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/forms.html#the-constraint-validation-api">
+<link rel="help" href="http://www.w3.org/html/wg/drafts/html/master/forms.html#dom-validitystate-toolong">
+<link rel="help" href="http://www.w3.org/html/wg/drafts/html/master/forms.html#the-constraint-validation-api">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="support/validator.js"></script>
@@ -16,66 +16,27 @@
       types: ["email"],
       testData: [
         // multiple is false
-        {multiple: false, value: "", expected: false, name: "The value is empty"},
-        {multiple: false, value: "test@example.com", expected: false, name: "The value is an valid email address"},
-        {multiple: false, value: "\u000A\u000D\u0020\u0009 test@example.com \u000A\u000D\u0020\u0009", expected: false, name: "The value is a valid email address with some white spaces."},
-        {multiple: false, value: "abc", expected: true, name: "The value is not an email address"},
+        {conditions: {multiple: false, value: ""}, expected: false, name: "[target] The value is empty"},
+        {conditions: {multiple: false, value: "test@example.com"}, expected: false, name: "[target] The value is an valid email address"},
+        {conditions: {multiple: false, value: "\u000A\u000D\u0020\u0009 test@example.com \u000A\u000D\u0020\u0009"}, expected: false, name: "[target] The value is a valid email address with some white spaces."},
+        {conditions: {multiple: false, value: "abc"}, expected: true, name: "[target] The value is not an email address"},
+        {conditions: {multiple: false, value: "test1@example.com,test2@example.com"}, expected: true, name: "[target] The value contains multiple email addresses"},
         //multiple is true
-        {multiple: true, value: "test1@example.com,test2@example.com", expected: false, name: "The value is valid email addresses"},
-        {multiple: true, value: "test1@example.com;test2@example.com", expected: true, name: "The value contains invalid separator"}
+        {conditions: {multiple: true, value: "test1@example.com,test2@example.com"}, expected: false, name: "[target] The value is valid email addresses"},
+        {conditions: {multiple: true, value: "test1@example.com;test2@example.com"}, expected: true, name: "[target] The value contains invalid separator"}
       ]
     },
     {
       tag: "input",
       types: ["url"],
       testData: [
-        {multiple: false, value: "", expected: false, name: "The value is empty"},
-        {multiple: false, value: "http://www.example.com", expected: false, name: "The value is a valid url"},
-        {multiple: false, value: "\u000A\u000D\u0020\u0009 http://www.example.com \u000A\u000D\u0020\u0009 ", expected: false, name: "The value is a valid url with some white spaces."},
-        {multiple: false, value: "abc", expected: true, name: "The value is not an url"}
+        {conditions: {multiple: false, value: ""}, expected: false, name: "[target] The value is empty"},
+        {conditions: {multiple: false, value: "http://www.example.com"}, expected: false, name: "[target] The value is a valid url"},
+        {conditions: {multiple: false, value: "\u000A\u000D\u0020\u0009 http://www.example.com \u000A\u000D\u0020\u0009 "}, expected: false, name: "[target] The value is a valid url with some white spaces."},
+        {conditions: {multiple: false, value: "abc"}, expected: true, name: "[target] The value is not an url"}
       ]
     }
   ];
 
-  for (var i = 0; i < testElements.length; i++) {
-    var ele = document.createElement(testElements[i].tag);
-    if (testElements[i].types.length > 0) {
-      for (var typ in testElements[i].types) {
-        try {
-          ele.type = testElements[i].types[typ];
-        } catch (e) {
-          //Do nothing, avoid the runtime error breaking the test
-        }
-
-        if (ele.type != testElements[i].types[typ]) {
-          validator.test_support_type(
-            ele,
-            testElements[i].types[typ],
-            "The " + testElements[i].types[typ] + " type of " + ele.tagName.toUpperCase() + " element must be suppoorted."
-          );
-          continue;
-        }
-
-        for (var item in testElements[i].testData) {
-          validator.test_typeMismatch( 
-            ele,
-            testElements[i].testData[item].multiple,
-            testElements[i].testData[item].value,
-            testElements[i].testData[item].expected,
-            "[" + testElements[i].tag.toUpperCase() + " in " + testElements[i].types[typ].toUpperCase() + " status]: " + testElements[i].testData[item].name
-          );
-        }
-      }
-    } else {
-      for (var item in testElements[i].testData) {
-        validator.test_typeMismatch( 
-          ele,
-          testElements[i].testData[item].multiple,
-          testElements[i].testData[item].value,
-          testElements[i].testData[item].expected,
-          "[" + testElements[i].tag + "] " + testElements[i].testData[item].name
-        );
-      }
-    }
-  }
+  validator.run_test(testElements, "typeMismatch");
 </script>

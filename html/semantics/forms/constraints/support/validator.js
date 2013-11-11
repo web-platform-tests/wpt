@@ -1,129 +1,116 @@
 var validator = {
-  test_tooLong: function(ctl, len, value, expected, testName, isDirty) {
+  test_tooLong: function(ctl, data) {
     var self = this;
     test(function () {
-      self.set_conditions(ctl, {maxLength: len, value: value});
+      self.set_conditions(ctl, data.conditions);
 
-      if (isDirty) {
-        document.designMode = "on";
+      if (data.dirty) {
+        ctl.focus();
         ctl.value += "a";
         ctl.setSelectionRange(ctl.value.length, ctl.value.length);
-        document.execCommand("Delete", true, null); //simulate the user interaction
-        document.designMode = "off";
+        document.execCommand("Delete"); //simulate the user interaction
       }
 
-      if (expected)
+      if (data.expected)
         assert_true(ctl.validity.tooLong, "The validity.tooLong should be true.");
       else
         assert_false(ctl.validity.tooLong, "The validity.tooLong should be false.");
-    }, testName);
+    }, data.name);
   },
 
-  test_patternMismatch: function(ctl, pattern, value, expected, testName) {
+  test_patternMismatch: function(ctl, data) {
     var self = this;
     test(function () {
-      self.set_conditions(ctl, {pattern: pattern, value: value});
+      self.set_conditions(ctl, data.conditions);
 
-      if (expected)
+      if (data.expected)
         assert_true(ctl.validity.patternMismatch, "The validity.patternMismatch should be true.");
       else
         assert_false(ctl.validity.patternMismatch, "The validity.patternMismatch should be false.");
-    }, testName);
+    }, data.name);
   },
 
-  test_valueMissing: function(ctl, required, value, expected, testName) {
+  test_valueMissing: function(ctl, data) {
     var self = this;
     test(function () {
-      if (ctl.type == "checkbox" || ctl.type == "radio") {
-        self.set_conditions(ctl, {required: !!required, checked: value, name: "test"+ctl.type});
-      } else if(ctl.type == "file") {
-        self.set_conditions(ctl, {required: !!required, files: value, name: "test"+ctl.type});
-      } else  {
-        self.set_conditions(ctl, {required: !!required, value: value, name: "test"+ctl.type});
-      }
-
-      if (expected)
+      self.set_conditions(ctl, data.conditions);
+      if (data.expected)
         assert_true(ctl.validity.valueMissing, "The validity.valueMissing should be true.");
       else
         assert_false(ctl.validity.valueMissing, "The validity.valueMissing should be false.");
-    }, testName);
+    }, data.name);
   },
 
-  test_typeMismatch: function(ctl, multiple, value, expected, testName) {
+  test_typeMismatch: function(ctl, data) {
     var self = this;
     test(function () {
-      self.set_conditions(ctl, {multiple: multiple, value: value});
+      self.set_conditions(ctl, data.conditions);
 
-      if (expected)
+      if (data.expected)
         assert_true(ctl.validity.typeMismatch, "The validity.typeMismatch should be true.");
       else
         assert_false(ctl.validity.typeMismatch, "The validity.typeMismatch should be false.");
-    }, testName);  
+    }, data.name);
   },
 
-  test_rangeOverflow: function(ctl, max, value, expected, testName) {
+  test_rangeOverflow: function(ctl, data) {
     var self = this;
     test(function () {
-      ctl.max = null;
-      ctl.removeAttribute("max");
-      self.set_conditions(ctl, {value: value, max: max});
+      self.set_conditions(ctl, data.conditions);
 
-      if (expected)
+      if (data.expected)
         assert_true(ctl.validity.rangeOverflow, "The validity.rangeOverflow should be true.");
       else
         assert_false(ctl.validity.rangeOverflow, "The validity.rangeOverflow should be false.");
-    }, testName);
+    }, data.name);
   },
 
-  test_rangeUnderflow: function(ctl, min, value, expected, testName) {
+  test_rangeUnderflow: function(ctl, data) {
     var self = this;
     test(function () {
-      ctl.min = null;
-      ctl.removeAttribute("min");
-
-      self.set_conditions(ctl, {value: value, min: min});
-      if (expected)
+      self.set_conditions(ctl, data.conditions);
+      if (data.expected)
         assert_true(ctl.validity.rangeUnderflow, "The validity.rangeUnderflow should be true.");
       else
         assert_false(ctl.validity.rangeUnderflow, "The validity.rangeUnderflow should be false.");
-    }, testName);
+    }, data.name);
   },
 
-  test_stepMismatch: function(ctl, step, value, expected, testName) {
+  test_stepMismatch: function(ctl, data) {
     var self = this;
     test(function () {
-      ctl.step = "";
-      self.set_conditions(ctl, {value: value, step: step});
-      
-      if (expected) {
+      self.set_conditions(ctl, data.conditions);
+
+      if (data.expected) {
         assert_true(ctl.validity.stepMismatch, "The validity.stepMismatch should be true.");
       } else {
         assert_false(ctl.validity.stepMismatch, "The validity.stepMismatch should be false.");
       }
-    }, testName);
+    }, data.name);
   },
 
   //ToDo: unspportted on most browsers
-  test_badInput: function(ctl, value, expected, testName) {
+  test_badInput: function(ctl, data) {
   },
 
-  test_willValidate: function(ctl, testName) {
-    if (ctl.type == "hidden" || ctl.type == "reset" || ctl.type == "button" || ctl.tagName == "KEYGEN" || ctl.tagName == "OBJECT") {
+  test_willValidate: function(ctl, data) {
+    if (ctl.type === "hidden" || ctl.type === "reset" || ctl.type === "button"
+        || ctl.tagName === "KEYGEN" || ctl.tagName === "OBJECT") {
       var tmp = ctl.type ? "in "+ ctl.type +" status" : "";
       test (function () {
         assert_false(ctl.willValidate, "The element.willValidate should be false.");
-      }, testName + "Must be barred from constraint validation");
+      }, data.name + "Must be barred from constraint validation");
     } else {
       test (function () {
         assert_true(ctl.willValidate, "The element.willValidate should be true.");
-      },  testName + "The willValidate attribute must be true if it is mutable");
+      },  data.name + "The willValidate attribute must be true if it is mutable");
 
       //If an element is disabled, it is barred from constraint validation.
       test (function () {
         ctl.disabled = true;
         assert_false(ctl.willValidate, "The element.willValidate should be false.");
         ctl.disabled = false;
-      }, testName + "Must be barred from constraint validation if it is disabled");
+      }, data.name + "Must be barred from constraint validation if it is disabled");
 
       test (function () {
         //If the readonly attribute is specified on an INPUT element, the element is barred from constraint validation.
@@ -132,25 +119,35 @@ var validator = {
           assert_false(ctl.willValidate, "The element.willValidate should be false.");
           ctl.readOnly = false;
         }
-      }, testName + "Must be barred from constraint validation if it is readonly");
+      }, data.name + "Must be barred from constraint validation if it is readonly");
 
       test (function () {
         //If an element has a datalist element ancestor, it is barred from constraint validation.
         var dl = document.createElement("datalist");
         dl.appendChild(ctl);
         assert_false(ctl.willValidate, "The element.willValidate should be false.");
-      }, testName + "Must be barred from constraint validation if it is a child of datalist");
+      }, data.name + "Must be barred from constraint validation if it is a child of datalist");
     }
   },
 
-  test_isValid: function (ctl, expected, testName) {
+  test_isValid: function (ctl, data) {
+    var self = this;
     test(function () {
-      if (expected) {
+      self.set_conditions(ctl, data.conditions);
+
+      if (data.dirty) {
+        ctl.focus();
+        ctl.value += "a";
+        ctl.setSelectionRange(ctl.value.length, ctl.value.length);
+        document.execCommand("Delete"); //simulate the user interaction
+      }
+
+      if (data.expected) {
         assert_true(ctl.validity.valid, "The validity.valid should be true.");
       } else {
         assert_false(ctl.validity.valid, "The validity.valid should be false.");
       }
-    }, testName);
+    }, data.name);
   },
 
   test_support_type: function (ctl, typ, testName) {
@@ -161,9 +158,74 @@ var validator = {
 
   set_conditions: function (ctl, obj) {
     for (var attr in obj) {
+      ctl[attr] = null;
+      ctl.removeAttribute(attr);
       ctl[attr] = obj[attr];
       if ((attr == "pattern" || attr == "multiple") && ( !obj[attr] )) {
-          ctl.removeAttribute("pattern");
+        ctl.removeAttribute("pattern");
+      }
+    }
+  },
+
+  run_test: function (testee, method) {
+    var testMethod = "test_" + method;
+    if (typeof this[testMethod] !== "function") {
+      // console.error("The " + method + " test is not defined.");
+      return false;
+    };
+
+    var ele = null,
+        prefix = "";
+
+    for (var i = 0; i < testee.length; i++) {
+      if (testee[i].types.length > 0) {
+        for (var typ in testee[i].types) {
+          ele = document.createElement(testee[i].tag);
+          document.forms.fm.appendChild(ele);
+
+          try {
+            ele.type = testee[i].types[typ];
+          } catch (e) {
+            //Do nothing, avoid the runtime error breaking the test
+          }
+
+          prefix = "[" + testee[i].tag.toUpperCase() + " in " + testee[i].types[typ].toUpperCase() + " status] ";
+          if (ele.type != testee[i].types[typ]) {
+            this.test_support_type(
+              ele,
+              testee[i].types[typ],
+              prefix + "The " + testee[i].types[typ].toUpperCase() + " type must be suppoorted."
+            );
+            continue;
+          }
+
+          if (testee[i].checkPoints) {
+            for (var j = 0; j < testee[i].checkPoints.length; j++) {
+              testee[i].testData[j].name = testee[i].testData[j].name.replace(/\[.*\]\s/g, prefix);
+              this[testMethod](ele, testee[i].testData[j]);
+            }
+          } else {
+            for (var item in testee[i].testData) {
+              testee[i].testData[item].name = testee[i].testData[item].name.replace(/\[.*\]\s/g, prefix);
+              this[testMethod](ele, testee[i].testData[item]);
+            }
+          }
+        }
+      } else {
+        ele = document.createElement(testee[i].tag);
+        document.forms.fm.appendChild(ele); 
+        prefix = "[" + testee[i].tag + "] ";
+
+        if (testElements[i].tag === "select") {
+          ele.add(new Option("test1", ""));
+          ele.add(new Option("test2", 1));
+        }
+
+        for (var item in testee[i].testData) {
+          prefix = "[" + testee[i].tag + "] ";
+          testee[i].testData[item].name = testee[i].testData[item].name.replace(/\[.*\]\s/g, prefix);
+          this[testMethod](ele, testee[i].testData[item]);
+        }
       }
     }
   }

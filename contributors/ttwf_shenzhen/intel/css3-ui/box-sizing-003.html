@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Basic User Interface Test: box-sizing - inherit (basic)</title>
+<link rel="author" title="Intel" href="http://www.intel.com/">
+<link rel="author" title="Shiyou Tan" href="mailto:shiyoux.tan@intel.com">
+<link rel="reviewer" title="Leif Arne Storset" href="mailto:lstorset@opera.com">
+<link rel="help" title="6.1. 'box-sizing' property" href="http://www.w3.org/TR/css3-ui/#box-sizing">
+<link rel="match" href="reference/ref-filled-green-100px-square.xht">
+<meta name="flags" content="">
+<meta name="assert" content="Test checks that the box-sizing inherits the parent's value of box-sizing">
+<style>
+  #container {
+    background-color: red;
+    border: 20px green solid;
+    box-sizing: border-box;
+    height: 100px;
+    width: 100px;
+  }
+  #inherit {
+    background-color: red;
+    border: 20px green solid;
+    box-sizing: inherit;
+    height: 60px;
+    width: 60px;
+  }
+  #refer {
+    background-color: green;
+    height: 20px;
+    width: 20px;
+  }
+</style>
+<body>
+  <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
+  <div id="container">
+    <div id="inherit">
+      <div id="refer"></div>
+    </div>
+  </div>
+</body>

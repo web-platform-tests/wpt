@@ -12,12 +12,11 @@
     text-overflow: clip;
   }
   #test {
-    height: 40px;
-    font-size: 20px;
-    height: 40px;
+    font-size: 10px;
     overflow: hidden;
     text-overflow: inherit;
-    width: 200px;
+    white-space: nowrap;
+    width: 120px;
   }
   span {
     font-family: Ahem;
@@ -25,7 +24,7 @@
   }
 </style>
 <body>
-  <p>Test passes if there are only three words <strong>Test checks the</strong> below.</p>
+  <p>Test passes if there is a <strong>black rectangle</strong> below.</p>
   <div id="container">
     <div id="test">
       <span>Test checks the content broken if the content overflows the container</span>

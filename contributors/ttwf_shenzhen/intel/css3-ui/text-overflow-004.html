@@ -12,11 +12,10 @@
     text-overflow: ellipsis;
   }
   #test {
-    font-size: 20px;
-    height: 40px;
+    font-size: 10px;
     overflow: hidden;
     text-overflow: inherit;
-    width: 170px;
+    width: 150px;
   }
   span {
     font-family: Ahem;
@@ -25,7 +24,7 @@
 </style>
 <body>
   <p>PREREQUISITE: The font used must have a glyph for the U+2026 character.</p>
-  <p>Test passes if there is <strong>ellipsis</strong> after characters <strong>TestChecks</strong> below.</p>
+  <p>Test passes if there is an <strong>ellipsis</strong> after a black rectangle below.</p>
   <div id="container">
     <div id="test">
       <span>TestChecksThatTheBrokenContentRepalcedByEllipsis</span>

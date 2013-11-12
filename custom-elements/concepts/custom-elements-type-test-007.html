@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>The custom element type started with extender char</title>
+<meta name="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<meta name="assert" content="The custom element type cannot start with extender char">
+<link rel="help" href="https://dvcs.w3.org/hg/webcomponents/raw-file/default/spec/custom/index.html#concepts">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src='../testcommon.js'></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+</head>
+<body>
+<div id="log"></div>
+<script type="text/javascript">
+
+function doTest(charCode) {
+    var doc = newHTMLDocument();
+    
+    var XFoo = null;
+    
+    var thrown = false;    
+    var name = String.fromCharCode(charCode) + '-foo';
+    try {
+        XFoo = doc.register(name);
+    } catch (e) {
+        thrown = true;
+    }
+    
+    assert_true(thrown, 'Exception should be thrown in case of attempt to register '
+            + 'a custom element with a name \'' + name + '\'  (char code U+' + charCode.toString(16) + ' )');
+}
+
+var parameters = [];
+
+for (var i = 0; i < EXTENDER_CHARS.length; i++) {
+    parameters[i] = ['Custom element name ' + String.fromCharCode(EXTENDER_CHARS[i]) 
+                     + '-foo', EXTENDER_CHARS[i]];
+}
+
+generate_tests(doTest, parameters, 'Invalid custom element types started with extender char');
+
+</script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Forbidden values of the custom element type</title>
+<meta name="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<meta name="assert" content="The custom element type must not be one of hyphen-containing element name">
+<link rel="help" href="http://www.w3.org/TR/2013/WD-html-templates-20130214/#clearing-the-stack">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src='../testcommon.js'></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+</head>
+<body>
+<div id="log"></div>
+<script type="text/javascript">
+
+function doTest(name) {
+    
+    var doc = newHTMLDocument();
+    
+    var XFoo = null;
+    
+    var thrown = false;    
+    
+    try {
+        XFoo = doc.register(name);
+    } catch (e) {
+        thrown = true;
+    }
+        
+    assert_true(thrown, "Exception should be thrown in case of attempt to register "
+            + "a custom element with an illegal name '" + name + "'");
+}
+
+var parameters = [
+    ['Forbidden custom element name annotation-xml', 'annotation-xml'],
+    ['Forbidden custom element name color-profile', 'color-profile'],
+    ['Forbidden custom element name font-face', 'font-face'],
+    ['Forbidden custom element name font-face-src', 'font-face-src'],
+    ['Forbidden custom element name font-face-uri', 'font-face-uri'],
+    ['Forbidden custom element name font-face-format', 'font-face-format'],
+    ['Forbidden custom element name font-face-name', 'font-face-name'],
+    ['Forbidden custom element name missing-glyph', 'missing-glyph']
+];
+
+generate_tests(doTest, parameters, 'Forbidden custom element types');
+
+</script>
+</body>
+</html>

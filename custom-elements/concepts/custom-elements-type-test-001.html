@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>The custom element type is a sequence of characters that must match the NCName production and contain a minus character</title>
+<meta name="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<meta name="assert" content="The custom element type is a sequence of characters that must match the NCName production and contain a U+002D HYPHEN-MINUS character">
+<link rel="help" href="https://dvcs.w3.org/hg/webcomponents/raw-file/default/spec/custom/index.html#concepts">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src='../testcommon.js'></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+</head>
+<body>
+<div id="log"></div>
+<script type="text/javascript">
+
+function doTest(name) {
+    var doc = newHTMLDocument();
+    
+    var XFoo = null;
+    
+    var thrown = false;    
+    
+    try {
+        XFoo = doc.register(name);
+    } catch (e) {
+        thrown = true;
+    }
+    
+    assert_false(thrown, 'Exception should not be thrown in case of attempt to register '
+            + 'a custom element with a name \'' + name + '\'');
+}
+
+var parameters = [
+    ['Custom element name x-foo', 'x-foo'],
+    ['Custom element name xx-foo', 'xx-foo'],
+    ['Custom element name x--foo', 'x--foo'],
+    ['Custom element name _-foo', '_-foo'],
+    ['Custom element name x-', 'x-'],
+    ['Custom element name x--', 'x--'],
+    ['Custom element name x-1', 'x-1'],
+    ['Custom element name x-_', 'x-_'],
+    ['Custom element name _-_', '_-_'],
+    ['Custom element name __-', '__-'],
+    ['Custom element name _-1', '_-1'],
+    ['Custom element name _-..', '_-..']
+];
+
+generate_tests(doTest, parameters, 'Valid custom element types');
+
+</script>
+</body>
+</html>

@@ -2,14 +2,10 @@ var validator = {
   test_tooLong: function(ctl, data) {
     var self = this;
     test(function () {
+       self.pre_check(ctl, "tooLong");
       self.set_conditions(ctl, data.conditions);
-
-      if (data.dirty) {
-        ctl.focus();
-        ctl.value += "a";
-        ctl.setSelectionRange(ctl.value.length, ctl.value.length);
-        document.execCommand("Delete"); //simulate the user interaction
-      }
+      if (data.dirty)
+        self.set_dirty(ctl);
 
       if (data.expected)
         assert_true(ctl.validity.tooLong, "The validity.tooLong should be true.");
@@ -17,10 +13,26 @@ var validator = {
         assert_false(ctl.validity.tooLong, "The validity.tooLong should be false.");
     }, data.name);
   },
+  
+  test_tooShort: function(ctl, data) {
+    var self = this;
+    test(function () {
+      self.pre_check(ctl, "tooShort");
+      self.set_conditions(ctl, data.conditions);
+      if (data.dirty)
+        self.set_dirty(ctl);
+
+      if (data.expected)
+        assert_true(ctl.validity.tooLong, "The validity.tooShort should be true.");
+      else
+        assert_false(ctl.validity.tooLong, "The validity.tooShort should be false.");
+    }, data.name);
+  },
 
   test_patternMismatch: function(ctl, data) {
     var self = this;
     test(function () {
+      self.pre_check(ctl, "patternMismatch");
       self.set_conditions(ctl, data.conditions);
 
       if (data.expected)
@@ -33,6 +45,7 @@ var validator = {
   test_valueMissing: function(ctl, data) {
     var self = this;
     test(function () {
+      self.pre_check(ctl, "valueMissing");
       self.set_conditions(ctl, data.conditions);
       if (data.expected)
         assert_true(ctl.validity.valueMissing, "The validity.valueMissing should be true.");
@@ -44,6 +57,7 @@ var validator = {
   test_typeMismatch: function(ctl, data) {
     var self = this;
     test(function () {
+      self.pre_check(ctl, "typeMismatch");
       self.set_conditions(ctl, data.conditions);
 
       if (data.expected)
@@ -56,6 +70,8 @@ var validator = {
   test_rangeOverflow: function(ctl, data) {
     var self = this;
     test(function () {
+      self.pre_check(ctl, "rangeOverflow");
+      assert_true("rangeOverflow" in ctl.validity, "The validity.rangeOverflow attribute should exist.");
       self.set_conditions(ctl, data.conditions);
 
       if (data.expected)
@@ -68,6 +84,7 @@ var validator = {
   test_rangeUnderflow: function(ctl, data) {
     var self = this;
     test(function () {
+      self.pre_check(ctl, "rangeUnderflow");
       self.set_conditions(ctl, data.conditions);
       if (data.expected)
         assert_true(ctl.validity.rangeUnderflow, "The validity.rangeUnderflow should be true.");
@@ -79,77 +96,121 @@ var validator = {
   test_stepMismatch: function(ctl, data) {
     var self = this;
     test(function () {
+      self.pre_check(ctl, "stepMismatch");
       self.set_conditions(ctl, data.conditions);
 
-      if (data.expected) {
+      if (data.expected)
         assert_true(ctl.validity.stepMismatch, "The validity.stepMismatch should be true.");
-      } else {
+      else
         assert_false(ctl.validity.stepMismatch, "The validity.stepMismatch should be false.");
-      }
     }, data.name);
   },
 
-  //ToDo: unspportted on most browsers
   test_badInput: function(ctl, data) {
+    var self = this;
+    test(function () {
+      self.pre_check(ctl, "badInput");
+      self.set_conditions(ctl, data.conditions);
+
+      if (data.expected)
+        assert_true(ctl.validity.badInput, "The validity.badInput should be true.");
+      else
+        assert_false(ctl.validity.badInput, "The validity.badInput should be false.");
+    }, data.name);
   },
 
-  test_willValidate: function(ctl, data) {
-    if (ctl.type === "hidden" || ctl.type === "reset" || ctl.type === "button"
-        || ctl.tagName === "KEYGEN" || ctl.tagName === "OBJECT") {
-      var tmp = ctl.type ? "in "+ ctl.type +" status" : "";
-      test (function () {
-        assert_false(ctl.willValidate, "The element.willValidate should be false.");
-      }, data.name + "Must be barred from constraint validation");
-    } else {
-      test (function () {
-        assert_true(ctl.willValidate, "The element.willValidate should be true.");
-      },  data.name + "The willValidate attribute must be true if it is mutable");
+  test_customError: function(ctl, data) {
+    var self = this;
+    test(function () {
+      self.pre_check(ctl, "customError");
+      ctl.setCustomValidity(data.conditions.message);
 
-      //If an element is disabled, it is barred from constraint validation.
-      test (function () {
-        ctl.disabled = true;
-        assert_false(ctl.willValidate, "The element.willValidate should be false.");
-        ctl.disabled = false;
-      }, data.name + "Must be barred from constraint validation if it is disabled");
-
-      test (function () {
-        //If the readonly attribute is specified on an INPUT element, the element is barred from constraint validation.
-        if (ctl.tagName == "INPUT" || ctl.tagName == "TEXTAREA") {
-          ctl.readOnly = true;
-          assert_false(ctl.willValidate, "The element.willValidate should be false.");
-          ctl.readOnly = false;
-        }
-      }, data.name + "Must be barred from constraint validation if it is readonly");
-
-      test (function () {
-        //If an element has a datalist element ancestor, it is barred from constraint validation.
-        var dl = document.createElement("datalist");
-        dl.appendChild(ctl);
-        assert_false(ctl.willValidate, "The element.willValidate should be false.");
-      }, data.name + "Must be barred from constraint validation if it is a child of datalist");
-    }
+      if (data.expected) {
+        assert_true(ctl.validity.customError, "The validity.customError attribute should be true.");
+        assert_equals(ctl.validationMessage, data.conditions.message, "The validationMessage attribute should be '" + data.conditions.message + "'.");
+      } else {
+        assert_false(ctl.validity.customError, "The validity.customError attribute should be false.");
+        assert_equals(ctl.validationMessage, "", "The validationMessage attribute must be empty.");
+      }
+    }, data.name);
   },
 
   test_isValid: function (ctl, data) {
     var self = this;
     test(function () {
       self.set_conditions(ctl, data.conditions);
+      if (data.dirty)
+        self.set_dirty(ctl);
 
-      if (data.dirty) {
-        ctl.focus();
-        ctl.value += "a";
-        ctl.setSelectionRange(ctl.value.length, ctl.value.length);
-        document.execCommand("Delete"); //simulate the user interaction
+      if (data.expected)
+        assert_true(ctl.validity.valid, "The validity.valid should be true.");
+      else
+        assert_false(ctl.validity.valid, "The validity.valid should be false.");
+    }, data.name);
+  },
+
+  test_willValidate: function(ctl, data) {
+    var self = this;
+    test(function () {
+      self.pre_check(ctl, "willValidate");
+      self.set_conditions(ctl, data.conditions);
+      if (data.ancestor) {
+        var dl = document.createElement("datalist");
+        dl.appendChild(ctl);
       }
 
+      if (data.expected)
+        assert_true(ctl.willValidate, "The willValidate attribute should be true.");
+      else
+        assert_false(ctl.willValidate, "The willValidate attribute should be false.");
+    }, data.name);
+  },
+
+  test_checkValidity: function (ctl, data) {
+    var self = this;
+    test(function () {
+      var eventFired = false;
+      self.pre_check(ctl, "checkValidity");
+      self.set_conditions(ctl, data.conditions);
+
+      on_event(ctl, "invalid", function(e){
+        eventFired = true;
+      });
+
       if (data.expected) {
-        assert_true(ctl.validity.valid, "The validity.valid should be true.");
+        assert_true(ctl.checkValidity(), "The checkValidity method should be true.");
+        assert_false(eventFired, "The invalid event should not be fired.");
       } else {
-        assert_false(ctl.validity.valid, "The validity.valid should be false.");
+        assert_false(ctl.checkValidity(), "The checkValidity method should be false.");
+        assert_true(eventFired, "The invalid event should be fired.");
       }
     }, data.name);
   },
 
+  test_reportValidity: function (ctl, data) {
+    var self = this;
+    test(function () {
+      var eventFired = false;
+      self.pre_check(ctl, "reportValidity");
+      self.set_conditions(ctl, data.conditions);
+
+      on_event(ctl, "invalid", function(e){
+        eventFired = true;
+      });
+
+      if (data.expected) {
+        assert_true(ctl.reportValidity(), "The reportValidity method should be true.");
+        assert_false(eventFired, "The invalid event should not be fired.");
+      } else {
+        on_event(ctl, "invalid", function(e){
+          assert_equals(e.type, "invalid1", "The invalid event should be fired.");
+          assert_true(eventFired, "The invalid event should be fired.");
+        });
+        assert_false(ctl.reportValidity(), "The reportValidity method should be false.");
+      }
+    }, data.name);
+  },
+  
   test_support_type: function (ctl, typ, testName) {
     test(function () {
       assert_equals(ctl.type, typ, "The " + typ + " type should be supported.");
@@ -161,9 +222,47 @@ var validator = {
       ctl[attr] = null;
       ctl.removeAttribute(attr);
       ctl[attr] = obj[attr];
-      if ((attr == "pattern" || attr == "multiple") && ( !obj[attr] )) {
-        ctl.removeAttribute("pattern");
+      if ((attr === "pattern" || attr === "multiple") && ( !obj[attr] )) {
+        ctl.removeAttribute(attr);
       }
+    }
+  },
+
+  set_dirty: function(ctl) {
+    ctl.focus();
+    ctl.value += "a";
+    ctl.setSelectionRange(ctl.value.length, ctl.value.length);
+    document.execCommand("Delete");
+  },
+
+  pre_check: function(ctl, item) {
+    switch (item) {
+      case "willValidate":
+        assert_true(item in ctl, name + "The " + item + " attribute doesn't exist.");
+        break;
+      case "checkValidity":
+      case "reportValidity":
+        assert_true(item in ctl, "The " + item + " method doesn't exist.");
+        break;
+      case "tooLong":
+      case "tooShort":
+      case "patternMismatch":
+      case "typeMismatch":
+      case "stepMismatch":
+      case "rangeOverflow":
+      case "rangeUnderflow":
+      case "valueMissing":
+      case "badInput":
+      case "valid":
+        assert_true("validity" in ctl, "The validity attribute doesn't exist.");
+        assert_true(item in ctl.validity, "The " + item + " attribute doesn't exist.");
+        break;
+      case "customError":
+        assert_true("validity" in ctl, "The validity attribute doesn't exist.");
+        assert_true("setCustomValidity" in ctl, "The validity attribute doesn't exist.");
+        assert_true("validationMessage" in ctl, "The validity attribute doesn't exist.");
+        assert_true(item in ctl.validity, "The " + item + " attribute doesn't exist.");
+        break;
     }
   },
 
@@ -172,17 +271,16 @@ var validator = {
     if (typeof this[testMethod] !== "function") {
       // console.error("The " + method + " test is not defined.");
       return false;
-    };
+    }
 
     var ele = null,
         prefix = "";
 
-    for (var i = 0; i < testee.length; i++) {
+    for (var i = 0; i < testee.length; i++) { 
       if (testee[i].types.length > 0) {
         for (var typ in testee[i].types) {
           ele = document.createElement(testee[i].tag);
-          document.forms.fm.appendChild(ele);
-
+          document.body.appendChild(ele);
           try {
             ele.type = testee[i].types[typ];
           } catch (e) {
@@ -194,7 +292,7 @@ var validator = {
             this.test_support_type(
               ele,
               testee[i].types[typ],
-              prefix + "The " + testee[i].types[typ].toUpperCase() + " type must be suppoorted."
+              prefix + "The " + testee[i].types[typ] + " type must be suppoorted."
             );
             continue;
           }
@@ -213,7 +311,7 @@ var validator = {
         }
       } else {
         ele = document.createElement(testee[i].tag);
-        document.forms.fm.appendChild(ele); 
+        document.body.appendChild(ele); 
         prefix = "[" + testee[i].tag + "] ";
 
         if (testElements[i].tag === "select") {

@@ -39,22 +39,26 @@
 
 	  test(function() {
         assert_equals(document.getElementById("valid").value, "2011-11"),
-        assert_equals(document.getElementById("too_small_value").value, "2011-01"),
-        assert_equals(document.getElementById("too_large_value").value, "2011-12")},
+       // assert_equals(document.getElementById("too_small_value").value, "2011-01")
+       assert_false(document.getElementById("too_small_value").checkValidity()),
+       assert_false(document.getElementById("too_large_value").checkValidity())
+       // assert_equals(document.getElementById("too_large_value").value, "2011-12")
+        },
       "The value attribute, if specified and not empty, must have a value that is a valid month string", {
 	    "help" : "http://www.w3.org/html/wg/drafts/html/master/forms.html#month-state-(type=month)" });
 
 	  test(function() {
         assert_equals(document.getElementById("valid").min, "2011-01"),
-        assert_equals(document.getElementById("invalid_min").min, "")
+        assert_equals(document.getElementById("invalid_min").validity.misMatch)
+       // assert_equals(document.getElementById("invalid_min").min, "")
         },
       "The min attribute, if specified, must have a value that is a valid month string.", {
 	    "help" : "http://www.w3.org/html/wg/drafts/html/master/forms.html#month-state-(type=month)" });
 
 	  test(function() {
         assert_equals(document.getElementById("valid").max, "2011-12"),
-        assert_equals(document.getElementById("min_larger_than_max").max, "2099-01"),
-        assert_equals(document.getElementById("invalid_max").max, "")
+        assert_equals(document.getElementById("min_larger_than_max").max, "2011-12"),
+        assert_equals(document.getElementById("invalid_max").max, "invalid_max")
 
       },
       "The max attribute, if specified, must have a value that is a valid month string", {

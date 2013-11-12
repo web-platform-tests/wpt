@@ -144,6 +144,14 @@ arguments.forEach(function(aValue) {
   }, "Element without children set to " + format_value(argument))
 
   test(function() {
+    var li = document.createElement("li")
+    li.textContent = argument
+    document.body.appendChild(li)
+    check(li)
+    document.body.removeChild(li)
+  }, "HTMLLIElement appended to body with child set to " + format_value(argument))
+
+  test(function() {
     var el = document.createElement("div")
     var text = el.appendChild(document.createTextNode(""))
     el.textContent = argument

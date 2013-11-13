@@ -5,7 +5,7 @@
 		<link rel="author" title="Mihai Balan" href="mibalan@adobe.com">
 		<style>
 		span {
-			counter-increment: spans 2;
+			counter-increment: spans 1;
 		}
 		#region {
 			counter-reset: spans 0;
@@ -15,7 +15,7 @@
 			content: counter(spans) ".";
 			width: 2em;
 			margin: 0 .5em;
-			background: red;
+			background: green;
 			color: white;
 			text-align: center;
 		}
@@ -26,9 +26,9 @@
 		</style>
 	</head>
 	<body>
-		<p>Test passes if you see a light blue rectangle below, with three blocks of black text on a single line. Each block of text should be numbered with even numbers (2, 4, 6); the numbers should be white on a red background.</p>
+		<p>Test passes if you see a light blue rectangle below, with three blocks of black text on a single line. Each block of text should be numbered from 1 to 3 and contain the text &ldquo;Visible text <em>n</em>&rdquo; with <em>n</em> ranging from 1 to 3. The numbering should be white on a green background.</p>
 		<div id="region">
-			<span>A bit of text 2</span><span>A bit of text 4</span><span>A bit of text 6</span>
+			<span>Visible text 1</span><span>Visible text 2</span><span>Visible text 3</span>
 		</div>
 	</body>
 </html>

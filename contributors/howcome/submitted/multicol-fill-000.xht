@@ -1,55 +1,71 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title>CSS Test: column-fill</title>
-<link rel="author" title="Hakon Wium Lie" href="mailto:howcome@opera.com"/>
-<link rel="help" href="http://www.w3.org/TR/css3-multicol/#cf"/>
-<link rel="match" href="multicol-fill-000-ref.xht"/>
-<meta name="assert" content="This test checks that content is balanced into all columns." />
-
-<meta name="flags" content="ahem" />
-<style type="text/css">
-div, table {
-  font: 10px/10px Ahem;
-  margin: 1em 0;
+ <head>
+  <title>CSS Multi-column Layout Test: column-fill: balance (basic)</title>
+  <link rel="author" title="Hakon Wium Lie" href="mailto:howcome@opera.com" />
+  <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2013-08-25 -->
+  <link rel="help" href="http://www.w3.org/TR/css3-multicol/#cf" title="7.1 'column-fill'" />
+  <link rel="match" href="multicol-fill-000-ref.xht" />
+  <meta name="flags" content="ahem" />
+  <meta name="assert" content="This test checks that content is balanced into all columns thanks to 'column-fill: balance'." />
+  <style type="text/css"><![CDATA[
+  div.test, table#reference
+  {
+  background-color: yellow;
   color: lime;
-  background: yellow;
-  width: 400px;
-  orphans: 0;
-  widows: 0;
-}
+  margin: 1em 0em;
+  font: 1.25em/1 Ahem;
+  width: 18em;
+  }
 
-div.multicol { 
+  div.test
+  {
   columns: 3;
-  column-gap: 0px;
-  column-rule: none;
   column-fill: balance;
-}
+  column-gap: 0em;
+  
+  /*
 
-table, tr, td, p {
-  border-collapse: collapse;
-  margin: 0; padding: 0; border: none;
-}
-</style>
-</head>
-<body>
-The three horizontal bars below should be identical.
+  N == 3;
+  
+  W == 6em;  
+  
+  */
+  
+  orphans: 1;
+  widows: 1;
+  }
 
-<div class="multicol">
-<p>0</p>
-<p>0</p>
-<p>0</p>
-</div>
+  div.test > p {margin: 0em;}
 
-<div class="multicol">0<br/>0<br/>0</div>
+  table
+  {
+  border-spacing: 0em;
+  table-layout: fixed;
+  }
 
-<table>
-<tr>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-</tr>
-</table>
+  td {padding: 0em;}
+  ]]></style>
+ </head>
+ <body>
 
-</body>
+  <p>Test passes if the 3 horizontal bars are <strong>identical</strong>.</p>
+
+  <div class="test">
+      <p>A</p>
+      <p>B</p>
+      <p>C</p>
+  </div>
+
+  <div class="test">D<br />E<br />F</div>
+
+  <table id="reference">
+    <tr>
+      <td>G</td>
+      <td>H</td>
+      <td>I</td>
+    </tr>
+  </table>
+ 
+ </body>
 </html>

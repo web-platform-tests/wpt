@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html  lang="en" >
+<head>
+<meta charset="utf-8"/>
+<title>hebrew, 10+</title>
+<link rel='author' title='Richard Ishida' href='mailto:ishida@w3.org'>
+<link rel='help' href='http://www.w3.org/TR/css-counter-styles-3/#simple-numeric'>
+<meta name='flags' content='font'>
+<meta name="assert" content="Setting list-style-type to hebrew will produce list numbering after 9 as described in the CSS3 Counter Styles module.">
+<style type='text/css'>
+.test { font-size: 25px; }
+ol { margin: 0; padding-left: 8em; }
+ol li { list-style-type: hebrew;  }
+</style>
+</head>
+<body>
+<p class="instructions">Test passes if the two columns are the same, ignoring the suffix.</p>
+
+
+<div class="test"><ol start='10'><li title='10'>י.</li></ol>
+<ol start='11'><li title='11'>יא.</li></ol>
+<ol start='12'><li title='12'>יב.</li></ol>
+<ol start='13'><li title='13'>יג.</li></ol>
+<ol start='14'><li title='14'>יד.</li></ol>
+<ol start='15'><li title='15'>טו.</li></ol>
+<ol start='16'><li title='16'>טז.</li></ol>
+<ol start='17'><li title='17'>יז.</li></ol>
+<ol start='18'><li title='18'>יח.</li></ol>
+<ol start='43'><li title='43'>מג.</li></ol>
+<ol start='77'><li title='77'>עז.</li></ol>
+<ol start='80'><li title='80'>פ.</li></ol>
+<ol start='99'><li title='99'>צט.</li></ol>
+<ol start='100'><li title='100'>ק.</li></ol>
+<ol start='101'><li title='101'>קא.</li></ol>
+<ol start='222'><li title='222'>רכב.</li></ol>
+<ol start='400'><li title='400'>ת.</li></ol>
+<ol start='401'><li title='401'>תא.</li></ol>
+<ol start='499'><li title='499'>תצט.</li></ol>
+</div>
+
+
+<!--Notes:
+You will need an appropriate font to run this test.
+
+To see the ASCII decimal number associated with a row, mouse over it and the number will pop up in a tooltip.
+-->
+
+
+</body>
+</html>

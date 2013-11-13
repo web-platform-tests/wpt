@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>CSS Regions Parsing Test: Parse webkit-flow-into property</title>
+        <title>CSS Regions Parsing Test: Parse flow-into property</title>
         <link rel="author" title="Jacob Goldstein" href="mailto:jacobg@adobe.com">
+    <link rel="author" title="Mihai Balan" href="mailto:mibalan@adobe.com"/>
         <link rel="help" href="http://www.w3.org/TR/css3-regions/#flow-into"/>
         <link rel="help" href="http://www.w3.org/TR/css3-regions/#flow-from"/>
         <meta name="flags" content="dom">
-        <meta name="assert" content="Value specified for the webkit-flow-into property should be parsed correctly.">
+        <meta name="assert" content="Value specified for the flow-into property should be parsed correctly.">
         <script src="/resources/testharness.js"></script>
         <script src="/resources/testharnessreport.js"></script>        
     </head>
@@ -18,16 +19,16 @@
             function testParse(declaration) {
                 var div = document.createElement("div");
                 div.setAttribute("style", declaration);
-                return div.style.webkitFlowInto;
+                return div.style.flowInto;
             }
             
             function testComputedStyle(value) {
                 var div = document.createElement("div");
                 document.body.appendChild(div);
                 div.style.setProperty("flow-into", value);
-                var webkitFlowComputedValue = getComputedStyle(div).getPropertyValue("flow-into");
+                var flowComputedValue = getComputedStyle(div).getPropertyValue("flow-into");
                 document.body.removeChild(div);
-                return webkitFlowComputedValue;
+                return flowComputedValue;
             }
 
             function testNotInherited(parentValue, childValue) {
@@ -37,10 +38,10 @@
                 var childDiv = document.createElement("div");
                 parentDiv.appendChild(childDiv);
                 childDiv.style.setProperty("flow-into", childValue);
-                var childWebKitFlowComputedValue = getComputedStyle(childDiv).getPropertyValue("flow-into");
+                var childFlowComputedValue = getComputedStyle(childDiv).getPropertyValue("flow-into");
                 parentDiv.removeChild(childDiv);
                 document.body.removeChild(parentDiv);
-                return childWebKitFlowComputedValue;
+                return childFlowComputedValue;
             }
             
             test(function() {assert_equals(testParse("flow-into: none"), "none")}, "Test Parse none"); 

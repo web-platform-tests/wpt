@@ -16,13 +16,13 @@ from os.path import join, getmtime
 import sys
 import re
 import os
-from w3ctestlib.Sources import XHTMLSource
+from w3ctestlib.Sources import XHTMLSource, SourceTree
 
 def xhtml2html(source, dest):
     """Convert XHTML file given by path `source` into HTML file at path `dest`."""
 
     # Parse and serialize
-    xs = XHTMLSource(source, dest)
+    xs = XHTMLSource(SourceTree(None), source, dest)
     o = xs.serializeHTML()
 
     # Report errors

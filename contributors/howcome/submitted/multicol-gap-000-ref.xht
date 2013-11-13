@@ -1,21 +1,28 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title>multicol-gap-000</title>
-<link rel="author" title="Hakon Wium Lie" href="mailto:howcome@opera.com"/>
-<style type="text/css">
-div.ref {
-  font: 10px/10px Ahem;
+ <head>
+  <title>CSS Reftest Reference</title>
+  <link rel="author" title="Hakon Wium Lie" href="mailto:howcome@opera.com" />
+  <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2013-08-25 -->
+  <meta name="flags" content="ahem" />
+  <style type="text/css"><![CDATA[
+  div
+  {
+  font: 1.25em/1 Ahem;
   margin: 1em 0;
-  color: black;
-  width: 600px;
-}
-div.ref span { color: yellow }
-</style>
-</head>
-<body>
-The two horizontal bars below should be identical.
-<div class="ref">01234567890123456789<span>01234567890123456789</span>01234567890123456789</div>
-<div class="ref">01234567890123456789<span>01234567890123456789</span>01234567890123456789</div>
-</body>
+  width: 30em;
+  }
+
+  span {color: yellow;}
+  ]]></style>
+ </head>
+ <body>
+
+  <p>Test passes if the 2 horizontal bars are <strong>identical</strong>.</p>
+
+  <div>1234567890<span>1234567890</span>1234567890</div>
+
+  <div>1234567890<span>1234567890</span>1234567890</div>
+
+ </body>
 </html>

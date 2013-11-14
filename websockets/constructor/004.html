@@ -5,19 +5,21 @@
 <script src=../constants.js></script>
 <div id=log></div>
 <script>
+var domain = SCHEME_DOMAIN_PORT.split('://')[1];
+
 // empty string
-test(function() {assert_throws("SyntaxError", function(){new WebSocket("ws://"+location.hostname+"/", "")})});
+test(function() {assert_throws("SyntaxError", function(){new WebSocket("ws://"+domain+"/", "")})});
 
 // chars below U+0020 except U+0000; U+0000 is tested in a separate test
 for (var i = 1; i < 0x20; ++i) {
 test(function() {
-  assert_throws("SyntaxError", function(){new WebSocket("ws://"+location.hostname+"/", "a"+String.fromCharCode(i)+"b")}, 'char code '+i);
+  assert_throws("SyntaxError", function(){new WebSocket("ws://"+domain+"/", "a"+String.fromCharCode(i)+"b")}, 'char code '+i);
 })
 }
 // some chars above U+007E
 for (var i = 0x7F; i < 0x100; ++i) {
 test(function() {
-  assert_throws("SyntaxError", function(){new WebSocket("ws://"+location.hostname+"/", "a"+String.fromCharCode(i)+"b")}, 'char code '+i);
+  assert_throws("SyntaxError", function(){new WebSocket("ws://"+domain+"/", "a"+String.fromCharCode(i)+"b")}, 'char code '+i);
 })
 }
 </script>

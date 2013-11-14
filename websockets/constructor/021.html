@@ -5,5 +5,9 @@
 <script src=../constants.js></script>
 <div id=log></div>
 <script>
-test(function() {assert_throws("SyntaxError", function(){new WebSocket("ws://certo2.oslo.osa/ws/protocol_array",["foobar, foobar"])})});
+test(function() {
+	assert_throws("SyntaxError", function(){
+		new WebSocket(SCHEME_DOMAIN_PORT+"/ws/protocol_array",["foobar", "foobar"])
+	})
+});
 </script>

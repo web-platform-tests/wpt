@@ -1,4 +1,4 @@
-//FIXME: 
+//FIXME:
 var DOMAIN_FOR_WS_TESTS = location.hostname;
 var DOMAIN_FOR_WSS_TESTS = location.hostname;
 

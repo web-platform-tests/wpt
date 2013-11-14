@@ -33,10 +33,11 @@ function testCollapse(rangeEndpoints, toStart) {
 		&& range.startOffset == range.endOffset,
 		"collapsed must be true if and only if the start and end are equal");
 
-	if(undefined == toStart)
-        	range.collapse()
-	else
+	if (toStart === undefined) {
+		range.collapse();
+	} else {
 		range.collapse(toStart);
+	}
 
 	assert_equals(range.startContainer, expectedContainer,
 		"Wrong startContainer");

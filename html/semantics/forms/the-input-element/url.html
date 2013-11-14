@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Input Url</title>
+    <link rel="author" title="Keiji Yoshida" href="mailto:yoshida.keiji.84@gmail.com">
+    <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/forms.html#url-state-(type=url)">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <h1>Input Url</h1>
+    <div id="log">
+    </div>
+    <div style="display: none;">
+      <input type="url" id="checkMutableElementValue">
+      <input type="url" id="checkInvalidAbsoluteURLInput">
+      <input type="url" id="checkEmptyValueInput">
+      <input type="url" id="checkLFInput">
+      <input type="url" id="checkCRInput">
+      <input type="url" id="checkCRLFInput">
+      <input type="url" id="checkCRLFInput2">
+      <input type="url" id="checkValueSanitizationAlgorithm">
+      <input type="url" id="checkElementAttributes">
+    </div>
+    <script type="text/javascript">
+      test(function(){
+        var element = document.getElementById("checkMutableElementValue");
+        var testInputValue = "1"
+        element.value = testInputValue;
+        assert_equals(element.value, testInputValue);
+      }, "If the element is mutable, it's value can be changed");
+
+      test(function(){
+        var element = document.getElementById("checkInvalidAbsoluteURLInput");
+        var testInputValue = "abcdefghijklmnopqurstuvwxyzABCDEFGHIJKLMNOPQURSTUVWXYZ1234567890";
+        element.value = testInputValue;
+        assert_equals(element.value, testInputValue);
+      }, "The element can be set the value to a string that is not a valid absolute URL");
+
+      test(function(){
+        var element = document.getElementById("checkEmptyValueInput");
+        var testInputValue = "";
+        element.value = testInputValue;
+        assert_equals(element.value, testInputValue);
+      }, "User agents should allow the user to set the value to the empty string");
+
+      test(function(){
+        var element = document.getElementById("checkLFInput");
+        var originalValue = element.value;
+        var testInputValue = "\n";
+        element.value = testInputValue;
+        assert_not_equals(element.value, testInputValue);
+        assert_equals(element.value, originalValue);
+      }, "User agents must not allow users to insert 'LF' (U+000A) character");
+
+      test(function(){
+        var element = document.getElementById("checkCRInput");
+        var originalValue = element.value;
+        var testInputValue = "\r";
+        element.value = testInputValue;
+        assert_not_equals(element.value, testInputValue);
+        assert_equals(element.value, originalValue);
+      }, "User agents must not allow users to insert 'CR' (U+000D) character");
+
+      test(function(){
+        var element = document.getElementById("checkCRLFInput");
+        var originalValue = element.value;
+        var testInputValue = "\r\n";
+        element.value = testInputValue;
+        assert_not_equals(element.value, testInputValue);
+        assert_equals(element.value, originalValue);
+      }, "User agents must not allow users to insert 'LF' (U+000A) or 'CR' (U+000D) characters");
+
+      test(function(){
+        var element = document.getElementById("checkCRLFInput2");
+        var testInputValue = "A\nB\rC\r\nD";
+        element.value = testInputValue;
+        assert_not_equals(element.value, testInputValue);
+        assert_equals(element.value, "ABCD");
+      }, "User agents must not allow users to insert 'LF' (U+000A) or 'CR' (U+000D) characters 2");
+
+      test(function(){
+        var element = document.getElementById("checkValueSanitizationAlgorithm");
+        var testInputValue = " A\nB\rC\r\nD E ";
+        element.value = testInputValue;
+        assert_not_equals(element.value, testInputValue);
+        assert_equals(element.value, "ABCD E");
+      }, "The value sanitization algorithm is as follows: Strip line breaks from the value, then strip leading and trailing whitespace from the value");
+
+      var attributesApplied = ["autocomplete", "list", "maxLength", "pattern", "placeholder", "readOnly", "required", "size"];
+      for(var i = 0, l = attributesApplied.length; i < l; i++){
+        test(function(){
+          var element = document.getElementById("checkElementAttributes");
+          assert_own_property(element, attributesApplied[i]);
+        }, attributesApplied[i] + " attribute applies to the element");
+      }
+
+      var IDLAttributesApplied = ["list", "selectionStart", "selectionEnd", "selectionDirection", "value"];
+      for(var i = 0, l = IDLAttributesApplied.length; i < l; i++){
+        test(function(){
+          var element = document.getElementById("checkElementAttributes");
+          assert_own_property(element, IDLAttributesApplied[i]);
+        }, IDLAttributesApplied[i] + " IDL attribute applies to the element");
+      }
+
+      var methodsApplied = ["select", "setRangeText", "setSelectionRange"];
+      for(var i = 0, l = methodsApplied.length; i < l; i++){
+        test(function(){
+          var element = document.getElementById("checkElementAttributes");
+          assert_inherits(element, methodsApplied[i]);
+        }, methodsApplied[i] + " method applies to the element");
+      }
+
+      var eventsApplied = ["oninput", "onchange"];
+      for(var i = 0, l = eventsApplied.length; i < l; i++){
+        test(function(){
+          var element = document.getElementById("checkElementAttributes");
+          assert_own_property(element, eventsApplied[i]);
+        }, eventsApplied[i] + " event applies to the element");
+      }
+
+      var attributesNotApplied = ["accept", "alt", "checked", "dirname", "formaction", "formenctype", "formmethod", "formnovalidate", "formtarget", "height", "max", "min", "multiple", "src", "step", "width"];
+      for(var i = 0, l = attributesNotApplied.length; i < l; i++){
+        test(function(){
+          var element = document.getElementById("checkElementAttributes");
+          assert_not_exists(element, attributesNotApplied[i]);
+        }, attributesNotApplied[i] + " attribute does not apply to the element");
+      }
+
+      var IDLAttributesNotApplied = ["checked", "files", "valueAsDate", "valueAsNumber"];
+      for(var i = 0, l = IDLAttributesNotApplied.length; i < l; i++){
+        test(function(){
+          var element = document.getElementById("checkElementAttributes");
+          assert_not_exists(element, IDLAttributesNotApplied[i]);
+        }, IDLAttributesNotApplied[i] + " IDL attribute does not apply to the element");
+      }
+
+      var methodsNotApplied = ["stepDown", "stepUp"];
+      for(var i = 0, l = methodsNotApplied.length; i < l; i++){
+        test(function(){
+          var element = document.getElementById("checkElementAttributes");
+          assert_not_exists(element, methodsNotApplied[i]);
+        }, methodsNotApplied[i] + " method does not apply to the element");
+      }
+    </script>
+  </body>
+</html>

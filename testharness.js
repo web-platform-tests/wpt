@@ -483,7 +483,12 @@ policies and contribution forms [3].
 
     function on_event(object, event, callback)
     {
-      object.addEventListener(event, callback, false);
+      try {
+          object.addEventListener(event, callback, false);
+      } catch(e) {
+          //The i12n people want to test old IE
+          object.attachEvent(event, callback);
+      }
     }
 
     expose(test, 'test');

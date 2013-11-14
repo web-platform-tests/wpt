@@ -15,8 +15,7 @@ iframe.onload = function(e) {
   var doc = iframe.contentDocument;
   t.step(function() {
     assert_equals(doc.compatMode, "BackCompat");
-    assert_false('contentType' in doc);
-    if(!assert_false('contentType' in doc)){
+    if(!('contentType' in doc)){
     	doc.contentType="text/plain";
     }
     assert_equals(doc.contentType, "text/plain");

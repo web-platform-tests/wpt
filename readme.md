@@ -2,7 +2,7 @@
 
 testharness.js provides a framework for writing low-level tests of
 browser functionality in javascript. It provides a convenient API for
-making asseertions and is intended to work for both simple synchronous
+making assertions and is intended to work for both simple synchronous
 tests and for tests of asynchronous behaviour.
 
 ## Getting Started ##

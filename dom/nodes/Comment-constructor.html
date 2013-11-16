@@ -5,6 +5,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
+<iframe></iframe>
 <script>
 test(function() {
   var comment = new Comment();
@@ -14,38 +15,46 @@ test(function() {
                 CharacterData.prototype, "Prototype chain: CharacterData");
   assert_equals(Object.getPrototypeOf(Object.getPrototypeOf(Object.getPrototypeOf(comment))),
                 Node.prototype, "Prototype chain: Node");
-}, "new Comment(): prototype chain")
+}, "new Comment(): prototype chain");
+
 test(function() {
   var comment = new Comment();
   assert_true(comment instanceof Node, "Should be a Node");
   assert_true(comment instanceof CharacterData, "Should be a CharacterData");
   assert_true(comment instanceof Comment, "Should be a Comment");
-}, "new Comment(): instanceof")
+}, "new Comment(): instanceof");
+
 test(function() {
   var comment = new Comment();
   assert_equals(comment.data, "");
   assert_equals(comment.nodeValue, "");
-}, "new Comment(): no arguments")
-test(function() {
-  var comment = new Comment(undefined);
-  assert_equals(comment.data, "");
-  assert_equals(comment.nodeValue, "");
-}, "new Comment(): undefined")
-test(function() {
-  var comment = new Comment(null);
-  assert_equals(comment.data, "null");
-  assert_equals(comment.nodeValue, "null");
-}, "new Comment(): null")
-test(function() {
-  var comment = new Comment("");
-  assert_equals(comment.data, "");
-  assert_equals(comment.nodeValue, "");
-}, "new Comment(): empty string")
-test(function() {
-  var comment = new Comment(42);
-  assert_equals(comment.data, "42");
-  assert_equals(comment.nodeValue, "42");
-}, "new Comment(): 42")
+  assert_equals(comment.ownerDocument, document);
+}, "new Comment(): no arguments");
+
+var arguments = [
+  [undefined, ""],
+  [null, "null"],
+  [42, "42"],
+  ["", ""],
+  ["-", "-"],
+  ["--", "--"],
+  ["-->", "-->"],
+  ["<!--", "<!--"],
+  ["\u0000", "\u0000"],
+  ["\u0000test", "\u0000test"],
+  ["&amp;", "&amp;"],
+];
+
+arguments.forEach(function(a) {
+  var argument = a[0], expected = a[1];
+  test(function() {
+    var comment = new Comment(argument);
+    assert_equals(comment.data, expected);
+    assert_equals(comment.nodeValue, expected);
+    assert_equals(comment.ownerDocument, document);
+  }, "new Comment(): " + format_value(argument));
+});
+
 test(function() {
   var called = [];
   var comment = new Comment({
@@ -61,6 +70,15 @@ test(function() {
   });
   assert_equals(comment.data, "text");
   assert_equals(comment.nodeValue, "text");
+  assert_equals(comment.ownerDocument, document);
   assert_array_equals(called, ["first"]);
 }, "new Comment(): two arguments")
+
+async_test("new Comment() should get the correct ownerDocument across globals").step(function() {
+  var iframe = document.getElementsByTagName("iframe")[0];
+  iframe.onload = this.step_func_done(function() {
+    var comment = new iframe.contentWindow.Comment();
+    assert_equals(comment.ownerDocument, iframe.contentDocument);
+  });
+});
 </script>

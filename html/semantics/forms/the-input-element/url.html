@@ -11,9 +11,9 @@
 	<h1>Input url</h1>
 	<div style="display: none">
 	<input type="url" id="type_support" />
-	<input type="url" id="user_input_LF" />
-	<input type="url" id="user_input_CR" />
-	<input type="url" id="user_input_CRLF" />
+	<input type="url" id="set_value_LF" />
+	<input type="url" id="set_value_CR" />
+	<input type="url" id="set_value_CRLF" />
 	<input type="url" id="value_with_CRLF" value="a&#x000D;&#x000A;a" />
 	<input type="url" id="value_with_leading_trailing_white_space" value=" aa " />
 	<input type="url" id="value_with_leading_trailing_inner_white_space" value=" a a " />
@@ -28,18 +28,18 @@
 		}, 'url type supported on input element');
 
 		test(function(){
-			var element = document.getElementById('user_input_LF');
+			var element = document.getElementById('set_value_LF');
 			element.value = 'a\u000Aa';
 			assert_equals(element.value, 'aa');
 
-			element = document.getElementById('user_input_CR');
+			element = document.getElementById('set_value_CR');
 			element.value = 'a\u000Da';
 			assert_equals(element.value, 'aa');
 
-			element = document.getElementById('user_input_CRLF');
+			element = document.getElementById('set_value_CRLF');
 			element.value = 'a\u000D\u000Aa';
 			assert_equals(element.value, 'aa');
-		}, 'User agents must not allow users to insert "LF" (U+000A) or "CR" (U+000D)');
+		}, 'The value must not be set with "LF" (U+000A) or "CR" (U+000D)');
 
 		test(function(){
 			var element = document.getElementById('value_with_CRLF');

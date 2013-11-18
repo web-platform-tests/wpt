@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>The custom element type started with combining char</title>
-<meta name="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
-<meta name="assert" content="The custom element type cannot start with combining char">
+<title>The custom element type with base char</title>
+<meta name="author" title="Vasiliy Degtyarev" href="mailto:vasya@unipro.ru">
+<meta name="assert" content="The custom element type may contain base char on any position except the first one">
 <link rel="help" href="https://dvcs.w3.org/hg/webcomponents/raw-file/default/spec/custom/index.html#concepts">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -20,25 +20,32 @@ function doTest(charCode) {
     var XFoo = null;
     
     var thrown = false;    
-    var name = String.fromCharCode(charCode) + '-foo';
+    var name = 'x-' + String.fromCharCode(charCode) + "-" + charCode;
     try {
         XFoo = doc.register(name);
     } catch (e) {
         thrown = true;
     }
     
-    assert_true(thrown, 'Exception should be thrown in case of attempt to register '
+    assert_false(thrown, 'Exception should not be thrown in case of attempt to register '
             + 'a custom element with a name \'' + name + '\'  (char code U+' + charCode.toString(16) + ' )');
 }
 
 var parameters = [];
 
-for (var i = 0; i < COMBINING_CHARS.length; i++) {
-    parameters[i] = ['Custom element name ' + String.fromCharCode(COMBINING_CHARS[i]) + '-foo', 
-                     COMBINING_CHARS[i]];
+var k = 0;
+for (var i = 0; i < BASE_CHARS_RANGES.length-1; i=i+2) {
+	for (var j = 0; BASE_CHARS_RANGES[i]+j <= BASE_CHARS_RANGES[i+1]; j++ ){
+	    parameters[k] = ['Custom element name x-' + String.fromCharCode(BASE_CHARS_RANGES[i]+j) + "-" + (BASE_CHARS_RANGES[i]+j).toString(16), (BASE_CHARS_RANGES[i]+j)];
+	    k++;
+	}
 }
 
-generate_tests(doTest, parameters, 'Invalid custom element types started with combining char');
+for (var i = 0; i < BASE_CHARS_SINGLE.length; i++) {
+    parameters[k + i] = ['Custom element name x-' + String.fromCharCode(BASE_CHARS_SINGLE[i]) + "-" + BASE_CHARS_SINGLE[i].toString(16), BASE_CHARS_SINGLE[i]];
+}
+
+generate_tests(doTest, parameters, 'Valid custom element types with base char');
 
 </script>
 </body>

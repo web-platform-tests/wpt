@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>The custom element type with ideographic char</title>
+<title>The custom element type with digit char</title>
 <meta name="author" title="Vasiliy Degtyarev" href="mailto:vasya@unipro.ru">
-<meta name="assert" content="The custom element type may contain ideographic char on any position except the first one">
+<meta name="assert" content="The custom element type may contain digit char on any position except the first one">
 <link rel="help" href="https://dvcs.w3.org/hg/webcomponents/raw-file/default/spec/custom/index.html#concepts">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -34,18 +34,14 @@ function doTest(charCode) {
 var parameters = [];
 
 var k=0;
-for (var i = 0; i < IDEOGRAPHIC_CHARS_RANGES.length-1; i=i+2) {
-	for (var j = 0; IDEOGRAPHIC_CHARS_RANGES[i]+j <= IDEOGRAPHIC_CHARS_RANGES[i+1]; j++ ){
-	    parameters[k] = ['Custom element name x-' + String.fromCharCode(IDEOGRAPHIC_CHARS_RANGES[i]+j), (IDEOGRAPHIC_CHARS_RANGES[i]+j)];
+for (var i = 0; i < DIGIT_CHARS_RANGES.length-1; i=i+2) {
+	for (var j = 0; DIGIT_CHARS_RANGES[i] + j <= DIGIT_CHARS_RANGES[i+1]; j++ ){
+	    parameters[k] = ['Custom element name x-' + String.fromCharCode(DIGIT_CHARS_RANGES[i]+j), (DIGIT_CHARS_RANGES[i]+j)];
 	    k++;
 	}
 }
 
-for (var i = 0; i < IDEOGRAPHIC_CHARS_SINGLE.length; i++) {
-    parameters[k + i] = ['Custom element name x-' + String.fromCharCode(IDEOGRAPHIC_CHARS_SINGLE[i]), IDEOGRAPHIC_CHARS_SINGLE[i]];
-}
-
-generate_tests(doTest, parameters, 'Valid custom element types with ideographic char');
+generate_tests(doTest, parameters, 'Valid custom element types with digit char');
 
 </script>
 </body>

@@ -1,10 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
     <head>
         <meta charset="utf-8" />
         <title>window.performance.timing.redirect attributes on a cross-origin server redirected navigation</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
-	<link rel="help" href="http://www.w3.org/TR/navigation-timing/#sec-navigation-timing-interface"/>
+        <link rel="help" href="http://www.w3.org/TR/navigation-timing/#sec-navigation-timing-interface"/>
         <script src="/resources/testharness.js"></script>
         <script src="/resources/testharnessreport.js"></script>
         <script src="resources/webperftestharness.js"></script>
@@ -56,8 +56,6 @@
         <br />
         <iframe id="frameContext" src="" style="width: 250px; height: 250px;"></iframe>
         <script>
-            // ensure we're starting at the right origin
-
             // combine the page origin and redirect origin into the IFRAME's src URL
             var destUrl = make_absolute_url({subdomain: subdomain,
                                              path: "/common/redirect.py",

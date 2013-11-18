@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>PROTOTYPE has a non-configurable property named constructor</title>
+<meta name="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<meta name="assert" content="If  PROTOTYPE has a non-configurable property named constructor, throw a NotSupportedError and stop">
+<link rel="help" href="http://www.w3.org/TR/custom-elements/#instantiating-custom-elements">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src='../testcommon.js'></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+</head>
+<body>
+<div id="log"></div>
+<script type="text/javascript">
+
+test(function() {
+    var doc = newHTMLDocument();
+    var thrown = false;
+    
+    var proto = Object.create(HTMLElement.prototype);
+    Object.defineProperty(proto, 'constructor', {configurable: false});
+    
+    try {
+        var XFoo = doc.register('x-foo', {prototype: proto});
+    } catch (e) {
+        thrown = true;
+        assert_equals(e.name, 'NotSupportedError', 'Wrong exception type');
+    }
+
+    assert_true(thrown, 'Exception was not thrown');
+    
+}, 'Prototype has a non-configurable property named constructor');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var thrown = false;
+    
+    var proto = Object.create(HTMLElement.prototype);
+    Object.defineProperty(proto, 'constructor', {configurable: true});
+    
+    try {
+        var XFoo = doc.register('x-foo', {prototype: proto});
+    } catch (e) {
+        thrown = true;
+    }
+
+    assert_false(thrown, 'Exception was not thrown');
+    
+}, 'Prototype has a configurable property named constructor');
+
+</script>
+</body>
+</html>

@@ -11,40 +11,33 @@
     </head>
     <body>
         <div id=log></div>
-        <script type="text/javascript">        
-        
-  
+        <script type="text/javascript">
+
+
         var t = async_test("async script executes as soon as possible after a download is complete");
-  
+
         function timeout()
         {
             t.step(function(){ assert_equals(document.getElementById("testresult").innerHTML, "21")});
             t.done();
         }
-  
+
         var timer = setTimeout(timeout, 5000);
-        
-        // This test uses a script (log.py) to change script order execution
-        // The php script takes two parameters 
-        //  * The first is for a the delay (sec=1 == sleep(1) in php)
-        //  * The second is passed as a parameter to 'log()'
+
+        // In this case the external tags have the 'async' attribute so the parser doesn't block execution
+        // Because of the sleep in the file the second script below executes before the first
         //
-        // The log function just appends to the testresult tag.
-        //
-        // In this case the log.py script tags have the 'async' attribute so the parser doesn't block execution
-        // Because of the sleep in the php file the second script below executes before the first
-        // 
         //  Thus the assert above is to check that the innerHTML == 21
         //
-        
-        function log(text) 
+
+        function log(text)
         {
             var textNode = document.createTextNode(text);
             document.getElementById("testresult").appendChild(textNode);
         }
-        
+
         </script>
-        
+
         <span style="display : none" id="testresult"></span>
 
         <script src="log.py?sec=3&id=1" async></script>

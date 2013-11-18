@@ -11,40 +11,38 @@
     </head>
     <body>
         <div id=log></div>
-        <script type="text/javascript">        
-        
-  
+        <script type="text/javascript">
+
+
         var t = async_test("Async script element execution delays the window's load event");
-  
+
         function timeout()
         {
             t.step(function(){ assert_equals(document.getElementById("testresult").innerHTML, "213")});
             t.done();
         }
-  
+
         var timer = setTimeout(timeout, 8000);
-        
-        // This test uses a script (log.py) to change script order execution
-        // See async_003.htm and async_004.htm for how this works
+
         // In this test the 'log(2)' should run first, then the 'ordered script' and then the script for the load event
         //
         //  Thus the assert above is to check that the innerHTML == 213
         //
-        function log(text) 
+        function log(text)
         {
             var textNode = document.createTextNode(text);
             document.getElementById("testresult").appendChild(textNode);
         }
-        
+
         </script>
-        
+
         <span style="display : none" id="testresult"></span>
         <script type="text/javascript">
             window.addEventListener("load", function() {
                 log("3");
                 timeout();
             }, false);
-            
+
             //Ordered Script
             var s1 = document.createElement("script");
             s1.src = "log.py?sec=2&id=1";

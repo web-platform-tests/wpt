@@ -11,38 +11,36 @@
     </head>
     <body>
  <div id=log></div>
-        <script type="text/javascript">        
-        
-  
+        <script type="text/javascript">
+
+
         var t = async_test("A script element with both async and defer set should execute asynchronously");
-  
+
         function timeout()
         {
             t.step(function(){ assert_equals(document.getElementById("testresult").innerHTML, "2134")});
             t.done();
         }
-  
+
         var timer = setTimeout(timeout, 5000);
-        
-        // This test uses a script (log.py) to change script order execution
-        // See async_003.htm and async_004.htm for how this works
-        // In this test 
+
+        // In this test
         //  * The second script tag below should execute first
         //  * Then then first script tag should execute
         //  * Then the thirds will run - since it has no async attribute so it blocks further script execution
         //  * Finally the last script tag will run
-        // 
+        //
         //  Thus the assert above is to check that the innerHTML == 2134
         //
-        
-        function log(text) 
+
+        function log(text)
         {
             var textNode = document.createTextNode(text);
             document.getElementById("testresult").appendChild(textNode);
         }
-        
+
         </script>
-        
+
         <span style="display : none" id="testresult"></span>
 
         <script type="text/javascript" src="log.py?sec=1&id=1" defer async></script>

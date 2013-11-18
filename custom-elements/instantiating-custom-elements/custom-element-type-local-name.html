@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Custom element type is the local name of the custom element</title>
+<meta name="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<meta name="assert" content="The custom element type can be given to a custom element at the time of its instantation as the local name of the custom element">
+<link rel="help" href="http://www.w3.org/TR/custom-elements/#instantiating-custom-elements">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src='../testcommon.js'></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+</head>
+<body>
+<div id="log"></div>
+<script type="text/javascript">
+
+test(function() {
+    var doc = newHTMLDocument();
+    
+    var XFoo = doc.register('x-foo-1');
+    
+    var xfoo = new XFoo();
+    
+    assert_equals(xfoo.constructor.prototype.constructor.name, xfoo.localName, 
+            'Wrong custom element type');
+        
+}, 'Custom element type is the local name of the custom element.'
+    + 'Custom element created in JavaScript');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    
+    doc.register('x-foo-2');
+    
+    doc.body.innerHTML = '<x-foo-2 id="xfoo2"></x-foo-2>';
+    
+    var xfoo = doc.querySelector('#xfoo2');
+    
+    assert_equals(xfoo.constructor.prototype.constructor.name, xfoo.localName, 
+        'Wrong custom element type');
+        
+}, 'Custom element type is the local name of the custom element.'
+    + 'Custom element created in HTML');
+    
+
+testInIFrame('../resources/x-foo.html', function(context) {
+    var doc = context.iframes[0].contentDocument;
+    
+    var XFoo = doc.register('x-foo');
+
+    var xfoo = doc.querySelector('#xfoo');
+    
+    assert_equals(xfoo.constructor.prototype.constructor.name, xfoo.localName, 
+        'Wrong custom element type');
+
+}, 'Custom element type is the local name of the custom element.'
+    + 'Custom element created in HTML. Document has browsing context');
+
+
+</script>
+</body>
+</html>

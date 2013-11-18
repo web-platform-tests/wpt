@@ -11,34 +11,32 @@
     </head>
     <body>
         <div id=log></div>
-        <script type="text/javascript">        
-        
-  
+        <script type="text/javascript">
+
+
         var t = async_test("Ordered async script execution when script.async == false");
-  
+
         function timeout()
         {
             t.step(function(){ assert_equals(document.getElementById("testresult").innerHTML, "312")});
             t.done();
         }
-  
+
         var timer = setTimeout(timeout, 8000);
-        
-        // This test uses a script (log.py) to change script order execution
-        // See async_003.htm and async_004.htm for how this works
+
         // In this test both dynamically created scripts have async set to 'false'
         // So when they are appended the run syncronously
         //
         //  Thus the assert above is to check that the innerHTML == 312
         //
-        function log(text) 
+        function log(text)
         {
             var textNode = document.createTextNode(text);
             document.getElementById("testresult").appendChild(textNode);
         }
-        
+
         </script>
-        
+
         <span style="display : none" id="testresult"></span>
         <script type="text/javascript">
             var one = document.createElement("script");

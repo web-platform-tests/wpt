@@ -1392,6 +1392,10 @@ policies and contribution forms [3].
                 }
                 else if (p == "explicit_timeout" && value) {
                     this.timeout_length = null;
+                    if (this.timeout_id)
+                    {
+                        clearTimeout(this.timeout_id);
+                    }
                 }
                 else if (p == "timeout_multiplier")
                 {

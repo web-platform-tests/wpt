@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Created callback should be called if createElementNS is called</title>
+<meta name="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<meta name="assert" content="Created callback should be called if createElement is called">
+<link rel="help" href="http://www.w3.org/TR/custom-elements/#types-of-callbacks">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src='../../testcommon.js'></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+</head>
+<body>
+<div id="log"></div>
+<script type="text/javascript">
+
+test(function() {
+    var doc = newHTMLDocument();
+    
+    var callbackCalled = false;
+    
+    var proto = Object.create(HTMLElement.prototype);
+    proto.createdCallback = function () {
+        callbackCalled = true;
+    }
+    
+    var name = 'x-foo-1';
+    
+    var XFoo = doc.register(name, {prototype: proto});
+    
+    var xfoo = doc.createElementNS(HTML_NAMESPACE, name);
+
+    assert_true(callbackCalled, 'Callback created was not called');
+    
+}, 'Created callback should be called if createElementNS is called. Type is not specified');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    
+    var callbackCalled = false;
+    
+    var proto = Object.create(HTMLElement.prototype);
+    proto.createdCallback = function () {
+        callbackCalled = true;
+    }
+    
+    var name = 'x-foo-2';
+    
+    var XFoo = doc.register(name, {prototype: proto});
+    
+    var xfoo = doc.createElementNS(HTML_NAMESPACE, name, name);
+
+    assert_true(callbackCalled, 'Callback created was not called');
+    
+}, 'Created callback should be called if createElementNS is called. Type is specified');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    
+    var callbackCalled = false;
+    
+    var proto = Object.create(HTMLElement.prototype);
+    proto.createdCallback = function () {
+        callbackCalled = true;
+    }
+    
+    var name = 'x-foo-3';
+    
+    var xfoo = doc.createElementNS(HTML_NAMESPACE, name);
+
+    assert_false(callbackCalled, 'Callback created was not called');
+    
+    var XFoo = doc.register(name, {prototype: proto});
+    
+    assert_true(callbackCalled, 'Callback created was not called');
+    
+}, 'Created callback should be called if createElementNS is called. ' +
+    'Element is unresolved at first');
+
+</script>
+</body>
+</html>

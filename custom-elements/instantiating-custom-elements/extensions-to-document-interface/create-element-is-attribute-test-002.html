@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>createElementNS should set IS attribute to type</title>
+<meta name="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<meta name="assert" content="If TYPE is not the same as localName, set the value of ELEMENT's is attribute to TYPE">
+<link rel="help" href="http://www.w3.org/TR/custom-elements/#extensions-to-document-interface-to-instantiate">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src='../../testcommon.js'></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+</head>
+<body>
+<div id="log"></div>
+<script type="text/javascript">
+
+function doTest(element) {
+    var doc = newHTMLDocument();
+    
+    var obj = doc.createElement(element);
+    
+    var name = 'x-foo-' + element;
+    
+    var proto = Object.create(obj.constructor.prototype);
+    
+    var XFoo = doc.register(name, {prototype: proto, extends: element});
+    
+    var xfoo = doc.createElementNS(HTML_NAMESPACE, element, name);
+        
+    assert_equals(xfoo.getAttribute('is'), name, 
+            'Wrong value of IS attribute');    
+}
+
+
+var parameters = [];
+
+for (var i = 0; i < HTML5_ELEMENTS.length; i++) {
+    if (HTML5_DOCUMENT_ELEMENTS.indexOf(HTML5_ELEMENTS[i]) == -1) {
+        parameters[i] = ['Custom element type ' + HTML5_ELEMENTS[i], HTML5_ELEMENTS[i]];
+    }
+}
+
+generate_tests(doTest, parameters, 
+        'If type is not the same as localName, the value of ELEMENT\'s is attribute ' +
+        'must be set to type by createElementNS');
+
+</script>
+</body>
+</html>

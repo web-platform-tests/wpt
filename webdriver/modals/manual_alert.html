@@ -1,10 +1,5 @@
 <!DOCTYPE html>
 <title>Testing Alerts</title>
-<div id='alert'>Click me to throw an alert</div>
-<script type="text/javascript">
-    "use strict";
-    var alertElement = document.getElementById('alert');
-    alertElement.addEventListener('click', function() { alert("we are throwing an alert")}, true);
-</script>
+<div id='alert' onclick='alert("we are throwing an alert");'>Click me to throw an alert</div>
 <p>This is a test of an alert open from onload event handler: <a id="open-page-with-onload-alert" href="pageWithOnLoad.html">open new page</a></p>
 <p>This is a test of an alert open from onunload event handler: <a id="open-page-with-onunload-alert" href="pageWithOnUnload.html">open new page</a></p>

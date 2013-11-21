@@ -16,14 +16,14 @@ class PromptsTests(base_test.WebDriverBaseTest):
         self.driver.find_element_by_id("prompt").click()
         alert = Alert(self.driver)
         alert.accept()
-        self.assertEquals("Testing Alerts", self.driver.title)
+        self.assertEquals("Prompt Test", self.driver.title)
 
     def test_should_allow_users_to_dismiss_a_prompt_manually(self):
         self.driver.get(self.webserver.where_is("modals/prompt_test.html"))
         self.driver.find_element_by_id("prompt").click()
         alert = Alert(self.driver)
         alert.dismiss()
-        self.assertEquals("Testing Alerts", self.driver.title)
+        self.assertEquals("Prompt Test", self.driver.title)
 
     def test_should_allow_users_to_enter_text_into_a_prompt_manually(self):
         self.driver.get(self.webserver.where_is("modals/prompt_test.html"))

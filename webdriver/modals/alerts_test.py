@@ -17,21 +17,21 @@ class AlertsTest(base_test.WebDriverBaseTest):
         self.driver.find_element_by_id("alert").click()
         alert = Alert(self.driver)
         alert.accept()
-        self.assertEquals("Testing Alerts", self.driver.title)
+        self.assertEquals("Manual Alert", self.driver.title)
 
     def test_should_allow_users_to_dismiss_an_alert_manually(self):
         self.driver.get(self.webserver.where_is("modals/manual_alert.html"))
         self.driver.find_element_by_id("alert").click()
         alert = Alert(self.driver)
         alert.dismiss()
-        self.assertEquals("Testing Alerts", self.driver.title)
+        self.assertEquals("Manual Alert", self.driver.title)
 
     def test_should_allow_users_to_accept_an_alert_with_no_text(self):
         self.driver.get(self.webserver.where_is("modals/empty_alerts.html"))
         self.driver.find_element_by_id("alert").click()
         alert = Alert(self.driver)
         alert.accept()
-        self.assertEquals("Testing Alerts", self.driver.title)
+        self.assertEquals("Empty Alerts", self.driver.title)
 
     def test_should_get_text_of_alert_opened_in_setTimeout(self):
         self.driver.get(self.webserver.where_is("modals/slow_alert.html"))
@@ -41,6 +41,7 @@ class AlertsTest(base_test.WebDriverBaseTest):
             self.assertEquals("Slow", alert.text)
         finally:
             alert.accept()
+        self.assertEquals("Slow Alert", self.driver.title)
 
     def test_should_throw_when_trying_to_send_text_to_alert(self):
         self.driver.get(self.webserver.where_is("modals/manual_alert.html"))
@@ -52,7 +53,7 @@ class AlertsTest(base_test.WebDriverBaseTest):
             pass
         finally:
             alert.dismiss()
-        self.assertEquals("Testing Alerts", self.driver.title)
+        self.assertEquals("Manual Alert", self.driver.title)
 
     def test_should_allow_the_user_to_get_the_text_of_an_alert(self):
         self.driver.get(self.webserver.where_is("modals/manual_alert.html"))
@@ -78,7 +79,7 @@ class AlertsTest(base_test.WebDriverBaseTest):
         self.driver.find_element_by_id('alertInFrame').click()
         alert = Alert(self.driver)
         alert.accept()
-        self.assertEquals("Testing Alerts", self.driver.title)
+        self.assertEquals("Page with iframe", self.driver.title)
 
     def test_should_allow_users_to_accept_an_alert_in_a_nested_frame(self):
         self.driver.get(self.webserver.where_is("modals/page_with_iframe.html"))
@@ -87,7 +88,7 @@ class AlertsTest(base_test.WebDriverBaseTest):
         self.driver.find_element_by_id('alertInFrame').click()
         alert = Alert(self.driver)
         alert.accept()
-        self.assertEquals("Testing Alerts", self.driver.title)
+        self.assertEquals("Page with iframe", self.driver.title)
 
     def test_switching_to_missing_alert_throws(self):
         try:
@@ -119,54 +120,6 @@ class AlertsTest(base_test.WebDriverBaseTest):
         alert.accept()
         self.assertEquals("onunload", value)
 
-
-class PromptsTests(base_test.WebDriverBaseTest):
-
-    def test_should_allow_users_to_accept_a_prompt_manually(self):
-        self.driver.get(self.webserver.where_is("modals/prompt_test.html"))
-        self.driver.find_element_by_id("prompt").click()
-        alert = Alert(self.driver)
-        alert.accept()
-        self.assertEquals("Testing Alerts", self.driver.title)
-
-    def test_should_allow_users_to_dismiss_a_prompt_manually(self):
-        self.driver.get(self.webserver.where_is("modals/prompt_test.html"))
-        self.driver.find_element_by_id("prompt").click()
-        alert = Alert(self.driver)
-        alert.dismiss()
-        self.assertEquals("Testing Alerts", self.driver.title)
-
-    def test_should_allow_users_to_enter_text_into_a_prompt_manually(self):
-        self.driver.get(self.webserver.where_is("modals/prompt_test.html"))
-        self.driver.find_element_by_id("prompt").click()
-        alert = Alert(self.driver)
-        alert.send_keys("cheese")
-        alert.accept()
-        self.assertEquals("cheese", self.driver.find_element('id', 'text').text)
-
-    def test_should_allow_users_to_get_text_of_prompt(self):
-        self.driver.get(self.webserver.where_is("modals/prompt_test.html"))
-        self.driver.find_element_by_id("prompt").click()
-        alert = Alert(self.driver)
-        value = alert.text
-        alert.accept()
-        self.assertEquals("Enter something", value)
-
-    def test_prompt_should_use_default_value_if_no_keys_sent(self):
-        self.driver.get(self.webserver.where_is("modals/prompt_with_default.html"))
-        self.driver.find_element_by_id("prompt").click()
-        alert = Alert(self.driver)
-        value = alert.text
-        alert.accept()
-        self.assertEquals("This is the default value", value)
-
-    def test_prompt_should_have_null_if_dismissed(self):
-        self.driver.get(self.webserver.where_is("modals/prompt_with_default.html"))
-        self.driver.find_element_by_id("prompt").click()
-        alert = Alert(self.driver)
-        value = alert.text
-        alert.dismiss()
-        self.assertEquals("null", value)
 
 if __name__ == "__main__":
     unittest.main()

@@ -13,11 +13,9 @@ function testCollapse(rangeEndpoints, toStart) {
 	var range;
 	if (rangeEndpoints == "detached") {
 		range = document.createRange();
-		range.detach();
+		range.detach(); // should be a no-op and therefore the following should not throw
 		range.collapse(toStart);
-		assert_true(range.collapsed,
-			".collapsed must be set after .collapsed()");
-		return;
+		assert_equals(true, range.collapsed);
 	}
 
 	// Have to account for Ranges involving Documents!
@@ -35,7 +33,11 @@ function testCollapse(rangeEndpoints, toStart) {
 		&& range.startOffset == range.endOffset,
 		"collapsed must be true if and only if the start and end are equal");
 
-	range.collapse(toStart);
+	if (toStart === undefined) {
+		range.collapse();
+	} else {
+		range.collapse(toStart);
+	}
 
 	assert_equals(range.startContainer, expectedContainer,
 		"Wrong startContainer");
@@ -60,6 +62,11 @@ for (var i = 0; i < testRanges.length; i++) {
 		"Range " + i + " " + testRanges[i] + ", toStart false",
 		eval(testRanges[i]),
 		false
+	]);
+	tests.push([
+		"Range " + i + " " + ranges[i] + ", toStart omitted",
+		eval(ranges[i]),
+		undefined
 	]);
 }
 generate_tests(testCollapse, tests);

@@ -9,7 +9,7 @@
 <link rel="help" href="http://www.w3.org/TR/navigation-timing/#sec-window.performance-attribute"/>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/resources/WebIDLParser.js"></script>
+<script src="/resources/webidl2/lib/webidl2.js"></script>
 <script src="/resources/idlharness.js"></script>
 </head>
 <body>
@@ -19,6 +19,39 @@
 <pre id='untested_idl' style='display:none'>
 
 interface Window {
+};
+
+callback interface EventListener {
+  void handleEvent(Event event);
+};
+
+interface Event {
+    // PhaseType
+    const unsigned short NONE = 0;
+    const unsigned short CAPTURING_PHASE = 1;
+    const unsigned short AT_TARGET = 2;
+    const unsigned short BUBBLING_PHASE = 3;
+    readonly    attribute DOMString      type;
+    readonly    attribute EventTarget?   target;
+    readonly    attribute EventTarget?   currentTarget;
+    readonly    attribute unsigned short eventPhase;
+    readonly    attribute boolean        bubbles;
+    readonly    attribute boolean        cancelable;
+    readonly    attribute DOMTimeStamp   timeStamp;
+    void stopPropagation ();
+    void preventDefault ();
+    void initEvent (DOMString eventTypeArg, boolean bubblesArg, boolean cancelableArg);
+    // Introduced in DOM Level 3
+    void stopImmediatePropagation ();
+    readonly    attribute boolean        defaultPrevented;
+    readonly    attribute boolean        isTrusted;
+};
+
+interface EventTarget {
+    // Modified in DOM Level 3
+    void    addEventListener (DOMString type, EventListener? listener, optional boolean useCapture = false);
+    void    removeEventListener (DOMString type, EventListener? listener, optional boolean useCapture = false);
+    boolean dispatchEvent (Event event);
 };
 
 </pre>
@@ -57,7 +90,7 @@ interface PerformanceNavigation {
   readonly attribute unsigned short redirectCount;
 };
 
-interface Performance {
+interface Performance : EventTarget {
   readonly attribute PerformanceTiming timing;
   readonly attribute PerformanceNavigation navigation;
 };

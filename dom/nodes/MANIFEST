@@ -8,6 +8,7 @@ CharacterData-insertData.html
 CharacterData-remove.html
 CharacterData-replaceData.html
 support ChildNode-remove.js
+Comment-constructor.html
 support creators.js
 Document-adoptNode.html
 http Document-characterSet-normalization.html

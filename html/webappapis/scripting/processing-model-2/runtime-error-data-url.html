@@ -8,6 +8,7 @@
  <body>
   <div id=log></div>
   <script>
+    setup({allow_uncaught_exception:true});
     var t = async_test();
     var t_col = async_test(document.title+' (column)');
     var ran = false;

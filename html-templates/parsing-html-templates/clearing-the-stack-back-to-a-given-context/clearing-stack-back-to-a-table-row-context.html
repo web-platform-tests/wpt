@@ -39,7 +39,7 @@ function doTest(doc, templateInnerHTML, id, tagName, elementId) {
     assert_equals(table.rows[0].cells.length, 1, 'Wrong number of table cells');
     assert_equals(template.parentNode, tr, 'Wrong template parent');
     if (id !== null) {
-        assert_not_null(template.content.querySelector('#' + id),
+        assert_not_equals(template.content.querySelector('#' + id), null,
                     'Element should present in the template content');
     }
     if (tagName !== null) {
@@ -47,7 +47,7 @@ function doTest(doc, templateInnerHTML, id, tagName, elementId) {
                 'Wrong element in the template content');
     }
     if (elementId) {
-        assert_null(doc.querySelector('#' + elementId),
+        assert_equals(doc.querySelector('#' + elementId), null,
                 'Table should have no element with ID ' + elementId);
     }
 }

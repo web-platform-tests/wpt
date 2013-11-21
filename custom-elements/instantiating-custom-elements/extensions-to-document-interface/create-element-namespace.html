@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Namespace for createElement is HTML Namespace</title>
+<meta name="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<meta name="assert" content="">
+<link rel="help" href="http://www.w3.org/TR/custom-elements/#extensions-to-document-interface-to-instantiate">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src='../../testcommon.js'></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+</head>
+<body>
+<div id="log"></div>
+<script type="text/javascript">
+
+test(function() {
+    var doc = newHTMLDocument();
+    
+    var name = 'x-foo-1';
+    
+    var XFoo = doc.register(name);
+
+    var xfoo = doc.createElement(name);
+
+    assert_equals(xfoo.namespaceURI, HTML_NAMESPACE, 
+            'Wrong custom element namespace');
+
+}, 'Namespace for createElement is HTML Namespace');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    
+    var name = 'x-foo-2';
+    
+    var XFoo = doc.register(name, {
+        prototype: Object.create(HTMLParagraphElement.prototype),
+        extends: 'p'
+    });
+
+    var xfoo = doc.createElement('p', name);
+
+    assert_equals(xfoo.namespaceURI, HTML_NAMESPACE, 
+            'Wrong custom element namespace');
+
+}, 'Namespace for createElement is HTML Namespace. Type extension specified');
+
+</script>
+</body>
+</html>

@@ -42,7 +42,7 @@ function doTest(doc, tagToTest, templateInnerHTML, id, tagName, bodiesNum, foote
     assert_equals(table.rows.length, 1, 'Wrong number of table rows');
     assert_equals(table.rows[0].cells.length, 1, 'Wrong number of table cells');
     if (id !== null) {
-        assert_not_null(template.content.querySelector('#' + id),
+        assert_not_equals(template.content.querySelector('#' + id), null,
                 'Element should present in the template content');
     }
     if (tagName !== null) {
@@ -50,21 +50,21 @@ function doTest(doc, tagToTest, templateInnerHTML, id, tagName, bodiesNum, foote
                 'Wrong element in the template content');
     }
 
-    assert_null(table.caption, 'Table should have no caption');
+    assert_equals(table.caption, null, 'Table should have no caption');
 
     if (bodiesNum) {
         assert_equals(table.tBodies.length, bodiesNum, 'Table should have '
                 + bodiesNum + ' body');
     }
     if (footerIsNull) {
-        assert_null(table.tFoot, 'Table should have no footer');
+        assert_equals(table.tFoot, null, 'Table should have no footer');
     }
     if (footerId) {
         assert_not_equals(table.tFoot.id, footerId,
                 'Table should have no footer with id="' + footerId + '"');
     }
     if (headerIsNull) {
-        assert_null(table.tHead, 'Table should have no header');
+        assert_equals(table.tHead, null, 'Table should have no header');
     }
     if (headerId) {
         assert_not_equals(table.tHead.id, headerId,

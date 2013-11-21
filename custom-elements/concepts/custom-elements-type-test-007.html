@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>The custom element type with ideographic char</title>
+<meta name="author" title="Vasiliy Degtyarev" href="mailto:vasya@unipro.ru">
+<meta name="assert" content="The custom element type may contain ideographic char on any position except the first one">
+<link rel="help" href="https://dvcs.w3.org/hg/webcomponents/raw-file/default/spec/custom/index.html#concepts">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src='../testcommon.js'></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+</head>
+<body>
+<div id="log"></div>
+<script type="text/javascript">
+
+function doTest(charCode) {
+    var doc = newHTMLDocument();
+    
+    var XFoo = null;
+    
+    var thrown = false;    
+    var name = 'x-' + String.fromCharCode(charCode);
+    try {
+        XFoo = doc.register(name);
+    } catch (e) {
+        thrown = true;
+    }
+    
+    assert_false(thrown, 'Exception should not be thrown in case of attempt to register '
+            + 'a custom element with a name \'' + name + '\'  (char code U+' + charCode.toString(16) + ' )');
+}
+
+var parameters = [];
+
+var k=0;
+for (var i = 0; i < IDEOGRAPHIC_CHARS_RANGES.length-1; i=i+2) {
+	for (var j = 0; IDEOGRAPHIC_CHARS_RANGES[i]+j <= IDEOGRAPHIC_CHARS_RANGES[i+1]; j++ ){
+	    parameters[k] = ['Custom element name x-' + String.fromCharCode(IDEOGRAPHIC_CHARS_RANGES[i]+j), (IDEOGRAPHIC_CHARS_RANGES[i]+j)];
+	    k++;
+	}
+}
+
+for (var i = 0; i < IDEOGRAPHIC_CHARS_SINGLE.length; i++) {
+    parameters[k + i] = ['Custom element name x-' + String.fromCharCode(IDEOGRAPHIC_CHARS_SINGLE[i]), IDEOGRAPHIC_CHARS_SINGLE[i]];
+}
+
+generate_tests(doTest, parameters, 'Valid custom element types with ideographic char');
+
+</script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Cross page drag and drop: helper file</title>
+<style type="text/css">
+html, body
+	{height:100%;}
+div:first-child
+	{width:100px;
+	height:100px;}
+p
+	{height:150px;}
+</style>
+<script type="application/ecmascript">
+function dropIt(event)
+	{if(event.dataTransfer.getData('text/uri-list').replace(/\r\n$/,'') == 'data:text/plain,PASS')
+		{document.querySelector('div').setAttribute('style','background-color:#228b22');}
+	}
+</script>
+</head>
+<body>
+<div/>
+<div ondragenter="window.location.reload()">
+<p ondragenter="event.stopPropagation()" dropzone="copy string:text/uri-list" ondrop="dropIt(event)">Drop box on this page, when you drop it green box should appear above.</p>
+</div>
+</body>
+</html>

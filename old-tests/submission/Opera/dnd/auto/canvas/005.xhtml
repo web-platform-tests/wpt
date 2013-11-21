@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Drag and drop to iframe: dropping block element onto canvas</title>
+<style type="text/css">
+div
+	{width:100px;
+	height:100px;
+	background-color:#d2b48c;}
+iframe
+	{width:200px;
+	height:200px;
+	border-style:none;}
+</style>
+<script type="application/ecmascript">
+function start(event)
+	{event.dataTransfer.effectAllowed = 'copy';
+	event.dataTransfer.setData('text/plain', '#228b22');}
+</script>
+</head>
+<body>
+<div draggable="true" ondragstart="start(event)"/>
+<p>Drag box above and drop it onto the one below. Pass if lower box turns green after drop.</p>
+<p><iframe src="005-1.xhtml">Lower box</iframe></p>
+</body>
+</html>

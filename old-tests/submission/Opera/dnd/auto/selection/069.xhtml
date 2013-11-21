@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Selection drag and drop to textarea in iframe</title>
+<style type="text/css">
+span
+	{border:solid 2px #D2B48C;}
+iframe
+	{width:500px;
+	height:400px;
+	border-style:none;}
+</style>
+</head>
+<body onload="window.getSelection().selectAllChildren(document.querySelector('span'))">
+<p><span ondragend="if(document.querySelector('iframe').contentDocument.querySelector('textarea').value == 'Drag me'){this.setAttribute('style','border:solid thick #228B22')}">Drag me</span></p>
+<p>Drag selected text to the textarea below. Text above should get green border.</p>
+<p><iframe src="069-1.xhtml">XHTML document</iframe></p>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Selection drag and drop from password to text input</title>
+<style type="text/css">
+input
+	{border:solid 2px #D2B48C;}
+input[placeholder]
+	{border:solid 2px #4682B4;}
+div
+	{width:300px;
+	height:100px;
+	margin-top:20px;
+	background-color:#4682B4;}
+</style>
+<script type="application/ecmascript">
+function paint(color)
+	{document.querySelector('input').setAttribute('style','border-color:' + color);}
+</script>
+</head>
+<body>
+<p>Try to select and drag content of password field and drop it into textarea below. Input border should turn green.</p>
+<p><input onmousedown="paint('#228B22')" type="password" value="FAIL"/></p>
+<p><input placeholder="Drop selection here" ondrop="paint('#B22222')"/></p>
+</body>
+</html>

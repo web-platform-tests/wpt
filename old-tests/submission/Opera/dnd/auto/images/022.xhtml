@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Dropping image on vertical iframe scrollbar</title>
+<style type="text/css">
+iframe
+	{height:100px;
+	width:16px;}
+div
+	{width:100px;
+	height:100px;
+	margin:20px 0;}
+img
+	{width:10px;
+	height:10px;}
+</style>
+<script type="application/ecmascript">
+function dragImage(event)
+	{event.dataTransfer.effectAllowed = 'copy';}
+function dropImage(event)
+	{document.querySelector('div').setAttribute('style','background-color:#228B22');}
+</script>
+</head>
+<body>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mO4tKXnPwAHgAMSIORTQAAAAABJRU5ErkJggg==" alt="PNG green pixel" ondragstart="dragImage(event)" ondragend="dropImage(event)"/></p>
+<p>Drag little square above and drop it on scrollbar below. Green box should appear below.</p>
+<div/>
+<iframe src="022-1.xhtml">XHTML document</iframe>
+</body>
+</html>

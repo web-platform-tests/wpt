@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Multielement selection drag and drop</title>
+<style type="text/css">
+body > div
+	{border:solid 2px #D2B48C;
+	display:inline-block;}
+textarea
+	{width:300px;
+	height:100px;
+	margin-top:20px;
+	border:solid 2px #4682B4;}
+</style>
+</head>
+<body onload="window.getSelection().selectAllChildren(document.querySelector('div'))">
+<div ondragend="if(document.querySelector('textarea').value.replace(/[\n\r]+/g,' ') == 'Drag selected text to the textarea below. Selection border should turn green.'){this.setAttribute('style','border:solid thick #228B22')}">
+<div>Drag selected text to the textarea below.</div>
+<div>Selection border should turn green.</div>
+</div>
+<p><textarea placeholder="Drop selection here"/></p>
+</body>
+</html>

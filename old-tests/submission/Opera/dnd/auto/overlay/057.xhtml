@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Drag feedback for partly visible float: negative margins</title>
+<style type="text/css">
+p
+	{margin-top:0;}
+div
+	{float:left;
+	margin:-150px 0 0 -150px;
+	height:200px;
+	width:200px;
+	background-color:#D2B48C;
+	border-style:solid;
+	border-width:3px;
+	border-color:#4682B4 #228B22;}
+body:after
+	{content:"";
+	display:block;
+	background-color:#4682B4;
+	width:105px;
+	height:105px;
+	position:fixed;
+	bottom:0;
+	right:0;}
+</style>
+</head>
+<body>
+<div draggable="true" ondragstart="event.dataTransfer.effectAllowed = 'copy'"/>
+<p>Try to drag box above. Feedback overlay should be square.</p>
+</body>
+</html>

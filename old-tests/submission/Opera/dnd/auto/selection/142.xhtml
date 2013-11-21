@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>BiDi text selection drag and drop to block element</title>
+<style type="text/css">
+span
+	{border:solid 2px #D2B48C;}
+div
+	{width:300px;
+	height:100px;
+	margin-top:20px;
+	background-color:#4682B4;}
+</style>
+</head>
+<body onload="window.getSelection().selectAllChildren(document.querySelector('p'))">
+<p><span>PASS|LIAF &#x202E;FAIL|SSAP&#x202C; PASS|LIAF</span></p>
+<p>Drag selected text to the box below. Box should turn green.</p>
+<div
+	ondragenter="event.preventDefault()"
+	ondragover="return false"
+	ondrop="if(event.dataTransfer.getData('text/plain') == 'PASS|LIAF &#x202E;FAIL|SSAP&#x202C; PASS|LIAF'){this.setAttribute('style','background-color:#228B22')}"
+/>
+</body>
+</html>

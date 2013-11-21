@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Drag and drop of image to scrollable container with vertical scrollbar</title>
+<style type="text/css">
+p + div
+	{height:150px;
+	width:150px;
+	overflow-y:scroll;}
+p + div > div
+	{margin-top:144px;
+	width:100px;
+	border-top:dashed 6px #4682b4;}
+div[ondrop]
+	{width:100px;
+	height:100px;
+ 	background-color:#4682b4;}
+</style>
+<script type="application/ecmascript">
+function dropIt(event)
+	{var c = document.createElement('img');
+	c.setAttribute('src',event.dataTransfer.getData('text/uri-list').replace(/\r\n$/,''));
+	document.querySelector('div > div').appendChild(c);}
+</script>
+</head>
+<body>
+<p><img ondragstart="event.dataTransfer.effectAllowed = 'copy'" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAABAklEQVR42u3RIREAIADAQPofcUhCIYiA4yZevJvb2GseOsYr4C9DYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJuSH6zwrT7ia+AAAAAElFTkSuQmCC" alt="PNG rectangle"/></p>
+<p>You should be able to drag box above to the box at the end of scrollable container (dragging towards the bottom edge triggers scrolling). Lower box should turn green.</p>
+<div>
+	<div>
+		<div
+			dropzone="copy string:text/plain"
+			ondrop="this.setAttribute('style','background-color:#228B22')"
+		/>
+	</div>
+</div>
+</body>
+</html>

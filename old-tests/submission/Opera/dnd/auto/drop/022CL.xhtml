@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Selection drag and drop: changing dropzone attribute ondragstart, 'link -> copy' case</title>
+<style type="text/css">
+span
+	{border:solid 2px #D2B48C;}
+div
+	{background-color:#4682B4;
+	width:100px;
+	height:100px;}
+</style>
+<script type="application/ecmascript">
+var effect = 'copy';
+function selectText()
+	{window.getSelection().selectAllChildren(document.querySelector('span'))}
+function dropSelection(event)
+	{if(event.dataTransfer.dropEffect == effect)
+		{document.querySelector('div').setAttribute('style','background-color:#228B22')}
+	}
+function start(event)
+	{document.querySelector('div').setAttribute('dropzone',effect + ' string:text/plain')}
+</script>
+</head>
+<body onload="selectText()">
+<p><span ondragstart="start(event)">Drag me</span></p>
+<p>You should be able to drag selection and drop it onto box below. Box should turn green.</p>
+<div ondrop="dropSelection(event)" dropzone="link string:text/plain"/>
+</body>
+</html>

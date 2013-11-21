@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Drag and drop of text input selection from object</title>
+<style type="text/css">
+p
+	{margin-top:3em;}
+span
+	{border:solid 2px #4682B4;}
+object
+	{width:100%;
+	height:300px;
+	border:solid medium navy;}
+</style>
+<script type="application/ecmascript">
+var step = 1;
+function enterPage(event)
+	{event.preventDefault();
+	if(step++ &lt; 1)
+		{step = 0;
+		say('Dragenter should fire before drop');}
+	}
+function overPage(event)
+	{event.preventDefault();
+	if(step++ &lt;= 1)
+		{step = 0;
+		say('Dragover should fire before drop');}
+	}
+function dropIt(event)
+	{event.preventDefault();
+	if(step++ &lt;= 3)
+		{step = 0;
+		event.dataTransfer.dropEffect = 'none';
+		say('Dragover should fire after dragenter');}
+	else
+		{event.dataTransfer.dropEffect = 'copy'}
+	}
+function say(it)
+	{document.querySelector('pre').appendChild(document.createTextNode(it + '\n'))}
+</script>
+</head>
+<body ondragenter="enterPage(event)" ondragover="overPage(event)" ondrop="dropIt(event)">
+<object type="application/xhtml+xml" data="014-1N.xhtml">XHTML document</object>
+<p><span>Place to drop</span></p>
+<pre/>
+</body>
+</html>

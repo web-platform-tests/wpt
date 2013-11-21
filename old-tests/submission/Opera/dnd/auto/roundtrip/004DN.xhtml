@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Text input selection drag and drop roundtrip</title>
+<style type="text/css">
+span
+	{border:solid 2px #4682B4;
+	display:inline-block;}
+input
+	{border:solid 2px #D2B48C;
+	width:5em;}
+</style>
+</head>
+<body>
+<p><span><input value="Drag me" dropzone="copy string:text/plain" ondrop="if(event.dataTransfer.getData('text/plain') == 'Drag me'){this.setAttribute('style','border:solid thick #228B22')}"/></span></p>
+<p>Select and drag content of tan box outside browser window and then drag it back and drop on itself. Input border should turn green.</p>
+</body>
+</html>

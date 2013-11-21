@@ -1,0 +1,70 @@
+sub Alt()
+	{return "64\x00Alt_L"}
+sub AltGr()
+	{return "108\x00Alt_R"}
+sub BackSpace()
+	{return "22\x00BackSpace"}
+sub CapsLock()
+	{return "66\x00Caps_Lock"}
+sub Ctrl()
+	{return "37\x00Control_L"}
+sub Delete()
+	{return "119\x00Delete"}
+sub Down()
+	{return "116\x00Down"}
+sub End()
+	{return "115\x00End"}
+sub Enter()
+	{return "36\x00Return"}
+sub Escape()
+	{return "9\x00Escape"}
+sub Home()
+	{return "110\x00Home"}
+sub F1()
+	{return "67\x00F1"}
+sub F2()
+	{return "68\x00F2"}
+sub F3()
+	{return "69\x00F3"}
+sub F4()
+	{return "70\x00F4"}
+sub F5()
+	{return "71\x00F5"}
+sub F6()
+	{return "72\x00F6"}
+sub F7()
+	{return "73\x00F7"}
+sub F8()
+	{return "74\x00F8"}
+sub F9()
+	{return "75\x00F9"}
+sub F10()
+	{return "76\x00F10"}
+sub F11()
+	{return "95\x00F11"}
+sub F12()
+	{return "96\x00F12"}
+sub Insert()
+	{return "118\x00Insert"}
+sub Left()
+	{return "113\x00Left"}
+sub Menu()
+	{return "135\x00Menu"}
+sub NumLock()
+	{return "77\x00Num_Lock"}
+sub PageDown()
+	{return "117\x00Next"}
+sub PageUp()
+	{return "112\x00Prior"}
+sub Right()
+	{return "114\x00Right"}
+sub Shift()
+	{return "50\x00Shift_L"}
+sub Space()
+	{return "65\x00space"}
+sub Super()
+	{return "133\x00Super_L"}
+sub Tab()
+	{return "23\x00Tab"}
+sub Up()
+	{return "111\x00Up"}

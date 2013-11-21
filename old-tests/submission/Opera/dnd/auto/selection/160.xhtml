@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Selection drag and drop between email inputs</title>
+<style type="text/css">
+input
+	{border:solid 2px #D2B48C;}
+input[placeholder]
+	{border:solid 2px #4682B4;}
+</style>
+</head>
+<body onload="document.querySelector('input').select()">
+<p><input type="email" value="mail@example.org"/></p>
+<p>Drag selected text to the input below. Border of upper input should turn green.</p>
+<p><input type="email" placeholder="Drop selection here" oninput="if(this.value == 'mail@example.org'){this.setAttribute('style','border:solid thick #228B22')}"/></p>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Drag and drop of overlapping links: negative margin</title>
+<style type="text/css">
+span, strong
+	{color:green;
+	background-color:yellow;}
+strong
+	{color:red;}
+div:first-child
+	{height:2em;}
+div + div
+	{margin-top:-2em;}
+a
+	{border:solid 2px #D2B48C;}
+p + div
+	{width:100px;
+	height:100px;
+	background-color:#4682B4;}
+</style>
+<script type="application/ecmascript">
+function start(event,feedback)
+	{event.dataTransfer.effectAllowed = 'copy';
+	event.dataTransfer.addElement(document.querySelector(feedback));}
+</script>
+</head>
+<body>
+<div>
+	<a href="data:text/plain,0" ondragstart="start(event,'strong')">Link</a>
+</div>
+<div>
+	<a href="data:text/plain,1" ondragstart="start(event,'span')">Link</a>
+</div>
+<p>Drag link above and drop it onto box below. Box should turn green and feedback image should look like <span>PASS</span> not <strong>FAIL</strong>.</p>
+<div dropzone="copy string:text/uri-list" ondrop="if(event.dataTransfer.getData('text/uri-list').replace(/\r\n$/,'') == 'data:text/plain,1'){document.querySelector('p + div').setAttribute('style','background-color:#228B22')}"/>
+</body>
+</html>

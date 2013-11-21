@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Moving text between url inputs</title>
+<style type="text/css">
+input
+	{border:solid 2px #D2B48C;}
+input[placeholder]
+	{border:solid 2px #4682B4;}
+</style>
+<script type="application/ecmascript">
+function check()
+	{var input = document.querySelectorAll('input');
+	if(input[0].value == '' &amp;&amp; input[1].value == 'http://opera.com')
+		{input[0].setAttribute('style','border:solid thick #228B22')}
+	}
+</script>
+</head>
+<body>
+<p><input type="url" value="http://opera.com"/></p>
+<p>Select content of tan box and drag it to the input below. Border of upper input should turn green.</p>
+<p><input ondragenter="event.preventDefault()" ondragover="event.preventDefault();event.dataTransfer.effectAllowed = 'move'" ondrop="window.setTimeout('check()',100)" type="url" placeholder="Drop selection here"/></p>
+</body>
+</html>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Cross fragment drag and drop of SVG text selection from text element to textArea</title>
+</head>
+<body onload="document.querySelector('text').selectSubString(0,7)" ondragend="if(document.querySelector('textArea').firstChild.nodeValue == 'Drag me'){document.querySelector('textArea+rect').setAttribute('stroke','#228B22')}">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100px" height="50px" viewBox="0 0 100 50">
+<text x="10" y="30" font-size="20"><tspan>Drag me</tspan></text>
+<rect x="10" y="10" width="86" height="26" stroke="#D2B48C" stroke-width="2" fill="none"/>
+</svg>
+<p>Drag selection above to the textarea below. Textarea border should turn green.</p>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.2" width="500px" height="400px" viewBox="0 0 500 400">
+<textArea x="10" y="10" width="480" height="380" font-size="20" editable="simple" pointer-events="boundingBox"></textArea>
+<rect x="10" y="10" width="480" height="380" stroke="#4682B4" stroke-width="2" fill="none"/>
+</svg>
+</body>
+</html>

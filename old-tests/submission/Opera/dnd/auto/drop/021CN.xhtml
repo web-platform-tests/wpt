@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Selection drag and drop: removing dropzone attribute ondragstart, 'copy' case</title>
+<style type="text/css">
+span
+	{border:solid 2px #D2B48C;}
+div
+	{background-color:#4682B4;
+	width:100px;
+	height:100px;}
+</style>
+<script type="application/ecmascript">
+var effect = 'copy';
+function dropSelection(event)
+	{document.querySelector('div').setAttribute('style','background-color:#b22222')}
+function start(event)
+	{document.querySelector('div').removeAttribute('dropzone')}
+</script>
+</head>
+<body>
+<p><span ondragstart="start(event)">Drag me</span></p>
+<p>Select and drag content of tan box and try to drop it onto box below. Box should turn green once you enter it and remain green after drag is ended.</p>
+<div ondrop="dropSelection(event)" ondragenter="this.setAttribute('style','background-color:#228B22')" dropzone="copy string:text/plain"/>
+</body>
+</html>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Drag and drop of selection to contenteditable element</title>
+<style type="text/css">
+span
+	{border:solid 2px #D2B48C;}
+div span
+	{background-color:#228B22;
+	color:white;}
+div
+	{width:300px;
+	height:100px;
+	margin-top:20px;
+	background-color:#4682B4;}
+</style>
+</head>
+<body onload="window.getSelection().selectAllChildren(document.querySelector('p'))">
+<p><span>Drag me</span></p>
+<p>Drag selection to the box below. Selection background should turn green once it's dropped.</p>
+<div contenteditable="true"/>
+</body>
+</html>

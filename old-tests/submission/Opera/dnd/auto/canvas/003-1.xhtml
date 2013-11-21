@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Canvas drag and drop: helper file</title>
+<style type="text/css">
+div
+	{width:100px;
+	height:100px;
+	background-color:#d2b48c;}
+</style>
+<script type="application/ecmascript">
+function start(event)
+	{event.dataTransfer.effectAllowed = 'copy';
+	event.dataTransfer.setData('text/plain', '#228b22');}
+</script>
+</head>
+<body>
+<div draggable="true" ondragstart="start(event)"/>
+</body>
+</html>

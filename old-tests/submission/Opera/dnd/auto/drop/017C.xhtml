@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Link drag and drop: dropzone 'copy'</title>
+<style type="text/css">
+a
+	{border:solid 2px #D2B48C;}
+div
+	{background-color:#4682B4;
+	width:100px;
+	height:100px;}
+</style>
+<script type="application/ecmascript">
+var effect = 'copy';
+function dropSelection(event)
+	{if(event.dataTransfer.dropEffect == effect)
+		{document.querySelector('div').setAttribute('style','background-color:#228B22')}
+	}
+function start(event)
+	{event.dataTransfer.effectAllowed = effect;}
+</script>
+</head>
+<body>
+<p><a href="data:text/plain,1" ondragstart="start(event)">Drag me</a></p>
+<p>You should be able to drag link and drop it onto box below. Box should turn green.</p>
+<div ondrop="dropSelection(event)" dropzone="copy string:text/uri-list"/>
+</body>
+</html>

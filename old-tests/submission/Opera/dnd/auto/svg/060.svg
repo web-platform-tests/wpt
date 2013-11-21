@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="500px" height="500px" viewBox="0 0 500 500">
+<title>SVG link drag and drop and history navigation roundtrip</title>
+<a xlink:href="data:text/plain,1">
+	<polygon points="50,5 150,5 50,100" fill="#D2B48C"/>
+</a>
+<textArea x="10" y="100" width="480" height="200" font-size="20">Drag triangle above. You will be redirected to new page. When you return back drop it onto itself. You should see word PASS once you drop it.</textArea>
+<rect x="10" y="240" width="480" height="250" fill="#4682B4"/>
+<script type="application/ecmascript">
+var a = document.querySelector('a'),  rect = document.querySelector('rect');
+a.addEventListener('dragstart',
+function (event)
+	{event.dataTransfer.effectAllowed = 'copy';
+	window.location = '060-1.svg'}
+,false);
+rect.addEventListener('dragenter',
+function (event)
+	{event.preventDefault();}
+,false);
+rect.addEventListener('dragover',
+function (event)
+	{event.preventDefault();}
+,false);
+rect.addEventListener('drop',
+function (event)
+	{if(event.dataTransfer.getData('text/uri-list').replace(/\r\n$/,'') == 'data:text/plain,1')
+	{rect.setAttribute('fill','#228B22');}
+	}
+,false);
+</script>
+</svg>

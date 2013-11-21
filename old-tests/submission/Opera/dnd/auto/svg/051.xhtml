@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Drag and drop of link from SVG fragment to XHTML</title>
+<style type="text/css">
+div
+	{width:300px;
+	height:100px;
+	margin-top:20px;
+	background-color:#4682B4;}
+</style>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="200px" height="50px" viewBox="0 0 200 50">
+	<a xlink:href="data:text/plain,1">
+		<rect x="0" y="0" width="200" height="50" fill="#D2B48C"/>
+	</a>
+</svg>
+<p>Drag box above and drop it onto the box below. Lower box should turn green.</p>
+<div dropzone="copy string:text/uri-list" ondrop="if(event.dataTransfer.getData('text/uri-list').replace(/[\n\r]+/,'') == 'data:text/plain,1'){this.setAttribute('style','background-color:#228B22')}"/>
+</body>
+</html>

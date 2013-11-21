@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Drag and drop and vertical scrolling: dropping block element onto canvas inside scrollable container</title>
+<style type="text/css">
+div[draggable]
+	{width:20px;
+	height:20px;
+	background-color:#d2b48c;}
+p + div
+	{height:100px;
+	width:150px;
+	overflow-y:scroll;}
+div div
+	{margin-top:94px;
+	width:100px;
+	border-top:dashed 6px #4682b4;}
+canvas
+	{display:block;}
+</style>
+<script type="application/ecmascript">
+function paint(color)
+	{var canvas = document.querySelector('canvas'),
+	c = canvas.getContext('2d');
+	c.fillStyle = color;
+	c.beginPath();
+	c.moveTo(0,0);
+	c.lineTo(100,0);
+	c.lineTo(100,100);
+	c.lineTo(0,100);
+	c.closePath();
+	c.fill();}
+function start(event)
+	{event.dataTransfer.effectAllowed = 'copy';
+	event.dataTransfer.setData('text/plain', '#228b22');}
+</script>
+</head>
+<body onload="paint('#4682b4')">
+<div draggable="true" ondragstart="start(event)"/>
+<p>You should be able to drag box above to the box at the bottom of scrollable container (dragging towards the bottom edge triggers scrolling). Lower box should turn green.</p>
+<div>
+	<div><canvas width="100" height="100" ondragenter="event.preventDefault()" ondragover="return false" ondrop="paint(event.dataTransfer.getData('text/plain'))">Canvas</canvas></div>
+</div>
+</body>
+</html>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Dragging selection from editable SVG textArea to contenteditable element</title>
+<style type="text/css">
+div
+  {width:300px;
+  height:100px;
+  margin-top:20px;
+  background-color:#4682B4;}
+</style>
+</head>
+<body ondragend="var d = document.querySelector('div');if(d.firstChild.nodeValue == 'Drag me'){d.setAttribute('style','background-color:#228B22')}">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100px" height="50px" viewBox="0 0 100 50">
+<textArea x="10" y="10" width="86" height="26" font-size="20">Drag me</textArea>
+<rect x="10" y="10" width="86" height="26" stroke="#D2B48C" stroke-width="2" fill="none"/>
+</svg>
+<p>Select text above and drag it to the box below. Box should turn green.</p>
+<div contenteditable="true"/>
+</body>
+</html>

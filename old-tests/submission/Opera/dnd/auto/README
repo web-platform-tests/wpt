@@ -1,0 +1,574 @@
+=Framework=
+
+CT is Perl package (for Python analog see [http://autopy.org/ AutoPy]) that provides basic platform independent test automation API. Can be used to run interactive tests and some types of visual ones.
+
+Normally CT grabs application window, focuses address bar, types url, loads page, locates elements on page via color search functions,
+sends mouse and keyboard events and checks results via color search. In this way CT replicates usual interaction between user and browser.
+
+=Mouse events=
+
+Mouse events are dispatched on OS level, for browser they are external and interaction pattern 
+is basically the same as if they were real. CT can be used to automate tests that are sensitive
+to origin of mouse events, including drag and drop, selection and mouse events tests.
+
+CT normally uses Xlib Xtst functions to dispatch events, either explicitly via X11::Xlib module
+or through higher level API provided by X11::GUITest module. Alternatively CT can use external utilities like xte or xdotool to dispatch events.
+
+Windows version of CT relies on Win32::GuiTest module.
+
+==Click==
+
+'''CT::Click($x,$y[,$times])'''
+
+Generates left clicks. First two arguments specify where to click (pixel coordinates are relative to browser window)
+while last argument is optional and specifies how many click to dispatch (default is 1).
+
+So CT::Click($x,$y) is single left click at pixel $x,$y and is equivalent to CT::Click($x,$y,1). CT::Click($x,$y,2) is double click at pixel $x,$y and so on.
+
+==MouseClick==
+
+'''CT::MouseClick($x,$y[,$button])'''
+
+Generates single clicks. First two arguments specify where to click (pixel coordinates are relative to browser window)
+while last argument is optional and specifies mouse button (default is CT::LeftButton other values are
+CT::MiddleButton and CT::RightButton, numerical values 1,2,3 are also recognized).
+
+So CT::MouseClick($x,$y) is left click at pixel $x,$y and is equivalent to CT::MouseClick($x,$y,1), CT::MouseClick($x,$y,CT::LeftButton)
+or CT::Click($x,$y).
+
+CT::MouseClick($x,$y,2) is middle click and is the same as CT::MouseClick($x,$y,CT::MiddleButton)
+
+CT::MouseClick($x,$y,3) is right click and is equivalent to CT::MouseClick($x,$y,CT::RightButton)
+
+==MouseDown==
+
+'''CT::MouseDown([$button])'''
+
+Presses specified mouse button. Default is CT::LeftButton other values are CT::MiddleButton and CT::RightButton, numerical values 1,2,3 are also recognized. Remember to release mouse button some time.
+
+CT::MouseDown() presses left button and is equivalent to CT::MouseDown(1) or CT::MouseDown(CT::LeftButton)
+
+CT::MouseDown(2) presses middle button and is the same as CT::MouseDown(CT::MiddleButton)
+
+CT::MouseDown(3) presses right button and is the same as CT::MouseDown(CT::RightButton)
+
+==MouseUp==
+
+'''CT::MouseDown([$button])'''
+
+Releases specified mouse button. Default is CT::LeftButton other values are CT::MiddleButton and CT::RightButton, numerical values 1,2,3 are also recognized
+
+CT::MouseUp() releases left button and is equivalent to CT::MouseDown(1) or CT::MouseDown(CT::LeftButton)
+
+CT::MouseUp(2) releases middle button and is the same as CT::MouseDown(CT::MiddleButton)
+
+CT::MouseUp(3) releases right button and is the same as CT::MouseDown(CT::RightButton)
+
+==MouseMove==
+
+'''CT::MouseMove([$x0,$y0,]$x1,$y1)'''
+
+When called with two arguments generates mouse jump to $x1,$y1 pixel (coordinates are relative to browser window).
+When called with four arguments generates continuous mouse movement from pixel $x0,$y0 to $x1,$y1.
+
+==DragAndDrop==
+
+'''CT::DragAndDrop($x0,$y0,$x1,$y1)'''
+
+Initiates mouse drag from pixel $x0,$y0 to $x1,$y1 (pixel coordinates are relative to browser window). Useful in drag and drop tests.
+
+==Select==
+
+'''CT::Select($x0,$y0,$x1,$y1)'''
+
+Initiates mouse drag from pixel $x0,$y0 to $x1,$y1 (pixel coordinates are relative to browser window). Can be used to select text.
+
+Difference between Select and DragAndDrop is in mouse path, in case of Select drag starts horizontally and after reaching $x1 column continues vertically,
+in case of drag and drop it drag starts vertically and after reaching $y1 row continues horizontally.
+
+==Mouse coordinates==
+
+Mouse coordinates that CT operates with are relative to browser window (that's not page, not client and in general not screen coordinates that might be used in pageX, pageY, clientX, clientY and screenX, screenY DOM properties).
+To get absolute screen coordinates one can use CT::AbsoluteXY($x,$y) function.
+
+Normally you should never need to hardcode coordinates in tests, give elements distinctive colors instead and use color matching functions to locate them. That way you will get actual coordinates you need.
+
+
+===AbsoluteXY===
+
+'''CT::AbsoluteXY($x0,$y0[,.., $xN,$yN])'''
+
+Transforms relative coordinates to absolute. Accepts 2*n coordinates relative to window and returns 2*n absolute screen coordinates.
+
+===RelativeXY===
+
+'''CT::RelativeXY($x0,$y0[,.., $xN,$yN])'''
+
+Transforms absolute screen coordinates to relative coordinates.
+Accepts 2*n screen coordinates and returns 2*n coordinates relative to application window.
+
+=Keyboard events=
+
+Like mouse events keyboard events are also dispatched on OS level, so among other things one can invoke system wide keyboard shortcuts.
+
+==KeyPress==
+
+'''CT::KeyPress($key)'''
+
+Presses and releases key.
+
+==KeyDown==
+
+'''CT::KeyDown($key)'''
+
+Presses key. Remember to release it some time.
+
+==KeyUp==
+
+'''CT::KeyUp($key)'''
+
+Releases key.
+
+==Keys==
+
+'''CT::Keys([$modifier1,..,$modifierN,]$key)'''
+
+When called with one argument dispatches keystrokes. When called with multiple arguments then last argument specifies keystrokes that need to be dispatched and preceding arguments are modifier keys that should be pressed during that time.
+The following modifier keys are recognized: CT::Alt, CT::Ctrl, CT::Shift.
+
+Examples:
+
+CT::Keys('Hello world!') types Hello world!
+
+CT::Keys(CT::Tab) presses and releases tab key, the same as CT::KeysPress(CT::Tab).
+
+CT::Keys(CT::Ctrl,'c') dispatches Ctrl+c (note that keys are case sensitive and CT::Keys(CT::Ctrl,'C') would be treated as CT::Keys(CT::Ctrl,CT::Shift,'c')).
+
+CT::Keys(CT::Ctrl,CT::Alt,CT::Delete) dispatches Ctrl+Alt+Delete
+
+==Key Names==
+
+CT recognizes printable ASCII characters passed as string and the following keys:
+
+* CT::Alt
+* CT::AltGr
+* CT::BackSpace
+* CT::CapsLock
+* CT::Ctrl
+* CT::Delete
+* CT::Down
+* CT::End
+* CT::Enter
+* CT::Escape
+* CT::Home
+* CT::F1-F12
+* CT::Insert
+* CT::Left
+* CT::Menu
+* CT::NumLock
+* CT::PageDown
+* CT::PageUp
+* CT::Right
+* CT::Shift
+* CT::Space
+* CT::Super
+* CT::Tab
+* CT::Up
+
+Note that some CT implementation (mostly those that take low level approach like Xlib based one)
+assume US ASCII keyboard layout while others are more flexible.
+
+=Actions=
+
+==Back==
+
+'''CT::Back([$steps])'''
+
+History navigation, argument specifies how many steps back to navigate. Default is 1.
+
+==CloseTab==
+
+'''CT::CloseTab()'''
+
+Closes active tab.
+
+==Copy==
+
+'''CT::Copy()'''
+
+Dispatches Ctrl+c
+
+==EnableAccessKeys==
+
+'''CT::EnableAccessKeys()'''
+
+Enables access keys
+
+==Forward==
+
+'''CT::Forward([$steps])'''
+
+History navigation, argument specifies how many steps forward to navigate. Default is 1.
+
+==HitEnter==
+
+'''CT::HitEnter()'''
+
+Presses Enter.
+
+==OpenNewTab==
+
+'''CT::OpenNewTab()'''
+
+Opens new tab
+
+==Paste==
+
+'''CT::Paste()'''
+
+Dispatches Ctrl+v
+
+==Redo==
+
+'''CT::Redo()'''
+
+Redoes last action.
+
+==Reload==
+
+'''CT::Reload()'''
+
+Reloads page.
+
+==SelectAll==
+
+'''CT::SelectAll()'''
+
+Dispatches Ctrl+a
+
+==SpatNav==
+
+'''CT::SpatNav($direction[,$steps])'''
+
+Triggers spatial navigation. First argument is required and specifies navigation direction (values CT::Down, CT::Up, CT::Left and CT::Right are recognized). Second argument is optional and specifies number of steps to navigate, default is 1.
+
+==SwitchTabs==
+
+'''CT::SwitchTabs()'''
+
+Switches tabs in Ctrl+Tab order.
+
+==TabNav==
+
+'''CT::TabNav([$steps])'''
+
+Triggers tab navigation. Optional arguments specifies how many tabs to press, default is 1.
+
+==Undo==
+
+'''CT::Undo()'''
+
+Undo last action.
+
+=Color matching=
+
+CT performs color search to locate different elements on page. It basically takes screenshot of active window
+using either xwd, import or scrot utilities and either parses pixel data using built-in XWD or BMP parsers,
+uses Imlib2 graphics library via Image::Imlib2 module or relies on dedicated utilities like visgrep.
+
+Windows version of CT relies on DibSect from Win32::GuiTest module or uses default snapshot tool and then retrieves bitmap data from clipboard. In both cases bitmaps are parsed using built-in BMP parser.
+
+==Colors==
+
+'''CT::Colors($color1,..,$colorN)'''
+
+Checks if specified colors are present on screenshot, if all of them are present returns 1, else 0.
+
+CT::Colors('forestgreen') is the same as CT::Colors('#228B22'), returns 1 if something is forestgreen on the page and 0 otherwise.
+Matching is exact, example above won't match  for instance '#228B23'.
+
+==FindColors==
+
+'''CT::FindColors($color1,..,$colorN)'''
+
+For each color returns coordinates of first (first matching pixel in first row that contains pixels of given color)
+and last matching pixels (last matching pixel in last row that contains pixels of given color) in screenshot.
+N color arguments are accepted, 4*N coordinates are return back, each group contains 
+$firstMatchingPixelX,$firstMatchingPixelY,$lastMatchingPixelX,$lastMatchingPixelY coordinates.
+For colors that are not present on page -1,-1,-1,-1 coordinates are returned.
+
+CT::FindColors('forestgreen') is the same as CT::FindColors('#228B22'), if you have 100x100 pixel forestgreen square on page it might return something like 10,60,110,160,
+where first pair are coordinates of top-left corner and last pair are coordinates of bottom-right corner of the square.
+
+==FindRGBColors==
+
+'''CT::FindRGBColors($color1R,$color1G,$color1B,..,$colorNR,$colorNG,$colorNB)'''
+
+The same as FindColors but accepts RGB components as arguments.
+
+CT::FindRGBColors(34,139,34) is the same as CT::Colors('forestgreen') or CT::Colors('#228B22').
+
+==QueryColors==
+
+'''CT::QueryColors($color1,..,$colorN)'''
+
+The same as FindColors but returns array reference instead of array.
+
+==QueryRGBColors==
+
+'''CT::QueryRGBColors($color1R,$color1G,$color1B,..,$colorNR,$colorNG,$colorNB)'''
+
+The same as FindRGBColors but returns array reference instead of array.
+
+==LocateColors==
+
+'''CT::LocateColors($color1,..,$colorN)'''
+
+The same as FindColors but returns hash instead of array. Keys in the hash are supplied colors,
+values are array references containing coordinates of matching pixels.
+
+CT::LocateColors('forestgreen','steelblue') is the same CT::LocateColors('#228B22','#4682B4'),
+if for instance you have 100x100 forestgreen square on page and 100x50 steelblue rectangle it might return something like this hash
+('forestgreen' => [10,60,110,160],'steelblue'=> [150,60,250,110])
+
+==LookUpColors==
+
+'''CT::LookUpColors($color1,..,$colorN)'''
+
+The same as LocateColors but returns hash reference instead of hash.
+
+==Color values==
+
+CT recognizes RGB hex values or (extended) color keywords as defined in CSS3.
+
+=Page loading=
+
+==BaseURL==
+
+'''CT::BaseURL($url)'''
+
+Specifies base url for relative urls supplied to LoadPage function
+
+==GrabWindow==
+
+'''CT::GrabWindow($windowName)'''
+
+Either switches to last window in alt+tab order and checks if window name matches $windowName pattern or searches for window with name that matches $windowName and raises it.
+
+==LoadPage==
+
+'''CT::LoadPage($url)'''
+
+Loads page. CT does not wait until loading is completed, to check if page loaded one has to rely on color search.
+
+==WaitSeconds==
+
+'''CT::WaitSeconds($seconds)'''
+
+Timeout. CT::WaitSeconds(0.5) will wait half a second.
+
+==Say==
+
+'''CT::Say($text)'''
+
+Generates and loads page that contains $text.
+
+==Blank==
+
+'''CT::Blank()'''
+
+Loads blank page.
+
+=Reporting results=
+
+Using CT::Result() fuctions you can send results for individual tests to CT and then get summary of results via CT::Results() function.
+
+==Result==
+
+'''CT::Result($result,$title)'''
+
+Send results for individual tests to CT.
+
+==Results==
+
+'''CT::Results()'''
+
+Return summary of results reported during test run via '''CT::Result()''' function.
+
+=Setup=
+
+==Windows==
+
+* Install Perl
+** http://activestate.com/activeperl
+* [http://search.cpan.org/~karasik/Win32-GuiTest-1.59/lib/Win32/GuiTest.pm#INSTALLATION Install] Perl Win32::GuiTest module
+
+==Linux==
+
+* Install either X11::GUITest Perl module, xte utility, xdotool utility or X11::Xlib Perl module.
+* Depending of what you installed you might need look into x11/CT.pm and if appropriate update line
+
+ do 'CT/xlib.pl'
+
+to one of those
+
+ do 'CT/guitest.pl'
+ do 'CT/xdotool.pl'
+ do 'CT/xte.pl'
+
+* Check if you have either xwd, import or scrot utility, if not install on of those or Image:Imlib2 Perl module
+* Depending of what you installed you might need look into x11/CT.pm again and if appropriate update line
+
+ do 'CT/xwd.pl'
+
+to one of those
+
+ do 'CT/bmp.pl' # uses GraphicsMagick import utility to take screenshots, can be modified to use scrot utility instead
+ do 'CT/imlib.pl' # uses Image:Imlib2 Perl module
+ do 'CT/visgrep.pl' # uses GraphicsMagick import utility and visgrep utility from xautomation package
+
+==Running tests==
+
+===Click to select tests===
+
+* Focus browser window first then switch to terminal
+* Run click.pl script with arguments specifying browser window title (active tab title for some browsers) and URL of drag and drop tests parent folder
+
+For example
+ 
+ perl click.pl Chromium file:///home/w3c/dnd/
+
+===Drag and drop tests===
+
+* Focus browser window first then switch to terminal
+* Run dnd.pl script with arguments specifying browser window title (active tab title for some browsers) and URL of drag and drop tests parent folder
+
+For example
+ 
+ perl dnd.pl Chromium http://example.org/tests/dnd/
+
+===Drag outside browser window and back tests===
+
+* Focus browser window, make sure it does not occupy top left corner of the screen and switch to terminal
+* Run dragaround.pl script with arguments specifying browser window title (active tab title for some browsers) and URL of drag and drop tests parent folder
+
+For example
+ 
+ perl dragaround.pl Chromium file://localhost/C:/w3c/dnd/
+
+
+
+==Known issues==
+
+===Drag and drop testing is interrupted under KDE===
+
+Active window checks fail randomly under KDE and scripts quit testing, this often happens with drag and drop tests
+where possibly dnd overlay tends to steal focus from main window, as a workaround one can replace Alive subroutine in CT.pm with
+
+ sub Alive
+ 	{if(index(`xwininfo -wm -id $winIDs[0]`,'Client accepts input or input focus: Yes') == -1)
+ 		{Quit("Testing interrupted since target window does not accept input.\n");}
+ 	return 1;}
+
+===Unity HUD interrupts testing===
+
+In Ubuntu 12.10 whenever Alt key is simulated HUD shows up and interrupts testing.
+
+HUD can be disabled from
+
+ All settings > Keyboard > Shortcuts > Launchers > Keys to show the HUD
+
+Press Backspace to disable it or define shortcut that will not interfere with testruns.
+
+=Tools=
+
+==Event simulators==
+
+===X11::Xlib===
+
+Provides low-level access to XTest extension of X11 library.
+
+This module can be installed using cpan, requires libxtst-dev library:
+
+ sudo apt-get install libxtst-dev
+ sudo cpan -i X11::Xlib
+
+===X11::GUITest===
+
+It's Perl module that makes it convenient to automate interactive tests on Linux. Like most of Linux automation tools it relies on
+XTest extensions from Xlib, but is more convenient then using low level Xlib functions.
+
+This module can be installed via apt-get or using cpan
+
+ sudo apt-get install libx11-guitest-perl
+
+On Linux CT can use X11::GuiTest instead of X11::Xlib module
+
+===Win32::GuiTest===
+
+Perl module for automating interactive tests on Windows. Among other things can be used to control mouse and keyboard, manage windows and take screenshots.
+
+Module page on CPAN has [http://search.cpan.org/~karasik/Win32-GuiTest-1.59/lib/Win32/GuiTest.pm#INSTALLATION installation instructions].
+
+On Windows CT relies on Win32::GuiTest
+
+===xte===
+
+Linux command line utility, part of xautomation package. It can only send keystrokes and control mouse, but it does it well.
+On Linux CT can use xte instead of X11::Xlib
+
+xautomation can be installed via apt-get
+
+ sudo apt-get install xautomation
+
+CT can use xte instead of X11::Xlib
+
+===xdotool===
+
+Another command line utility similar to xte, can also manage windows to some extend.
+
+xdotool package can be installed via apt-get
+
+ sudo apt-get install xdotool
+
+CT can use xdotool instead of X11::Xlib
+
+==Screenshot tools==
+
+===xwd===
+
+Window dumping utility that saves screenshots in xwd format, xwd images are heavy, but on the other hand they are uncompressed, easy to parse and testing scripts can read them from standard output without saving screenshot to disk.
+
+They also contain useful information in header, like window position, dimensions and name.
+
+===import===
+
+Part of imagemagick package. Can save screenshots in multiple formats or send data to standard output. Latest versions are a bit slow, can be up to 10 times slower then scrot or xwd.
+
+===scrot===
+
+Lightweight screenshot taking utility. Relies on imlib2.
+
+Scot is default tool for taking screenshots on Lubuntu, otherwise it can be installed via apt-get
+
+ sudo apt-get install scrot
+
+==Pixel search==
+
+If bitmap image is not compressed, like it is often the case for xwd and bmp images, CT can parse it and search for colors without relying on external tools.
+For hard to parse png images one can use either Imlib2 or visgrep described below.
+
+===Imlib2===
+
+Useful graphic library. One can use find_colour methods to search for pixel by color.
+
+In Perl one can use Image::Imlib2 module as interface to the imlib2. Module can be installed via apt-get or using cpan:
+
+ sudo apt-get install libimage-imlib2-perl
+
+===visgrep===
+
+Linux command line utility, part of xautomation package. Can be used to search for subimages in image:
+
+ visgrep image.png match.pat
+

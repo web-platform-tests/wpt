@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Text input selection cross page drag and drop</title>
+<style type="text/css">
+input
+	{border:solid 2px #D2B48C;
+	width:5em;}
+div
+	{width:100px;
+	height:100px;
+	margin-top:20px;
+ 	background-color:#4682b4;}
+</style>
+</head>
+<body onload="document.querySelector('input').select()">
+<p><input value="Drag me" ondragstart="event.dataTransfer.effectAllowed = 'move';window.location = '004-1D.xhtml'"/></p>
+<p>Drag selected text. You should be redirected to the new page and be able to drop it there.</p>
+<div/>
+</body>
+</html>

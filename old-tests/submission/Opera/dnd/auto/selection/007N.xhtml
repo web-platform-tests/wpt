@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Selection drag and drop from short text input to block element</title>
+<style type="text/css">
+input
+	{border:solid 2px #D2B48C;}
+div
+	{width:300px;
+	height:100px;
+	margin-top:20px;
+	padding:10px;
+	color:white;
+	background-color:#4682B4;}
+</style>
+</head>
+<body>
+<p>Select content of tan box and drag it to the box below. Box should turn green.</p>
+<p><input size="5" value="Drag me"/></p>
+<div
+	ondragenter="event.preventDefault()"
+	ondragover="return false"
+	ondrop="if(event.dataTransfer.getData('text/plain') == 'Drag me'){this.setAttribute('style','background-color:#228B22')}"
+/>
+</body>
+</html>

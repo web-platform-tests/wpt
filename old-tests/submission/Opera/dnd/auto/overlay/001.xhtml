@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Drag feedback bitmap</title>
+<style type="text/css">
+img
+	{height:100px;
+	width:100px;
+	display:block;}
+span
+	{display:inline-block;
+	border:solid 2px #D2B48C;}
+body:after
+	{content:"";
+	display:block;
+	background-color:#4682B4;
+	width:105px;
+	height:105px;
+	position:fixed;
+	bottom:0;
+	right:0;}
+</style>
+</head>
+<body>
+<p><span><img ondragstart="event.dataTransfer.effectAllowed = 'copy'" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAYAAACOEfKtAAAAn0lEQVR42u3bQREAEQBAUVmEEcyVOJJsodXBYBjv8Au8+w8pt1/jBQgAAQIEKIAAAQLUQsCv1acCCBAgQIAAAQIECBDgTYCxxKMDCBAgQIAAAQIECBAgQIAAAQIECBAgQIAAAQIECBAgQIAAAQIECBAgQIAAAQIECBAgQIAAAQIEaLQBCBAgQIAAAQIECBDgbkABBAgQoAACBAhQAKfVAWfWYUPpxXpKAAAAAElFTkSuQmCC" alt="PNG pattern"/></span></p>
+<p>Try to drag box above. Feedback overlay should be green.</p>
+</body>
+</html>

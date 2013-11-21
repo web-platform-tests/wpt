@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Selection drag and drop between tel inputs</title>
+<style type="text/css">
+input
+	{width:6em;
+	border:solid 2px #D2B48C;}
+input[placeholder]
+	{border:solid 2px #4682B4;}
+</style>
+</head>
+<body>
+<p><input type="tel" value="123456789"/></p>
+<p>Select content of tan box and drag it to the input below. Border of lower input should turn green.</p>
+<p><input type="tel" placeholder="Drop selection here" oninput="if(this.value == '123456789'){this.setAttribute('style','border:solid thick #228B22')}"/></p>
+</body>
+</html>

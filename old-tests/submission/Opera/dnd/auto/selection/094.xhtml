@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Selection drag and drop from text input to textarea in object</title>
+<style type="text/css">
+input
+	{border:solid 2px #D2B48C;
+	width:5em;}
+object
+	{width:500px;
+	height:400px;}
+</style>
+</head>
+<body onload="document.querySelector('input').select()">
+<p><input value="Drag me" ondragend="if(document.querySelector('object').contentDocument.querySelector('textarea').value == 'Drag me'){this.setAttribute('style','border:solid thick #228B22')}"/></p>
+<p>Drag selected text to the textarea below. Border of input should turn green.</p>
+<p><object type="application/xhtml+xml" data="094-1.xhtml">XHTML document</object></p>
+</body>
+</html>

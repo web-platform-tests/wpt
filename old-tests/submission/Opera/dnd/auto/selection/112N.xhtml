@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>RTL text selection drag and drop to textarea</title>
+<style type="text/css">
+span
+	{border:solid 2px #D2B48C;}
+textarea
+	{border:solid 2px #4682B4;}
+</style>
+</head>
+<body>
+<p><span ondragend="if(document.querySelector('textarea').value == '&#x202E;FAIL|SSAP&#x202C;'){this.setAttribute('style','border:solid thick #228B22')}">&#x202E;FAIL|SSAP&#x202C;</span></p>
+<p>Select content of tan box and drag it to the textarea. Input border should turn green.</p>
+<p dir="rtl"><textarea placeholder="Drop selection here"/></p>
+</body>
+</html>

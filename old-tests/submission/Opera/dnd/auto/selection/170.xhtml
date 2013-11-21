@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Dragging multiline text selection from scrolled textarea to block element</title>
+<style type="text/css">
+textarea
+	{width:300px;
+	height:15px;
+	border:solid 2px #D2B48C;}
+div
+	{width:300px;
+	height:100px;
+	margin-top:20px;
+	background-color:#4682B4;}
+</style>
+</head>
+<body onload="var t = document.querySelector('textarea');t.select();t.setSelectionRange(111,132)">
+<p>
+<textarea>
+Here is textarea with selection at the end of it.
+Drag selected text to the box below.
+Box should turn green.
+Try to drag this text.
+</textarea>
+</p>
+<p>
+Drag selected text to the box below.
+Box should turn green.
+</p>
+<div
+	ondragenter="event.preventDefault()"
+	ondragover="return false"
+	ondrop="if(event.dataTransfer.getData('text/plain') == 'Try to drag this text'){this.setAttribute('style','background-color:#228B22')}"
+/>
+</body>
+</html>

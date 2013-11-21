@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Drag and drop of link to contenteditable element</title>
+<style type="text/css">
+a
+	{border:solid 2px #D2B48C;}
+div a
+	{background-color:#228B22;
+	color:white;}
+div
+	{background-color:#4682B4;
+	width:200px;
+	height:200px;}
+</style>
+</head>
+<body>
+<p ondragstart="start(event)">
+	<a href="data:text/plain,1">Link</a>
+</p>
+<p>Drag link and drop it into box below. Link background should turn green.</p>
+<div contenteditable="true"/>
+</body>
+</html>

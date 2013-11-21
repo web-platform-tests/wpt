@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Reload during link cross page drag and drop</title>
+<style type="text/css">
+a
+	{border:solid 2px #D2B48C;}
+div
+	{width:100px;
+	height:100px;
+	margin-top:50px;
+ 	background-color:#4682b4;}
+</style>
+</head>
+<body>
+<p><a href="data:text/plain,1" ondragstart="event.dataTransfer.effectAllowed = 'copy';window.location = '021-1.xhtml'">Drag me</a></p>
+<p>Drag link above. You should be redirected to the new page and be able to drop it there.</p>
+<div/>
+</body>
+</html>

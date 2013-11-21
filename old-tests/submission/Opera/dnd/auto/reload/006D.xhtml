@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Reload during link drag and drop roundtrip</title>
+<style type="text/css">
+body
+	{line-height:3em;}
+span
+	{border:solid 2px #4682B4;}
+br + span
+	{border:solid 2px #D2B48C;}
+</style>
+</head>
+<body>
+<p>Drag link around and then drop it onto itself:</p>
+<p><a href="data:text/plain,1" ondragstart="window.location.reload()" dropzone="link string:text/uri-list" ondrop="if(event.dataTransfer.getData('text/uri-list').replace(/\r\n$/,'') == 'data:text/plain,1'){this.setAttribute('style','border:solid thick #228B22')}" ondragover="return false"><span>Drag</span><br/><span>me</span></a></p>
+<p>Link should get green border.</p>
+</body>
+</html>

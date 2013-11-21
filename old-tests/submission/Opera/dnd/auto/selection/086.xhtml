@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Events during selection drag and drop to number input</title>
+<style type="text/css">
+span
+	{border:solid 2px #D2B48C;}
+input
+	{border:solid 2px #4682B4;}
+</style>
+<script type="application/ecmascript">
+var e = 0;
+</script>
+</head>
+<body onload="window.getSelection().selectAllChildren(document.querySelector('span'))">
+<p><span>12345</span></p>
+<p>Drag selected text to the input below and click somewhere outside input. Input border should turn green.</p>
+<p><input type="number" placeholder="Drop selection here" onchange="if(e == 2){this.setAttribute('style','border-color:#228B22')}" oninput="e++" onkeypress="e--" ondrop="e++"/></p>
+</body>
+</html>

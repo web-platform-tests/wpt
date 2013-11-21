@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Drag and drop after selecting whole page content</title>
+<style type="text/css">
+p:first-child
+	{border:solid 2px #D2B48C;}
+textarea
+	{width:300px;
+	height:100px;}
+div
+	{display:inline-block;
+	border:solid 2px #4682B4;}
+</style>
+</head>
+<body onload="window.getSelection().selectAllChildren(document.querySelector('body'))" ondragend="var txt = document.querySelector('textarea');if(txt.value.replace(/(^[\n\r\s]+|[\n\r\s]+$)/g,'') == 'Drag selected text to the textarea below. Textarea border should turn green.'){txt.setAttribute('style','border:solid thick #228B22')}">
+<p>Drag selected text to the textarea below. Textarea border should turn green.</p>
+<div><textarea placeholder="Drop selection here"/></div>
+</body>
+</html>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Selection drag and drop: helper file</title>
+<style type="text/css">
+textarea
+	{border:solid 2px #D2B48C;
+	width:7em;
+	height:2em;}
+</style>
+</head>
+<body onload="var t = document.querySelector('textarea');t.select();t.setSelectionRange(0,7)">
+<p><textarea ondragend="if(parent.document.querySelector('div').firstChild.nodeValue == 'Drag me'){this.setAttribute('style','border:solid thick #228B22')}">Drag me</textarea></p>
+<p>Drag selected text to box below. Border of textarea should turn green.</p>
+</body>
+</html>

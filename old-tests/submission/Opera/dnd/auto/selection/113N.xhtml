@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>RTL text selection drag and drop between textareas</title>
+<style type="text/css">
+textarea
+	{border:solid 2px #D2B48C;
+	white-space:nowrap;
+	width:7em;
+	height:2em;}
+textarea[placeholder]
+	{border:solid 2px #4682B4;
+	overflow:hidden;}
+</style>
+</head>
+<body>
+<p><textarea ondragend="if(document.querySelector('textarea[placeholder]').value.search(/&#x202E;?FAIL|SSAP&#x202C;?/) != -1){this.setAttribute('style','border:solid thick #228B22')}">&#x202E;FAIL|SSAP&#x202C;</textarea></p>
+<p>Select content of tan box and drag it to the textarea. Border of upper textarea should turn green.</p>
+<p><textarea dir="rtl" placeholder="Drop selection here"/></p>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Feedback image with rounded corners</title>
+<style type="text/css">
+div
+	{display:block;
+	background-color:#D2B48C;
+	width:100px;
+	height:100px;
+	border-style:solid;
+	border-width:3px;
+	border-color:#4682B4 #228B22;
+	border-radius:50px;}
+body:after
+	{content:"";
+	display:block;
+	background-color:#4682B4;
+	width:105px;
+	height:105px;
+	position:fixed;
+	bottom:0;
+	right:0;}
+</style>
+</head>
+<body>
+<div draggable="true" ondragstart="event.dataTransfer.effectAllowed = 'copy'"/>
+<p>Try to drag circle above. Feedback overlay should not be rectangular.</p>
+</body>
+</html>

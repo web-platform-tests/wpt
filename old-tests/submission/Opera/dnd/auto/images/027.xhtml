@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Drag and drop of image to scrollable container</title>
+<style type="text/css">
+p + div
+	{height:150px;
+	width:150px;
+	overflow:scroll;}
+p + div > div
+	{margin:129px 0 0 129px;
+	width:100px;
+	border-width:6px 0 0 6px;
+	border-color:#4682b4;
+	border-style:dashed;}
+div[ondragenter]
+	{width:100px;
+	height:100px;
+ 	background-color:#4682b4;}
+</style>
+<script type="application/ecmascript">
+function dropIt(event)
+	{var c = document.createElement('img');
+	c.setAttribute('src',event.dataTransfer.getData('text/uri-list').replace(/\r\n$/,''));
+	document.querySelector('div > div').appendChild(c);}
+</script>
+</head>
+<body>
+<p><img ondragstart="event.dataTransfer.effectAllowed = 'copy'" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAABAklEQVR42u3RIREAIADAQPofcUhCIYiA4yZevJvb2GseOsYr4C9DYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJuSH6zwrT7ia+AAAAAElFTkSuQmCC" alt="PNG rectangle"/></p>
+<p>You should be able to drag box above to the box in the corner of scrollable container (dragging towards the bottom-right corner triggers scrolling). Lower box should turn green.</p>
+<div>
+	<div>
+		<div
+			ondragenter="event.preventDefault()"
+			ondragover="return false"
+			ondrop="this.setAttribute('style','background-color:#228B22')"
+		/>
+	</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Canvas drag and drop: allowed effect 'link'</title>
+<style type="text/css">
+div
+	{background-color:#4682B4;
+	width:100px;
+	height:100px;}
+</style>
+<script type="application/ecmascript">
+var effect = 'link';
+function dropSelection(event)
+	{if(event.dataTransfer.dropEffect == effect &amp;&amp; event.dataTransfer.effectAllowed == effect)
+		{document.querySelector('div').setAttribute('style','background-color:#228B22')}
+	}
+function start(event)
+	{event.dataTransfer.effectAllowed = effect;}
+</script>
+</head>
+<body>
+<p>
+	<canvas width="100" height="100" draggable="true" ondragstart="start(event)">Canvas</canvas>
+</p>
+<p>You should be able to drag box above and drop it onto box below. Lower box should turn green.</p>
+<div ondragenter="event.preventDefault()" ondragover="return false" ondrop="dropSelection(event)"/>
+<script type="application/ecmascript">
+var canvas = document.querySelector('canvas'),
+c = canvas.getContext('2d');
+c.fillStyle = '#d2b48c';
+c.beginPath();
+c.moveTo(0,0);
+c.lineTo(100,0);
+c.lineTo(100,100);
+c.lineTo(0,100);
+c.closePath();
+c.fill();
+</script>
+</body>
+</html>

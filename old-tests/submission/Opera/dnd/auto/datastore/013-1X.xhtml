@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Drag and drop datastore: helper file</title>
+<style type="text/css">
+div
+	{height:100px;
+	width:100px;
+	padding:20px;
+	background-color:#D2B48C;}
+</style>
+<script type="application/ecmascript">
+<![CDATA[
+var dataTypes = ['text/plain', 'text/uri-list', 'text/html'],
+data = ['PASS', 'data:text/plain,1', '<!DOCTYPE html><html><head><title>Data store item</title></head><body><p>PASS</p></body></html>'];
+function start(event)
+	{event.dataTransfer.effectAllowed = 'copy';
+	for(var i = 0; i != dataTypes.length; i++)
+		{event.dataTransfer.setData(dataTypes[i], data[i]);}
+	}
+]]>
+</script>
+</head>
+<body>
+<div draggable="true" ondragstart="start(event)"/>
+<p>Drag box above to the frame below.</p>
+</body>
+</html>

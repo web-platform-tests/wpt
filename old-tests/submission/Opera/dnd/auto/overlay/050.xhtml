@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Drag feedback for partly visible image: relative position</title>
+<style type="text/css">
+p:first-child
+	{margin:0;
+	position:relative;
+	top:-50px;
+	left:-50px;}
+img
+	{display:block;
+	height:100px;
+	width:100px;}
+body:after
+	{content:"";
+	display:block;
+	background-color:#4682B4;
+	width:105px;
+	height:105px;
+	position:fixed;
+	bottom:0;
+	right:0;}
+</style>
+</head>
+<body>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAABEklEQVR42u3RoRVAAAAAUbMYxmAq45jEQjTF8zQu/PDbtRvGZTzoGN4CvnUNmeaNHxkS8zhk31Y+ZEiMITGGxBgSY0iMITGGxBgSY0iMITGGxBgSY0iMITGGxBgSY0iMITGGxBgSY0iMITGGxBgSY0iMITGGxBgSY0iMITGGxBgSY0iMITGGxBgSY0iMITGGxBgSY0iMITGGxBgSY0iMITGGxBgSY0iMITGGxBgSY0iMITGGxBgSY0iMITGGxBgSY0iMITGGxBgSY0iMITGGxBgSY0iMITGGxBgSY0iMITGGxBgSY0iMITGGxBgSY0iMITGGxBgSY0iMITGGxBgSY0iMITGGxLwO4R+GxNyG0GBIzAlv8Tjvb8A8CQAAAABJRU5ErkJggg==" alt="PNG pattern" ondragstart="event.dataTransfer.effectAllowed = 'copy'"/></p>
+<p>Try to drag box above. Feedback overlay should be square.</p>
+</body>
+</html>

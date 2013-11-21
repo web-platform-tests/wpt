@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Reload during selection cross page drag and drop</title>
+<style type="text/css">
+span
+	{border:solid 2px #D2B48C;}
+div
+	{width:100px;
+	height:100px;
+	margin-top:50px;
+ 	background-color:#4682b4;}
+</style>
+</head>
+<body onload="window.getSelection().selectAllChildren(document.querySelector('span'))">
+<p><span ondragstart="event.dataTransfer.effectAllowed = 'copy';window.location = '020-1.xhtml'">Drag me</span></p>
+<p>Drag selected text. You should be redirected to the new page and be able to drop it there.</p>
+<div/>
+</body>
+</html>

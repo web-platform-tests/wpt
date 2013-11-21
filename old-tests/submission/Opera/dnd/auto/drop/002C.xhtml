@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Text input selection drag and drop: allowed effect 'copy'</title>
+<style type="text/css">
+input
+	{border:solid 2px #D2B48C;
+	width:5em;}
+div
+	{background-color:#4682B4;
+	width:100px;
+	height:100px;}
+</style>
+<script type="application/ecmascript">
+var effect = 'copy';
+function selectText()
+	{document.querySelector('input').select()}
+function dropSelection(event)
+	{if(event.dataTransfer.dropEffect == effect &amp;&amp; event.dataTransfer.effectAllowed == effect)
+		{document.querySelector('div').setAttribute('style','background-color:#228B22')}
+	}
+function start(event)
+	{event.dataTransfer.effectAllowed = effect;}
+</script>
+</head>
+<body onload="selectText()">
+<p><input value="Drag me" ondragstart="start(event)"/></p>
+<p>You should be able to drag selection and drop it onto box below. Box should turn green.</p>
+<div ondragenter="event.preventDefault()" ondragover="return false" ondrop="dropSelection(event)"/>
+</body>
+</html>

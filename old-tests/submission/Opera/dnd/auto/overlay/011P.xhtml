@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Triangular feedback bitmap</title>
+<style type="text/css">
+img
+	{height:100px;
+	width:100px;
+	display:block;}
+body:after
+	{content:"";
+	display:block;
+	background-color:#4682B4;
+	width:105px;
+	height:105px;
+	position:fixed;
+	bottom:0;
+	right:0;}
+</style>
+</head>
+<body>
+<p><img ondragstart="event.dataTransfer.effectAllowed = 'copy'" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAACqklEQVR42u3R220UURAAUcfiYMiBaJD4wRIkwKdzIBISArWxwI/dnbrvZm6V1H+rnb597u6/3v9y0szDHfiRM2ce7iLwQ2f8/MEQJMX8wxBk+bzGEGTpvMcQZNlcxhBkyVzHEGT63MYQZOocY0Tgj57m549vW8+nx4+HN2rGiMCfbQ8yDSMCf7g1yFSMCPzptiDTMSLwx1uCLMGIwJ9vB7IMIwIf2ApkKUYEPrINyHKMCHxoC5AUGBH42OlB0mBE4INFIB8+/5g+X74/Hu71X2BE4KOpQU6FEYEPpwU5HUYEPp4S5JQYEVggHchpMSKwRCqQU2NEYJE0IKfHiMAyKUC2wIjAQstBtsGIwFJLQbbCiMBiy0C2w4jAcktAtsSIwILTQbbFiMCSU0G2xojAotNAtseIwLJTQMR4Diw8HESMF4Glh4KI8Saw+DAQMS4Elh8CIsaVwAO6g4hxI/CIriBiHAQe0g1EDBB4TBcQMWDgQc0gYhQEHtUEIkZh4GHVIGJUBB5XBSJGZeCBxSBiNAQeWQQiRmPgoUUgtSPGc+Cxw0HEeBF48FAQMd4EHj0MRIwLgYcPARHjSuDx3UHEuBE4QFcQMQ4CR+gGIgYIHKILiBgwcIxmEDEKAgdpAhGjMHCUahAxKgKHqQIRozJwnGIQMRoCByoCEaMxcCQMIkaHwKEQiBidAsc6BBGjY+BgN0HE6Bw42lUQMQYEDncRRIxBgeO9AxFjYOCAr0DEGBw44l8QMSYEDvk0YkwKHLN1xCgJHLRlxCgNHLV2xKgJHLZmxKgNHLd0xGgJHLhkxGgNHJmOGD0ChyYjRq/AsY9GjJ6Bg4sxM3B0MWYGDi/GzMDxxZgZABBjZgBBjJkBCDFmJkayxEiWGMkSI1liJEuMZImRLDGSJUaufgOMqtDvBR93NQAAAABJRU5ErkJggg==" alt="PNG pattern"/></p>
+<p>Try to drag triangle above. Feedback overlay should be triangular.</p>
+</body>
+</html>

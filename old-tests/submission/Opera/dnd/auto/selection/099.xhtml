@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Selection drag and drop from textarea in object to block element</title>
+<style type="text/css">
+object
+	{width:500px;
+	height:200px;}
+div
+	{width:300px;
+	height:100px;
+	margin-top:20px;
+	background-color:#4682B4;}
+</style>
+</head>
+<body>
+<p><object type="application/xhtml+xml" data="099-1.xhtml">XHTML document</object></p>
+<div
+	ondragenter="event.preventDefault()"
+	ondragover="return false"
+	ondrop="if(event.dataTransfer.getData('text/plain') == 'Drag me'){this.setAttribute('style','background-color:#228B22')}"
+/>
+</body>
+</html>

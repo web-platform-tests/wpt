@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Image drag and drop: helper file</title>
+<style type="text/css">
+div
+	{height:100px;
+	width:100px;
+	padding:20px;
+	background-color:#4682B4;}
+</style>
+<script type="application/ecmascript">
+function dropIt(event)
+	{if(event.dataTransfer.getData('text/uri-list').replace(/\r\n$/,'') == parent.frames[0].document.querySelector('img').src)
+		{document.querySelector('div').setAttribute('style','background-color:#228B22');}
+	}
+</script>
+</head>
+<body>
+<div
+	ondragenter="event.preventDefault()"
+	ondragover="return false"
+	ondrop="dropIt(event)"
+/>
+</body>
+</html>

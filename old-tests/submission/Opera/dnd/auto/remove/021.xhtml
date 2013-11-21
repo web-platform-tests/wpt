@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Removing a element during drag and drop of url</title>
+<style type="text/css">
+a
+	{border:solid 2px #D2B48C;}
+div
+	{min-height:100px;
+	width:100px;
+	padding:20px;
+	color:white;
+	background-color:#4682B4;}
+</style>
+</head>
+<body>
+<p><a href="data:text/plain,1" ondragstart="event.dataTransfer.effectAllowed = 'copy';document.querySelector('p').removeChild(document.querySelector('a'))">Drag me</a></p>
+<p>Drag link above to the box below and drop it. You should see word PASS once you drop it in the box.</p>
+<div ondragenter="event.preventDefault()" ondragover="return false" ondrop="if(event.dataTransfer.getData('url').replace(/\r\n$/,'') == 'data:text/plain,1'){document.querySelector('div').setAttribute('style','background-color:#228b22');}"/>
+</body>
+</html>

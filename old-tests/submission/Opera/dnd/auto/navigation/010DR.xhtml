@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Link drag and drop and history navigation roundtrip</title>
+<style type="text/css">
+span, a
+	{border:solid 2px #D2B48C;
+	display:inline-block;}
+a
+	{border:solid 2px #4682B4;}
+</style>
+</head>
+<body>
+<p>Drag link around and then drop it onto itself. Link should get green border.</p>
+<p><span><a href="data:text/plain,1" ondragstart="window.location = '010-1R.xhtml'" ondragenter="event.preventDefault()" ondragover="return false" ondrop="if(event.dataTransfer.getData('text/uri-list').replace(/\r\n$/,'') == 'data:text/plain,1'){this.setAttribute('style','border:solid thick #228B22')}">Drag me</a></span></p>
+</body>
+</html>

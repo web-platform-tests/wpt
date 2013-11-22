@@ -78,7 +78,10 @@ class ServerProc(object):
 
         if self.daemon:
             self.daemon.start(block=False)
-            self.stop.wait()
+            try:
+                self.stop.wait()
+            except KeyboardInterrupt:
+                pass
 
     def wait(self):
         self.stop.set()

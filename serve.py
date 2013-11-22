@@ -53,49 +53,47 @@ def open_socket(port):
 def get_port():
     free_socket = open_socket(0)
     port = free_socket.getsockname()[1]
-    #Keep this socket open here and close it just before we start
-    #the corresponding server
-    return port, free_socket
+    logger.debug("Going to use port %s" % port)
+    free_socket.close()
+    return port
+
 
 class ServerProc(object):
-    def __init__(self, daemon):
-        self.daemon = daemon
+    def __init__(self):
+        self.proc = None
+        self.daemon = None
         self.stop = Event()
 
-    def start(self):
-        try:
-            self.daemon.start(block=False)
-            self.stop.wait()
-            self.daemon.stop()
-        except KeyboardInterrupt:
-            pass
-
-class ServerWrapper(object):
-    def __init__(self, daemon):
-        self.proc = None
-        self.daemon = ServerProc(daemon)
-
-    def start(self):
-        self.proc = Process(target=self.daemon.start)
+    def start(self, init_func, config, port):
+        self.proc = Process(target=self.create_daemon, args=(init_func, config, port))
         self.proc.daemon = True
         self.proc.start()
 
+    def create_daemon(self, init_func, config, port):
+        try:
+            self.daemon = init_func(config, port)
+        except socket.error:
+            print port
+            raise
+
+        if self.daemon:
+            self.daemon.start(block=False)
+            self.stop.wait()
+
     def wait(self):
-        self.daemon.stop.set()
+        self.stop.set()
         self.proc.join()
 
     def kill(self):
-        self.daemon.stop.set()
+        self.stop.set()
         self.proc.terminate()
         self.proc.join()
 
 def probe_subdomains(config):
     host = config["host"]
-    port, sock = get_port()
-    sock.close()
-    daemon = start_http_server(config, port)
-    wrapper = ServerWrapper(daemon)
-    wrapper.start()
+    port = get_port()
+    wrapper = ServerProc()
+    wrapper.start(start_http_server, config, port)
 
     rv = {}
 
@@ -128,22 +126,17 @@ def start_servers(config, ports):
     for scheme, ports in ports.iteritems():
         assert len(ports) == {"http":2}.get(scheme, 1)
 
-        for port, sock in ports:
+        for port  in ports:
             init_func = {"http":start_http_server,
                          "https":start_https_server,
                          "ws":start_ws_server,
                          "wss":start_wss_server}[scheme]
 
-            sock.shutdown(socket.SHUT_RDWR)
-            sock.close()
-            daemon = init_func(config, port)
+            server_proc = ServerProc()
+            server_proc.start(init_func, config, port)
 
-            if daemon:
-                import subprocess
-                wrapper = ServerWrapper(daemon)
-                wrapper.start()
-                logger.info("Started server at %s://%s:%s" % (scheme, config["host"], port))
-                servers[scheme].append((port, wrapper))
+            logger.info("Started server at %s://%s:%s" % (scheme, config["host"], port))
+            servers[scheme].append((port, server_proc))
 
     return servers
 
@@ -216,19 +209,20 @@ def start_wss_server(config, port):
 
 def get_ports(config):
     rv = defaultdict(list)
+    print os.getpid()
     for scheme, ports in config["ports"].iteritems():
         for i, port in enumerate(ports):
             if port == "auto":
-                port, sock = get_port()
+                port = get_port()
             else:
-                port, sock = port, open_socket(port)
-            rv[scheme].append((port, sock))
+                port = port
+            rv[scheme].append(port)
     return rv
 
 def normalise_config(config, domains, ports):
     ports_ = {}
     for scheme, ports_used in ports.iteritems():
-        ports_[scheme] = [item[0] for item in ports_used]
+        ports_[scheme] = ports_used
 
     domains_ = domains.copy()
     domains_[""] = config["host"]

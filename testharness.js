@@ -133,8 +133,22 @@ policies and contribution forms [3].
  *       asserts outside these places won't be detected correctly by the harness
  *       and may cause a file to stop testing.
  *
+ * == Cleanup ==
+ *
+ * Occasionally tests may create state that will persist beyond the test itself.
+ * In order to ensure that tests are independent, such state should be cleaned
+ * up once the test has a result. This can be achieved by adding cleanup
+ * callbacks to the test. Such callbacks are registered using the add_cleanup
+ * function on the test object. All registered callbacks will be run as soon as
+ * the test result is known. For example
+ * test(function() {
+ *          window.some_global = "example";
+ *          this.add_cleanup(function() {delete window.some_global});
+ *          assert_true(false);
+ *      });
+ *
  * == Harness Timeout ==
- * 
+ *
  * The overall harness admits two timeout values "normal" (the
  * default) and "long", used for tests which have an unusually long
  * runtime. After the timeout is reached, the harness will stop
@@ -1130,6 +1144,8 @@ policies and contribution forms [3].
         var this_obj = this;
         this.steps = [];
 
+        this.cleanup_callbacks = [];
+
         tests.push(this);
     }
 
@@ -1238,6 +1254,10 @@ policies and contribution forms [3].
         };
     }
 
+    Test.prototype.add_cleanup = function(callback) {
+        this.cleanup_callbacks.push(callback);
+    }
+
     Test.prototype.set_timeout = function()
     {
         if (this.timeout_length !== null)
@@ -1282,8 +1302,15 @@ policies and contribution forms [3].
 
         clearTimeout(this.timeout_id);
         tests.result(this);
+        this.cleanup();
     };
 
+    Test.prototype.cleanup = function() {
+        forEach(this.cleanup_callbacks,
+                function(cleanup_callback) {
+                    cleanup_callback()
+                });
+    }
 
     /*
      * Harness
@@ -1576,6 +1603,7 @@ policies and contribution forms [3].
                 if(x.status === x.NOTRUN)
                 {
                     this_obj.notify_result(x);
+                    x.cleanup();
                 }
             }
         );

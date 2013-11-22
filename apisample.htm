@@ -135,7 +135,11 @@
     }, "Test assert_throws with non-DOM-exception expected to Fail");
 
     var t = async_test("Test step_func")
-    setTimeout(t.step_func(function (){assert_true(true); t.done();}), 0);
+    setTimeout(
+      t.step_func(
+        function () {
+          assert_true(true); t.done();
+        }), 0);
 
     async_test(function(t) {
         setTimeout(t.step_func(function (){assert_true(true); t.done();}), 0);
@@ -152,6 +156,16 @@
 
     async_test("async test that is never started, should have status Not Run", {timeout:1000});
 
+
+    test(function() {
+             window.global = 1;
+             this.add_cleanup(function() {delete window.global});
+             assert_equals(window.global, 1);
+         },
+         "Test that defines a global and cleans it up");
+
+   test(function() {assert_equals(window.global, undefined)},
+        "Test that cleanup handlers from previous test ran");
 
 </script>
 </body>

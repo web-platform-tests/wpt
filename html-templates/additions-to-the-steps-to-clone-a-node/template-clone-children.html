@@ -24,14 +24,14 @@ test(function () {
     var template = doc.querySelector('#tmpl1');
     var copy = template.cloneNode(true);
 
-    assert_not_undefined(copy.content, 'Template clone content attribute should not be undefined');
-    assert_not_null(copy.content, 'Template clone content attribute should not be null');
+    assert_not_equals(copy.content, undefined, 'Template clone content attribute should not be undefined');
+    assert_not_equals(copy.content, null, 'Template clone content attribute should not be null');
 
     assert_equals(copy.content.childNodes.length, 2,
             'Wrong number of template content\'s copy child nodes');
-    assert_not_null(copy.content.querySelector('#div1'),
+    assert_not_equals(copy.content.querySelector('#div1'), null,
             'Template child node should be copied');
-    assert_not_null(copy.content.querySelector('#div2'),
+    assert_not_equals(copy.content.querySelector('#div2'), null,
             'Template child node should be copied');
 
 }, 'Clone template node. Test call to cloneNode(true)');
@@ -48,18 +48,14 @@ test(function () {
     var template = doc.querySelector('#tmpl1');
     var copy = template.cloneNode();
 
-    assert_not_undefined(copy.content, 'Template clone content attribute should not be undefined');
-    assert_not_null(copy.content, 'Template clone content attribute should not be null');
+    assert_not_equals(copy.content, undefined, 'Template clone content attribute should not be undefined');
+    assert_not_equals(copy.content, null, 'Template clone content attribute should not be null');
 
-    assert_equals(copy.content.childNodes.length, 2,
+    assert_equals(copy.content.childNodes.length, 0,
             'Wrong number of template content\'s copy child nodes');
-    assert_not_null(copy.content.querySelector('#div1'),
-            'Template child node should be copied');
-    assert_not_null(copy.content.querySelector('#div2'),
-            'Template child node should be copied');
 
 }, 'Clone template node. Test call to cloneNode() with the default parameter '
-    + '(true by default)');
+    + '(false by default)');
 
 
 
@@ -73,8 +69,8 @@ test(function () {
     var template = doc.querySelector('#tmpl1');
     var copy = template.cloneNode(false);
 
-    assert_not_undefined(copy.content, 'Template clone content attribute is undefined');
-    assert_not_null(copy.content, 'Template clone content attribute is null');
+    assert_not_equals(copy.content, undefined, 'Template clone content attribute is undefined');
+    assert_not_equals(copy.content, null, 'Template clone content attribute is null');
 
     assert_equals(copy.content.childNodes.length, 0,
             'Wrong number of template content\'s copy child nodes');

@@ -19,16 +19,15 @@ onload = function() {
     var spec_url = 'http://www.whatwg.org/specs/web-apps/current-work/multipage/rendering.html';
     spec_url += tag == 'body' ? '#the-page' : '#tables';
     test(function() {
-      try {
-        var elm = document.createElement(tag);
-        document.body.appendChild(elm);
-        elm.setAttribute('background', input_url_png);
-        var got = getComputedStyle(elm).backgroundImage;
-        var expected = expected_current;
-        assert_true(got.indexOf(expected) > -1, msg(expected, got));
-      } finally {
+      var elm = document.createElement(tag);
+      document.body.appendChild(elm);
+      this.add_cleanup(function() {
         document.body.removeChild(elm);
-      }
+      });
+      elm.setAttribute('background', input_url_png);
+      var got = getComputedStyle(elm).backgroundImage;
+      var expected = expected_current;
+      assert_true(got.indexOf(expected) > -1, msg(expected, got));
     }, 'getComputedStyle <'+tag+' background>',
     {help:spec_url});
   }
@@ -73,20 +72,17 @@ onload = function() {
       var iframe = document.createElement('iframe');
       var id = 'test_follow_link_'+tag;
       iframe.name = id;
-      document.body.appendChild(iframe);
       elm.target = id;
       elm.setAttribute('href', input_url_html);
       document.body.appendChild(iframe);
       document.body.appendChild(elm);
+      this.add_cleanup(function() {
+        document.body.removeChild(iframe);
+        document.body.removeChild(elm);
+      });
       iframe.onload = this.step_func(function() { // when the page navigated to has loaded
-        try {
-          assert_equals(iframe.contentDocument.body.textContent, expected_current.substr(3));
-          this.done();
-        } finally {
-          // XXX use add_result_callback or so for cleanup? or the 'result' event? would be nice with this.onresult.
-          document.body.removeChild(iframe);
-          document.body.removeChild(elm);
-        }
+        assert_equals(iframe.contentDocument.body.textContent, expected_current.substr(3));
+        this.done();
       });
       // follow the hyperlink
       console.log(tag, iframe.contentDocument.readyState);
@@ -146,11 +142,15 @@ onload = function() {
   // itemid
   // microdata values (<a href> etc)
   // drag and drop (<a href> or <img src>)
+  // Worker()
+  // SharedWorker()
+  // EventSource()
   // 
   // UTF-8:
   // XHR
   // in a worker
   // WebSocket()
+  // WebSocket#url
   // Parsing cache manifest?
   // XMLDocument#load()
   // 

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>CSS Reftest Reference</title>
+		<link rel="author" title="Mirela Budăeș" href="mailto:mbudaes@adobe.com">
+		<style>
+			.parent{
+				margin: 30px;
+				width: 130px;
+				height: 130px;
+				float: left;
+				background: yellow;/*rgb(255,255,0);*/
+				position: relative;
+				z-index: 1;
+			}
+			.intermediate{
+				background: aqua;/*rgb(0,255,255);*/
+				width: 100px;
+				height: 100px;
+				display: inline-block;
+
+			}
+			.blended {
+				background: lime;/* rgb(0,255,0);*/
+				margin-top: 20px;
+				margin-left: 20px;
+				width: 100px;
+				height: 100px;
+			}
+			.overlap {
+				background: white;/*rgb(0,0,0);*/
+				width: 80px;
+				height: 80px;
+			}
+		</style>
+	</head>
+	<body>
+		<p>Test passes if there is no red square on the screen. <br>
+		You should see two overlapping aqua and lime squares on top of a yellow one. <br>
+		At the intersection of the lime and red squares, a white square will be created. </p>
+		<div class="parent">
+			<div class="intermediate">
+				<div class="blended">
+					<div class="overlap"></div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

@@ -19,6 +19,7 @@
 
 test(function() {
     var doc = newXHTMLDocument();
+    doc.documentElement.setAttribute('xmlns', 'http://www.w3.org/1999/xhtml');
     doc.body = doc.createElement('body');
     doc.body.innerHTML = '<template id="tmpl"></template>';
 
@@ -42,7 +43,7 @@ test(function() {
 
 test(function() {
     var doc = newXHTMLDocument();
-
+    doc.documentElement.setAttribute('xmlns', 'http://www.w3.org/1999/xhtml');
     doc.body = doc.createElement('body');
     doc.body.innerHTML = '<template id="tmpl"><div>Div content</div></template>';
 
@@ -68,6 +69,7 @@ test(function() {
 
 test(function() {
     var doc = newXHTMLDocument();
+    doc.documentElement.setAttribute('xmlns', 'http://www.w3.org/1999/xhtml');
     doc.body = doc.createElement('body');
     doc.body.innerHTML = ''
             + '<template id="tmpl"><div>Div content</div> And some more text'

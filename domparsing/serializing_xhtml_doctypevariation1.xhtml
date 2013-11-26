@@ -1,0 +1,22 @@
+<!DOCTYPE html  SYSTEM     " external.dtd " [  <!ENTITY   blah    "val-value "> ]>
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>DOM Serialization in XHTML - variation 1</title>
+  <script src="../resources/testharness.js"></script>
+  <script src="../resources/testharnessreport.js"></script>
+ </head>
+ <body>
+  <div id="log"></div>
+  <script><![CDATA[
+  test(function(){
+    // Set testing expectations based on platform capability
+    var expectedSerialization = (typeof document.doctype.internalSubset != undefined) ?
+        "<!DOCTYPE html SYSTEM \" external.dtd \" [  <!ENTITY   blah    \"val-value \"> ]>" :
+        "<!DOCTYPE html SYSTEM \" external.dtd \">";
+    
+    assert_equals(new XMLSerializer().serializeToString(document.doctype), expectedSerialization);
+  }, "Parsed DOCTYPE serialized correctly");
+  // ]]>
+  </script>
+ </body>
+</html>

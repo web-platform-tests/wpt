@@ -14,52 +14,47 @@
 <div id="log"></div>
 <script type="text/javascript">
 
-function doTest(element) {
-    var doc = newHTMLDocument();
-    
-    var name = 'x-foo-' + element;
-    
-    var XFoo = doc.register(name);
-    
-    if (HTML5_TABLE_ELEMENTS.indexOf(element) != -1) {
-        doc.body.innerHTML = 
-            '<table>' +
-            '<' + element + ' id="customElement" is="' + name + '"></' + element + '>' +
-            '</table>';
-    } else {
-        doc.body.innerHTML = 
-            '<' + element + ' id="customElement" is="' + name + '"></' + element + '>';        
-    }
-    
-    var xfoo = doc.querySelector('#customElement');
-
-    var obj = doc.createElement(element);
-    
-    assert_class_string(xfoo, obj.constructor.name,
-            'Custom element  must be a ' + obj.constructor.name);
-    
+test(function() {
     for (var i = 0; i < HTML5_ELEMENTS.length; i++) {
-        var name2 = 'x-foo-' + element + '-' + HTML5_ELEMENTS[i];        
-        var XFoo2 = doc.register(name2);
+        if (HTML5_DOCUMENT_ELEMENTS.indexOf(HTML5_ELEMENTS[i]) == -1) {
+            var element = HTML5_ELEMENTS[i];
+            var doc = newHTMLDocument();
+            
+            var name = 'x-' + element;
+            
+            doc.register(name);
+            
+            if (HTML5_TABLE_ELEMENTS.indexOf(element) != -1) {
+                doc.body.innerHTML = 
+                    '<table>' +
+                    '<' + element + ' id="customElement" is="' + name + '"></' + element + '>' +
+                    '</table>';
+            } else {
+                doc.body.innerHTML = 
+                    '<' + element + ' id="customElement" is="' + name + '"></' + element + '>';        
+            }
+            
+            var customElement = doc.querySelector('#customElement');
 
-        xfoo.setAttribute('is', name2);
-        
-        assert_class_string(xfoo, obj.constructor.name,
-                'Custom element must not be changed and should be a ' + obj.constructor.name);
+            var obj = doc.createElement(element);
+            
+            assert_class_string(customElement, obj.constructor.name,
+                    'Custom element  must be a ' + obj.constructor.name);
+            
+            for (var i = 0; i < HTML5_ELEMENTS.length; i++) {
+                var name2 = 'x-' + element + '-' + HTML5_ELEMENTS[i];        
+                doc.register(name2);
+
+                customElement.setAttribute('is', name2);
+                
+                assert_class_string(customElement, obj.constructor.name,
+                        'Custom element must not be changed and should be a ' + 
+                        obj.constructor.name);
+            }
+            
+        }
     }
-}
-
-
-var parameters = [];
-
-for (var i = 0; i < HTML5_ELEMENTS.length; i++) {
-    if (HTML5_DOCUMENT_ELEMENTS.indexOf(HTML5_ELEMENTS[i]) == -1) {
-        parameters[i] = ['Custom element type ' + HTML5_ELEMENTS[i], HTML5_ELEMENTS[i]];
-    }
-}
-
-generate_tests(doTest, parameters, 
-        'Changing IS attribute of the custom element after element is instatiated');
+}, 'Changing IS attribute of the custom element after element is instatiated');
 
 </script>
 </body>

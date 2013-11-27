@@ -17,13 +17,13 @@
 test(function() {
     var doc = newHTMLDocument();
     
-    var name = 'x-foo-1';
+    var name = 'x-a-1';
     
-    var XFoo = doc.register(name);
+    doc.register(name);
 
-    var xfoo = doc.createElement(name);
+    var customElement = doc.createElement(name);
 
-    assert_equals(xfoo.constructor.prototype.constructor.name, name, 
+    assert_equals(customElement.constructor.prototype.constructor.name, name, 
             'Wrong custom element type');    
 
 }, 'If typeExtension is not present in createElement call then type is a local name');
@@ -32,13 +32,13 @@ test(function() {
 test(function() {
     var doc = newHTMLDocument();
     
-    var name = 'x-foo-2';
+    var name = 'x-a-2';
     
-    var XFoo = doc.register(name);
+    doc.register(name);
 
-    var xfoo = doc.createElementNS(HTML_NAMESPACE, name);
+    var customElement = doc.createElementNS(HTML_NAMESPACE, name);
 
-    assert_equals(xfoo.constructor.prototype.constructor.name, name, 
+    assert_equals(customElement.constructor.prototype.constructor.name, name, 
             'Wrong custom element type');
 
 }, 'If typeExtension is not present in createElementNS call then type is a local name');

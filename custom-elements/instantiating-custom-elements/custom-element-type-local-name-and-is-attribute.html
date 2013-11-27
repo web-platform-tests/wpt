@@ -17,17 +17,17 @@
 test(function() {
     var doc = newHTMLDocument();
     
-    doc.register('x-foo-1');
-    doc.register('x-foo-2');
+    doc.register('x-a-1');
+    doc.register('x-a-2');
     
-    doc.body.innerHTML = '<x-foo-1 id="xfoo" is="x-foo-2"></x-foo-1>';
+    doc.body.innerHTML = '<x-a-1 id="xa" is="x-a-2"></x-a-1>';
     
-    var xfoo = doc.querySelector('#xfoo');
+    var customElement = doc.querySelector('#xa');
     
-    assert_equals(xfoo.constructor.prototype.constructor.name, xfoo.localName, 
+    assert_equals(customElement.constructor.prototype.constructor.name, customElement.localName, 
         'Wrong custom element local name');
 
-    assert_equals(xfoo.constructor.prototype.constructor.name, 'x-foo-1', 
+    assert_equals(customElement.constructor.prototype.constructor.name, 'x-a-1', 
         'Wrong custom element type');
     
 }, 'Custom element type is the local name of the custom element even if IS attribute provided.');
@@ -36,25 +36,25 @@ test(function() {
 test(function() {
     var doc = newHTMLDocument();
         
-    doc.register('x-foo-4');
+    doc.register('x-a-4');
     
-    doc.body.innerHTML = '<x-foo-3 id="xfoo" is="x-foo-4"></x-foo-3>';
+    doc.body.innerHTML = '<x-a-3 id="xa" is="x-a-4"></x-a-3>';
     
-    var xfoo = doc.querySelector('#xfoo');
+    var customElement = doc.querySelector('#xa');
     
-    assert_equals(xfoo.constructor.prototype.constructor.name, 'HTMLElement', 
+    assert_equals(customElement.constructor.prototype.constructor.name, 'HTMLElement', 
         'Wrong custom element local name');
 
-    doc.register('x-foo-3');
+    doc.register('x-a-3');
     
-    assert_equals(xfoo.constructor.prototype.constructor.name, xfoo.localName, 
+    assert_equals(customElement.constructor.prototype.constructor.name, customElement.localName, 
             'Wrong custom element local name');
 
-    assert_equals(xfoo.constructor.prototype.constructor.name, 'x-foo-3', 
+    assert_equals(customElement.constructor.prototype.constructor.name, 'x-a-3', 
             'Wrong custom element type');
     
-}, 'Custom element type is the local name of the custom element even if IS attribute provided.'
-    + 'Custom element is unresolved at first');
+}, 'Custom element type is the local name of the custom element even if IS attribute provided.' + 
+    'Custom element is unresolved at first');
 
 </script>
 </body>

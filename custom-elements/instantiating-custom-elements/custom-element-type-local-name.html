@@ -17,45 +17,45 @@
 test(function() {
     var doc = newHTMLDocument();
     
-    var XFoo = doc.register('x-foo-1');
+    var ElementConstructor = doc.register('x-a-1');
     
-    var xfoo = new XFoo();
+    var customElement = new ElementConstructor();
     
-    assert_equals(xfoo.constructor.prototype.constructor.name, xfoo.localName, 
-            'Wrong custom element type');
+    assert_equals(customElement.constructor.prototype.constructor.name, 
+            customElement.localName, 'Wrong custom element type');
         
-}, 'Custom element type is the local name of the custom element.'
-    + 'Custom element created in JavaScript');
+}, 'Custom element type is the local name of the custom element. ' + 
+    'Custom element created in JavaScript');
 
 
 test(function() {
     var doc = newHTMLDocument();
     
-    doc.register('x-foo-2');
+    doc.register('x-a-2');
     
-    doc.body.innerHTML = '<x-foo-2 id="xfoo2"></x-foo-2>';
+    doc.body.innerHTML = '<x-a-2 id="ce2"></x-a-2>';
     
-    var xfoo = doc.querySelector('#xfoo2');
+    var customElement = doc.querySelector('#ce2');
     
-    assert_equals(xfoo.constructor.prototype.constructor.name, xfoo.localName, 
+    assert_equals(customElement.constructor.prototype.constructor.name, customElement.localName, 
         'Wrong custom element type');
         
-}, 'Custom element type is the local name of the custom element.'
-    + 'Custom element created in HTML');
+}, 'Custom element type is the local name of the custom element.' + 
+    'Custom element created in HTML');
     
 
-testInIFrame('../resources/x-foo.html', function(context) {
+testInIFrame('../resources/x-element.html', function(context) {
     var doc = context.iframes[0].contentDocument;
     
-    var XFoo = doc.register('x-foo');
+    doc.register('x-element');
 
-    var xfoo = doc.querySelector('#xfoo');
+    var xelement = doc.querySelector('#xelement');
     
-    assert_equals(xfoo.constructor.prototype.constructor.name, xfoo.localName, 
+    assert_equals(xelement.constructor.prototype.constructor.name, xelement.localName, 
         'Wrong custom element type');
 
-}, 'Custom element type is the local name of the custom element.'
-    + 'Custom element created in HTML. Document has browsing context');
+}, 'Custom element type is the local name of the custom element. ' + 
+    'Custom element created in HTML. Document has browsing context');
 
 
 </script>

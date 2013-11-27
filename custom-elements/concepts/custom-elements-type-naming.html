@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>The custom element type is a sequence of characters that must match the NCName production and contain a minus character</title>
+<meta name="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<meta name="assert" content="The custom element type is a sequence of characters that must match the NCName production and contain a U+002D HYPHEN-MINUS character">
+<link rel="help" href="https://dvcs.w3.org/hg/webcomponents/raw-file/default/spec/custom/index.html#concepts">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src='../testcommon.js'></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+</head>
+<body>
+<div id="log"></div>
+<script type="text/javascript">
+
+test(function() {
+    var validNames = ['x-frame', 'xx-frame', 'x--frame', '_-frame', 'x-', 'x--',
+                      'x-1', 'x-_', '_-_', '__-',  '_-1',  '_-..'                      
+                     ];
+    
+    HTML5_ELEMENTS.forEach(function(value) {
+        validNames[validNames.length] = 'x-' + value;
+    });
+    
+    for (var i = 0; i < validNames.length; i++) {
+        var doc = newHTMLDocument();
+        
+        var name = validNames[i];
+        var thrown = false;    
+        
+        try {
+            doc.register(name);
+        } catch (e) {
+            thrown = true;
+        }
+        
+        assert_false(thrown, 'Exception should not be thrown in case of attempt ' +
+                'to register a custom element with a name \'' + name + '\'');
+    }
+}, 'Register valid custom element types');
+
+
+test(function() {
+    var invalidNames = [
+                      'xframe', 'x_frame', 'x.frame', 'x1frame', '-xframe', '1-frame', '1x-frame',
+                      '.-frame', '_frame', 'x-f!rame'
+                     ];
+    
+    invalidNames.forEach(function(value) {
+        assert_throws(null, function() {
+            
+            var doc = newHTMLDocument();
+            doc.register(value);
+            
+        }, 'Exception should be thrown in case of attempt to register element ' +
+            'with the name \'' + value + '\'');
+    });    
+}, 'Register invalid custom element types');
+
+
+test(function() {
+    var forbiddenNames = [
+                        'annotation-xml',
+                        'color-profile',
+                        'font-face',
+                        'font-face-src',
+                        'font-face-uri',
+                        'font-face-format',
+                        'font-face-name',
+                        'missing-glyph'
+                     ];
+    
+    forbiddenNames.forEach(function(value) {
+        assert_throws(null, function() {
+            
+            var doc = newHTMLDocument();
+            doc.register(value);
+            
+        }, 'Exception should be thrown in case of attempt to register element ' +
+            'with the name \'' + value + '\'');
+    });    
+}, 'Register forbidden custom element types');
+
+
+</script>
+</body>
+</html>

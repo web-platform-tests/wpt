@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Custom element type is the value of the is attribute of the custom element</title>
+<meta name="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<meta name="assert" content="The custom element type can be given to a custom element at the time of its instantation as the value of the is attribute of the custom element">
+<link rel="help" href="http://www.w3.org/TR/custom-elements/#instantiating-custom-elements">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src='../testcommon.js'></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+</head>
+<body>
+<div id="log"></div>
+<script type="text/javascript">
+
+test(function() {
+    for (var i = 0; i < HTML5_ELEMENTS.length; i++) {
+        if (HTML5_DOCUMENT_ELEMENTS.indexOf(HTML5_ELEMENTS[i]) == -1) {
+            var element = HTML5_ELEMENTS[i];
+            var doc = newHTMLDocument();
+            
+            var obj = doc.createElement(element);
+            
+            var name = 'x-1-' + element;
+            
+            var proto = Object.create(obj.constructor.prototype);
+            
+            doc.register(name, {prototype: proto, extends: element});
+            
+            if (HTML5_TABLE_ELEMENTS.indexOf(element) != -1) {
+                doc.body.innerHTML = 
+                    '<table>' +
+                    '<' + element + ' id="customElement" is="' + name + '"></' + element + '>' +
+                    '</table>';
+            } else {
+                doc.body.innerHTML = 
+                    '<' + element + ' id="customElement" is="' + name + '"></' + element + '>';        
+            }
+            
+            var xfoo = doc.querySelector('#customElement');
+            
+            assert_equals(xfoo.constructor.prototype.constructor.name, name, 
+                    'Wrong custom element type');
+        }
+    }
+}, 'Custom element type is the value of the IS attribute of the custom element');
+
+
+test(function() {
+    for (var i = 0; i < HTML5_ELEMENTS.length; i++) {
+        if (HTML5_DOCUMENT_ELEMENTS.indexOf(HTML5_ELEMENTS[i]) == -1) {
+            var element = HTML5_ELEMENTS[i];
+            var doc = newHTMLDocument();
+            
+            var obj = doc.createElement(element);
+            
+            var name = 'x-2-' + element;
+                
+            if (HTML5_TABLE_ELEMENTS.indexOf(element) != -1) {
+                doc.body.innerHTML = 
+                    '<table>' +
+                    '<' + element + ' id="customElement" is="' + name + '"></' + element + '>' +
+                    '</table>';
+            } else {
+                doc.body.innerHTML = 
+                    '<' + element + ' id="customElement" is="' + name + '"></' + element + '>';        
+            }
+
+            var proto = Object.create(obj.constructor.prototype);
+            
+            doc.register(name, {prototype: proto, extends: element});
+            
+            var customElement = doc.querySelector('#customElement');
+            
+            assert_equals(customElement.constructor.prototype.constructor.name, name, 
+                    'Wrong custom element type');
+        }
+    }
+}, 'Custom element type is the value of the IS attribute of the custom element. ' + 
+    'Custom element is unresolved at first');
+
+</script>
+</body>
+</html>

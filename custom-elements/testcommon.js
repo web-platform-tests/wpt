@@ -304,6 +304,7 @@ var DIGIT_CHARS_RANGES = [ 0x0030, 0x0039, 0x0660, 0x0669, 0x06F0, 0x06F9,
         0x0E50, 0x0E59, 0x0ED0, 0x0ED9, 0x0F20, 0x0F29 ];
 
 var HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
+var SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
 
 function newDocument() {
     var d = document.implementation.createDocument();

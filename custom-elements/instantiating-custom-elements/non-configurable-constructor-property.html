@@ -16,20 +16,15 @@
 
 test(function() {
     var doc = newHTMLDocument();
-    var thrown = false;
     
     var proto = Object.create(HTMLElement.prototype);
     Object.defineProperty(proto, 'constructor', {configurable: false});
     
-    try {
-        var XFoo = doc.register('x-foo', {prototype: proto});
-    } catch (e) {
-        thrown = true;
-        assert_equals(e.name, 'NotSupportedError', 'Wrong exception type');
-    }
+    assert_throws(null, function() {
+        doc.register('x-a-1', {prototype: proto});
+    }, 'Exception should be thrown in case of attempt to register element ' +
+        'with a non-configurable property named constructor');
 
-    assert_true(thrown, 'Exception was not thrown');
-    
 }, 'Prototype has a non-configurable property named constructor');
 
 
@@ -41,12 +36,13 @@ test(function() {
     Object.defineProperty(proto, 'constructor', {configurable: true});
     
     try {
-        var XFoo = doc.register('x-foo', {prototype: proto});
+        doc.register('x-a-2', {prototype: proto});
     } catch (e) {
         thrown = true;
     }
 
-    assert_false(thrown, 'Exception was not thrown');
+    assert_false(thrown, 'Exception should not be thrown in case of attempt to register ' +
+            'element with a configurable property named constructor');
     
 }, 'Prototype has a configurable property named constructor');
 

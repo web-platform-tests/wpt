@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>HTML Test: marquee-events</title>
+<link rel="author" title="Intel" href="http://www.intel.com/">
+<link rel="help" href="http://www.whatwg.org/specs/web-apps/current-work/multipage/obsolete.html#the-marquee-element">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<marquee id="test1" loop="2" width="100" bgcolor="yellow" behavior="alternate">Test1</marquee>
+<script>
+  var mq;
+  var t_start = async_test("marquee_events_start");
+  var t_finish = async_test("marquee_events_finish");
+  var t_bounce = async_test("marquee_events_bounce");
+
+  setup(function() {
+    mq = document.getElementById("test1");
+  });
+
+  mq.addEventListener("start", function(evt) {
+    t_start.step(function() {
+      assert_equals(evt.type, "start", "The onstart event should be fired.");
+    });
+    t_start.done();
+  });
+
+  mq.addEventListener("finish", function(evt) {
+    t_finish.step(function() {
+      assert_equals(evt.type, "finish", "The onfinish event should be fired.");
+    });
+    t_finish.done();
+  });
+
+  mq.addEventListener("bounce", function(evt) {
+    t_bounce.step(function() {
+      assert_equals(evt.type, "bounce", "The onbounce event should be fired.");
+    });
+    t_bounce.done();
+  });
+</script>

@@ -15,15 +15,11 @@
 <script type="text/javascript">
 
 test(function() {
-    for (var i = 0; i < HTML5_ELEMENTS.length; i++) {
-        if (HTML5_DOCUMENT_ELEMENTS.indexOf(HTML5_ELEMENTS[i]) == -1) {
-            var element = HTML5_ELEMENTS[i];
-            var doc = newHTMLDocument();
-            
+    var doc = newHTMLDocument();
+    HTML5_ELEMENTS.forEach(function(element) {
+        if (HTML5_DOCUMENT_ELEMENTS.indexOf(element) == -1) {
             var name = 'x-' + element;
-            
             doc.register(name);
-            
             if (HTML5_TABLE_ELEMENTS.indexOf(element) != -1) {
                 doc.body.innerHTML = 
                     '<table>' +
@@ -33,27 +29,22 @@ test(function() {
                 doc.body.innerHTML = 
                     '<' + element + ' id="customElement" is="' + name + '"></' + element + '>';        
             }
-            
             var customElement = doc.querySelector('#customElement');
-
             var obj = doc.createElement(element);
-            
             assert_class_string(customElement, obj.constructor.name,
                     'Custom element  must be a ' + obj.constructor.name);
             
-            for (var i = 0; i < HTML5_ELEMENTS.length; i++) {
-                var name2 = 'x-' + element + '-' + HTML5_ELEMENTS[i];        
+            HTML5_ELEMENTS.forEach(function(value) {
+                var name2 = 'x-' + element + '-' + value;        
                 doc.register(name2);
-
                 customElement.setAttribute('is', name2);
-                
+
                 assert_class_string(customElement, obj.constructor.name,
                         'Custom element must not be changed and should be a ' + 
-                        obj.constructor.name);
-            }
-            
+                        obj.constructor.name);                
+            });
         }
-    }
+    });
 }, 'Changing IS attribute of the custom element after element is instatiated');
 
 </script>

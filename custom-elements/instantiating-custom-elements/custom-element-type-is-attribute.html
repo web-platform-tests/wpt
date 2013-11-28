@@ -15,17 +15,12 @@
 <script type="text/javascript">
 
 test(function() {
-    for (var i = 0; i < HTML5_ELEMENTS.length; i++) {
-        if (HTML5_DOCUMENT_ELEMENTS.indexOf(HTML5_ELEMENTS[i]) == -1) {
-            var element = HTML5_ELEMENTS[i];
-            var doc = newHTMLDocument();
-            
+    HTML5_ELEMENTS.forEach(function(element) {
+        var doc = newHTMLDocument();
+        if (HTML5_DOCUMENT_ELEMENTS.indexOf(element) == -1) {
             var obj = doc.createElement(element);
-            
             var name = 'x-1-' + element;
-            
             var proto = Object.create(obj.constructor.prototype);
-            
             doc.register(name, {prototype: proto, extends: element});
             
             if (HTML5_TABLE_ELEMENTS.indexOf(element) != -1) {
@@ -37,26 +32,20 @@ test(function() {
                 doc.body.innerHTML = 
                     '<' + element + ' id="customElement" is="' + name + '"></' + element + '>';        
             }
-            
-            var xfoo = doc.querySelector('#customElement');
-            
-            assert_equals(xfoo.constructor.prototype.constructor.name, name, 
+            var customElement = doc.querySelector('#customElement');
+            assert_equals(customElement.constructor.prototype.constructor.name, name, 
                     'Wrong custom element type');
-        }
-    }
+        }        
+    });
 }, 'Custom element type is the value of the IS attribute of the custom element');
 
 
 test(function() {
-    for (var i = 0; i < HTML5_ELEMENTS.length; i++) {
-        if (HTML5_DOCUMENT_ELEMENTS.indexOf(HTML5_ELEMENTS[i]) == -1) {
-            var element = HTML5_ELEMENTS[i];
-            var doc = newHTMLDocument();
-            
+    var doc = newHTMLDocument();
+    HTML5_ELEMENTS.forEach(function(element) {
+        if (HTML5_DOCUMENT_ELEMENTS.indexOf(element) == -1) {
             var obj = doc.createElement(element);
-            
             var name = 'x-2-' + element;
-                
             if (HTML5_TABLE_ELEMENTS.indexOf(element) != -1) {
                 doc.body.innerHTML = 
                     '<table>' +
@@ -66,17 +55,14 @@ test(function() {
                 doc.body.innerHTML = 
                     '<' + element + ' id="customElement" is="' + name + '"></' + element + '>';        
             }
-
             var proto = Object.create(obj.constructor.prototype);
-            
             doc.register(name, {prototype: proto, extends: element});
-            
             var customElement = doc.querySelector('#customElement');
             
             assert_equals(customElement.constructor.prototype.constructor.name, name, 
                     'Wrong custom element type');
         }
-    }
+    });
 }, 'Custom element type is the value of the IS attribute of the custom element. ' + 
     'Custom element is unresolved at first');
 

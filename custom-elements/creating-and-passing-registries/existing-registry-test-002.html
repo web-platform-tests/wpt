@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>A new document instance must be associated with an existing registry when creating a document for template contents</title>
+<title>When creating an import, use the registry of the master document</title>
 <meta name="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
-<meta name="assert" content="When creating a document for template contents, use the registry of the template's document.">
+<meta name="assert" content="When creating an import, use the registry of the master document">
 <link rel="help" href="http://www.w3.org/TR/custom-elements/#creating-and-passing-registries">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -14,61 +14,51 @@
 <div id="log"></div>
 <script type="text/javascript">
 
-testInIFrame(null, function(context) {
+testInIFrame('../resources/import-master.html', function(context) {
     var doc = context.iframes[0].contentDocument;
     
-    var name = 'x-frame-1';
+    var link = doc.querySelector('link[rel=import]');
     
-    var template = doc.createElement('template');
+    var doc2 = link.import;
     
-    var div = doc.createElement('div');
-
-    template.appendChild(div);
-
-    doc.body.appendChild(template);
-    
-    doc = template.ownerDocument;
+    var name = 'x-frame';
     
     doc.register(name);
-
-    // doc has browsing context. There should be another document as a template
-    // content owner
-    var doc2 = template.content.ownerDocument;
-    
-    assert_throws(null, function () {
-        doc2.register(name); 
-    }, 'Exception should be throw if element with the same type is already registered');
-        
-}, 'Test that registry is shared between template\'s and template content\'s owner documents');
-
-
-testInIFrame('../resources/x-element.html', function(context) {
-    var doc = context.iframes[0].contentDocument;
-    
-    var name = 'x-element';
-    
-    var template = doc.createElement('template');
-
-    var div = doc.createElement('div');
-
-    template.appendChild(div);
-
-    doc.body.appendChild(template);
-    
-    doc = template.ownerDocument;
-    
-    doc.register(name);
-
-    // doc has browsing context. There should be another document as a template
-    // content owner
-    var doc2 = template.content.ownerDocument;
     
     assert_throws(null, function () {
         doc2.register(name); 
     }, 'Exception should be throw if element with the same type is already registered');
     
-}, 'Test that registry is shared between template\'s and template content\'s owner documents.' +
-    'Test actual document with the browsing context');
+}, 'Registry of the import should share master document registry');
+
+
+testInIFrame('../resources/import-master.html', function(context) {
+    var doc = context.iframes[0].contentDocument;
+    
+    var link = doc.querySelector('link[rel=import]');
+    
+    var doc2 = link.import;
+    
+    var name = 'x-frame';
+    
+    doc.register(name);    
+    
+    assert_throws(null, function () {
+        doc2.register(name); 
+    }, 'Exception should be throw if element with the same type is already registered');
+    
+    var doc3 = newHTMLDocument();
+    
+    var thrown = false;
+    try {
+        doc3.register(name);    
+    } catch (e) {
+        thrown = true;
+    }
+    
+    assert_false(thrown, 'Exception should not be thrown');
+    
+}, 'Registry of the import should share master document registry only');
 
 </script>
 </body>

@@ -15,49 +15,35 @@
 <script type="text/javascript">
 
 test(function() {
-    for (var i = 0; i < HTML5_ELEMENTS.length; i++) {
-        var element = HTML5_ELEMENTS[i];
-        
-        var doc = newHTMLDocument();
-        
-        var obj = doc.createElement(element);
-        
-        var name = 'x-1-' + element;
-        
+    var doc = newHTMLDocument();
+    
+    HTML5_ELEMENTS.forEach(function (value) {        
+        var obj = doc.createElement(value);
+        var name = 'x-1-' + value;        
         var proto = Object.create(obj.constructor.prototype);
-        
-        doc.register(name, {prototype: proto, extends: element});
-        
-        var customElement = doc.createElement(element, name);
+        doc.register(name, {prototype: proto, extends: value});
+        var customElement = doc.createElement(value, name);
             
         assert_equals(customElement.getAttribute('is'), name, 
-                'Wrong value of the IS attribute');    
-    }
-    
+                'Wrong value of the IS attribute');            
+    });    
 }, 'If type is not the same as localName, the value of ELEMENT\'s is attribute ' +
     'must be set to type by createElement');
 
 
 test(function() {
-    for (var i = 0; i < HTML5_ELEMENTS.length; i++) {
-        var element = HTML5_ELEMENTS[i];
-        
-        var doc = newHTMLDocument();
-        
-        var obj = doc.createElement(element);
-        
-        var name = 'x-2-' + element;
-        
+    var doc = newHTMLDocument();
+    
+    HTML5_ELEMENTS.forEach(function (value) {        
+        var obj = doc.createElement(value);
+        var name = 'x-2-' + value;        
         var proto = Object.create(obj.constructor.prototype);
-        
-        doc.register(name, {prototype: proto, extends: element});
-        
-        var customElement = doc.createElementNS(HTML_NAMESPACE, element, name);
+        doc.register(name, {prototype: proto, extends: value});
+        var customElement = doc.createElementNS(HTML_NAMESPACE, value, name);
             
         assert_equals(customElement.getAttribute('is'), name, 
-                'Wrong value of IS attribute');    
-    }
-    
+                'Wrong value of the IS attribute');            
+    });        
 }, 'If type is not the same as localName, the value of ELEMENT\'s is attribute ' +
     'must be set to type by createElementNS');
     

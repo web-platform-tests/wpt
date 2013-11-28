@@ -30,7 +30,6 @@ test(function() {
 
 test(function() {
     var doc = newHTMLDocument();
-    var thrown = false;
     
     var proto = Object.create(HTMLElement.prototype);
     Object.defineProperty(proto, 'constructor', {configurable: true});
@@ -38,12 +37,9 @@ test(function() {
     try {
         doc.register('x-a-2', {prototype: proto});
     } catch (e) {
-        thrown = true;
+        assert_unreached('Exception should not be thrown in case of attempt to register ' +
+        'element with a configurable property named constructor');
     }
-
-    assert_false(thrown, 'Exception should not be thrown in case of attempt to register ' +
-            'element with a configurable property named constructor');
-    
 }, 'Prototype has a configurable property named constructor');
 
 </script>

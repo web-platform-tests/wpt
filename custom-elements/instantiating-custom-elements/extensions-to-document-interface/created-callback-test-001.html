@@ -16,18 +16,13 @@
 
 test(function() {
     var doc = newHTMLDocument();
-    
     var callbackCalled = false;
-    
     var proto = Object.create(HTMLElement.prototype);
     proto.createdCallback = function () {
         callbackCalled = true;
     }
-    
     var name = 'x-a-1';
-    
     doc.register(name, {prototype: proto});
-    
     var customElement = doc.createElement(name);
 
     assert_true(callbackCalled, 'Callback created was not called');
@@ -37,18 +32,13 @@ test(function() {
 
 test(function() {
     var doc = newHTMLDocument();
-    
     var callbackCalled = false;
-    
     var proto = Object.create(HTMLElement.prototype);
     proto.createdCallback = function () {
         callbackCalled = true;
     }
-    
     var name = 'x-a-2';
-    
     doc.register(name, {prototype: proto});
-    
     var customElement = doc.createElement(name, name);
 
     assert_true(callbackCalled, 'Callback created was not called');
@@ -58,22 +48,16 @@ test(function() {
 
 test(function() {
     var doc = newHTMLDocument();
-    
     var callbackCalled = false;
-    
     var proto = Object.create(HTMLElement.prototype);
     proto.createdCallback = function () {
         callbackCalled = true;
     }
-    
     var name = 'x-a-3';
-    
     var customElement = doc.createElement(name);
-
     assert_false(callbackCalled, 'Callback created was not called');
     
     doc.register(name, {prototype: proto});
-    
     assert_true(callbackCalled, 'Callback created was not called');
     
 }, 'Created callback should be called if createElement is called. ' +
@@ -81,27 +65,19 @@ test(function() {
 
 
 test(function () {
-    for (var i = 0; i < HTML5_ELEMENTS.length; i++) {
-        var element = HTML5_ELEMENTS[i];
-        
-        var doc = newHTMLDocument();
-        
-        var obj = doc.createElement(element);
-        
-        var name = 'x-' + element;
-        
+    var doc = newHTMLDocument();
+    HTML5_ELEMENTS.forEach(function(value) {
+        var obj = doc.createElement(value);
+        var name = 'x-' + value;
         var proto = Object.create(obj.constructor.prototype);
         proto.createdCallback = function () {
             callbackCalled = true;
         }    
-        
-        doc.register(name, {prototype: proto, extends: element});
-        
-        var createElement = doc.createElement(element, name);
-            
-        assert_true(callbackCalled, 'Callback created was not called');
-    }
-    
+        doc.register(name, {prototype: proto, extends: value});
+        var createElement = doc.createElement(value, name);
+
+        assert_true(callbackCalled, 'Callback created was not called');        
+    });
 }, 'Created callback should be called if createElement is called. Test different types');
 
 </script>

@@ -15,21 +15,17 @@
 <script type="text/javascript">
 
 test(function() {
-    for (var i = 0; i < HTML5_ELEMENTS.length; i++) {
-        var doc = newHTMLDocument();
-        
-        var element = HTML5_ELEMENTS[i];
-        
-        var obj = doc.createElement(element);
-        
+    var doc = newHTMLDocument();
+    HTML5_ELEMENTS.forEach(function(element) {
+        var obj = doc.createElement(element);        
         var name = 'x-' + element;
         
         assert_throws(null, function() {
             doc.register(name, {prototype: obj.constructor.prototype});
         }, 'Exception should be thrown in case of attempt to register element ' +
             'if prototype is already an interface prototype object (' + 
-            obj.constructor.prototype.name + ')');
-    }
+            obj.constructor.prototype.name + ')');        
+    });
 }, 'Prototype is already an interface prototype object');
 
 </script>

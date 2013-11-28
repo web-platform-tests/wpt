@@ -15,44 +15,36 @@
 <script type="text/javascript">
 
 test(function() {
+    var doc = newHTMLDocument();
     var validNames = ['x-frame', 'xx-frame', 'x--frame', '_-frame', 'x-', 'x--',
                       'x-1', 'x-_', '_-_', '__-',  '_-1',  '_-..'                      
                      ];
     
     HTML5_ELEMENTS.forEach(function(value) {
-        validNames[validNames.length] = 'x-' + value;
+        validNames.push('x-' + value);
     });
     
-    for (var i = 0; i < validNames.length; i++) {
-        var doc = newHTMLDocument();
-        
-        var name = validNames[i];
-        var thrown = false;    
-        
+    validNames.forEach(function(value) {
         try {
-            doc.register(name);
+            doc.register(value);
         } catch (e) {
-            thrown = true;
+            assert_unreached('Exception should not be thrown in case of attempt ' +
+                    'to register a custom element with a name \'' + value + '\'');        
         }
-        
-        assert_false(thrown, 'Exception should not be thrown in case of attempt ' +
-                'to register a custom element with a name \'' + name + '\'');
-    }
+    });
 }, 'Register valid custom element types');
 
 
 test(function() {
+    var doc = newHTMLDocument();
     var invalidNames = [
                       'xframe', 'x_frame', 'x.frame', 'x1frame', '-xframe', '1-frame', '1x-frame',
                       '.-frame', '_frame', 'x-f!rame'
                      ];
     
-    invalidNames.forEach(function(value) {
-        assert_throws(null, function() {
-            
-            var doc = newHTMLDocument();
+    invalidNames.forEach(function(value) {        
+        assert_throws(null, function() {            
             doc.register(value);
-            
         }, 'Exception should be thrown in case of attempt to register element ' +
             'with the name \'' + value + '\'');
     });    
@@ -60,6 +52,7 @@ test(function() {
 
 
 test(function() {
+    var doc = newHTMLDocument();
     var forbiddenNames = [
                         'annotation-xml',
                         'color-profile',
@@ -73,15 +66,11 @@ test(function() {
     
     forbiddenNames.forEach(function(value) {
         assert_throws(null, function() {
-            
-            var doc = newHTMLDocument();
             doc.register(value);
-            
         }, 'Exception should be thrown in case of attempt to register element ' +
             'with the name \'' + value + '\'');
     });    
 }, 'Register forbidden custom element types');
-
 
 </script>
 </body>

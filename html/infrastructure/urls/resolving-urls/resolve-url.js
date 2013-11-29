@@ -6,7 +6,7 @@ onload = function() {
   var input_url_png = input_url + '&type=png';
   var expected_utf8 = '?q=%C3%A5';
   var expected_1252 = '?q=%E5';
-  var expected_error_url = '?q=?';
+  var expected_error_url = '?q=%3F';
   var expected_error_form = '?q=%26%23229%3B';
   var expected_current = expected_{{GET[expected]}};
   
@@ -65,27 +65,29 @@ onload = function() {
     test_reflecting(arr[0], arr[1], arr[2], true);
   });
 
+  function setup_navigation(elm, iframe, id, test_obj) {
+    iframe.name = id;
+    elm.target = id;
+    elm.setAttribute('href', input_url_html);
+    document.body.appendChild(iframe);
+    document.body.appendChild(elm);
+    test_obj.add_cleanup(function() {
+      document.body.removeChild(iframe);
+      document.body.removeChild(elm);
+    });  
+  }
+
   // follow hyperlink
   function test_follow_link(tag) {
     async_test(function() {
       var elm = document.createElement(tag);
       var iframe = document.createElement('iframe');
-      var id = 'test_follow_link_'+tag;
-      iframe.name = id;
-      elm.target = id;
-      elm.setAttribute('href', input_url_html);
-      document.body.appendChild(iframe);
-      document.body.appendChild(elm);
-      this.add_cleanup(function() {
-        document.body.removeChild(iframe);
-        document.body.removeChild(elm);
-      });
+      setup_navigation(elm, iframe, 'test_follow_link_'+tag, this);
       iframe.onload = this.step_func(function() { // when the page navigated to has loaded
         assert_equals(iframe.contentDocument.body.textContent, expected_current.substr(3));
         this.done();
       });
       // follow the hyperlink
-      console.log(tag, iframe.contentDocument.readyState);
       elm.click();
       // check that navigation succeeded by ...??? XXX
     }, 'follow hyperlink <'+tag+' href>');
@@ -94,7 +96,34 @@ onload = function() {
   'a, area, link'.split(', ').forEach(function(str) {
     test_follow_link(str);
   });
-  // XXX follow hyperlink <a href ping>
+
+  // follow hyperlink with ping attribute
+  function test_follow_link_ping(tag) {
+    async_test(function() {
+      var uuid = token();
+      var elm = document.createElement(tag);
+      // check if ping is supported
+      assert_true('ping' in elm, 'ping not supported');
+      elm.setAttribute('ping', 'stash.py?q=\u00E5&id='+uuid+'&action=put');
+      var iframe = document.createElement('iframe');
+      setup_navigation(elm, iframe, 'test_follow_link_ping_'+tag, this);
+      // follow the hyperlink
+      elm.click();
+      // check that navigation succeeded by ...??? XXX
+      // check that the right URL was requested for the ping
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', 'stash.py?id='+uuid+'&action=take');
+      xhr.onload = this.step_func(function(e) {
+        assert_equals(xhr.response, expected_current.substr(3));
+        this.done();
+      });
+      xhr.send();
+    }, 'hyperlink auditing <'+tag+' ping>');
+  }
+  
+  'a, area'.split(', ').forEach(function(str) {
+    test_follow_link_ping(str);
+  });
 
 
   // navigating with meta refresh

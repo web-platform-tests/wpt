@@ -1,9 +1,11 @@
 import urllib
 import os
+import re
 
 def main(request, response):
     type = request.GET['type']
-    q = urllib.quote(request.GET['q']) # XXX actually want the raw query here
+    # We want the raw input for 'q'
+    q = re.search(r'q=([^&]+)', request.url_parts.query).groups()[0]
     if type == 'html':
         return ([("Content-Type", "text/html")], q)
     elif type == 'css':
@@ -13,7 +15,7 @@ def main(request, response):
             image = 'green-1x1.png'
         elif q == '%C3%A5':
             image = 'green-2x2.png'
-        elif q == '%3F': # XXX
+        elif q == '%3F':
             image = 'green-16x16.png'
         else:
             image = 'green-256x256.png'

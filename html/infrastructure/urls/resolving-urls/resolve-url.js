@@ -91,7 +91,8 @@ onload = function() {
       // follow the hyperlink
       elm.click();
       // check that navigation succeeded by ...??? XXX
-    }, 'follow hyperlink <'+tag+' href>');
+    }, 'follow hyperlink <'+tag+' href>',
+    {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/links.html#following-hyperlinks'});
   }
 
   'a, area, link'.split(', ').forEach(function(str) {
@@ -119,7 +120,8 @@ onload = function() {
         this.done();
       });
       xhr.send();
-    }, 'hyperlink auditing <'+tag+' ping>');
+    }, 'hyperlink auditing <'+tag+' ping>',
+    {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/links.html#hyperlink-auditing'});
   }
 
   'a, area'.split(', ').forEach(function(str) {
@@ -144,10 +146,11 @@ onload = function() {
       assert_equals(got, expected_current.substr(3));
       this.done();
     });
-  }, 'meta refresh');
+  }, 'meta refresh',
+  {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/semantics.html#attr-meta-http-equiv-refresh'});
 
   // loading html (or actually svg to support <embed>)
-  function test_load_nested_browsing_context(tag, attr) {
+  function test_load_nested_browsing_context(tag, attr, spec_url) {
     async_test(function() {
       var id = 'test_load_nested_browsing_context_'+tag;
       var elm = document.createElement(tag);
@@ -162,12 +165,20 @@ onload = function() {
         this.done();
       });
 
-    }, 'load nested browsing context <'+tag+' '+attr+'>');
+    }, 'load nested browsing context <'+tag+' '+attr+'>',
+    {help:spec_url});
   }
+
+  spec_url_load_nested_browsing_context = {
+    frame:'http://www.whatwg.org/specs/web-apps/current-work/multipage/obsolete.html#process-the-frame-attributes',
+    iframe:'http://www.whatwg.org/specs/web-apps/current-work/multipage/the-iframe-element.html#process-the-iframe-attributes',
+    object:'http://www.whatwg.org/specs/web-apps/current-work/multipage/the-iframe-element.html#the-object-element',
+    embed:'http://www.whatwg.org/specs/web-apps/current-work/multipage/the-iframe-element.html#the-embed-element-setup-steps'
+  };
 
   'frame src, iframe src, object data, embed src'.split(', ').forEach(function(str) {
     var arr = str.split(' ');
-    test_load_nested_browsing_context(arr[0], arr[1]);
+    test_load_nested_browsing_context(arr[0], arr[1], spec_url_load_nested_browsing_context[arr[0]]);
   });
 
   // loading css

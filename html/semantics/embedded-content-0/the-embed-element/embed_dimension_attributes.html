@@ -1,32 +1,27 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title>HTML Test: embed_dimension_attributes</title>
-    <link rel="author" title="Intel" href="http://www.intel.com">
-    <link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/embedded-content-0.html#the-embed-element">
-    <script src="/resources/testharness.js"></script>
-    <script src="/resources/testharnessreport.js"></script>
-  </head>
-  <body>
-    <div id="log"></div>
-    <embed id="ebd" src="/images/blue.png" height="100" width="100" style="display:none">
-    <script>
-      var embed;
-      setup(function() {
-        embed = document.getElementById("ebd");
-      });
+<meta charset="utf-8">
+<title>HTML Test: dimension attributes</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/embedded-content-0.html#the-embed-element">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<div id="log"></div>
+  <embed id="ebd" src="/images/blue.png" height="100" width="100" style="display:none">
+  <script>
+    var embed;
+    setup(function() {
+      embed = document.getElementById("ebd");
+    });
 
-      test(function() {
-        assert_equals(embed.width, "100", "The width of the embed element is incorrect.");
-        assert_equals(embed.getAttribute("width"), "100", "The width of the embed element is incorrect.");
-      }, "embed_dimension_attributes_width");
+    test(function() {
+      assert_equals(embed.width, "100", "The width of the embed element is incorrect.");
+      assert_equals(embed.getAttribute("width"), "100", "The width of the embed element is incorrect.");
+    }, "The width attribute");
 
-      test(function() {
-        assert_equals(embed.height, "100", "The height of the embed element is incorrect.");
-        assert_equals(embed.getAttribute("height"), "100", "The height of the embed element is incorrect.");
-      }, "embed_dimension_attributes_height");
-    </script>
-  </body>
-</html>
-
+    test(function() {
+      assert_equals(embed.height, "100", "The height of the embed element is incorrect.");
+      assert_equals(embed.getAttribute("height"), "100", "The height of the embed element is incorrect.");
+    }, "The height attribute");
+  </script>
+</body>

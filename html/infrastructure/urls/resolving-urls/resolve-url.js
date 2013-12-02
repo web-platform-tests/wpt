@@ -9,7 +9,7 @@ onload = function() {
   var expected_error_url = '?q=%3F';
   var expected_error_form = '?q=%26%23229%3B';
   var expected_current = expected_{{GET[expected]}};
-  
+
   function msg(expected, got) {
     return 'expected substring '+expected+' got '+got;
   }
@@ -53,13 +53,13 @@ onload = function() {
     }, 'Getting <'+tag+'>.'+idlAttr + (multiple ? ' (multiple URLs)' : ''),
     {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/common-dom-interfaces.html#reflecting-content-attributes-in-idl-attributes'});
   }
-  
-  ('iframe src, a href, base href, link href, img src, embed src, object data, track src, video src, audio src, input src, form action, ' + 
+
+  ('iframe src, a href, base href, link href, img src, embed src, object data, track src, video src, audio src, input src, form action, ' +
   'input formaction formAction, button formaction formAction, menuitem icon, script src, div itemid').split(', ').forEach(function(str) {
     var arr = str.split(' ');
     test_reflecting(arr[0], arr[1], arr[2]);
   });
-  
+
   'a ping'.split(', ').forEach(function(str) {
     var arr = str.split(' ');
     test_reflecting(arr[0], arr[1], arr[2], true);
@@ -74,7 +74,7 @@ onload = function() {
     test_obj.add_cleanup(function() {
       document.body.removeChild(iframe);
       document.body.removeChild(elm);
-    });  
+    });
   }
 
   // follow hyperlink
@@ -92,7 +92,7 @@ onload = function() {
       // check that navigation succeeded by ...??? XXX
     }, 'follow hyperlink <'+tag+' href>');
   }
-  
+
   'a, area, link'.split(', ').forEach(function(str) {
     test_follow_link(str);
   });
@@ -120,14 +120,30 @@ onload = function() {
       xhr.send();
     }, 'hyperlink auditing <'+tag+' ping>');
   }
-  
+
   'a, area'.split(', ').forEach(function(str) {
     test_follow_link_ping(str);
   });
 
-
   // navigating with meta refresh
-  // <meta http-equiv=refresh>
+  async_test(function() {
+    var iframe = document.createElement('iframe');
+    document.body.appendChild(iframe);
+    this.add_cleanup(function() {
+      document.body.removeChild(iframe);
+    });
+    var doc = iframe.contentDocument;
+    doc.write('<meta http-equiv=refresh content="0; URL='+input_url_html+'">REFRESH');
+    doc.close();
+    iframe.onload = this.step_func(function() {
+      var got = iframe.contentDocument.body.textContent;
+      if (got == 'REFRESH') {
+        return;
+      }
+      assert_equals(got, expected_current.substr(3));
+      this.done();
+    });
+  }, 'meta refresh');
 
   // loading html
   // <frame src>
@@ -153,7 +169,7 @@ onload = function() {
   // loading video
   // <video src>
   // <audio src>
-  
+
   // loading webvtt
   // <track src>
 
@@ -174,7 +190,7 @@ onload = function() {
   // Worker()
   // SharedWorker()
   // EventSource()
-  // 
+  //
   // UTF-8:
   // XHR
   // in a worker
@@ -182,7 +198,7 @@ onload = function() {
   // WebSocket#url
   // Parsing cache manifest?
   // XMLDocument#load()
-  // 
+  //
   // step 4:
   // all the things that give a base url
   // element

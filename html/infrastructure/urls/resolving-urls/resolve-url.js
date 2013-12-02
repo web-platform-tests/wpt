@@ -4,6 +4,7 @@ onload = function() {
   var input_url_html = input_url + '&type=html';
   var input_url_css = input_url + '&type=css';
   var input_url_png = input_url + '&type=png';
+  var input_url_svg = input_url + '&type=svg';
   var expected_utf8 = '?q=%C3%A5';
   var expected_1252 = '?q=%E5';
   var expected_error_url = '?q=%3F';
@@ -145,10 +146,29 @@ onload = function() {
     });
   }, 'meta refresh');
 
-  // loading html
-  // <frame src>
-  // <iframe src>
-  // <object data>
+  // loading html (or actually svg to support <embed>)
+  function test_load_nested_browsing_context(tag, attr) {
+    async_test(function() {
+      var id = 'test_load_nested_browsing_context_'+tag;
+      var elm = document.createElement(tag);
+      elm.setAttribute(attr, input_url_svg);
+      elm.name = id;
+      document.body.appendChild(elm);
+      this.add_cleanup(function() {
+        document.body.removeChild(elm);
+      });
+      elm.onload = this.step_func(function() {
+        assert_equals(window[id].document.documentElement.textContent, expected_current.substr(3));
+        this.done();
+      });
+
+    }, 'load nested browsing context <'+tag+' '+attr+'>');
+  }
+
+  'frame src, iframe src, object data, embed src'.split(', ').forEach(function(str) {
+    var arr = str.split(' ');
+    test_load_nested_browsing_context(arr[0], arr[1]);
+  });
 
   // loading css
   // <link href>

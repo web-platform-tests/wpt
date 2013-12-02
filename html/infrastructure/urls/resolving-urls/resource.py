@@ -9,6 +9,8 @@ def main(request, response):
         return ([("Content-Type", "text/html")], q)
     elif type == 'css':
         return ([("Content-Type", "text/css")], "#test::before { content:'" + q + "' }")
+    elif type == 'svg':
+        return ([("Content-Type", "image/svg+xml")], "<svg xmlns='http://www.w3.org/2000/svg'>"+q+"</svg>")
     elif type == 'png':
         if q == '%E5':
             image = 'green-1x1.png'

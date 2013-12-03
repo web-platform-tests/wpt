@@ -19,7 +19,7 @@ test(function() {
     
     var proto = Object.create(HTMLElement.prototype);
     Object.defineProperty(proto, 'constructor', {configurable: false});
-    
+    //FIXME Should the type of the exception be specified here?
     assert_throws(null, function() {
         doc.register('x-a-1', {prototype: proto});
     }, 'Exception should be thrown in case of attempt to register element ' +

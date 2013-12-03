@@ -6,17 +6,17 @@
   <link rel="help" href="http://www.w3.org/TR/REC-CSS1#line-height"/>
   <link rel="author" title="CSS1 Test Suite Contributors" href="http://www.w3.org/Style/CSS/Test/CSS1/current/tsack.html"/>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
-  <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-03-31 -->
+  <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-03-31 and 2013-12-03 -->
   <link rel="match" href="c548-ln-ht-001-ref.xht" />
 
   <style type="text/css"><![CDATA[
    div { font: 20px Ahem; background: red url(support/pattern-gg-gr.png); color: lime; width: 4em; padding: 0.5em 0 0.5em 1em; border: solid black; margin: 0.5em; }
    p { margin: 0; }
-   /*    
+   /*
    .one {line-height: 0.41667in;}
    */
-   .two {line-height: 1.05833cm;}
-   .three {line-height: 10.58333mm;}
+   .two {line-height: 1.05834cm;} /* 1.05833cm will not suffice! */
+   .three {line-height: 10.58334mm;} /* 10.58333cm will not suffice! */
    .four {line-height: 30pt;}
    .five {line-height: 2.5pc;}
    .six {line-height: 2em;}

@@ -19,7 +19,7 @@ test(function() {
     HTML5_ELEMENTS.forEach(function(element) {
         var obj = doc.createElement(element);        
         var name = 'x-' + element;
-        
+        //FIXME Should the type of the exception be specified here?
         assert_throws(null, function() {
             doc.register(name, {prototype: obj.constructor.prototype});
         }, 'Exception should be thrown in case of attempt to register element ' +

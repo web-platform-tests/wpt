@@ -63,7 +63,8 @@ policies and contribution forms [3].
  * in the <head>.
  * The recognized metadata properties are:
  *
- *    help - The url of the part of the specification being tested
+ *    help - The url or an array of urls of the part(s) of the specification(s)
+ *           being tested
  *
  *    assert - A human readable description of what the test is attempting
  *             to prove

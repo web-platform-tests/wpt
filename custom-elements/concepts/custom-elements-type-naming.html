@@ -32,7 +32,7 @@ test(function() {
                     'to register a custom element with a name \'' + value + '\'');        
         }
     });
-}, 'Register valid custom element types');
+}, 'Registering valid custom element types');
 
 
 test(function() {
@@ -42,13 +42,14 @@ test(function() {
                       '.-frame', '_frame', 'x-f!rame'
                      ];
     
-    invalidNames.forEach(function(value) {        
+    invalidNames.forEach(function(value) {
+        //FIXME Should the type of the exception be specified here?
         assert_throws(null, function() {            
             doc.register(value);
         }, 'Exception should be thrown in case of attempt to register element ' +
             'with the name \'' + value + '\'');
     });    
-}, 'Register invalid custom element types');
+}, 'Registering invalid custom element types should fail');
 
 
 test(function() {
@@ -65,12 +66,13 @@ test(function() {
                      ];
     
     forbiddenNames.forEach(function(value) {
+        //FIXME Should the type of the exception be specified here?
         assert_throws(null, function() {
             doc.register(value);
         }, 'Exception should be thrown in case of attempt to register element ' +
             'with the name \'' + value + '\'');
     });    
-}, 'Register forbidden custom element types');
+}, 'Registering forbidden custom element types shoul fail');
 
 </script>
 </body>

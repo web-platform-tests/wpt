@@ -35,7 +35,6 @@ test(function() {
     doc.body.removeChild(xa1);
     assert_false(callbackCalled, 'Callback leftView was called for the document ' + 
             'with no browsing context');
-    
 }, 'Test leftView callback when custom element is instantiating in HTML. ' + 
     'Document has no browsing context');
 
@@ -61,7 +60,6 @@ test(function() {
     doc.body.removeChild(customElement);
     assert_false(callbackCalled, 'Callback leftView was called for the document ' + 
             'with no browsing context');
-    
 }, 'Test leftView callback when custom element is instantiating in HTML before ' + 
     'registration of a custom element. Document has no browsing context');
 
@@ -103,7 +101,6 @@ testInIFrame('../../resources/x-element.html', function(context) {
     doc.body.removeChild(customElement);
     assert_true(callbackCalled, 'Callback leftView was not called for the document ' + 
             'with browsing context');
-
 }, 'Test leftView callback. Document has browsing context');
 
     

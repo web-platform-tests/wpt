@@ -7,12 +7,6 @@ import argparse
 import json
 import subprocess
 import logging
-try:
-    from xml.etree import cElementTree as ElementTree
-except ImportError:
-    from xml.etree import ElementTree
-
-import html5lib
 
 manifest_name = "MANIFEST.json"
 exclude_php_hack = True
@@ -430,6 +424,16 @@ def load(manifest_path):
 
 
 def update(manifest):
+    global ElementTree
+    global html5lib
+
+    try:
+        from xml.etree import cElementTree as ElementTree
+    except ImportError:
+        from xml.etree import ElementTree
+
+    import html5lib
+
     committed_changes = get_committed_changes(manifest.ref)
     local_changes = get_local_changes()
 

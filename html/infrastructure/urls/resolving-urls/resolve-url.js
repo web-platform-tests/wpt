@@ -3,6 +3,7 @@ onload = function() {
   var input_url = 'resource.py?q=\u00E5';
   var input_url_html = input_url + '&type=html';
   var input_url_css = input_url + '&type=css';
+  var input_url_js = input_url + '&type=js';
   var input_url_png = input_url + '&type=png';
   var input_url_svg = input_url + '&type=svg';
   var expected_utf8 = '?q=%C3%A5';
@@ -199,10 +200,18 @@ onload = function() {
          'http://www.whatwg.org/specs/web-apps/current-work/multipage/semantics.html#styling']});
 
   // loading js
-  // <script src>
+  async_test(function() {
+    var elm = document.createElement('script');
+    elm.src = input_url_js + '&var=test_load_js_got';
+    document.head.appendChild(elm); // no cleanup
+    elm.onload = this.step_func(function() {
+      assert_equals(window.test_load_js_got, expected_current.substr(3));
+      this.done();
+    });
+  }, 'loading js <script>',
+  {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/scripting-1.html#prepare-a-script'});
 
   // loading image
-  // <style> background </style>
   // <img src>
   // <img srcset>
   // <embed src>
@@ -242,6 +251,7 @@ onload = function() {
   // WebSocket#url
   // Parsing cache manifest?
   // XMLDocument#load()
+  // CSS background-image, @import, content, etc.
   //
   // step 4:
   // all the things that give a base url

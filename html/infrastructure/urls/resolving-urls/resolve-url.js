@@ -27,8 +27,7 @@ onload = function() {
       });
       elm.setAttribute('background', input_url_png);
       var got = getComputedStyle(elm).backgroundImage;
-      var expected = expected_current;
-      assert_true(got.indexOf(expected) > -1, msg(expected, got));
+      assert_true(got.indexOf(expected_current) > -1, msg(expected_current, got));
     }, 'getComputedStyle <'+tag+' background>',
     {help:spec_url});
   }
@@ -41,7 +40,6 @@ onload = function() {
   function test_reflecting(tag, attr, idlAttr, multiple) {
     idlAttr = idlAttr || attr;
     var input = input_url_html;
-    var expected = expected_current;
     if (multiple) {
       input += ' ' + input;
     }
@@ -50,7 +48,7 @@ onload = function() {
       assert_true(idlAttr in elm, idlAttr + ' is not supported');
       elm.setAttribute(attr, input);
       var got = elm[idlAttr];
-      assert_true(got.indexOf(expected) > -1, msg(expected, got));
+      assert_true(got.indexOf(expected_current) > -1, msg(expected_current, got));
     }, 'Getting <'+tag+'>.'+idlAttr + (multiple ? ' (multiple URLs)' : ''),
     {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/common-dom-interfaces.html#reflecting-content-attributes-in-idl-attributes'});
   }
@@ -181,9 +179,24 @@ onload = function() {
     test_load_nested_browsing_context(arr[0], arr[1], spec_url_load_nested_browsing_context[arr[0]]);
   });
 
-  // loading css
-  // <link href>
-  // <link>.sheet.href
+  // loading css with <link>
+  async_test(function() {
+    var elm = document.createElement('link');
+    elm.href = input_url_css;
+    elm.rel = 'stylesheet';
+    document.head.appendChild(elm);
+    this.add_cleanup(function() {
+      document.head.removeChild(elm);
+    });
+    elm.onload = this.step_func(function() {
+      var got = elm.sheet.href;
+      assert_true(elm.sheet.href.indexOf(expected_current) > -1, 'sheet.href ' + msg(expected_current, got));
+      assert_equals(elm.sheet.cssRules[0].style.content, '"'+expected_current.substr(3)+'"', 'sheet.cssRules[0].style.content');
+      this.done();
+    });
+  }, 'loading css <link>',
+  {help:['http://www.whatwg.org/specs/web-apps/current-work/multipage/semantics.html#the-link-element',
+         'http://www.whatwg.org/specs/web-apps/current-work/multipage/semantics.html#styling']});
 
   // loading js
   // <script src>

@@ -2,17 +2,30 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>FileAPI Test: idlharness</title>
+    <title>File API IDL tests</title>
     <link rel="author" title="Intel" href="http://www.intel.com">
     <link rel="help" href="http://dev.w3.org/2006/webapi/FileAPI/#conformance">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
-    <script src="/resources/webidl2/lib/webidl2.js"></script>
+    <script src="/resources/WebIDLParser.js"></script>
     <script src="/resources/idlharness.js"></script>
   </head>
   <body>
-    <h1>idlharness test</h1>
-    <p>This test validates the WebIDL included in the FileAPI specification.</p>
+    <h1>File API IDL tests</h1>
+
+    <div>
+      <p>Test steps:</p>
+      <ol>
+        <li>Download <a href="support/upload.txt">upload.txt</a> to local.</li>
+        <li>Select the local upload.txt file to run the test.</li>
+      </ol>
+    </div>
+
+    <form name="uploadData">
+      <input type="file" id="fileChooser">
+    </form>
+
+    <div id="log"></div>
 
     <pre id="untested_idl" style="display: none">
       interface ArrayBuffer {
@@ -109,20 +122,6 @@
         static void revokeObjectURL(DOMString url);
       };
     </pre>
-
-    <form name='uploadData'>
-      <input type='file' id='fileChooser'>
-    </form>
-
-    <div>
-      <p>Test steps:</p>
-      <ol>
-        <li>Download <a href='support/upload.txt'>upload.txt</a> to local.</li>
-        <li>Select the local upload.txt file to run the test.</li>
-      </ol>
-    </div>
-
-    <div id="log"></div>
 
     <script>
       var fileInput;

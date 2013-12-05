@@ -278,7 +278,7 @@ onload = function() {
   // <menuitem icon> could also be tested but the spec doesn't require it to be loaded...
 
   // loading video
-  function test_load_video(tag) {
+  function test_load_video(tag, use_source_element) {
     async_test(function() {
       var elm = document.createElement(tag);
       var video_ext = '';
@@ -288,10 +288,21 @@ onload = function() {
         video_ext = 'mp4';
       }
       assert_not_equals(video_ext, '', 'no supported video format');
-      elm.src = input_url_video + '&ext=' + video_ext;
+      var source;
+      if (use_source_element) {
+        source = document.createElement('source');
+        elm.appendChild(source);
+      } else {
+        source = elm;
+      }
+      source.src = input_url_video + '&ext=' + video_ext;
       elm.preload = 'auto';
+      elm.load();
       this.add_cleanup(function() {
         elm.removeAttribute('src');
+        if (elm.firstChild) {
+          elm.removeChild(elm.firstChild);
+        }
         elm.load();
       });
       elm.onloadedmetadata = this.step_func(function() {
@@ -300,7 +311,8 @@ onload = function() {
         assert_equals(got, query_to_video_duration[expected], msg(expected, video_duration_to_query[got]));
         this.done();
       });
-    }, 'loading video <'+tag+'>');
+    }, 'loading video <'+tag+'>' + (use_source_element ? '<source>' : ''),
+    {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/the-video-element.html#concept-media-load-algorithm'});
   }
 
   var query_to_video_duration = {
@@ -321,6 +333,7 @@ onload = function() {
 
   'video, audio'.split(', ').forEach(function(str) {
     test_load_video(str);
+    test_load_video(str, true);
   });
 
   // loading webvtt

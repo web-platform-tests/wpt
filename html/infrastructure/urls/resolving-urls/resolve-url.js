@@ -6,6 +6,7 @@ onload = function() {
   var input_url_js = input_url + '&type=js';
   var input_url_png = input_url + '&type=png';
   var input_url_svg = input_url + '&type=svg';
+  var input_url_video = input_url + '&type=video';
   var expected_utf8 = '?q=%C3%A5';
   var expected_1252 = '?q=%E5';
   var expected_error_url = '?q=%3F';
@@ -254,9 +255,11 @@ onload = function() {
   };
 
   var image_width_to_query = {};
-  for (var x in query_to_image_width) {
-    image_width_to_query[query_to_image_width[x]] = x;
-  }
+  (function() {
+    for (var x in query_to_image_width) {
+      image_width_to_query[query_to_image_width[x]] = x;
+    }
+  })();
 
   var spec_url_load_image = {
     img:'http://www.whatwg.org/specs/web-apps/current-work/multipage/embedded-content-1.html#update-the-image-data',
@@ -275,8 +278,50 @@ onload = function() {
   // <menuitem icon> could also be tested but the spec doesn't require it to be loaded...
 
   // loading video
-  // <video src>
-  // <audio src>
+  function test_load_video(tag) {
+    async_test(function() {
+      var elm = document.createElement(tag);
+      var video_ext = '';
+      if (elm.canPlayType('video/ogg; codecs="theora,vorbis"')) {
+        video_ext = 'ogv';
+      } else if (elm.canPlayType('video/mp4; codecs="avc1.42E01E,mp4a.40.2"')) {
+        video_ext = 'mp4';
+      }
+      assert_not_equals(video_ext, '', 'no supported video format');
+      elm.src = input_url_video + '&ext=' + video_ext;
+      elm.preload = 'auto';
+      this.add_cleanup(function() {
+        elm.removeAttribute('src');
+        elm.load();
+      });
+      elm.onloadedmetadata = this.step_func(function() {
+        var got = Math.round(elm.duration);
+        var expected = expected_current.substr(3);
+        assert_equals(got, query_to_video_duration[expected], msg(expected, video_duration_to_query[got]));
+        this.done();
+      });
+    }, 'loading video <'+tag+'>');
+  }
+
+  var query_to_video_duration = {
+    '%E5':3,
+    '%C3%A5':5,
+    '%3F':30,
+    'unknown query':300,
+    'Infinity':Infinity,
+    'NaN':NaN
+  };
+
+  var video_duration_to_query = {};
+  (function() {
+    for (var x in query_to_video_duration) {
+      video_duration_to_query[query_to_video_duration[x]] = x;
+    }
+  })();
+
+  'video, audio'.split(', ').forEach(function(str) {
+    test_load_video(str);
+  });
 
   // loading webvtt
   // <track src>

@@ -24,3 +24,17 @@ def main(request, response):
             image = 'green-256x256.png'
         rv = open(os.path.join(request.doc_root, "images", image)).read()
         return ([("Content-Type", "image/png")], rv)
+    elif type == 'video':
+        ext = request.GET['ext']
+        if q == '%E5':
+            video = 'A4' # duration: 3
+        elif q == '%C3%A5':
+            video = 'movie_5' # duration: 5
+        elif q == '%3F':
+            video = 'green-at-15' # duration: 30
+        else:
+            video = 'movie_300' # duration: 300
+        rv = open(os.path.join(request.doc_root, "media", video + "." + ext)).read()
+        if ext == 'ogv':
+            ext = 'ogg'
+        return ([("Content-Type", "video/" + ext)], rv)

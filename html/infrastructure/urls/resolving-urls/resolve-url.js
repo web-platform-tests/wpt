@@ -212,12 +212,67 @@ onload = function() {
   {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/scripting-1.html#prepare-a-script'});
 
   // loading image
-  // <img src>
-  // <img srcset>
-  // <embed src>
-  // <object data>
-  // <input type=image src>
-  // <menuitem icon>
+  function test_load_image(tag, attr, spec_url) {
+    async_test(function() {
+      var elm = document.createElement(tag);
+      if (tag == 'input') {
+        elm.type = 'image';
+      }
+      elm.setAttribute(attr, input_url_png);
+      document.body.appendChild(elm);
+      this.add_cleanup(function() {
+        document.body.removeChild(elm);
+      });
+      elm.onload = this.step_func(function() {
+        var got = elm.offsetWidth;
+        var expected = expected_current.substr(3);
+        assert_equals(got, query_to_image_width[expected], msg(expected, image_width_to_query[got]));
+        this.done();
+      });
+      // <video poster> doesn't notify when the image is loaded so we need to poll :-(
+      var interval;
+      var check_video_width = function() {
+        var width = elm.offsetWidth;
+        if (width != 300 && width != 0) {
+          clearInterval(interval);
+          elm.onload();
+        }
+      }
+      if (tag == 'video') {
+        interval = setInterval(check_video_width, 10);
+      }
+    }, 'loading image <'+tag+' '+attr+'>',
+    {help:spec_url});
+  }
+
+  var query_to_image_width = {
+    '%E5':1,
+    '%C3%A5':2,
+    '%3F':16,
+    'unknown query':256,
+    'default intrinsic width':300
+  };
+
+  var image_width_to_query = {};
+  for (var x in query_to_image_width) {
+    image_width_to_query[query_to_image_width[x]] = x;
+  }
+
+  var spec_url_load_image = {
+    img:'http://www.whatwg.org/specs/web-apps/current-work/multipage/embedded-content-1.html#update-the-image-data',
+    embed:'http://www.whatwg.org/specs/web-apps/current-work/multipage/the-iframe-element.html#the-embed-element-setup-steps',
+    object:'http://www.whatwg.org/specs/web-apps/current-work/multipage/the-iframe-element.html#the-object-element',
+    input:'http://www.whatwg.org/specs/web-apps/current-work/multipage/states-of-the-type-attribute.html#image-button-state-(type=image)',
+    video:'http://www.whatwg.org/specs/web-apps/current-work/multipage/the-video-element.html#poster-frame'
+  };
+
+  'img src, embed src, object data, input src, video poster'.split(', ').forEach(function(str) {
+    var arr = str.split(' ');
+    test_load_image(arr[0], arr[1], spec_url_load_image[arr[0]]);
+  });
+
+  // XXX test <img srcset> or its successor
+  // <menuitem icon> could also be tested but the spec doesn't require it to be loaded...
 
   // loading video
   // <video src>

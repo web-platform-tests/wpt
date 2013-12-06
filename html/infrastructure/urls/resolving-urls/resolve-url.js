@@ -7,6 +7,7 @@ onload = function() {
   var input_url_png = input_url + '&type=png';
   var input_url_svg = input_url + '&type=svg';
   var input_url_video = input_url + '&type=video';
+  var input_url_webvtt = input_url + '&type=webvtt';
   var expected_utf8 = '?q=%C3%A5';
   var expected_1252 = '?q=%E5';
   var expected_error_url = '?q=%3F';
@@ -337,7 +338,19 @@ onload = function() {
   });
 
   // loading webvtt
-  // <track src>
+  async_test(function() {
+    var video = document.createElement('video');
+    var track = document.createElement('track');
+    video.appendChild(track);
+    track.src = input_url_webvtt;
+    track.track.mode = 'showing';
+    track.onload = this.step_func(function() {
+      var got = track.track.cues[0].text;
+      assert_equals(got, expected_current.substr(3));
+      this.done();
+    });
+  }, 'loading webvtt <track>',
+  {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/the-video-element.html#track-url'});
 
   // downloading
   // <a href download>

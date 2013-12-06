@@ -38,3 +38,5 @@ def main(request, response):
         if ext == 'ogv':
             ext = 'ogg'
         return ([("Content-Type", "video/" + ext)], rv)
+    elif type == 'webvtt':
+        return ([("Content-Type", "text/vtt")], "WEBVTT\n\n00:00:00.000 --> 00:00:01.000\n"+q)

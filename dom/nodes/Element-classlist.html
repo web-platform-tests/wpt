@@ -1,8 +1,8 @@
 <!doctype html>
 <html>
 	<head class="test test">
-		<title class=" ">HTMLElement.classList in case-sensitive documents</title>
-		<link rel="" href="http://www.w3.org/TR/html5/dom.html#dom-classlist">
+		<title class=" ">Element.classList in case-sensitive documents</title>
+		<link rel="help" href="http://dom.spec.whatwg.org/#concept-class">
 		<script type="text/javascript" src="/resources/testharness.js"></script>
 		<script type="text/javascript" src="/resources/testharnessreport.js"></script>
 		<style type="text/css">
@@ -12,10 +12,10 @@
 var elem = document.getElementsByTagName('title')[0], secondelem = document.getElementsByTagName('head')[0];
 test(function () {
 	assert_equals( typeof elem.classList, 'object', 'critical test; ignore any results after this' );
-}, 'HTMLElement.classList must exist as an object');
+}, 'Element.classList must exist as an object');
 test(function () {
 	assert_equals( typeof document.documentElement.classList, 'object' );
-}, 'HTMLElement.classList must exist as an object even if the element has no class attribute');
+}, 'Element.classList must exist as an object even if the element has no class attribute');
 test(function () {
 	assert_true( !!window.DOMTokenList );
 }, 'DOMTokenList should be exposed for prototyping');
@@ -26,7 +26,7 @@ test(function () {
 test(function () {
 	assert_true( elem.classList instanceof window.DOMTokenList );
 	assert_equals( elem.classList.constructor, window.DOMTokenList );
-}, 'HTMLElement.classList must implement DOMTokenList');
+}, 'Element.classList must implement DOMTokenList');
 test(function () {
 	assert_not_equals( getComputedStyle(elem,null).fontStyle, 'italic', 'critical test; required by the testsuite' );
 }, 'CSS .foo selectors must not match elements without any class');

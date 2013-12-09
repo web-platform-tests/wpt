@@ -6,11 +6,11 @@ def main(request, response):
     # We want the raw input for 'q'
     q = re.search(r'q=([^&]+)', request.url_parts.query).groups()[0]
     if type == 'html':
-        return ([("Content-Type", "text/html")], q)
+        return ([("Content-Type", "text/html; charset=utf-8")], q)
     elif type == 'css':
-        return ([("Content-Type", "text/css")], "#test::before { content:'" + q + "' }")
+        return ([("Content-Type", "text/css; charset=utf-8")], "#test::before { content:'" + q + "' }")
     elif type == 'js':
-        return ([("Content-Type", "text/javascript")], request.GET['var'] + " = '" + q + "';")
+        return ([("Content-Type", "text/javascript; charset=utf-8")], request.GET['var'] + " = '" + q + "';")
     elif type == 'svg':
         return ([("Content-Type", "image/svg+xml")], "<svg xmlns='http://www.w3.org/2000/svg'>"+q+"</svg>")
     elif type == 'png':

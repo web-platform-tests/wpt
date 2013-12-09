@@ -8,10 +8,15 @@ onload = function() {
   var input_url_svg = input_url + '&type=svg';
   var input_url_video = input_url + '&type=video';
   var input_url_webvtt = input_url + '&type=webvtt';
-  var expected_utf8 = '?q=%C3%A5';
-  var expected_1252 = '?q=%E5';
-  var expected_error = '?q=%3F';
-  var expected_current = expected_{{GET[expected]}};
+  var expected_obj = {
+    'utf-8':'?q=%C3%A5',
+    'utf-16be':'?q=%C3%A5',
+    'utf-16le':'?q=%C3%A5',
+    'windows-1252':'?q=%E5',
+    'windows-1251':'?q=%3F'
+  };
+  var encoding = '{{GET[encoding]}}';
+  var expected_current = expected_obj[encoding];
 
   function msg(expected, got) {
     return 'expected substring '+expected+' got '+got;
@@ -131,16 +136,17 @@ onload = function() {
   // navigating with meta refresh
   async_test(function() {
     var iframe = document.createElement('iframe');
+    iframe.src = 'blank.py?encoding='+encoding;
     document.body.appendChild(iframe);
     this.add_cleanup(function() {
       document.body.removeChild(iframe);
     });
-    var doc = iframe.contentDocument;
-    doc.write('<meta http-equiv=refresh content="0; URL='+input_url_html+'">REFRESH');
-    doc.close();
     iframe.onload = this.step_func(function() {
-      var got = iframe.contentDocument.body.textContent;
-      if (got == 'REFRESH') {
+      var doc = iframe.contentDocument;
+      var got = doc.body.textContent;
+      if (got == '') {
+        doc.write('<meta http-equiv=refresh content="0; URL='+input_url_html+'">REFRESH');
+        doc.close();
         return;
       }
       assert_equals(got, expected_current.substr(3));
@@ -400,8 +406,29 @@ onload = function() {
     test_submit_form(arr[0], arr[1]);
   });
 
-  // other
   // <base href>
+  async_test(function() {
+    var iframe = document.createElement('iframe');
+    iframe.src = 'blank.py?encoding='+encoding;
+    document.body.appendChild(iframe);
+    this.add_cleanup(function() {
+      document.body.removeChild(iframe);
+    });
+    iframe.onload = this.step_func(function() {
+      var doc = iframe.contentDocument;
+      doc.write('<!doctype html><base href="'+input_url+'"><a href></a>');
+      doc.close();
+      var got_baseURI = doc.baseURI;
+      assert_true(got_baseURI.indexOf(expected_current) > -1, msg(expected_current, got_baseURI), 'doc.baseURI');
+      var got_a_href = doc.links[0].href;
+      assert_true(got_a_href.indexOf(expected_current) > -1, msg(expected_current, got_a_href), 'a.href');
+      this.done();
+    });
+  }, '<base href>',
+  {help:['http://www.whatwg.org/specs/web-apps/current-work/multipage/semantics.html#set-the-frozen-base-url',
+  'http://dom.spec.whatwg.org/#dom-node-baseuri',
+  'http://www.whatwg.org/specs/web-apps/current-work/multipage/text-level-semantics.html#the-a-element']});
+
   // itemid
   // microdata values (<a href> etc)
   // drag and drop (<a href> or <img src>)

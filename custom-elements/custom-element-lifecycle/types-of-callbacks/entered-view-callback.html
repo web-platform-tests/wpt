@@ -16,101 +16,155 @@
 
 test(function() {
     var doc = newHTMLDocument();
-    var callbackCalled = false;
-    
+    var callbackCalledCounter = 0;
+
     var proto = Object.create(HTMLElement.prototype);
     proto.enteredViewCallback  = function () {
-        callbackCalled = true;
+        callbackCalledCounter++;
     }
-    assert_false(callbackCalled, 'Callback enteredView was called after prototype creation ' + 
-            'but should not');
-    
     var GeneratedConstructor = doc.register('x-a-1', {prototype: proto});
-    assert_false(callbackCalled, 'Callback enteredView was called but should not');
-    
     var customElement = new GeneratedConstructor();
-    assert_false(callbackCalled, 'Callback enteredView was called');
-    
-}, 'Test enteredView callback when custom element is instantiating in JavaScript. ' + 
+    assert_equals(callbackCalledCounter, 0, 'Callback enteredView was called for document ' +
+            'that has no browsing content but should not');
+
+}, 'Test enteredView callback when custom element is instantiating in JavaScript. ' +
     'Document has no browsing context');
 
 
 test(function() {
     var doc = newHTMLDocument();
-    var callbackCalled = false;
-    
+    var callbackCalledCounter = 0;
+
     var proto = Object.create(HTMLElement.prototype);
     proto.enteredViewCallback = function () {
-        callbackCalled = true;
+        callbackCalledCounter++;
     }
-    assert_false(callbackCalled, 'Callback enteredView was called after prototype creation ' + 
-            'but should not');
-    
     doc.register('x-a-2', {prototype: proto});
-    assert_false(callbackCalled, 'Callback enteredView was called but should not');
-    
     doc.body.innerHTML = '<x-a-2></x-a-2>';
-    assert_false(callbackCalled, 'Callback enteredView was called');
-    
-}, 'Test enteredView callback when custom element is instantiating in HTML' + 
+    assert_equals(callbackCalledCounter, 0, 'Callback enteredView was called for document ' +
+            'that has no browsing content but should not');
+
+}, 'Test enteredView callback when custom element is instantiating in HTML' +
     'Document has no browsing context');
 
 
 test(function() {
     var doc = newHTMLDocument();
-    var callbackCalled = false;
-    
+    var callbackCalledCounter = 0;
+
     var proto = Object.create(HTMLElement.prototype);
     proto.enteredViewCallback = function () {
-        callbackCalled = true;
+        callbackCalledCounter++;
     }
-    assert_false(callbackCalled, 'Callback enteredView was called after prototype ' + 
-            'creation but should not');
-        
     doc.body.innerHTML = '<x-a-3></x-a-3>';
-    assert_false(callbackCalled, 'Callback enteredView was called but should not');
-    
     doc.register('x-a-3', {prototype: proto});
-    assert_false(callbackCalled, 'Callback enteredView was called');
-    
-}, 'Test enteredView callback when custom element is instantiating in HTML before ' + 
+    assert_equals(callbackCalledCounter, 0, 'Callback enteredView was called for document ' +
+            'that has no browsing content but should not');
+
+}, 'Test enteredView callback when custom element is instantiating in HTML before ' +
     'registration of a custom element. Document has no browsing context');
-    
+
 
 test(function() {
     var doc = newHTMLDocument();
-    var callbackCalled = false;
-    
+    var callbackCalledCounter = 0;
+
     doc.body.innerHTML = '<x-a-4 id="xa"></x-a-4>';
     var customElement = doc.querySelector('#xa');
-    assert_not_equals(customElement, null, 
-            'Unregistered custom element should be accessible by id');
-    
     var proto = Object.create(HTMLElement.prototype);
     proto.enteredViewCallback = function () {
-        callbackCalled = true;
+        callbackCalledCounter++;
     }
     customElement.constructor.prototype = proto;
-    assert_false(callbackCalled, 'Callback enteredView was called when custom element is uregistred.');
+    assert_equals(callbackCalledCounter, 0, 'Callback enteredView was called ' +
+            'when custom element is uregistred and has no browsing context but should not');
 
 }, 'Test enteredView callback when custom element is unregistered.');
 
 
 testInIFrame('../../resources/x-element.html', function(context) {
     var doc = context.iframes[0].contentDocument;
-    var callbackCalled = false;
-    
+    var callbackCalledCounter = 0;
+
     var proto = Object.create(HTMLElement.prototype);
     proto.enteredViewCallback = function () {
-        callbackCalled = true;
+        callbackCalledCounter++;
     }
-    assert_false(callbackCalled, 'Callback enteredView was called after prototype ' + 
-            'creation but should not');
-            
     doc.register('x-element', {prototype: proto});
-    assert_true(callbackCalled, 'Callback created was not called');
+    assert_equals(callbackCalledCounter, 1, 'Callback enteredView was not called for ' +
+            'the document that has browsing content but should');
 
 }, 'Test enteredView callback. Document has browsing context');
+
+
+testInIFrame('../../resources/blank.html', function(context) {
+    var doc = context.iframes[0].contentDocument;
+    var callbackCalledCounter = 0;
+
+    var proto = Object.create(HTMLElement.prototype);
+    proto.enteredViewCallback = function () {
+        callbackCalledCounter++;
+    }
+    doc.register('x-element', {prototype: proto});
+    var x = doc.createElement('x-element');
+    doc.body.appendChild(x);
+    assert_equals(callbackCalledCounter, 1, 'Callback enteredView was not called for ' +
+            'the document that has browsing content but should');
+
+}, 'Test enteredView callback. Registred element is created via document.createElement(). ' +
+    'Document has browsing context');
+
+
+testInIFrame('../../resources/blank.html', function(context) {
+    var doc = context.iframes[0].contentDocument;
+    var callbackCalledCounter = 0;
+
+    var x = doc.createElement('x-element');
+    doc.body.appendChild(x);
+    var proto = Object.create(HTMLElement.prototype);
+    proto.enteredViewCallback = function () {
+        callbackCalledCounter++;
+    }
+    doc.register('x-element', {prototype: proto});
+    assert_equals(callbackCalledCounter, 1, 'Callback enteredView was not called for ' +
+            'the document that has browsing content but should');
+
+}, 'Test enteredView callback. Unregistred element is created via document.createElement(). ' +
+    'Document has browsing context');
+
+
+testInIFrame('../../resources/blank.html', function(context) {
+    var doc = context.iframes[0].contentDocument;
+    var callbackCalledCounter = 0;
+
+    var proto = Object.create(HTMLElement.prototype);
+    proto.enteredViewCallback = function () {
+        callbackCalledCounter++;
+    }
+    doc.register('x-element', {prototype: proto});
+    doc.body.innerHTML = '<x-element></x-element>';
+    assert_equals(callbackCalledCounter, 1, 'Callback enteredView was not called for ' +
+            'the document that has browsing content but should');
+
+}, 'Test enteredView callback. Registered element is created via innerHTML property. ' +
+    'Document has browsing context');
+
+
+testInIFrame('../../resources/blank.html', function(context) {
+    var doc = context.iframes[0].contentDocument;
+    var callbackCalledCounter = 0;
+
+    doc.body.innerHTML = '<x-element></x-element>';
+    var proto = Object.create(HTMLElement.prototype);
+    proto.enteredViewCallback = function () {
+        callbackCalledCounter++;
+    }
+    doc.register('x-element', {prototype: proto});
+    assert_equals(callbackCalledCounter, 1, 'Callback enteredView was not called for ' +
+            'the document that has browsing content but should');
+
+}, 'Test enteredView callback. Unresolved element is created via innerHTML property. ' +
+    'Document has browsing context');
 
 </script>
 </body>

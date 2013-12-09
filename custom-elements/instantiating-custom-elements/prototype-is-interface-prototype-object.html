@@ -28,6 +28,22 @@ test(function() {
     });
 }, 'Prototype is already an interface prototype object');
 
+
+test(function() {
+    var doc = newHTMLDocument();
+    var proto = Object.create(HTMLElement.prototype);
+    doc.register('x-a-1', {
+        prototype: proto
+    });
+    //FIXME Should the type of the exception be specified here?
+    assert_throws(null, function() {
+        doc.register('x-a-1', {
+            prototype: proto
+        });                
+    }, 'Exception shoul be thrown if custom element with already used prototype is registered');
+    
+}, 'Prototype is already an registered');
+
 </script>
 </body>
 </html>

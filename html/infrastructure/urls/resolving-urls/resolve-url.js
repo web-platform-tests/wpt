@@ -10,8 +10,7 @@ onload = function() {
   var input_url_webvtt = input_url + '&type=webvtt';
   var expected_utf8 = '?q=%C3%A5';
   var expected_1252 = '?q=%E5';
-  var expected_error_url = '?q=%3F';
-  var expected_error_form = '?q=%26%23229%3B';
+  var expected_error = '?q=%3F';
   var expected_current = expected_{{GET[expected]}};
 
   function msg(expected, got) {
@@ -352,14 +351,54 @@ onload = function() {
   }, 'loading webvtt <track>',
   {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/the-video-element.html#track-url'});
 
-  // downloading
+  // XXX downloading seems hard to automate
   // <a href download>
   // <area href download>
 
   // submit forms
-  // <form action>
-  // <input type=submit formaction>
-  // <button formaction>
+  function test_submit_form(tag, attr) {
+    async_test(function(){
+      var elm = document.createElement(tag);
+      elm.setAttribute(attr, input_url_html);
+      var form;
+      var button;
+      if (tag == 'form') {
+        form = elm;
+        button = document.createElement('button');
+      } else {
+        form = document.createElement('form');
+        button = elm;
+      }
+      form.method = 'post';
+      form.appendChild(button);
+      var iframe = document.createElement('iframe');
+      var id = 'test_submit_form_' + tag;
+      iframe.name = id;
+      form.target = id;
+      button.type = 'submit';
+      document.body.appendChild(form);
+      document.body.appendChild(iframe);
+      this.add_cleanup(function() {
+        document.body.removeChild(form);
+        document.body.removeChild(iframe);
+      });
+      button.click();
+      iframe.onload = this.step_func(function() {
+        var got = iframe.contentDocument.body.textContent;
+        if (got == '') {
+          return;
+        }
+        assert_equals(got, expected_current.substr(3));
+        this.done();
+      });
+    }, 'submit form <'+tag+' '+attr+'>',
+    {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/association-of-controls-and-forms.html#concept-form-submit'});
+  }
+
+  'form action, input formaction, button formaction'.split(', ').forEach(function(str) {
+    var arr = str.split(' ');
+    test_submit_form(arr[0], arr[1]);
+  });
 
   // other
   // <base href>

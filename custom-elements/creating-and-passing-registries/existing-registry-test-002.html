@@ -22,27 +22,27 @@ testInIFrame('../resources/import-master.html', function(context) {
     doc.register(name);
     //FIXME Should the type of the exception be specified here?
     assert_throws(null, function () {
-        doc2.register(name); 
-    }, 'Exception should be throw if element with the same type is already registered');
+        doc2.register(name);
+    }, 'Exception should be thrown for element, which is already registered in shared registry');
 }, 'Registry of the import should share master document registry');
 
 
 testInIFrame('../resources/import-master.html', function(context) {
     var doc = context.iframes[0].contentDocument;
-    var link = doc.querySelector('link[rel=import]');    
+    var link = doc.querySelector('link[rel=import]');
     var doc2 = link.import;
     var name = 'x-frame';
     doc.register(name);
     //FIXME Should the type of the exception be specified here?
     assert_throws(null, function () {
-        doc2.register(name); 
-    }, 'Exception should be throw if element with the same type is already registered');
-    
+        doc2.register(name);
+    }, 'Exception should be thrown for element, which is already registered in shared registry');
+
     var doc3 = newHTMLDocument();
     try {
-        doc3.register(name);    
+        doc3.register(name);
     } catch (e) {
-        assert_unreached('Exception should not be thrown');
+        assert_unreached('Exception should not be thrown for new document');
     }
 }, 'Registry of the import should share master document registry only');
 

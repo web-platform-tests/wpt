@@ -15,34 +15,34 @@
 <script type="text/javascript">
 
 test(function() {
-    var doc = newHTMLDocument();    
-    var name = 'x-frame';        
-    
-    var GeneratedConstructor = doc.register(name);    
+    var doc = newHTMLDocument();
+    var name = 'x-frame';
+
+    var GeneratedConstructor = doc.register(name);
     var doc2 = doc.implementation.createHTMLDocument('Document 2');
     //FIXME Should the type of the exception be specified here?
     assert_throws(null, function () {
-        doc2.register(name); 
-    }, 'Exception should be throw if element with the same type is already registered');
-    
-    var xframe = doc2.createElement(name);    
+        doc2.register(name);
+    }, 'Exception should be thrown for custom element, which is already registered in shared registry');
+
+    var xframe = doc2.createElement(name);
     assert_true(xframe instanceof GeneratedConstructor, 'Wrong custom element constructor');
-    
+
 }, 'Document created by createHTMLDocument should share an existing registry');
 
 
 test(function() {
     var doc = newHTMLDocument();
     var name = 'x-frame-1';
-        
+
     var GeneratedConstructor = doc.register(name);
     var doc2 = doc.implementation.createDocument(HTML_NAMESPACE, 'html', null);
     //FIXME Should the type of the exception be specified here?
     assert_throws(null, function () {
-        doc2.register(name); 
-    }, 'Exception should be throw if element with the same type is already registered');
-    
-    var xframe = doc2.createElement(name);    
+        doc2.register(name);
+    }, 'Exception should be thrown for custom element, which is already registered in shared registry');
+
+    var xframe = doc2.createElement(name);
     assert_true(xframe instanceof GeneratedConstructor, 'Wrong custom element constructor');
 }, 'Document created by createDocument with HTML namespace should share an existing registry');
 

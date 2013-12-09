@@ -10,22 +10,18 @@
 <marquee id="test2" loop="-2">Test2</marquee>
 <marquee id="test3" loop="2">Test3</marquee>
 <script>
-  setup({explicit_done:true});
-
-  setTimeout(function() {test(function() {
+  test(function() {
     var mq = document.getElementById("test1");
     assert_equals(mq.loop, -1, "The value of loop should be -1.");
-  }, "marquee_loop_string");}, 1);
+  }, "marquee_loop_string");
 
-  setTimeout(function() {test(function() {
+  test(function() {
     var mq = document.getElementById("test2");
     assert_equals(mq.loop, -1, "The value of loop should be -1.");
-  }, "marquee_loop_less_than_1");}, 1);
+  }, "marquee_loop_less_than_1");
 
-  setTimeout(function() {test(function() {
+  test(function() {
     var mq = document.getElementById("test3");
-    assert_equals(mq.loop, 2, "The value of loop should be 10.");
-  }, "marquee_loop_normal");}, 1);
-
-  setTimeout(function(){done()}, 1);
+    assert_equals(mq.loop, 2, "The value of loop should be 2.");
+  }, "marquee_loop_normal");
 </script>

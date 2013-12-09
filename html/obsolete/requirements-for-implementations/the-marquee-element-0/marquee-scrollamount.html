@@ -10,22 +10,18 @@
 <marquee id="test2" scrollamount="-1">Test2</marquee>
 <marquee id="test3" scrollamount="10">Test3</marquee>
 <script>
-  setup({explicit_done:true});
-
-  setTimeout(function() {test(function() {
+  test(function() {
     var mq = document.getElementById("test1");
     assert_equals(mq.scrollAmount, 6, "The value of scrollamount should be 6.");
-  }, "The scrollamount is a string");}, 1);
+  }, "The scrollamount is a string");
 
-  setTimeout(function() {test(function() {
+  test(function() {
     var mq = document.getElementById("test2");
     assert_equals(mq.scrollAmount, 6, "The value of scrollamount should be 6.");
-  }, "The scrollamount is a negative");}, 1);
+  }, "The scrollamount is a negative");
 
-  setTimeout(function() {test(function() {
+  test(function() {
     var mq = document.getElementById("test3");
     assert_equals(mq.scrollAmount, 10, "The value of scrollamount should be 10.");
-  }, "The scrollamount is a normal value");}, 1);
-
-  setTimeout(function(){done()}, 1);
+  }, "The scrollamount is a normal value");
 </script>

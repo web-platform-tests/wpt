@@ -13,9 +13,10 @@
 <ul>
   <li>The text "Test Marquee" start to move when the 'Start' button is clicked</li>
 </ul>
-<input type="button" id="start" value="Start" />
+<input type="button" id="start" value="Start" onload="this.stop();"/>
 <marquee id="test">Test Marquee</marquee>
 <script>
+  document.getElementById("test").stop();
   document.getElementById("start").addEventListener("click", function(evt) {
     document.getElementById("test").start();
   }, false);

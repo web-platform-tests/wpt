@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>attributeChanged callback of a custom element. Test attribute setting</title>
+<title>Test attribute setting to check attributeChanged callback of a custom element</title>
 <meta name="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
 <meta name="assert" content="attributeChanged callback must be enqueued whenever custom element's attribute is added, changed or removed">
 <link rel="help" href="http://www.w3.org/TR/custom-elements/#types-of-callbacks">
@@ -16,129 +16,459 @@
 
 test(function() {
     var doc = newHTMLDocument();
-    var callbackCalled = false;
+    var callbackCalledCounter = 0;
     
     var proto = Object.create(HTMLElement.prototype);
-    proto.attributeChangedCallback  = function () {
-        callbackCalled = true;
+    proto.attributeChangedCallback = function() {
+        callbackCalledCounter++;
     }
-    assert_false(callbackCalled, 'Callback attributeChanged was called after prototype ' + 
-            'creation but should not');
-    
-    var GeneratedConstructor = doc.register('x-a-1', {prototype: proto});
-    assert_false(callbackCalled, 'Callback attributeChanged was called but should not');
-    
+    var GeneratedConstructor = doc.register('x-a-1', {prototype: proto});    
     var customElement = new GeneratedConstructor();
-    assert_false(callbackCalled, 'Callback attributeChanged was called');
-    
-    customElement.setAttribute('class', 'someClass');    
-    assert_true(callbackCalled, 'Callback attributeChanged was not called');
-    
-}, 'Test attributeChanged callback of the custom element instantiating in JavaScript. ' + 
-    'Test setting attribute');
-
-
-test(function() {
-    var doc = newHTMLDocument();
-    var callbackCalled = false;
-    
-    var proto = Object.create(HTMLElement.prototype);
-    proto.attributeChangedCallback = function () {
-        callbackCalled = true;
-    }
-    
-    assert_false(callbackCalled, 'Callback attributeChanged was called after prototype ' + 
-            'creation but should not');
-    
-    doc.register('x-a-2', {prototype: proto});
-    assert_false(callbackCalled, 'Callback attributeChanged was called but should not');
-    
-    doc.body.innerHTML = '<x-a-2 id="xa2" class="theClass"></x-a-2>';
-    assert_false(callbackCalled, 'Callback attributeChanged was called');
-    
-    var customElement = doc.querySelector('#xa2');
     customElement.setAttribute('class', 'someClass');
-    assert_true(callbackCalled, 'Callback attributeChanged was not called');
     
-}, 'Test attributeChanged callback of the custom element instantiating in HTML. ' + 
-    'Test setting attribute');
+    assert_equals(callbackCalledCounter, 1, 'Callback attributeChanged was called ' +
+            'wrong number of times');
+}, 'Test attributeChanged callback of the custom element created in JavaScript. ' + 
+    'Test callback calling when attribute value is set');
 
 
 test(function() {
     var doc = newHTMLDocument();
-    var callbackCalled = false;
+    var argument1 = 'arg1';
+    var argument2 = 'arg2';
+    var argument3 = 'arg3';
     
     var proto = Object.create(HTMLElement.prototype);
-    proto.attributeChangedCallback = function () {
-        callbackCalled = true;
+    proto.attributeChangedCallback = function(arg1, arg2, arg3) {
+        argument1 = arg1;
+        argument2 = arg2;
+        argument3 = arg3;
     }
-    assert_false(callbackCalled, 'Callback attributeChanged was called after prototype ' + 
-            'creation but should not');
-        
-    doc.body.innerHTML = '<x-a-3 id="xa3" class="theClass"></x-a-3>';
-    assert_false(callbackCalled, 'Callback attributeChanged was called');
+    var GeneratedConstructor = doc.register('x-b-1', {prototype: proto});    
+    var customElement = new GeneratedConstructor();
+    customElement.setAttribute('class', 'someClass');
     
+    assert_equals(argument1, 'class', 'Wrong value of the first attribute of ' +
+        'attributeChanged callback');
+    assert_equals(argument2, null, 'Wrong value of the second attribute of ' +
+        'attributeChanged callback');
+    assert_equals(argument3, 'someClass', 'Wrong value of the third attribute of ' +
+        'attributeChanged callback');
+}, 'Test attributeChanged callback of the custom element created in JavaScript. ' + 
+    'Test callback arguments when attribute value is set by setAttribute');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var callbackCalledCounter = 0;
+    
+    var proto = Object.create(HTMLElement.prototype);
+    proto.attributeChangedCallback = function() {
+        callbackCalledCounter++;
+    }
+    var GeneratedConstructor = doc.register('x-a-1-1', {prototype: proto});    
+    var customElement = new GeneratedConstructor();
+    customElement.classList.add('someClass');
+    
+    assert_equals(callbackCalledCounter, 1, 'Callback attributeChanged was called ' +
+            'wrong number of times');
+}, 'Test attributeChanged callback of the custom element created in JavaScript. ' + 
+    'Test callback calling when attribute value is set by classList.add');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var argument1 = 'arg1';
+    var argument2 = 'arg2';
+    var argument3 = 'arg3';
+    
+    var proto = Object.create(HTMLElement.prototype);
+    proto.attributeChangedCallback = function(arg1, arg2, arg3) {
+        argument1 = arg1;
+        argument2 = arg2;
+        argument3 = arg3;
+    }
+    var GeneratedConstructor = doc.register('x-b-1-1', {prototype: proto});    
+    var customElement = new GeneratedConstructor();
+    customElement.classList.add('someClass');
+    
+    assert_equals(argument1, 'class', 'Wrong value of the first attribute of ' +
+        'attributeChanged callback');
+    assert_equals(argument2, null, 'Wrong value of the second attribute of ' +
+        'attributeChanged callback');
+    assert_equals(argument3, 'someClass', 'Wrong value of the third attribute of ' +
+        'attributeChanged callback');
+}, 'Test attributeChanged callback of the custom element created in JavaScript. ' + 
+    'Test callback arguments when attribute value is set by classList.add');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var callbackCalledCounter = 0;
+    
+    var proto = Object.create(HTMLElement.prototype);
+    proto.attributeChangedCallback = function() {
+        callbackCalledCounter++;
+    }
+    var GeneratedConstructor = doc.register('x-a-1-2', {prototype: proto});    
+    var customElement = new GeneratedConstructor();
+    customElement.className = 'someClass';
+    
+    assert_equals(callbackCalledCounter, 1, 'Callback attributeChanged was called ' +
+            'wrong number of times');
+}, 'Test attributeChanged callback of the custom element created in JavaScript. ' + 
+    'Test callback calling when attribute value is set as property');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var argument1 = 'arg1';
+    var argument2 = 'arg2';
+    var argument3 = 'arg3';
+    
+    var proto = Object.create(HTMLElement.prototype);
+    proto.attributeChangedCallback = function(arg1, arg2, arg3) {
+        argument1 = arg1;
+        argument2 = arg2;
+        argument3 = arg3;
+    }
+    var GeneratedConstructor = doc.register('x-b-1-2', {prototype: proto});    
+    var customElement = new GeneratedConstructor();
+    customElement.className = 'someClass';
+    
+    assert_equals(argument1, 'class', 'Wrong value of the first attribute of ' +
+        'attributeChanged callback');
+    assert_equals(argument2, null, 'Wrong value of the second attribute of ' +
+        'attributeChanged callback');
+    assert_equals(argument3, 'someClass', 'Wrong value of the third attribute of ' +
+        'attributeChanged callback');
+}, 'Test attributeChanged callback of the custom element created in JavaScript. ' + 
+    'Test callback arguments when attribute value is set as property');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var callbackCalledCounter = 0;
+    
+    var proto = Object.create(HTMLElement.prototype);
+    proto.attributeChangedCallback = function() {
+        callbackCalledCounter++;
+    }
+    doc.register('x-a-2', {prototype: proto});
+    doc.body.innerHTML = '<x-a-2 id="xa2" class="theClass"></x-a-2>';
+    
+    assert_equals(callbackCalledCounter, 0, 'Callback attributeChanged was called ' +
+            'wrong number of times');
+}, 'Test attributeChanged callback of the custom element created in HTML. ' + 
+    'Test callback not calling if setAttribute is not called');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var callbackCalledCounter = 0;
+    
+    var proto = Object.create(HTMLElement.prototype);
+    proto.attributeChangedCallback = function() {
+        callbackCalledCounter++;
+    }
+    doc.register('x-a-3', {prototype: proto});
+    doc.body.innerHTML = '<x-a-3 id="xa3" class="theClass"></x-a-3>';
     var customElement = doc.querySelector('#xa3');
     customElement.setAttribute('class', 'someClass');
-    assert_false(callbackCalled, 'Callback attributeChanged was called but must not');
     
-    doc.register('x-a-3', {prototype: proto});
-    assert_false(callbackCalled, 'Callback attributeChanged was called but should not');
+    assert_equals(callbackCalledCounter, 1, 'Callback attributeChanged was called ' +
+            'wrong number of times');
+}, 'Test attributeChanged callback of the custom element created in HTML. ' + 
+    'Test callback calling when attribute value is set');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var argument1 = 'arg1';
+    var argument2 = 'arg2';
+    var argument3 = 'arg3';
     
-    customElement.setAttribute('name', 'someName');
-    assert_true(callbackCalled, 'Callback attributeChanged was not called');
+    var proto = Object.create(HTMLElement.prototype);
+    proto.attributeChangedCallback = function(arg1, arg2, arg3) {
+        argument1 = arg1;
+        argument2 = arg2;
+        argument3 = arg3;
+    }
+    doc.register('x-b-3', {prototype: proto});
+    doc.body.innerHTML = '<x-b-3 id="xb3"></x-b-3>';
+    var customElement = doc.querySelector('#xb3');
+    customElement.setAttribute('class', 'someClass');
     
+    assert_equals(argument1, 'class', 'Wrong value of the first attribute of ' +
+        'attributeChanged callback');
+    assert_equals(argument2, null, 'Wrong value of the second attribute of ' +
+        'attributeChanged callback');
+    assert_equals(argument3, 'someClass', 'Wrong value of the third attribute of ' +
+        'attributeChanged callback');
+}, 'Test attributeChanged callback of the custom element created in HTML. ' + 
+    'Test callback arguments when attribute value is set');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var callbackCalledCounter = 0;
+    
+    var proto = Object.create(HTMLElement.prototype);
+    proto.attributeChangedCallback = function() {
+        callbackCalledCounter++;
+    }
+    doc.body.innerHTML = '<x-a-4 id="xa4"></x-a-4>';
+    var customElement = doc.querySelector('#xa4');
+    // this call shouldn't invoke or enquee the callback
+    customElement.setAttribute('class', 'someClass');
+    doc.register('x-a-4', {prototype: proto});
+    // this one should
+    customElement.setAttribute('class', 'someClass2');
+    
+    assert_equals(callbackCalledCounter, 1, 'Callback attributeChanged was called ' +
+            'wrong number of times');    
 }, 'Test attributeChanged callback of the custom element instantiating in HTML. ' + 
-    'Test attribute setting before element registration');
+    'Test that callback is not called when attribute value of unresolved element is set');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    HTML5_ELEMENTS.forEach(function(element) {
+        var callbackCalledCounter = 0;
+        var obj = doc.createElement(element);
+        var proto = Object.create(obj.constructor.prototype);
+        proto.attributeChangedCallback = function() {
+            callbackCalledCounter++;
+        }
+        var GeneratedConstructor = doc.register('x-' + element + '-' + element + '-1', {
+            prototype: proto,
+            extends: element
+        });    
+        var customElement = new GeneratedConstructor();
+        customElement.setAttribute('class', 'someClass');
+        
+        assert_equals(callbackCalledCounter, 1, 'Callback attributeChanged was called ' +
+                'wrong number of times');        
+    });
+}, 'Test attributeChanged callback of the custom element that extends some HTML element. ' +
+    'Test that the callback is called');    
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    HTML5_ELEMENTS.forEach(function(element) {
+        var callbackCalledCounter = 0;
+        var obj = doc.createElement(element);
+        var proto = Object.create(obj.constructor.prototype);
+        proto.attributeChangedCallback = function() {
+            callbackCalledCounter++;
+        }
+        var GeneratedConstructor = doc.register('x-' + element + '-' + element + '-1-1', {
+            prototype: proto,
+            extends: element
+        });    
+        var customElement = new GeneratedConstructor();
+        customElement.classList.add('someClass');
+        
+        assert_equals(callbackCalledCounter, 1, 'Callback attributeChanged was called ' +
+                'wrong number of times');        
+    });    
+}, 'Test attributeChanged callback of the custom element that extends some HTML element. ' +
+    'Test that the callback is called if attribute is set by classList.add');    
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    HTML5_ELEMENTS.forEach(function(element) {
+        var argument1 = 'arg1';
+        var argument2 = 'arg2';
+        var argument3 = 'arg3';        
+        var obj = doc.createElement(element);
+        var proto = Object.create(obj.constructor.prototype);
+        proto.attributeChangedCallback = function(arg1, arg2, arg3) {
+            argument1 = arg1;
+            argument2 = arg2;
+            argument3 = arg3;
+        }
+        var GeneratedConstructor = doc.register('x-' + element + '-' + element + '-2', {
+            prototype: proto,
+            extends: element
+        });    
+        var customElement = new GeneratedConstructor();
+        customElement.setAttribute('class', 'someClass');
+        
+        assert_equals(argument1, 'class', 'Wrong value of the first attribute of ' +
+            'attributeChanged callback');
+        assert_equals(argument2, null, 'Wrong value of the second attribute of ' +
+            'attributeChanged callback');
+        assert_equals(argument3, 'someClass', 'Wrong value of the third attribute of ' +
+            'attributeChanged callback');
+    });
+}, 'Test attributeChanged callback of the custom element that extends some HTML element. ' +
+    'Test callback arguments');    
 
 
 testInIFrame('../../resources/x-element.html', function(context) {
     var doc = context.iframes[0].contentDocument;
-    var callbackCalled = false;
+    var callbackCalledCounter = 0;
     
     var proto = Object.create(HTMLElement.prototype);
-    proto.attributeChangedCallback = function () {
-        callbackCalled = true;
+    proto.attributeChangedCallback = function() {
+        callbackCalledCounter++;
     }
-    assert_false(callbackCalled, 'Callback attributeChanged was called after prototype ' + 
-            'creation but should not');
-            
     doc.register('x-element', {prototype: proto});
-    assert_false(callbackCalled, 'Callback attributeChanged was called');
-    
     var customElement = doc.querySelector('#xelement');
     customElement.setAttribute('class', 'someClass');
-    assert_true(callbackCalled, 'Callback attributeChanged was not called for the document ' + 
-            'with browsing context');
-
-}, 'Test attributeChanged callback. Document has browsing context');
+    
+    assert_equals(callbackCalledCounter, 1, 'Callback attributeChanged was called ' +
+            'wrong number of times');    
+}, 'Test attributeChanged callback for the document which has browsing context. ' + 
+    'Test that the callback is called');
 
 
 testInIFrame('../../resources/x-element.html', function(context) {
     var doc = context.iframes[0].contentDocument;
-    var callbackCalled = false;
+    var argument1 = 'arg1';
+    var argument2 = 'arg2';
+    var argument3 = 'arg3';
     
     var proto = Object.create(HTMLElement.prototype);
-    proto.attributeChangedCallback = function () {
-        callbackCalled = true;
+    proto.attributeChangedCallback = function(arg1, arg2, arg3) {
+        argument1 = arg1;
+        argument2 = arg2;
+        argument3 = arg3;
     }
-    assert_false(callbackCalled, 'Callback attributeChanged was called after prototype ' + 
-            'creation but should not');
-    
+    doc.register('x-element', {prototype: proto});
     var customElement = doc.querySelector('#xelement');
+    customElement.setAttribute('class', 'someClass');
+    
+    assert_equals(argument1, 'class', 'Wrong value of the first attribute of ' +
+        'attributeChanged callback');
+    assert_equals(argument2, null, 'Wrong value of the second attribute of ' +
+        'attributeChanged callback');
+    assert_equals(argument3, 'someClass', 'Wrong value of the third attribute of ' +
+        'attributeChanged callback');
+}, 'Test attributeChanged callback for the document which has browsing context.' +
+    'Test callback arguments');
+
+
+testInIFrame('../../resources/x-element.html', function(context) {
+    var doc = context.iframes[0].contentDocument;
+    var callbackCalledCounter = 0;
+    
+    var proto = Object.create(HTMLElement.prototype);
+    proto.attributeChangedCallback = function() {
+        callbackCalledCounter++;
+    }
+    doc.register('x-element', {prototype: proto});
+    var customElement = doc.querySelector('#xelement');
+    customElement.classList.add('someClass');
+    
+    assert_equals(callbackCalledCounter, 1, 'Callback attributeChanged was called ' +
+            'wrong number of times');    
+}, 'Test attributeChanged callback for the document which has browsing context. ' + 
+    'Test that the callback is called if attribute set by classList.add');
+
+
+testInIFrame('../../resources/x-element.html', function(context) {
+    var doc = context.iframes[0].contentDocument;
+    var argument1 = 'arg1';
+    var argument2 = 'arg2';
+    var argument3 = 'arg3';
+    
+    var proto = Object.create(HTMLElement.prototype);
+    proto.attributeChangedCallback = function(arg1, arg2, arg3) {
+        argument1 = arg1;
+        argument2 = arg2;
+        argument3 = arg3;
+    }
+    doc.register('x-element', {prototype: proto});
+    var customElement = doc.querySelector('#xelement');
+    customElement.classList.add('someClass');
+    
+    assert_equals(argument1, 'class', 'Wrong value of the first attribute of ' +
+        'attributeChanged callback');
+    assert_equals(argument2, null, 'Wrong value of the second attribute of ' +
+        'attributeChanged callback');
+    assert_equals(argument3, 'someClass', 'Wrong value of the third attribute of ' +
+        'attributeChanged callback');
+}, 'Test attributeChanged callback for the document which has browsing context.' +
+    'Test callback arguments if attribute set by classList.add');
+
+testInIFrame('../../resources/x-element.html', function(context) {
+    var doc = context.iframes[0].contentDocument;
+    var callbackCalledCounter = 0;
+
+    var proto = Object.create(HTMLElement.prototype);
+    proto.attributeChangedCallback = function() {
+        callbackCalledCounter++;
+    }
+    var customElement = doc.querySelector('#xelement');
+    // this call shouldn't invoke or enquee the callback
     customElement.setAttribute('name', 'someName');
-    assert_false(callbackCalled, 'Callback attributeChanged was called for the document ' + 
-            'with browsing context priop element registration');
-            
     doc.register('x-element', {prototype: proto});
-    assert_false(callbackCalled, 'Callback attributeChanged was called');
-    
+    // this one should
     customElement.setAttribute('class', 'someClass');
-    assert_true(callbackCalled, 'Callback attributeChanged was not called for the document ' + 
-            'with browsing context');
 
-}, 'Test attributeChanged callback. Document has browsing context. ' + 
+    assert_equals(callbackCalledCounter, 1, 'Callback attributeChanged was called ' +
+            'wrong number of times');    
+}, 'Test attributeChanged callback for the document which has browsing context. ' + 
     'Attribute changed before element registration');
+
+
+testInIFrame('../../resources/x-element.html', function(context) {
+    var doc = context.iframes[0].contentDocument;
+    HTML5_ELEMENTS.forEach(function(element) {
+        var callbackCalledCounter = 0;
+        var obj = doc.createElement(element);
+        var proto = Object.create(obj.constructor.prototype);
+        proto.attributeChangedCallback = function() {
+            callbackCalledCounter++;
+        }
+        var GeneratedConstructor = doc.register('x-' + element + '-' + element + '-1', {
+            prototype: proto,
+            extends: element
+        });    
+        var customElement = new GeneratedConstructor();
+        customElement.setAttribute('class', 'someClass');
+        
+        assert_equals(callbackCalledCounter, 1, 'Callback attributeChanged was called ' +
+                'wrong number of times');        
+    });
+    
+}, 'Test attributeChanged callback of the custom element that extends some HTML element. ' +
+    'Document has browsing context. Test that the callback is called');    
+
+
+testInIFrame('../../resources/x-element.html', function(context) {
+    var doc = context.iframes[0].contentDocument;
+    HTML5_ELEMENTS.forEach(function(element) {
+        var argument1 = 'arg1';
+        var argument2 = 'arg2';
+        var argument3 = 'arg3';        
+        var obj = doc.createElement(element);
+        var proto = Object.create(obj.constructor.prototype);
+        proto.attributeChangedCallback = function(arg1, arg2, arg3) {
+            argument1 = arg1;
+            argument2 = arg2;
+            argument3 = arg3;
+        }
+        var GeneratedConstructor = doc.register('x-' + element + '-' + element + '-2', {
+            prototype: proto,
+            extends: element
+        });    
+        var customElement = new GeneratedConstructor();
+        customElement.setAttribute('class', 'someClass');
+        
+        assert_equals(argument1, 'class', 'Wrong value of the first attribute of ' +
+            'attributeChanged callback');
+        assert_equals(argument2, null, 'Wrong value of the second attribute of ' +
+            'attributeChanged callback');
+        assert_equals(argument3, 'someClass', 'Wrong value of the third attribute of ' +
+            'attributeChanged callback');
+    });
+}, 'Test attributeChanged callback of the custom element that extends some HTML element. ' +
+    'Document has browsing context. Test callback arguments');    
 
 </script>
 </body>

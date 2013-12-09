@@ -17,100 +17,109 @@
 
 test(function() {
     var doc = newHTMLDocument();
-    var callbackCalled = false;
-    
+    var callbackCalledCounter = 0;
+
     var proto = Object.create(HTMLElement.prototype);
     proto.createdCallback = function () {
-        callbackCalled = true;
+        callbackCalledCounter++;
     }
-    assert_false(callbackCalled, 'Callback created was called after prototype creation ' + 
-            'but should not')
-    
     var GeneratedConstructor = doc.register('x-a', {prototype: proto});
-    assert_false(callbackCalled, 'Callback created was called but should not');
-    
     var customElement = new GeneratedConstructor();
-    assert_true(callbackCalled, 'Callback created was not called');
+    assert_equals(callbackCalledCounter, 1, 'Callback created was not called after ' +
+            'element instance was created');
     
-}, 'Test created callback when custom element is instantiating in JavaScript');
+}, 'Test created callback when custom element is created in JavaScript');
 
 
 test(function() {
     var doc = newHTMLDocument();
-    var callbackCalled = false;
-    
+    var callbackCalledCounter = 0;
+
     var proto = Object.create(HTMLElement.prototype);
     proto.createdCallback = function () {
-        callbackCalled = true;
+        callbackCalledCounter++;
     }
-    assert_false(callbackCalled, 'Callback created was called after prototype creation ' + 
-            'but should not')
-    
     doc.register('x-a-2', {prototype: proto});
-    assert_false(callbackCalled, 'Callback created was called but should not');
-    
     doc.body.innerHTML = '<x-a-2></x-a-2>';
-    assert_true(callbackCalled, 'Callback created was not called');
+    assert_equals(callbackCalledCounter, 1, 'Callback created was not called after ' +
+            'element instance was created');
     
-}, 'Test created callback when custom element is instantiating in HTML');
+}, 'Test created callback when custom element is created in HTML');
 
 
 test(function() {
     var doc = newHTMLDocument();
-    var callbackCalled = false;
-    
+    var callbackCalledCounter = 0;
+
     var proto = Object.create(HTMLElement.prototype);
     proto.createdCallback = function () {
-        callbackCalled = true;
+        callbackCalledCounter++;
     }
-    assert_false(callbackCalled, 'Callback created was called after prototype creation ' + 
-            'but should not');
-        
-    doc.body.innerHTML = '<x-a-3></x-a-3>';
-    assert_false(callbackCalled, 'Callback created was called but should not');
-    
     doc.register('x-a-3', {prototype: proto});
-    assert_true(callbackCalled, 'Callback created was not called');
+    var customElement = doc.createElement('x-a-3');
+    assert_equals(callbackCalledCounter, 1, 'Callback created was not called after ' +
+            'element instance was created');
     
-}, 'Test created callback when custom element is instantiating in HTML before ' + 
+}, 'Test created callback when custom element is created by createElement');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var callbackCalledCounter = 0;
+
+    var proto = Object.create(HTMLElement.prototype);
+    proto.createdCallback = function () {
+        callbackCalledCounter++;
+    }
+    doc.body.innerHTML = '<x-a-4></x-a-4>';
+    doc.register('x-a-4', {prototype: proto});
+    assert_equals(callbackCalledCounter, 1, 'Callback created was not called after ' +
+            'element instance was created');
+    
+}, 'Test created callback when custom element is created in HTML before ' +
     'registration of a custom element');
 
 
 test(function() {
     var doc = newHTMLDocument();
-    var callbackCalled = false;
-    
-    doc.body.innerHTML = '<x-a-4 id="xa"></x-a-4>';
+    var callbackCalledCounter = 0;
+
+    doc.body.innerHTML = '<x-a-5 id="xa"></x-a-5>';
     var customElement = doc.querySelector('#xa');
-    assert_not_equals(customElement, null, 
-            'Unresolved custom element should be accessible by id');
-    
     var proto = Object.create(HTMLElement.prototype);
     proto.createdCallback = function () {
-        callbackCalled = true;
+        callbackCalledCounter++;
     }
-    customElement.constructor.prototype = proto;        
-    assert_false(callbackCalled, 
-            'Callback enteredView was called when custom element is unresolved');
-
+    customElement.constructor.prototype = proto;
+    assert_equals(callbackCalledCounter, 0,
+            'Callback created was called when custom element is unresolved');
+    
 }, 'Test created callback when custom element is unresolved.');
 
 
 testInIFrame('../../resources/x-element.html', function(context) {
     var doc = context.iframes[0].contentDocument;
-    var callbackCalled = false;
-    
+    var callbackCalledCounter = 0;
+
     var proto = Object.create(HTMLElement.prototype);
     proto.createdCallback = function () {
-        callbackCalled = true;
+        callbackCalledCounter++;
     }
-    assert_false(callbackCalled, 'Callback created was called after prototype ' + 
-            'creation but should not');
-            
     doc.register('x-element', {prototype: proto});
-    assert_true(callbackCalled, 'Callback created was not called');
+    assert_equals(callbackCalledCounter, 1, 'Callback created was not called');
+    
+}, 'Test created callback. Create custom element, then register. ' + 
+    'Document has browsing context');
 
-}, 'Test created callback. Document has browsing context');
+
+testInIFrame('../../resources/register-and-create-custom-element.html', function(context) {
+    var doc = context.iframes[0].contentDocument;
+
+    assert_equals('Created callback called', doc.querySelector('#log').innerText,
+        'Callback created was not called')
+}, 'Test created callback. Register custom element, then create. ' + 
+    'Document has browsing context');
+
 </script>
 </body>
 </html>

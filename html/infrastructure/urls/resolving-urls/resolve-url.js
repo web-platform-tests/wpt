@@ -429,8 +429,26 @@ onload = function() {
   'http://dom.spec.whatwg.org/#dom-node-baseuri',
   'http://www.whatwg.org/specs/web-apps/current-work/multipage/text-level-semantics.html#the-a-element']});
 
-  // itemid
-  // microdata values (<a href> etc)
+  // XXX itemid is exposed in JSON drag-and-drop but seems hard to automate
+
+  // microdata values
+  function test_microdata_values(tag, attr) {
+    test(function() {
+      var elm = document.createElement(tag);
+      elm.setAttribute('itemprop', '');
+      elm.setAttribute(attr, input_url_html);
+      var got = elm.itemValue;
+      assert_not_equals(got, undefined, 'itemValue not supported');
+      assert_true(got.indexOf(expected_current) > -1, msg(expected_current, got));
+    }, 'microdata values <'+tag+' '+attr+'>',
+    {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/microdata.html#concept-property-value'});
+  }
+
+  'audio src, embed src, iframe src, img src, source src, track src, video src, a href, area href, link href, object data'.split(', ').forEach(function(str) {
+    var arr = str.split(' ');
+    test_microdata_values(arr[0], arr[1]);
+  });
+
   // drag and drop (<a href> or <img src>)
   // Worker()
   // SharedWorker()

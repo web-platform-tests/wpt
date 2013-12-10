@@ -27,8 +27,8 @@
       timeStamp.push(evt.timeStamp);
       assert_true(evt.isTrusted, "The onstart event is created by UA, it must be trusted.");
       assert_equals(timeStamp.length, 1, "The onstart event should be fired firstly.");
-      assert_false(evt.bubbles, "The bubbles property of onstart event should be fasle.");
-      assert_false(evt.cancelable, "The cancelable property of onstart event should be fasle.");
+      assert_false(evt.bubbles, "The bubbles property of onstart event should be false.");
+      assert_false(evt.cancelable, "The cancelable property of onstart event should be false.");
       assert_true(evt instanceof Event, "The onstart event must be the instance of Event interface.");
     });
     t_start.done();
@@ -39,8 +39,8 @@
       timeStamp.push(evt.timeStamp);
       assert_true(evt.isTrusted, "The onfinish event is created by UA, it must be trusted.");
       assert_equals(timeStamp.length, 3, "The onfinish event should be fired lastly.");
-      assert_false(evt.bubbles, "The bubbles property of onfinish event should be fasle.");
-      assert_false(evt.cancelable, "The cancelable property of onfinish event should be fasle.");
+      assert_false(evt.bubbles, "The bubbles property of onfinish event should be false.");
+      assert_false(evt.cancelable, "The cancelable property of onfinish event should be false.");
       assert_true(evt instanceof Event, "The onfinish event must be the instance of Event interface.");
     });
     t_finish.done();
@@ -51,8 +51,8 @@
       timeStamp.push(evt.timeStamp);
       assert_true(evt.isTrusted, "The onbounce event is created by UA, it must be trusted.");
       assert_equals(timeStamp.length, 2, "The onbounce event should be fired secondly.");
-      assert_false(evt.bubbles, "The bubbles property of onbounce event should be fasle.");
-      assert_false(evt.cancelable, "The cancelable property of onbounce event should be fasle.");
+      assert_false(evt.bubbles, "The bubbles property of onbounce event should be false.");
+      assert_false(evt.cancelable, "The cancelable property of onbounce event should be false.");
       assert_true(evt instanceof Event, "The onbounce event must be the instance of Event interface.");
     });
     t_bounce.done();

@@ -4,6 +4,8 @@ onload = function() {
   var input_url_html = input_url + '&type=html';
   var input_url_css = input_url + '&type=css';
   var input_url_js = input_url + '&type=js';
+  var input_url_worker = input_url + '&type=worker';
+  var input_url_sharedworker = input_url + '&type=sharedworker';
   var input_url_png = input_url + '&type=png';
   var input_url_svg = input_url + '&type=svg';
   var input_url_video = input_url + '&type=video';
@@ -89,9 +91,8 @@ onload = function() {
       var elm = document.createElement(tag);
       var iframe = document.createElement('iframe');
       setup_navigation(elm, iframe, 'test_follow_link_'+tag, this);
-      iframe.onload = this.step_func(function() { // when the page navigated to has loaded
+      iframe.onload = this.step_func_done(function() { // when the page navigated to has loaded
         assert_equals(iframe.contentDocument.body.textContent, expected_current.substr(3));
-        this.done();
       });
       // follow the hyperlink
       elm.click();
@@ -120,9 +121,8 @@ onload = function() {
       // check that the right URL was requested for the ping
       var xhr = new XMLHttpRequest();
       xhr.open('GET', 'stash.py?id='+uuid+'&action=take');
-      xhr.onload = this.step_func(function(e) {
+      xhr.onload = this.step_func_done(function(e) {
         assert_equals(xhr.response, expected_current.substr(3));
-        this.done();
       });
       xhr.send();
     }, 'hyperlink auditing <'+tag+' ping>',
@@ -141,7 +141,7 @@ onload = function() {
     this.add_cleanup(function() {
       document.body.removeChild(iframe);
     });
-    iframe.onload = this.step_func(function() {
+    iframe.onload = this.step_func_done(function() {
       var doc = iframe.contentDocument;
       var got = doc.body.textContent;
       if (got == '') {
@@ -150,7 +150,6 @@ onload = function() {
         return;
       }
       assert_equals(got, expected_current.substr(3));
-      this.done();
     });
   }, 'meta refresh',
   {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/semantics.html#attr-meta-http-equiv-refresh'});
@@ -166,9 +165,8 @@ onload = function() {
       this.add_cleanup(function() {
         document.body.removeChild(elm);
       });
-      elm.onload = this.step_func(function() {
+      elm.onload = this.step_func_done(function() {
         assert_equals(window[id].document.documentElement.textContent, expected_current.substr(3));
-        this.done();
       });
 
     }, 'load nested browsing context <'+tag+' '+attr+'>',
@@ -196,11 +194,10 @@ onload = function() {
     this.add_cleanup(function() {
       document.head.removeChild(elm);
     });
-    elm.onload = this.step_func(function() {
+    elm.onload = this.step_func_done(function() {
       var got = elm.sheet.href;
       assert_true(elm.sheet.href.indexOf(expected_current) > -1, 'sheet.href ' + msg(expected_current, got));
       assert_equals(elm.sheet.cssRules[0].style.content, '"'+expected_current.substr(3)+'"', 'sheet.cssRules[0].style.content');
-      this.done();
     });
   }, 'loading css <link>',
   {help:['http://www.whatwg.org/specs/web-apps/current-work/multipage/semantics.html#the-link-element',
@@ -211,9 +208,8 @@ onload = function() {
     var elm = document.createElement('script');
     elm.src = input_url_js + '&var=test_load_js_got';
     document.head.appendChild(elm); // no cleanup
-    elm.onload = this.step_func(function() {
+    elm.onload = this.step_func_done(function() {
       assert_equals(window.test_load_js_got, expected_current.substr(3));
-      this.done();
     });
   }, 'loading js <script>',
   {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/scripting-1.html#prepare-a-script'});
@@ -230,11 +226,10 @@ onload = function() {
       this.add_cleanup(function() {
         document.body.removeChild(elm);
       });
-      elm.onload = this.step_func(function() {
+      elm.onload = this.step_func_done(function() {
         var got = elm.offsetWidth;
         var expected = expected_current.substr(3);
         assert_equals(got, query_to_image_width[expected], msg(expected, image_width_to_query[got]));
-        this.done();
       });
       // <video poster> doesn't notify when the image is loaded so we need to poll :-(
       var interval;
@@ -311,11 +306,10 @@ onload = function() {
         }
         elm.load();
       });
-      elm.onloadedmetadata = this.step_func(function() {
+      elm.onloadedmetadata = this.step_func_done(function() {
         var got = Math.round(elm.duration);
         var expected = expected_current.substr(3);
         assert_equals(got, query_to_video_duration[expected], msg(expected, video_duration_to_query[got]));
-        this.done();
       });
     }, 'loading video <'+tag+'>' + (use_source_element ? '<source>' : ''),
     {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/the-video-element.html#concept-media-load-algorithm'});
@@ -349,10 +343,9 @@ onload = function() {
     video.appendChild(track);
     track.src = input_url_webvtt;
     track.track.mode = 'showing';
-    track.onload = this.step_func(function() {
+    track.onload = this.step_func_done(function() {
       var got = track.track.cues[0].text;
       assert_equals(got, expected_current.substr(3));
-      this.done();
     });
   }, 'loading webvtt <track>',
   {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/the-video-element.html#track-url'});
@@ -389,13 +382,12 @@ onload = function() {
         document.body.removeChild(iframe);
       });
       button.click();
-      iframe.onload = this.step_func(function() {
+      iframe.onload = this.step_func_done(function() {
         var got = iframe.contentDocument.body.textContent;
         if (got == '') {
           return;
         }
         assert_equals(got, expected_current.substr(3));
-        this.done();
       });
     }, 'submit form <'+tag+' '+attr+'>',
     {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/association-of-controls-and-forms.html#concept-form-submit'});
@@ -414,7 +406,7 @@ onload = function() {
     this.add_cleanup(function() {
       document.body.removeChild(iframe);
     });
-    iframe.onload = this.step_func(function() {
+    iframe.onload = this.step_func_done(function() {
       var doc = iframe.contentDocument;
       doc.write('<!doctype html><base href="'+input_url+'"><a href></a>');
       doc.close();
@@ -422,7 +414,6 @@ onload = function() {
       assert_true(got_baseURI.indexOf(expected_current) > -1, msg(expected_current, got_baseURI), 'doc.baseURI');
       var got_a_href = doc.links[0].href;
       assert_true(got_a_href.indexOf(expected_current) > -1, msg(expected_current, got_a_href), 'a.href');
-      this.done();
     });
   }, '<base href>',
   {help:['http://www.whatwg.org/specs/web-apps/current-work/multipage/semantics.html#set-the-frozen-base-url',
@@ -449,9 +440,26 @@ onload = function() {
     test_microdata_values(arr[0], arr[1]);
   });
 
-  // drag and drop (<a href> or <img src>)
+  // XXX drag and drop (<a href> or <img src>) seems hard to automate
+
   // Worker()
+  async_test(function() {
+    var worker = new Worker(input_url_worker);
+    worker.onmessage = this.step_func_done(function(e) {
+      assert_equals(e.data, expected_current.substr(3));
+    });
+  }, 'Worker constructor',
+  {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/workers.html#dom-worker'});
+
   // SharedWorker()
+  async_test(function() {
+    var worker = new SharedWorker(input_url_sharedworker);
+    worker.port.onmessage = this.step_func_done(function(e) {
+      assert_equals(e.data, expected_current.substr(3));
+    });
+  }, 'SharedWorker constructor',
+  {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/workers.html#dom-sharedworker'});
+
   // EventSource()
   //
   // UTF-8:

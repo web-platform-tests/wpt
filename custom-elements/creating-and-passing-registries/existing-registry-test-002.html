@@ -23,7 +23,8 @@ testInIFrame('../resources/import-master.html', function(context) {
     //FIXME Should the type of the exception be specified here?
     assert_throws(null, function () {
         doc2.register(name);
-    }, 'Exception should be thrown for element, which is already registered in shared registry');
+    }, 'Registering a custom element type name that is already registered in a shared ' +
+        'registry should throw an exception');
 }, 'Registry of the import should share master document registry');
 
 
@@ -36,13 +37,15 @@ testInIFrame('../resources/import-master.html', function(context) {
     //FIXME Should the type of the exception be specified here?
     assert_throws(null, function () {
         doc2.register(name);
-    }, 'Exception should be thrown for element, which is already registered in shared registry');
+    }, 'Registering a custom element type name that is already registered in a shared ' +
+        'registry should throw an exception');
 
     var doc3 = newHTMLDocument();
     try {
         doc3.register(name);
     } catch (e) {
-        assert_unreached('Exception should not be thrown for new document');
+        assert_unreached('Unexpected exception while registering a valid custom element ' +
+                'in a document which has it\'s own registry');
     }
 }, 'Registry of the import should share master document registry only');
 

@@ -6,6 +6,7 @@ onload = function() {
   var input_url_js = input_url + '&type=js';
   var input_url_worker = input_url + '&type=worker';
   var input_url_sharedworker = input_url + '&type=sharedworker';
+  var input_url_eventstream = input_url + '&type=eventstream';
   var input_url_png = input_url + '&type=png';
   var input_url_svg = input_url + '&type=svg';
   var input_url_video = input_url + '&type=video';
@@ -461,7 +462,17 @@ onload = function() {
   {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/workers.html#dom-sharedworker'});
 
   // EventSource()
-  //
+  async_test(function() {
+    var source = new EventSource(input_url_eventstream);
+    this.add_cleanup(function() {
+      source.close();
+    });
+    source.onmessage = this.step_func_done(function(e) {
+      assert_equals(e.data, expected_current.substr(3));
+    });
+  }, 'EventSource constructor',
+  {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/comms.html#dom-eventsource'});
+
   // UTF-8:
   // XHR
   // in a worker

@@ -15,6 +15,8 @@ def main(request, response):
         return ([("Content-Type", "text/javascript; charset=utf-8")], "postMessage('" + q + "'); close();")
     elif type == 'sharedworker':
         return ([("Content-Type", "text/javascript; charset=utf-8")], "onconnect = function(e) { e.source.postMessage('" + q + "'); close(); };")
+    elif type == 'eventstream':
+        return ([("Content-Type", "text/event-stream")], "data: " + q + "\n\n")
     elif type == 'svg':
         return ([("Content-Type", "image/svg+xml")], "<svg xmlns='http://www.w3.org/2000/svg'>"+q+"</svg>")
     elif type == 'png':

@@ -19,11 +19,10 @@ test(function() {
     var validNames = ['x-frame', 'xx-frame', 'x--frame', '_-frame', 'x-', 'x--',
                       'x-1', 'x-_', '_-_', '__-',  '_-1',  '_-..'                      
                      ];
-    
     HTML5_ELEMENTS.forEach(function(value) {
         validNames.push('x-' + value);
+        validNames.push('Y-' + value.toUpperCase());
     });
-    
     validNames.forEach(function(value) {
         try {
             doc.register(value);
@@ -41,7 +40,6 @@ test(function() {
                       'xframe', 'x_frame', 'x.frame', 'x1frame', '-xframe', '1-frame', '1x-frame',
                       '.-frame', '_frame', 'x-f!rame'
                      ];
-    
     invalidNames.forEach(function(value) {
         //FIXME Should the type of the exception be specified here?
         assert_throws(null, function() {            
@@ -64,7 +62,6 @@ test(function() {
                         'font-face-name',
                         'missing-glyph'
                      ];
-    
     forbiddenNames.forEach(function(value) {
         //FIXME Should the type of the exception be specified here?
         assert_throws(null, function() {

@@ -23,7 +23,8 @@ test(function() {
     //FIXME Should the type of the exception be specified here?
     assert_throws(null, function () {
         doc2.register(name);
-    }, 'Exception should be thrown for custom element, which is already registered in shared registry');
+    }, 'Registering a custom element type name that is already registered in a shared ' +
+        'registry should throw an exception');
 
     var xframe = doc2.createElement(name);
     assert_true(xframe instanceof GeneratedConstructor, 'Wrong custom element constructor');

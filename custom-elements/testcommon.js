@@ -306,10 +306,6 @@ var DIGIT_CHARS_RANGES = [ 0x0030, 0x0039, 0x0660, 0x0669, 0x06F0, 0x06F9,
 var HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
 var SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
 
-function newDocument() {
-    var d = document.implementation.createDocument();
-    return d;
-}
 
 function newHTMLDocument() {
     var d = document.implementation.createHTMLDocument('Test Document');

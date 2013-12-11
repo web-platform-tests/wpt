@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>New document without browsing context must not have a registry.</title>
+<meta name="author" title="Aleksei Yu. Semenov" href="mailto:a.semenov@unipro.ru">
+<meta name="assert" content="In all other cases, new documents must not have a registry.">
+<link rel="help" href="http://www.w3.org/TR/custom-elements/#creating-and-passing-registries">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src='../testcommon.js'></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+</head>
+<body>
+<div id="log"></div>
+<script type="text/javascript">
+
+test(function() {
+    var doc = document.implementation.createDocument(null, "test", null);
+    assert_throws('NotSupportedError',
+                  function() { doc.register('x-element'); },
+                  'Registering valid custom element in a document ' +
+                  'without browsing context should fail');
+
+}, 'Generic document without browsing context must not have a registry');
+
+
+test(function() {
+    var request = new XMLHttpRequest();
+    request.open('GET', '../resources/blank.xml', false);
+    request.overrideMimeType('text/xml');
+    request.send(null);
+
+    assert_equals(200, request.status, 'Test document is not loaded correctly');
+
+    var doc = request.responseXML;
+    assert_throws('NotSupportedError',
+                   function() { doc.register('x-element'); },
+                   'Registering valid custom element in ' +
+                     'a XMLHttpRequest\' response document fail');
+
+}, 'XMLHttpRequest\'s synchronous response document must not have a registry');
+
+async_test(function(t) {
+    var request = new XMLHttpRequest();
+    request.onreadystatechange = t.step_func(function() {
+        if (request.readyState==4){
+             assert_equals(200, request.status, 'Test document is not loaded correctly');
+            var doc = request.responseXML;
+            assert_throws('NotSupportedError',
+                   function() { doc.register('x-element'); },
+                   'Registering valid custom element in ' +
+                         'a XMLHttpRequest\' response document fail');
+            t.done();
+        }
+    });
+
+    request.open('GET', '../resources/blank.xml', true);
+    request.overrideMimeType('text/xml');
+    request.send();
+}, 'XMLHttpRequest\'s asynchronous response document must not have a registry');
+
+</script>
+</body>
+</html>

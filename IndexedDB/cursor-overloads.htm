@@ -39,10 +39,6 @@ http://trac.webkit.org/browser/trunk/LayoutTests/storage/indexeddb/cursor-overlo
         checkCursorDirection("store.openCursor(0, 'nextunique')", "nextunique");
         checkCursorDirection("store.openCursor(0, 'prev')", "prev");
         checkCursorDirection("store.openCursor(0, 'prevunique')", "prevunique");
-        checkCursorDirection("store.openCursor(0, IDBCursor.NEXT)", "next");
-        checkCursorDirection("store.openCursor(0, IDBCursor.NEXT_NO_DUPLICATE)", "nextunique");
-        checkCursorDirection("store.openCursor(0, IDBCursor.PREV)", "prev");
-        checkCursorDirection("store.openCursor(0, IDBCursor.PREV_NO_DUPLICATE)", "prevunique");
 
         checkCursorDirection("store.openCursor(IDBKeyRange.only(0))", "next");
         checkCursorDirection("store.openCursor(IDBKeyRange.only(0), 'next')", "next");
@@ -81,8 +77,7 @@ http://trac.webkit.org/browser/trunk/LayoutTests/storage/indexeddb/cursor-overlo
 
     function checkCursorDirection(statement, direction) {
         request = eval(statement);
-        request.onsuccess = function() {
-            console.log(statement);
+        request.onsuccess = function(event) {
             assert_not_equals(event.target.result, null, "Check the result is not null")
             assert_equals(event.target.result.direction, direction, "Check the result direction");
         };

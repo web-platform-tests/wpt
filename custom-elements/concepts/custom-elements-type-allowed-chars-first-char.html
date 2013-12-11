@@ -63,7 +63,7 @@ function testRangesArray(doc, array, positive) {
 }
 
 test(function(){
-    testArray(newHTMLDocument(), ['_'], true);
+    testArray(newHTMLDocument(), ['_'.charCodeAt(0)], true);
 }, 'Registering valid custom element name starting with \'_\' char');
 
 test(function(){

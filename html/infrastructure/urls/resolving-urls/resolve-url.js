@@ -1,11 +1,18 @@
 setup({explicit_done:true});
 onload = function() {
+  var encoding = '{{GET[encoding]}}';
   var input_url = 'resource.py?q=\u00E5';
   var input_url_html = input_url + '&type=html';
   var input_url_css = input_url + '&type=css';
   var input_url_js = input_url + '&type=js';
   var input_url_worker = input_url + '&type=worker';
   var input_url_sharedworker = input_url + '&type=sharedworker';
+  var input_url_worker_importScripts = input_url + '&type=worker_importScripts&encoding=' + encoding;
+  var input_url_sharedworker_importScripts = input_url + '&type=sharedworker_importScripts&encoding=' + encoding;
+  var input_url_worker_worker = input_url + '&type=worker_worker&encoding=' + encoding;
+  var input_url_worker_sharedworker = input_url + '&type=worker_sharedworker&encoding=' + encoding;
+  var input_url_sharedworker_worker = input_url + '&type=sharedworker_worker&encoding=' + encoding;
+  var input_url_sharedworker_sharedworker = input_url + '&type=sharedworker_sharedworker&encoding=' + encoding;
   var input_url_eventstream = input_url + '&type=eventstream';
   var input_url_png = input_url + '&type=png';
   var input_url_svg = input_url + '&type=svg';
@@ -18,7 +25,6 @@ onload = function() {
     'windows-1252':'?q=%E5',
     'windows-1251':'?q=%3F'
   };
-  var encoding = '{{GET[encoding]}}';
   var expected_current = expected_obj[encoding];
 
   function msg(expected, got) {
@@ -475,7 +481,71 @@ onload = function() {
 
   // UTF-8:
   // XHR
+  async_test(function() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', input_url_html);
+    xhr.onload = this.step_func_done(function() {
+      assert_equals(xhr.response, expected_obj['utf-8'].substr(3));
+    });
+    xhr.send();
+  }, 'XMLHttpRequest#open()',
+  {help:'http://xhr.spec.whatwg.org/#the-open()-method'});
+
   // in a worker
+  async_test(function() {
+    var worker = new Worker(input_url_worker_importScripts);
+    worker.onmessage = this.step_func_done(function(e) {
+      assert_equals(e.data, expected_obj['utf-8'].substr(3));
+    });
+  }, 'importScripts() in a dedicated worker',
+  {help:['http://www.whatwg.org/specs/web-apps/current-work/multipage/workers.html#set-up-a-worker-script-settings-object',
+         'http://www.whatwg.org/specs/web-apps/current-work/multipage/workers.html#dom-workerglobalscope-importscripts']});
+
+  async_test(function() {
+    var worker = new Worker(input_url_worker_worker);
+    worker.onmessage = this.step_func_done(function(e) {
+      assert_equals(e.data, expected_obj['utf-8'].substr(3));
+    });
+  }, 'Worker() in a dedicated worker',
+  {help:['http://www.whatwg.org/specs/web-apps/current-work/multipage/workers.html#set-up-a-worker-script-settings-object',
+         'http://www.whatwg.org/specs/web-apps/current-work/multipage/workers.html#dom-worker']});
+
+  async_test(function() {
+    var worker = new Worker(input_url_worker_sharedworker);
+    worker.onmessage = this.step_func_done(function(e) {
+      assert_equals(e.data, expected_obj['utf-8'].substr(3));
+    });
+  }, 'SharedWorker() in a dedicated worker',
+  {help:['http://www.whatwg.org/specs/web-apps/current-work/multipage/workers.html#set-up-a-worker-script-settings-object',
+         'http://www.whatwg.org/specs/web-apps/current-work/multipage/workers.html#dom-sharedworker']});
+
+  async_test(function() {
+    var worker = new SharedWorker(input_url_sharedworker_importScripts);
+    worker.port.onmessage = this.step_func_done(function(e) {
+      assert_equals(e.data, expected_obj['utf-8'].substr(3));
+    });
+  }, 'importScripts() in a shared worker',
+  {help:['http://www.whatwg.org/specs/web-apps/current-work/multipage/workers.html#set-up-a-worker-script-settings-object',
+         'http://www.whatwg.org/specs/web-apps/current-work/multipage/workers.html#dom-workerglobalscope-importscripts']});
+
+  async_test(function() {
+    var worker = new SharedWorker(input_url_sharedworker_worker);
+    worker.port.onmessage = this.step_func_done(function(e) {
+      assert_equals(e.data, expected_obj['utf-8'].substr(3));
+    });
+  }, 'Worker() in a shared worker',
+  {help:['http://www.whatwg.org/specs/web-apps/current-work/multipage/workers.html#set-up-a-worker-script-settings-object',
+         'http://www.whatwg.org/specs/web-apps/current-work/multipage/workers.html#dom-worker']});
+
+  async_test(function() {
+    var worker = new SharedWorker(input_url_sharedworker_sharedworker);
+    worker.port.onmessage = this.step_func_done(function(e) {
+      assert_equals(e.data, expected_obj['utf-8'].substr(3));
+    });
+  }, 'SharedWorker() in a shared worker',
+  {help:['http://www.whatwg.org/specs/web-apps/current-work/multipage/workers.html#set-up-a-worker-script-settings-object',
+         'http://www.whatwg.org/specs/web-apps/current-work/multipage/workers.html#dom-sharedworker']});
+
   // WebSocket()
   // WebSocket#url
   // Parsing cache manifest?

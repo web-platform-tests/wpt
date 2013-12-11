@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Pointer Lock event constructor</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>  
+    <link rel="help" href="http://www.w3.org/TR/pointerlock/#pointerlockchange-and-pointerlockerror-events"/>
+    <link rel="help" href="http://www.w3.org/TR/dom/#interface-event"/>
+  </head>
+  <body>
+    <p>This test the events for Pointer Lock can be created as defined by DOM events.</p>
+    <div id='log'></div>
+    <script>
+test(function() {
+  var ev = new Event("pointerlockchange");
+  assert_equals(ev.type, "pointerlockchange");
+  assert_equals(ev.target, null);
+  assert_equals(ev.currentTarget, null);
+  assert_equals(ev.bubbles, false);
+  assert_equals(ev.eventPhase, Event.NONE);
+  assert_equals(ev.cancelable, false);
+  assert_true("preventDefault" in ev);
+  assert_equals(ev.defaultPrevented, false);
+  assert_true(ev.timeStamp > 0);
+  assert_true("initEvent" in ev);
+}, "Default event values for generic event interface.");
+test(function() {
+  var ev = new Event("pointerlockerror", { type: "trololol", bubbles: true, cancelable: false, defaultPrevented: true});
+  assert_equals(ev.type, "pointerlockerror");
+  assert_equals(ev.bubbles, true);
+  assert_equals(ev.cancelable, false);
+  assert_equals(ev.defaultPrevented, false);
+}, "Basic test.");
+    </script>
+
+</body>
+
+</html>

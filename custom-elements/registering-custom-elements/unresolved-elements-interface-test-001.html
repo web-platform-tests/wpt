@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Unresolved element interface must be HTMLElement, if the namespace is HTML Namespace</title>
+<meta name="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<meta name="assert" content="When an unresolved element is created, it's element interface must be HTMLElement, if the namespace is HTML Namespace">
+<link rel="help" href="http://www.w3.org/TR/custom-elements/#registering-custom-elements">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src='../testcommon.js'></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+</head>
+<body>
+<div id="log"></div>
+<script type="text/javascript">
+
+test(function() {
+    var doc = newHTMLDocument();
+    doc.body.innerHTML = '<x-a id="xa"></x-a>';
+    var customElement = doc.querySelector('#xa');
+
+    assert_not_equals(customElement, null, 'Unregistered custom element should not be null');
+    
+    assert_class_string(customElement, 'HTMLElement',
+            'Unresolved custom element must be a HTML element');
+
+}, 'Unresolved element interface with valid name for HTML namespace');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var customElement = doc.createElement('x-a-2');
+    
+    assert_class_string(customElement, 'HTMLElement', 
+            'Unresolved custom element must be a HTML element');
+    
+}, 'Unresolved element interface with valid name for HTML namespace. ' + 
+    'Element created by createElement');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var customElement = doc.createElementNS(HTML_NAMESPACE, 'x-a-3');
+    
+    assert_class_string(customElement, 'HTMLElement',
+            'Unresolved custom element must be a HTML element');
+    
+}, 'Unresolved element interface with valid name for HTML namespace. ' + 
+    'Element created by createElementNS');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    doc.body.innerHTML = '<xa id="xa"></xa>';
+    var xa = doc.querySelector('#xa');
+
+    assert_not_equals(xa, null, 'Element should not be null');
+    
+    assert_class_string(xa, 'HTMLUnknownElement',
+            'Element must be a HTML Unknown element');
+    
+
+}, 'Unresolved element interface with invalid name for HTML namespace');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var xa = doc.createElement('xa2');
+    
+    assert_class_string(xa, 'HTMLUnknownElement',
+            'Element must be a HTML Unknown element');
+    
+}, 'Unresolved element interface with invalid name for HTML namespace. ' + 
+    'Element created by createElement');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var xa = doc.createElementNS(HTML_NAMESPACE, 'xa3');
+    
+    assert_class_string(xa, 'HTMLUnknownElement',
+            'Element must be a HTML Unknown element');
+    
+}, 'Unresolved element interface with invalid name for HTML namespace. ' + 
+    'Element created by createElementNS');
+
+</script>
+</body>
+</html>

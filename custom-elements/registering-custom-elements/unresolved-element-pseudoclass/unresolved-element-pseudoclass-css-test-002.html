@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+    <title>The :unresolved pseudoclass matching</title>
+    <meta name="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+    <meta name="assert" content="The :unresolved pseudoclass must match all custom elements whose created callback has not yet been invoked">
+    <link rel="help" href="http://www.w3.org/TR/custom-elements/#unresolved-element-pseudoclass">
+    <style>
+        :unresolved {
+            border: 1px solid; 
+            background-color: red;
+        }
+        body {
+            background-color: white;
+        }
+    </style>
+    <script type="text/javascript">
+    function registerElement() {
+        document.register('x-element');
+    }
+    </script>
+<body>
+    <p>Test passes if x-element background became white after clicking 'Register' button</p>
+    <x-element>
+        x-element
+    </x-element>
+    <br clear="all">
+    <br clear="all">
+    <button onclick="registerElement()">Register</button>
+</body>

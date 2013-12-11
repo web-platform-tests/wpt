@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Prototype object of a custom element</title>
+<meta name="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<meta name="assert" content="If PROTOTYPE is null, let PROTOTYPE be the result of invoking Object.create with HTMLElement's interface prototype object as only argument">
+<link rel="help" href="http://www.w3.org/TR/custom-elements/#extensions-to-document-interface-to-register">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src='../../testcommon.js'></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+</head>
+<body>
+<div id="log"></div>
+<script type="text/javascript">
+
+test(function() {
+    var doc = newHTMLDocument();
+    var GeneratedConstructor = doc.register('x-a-1');
+    var customElement = new GeneratedConstructor();
+
+    assert_class_string(customElement, 'HTMLElement',
+            'Custom element without specified prototype must be a HTMLelement');
+}, 'Custom element without specified prototype');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var GeneratedConstructor = doc.register('x-a-2', {
+        prototype: Object.create(HTMLParagraphElement.prototype),
+        extends: 'p'
+    });
+    var customElement = new GeneratedConstructor();
+
+    assert_class_string(customElement, 'HTMLParagraphElement',
+            'Custom element  must be a HTMLParagraphElement');
+}, 'Custom element with specified prototype');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var GeneratedConstructor = doc.register('x-a-3', {
+        prototype: Object.create(HTMLParagraphElement.prototype)
+    });
+    var customElement = new GeneratedConstructor();
+    // Extends is nut specifiet therefore expected class string here is HTMLElement
+    assert_class_string(customElement, 'HTMLElement',
+            'Custom element  must be a HTMLElement');
+}, 'Custom element with specified prototype. Extends is not specified');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var GeneratedConstructor = doc.register('x-a-4', {
+        prototype: Object.create(HTMLParagraphElement.prototype),
+        extends: null
+    });
+    var customElement = new GeneratedConstructor();
+    // Extends is nut specifiet therefore expected class string here is HTMLElement
+    assert_class_string(customElement, 'HTMLElement',
+            'Custom element  must be a HTMLElement');
+}, 'Custom element with specified prototype. Extends is null');
+
+</script>
+</body>
+</html>

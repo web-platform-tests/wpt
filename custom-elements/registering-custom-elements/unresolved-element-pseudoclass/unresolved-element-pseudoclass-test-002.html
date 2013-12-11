@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>The :unresolved pseudoclass matching</title>
+<meta name="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<meta name="assert" content="The :unresolved pseudoclass must match all custom elements whose created callback has not yet been invoked">
+<link rel="help" href="http://www.w3.org/TR/custom-elements/#unresolved-element-pseudoclass">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src='../../testcommon.js'></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+</head>
+<body>
+<div id="log"></div>
+<script type="text/javascript">
+
+test(function() {
+    var doc = newHTMLDocument();
+    
+    HTML5_ELEMENTS.forEach(function(element) {
+        if (HTML5_DOCUMENT_ELEMENTS.indexOf(element) == -1) {
+            var obj = doc.createElement(element);            
+            var name = 'x-' + element;
+            if (HTML5_TABLE_ELEMENTS.indexOf(element) != -1) {
+                doc.body.innerHTML = 
+                    '<table>' +
+                    '<' + element + ' id="customElement" is="' + name + '"></' + element + '>' +
+                    '</table>';
+            } else {
+                doc.body.innerHTML = 
+                    '<' + element + ' id="customElement" is="' + name + '"></' + element + '>';        
+            }
+            var customElement = doc.querySelector(':unresolved');
+            
+            assert_not_equals(customElement, null, 
+                    'Unregistered custom element should be accessible by :unresolved');
+
+            assert_equals(customElement.id, 'customElement', 'Wrong custom element');    
+
+            var proto = Object.create(obj.constructor.prototype);
+            doc.register(name, {prototype: proto, extends: element});
+            var customElement2 = doc.querySelector(':unresolved');
+            
+            assert_equals(customElement2, null, 
+                    'Registered custom element should not be accessible by :unresolved');        
+            
+            assert_equals(customElement.constructor.prototype.constructor.name, name, 
+                    'Wrong custom element type');
+        }
+    });
+}, 'Test :unresolved pseudoclass for custom element types created by IS attribute');
+
+</script>
+</body>
+</html>

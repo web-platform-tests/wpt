@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>If element interface for name doesn't exists then error must be thrown</title>
+<meta name="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<meta name="assert" content="If NAME was provided and is not null and if element interface for the name and namespace does not exist or is an interface for a custom element, set ERROR to InvalidName and stop">
+<link rel="help" href="http://www.w3.org/TR/custom-elements/#registering-custom-elements">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src='../testcommon.js'></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+</head>
+<body>
+<div id="log"></div>
+<script type="text/javascript">
+
+test(function() {
+    var doc = newHTMLDocument();
+    var GeneratedConstructor = doc.register('x-a-1', {extends: 'xframe'});
+    var customElement = new GeneratedConstructor();
+    
+    assert_class_string(customElement, 'HTMLUnknownElement', 
+            'Exception should be thrown in case of attempt to register ' + 
+            'a custom element wich extends an unexisting element');
+}, 'Exception should be thrown in case of attempt to register ' + 
+    'a custom element wich extends an unexisting element');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    doc.register('x-a-2');
+    //FIXME Should the type of the exception be specified here?
+    assert_throws(null, function() {
+        doc.register('x-a-3', {extends: 'x-a-2'});
+    }, 'Exception should be thrown in case of attempt to register ' + 
+    'a custom element wich extends another custom element');
+
+}, 'Exception should be thrown in case of attempt to register ' + 
+    'a custom element wich extends another custom element');
+
+</script>
+</body>
+</html>

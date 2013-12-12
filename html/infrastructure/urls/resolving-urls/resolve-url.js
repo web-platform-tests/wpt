@@ -547,7 +547,27 @@ onload = function() {
          'http://www.whatwg.org/specs/web-apps/current-work/multipage/workers.html#dom-sharedworker']});
 
   // WebSocket()
+  async_test(function(){
+    var ws = new WebSocket('ws://{{host}}:{{ports[ws][0]}}/echo-query?\u00E5');
+    this.add_cleanup(function() {
+      ws.close();
+    });
+    ws.onmessage = this.step_func_done(function(e) {
+      assert_equals(e.data, expected_obj['utf-8'].substr(3));
+    });
+  }, 'WebSocket constructor',
+  {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/network.html#parse-a-websocket-url\'s-components'});
+
   // WebSocket#url
+  test(function(){
+    var ws = new WebSocket('ws://{{host}}:{{ports[ws][0]}}/echo-query?\u00E5');
+    ws.close();
+    var got = ws.url;
+    var expected = expected_obj['utf-8'].substr(3);
+    assert_true(ws.url.indexOf(expected) > -1, msg(expected, got));
+  }, 'WebSocket#url',
+  {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/network.html#dom-websocket-url'});
+
   // Parsing cache manifest?
   // XMLDocument#load()
   // CSS background-image, @import, content, etc.

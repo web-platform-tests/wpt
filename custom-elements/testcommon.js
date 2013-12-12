@@ -25,8 +25,8 @@ var HTML5_ELEMENTS = [ 'a', 'abbr', 'address', 'area', 'article', 'aside',
         'tfoot', 'th', 'thead', 'time', 'title', 'tr', 'track', 'u', 'ul',
         'var', 'video', 'wbr' ];
 
-// only void (without end tag) HTML5 elements
-var HTML5_VOID_ELEMENTS = [ 'area', 'base', 'br', 'col', 'command', 'embed',
+// self-closing HTML5 elements
+var HTML5_SELF_CLOSING_ELEMENTS = [ 'area', 'base', 'br', 'col', 'command', 'embed',
         'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source',
         'track', 'wbr' ];
 
@@ -308,8 +308,7 @@ var SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
 
 
 function newHTMLDocument() {
-    var d = document.implementation.createHTMLDocument('Test Document');
-    return d;
+    return document.implementation.createHTMLDocument('Test Document');
 }
 
 function newXHTMLDocument() {
@@ -335,7 +334,7 @@ function newIFrame(context, src) {
         iframe.src = src;
     }
     document.body.appendChild(iframe);
-    context.iframes.push(iframe);
+    context.addIFrame(iframe);
 
     assert_true(typeof (iframe.contentWindow) != 'undefined'
             && typeof (iframe.contentWindow.document) != 'undefined'
@@ -344,33 +343,36 @@ function newIFrame(context, src) {
     return iframe;
 }
 
-function newRenderedHTMLDocument(context) {
+function newHTMLDocumentWithBrowsingContext(context) {
     var frame = newIFrame(context);
     var d = frame.contentWindow.document;
     return d;
 }
 
-function newContext() {
-    return {
-        iframes : []
-    };
+function Context() {
+    this.iframes = [];
 }
 
-function cleanContext(context) {
-    context.iframes.forEach(function(e) {
+Context.prototype.clean = function () {
+    this.iframes.forEach(function(e) {
         e.parentNode.removeChild(e);
     });
+    this.iframes = [];
+}
+
+Context.prototype.addIFrame = function(iframe){
+    this.iframes.push(iframe)
 }
 
 // run given test function in context
 // the context is cleaned up after test completes.
 function inContext(f) {
     return function() {
-        var context = newContext();
+        var context = new Context();
         try {
             f(context);
         } finally {
-            cleanContext(context);
+            context.clean();
         }
     };
 }
@@ -384,44 +386,22 @@ function testInIFrame(url, f, testName, testProps) {
     if (url) {
         var t = async_test(testName, testProps);
         t.step(function() {
-            var context = newContext();
+            var context = new Context();
             var iframe = newIFrame(context, url);
             iframe.onload = t.step_func(function() {
                 try {
                     f(context);
                     t.done();
                 } finally {
-                    cleanContext(context);
+                    context.clean();
                 }
             });
         });
     } else {
         test(inContext(function(context) {
-            newRenderedHTMLDocument(context);
+            newHTMLDocumentWithBrowsingContext(context);
             f(context);
         }), testName, testProps);
-    }
-}
-
-function assert_nodelist_contents_equal_noorder(actual, expected, message) {
-    assert_equals(actual.length, expected.length, message);
-    var used = [];
-    for ( var i = 0; i < expected.length; i++) {
-        used.push(false);
-    }
-    for (i = 0; i < expected.length; i++) {
-        var found = false;
-        for ( var j = 0; j < actual.length; j++) {
-            if (used[j] == false && expected[i] == actual[j]) {
-                used[j] = true;
-                found = true;
-                break;
-            }
-        }
-        if (!found) {
-            assert_unreached(message + ". Fail reason:  element not found: "
-                    + expected[i]);
-        }
     }
 }
 
@@ -429,8 +409,8 @@ function isVisible(el) {
     return el.offsetTop != 0;
 }
 
-function isVoidElement(elementName) {
-    return HTML5_VOID_ELEMENTS.indexOf(elementName) >= 0;
+function isSelfClosingElement(elementName) {
+    return HTML5_SELF_CLOSING_ELEMENTS.indexOf(elementName) >= 0;
 }
 
 function checkTemplateContent(d, obj, html, id, nodeName) {

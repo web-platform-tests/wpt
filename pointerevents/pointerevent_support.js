@@ -112,4 +112,3 @@ function showPointerTypes(resultBool) {
         alert(e.message);
     }
 }
-

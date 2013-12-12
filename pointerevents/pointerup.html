@@ -1,61 +1,60 @@
-	<!doctype html>
-	<html>
-	<title>Pointerup</title>
+<!doctype html>
+<html>
 	<head>
-	    <meta name="viewport" content="width=device-width">
-	    <script src="http://w3c-test.org/resources/testharness.js"></script>
-        <!-- Additional helper script for common checks across event types -->
-        <script type="text/javascript" src="pointerevent_support.js"></script>
+		<title>Pointerup</title>
+		<meta name="viewport" content="width=device-width">
+		<script src="http://w3c-test.org/resources/testharness.js"></script>
+		<!-- Additional helper script for common checks across event types -->
+		<script type="text/javascript" src="pointerevent_support.js"></script>
 	</head>
-
 	<body onload="run()">
-	<h2>PointerUp</h2>
-	<h4>Test Description: This test checks if pointerup event triggers. Press mouse left button and release it over the black rectangle or tap it if you are using a touchscreen.</h4>
-	
-	<div id="target0" style="background:black"></div>	
-	<script>
-	    var detected_pointertypes = {};
-	    var test_pointerEvent = async_test("pointerup event received");
-	    // showPointerTypes is defined in pointerevent_support.js
-	    // Requirements: the callbakc function will reference the test_pointerEvent object and
-	    // will fail unless the async_test is created with the var name "test_pointerEvent".
-	    add_completion_callback(showPointerTypes);
+		<h2>PointerUp</h2>
+		<h4>Test Description: This test checks if pointerup event triggers. Press mouse left button and release it over the black rectangle or tap it if you are using a touchscreen.</h4>
 
-	    function run() {
-	        var target0 = document.getElementById("target0");
+		<div id="target0" style="background:black"></div>	
+		<script>
+			var detected_pointertypes = {};
+			var test_pointerEvent = async_test("pointerup event received");
+			// showPointerTypes is defined in pointerevent_support.js
+			// Requirements: the callbakc function will reference the test_pointerEvent object and
+			// will fail unless the async_test is created with the var name "test_pointerEvent".
+			add_completion_callback(showPointerTypes);
 
-	        on_event(target0, "pointerup", function (event) {
-	            detected_pointertypes[event.pointerType] = true;
-	            test_pointerEvent.step(function () {
-	                check_PointerEvent(event);
-	                assert_equals(event.type, "pointerup", "Pointer Event received.");
-	            });
-	            test_pointerEvent.done();
-	        });
-	    }
-	</script>
-	<style>
-	    div {
-	        margin: 0em;
-	        padding: 2em;
-	    }
+			function run() {
+				var target0 = document.getElementById("target0");
 
-	    #complete-notice {
-	        background: #afa;
-	        border: 1px solid #0a0;
-	        display: none;
-	    }
+				on_event(target0, "pointerup", function (event) {
+					detected_pointertypes[event.pointerType] = true;
+					test_pointerEvent.step(function () {
+						check_PointerEvent(event);
+						assert_equals(event.type, "pointerup", "Pointer Event received.");
+					});
+					test_pointerEvent.done();
+				});
+			}
+		</script>
+		<style>
+			div {
+				margin: 0em;
+				padding: 2em;
+			}
 
-	    #pointertype-log {
-	        font-weight: bold;
-	    }
-	</style>
-	
-	<h1>Pointer Events pointerup Tests</h1>
-	<div id="complete-notice">
-		<p>The following pointer types were detected: <span id="pointertype-log"></span>.</p>
-		<p>Refresh the page to run the tests again with a different pointer type.</p>
-	</div>
-	<div id="log"></div>
+			#complete-notice {
+				background: #afa;
+				border: 1px solid #0a0;
+				display: none;
+			}
+
+			#pointertype-log {
+				font-weight: bold;
+			}
+		</style>
+
+		<h1>Pointer Events pointerup Tests</h1>
+		<div id="complete-notice">
+			<p>The following pointer types were detected: <span id="pointertype-log"></span>.</p>
+			<p>Refresh the page to run the tests again with a different pointer type.</p>
+		</div>
+		<div id="log"></div>
 	</body>
-	</html>
+</html>

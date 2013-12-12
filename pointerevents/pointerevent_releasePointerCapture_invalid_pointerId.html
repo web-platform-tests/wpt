@@ -2,20 +2,16 @@
 <html>
     <head>
         <title>Pointer Event: releasePointerCapture DOMException - InvalidPointerId</title>
-
         <meta name="assert" content="releasePointerCapture DOMException - InvalidPointerId"/>
         <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/"/>
         <link rel="help" href="http://www.w3.org/wiki/PointerEvents/TestAssertions">
-
         <meta name="assert" content="When the releasePointerCapture method is invoked, if the provided pointerId value does not match any of the active pointers, a DOMException with the name InvalidPointerId must be thrown."/>
-
         <!-- http://w3c-test.org/resources/testharness.js -->
 	    <script src="http://w3c-test.org/resources/testharness.js"></script>
 		<!-- Additional helper script for common checks across event types -->
         <script type="text/javascript" src="pointerevent_support.js"></script>
         <script type="text/javascript">
-
             var detected_pointertypes = {};
             var test_pointerEvent = async_test("releasePointerCapture: DOMException InvalidPointerId");  // set up test harness
             // showPointerTypes is defined in pointerevent_support.js
@@ -56,7 +52,6 @@
                 });
             }
         </script>
-
         <style>
             div {
                 margin: 0em;

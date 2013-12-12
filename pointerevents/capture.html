@@ -1,217 +1,215 @@
-	<!doctype html>
-	<html>
+<!doctype html>
+<html>
 	<head>
-	<title>Set/Release capture</title>
-	<meta name="viewport" content="width=device-width">
-	<script src="http://w3c-test.org/resources/testharness.js"></script>
+		<title>Set/Release capture</title>
+		<meta name="viewport" content="width=device-width">
+		<script src="http://w3c-test.org/resources/testharness.js"></script>
 	</head>
-
 	<body>
-	<h2>capture</h2>
-	<h4>Test Description: This test checks if setCapture/releaseCapture functions works properly. Complete the folowing actions:
-	<ol>
-	<li> Put your mouse over the upper rectangle. pointerover event should be received for the black rectangle
-	<li> Put your mouse over the lower rectangle. pointerover event should be received for the purple rectangle
-	<li> Press and hold left mouse button over "Set Capture" button
-	<li> Put your mouse over the upper rectangle. pointerover should be received for the black rectangle and "gotpointercapture" should be logged inside of it
-	<li> Put your mouse over the lower rectangle. pointerover should be received for the black rectangle
-	<li> Release left mouse button. "lostpointercapture" should be logged inside of the black rectangle
-	</ol> </h4>
-	Test passes if the proper behavior of the events is observed.
-	<p>
-	<b>This test has large timeout value: <span id="timeoutVal"></span></b>
-	<p>		
-	<div id="target0"></div>
-	<br>
-	<div id="target1"></div>
-	<br>
-	<input type="button" id="btnCapture" value="Set Capture">
-	<script type='text/javascript'>
-
-		var isPointerCapture = false;
-		var count=0;
-		
-		var target0 = document.getElementById('target0');
-		var target1 = document.getElementById('target1');
-		var captureButton = document.getElementById('btnCapture');
-		
-		setup({ explicit_done: true });
-		
-		//test timeout. set the value that will be enough in your opinion
-		var timeoutSettings = 35000;
-		setup({timeout: timeoutSettings});
-		
-		var test_gotpointercapture = async_test("gotpointercapture event received");
-		var test_lostpointercapture = async_test("lostpointercapture event received");
-		
-	window.onload = function() {
-		document.getElementById('timeoutVal').innerHTML = timeoutSettings + " ms";
-		
-		captureButton.addEventListener('pointerdown', function(e) {
-				if(isPointerCapture == false) {
-					isPointerCapture = true;
-					captureButton.value = 'Release Capture';
-					sPointerCapture(e);
-				}
-				else {
-					rPointerCapture(e);
-				}
-			});
+		<h2>capture</h2>
+		<h4>Test Description: This test checks if setCapture/releaseCapture functions works properly. Complete the folowing actions:
+			<ol>
+				<li> Put your mouse over the upper rectangle. pointerover event should be received for the black rectangle</li>
+				<li> Put your mouse over the lower rectangle. pointerover event should be received for the purple rectangle</li>
+				<li> Press and hold left mouse button over "Set Capture" button</li>
+				<li> Put your mouse over the upper rectangle. pointerover should be received for the black rectangle and "gotpointercapture" should be logged inside of it</li>
+				<li> Put your mouse over the lower rectangle. pointerover should be received for the black rectangle</li>
+				<li> Release left mouse button. "lostpointercapture" should be logged inside of the black rectangle</li>
+			</ol>
+		</h4>
+		Test passes if the proper behavior of the events is observed.
+		<p>
+			<b>This test has large timeout value: <span id="timeoutVal"></span></b>
+		</p>		
+		<div id="target0"></div>
+		<br>
+		<div id="target1"></div>
+		<br>
+		<input type="button" id="btnCapture" value="Set Capture">
+		<script type='text/javascript'>
+			var isPointerCapture = false;
+			var count=0;
 			
-		target0.addEventListener('gotpointercapture', function(e) {
-			test_gotpointercapture.done();
-			log("gotpointercapture", document.getElementById('target0'));
-		});
+			var target0 = document.getElementById('target0');
+			var target1 = document.getElementById('target1');
+			var captureButton = document.getElementById('btnCapture');
 			
-		target0.addEventListener('lostpointercapture', function(e) {
-			test_lostpointercapture.done();
-			log("lostpointercapture", document.getElementById('target0'));
-			captureButton.value = 'Set Capture';
-			isPointerCapture = false;
-			done();
-		});
+			setup({ explicit_done: true });
 			
-		run();
-	}
-	
-	function sPointerCapture(e) {
-		try {
-			target0.setPointerCapture(e.pointerId);
-		}
-		catch(e) {
-		}
-	}
-	
-	function rPointerCapture(e) {
-		try {
-			captureButton.value = 'Set Capture';
-			isPointerCapture = false;
-			target0.releasePointerCapture(e.pointerId);
-		}
-		catch(e) {
-		}
-	}
-	
-	function run() {
-		var test_pointerover0 = async_test("pointerover event for black rectangle received")
-		var test_pointerover1 = async_test("pointerover event for purple rectangle received")
-		
-		on_event(target0, "pointerover", function (event) {
-			test_pointerover0.done();	
-			log("pointerover", document.getElementById('target0'));
-			if(isPointerCapture) {
-				test(function() {
-					assert_true(event.relatedTarget==null, "relatedTarget is null when the capture is set")
-				}, "relatedTarget is null when the capture is set. relatedTarget is " + event.relatedTarget);
+			//test timeout. set the value that will be enough in your opinion
+			var timeoutSettings = 35000;
+			setup({timeout: timeoutSettings});
+			
+			var test_gotpointercapture = async_test("gotpointercapture event received");
+			var test_lostpointercapture = async_test("lostpointercapture event received");
+			
+			window.onload = function() {
+				document.getElementById('timeoutVal').innerHTML = timeoutSettings + " ms";
+				
+				captureButton.addEventListener('pointerdown', function(e) {
+						if(isPointerCapture == false) {
+							isPointerCapture = true;
+							captureButton.value = 'Release Capture';
+							sPointerCapture(e);
+						}
+						else {
+							rPointerCapture(e);
+						}
+					});
+					
+				target0.addEventListener('gotpointercapture', function(e) {
+					test_gotpointercapture.done();
+					log("gotpointercapture", document.getElementById('target0'));
+				});
+					
+				target0.addEventListener('lostpointercapture', function(e) {
+					test_lostpointercapture.done();
+					log("lostpointercapture", document.getElementById('target0'));
+					captureButton.value = 'Set Capture';
+					isPointerCapture = false;
+					done();
+				});
+					
+				run();
 			}
-		});
-		
-	    on_event(target1, "pointerover", function (event) {
-			test(function() {
-				assert_true(isPointerCapture==false, "pointerover shouldn't trigger for this target when capture is enabled");
-			}, "pointerover shouldn't trigger for the purple rectangle while the black rectangle has capture");				
-			
-			test_pointerover1.done();
-			log("pointerover", document.getElementById('target1'));
-	    });	
-	}
-	
-  function log(msg, el) {
-    if (++count > 6){
-      count = 0;
-      el.innerHTML = ' ';
-    }
-    el.innerHTML = msg + '<br/>' + el.innerHTML;
-  }	
-	</script>
-	<style>
-		div {
-			margin: 0em;
-			padding: 2em;
+
+			function sPointerCapture(e) {
+				try {
+					target0.setPointerCapture(e.pointerId);
+				}
+				catch(e) {
+				}
+			}
+
+			function rPointerCapture(e) {
+				try {
+					captureButton.value = 'Set Capture';
+					isPointerCapture = false;
+					target0.releasePointerCapture(e.pointerId);
+				}
+				catch(e) {
+				}
+			}
+
+			function run() {
+				var test_pointerover0 = async_test("pointerover event for black rectangle received")
+				var test_pointerover1 = async_test("pointerover event for purple rectangle received")
+				
+				on_event(target0, "pointerover", function (event) {
+					test_pointerover0.done();	
+					log("pointerover", document.getElementById('target0'));
+					if(isPointerCapture) {
+						test(function() {
+							assert_true(event.relatedTarget==null, "relatedTarget is null when the capture is set")
+						}, "relatedTarget is null when the capture is set. relatedTarget is " + event.relatedTarget);
+					}
+				});
+				
+				on_event(target1, "pointerover", function (event) {
+					test(function() {
+						assert_true(isPointerCapture==false, "pointerover shouldn't trigger for this target when capture is enabled");
+					}, "pointerover shouldn't trigger for the purple rectangle while the black rectangle has capture");				
+					
+					test_pointerover1.done();
+					log("pointerover", document.getElementById('target1'));
+				});	
+			}
+
+			function log(msg, el) {
+			if (++count > 6){
+			  count = 0;
+			  el.innerHTML = ' ';
+			}
+			el.innerHTML = msg + '<br/>' + el.innerHTML;
+			}	
+		</script>
+		<style>
+			div {
+				margin: 0em;
+				padding: 2em;
+			}
+			#complete-notice {
+				background: #afa;
+				border: 1px solid #0a0;
+				display: none;
+			}
+			#pointertype-log {
+				font-weight: bold;
+			}
+		</style>
+
+		<h1>Pointer Events Capture Test</h1>
+		<div id="complete-notice"></div>
+		<div id="log"></div>	
+		<style>
+			.btn.pass {
+			background-color: #5BB75B;
 		}
-		#complete-notice {
-			background: #afa;
-			border: 1px solid #0a0;
-			display: none;
+
+		.btn.fail {
+			background-color: #DA4F49;
+		}	
+
+		.btn:hover {
+
 		}
-		#pointertype-log {
-			font-weight: bold;
+
+		.btn {
+			border-radius: 4px 4px 4px 4px;
+			background-color: #FAFAFA;
+			border-color: #CCCCCC;
 		}
-	</style>
-	
-	<h1>Pointer Events Capture Test</h1>
-	<div id="complete-notice">
-	</div>
-	<div id="log"></div>	
-	<style>
-		.btn.pass {
-		background-color: #5BB75B;
-	}
-	
-	.btn.fail {
-		background-color: #DA4F49;
-	}	
-	
-	.btn:hover {
 
-	}
-	
-	.btn {
-		border-radius: 4px 4px 4px 4px;
-		background-color: #FAFAFA;
-		border-color: #CCCCCC;
-	}
+		td {
+			padding: 25px;
+			vertical-align: top;
+		}
 
-	td {
-		padding: 25px;
-		vertical-align: top;
-	}
+		td#options {
+			width: 150px;
+		}
 
-	td#options {
-		width: 150px;
-	}
+		td#results {
+			width: 200px;
+		}
 
-	td#results {
-		width: 200px;
-	}
+		td#tdMouseEvents {
+			width: 200px;
+		}  
 
-	td#tdMouseEvents {
-		width: 200px;
-	}  
+		#target0 {
+			touch-action: auto;
+			background: black;
+			width: 300px;
+			height: 150px;
+			margin: 0;
+			overflow: hidden;
+			color: white;
+			position:relative;
+		}
 
-	#target0 {
-		touch-action: auto;
-		background: black;
-		width: 300px;
-		height: 150px;
-		margin: 0;
-		overflow: hidden;
-		color: white;
-		position:relative;
-	}
-	
-	#target1 {
-		touch-action: auto;
-		background: purple;
-		width: 300px;
-		height: 150px;
-		margin: 0;
-		overflow: hidden;
-		color: white;
-		position:relative;
-	}
+		#target1 {
+			touch-action: auto;
+			background: purple;
+			width: 300px;
+			height: 150px;
+			margin: 0;
+			overflow: hidden;
+			color: white;
+			position:relative;
+		}
 
-	#captureTest {
-		background: green;
-		width: 600px;
-		height: 100px;
-		margin: 0 auto;
-		color: white;
-	}
+		#captureTest {
+			background: green;
+			width: 600px;
+			height: 100px;
+			margin: 0 auto;
+			color: white;
+		}
 
-	body {
-		overflow: auto;
-	}
-	</style>
+		body {
+			overflow: auto;
+		}
+		</style>
 	</body>
-	</html>
+</html>

@@ -1,7 +1,7 @@
 setup({explicit_done:true});
 onload = function() {
   var encoding = '{{GET[encoding]}}';
-  var input_url = 'resource.py?q=\u00E5';
+  var input_url = 'resources/resource.py?q=\u00E5';
   var input_url_html = input_url + '&type=html';
   var input_url_css = input_url + '&type=css';
   var input_url_js = input_url + '&type=js';
@@ -119,7 +119,7 @@ onload = function() {
       var elm = document.createElement(tag);
       // check if ping is supported
       assert_true('ping' in elm, 'ping not supported');
-      elm.setAttribute('ping', 'stash.py?q=\u00E5&id='+uuid+'&action=put');
+      elm.setAttribute('ping', 'resources/stash.py?q=\u00E5&id='+uuid+'&action=put');
       var iframe = document.createElement('iframe');
       setup_navigation(elm, iframe, 'test_follow_link_ping_'+tag, this);
       // follow the hyperlink
@@ -127,7 +127,7 @@ onload = function() {
       // check that navigation succeeded by ...??? XXX
       // check that the right URL was requested for the ping
       var xhr = new XMLHttpRequest();
-      xhr.open('GET', 'stash.py?id='+uuid+'&action=take');
+      xhr.open('GET', 'resources/stash.py?id='+uuid+'&action=take');
       xhr.onload = this.step_func_done(function(e) {
         assert_equals(xhr.response, expected_current.substr(3));
       });

@@ -1,71 +1,61 @@
 	<!doctype html>
+	<html>
 	<title>Pointerup</title>
 	<head>
-	<meta name="viewport" content="width=device-width">
-	<script src="http://w3c-test.org/resources/testharness.js"></script>
+	    <meta name="viewport" content="width=device-width">
+	    <script src="http://w3c-test.org/resources/testharness.js"></script>
+        <!-- Additional helper script for common checks across event types -->
+        <script type="text/javascript" src="pointerevent_support.js"></script>
 	</head>
 
 	<body onload="run()">
 	<h2>PointerUp</h2>
-	<h4>Test Description: This test checks if pointerup event triggers. Press mouse left button and release it over the black rectangle or tap it if you are using toucscreen.</h4>
+	<h4>Test Description: This test checks if pointerup event triggers. Press mouse left button and release it over the black rectangle or tap it if you are using a touchscreen.</h4>
 	
-	<p>		
 	<div id="target0" style="background:black"></div>	
 	<script>
-	var eventTested = false;
-	var detected_pointertypes = {};
+	    var detected_pointertypes = {};
+	    var test_pointerEvent = async_test("pointerup event received");
+	    // showPointerTypes is defined in pointerevent_support.js
+	    // Requirements: the callbakc function will reference the test_pointerEvent object and
+	    // will fail unless the async_test is created with the var name "test_pointerEvent".
+	    add_completion_callback(showPointerTypes);
 
-    setup({ explicit_done: true });
-	add_completion_callback(showPointerTypes);
-	
-	function run() {
-		var target0 = document.getElementById("target0");
-		var test_pointerup = async_test("pointerup event received");
-		var pointerover_event;
-		
-		on_event(target0, "pointerover", function(event) {
-			pointerover_event = event;
-			detected_pointertypes[ event.pointerType ] = true;
-		});
+	    function run() {
+	        var target0 = document.getElementById("target0");
 
-		on_event(target0, "pointerup", function (event) {
-		    if (eventTested == false) {
-		        detected_pointertypes[event.pointerType] = true;
-
-		        test_pointerup.done();
-		        eventTested = true;
-		    }
-		});
-	}
-	
-	function showPointerTypes() {
-		var complete_notice = document.getElementById("complete-notice");
-		var pointertype_log = document.getElementById("pointertype-log");
-		var pointertypes = Object.keys(detected_pointertypes);
-		pointertype_log.innerHTML = pointertypes.length ?
-			pointertypes.join(",") : "(none)";
-		complete_notice.style.display = "block";
-	}
+	        on_event(target0, "pointerup", function (event) {
+	            detected_pointertypes[event.pointerType] = true;
+	            test_pointerEvent.step(function () {
+	                check_PointerEvent(event);
+	                assert_equals(event.type, "pointerup", "Pointer Event received.");
+	            });
+	            test_pointerEvent.done();
+	        });
+	    }
 	</script>
 	<style>
-		div {
-			margin: 0em;
-			padding: 2em;
-		}
-		#complete-notice {
-			background: #afa;
-			border: 1px solid #0a0;
-			display: none;
-		}
-		#pointertype-log {
-			font-weight: bold;
-		}
+	    div {
+	        margin: 0em;
+	        padding: 2em;
+	    }
+
+	    #complete-notice {
+	        background: #afa;
+	        border: 1px solid #0a0;
+	        display: none;
+	    }
+
+	    #pointertype-log {
+	        font-weight: bold;
+	    }
 	</style>
 	
 	<h1>Pointer Events pointerup Tests</h1>
 	<div id="complete-notice">
 		<p>The following pointer types were detected: <span id="pointertype-log"></span>.</p>
-		<p>Would you like to <a href="#">run the tests again</a> with a different pointer type?</p>
+		<p>Refresh the page to run the tests again with a different pointer type.</p>
 	</div>
 	<div id="log"></div>
 	</body>
+	</html>

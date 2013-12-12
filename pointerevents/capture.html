@@ -1,6 +1,7 @@
 	<!doctype html>
-	<title>Set/Release capture</title>
+	<html>
 	<head>
+	<title>Set/Release capture</title>
 	<meta name="viewport" content="width=device-width">
 	<script src="http://w3c-test.org/resources/testharness.js"></script>
 	</head>
@@ -67,6 +68,7 @@
 			log("lostpointercapture", document.getElementById('target0'));
 			captureButton.value = 'Set Capture';
 			isPointerCapture = false;
+			done();
 		});
 			
 		run();
@@ -212,3 +214,4 @@
 	}
 	</style>
 	</body>
+	</html>

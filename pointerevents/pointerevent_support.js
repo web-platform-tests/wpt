@@ -26,7 +26,7 @@ function check_PointerEvent(event) {
     var idl_type_check = {
         "long": function (v) { return typeof v === "number" && Math.round(v) === v; },
         "float": function (v) { return typeof v === "number"; },
-        "DOMString": function (v) { return typeof v === "string"; },
+        "string": function (v) { return typeof v === "string"; },
         "boolean": function (v) { return typeof v === "boolean" }
     };
     [
@@ -36,7 +36,7 @@ function check_PointerEvent(event) {
         ["readonly", "float", "pressure"],
         ["readonly", "long", "tiltX"],
         ["readonly", "long", "tiltY"],
-        ["readonly", "DOMString", "pointerType"],
+        ["readonly", "string", "pointerType"],
         ["readonly", "boolean", "isPrimary"]
     ].forEach(function (attr) {
         var readonly = attr[0];
@@ -86,47 +86,30 @@ function check_PointerEvent(event) {
 
     // Check mouse-specific properties
     if (event.pointerType === "mouse") {
-        // TA: 1.9, 1.10, 1.11, 1.13
+        // TA: 1.9, 1.10, 1.13
         test(function () {
             assert_equals(event.tiltX, 0, event.type + ".tiltX is 0 for mouse");
             assert_equals(event.tiltY, 0, event.type + ".tiltY is 0 for mouse");
-            assert_equals(event.pointerId, 1, event.type + ".pointerId is 1 for mouse");
             assert_true(event.isPrimary, event.type + ".isPrimary is true for mouse");
         }, event.type + " properties for pointerType = mouse");
         // Check properties for pointers other than mouse
-    } else if (event.pointerType === "touch") {
-        // TA: 1.12
-        test(function () {
-            assert_true(event.pointerId !== 1, event.type + ".pointerId is not 1 for " + event.pointerType);
-        }, event.type + " properties for pointerType=" + event.pointerType);
-    }
-    else if (event.pointerType === "pen") {
-        // TA: 1.12
-        test(function () {
-            assert_true(event.pointerId !== 1, event.type + ".pointerId is not 1 for " + event.pointerType);
-        }, event.type + " properties for pointerType=" + event.pointerType);
-    }
+    } 
 }
 
-
-var mouseEvents = ["mousedown", "mouseup", "mouseover", "mouseenter", "mouseout", "mouseleave", "mousemove"];
-var clickEvents = ["click", "dblclick", "contextmenu"];
-var pointerEvents = ["pointerdown", "pointerup", "pointerover", "pointerout", "pointerenter", "pointerleave", "pointermove", "pointercancel",
-                     "gotpointercapture", "lostpointercapture"];
-
-function ListenForPointerEvents(target, eventListener) {
-    for (var i = 0; i < pointerEvents.length; i++) {
-        target.addEventListener(pointerEvents[i], eventListener, false);
-    }
-}
-function ListenForMouseEvents(target, eventListener) {
-    for (var i = 0; i < mouseEvents.length; i++) {
-        target.addEventListener(mouseEvents[i], eventListener, false);
-    }
-}
-function ListenForClickEvents(target, eventListener) {
-    for (var i = 0; i < clickEvents.length; i++) {
-        target.addEventListener(clickEvents[i], eventListener, false);
+function showPointerTypes(resultBool) {
+    try{
+        var complete_notice = document.getElementById("complete-notice");
+        var pointertype_log = document.getElementById("pointertype-log");
+        var pointertypes = Object.keys(detected_pointertypes);
+        pointertype_log.innerHTML = pointertypes.length ? pointertypes.join(",") : "(none)";
+        if (test_pointerEvent.status == test_pointerEvent.NOTRUN
+                    || test_pointerEvent.status == test_pointerEvent.TIMEOUT) {
+            complete_notice.innerHTML = "Test FAIL due to time out.  This is due to the browser not supporting pointer, or the manual steps were not run to completion.";
+            complete_notice.style.background = "red";
+        }
+        complete_notice.style.display = "block";
+    } catch (e) {
+        alert(e.message);
     }
 }
 

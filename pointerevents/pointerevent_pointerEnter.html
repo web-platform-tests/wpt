@@ -11,40 +11,24 @@
 		<!-- Additional helper script for common checks across event types -->
         <script type="text/javascript" src="pointerevent_support.js"></script>
         <script type="text/javascript">
-
-            setup({ explicit_done: true });
-
             var detected_pointertypes = {};
+            var test_pointerEvent = async_test("pointerenter event");  // set up test harness
+            // showPointerTypes is defined in pointerevent_support.js
+            // Requirements: the callbakc function will reference the test_pointerEvent object and
+            // will fail unless the async_test is created with the var name "test_pointerEvent".
             add_completion_callback(showPointerTypes);
 
-            var target0;
-            var test_pointerEnter;
-
             function run() {
-                target0 = document.getElementById("target0");
-                test_pointerEnter = async_test("pointerenter event");  // set up test harness
+                var target0 = document.getElementById("target0");
 
                 on_event(target0, "pointerenter", function (event) {
                     check_PointerEvent(event);
-                    test_pointerEnter.step(function () {
-                        assert_equals(event.type, "pointerenter", "pointer event received" + event.type);
+                    test_pointerEvent.step(function () {
+                        assert_equals(event.type, "pointerenter", "pointer event received: " + event.type);
                     });
                     detected_pointertypes[event.pointerType] = true;
-                    test_pointerEnter.done(); // complete test
+                    test_pointerEvent.done(); // complete test
                 });
-            }
-
-            function showPointerTypes() {
-                var complete_notice = document.getElementById("complete-notice");
-                var pointertype_log = document.getElementById("pointertype-log");
-                var pointertypes = Object.keys(detected_pointertypes);
-                pointertype_log.innerHTML = pointertypes.length ? pointertypes.join(",") : "(none)";
-                if (test_pointerEnter.status == test_pointerEnter.NOTRUN
-                    || test_pointerEnter.status == test_pointerEnter.TIMEOUT) {
-                    complete_notice.innerHTML = "Test FAIL due to time out.  This is due to the browser not supporting pointer, or the manual steps were not run to completion.";
-                    complete_notice.style.background = "red";
-                }
-                complete_notice.style.display = "block";
             }
         </script>
 

@@ -12,41 +12,27 @@
         <script type="text/javascript" src="pointerevent_support.js"></script>
         <script type="text/javascript">
 
-            setup({ explicit_done: true });
-
             var detected_pointertypes = {};
+            var test_pointerEvent = async_test("pointerleave event");  // set up test harness;
+            // showPointerTypes is defined in pointerevent_support.js
+            // Requirements: the callbakc function will reference the test_pointerEvent object and
+            // will fail unless the async_test is created with the var name "test_pointerEvent".
             add_completion_callback(showPointerTypes);
 
-            var target0;
-            var test_pointerLeave;
-
             function run() {
-                target0 = document.getElementById("target0");
-                test_pointerLeave = async_test("pointerleave event");  // set up test harness
+                var target0 = document.getElementById("target0");
 
                 on_event(target0, "pointerleave", function (event) {
                     check_PointerEvent(event);
-                    test_pointerLeave.step(function () {
-                        assert_equals(event.pointerType, "mouse", " Test should be run using a mouse as input");
-                        assert_equals(event.type,"pointerleave", "The " + event.type + " event was received");
+                    test_pointerEvent.step(function () {
+                        assert_equals(event.pointerType, "mouse", "Test should be run using a mouse as input.");
+                        assert_equals(event.type, "pointerleave", "The " + event.type + " event was received.");
                     });
                     detected_pointertypes[event.pointerType] = true;
-                    test_pointerLeave.done(); // complete test
+                    test_pointerEvent.done(); // complete test
                 });
             }
 
-            function showPointerTypes() {
-                var complete_notice = document.getElementById("complete-notice");
-                var pointertype_log = document.getElementById("pointertype-log");
-                var pointertypes = Object.keys(detected_pointertypes);
-                pointertype_log.innerHTML = pointertypes.length ? pointertypes.join(",") : "(none)";
-                if (test_pointerLeave.status == test_pointerLeave.NOTRUN
-                    || test_pointerLeave.status == test_pointerLeave.TIMEOUT) {
-                    complete_notice.innerHTML = "Test FAIL due to time out.  This is due to the browser not supporting pointer, or the manual steps were not run to completion.";
-                    complete_notice.style.background = "red";
-                }
-                complete_notice.style.display = "block";
-            }
         </script>
 
             <style>
@@ -78,7 +64,7 @@
         </h4>
         <br />
         <div id="target0">
-            Use a mouse to move over than out of this element
+            Use a mouse to move over then out of this element
         </div>
         <div id="complete-notice">
             <p>Test complete:  Scroll to Summary to view Pass/Fail Results.</p>

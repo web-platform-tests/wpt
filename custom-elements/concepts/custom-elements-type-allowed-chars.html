@@ -22,24 +22,24 @@ test(function() {
             doc.register(name);
         } catch (e) {
             assert_unreached('Exception should not be thrown in case of attempt ' +
-                    'to register a custom element with a name \'' + name + 
+                    'to register a custom element with a name \'' + name +
                     '\' (char code U+' + EXTENDER_CHARS[i].toString(16) + ')');
-        }        
+        }
     }
 }, 'Registering valid custom element types with extender char');
 
 
 test(function() {
     var doc = newHTMLDocument();
-    for (var i = 0; i < COMBINING_CHARS.length; i++) {        
+    for (var i = 0; i < COMBINING_CHARS.length; i++) {
         var name = 'x-' + String.fromCharCode(COMBINING_CHARS[i]);
         try {
             doc.register(name);
         } catch (e) {
             assert_unreached('Exception should not be thrown in case of attempt ' +
-                    'to register a custom element with a name \'' + name + 
+                    'to register a custom element with a name \'' + name +
                     '\' (char code U+' + COMBINING_CHARS[i].toString(16) + ')');
-        }        
+        }
     }
 }, 'Registering valid custom element types with combining char');
 
@@ -52,7 +52,7 @@ test(function() {
             doc.register(name);
         } catch (e) {
             assert_unreached('Exception should not be thrown in case of attempt ' +
-                    'to register a custom element with a name \'' + name + '\' (char code U+' + 
+                    'to register a custom element with a name \'' + name + '\' (char code U+' +
                     BASE_CHARS_SINGLE[i].toString(16) + ')');
         }
     }
@@ -61,19 +61,19 @@ test(function() {
 
 test(function() {
     var doc = newHTMLDocument();
-    
+
     // BASE_CHARS_RANGES is a flattened sequence of range start, range end pairs
     for (var i = 0; i < BASE_CHARS_RANGES.length - 1; i += 2) {
         var rangeStart = BASE_CHARS_RANGES[i];
         var rangeEnd = BASE_CHARS_RANGES[i+1];
-        
-        for (var charCode = rangeStart; charCode <= rangeEnd; charCode++ ) {
-            var name = 'x-' + String.fromCharCode(charCode) + '-' + charCode.toString(16);            
+
+        for (var charCode = rangeStart; charCode <= rangeEnd; charCode++) {
+            var name = 'x-' + String.fromCharCode(charCode) + '-' + charCode.toString(16);
             try {
                 doc.register(name);
             } catch (e) {
                 assert_unreached('Exception should not be thrown in case of attempt ' +
-                        'to register a custom element with a name \'' + name + 
+                        'to register a custom element with a name \'' + name +
                         '\' (char code U+' + charCode.toString(16) + ')');
             }
         }
@@ -89,28 +89,28 @@ test(function() {
             doc.register(name);
         } catch (e) {
             assert_unreached('Exception should not be thrown in case of attempt ' +
-                    'to register a custom element with a name \'' + name + 
+                    'to register a custom element with a name \'' + name +
                     '\' (char code U+' + IDEOGRAPHIC_CHARS_SINGLE[i].toString(16) + ')');
-        }        
+        }
     }
 }, 'Registering valid custom element types with single ideographic chars');
 
 
 test(function() {
     var doc = newHTMLDocument();
-    
+
     // IDEOGRAPHIC_CHARS_RANGES is a flattened sequence of range start, range end pairs
     for (var i = 0; i < IDEOGRAPHIC_CHARS_RANGES.length - 1; i += 2) {
         var rangeStart = IDEOGRAPHIC_CHARS_RANGES[i];
         var rangeEnd = IDEOGRAPHIC_CHARS_RANGES[i+1];
-        
-        for (var charCode = rangeStart; charCode <= rangeEnd; charCode++ ) {
+
+        for (var charCode = rangeStart; charCode <= rangeEnd; charCode++) {
             var name = 'x-' + String.fromCharCode(charCode) + '-' + charCode.toString(16);
             try {
                 doc.register(name);
             } catch (e) {
                 assert_unreached('Exception should not be thrown in case of attempt ' +
-                        'to register a custom element with a name \'' + name + 
+                        'to register a custom element with a name \'' + name +
                         '\' (char code U+' + charCode.toString(16) + ')');
             }
         }
@@ -120,19 +120,19 @@ test(function() {
 
 test(function() {
     var doc = newHTMLDocument();
-    
+
     // DIGIT_CHARS_RANGES is a flattened sequence of range start, range end pairs
     for (var i = 0; i < DIGIT_CHARS_RANGES.length - 1; i += 2) {
         var rangeStart = DIGIT_CHARS_RANGES[i];
         var rangeEnd = DIGIT_CHARS_RANGES[i+1];
-        
-        for (var charCode = rangeStart; charCode <= rangeEnd; charCode++ ) {
+
+        for (var charCode = rangeStart; charCode <= rangeEnd; charCode++) {
             var name = 'x-' + String.fromCharCode(charCode) + '-' + charCode.toString(16);
             try {
                 doc.register(name);
             } catch (e) {
                 assert_unreached('Exception should not be thrown in case of attempt ' +
-                        'to register a custom element with a name \'' + name + 
+                        'to register a custom element with a name \'' + name +
                         '\' (char code U+' + charCode.toString(16) + ')');
             }
         }

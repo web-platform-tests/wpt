@@ -28,7 +28,7 @@ test(function() {
 test(function() {
   var ev = new Event("pointerlockerror", { type: "trololol", bubbles: true, cancelable: false, defaultPrevented: true});
   assert_equals(ev.type, "pointerlockerror");
-  assert_equals(ev.bubbles, true);
+  assert_equals(ev.bubbles, false);
   assert_equals(ev.cancelable, false);
   assert_equals(ev.defaultPrevented, false);
 }, "Basic test.");

@@ -17,7 +17,7 @@
 test(function() {
     var doc = newHTMLDocument();
     var validNames = ['x-frame', 'xx-frame', 'x--frame', '_-frame', 'x-', 'x--',
-                      'x-1', 'x-_', '_-_', '__-',  '_-1',  '_-..'                      
+                      'x-1', 'x-_', '_-_', '__-',  '_-1',  '_-..'
                      ];
     HTML5_ELEMENTS.forEach(function(value) {
         validNames.push('x-' + value);
@@ -28,7 +28,7 @@ test(function() {
             doc.register(value);
         } catch (e) {
             assert_unreached('Exception should not be thrown in case of attempt ' +
-                    'to register a custom element with a name \'' + value + '\'');        
+                    'to register a custom element with a name \'' + value + '\'');
         }
     });
 }, 'Registering valid custom element types');
@@ -42,11 +42,11 @@ test(function() {
                      ];
     invalidNames.forEach(function(value) {
         //FIXME Should the type of the exception be specified here?
-        assert_throws(null, function() {            
+        assert_throws(null, function() {
             doc.register(value);
         }, 'Exception should be thrown in case of attempt to register element ' +
             'with the name \'' + value + '\'');
-    });    
+    });
 }, 'Registering invalid custom element types should fail');
 
 
@@ -68,8 +68,8 @@ test(function() {
             doc.register(value);
         }, 'Exception should be thrown in case of attempt to register element ' +
             'with the name \'' + value + '\'');
-    });    
-}, 'Registering forbidden custom element types shoul fail');
+    });
+}, 'Registering forbidden custom element types should fail');
 
 </script>
 </body>

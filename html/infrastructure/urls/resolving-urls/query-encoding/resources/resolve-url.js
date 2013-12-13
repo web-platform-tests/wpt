@@ -479,6 +479,16 @@ onload = function() {
   }, 'EventSource constructor',
   {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/comms.html#dom-eventsource'});
 
+  // XMLDocument#load()
+  async_test(function() {
+    var doc = document.implementation.createDocument(null, "x");
+    doc.load(input_url_svg);
+    doc.onload = this.step_func_done(function() {
+      assert_equals(doc.documentElement.textContent, expected_current.substr(3));
+    });
+  }, 'XMLDocument#load()',
+  {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/dom.html#dom-xmldocument-load'});
+
   // UTF-8:
   // XHR
   async_test(function() {
@@ -592,7 +602,6 @@ onload = function() {
     test_cache_manifest(str);
   });
 
-  // XMLDocument#load()
   // CSS background-image, @import, content, etc.
   //
   // step 4:

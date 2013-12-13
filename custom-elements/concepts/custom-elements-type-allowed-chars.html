@@ -3,6 +3,7 @@
 <head>
 <title>Chars allowed for custom element type </title>
 <meta name="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<meta name="author" title="Aleksei Yu. Semenov" href="mailto:a.semenov@unipro.ru">
 <meta name="assert" content="The custom element type identifies a custom element interface and is a sequence of characters that must match the NCName production">
 <link rel="help" href="https://dvcs.w3.org/hg/webcomponents/raw-file/default/spec/custom/index.html#concepts">
 <script src="/resources/testharness.js"></script>
@@ -14,130 +15,69 @@
 <div id="log"></div>
 <script type="text/javascript">
 
-test(function() {
-    var doc = newHTMLDocument();
-    for (var i = 0; i < EXTENDER_CHARS.length; i++) {
-        var name = 'x-' + String.fromCharCode(EXTENDER_CHARS[i]);
-        try {
-            doc.register(name);
-        } catch (e) {
-            assert_unreached('Exception should not be thrown in case of attempt ' +
-                    'to register a custom element with a name \'' + name +
-                    '\' (char code U+' + EXTENDER_CHARS[i].toString(16) + ')');
+function checkValidName(doc, name) {
+    try {
+        doc.register(name);
+    } catch (e) {
+        assert_unreached('The custom element name \'' + name +
+               '\' should be registered without errors');
+    }
+}
+
+// check each element of the supplied array with the checkFunction
+function testCharCodeArray(doc, charCodeArray, checkFunction) {
+    for (var i = 0; i < charCodeArray.length; i++){
+        var c = charCodeArray[i];
+        var name = 'x-' + String.fromCharCode(c) + '-x' + c.toString(16);
+        checkFunction(doc, name);
+    }
+}
+
+// check each element of the supplied ranges array with the checkFunction
+function testCharCodeRangesArray(doc, charCodeRangesArray, checkFunction) {
+    for (var i = 0; i < charCodeRangesArray.length; i += 2){
+        var rangeStart = charCodeRangesArray[i];
+        var rangeEnd = charCodeRangesArray[i+1];
+        for (var c = rangeStart; c <= rangeEnd; c++){
+            var name = 'x-' + String.fromCharCode(c) + '-x' + c.toString(16);
+            checkFunction(doc, name);
         }
     }
-}, 'Registering valid custom element types with extender char');
-
-
-test(function() {
-    var doc = newHTMLDocument();
-    for (var i = 0; i < COMBINING_CHARS.length; i++) {
-        var name = 'x-' + String.fromCharCode(COMBINING_CHARS[i]);
-        try {
-            doc.register(name);
-        } catch (e) {
-            assert_unreached('Exception should not be thrown in case of attempt ' +
-                    'to register a custom element with a name \'' + name +
-                    '\' (char code U+' + COMBINING_CHARS[i].toString(16) + ')');
-        }
-    }
-}, 'Registering valid custom element types with combining char');
-
+}
 
 test(function() {
-    var doc = newHTMLDocument();
-    for (var i = 0; i < BASE_CHARS_SINGLE.length; i++) {
-        var name = 'x-' + String.fromCharCode(BASE_CHARS_SINGLE[i]);
-        try {
-            doc.register(name);
-        } catch (e) {
-            assert_unreached('Exception should not be thrown in case of attempt ' +
-                    'to register a custom element with a name \'' + name + '\' (char code U+' +
-                    BASE_CHARS_SINGLE[i].toString(16) + ')');
-        }
-    }
+    testCharCodeArray(newHTMLDocument(), BASE_CHARS_SINGLE, checkValidName);
 }, 'Registering valid custom element types with single base chars');
 
-
 test(function() {
-    var doc = newHTMLDocument();
-
-    // BASE_CHARS_RANGES is a flattened sequence of range start, range end pairs
-    for (var i = 0; i < BASE_CHARS_RANGES.length - 1; i += 2) {
-        var rangeStart = BASE_CHARS_RANGES[i];
-        var rangeEnd = BASE_CHARS_RANGES[i+1];
-
-        for (var charCode = rangeStart; charCode <= rangeEnd; charCode++) {
-            var name = 'x-' + String.fromCharCode(charCode) + '-' + charCode.toString(16);
-            try {
-                doc.register(name);
-            } catch (e) {
-                assert_unreached('Exception should not be thrown in case of attempt ' +
-                        'to register a custom element with a name \'' + name +
-                        '\' (char code U+' + charCode.toString(16) + ')');
-            }
-        }
-    }
+    testCharCodeRangesArray(newHTMLDocument(), BASE_CHARS_RANGES, checkValidName);
 }, 'Registering valid custom element types with base chars ranges');
 
-
 test(function() {
-    var doc = newHTMLDocument();
-    for (var i = 0; i < IDEOGRAPHIC_CHARS_SINGLE.length; i++) {
-        var name = 'x-' + String.fromCharCode(IDEOGRAPHIC_CHARS_SINGLE[i]);
-        try {
-            doc.register(name);
-        } catch (e) {
-            assert_unreached('Exception should not be thrown in case of attempt ' +
-                    'to register a custom element with a name \'' + name +
-                    '\' (char code U+' + IDEOGRAPHIC_CHARS_SINGLE[i].toString(16) + ')');
-        }
-    }
+    testCharCodeArray(newHTMLDocument(), IDEOGRAPHIC_CHARS_SINGLE, checkValidName);
 }, 'Registering valid custom element types with single ideographic chars');
 
-
 test(function() {
-    var doc = newHTMLDocument();
-
-    // IDEOGRAPHIC_CHARS_RANGES is a flattened sequence of range start, range end pairs
-    for (var i = 0; i < IDEOGRAPHIC_CHARS_RANGES.length - 1; i += 2) {
-        var rangeStart = IDEOGRAPHIC_CHARS_RANGES[i];
-        var rangeEnd = IDEOGRAPHIC_CHARS_RANGES[i+1];
-
-        for (var charCode = rangeStart; charCode <= rangeEnd; charCode++) {
-            var name = 'x-' + String.fromCharCode(charCode) + '-' + charCode.toString(16);
-            try {
-                doc.register(name);
-            } catch (e) {
-                assert_unreached('Exception should not be thrown in case of attempt ' +
-                        'to register a custom element with a name \'' + name +
-                        '\' (char code U+' + charCode.toString(16) + ')');
-            }
-        }
-    }
+    testCharCodeRangesArray(newHTMLDocument(), IDEOGRAPHIC_CHARS_RANGES, checkValidName);
 }, 'Registering valid custom element types with ideographic chars ranges');
 
+test(function() {
+    testCharCodeRangesArray(newHTMLDocument(), DIGIT_CHARS_RANGES, checkValidName);
+}, 'Registering valid custom element types with digit chars');
 
 test(function() {
-    var doc = newHTMLDocument();
+    testCharCodeArray(newHTMLDocument(),
+                      ['.'.charCodeAt(0), '-'.charCodeAt(0), '_'.charCodeAt(0)],
+                      checkValidName);
+}, 'Registering valid custom element types with characters \'.\', \'-\', \'_\'');
 
-    // DIGIT_CHARS_RANGES is a flattened sequence of range start, range end pairs
-    for (var i = 0; i < DIGIT_CHARS_RANGES.length - 1; i += 2) {
-        var rangeStart = DIGIT_CHARS_RANGES[i];
-        var rangeEnd = DIGIT_CHARS_RANGES[i+1];
+test(function() {
+    testCharCodeArray(newHTMLDocument(), COMBINING_CHARS, checkValidName);
+}, 'Registering valid custom element types with combining char');
 
-        for (var charCode = rangeStart; charCode <= rangeEnd; charCode++) {
-            var name = 'x-' + String.fromCharCode(charCode) + '-' + charCode.toString(16);
-            try {
-                doc.register(name);
-            } catch (e) {
-                assert_unreached('Exception should not be thrown in case of attempt ' +
-                        'to register a custom element with a name \'' + name +
-                        '\' (char code U+' + charCode.toString(16) + ')');
-            }
-        }
-    }
-}, 'Registering valid custom element types with digit chars');
+test(function() {
+    testCharCodeArray(newHTMLDocument(), EXTENDER_CHARS, checkValidName);
+}, 'Registering valid custom element types with extender char');
 
 </script>
 </body>

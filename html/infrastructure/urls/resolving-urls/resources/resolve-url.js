@@ -143,7 +143,7 @@ onload = function() {
   // navigating with meta refresh
   async_test(function() {
     var iframe = document.createElement('iframe');
-    iframe.src = 'blank.py?encoding='+encoding;
+    iframe.src = 'resources/blank.py?encoding='+encoding;
     document.body.appendChild(iframe);
     this.add_cleanup(function() {
       document.body.removeChild(iframe);
@@ -408,7 +408,7 @@ onload = function() {
   // <base href>
   async_test(function() {
     var iframe = document.createElement('iframe');
-    iframe.src = 'blank.py?encoding='+encoding;
+    iframe.src = 'resources/blank.py?encoding='+encoding;
     document.body.appendChild(iframe);
     this.add_cleanup(function() {
       document.body.removeChild(iframe);
@@ -568,7 +568,30 @@ onload = function() {
   }, 'WebSocket#url',
   {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/network.html#dom-websocket-url'});
 
-  // Parsing cache manifest?
+  // Parsing cache manifest
+  function test_cache_manifest(mode) {
+    async_test(function() {
+      var iframe = document.createElement('iframe');
+      var id = token();
+      iframe.src = 'resources/page-using-manifest.py?id='+id+'&encoding='+encoding+'&mode='+mode;
+      document.body.appendChild(iframe);
+      this.add_cleanup(function() {
+        document.body.removeChild(iframe);
+      });
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', 'resources/stash.py?id='+id+'&action=take');
+      xhr.onload = this.step_func_done(function(e) {
+        assert_equals(xhr.response, expected_obj['utf-8'].substr(3));
+      });
+      xhr.send();
+    }, 'Parsing cache manifest (' + mode + ')',
+    {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/offline.html#parse-a-manifest'});
+  }
+
+  'CACHE, FALLBACK, NETWORK'.split(', ').forEach(function(str) {
+    test_cache_manifest(str);
+  });
+
   // XMLDocument#load()
   // CSS background-image, @import, content, etc.
   //

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>CSS Test: Blended element with masking.</title>
+		<link rel="author" title="Mihai Tica" href="mitica@adobe.com">
+		<link rel="help" href="http://dev.w3.org/fxtf/compositing-1/#mix-blend-mode">
+		<meta name="assert" content="Test checks that an element having mask and mix-blend-mode blends with its parent element.">
+		<link rel="match" href="reference/mix-blend-mode-mask-ref.html">
+	</head>
+	<style>
+		div {
+			width: 100px;
+			height: 100px;
+		}
+	</style>
+	<body>
+		<p>Test passes if you can see a green circle. <br>
+		The test fails if the circle is drawn with red. </p>
+
+		<div style="background: #0F0; mask-image: url('../support/red_circle.svg');"></div>
+	</body>
+</html>

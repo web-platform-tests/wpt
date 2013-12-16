@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Text Test Reference File</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<style>
+  #ref {
+    border: 1px solid black;
+    width: 200px;
+  }
+  #test {
+    border: 1px solid blue;
+    width: 200px;
+  }
+</style>
+<body>
+  <p>Test passes if the 'FillerText' overflows the blue border box, but breaks line within the black border box.</p>
+  <p id="ref">FillerTextFillerTextFillerTextFille rText</p>
+  <p id="test">FillerTextFillerTextFillerTextFillerText</p>
+</body>

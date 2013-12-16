@@ -235,3 +235,16 @@ http:@:www.example.com
 http:/@:www.example.com
 http://@:www.example.com
 http://:@www.example.com  s:http pass: h:www.example.com p:/
+
+#Others
+/ http://www.example.com/test s:http h:www.example.com p:/
+/test.txt  s:http h:www.example.com p:/test.txt
+.  s:http h:www.example.com p:/
+..  s:http h:www.example.com p:/
+test.txt  s:http h:www.example.com p:/test.txt
+./test.txt  s:http h:www.example.com p:/test.txt
+../test.txt  s:http h:www.example.com p:/test.txt
+../aaa/test.txt  s:http h:www.example.com p:/aaa/test.txt
+../../test.txt  s:http h:www.example.com p:/test.txt
+\u0061\u0061\u0061/test.txt  s:http h:www.example.com p:/aaa/test.txt
+http://www.example2.com  s:http h:www.example2.com p:/

@@ -31,6 +31,21 @@ onload = function() {
     return 'expected substring '+expected+' got '+got;
   }
 
+  // Some tests tend to get everything to time out if they're all run at the same time, so we'll run them in sequence instead
+  var sequentual_tests = [];
+  function run_next_in_sequence() {
+    if (sequentual_tests.length > 0) {
+      var arr = sequentual_tests.shift();
+      var test_obj = arr[0];
+      var func = arr[1];
+      test_obj.step(func);
+    }
+  }
+  function run_sequentially(test_obj, func) {
+    sequentual_tests.push([test_obj, func]);
+    test_obj.add_cleanup(run_next_in_sequence);
+  }
+
   // background attribute, check with getComputedStyle
   function test_background(tag) {
     var spec_url = 'http://www.whatwg.org/specs/web-apps/current-work/multipage/rendering.html';
@@ -115,23 +130,25 @@ onload = function() {
   // follow hyperlink with ping attribute
   function test_follow_link_ping(tag) {
     async_test(function() {
-      var uuid = token();
-      var elm = document.createElement(tag);
-      // check if ping is supported
-      assert_true('ping' in elm, 'ping not supported');
-      elm.setAttribute('ping', 'resources/stash.py?q=\u00E5&id='+uuid+'&action=put');
-      var iframe = document.createElement('iframe');
-      setup_navigation(elm, iframe, 'test_follow_link_ping_'+tag, this);
-      // follow the hyperlink
-      elm.click();
-      // check that navigation succeeded by ...??? XXX
-      // check that the right URL was requested for the ping
-      var xhr = new XMLHttpRequest();
-      xhr.open('GET', 'resources/stash.py?id='+uuid+'&action=take');
-      xhr.onload = this.step_func_done(function(e) {
-        assert_equals(xhr.response, expected_current.substr(3));
+      run_sequentially(this, function() {
+        var uuid = token();
+        var elm = document.createElement(tag);
+        // check if ping is supported
+        assert_true('ping' in elm, 'ping not supported');
+        elm.setAttribute('ping', 'resources/stash.py?q=\u00E5&id='+uuid+'&action=put');
+        var iframe = document.createElement('iframe');
+        setup_navigation(elm, iframe, 'test_follow_link_ping_'+tag, this);
+        // follow the hyperlink
+        elm.click();
+        // check that navigation succeeded by ...??? XXX
+        // check that the right URL was requested for the ping
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'resources/stash.py?id='+uuid+'&action=take');
+        xhr.onload = this.step_func_done(function(e) {
+          assert_equals(xhr.response, expected_current.substr(3));
+        });
+        xhr.send();
       });
-      xhr.send();
     }, 'hyperlink auditing <'+tag+' ping>',
     {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/links.html#hyperlink-auditing'});
   }
@@ -581,19 +598,21 @@ onload = function() {
   // Parsing cache manifest
   function test_cache_manifest(mode) {
     async_test(function() {
-      var iframe = document.createElement('iframe');
-      var id = token();
-      iframe.src = 'resources/page-using-manifest.py?id='+id+'&encoding='+encoding+'&mode='+mode;
-      document.body.appendChild(iframe);
-      this.add_cleanup(function() {
-        document.body.removeChild(iframe);
+      run_sequentially(this, function() {
+        var iframe = document.createElement('iframe');
+        var uuid = token();
+        iframe.src = 'resources/page-using-manifest.py?id='+uuid+'&encoding='+encoding+'&mode='+mode;
+        document.body.appendChild(iframe);
+        this.add_cleanup(function() {
+          document.body.removeChild(iframe);
+        });
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'resources/stash.py?id='+uuid+'&action=take');
+        xhr.onload = this.step_func_done(function(e) {
+          assert_equals(xhr.response, expected_obj['utf-8'].substr(3));
+        });
+        xhr.send();
       });
-      var xhr = new XMLHttpRequest();
-      xhr.open('GET', 'resources/stash.py?id='+id+'&action=take');
-      xhr.onload = this.step_func_done(function(e) {
-        assert_equals(xhr.response, expected_obj['utf-8'].substr(3));
-      });
-      xhr.send();
     }, 'Parsing cache manifest (' + mode + ')',
     {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/offline.html#parse-a-manifest'});
   }
@@ -602,12 +621,87 @@ onload = function() {
     test_cache_manifest(str);
   });
 
-  // CSS background-image, @import, content, etc.
-  //
-  // step 4:
-  // all the things that give a base url
-  // element
-  // element + <base>
-  // element + xml:base
+  // CSS
+  function test_css(tmpl, expected_cssom, encoding, use_style_element) {
+    var desc = ['CSS', (use_style_element ? '<style>' : '<link> (' + encoding + ')'),  tmpl].join(' ');
+    async_test(function(){
+      css_is_supported(tmpl, expected_cssom, this);
+      run_sequentially(this, function() {
+        var uuid = token();
+        var id = 'test_css_' + uuid;
+        var url = 'url(stash.py?q=%s&action=put&id=' + uuid + ')';
+        tmpl = tmpl.replace(/<id>/g, id).replace(/<url>/g, url);
+        var link;
+        if (use_style_element) {
+          link = document.createElement('style');
+          link.textContent = tmpl.replace(/%s/g, '\u00E5').replace(/stash\.py/g, 'resources/stash.py');
+        } else {
+          link = document.createElement('link');
+          link.rel = 'stylesheet';
+          link.href = 'resources/css-tmpl.py?encoding='+encoding+'&tmpl='+encodeURIComponent(tmpl);
+        }
+        var div = document.createElement('div');
+        div.id = id;
+        div.textContent='x';
+        document.head.appendChild(link);
+        document.body.appendChild(div);
+        this.add_cleanup(function() {
+          document.head.removeChild(link);
+          document.body.removeChild(div);
+        });
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'resources/stash.py?id='+uuid+'&action=take');
+        xhr.onload = this.step_func_done(function(e) {
+          assert_equals(xhr.response, expected_obj['utf-8'].substr(3));
+        });
+        xhr.send();
+      });
+    }, desc,
+    {help:'https://www.w3.org/Bugs/Public/show_bug.cgi?id=23968'});
+  }
+
+  // fail fast if the input doesn't parse into the expected cssom
+  function css_is_supported(tmpl, expected_cssom, test_obj) {
+    if (expected_cssom === null) {
+      return;
+    }
+    var style = document.createElement('style');
+    style.textContent = tmpl.replace(/<id>/g, 'x').replace(/<url>/g, 'url(data:,)');
+    document.head.appendChild(style);
+    test_obj.add_cleanup(function() {
+      document.head.removeChild(style);
+    });
+    assert_equals(style.sheet.cssRules.length, expected_cssom.length, 'number of style rules');
+    for (var i = 0; i < expected_cssom.length; ++i) {
+      if (expected_cssom[i] === null) {
+        continue;
+      }
+      assert_equals(style.sheet.cssRules[i].style.length, expected_cssom[i], 'number of declarations in style rule #'+i);
+    }
+  }
+
+  [['#<id> { background-image:<url> }', [1] ],
+   ['#<id> { border-image-source:<url> }', [1] ],
+   ['#<id>::before { content:<url> }', [1] ],
+   ['@font-face { font-family:<id>; src:<url> } #<id> { font-family:<id> }', [null, 1] ],
+   ['#<id> { display:list-item; list-style-image:<url> }', [2] ],
+   ['@import <url>;', null ],
+   // XXX maybe cursor isn't suitable for automation here if browsers delay fetching it
+   ['#<id> { cursor:<url>, pointer }', [1] ]].forEach(function(arr) {
+    var input = arr[0];
+    var expected_cssom = arr[1];
+    var other_encoding = encoding == 'utf-8' ? 'windows-1252' : 'utf-8';
+    test_css(input, expected_cssom, encoding);
+    test_css(input, expected_cssom, other_encoding);
+    test_css(input, expected_cssom, null, true);
+   });
+
+  // XXX maybe test if they become relevant:
+  // binding (obsolete?)
+  // aural: cue-after, cue-before, play-during (not implemented?)
+  // hyphenate-resource (not implemented?)
+  // image() (not implemented?)
+
+  run_next_in_sequence();
   done();
 };

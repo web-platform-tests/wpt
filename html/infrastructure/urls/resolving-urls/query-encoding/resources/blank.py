@@ -1,2 +1,2 @@
 def main(request, response):
-    return ([("Content-Type", "text/html; charset=" + request.GET['encoding'])], "")
+    return ([("Content-Type", "text/html; charset=%s" % (request.GET['encoding']))], "")

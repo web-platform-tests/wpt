@@ -16,8 +16,8 @@ def main(request, response):
             if q != None:
                 break
             i += 1
-            if i == 100:
+            if i == 500:
                 q = 'TIMEOUT'
                 break
-            time.sleep(0.1)
+            time.sleep(0.01)
         return ([("Content-Type", "text/html")], q)

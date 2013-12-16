@@ -9,4 +9,4 @@ def main(request, response):
 <html manifest="manifest.py?id=%s&encoding=%s&mode=%s">
 %s
 """ % (id, encoding, mode, iframe)
-    return ([("Content-Type", "text/html; charset=" + encoding)], doc.encode(encoding))
+    return ([("Content-Type", "text/html; charset=%s" % (encoding))], doc.encode(encoding))

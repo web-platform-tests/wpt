@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>CSS Reftest Reference</title>
+		<link rel="author" title="Mirela Budăeș" href="mailto:mbudaes@adobe.com">
+		<style>
+		div {
+		  height: 150px;
+		  width: 150px;
+		}
+		.container {
+		  position: fixed;
+		  background-color: lime;/*rgb(0,255,0);*/
+		}
+		.transformed {
+		  /*-webkit-transform-style: preserve-3d;*/
+		  -webkit-transform: rotateY(50deg);
+		  /*-moz-transform-style: preserve-3d;*/
+		  -moz-transform: rotateY(50deg);
+		  background-color: blue;/*rgb(0,0,255);*/
+		}
+		.child {
+		  -webkit-transform-origin: top left;
+		  -webkit-transform: rotateX(40deg);
+		  -moz-transform-origin: top left;
+		  -moz-transform: rotateX(40deg);
+		  background-color: yellow;/*rgb(255,255,0);*/
+		}
+		</style>
+	</head>
+	<body>
+		<p>You should see a yellow and a blue rectangle on top of a lime rectangle<br>
+			You should not see a red rectangle on the screeen.</p>
+		<div class="container">
+		  <div class="transformed">
+		      <div class="child"></div>
+		  </div>
+		</div>
+	</body>
+</html>

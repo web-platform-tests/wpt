@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>CSS Test: mix-blend-mode between a parent element and a blended child with overflow:hidden and border-radius</title>
+		<link rel="author" title="Mirela Budăeș" href="mailto:mbudaes@adobe.com">
+		<link rel="help" href="http://dev.w3.org/fxtf/compositing-1/#mix-blend-mode">
+		<meta name="flags" content="">
+		<meta name="assert" content="Test checks that the element with mix-blend-mode, overflow:hidden and border-radius correctly blends with the parent element.">
+		<link rel="match" href="reference/mix-blend-mode-intermediate-element-overflow-hidden-and-border-radius-ref.html">
+		<style>
+			.simple {
+				background: aqua;/*rgb(0,255,255);*/
+				width: 140px;
+				height: 140px;
+				display: inline-block;
+				position: fixed;
+			}
+			.mixed {
+				background: red;/*rgb(255,0,0);*/
+				margin-top: -200px;
+				margin-left: 20px;
+				width: 200px;
+				height: 200px;
+				mix-blend-mode: difference;
+				-webkit-transform: translateZ(0);
+				-moz-transform: translateZ(0);
+			}
+			.intermediateOfMixed {
+				background: yellow;/*rgb(255,255,0);*/
+				margin-top: 20px;
+				margin-left: 20px;
+				width: 200px;
+				height: 200px;
+				overflow: hidden;
+				border-radius: 50%;
+			}
+		</style>
+	</head>
+	<body>
+		<p> You should see two overlapping squares and a green circle on top of the second square <br>
+			The color of the first square should be aqua. <br>
+			The second square should have three red corners and one white corner. <br>
+		</p>
+		<div class="simple">
+			<div class="intermediateOfMixed"></div>
+			<div class="mixed">
+			</div>
+		</div>
+	</body>
+</html>

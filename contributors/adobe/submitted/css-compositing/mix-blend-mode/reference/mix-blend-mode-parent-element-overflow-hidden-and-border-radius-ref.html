@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>CSS Reftest Reference</title>
+		<link rel="author" title="Mirela Budăeș" href="mailto:mbudaes@adobe.com">
+		<style>
+			.simple{
+				background: aqua;/*rgb(0,255,255);*/
+				width: 140px;
+				height: 140px;
+				display: inline-block;
+				position: fixed;
+				overflow: hidden;
+				border-radius: 1em 5em;
+			}
+			.mixed {
+				background: black;/*rgb(0,0,0);*/
+				margin-top: 20px;
+				margin-left: 20px;
+				width: 200px;
+				height: 200px;
+				}
+		</style>
+	</head>
+	<body>
+		<p> You should see a black square on top of an aqua lemon. <br>
+			The part of the square outside the lemon is not painted. <br>
+			You should not see the part of a red square on the page.</p>
+		<div class="simple">
+			<div class="mixed"></div>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>CSS Reftest Reference</title>
+		<link rel="author" title="Mirela Budăeș" href="mailto:mbudaes@adobe.com">
+		<style>
+			.simple{
+				background: aqua;/*rgb(0,255,255);*/
+				width: 140px;
+				height: 140px;
+				display:inline-block;
+				position: fixed;
+				overflow:scroll;
+			}
+			.mixed {
+				background: black;/*rgb(0,0,0);*/
+				margin-top: 20px;
+				margin-left: 20px;
+				width: 200px;
+				height: 200px;
+				mix-blend-mode: multiply;
+				}
+		</style>
+	</head>
+	<body>
+		<p>Test passes if you see a black rectangle with large aqua borders on the top and left. <br>
+			Also, you should see scrollbars on the right and the bottom of the main div.
+		You should not see a red rectangle on the page. </p>
+		<div class="simple">
+			<div class="mixed"></div>
+		</div>
+	</body>
+</html>

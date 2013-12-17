@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>CSS Test: mix-blend-mode between a parent element and its child with 3D transform and preserve 3D</title>
+		<link rel="author" title="Mirela Budăeș" href="mailto:mbudaes@adobe.com">
+		<link rel="help" href="http://dev.w3.org/fxtf/compositing-1/#mix-blend-mode">
+		<meta name="flags" content="">
+		<meta name="assert" content="Test checks that mix-blend-mode override the behavior of transform:style:preserve-3d">
+		<link rel="match" href="reference/mix-blend-mode-with-transform-and-preserve-3D-ref.html">
+		<style>
+		div {
+		  height: 150px;
+		  width: 150px;
+		}
+		.container {
+		  position: fixed;
+		  background-color: lime;/*rgb(0,255,0);*/
+		}
+		.transformed {
+		  -webkit-transform-style: preserve-3d;
+		  -webkit-transform: rotateY(50deg);
+		  -moz-transform-style: preserve-3d;
+		  -moz-transform: rotateY(50deg);
+		  background-color: aqua;/*rgb(0,255,255);*/
+		  mix-blend-mode: difference;
+		}
+		.child {
+		  -webkit-transform-origin: top left;
+		  -webkit-transform: rotateX(40deg);
+		  -moz-transform-origin: top left;
+		  -moz-transform: rotateX(40deg);
+		  background-color: red;/*rgb(255,0,0);*/
+		}
+		</style>
+	</head>
+	<body>
+		<p>You should see a yellow and a blue rectangle on top of a lime rectangle<br>
+			You should not see a red rectangle on the screeen.</p>
+		<div class="container">
+		  <div class="transformed">
+		      <div class="child"></div>
+		  </div>
+		</div>
+	</body>
+</html>

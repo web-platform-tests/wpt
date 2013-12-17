@@ -17,7 +17,7 @@
 test(function() {
     var doc = newHTMLDocument();
     var callbackCalledCounter = 0;
-    
+
     var proto = Object.create(HTMLElement.prototype);
     proto.attributeChangedCallback = function() {
         callbackCalledCounter++;
@@ -26,17 +26,17 @@ test(function() {
     var customElement = new GeneratedConstructor();
     customElement.setAttribute('class', 'someClass');
     customElement.setAttribute('class', 'someClass2');
-    assert_equals(callbackCalledCounter, 2, 'Callback attributeChanged was called ' + 
+    assert_equals(callbackCalledCounter, 2, 'Callback attributeChanged was called ' +
             'wrong number of times');
-    
+
     customElement.classList.add('someClass3');
-    assert_equals(callbackCalledCounter, 3, 'Callback attributeChanged was called ' + 
+    assert_equals(callbackCalledCounter, 3, 'Callback attributeChanged was called ' +
             'wrong number of times after classList.add');
-    
+
     customElement.id = 'someId';
-    assert_equals(callbackCalledCounter, 4, 'Callback attributeChanged was called ' + 
-            'wrong number of times after changing attribute as property');    
-}, 'Test attributeChanged callback of the custom element created in JavaScript. ' + 
+    assert_equals(callbackCalledCounter, 4, 'Callback attributeChanged was called ' +
+            'wrong number of times after changing attribute as property');
+}, 'Test attributeChanged callback of the custom element created in JavaScript. ' +
     'Test that callback is called when attribute is changed');
 
 
@@ -46,7 +46,7 @@ test(function() {
     var argument1 = 'arg1';
     var argument2 = 'arg2';
     var argument3 = 'arg3';
-    
+
     var proto = Object.create(HTMLElement.prototype);
     proto.attributeChangedCallback = function(arg1, arg2, arg3) {
         callbackCalledCounter++;
@@ -54,51 +54,51 @@ test(function() {
         argument2 = arg2;
         argument3 = arg3;
     }
-    doc.register('x-a-2', {prototype: proto});    
+    doc.register('x-a-2', {prototype: proto});
     doc.body.innerHTML = '<x-a-2 id="xa2" class="oldValue"></x-a-2>';
     var customElement = doc.querySelector('#xa2');
-    
+
     customElement.setAttribute('class', 'newValue');
-    assert_equals(callbackCalledCounter, 1, 'Callback attributeChanged was called ' + 
-            'wrong number of times');    
-    assert_equals(argument1, 'class', 'Wrong value of the first attribute of ' +
+    assert_equals(callbackCalledCounter, 1, 'Callback attributeChanged was called ' +
+            'wrong number of times');
+    assert_equals(argument1, 'class', 'Wrong value of the first argument of ' +
         'attributeChanged callback');
-    assert_equals(argument2, 'oldValue', 'Wrong value of the second attribute of ' +
+    assert_equals(argument2, 'oldValue', 'Wrong value of the second argument of ' +
         'attributeChanged callback');
-    assert_equals(argument3, 'newValue', 'Wrong value of the third attribute of ' +
+    assert_equals(argument3, 'newValue', 'Wrong value of the third argument of ' +
         'attributeChanged callback');
-    
+
     customElement.classList.add('newestValue');
-    assert_equals(callbackCalledCounter, 2, 'Callback attributeChanged was called ' + 
-            'wrong number of times after changing attribute by classList.add');    
-    assert_equals(argument1, 'class', 'Wrong value of the first attribute of ' +
+    assert_equals(callbackCalledCounter, 2, 'Callback attributeChanged was called ' +
+            'wrong number of times after changing attribute by classList.add');
+    assert_equals(argument1, 'class', 'Wrong value of the first argument of ' +
         'attributeChanged callback after changing attribute by classList.add');
-    assert_equals(argument2, 'newValue', 'Wrong value of the second attribute of ' +
+    assert_equals(argument2, 'newValue', 'Wrong value of the second argument of ' +
         'attributeChanged callback after changing attribute by classList.add');
-    assert_equals(argument3, 'newValue newestValue', 'Wrong value of the third attribute of ' +
+    assert_equals(argument3, 'newValue newestValue', 'Wrong value of the third argument of ' +
         'attributeChanged callback after changing attribute by classList.add');
-    
+
     customElement.className = 'lastValue';
-    assert_equals(callbackCalledCounter, 3, 'Callback attributeChanged was called ' + 
-            'wrong number of times after changing attribute as a property');    
-    assert_equals(argument1, 'class', 'Wrong value of the first attribute of ' +
+    assert_equals(callbackCalledCounter, 3, 'Callback attributeChanged was called ' +
+            'wrong number of times after changing attribute as a property');
+    assert_equals(argument1, 'class', 'Wrong value of the first argument of ' +
         'attributeChanged callback after changing attribute by classList.add');
-    assert_equals(argument2, 'newValue newestValue', 'Wrong value of the second attribute of ' +
+    assert_equals(argument2, 'newValue newestValue', 'Wrong value of the second argument of ' +
         'attributeChanged callback after changing attribute by classList.add');
-    assert_equals(argument3, 'lastValue', 'Wrong value of the third attribute of ' +
+    assert_equals(argument3, 'lastValue', 'Wrong value of the third argument of ' +
         'attributeChanged callback after changing attribute by classList.add');
-    
-}, 'Test attributeChanged callback of the custom element instantiating in HTML. ' + 
+
+}, 'Test attributeChanged callback of the custom element instantiating in HTML. ' +
     'Test callback arguments when attribute is changed');
 
 
 test(function() {
-    var doc = newHTMLDocument();    
+    var doc = newHTMLDocument();
     var callbackCalledCounter = 0;
     var argument1 = 'arg1';
     var argument2 = 'arg2';
     var argument3 = 'arg3';
-    
+
     var proto = Object.create(HTMLElement.prototype);
     proto.attributeChangedCallback = function (arg1, arg2, arg3) {
         callbackCalledCounter++;
@@ -109,26 +109,26 @@ test(function() {
     doc.body.innerHTML = '<x-a-3 id="xa3" class="oldValue"></x-a-3>';
     var customElement = doc.querySelector('#xa3');
     customElement.setAttribute('class', 'newValue');
-    customElement.setAttribute('class', 'newestValue');    
+    customElement.setAttribute('class', 'newestValue');
     doc.register('x-a-3', {prototype: proto});
     customElement.setAttribute('class', 'rightValue');
-    
-    assert_equals(callbackCalledCounter, 1, 'Callback attributeChanged was called ' + 
+
+    assert_equals(callbackCalledCounter, 1, 'Callback attributeChanged was called ' +
             'wrong number of times');
-    assert_equals(argument1, 'class', 'Wrong value of the first attribute of ' +
+    assert_equals(argument1, 'class', 'Wrong value of the first argument of ' +
             'attributeChanged callback');
-    assert_equals(argument2, 'newestValue', 'Wrong value of the second attribute of ' +
+    assert_equals(argument2, 'newestValue', 'Wrong value of the second argument of ' +
             'attributeChanged callback');
-    assert_equals(argument3, 'rightValue', 'Wrong value of the third attribute of ' +
+    assert_equals(argument3, 'rightValue', 'Wrong value of the third argument of ' +
             'attributeChanged callback');
-}, 'Test attributeChanged callback of the custom element instantiating in HTML. ' + 
+}, 'Test attributeChanged callback of the custom element instantiating in HTML. ' +
     'Test attribute changing of unregistered element');
 
 
 testInIFrame('../../resources/x-element.html', function(context) {
     var doc = context.iframes[0].contentDocument;
     var callbackCalledCounter = 0;
-    
+
     var proto = Object.create(HTMLElement.prototype);
     proto.attributeChangedCallback = function () {
         callbackCalledCounter++;
@@ -139,15 +139,15 @@ testInIFrame('../../resources/x-element.html', function(context) {
     customElement.setAttribute('class', 'secondValue');
     assert_equals(callbackCalledCounter, 2, 'Callback attributeChanged was called ' +
             'wrong number of times');
-    
+
     customElement.classList.add('someClass3');
-    assert_equals(callbackCalledCounter, 3, 'Callback attributeChanged was called ' + 
+    assert_equals(callbackCalledCounter, 3, 'Callback attributeChanged was called ' +
             'wrong number of times after classList.add');
-    
+
     customElement.id = 'someId';
-    assert_equals(callbackCalledCounter, 4, 'Callback attributeChanged was called ' + 
-            'wrong number of times after changing attribute as property');    
-    
+    assert_equals(callbackCalledCounter, 4, 'Callback attributeChanged was called ' +
+            'wrong number of times after changing attribute as property');
+
 }, 'Test attributeChanged callback for document that has browsing context. ' +
     'Test that callback is called when attribute is changed');
 
@@ -157,7 +157,7 @@ testInIFrame('../../resources/x-element.html', function(context) {
     var argument1 = 'arg1';
     var argument2 = 'arg2';
     var argument3 = 'arg3';
-    
+
     var proto = Object.create(HTMLElement.prototype);
     proto.attributeChangedCallback = function (arg1, arg2, arg3) {
         argument1 = arg1;
@@ -168,29 +168,29 @@ testInIFrame('../../resources/x-element.html', function(context) {
     var customElement = doc.querySelector('#xelement');
     customElement.setAttribute('class', 'firstValue');
     customElement.setAttribute('class', 'secondValue');
-    assert_equals(argument1, 'class', 'Wrong value of the first attribute of ' +
+    assert_equals(argument1, 'class', 'Wrong value of the first argument of ' +
         'attributeChanged callback');
-    assert_equals(argument2, 'firstValue', 'Wrong value of the second attribute of ' +
+    assert_equals(argument2, 'firstValue', 'Wrong value of the second argument of ' +
         'attributeChanged callback');
-    assert_equals(argument3, 'secondValue', 'Wrong value of the third attribute of ' +
+    assert_equals(argument3, 'secondValue', 'Wrong value of the third argument of ' +
         'attributeChanged callback');
-    
+
     customElement.classList.add('newestValue');
-    assert_equals(argument1, 'class', 'Wrong value of the first attribute of ' +
+    assert_equals(argument1, 'class', 'Wrong value of the first argument of ' +
         'attributeChanged callback after changing attribute by classList.add');
-    assert_equals(argument2, 'secondValue', 'Wrong value of the second attribute of ' +
+    assert_equals(argument2, 'secondValue', 'Wrong value of the second argument of ' +
         'attributeChanged callback after changing attribute by classList.add');
-    assert_equals(argument3, 'secondValue newestValue', 'Wrong value of the third attribute of ' +
+    assert_equals(argument3, 'secondValue newestValue', 'Wrong value of the third argument of ' +
         'attributeChanged callback after changing attribute by classList.add');
-    
+
     customElement.className = 'lastValue';
-    assert_equals(argument1, 'class', 'Wrong value of the first attribute of ' +
+    assert_equals(argument1, 'class', 'Wrong value of the first argument of ' +
         'attributeChanged callback after changing attribute as a property');
-    assert_equals(argument2, 'secondValue newestValue', 'Wrong value of the second attribute of ' +
+    assert_equals(argument2, 'secondValue newestValue', 'Wrong value of the second argument of ' +
         'attributeChanged callback after changing attribute as a property');
-    assert_equals(argument3, 'lastValue', 'Wrong value of the third attribute of ' +
+    assert_equals(argument3, 'lastValue', 'Wrong value of the third argument of ' +
         'attributeChanged callback after changing attribute as a property');
-    
+
 }, 'Test attributeChanged callback for document that has browsing context. ' +
     'Test callback attributes when attribute is changed');
 
@@ -198,7 +198,7 @@ testInIFrame('../../resources/x-element.html', function(context) {
 testInIFrame('../../resources/x-element.html', function(context) {
     var doc = context.iframes[0].contentDocument;
     var callbackCalledCounter = 0;
-    
+
     var proto = Object.create(HTMLElement.prototype);
     proto.attributeChangedCallback = function () {
         callbackCalledCounter++;
@@ -208,7 +208,7 @@ testInIFrame('../../resources/x-element.html', function(context) {
     customElement.setAttribute('class', 'secondValue');
     doc.register('x-element', {prototype: proto});
     customElement.setAttribute('class', 'thirdValue');
-    assert_equals(callbackCalledCounter, 1, 'Callback attributeChanged was called ' + 
+    assert_equals(callbackCalledCounter, 1, 'Callback attributeChanged was called ' +
             'wrong number of times');
 }, 'Test attributeChanged callback for document that has browsing context. ' +
     'Test that callback is called when attribute is changed. Element is unregistered ' +

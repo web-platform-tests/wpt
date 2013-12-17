@@ -102,6 +102,27 @@ testInIFrame('../../resources/x-element.html', function(context) {
 }, 'Test leftView callback is called after method replaceChild(). Document has browsing context');
 
 
+testInIFrame('../../resources/blank.html', function(context) {
+    var doc = context.iframes[0].contentDocument;
+    var callbackCalledCounter = 0;
+
+    var proto = Object.create(HTMLElement.prototype);
+    proto.leftViewCallback = function () {
+        callbackCalledCounter++;
+    }
+    doc.register('x-a-6', {prototype: proto});
+
+    doc.body.innerHTML = '<div id="x-a-6-parent"><x-a-6 id="xelement"></x-a-6></div>';
+
+    var parent = doc.querySelector('#x-a-6-parent');
+    var replacement = doc.createElement('div');
+    doc.body.replaceChild(replacement, parent);
+    assert_equals(callbackCalledCounter, 1, 'Callback leftView was not called when ' +
+            'custom element is removed from the document with browsing context');
+}, 'Test leftView callback is called after method replaceChild() for custom element\'s parent. ' +
+    'Document has browsing context');
+
+
 testInIFrame('../../resources/x-element.html', function(context) {
     var doc = context.iframes[0].contentDocument;
     var callbackCalledCounter = 0;

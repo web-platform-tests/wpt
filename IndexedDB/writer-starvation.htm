@@ -4,8 +4,7 @@
 <meta name=timeout content=long>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
-
-<script src=../support.js></script>
+<script src=support.js></script>
 
 <script>
     var db, read_request_count = 0, read_success_count = 0;
@@ -32,8 +31,7 @@
               .get(1)
               .onsuccess = this.step_func(function(e) {
                     read_success_count++;
-                    //assert_equals(e.target.transaction.mode, "readonly");
-                    console.log("prefill read success " + read_success_count );
+                    assert_equals(e.target.transaction.mode, "readonly");
                 });
         }
 
@@ -41,7 +39,6 @@
 
         function loop() {
             read_request_count++;
-            console.log("        read request " + read_request_count );
 
             db.transaction("s")
               .objectStore("s")
@@ -49,21 +46,20 @@
               .onsuccess = this.step_func(function(e)
             {
                 read_success_count++;
-                //assert_equals(e.target.transaction.mode, "readonly");
-                console.log("        read success " + read_success_count );
+                assert_equals(e.target.transaction.mode, "readonly");
 
                 if (read_success_count >= RQ_COUNT && write_request_count == 0)
                 {
                     write_request_count++;
                     console.info("Generating 1 readwrite request with "
                                   + read_success_count + " previous readonly requests");
-                    db.transaction("s", IDBTransaction.READ_WRITE)
+                    db.transaction("s", "readwrite")
                       .objectStore("s")
                       .add("written", read_request_count)
                       .onsuccess = this.step_func(function(e)
                     {
                         write_success_count++;
-                        //assert_equals(e.target.transaction.mode, "readwrite");
+                        assert_equals(e.target.transaction.mode, "readwrite");
                         assert_equals(e.target.result, read_success_count,
                                        "write cb came before later read cb's")
                     });
@@ -79,7 +75,6 @@
                           .onsuccess = this.step_func(function(e)
                         {
                             read_success_count++;
-                            console.log("  extra read success " + read_success_count );
                         });
                     }
                 }
@@ -93,14 +88,14 @@
                   .objectStore("s")
                   .count()
                   .onsuccess = this.step_func(function()
-                    { setTimeout(this.step_func(finish), 100); });
+                {
+                    setTimeout(this.step_func(finish), 100);
+                });
         }
     }
 
 
 function finish() {
-    console.log("read request:"+read_request_count, "read success:"+read_success_count);
-    console.log("write request:"+write_request_count, "write success:"+write_success_count);
     assert_equals(read_request_count, read_success_count, "read counts");
     assert_equals(write_request_count, write_success_count, "write counts");
     this.done();

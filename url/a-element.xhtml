@@ -2,14 +2,15 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <title>URL Test</title>
     <link rel="author" title="Intel" href="http://www.intel.com/" />
-    <link rel="help" title="2.5.2 Resolving URLs" href="http://www.w3.org/html/wg/drafts/html/CR/infrastructure.html#resolving-urls" />
+    <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/infrastructure.html#urls" />
     <link rel="help" href="http://www.w3.org/TR/xhtml1/" />
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <script src="urltestparser.js"></script>
   </head>
-  <body xml:base="">  
+  <body>
     <div id="log"></div>
     <script>
     <![CDATA[
@@ -26,7 +27,7 @@
     })
 
     function setBase(base) {
-      document.body.setAttribute("xml:base", "http://www.example.com/test");
+      document.body.setAttributeNS("http://www.w3.org/XML/1998/namespace", "xml:base", base);
     }
 
     function bURL(url, base) {

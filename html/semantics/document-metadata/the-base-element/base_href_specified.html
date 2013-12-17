@@ -3,9 +3,9 @@
 <title>HTML Test: base_href_specified</title>
 <link rel="author" title="Intel" href="http://www.intel.com/">
 <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/document-metadata.html#the-base-element">
-<base id="base" href="http://www.w3c-test.org/index.html">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<base id="base" href="http://www.example.com">
 <div id="log"></div>
 <img id="test" src="test.ico" style="display:none">
 
@@ -18,15 +18,11 @@
     baseElement = document.getElementById("base");
   });
 
-  /*
-  Becasue the href attribute of base will impact on the script element also,
-  to ensure the tests work well, set "http://www.w3c-test.org/index.html" as the href attribute of base elements.
-  */
   test(function() {
-    assert_equals(baseElement.href, "http://www.w3c-test.org/index.html", "The href attribute of the base element is incorrect.");
-  }, "The href attribute is specified");
+    assert_equals(baseElement.href, "http://www.example.com/", "The href attribute of the base element is incorrect.");
+  }, "The href attribute of the base element is specified");
 
   test(function() {
-    assert_equals(testElement.src, "http://www.w3c-test.org/test.ico", "The src attribute of the img element is incorrect.");
+    assert_equals(testElement.src, "http://www.example.com/test.ico", "The src attribute of the img element is incorrect.");
   }, "The src attribute of the img element must relative to the href attribute of the base element");
 </script>

@@ -57,7 +57,6 @@
             }
             else {
                 assert_true(overflow_error_fired, "error fired on 'current number' overflow");
-                console.log(actual_keys);
                 assert_object_equals(actual_keys, expected_keys, "keygenerator array");
 
                 t.done();

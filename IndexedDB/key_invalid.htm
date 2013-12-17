@@ -23,7 +23,7 @@
         // set the current test, and run it
         db.setTest(t).onupgradeneeded = function(e) {
             objStore = objStore || e.target.result.createObjectStore("store");
-            try { objStore.add("value", key); } catch(e) { console.log(e) };
+            try { objStore.add("value", key); } catch(e) { assert_unreached(e); };
             assert_throws('DataError', function() {
                 objStore.add("value", key);
             });

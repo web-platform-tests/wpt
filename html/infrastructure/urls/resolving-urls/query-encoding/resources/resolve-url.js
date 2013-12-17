@@ -506,6 +506,31 @@ onload = function() {
   }, 'XMLDocument#load()',
   {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/dom.html#dom-xmldocument-load'});
 
+  // window.open
+  async_test(function() {
+    var id = 'test_window_open';
+    var iframe = document.createElement('iframe');
+    iframe.name = id;
+    document.body.appendChild(iframe);
+    this.add_cleanup(function() {
+      document.body.removeChild(iframe);
+    });
+    window.open(input_url_html, id);
+    iframe.onload = this.step_func(function() {
+      var got = iframe.contentDocument.body.textContent;
+      if (got != "") {
+        assert_equals(got, expected_current.substr(3));
+        this.done();
+      }
+    });
+  }, 'window.open()',
+  {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#dom-open'});
+
+  // location
+  // pushState
+  // replaceState
+  // SVG
+
   // UTF-8:
   // XHR
   async_test(function() {

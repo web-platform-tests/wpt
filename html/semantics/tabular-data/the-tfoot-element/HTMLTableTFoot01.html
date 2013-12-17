@@ -4,8 +4,7 @@
 <title>NIST DOM HTML Test - TABLE</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="../common/domtests-common.js"></script>
-<link href="http://www.w3.org/TR/html5/the-table-element.html#dom-table-thead" rel="help">
+<link href="http://www.w3.org/TR/html5/tabular-data.html#the-tfoot-element" rel="help">
 <link rel="author" title="NIST">
 </head>
 <body>
@@ -81,29 +80,31 @@
 
 
 <script>
-var domtest = async_test("The tHead attribute returns the tables THEAD or null if it does not     exist.      Retrieve the THEAD element from within the first TABLE element.");
+var domtest = async_test("The tFoot attribute returns the tables TFOOT.");
 
 on_event(window, "load", domtest.step_func(function (dom_event) {
     var nodeList;
       var testNode;
       var vsection;
+      var valign;
       var doc;
       doc = window.document;
       nodeList = doc.getElementsByTagName("table");
       assert_equals(nodeList.length,3);
-testNode = nodeList.item(0);
-      vsection = testNode.tHead;
+testNode = nodeList.item(1);
+      vsection = testNode.tFoot;
 
-      assert_equals(vsection, null);
-    
+      valign = vsection.align;
+
+      assert_equals(valign,"center");
+       
     domtest.done();
 }));
 
 </script>
-<p>The tHead attribute returns the tables THEAD or null if it does not
-    exist.
+<p>The tFoot attribute returns the tables TFOOT.
 
-    Retrieve the THEAD element from within the first TABLE element.  
-    Since one does not exist it should be null.</p>
+    Retrieve the align attribute of the TFOOT element from the second
+    TABLE element and examine its value.</p>
 <div id="log"></div>
 </body></html>

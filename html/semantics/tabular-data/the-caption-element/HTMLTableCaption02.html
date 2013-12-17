@@ -4,8 +4,7 @@
 <title>NIST DOM HTML Test - TABLE</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="../common/domtests-common.js"></script>
-<link href="http://www.w3.org/TR/html5/the-table-element.html#dom-table-tfoot" rel="help">
+<link href="http://www.w3.org/TR/html5/tabular-data.html#the-caption-element" rel="help">
 <link rel="author" title="NIST">
 </head>
 <body>
@@ -81,31 +80,29 @@
 
 
 <script>
-var domtest = async_test("The tFoot attribute returns the tables TFOOT.");
+var domtest = async_test("The caption attribute returns the table's CAPTION or void if it does not exist. Retrieve the CAPTION element from within the first TABLE element.");
 
 on_event(window, "load", domtest.step_func(function (dom_event) {
     var nodeList;
       var testNode;
-      var vsection;
-      var valign;
+      var vcaption;
       var doc;
       doc = window.document;
       nodeList = doc.getElementsByTagName("table");
       assert_equals(nodeList.length,3);
-testNode = nodeList.item(1);
-      vsection = testNode.tFoot;
+testNode = nodeList.item(0);
+      vcaption = testNode.caption;
 
-      valign = vsection.align;
-
-      assert_equals(valign,"center");
-       
+      assert_equals(vcaption, null);
+    
     domtest.done();
 }));
 
 </script>
-<p>The tFoot attribute returns the tables TFOOT.
+<p>The caption attribute returns the tables CAPTION or void if it does not
+    exist.
 
-    Retrieve the align attribute of the TFOOT element from the second
-    TABLE element and examine its value.</p>
+    Retrieve the CAPTION element from within the first TABLE element.  
+    Since one does not exist it should be void.</p>
 <div id="log"></div>
 </body></html>

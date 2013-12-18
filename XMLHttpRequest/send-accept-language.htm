@@ -17,10 +17,10 @@
       }, 'Send "sensible" default value, whatever that means')
       test(function() {
         var client = new XMLHttpRequest()
-        client.open("GET", "resources/accept-language.py", false)
+        client.open("GET", "resources/inspect-headers.py?filter_name=accept-language", false)
         client.setRequestHeader("Accept-Language", "x-GameSpeak")
         client.send(null)
-        assert_equals(client.responseText, "x-GameSpeak")
+        assert_regexp_match(client.responseText, /accept-language:\sx-GameSpeak/)
       })
     </script>
   </body>

@@ -13,10 +13,10 @@ P /sync-tests-filter
 H /test-template-001.xht
 H /references/test-template-001.xht
 
-# css-supports-027 uses @-moz-document, so we don't submit it.  FIXME:
-# It ought to have an @media equivalent, but currently doesn't.
+# css-supports-027 uses @-moz-document, so we don't submit it.
+# css-supports-046 tests the equivalent with @media.
 H /conditional3/css-supports-027.xht
 
-# css-supports-028 tests with @-moz-document what css-supports-026 tests
-# with @media, and we don't want to submit @-moz-document tests.
+# css-supports-028 uses @-moz-document, so we don't submit it.
+# css-supports-026 tests the equivalent with @media.
 H /conditional3/css-supports-028.xht

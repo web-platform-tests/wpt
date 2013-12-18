@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Flexbox Test: align-self - center</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="author" title="Shiyou Tan" href="mailto:shiyoux.tan@intel.com">
+<link rel="help" title="8.3. Cross-axis Alignment: the 'align-items' and 'align-self' properties" href="http://www.w3.org/TR/css3-flexbox/#align-self">
+<link rel="match" href="align-self-001-ref.html">
+<meta name="flags" content="">
+<meta name="assert" content="The 'align-self' property set 'center' centered the flex items in the cross axis within the line">
+<style>
+  #test {
+    background-color: red;
+    display: flex;
+    height: 120px;
+    width: 120px;
+  }
+  #test div {
+    align-self: center;
+    background-color: green;
+    height: 60px;
+    width: 30px;
+  }
+  #top {
+    background-color: green;
+    margin-top: -120px;
+    height: 30px;
+    width: 120px;
+  }
+  #bottom {
+    background-color: green;
+    height: 30px;
+    margin-top: 60px;
+    width: 120px;
+  }
+</style>
+<body>
+  <p>Test passes if there is a filled green square and no red.</p>
+  <div id="test">
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+  <div id="top"></div>
+  <div id="bottom"></div>
+</body>

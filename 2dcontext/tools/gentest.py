@@ -408,10 +408,7 @@ for i in range(len(tests)):
                 expected)
             expected += "\nsurface.write_to_png('%s/%s.png')\n" % (IMAGEOUTPUTDIR, mapped_name)
             eval(compile(expected, '<test %s>' % test['name'], 'exec'), {}, {'cairo':cairo})
-            if '@manual' in test['code']:
-                expected_img = "%s-manual.png" % name
-            else:
-                expected_img = "%s.png" % name
+            expected_img = "%s.png" % name
 
         if expected_img:
             expectation_html = ('<p class="output expectedtext">Expected output:' +

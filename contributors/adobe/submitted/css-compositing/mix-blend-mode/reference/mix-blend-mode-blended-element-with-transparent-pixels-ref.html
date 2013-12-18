@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>CSS Reftest Reference</title>
+		<link rel="author" title="Mirela Budăeș" href="mailto:mbudaes@adobe.com">
+		<link rel="match" href="">
+		<style>
+			.parent {
+				opacity: 0.9;
+				background: yellow;/*rgb(255,255,0);*/
+				margin: 30px;
+				width: 120px;
+				height: 120px;
+				display: inline-block;
+			}
+			.childBlended {
+				background: lime;/*rgb(0,255,0);*/
+				width: 80px;
+				height: 80px;
+				margin-top: 20px;
+				margin-left: 20px;
+			}
+		</style>
+	</head>
+	<body>
+		<p>Test passes if there is no complete red square on the screen.<br>
+		You should see a lime square with yellow borders.</p>
+		<div class="parent">
+				<div class="childBlended"></div>
+		</div>
+	</body>
+</html>

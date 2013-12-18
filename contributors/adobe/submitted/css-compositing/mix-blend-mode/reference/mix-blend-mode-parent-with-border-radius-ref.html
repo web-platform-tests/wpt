@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>CSS Reftest Reference</title>
+		<link rel="author" title="Mirela Budăeș" href="mailto:mbudaes@adobe.com">
+		<style>
+			.bodyPlaceholder {
+				margin: 30px;
+				width: 130px;
+				height: 130px;
+				background: aqua;
+			}
+			.parent {
+				position: absolute;
+				z-index: 1;
+				width: 100px;
+				height: 100px;
+				background: red;
+
+			}
+			.blended {
+				background: yellow;
+				width: 100px;
+				height: 100px;
+				border-radius: 10em/10em;
+			}
+		</style>
+	</head>
+	<body>
+		<p>Test passes if there is no complete red square on the screen. <br>
+		You should see an yellow circle overlapping a red square on top of an aqua square. </p>
+		<div class="bodyPlaceholder">
+			<div class="parent">
+				<div class="blended"></div>
+			</div>
+		</div>
+	</body>
+</html>

@@ -73,7 +73,7 @@ class ServerProc(object):
         try:
             self.daemon = init_func(config, port)
         except socket.error:
-            print port
+            logger.error("Socket error on port %s" % port)
             raise
 
         if self.daemon:
@@ -212,7 +212,6 @@ def start_wss_server(config, port):
 
 def get_ports(config):
     rv = defaultdict(list)
-    print os.getpid()
     for scheme, ports in config["ports"].iteritems():
         for i, port in enumerate(ports):
             if port == "auto":

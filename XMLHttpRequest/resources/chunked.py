@@ -9,7 +9,7 @@ def main(request, response):
     response.headers.set("Content-Type", "text/plain");
     response.writer.flush()
 
-    for i, value in enumerate(chunks):
+    for value in chunks:
         response.writer.write("%d\r\n" % len(value))
         response.writer.write(value)
         response.writer.write("\r\n")

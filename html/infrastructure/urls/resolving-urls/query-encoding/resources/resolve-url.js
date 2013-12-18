@@ -527,6 +527,54 @@ onload = function() {
   {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#dom-open'});
 
   // location
+  function test_location(func, desc) {
+    async_test(function() {
+      var iframe = document.createElement('iframe');
+      document.body.appendChild(iframe);
+      this.add_cleanup(function() {
+        document.body.removeChild(iframe);
+      });
+      func(iframe.contentWindow, input_url_html);
+      iframe.onload = this.step_func(function() {
+        var got = iframe.contentDocument.body.textContent;
+        if (got != '') {
+          assert_equals(got, expected_current.substr(3));
+          this.done();
+        }
+      });
+    }, desc,
+    {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/history.html#the-location-interface'});
+  }
+  [[function(win, input) { win.location = input; }, "location [PutForwards]"],
+   [function(win, input) { win.location.assign(input); }, "location.assign()"],
+   [function(win, input) { win.location.replace(input); }, "location.replace()"],
+   [function(win, input) { win.location.href = input; }, "location.href"]].forEach(function(arr) {
+    test_location(arr[0], arr[1]);
+  });
+
+  // location.search
+  async_test(function() {
+    var iframe = document.createElement('iframe');
+    iframe.src = input_url_html;
+    document.body.appendChild(iframe);
+    this.add_cleanup(function() {
+      document.body.removeChild(iframe);
+    });
+    var i = 0;
+    iframe.onload = this.step_func(function() {
+      i++;
+      if (i == 1) {
+        iframe.contentWindow.location.search = '?' + input_url_html.split('?')[1] + '&other=foobar';
+      } else {
+        var got = iframe.contentDocument.body.textContent;
+        assert_equals(got, expected_current.substr(3));
+        this.done();
+      }
+    });
+  }, 'location.search',
+  {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/history.html#the-location-interface'});
+
+  // a.search, area.search
   // pushState
   // replaceState
   // SVG
@@ -726,6 +774,14 @@ onload = function() {
   // aural: cue-after, cue-before, play-during (not implemented?)
   // hyphenate-resource (not implemented?)
   // image() (not implemented?)
+
+  // new URL()
+  // URLSearchParams.append()
+  // URLSearchParams.delete()
+  // URLSearchParams.get()
+  // URLSearchParams.getAll()
+  // URLSearchParams.has()
+  // URLSearchParams.set()
 
   run_next_in_sequence();
   done();

@@ -108,8 +108,8 @@ function run() {
   assert_disallowed_balanced_variable_value("(])", "unbalanced close bracket in something balanced");
   assert_disallowed_balanced_variable_value("[)]", "unbalanced close paren in something balanced");
   assert_disallowed_balanced_variable_value("(})", "unbalanced close brace in something balanced");
-  assert_disallowed_balanced_variable_value("<!--", "CDO at top level");
-  assert_disallowed_balanced_variable_value("-->", "CDC at top level");
+  assert_allowed_variable_value("<!--", "CDO at top level");
+  assert_allowed_variable_value("-->", "CDC at top level");
   assert_allowed_variable_value("(;)", "semicolon not at top level (value -> unused)");
   assert_allowed_variable_value("(<!--)", "CDO not at top level (value -> unused)");
   assert_allowed_variable_value("(-->)", "CDC not at top level (value -> unused)");

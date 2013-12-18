@@ -405,13 +405,15 @@ for i in range(len(tests)):
             if ';' in expected: print "Found semicolon in %s" % name
             expected = re.sub(r'^size (\d+) (\d+)',
                 r'surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, \1, \2)\ncr = cairo.Context(surface)',
-                expected)
-            expected += "\nsurface.write_to_png('%s/%s.png')\n" % (IMAGEOUTPUTDIR, mapped_name)
-            eval(compile(expected, '<test %s>' % test['name'], 'exec'), {}, {'cairo':cairo})
-            if '@manual' in test['code']:
-                expected_img = "%s-manual.png" % name
+                              expected)
+
+            if mapped_name.endswith("-manual"):
+                png_name = mapped_name[:-len("-manual")]
             else:
-                expected_img = "%s.png" % name
+                png_name = mapped_name
+            expected += "\nsurface.write_to_png('%s/%s.png')\n" % (IMAGEOUTPUTDIR, png_name)
+            eval(compile(expected, '<test %s>' % test['name'], 'exec'), {}, {'cairo':cairo})
+            expected_img = "%s.png" % name
 
         if expected_img:
             expectation_html = ('<p class="output expectedtext">Expected output:' +

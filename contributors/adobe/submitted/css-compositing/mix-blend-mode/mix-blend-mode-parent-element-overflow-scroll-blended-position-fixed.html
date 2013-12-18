@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>CSS Test: mix-blend-mode between a parent element with overflow:scroll and its child</title>
+		<link rel="author" title="Mirela Budăeș" href="mailto:mbudaes@adobe.com">
+		<link rel="help" href="http://dev.w3.org/fxtf/compositing-1/#mix-blend-mode">
+		<meta name="flags" content="">
+		<meta name="assert" content="Test checks that the element with mix-blend-mode blends with the parent element with overflow:scroll">
+		<link rel="match" href="">
+		<style>
+			.simple{
+				background: aqua;/*rgb(0,255,255);*/
+				width: 140px;
+				height: 140px;
+				display:inline-block;
+				position: fixed;
+				overflow:scroll;
+			}
+
+			.mixed {
+				background: fuchsia;/*rgb(255,0,0);*/
+				margin-top: 20px;
+				margin-left: 20px;
+				width: 200px;
+				height: 200px;
+				mix-blend-mode: multiply;
+				position: fixed;
+				}
+
+			.child2 {
+				background: lime;
+				margin-top: 125px;
+				margin-left: 125px;
+				width: 200px;
+				height: 200px;
+
+				}
+		</style>
+	</head>
+	<body>
+		<p>Test passes if you see a fuchsia square on top of an aqua square. <br>
+		The aqua square has scrollbars on the left and the bottom. <br>
+		At the intersection of the two squares a blue square is formed. <br>
+		Test passes if the scrollbars are working properly on dragging. <br>
+		Dragging both scrollbars in the bottom right corner will result in fuchsia square on top of an lime square. At the intersection of the two squares a black square is formed.</p>
+		<div class="simple">
+			<div class="mixed"></div>
+			<div class="child2"></div>
+		</div>
+	</body>
+</html>

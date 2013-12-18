@@ -572,9 +572,28 @@ onload = function() {
       }
     });
   }, 'location.search',
-  {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/history.html#the-location-interface'});
+  {help:['http://www.whatwg.org/specs/web-apps/current-work/multipage/history.html#the-location-interface',
+         'http://url.spec.whatwg.org/#dom-url-search']});
 
   // a.search, area.search
+  function test_hyperlink_search(tag) {
+    test(function() {
+      var elm = document.createElement(tag);
+      var input_arr = input_url_html.split('?');
+      elm.href = input_arr[0];
+      elm.search = '?' + input_arr[1];
+      var got_href = elm.getAttribute('href');
+      assert_true(got_href.indexOf(expected_current) > -1, 'href content attribute ' + msg(expected_current, got_href));
+      var got_search = elm.search;
+      assert_true(got_search.indexOf(expected_current) > -1, 'getting .search '+msg(expected_current, got_search));
+    }, '<'+tag+'>.search',
+    {help:['http://www.whatwg.org/specs/web-apps/current-work/multipage/text-level-semantics.html#the-'+tag+'-element',
+           'http://url.spec.whatwg.org/#dom-url-search']});
+  }
+  'a, area'.split(', ').forEach(function(str) {
+    test_hyperlink_search(str);
+  });
+
   // pushState
   // replaceState
   // SVG

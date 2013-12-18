@@ -50,7 +50,10 @@ include multicol3/reftest.list
 # include transitions/reftest.list
 
 # User Interface Level 3
-# include ui3/reftest.list
+include ui3/reftest.list
 
 # Values and Units Level 3
 include values3/reftest.list
+
+# Variables Level 1
+include variables/reftest.list

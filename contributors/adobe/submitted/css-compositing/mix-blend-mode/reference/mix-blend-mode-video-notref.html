@@ -3,9 +3,6 @@
     <head>
         <title>CSS Test: Video element with mix-blend-mode.</title>
         <link rel="author" title="Mihai Tica" href="mitica@adobe.com">
-        <link rel="help" href="http://dev.w3.org/fxtf/compositing-1/#mix-blend-mode">
-        <meta name="assert" content="Test checks that mix-blend-mode is applied to a video element.">
-        <link rel="mismatch" href="reference/mix-blend-mode-video-notref.html">
         <style type="text/css">
             div {
                 width: 480px;
@@ -17,8 +14,8 @@
     <body>
         <p>Test passes if you can see a green circle.</p>
         <div>
-            <video autoplay style="mix-blend-mode: difference">
-                <source src="../support/red_circle.mp4" type="video/mp4">
+            <video autoplay>
+                <source src="../../support/red_circle.mp4" type="video/mp4">
             </video>
         </div>
     </body>

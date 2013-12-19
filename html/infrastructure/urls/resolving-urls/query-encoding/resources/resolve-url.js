@@ -594,8 +594,30 @@ onload = function() {
     test_hyperlink_search(str);
   });
 
-  // pushState
-  // replaceState
+  // history.pushState
+  // history.replaceState
+  function test_history(prop) {
+    async_test(function() {
+      var iframe = document.createElement('iframe');
+      iframe.src = 'resources/blank.py?encoding='+encoding;
+      document.body.appendChild(iframe);
+      this.add_cleanup(function() {
+        document.body.removeChild(iframe);
+      });
+      iframe.onload = this.step_func_done(function() {
+        iframe.contentWindow.history[prop](null, null, input_url_html); /* this should resolve against the test's URL, not the iframe's URL */
+        var got = iframe.contentWindow.location.href;
+        assert_true(got.indexOf(expected_current) > -1, msg(expected_current, got));
+        assert_equals(got.indexOf('/resources/resources/'), -1, 'url was resolved against the iframe\'s URL instead of the settings object\'s API base URL');
+      });
+    }, 'history.'+prop,
+    {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/history.html#dom-history-'+prop.toLowerCase()});
+  }
+
+  'pushState, replaceState'.split(', ').forEach(function(str) {
+    test_history(str);
+  });
+
   // SVG
 
   // UTF-8:

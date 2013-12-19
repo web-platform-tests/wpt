@@ -19,9 +19,9 @@ test(function() {
     assert_throws('NotSupportedError',
                   function() { doc.register('x-element'); },
                   'Registering valid custom element in a document ' +
-                  'without browsing context should fail');
+                      'without registry should fail');
 
-}, 'Generic document without browsing context must not have a registry');
+}, 'Document of type other than HTML, not loaded into browsing context, must not have a registry');
 
 
 test(function() {
@@ -34,22 +34,22 @@ test(function() {
 
     var doc = request.responseXML;
     assert_throws('NotSupportedError',
-                   function() { doc.register('x-element'); },
-                   'Registering valid custom element in ' +
-                     'a XMLHttpRequest\' response document fail');
+                  function() { doc.register('x-element'); },
+                  'Registering valid custom element in ' +
+                      'a XMLHttpRequest\'s response document should fail');
 
 }, 'XMLHttpRequest\'s synchronous response document must not have a registry');
 
 async_test(function(t) {
     var request = new XMLHttpRequest();
     request.onreadystatechange = t.step_func(function() {
-        if (request.readyState==4){
+        if (request.readyState == 4){
             assert_equals(200, request.status, 'Test document is not loaded correctly');
             var doc = request.responseXML;
             assert_throws('NotSupportedError',
-                   function() { doc.register('x-element'); },
-                   'Registering valid custom element in ' +
-                         'a XMLHttpRequest\' response document fail');
+                          function() { doc.register('x-element'); },
+                          'Registering valid custom element in ' +
+                              'a XMLHttpRequest\'s response document should fail');
             t.done();
         }
     });

@@ -817,12 +817,21 @@ onload = function() {
   // image() (not implemented?)
 
   // new URL()
-  // URLSearchParams.append()
-  // URLSearchParams.delete()
-  // URLSearchParams.get()
-  // URLSearchParams.getAll()
-  // URLSearchParams.has()
-  // URLSearchParams.set()
+  test(function() {
+    var url = new URL('http://example.org/'+input_url);
+    var expected = expected_obj['utf-8'];
+    assert_true(url.href.indexOf(expected) > -1, 'url.href '+msg(expected, url.href));
+    assert_true(url.search.indexOf(expected) > -1, 'url.search '+msg(expected, url.search));
+  }, 'URL constructor, url',
+  {help:'http://url.spec.whatwg.org/#dom-url'});
+
+  test(function() {
+    var url = new URL('', 'http://example.org/'+input_url);
+    var expected = expected_obj['utf-8'];
+    assert_true(url.href.indexOf(expected) > -1, 'url.href '+msg(expected, url.href));
+    assert_true(url.search.indexOf(expected) > -1, 'url.search '+msg(expected, url.search));
+  }, 'URL constructor, base',
+  {help:'http://url.spec.whatwg.org/#dom-url'});
 
   run_next_in_sequence();
   done();

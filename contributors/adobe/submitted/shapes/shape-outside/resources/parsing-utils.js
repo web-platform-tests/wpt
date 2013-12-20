@@ -6,12 +6,9 @@ function testInlineStyle(value, expected) {
     assert_equals(actual, typeof expected !== 'undefined' ? expected : value);
 }
 
-function testComputedStyle(value, expected, props) {
+function testComputedStyle(value, expected) {
     var div = document.createElement('div');
     div.style.setProperty('shape-outside', value);
-    if (props)
-        for (key in props)
-            div.style.setProperty(key, props[key]);
     document.body.appendChild(div);
     var style = getComputedStyle(div);
     var actual = style.getPropertyValue('shape-outside');

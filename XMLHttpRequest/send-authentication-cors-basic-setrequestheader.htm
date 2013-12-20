@@ -15,10 +15,10 @@
       var test = async_test()
       test.step(function() {
         var client = new XMLHttpRequest(),
-            urlstart = location.host + location.pathname.replace(/\/[^\/]*$/, '/')
+            urlstart = location.host + location.pathname.replace(/\/[^\/]*$/, '/'),
+            user = token()
         client.open("GET", location.protocol+'//www1.'+urlstart + "resources/auth2/corsenabled.py", false)
         client.withCredentials = true
-        user = token();
         client.setRequestHeader("x-user", user)
         client.setRequestHeader("x-pass", 'pass')
         client.setRequestHeader('Authorization', 'Basic ' + btoa(user + ":pass"))

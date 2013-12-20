@@ -22,6 +22,7 @@
         // (Note: this test will only work as expected if run once per browsing session)
         var open_user = token()
         client.open("GET", location.protocol+'//'+urlstart + "resources/auth4/auth.py", false, open_user, 'open-pass')
+        client.setRequestHeader('X-User', open_user)
         // initial request - this will get a 401 response and re-try with HTTP auth
         client.send(null)
         assert_equals(client.responseText, open_user + '\nopen-pass')
@@ -35,7 +36,7 @@
         client.open("GET", location.protocol+'//'+urlstart + "resources/auth4/auth.py", true)
         client.setRequestHeader("x-user", user)
         client.setRequestHeader("x-pass", 'pass')
-        client.setRequestHeader('Authorization', 'Basic dXNlcjpwYXNz')
+        client.setRequestHeader('Authorization', 'Basic ' + btoa(user + ":pass"))
         client.onreadystatechange = function () {
           if (client.readyState < 4) {return}
           test.step( function () {

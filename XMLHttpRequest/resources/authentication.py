@@ -7,7 +7,6 @@ def main(request, response):
     session_user = request.auth.username
     session_pass = request.auth.password
     expected_user_name = request.headers.get("X-User", None)
-    expected_user_password = request.headers.get("X-Pass", None)
 
     token = expected_user_name
     if session_user is None and session_pass is None:

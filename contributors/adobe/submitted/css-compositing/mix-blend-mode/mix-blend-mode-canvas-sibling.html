@@ -6,6 +6,8 @@
         <link rel="help" href="http://dev.w3.org/fxtf/compositing-1/#mix-blend-mode">
         <meta name="assert" content="Test checks that a canvas element having mix-blend-mode applied blends with a sibling element.">
         <meta name="flags" content="dom"/>
+        <link rel="reviewer" title="Rik Cabanier" href="mailto:cabanier@adobe.com">
+        <link rel="reviewer" title="Mirela Budaes" href="mailto:mbudaes@adobe.com">
         <link rel="match" href="reference/mix-blend-mode-canvas-sibling-ref.html">
     </head>
     <body>
@@ -17,7 +19,7 @@
             var canvas = document.getElementById("cvs");
             var context = canvas.getContext("2d");
 
-            context.fillStyle = "F00";
+            context.fillStyle = "#F00";
             context.fillRect(0, 0, 100, 100);
         </script>
     </body>

@@ -619,6 +619,75 @@ onload = function() {
   });
 
   // SVG
+  var ns = {svg:'http://www.w3.org/2000/svg', xlink:'http://www.w3.org/1999/xlink'};
+  // a
+  async_test(function() {
+    SVGAElement; // check support
+    var iframe = document.createElement('iframe');
+    var id = 'test_svg_a';
+    iframe.name = id;
+    var svg = document.createElementNS(ns.svg, 'svg');
+    var a = document.createElementNS(ns.svg, 'a');
+    a.setAttributeNS(ns.xlink, 'xlink:href', input_url_html);
+    a.setAttribute('target', id);
+    var span = document.createElement('span');
+    a.appendChild(span);
+    svg.appendChild(a);
+    document.body.appendChild(iframe);
+    document.body.appendChild(svg);
+    this.add_cleanup(function() {
+      document.body.removeChild(iframe);
+      document.body.removeChild(svg);
+    });
+    span.click();
+    iframe.onload = this.step_func_done(function() {
+      var got = iframe.contentDocument.body.textContent;
+      if (got != '') {
+        assert_equals(got, expected_current.substr(3));
+      }
+    });
+  }, 'SVG <a>');
+
+  // feImage, image, use
+  function test_svg(func, tag) {
+    async_test(function() {
+      run_sequentially(this, function() {
+        var uuid = token();
+        var id = 'test_svg_'+tag;
+        var svg = document.createElementNS(ns.svg, 'svg');
+        var parent = func(svg, id);
+        var elm = document.createElementNS(ns.svg, tag);
+        elm.setAttributeNS(ns.xlink, 'xlink:href', 'resources/stash.py?q=\u00E5&id=' + uuid + '&action=put#foo');
+        parent.appendChild(elm);
+        document.body.appendChild(svg);
+        this.add_cleanup(function() {
+          document.body.removeChild(svg);
+        });
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'resources/stash.py?id='+uuid+'&action=take');
+        xhr.onload = this.step_func_done(function(e) {
+          assert_equals(xhr.response, expected_current.substr(3));
+        });
+        xhr.send();
+      });
+    }, 'SVG <' + tag + '>',
+    {help:'https://www.w3.org/Bugs/Public/show_bug.cgi?id=24148'});
+  }
+
+  [[function(svg, id) {
+      SVGFEImageElement; // check support
+      var filter = document.createElementNS(ns.svg, 'filter');
+      filter.setAttribute('id', id);
+      svg.appendChild(filter);
+      var rect = document.createElementNS(ns.svg, 'rect');
+      rect.setAttribute('filter', 'url(#'+id+')');
+      svg.appendChild(rect);
+      return filter;
+    }, 'feImage'],
+   [function(svg, id) { SVGImageElement; return svg; }, 'image'],
+   [function(svg, id) { SVGUseElement; return svg; }, 'use']].forEach(function(arr) {
+    test_svg(arr[0], arr[1]);
+  });
 
   // UTF-8:
   // XHR

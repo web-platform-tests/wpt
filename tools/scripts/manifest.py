@@ -105,7 +105,6 @@ class ManualTest(ManifestItem):
 
 
 class Helper(ManifestItem):
-    #not really a test as such, but needs the same interface
     item_type = "helper"
 
     @classmethod
@@ -126,10 +125,7 @@ class Manifest(object):
         self.local_changes = LocalChanges()
 
     def contains_path(self, path):
-        for item in self._data.itervalues():
-            if path in item:
-                return True
-        return False
+        return any(path in item for item in self._data.itervalues())
 
     def add(self, item):
         self._data[item.item_type][item.path].add(item)
@@ -139,9 +135,9 @@ class Manifest(object):
             self.add(item)
 
     def remove_path(self, path):
-        for item in self.item_types:
-            if path in self._data[item]:
-                del self._data[item][path]
+        for item_type in self.item_types:
+            if path in self._data[item_type]:
+                del self._data[item_type][path]
 
     def itertype(self, item_type):
         values_by_type = reduce(lambda x,y:x|y, self._data[item_type].values(), set())
@@ -149,8 +145,7 @@ class Manifest(object):
             yield item
 
     def __iter__(self):
-        for item_type in ["testharness", "reftest",
-                          "manual", "helper"]:
+        for item_type in self.item_types:
             for item in self._data[item_type].iteritems():
                 yield item
 
@@ -169,9 +164,9 @@ class Manifest(object):
     def to_json(self):
         rv = {"ref":self.ref,
               "local_changes":self.local_changes.to_json(),
-              "items":{}}
-        for item_type in self.item_types:
-            rv["items"][item_type] = [item.to_json() for item in self.itertype(item_type)]
+              "items":{},
+              "items": {item_type:[item.to_json() for item in self.itertype(item_type)]
+                        for item_type in self.item_types}}
         return rv
 
     @classmethod
@@ -399,11 +394,11 @@ def sync_local_changes(manifest, local_changes):
         if path not in local_changes:
             #If a path was previously marked as deleted but is now back
             #we need to readd it to the manifest
-            if (status == "D" and path in all_paths):
+            if status == "D" and path in all_paths:
                 local_changes[path] = "A"
             #If a path was previously marked as added but is now
             #not then we need to remove it from the manifest
-            elif (status == "A" and path not in all_paths):
+            elif status == "A" and path not in all_paths:
                 local_changes[path] = "D"
 
     sync_urls(manifest, ((status, path) for path, status in local_changes.iteritems()))

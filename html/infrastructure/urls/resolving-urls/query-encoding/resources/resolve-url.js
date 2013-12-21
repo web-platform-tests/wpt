@@ -3,7 +3,7 @@ onload = function() {
   var encoding = '{{GET[encoding]}}';
   var input_url = 'resources/resource.py?q=\u00E5&encoding=' + encoding + '&type=';
   ('html css js worker sharedworker worker_importScripts sharedworker_importScripts worker_worker worker_sharedworker sharedworker_worker '+
-   'sharedworker_sharedworker eventstream png svg video webvtt').split(' ').forEach(function(str) {
+   'sharedworker_sharedworker eventstream png svg xmlstylesheet_css video webvtt').split(' ').forEach(function(str) {
     window['input_url_'+str] = input_url + str;
   });
   var blank = 'resources/blank.py?encoding=' + encoding;
@@ -875,6 +875,18 @@ onload = function() {
   // image() (not implemented?)
 
   // <?xml-stylesheet?>
+  async_test(function() {
+    var iframe = document.createElement('iframe');
+    iframe.src = input_url_xmlstylesheet_css;
+    document.body.appendChild(iframe);
+    this.add_cleanup(function() {
+      //document.body.removeChild(iframe);
+    });
+    iframe.onload = this.step_func_done(function() {
+      assert_equals(iframe.contentDocument.firstChild.sheet.cssRules[0].style.content, '"' + expected_utf8 + '"');
+    });
+  }, '<?xml-stylesheet?> (CSS)',
+  {help:'http://dev.w3.org/csswg/cssom/#requirements-on-user-agents-implementing-the-xml-stylesheet-processing-instruction'});
 
   // new URL()
   test(function() {

@@ -149,14 +149,8 @@ class Manifest(object):
             for item in self._data[item_type].iteritems():
                 yield item
 
-    def __contains__(self, key):
-        for test_type, items in self._data.iteritems():
-            if key in items:
-                return True
-        return False
-
     def __getitem__(self, key):
-        for test_type, items in self._data.iteritems():
+        for items in self._data.itervalues():
             if key in items:
                 return items[key]
         raise KeyError

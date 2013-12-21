@@ -1,31 +1,23 @@
 setup({explicit_done:true});
 onload = function() {
   var encoding = '{{GET[encoding]}}';
-  var input_url = 'resources/resource.py?q=\u00E5';
-  var input_url_html = input_url + '&type=html';
-  var input_url_css = input_url + '&type=css';
-  var input_url_js = input_url + '&type=js';
-  var input_url_worker = input_url + '&type=worker';
-  var input_url_sharedworker = input_url + '&type=sharedworker';
-  var input_url_worker_importScripts = input_url + '&type=worker_importScripts&encoding=' + encoding;
-  var input_url_sharedworker_importScripts = input_url + '&type=sharedworker_importScripts&encoding=' + encoding;
-  var input_url_worker_worker = input_url + '&type=worker_worker&encoding=' + encoding;
-  var input_url_worker_sharedworker = input_url + '&type=worker_sharedworker&encoding=' + encoding;
-  var input_url_sharedworker_worker = input_url + '&type=sharedworker_worker&encoding=' + encoding;
-  var input_url_sharedworker_sharedworker = input_url + '&type=sharedworker_sharedworker&encoding=' + encoding;
-  var input_url_eventstream = input_url + '&type=eventstream';
-  var input_url_png = input_url + '&type=png';
-  var input_url_svg = input_url + '&type=svg';
-  var input_url_video = input_url + '&type=video';
-  var input_url_webvtt = input_url + '&type=webvtt';
+  var input_url = 'resources/resource.py?q=\u00E5&encoding=' + encoding + '&type=';
+  ('html css js worker sharedworker worker_importScripts sharedworker_importScripts worker_worker worker_sharedworker sharedworker_worker '+
+   'sharedworker_sharedworker eventstream png svg video webvtt').split(' ').forEach(function(str) {
+    window['input_url_'+str] = input_url + str;
+  });
+  var blank = 'resources/blank.py?encoding=' + encoding;
+  var stash_put = 'resources/stash.py?q=\u00E5&action=put&id=';
+  var stash_take = 'resources/stash.py?action=take&id=';
   var expected_obj = {
-    'utf-8':'?q=%C3%A5',
-    'utf-16be':'?q=%C3%A5',
-    'utf-16le':'?q=%C3%A5',
-    'windows-1252':'?q=%E5',
-    'windows-1251':'?q=%3F'
+    'utf-8':'%C3%A5',
+    'utf-16be':'%C3%A5',
+    'utf-16le':'%C3%A5',
+    'windows-1252':'%E5',
+    'windows-1251':'%3F'
   };
   var expected_current = expected_obj[encoding];
+  var expected_utf8 = expected_obj['utf-8'];
 
   function msg(expected, got) {
     return 'expected substring '+expected+' got '+got;
@@ -114,7 +106,7 @@ onload = function() {
       var iframe = document.createElement('iframe');
       setup_navigation(elm, iframe, 'test_follow_link_'+tag, this);
       iframe.onload = this.step_func_done(function() { // when the page navigated to has loaded
-        assert_equals(iframe.contentDocument.body.textContent, expected_current.substr(3));
+        assert_equals(iframe.contentDocument.body.textContent, expected_current);
       });
       // follow the hyperlink
       elm.click();
@@ -135,7 +127,7 @@ onload = function() {
         var elm = document.createElement(tag);
         // check if ping is supported
         assert_true('ping' in elm, 'ping not supported');
-        elm.setAttribute('ping', 'resources/stash.py?q=\u00E5&id='+uuid+'&action=put');
+        elm.setAttribute('ping', stash_put + uuid);
         var iframe = document.createElement('iframe');
         setup_navigation(elm, iframe, 'test_follow_link_ping_'+tag, this);
         // follow the hyperlink
@@ -143,9 +135,9 @@ onload = function() {
         // check that navigation succeeded by ...??? XXX
         // check that the right URL was requested for the ping
         var xhr = new XMLHttpRequest();
-        xhr.open('GET', 'resources/stash.py?id='+uuid+'&action=take');
+        xhr.open('GET', stash_take + uuid);
         xhr.onload = this.step_func_done(function(e) {
-          assert_equals(xhr.response, expected_current.substr(3));
+          assert_equals(xhr.response, expected_current);
         });
         xhr.send();
       });
@@ -160,7 +152,7 @@ onload = function() {
   // navigating with meta refresh
   async_test(function() {
     var iframe = document.createElement('iframe');
-    iframe.src = 'resources/blank.py?encoding='+encoding;
+    iframe.src = blank;
     document.body.appendChild(iframe);
     this.add_cleanup(function() {
       document.body.removeChild(iframe);
@@ -173,7 +165,7 @@ onload = function() {
         doc.close();
         return;
       }
-      assert_equals(got, expected_current.substr(3));
+      assert_equals(got, expected_current);
     });
   }, 'meta refresh',
   {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/semantics.html#attr-meta-http-equiv-refresh'});
@@ -190,7 +182,7 @@ onload = function() {
         document.body.removeChild(elm);
       });
       elm.onload = this.step_func_done(function() {
-        assert_equals(window[id].document.documentElement.textContent, expected_current.substr(3));
+        assert_equals(window[id].document.documentElement.textContent, expected_current);
       });
 
     }, 'load nested browsing context <'+tag+' '+attr+'>',
@@ -221,7 +213,7 @@ onload = function() {
     elm.onload = this.step_func_done(function() {
       var got = elm.sheet.href;
       assert_true(elm.sheet.href.indexOf(expected_current) > -1, 'sheet.href ' + msg(expected_current, got));
-      assert_equals(elm.sheet.cssRules[0].style.content, '"'+expected_current.substr(3)+'"', 'sheet.cssRules[0].style.content');
+      assert_equals(elm.sheet.cssRules[0].style.content, '"'+expected_current+'"', 'sheet.cssRules[0].style.content');
     });
   }, 'loading css <link>',
   {help:['http://www.whatwg.org/specs/web-apps/current-work/multipage/semantics.html#the-link-element',
@@ -233,7 +225,7 @@ onload = function() {
     elm.src = input_url_js + '&var=test_load_js_got';
     document.head.appendChild(elm); // no cleanup
     elm.onload = this.step_func_done(function() {
-      assert_equals(window.test_load_js_got, expected_current.substr(3));
+      assert_equals(window.test_load_js_got, expected_current);
     });
   }, 'loading js <script>',
   {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/scripting-1.html#prepare-a-script'});
@@ -252,8 +244,7 @@ onload = function() {
       });
       elm.onload = this.step_func_done(function() {
         var got = elm.offsetWidth;
-        var expected = expected_current.substr(3);
-        assert_equals(got, query_to_image_width[expected], msg(expected, image_width_to_query[got]));
+        assert_equals(got, query_to_image_width[expected_current], msg(expected_current, image_width_to_query[got]));
       });
       // <video poster> doesn't notify when the image is loaded so we need to poll :-(
       var interval;
@@ -332,8 +323,7 @@ onload = function() {
       });
       elm.onloadedmetadata = this.step_func_done(function() {
         var got = Math.round(elm.duration);
-        var expected = expected_current.substr(3);
-        assert_equals(got, query_to_video_duration[expected], msg(expected, video_duration_to_query[got]));
+        assert_equals(got, query_to_video_duration[expected_current], msg(expected_current, video_duration_to_query[got]));
       });
     }, 'loading video <'+tag+'>' + (use_source_element ? '<source>' : ''),
     {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/the-video-element.html#concept-media-load-algorithm'});
@@ -369,7 +359,7 @@ onload = function() {
     track.track.mode = 'showing';
     track.onload = this.step_func_done(function() {
       var got = track.track.cues[0].text;
-      assert_equals(got, expected_current.substr(3));
+      assert_equals(got, expected_current);
     });
   }, 'loading webvtt <track>',
   {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/the-video-element.html#track-url'});
@@ -411,7 +401,7 @@ onload = function() {
         if (got == '') {
           return;
         }
-        assert_equals(got, expected_current.substr(3));
+        assert_equals(got, expected_current);
       });
     }, 'submit form <'+tag+' '+attr+'>',
     {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/association-of-controls-and-forms.html#concept-form-submit'});
@@ -425,7 +415,7 @@ onload = function() {
   // <base href>
   async_test(function() {
     var iframe = document.createElement('iframe');
-    iframe.src = 'resources/blank.py?encoding='+encoding;
+    iframe.src = blank;
     document.body.appendChild(iframe);
     this.add_cleanup(function() {
       document.body.removeChild(iframe);
@@ -470,7 +460,7 @@ onload = function() {
   async_test(function() {
     var worker = new Worker(input_url_worker);
     worker.onmessage = this.step_func_done(function(e) {
-      assert_equals(e.data, expected_current.substr(3));
+      assert_equals(e.data, expected_current);
     });
   }, 'Worker constructor',
   {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/workers.html#dom-worker'});
@@ -479,7 +469,7 @@ onload = function() {
   async_test(function() {
     var worker = new SharedWorker(input_url_sharedworker);
     worker.port.onmessage = this.step_func_done(function(e) {
-      assert_equals(e.data, expected_current.substr(3));
+      assert_equals(e.data, expected_current);
     });
   }, 'SharedWorker constructor',
   {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/workers.html#dom-sharedworker'});
@@ -491,7 +481,7 @@ onload = function() {
       source.close();
     });
     source.onmessage = this.step_func_done(function(e) {
-      assert_equals(e.data, expected_current.substr(3));
+      assert_equals(e.data, expected_current);
     });
   }, 'EventSource constructor',
   {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/comms.html#dom-eventsource'});
@@ -501,7 +491,7 @@ onload = function() {
     var doc = document.implementation.createDocument(null, "x");
     doc.load(input_url_svg);
     doc.onload = this.step_func_done(function() {
-      assert_equals(doc.documentElement.textContent, expected_current.substr(3));
+      assert_equals(doc.documentElement.textContent, expected_current);
     });
   }, 'XMLDocument#load()',
   {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/dom.html#dom-xmldocument-load'});
@@ -519,7 +509,7 @@ onload = function() {
     iframe.onload = this.step_func(function() {
       var got = iframe.contentDocument.body.textContent;
       if (got != "") {
-        assert_equals(got, expected_current.substr(3));
+        assert_equals(got, expected_current);
         this.done();
       }
     });
@@ -538,7 +528,7 @@ onload = function() {
       iframe.onload = this.step_func(function() {
         var got = iframe.contentDocument.body.textContent;
         if (got != '') {
-          assert_equals(got, expected_current.substr(3));
+          assert_equals(got, expected_current);
           this.done();
         }
       });
@@ -567,7 +557,7 @@ onload = function() {
         iframe.contentWindow.location.search = '?' + input_url_html.split('?')[1] + '&other=foobar';
       } else {
         var got = iframe.contentDocument.body.textContent;
-        assert_equals(got, expected_current.substr(3));
+        assert_equals(got, expected_current);
         this.done();
       }
     });
@@ -599,13 +589,13 @@ onload = function() {
   function test_history(prop) {
     async_test(function() {
       var iframe = document.createElement('iframe');
-      iframe.src = 'resources/blank.py?encoding='+encoding;
+      iframe.src = blank;
       document.body.appendChild(iframe);
       this.add_cleanup(function() {
         document.body.removeChild(iframe);
       });
       iframe.onload = this.step_func_done(function() {
-        iframe.contentWindow.history[prop](null, null, input_url_html); /* this should resolve against the test's URL, not the iframe's URL */
+        iframe.contentWindow.history[prop](null, null, input_url_html); // this should resolve against the test's URL, not the iframe's URL
         var got = iframe.contentWindow.location.href;
         assert_true(got.indexOf(expected_current) > -1, msg(expected_current, got));
         assert_equals(got.indexOf('/resources/resources/'), -1, 'url was resolved against the iframe\'s URL instead of the settings object\'s API base URL');
@@ -643,7 +633,7 @@ onload = function() {
     iframe.onload = this.step_func_done(function() {
       var got = iframe.contentDocument.body.textContent;
       if (got != '') {
-        assert_equals(got, expected_current.substr(3));
+        assert_equals(got, expected_current);
       }
     });
   }, 'SVG <a>');
@@ -657,16 +647,16 @@ onload = function() {
         var svg = document.createElementNS(ns.svg, 'svg');
         var parent = func(svg, id);
         var elm = document.createElementNS(ns.svg, tag);
-        elm.setAttributeNS(ns.xlink, 'xlink:href', 'resources/stash.py?q=\u00E5&id=' + uuid + '&action=put#foo');
+        elm.setAttributeNS(ns.xlink, 'xlink:href', stash_put + uuid + '#foo');
         parent.appendChild(elm);
         document.body.appendChild(svg);
         this.add_cleanup(function() {
           document.body.removeChild(svg);
         });
         var xhr = new XMLHttpRequest();
-        xhr.open('GET', 'resources/stash.py?id='+uuid+'&action=take');
+        xhr.open('GET', stash_take + uuid);
         xhr.onload = this.step_func_done(function(e) {
-          assert_equals(xhr.response, expected_current.substr(3));
+          assert_equals(xhr.response, expected_current);
         });
         xhr.send();
       });
@@ -695,7 +685,7 @@ onload = function() {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', input_url_html);
     xhr.onload = this.step_func_done(function() {
-      assert_equals(xhr.response, expected_obj['utf-8'].substr(3));
+      assert_equals(xhr.response, expected_utf8);
     });
     xhr.send();
   }, 'XMLHttpRequest#open()',
@@ -705,7 +695,7 @@ onload = function() {
   async_test(function() {
     var worker = new Worker(input_url_worker_importScripts);
     worker.onmessage = this.step_func_done(function(e) {
-      assert_equals(e.data, expected_obj['utf-8'].substr(3));
+      assert_equals(e.data, expected_utf8);
     });
   }, 'importScripts() in a dedicated worker',
   {help:['http://www.whatwg.org/specs/web-apps/current-work/multipage/workers.html#set-up-a-worker-script-settings-object',
@@ -714,7 +704,7 @@ onload = function() {
   async_test(function() {
     var worker = new Worker(input_url_worker_worker);
     worker.onmessage = this.step_func_done(function(e) {
-      assert_equals(e.data, expected_obj['utf-8'].substr(3));
+      assert_equals(e.data, expected_utf8);
     });
   }, 'Worker() in a dedicated worker',
   {help:['http://www.whatwg.org/specs/web-apps/current-work/multipage/workers.html#set-up-a-worker-script-settings-object',
@@ -723,7 +713,7 @@ onload = function() {
   async_test(function() {
     var worker = new Worker(input_url_worker_sharedworker);
     worker.onmessage = this.step_func_done(function(e) {
-      assert_equals(e.data, expected_obj['utf-8'].substr(3));
+      assert_equals(e.data, expected_utf8);
     });
   }, 'SharedWorker() in a dedicated worker',
   {help:['http://www.whatwg.org/specs/web-apps/current-work/multipage/workers.html#set-up-a-worker-script-settings-object',
@@ -732,7 +722,7 @@ onload = function() {
   async_test(function() {
     var worker = new SharedWorker(input_url_sharedworker_importScripts);
     worker.port.onmessage = this.step_func_done(function(e) {
-      assert_equals(e.data, expected_obj['utf-8'].substr(3));
+      assert_equals(e.data, expected_utf8);
     });
   }, 'importScripts() in a shared worker',
   {help:['http://www.whatwg.org/specs/web-apps/current-work/multipage/workers.html#set-up-a-worker-script-settings-object',
@@ -741,7 +731,7 @@ onload = function() {
   async_test(function() {
     var worker = new SharedWorker(input_url_sharedworker_worker);
     worker.port.onmessage = this.step_func_done(function(e) {
-      assert_equals(e.data, expected_obj['utf-8'].substr(3));
+      assert_equals(e.data, expected_utf8);
     });
   }, 'Worker() in a shared worker',
   {help:['http://www.whatwg.org/specs/web-apps/current-work/multipage/workers.html#set-up-a-worker-script-settings-object',
@@ -750,7 +740,7 @@ onload = function() {
   async_test(function() {
     var worker = new SharedWorker(input_url_sharedworker_sharedworker);
     worker.port.onmessage = this.step_func_done(function(e) {
-      assert_equals(e.data, expected_obj['utf-8'].substr(3));
+      assert_equals(e.data, expected_utf8);
     });
   }, 'SharedWorker() in a shared worker',
   {help:['http://www.whatwg.org/specs/web-apps/current-work/multipage/workers.html#set-up-a-worker-script-settings-object',
@@ -763,7 +753,7 @@ onload = function() {
       ws.close();
     });
     ws.onmessage = this.step_func_done(function(e) {
-      assert_equals(e.data, expected_obj['utf-8'].substr(3));
+      assert_equals(e.data, expected_utf8);
     });
   }, 'WebSocket constructor',
   {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/network.html#parse-a-websocket-url\'s-components'});
@@ -773,8 +763,7 @@ onload = function() {
     var ws = new WebSocket('ws://{{host}}:{{ports[ws][0]}}/echo-query?\u00E5');
     ws.close();
     var got = ws.url;
-    var expected = expected_obj['utf-8'].substr(3);
-    assert_true(ws.url.indexOf(expected) > -1, msg(expected, got));
+    assert_true(ws.url.indexOf(expected_utf8) > -1, msg(expected_utf8, got));
   }, 'WebSocket#url',
   {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/network.html#dom-websocket-url'});
 
@@ -790,9 +779,9 @@ onload = function() {
           document.body.removeChild(iframe);
         });
         var xhr = new XMLHttpRequest();
-        xhr.open('GET', 'resources/stash.py?id='+uuid+'&action=take');
+        xhr.open('GET', stash_take + uuid);
         xhr.onload = this.step_func_done(function(e) {
-          assert_equals(xhr.response, expected_obj['utf-8'].substr(3));
+          assert_equals(xhr.response, expected_utf8);
         });
         xhr.send();
       });
@@ -833,9 +822,9 @@ onload = function() {
           document.body.removeChild(div);
         });
         var xhr = new XMLHttpRequest();
-        xhr.open('GET', 'resources/stash.py?id='+uuid+'&action=take');
+        xhr.open('GET', stash_take + uuid);
         xhr.onload = this.step_func_done(function(e) {
-          assert_equals(xhr.response, expected_obj['utf-8'].substr(3));
+          assert_equals(xhr.response, expected_utf8);
         });
         xhr.send();
       });
@@ -885,10 +874,12 @@ onload = function() {
   // hyphenate-resource (not implemented?)
   // image() (not implemented?)
 
+  // <?xml-stylesheet?>
+
   // new URL()
   test(function() {
     var url = new URL('http://example.org/'+input_url);
-    var expected = expected_obj['utf-8'];
+    var expected = expected_utf8;
     assert_true(url.href.indexOf(expected) > -1, 'url.href '+msg(expected, url.href));
     assert_true(url.search.indexOf(expected) > -1, 'url.search '+msg(expected, url.search));
   }, 'URL constructor, url',
@@ -896,7 +887,7 @@ onload = function() {
 
   test(function() {
     var url = new URL('', 'http://example.org/'+input_url);
-    var expected = expected_obj['utf-8'];
+    var expected = expected_utf8;
     assert_true(url.href.indexOf(expected) > -1, 'url.href '+msg(expected, url.href));
     assert_true(url.search.indexOf(expected) > -1, 'url.search '+msg(expected, url.search));
   }, 'URL constructor, base',

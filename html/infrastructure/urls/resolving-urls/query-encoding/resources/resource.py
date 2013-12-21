@@ -3,6 +3,7 @@ import re
 
 def main(request, response):
     type = request.GET['type']
+    encoding = request.GET['encoding']
     # We want the raw input for 'q'
     q = re.search(r'q=([^&]+)', request.url_parts.query).groups()[0]
     if type == 'html':
@@ -16,56 +17,56 @@ def main(request, response):
     elif type == 'sharedworker':
         return ([("Content-Type", "text/javascript")], "onconnect = function(e) { e.source.postMessage('%s'); close(); };" % q)
     elif type == 'worker_importScripts':
-        return ([("Content-Type", "text/javascript; charset=%s" % request.GET['encoding'])], # charset should be ignored for workers
+        return ([("Content-Type", "text/javascript; charset=%s" % encoding)], # charset should be ignored for workers
                 """try {
                      var x = 'importScripts failed to run';
-                     importScripts('?q=\\u00E5&type=js&var=x');
+                     importScripts('?q=\\u00E5&type=js&var=x&encoding=%s');
                      postMessage(x);
                      close();
                    } catch(ex) {
                      postMessage(String(ex));
-                   }""")
+                   }""" % encoding)
     elif type == 'worker_worker':
-        return ([("Content-Type", "text/javascript; charset=%s" % request.GET['encoding'])], # charset should be ignored for workers
+        return ([("Content-Type", "text/javascript; charset=%s" % encoding)], # charset should be ignored for workers
                 """try {
-                     var worker = new Worker('?q=\\u00E5&type=worker');
+                     var worker = new Worker('?q=\\u00E5&type=worker&encoding=%s');
                      worker.onmessage = function(e) {
                        postMessage(e.data);
                        close();
                      };
                    } catch(ex) {
                      postMessage(String(ex));
-                   }""")
+                   }""" % encoding)
     elif type =='worker_sharedworker':
-        return ([("Content-Type", "text/javascript; charset=%s" % request.GET['encoding'])], # charset should be ignored for workers
+        return ([("Content-Type", "text/javascript; charset=%s" % encoding)], # charset should be ignored for workers
                 """try {
-                   var worker = new SharedWorker('?q=\\u00E5&type=sharedworker');
+                   var worker = new SharedWorker('?q=\\u00E5&type=sharedworker&encoding=%s');
                      worker.port.onmessage = function(e) {
                        postMessage(e.data);
                        close();
                      };
                    } catch(ex) {
                      postMessage(String(ex));
-                   }""")
+                   }""" % encoding)
     elif type == 'sharedworker_importScripts':
         return ([("Content-Type", "text/javascript; charset=%s" % request.GET['encoding'])], # charset should be ignored for workers
                 """onconnect = function(e) {
                      var connect_port = e.source;
                      try {
                        var x = 'importScripts failed to run';
-                       importScripts('?q=\\u00E5&type=js&var=x');
+                       importScripts('?q=\\u00E5&type=js&var=x&encoding=%s');
                        connect_port.postMessage(x);
                        close();
                      } catch(ex) {
                        connect_port.postMessage(String(ex));
                      }
-                   };""")
+                   };""" % encoding)
     elif type == 'sharedworker_worker':
-        return ([("Content-Type", "text/javascript; charset=%s" % request.GET['encoding'])], # charset should be ignored for workers
+        return ([("Content-Type", "text/javascript; charset=%s" % encoding)], # charset should be ignored for workers
                 """onconnect = function(e) {
                      var connect_port = e.source;
                      try {
-                       var worker = new Worker('?q=\\u00E5&type=worker');
+                       var worker = new Worker('?q=\\u00E5&type=worker&encoding=%s');
                        worker.onmessage = function(e) {
                          connect_port.postMessage(e.data);
                          close();
@@ -73,9 +74,9 @@ def main(request, response):
                      } catch(ex) {
                        connect_port.postMessage(String(ex));
                      }
-                   };""")
+                   };""" % encoding)
     elif type == 'sharedworker_sharedworker':
-        return ([("Content-Type", "text/javascript; charset=%s" % request.GET['encoding'])], # charset should be ignored for workers
+        return ([("Content-Type", "text/javascript; charset=%s" % encoding)], # charset should be ignored for workers
                 """onconnect = function(e) {
                      var connect_port = e.source;
                      try {
@@ -84,7 +85,7 @@ def main(request, response):
                          close();
                          return false;
                        };
-                       var worker = new SharedWorker('?q=\\u00E5&type=sharedworker');
+                       var worker = new SharedWorker('?q=\\u00E5&type=sharedworker&encoding=%s');
                        worker.port.onmessage = function(e) {
                          connect_port.postMessage(e.data);
                          close();
@@ -92,7 +93,7 @@ def main(request, response):
                      } catch(ex) {
                        connect_port.postMessage(String(ex));
                      }
-                   };""")
+                   };""" % encoding)
     elif type == 'eventstream':
         return ([("Content-Type", "text/event-stream")], "data: %s\n\n" % q)
     elif type == 'svg':

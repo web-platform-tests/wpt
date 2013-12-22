@@ -10,33 +10,33 @@
 <div id=log></div>
 
 <script>
-var eventCounter = 0;
-function doTest(desc, headers, expectEvents){
-    async_test("Late listeners: "+desc).step(function() {
+function doTest(desc, headers, expectEvents) {
+    async_test("Late listeners: " + desc).step(function() {
         var client = new XMLHttpRequest();
-        console.log( CROSSDOMAIN + "resources/status.py?headers=custom-header");
+        var eventCounter = 0;
         client.open("POST", CROSSDOMAIN + "resources/status.py?headers=custom-header");
 
-        for(var name in headers){ console.log(name+': '+headers[name])
+        for (var name in headers) {
             client.setRequestHeader(name, headers[name]);
         }
 
-        client.onreadystatechange = this.step_func(function(e) { console.log('readyState '+client.readyState)
+        client.onreadystatechange = this.step_func(function(e) {
             // Irrelevant if request is not finished
             if (client.readyState < 4) return;
             assert_equals(client.status, 200);
-            if(expectEvents){
-                assert_true(eventCounter>0, 'Events did fire');
-            }else{
+            if (expectEvents) {
+                assert_true(eventCounter > 3, 'Events did fire');
+            }
+            else {
                 assert_equals(eventCounter, 0, 'No events did fire');
             }
             this.done();
         });
-        client.send((new Array(1000)).join('a'));
-        client.upload.onprogress = client.upload.onloadend = client.upload.onloadstart = client.upload.onload = this.step_func(function(e){
-            eventCounter ++;
-            if(!expectEvents){
-                assert_unreached("Apparently, these events should not fire, because there was no preflight for this request. This failure might cause cross-origin information to leak - security implications should be investigated.");
+        client.send((new Array(3000)).join('xo'));
+        client.upload.onprogress = client.upload.onloadend = client.upload.onloadstart = client.upload.onload = this.step_func(function(e) {
+            eventCounter++;
+            if (!expectEvents) {
+                assert_unreached("Upload events should not fire, but did: " + e.type);
             }
         });
     });

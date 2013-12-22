@@ -17,10 +17,10 @@
     </ol>
     <div id="log"></div>
     <script>
-    if(location.search === '?dotest'){
+    if (location.search.indexOf('?dotest') != -1) {
       test(function() {
-        var user = location.search.slice(location.search.indexOf('&user=') + 6);
-        var client = new XMLHttpRequest(),
+        var user = location.search.slice(location.search.indexOf('&user=') + 6),
+          client = new XMLHttpRequest(),
           urlstart = location.host + location.pathname.replace(/\/[^\/]*$/, '/')
         client.open("GET", location.protocol+'//'+urlstart + "resources/auth3/auth.py", false)
         client.send(null)

@@ -21,7 +21,7 @@ setup(function () {
 var testInfo = {
 		help:   "http://w3.org/TR/some-specification#truth-and-beauty"
 	, assert: [
-			"http://dvcs.w3.org/hg/innerhtml/raw-file/tip/index.html#widl-Element-insertAdjacentHTML-void-insertAdjacentHTMLPosition-position-DOMString-text"
+			"http://www.w3.org/TR/DOM-Parsing/#widl-Element-insertAdjacentHTML-void-DOMString-position-DOMString-text"
 		, "http://domparsing.spec.whatwg.org/#insertadjacenthtml()"
 	]
 	, authors: [
@@ -57,21 +57,15 @@ Object.keys(possiblePositions).forEach(function(position) {
 });
 
 test(function() {
-	assert_throws(new TypeError(), function() {
-		el.insertAdjacentHTML("giberish", "giberish");
-	});
-}, "W3C editors spec: Throws a TypeError exception if the position argument has an invalid value.");
-
-test(function() {
 	assert_throws('SyntaxError', function() {
 		el.insertAdjacentHTML("giberish", "giberish");
 	});
-}, "WhatWG editors spec: Throws a DOM SyntaxError exception if the position argument has an invalid value.");
+}, "Throws a DOM SyntaxError exception if the position argument has an invalid value.");
 
 test(function() {
 	assert_throws("NoModificationAllowedError", function() {
 		var root = document.documentElement;
-		html.insertAdjacentHTML("beforebegin", "failure");
+		root.insertAdjacentHTML("beforebegin", "failure");
 	});
 }, "Throws a DOMException with name NoModificationAllowedError if the given position isn't possible.\n"
 	+ "Inserting elements before the root element of a Document.");
@@ -80,7 +74,7 @@ test(function() {
 test(function() {
 	assert_throws("NoModificationAllowedError", function() {
 		var root = document.documentElement;
-		html.insertAdjacentHTML("afterend", "failure");
+		root.insertAdjacentHTML("afterend", "failure");
 	});
 }, "Throws a DOMException with name NoModificationAllowedError if the given position isn't possible.\n"
 	+ "Inserting elements after the end of the root element of a Document.");

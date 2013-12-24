@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>SVG image drag and drop: allowed effect 'link'</title>
+<style type="text/css">
+div
+	{background-color:#4682B4;
+	width:100px;
+	height:100px;}
+</style>
+<script type="application/ecmascript">
+var effect = 'link';
+function dropSelection(event)
+	{if(event.dataTransfer.dropEffect == effect &amp;&amp; event.dataTransfer.effectAllowed == effect)
+		{document.querySelector('div').setAttribute('style','background-color:#228B22')}
+	}
+function start(event)
+	{event.dataTransfer.effectAllowed = effect;}
+</script>
+</head>
+<body>
+<p><img ondragstart="start(event)" src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20version%3D%221.1%22%20width%3D%22100px%22%20height%3D%22100px%22%20viewBox%3D%220%200%20100%20100%22%3E%3Crect%20x%3D%220%22%20y%3D%220%22%20width%3D%22100%22%20height%3D%22100%22%20fill%3D%22%23D2B48C%22/%3E%3C/svg%3E" alt="SVG rectangle"/></p>
+<p>You should be able to drag box above and drop it onto box below. Box should turn green.</p>
+<div ondragenter="event.preventDefault()" ondragover="return false" ondrop="dropSelection(event)"/>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Removing image element during drag and drop of PNG image</title>
+<style type="text/css">
+div
+	{height:150px;
+	width:150px;
+	padding:20px;
+	background-color:#4682B4;}
+p:first-child
+	{height:100px;}
+</style>
+</head>
+<body>
+<p><img ondragstart="event.dataTransfer.effectAllowed = 'copy';document.querySelector('p').removeChild(document.querySelector('img'))" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAABAklEQVR42u3RIREAIADAQPofcUhCIYiA4yZevJvb2GseOsYr4C9DYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJuSH6zwrT7ia+AAAAAElFTkSuQmCC" alt="PNG rectangle"/></p>
+<p>Drag box above and drop it onto the box below. Lower box should turn green.</p>
+<div
+	ondragenter="event.preventDefault()"
+	ondragover="return false"
+	ondrop="dropIt(event)"
+/>
+<script type="application/ecmascript">
+var uri = document.querySelector('img').getAttribute('src');
+function dropIt(event)
+	{if(event.dataTransfer.getData('text/uri-list').replace(/\r\n$/,'') == uri)
+		{document.querySelector('div').setAttribute('style','background-color:#228B22');}
+	}
+</script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Selection drag and drop from textarea to contenteditable element</title>
+<style type="text/css">
+textarea
+	{border:solid 2px #D2B48C;
+	width:7em;
+	height:2em;}
+div[contenteditable]
+	{width:300px;
+	height:100px;
+	margin-top:20px;
+	background-color:#4682B4;}
+</style>
+</head>
+<body>
+<p>Select content of tan box and drag it to the box below. Box should turn green.</p>
+<p ondragend="done(event)"><textarea>Drag me</textarea></p>
+<div contenteditable="true"/>
+<script type="application/ecmascript">
+var t = document.querySelector('textarea').value;
+function done(event)
+	{var div = document.querySelector('div');
+	if(div.firstChild.nodeValue == t)
+		{div.setAttribute('style','background-color:#228B22')}
+	}
+</script>
+</body>
+</html>

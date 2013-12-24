@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Drag and drop of input element to contenteditable element</title>
+<style type="text/css">
+span
+	{border-left:solid 8px #D2B48C;}
+div input
+	{background-color:#228B22;}
+div
+	{width:300px;
+	height:100px;
+	margin-top:20px;
+	background-color:#4682B4;}
+</style>
+</head>
+<body>
+<p><span draggable="true"><input value="Drag me"/></span></p>
+<p>Drag input above by border and drop it into the box below. Input background should turn green once it's dropped.</p>
+<div contenteditable="true"/>
+</body>
+</html>

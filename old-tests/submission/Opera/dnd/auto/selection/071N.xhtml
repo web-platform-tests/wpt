@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Selection drag and drop between text inputs of different size</title>
+<style type="text/css">
+input
+	{border:solid 2px #D2B48C;
+	width:5em;}
+input[placeholder]
+	{width:300px;
+	height:100px;
+	margin-top:20px;
+	border:solid 2px #4682B4;}
+</style>
+<script type="application/ecmascript">
+function done(event)
+	{var t = setTimeout("var txt = document.querySelectorAll('input');if(txt[0].value == '' &amp;&amp; txt[1].value == 'Drag me'){txt[0].setAttribute('style','border:solid thick #228B22')}",1);}
+</script>
+</head>
+<body>
+<p><input ondragend="done(event)" value="Drag me"/></p>
+<p>Select content of tan box and drag it to the input below. Border of upper input should turn green.</p>
+<p><input placeholder="Drop selection here"/></p>
+</body>
+</html>

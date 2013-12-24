@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Reload during selection drag and drop roundtrip</title>
+<style type="text/css">
+body
+	{line-height:1em;}
+span span
+	{outline:solid 2px #D2B48C;}
+br + span
+	{outline:solid 2px #4682B4;}
+</style>
+</head>
+<body onload="window.getSelection().selectAllChildren(document.querySelector('span'))">
+<p>Drag selected text around and then drop it onto itself:
+	<span ondragenter="event.preventDefault()" ondragstart="window.location.reload()" ondragover="return false" ondrop="if(event.dataTransfer.getData('text/plain').replace(/[\n\r]+/,' ') == 'Drag me'){this.setAttribute('style','border:solid thick #228B22')}"><span>Drag</span><br/><br/><span>me</span></span>
+Selection should get green border.</p>
+</body>
+</html>

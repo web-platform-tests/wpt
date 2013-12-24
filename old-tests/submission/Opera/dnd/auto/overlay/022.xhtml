@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Block element drag and drop: changing draggable attribute</title>
+<style type="text/css">
+div
+	{width:100px;
+	height:100px;
+	background-color:#D2B48C;}
+p + div
+	{background-color:#4682B4;}
+</style>
+<script type="application/ecmascript">
+function paint(color)
+	{document.querySelector('p + div').setAttribute('style','background-color:' + color);}
+</script>
+</head>
+<body onload="document.querySelector('div').setAttribute('draggable','false')">
+<div draggable="true" onmousedown="paint('#228B22')" ondragstart="paint('white')"/>
+<p>Try to drag box above. Lower box should turn green.</p>
+<div/>
+</body>
+</html>

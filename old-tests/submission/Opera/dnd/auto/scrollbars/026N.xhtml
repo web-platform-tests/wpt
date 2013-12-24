@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Dropping selection on vertical scrollbar of a scrollable block element</title>
+<style type="text/css">
+div[ondragenter]
+	{width:15px;
+	height:100px;
+	margin-top:1em;
+	overflow-x:scroll;}
+div[ondragenter]:before
+	{display:block;
+	content:'';
+	height:200px;
+	width:2px;
+	margin:50px 0;
+	background-color:#4682b4;}
+div + div
+	{margin-top:20px;
+	width:100px;
+	height:100px;}
+input
+	{border:solid 2px #D2B48C;
+	width:5em;}
+</style>
+<script type="application/ecmascript">
+function done(event)
+	{if(event.dataTransfer.getData('text/plain') == 'Drag me')
+		{document.querySelector('div+div').setAttribute('style','background-color:#228B22');}
+	}
+</script>
+</head>
+<body>
+<p><input value="Drag me"/></p>
+<p>Select text above then drag and drop it on scrollbar below. Green box should appear below.</p>
+<div ondragenter="event.preventDefault()" ondragover="return false" ondrop="done(event)"/>
+<div/>
+</body>
+</html>

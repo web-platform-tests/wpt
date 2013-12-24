@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Dropping link on vertical page scrollbar</title>
+<style type="text/css">
+p + div
+	{margin-left:5px;
+	width:100px;
+	height:100px;}
+div + div
+	{margin:50px 0 0 auto;
+	width:2px;
+	height:100px;
+	background-color:#4682b4;}
+body
+	{height:3000px;
+	margin:0;}
+a
+	{background-color:#D2B48C;}
+</style>
+<script type="application/ecmascript">
+function done(event)
+	{document.querySelector('p + div').setAttribute('style','background-color:#228B22');}
+</script>
+</head>
+<body>
+<p><a href="data:text/plain,1" ondragend="done(event)">Link</a></p>
+<p>Drag link above and drop it on the vertical scrollbar. Green box should appear below.</p>
+<div/>
+<div/>
+</body>
+</html>

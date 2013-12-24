@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Block element with text/plain data: events after drag and drop is cancelled</title>
+<style type="text/css">
+div
+	{width:100px;
+	height:100px;
+	background-color:#D2B48C;}
+</style>
+<script type="application/ecmascript">
+var result;
+</script>
+</head>
+<body ondragenter="event.preventDefault()" ondragover="return false" ondrop="result = false">
+<p><div draggable="true" ondragstart="result = true;event.dataTransfer.setData('text/plain','ok')" ondragend="if(result){this.setAttribute('style','background-color:#228B22')}"/></p>
+<p>Drag box above and press Esc before you drop it. Box should turn green once drag and drop is cancelled.</p>
+</body>
+</html>

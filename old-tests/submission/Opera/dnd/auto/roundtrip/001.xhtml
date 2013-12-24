@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Canvas drag and drop roundtrip</title>
+</head>
+<body onload="paint(['#D2B48C','#4682B4'])">
+<p>
+	<canvas width="200" height="200" draggable="true" ondragstart="event.dataTransfer.effectAllowed = 'copy';" ondragenter="event.preventDefault()" ondragover="return false" ondrop="paint(['#228B22','#228B22'])">Canvas</canvas>
+</p>
+<p>Drag box above and drop it onto box below. Boxes should turn green.</p>
+<script type="application/ecmascript">
+function paint(color)
+	{var canvas = document.querySelector('canvas'),
+	c = canvas.getContext('2d');
+	for(var x = 0; x != 2; x++)
+		{c.fillStyle = color[x];
+		c.beginPath();
+		c.moveTo(100*x,100*x);
+		c.lineTo(100*(1+x),100*x);
+		c.lineTo(100*(1+x),100*(1+x));
+		c.lineTo(100*x,100*(1+x));
+		c.closePath();
+		c.fill();}
+	}
+</script>
+</body>
+</html>

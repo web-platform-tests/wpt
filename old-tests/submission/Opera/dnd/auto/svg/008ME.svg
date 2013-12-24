@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.2" width="500px" height="500px" viewBox="0 0 500 500">
+<title>Drag and drop of SVG text selection from tspan element to editable text element</title>
+<text x="10" y="30" font-size="20" editable="simple"><tspan>Dr</tspan><tspan>ag me</tspan></text>
+<rect x="10" y="10" width="86" height="26" stroke="#D2B48C" stroke-width="2" fill="none"/>
+<text x="10" y="60" font-size="20">Drag selection above to the text input below.</text>
+<text x="10" y="90" font-size="20">Input border should turn green.</text>
+<text x="10" y="150" font-size="50" editable="simple">               </text>
+<rect x="10" y="110" width="250" height="50" stroke="#4682B4" stroke-width="2" fill="none"/>
+<script type="application/ecmascript">
+var txt = document.querySelector('text');
+txt.selectSubString(0,7);
+txt.addEventListener('dragend',
+function (event)
+  {if(document.querySelector('text+text[editable]').firstChild.nodeValue.replace(/ /g,'') == 'Drag me')
+    {document.querySelector('text+text[editable]+rect').setAttribute('stroke','#228B22')}
+  }
+,false);
+</script>
+</svg>

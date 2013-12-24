@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Drag and drop of block element to contenteditable element</title>
+<style type="text/css">
+div[draggable]
+	{width:100px;
+	height:100px;
+	padding:5px;
+	background-color:#D2B48C;}
+div div[draggable]
+	{background-color:#228B22;}
+div[contenteditable]
+	{width:110px;
+	height:110px;
+	margin-top:20px;
+	background-color:#4682B4;}
+</style>
+</head>
+<body>
+<div draggable="true">Drag me</div>
+<p>Drag box above to the box below. Box should turn green once it's dropped.</p>
+<div contenteditable="true"/>
+</body>
+</html>

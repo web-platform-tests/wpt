@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Text input selection: left to right mouse drag</title>
+<style type="text/css">
+input
+	{width:6em;
+	border:solid 4px #D2B48C;}
+</style>
+<script type="application/ecmascript">
+function checkSelection()
+	{var i = document.querySelector('input');
+	if(i.value.substring(i.selectionStart,i.selectionEnd) == i.value)
+		{document.querySelector('input').setAttribute('style','border:solid 4px #228B22');}
+	}
+</script>
+</head>
+<body onmouseup="checkSelection()">
+<p><input value="Select me"/></p>
+<p>You should be able to select text above by dragging mouse over it from left to right. Selection border should turn green once you release mouse.</p>
+</body>
+</html>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Reload during PNG image cross page drag and drop</title>
+<style type="text/css">
+div
+	{width:100px;
+	height:100px;
+	margin-top:20px;
+ 	background-color:#4682b4;}
+</style>
+</head>
+<body>
+<p><img ondragstart="event.dataTransfer.effectAllowed = 'copy';window.location = '017-1.xhtml'" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAABAklEQVR42u3RIREAIADAQPofcUhCIYiA4yZevJvb2GseOsYr4C9DYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJuSH6zwrT7ia+AAAAAElFTkSuQmCC" alt="PNG rectangle"/></p>
+<p>Drag box above. You should be redirected to the new page and be able to drop it there.</p>
+<div/>
+</body>
+</html>

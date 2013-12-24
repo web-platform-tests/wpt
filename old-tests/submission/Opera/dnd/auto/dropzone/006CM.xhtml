@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Dropzone and link drag and drop: allowed effect 'copyMove', drop effect 'move'</title>
+<style type="text/css">
+a
+	{border:solid 2px #D2B48C;}
+div
+	{background-color:#4682B4;
+	width:200px;
+	height:200px;}
+</style>
+<script type="application/ecmascript">
+var effect = 'copyMove';
+function start(event)
+	{event.dataTransfer.effectAllowed = effect;}
+function finish(event)
+	{if(event.dataTransfer.dropEffect == 'move' &amp;&amp; event.dataTransfer.effectAllowed == effect)
+		{document.querySelector('div').setAttribute('style','background-color:#228B22');}
+	}
+</script>
+</head>
+<body>
+<p ondragstart="start(event)">
+	<a href="data:text/plain,1">Link</a>
+</p>
+<p>Drag link and drop it onto box below. Box should turn green.</p>
+<div dropzone="move string:text/uri-list" ondrop="finish(event)"/>
+</body>
+</html>

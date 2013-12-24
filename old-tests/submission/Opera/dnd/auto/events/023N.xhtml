@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Text input selection drag and drop: events after drag and drop is cancelled</title>
+<style type="text/css">
+input
+	{border:solid 2px #D2B48C;
+	width:5em;}
+</style>
+<script type="application/ecmascript">
+var result;
+</script>
+</head>
+<body dropzone="copy string:text/plain" ondrop="result = false">
+<p><input value="Drag me" ondragstart="result = true" ondragend="if(result){document.querySelector('p+p').setAttribute('style','border:solid #228B22 medium')}"/></p>
+<p>Select and drag content of tan box and press Esc before you drop it. This paragraph should get green border once drag and drop is cancelled.</p>
+</body>
+</html>

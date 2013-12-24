@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Canvas drag and drop carrying image as dataURL</title>
+<style type="text/css">
+div
+	{width:105px;
+	height:105px;
+	margin-top:20px;
+ 	background-color:#4682b4;}
+</style>
+<script type="application/ecmascript">
+var ref = '';
+function dropIt(event)
+	{if(event.dataTransfer.getData('text/uri-list').replace(/[\n\r]+/,'') == ref)
+		{document.querySelector('div').setAttribute('style','background-color:#228b22');}
+	}
+function start(event)
+	{event.dataTransfer.effectAllowed = 'copy';
+	event.dataTransfer.setData('text/uri-list', ref);}
+</script>
+</head>
+<body>
+<p>
+	<canvas width="100" height="100" draggable="true" ondragstart="start(event)">Canvas</canvas>
+</p>
+<p>Drag box above and drop it onto the one below. Pass if lower box turns green after drop.</p>
+<div
+	ondragenter="event.preventDefault()"
+	ondragover="return false"
+	ondrop="dropIt(event)"
+/>
+<script type="application/ecmascript">
+var canvas = document.querySelector('canvas'),
+c = canvas.getContext('2d');
+c.fillStyle = '#d2b48c';
+c.beginPath();
+c.moveTo(0,0);
+c.lineTo(100,0);
+c.lineTo(100,100);
+c.lineTo(0,100);
+c.closePath();
+c.fill();
+ref = document.querySelector('canvas').toDataURL('image/png');
+</script>
+</body>
+</html>

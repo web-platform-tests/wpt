@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Selection drag and drop: helper file</title>
+<style type="text/css">
+input
+	{border:solid 2px #D2B48C;
+	width:5em;}
+</style>
+</head>
+<body>
+<p><input value="Drag me" ondragend="if(parent.document.querySelector('div').firstChild.nodeValue == 'Drag me'){this.setAttribute('style','border:solid thick #228B22')}"/></p>
+<p>Select content of tan box and drag it to box below. Border of input should turn green.</p>
+</body>
+</html>

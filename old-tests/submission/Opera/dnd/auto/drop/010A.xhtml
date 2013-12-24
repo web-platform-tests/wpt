@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Selection drag and drop: allowed effect 'all'</title>
+<style type="text/css">
+span
+	{border:solid 2px #D2B48C;}
+div
+	{background-color:#4682B4;
+	width:100px;
+	height:100px;}
+</style>
+<script type="application/ecmascript">
+var effect = 'all';
+function selectText()
+	{window.getSelection().selectAllChildren(document.querySelector('span'))}
+function dropSelection(event)
+	{if(event.dataTransfer.dropEffect == 'copy' &amp;&amp; event.dataTransfer.effectAllowed == effect)
+		{document.querySelector('div').setAttribute('style','background-color:#228B22')}
+	}
+function start(event)
+	{event.dataTransfer.effectAllowed = effect;}
+</script>
+</head>
+<body onload="selectText()">
+<p><span ondragstart="start(event)">Drag me</span></p>
+<p>You should be able to drag selection and drop it onto box below. Box should turn green.</p>
+<div ondragenter="event.preventDefault()" ondragover="return false" ondrop="dropSelection(event)"/>
+</body>
+</html>

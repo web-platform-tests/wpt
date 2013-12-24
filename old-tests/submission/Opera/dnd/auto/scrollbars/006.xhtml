@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Dropping element on vertical iframe scrollbar</title>
+<style type="text/css">
+iframe
+	{height:100px;
+	width:16px;}
+div
+	{width:100px;
+	height:100px;
+	margin:20px 0;}
+div:first-child
+	{margin:5px;
+	width:10px;
+	height:10px;
+	background-color:#D2B48C;}
+</style>
+<script type="application/ecmascript">
+function start(event)
+	{event.dataTransfer.effectAllowed = 'copy';}
+function done(event)
+	{document.querySelector('p + div').setAttribute('style','background-color:#228B22');}
+</script>
+</head>
+<body>
+<div draggable="true" ondragstart="start(event)" ondragend="done(event)"/>
+<p>Drag little square above and drop it on scrollbar below. Green box should appear below.</p>
+<div/>
+<iframe src="006-1.xhtml">XHTML document</iframe>
+</body>
+</html>

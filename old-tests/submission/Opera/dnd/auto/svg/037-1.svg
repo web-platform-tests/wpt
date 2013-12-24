@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.2" width="500px" height="400px" viewBox="0 0 500 400">
+<textArea x="10" y="10" width="480" height="380" font-size="20" editable="simple" pointer-events="boundingBox"></textArea>
+<rect x="10" y="10" width="480" height="380" stroke="#4682B4" stroke-width="2" fill="none"/>
+<script type="application/ecmascript">
+document.querySelector('textArea').addEventListener('drop',
+function (event)
+  {if(event.dataTransfer.getData('text/plain') == 'Drag me')
+    {document.querySelector('rect').setAttribute('stroke','#228B22')}
+  }
+,false);
+</script>
+</svg>

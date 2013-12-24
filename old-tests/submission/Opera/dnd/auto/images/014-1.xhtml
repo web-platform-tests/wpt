@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html id="tc" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Image drag and drop: helper file</title>
+<style type="text/css">
+div
+	{margin-top:100px;
+	height:100px;
+	width:100px;
+	padding:20px;
+	background-color:#4682B4;}
+p:first-child
+	{padding-left:12px;}
+html:target img
+	{visibility:hidden;}
+</style>
+<script type="application/ecmascript">
+function dropIt(event)
+	{if(event.dataTransfer.getData('text/uri-list').replace(/\r\n$/,'') == parent.frames[0].document.querySelector('img').src)
+		{document.querySelector('div').setAttribute('style','background-color:#228B22');}
+	}
+</script>
+</head>
+<body>
+<p><img src="014-2.png" alt="PNG box" ondragstart="event.dataTransfer.effectAllowed = 'copy'"/></p>
+<p>Drag box from upper frame and drop it onto lower box in bottom frame. Lower box should turn green.</p>
+<div
+	ondragenter="event.preventDefault()"
+	ondragover="return false"
+	ondrop="dropIt(event)"
+/>
+</body>
+</html>

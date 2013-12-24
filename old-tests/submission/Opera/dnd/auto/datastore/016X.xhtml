@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>dataTransfer.clearData during PNG image drag and drop</title>
+<style type="text/css">
+div
+	{height:100px;
+	width:100px;
+	padding:20px;
+	background-color:#4682B4;}
+</style>
+<script type="application/ecmascript">
+<![CDATA[
+var dataTypes = ['text/uri-list', 'text/plain', 'text/html'],
+data = ['data:text/plain,FAIL', 'FAIL', '<!DOCTYPE html><html><head><title>Data store item</title></head><body><p>FAIL</p></body></html>'],
+l = 0, pass = true;
+function start(event)
+	{event.dataTransfer.effectAllowed = 'copy';
+	l = event.dataTransfer.items.length;
+	for(var i = 0; i != dataTypes.length; i++)
+		{event.dataTransfer.setData(dataTypes[i], data[i]);}
+	for(var i = 0; i != dataTypes.length; i++)
+		{event.dataTransfer.clearData(dataTypes[i]);}
+	}
+function dragElement(event)
+	{for(var i = 0; i != dataTypes.length; i++)
+		{event.dataTransfer.setData(dataTypes[i], 'FAIL');
+		if(event.dataTransfer.getData(dataTypes[i]))
+			{say('getData(' + dataTypes[i] + ') : FAIL (data store should not be readable during drag)')}
+		}
+	}
+function enterElement(event)
+	{event.preventDefault();
+	for(var i = 0; i != dataTypes.length; i++)
+		{event.dataTransfer.setData(dataTypes[i], 'FAIL');
+		if(event.dataTransfer.getData(dataTypes[i]))
+			{say('getData(' + dataTypes[i] + ') : FAIL (data store should not be readable during dragenter)')}
+		}
+	}
+function dataDrop(event)
+	{for(var i = 0; i != dataTypes.length; i++)
+		{say('getData(' + dataTypes[i] + ') : ' + ((event.dataTransfer.getData(dataTypes[i]) == '')?'PASS':'FAIL'));}
+	if(pass)
+		{document.querySelector('div').setAttribute('style','background-color:#228B22')};}
+function say(it)
+	{document.querySelector('pre').appendChild(document.createTextNode(it + '\n'));
+	if(it.indexOf('FAIL') != -1)
+		{pass = false}
+	}
+]]>
+</script>
+</head>
+<body>
+<p><img ondragstart="start(event)" ondrag="dragElement(event)" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAABAklEQVR42u3RIREAIADAQPofcUhCIYiA4yZevJvb2GseOsYr4C9DYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJuSH6zwrT7ia+AAAAAElFTkSuQmCC" alt="PNG rectangle"/></p>
+<p>Drag box above to the box below and drop it. Lower box should turn green and test results should appear below.</p>
+<div ondragenter="enterElement(event)" ondragover="return false;" ondrop="dataDrop(event)"/>
+<pre/>
+</body>
+</html>

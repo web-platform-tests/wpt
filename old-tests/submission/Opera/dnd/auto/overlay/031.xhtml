@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Drag and drop of overlapping images: negative margin</title>
+<style type="text/css">
+span, strong
+	{color:green;
+	background-color:yellow;}
+strong
+	{color:red;}
+img
+	{display:block;
+	width:100px;
+	height:100px;}
+img + img
+	{margin-top:-100px;}
+p + div
+	{width:100px;
+	height:100px;
+	background-color:#4682B4;}
+</style>
+<script type="application/ecmascript">
+function start(event,feedback)
+	{event.dataTransfer.effectAllowed = 'copy';
+	event.dataTransfer.addElement(document.querySelector(feedback));}
+</script>
+</head>
+<body>
+<div>
+	<img ondragstart="start(event,'strong')" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNoYGD4DwADBAGA1N3aBAAAAABJRU5ErkJggg=="/>
+	<img ondragstart="start(event,'span')" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mO4tKXnPwAHgAMSIORTQAAAAABJRU5ErkJggg=="/>
+</div>
+<p>Drag box above and drop it onto box below. Lower box should turn green and feedback image should look like <span>PASS</span> not <strong>FAIL</strong>.</p>
+<div dropzone="copy string:text/uri-list" ondrop="if(event.dataTransfer.getData('text/uri-list').replace(/\r\n$/,'') == document.querySelector('img+img').src){document.querySelector('p + div').setAttribute('style','background-color:#228B22')}"/>
+</body>
+</html>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Selection drag and drop between contenteditable elements</title>
+<style type="text/css">
+span
+	{border:solid 2px #D2B48C;}
+div
+	{width:300px;
+	height:100px;
+	margin-top:20px;
+	background-color:#4682B4;}
+</style>
+</head>
+<body>
+<p><span contenteditable="true" ondragend="if(document.querySelector('div').innerHTML.indexOf('Drag me') != -1){this.setAttribute('style','border:solid thick #228B22')}">Drag me</span></p>
+<p>Select content of tan box and drag it to the box. Selection border should turn green.</p>
+<div contenteditable="true"/>
+</body>
+</html>

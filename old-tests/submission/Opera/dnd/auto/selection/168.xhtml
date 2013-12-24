@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Moving text between contenteditable elements</title>
+<style type="text/css">
+div:first-child
+	{border:solid 2px #D2B48C;
+	display:inline-block;
+	margin-top:20px;}
+p + div
+	{width:100px;
+	height:100px;
+	background-color:#4682B4;}
+</style>
+<script type="application/ecmascript">
+function check()
+	{var div = document.querySelectorAll('div');
+	if(!div[0].firstChild.nodeValue &amp;&amp; div[1].innerHTML.indexOf('Drag me') != -1)
+		{div[1].setAttribute('style','background-color:#228B22')}
+	}
+</script>
+</head>
+<body onload="window.getSelection().selectAllChildren(document.querySelector('div'))">
+<div contenteditable="true" ondragstart="event.dataTransfer.effectAllowed = 'move'">Drag me</div>
+<p>Drag selected text to the box below. Box should turn green.</p>
+<div ondragenter="event.preventDefault()" ondragover="event.preventDefault();" ondrop="window.setTimeout('check()',100)" contenteditable="true"/>
+</body>
+</html>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Triangular feedback bitmap</title>
+<style type="text/css">
+img
+	{height:100px;
+	width:100px;
+	display:block;}
+body:after
+	{content:"";
+	display:block;
+	background-color:#4682B4;
+	width:105px;
+	height:105px;
+	position:fixed;
+	bottom:0;
+	right:0;}
+</style>
+</head>
+<body>
+<p><img ondragstart="event.dataTransfer.effectAllowed = 'copy'" src="011-1.svg" alt="SVG pattern"/></p>
+<p>Try to drag triangle above. Feedback overlay should be triangular.</p>
+</body>
+</html>

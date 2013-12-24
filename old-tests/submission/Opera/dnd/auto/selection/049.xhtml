@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Selection drag and drop from text input to contenteditable element in iframe</title>
+<style type="text/css">
+input
+	{border:solid 2px #D2B48C;
+	width:5em;}
+iframe
+	{width:350px;
+	height:150px;
+	border-style:none;}
+</style>
+</head>
+<body onload="document.querySelector('input').select()">
+<p><input value="Drag me" ondragend="if(document.querySelector('iframe').contentDocument.querySelector('div').firstChild.nodeValue == 'Drag me'){this.setAttribute('style','border:solid thick #228B22')}"/></p>
+<p>Drag selected text to the box below. Border of input should turn green.</p>
+<p><iframe src="049-1.xhtml">XHTML document</iframe></p>
+</body>
+</html>

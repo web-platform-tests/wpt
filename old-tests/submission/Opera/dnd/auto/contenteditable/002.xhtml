@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Drag and drop of PNG image to contenteditable element</title>
+<style type="text/css">
+div
+	{height:100px;
+	width:100px;
+	padding:20px;
+	background-color:#4682B4;}
+</style>
+</head>
+<body>
+<p><img ondragstart="event.dataTransfer.effectAllowed = 'copy';this.setAttribute('style','visibility:hidden')" src="002-1.png" alt="PNG rectangle"/></p>
+<p>Drag image above and drop it into the box below. Image should end up in lower box once it's dropped.</p>
+<div contenteditable="true"/>
+</body>
+</html>

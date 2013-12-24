@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Reload during drag and drop roundtrip with text/uri-list data</title>
+<style type="text/css">
+div
+	{border:solid 2px #D2B48C;
+	width:90px;
+	height:90px;
+	margin-top:20px;
+	background-color:#4682B4;}
+</style>
+</head>
+<body>
+<div
+	draggable="true"
+	ondragstart="event.dataTransfer.effectAllowed = 'copy';event.dataTransfer.setData('text/uri-list','data:text/plain,PASS');window.location.reload()"
+	dropzone="copy string:text/uri-list"
+	ondrop="if(event.dataTransfer.getData('text/uri-list').substr(16,4)=='PASS'){this.setAttribute('style','background-color:#228B22')}"
+/>
+<p>Drag box outside browser window and then drag it back and drop on itself. Box should turn green.</p>
+</body>
+</html>

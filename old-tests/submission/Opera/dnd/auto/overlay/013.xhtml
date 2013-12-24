@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Rhombic feedback image</title>
+<style type="text/css">
+div
+	{display:block;
+	margin-left:50px;
+	background-color:#D2B48C;
+	border-style:solid;
+	border-width:3px;
+	border-color:#4682B4 #228B22;
+	width:100px;
+	height:87px;
+	transform-origin:bottom right;
+	transform:skew(30deg);
+	-o-transform-origin:bottom right;
+	-o-transform:skew(30deg);}
+body:after
+	{content:"";
+	display:block;
+	background-color:#4682B4;
+	width:105px;
+	height:105px;
+	position:fixed;
+	bottom:0;
+	right:0;}
+</style>
+</head>
+<body>
+<div draggable="true" ondragstart="event.dataTransfer.effectAllowed = 'copy'"/>
+<p>Try to drag rhomb above. Feedback overlay should not be rectangular.</p>
+</body>
+</html>

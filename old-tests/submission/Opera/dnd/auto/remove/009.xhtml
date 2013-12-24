@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Changing iframe content during drag and drop of link</title>
+<style type="text/css">
+div
+	{min-height:100px;
+	width:100px;
+	padding:20px;
+	color:white;
+	background-color:#4682B4;}
+iframe
+	{height:100px;
+	width:300px;
+	border:solid medium navy;}
+</style>
+</head>
+<body ondragenter="event.preventDefault();document.querySelector('iframe').src = 'data:text/plain,Drop%20link%20outside%20this%20frame'" ondragover="return false" ondrop="if(event.dataTransfer.getData('text/uri-list').replace(/\r\n$/,'') == 'data:text/plain,1'){document.querySelector('div').setAttribute('style','background-color:#228b22');}">
+<iframe src="009-1.xhtml">XHTML document</iframe>
+<p>Drag link above and drop it onto the box below. Lower box should turn green.</p>
+<div/>
+</body>
+</html>

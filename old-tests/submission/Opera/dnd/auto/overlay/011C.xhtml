@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Triangular feedback bitmap</title>
+<style type="text/css">
+canvas
+	{height:100px;
+	width:100px;
+	display:block;}
+body:after
+	{content:"";
+	display:block;
+	background-color:#4682B4;
+	width:105px;
+	height:105px;
+	position:fixed;
+	bottom:0;
+	right:0;}
+</style>
+</head>
+<body>
+<p>
+	<canvas width="100" height="100" draggable="true">Canvas</canvas>
+</p>
+<p>Try to drag triangle above. Feedback overlay should be triangular.</p>
+<script type="application/ecmascript">
+var canvas = document.querySelector('canvas'),
+c = canvas.getContext('2d'), pattern = ['#228B22','#D2B48C','#4682B4'];
+for(var i = 0; i != 3; i++)
+	{c.fillStyle = pattern[i];
+	c.beginPath();
+	c.moveTo(10*i,10*i);
+	c.lineTo(100-25*i,10*i);
+	c.lineTo(10*i,100-25*i);
+	c.closePath();
+	c.fill();}
+</script>
+</body>
+</html>

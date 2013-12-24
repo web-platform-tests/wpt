@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Dragging text selection from scrollable container to block element</title>
+<style type="text/css">
+div
+	{width:300px;
+	height:100px;}
+div:first-child
+	{overflow-y:scroll;}
+div[ondragenter]
+	{margin-top:20px;
+	padding:10px;
+	color:white;
+	background-color:#4682B4;}
+span
+	{border:solid 2px #D2B48C;}
+p+p
+	{margin-top:200px;
+	padding-bottom:50px;}
+</style>
+</head>
+<body  onload="window.getSelection().selectAllChildren(document.querySelector('span'));window.location.hash = 'start'">
+<div>
+<p>
+Here is scrollable container with text selection at the end of it.
+Drag selected text to the box below.
+Box should turn green.
+</p>
+<p><span id="start">Try to drag this text</span></p>
+</div>
+<div
+	ondragenter="event.preventDefault()"
+	ondragover="return false"
+	ondrop="if(event.dataTransfer.getData('text/plain') == 'Try to drag this text'){this.setAttribute('style','background-color:#228B22')}"
+/>
+</body>
+</html>

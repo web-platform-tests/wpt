@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Dropping link on horizontal iframe scrollbar</title>
+<style type="text/css">
+iframe
+	{height:16px;
+	width:100px;}
+div
+	{width:100px;
+	height:100px;
+	margin:20px 0;}
+a
+	{background-color:#D2B48C;}
+</style>
+<script type="application/ecmascript">
+function done(event)
+	{document.querySelector('p + div').setAttribute('style','background-color:#228B22');}
+</script>
+</head>
+<body>
+<p><a href="data:text/plain,1" ondragend="done(event)">Link</a></p>
+<p>Drag link above and drop it on scrollbar below. Green box should appear below.</p>
+<div/>
+<iframe src="013-1.xhtml">XHTML document</iframe>
+</body>
+</html>

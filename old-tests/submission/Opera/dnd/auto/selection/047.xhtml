@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Selection drag and drop from text input to textarea in iframe</title>
+<style type="text/css">
+input
+	{border:solid 2px #D2B48C;
+	width:5em;}
+iframe
+	{width:500px;
+	height:400px;
+	border-style:none;}
+</style>
+</head>
+<body onload="document.querySelector('input').select()">
+<p>Drag selected text to the textarea below. Border of input should turn green.</p>
+<p><input value="Drag me" ondragend="if(document.querySelector('iframe').contentDocument.querySelector('textarea').value == 'Drag me'){this.setAttribute('style','border:solid thick #228B22')}"/></p>
+<p><iframe src="047-1.xhtml">XHTML document</iframe></p>
+</body>
+</html>

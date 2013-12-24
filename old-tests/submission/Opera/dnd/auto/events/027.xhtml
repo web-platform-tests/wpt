@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>PNG image drag and drop: 'return false' should not cancel event</title>
+<style type="text/css">
+div
+	{height:100px;
+	width:100px;
+	padding:20px;
+	background-color:#4682B4;}
+</style>
+<script type="application/ecmascript">
+function dropIt(event)
+	{document.querySelector('div').setAttribute('style','background-color:#228B22');}
+</script>
+</head>
+<body onload="document.querySelector('img').addEventListener('drag',function (){return false},false)">
+<p><img ondragstart="event.dataTransfer.effectAllowed = 'copy'" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAABAklEQVR42u3RIREAIADAQPofcUhCIYiA4yZevJvb2GseOsYr4C9DYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJMSTGkBhDYgyJuSH6zwrT7ia+AAAAAElFTkSuQmCC" alt="PNG rectangle"/></p>
+<p>Drag box above to the box below and drop it. Lower box should turn green.</p>
+<div ondragenter="event.preventDefault()" ondragover="return false" ondrop="dropIt(event)"/>
+</body>
+</html>

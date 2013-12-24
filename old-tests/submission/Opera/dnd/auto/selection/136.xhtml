@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>BiDi text selection drag and drop to textarea</title>
+<style type="text/css">
+span
+	{border:solid 2px #D2B48C;}
+textarea
+	{width:300px;
+	height:100px;
+	margin-top:20px;
+	border:solid 2px #4682B4;}
+</style>
+</head>
+<body onload="window.getSelection().selectAllChildren(document.querySelector('p'))">
+<p><span ondragend="if(document.querySelector('textarea').value == 'PASS|LIAF &#x202E;FAIL|SSAP&#x202C; PASS|LIAF'){this.setAttribute('style','border:solid thick #228B22')}">PASS|LIAF &#x202E;FAIL|SSAP&#x202C; PASS|LIAF</span></p>
+<p>Drag selected text to the textarea below. Selection border should turn green.</p>
+<p><textarea placeholder="Drop selection here"/></p>
+</body>
+</html>

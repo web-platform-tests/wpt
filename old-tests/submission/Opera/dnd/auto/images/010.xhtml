@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Image drag and drop to iframe</title>
+<style type="text/css">
+p:first-child
+	{padding-left:20px;}
+iframe
+	{width:160px;
+	height:160px;
+	border-style:none;}
+</style>
+</head>
+<body>
+<p><img src="010-1.png" alt="PNG rectangle" ondragstart="event.dataTransfer.effectAllowed = 'copy'"/></p>
+<p>Drag box above and drop it onto the box below. Lower box should turn green.</p>
+<p><iframe src="010-2.xhtml">XHTML with image</iframe></p>
+</body>
+</html>

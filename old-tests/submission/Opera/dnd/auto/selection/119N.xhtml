@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>RTL text selection drag and drop from textarea to RTL text input</title>
+<style type="text/css">
+textarea
+	{border:solid 2px #D2B48C;
+	width:7em;
+	height:2em;}
+input
+	{border:solid 2px #4682B4;}
+</style>
+</head>
+<body>
+<p><textarea>&#x202E;FAIL|SSAP&#x202C;</textarea></p>
+<p>Select content of tan box and drag it to the input below. Input border should turn green.</p>
+<p><input dir="rtl" placeholder="Drop selection here" oninput="if(this.value.search(/&#x202E;?FAIL|SSAP&#x202C;?/) != -1){this.setAttribute('style','border:solid thick #228B22')}"/></p>
+</body>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Selecting text in SVG text element inside draggable container</title>
+</head>
+<body onmouseup="if(window.getSelection().toString() == 'Select me'){document.querySelector('div').setAttribute('style','border:solid 4px #228B22')}">
+<div draggable="true">
+	<svg xmlns="http://www.w3.org/2000/svg" version="1.2" width="200px" height="50px" viewBox="0 0 200 50">
+		<text x="10" y="45" font-size="30" fill="navy" editable="simple">Select me</text>
+	<rect x="10" y="20" width="160" height="30" fill="none" stroke="#D2B48C" stroke-width="2"/>
+</svg>
+</div>
+<p>You should be able to select text above by dragging mouse over it from left to right. Selection border should turn green once you release mouse.</p>
+</body>
+</html>

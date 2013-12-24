@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Adding element to datastore on dragenter</title>
+<style type="text/css">
+a
+	{color:#4682B4;
+	background-color:#D2B48C;}
+span
+	{padding:1ex;
+	color:#D2B48C;
+	background-color:#228B22}
+body:after
+	{content:"";
+	display:block;
+	background-color:#4682B4;
+	width:105px;
+	height:105px;
+	position:fixed;
+	bottom:0;
+	right:0;}
+</style>
+<script type="application/ecmascript">
+function start(event)
+	{event.dataTransfer.effectAllowed = 'copy';
+	event.dataTransfer.addElement(document.querySelector('span'));}
+function resetImage(event)
+	{event.preventDefault();
+	event.dataTransfer.addElement(document.querySelector('a'));}
+</script>
+</head>
+<body>
+<p><a href="data:text/plain,1" ondragstart="start(event)">Drag me</a></p>
+<p><span>PASS</span></p>
+<p ondragenter="resetImage(event)" ondragover="return false">Try to drag link above. You should see word PASS in feedback overlay.</p>
+</body>
+</html>

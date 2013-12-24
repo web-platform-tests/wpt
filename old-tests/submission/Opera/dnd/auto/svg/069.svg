@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.2" width="500px" height="500px" viewBox="0 0 500 500">
+<title>SVG editable text selection: left to right mouse drag</title>
+<text x="10" y="30" font-size="20" editable="simple">Select me</text>
+<rect x="10" y="10" width="110" height="26"  fill="none" stroke="#D2B48C" stroke-width="2"/>
+<textArea x="10" y="50" width="480" height="450" font-size="20">You should be able to select text above by dragging mouse over it from right to left. Selection border should turn green once you release mouse.</textArea>
+<script type="application/ecmascript">
+document.querySelector('svg').addEventListener('mouseup',
+function (event)
+	{if(window.getSelection().toString() == 'Select me')
+		{for(var i = 0; i != 2; i++)
+			{document.querySelectorAll('rect')[i].setAttribute('fill','#228B22')}
+		}
+	 }, false);
+</script>
+</svg>

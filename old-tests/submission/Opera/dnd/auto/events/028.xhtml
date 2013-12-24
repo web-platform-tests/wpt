@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Link drag and drop: 'return false' should not cancel event</title>
+<style type="text/css">
+a
+	{border:solid 2px #D2B48C;}
+div
+	{height:100px;
+	width:100px;
+	padding:20px;
+	background-color:#4682B4;}
+</style>
+</head>
+<body onload="document.querySelector('a').addEventListener('drag',function (){return false},false)">
+<p><a href="data:text/plain,1" ondragstart="event.dataTransfer.effectAllowed = 'copy'">Drag me</a></p>
+<p>Drag box above to the box below and drop it. Lower box should turn green.</p>
+<div ondragenter="event.preventDefault()" ondragover="return false" ondrop="if(event.dataTransfer.getData('text/uri-list').replace(/\r\n$/,'') == 'data:text/plain,1'){document.querySelector('div').setAttribute('style','background-color:#228B22');}"/>
+</body>
+</html>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Text selection in contenteditable: left to right mouse drag</title>
+<style type="text/css">
+span
+	{border:solid 4px #D2B48C;}
+</style>
+</head>
+<body onmouseup="if(window.getSelection().toString() == 'Select me'){document.querySelector('span').setAttribute('style','border:solid 4px #228B22')}">
+<p><span contenteditable="true">Select me</span></p>
+<p>You should be able to select text above by dragging mouse over it from left to right. Selection border should turn green once you release mouse.</p>
+</body>
+</html>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>SVG image drag and drop: events after drag and drop is cancelled</title>
+<style type="text/css">
+a
+	{border:solid 2px #D2B48C;}
+</style>
+<script type="application/ecmascript">
+var result;
+</script>
+</head>
+<body ondragenter="event.preventDefault()" ondragover="return false" ondrop="result = false">
+<p><img ondragstart="result = true;event.dataTransfer.effectAllowed = 'copy'" ondragend="if(result){document.querySelector('p+p').setAttribute('style','border:solid #228B22 medium')}" src="045-1.svg" alt="PNG rectangle"/></p>
+<p>Drag box above and press Esc before you drop it. This paragraph should get green border once drag and drop is cancelled.</p>
+</body>
+</html>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Link drag and drop: changing draggable attribute</title>
+<style type="text/css">
+a
+	{border:solid 2px #D2B48C;}
+div
+	{width:100px;
+	height:100px;
+	background-color:#4682B4;}
+</style>
+<script type="application/ecmascript">
+function paint(color)
+	{document.querySelector('p + div').setAttribute('style','background-color:' + color);}
+</script>
+</head>
+<body onload="document.querySelector('a').setAttribute('draggable','false')">
+<p><a href="data:text/plain,1" onmousedown="paint('#228B22')" ondragstart="paint('white')">Try to drag me</a></p>
+<p>Try to drag link above. Lower box should turn green.</p>
+<div/>
+</body>
+</html>

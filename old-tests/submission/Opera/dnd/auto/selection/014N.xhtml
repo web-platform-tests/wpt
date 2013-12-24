@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Selection drag and drop from url input to textarea</title>
+<style type="text/css">
+input
+	{border:solid 2px #D2B48C;}
+textarea
+	{border:solid 2px #4682B4;
+	width:300px;
+	height:100px;
+	margin-top:20px;}
+</style>
+</head>
+<body>
+<p>Select content of tan box and drag it to the textarea. Textarea border should turn green.</p>
+<p ondragend="done(event)"><input type="url" value="http://opera.com"/></p>
+<p><textarea placeholder="Drop selection here"/></p>
+<script type="application/ecmascript">
+var t = document.querySelector('input').value;
+function done(event)
+	{var txt = document.querySelector('textarea');
+	if(txt.value == t)
+		{txt.setAttribute('style','border:solid thick #228B22')}
+	}
+</script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Removing iframe during drag and drop of text input selection</title>
+<style type="text/css">
+div
+	{height:170px;
+	width:170px;
+	background-color:#4682B4;}
+iframe
+	{height:100px;
+	width:300px;
+	border:solid medium navy;}
+</style>
+</head>
+<body ondragenter="event.preventDefault();document.querySelector('body').removeChild(document.querySelector('iframe'))" ondragover="return false" ondrop="if(event.dataTransfer.getData('text/plain') == 'Drag me'){document.querySelector('div').setAttribute('style','background-color:#228b22');}">
+<iframe src="017-1N.xhtml">XHTML document</iframe>
+<p>Select and drag content of tan box and drop it onto the box below. Lower box should turn green.</p>
+<div/>
+</body>
+</html>

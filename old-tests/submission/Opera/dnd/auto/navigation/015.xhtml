@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Selection drag and drop and history navigation roundtrip</title>
+<style type="text/css">
+div
+	{line-height:100px;}
+span span
+	{border:solid 2px #D2B48C;}
+br + span
+	{border:solid 2px #4682B4;}
+</style>
+</head>
+<body onload="window.getSelection().selectAllChildren(document.querySelector('span'))">
+<p>Drag selected text around and then drop it onto itself. Selection should get green border.</p>
+<div>
+<span dropzone="copy string:text/plain" ondragstart="window.location = '015-1.xhtml'" ondrop="if(event.dataTransfer.getData('text/plain').replace(/[\n\r]+/,' ') == 'Drag me'){this.setAttribute('style','border:solid thick #228B22')}"><span>Drag</span><br/><span>me</span></span>
+</div>
+</body>
+</html>

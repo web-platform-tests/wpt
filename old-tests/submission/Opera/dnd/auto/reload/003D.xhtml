@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Reload during SVG image drag and drop roundtrip</title>
+</head>
+<body>
+<p><img dropzone="copy string:text/uri-list" ondragstart="event.dataTransfer.effectAllowed = 'copy';window.location.reload()" ondragenter="event.preventDefault()" ondrop="this.setAttribute('style','border:solid thick #228B22')" ondragover="return false" src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20xmlns%3Axlink%3D%22http%3A//www.w3.org/1999/xlink%22%20version%3D%221.1%22%20width%3D%22200px%22%20height%3D%22200px%22%20viewBox%3D%220%200%20200%20200%22%3E%3Crect%20x%3D%220%22%20y%3D%220%22%20width%3D%22100%22%20height%3D%22100%22%20fill%3D%22%234682B4%22/%3E%3Crect%20x%3D%22100%22%20y%3D%22100%22%20width%3D%22100%22%20height%3D%22100%22%20fill%3D%22%23D2B48C%22/%3E%3C/svg%3E" alt="SVG pattern"/></p>
+<p>Drag box below and drop it onto upper box. Green border should appear around boxes.</p>
+</body>
+</html>

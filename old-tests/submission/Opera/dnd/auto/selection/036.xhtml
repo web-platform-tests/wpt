@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Dragging multiline text selection from textarea to contenteditable element</title>
+<style type="text/css">
+body > div
+	{width:300px;
+	height:100px;
+	margin-top:20px;
+	background-color:#4682B4;}
+textarea
+	{border:solid 2px #D2B48C;
+	width:120px;
+	height:140px;}
+</style>
+</head>
+<body onload="var t = document.querySelector('textarea');t.select();t.setSelectionRange(23,55)">
+<p>
+<textarea ondragend="var d = document.querySelector('div');if(d.innerHTML.search(/selection.*that spans.*three lines/) != -1){d.setAttribute('style','background-color:#228B22')}">
+Here is textarea with
+selection
+that spans
+three lines.
+Drag selected text to the box below.
+Box should turn green.
+</textarea>
+</p>
+<p>Drag selected text to the box below. Box should turn green.</p>
+<div contenteditable="true"/>
+</body>
+</html>

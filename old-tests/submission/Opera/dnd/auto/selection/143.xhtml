@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Large text selection drag and drop</title>
+<style type="text/css">
+div
+	{border:solid 2px #D2B48C;
+	height:200px;
+	overflow-y:scroll;}
+textarea
+	{width:300px;
+	height:100px;
+	margin-top:20px;
+	border:solid 2px #4682B4;}
+</style>
+<script type="application/ecmascript">
+function start(event)
+	{var d = document.querySelector('div'), s = d.firstChild.nodeValue;
+	for(var i = 0; i != 12; i++)
+		{s = s + ' ' + s;}
+	d.firstChild.nodeValue = 'Start of selection. ' + s + ' End of selection';
+	window.getSelection().selectAllChildren(d);}
+function done(event)
+	{var d = document.querySelector('div');
+	if(document.querySelector('textarea').value == d.firstChild.nodeValue)
+		{d.setAttribute('style','border:solid thick #228B22')}
+	}	
+</script>
+</head>
+<body onload="start()">
+<div ondragend="done(event)">Large selection.</div>
+<p>Drag selection to the textarea below. Selection border should turn green.</p>
+<p><textarea placeholder="Drop selection here"/></p>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Horizontal scrolling during selection drag and drop to text input</title>
+<style type="text/css">
+span
+	{border:solid 2px #D2B48C;}
+p + div
+	{height:200px;
+	width:150px;
+	overflow-x:scroll;}
+div div
+	{margin:100px 0 0 144px;
+	width:100px;
+	border-left:dashed 6px #4682b4;}
+</style>
+</head>
+<body onload="window.getSelection().selectAllChildren(document.querySelector('p'))">
+<p><span>Drag me</span></p>
+<p>You should be able to drag selected text to the input at the end of scrollable container (dragging towards the right edge triggers scrolling).
+Container should turn green.</p>
+<div>
+	<div>
+		<input placeholder="Drop selection here" ondrop="document.querySelector('p+div').setAttribute('style','background-color:#228B22')"/>
+	</div>
+</div>
+</body>
+</html>

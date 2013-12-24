@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Drag feedback when elements are added to dragstore</title>
+<style type="text/css">
+div > div
+	{height:80px;
+	width:80px;
+	float:left;}
+div + div
+	{margin:-20px 0 0 -40px;
+	background-color:#228B22;}
+div[draggable]
+	{background-color:#D2B48C;
+	margin-top:20px;}
+body:after
+	{content:"";
+	display:block;
+	background-color:#4682B4;
+	width:105px;
+	height:105px;
+	position:fixed;
+	bottom:0;
+	right:0;}
+</style>
+<script type="application/ecmascript">
+function start(event)
+	{event.dataTransfer.effectAllowed = 'copy';
+	event.dataTransfer.addElement(document.querySelector('div + div'));}
+</script>
+</head>
+<body>
+<div ondragstart="start(event)">
+	<div draggable="true"/>
+	<div/>
+</div>
+<p>Try to drag lower box. Feedback overlay should include both boxes.</p>
+</body>
+</html>

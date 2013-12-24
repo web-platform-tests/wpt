@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Removing input element during drag and drop of selection</title>
+<style type="text/css">
+input
+	{border:solid 2px #D2B48C;
+	width:5em;}
+div
+	{min-height:150px;
+	width:150px;
+	padding:20px;
+	color:white;
+	background-color:#4682B4;}
+</style>
+</head>
+<body onload="document.querySelector('input').select()">
+<p><input value="Drag me" ondragstart="document.querySelector('p').removeChild(document.querySelector('input'))"/></p>
+<p>Drag selection and drop it onto the box below. Lower box should turn green.</p>
+<div ondragover="return false" ondrop="if(event.dataTransfer.getData('text/plain') == 'Drag me'){document.querySelector('div').setAttribute('style','background-color:#228b22')}"/>
+</body>
+</html>

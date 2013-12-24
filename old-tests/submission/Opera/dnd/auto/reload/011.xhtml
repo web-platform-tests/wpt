@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Reload during link drag and drop from object</title>
+<style type="text/css">
+div
+	{background-color:#4682B4;
+	width:100px;
+	height:100px;}
+object
+	{height:100px;
+	width:300px;
+	border:solid medium navy;}
+</style>
+</head>
+<body dropzone="copy string:text/uri-list" ondrop="if(event.dataTransfer.getData('text/uri-list').replace(/\r\n$/,'') == 'data:text/plain,1'){document.querySelector('div').setAttribute('style','background-color:#228B22')}">
+<object type="application/xhtml+xml" data="009-1.xhtml">XHTML document</object>
+<p>Drag link above and drop it onto box below. Box should turn green.</p>
+<div/>
+</body>
+</html>

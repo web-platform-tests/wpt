@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Selection drag and drop from textarea to contenteditable element in iframe</title>
+<style type="text/css">
+textarea
+	{border:solid 2px #D2B48C;
+	width:7em;
+	height:2em;}
+iframe
+	{width:350px;
+	height:150px;
+	border-style:none;}
+</style>
+</head>
+<body>
+<p><textarea ondragend="if(document.querySelector('iframe').contentDocument.querySelector('div').firstChild.nodeValue == 'Drag me'){this.setAttribute('style','border:solid thick #228B22')}">Drag me</textarea></p>
+<p>Select content of tan box and drag it to the box below. Border of textarea should turn green.</p>
+<p><iframe src="050-1N.xhtml">XHTML document</iframe></p>
+</body>
+</html>

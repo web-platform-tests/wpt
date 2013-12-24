@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Drag and drop roundtrip with text/uri-list data</title>
+<style type="text/css">
+p:first-child
+	{line-height:80px;}
+span span
+	{display:inline-block;
+	width:40px;
+	height:40px;
+	background-color:#D2B48C;}
+br + span
+	{background-color:#4682B4;}
+</style>
+</head>
+<body>
+<p>
+<span
+	draggable="true"
+	ondragstart="event.dataTransfer.effectAllowed = 'copy';event.dataTransfer.setData('text/uri-list','data:text/plain,1')"
+	ondragenter="event.preventDefault()"
+	ondragover="return false"
+	ondrop="if(event.dataTransfer.getData('text/uri-list').replace(/\r\n$/,'') == 'data:text/plain,1'){document.querySelector('br+span').setAttribute('style','background-color:#228B22')}">
+<span/><br/><span/>
+</span>
+</p>
+<p>Drag upper box and drop it onto lower. Lower box should turn green.</p>
+</body>
+</html>

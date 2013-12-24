@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Selection drag and drop from search to text input</title>
+<style type="text/css">
+span
+	{outline:solid 2px #D2B48C;}
+input[ondragend]
+	{width:5em;
+	margin:-2px;}
+input[placeholder]
+	{margin-top:20px;
+	border:solid 2px #4682B4;}
+</style>
+<script type="application/ecmascript">
+function done(event)
+	{var t = setTimeout("var txt = document.querySelectorAll('input');if(txt[0].value == '' &amp;&amp; txt[1].value == 'Selection'){txt[0].setAttribute('style','outline:solid thick #228B22')}",100);}
+</script>
+</head>
+<body>
+<p><span><input ondragend="done(event)" type="search" value="Selection"/></span></p>
+<p>Select content of tan box and drag it to the input below. Border of upper input should turn green.</p>
+<p><input placeholder="Drop selection here"/></p>
+</body>
+</html>

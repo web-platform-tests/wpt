@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>JPG image drag and drop</title>
+<style type="text/css">
+div
+	{height:100px;
+	width:100px;
+	padding:20px;
+	background-color:#4682B4;}
+img
+	{width:100px;
+	height:100px;
+	border:solid 2px #D2B48C;}
+</style>
+<script type="application/ecmascript">
+function dropIt(event)
+	{if(event.dataTransfer.getData('text/uri-list').replace(/\r\n$/,'') == document.querySelector('img').src)
+		{document.querySelector('div').setAttribute('style','background-color:#228B22');}
+	}
+</script>
+</head>
+<body>
+<p><img ondragstart="event.dataTransfer.effectAllowed = 'copy'" src="005-1.jpg" alt="JPG rectangle"/></p>
+<p>Drag box above and drop it onto the box below. Lower box should turn green.</p>
+<div
+	ondragenter="event.preventDefault()"
+	ondragover="return false"
+	ondrop="dropIt(event)"
+/>
+</body>
+</html>

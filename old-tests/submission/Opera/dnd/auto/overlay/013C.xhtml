@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Rhomboidal feedback bitmap</title>
+<style type="text/css">
+canvas
+	{height:100px;
+	width:150px;
+	display:block;}
+body:after
+	{content:"";
+	display:block;
+	background-color:#4682B4;
+	width:105px;
+	height:105px;
+	position:fixed;
+	bottom:0;
+	right:0;}
+</style>
+</head>
+<body>
+<p>
+	<canvas width="150" height="100" draggable="true">Canvas</canvas>
+</p>
+<p>Try to drag rhomboid above. Feedback overlay should not be rectangular.</p>
+<script type="application/ecmascript">
+var canvas = document.querySelector('canvas'),
+c = canvas.getContext('2d'), pattern = ['#228B22','#D2B48C','#4682B4'];
+for(var i = 0; i != 3; i++)
+	{c.fillStyle = pattern[i];
+	c.beginPath();
+	c.moveTo(4*i,4*i);
+	c.lineTo(120-2*i,4*i);
+	c.lineTo(150-4*i,100-4*i);
+	c.lineTo(30+2*i,100-4*i);
+	c.closePath();
+	c.fill();}
+</script>
+</body>
+</html>

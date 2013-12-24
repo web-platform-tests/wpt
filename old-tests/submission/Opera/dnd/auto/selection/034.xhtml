@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Dragging multiline text selection between textareas</title>
+<style type="text/css">
+textarea
+	{border:solid 2px #D2B48C;}
+textarea[placeholder]
+	{border:solid 2px #4682B4;
+	width:300px;
+	height:100px;
+	margin-top:20px;}
+</style>
+<script type="application/ecmascript">
+function done(event)
+	{var txt = document.querySelector('textarea[placeholder]');
+	if(txt.value.replace(/[\n\r]+/g,' ') == 'Here is textarea with selection that spans three lines')
+		{txt.setAttribute('style','border:solid thick #228B22')}
+	}
+</script>
+</head>
+<body onload="var t = document.querySelector('textarea');t.select();t.setSelectionRange(0,54)">
+<p ondragend="done(event)">
+<textarea>Here is textarea with selection
+that spans
+three lines. Drag selected text to the textarea below.
+Lower textarea border should turn green.
+</textarea>
+</p>
+<p><textarea placeholder="Drop selection here"/></p>
+</body>
+</html>

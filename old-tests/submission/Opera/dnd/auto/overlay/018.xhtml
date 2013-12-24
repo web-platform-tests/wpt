@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Setting drag image during drag and drop of SVG image</title>
+<style type="text/css">
+span
+	{padding:1ex;
+	border:solid 5px #228B22;
+	color:#4682B4;
+	background-color:#D2B48C;}
+img
+	{height:30px;
+	width:30px;
+	border:solid 5px silver;}
+body:after
+	{content:"";
+	display:block;
+	background-color:#4682B4;
+	width:105px;
+	height:105px;
+	position:fixed;
+	bottom:0;
+	right:0;}
+</style>
+<script type="application/ecmascript">
+function start(event)
+	{event.dataTransfer.effectAllowed = 'copy';
+	event.dataTransfer.setDragImage(document.querySelector('span'), 1, 1);}
+</script>
+</head>
+<body>
+<p><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20version%3D%221.1%22%20width%3D%22100px%22%20height%3D%22100px%22%20viewBox%3D%220%200%20100%20100%22%3E%3Crect%20x%3D%220%22%20y%3D%220%22%20width%3D%22100%22%20height%3D%22100%22%20fill%3D%22%23D2B48C%22/%3E%3C/svg%3E" alt="SVG box" ondragstart="start(event)"/></p>
+<p><span>PASS</span></p>
+<p>Try to drag box above. You should see word PASS in feedback overlay.</p>
+</body>
+</html>

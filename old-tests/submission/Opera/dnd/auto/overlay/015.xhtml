@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Adding element to datastore during drag and drop of selection</title>
+<style type="text/css">
+span[ondragstart]
+	{border:solid 2px #D2B48C;}
+p + p > span
+	{padding:1ex;
+	border:solid 5px #228B22;
+	color:#4682B4;
+	background-color:#D2B48C;}
+body:after
+	{content:"";
+	display:block;
+	background-color:#4682B4;
+	width:105px;
+	height:105px;
+	position:fixed;
+	bottom:0;
+	right:0;}
+</style>
+<script type="application/ecmascript">
+function start(event)
+	{event.dataTransfer.effectAllowed = 'copy';
+	event.dataTransfer.addElement(document.querySelector('p + p > span'));}
+</script>
+</head>
+<body onload="window.getSelection().selectAllChildren(document.querySelector('span'))">
+<p><span ondragstart="start(event)">Drag me</span></p>
+<p><span>PASS</span></p>
+<p>Try to drag selection above. You should see word PASS in feedback overlay.</p>
+</body>
+</html>

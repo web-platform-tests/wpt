@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Selection drag and drop from text input and text/plain aliases</title>
+<style type="text/css">
+input
+	{border:solid 2px #D2B48C;
+	width:5em;}
+div
+	{width:300px;
+	height:100px;
+	margin-top:20px;
+	background-color:#4682B4;}
+</style>
+<script type="application/ecmascript">
+function start(event)
+	{event.dataTransfer.effectAllowed = 'copy';
+	event.dataTransfer.setData('text/plain','PASS');}
+function checkText(event)
+	{var a = event.dataTransfer.getData('text/plain'),
+	b = event.dataTransfer.getData('text'),
+	c = event.dataTransfer.getData('TEXT'),
+	d = event.dataTransfer.getData('TexT');
+	if(a == b &amp;&amp; b == c &amp;&amp; c == d &amp;&amp; d == 'PASS')
+		{document.querySelector('div').setAttribute('style','background-color:#228B22')}
+	}
+</script>
+</head>
+<body>
+<p><input value="Drag me" ondragstart="start(event)"/></p>
+<p>Select content of tan box and drag it to the box below. Box should turn green.</p>
+<div ondragenter="event.preventDefault()" ondragover="return false" ondrop="checkText(event)"/>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Shape Outside Basic Shape Arguments</title>
+        <link rel="author" title="Adobe" href="http://html.adobe.com/">
+        <link rel="author" title="Bear Travis" href="mailto:betravis@adobe.com">
+        <link rel="help" href="http://dev.w3.org/csswg/css-shapes/#typedef-basic-shape">
+        <link rel="help" href="http://dev.w3.org/csswg/cssom/#serializing-css-values">
+        <meta name="assert" content="A basic basic shape can contain any length unit type, or percentage">
+        <meta name="flags" content="DOM">
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+        <script src="../resources/parsing-utils.js"></script>
+    </head>
+    <body>
+        <div id="log"></div>
+        <script type="text/javascript">
+            // relative units: em, ex, ch, rem, vw, vh, vmin, vmax
+            // fixed units: cm, mm, in, px, pt, pc
+            // percentage unit: %
+            // zero length: 0
+            generate_tests(ParsingUtils.testInlineStyle, [
+                ["0-valued", "polygon(nonzero, 0 0)", "polygon(nonzero, 0px 0px)"],
+                ["Font relative units", "polygon(nonzero, 1em 2ex, 3ch 4rem)"],
+                ["View relative units", "polygon(nonzero, 1vw 2vh, 3vmin 4vmax)"],
+                ["Fixed units", "polygon(nonzero, 1cm 2mm, 3in 4px, 5pt 6pc)"],
+                ["Percentage units", "polygon(nonzero, 1% 2%)"],
+            ]);
+        </script>
+    </body>
+</html>

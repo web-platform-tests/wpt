@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Shape Outside Valid Basic Shape Functional Notation</title>
+        <link rel="author" title="Adobe" href="http://html.adobe.com/">
+        <link rel="author" title="Bear Travis" href="mailto:betravis@adobe.com">
+        <link rel="help" href="http://dev.w3.org/csswg/css-shapes/#typedef-basic-shape">
+        <link rel="help" href="http://dev.w3.org/csswg/cssom/#serializing-css-values">
+        <meta name="assert" content="Basic shapes use functional notation, and may contain optional whitespace inside the parentheses">
+        <meta name="flags" content="DOM">
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+        <script src="../resources/parsing-utils.js"></script>
+    </head>
+    <body>
+        <div id="log"></div>
+        <script type="text/javascript">
+            generate_tests(ParsingUtils.testInlineStyle, [
+                ["No whitespace" , "polygon(nonzero,1px 2px,3px 4px)", "polygon(nonzero, 1px 2px, 3px 4px)"],
+                ["Extra whitespace", "polygon( nonzero , 1px 2px\n\t,\n\t3px\n\t4px\n\t)", "polygon(nonzero, 1px 2px, 3px 4px)"]
+            ]);
+        </script>
+    </body>
+</html>

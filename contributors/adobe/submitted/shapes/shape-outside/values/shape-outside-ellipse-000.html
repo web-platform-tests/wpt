@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Shape Outside Ellipse Valid Formats</title>
+        <link rel="author" title="Adobe" href="http://html.adobe.com/">
+        <link rel="author" title="Bear Travis" href="mailto:betravis@adobe.com">
+        <link rel="help" href="http://dev.w3.org/csswg/css-shapes/#funcdef-ellipse">
+        <meta name="assert" content="An elliptical basic shape has two optional components, radii (2) and a position.">
+        <meta name="flags" content="DOM">
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+        <script src="../resources/parsing-utils.js"></script>
+    </head>
+    <body>
+        <div id="log"></div>
+        <script type="text/javascript">
+            generate_tests(ParsingUtils.testInlineStyle, [
+                ["No arguments", "ellipse()"],
+                ["Radial arguments", "ellipse(50px 50px)"],
+                ["Position argument", "ellipse(at 50px 50px)"],
+                ["Radial and position argument", "ellipse(50px 50px at 50px 50px)"]
+            ]);
+        </script>
+    </body>
+</html>

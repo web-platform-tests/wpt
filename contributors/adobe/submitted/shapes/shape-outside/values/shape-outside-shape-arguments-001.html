@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Shape Outside Shape Number Values</title>
+        <link rel="author" title="Adobe" href="http://html.adobe.com/">
+        <link rel="author" title="Bear Travis" href="mailto:betravis@adobe.com">
+        <link rel="help" href="http://dev.w3.org/csswg/css-shapes/#typedef-basic-shape">
+        <link rel="help" href="http://dev.w3.org/csswg/cssom/#serializing-css-values">
+        <meta name="assert" content="The basic shape can contain all valid number formats">
+        <meta name="flags" content="DOM">
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+        <script src="../resources/parsing-utils.js"></script>
+    </head>
+    <body>
+        <div id="log"></div>
+        <script type="text/javascript">
+            // number forms: d, +d, -d, .d, +.d, -.d, d.d, +d.d, -d.d
+            generate_tests(ParsingUtils.testInlineStyle, [
+                ["Positive number variations" , "polygon(nonzero, 1px +2px, .3px +.4px, 5.5px +6.6px)", "polygon(nonzero, 1px 2px, 0.3px 0.4px, 5.5px 6.6px)"],
+                ["Negative number variations", "polygon(nonzero, -1px -.2px, -1.1px 0px)", "polygon(nonzero, -1px -0.2px, -1.1px 0px)"]
+            ]);
+        </script>
+    </body>
+</html>

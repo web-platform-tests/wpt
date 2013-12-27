@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Shape Outside Circle Valid Positions</title>
+        <link rel="author" title="Adobe" href="http://html.adobe.com/">
+        <link rel="author" title="Bear Travis" href="mailto:betravis@adobe.com">
+        <link rel="help" href="http://dev.w3.org/csswg/css-shapes/#funcdef-circle">
+        <meta name="assert" content="A circle's position argument may be any of the valid keyword/length/percentage combinations allowed by a <position> value">
+        <meta name="flags" content="DOM">
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+        <script src="../resources/parsing-utils.js"></script>
+    </head>
+    <body>
+        <div id="log"></div>
+        <script type="text/javascript">
+            generate_tests(function(value) {
+                value = "circle(at " + value + ")";
+                ParsingUtils.testInlineStyle(value, value);
+            }, ParsingUtils.valuesAsArrays(ParsingUtils.validPositions, 2));
+        </script>
+    </body>
+</html>

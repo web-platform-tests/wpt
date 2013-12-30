@@ -10,7 +10,7 @@
     <script>
       async_test(function (test) {
         test.step(function() {
-          var source = new EventSource({toString:function(){return "resources/message.php";}})
+          var source = new EventSource({toString:function(){return "resources/message.py";}})
           source.onopen = function(e) {
             test.step(function() {
               assert_false(e.hasOwnProperty('data'))

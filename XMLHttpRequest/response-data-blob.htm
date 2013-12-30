@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method" />
@@ -27,7 +27,7 @@
                     test.step(function()
                     {
                         blob = xhr.response;
-                        assert_true(blob instanceof Blob);
+                        assert_true(blob instanceof Blob, 'blob is a Blob');
 
                         var reader = new FileReader();
                         reader.onload = function()
@@ -43,7 +43,7 @@
                 }
             }
 
-            xhr.open("GET", "./resources/content.php?content=" + content, true);
+            xhr.open("GET", "./resources/content.py?content=" + content, true);
             xhr.responseType = "blob";
             xhr.send();
         });

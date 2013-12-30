@@ -1,0 +1,41 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>HTML5 Media Elements: removing the 'src' attribute does not invoke the media element load algorithm.</title>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+    <link rel="help" href="http://www.w3.org/TR/html5/embedded-content-0.html#attr-media-src" />
+    <meta name="assert" content="removing the 'src' attribute does not invoke the media element load algorithm." />
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script type="text/javascript" src="../../../../common/media.js"></script>
+    <script type="text/javascript">
+      var test = async_test("removing the 'src' attribute does not invoke the media element load algorithm.", {timeout:5000});
+
+    function do_play(event) {
+      test.step(function() {
+        var vid = document.getElementById("video0");
+        vid.addEventListener("loadstart", do_loadstart, false);
+        vid.removeAttribute("src");
+        vid.load();
+      });
+    }
+
+    function do_loadstart(){
+      test.step(function() {assert_unreached("removing src attribute does not invoke the media element load algorithm")});
+      test.done();
+    }
+
+    setTimeout(function(){test.done();}, 4000);
+    </script>
+  </head>
+  <body>
+    <div id=log></div>
+    <script type="text/javascript">
+      document.write(
+        "<video id='video0' src='" + getVideoURI("/media/green-at-15") + "'" +
+        " onloadstart='do_play(event);'></video>"
+      );
+    </script>
+  </body>
+</html>

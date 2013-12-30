@@ -1,4 +1,4 @@
-﻿var databaseName = "database";
+var databaseName = "database";
 var databaseVersion = 1;
 
 if (!window.indexedDB)

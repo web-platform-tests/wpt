@@ -1,6 +1,6 @@
 <!--
 try {
-  var source = new EventSource("../resources/message.php")
+  var source = new EventSource("../resources/message.py")
   postMessage([true, source.url])
   source.close()
 } catch(e) {
@@ -19,7 +19,7 @@ try {
     <script>
       var test = async_test();
       test.step(function() {
-        var url = "resources/message.php"
+        var url = "resources/message.py"
         var worker = new Worker('#')
         worker.onmessage = function(e) {
           test.step(function() {

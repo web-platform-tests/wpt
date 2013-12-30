@@ -99,7 +99,7 @@
       }
     });
     assert_equals(event.type, '123');
-  }, 'type argument is complext object, with toString method');
+  }, 'type argument is complex object, with toString method');
 
   test(function() {
     assert_throws(null, function() {
@@ -305,7 +305,7 @@
     t.done();
   });
 
-  var t2 = async_test('test if DeviceLightEvent recieved');
+  var t2 = async_test('test if DeviceLightEvent received');
   window.ondevicelight = function(e) {
     t2.step(function() {
       var msg = 'expected instance of DeviceLightEvent: ';

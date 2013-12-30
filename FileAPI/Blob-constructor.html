@@ -8,7 +8,11 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="support/Blob.js"></script>
+<p><strong><a href="https://www.w3.org/Bugs/Public/show_bug.cgi?id=23683">Discussion</a>
+is ongoing that will affect a number of the following tests.</strong>
 <div id="log"></div>
+<!-- used by "platform object that supports indexed properties" tests -->
+<iframe style="display:none"></iframe>
 <script>
 test(function() {
   assert_true("Blob" in window, "window should have a Blob property.");
@@ -20,6 +24,7 @@ test(function() {
 test(function() {
   var blob = new Blob();
   assert_true(blob instanceof Blob);
+  assert_equals(String(blob), '[object Blob]');
   assert_equals(blob.size, 0);
   assert_equals(blob.type, "");
 }, "no-argument Blob constructor");
@@ -97,6 +102,21 @@ test(function() {
   });
 }, "The length getter should be invoked and any exceptions should be propagated.");
 
+test_blob(function() {
+  var element = document.createElement("div");
+  element.appendChild(document.createElement("div"));
+  element.appendChild(document.createElement("p"));
+  var list = element.children;
+  Object.defineProperty(list, "length", {
+    get: function() { throw test_error; }
+  });
+  return new Blob(list);
+}, {
+  expected: "[object HTMLDivElement][object HTMLParagraphElement]",
+  type: "",
+  desc: "A platform object that supports indexed properties should be treated as a sequence for the blobParts argument (overwritten 'length'.)"
+});
+
 test(function() {
   assert_throws(test_error, function() {
     var obj = {
@@ -162,16 +182,19 @@ test(function() {
 test(function() {
   assert_throws(test_error, function() {
     new Blob([{ toString: function() { throw test_error; } }]);
-  });
+  }, "Throwing toString");
   assert_throws(test_error, function() {
     new Blob([{ toString: undefined, valueOf: function() { throw test_error; } }]);
-  });
+  }, "Throwing valueOf");
   assert_throws(test_error, function() {
     new Blob([{
       toString: function() { throw test_error; },
       valueOf: function() { assert_unreached("Should not call valueOf if toString is present."); }
     }]);
-  });
+  }, "Throwing toString and valueOf");
+  assert_throws(new TypeError(), function() {
+    new Blob([{toString: null, valueOf: null}]);
+  }, "Null toString and valueOf");
 }, "ToString should be called on elements of the blobParts array and any exceptions should be propagated.");
 
 test_blob(function() {
@@ -277,6 +300,101 @@ test_blob(function() {
   desc: "Passing a Float64Array as element of the blobParts array should work."
 });
 
+test_blob(function() {
+  return new Blob(document.createElement("div"));
+}, {
+  expected: "",
+  type: "",
+  desc: "Passing an element as the blobParts array should work."
+});
+
+test_blob(function() {
+  return new Blob(window);
+}, {
+  expected: "[object Window]",
+  type: "",
+  desc: "Passing an platform object that supports indexed properties as the blobParts array should work (window)."
+});
+test_blob(function() {
+  window[0].toString = function() { return "foo"; };
+  return new Blob(window);
+}, {
+  expected: "foo",
+  type: "",
+  desc: "Passing an platform object that supports indexed properties as the blobParts array should work (window with custom toString)."
+});
+test_blob(function() {
+  var select = document.createElement("select");
+  select.appendChild(document.createElement("option"));
+  return new Blob(select);
+}, {
+  expected: "[object HTMLOptionElement]",
+  type: "",
+  desc: "Passing an platform object that supports indexed properties as the blobParts array should work (select)."
+});
+
+var t_ports = async_test("Passing a platform array object as the blobParts array should work (MessagePort[]).");
+t_ports.step(function() {
+    var channel = new MessageChannel();
+    channel.port2.onmessage = this.step_func(function(e) {
+        var b_ports = new Blob(e.ports);
+        assert_equals(b_ports.size, "[object MessagePort]".length);
+        this.done();
+    });
+    var channel2 = new MessageChannel();
+    channel.port1.postMessage('', [channel2.port1]);
+});
+
+test_blob(function() {
+  var elm = document.createElement("div");
+  elm.setAttribute("foo", "bar");
+  return new Blob(elm.attributes);
+}, {
+  expected: "[object Attr]",
+  type: "",
+  desc: "Passing a platform array object as the blobParts array should work (Attr[])."
+});
+
+test_blob(function() {
+  var blob = new Blob(['foo']);
+  return new Blob([blob, blob]);
+}, {
+  expected: "foofoo",
+  type: "",
+  desc: "Array with two blobs"
+});
+
+test_blob_binary(function() {
+  var view = new Uint8Array([0, 255, 0]);
+  return new Blob([view.buffer, view.buffer]);
+}, {
+  expected: [0, 255, 0, 0, 255, 0],
+  type: "",
+  desc: "Array with two buffers"
+});
+
+test_blob_binary(function() {
+  var view = new Uint8Array([0, 255, 0, 4]);
+  var blob = new Blob([view, view]);
+  assert_equals(blob.size, 8);
+  var view1 = new Uint16Array(view.buffer, 2);
+  return new Blob([view1, view.buffer, view1]);
+}, {
+  expected: [0, 4, 0, 255, 0, 4, 0, 4],
+  type: "",
+  desc: "Array with two bufferviews"
+});
+
+test_blob(function() {
+  var view = new Uint8Array([0]);
+  var blob = new Blob(["fo"]);
+  return new Blob([view.buffer, blob, "foo"]);
+}, {
+  expected: "\0fofoo",
+  type: "",
+  desc: "Array with mixed types"
+});
+
 // options argument
 test(function() {
   new Blob([], { endings: "invalidEnumValue" });
@@ -335,30 +453,6 @@ test(function() {
 });
 
 test_blob(function() {
-  return new Blob([], { type: "" });
-}, {
-  expected: "",
-  type: "",
-  desc: "Passing the empty string for type should not throw."
-});
-
-test_blob(function() {
-  return new Blob([], { type: "text/html" });
-}, {
-  expected: "",
-  type: "text/html",
-  desc: "Passing 'text/html' for type should not throw."
-});
-
-test_blob(function() {
-  return new Blob([], { type: "TEXT/HTML" });
-}, {
-  expected: "",
-  type: "text/html",
-  desc: "Passing 'TEXT/HTML' for type should return a 'text/html' for blob.type."
-});
-
-test_blob(function() {
   return new Blob(["\na\r\nb\n\rc\r"], { endings: "transparent" });
 }, {
   expected: "\na\r\nb\n\rc\r",
@@ -373,126 +467,32 @@ test_blob(function() {
   desc: "Newlines should not change when endings is 'native'."
 });
 
-test(function() {
-  var blob1, blob2;
+var type_tests = [
+  // blobParts, type, expected type
+  [[], '', ''],
+  [[], 'a', 'a'],
+  [[], 'A', 'a'],
+  [[], 'text/html', 'text/html'],
+  [[], 'TEXT/HTML', 'text/html'],
+  [[], '\u00E5', ''],
+  [[], '\uD801\uDC7E', ''], // U+1047E
+  [[], ' image/gif ', ' image/gif '],
+  [[], '\timage/gif\t', ''],
+  [[], 'image/gif;\u007f', ''],
+  [[], '\u0130mage/gif', ''], // uppercase i with dot
+  [[], '\u0131mage/gif', ''], // lowercase dotless i
+  [[], 'image/gif\u0000', ''],
+  // check that type isn't changed based on sniffing
+  [[0x3C, 0x48, 0x54, 0x4D, 0x4C, 0x3E], 'unknown/unknown', 'unknown/unknown'], // "<HTML>"
+  [[0x00, 0xFF], 'text/plain', 'text/plain'],
+  [[0x47, 0x49, 0x46, 0x38, 0x39, 0x61], 'image/png', 'image/png'], // "GIF89a"
+];
 
-  test_blob(function() {
-    return blob1 = new Blob(["squiggle"]);
-  }, {
-    expected: "squiggle",
-    type: "",
-    desc: "blob1."
-  });
-
-  test_blob(function() {
-    return blob2 = new Blob(["steak"], {type: "content/type"});
-  }, {
-    expected: "steak",
-    type: "content/type",
-    desc: "blob2."
-  });
-
-  var arrayBuffer = new ArrayBuffer(16);
-  var int8View = new Int8Array(arrayBuffer);
-  for (var i = 0; i < 16; i++) {
-    int8View[i] = i + 65;
-  }
-
-  var testData = [
-    // Test 3 strings
-    [
-      ["foo", "bar", "baz"],
-      {},
-      [{start: 0, length: 9, contents: "foobarbaz"},
-       {start: 0, length: 3, contents: "foo"},
-       {start: 3, length:6, contents:  "barbaz"},
-       {start: 6, length: 3, contents:  "baz"},
-       {start: 6, length: 6, contents: "baz"},
-       {start: 0, length: 9, contents:  "foobarbaz"},
-       {start: 0, length: 11, contents: "foobarbaz"},
-                             {start: 10, length: 5, contents: ""}]
-    ],
-
-    // Test string, Blob, string
-    [
-      ["foo", blob1, "baz"],
-      {},
-      [{start: 0, length: 3, contents:  "foo"},
-       {start: 3, length: 8, contents:  "squiggle"},
-       {start: 2, length: 2, contents:  "os"},
-       {start: 10, length: 2, contents: "eb"}]
-    ],
-
-    // Test blob, string, blob
-    [
-      [blob1, "foo", blob1],
-      {},
-      [{start: 0, length: 8, contents:  "squiggle"},
-       {start: 7, length: 2, contents:  "ef"},
-       {start: 10, length: 2, contents: "os"},
-       {start: 1, length: 3, contents:  "qui"},
-       {start: 12, length: 3, contents: "qui"},
-       {start: 40, length: 20, contents: ""}]
-    ],
-
-    // Test blobs all the way down
-    [
-      [blob2, blob1, blob2],
-      {},
-      [{start: 0, length: 5, contents:  "steak"},
-       {start: 5, length: 8, contents:  "squiggle"},
-       {start: 13, length: 5, contents: "steak"},
-       {start: 1, length: 2, contents:  "te"},
-       {start: 6, length: 4, contents:  "quig"}]
-    ],
-
-    // Test an ArrayBufferView
-    [
-      [int8View, blob1, "foo"],
-      {},
-      [{start: 0, length: 8, contents:  "ABCDEFGH"},
-       {start: 8, length:10, contents:  "IJKLMNOPsq"},
-       {start: 17, length: 3, contents: "qui"},
-       {start: 4, length: 8, contents:  "EFGHIJKL"}]
-    ],
-
-    // Test a partial ArrayBufferView
-    [
-      [new Uint8Array(arrayBuffer, 3, 5), blob1, "foo"],
-      {},
-      [{start: 0, length: 8, contents:  "DEFGHsqu"},
-       {start: 8, length:10, contents:  "igglefoo"},
-       {start: 4, length: 8, contents:  "Hsquiggl"}]
-    ],
-
-    // Test type coercion of a number
-    [
-      [3, int8View, "foo"],
-      {},
-      [{start: 0, length: 8, contents:  "3ABCDEFG"},
-       {start: 8, length:10, contents:  "HIJKLMNOPf"},
-       {start: 17, length: 4, contents: "foo"},
-       {start: 4, length: 8, contents:  "DEFGHIJK"}]
-    ]
-  ];
-
-  testData.forEach(function(data, i) {
-    var blobs = data[0], options = data[1], tests = data[2];
-    tests.forEach(function(expectations, j) {
-      test(function() {
-        var blob = new Blob(blobs, options);
-        assert_true(blob instanceof Blob);
-        assert_false(blob instanceof File);
-
-        test_blob(function() {
-          return blob.slice(expectations.start, expectations.start + expectations.length);
-        }, {
-          expected: expectations.contents,
-          type: "",
-          desc: "Slicing test: slice (" + i + "," + j + ")."
-        });
-      }, "Slicing test (" + i + "," + j + ").");
-    });
-  });
-}, "Slicing");
+type_tests.forEach(function(t) {
+  test(function() {
+    var arr = new Uint8Array([t[0]]).buffer;
+    var b = new Blob([arr], {type:t[1]});
+    assert_equals(b.type, t[2]);
+  }, "Blob with type " + format_value(t[1]));
+});
 </script>

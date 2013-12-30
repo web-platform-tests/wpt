@@ -1,4 +1,4 @@
-﻿function IsSandboxSupported() {
+function IsSandboxSupported() {
     if ('sandbox' in document.createElement('iframe')) {
         return true;
     }

@@ -12,7 +12,7 @@
     <script>
       test(function() {
         var client = new XMLHttpRequest()
-        client.open("GET", "resources/content.php?ß", false)
+        client.open("GET", "resources/content.py?ß", false)
         client.send(null)
         assert_equals(client.getResponseHeader("x-request-query"), "%C3%9F")
       })

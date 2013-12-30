@@ -1,0 +1,30 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>HTML5 Media Elements: 'error' attribute returns 'null' when no error has occurred.</title>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+    <link rel="help" href="http://www.w3.org/TR/html5/embedded-content-0.html#dom-media-error" />
+    <meta name="assert" content="'error' attribute returns 'null' when no error has occurred." />
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+
+    <script type="text/javascript" src="../../../../common/media.js"></script>
+    <script type="text/javascript">
+      var test = async_test("'error' attribute returns 'null' when no error has occurred.")
+      function do_loadstart(event) {
+        test.step(function() { assert_equals(document.getElementById("video0").error, null)} );
+        test.done();
+      }
+    </script>
+  </head>
+  <body>
+    <div id=log></div>
+    <script type="text/javascript">
+      document.write(
+        "<video id='video0' src='" + getVideoURI("/media/movie_5") + "'" +
+        " onloadstart='do_loadstart(event)' autoplay></video>"
+      );
+    </script>
+</body>
+</html>

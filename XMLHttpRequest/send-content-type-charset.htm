@@ -13,7 +13,7 @@
       function request(input, output) {
         test(function() {
         var client = new XMLHttpRequest()
-        client.open("POST", "resources/content.php", false)
+        client.open("POST", "resources/content.py", false)
         if(input)
           client.setRequestHeader("Content-Type", input)
         client.send("TEST")

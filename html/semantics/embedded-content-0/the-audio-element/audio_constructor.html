@@ -17,6 +17,10 @@ test(function() {
     [function() { return new Audio("") }, "", "Empty string argument, with new"],
     [function() { return Audio("src") }, "src", "Non-empty string argument, without new"],
     [function() { return new Audio("src") }, "src", "Non-empty string argument, with new"],
+    [function() { return Audio(null) }, "null", "Null argument, without new"],
+    [function() { return new Audio(null) }, "null", "Null argument, with new"],
+    [function() { return Audio(undefined) }, null, "Undefined argument, without new"],
+    [function() { return new Audio(undefined) }, null, "Undefined argument, with new"],
     [function() { return Audio("", throwingObject) }, "", "Extra argument, without new"],
     [function() { return new Audio("", throwingObject) }, "", "Extra argument, with new"],
   ];

@@ -454,10 +454,10 @@ def update_manifest(repo_path, out_path):
     setup_git(repo_path)
     manifest = load(out_path)
     update(manifest)
-#    if not manifest.local_changes:
-    write(manifest, out_path)
-    #else:
-    #    logging.info("Not writing updated manifest because of local changes")
+    if not manifest.local_changes:
+        write(manifest, out_path)
+    else:
+        logging.info("Not writing updated manifest because of local changes")
 
 
 if __name__ == "__main__":

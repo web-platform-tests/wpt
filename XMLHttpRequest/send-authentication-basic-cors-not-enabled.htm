@@ -18,7 +18,6 @@
         user = token()
         client.open("GET", location.protocol+'//'+urlstart + "resources/auth1/auth.py", false, user, 'pass')
         client.setRequestHeader("x-user", user)
-        client.setRequestHeader("x-pass", 'pass')
         assert_throws("NetworkError", function(){ client.send(null) })
         assert_equals(client.responseText, '')
         assert_equals(client.status, 0)

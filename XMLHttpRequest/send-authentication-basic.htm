@@ -17,7 +17,6 @@
           user = token();
         client.open("GET", location.protocol+'//'+urlstart + "resources/auth1/auth.py", false, user, 'pass')
         client.setRequestHeader("x-user", user)
-        client.setRequestHeader("x-pass", 'pass')
         client.send(null)
         assert_equals(client.responseText, user + "\n" + 'pass')
         assert_equals(client.getResponseHeader('x-challenge'), 'DID')

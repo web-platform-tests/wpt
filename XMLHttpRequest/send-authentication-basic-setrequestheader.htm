@@ -19,7 +19,6 @@
           user = token()
         client.open("GET", location.protocol+'//'+urlstart + "resources/auth2/auth.py", false)
         client.setRequestHeader("x-user", user)
-        client.setRequestHeader("x-pass", 'pass')
         client.setRequestHeader('Authorization', 'Basic ' + btoa(user + ":pass"))
         client.onreadystatechange = function () {
           if (client.readyState < 4) {return}

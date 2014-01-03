@@ -20,7 +20,7 @@
         client.open("GET", "resources/inspect-headers.py?filter_name=accept-language", false)
         client.setRequestHeader("Accept-Language", "x-GameSpeak")
         client.send(null)
-        assert_regexp_match(client.responseText, /accept-language:\sx-GameSpeak/)
+        assert_equals(client.responseText, "accept-language: x-GameSpeak")
       })
     </script>
   </body>

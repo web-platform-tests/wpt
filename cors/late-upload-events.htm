@@ -26,8 +26,7 @@ function doTest(desc, headers, expectEvents) {
             assert_equals(client.status, 200);
             if (expectEvents) {
                 assert_true(eventCounter > 3, 'Events did fire');
-            }
-            else {
+            } else {
                 assert_equals(eventCounter, 0, 'No events did fire');
             }
             this.done();

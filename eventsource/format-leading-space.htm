@@ -10,7 +10,7 @@
     <script>
       var test = async_test()
       test.step(function() {
-        var source = new EventSource("resources/message.php?message=data%3A%09test%0Ddata%3A%20%0Adata%3Atest")
+        var source = new EventSource("resources/message.py?message=data%3A%09test%0Ddata%3A%20%0Adata%3Atest")
         source.onmessage = function(e) {
           test.step(function() {
             assert_equals("\ttest\n\ntest", e.data)

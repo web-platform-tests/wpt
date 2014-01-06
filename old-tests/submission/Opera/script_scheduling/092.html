@@ -13,7 +13,7 @@
           var t = async_test(undefined, {timeout:3500});
           
           var script = document.createElement("script");
-          script.src = "scripts/delay.php?time=2&url=include-2.js";
+          script.src = "scripts/include-2.js?pipe=trickle(d2)";
           script.async = false;
           document.head.appendChild(script);
 

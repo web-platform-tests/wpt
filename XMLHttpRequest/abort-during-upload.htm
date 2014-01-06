@@ -20,7 +20,7 @@
       }
       test.step(function() {
         var client = new XMLHttpRequest()
-        client.open("POST", "resources/delay.php?ms=1000")
+        client.open("POST", "resources/delay.py?ms=1000")
         client.addEventListener('progress', logEvt)
         client.addEventListener('abort', logEvt)
         client.addEventListener('loadend', function (e) {

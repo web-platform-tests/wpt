@@ -14,29 +14,29 @@
 
 <script>
 
-    
+
     var description = "Test Description: " +
-                      "To restrict the message to same-origin targets only, without needing to explicitly " + 
+                      "To restrict the message to same-origin targets only, without needing to explicitly " +
                       "state the origin, set the target origin to '/'.";
-    
+
     var t = async_test(description);
-    
+
     var DATA = "/";
     var TARGET = document.querySelector("iframe");
-    var SORIGIN = "http://" + location.hostname;
+    var SORIGIN = "http://" + location.host;
     var ExpectedResult = [DATA, SORIGIN];
     var ActualResult = [];
-                
+
     function PostMessageTest()
     {
         TARGET.contentWindow.postMessage(DATA, "/");
     }
-    
+
     window.onmessage = t.step_func(function(e)
     {
         ActualResult.push(e.data, e.origin);
         assert_array_equals(ActualResult, ExpectedResult, "ActualResult");
-        t.done(); 
+        t.done();
     });
 </script>
 </body>

@@ -41,7 +41,7 @@
             xhr.onload             = function(e){ actual.push(e.type); };
             xhr.onloadend          = function(e){ actual.push(e.type); VerifyResult()};
             xhr.onprogress         = function(e){ actual.push(e.type);};
-            
+
             xhr.upload.onloadstart = function(e){ actual.push("upload." + e.type); };
             xhr.upload.onload      = function(e){ actual.push("upload." + e.type); };
             xhr.upload.onloadend   = function(e){ actual.push("upload." + e.type);};
@@ -56,7 +56,7 @@
                 });
             };
 
-            xhr.open("POST", "./resources/content.php", true);
+            xhr.open("POST", "./resources/content.py", true);
             xhr.send("Test Message");
         });
     </script>

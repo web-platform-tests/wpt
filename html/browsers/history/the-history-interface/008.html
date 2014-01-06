@@ -27,7 +27,7 @@ test(function () {
 	assert_equals(location.href,beforehref.replace(/^(\w*:\/\/[^\/]*\/)[\w\W]*$/,'$1testing_ignore_me_404_2'));
 }, 'history.replaceState URL resolving should be done relative to the document, not the script');
 */
-var scriptlocation = 'http://www.w3c-test.org/' + location.pathname.split("/").slice(0,-1).join("/") + "/008.js";
+var scriptlocation = 'http://www.' + location.host + location.pathname.split("/").slice(0,-1).join("/") + "/008.js";
 
 if( location.protocol == 'file:' ) {
 	document.getElementsByTagName('p')[0].innerHTML = 'ERROR: This test cannot be run from file: (URL resolving will not work). It must be loaded over HTTP.';

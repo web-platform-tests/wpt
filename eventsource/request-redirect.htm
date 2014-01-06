@@ -11,7 +11,7 @@
       function redirectTest(status) {
         var test = async_test(document.title + " (" + status +")")
         test.step(function() {
-          var source = new EventSource("resources/redirect.php?status=" + status)
+          var source = new EventSource("/common/redirect.py?location=/eventsource/resources/message.py&status=" + status)
           source.onopen = function() {
             test.step(function() {
               assert_equals(this.readyState, this.OPEN)

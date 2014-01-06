@@ -11,7 +11,7 @@
       var test = async_test(document.title, {timeout: 2500})
       test.step(function() {
         var timeoutms = 2000,
-            source = new EventSource("resources/message.php?message=retry%3A2000%0Aretry%3A1000x%0Adata%3Ax"),
+            source = new EventSource("resources/message.py?message=retry%3A2000%0Aretry%3A1000x%0Adata%3Ax"),
             opened = 0
         source.onopen = function() {
           test.step(function() {

@@ -28,7 +28,7 @@ Media plays automatically when 'autoplay' is true. (audio)
       <td>Test Assertion</td>
     </tr>
     <tr>
-      <td id='test_0_assertion'>Test passes if the text 'PASS' appears to the left and the text 'Your browser does not support media elements.' does not appear anywhere on this page.</td>
+      <td id='test_0_assertion'>Test passes if the text 'PASS' appears to the left.</td>
     </tr>
   </table>
 <pre>
@@ -48,7 +48,6 @@ so without stopping.
     document.write(
       "<audio id='audio0' src='" + getAudioURI("/media/sound_5") + "'" + 
       " onplaying='do_playing(event);' autoplay>" +
-      "Your browser does not support media elements." +
       "</audio>"
     );
 

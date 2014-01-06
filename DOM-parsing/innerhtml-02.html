@@ -7,7 +7,7 @@
 <div id="log"></div>
 <script>
 var voidElements = [
-  "area", "base", "basefont", "bgsound", "br", "col", "command", "embed",
+  "area", "base", "basefont", "bgsound", "br", "col", "embed",
   "frame", "hr", "img", "input", "keygen", "link", "meta", "param", "source",
   "track", "wbr"
 ];
@@ -46,15 +46,6 @@ var tests = [
       return el;
     },
     "<br>"
-  ],
-  [
-    function() {
-      var el = document.createElement("div");
-      el.appendChild(document.createElement("input"))
-        .appendChild(document.createElement("span"));
-      return el;
-    },
-    "<input>"
   ],
   [
     function() {
@@ -101,7 +92,7 @@ voidElements.forEach(function(tag) {
       el.appendChild(document.createElement("span"));
       return el;
     },
-    "<span><\/span>"
+    ""
   ]);
 });
 ["pre", "textarea", "listing"].forEach(function(tag) {

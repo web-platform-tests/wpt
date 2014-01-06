@@ -13,7 +13,7 @@
     <div id='log'></div>
     <script>
 test(function() {
-  var ev = new Event("pointerlockchange");
+  var ev = new MouseEvent("pointerlockchange");
   assert_equals(ev.type, "pointerlockchange");
   assert_equals(ev.target, null);
   assert_equals(ev.currentTarget, null);
@@ -24,9 +24,13 @@ test(function() {
   assert_equals(ev.defaultPrevented, false);
   assert_true(ev.timeStamp > 0);
   assert_true("initEvent" in ev);
-}, "Default event values for generic event interface.");
+  assert_true("movementX" in ev, "movementX exists");
+  assert_true("movementY" in ev, "movementY exists");
+  assert_true(ev.movementX == 0, "movementX is 0");
+  assert_true(ev.movementY == 0, "movementY is 0");
+}, "Default event values for mouse event interface and its pointer lock extensions.");
 test(function() {
-  var ev = new Event("pointerlockerror", { type: "trololol", bubbles: true, cancelable: false, defaultPrevented: true});
+  var ev = new MouseEvent("pointerlockerror", { type: "trololol", bubbles: true, cancelable: false, defaultPrevented: true});
   assert_equals(ev.type, "pointerlockerror");
   assert_equals(ev.bubbles, false);
   assert_equals(ev.cancelable, false);

@@ -117,11 +117,11 @@ class ManifestError(Exception):
 
 
 class Manifest(object):
-    def __init__(self, git_ref):
+    def __init__(self, git_rev):
         self.item_types = ["testharness", "reftest",
                            "manual", "helper"]
         self._data = dict((item_type, defaultdict(set)) for item_type in self.item_types)
-        self.ref = git_ref
+        self.rev = git_rev
         self.local_changes = LocalChanges()
 
     def contains_path(self, path):
@@ -156,7 +156,7 @@ class Manifest(object):
         raise KeyError
 
     def to_json(self):
-        rv = {"ref":self.ref,
+        rv = {"rev":self.rev,
               "local_changes":self.local_changes.to_json(),
               "items":{},
               "items": {item_type:[item.to_json() for item in self.itertype(item_type)]
@@ -165,7 +165,7 @@ class Manifest(object):
 
     @classmethod
     def from_json(cls, obj):
-        self = cls(obj["ref"])
+        self = cls(obj["rev"])
         if not hasattr(obj, "iteritems"):
             raise ManifestError
 
@@ -335,13 +335,13 @@ def get_repo_paths():
     return [item for item in data.split("\n") if not item.endswith(os.path.sep)]
 
 
-def get_committed_changes(base_ref):
-    if base_ref is None:
+def get_committed_changes(base_rev):
+    if base_rev is None:
         logger.debug("Adding all changesets to the manifest")
         return [("A", item) for item in get_repo_paths()]
     else:
-        logger.debug("Updating the manifest from %s to %s" % (base_ref, get_current_ref()))
-        data  = git("diff", "--name-status", base_ref)
+        logger.debug("Updating the manifest from %s to %s" % (base_rev, get_current_rev()))
+        data  = git("diff", "--name-status", base_rev)
         return [line.split("\t", 1) for line in data.split("\n") if line]
 
 
@@ -408,7 +408,7 @@ def get_repo_root():
     return None
 
 
-def get_current_ref():
+def get_current_rev():
     return git("rev-parse", "HEAD").strip()
 
 def load(manifest_path):
@@ -435,13 +435,13 @@ def update(manifest):
 
     import html5lib
 
-    committed_changes = get_committed_changes(manifest.ref)
+    committed_changes = get_committed_changes(manifest.rev)
     local_changes = get_local_changes()
 
     sync_urls(manifest, committed_changes)
     sync_local_changes(manifest, local_changes)
 
-    manifest.ref = get_current_ref()
+    manifest.rev = get_current_rev()
     manifest.local_changes = local_changes
 
 

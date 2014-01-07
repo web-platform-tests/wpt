@@ -1,25 +1,25 @@
-"use strict";
 (function() {
+"use strict";
 var runner;
 
 function Manifest(path) {
     this.data = null;
     this.path = path
     this.num_tests = null;
-    this.load();
 }
 
 Manifest.prototype = {
-    load: function() {
+    load: function(loaded_callback) {
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = (function() {
             if (xhr.readyState !== 4) {
                 return;
             }
             if (!(xhr.status === 200 || xhr.status === 0)) {
-                throw new Error("Manifest failed to load");
+                throw new Error("Manifest " + this.path + " failed to load");
             }
-            this.data = JSON.parse(xhr.responseText, "");
+            this.data = JSON.parse(xhr.responseText);
+            loaded_callback();
         }).bind(this);
         xhr.open("GET", this.path);
         xhr.send(null);
@@ -68,7 +68,7 @@ ManifestIterator.prototype = {
     },
 
     matches: function(manifest_item) {
-        return manifest_item.url.slice(0, this.path.length) === this.path;
+        return manifest_item.url.indexOf(this.path) == 0;
     },
 
     to_test: function(manifest_item) {
@@ -81,7 +81,6 @@ ManifestIterator.prototype = {
             test.ref_url = manifest_item.ref_url;
         }
         return test;
-
     },
 
     count: function() {
@@ -158,6 +157,15 @@ VisualOutput.prototype = {
             test_status = status;
         }
 
+        subtests.forEach((function(subtest) {
+            if (this.result_count.hasOwnProperty(subtest.status)) {
+                this.result_count[subtest.status] += 1;
+            }
+        }).bind(this));
+        if (this.result_count.hasOwnProperty(status)) {
+            this.result_count[status] += 1;
+        }
+
         var name_node =  row.appendChild(document.createElement("td"));
         name_node.appendChild(this.test_name_node(test));
 
@@ -166,7 +174,7 @@ VisualOutput.prototype = {
         status_node.className = test_status;
 
         var message_node = row.appendChild(document.createElement("td"));
-        message_node.textContent = message ? message : "";
+        message_node.textContent = message || "";
 
         var subtests_node = row.appendChild(document.createElement("td"));
         if (subtests_count) {
@@ -175,7 +183,6 @@ VisualOutput.prototype = {
             subtests_node.textContent = "1/1"
         }
 
-        this.result_count[test_status] += (subtests_count ?  subtests_count : 1);
         this.elem.querySelector("dd." + test_status).textContent = this.result_count[test_status];
 
         this.results_table.tBodies[0].appendChild(row);
@@ -415,13 +422,13 @@ Results.prototype = {
                 return rv;
             })
         }
-        return JSON.stringify(data, null, "  ");
+        return JSON.stringify(data, null, 2);
     }
 }
 
-function Runner(manifest, options) {
+function Runner(manifest_path, options) {
     this.server = location.protocol + "//" + location.host;
-    this.manifest = manifest;
+    this.manifest = new Manifest(manifest_path);
     this.path = null;
     this.test_types = null;
     this.manifest_iterator = null;
@@ -440,6 +447,9 @@ function Runner(manifest, options) {
     this.done_callbacks = [];
 
     this.results = new Results(this);
+
+    this.start_after_manifest_load = false;
+    this.manifest.load(this.manifest_loaded.bind(this));
 };
 
 Runner.prototype = {
@@ -454,6 +464,12 @@ Runner.prototype = {
         window.focus();
     },
 
+    manifest_loaded: function() {
+        if (this.start_after_manifest_load) {
+            this.do_start();
+        }
+    },
+
     start: function(path, test_types) {
         this.pause_flag = false;
         this.path = path;
@@ -461,6 +477,14 @@ Runner.prototype = {
         this.manifest_iterator = new ManifestIterator(this.manifest, this.path, this.test_types);
         this.num_tests = null;
 
+        if (this.manifest.data === null) {
+            this.start_after_manifest_load = true;
+        } else {
+            this.do_start();
+        }
+    },
+
+    do_start: function() {
         this.open_test_window();
         this.start_callbacks.forEach(function(callback) {
             callback();
@@ -487,7 +511,6 @@ Runner.prototype = {
     },
 
     on_timeout: function() {
-        clearTimeout(this.timeout);
         this.on_result("TIMEOUT", "", []);
     },
 
@@ -542,7 +565,6 @@ Runner.prototype = {
 };
 
 
-/* ***** Preparation ***** */
 function parseOptions() {
     var options = {
         test_types: ["testharness", "reftest", "manual"],
@@ -561,19 +583,11 @@ function parseOptions() {
 function setup() {
     var options = parseOptions();
 
-    var manifest_path;
-    if (options.hasOwnProperty("manifest")) {
-        manifest_path = options["manifest"];
-    } else {
-        manifest_path = "/MANIFEST.json";
+    if (options.path) {
+        document.getElementById('path').value = options.path;
     }
 
-    if (options["path"]) {
-        document.getElementById('path').value = options["path"];
-    }
-
-    var manifest = new Manifest(manifest_path);
-    runner = new Runner(manifest, options);
+    runner = new Runner("/MANIFEST.json", options);
     var test_control = new TestControl(document.getElementById("testControl"), runner);
     var manual_ui = new ManualUI(document.getElementById("manualUI"), runner);
     var visual_output = new VisualOutput(document.getElementById("output"), runner);

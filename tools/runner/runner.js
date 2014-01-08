@@ -192,6 +192,7 @@ VisualOutput.prototype = {
         this.progress.textContent = "Done";
         //add the json serialization of the results
         var a = this.elem.querySelector(".jsonResults");
+        //Using a json content type here causes browsers to freeze/crash
         a.href = "data:text/plain," + encodeURIComponent(this.runner.results.to_json());
         a.textContent = "JSON Results...";
     },

@@ -103,17 +103,14 @@ function VisualOutput(elem, runner) {
     this.section = null;
     this.progress = this.elem.querySelector(".summary .progress");
     this.result_count = null;
-    this.setup();
+
+    this.elem.style.display = "none";
+    this.runner.start_callbacks.push(this.on_start.bind(this));
+    this.runner.result_callbacks.push(this.on_result.bind(this));
+    this.runner.done_callbacks.push(this.on_done.bind(this));
 }
 
 VisualOutput.prototype = {
-    setup: function() {
-        this.elem.style.display = "none";
-        this.runner.start_callbacks.push(this.on_start.bind(this));
-        this.runner.result_callbacks.push(this.on_result.bind(this));
-        this.runner.done_callbacks.push(this.on_done.bind(this));
-    },
-
     clear: function() {
         this.result_count = {"PASS":0,
                              "FAIL":0,
@@ -234,27 +231,24 @@ function ManualUI(elem, runner) {
     this.ref_type = this.ref_buttons.querySelector(".refType");
     this.test_button = this.ref_buttons.querySelector("button.test");
     this.ref_button = this.ref_buttons.querySelector("button.ref");
-    this.setup();
+
+    this.hide();
+
+    this.runner.test_start_callbacks.push(this.on_test_start.bind(this));
+    this.runner.done_callbacks.push(this.on_done.bind(this));
+
+    this.pass_button.onclick = (function() {
+        this.runner.on_result("PASS", "", []);
+        this.disable_buttons();
+        setTimeout(this.enable_buttons.bind(this), 200);
+    }).bind(this);
+
+    this.fail_button.onclick = (function() {
+        this.runner.on_result("FAIL", "", []);
+    }).bind(this);
 }
 
 ManualUI.prototype = {
-    setup: function() {
-        this.hide();
-
-        this.runner.test_start_callbacks.push(this.on_test_start.bind(this));
-        this.runner.done_callbacks.push(this.on_done.bind(this));
-
-        this.pass_button.onclick = (function() {
-            this.runner.on_result("PASS", "", []);
-            this.disable_buttons();
-            setTimeout(this.enable_buttons.bind(this), 200);
-        }).bind(this);
-
-        this.fail_button.onclick = (function() {
-            this.runner.on_result("FAIL", "", []);
-        }).bind(this);
-    },
-
     show: function() {
         this.elem.style.display = "block";
     },
@@ -388,13 +382,11 @@ TestControl.prototype = {
 function Results(runner) {
     this.test_results = null;
     this.runner = runner;
-    this.setup();
+
+    this.runner.start_callbacks.push(this.on_start.bind(this));
 }
 
 Results.prototype = {
-    setup: function() {
-        this.runner.start_callbacks.push(this.on_start.bind(this));
-    },
     on_start: function() {
         this.test_results = [];
     },
@@ -433,7 +425,6 @@ function Runner(manifest_path, options) {
     this.test_types = null;
     this.manifest_iterator = null;
 
-    this.start_time = (new Date()).getTime();
     this.test_window = null
 
     this.current_test = null;
@@ -534,7 +525,7 @@ Runner.prototype = {
         this.current_test = next_test;
 
         if (next_test.type === "testharness") {
-            this.timeout = setTimeout(this.on_timeout().bind(this),
+            this.timeout = setTimeout(this.on_timeout.bind(this),
                                       this.test_timeout);
         }
         this.load(this.current_test.url);

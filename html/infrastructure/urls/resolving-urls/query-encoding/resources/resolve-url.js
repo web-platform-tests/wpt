@@ -880,7 +880,7 @@ onload = function() {
     iframe.src = input_url_xmlstylesheet_css;
     document.body.appendChild(iframe);
     this.add_cleanup(function() {
-      //document.body.removeChild(iframe);
+      document.body.removeChild(iframe);
     });
     iframe.onload = this.step_func_done(function() {
       assert_equals(iframe.contentDocument.firstChild.sheet.cssRules[0].style.content, '"' + expected_utf8 + '"');

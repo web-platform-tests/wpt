@@ -247,7 +247,7 @@ ManualUI.prototype = {
         this.pass_button.onclick = (function() {
             this.runner.on_result("PASS", "", []);
             this.disable_buttons();
-            setTimeout((function() {this.enable_buttons()}).bind(this), 200);
+            setTimeout(this.enable_buttons.bind(this), 200);
         }).bind(this);
 
         this.fail_button.onclick = (function() {
@@ -534,7 +534,7 @@ Runner.prototype = {
         this.current_test = next_test;
 
         if (next_test.type === "testharness") {
-            this.timeout = setTimeout((function() {this.on_timeout()}).bind(this),
+            this.timeout = setTimeout(this.on_timeout().bind(this),
                                       this.test_timeout);
         }
         this.load(this.current_test.url);

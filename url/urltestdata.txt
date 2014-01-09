@@ -41,7 +41,7 @@ foo://  s:foo p://
 http://a:b@c:29/d  s:http u:a pass:b h:c port:29 p:/d
 http::@c:29  s:http h:example.org p:/foo/:@c:29
 http://&a:foo(b]c@d:2/  s:http u:&a pass:foo(b]c h:d port:2 p:/
-http://::@c@d:2  s:http pass::c%40 h:d port:2 p:/
+http://::@c@d:2  s:http pass::%40c h:d port:2 p:/
 http://foo.com:b@d/  s:http u:foo.com pass:b h:d p:/
 http://foo.com/\\@  s:http h:foo.com p://@
 http:\\\\foo.com\\  s:http h:foo.com p:/

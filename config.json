@@ -3,4 +3,5 @@
           "https":["auto"],
           "ws":["auto"]},
  "external_domain":"w3c-test.org",
+ "check_subdomains": true,
  "log_level":"debug"}

@@ -27,14 +27,14 @@ test(function() {
        var quarter_interpolated = cs.backgroundColor;
        div.style.transition = "";
        div.style.backgroundColor = "rgb(204, 0, 51)";
-       var reference = cs.backgroundColor;
-       div.style.backgroundColor = "rgb(214, 0, 61)";
-       var notreference = cs.backgroundColor;
-       assert_true(quarter_interpolated == reference &&
-                   reference != notreference);
+       var quarter_reference = cs.backgroundColor;
+       div.style.backgroundColor = "blue";
+       var final_reference = cs.backgroundColor;
+       assert_true(quarter_interpolated != quarter_reference &&
+                   quarter_interpolated == final_reference);
      },
      "currentcolortransition",
-     { assert: "Transition occurs when the value is currentColor and color changes" });
+     { assert: "Transition does not occur when the value is currentColor and color changes" });
 
 </script>
 </body>

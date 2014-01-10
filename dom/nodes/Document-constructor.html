@@ -11,6 +11,8 @@ test(function() {
   assert_true(doc instanceof Node, "Should be a Node");
   assert_true(doc instanceof Document, "Should be a Document");
   assert_false(doc instanceof XMLDocument, "Should not be an XMLDocument");
+  assert_equals(Object.getPrototypeOf(doc), Document.prototype,
+                "Document should be the primary interface");
 }, "new Document(): interfaces")
 
 test(function() {

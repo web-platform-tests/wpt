@@ -116,10 +116,10 @@ VisualOutput.prototype = {
                              "FAIL":0,
                              "ERROR":0,
                              "TIMEOUT":0}
-        while(this.progress.childNodes.length) {
+        while (this.progress.childNodes.length) {
             this.progress.removeChild(this.progress.childNodes[0]);
         }
-        for(var p in this.result_count) {
+        for (var p in this.result_count) {
             if (this.result_count.hasOwnProperty(p)) {
                 this.elem.querySelector("dd." + p).textContent = 0;
             }
@@ -163,7 +163,7 @@ VisualOutput.prototype = {
             this.result_count[status] += 1;
         }
 
-        var name_node =  row.appendChild(document.createElement("td"));
+        var name_node = row.appendChild(document.createElement("td"));
         name_node.appendChild(this.test_name_node(test));
 
         var status_node = row.appendChild(document.createElement("td"));
@@ -364,14 +364,11 @@ TestControl.prototype = {
     },
 
     get_test_types: function() {
-        return this.type_checkboxes.filter(
-            function(elem) {
-                return elem.checked
-            }).map(
-                function(elem) {
-                    return elem.value;
-                }
-            );
+        return this.type_checkboxes.filter(function(elem) {
+            return elem.checked;
+        }).map(function(elem) {
+            return elem.value;
+        });
     },
 
     on_done: function() {
@@ -594,7 +591,7 @@ window.completion_callback = function(tests, status) {
     var harness_status_map = {0:"OK", 1:"ERROR", 2:"TIMEOUT"}
     var subtest_status_map = {0:"PASS", 1:"FAIL", 2:"TIMEOUT", 3:"NOTRUN"}
 
-    var subtest_results = tests.map( function (test) {
+    var subtest_results = tests.map(function (test) {
         return {name: test.name,
                 status: subtest_status_map[test.status],
                 message: test.message}

@@ -35,7 +35,6 @@ html.done section + section { border-top: none; }
     background-color:yellow;
     padding:0 5em 0 5em;
 }
-/*#manualUI { display: none; }*/
 
 body > p { text-align: center; }
 body > p > textarea { width: 90%; height: 20em; }

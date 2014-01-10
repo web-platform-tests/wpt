@@ -2,7 +2,7 @@ Description
 ===========
 
 This is the test suites from a number of W3C Working Groups, including the HTML
-Working Group, the Web Apps Working Group, the Device APIs Working Group, and 
+Working Group, the Web Apps Working Group, the Device APIs Working Group, and
 the Web Apps Security Working Group.
 
 Running the Tests
@@ -53,82 +53,116 @@ to some port of your choice e.g.
 "http":[1234, "auto"]
 ```
 
+Test Runner
+===========
+
+There is a test runner in `tools/runner` that is designed to provide a
+convenient way to run the web-platform tests in-browser. It will run
+testharness.js tests automatically but requires manual work for
+reftests and manual tests.
+
+In order to use the runner, it is first necessary to generate a test
+manifest. This must be called `MANIFEST.json` and placed in the
+web-platform-tests root. To generate this navigate to the root
+directory and run
+
+```
+python tools/scripts/manifest.py MANIFEST.json
+```
+
+Running the tests requires that the test environment be activated as
+described above. The runner can be found at `/tools/runner/index.html`
+on the local server i.e.
+
+```
+http://web-platform.test:8000/tools/runner/index.html
+```
+
+in the default configuration.
+
 Publication
 ===========
 
-The master branch is automatically synced to: http://w3c-test.org/web-platform-tests/master/.
-Likewise the CR branch (that matches the test suites used for the Candidate
-Recommendations of HTML5, Canvas 2D and Microdata) to: http://w3c-test.org/web-platform-tests/CR/.
+The master branch is automatically synced to:
+`http://w3c-test.org/web-platform-tests/master/`.  Likewise the CR
+branch (that matches the test suites used for the Candidate
+Recommendations of HTML5, Canvas 2D and Microdata) to:
+`http://w3c-test.org/web-platform-tests/CR/`.
 
 Pull requests that have been checked are automatically mirrored to
-https://w3c-test.org/web-platform-tests/submissions/
+`https://w3c-test.org/web-platform-tests/submissions/`.
 
 Finding Things
 ==============
-Each top-level directory represents a W3C specification: the name matches the
-shortname used after the canonical address of the said specification under
-http://www.w3.org/TR/ .
+
+Each top-level directory represents a W3C specification: the name
+matches the shortname used after the canonical address of the said
+specification under http://www.w3.org/TR/ .
 
 For some of the specifications, the tree under the top-level directory
-represents the sections of the respective documents, using the section IDs for
-directory names, with a maximum of three levels deep.
+represents the sections of the respective documents, using the section
+IDs for directory names, with a maximum of three levels deep.
 
 So if you're looking for tests in HTML for "The History interface",
 they will be under `html/browsers/history/the-history-interface/`.
 
-Various resources that tests depend on are in `common`, `images`, and `fonts`.
+Various resources that tests depend on are in `common`, `images`, and
+`fonts`.
 
-In order to function properly, tests need to be run from a web server that has
-[testharness.js](https://github.com/w3c/testharness.js) in `/resources/`.
 
-If you're looking at a section of the specification and can't figure out where
-the directory is for it in the tree, just run:
-    node tools/scripts/id2path.js your-id
+If you're looking at a section of the specification and can't figure
+out where the directory is for it in the tree, just run:
+
+```
+node tools/scripts/id2path.js your-id
+```
 
 Branches
 ========
 
-In the vast majority of cases the **only** branch that you should need to care
-about is `master`.
+In the vast majority of cases the **only** branch that you should need
+to care about is `master`.
 
-There is another branch called `CR`. This is a strict subset of `master` that
-is limited to features that are found in the Candidate Recommendation version
-of the relevant specifications.
+There is another branch called `CR`. This is a strict subset of
+`master` that is limited to features that are found in the Candidate
+Recommendation version of the relevant specifications.
 
-If you see other branches in the repository, you can generally safely ignore 
-them. Please note that branches prefixed with `temp/` are temporary branches
-and **can** get deleted at some point. So don't base any work off them unless
-you want to see your work destroyed.
+If you see other branches in the repository, you can generally safely
+ignore them. Please note that branches prefixed with `temp/` are
+temporary branches and **can** get deleted at some point. So don't
+base any work off them unless you want to see your work destroyed.
 
 Contributing
 ============
 
 Save the Web, Write Some Tests!
 
-Absolutely everyone is welcome (and even encouraged) to contribute to test
-development, so long as you fulfill the contribution requirements detailed
-in the [Contributing Guidelines][contributing]. No test is too small or too
-simple, especially if it corresponds to something for which you've noted an
-interoperability bug in a browser.
+Absolutely everyone is welcome (and even encouraged) to contribute to
+test development, so long as you fulfill the contribution requirements
+detailed in the [Contributing Guidelines][contributing]. No test is
+too small or too simple, especially if it corresponds to something for
+which you've noted an interoperability bug in a browser.
 
 The way to contribute is just as usual:
 
-* fork this repository (and make sure you're still relatively in sync with it 
-  if you forked a while ago);
-* create a branch for your changes, `git checkout -b submission/your-name`;
+* fork this repository (and make sure you're still relatively in sync
+  with it if you forked a while ago);
+* create a branch for your changes, `git checkout -b
+  submission/your-name`;
 * make your changes;
 * push that to your repo;
 * and send in a pull request based on the above.
 
-Please make your pull requests either to `master` or to a feature branch
-(but not to `CR`).
+Please make your pull requests either to `master` or to a feature
+branch (but not to `CR`).
 
-We can sometimes take a little while to go through pull requests because
-we have to go through all the tests and ensure that they match the specification
-correctly. But we look at all of them, and take everything that we can.
+We can sometimes take a little while to go through pull requests
+because we have to go through all the tests and ensure that they match
+the specification correctly. But we look at all of them, and take
+everything that we can.
 
 If you wish to contribute actively, you're very welcome to join the
-public-html-testsuite@w3.org mailing list (low traffic) by 
+public-html-testsuite@w3.org mailing list (low traffic) by
 [signing up to our mailing list](mailto:public-html-testsuite-request@w3.org?subject=subscribe).
 
 [contributing]: https://github.com/w3c/web-platform-tests/blob/master/CONTRIBUTING.md

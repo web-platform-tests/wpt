@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Touch Events Test: TouchEvent - touches/changedTouches(event type of touchstart, touchmove and touchend)</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="author" title="Xin Liu" href="mailto:xinx.liu@intel.com">
+<link rel="help" title="5. TouchEvent Interface" href="http://www.w3.org/TR/touch-events/#touchevent-interface">
+<meta name="flags" content="interact">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  div {
+    margin: 0em;
+    padding: 2em;
+  }
+  #target0 {
+    background: yellow;
+    border: 1px solid orange;
+  }
+  #target1 {
+    background: lightblue;
+    border: 1px solid blue;
+  }
+</style>
+<body>
+  <p>Touch the box surface following the contents from it.</p>
+  <div id="target0">
+    Touch this box with one finger, then move finger to next blue box...
+  </div>
+  <div id="target1">
+    Lift your finger from here.
+  </div>
+  <div id="log"></div>
+  <script>
+    var target0, target1;
+    setup(function(){
+      target0 = document.getElementById("target0");
+      target1 = document.getElementById("target1");
+    }, {explicit_done: true, timeout: 20000});
+
+    var test_touchstart = async_test("the touchstart event can be invoked");
+    var test_touchmove = async_test("the touchmove event can be invoked");
+    var test_touchend = async_test("the touchend event can be invoked");
+
+    on_event(target0, "touchstart", function(event) {
+      test(function() {
+        assert_eqauls(Object.prototype.toString.call(event), "[object TouchEvent]", "the type of event");
+      }, "the event type of touchstart get TouchEvent");
+
+      test(function() {
+        assert_eqauls(Object.prototype.toString.call(event.touches), "[object TouchList]", "the type of event.touches");
+      }, "the touchstart event can get touches");
+
+      
+      test(function() {
+        var touch = event.touches.item(0);
+        assert_eqauls(Object.prototype.toString.call(touch), "[object Touch]", "the type of event.touches.touch");
+        assert_greater_than_equal(touch.clientX, 0, "the value of touch.clientX");
+        assert_greater_than_equal(touch.clientY, 0, "the value of touch.clientY");
+        assert_greater_than_equal(touch.screenX, 0, "the value of touch.screenX");
+        assert_greater_than_equal(touch.pageX, 0, "the value of touch.pageX");
+        assert_greater_than_equal(touch.pageY, 0, "the value of touch.pageY");
+      }, "the attributes of touch get correct values");
+
+      test_touchstart.done();
+    });
+
+    on_event(target1, "touchmove", function(event) {
+      test(function() {
+        assert_eqauls(Object.prototype.toString.call(event), "[object TouchEvent]", "the type of event");
+      }, "the event type of touchmove get TouchEvent");
+
+      test(function() {
+        assert_eqauls(Object.prototype.toString.call(event.changedTouches), "[object TouchList]", "the type of event.changedTouches");
+      }, "the touchmove event can get changedTouches");
+
+      test_touchmove.done();
+    });
+
+    on_event(window, "touchend", function(event) {
+      test(function() {
+        assert_eqauls(Object.prototype.toString.call(event), "[object TouchEvent]", "the type of event");
+      }, "the event type of touchend get TouchEvent");
+
+      test_touchend.done();
+      done();
+    });
+</script>
+</body>
+

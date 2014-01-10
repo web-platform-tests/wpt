@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang=en>
+<meta charset=UTF-8>
+<title>Web tests</title>
+<link rel=stylesheet href=runner.css>
+<script src=runner.js></script>
+
+<header>
+<h1>Web Platform Tests Runner</h1>
+<p>Tests will run in a new window. For reftests and manual tests it is recommended to have that window and this window side by side.
+</header>
+
+<div id="testControl">
+<p>
+Include test types:<br>
+<label><input type=checkbox checked value="testharness">Javascript tests</label><br>
+<label><input type=checkbox checked value="reftest">Reftests</label><br>
+<label><input type=checkbox checked value="manual">Manual tests</label>
+<p><label>Run tests under path <input value="/" class="path"><button class="togglePause" disabled>Pause</button><button class="toggleStart">Start</button></label>
+</header>
+</div>
+
+<div id="output">
+
+<div class="summary">
+<dl>
+  <dt>Progress</dt>
+  <dd class="progress"></dd>
+  <dt>Passed</dt>
+  <dd class="PASS">0</dd>
+  <dt>Failed</dt>
+  <dd class="FAIL">0</dd>
+  <dt>Timeout</dt>
+  <dd class="TIMEOUT">0</dd>
+  <dt>Error</dt>
+  <dd class="ERROR">0</dd>
+</dl>
+<a class="jsonResults"></a>
+</div>
+
+<div class="results">
+     <table>
+     <thead>
+     <tr>
+     <th>Test
+     <th>Status
+     <th>Message
+     <th>Subtest Pass Rate
+     </tr>
+     </thead>
+     <tbody>
+     </tbody>
+</div>
+
+</div>
+
+<div id="manualUI">
+<p>The current test requires manual result marking.
+<div class="reftestUI">
+<p>Test and ref should comapre <strong class="refType"></strong>
+<p><button class="test">Show Test</button> <button class="ref">Show Reference</button>
+</div>
+<p>Test has: <button class="pass">Passed</button> <button class="fail">Failed</button>
+</div>

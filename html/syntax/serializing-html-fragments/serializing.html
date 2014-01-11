@@ -17,10 +17,6 @@
 <span><a b=">"></a></span>
 <span><svg xlink:href="a"></svg></span>
 <span><svg xmlns:svg="test"></svg></span>
-<span><pre>&#x0A;&#x0A;</pre></span>
-<span><textarea>&#x0A;&#x0A;</textarea></span>
-<span><listing>&#x0A;&#x0A;</listing></span>
-<span><a>&#x0A;&#x0A;</a></span>
 <span>a</span>
 <span>&amp;</span>
 <span>&nbsp;</span>
@@ -54,10 +50,6 @@ var expected = [
 ["<a b=\">\"></a>", "<span><a b=\">\"></a></span>"],
 ["<svg xlink:href=\"a\"></svg>", "<span><svg xlink:href=\"a\"></svg></span>"],
 ["<svg xmlns:svg=\"test\"></svg>", "<span><svg xmlns:svg=\"test\"></svg></span>"],
-["<pre>\x0A</pre>", "<span><pre>\x0A</pre></span>"],
-["<textarea>\x0A</textarea>", "<span><textarea>\x0A</textarea></span>"],
-["<listing>\x0A</listing>", "<span><listing>\x0A</listing></span>"],
-["<a>\x0A\x0A</a>", "<span><a>\x0A\x0A</a></span>"],
 ["a", "<span>a</span>"],
 ["&amp;", "<span>&amp;</span>"],
 ["&nbsp;", "<span>&nbsp;</span>"],
@@ -131,7 +123,57 @@ var dom_tests = [
   },
   '<svg abc:def="test"></svg>',
   '<span><svg abc:def="test"></svg></span>'],
+
+ ["<span> starting with U+000A",
+  function() {
+      var elem = document.createElement("span");
+      elem.appendChild(document.createTextNode("\x0A"));
+      return elem;
+  },
+  "\x0A",
+  "<span>\x0A</span>"],
+
    //TODO: Processing instructions, doctypes
+]
+
+var text_elements = ["pre", "textarea", "listing"];
+
+var text_tests = [
+ ["<%text> context starting with U+000A",
+  function(elem) {
+      elem.appendChild(document.createTextNode("\x0A"));
+      return elem;
+  },
+  "\x0A",
+  "<%text>\x0A\x0A</%text>"],
+
+ ["<%text> context not starting with U+000A",
+  function(elem) {
+      elem.appendChild(document.createTextNode("a\x0A"));
+      return elem;
+  },
+  "a\x0A",
+  "<%text>a\x0A</%text>"],
+
+ ["<%text> non-context starting with U+000A",
+  function(elem) {
+      var span = document.createElement("span");
+      elem.appendChild(document.createTextNode("\x0A"));
+      span.appendChild(elem);
+      return span;
+  },
+  "<%text>\x0A\x0A</%text>",
+  "<span><%text>\x0A\x0A</%text></span>"],
+
+ ["<%text> non-context not starting with U+000A",
+  function(elem) {
+      var span = document.createElement("span");
+      elem.appendChild(document.createTextNode("a\x0A"));
+      span.appendChild(elem);
+      return span;
+  },
+  "<%text>a\x0A</%text>",
+  "<span><%text>a\x0A</%text></span>"],
 ]
 
 var void_elements = [
@@ -193,21 +235,14 @@ function cross_map(a1, a2, f) {
     return rv;
 }
 
-function innerHTML_test(i) {
-    assert_equals(test_data[i].innerHTML, expected[i][0]);
+function innerHTML_test(func, elem, expected) {
+    assert_equals(func(elem).innerHTML, expected);
 }
 
-function outerHTML_test(i) {
-    assert_equals(test_data[i].outerHTML, expected[i][1]);
+function outerHTML_test(func, elem, expected) {
+    assert_equals(func(elem).outerHTML, expected);
 }
 
-function innerHTML_dom_test(test_data) {
-    assert_equals(test_data[1]().innerHTML, test_data[2]);
-}
-
-function outerHTML_dom_test(test_data) {
-    assert_equals(test_data[1]().outerHTML, test_data[3]);
-}
 
 function make_void(name) {
     var rv = document.createElement(name);
@@ -218,51 +253,79 @@ function make_void(name) {
     return rv;
 }
 
-function innerHTML_void_test(func, elem, expected) {
-    assert_equals(func(elem).innerHTML, expected);
-}
-
-function outerHTML_void_test(func, elem, expected) {
-    assert_equals(func(elem).outerHTML, expected);
+function make_text(name) {
+    return document.createElement(name);
 }
 
 generate_tests(innerHTML_test,
                expected.map(function(item, i) {
-                                return ["innerHTML " + i + " " + expected[i][0], i];
+                                return ["innerHTML " + i + " " + expected[i][0],
+                                        function() {return test_data[i]},
+                                        null,
+                                        item[0]];
                             }))
 
 generate_tests(outerHTML_test,
                expected.map(function(item, i) {
-                                return ["outerHTML " + i + " " + expected[i][1], i];
+                                return ["outerHTML " + i + " " + expected[i][1],
+                                        function() {return test_data[i]},
+                                        null,
+                                        item[1]];
                             }))
 
-generate_tests(innerHTML_dom_test,
+generate_tests(innerHTML_test,
                dom_tests.map(function(item) {
-                                return ["innerHTML " + item[0], item];
+                                return ["innerHTML " + item[0],
+                                        item[1],
+                                        null,
+                                        item[2]];
                             }))
 
-generate_tests(outerHTML_dom_test,
+generate_tests(outerHTML_test,
                dom_tests.map(function(item) {
-                                return ["outerHTML " + item[0], item];
+                                return ["outerHTML " + item[0],
+                                        item[1],
+                                        null,
+                                        item[3]];
                             }))
 
-generate_tests(innerHTML_void_test,
+generate_tests(innerHTML_test,
+               cross_map(text_tests, text_elements,
+                         function(test_data, elem_name) {
+                             var rv = ["innerHTML " + test_data[0].replace("%text", elem_name, "g"),
+                                       test_data[1],
+                                       document.createElement(elem_name),
+                                       test_data[2].replace("%text", elem_name, "g")];
+                             return rv;
+                         }))
+
+generate_tests(outerHTML_test,
+               cross_map(text_tests, text_elements,
+                         function(test_data, elem_name) {
+                             var rv = ["outerHTML " + test_data[0].replace("%text", elem_name, "g"),
+                                       test_data[1],
+                                       document.createElement(elem_name),
+                                       test_data[3].replace("%text", elem_name, "g")];
+                             return rv;
+                         }))
+
+generate_tests(innerHTML_test,
                cross_map(void_tests, void_elements,
                          function(test_data, elem_name) {
                              var rv = ["innerHTML " + test_data[0] + " " + elem_name,
                                        test_data[1],
                                        make_void(elem_name),
-                                       test_data[2].replace("%void", elem_name)];
+                                       test_data[2].replace("%void", elem_name, "g")];
                              return rv;
                          }))
 
-generate_tests(outerHTML_void_test,
+generate_tests(outerHTML_test,
                cross_map(void_tests, void_elements,
                          function(test_data, elem_name) {
                              var rv = ["outerHTML " + test_data[0] + " " + elem_name,
                                        test_data[1],
                                        make_void(elem_name),
-                                       test_data[3].replace("%void", elem_name)];
+                                       test_data[3].replace("%void", elem_name, "g")];
                              return rv;
                          }))
 

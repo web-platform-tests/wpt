@@ -1,6 +1,5 @@
 def main(request, response):
     content = []
-    print request.POST
 
     for key, values in sorted(item for item in request.POST.items() if not hasattr(item[1][0], "filename")):
          content.append("%s=%s," % (key, values[0]))

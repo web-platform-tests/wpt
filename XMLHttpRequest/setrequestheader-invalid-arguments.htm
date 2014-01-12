@@ -23,19 +23,20 @@
     <script>
       var invalid_headers = ["(", ")", "<", ">", "@", ",", ";", ":", "\\",
                              "\"", "/", "[", "]", "?", "=", "{", "}", " ",
-                             "\u0009", "\u007f"]
+                             /* HT already tested in the loop below */
+                             "\u007f"]
       for (var i = 0; i < 32; ++i) {
         invalid_headers.push(String.fromCharCode(i))
       }
       for (var i = 0; i < invalid_headers.length; ++i) {
         test(function() {
-          assert_throws("SYNTAX_ERR", function() {
+          assert_throws("SyntaxError", function() {
             var client = new XMLHttpRequest()
-            client.open("GET", "../resources/delay.php?ms=0")
+            client.open("GET", "../common/text-plain.txt")
             client.setRequestHeader(invalid_headers[i], "test")
-          }, "setRequestHeader should throw with header " +
-             format_value(invalid_headers[i]) +".")
-        })
+          })
+        }, "setRequestHeader should throw with header " +
+           format_value(invalid_headers[i]) + ".")
       }
     </script>
   </body>

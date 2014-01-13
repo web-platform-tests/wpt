@@ -249,10 +249,37 @@ def iter_procs(servers):
         for port, server in servers:
             yield server.proc
 
+def merge_json(base_obj, override_obj):
+    rv = {}
+    for key, value in base_obj.iteritems():
+        if key not in override_obj:
+            rv[key] = value
+        else:
+            if isinstance(value, dict):
+                rv[key] = merge_json(value, override_obj[key])
+            else:
+                rv[key] = override_obj[key]
+    return rv
+
+def load_config(default_path, override_path=None):
+    if os.path.exists(default_path):
+        with open(default_path) as f:
+            base_obj = json.load(f)
+    else:
+        raise ValueError("Config path %s does not exist" % default_path)
+
+    if os.path.exists(override_path):
+        with open(override_path) as f:
+            override_obj = json.load(f)
+    else:
+        override_obj = {}
+    return merge_json(base_obj, override_obj)
+
 def main():
     global logger
-    with open("config.json") as f:
-        config = json.load(f)
+
+    config = load_config("config.default.json",
+                         "config.json")
 
     logger = default_logger(config["log_level"])
 

@@ -16,7 +16,7 @@
 
 test(function() {
     var doc = newHTMLDocument();
-    var GeneratedConstructor = doc.register('x-a-1', {extends: 'xframe'});
+    var GeneratedConstructor = doc.registerElement('x-a-1', {extends: 'xframe'});
     var customElement = new GeneratedConstructor();
     
     assert_class_string(customElement, 'HTMLUnknownElement', 
@@ -28,10 +28,10 @@ test(function() {
 
 test(function() {
     var doc = newHTMLDocument();
-    doc.register('x-a-2');
+    doc.registerElement('x-a-2');
     //FIXME Should the type of the exception be specified here?
     assert_throws(null, function() {
-        doc.register('x-a-3', {extends: 'x-a-2'});
+        doc.registerElement('x-a-3', {extends: 'x-a-2'});
     }, 'Exception should be thrown in case of attempt to register ' + 
     'a custom element wich extends another custom element');
 

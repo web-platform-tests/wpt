@@ -18,7 +18,7 @@ test(function() {
     var doc = newHTMLDocument();
     var svg = doc.createElementNS(SVG_NAMESPACE, 'x-a');
     var proto = Object.create(svg.constructor.prototype);    
-    var GeneratedConstructor = doc.register('x-a-1', {prototype: proto});
+    var GeneratedConstructor = doc.registerElement('x-a-1', {prototype: proto});
     var customElement = new GeneratedConstructor();
     
     assert_equals(customElement.namespaceURI, SVG_NAMESPACE, 'Wrong namespace');

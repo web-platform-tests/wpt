@@ -24,7 +24,7 @@ test(function() {
         callbackProto = this.constructor.prototype;
     }
     doc.body.innerHTML = '<x-a-1 id="x-a-1"></x-a-1>';
-    doc.register('x-a-1', {prototype: proto});
+    doc.registerElement('x-a-1', {prototype: proto});
     assert_equals(callbackProto, proto, 'The custom element prototype ' +
             'is incorrect inside created callback');
 
@@ -40,7 +40,7 @@ test(function() {
     proto.createdCallback = function () {
         callbackProto = this.constructor.prototype;
     }
-    doc.register('x-b-1', {prototype: proto});
+    doc.registerElement('x-b-1', {prototype: proto});
     doc.body.innerHTML = '<x-b-1 id="x-b-1"></x-b-1>';
     assert_equals(callbackProto, proto, 'The custom element prototype ' +
             'is incorrect inside created callback');
@@ -59,7 +59,7 @@ test(function() {
     }
     var customElement = doc.createElement('x-a-2');
     doc.body.appendChild(customElement);
-    doc.register('x-a-2', {prototype: proto});
+    doc.registerElement('x-a-2', {prototype: proto});
     assert_equals(callbackProto, proto, 'The custom element prototype ' +
             'is incorrect inside created callback');
 
@@ -75,7 +75,7 @@ test(function() {
     proto.createdCallback = function () {
         callbackProto = this.constructor.prototype;
     }
-    doc.register('x-b-2', {prototype: proto});
+    doc.registerElement('x-b-2', {prototype: proto});
     var customElement = doc.createElement('x-b-2');
     doc.body.appendChild(customElement);
     assert_equals(callbackProto, proto, 'The custom element prototype ' +
@@ -93,7 +93,7 @@ test(function() {
     proto.createdCallback = function () {
         callbackProto = this.constructor.prototype;
     }
-    var GeneratedConstructor = doc.register('x-b-3', {prototype: proto});
+    var GeneratedConstructor = doc.registerElement('x-b-3', {prototype: proto});
     var customElement = new GeneratedConstructor();
     assert_equals(callbackProto, proto, 'The custom element prototype ' +
             'is incorrect inside created callback');
@@ -110,7 +110,7 @@ testInIFrame('../../resources/x-element.html', function(context) {
     proto.createdCallback = function () {
         callbackProto = this.constructor.prototype;
     }
-    doc.register('x-element', {prototype: proto});
+    doc.registerElement('x-element', {prototype: proto});
     assert_equals(callbackProto, proto, 'The custom element prototype ' +
             'is incorrect inside created callback');
 

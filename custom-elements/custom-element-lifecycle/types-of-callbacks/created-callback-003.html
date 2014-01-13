@@ -23,16 +23,16 @@ testInIFrame('../../resources/blank.html', function(context){
     proto.createdCallback = function () {
         callbackLog.push('created');
     }
-    proto.enteredViewCallback = function() {
-        callbackLog.push('enteredViewCallback');
+    proto.attachedCallback = function() {
+        callbackLog.push('attachedCallback');
     }
-    doc.register('x-a-1', {prototype: proto});
+    doc.registerElement('x-a-1', {prototype: proto});
 
     doc.body.innerHTML = '<x-a-1 id="x-a-1"></x-a-1>';
     assert_equals('created', callbackLog[0], 'The callback '+
         callbackLog[0]+' was enqueued before created callback');
 
-}, 'Test enteredView callback is enqueued after created callback');
+}, 'Test attached callback is enqueued after created callback');
 
 
 testInIFrame('../../resources/blank.html', function(context){
@@ -46,7 +46,7 @@ testInIFrame('../../resources/blank.html', function(context){
     proto.attributeChangedCallback = function() {
         callbackLog.push('attributeChangedCallback');
     }
-    doc.register('x-a-2', {prototype: proto});
+    doc.registerElement('x-a-2', {prototype: proto});
 
     doc.body.innerHTML = '<x-a-2 id="x-a-2"></x-a-2>';
     assert_equals('created', callbackLog[0], 'The callback '+
@@ -67,7 +67,7 @@ test(function(){
     proto.attributeChangedCallback = function() {
         callbackLog.push('attributeChangedCallback');
     }
-    doc.register('x-a-3', {prototype: proto});
+    doc.registerElement('x-a-3', {prototype: proto});
 
     doc.body.innerHTML = '<x-a-3 id="x-a-3"></x-a-3>';
     assert_equals('created', callbackLog[0], 'The callback '+
@@ -88,15 +88,15 @@ testInIFrame('../../resources/x-element.html', function(context){
     proto.attributeChangedCallback = function() {
         callbackLog.push('attributeChangedCallback');
     }
-    proto.enteredViewCallback = function() {
-        callbackLog.push('enteredViewCallback');
+    proto.attachedCallback = function() {
+        callbackLog.push('attachedCallback');
     }
-    doc.register('x-element', {prototype: proto});
+    doc.registerElement('x-element', {prototype: proto});
 
     assert_equals('created', callbackLog[0], 'The callback '+
         callbackLog[0]+' was enqueued before created callback');
 
-}, 'Test enteredViewCallback and attributeChangedCallback callbacks '+
+}, 'Test attachedCallback and attributeChangedCallback callbacks '+
     'are enqueued after created callback. '+
     'Document has browsing context');
 

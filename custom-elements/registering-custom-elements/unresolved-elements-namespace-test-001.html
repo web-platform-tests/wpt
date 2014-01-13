@@ -20,7 +20,7 @@ test(function() {
     assert_equals(xsvg.namespaceURI, SVG_NAMESPACE, 'Wrong SVG element namespace');
 
     var proto = Object.create(xsvg.constructor.prototype);
-    var GeneratedConstructor = doc.register('x-svg-1', {prototype: proto});
+    var GeneratedConstructor = doc.registerElement('x-svg-1', {prototype: proto});
     var xsvg1 = new GeneratedConstructor();
     
     assert_equals(xsvg1.namespaceURI, SVG_NAMESPACE, 'Wrong namespace');

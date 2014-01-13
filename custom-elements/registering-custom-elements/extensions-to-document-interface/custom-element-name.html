@@ -21,7 +21,7 @@ test(function () {
         var name = 'x-' + element;
         var obj = doc.createElement(element);
         var proto = Object.create(obj.constructor.prototype);
-        var GeneratedConstructor = doc.register(name, {
+        var GeneratedConstructor = doc.registerElement(name, {
             prototype: proto,
             extends: element
         });

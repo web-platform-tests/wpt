@@ -37,7 +37,7 @@ test(function() {
     
     assert_equals(customElement.localName, 'x-a-2', 'Wrong custom element');
     
-    doc.register('x-a-2');
+    doc.registerElement('x-a-2');
     customElement = doc.querySelector(':unresolved');
     
     assert_equals(customElement, null, 
@@ -57,7 +57,7 @@ test(function() {
     
     assert_equals(customElement.localName, 'x-a-3', 'Wrong custom element');
 
-    doc.register('x-a-3');
+    doc.registerElement('x-a-3');
     customElement = doc.querySelector(':unresolved');
 
     assert_not_equals(customElement, null, 

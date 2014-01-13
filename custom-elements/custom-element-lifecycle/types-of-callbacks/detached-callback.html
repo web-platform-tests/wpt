@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>leftView callback of a custom element</title>
+<title>detached callback of a custom element</title>
 <meta name="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
 <meta name="author" title="Aleksei Yu. Semenov" href="mailto:a.semenov@unipro.ru">
-<meta name="assert" content="leftView callback must be enqueued whenever custom element is removed from the document and this document has a browsing context">
+<meta name="assert" content="detached callback must be enqueued whenever custom element is removed from the document and this document has a browsing context">
 <link rel="help" href="http://www.w3.org/TR/custom-elements/#types-of-callbacks">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -20,16 +20,16 @@ test(function() {
     var callbackCalledCounter = 0;
 
     var proto = Object.create(HTMLElement.prototype);
-    proto.leftViewCallback = function () {
+    proto.detachedCallback = function () {
         callbackCalledCounter++;
     }
-    doc.register('x-a-1', {prototype: proto});
+    doc.registerElement('x-a-1', {prototype: proto});
     doc.body.innerHTML = '<x-a-1 id="xa1"></x-a-1>';
     var xa1 = doc.querySelector('#xa1');
     doc.body.removeChild(xa1);
-    assert_equals(callbackCalledCounter, 0, 'Callback leftView was called for the document ' +
+    assert_equals(callbackCalledCounter, 0, 'Callback detached was called for the document ' +
             'with no browsing context');
-}, 'Test leftView callback when custom element is created in HTML. ' +
+}, 'Test detached callback when custom element is created in HTML. ' +
     'Document has no browsing context');
 
 
@@ -38,16 +38,16 @@ test(function() {
     var callbackCalledCounter = 0;
 
     var proto = Object.create(HTMLElement.prototype);
-    proto.leftViewCallback = function () {
+    proto.detachedCallback = function () {
         callbackCalledCounter++;
     }
     doc.body.innerHTML = '<x-a-2 id="xa2"></x-a-2>';
-    doc.register('x-a-2', {prototype: proto});
+    doc.registerElement('x-a-2', {prototype: proto});
     var customElement = doc.querySelector('#xa2');
     doc.body.removeChild(customElement);
-    assert_equals(callbackCalledCounter, 0, 'Callback leftView was called for the document ' +
+    assert_equals(callbackCalledCounter, 0, 'Callback detached was called for the document ' +
             'with no browsing context');
-}, 'Test leftView callback when custom element is created in HTML before ' +
+}, 'Test detached callback when custom element is created in HTML before ' +
     'registration of a custom element. Document has no browsing context');
 
 
@@ -58,15 +58,15 @@ test(function() {
     doc.body.innerHTML = '<x-a-3 id="xa3"></x-a-3>';
     var customElement = doc.querySelector('#xa3');
     var proto = Object.create(HTMLElement.prototype);
-    proto.leftViewCallback = function () {
+    proto.detachedCallback = function () {
         callbackCalled = true;
     }
     customElement.constructor.prototype = proto;
     doc.body.removeChild(customElement);
-    assert_equals(callbackCalledCounter, 0, 'Callback leftView was called when custom ' +
+    assert_equals(callbackCalledCounter, 0, 'Callback detached was called when custom ' +
             'element is uregistred.');
 
-}, 'Test leftView callback when custom element is unregistered.');
+}, 'Test detached callback when custom element is unregistered.');
 
 
 testInIFrame('../../resources/x-element.html', function(context) {
@@ -74,15 +74,15 @@ testInIFrame('../../resources/x-element.html', function(context) {
     var callbackCalledCounter = 0;
 
     var proto = Object.create(HTMLElement.prototype);
-    proto.leftViewCallback = function () {
+    proto.detachedCallback = function () {
         callbackCalledCounter++;
     }
-    doc.register('x-element', {prototype: proto});
+    doc.registerElement('x-element', {prototype: proto});
     var customElement = doc.querySelector('#xelement');
     doc.body.removeChild(customElement);
-    assert_equals(callbackCalledCounter, 1, 'Callback leftView was not called when ' +
+    assert_equals(callbackCalledCounter, 1, 'Callback detached was not called when ' +
             'custom element is removed from the document with browsing context');
-}, 'Test leftView callback is called after method removeChild(). Document has browsing context');
+}, 'Test detached callback is called after method removeChild(). Document has browsing context');
 
 
 testInIFrame('../../resources/x-element.html', function(context) {
@@ -90,16 +90,16 @@ testInIFrame('../../resources/x-element.html', function(context) {
     var callbackCalledCounter = 0;
 
     var proto = Object.create(HTMLElement.prototype);
-    proto.leftViewCallback = function () {
+    proto.detachedCallback = function () {
         callbackCalledCounter++;
     }
-    doc.register('x-element', {prototype: proto});
+    doc.registerElement('x-element', {prototype: proto});
     var customElement = doc.querySelector('#xelement');
     var div = doc.createElement('div');
     doc.body.replaceChild(div, customElement);
-    assert_equals(callbackCalledCounter, 1, 'Callback leftView was not called when ' +
+    assert_equals(callbackCalledCounter, 1, 'Callback detached was not called when ' +
             'custom element is removed from the document with browsing context');
-}, 'Test leftView callback is called after method replaceChild(). Document has browsing context');
+}, 'Test detached callback is called after method replaceChild(). Document has browsing context');
 
 
 testInIFrame('../../resources/blank.html', function(context) {
@@ -107,19 +107,19 @@ testInIFrame('../../resources/blank.html', function(context) {
     var callbackCalledCounter = 0;
 
     var proto = Object.create(HTMLElement.prototype);
-    proto.leftViewCallback = function () {
+    proto.detachedCallback = function () {
         callbackCalledCounter++;
     }
-    doc.register('x-a-6', {prototype: proto});
+    doc.registerElement('x-a-6', {prototype: proto});
 
     doc.body.innerHTML = '<div id="x-a-6-parent"><x-a-6 id="xelement"></x-a-6></div>';
 
     var parent = doc.querySelector('#x-a-6-parent');
     var replacement = doc.createElement('div');
     doc.body.replaceChild(replacement, parent);
-    assert_equals(callbackCalledCounter, 1, 'Callback leftView was not called when ' +
+    assert_equals(callbackCalledCounter, 1, 'Callback detached was not called when ' +
             'custom element is removed from the document with browsing context');
-}, 'Test leftView callback is called after method replaceChild() for custom element\'s parent. ' +
+}, 'Test detached callback is called after method replaceChild() for custom element\'s parent. ' +
     'Document has browsing context');
 
 
@@ -128,15 +128,15 @@ testInIFrame('../../resources/x-element.html', function(context) {
     var callbackCalledCounter = 0;
 
     var proto = Object.create(HTMLElement.prototype);
-    proto.leftViewCallback = function () {
+    proto.detachedCallback = function () {
         callbackCalledCounter++;
     }
-    doc.register('x-element', {prototype: proto});
+    doc.registerElement('x-element', {prototype: proto});
     var customElement = doc.querySelector('#xelement');
     doc.body.innerHTML = '';
-    assert_equals(callbackCalledCounter, 1, 'Callback leftView was not called when ' +
+    assert_equals(callbackCalledCounter, 1, 'Callback detached was not called when ' +
             'custom element is removed from the document with browsing context');
-}, 'Test leftView callback is called after changing innerHTML. Document has browsing context');
+}, 'Test detached callback is called after changing innerHTML. Document has browsing context');
 
 
 testInIFrame('../../resources/blank.html', function(context) {
@@ -145,18 +145,18 @@ testInIFrame('../../resources/blank.html', function(context) {
 
     doc.body.innerHTML = '<div id="xa4-parent"><x-a-4 id="xa4"></x-a-4></div>';
     var proto = Object.create(HTMLElement.prototype);
-    proto.leftViewCallback = function () {
+    proto.detachedCallback = function () {
         callbackCalledCounter++;
     }
-    doc.register('x-a-4', {prototype: proto});
+    doc.registerElement('x-a-4', {prototype: proto});
 
     var div = doc.querySelector('#xa4-parent');
     doc.body.removeChild(div);
     assert_equals(doc.querySelector('#xa4'),null);
-    assert_equals(callbackCalledCounter, 1, 'Callback leftView was not called when ' +
+    assert_equals(callbackCalledCounter, 1, 'Callback detached was not called when ' +
             'custom element is removed from the document with browsing context');
 
-}, 'Test leftView callback is called when ancestor node of custom element '+
+}, 'Test detached callback is called when ancestor node of custom element '+
     'is removed by removeChild method from document with browsing context');
 
 
@@ -166,17 +166,17 @@ testInIFrame('../../resources/blank.html', function(context) {
 
     doc.body.innerHTML = '<div id="xa4-parent"><x-a-5 id="xa5"></x-a-5></div>';
     var proto = Object.create(HTMLElement.prototype);
-    proto.leftViewCallback = function () {
+    proto.detachedCallback = function () {
         callbackCalledCounter++;
     }
-    doc.register('x-a-5', {prototype: proto});
+    doc.registerElement('x-a-5', {prototype: proto});
 
     var div = doc.querySelector('#xa5-parent');
     doc.body.innerHTML = '';
-    assert_equals(callbackCalledCounter, 1, 'Callback leftView was not called when ' +
+    assert_equals(callbackCalledCounter, 1, 'Callback detached was not called when ' +
             'custom element is removed from the document with browsing context');
 
-}, 'Test leftView callback is called when ancestor node of custom element '+
+}, 'Test detached callback is called when ancestor node of custom element '+
     'is removed from document with browsing context');
 
 </script>

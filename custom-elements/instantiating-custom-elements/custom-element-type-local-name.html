@@ -16,7 +16,7 @@
 
 test(function() {
     var doc = newHTMLDocument();
-    var GeneratedConstructor = doc.register('x-a-1');
+    var GeneratedConstructor = doc.registerElement('x-a-1');
     var customElement = new GeneratedConstructor();
     assert_equals(customElement.constructor.prototype.constructor.name, 
             customElement.localName, 'Wrong custom element type');
@@ -26,7 +26,7 @@ test(function() {
 
 test(function() {
     var doc = newHTMLDocument();
-    doc.register('x-a-2');
+    doc.registerElement('x-a-2');
     doc.body.innerHTML = '<x-a-2 id="ce2"></x-a-2>';
     var customElement = doc.querySelector('#ce2');
     assert_equals(customElement.constructor.prototype.constructor.name, customElement.localName, 
@@ -37,7 +37,7 @@ test(function() {
 
 testInIFrame('../resources/x-element.html', function(context) {
     var doc = context.iframes[0].contentDocument;
-    doc.register('x-element');
+    doc.registerElement('x-element');
     var xelement = doc.querySelector('#xelement');
     assert_equals(xelement.constructor.prototype.constructor.name, xelement.localName, 
         'Wrong custom element type');

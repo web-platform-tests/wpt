@@ -21,7 +21,7 @@ test(function() {
     Object.defineProperty(proto, 'constructor', {configurable: false});
     //FIXME Should the type of the exception be specified here?
     assert_throws(null, function() {
-        doc.register('x-a-1', {prototype: proto});
+        doc.registerElement('x-a-1', {prototype: proto});
     }, 'Exception should be thrown in case of attempt to register element ' +
         'with a non-configurable property named constructor');
 
@@ -35,7 +35,7 @@ test(function() {
     Object.defineProperty(proto, 'constructor', {configurable: true});
     
     try {
-        doc.register('x-a-2', {prototype: proto});
+        doc.registerElement('x-a-2', {prototype: proto});
     } catch (e) {
         assert_unreached('Exception should not be thrown in case of attempt to register ' +
         'element with a configurable property named constructor');

@@ -17,8 +17,8 @@
 test(function() {
     var doc = newHTMLDocument();
     
-    doc.register('x-a-1');
-    doc.register('x-a-2');
+    doc.registerElement('x-a-1');
+    doc.registerElement('x-a-2');
     doc.body.innerHTML = '<x-a-1 id="xa" is="x-a-2"></x-a-1>';
     var customElement = doc.querySelector('#xa');
     
@@ -32,13 +32,13 @@ test(function() {
 test(function() {
     var doc = newHTMLDocument();
     
-    doc.register('x-a-4');
+    doc.registerElement('x-a-4');
     doc.body.innerHTML = '<x-a-3 id="xa" is="x-a-4"></x-a-3>';
     var customElement = doc.querySelector('#xa');
     assert_equals(customElement.constructor.prototype.constructor.name, 'HTMLElement', 
         'Wrong custom element local name');
 
-    doc.register('x-a-3');
+    doc.registerElement('x-a-3');
     assert_equals(customElement.constructor.prototype.constructor.name, 
             customElement.localName, 'Wrong custom element local name');
     assert_equals(customElement.constructor.prototype.constructor.name, 'x-a-3', 
@@ -49,12 +49,12 @@ test(function() {
 
 test(function() {
     var doc = newHTMLDocument();
-    doc.register('x-element');
+    doc.registerElement('x-element');
     
     HTML5_ELEMENTS.forEach(function(value) {
         var obj = doc.createElement(value);
         var name = 'x-' + value + '-01';
-        doc.register(name, {
+        doc.registerElement(name, {
             prototype: Object.create(obj.constructor.prototype),
             extends: value
         });
@@ -71,13 +71,13 @@ test(function() {
 
 test(function() {
     var doc = newHTMLDocument();
-    doc.register('x-element-2');
+    doc.registerElement('x-element-2');
     
     HTML5_ELEMENTS.forEach(function(value) {
         var obj = doc.createElement(value);
         var name = 'x-' + value + '-02';
         var id = 'x_' + value + '_02';
-        doc.register(name, {
+        doc.registerElement(name, {
             prototype: Object.create(obj.constructor.prototype),
             extends: value
         });

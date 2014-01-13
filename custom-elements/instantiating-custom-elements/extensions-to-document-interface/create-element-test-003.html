@@ -25,7 +25,7 @@ test (function () {
                 obj.constructor.name, 
                 'Wrong custom element type before registration of the custom element type');
         
-        doc.register(name, {prototype: proto, extends: value});
+        doc.registerElement(name, {prototype: proto, extends: value});
         assert_equals(customElement.constructor.prototype.constructor.name, name, 
                 'Wrong custom element type after registration of the custom element type');        
     });
@@ -43,7 +43,7 @@ test (function () {
                 obj.constructor.name, 
                 'Wrong custom element type before registration of the custom element type');
         
-        doc.register(name, {prototype: proto, extends: value});
+        doc.registerElement(name, {prototype: proto, extends: value});
         assert_equals(customElement.constructor.prototype.constructor.name, name, 
                 'Wrong custom element type after registration of the custom element type');        
     });

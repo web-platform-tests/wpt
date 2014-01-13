@@ -17,7 +17,7 @@
 test(function() {
     var doc = newHTMLDocument();
     var name = 'x-a';
-    doc.register(name);
+    doc.registerElement(name);
     var customElement = doc.createElement(name);
     
     assert_equals(customElement.namespaceURI, HTML_NAMESPACE, 
@@ -31,7 +31,7 @@ test(function() {
         var obj = doc.createElement(value);        
         var name = 'x-2-' + value;        
         var proto = Object.create(obj.constructor.prototype);        
-        doc.register(name, {
+        doc.registerElement(name, {
             prototype: Object.create(proto),
             extends: value
         });        

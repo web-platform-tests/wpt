@@ -21,7 +21,7 @@ test(function() {
         var name = 'x-' + element;
         //FIXME Should the type of the exception be specified here?
         assert_throws(null, function() {
-            doc.register(name, {prototype: obj.constructor.prototype});
+            doc.registerElement(name, {prototype: obj.constructor.prototype});
         }, 'Exception should be thrown in case of attempt to register element ' +
             'if prototype is already an interface prototype object (' + 
             obj.constructor.prototype.name + ')');        
@@ -32,12 +32,12 @@ test(function() {
 test(function() {
     var doc = newHTMLDocument();
     var proto = Object.create(HTMLElement.prototype);
-    doc.register('x-a-1', {
+    doc.registerElement('x-a-1', {
         prototype: proto
     });
     //FIXME Should the type of the exception be specified here?
     assert_throws(null, function() {
-        doc.register('x-a-1', {
+        doc.registerElement('x-a-1', {
             prototype: proto
         });                
     }, 'Exception shoul be thrown if custom element with already used prototype is registered');

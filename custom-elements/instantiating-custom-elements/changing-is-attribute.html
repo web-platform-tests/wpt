@@ -19,7 +19,7 @@ test(function() {
     HTML5_ELEMENTS.forEach(function(element) {
         if (HTML5_DOCUMENT_ELEMENTS.indexOf(element) == -1) {
             var name = 'x-' + element;
-            doc.register(name);
+            doc.registerElement(name);
             if (HTML5_TABLE_ELEMENTS.indexOf(element) != -1) {
                 doc.body.innerHTML = 
                     '<table>' +
@@ -36,7 +36,7 @@ test(function() {
             
             HTML5_ELEMENTS.forEach(function(value) {
                 var name2 = 'x-' + element + '-' + value;        
-                doc.register(name2);
+                doc.registerElement(name2);
                 customElement.setAttribute('is', name2);
 
                 assert_class_string(customElement, obj.constructor.name,

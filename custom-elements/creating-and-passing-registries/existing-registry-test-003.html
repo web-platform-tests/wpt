@@ -18,7 +18,7 @@
 testInIFrame('../resources/blank.html', function(context) {
     var doc = context.iframes[0].contentDocument;
     try {
-        doc.register('x-element');
+        doc.registerElement('x-element');
     } catch (e) {
         assert_unreached('Unexpected exception, while registering a valid custom element');
     }
@@ -28,9 +28,9 @@ testInIFrame('../resources/blank.html', function(context) {
 testInIFrame('../resources/blank.html', function(context) {
     var doc = context.iframes[0].contentDocument;
     var doc1 = newHTMLDocument();
-    doc1.register('x-element');
+    doc1.registerElement('x-element');
     try {
-        doc.register('x-element');
+        doc.registerElement('x-element');
     } catch (e) {
         assert_unreached('Unexpected exception while registering a valid custom element ' +
         'in a document which has it\'s own registry');

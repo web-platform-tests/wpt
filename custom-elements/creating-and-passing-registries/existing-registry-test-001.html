@@ -18,11 +18,11 @@ test(function() {
     var doc = newHTMLDocument();
     var name = 'x-frame';
 
-    var GeneratedConstructor = doc.register(name);
+    var GeneratedConstructor = doc.registerElement(name);
     var doc2 = doc.implementation.createHTMLDocument('Document 2');
     //FIXME Should the type of the exception be specified here?
     assert_throws(null, function () {
-        doc2.register(name);
+        doc2.registerElement(name);
     }, 'Registering a custom element type name that is already registered in a shared ' +
         'registry should throw an exception');
 
@@ -36,11 +36,11 @@ test(function() {
     var doc = newHTMLDocument();
     var name = 'x-frame-1';
 
-    var GeneratedConstructor = doc.register(name);
+    var GeneratedConstructor = doc.registerElement(name);
     var doc2 = doc.implementation.createDocument(HTML_NAMESPACE, 'html', null);
     //FIXME Should the type of the exception be specified here?
     assert_throws(null, function () {
-        doc2.register(name);
+        doc2.registerElement(name);
     }, 'Exception should be thrown for custom element, which is already registered in shared registry');
 
     var xframe = doc2.createElement(name);

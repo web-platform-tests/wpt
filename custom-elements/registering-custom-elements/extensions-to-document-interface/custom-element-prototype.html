@@ -16,7 +16,7 @@
 
 test(function() {
     var doc = newHTMLDocument();
-    var GeneratedConstructor = doc.register('x-a-1');
+    var GeneratedConstructor = doc.registerElement('x-a-1');
     var customElement = new GeneratedConstructor();
 
     assert_class_string(customElement, 'HTMLElement',
@@ -26,7 +26,7 @@ test(function() {
 
 test(function() {
     var doc = newHTMLDocument();
-    var GeneratedConstructor = doc.register('x-a-2', {
+    var GeneratedConstructor = doc.registerElement('x-a-2', {
         prototype: Object.create(HTMLParagraphElement.prototype),
         extends: 'p'
     });
@@ -39,7 +39,7 @@ test(function() {
 
 test(function() {
     var doc = newHTMLDocument();
-    var GeneratedConstructor = doc.register('x-a-3', {
+    var GeneratedConstructor = doc.registerElement('x-a-3', {
         prototype: Object.create(HTMLParagraphElement.prototype)
     });
     var customElement = new GeneratedConstructor();
@@ -51,7 +51,7 @@ test(function() {
 
 test(function() {
     var doc = newHTMLDocument();
-    var GeneratedConstructor = doc.register('x-a-4', {
+    var GeneratedConstructor = doc.registerElement('x-a-4', {
         prototype: Object.create(HTMLParagraphElement.prototype),
         extends: null
     });

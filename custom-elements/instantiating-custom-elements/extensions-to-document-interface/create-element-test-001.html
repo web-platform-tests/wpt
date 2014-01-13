@@ -17,7 +17,7 @@
 test(function() {
     var doc = newHTMLDocument();
     var name = 'x-a-1';
-    doc.register(name);
+    doc.registerElement(name);
     var customElement = doc.createElement(name);
 
     assert_equals(customElement.constructor.prototype.constructor.name, name, 
@@ -28,7 +28,7 @@ test(function() {
 test(function() {
     var doc = newHTMLDocument();
     var name = 'x-a-2';
-    doc.register(name);
+    doc.registerElement(name);
     var customElement = doc.createElementNS(HTML_NAMESPACE, name);
 
     assert_equals(customElement.constructor.prototype.constructor.name, name, 

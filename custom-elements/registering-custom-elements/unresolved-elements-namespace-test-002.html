@@ -17,7 +17,7 @@
 test(function() {
     var doc = newHTMLDocument();
     var proto = Object.create(HTMLElement.prototype);
-    var GeneratedConstructor = doc.register('x-a-1', {prototype: proto});
+    var GeneratedConstructor = doc.registerElement('x-a-1', {prototype: proto});
     var customElement = new GeneratedConstructor();
     
     assert_equals(customElement.namespaceURI, HTML_NAMESPACE, 'Wrong namespace');
@@ -32,7 +32,7 @@ test(function() {
         var obj = doc.createElement(element);        
         var name = 'x-2-' + element;
         var proto = Object.create(obj.constructor.prototype);
-        doc.register(name, {
+        doc.registerElement(name, {
             prototype: Object.create(proto),
             extends: element
         });

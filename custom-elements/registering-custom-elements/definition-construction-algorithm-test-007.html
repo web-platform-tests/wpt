@@ -24,7 +24,7 @@ test(function() {
         element.removeAttribute('localName');
         
         var proto = Object.create(element.constructor.prototype);
-        var GeneratedConstructor = doc.register(name, {prototype: proto});
+        var GeneratedConstructor = doc.registerElement(name, {prototype: proto});
         var customElement = new GeneratedConstructor();
         
         assert_equals(customElement.localName, name, 'LocalName should be a type in case of ' + 
@@ -41,7 +41,7 @@ test(function() {
         var element = doc.createElement(value);
         element.removeAttribute('localName');
         var proto = Object.create(element.constructor.prototype);
-        var GeneratedConstructor = doc.register(name, {prototype: proto, extends: null});
+        var GeneratedConstructor = doc.registerElement(name, {prototype: proto, extends: null});
         var customElement = new GeneratedConstructor();
         
         assert_equals(customElement.localName, name, 'LocalName should be a type in case of ' + 

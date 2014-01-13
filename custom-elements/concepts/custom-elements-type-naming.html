@@ -25,7 +25,7 @@ test(function() {
     });
     validNames.forEach(function(value) {
         try {
-            doc.register(value);
+            doc.registerElement(value);
         } catch (e) {
             assert_unreached('Exception should not be thrown in case of attempt ' +
                     'to register a custom element with a name \'' + value + '\'');
@@ -43,7 +43,7 @@ test(function() {
     invalidNames.forEach(function(value) {
         //FIXME Should the type of the exception be specified here?
         assert_throws(null, function() {
-            doc.register(value);
+            doc.registerElement(value);
         }, 'Exception should be thrown in case of attempt to register element ' +
             'with the name \'' + value + '\'');
     });
@@ -65,7 +65,7 @@ test(function() {
     forbiddenNames.forEach(function(value) {
         //FIXME Should the type of the exception be specified here?
         assert_throws(null, function() {
-            doc.register(value);
+            doc.registerElement(value);
         }, 'Exception should be thrown in case of attempt to register element ' +
             'with the name \'' + value + '\'');
     });

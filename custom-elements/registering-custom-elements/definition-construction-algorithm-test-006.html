@@ -21,7 +21,7 @@ test(function() {
     var proto = Object.create(svg.constructor.prototype);
     //FIXME Should the type of the exception be specified here?
     assert_throws(null, function () {
-        doc.register('x-svg-1', {prototype: proto});
+        doc.registerElement('x-svg-1', {prototype: proto});
     }, 'Exception should be thrown in case of attempt to register ' + 
     'a custom element with SVG namespace and name is not specified');
     
@@ -34,7 +34,7 @@ test(function() {
     var proto = Object.create(svg.constructor.prototype);
     //FIXME Should the type of the exception be specified here?
     assert_throws(null, function () {
-        doc.register('x-svg-2', {prototype: proto, extends: null});
+        doc.registerElement('x-svg-2', {prototype: proto, extends: null});
     }, 'Exception should be thrown in case of attempt to register ' + 
     'a custom element with SVG namespace and name is null');
 

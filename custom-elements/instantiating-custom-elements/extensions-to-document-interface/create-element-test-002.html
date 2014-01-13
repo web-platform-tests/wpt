@@ -20,7 +20,7 @@ test(function () {
         var obj = doc.createElement(value);
         var name = 'x-1-' + value;
         var proto = Object.create(obj.constructor.prototype);
-        doc.register(name, {prototype: proto, extends: value});
+        doc.registerElement(name, {prototype: proto, extends: value});
         var customElement = doc.createElement(value, name);
             
         assert_equals(customElement.constructor.prototype.constructor.name, name, 
@@ -35,7 +35,7 @@ test(function () {
         var obj = doc.createElement(value);
         var name = 'x-2-' + value;
         var proto = Object.create(obj.constructor.prototype);
-        doc.register(name, {prototype: proto, extends: value});
+        doc.registerElement(name, {prototype: proto, extends: value});
         var customElement = doc.createElementNS(HTML_NAMESPACE, value, name);
             
         assert_equals(customElement.constructor.prototype.constructor.name, name, 

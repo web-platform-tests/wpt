@@ -22,7 +22,7 @@ test(function() {
         callbackCalled = true;
     }
     var name = 'x-a-1';
-    doc.register(name, {prototype: proto});
+    doc.registerElement(name, {prototype: proto});
     var customElement = doc.createElement(name);
 
     assert_true(callbackCalled, 'Callback created was not called');
@@ -38,7 +38,7 @@ test(function() {
         callbackCalled = true;
     }
     var name = 'x-a-2';
-    doc.register(name, {prototype: proto});
+    doc.registerElement(name, {prototype: proto});
     var customElement = doc.createElement(name, name);
 
     assert_true(callbackCalled, 'Callback created was not called');
@@ -57,7 +57,7 @@ test(function() {
     var customElement = doc.createElement(name);
     assert_false(callbackCalled, 'Callback created was not called');
     
-    doc.register(name, {prototype: proto});
+    doc.registerElement(name, {prototype: proto});
     assert_true(callbackCalled, 'Callback created was not called');
     
 }, 'Created callback should be called if createElement is called. ' +
@@ -73,7 +73,7 @@ test(function () {
         proto.createdCallback = function () {
             callbackCalled = true;
         }    
-        doc.register(name, {prototype: proto, extends: value});
+        doc.registerElement(name, {prototype: proto, extends: value});
         var createElement = doc.createElement(value, name);
 
         assert_true(callbackCalled, 'Callback created was not called');        

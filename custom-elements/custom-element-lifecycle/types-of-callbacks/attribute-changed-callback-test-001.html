@@ -22,7 +22,7 @@ test(function() {
     proto.attributeChangedCallback = function() {
         callbackCalledCounter++;
     }
-    var GeneratedConstructor = doc.register('x-a-1', {prototype: proto});
+    var GeneratedConstructor = doc.registerElement('x-a-1', {prototype: proto});
     var customElement = new GeneratedConstructor();
     customElement.setAttribute('class', 'someClass');
 
@@ -44,7 +44,7 @@ test(function() {
         argument2 = arg2;
         argument3 = arg3;
     }
-    var GeneratedConstructor = doc.register('x-b-1', {prototype: proto});
+    var GeneratedConstructor = doc.registerElement('x-b-1', {prototype: proto});
     var customElement = new GeneratedConstructor();
     customElement.setAttribute('class', 'someClass');
 
@@ -66,7 +66,7 @@ test(function() {
     proto.attributeChangedCallback = function() {
         callbackCalledCounter++;
     }
-    var GeneratedConstructor = doc.register('x-a-1-1', {prototype: proto});
+    var GeneratedConstructor = doc.registerElement('x-a-1-1', {prototype: proto});
     var customElement = new GeneratedConstructor();
     customElement.classList.add('someClass');
 
@@ -88,7 +88,7 @@ test(function() {
         argument2 = arg2;
         argument3 = arg3;
     }
-    var GeneratedConstructor = doc.register('x-b-1-1', {prototype: proto});
+    var GeneratedConstructor = doc.registerElement('x-b-1-1', {prototype: proto});
     var customElement = new GeneratedConstructor();
     customElement.classList.add('someClass');
 
@@ -110,7 +110,7 @@ test(function() {
     proto.attributeChangedCallback = function() {
         callbackCalledCounter++;
     }
-    var GeneratedConstructor = doc.register('x-a-1-2', {prototype: proto});
+    var GeneratedConstructor = doc.registerElement('x-a-1-2', {prototype: proto});
     var customElement = new GeneratedConstructor();
     customElement.className = 'someClass';
 
@@ -132,7 +132,7 @@ test(function() {
         argument2 = arg2;
         argument3 = arg3;
     }
-    var GeneratedConstructor = doc.register('x-b-1-2', {prototype: proto});
+    var GeneratedConstructor = doc.registerElement('x-b-1-2', {prototype: proto});
     var customElement = new GeneratedConstructor();
     customElement.className = 'someClass';
 
@@ -154,7 +154,7 @@ test(function() {
     proto.attributeChangedCallback = function() {
         callbackCalledCounter++;
     }
-    doc.register('x-a-2', {prototype: proto});
+    doc.registerElement('x-a-2', {prototype: proto});
     doc.body.innerHTML = '<x-a-2 id="xa2" class="theClass"></x-a-2>';
 
     assert_equals(callbackCalledCounter, 0, 'Callback attributeChanged was called ' +
@@ -171,7 +171,7 @@ test(function() {
     proto.attributeChangedCallback = function() {
         callbackCalledCounter++;
     }
-    doc.register('x-a-3', {prototype: proto});
+    doc.registerElement('x-a-3', {prototype: proto});
     doc.body.innerHTML = '<x-a-3 id="xa3" class="theClass"></x-a-3>';
     var customElement = doc.querySelector('#xa3');
     customElement.setAttribute('class', 'someClass');
@@ -194,7 +194,7 @@ test(function() {
         argument2 = arg2;
         argument3 = arg3;
     }
-    doc.register('x-b-3', {prototype: proto});
+    doc.registerElement('x-b-3', {prototype: proto});
     doc.body.innerHTML = '<x-b-3 id="xb3"></x-b-3>';
     var customElement = doc.querySelector('#xb3');
     customElement.setAttribute('class', 'someClass');
@@ -221,7 +221,7 @@ test(function() {
     var customElement = doc.querySelector('#xa4');
     // this call shouldn't invoke or enquee the callback
     customElement.setAttribute('class', 'someClass');
-    doc.register('x-a-4', {prototype: proto});
+    doc.registerElement('x-a-4', {prototype: proto});
     // this one should
     customElement.setAttribute('class', 'someClass2');
 
@@ -240,7 +240,7 @@ test(function() {
         proto.attributeChangedCallback = function() {
             callbackCalledCounter++;
         }
-        var GeneratedConstructor = doc.register('x-' + element + '-' + element + '-1', {
+        var GeneratedConstructor = doc.registerElement('x-' + element + '-' + element + '-1', {
             prototype: proto,
             extends: element
         });
@@ -263,7 +263,7 @@ test(function() {
         proto.attributeChangedCallback = function() {
             callbackCalledCounter++;
         }
-        var GeneratedConstructor = doc.register('x-' + element + '-' + element + '-1-1', {
+        var GeneratedConstructor = doc.registerElement('x-' + element + '-' + element + '-1-1', {
             prototype: proto,
             extends: element
         });
@@ -290,7 +290,7 @@ test(function() {
             argument2 = arg2;
             argument3 = arg3;
         }
-        var GeneratedConstructor = doc.register('x-' + element + '-' + element + '-2', {
+        var GeneratedConstructor = doc.registerElement('x-' + element + '-' + element + '-2', {
             prototype: proto,
             extends: element
         });
@@ -316,7 +316,7 @@ testInIFrame('../../resources/x-element.html', function(context) {
     proto.attributeChangedCallback = function() {
         callbackCalledCounter++;
     }
-    doc.register('x-element', {prototype: proto});
+    doc.registerElement('x-element', {prototype: proto});
     var customElement = doc.querySelector('#xelement');
     customElement.setAttribute('class', 'someClass');
 
@@ -338,7 +338,7 @@ testInIFrame('../../resources/x-element.html', function(context) {
         argument2 = arg2;
         argument3 = arg3;
     }
-    doc.register('x-element', {prototype: proto});
+    doc.registerElement('x-element', {prototype: proto});
     var customElement = doc.querySelector('#xelement');
     customElement.setAttribute('class', 'someClass');
 
@@ -360,7 +360,7 @@ testInIFrame('../../resources/x-element.html', function(context) {
     proto.attributeChangedCallback = function() {
         callbackCalledCounter++;
     }
-    doc.register('x-element', {prototype: proto});
+    doc.registerElement('x-element', {prototype: proto});
     var customElement = doc.querySelector('#xelement');
     customElement.classList.add('someClass');
 
@@ -382,7 +382,7 @@ testInIFrame('../../resources/x-element.html', function(context) {
         argument2 = arg2;
         argument3 = arg3;
     }
-    doc.register('x-element', {prototype: proto});
+    doc.registerElement('x-element', {prototype: proto});
     var customElement = doc.querySelector('#xelement');
     customElement.classList.add('someClass');
 
@@ -406,7 +406,7 @@ testInIFrame('../../resources/x-element.html', function(context) {
     var customElement = doc.querySelector('#xelement');
     // this call shouldn't invoke or enquee the callback
     customElement.setAttribute('name', 'someName');
-    doc.register('x-element', {prototype: proto});
+    doc.registerElement('x-element', {prototype: proto});
     // this one should
     customElement.setAttribute('class', 'someClass');
 
@@ -425,7 +425,7 @@ testInIFrame('../../resources/x-element.html', function(context) {
         proto.attributeChangedCallback = function() {
             callbackCalledCounter++;
         }
-        var GeneratedConstructor = doc.register('x-' + element + '-' + element + '-1', {
+        var GeneratedConstructor = doc.registerElement('x-' + element + '-' + element + '-1', {
             prototype: proto,
             extends: element
         });
@@ -453,7 +453,7 @@ testInIFrame('../../resources/x-element.html', function(context) {
             argument2 = arg2;
             argument3 = arg3;
         }
-        var GeneratedConstructor = doc.register('x-' + element + '-' + element + '-2', {
+        var GeneratedConstructor = doc.registerElement('x-' + element + '-' + element + '-2', {
             prototype: proto,
             extends: element
         });

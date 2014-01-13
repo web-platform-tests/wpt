@@ -17,7 +17,7 @@
 
 function checkValidName(doc, name) {
     try {
-        doc.register(name);
+        doc.registerElement(name);
     } catch (e) {
         assert_unreached('The custom element name \'' + name +
                '\' should be registered without errors');

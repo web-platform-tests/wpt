@@ -19,10 +19,10 @@ testInIFrame('../resources/import-master.html', function(context) {
     var link = doc.querySelector('link[rel=import]');
     var doc2 = link.import;
     var name = 'x-frame';
-    doc.register(name);
+    doc.registerElement(name);
     //FIXME Should the type of the exception be specified here?
     assert_throws(null, function () {
-        doc2.register(name);
+        doc2.registerElement(name);
     }, 'Registering a custom element type name that is already registered in a shared ' +
         'registry should throw an exception');
 }, 'Registry of the import should share master document registry');
@@ -33,16 +33,16 @@ testInIFrame('../resources/import-master.html', function(context) {
     var link = doc.querySelector('link[rel=import]');
     var doc2 = link.import;
     var name = 'x-frame';
-    doc.register(name);
+    doc.registerElement(name);
     //FIXME Should the type of the exception be specified here?
     assert_throws(null, function () {
-        doc2.register(name);
+        doc2.registerElement(name);
     }, 'Registering a custom element type name that is already registered in a shared ' +
         'registry should throw an exception');
 
     var doc3 = newHTMLDocument();
     try {
-        doc3.register(name);
+        doc3.registerElement(name);
     } catch (e) {
         assert_unreached('Unexpected exception while registering a valid custom element ' +
                 'in a document which has it\'s own registry');

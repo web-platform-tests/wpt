@@ -32,14 +32,20 @@
         assert_equals(document.getElementById('table1').caption.innerHTML, "first caption");
       }, "first caption element child of the first table element");
 
-      function captionElement() {
+      test(function () {
         var caption = document.createElement("caption");
         caption.innerHTML = "new caption";
-        document.getElementById('table1').caption = caption;
+        var table = document.getElementById('table1');
+        table.caption = caption;
 
+        assert_equals(caption.parentNode, table);
         assert_equals(document.getElementById('table1').caption.innerHTML, "new caption");
-      }
-      test(captionElement, "setting caption on a table");
+
+        captions = table.getElementsByTagName('caption');
+        assert_equals(captions.length, 2);
+        assert_equals(captions[0].innerHTML, "new caption");
+        assert_equals(captions[1].innerHTML, "second caption");
+      }, "setting caption on a table");
 
       test(function () {
         assert_equals(document.getElementById('table2').caption, null);
@@ -49,13 +55,14 @@
         assert_equals(document.getElementById('table3').caption.innerHTML, "non-child caption");
       }, "first caption element child of the third table element");
 
-      function removeCaptionElement() {
+      test(function () {
+        assert_not_equals(document.getElementById('table4').caption, null);
+
         var parent = document.getElementById('table4').caption.parentNode;
         parent.removeChild(document.getElementById('table4').caption);
 
         assert_equals(document.getElementById('table4').caption, null);
-      }
-      test(captionElement, "dynamically removing caption on a table");
+      }, "dynamically removing caption on a table");
     </script>
   </body>
 </html>

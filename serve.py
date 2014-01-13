@@ -92,17 +92,14 @@ class ServerProc(object):
         self.proc.terminate()
         self.proc.join()
 
-def probe_subdomains(config):
-    host = config["host"]
+def check_subdomains(config, subdomains):
     port = get_port()
     wrapper = ServerProc()
     wrapper.start(start_http_server, config, port)
 
     rv = {}
 
-    for subdomain in subdomains:
-        #This assumes that the tld is ascii-only or already in punycode
-        punycode = subdomain.encode("idna")
+    for subdomain, (punycode, host) in subdomains.iteritems():
         domain = "%s.%s" % (punycode, host)
         try:
             urllib2.urlopen("http://%s:%d/" % (domain, port))
@@ -119,6 +116,16 @@ def probe_subdomains(config):
 
     wrapper.wait()
 
+    return rv
+
+def get_subdomains(config):
+    rv = {}
+    #This assumes that the tld is ascii-only or already in punycode
+    host = config["host"]
+
+    for subdomain in subdomains:
+        punycode = subdomain.encode("idna")
+        rv[subdomain] = (punycode, host)
     return rv
 
 def start_servers(config, ports):
@@ -235,7 +242,9 @@ def normalise_config(config, domains, ports):
 
 def start(config):
     ports = get_ports(config)
-    domains = probe_subdomains(config)
+    domains = get_subdomains(config)
+    if config["check_subdomains"]:
+        domains = check_subdomains(config, domains)
 
     config_ = normalise_config(config, domains, ports)
 

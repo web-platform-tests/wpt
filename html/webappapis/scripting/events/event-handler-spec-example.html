@@ -8,7 +8,7 @@ var objects = [{}, function() {}, new Number(42), new String()];
 var primitives = [42, null, undefined, ""];
 objects.forEach(function(object) {
   var t = async_test("Event handler listeners should be registered when they " +
-                     "are first set to a object value (" +
+                     "are first set to an object value (" +
                      format_value(object) + ").");
   t.step(function() {
     var i = 0;
@@ -28,7 +28,7 @@ objects.forEach(function(object) {
 });
 primitives.forEach(function(primitive) {
   var t = async_test("Event handler listeners should be registered when they " +
-                     "are first set to a object value (" +
+                     "are first set to an object value (" +
                      format_value(primitive) + ").");
   t.step(function() {
     var i = 0;

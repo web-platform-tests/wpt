@@ -19,9 +19,7 @@
       <tr><td></td></tr>
     </table>
     <table id="table3" style="display:none">
-      <tr><td><caption>non-child caption</caption></td></tr>
-      <caption>first caption</caption>
-      <caption>second caption</caption>
+      <tr><td></td></tr>
     </table>
     <table id="table4" style="display:none">
       <tr><td></td></tr>
@@ -52,8 +50,11 @@
       }, "caption IDL attribute is null");
 
       test(function () {
-        assert_equals(document.getElementById('table3').caption.innerHTML, "non-child caption");
-      }, "first caption element child of the third table element");
+        var table = document.getElementById('table3');
+        var caption = document.createElement("caption")
+        table.rows[0].appendChild(caption);
+        assert_equals(table.caption, null);
+      }, "caption of the third table element should be null");
 
       test(function () {
         assert_not_equals(document.getElementById('table4').caption, null);

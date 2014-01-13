@@ -17,7 +17,7 @@
 test(function() {
     var doc = document.implementation.createDocument(null, "test", null);
     assert_throws('NotSupportedError',
-                  function() { doc.register('x-element'); },
+                  function() { doc.registerElement('x-element'); },
                   'Registering valid custom element in a document ' +
                       'without registry should fail');
 
@@ -34,7 +34,7 @@ test(function() {
 
     var doc = request.responseXML;
     assert_throws('NotSupportedError',
-                  function() { doc.register('x-element'); },
+                  function() { doc.registerElement('x-element'); },
                   'Registering valid custom element in ' +
                       'a XMLHttpRequest\'s response document should fail');
 
@@ -47,7 +47,7 @@ async_test(function(t) {
             assert_equals(200, request.status, 'Test document is not loaded correctly');
             var doc = request.responseXML;
             assert_throws('NotSupportedError',
-                          function() { doc.register('x-element'); },
+                          function() { doc.registerElement('x-element'); },
                           'Registering valid custom element in ' +
                               'a XMLHttpRequest\'s response document should fail');
             t.done();

@@ -37,7 +37,7 @@
         table.caption = caption;
 
         assert_equals(caption.parentNode, table);
-        assert_equals(document.getElementById('table1').caption.innerHTML, "new caption");
+        assert_equals(table.caption.innerHTML, "new caption");
 
         captions = table.getElementsByTagName('caption');
         assert_equals(captions.length, 2);

@@ -1,96 +1,49 @@
 <!DOCTYPE HTML>
-<html>
-<head>
-  <title>HTML5 Media Elements: Seeking to a value less than 'startTime' seeks to 'startTime'.</title>
-  <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
-  <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
-  <link rel="help" href="http://www.w3.org/TR/html5/video.html#dom-media-seeking" />
-  <meta name="assert" content="Seeking to a value less than 'startTime' seeks to 'startTime'." />
-  <script type="text/javascript" src="../../../../common/media.js"></script>
-  <script type="text/javascript">
+<meta charset=UTF-8>
+<title>HTMLMediaElement.currentTime: Seeking to a value less than the earliest possible position seeks to the earliest possible position.</title>
+<link rel="author" title="Microsoft" href="http://www.microsoft.com/">
+<link rel="author" title="Ms2ger" href="mailto:Ms2ger@gmail.com">
+<link rel="help" href="http://www.whatwg.org/html/#dom-media-seek">
+<meta name="assert" content="Seeking to a value less than the earliest possible position seeks to the earliest possible position.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/media.js"></script>
+<script>
+var videotest = async_test("Seeking to a value less than the earliest possible position seeks to the earliest possible position.");
 
 function getTestVideoElement()
 {
-    return document.getElementById("video0");
+   return document.getElementById("video0");
 }
 
 function do_play(event)
 {
+  videotest.step(function() {
     var vid = getTestVideoElement();
     vid.pause();
     vid.currentTime = -1;
+  });
 }
 
 function do_seeked(event)
 {
+  videotest.step(function() {
     var vid = getTestVideoElement();
-    
-    if (vid.currentTime == vid.startTime)
-    {
-        passTest();
-    }
-    else
-    {
-        failTest();
-    }
+    assert_equals(vid.currentTime, 0);
+  });
+  videotest.done();
 }
 
 </script>
-</head>
-<body>
-<pre>
-Seeking to a value less than 'startTime' seeks to 'startTime'.
-</pre>
-<table id='testtable' border='1'>
-  <tr>
-    <td>Test Result</td>
-    <td>Test Assertion</td>
-  </tr>
-  <tr>
-    <td id='test_0_result'>Waiting ...</td>
-    <td id='test_0_assertion'>Test passes if the text 'PASS' appears to the left and the text 'Your browser does not support media elements.' does not appear anywhere on this page.</td>
-  </tr>
-</table>
-<pre>
 
-http://www.w3.org/TR/html5/video.html#dom-media-seeking
+<div id='log'></div>
 
-When the user agent is required to seek to a particular new playback 
-position in the media resource, it means that the user agent must run 
-the following steps: 
-
-[...]
-
-3. If the new playback position is less than the earliest possible 
-position, let it be that position instead. 
-
-</pre>
-<div id='testcontent'>
-
-<script type="text/javascript">
-
+<script>
 document.write(
-    "<video id='video0' src='" + getVideoURI("/media/movie_5") + "'" +
-    " onseeked='do_seeked(event);'" +
-    " onplay='do_play(event);'" +
-    " autoplay>"
-    );
-
+  "<video id='video0' src='" + getVideoURI("/media/movie_5") + "'" +
+  " onseeked='do_seeked(event);'" +
+  " onplay='do_play(event);'" +
+  " autoplay>" +
+  "Your browser does not support media elements." +
+  "<\/video>");
 </script>
-Your browser does not support media elements.
-</video>
-<script type="text/javascript">    
-        try
-        {
-setFailTimeout(30000);
-        }
-        catch(ex)
-        {
-
-        }
-    </script>
-
-
-</div>
-</body>
-</html>

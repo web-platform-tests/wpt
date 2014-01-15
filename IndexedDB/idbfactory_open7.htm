@@ -2,11 +2,12 @@
 <html>
 <head>  
     <title>IDBFactory.open() - open database with a higher version than current</title>
-    <script type="text/javascript" src="support.js"></script>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
-    <script type="text/javascript">
+    <script src="support.js"></script>
+    <script>
         var t = async_test(); 
+        var databaseName = "open7"
         
         function RunTest() {
             var rqOpen = window.indexedDB.open(databaseName, databaseVersion);

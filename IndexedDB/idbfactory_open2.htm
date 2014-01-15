@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html>
-<head>  
+<head>
     <title>IDBFactory.open() - database 'name' and 'version' are correctly set</title>
-    <script type="text/javascript" src="support.js"></script>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
-    <script type="text/javascript">
+    <script src="support.js"></script>
+    <script>
         var db = null;
-        var t = async_test(); 
-        
+        var t = async_test();
+        var databaseName = "mydatabase2"
+
         function RunTest() {
             databaseVersion = parseInt(Math.random()*1000) + 1;
             var rqOpen = window.indexedDB.open(databaseName, databaseVersion);
@@ -20,9 +21,9 @@
             });
             rqOpen.onerror = t.step_func( assert_open_request_error );
         }
-        
+
         add_completion_callback(function() { if(db) db.close(); });
-        
+
         setup(function() {
             var rqDelete = window.indexedDB.deleteDatabase(databaseName);
             rqDelete.onsuccess = t.step_func( RunTest );

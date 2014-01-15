@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html>
-<head>  
+<head>
     <title>IDBFactory.open() - request has no source</title>
-    <script type="text/javascript" src="support.js"></script>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
-    <script type="text/javascript">
-        var t = async_test(); 
+    <script src="support.js"></script>
+    <script>
+        var t = async_test();
+        var databaseName = "first open test";
         
         function RunTest() {
             var rqOpen = window.indexedDB.open(databaseName);
@@ -17,7 +18,7 @@
             rqOpen.onerror = t.step_func( assert_open_request_error );
         }
         
-        add_completion_callback(function() { if(db) db.close(); });
+        //add_completion_callback(function() { if(db) db.close(); });
         
         setup(function() {
             var rqDelete = window.indexedDB.deleteDatabase(databaseName);

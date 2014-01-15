@@ -12,41 +12,41 @@ var tests = init_tests("HTMLAudioElement.preload:metadata event order when prelo
 tests.forEach(function(vars) {
     var t = vars[0];
     t.step(function() {
-	var tag_name = vars[1];
-	var events_actual = '';
-	var node = document.getElementsByTagName(tag_name)[0];
-	var events  = ['loadstart', 'progress', 'suspend', 'abort', 'error', 'loadedmetadata', 'loadeddata', 'canplay', 'canplaythrough'];
-	for (var e in events) {
-	    node.addEventListener(events[e], handleEvent, false);
-	}
-	node.addEventListener('loadstart', startTest, false);
-	node.addEventListener('error', function() {
-	    if (!node.canPlayType(tag_name + '/wave')) {
-		t.step(function() {
-		    assert_unreached("Cannot play '" + tag_name + "/wave'");
-		    t.done();
-		});
-	    }
-	}, false);
-	node.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAAAA';
+  var tag_name = vars[1];
+  var events_actual = '';
+  var node = document.getElementsByTagName(tag_name)[0];
+  var events  = ['loadstart', 'progress', 'suspend', 'abort', 'error', 'loadedmetadata', 'loadeddata', 'canplay', 'canplaythrough'];
+  for (var e in events) {
+      node.addEventListener(events[e], handleEvent, false);
+  }
+  node.addEventListener('loadstart', startTest, false);
+  node.addEventListener('error', function() {
+      if (!node.canPlayType(tag_name + '/wave')) {
+    t.step(function() {
+        assert_unreached("Cannot play '" + tag_name + "/wave'");
+        t.done();
+    });
+      }
+  }, false);
+  node.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAAAA';
 
-	function startTest(e) {
-	    node.removeEventListener('loadstart', startTest, false);
-	    node.preload = 'none';
-	}
+  function startTest(e) {
+      node.removeEventListener('loadstart', startTest, false);
+      node.preload = 'none';
+  }
 
-	function handleEvent(e) {
-	    events_actual += e.type + ' ';
-	    if (e.type == 'suspend') endTest();
-	}
+  function handleEvent(e) {
+      events_actual += e.type + ' ';
+      if (e.type == 'suspend') endTest();
+  }
 
-	function endTest() {
-	    t.step(function() {
-		assert_regexp_match(events_actual, /^loadstart progress loadedmetadata loadeddata suspend $/g, 'Event order check');
-		assert_equals(node.preload, 'none', "'preload' value should be 'none'");
-		t.done();
-	    });
-	}
+  function endTest() {
+      t.step(function() {
+    assert_regexp_match(events_actual, /^loadstart progress loadedmetadata loadeddata suspend $/g, 'Event order check');
+    assert_equals(node.preload, 'none', "'preload' value should be 'none'");
+    t.done();
+      });
+  }
     });
 });
 </script>

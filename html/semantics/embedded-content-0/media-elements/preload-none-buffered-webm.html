@@ -12,34 +12,34 @@ var tests = init_tests("HTMLAudioElement.preload:none 'buffered' should be empty
 tests.forEach(function(vars) {
     var t = vars[0];
     t.step(function() {
-	var tag_name = vars[1];
-	var node = document.getElementsByTagName(tag_name)[0];
-	startTest();
+  var tag_name = vars[1];
+  var node = document.getElementsByTagName(tag_name)[0];
+  startTest();
 
-	function startTest() {
-	    var events  = ['loadstart', 'progress', 'suspend', 'abort', 'error', 'loadedmetadata', 'loadeddata', 'canplay', 'canplaythrough'];
-	    for (var e in events) {
-		node.addEventListener(events[e], handleEvent, false);
-	    }
-	    node.src = '../../../../common/range-request.php?rate=100000&fileloc=../media/preload.webm&nocache=' + Math.random();
-	}
+  function startTest() {
+      var events  = ['loadstart', 'progress', 'suspend', 'abort', 'error', 'loadedmetadata', 'loadeddata', 'canplay', 'canplaythrough'];
+      for (var e in events) {
+    node.addEventListener(events[e], handleEvent, false);
+      }
+      node.src = '/media/preload.webm?pipe=trickle(100000:d1:r2)&nocache=' + Math.random();
+  }
 
-	function handleEvent(e) {
-	    if (e.type == 'error' && !node.canPlayType(tag_name + '/webm')) {
-		t.step(function() {
-		    assert_unreached("Cannot play '" + tag_name + "/webm'");
-		    t.done();
-		});
-	    }
-	    if (e.type == 'suspend') endTest();
-	}
+  function handleEvent(e) {
+      if (e.type == 'error' && !node.canPlayType(tag_name + '/webm')) {
+    t.step(function() {
+        assert_unreached("Cannot play '" + tag_name + "/webm'");
+        t.done();
+    });
+      }
+      if (e.type == 'suspend') endTest();
+  }
 
-	function endTest() {
-	    t.step(function() {
-		assert_equals(node.buffered.length, 0, "'buffered' should be empty");
-		t.done();
-	    });
-	}
+  function endTest() {
+      t.step(function() {
+    assert_equals(node.buffered.length, 0, "'buffered' should be empty");
+    t.done();
+      });
+  }
     });
 });
 </script>

@@ -12,27 +12,27 @@ var tests = init_tests("HTMLAudioElement.preload:metadata readyState when preloa
 tests.forEach(function(vars) {
     var t = vars[0];
     t.step(function() {
-	var tag_name = vars[1];
-	var states_actual = '';
-	var node = document.getElementsByTagName(tag_name)[0];
-	node.addEventListener('suspend', endTest, false);
-	node.addEventListener('error', function() {
-	    if (!node.canPlayType(tag_name + '/ogg')) {
-		t.step(function() {
-		    assert_unreached("Cannot play '" + tag_name + "/ogg'");
-		    t.done();
-		});
-	    }
-	}, false);
-	node.src = '../../../../common/range-request.php?rate=100000&fileloc=../media/preload.ogv&nocache=' + Math.random();
-	node.preload = 'none';
+  var tag_name = vars[1];
+  var states_actual = '';
+  var node = document.getElementsByTagName(tag_name)[0];
+  node.addEventListener('suspend', endTest, false);
+  node.addEventListener('error', function() {
+      if (!node.canPlayType(tag_name + '/ogg')) {
+    t.step(function() {
+        assert_unreached("Cannot play '" + tag_name + "/ogg'");
+        t.done();
+    });
+      }
+  }, false);
+  node.src = '/media/preload.ogv?pipe=trickle(100000:d1:r2)&nocache=' + Math.random();
+  node.preload = 'none';
 
-	function endTest() {
-	    t.step(function() {
-		assert_equals(node.readyState, HTMLMediaElement.HAVE_NOTHING, 'readyState after suspend')
-		t.done();
-	    });
-	}
+  function endTest() {
+      t.step(function() {
+    assert_equals(node.readyState, HTMLMediaElement.HAVE_NOTHING, 'readyState after suspend')
+    t.done();
+      });
+  }
     });
 });
 </script>

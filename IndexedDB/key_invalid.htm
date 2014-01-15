@@ -49,14 +49,14 @@
     // booleans
     invalid_key( 'true'  , true );
     invalid_key( 'false' , false );
-    
+
     // null/NaN/undefined
     invalid_key( 'null'      , null );
     invalid_key( 'NaN'       , NaN );
     invalid_key( 'undefined' , undefined );
     invalid_key( 'undefined2');
 
-    // functions 
+    // functions
     invalid_key( 'function() {}', function(){} );
 
     // objects
@@ -71,7 +71,7 @@
     invalid_key( 'new String()'                 , new String() );
     invalid_key( 'new Number()'                 , new Number() );
     invalid_key( 'new Boolean()'                , new Boolean() );
-    
+
     // arrays
     invalid_key( '[{}]'                     , [{}] );
     invalid_key( '[[], [], [], [[ Date ]]]' , [ [], [], [], [[ Date ]] ] );

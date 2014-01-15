@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!-- Submitted from TestTWF Paris -->
 <html>
-    <head>  
+    <head>
         <meta charset=utf-8>
         <title id='desc'>IDBKeyRange Tests - Incorrect</title>
         <link rel=help href="http://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#range-concept">
@@ -13,7 +13,7 @@
         <script src="support.js"></script>
 
         <script type="text/javascript">
-            
+
             // TypeError: bound requires more than 0 arguments
             test( function() {
                 assert_throws(new TypeError(), function() {
@@ -54,7 +54,7 @@
             test( function() {
                 assert_throws("DataError", function() {
                     IDBKeyRange.bound('a', 1);
-                });    
+                });
                 assert_throws("DataError", function() {
                     IDBKeyRange.bound(new Date(), 1);
                 });
@@ -85,7 +85,7 @@
 
         </script>
     </head>
-    
+
     <body>
         <div id="log"></div>
     </body>

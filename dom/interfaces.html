@@ -263,7 +263,7 @@ interface Document : Node {
   [NewObject] Comment createComment(DOMString data);
   [NewObject] ProcessingInstruction createProcessingInstruction(DOMString target, DOMString data);
 
-  Node importNode(Node node, optional boolean deep = true);
+  Node importNode(Node node, optional boolean deep = false);
   Node adoptNode(Node node);
 
   [NewObject] Event createEvent(DOMString interface);

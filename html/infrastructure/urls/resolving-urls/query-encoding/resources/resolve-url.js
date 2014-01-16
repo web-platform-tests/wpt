@@ -921,11 +921,11 @@ onload = function() {
                           'gopher://example.invalid/?x=\u00E5',
                           'http://example.invalid/?x=\u00E5',
                           'https://example.invalid/?x=\u00E5',
-                          'ws://example.invalid/?x=\u00E5', // XXX should be utf-8?
-                          'wss://example.invalid/?x=\u00E5', // XXX should be utf-8?
                          ];
 
-  var test_scheme_urls_utf8 = ['mailto:example@invalid?x=\u00E5',
+  var test_scheme_urls_utf8 = ['ws://example.invalid/?x=\u00E5',
+                               'wss://example.invalid/?x=\u00E5',
+                               'mailto:example@invalid?x=\u00E5',
                                'data:text/plain;charset='+encoding+',?x=\u00E5',
                                'javascript:"?x=\u00E5"',
                                'ftps://example.invalid/?x=\u00E5',

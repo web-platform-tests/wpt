@@ -30,7 +30,15 @@ test(function() {
   assert_equals(ev.movementY, 0);
 }, "Default event values for mouse event interface and its pointer lock extensions.");
 test(function() {
-  var ev = new MouseEvent("pointerlockerror", { type: "trololol", bubbles: true, cancelable: false, defaultPrevented: true, movementX: 10, movementY: 10});
+  var ev = new MouseEvent("pointerlockerror",
+                            { type: "trololol",
+                              bubbles: true,
+                              cancelable: false,
+                              get defaultPrevented() {
+                                  assert_unreached("Should not look at the defaultPrevented property.");
+                               },
+                              movementX: 10,
+                              movementY: 10});
   assert_equals(ev.type, "pointerlockerror");
   assert_equals(ev.bubbles, true); // this is synthetic event, so follow the dictionary
   assert_equals(ev.cancelable, false);

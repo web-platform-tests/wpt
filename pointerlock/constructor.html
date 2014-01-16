@@ -32,18 +32,12 @@ test(function() {
 test(function() {
   var ev = new MouseEvent("pointerlockerror", { type: "trololol", bubbles: true, cancelable: false, defaultPrevented: true, movementX: 10, movementY: 10});
   assert_equals(ev.type, "pointerlockerror");
-  assert_equals(ev.bubbles, false);
+  assert_equals(ev.bubbles, true); // this is synthetic event, so follow the dictionary
   assert_equals(ev.cancelable, false);
   assert_equals(ev.defaultPrevented, false);
-  assert_equals(ev.movementX, 0, "movementX/Y must be zero for all mouse events except mousemove.");
-  assert_equals(ev.movementY, 0, "movementX/Y must be zero for all mouse events except mousemove.");
+  assert_equals(ev.movementX, 10); // this is synthetic event, so follow the dictionary
+  assert_equals(ev.movementY, 10); // this is synthetic event, so follow the dictionary
 }, "Default event values for pointerlockerror using a dictionary");
-test(function() {
-  var ev = new MouseEvent("mousemove", { movementX: 10, movementY: 10});
-  assert_equals(ev.type, "mousemove");
-  assert_equals(ev.movementX, 10);
-  assert_equals(ev.movementY, 10);
-}, "Non-zero values for movementX/Y on mousemove using a dictionary");
    </script>
 
 </body>

@@ -3,7 +3,7 @@ def main(request, response):
     mode = request.GET['mode']
     fallback_url = ""
     if mode == "FALLBACK":
-      fallback_url = "fallback-namespace/"
+        fallback_url = "fallback-namespace/"
     manifest = u"""CACHE MANIFEST
 
 %s:

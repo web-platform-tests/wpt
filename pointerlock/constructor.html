@@ -4,12 +4,12 @@
     <meta charset="utf-8">
     <title>Pointer Lock event constructor</title>
     <script src="/resources/testharness.js"></script>
-    <script src="/resources/testharnessreport.js"></script>  
-    <link rel="help" href="http://www.w3.org/TR/pointerlock/#pointerlockchange-and-pointerlockerror-events"/>
-    <link rel="help" href="http://www.w3.org/TR/dom/#interface-event"/>
+    <script src="/resources/testharnessreport.js"></script>
+    <link rel="help" href="http://www.w3.org/TR/pointerlock/#pointerlockchange-and-pointerlockerror-events">
+    <link rel="help" href="http://www.w3.org/TR/dom/#interface-event">
   </head>
   <body>
-    <p>This test the events for Pointer Lock can be created as defined by DOM events.</p>
+    <p>Create Pointer Lock events and check each default value.</p>
     <div id='log'></div>
     <script>
 test(function() {
@@ -26,17 +26,25 @@ test(function() {
   assert_true("initEvent" in ev);
   assert_true("movementX" in ev, "movementX exists");
   assert_true("movementY" in ev, "movementY exists");
-  assert_true(ev.movementX == 0, "movementX is 0");
-  assert_true(ev.movementY == 0, "movementY is 0");
+  assert_equals(ev.movementX, 0);
+  assert_equals(ev.movementY, 0);
 }, "Default event values for mouse event interface and its pointer lock extensions.");
 test(function() {
-  var ev = new MouseEvent("pointerlockerror", { type: "trololol", bubbles: true, cancelable: false, defaultPrevented: true});
+  var ev = new MouseEvent("pointerlockerror", { type: "trololol", bubbles: true, cancelable: false, defaultPrevented: true, movementX: 10, movementY: 10});
   assert_equals(ev.type, "pointerlockerror");
   assert_equals(ev.bubbles, false);
   assert_equals(ev.cancelable, false);
   assert_equals(ev.defaultPrevented, false);
-}, "Basic test.");
-    </script>
+  assert_equals(ev.movementX, 0, "movementX/Y must be zero for all mouse events except mousemove.");
+  assert_equals(ev.movementY, 0, "movementX/Y must be zero for all mouse events except mousemove.");
+}, "Default event values for pointerlockerror using a dictionary");
+test(function() {
+  var ev = new MouseEvent("mousemove", { movementX: 10, movementY: 10});
+  assert_equals(ev.type, "mousemove");
+  assert_equals(ev.movementX, 10);
+  assert_equals(ev.movementY, 10);
+}, "Non-zero values for movementX/Y on mousemove using a dictionary");
+   </script>
 
 </body>
 

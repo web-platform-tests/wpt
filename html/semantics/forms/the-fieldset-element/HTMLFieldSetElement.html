@@ -11,10 +11,10 @@
   <legend><input type="checkbox" name="cb"></legend>
   <input type=text name="txt" id="ctl1">
   <button id="ctl2" name="btn">BUTTON</button>
-  <fieldset id="fs_inner">
-    <input type="text" name="txt_inner">
-    <progress name="pg" value=".5"></progress>
-  </fieldset>
+    <fieldset id="fs_inner">
+      <input type="text" name="txt_inner">
+      <progress name="pg" value="0.5"></progress>
+    </fieldset>
   </fieldset>
 </form>
 <script>
@@ -34,19 +34,13 @@ test(function () {
 }, "The type attribute must return 'fieldset'");
 
 test(function () {
-  assert_false(fs_outer.disabled, "The disabled attribute should be false.");
-  fs_outer.setAttribute("disabled", "true");
-  assert_true(fs_outer.disabled, "The disabled attribute should be true.");
-}, "The disabled attribute must reflect the content attribute");
-
-test(function () {
-  assert_equals(fs_outer.form, fm1, "The fieldset should has a form owner.");
+  assert_equals(fs_outer.form, fm1, "The fieldset should have a form owner.");
 }, "The form attribute must return the fieldset's form owner");
 
 test(function () {
   assert_true(children_outer instanceof HTMLFormControlsCollection,
-              "The elements attribue should be an HTMLFormControlsCollection object");
-}, "The elements must retrun an HTMLFormControlsCollection object");
+              "The elements attribute should be an HTMLFormControlsCollection object");
+}, "The elements must return an HTMLFormControlsCollection object");
 
 test(function () {
   var fs_inner = document.getElementById("fs_inner");

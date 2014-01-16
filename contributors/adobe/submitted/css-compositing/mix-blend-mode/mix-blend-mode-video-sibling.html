@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>CSS Test: mix-blend-mode blending between video element with an overlapping sibling</title>
+        <link rel="author" title="Mirela Budăeș" href="mailto:mbudaes@adobe.com">
+        <link rel="help" href="http://dev.w3.org/fxtf/compositing-1/#mix-blend-mode">
+        <meta name="flags" content="requirements flags">
+        <meta name="assert" content="Test checks that the video element blends with an overlapping sibling element with some text inside">
+        <link rel="mismatch" href="reference/mix-blend-mode-video-sibling-notref.html">
+        <style type="text/css">
+            div {
+                mix-blend-mode: difference;
+                margin-top: -361px;
+                background-color: #FF0;
+                width: 300px;
+                height: 350px;
+                color: #F00;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if you can see text and a circle moving down, both drawn with green, on top of a blue background. </p>
+        <video autoplay>
+            <source type="video/mp4" src="../support/red_circle.mp4">
+       </video>
+       <div>Some text inside the div.</div>
+    </body>
+</html>

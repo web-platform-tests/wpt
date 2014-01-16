@@ -11,14 +11,13 @@
 		<link rel="match" href="reference/floats-in-named-flow-006-ref.html">
 		<style>
 		.flow {
-			-webkit-flow-into: f;
+			flow-into: f;
 			color: gray;
 			font-family: Ahem;
 			font-size: 20px;
 			line-height: 1em;
 		}
 		.break {
-			-webkit-region-break-after: always;
 			break-after: region;
 		}
 		.floater {
@@ -33,7 +32,7 @@
 			float: right;
 		}
 		.region {
-			-webkit-flow-from: f;
+			flow-from: f;
 			max-width: 200px;
 			margin: 5px;
 		}

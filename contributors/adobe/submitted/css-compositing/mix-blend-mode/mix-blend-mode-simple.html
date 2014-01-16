@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>CSS Test: An element with mix-blend-mode blends with its parent element.</title>
+        <link rel="author" title="Mihai Tica" href="mailto:mitica@adobe.com">
+        <link rel="reviewer" title="Mihai Balan" href="mailto:mibalan@adobe.com">
+        <link rel="help" href="http://dev.w3.org/fxtf/compositing-1/#mix-blend-mode">
+        <meta name="assert" content="Test checks that the element with mix-blend-mode blends with its parent element.">
+        <link rel="match" href="reference/mix-blend-mode-simple-ref.html">
+        <style type="text/css">
+            div {
+                width: 100px;
+                height: 100px;
+            }
+            .parent {
+                background: #FF0;
+            }
+            .child {
+                background: #F00;
+                mix-blend-mode: difference;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if you can see a lime square. If the square is drawn with red, the test fails.</p>
+        <div class="parent">
+            <div class="child"></div>
+        </div>
+    </body>
+</html>

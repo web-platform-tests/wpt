@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>HTML Test: Window Security</title>
+<link rel="author" title="Intel" href="http://www.intel.com/">
+<link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#security-window">
+<link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#the-window-object">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<iframe id="fr" src="http://127.0.0.1" onload="fr_load()" style="display:none"></iframe>
+<script>
+
+var t = async_test("Start Window Security testing...");
+
+function fr_load() {
+  fr = document.getElementById("fr");
+
+  t.step(function () {
+    //SecurityError should be thrown
+    [
+      //attributes
+      {name: "document"},
+      {name: "name"},
+      {name: "history"},
+      {name: "locationbar"},
+      {name: "menubar"},
+      {name: "personalbar"},
+      {name: "scrollbars"},
+      {name: "statusbar"},
+      {name: "documtoolbarent"},
+      {name: "status"},
+      {name: "length"},
+      {name: "frameElement"},
+      {name: "navigator"},
+      {name: "external"},
+      {name: "applicationCache"},
+
+      //methods
+      {name: "stop", isMethod: true},
+      {name: "open", isMethod: true},
+      {name: "alert", isMethod: true},
+      {name: "confirm", isMethod: true},
+      {name: "prompt", isMethod: true},
+      {name: "print", isMethod: true},
+      {name: "showModalDialog", isMethod: true, args:["auto:blank"]}
+    ].forEach(function (item) {
+      test(function () {
+        assert_throws("SecurityError", function () {
+          if (item.isMethod)
+            if (item.args)
+              fr.contentWindow[item.name](item.args[0]);
+            else
+              fr.contentWindow[item.name]();
+          else
+            fr.contentWindow[item.name];
+        }, "The SecurityError exception is not thrown.");
+      }, "The SecurityError exception must be thrown when window." + item.name + " are accessed from a different origin");
+    });
+
+    //SecurityError should not be thrown
+    [
+      //attributes
+      {name: "location"},
+      {name: "window"},
+      {name: "frames"},
+      {name: "self"},
+      {name: "top"},
+      {name: "parent"},
+      {name: "opener"},
+      {name: "closed"},
+
+      //methods
+      {name: "postMessage", isMethod: true, args: [{msg: 'foo'}, "*"]},
+      {name: "close", isMethod: true},
+      {name: "blur", isMethod: true},
+      {name: "focus", isMethod: true}
+    ].forEach(function (item) {
+      test(function () {
+        try {
+          if (item.isMethod)
+            if (item.args)
+              fr.contentWindow[item.name](item.args[0], item.args[1]);
+            else
+               fr.contentWindow[item.name]();
+          else
+            fr.contentWindow[item.name];
+        } catch (e) {
+          assert_unreached("Unexpected exception is thrown.");
+        }
+      }, "The SecurityError must not be thrown when window." + item.name + " is accessed from a different origin");
+    });
+  });
+  t.done();
+}
+
+</script>

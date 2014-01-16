@@ -905,6 +905,60 @@ onload = function() {
   }, 'URL constructor, base',
   {help:'http://url.spec.whatwg.org/#dom-url'});
 
+  // Test different schemes
+  function test_scheme(url, utf8) {
+    test(function() {
+      var a = document.createElement('a');
+      a.setAttribute('href', url);
+      var got = a.href;
+      var expected = utf8 ? expected_utf8 : expected_current;
+      assert_true(got.indexOf(expected) != -1, msg(expected, got));
+    }, 'Scheme ' + url.split(':')[0] + ' (getting <a>.href)');
+  }
+
+  var test_scheme_urls = ['ftp://example.invalid/?x=\u00E5',
+                          'file:///?x=\u00E5',
+                          'gopher://example.invalid/?x=\u00E5',
+                          'http://example.invalid/?x=\u00E5',
+                          'https://example.invalid/?x=\u00E5',
+                          'ws://example.invalid/?x=\u00E5', // XXX should be utf-8?
+                          'wss://example.invalid/?x=\u00E5', // XXX should be utf-8?
+                         ];
+
+  var test_scheme_urls_utf8 = ['mailto:example@invalid?x=\u00E5',
+                               'data:text/plain;charset='+encoding+',?x=\u00E5',
+                               'javascript:"?x=\u00E5"',
+                               'ftps://example.invalid/?x=\u00E5"',
+                               'httpbogus://example.invalid/?x=\u00E5"',
+                               'bitcoin:foo?x=\u00E5"',
+                               'geo:foo?x=\u00E5"',
+                               'im:foo?x=\u00E5"',
+                               'irc:foo?x=\u00E5"',
+                               'ircs:foo?x=\u00E5"',
+                               'magnet:foo?x=\u00E5"',
+                               'mms:foo?x=\u00E5"',
+                               'news:foo?x=\u00E5"',
+                               'nntp:foo?x=\u00E5"',
+                               'sip:foo?x=\u00E5"',
+                               'sms:foo?x=\u00E5"',
+                               'smsto:foo?x=\u00E5"',
+                               'ssh:foo?x=\u00E5"',
+                               'tel:foo?x=\u00E5"',
+                               'urn:foo?x=\u00E5"',
+                               'webcal:foo?x=\u00E5"',
+                               'wtai:foo?x=\u00E5"',
+                               'xmpp:foo?x=\u00E5"',
+                               'web+http:foo?x=\u00E5"',
+                              ];
+
+  test_scheme_urls.forEach(function(url) {
+    test_scheme(url);
+  });
+
+  test_scheme_urls_utf8.forEach(function(url) {
+    test_scheme(url, true);
+  });
+
   run_next_in_sequence();
   done();
 };

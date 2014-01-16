@@ -19,13 +19,13 @@ var pathname = window.location.pathname.substring(0, index) + '/';
 
 function setup_iframe() {
     var iframe_content =
-        '<link rel="stylesheet" href="' + pathname + 'resources/redirect.php?location=' + pathname + 'resources/generate_resource.php%3Ftype=css"></link>' +
-        '<img src="' + pathname + 'resources/redirect.php?location=' + pathname + 'resources/generate_resource.php%3Ftype=image"></img>' +
-        '<iframe src="' + pathname + 'resources/redirect.php?location=' + pathname + 'resources/generate_resource.php%3Ftype=iframe"></iframe>' +
-        '<script src="' + pathname + 'resources/redirect.php?location=' + pathname + 'resources/generate_resource.php%3Ftype=script"></scr' + 'ipt>' +
+        '<link rel="stylesheet" href="' + pathname + '/common/redirect.py?location=' + pathname + 'resources/generate_resource.php%3Ftype=css"></link>' +
+        '<img src="' + pathname + '/common/redirect.py?location=' + pathname + 'resources/generate_resource.php%3Ftype=image"></img>' +
+        '<iframe src="' + pathname + '/common/redirect.py?location=' + pathname + 'resources/generate_resource.php%3Ftype=iframe"></iframe>' +
+        '<script src="' + pathname + '/common/redirect.py?location=' + pathname + 'resources/generate_resource.php%3Ftype=script"></scr' + 'ipt>' +
         '<script>' +
         'var xhr = new XMLHttpRequest;' +
-        'xhr.open("GET", "' + pathname + 'resources/redirect.php?location=' + pathname + 'resources/generate_resource.php%3Ftype=iframe%26id=xhr", false);' +
+        'xhr.open("GET", "' + pathname + '/common/redirect.py?location=' + pathname + 'resources/generate_resource.php%3Ftype=iframe%26id=xhr", false);' +
         'xhr.send();' +
         '</scr' + 'ipt>';
     iframe = document.getElementById('frameContext');
@@ -44,11 +44,11 @@ function onload_test() {
 
     var expected_entries = { };
 
-    expected_entries[ pathname + 'resources/redirect.php?location=' + pathname + 'resources/generate_resource.php%3Ftype=css' ] = 'link';
-    expected_entries[ pathname + 'resources/redirect.php?location=' + pathname + 'resources/generate_resource.php%3Ftype=image' ] = 'img';
-    expected_entries[ pathname + 'resources/redirect.php?location=' + pathname + 'resources/generate_resource.php%3Ftype=iframe' ] = 'iframe';
-    expected_entries[ pathname + 'resources/redirect.php?location=' + pathname + 'resources/generate_resource.php%3Ftype=script' ] = 'script';
-    expected_entries[ pathname + 'resources/redirect.php?location=' + pathname + 'resources/generate_resource.php%3Ftype=iframe%26id=xhr' ] = 'xmlhttprequest';
+    expected_entries[ pathname + '/common/redirect.py?location=' + pathname + 'resources/generate_resource.php%3Ftype=css' ] = 'link';
+    expected_entries[ pathname + '/common/redirect.py?location=' + pathname + 'resources/generate_resource.php%3Ftype=image' ] = 'img';
+    expected_entries[ pathname + '/common/redirect.py?location=' + pathname + 'resources/generate_resource.php%3Ftype=iframe' ] = 'iframe';
+    expected_entries[ pathname + '/common/redirect.py?location=' + pathname + 'resources/generate_resource.php%3Ftype=script' ] = 'script';
+    expected_entries[ pathname + '/common/redirect.py?location=' + pathname + 'resources/generate_resource.php%3Ftype=iframe%26id=xhr' ] = 'xmlhttprequest';
 
     test_resource_entries(entries, expected_entries);
 }

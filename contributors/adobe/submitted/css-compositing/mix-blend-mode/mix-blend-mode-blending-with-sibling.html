@@ -3,9 +3,10 @@
     <head>
         <title>CSS Test: mix-blend-mode between an element and its sibling</title>
         <link rel="author" title="Mirela Budăeș" href="mailto:mbudaes@adobe.com">
+        <link rel="author" title="Mihai Tica" href="mailto:mitica@adobe.com">
         <link rel="reviewer" title="Mihai Balan" href="mailto:mibalan@adobe.com">
         <link rel="help" href="http://dev.w3.org/fxtf/compositing-1/#mix-blend-mode">
-        <meta name="assert" content="Test checks that the element with mix-blend-mode blends with a sibling element">
+        <meta name="assert" content="Test checks that an element with mix-blend-mode blends with a sibling element">
         <link rel="match" href="reference/green-square.html">
         <style type="text/css">
             div {
@@ -28,7 +29,7 @@
         </style>
     </head>
     <body>
-        <p>Test passes if you can see a green square drawn on the screen.</p>
+        <p>Test passes if you can see a green square on the screen.</p>
         <div class="container">
             <div class="blender"></div>
             <div class="sibling"></div>

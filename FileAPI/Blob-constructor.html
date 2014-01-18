@@ -9,6 +9,8 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="support/Blob.js"></script>
 <div id="log"></div>
+<!-- used by "platform object that supports indexed properties" tests -->
+<iframe style="display:none"></iframe>
 <script>
 test(function() {
   assert_true("Blob" in window, "window should have a Blob property.");

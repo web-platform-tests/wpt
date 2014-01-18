@@ -98,6 +98,21 @@ test(function() {
   });
 }, "The length getter should be invoked and any exceptions should be propagated.");
 
+test_blob(function() {
+  var element = document.createElement("div");
+  element.appendChild(document.createElement("div"));
+  element.appendChild(document.createElement("p"));
+  var list = element.children;
+  Object.defineProperty(list, "length", {
+    get: function() { throw test_error; }
+  });
+  return new Blob(list);
+}, {
+  expected: "[object HTMLDivElement][object HTMLParagraphElement]",
+  type: "",
+  desc: "A platform object that supports indexed properties should be treated as a sequence for the blobParts argument (overwritten 'length'.)"
+});
+
 test(function() {
   assert_throws(test_error, function() {
     var obj = {
@@ -287,6 +302,31 @@ test_blob(function() {
   expected: "",
   type: "",
   desc: "Passing an element as the blobParts array should work."
+});
+
+test_blob(function() {
+  return new Blob(window);
+}, {
+  expected: "[object Window]",
+  type: "",
+  desc: "Passing an platform object that supports indexed properties as the blobParts array should work (window)."
+});
+test_blob(function() {
+  window[0].toString = function() { return "foo"; };
+  return new Blob(window);
+}, {
+  expected: "foo",
+  type: "",
+  desc: "Passing an platform object that supports indexed properties as the blobParts array should work (window with custom toString)."
+});
+test_blob(function() {
+  var select = document.createElement("select");
+  select.appendChild(document.createElement("option"));
+  return new Blob(select);
+}, {
+  expected: "[object HTMLOptionElement]",
+  type: "",
+  desc: "Passing an platform object that supports indexed properties as the blobParts array should work (select)."
 });
 
 // options argument

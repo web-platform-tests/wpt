@@ -13,24 +13,6 @@
         assert_false('toNativeLineEndings' in window);
     }, document.title+', non-support for obsolete "toNativeLineEndings" thing');
 
-    test(function() {
-        var b_window = new Blob(window);
-        assert_equals(b_window.size, '[object Window]'.length, 'window');
-        window[0].toString = function() { return 'foo'; };
-        var b_window_2 = new Blob(window);
-        assert_equals(b_window_2.size, 3, 'window');
-        var select = document.createElement('select');
-        select.appendChild(document.createElement('option'));
-        var b_select = new Blob(select);
-        assert_equals(b_select.size, '[object HTMLOptionElement]'.length, 'select');
-    }, document.title+', platform object that supports indexed properties');
-
-    test(function() {
-        var list = document.body.children;
-        Object.defineProperty(list, "length", {get: function() { throw {name:7}; }});
-        assert_throws({name:7}, function(){ new Blob(list); });
-    }, document.title+', platform object that supports indexed properties, overwriting "length"');
-
     var t_ports = async_test(document.title+', MessagePort[] (platform array object)');
     t_ports.step(function() {
         var channel = new MessageChannel();

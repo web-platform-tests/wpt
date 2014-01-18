@@ -15,6 +15,9 @@ function test_blob(fn, expectations) {
     fr.onload = t.step_func_done(function(event) {
       assert_equals(this.result, expected);
     }, fr);
+    fr.onerror = t.step_func(function(e) {
+      assert_unreached("got error event on FileReader");
+    });
     fr.readAsText(blob, "UTF-8");
   });
 }

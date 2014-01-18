@@ -10,41 +10,8 @@
   <iframe style=display:none></iframe><!-- used by "platform object that supports indexed properties" test -->
   <script>
     test(function(){
-        var b = new Blob();
-        assert_true(b instanceof Blob, 'b instanceof Blob');
-        assert_equals(String(b), '[object Blob]', 'String(b)');
-        assert_equals(b.size, 0, 'b.size');
-        assert_equals(b.type, '', 'b.type');
-    }, document.title+', no args');
-
-    async_test(function(){
-        var b1 = new Blob(['\r\r\n\n'], {endings:'native'});
-        assert_equals(b1.size, 4);
-        var reader = new FileReader();
-        reader.onload = this.step_func(function(e) {
-            assert_equals(reader.result, '\r\r\n\n');
-            this.done();
-        });
-        reader.onerror = this.step_func(function(e) {
-            assert_unreached('got error event on FileReader');
-        });
-        reader.readAsText(b1);
-    }, document.title+', non-support for obsolete "endings" thing');
-
-    test(function(){
         assert_false('toNativeLineEndings' in window);
     }, document.title+', non-support for obsolete "toNativeLineEndings" thing');
-
-    test(function() {
-        assert_throws(new TypeError(), function() { new Blob("foo"); });
-        assert_throws(new TypeError(), function() { new Blob(document.createElement("div")); });
-        assert_throws(new TypeError(), function() { new Blob([{toString:null, valueOf:null}]); });
-    }, document.title+', wrong first arg');
-
-    test(function() {
-        var b = new Blob({"0": "foo", "length":1});
-        assert_equals(b.size, 3);
-    }, document.title+', object with properties "0" and "length"');
 
     test(function() {
         var b_window = new Blob(window);

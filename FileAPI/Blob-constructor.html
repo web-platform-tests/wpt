@@ -20,6 +20,7 @@ test(function() {
 test(function() {
   var blob = new Blob();
   assert_true(blob instanceof Blob);
+  assert_equals(String(blob), '[object Blob]');
   assert_equals(blob.size, 0);
   assert_equals(blob.type, "");
 }, "no-argument Blob constructor");
@@ -162,16 +163,19 @@ test(function() {
 test(function() {
   assert_throws(test_error, function() {
     new Blob([{ toString: function() { throw test_error; } }]);
-  });
+  }, "Throwing toString");
   assert_throws(test_error, function() {
     new Blob([{ toString: undefined, valueOf: function() { throw test_error; } }]);
-  });
+  }, "Throwing valueOf");
   assert_throws(test_error, function() {
     new Blob([{
       toString: function() { throw test_error; },
       valueOf: function() { assert_unreached("Should not call valueOf if toString is present."); }
     }]);
-  });
+  }, "Throwing toString and valueOf");
+  assert_throws(new TypeError(), function() {
+    new Blob([{toString: null, valueOf: null}]);
+  }, "Null toString and valueOf");
 }, "ToString should be called on elements of the blobParts array and any exceptions should be propagated.");
 
 test_blob(function() {
@@ -275,6 +279,14 @@ test_blob(function() {
   expected: "PASSPASS",
   type: "",
   desc: "Passing a Float64Array as element of the blobParts array should work."
+});
+
+test_blob(function() {
+  return new Blob(document.createElement("div"));
+}, {
+  expected: "",
+  type: "",
+  desc: "Passing an element as the blobParts array should work."
 });
 
 // options argument

@@ -411,30 +411,6 @@ test(function() {
 });
 
 test_blob(function() {
-  return new Blob([], { type: "" });
-}, {
-  expected: "",
-  type: "",
-  desc: "Passing the empty string for type should not throw."
-});
-
-test_blob(function() {
-  return new Blob([], { type: "text/html" });
-}, {
-  expected: "",
-  type: "text/html",
-  desc: "Passing 'text/html' for type should not throw."
-});
-
-test_blob(function() {
-  return new Blob([], { type: "TEXT/HTML" });
-}, {
-  expected: "",
-  type: "text/html",
-  desc: "Passing 'TEXT/HTML' for type should return a 'text/html' for blob.type."
-});
-
-test_blob(function() {
   return new Blob(["\na\r\nb\n\rc\r"], { endings: "transparent" });
 }, {
   expected: "\na\r\nb\n\rc\r",
@@ -451,8 +427,11 @@ test_blob(function() {
 
 var type_tests = [
   // blobParts, type, expected type
+  [[], '', ''],
   [[], 'a', 'a'],
   [[], 'A', 'a'],
+  [[], 'text/html', 'text/html'],
+  [[], 'TEXT/HTML', 'text/html'],
   [[], '\u00E5', ''],
   [[], '\uD801\uDC7E', ''], // U+1047E
   [[], ' image/gif ', ' image/gif '],

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <title>IDBCursor is reused</title>
 <meta rel=help href="http://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#widl-IDBCursor-continue-void-any-key">
 <meta rel=assert title="Otherwise this method runs the steps for asynchronously executing a request. However, the steps are slightly modified such that instead of creating a new IDBRequest, it reuses the request originally created when this cursor was created. The done flag on the request is set to false before the request is returned. The steps are run with the cursor's source as source and the steps for iterating a cursor as operation, using this cursor as cursor and the key parameter as key.">

@@ -1,1 +1,1 @@
-﻿onmessage = function (ev) { postMessage(ev.data); }
+onmessage = function (ev) { postMessage(ev.data); }

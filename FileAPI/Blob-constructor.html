@@ -353,6 +353,46 @@ test_blob(function() {
   desc: "Passing a platform array object as the blobParts array should work (Attr[])."
 });
 
+test_blob(function() {
+  var blob = new Blob(['foo']);
+  return new Blob([blob, blob]);
+}, {
+  expected: "foofoo",
+  type: "",
+  desc: "Array with two blobs"
+});
+
+test_blob_binary(function() {
+  var view = new Uint8Array([0, 255, 0]);
+  return new Blob([view.buffer, view.buffer]);
+}, {
+  expected: [0, 255, 0, 0, 255, 0],
+  type: "",
+  desc: "Array with two buffers"
+});
+
+test_blob_binary(function() {
+  var view = new Uint8Array([0, 255, 0, 4]);
+  var blob = new Blob([view, view]);
+  assert_equals(blob.size, 8);
+  var view1 = new Uint16Array(view.buffer, 2);
+  return new Blob([view1, view.buffer, view1]);
+}, {
+  expected: [0, 4, 0, 255, 0, 4, 0, 4],
+  type: "",
+  desc: "Array with two bufferviews"
+});
+
+test_blob(function() {
+  var view = new Uint8Array([0]);
+  var blob = new Blob(["fo"]);
+  return new Blob([view.buffer, blob, "foo"]);
+}, {
+  expected: "\0fofoo",
+  type: "",
+  desc: "Array with mixed types"
+});
+
 // options argument
 test(function() {
   new Blob([], { endings: "invalidEnumValue" });

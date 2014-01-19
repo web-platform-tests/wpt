@@ -12,39 +12,6 @@
         assert_false('toNativeLineEndings' in window);
     }, document.title+', non-support for obsolete "toNativeLineEndings" thing');
 
-    test(function() {
-        var b1 = new Blob(['foo']);
-        var b2 = new Blob([b1, b1]);
-        assert_equals(b2.size, 6);
-    }, document.title+', Blob in first argument');
-
-    test(function() {
-        var view = new Uint8Array([0, 255, 0]);
-        var b1 = new Blob([view.buffer, view.buffer]);
-        assert_equals(b1.size, 6);
-    }, document.title+', ArrayBuffer in first argument');
-
-    test(function() {
-        var view = new Uint8Array([0, 255, 0, 4]);
-        var b1 = new Blob([view, view]);
-        assert_equals(b1.size, 8);
-        var view1 = new Uint16Array(view.buffer, 2);
-        var b2 = new Blob([view1, view.buffer, view1]);
-        assert_equals(b2.size, 2 + 4 + 2);
-    }, document.title+', ArrayBufferView in first argument');
-
-    test(function() {
-        var view = new Uint8Array([0]);
-        var b1 = new Blob(['fo']);
-        var b2 = new Blob([view.buffer, b1, "foo"]);
-        assert_equals(b2.size, 6);
-    }, document.title+', mixed types in first argument');
-
-    test(function() {
-        var b1 = new Blob([null, undefined]);
-        assert_equals(b1.size, "nullundefined".length);
-    }, document.title+', null/undefined in first argument');
-
     var t_slice = async_test(document.title+', slice');
     t_slice.step(function(){
         var view = new Uint8Array([0, 255, 0]);

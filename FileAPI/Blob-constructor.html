@@ -449,6 +449,32 @@ test_blob(function() {
   desc: "Newlines should not change when endings is 'native'."
 });
 
+var type_tests = [
+  // blobParts, type, expected type
+  [[], 'a', 'a'],
+  [[], 'A', 'a'],
+  [[], '\u00E5', ''],
+  [[], '\uD801\uDC7E', ''], // U+1047E
+  [[], ' image/gif ', ' image/gif '],
+  [[], '\timage/gif\t', ''],
+  [[], 'image/gif;\u007f', ''],
+  [[], '\u0130mage/gif', ''], // uppercase i with dot
+  [[], '\u0131mage/gif', ''], // lowercase dotless i
+  [[], 'image/gif\u0000', ''],
+  // check that type isn't changed based on sniffing
+  [[0x3C, 0x48, 0x54, 0x4D, 0x4C, 0x3E], 'unknown/unknown', 'unknown/unknown'], // "<HTML>"
+  [[0x00, 0xFF], 'text/plain', 'text/plain'],
+  [[0x47, 0x49, 0x46, 0x38, 0x39, 0x61], 'image/png', 'image/png'], // "GIF89a"
+];
+
+type_tests.forEach(function(t) {
+  test(function() {
+    var arr = new Uint8Array([t[0]]).buffer;
+    var b = new Blob([arr], {type:t[1]});
+    assert_equals(b.type, t[2]);
+  }, "Blob with type " + format_value(t[1]));
+});
+
 test(function() {
   var blob1, blob2;
 

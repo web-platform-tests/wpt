@@ -12,25 +12,6 @@
         assert_false('toNativeLineEndings' in window);
     }, document.title+', non-support for obsolete "toNativeLineEndings" thing');
 
-    var t_ports = async_test(document.title+', MessagePort[] (platform array object)');
-    t_ports.step(function() {
-        var channel = new MessageChannel();
-        channel.port2.onmessage = this.step_func(function(e) {
-            var b_ports = new Blob(e.ports);
-            assert_equals(b_ports.size, '[object MessagePort]'.length);
-            this.done();
-        });
-        var channel2 = new MessageChannel();
-        channel.port1.postMessage('', [channel2.port1]);
-    });
-
-    test(function() {
-        var elm = document.createElement('div');
-        elm.setAttribute('foo', 'bar');
-        var b_attrs = new Blob(elm.attributes);
-        assert_equals(b_attrs.size, '[object Attr]'.length);
-    }, document.title+', Attr[] (platform array object)');
-
     var type_tests = [
     // blobParts, type, expected type
     [[], 'a', 'a'],

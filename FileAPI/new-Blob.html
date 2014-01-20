@@ -8,10 +8,6 @@
  <body>
   <div id="log"></div>
   <script>
-    test(function(){
-        assert_false('toNativeLineEndings' in window);
-    }, document.title+', non-support for obsolete "toNativeLineEndings" thing');
-
     var t_slice = async_test(document.title+', slice');
     t_slice.step(function(){
         var view = new Uint8Array([0, 255, 0]);

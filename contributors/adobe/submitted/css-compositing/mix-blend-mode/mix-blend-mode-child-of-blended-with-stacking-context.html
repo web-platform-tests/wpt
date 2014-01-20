@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>CSS Test: blending between an element and a child that creates a stacking context</title>
+        <link rel="author" title="Mirela Budăeș" href="mailto:mbudaes@adobe.com">
+        <link rel="author" title="Mihai Tica" href="mailto:mitica@adobe.com">
+        <link rel="help" href="http://dev.w3.org/fxtf/compositing-1/#mix-blend-mode">
+        <meta name="assert" content="Test checks that an element with mix-blend-mode and its child that creates
+        a stacking context blend together as a group with the underlying content.">
+        <link rel="match" href="reference/mix-blend-mode-child-of-blended-with-stacking-context.html">
+        <style type="text/css">
+            .parent {
+                position: absolute;
+                z-index: 1;
+                background: #FF0;
+                width: 100px;
+                height: 100px;
+            }
+            .blender {
+                width: 100px;
+                height: 100px;
+                background: #F0F;
+                margin-top: 10px;
+                margin-left: 10px;
+                mix-blend-mode: difference;
+            }
+            .child {
+                position: absolute;
+                z-index: 1;
+                background: #F00;
+                width: 100px;
+                height: 100px;
+                margin: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if a lime square is drawn at the intersection of the squares.<br>
+        The first square should be drawn with yellow, the second one with aqua, having fuchsia corners.<br>
+        Third square should be green, with the right-lower part drawn in red.</p>
+        <div class="parent">
+            <div class="blender">
+                <div class="child"></div>
+            </div>
+        </div>
+    </body>
+</html>

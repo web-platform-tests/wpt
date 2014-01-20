@@ -552,6 +552,24 @@
     var data = canvas.toDataURL();
     @assert data === 'data:,';
 
+- name: toDataURL.zerowidth
+  desc: toDataURL on zero-size canvas returns 'data:,'
+  testing:
+    - toDataURL.zerosize
+  canvas: width="0"
+  code: |
+    var data = canvas.toDataURL();
+    @assert data === 'data:,';
+
+- name: toDataURL.zeroheight
+  desc: toDataURL on zero-size canvas returns 'data:,'
+  testing:
+    - toDataURL.zerosize
+  canvas: height="0"
+  code: |
+    var data = canvas.toDataURL();
+    @assert data === 'data:,';
+
 - name: toDataURL.large1
   DISABLED: just testing implementation limits, and tends to crash
   canvas: width="30000" height="1"

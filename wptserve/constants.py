@@ -10,7 +10,16 @@ content_types = utils.invert_dict({"text/html": ["htm", "html"],
                                    "image/jpeg": ["jpg", "jpeg"],
                                    "image/png": ["png"],
                                    "text/event-stream": ["event_stream"],
-                                   "text/cache-manifest": ["manifest"]})
+                                   "text/cache-manifest": ["manifest"],
+                                   "video/mp4": ["mp4", "m4v"],
+                                   "audio/mp4": ["m4a"],
+                                   "audio/mpeg": ["mp3"],
+                                   "video/webm": ["webm"],
+                                   "audio/webm": ["weba"],
+                                   "video/ogg": ["ogg", "ogv"],
+                                   "audio/ogg": ["oga"],
+                                   "audio/x-wav": ["wav"],
+                                   "text/vtt": ["vtt"],})
 
 response_codes = {
     100: ('Continue', 'Request received, please continue'),

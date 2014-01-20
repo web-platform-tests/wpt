@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>CSS Test: blending with an element containing text</title>
+        <link rel="author" title="Mirela Budăeș" href="mailto:mbudaes@adobe.com">
+        <link rel="author" title="Mihai Tica" href="mailto:mitica@adobe.com">
+        <link rel="help" href="http://dev.w3.org/fxtf/compositing-1/#mix-blend-mode">
+        <meta name="assert" content="Test checks that an element with mix-blend-mode blends with a parent having text.">
+        <link rel="match" href="reference/mix-blend-mode-parent-with-opacity-ref.html">
+        <style type="text/css">
+            .parent {
+                position: absolute;
+                z-index: 1;
+                width: 100px;
+                height: 100px;
+            }
+            .blender {
+                background: #FF0;
+                width: 100px;
+                height: 100px;
+                margin-top: -54px;
+                mix-blend-mode: difference;
+            }
+            .txt {
+                color: #F00;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if a yellow square with green text is drawn.</p>
+        <div class="parent">
+            <div class="txt">Red text that becomes green after blending </div>
+            <div class="blender"></div>
+        </div>
+    </body>
+</html>

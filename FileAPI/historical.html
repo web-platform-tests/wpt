@@ -1,23 +1,26 @@
 <!doctype html>
 <html>
  <head>
-  <title>Blob slice</title>
+  <meta charset="utf-8">
+  <title>Historical features</title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
  </head>
  <body>
   <div id="log"></div>
   <script>
-    test(function(){
+    test(function() {
+        assert_false('toNativeLineEndings' in window);
+    }, '"toNativeLineEndings" should not be supported');
+
+    test(function() {
         var b = new Blob();
         var prefixes = ['op', 'moz', 'webkit', 'ms'];
         for (var i = 0; i < prefixes.length; ++i) {
             assert_false(prefixes[i]+'Slice' in b, "'"+prefixes[i]+"Slice' in b");
             assert_false(prefixes[i]+'Slice' in Blob.prototype, "'"+prefixes[i]+"Slice in Blob.prototype");
         }
-        assert_true('slice' in b, "'slice' in b");
-        assert_true('slice' in Blob.prototype, "'slice' in Blob.prototype");
-    });
+    }, 'Blob should not support slice prefixed');
   </script>
  </body>
 </html>

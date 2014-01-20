@@ -9,4 +9,4 @@ def main(request, response):
 %s:
 %s stash.py?q=\u00E5&id=%s&action=put
 """ % (mode, fallback_url, id)
-    return ([("Content-Type", "text/cache-manifest; charset=%s" % (request.GET['encoding']))], manifest.encode('utf-8')) # charset should be ignored for cache manifests
+    return [("Content-Type", "text/cache-manifest; charset=%s" % request.GET['encoding'])], manifest.encode('utf-8') # charset should be ignored for cache manifests

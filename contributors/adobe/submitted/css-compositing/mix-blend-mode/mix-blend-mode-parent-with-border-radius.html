@@ -1,43 +1,34 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>CSS Test: blending between an element and the parent with border radius</title>
-		<link rel="author" title="Mirela Budăeș" href="mailto:mbudaes@adobe.com">
-		<link rel="help" href="http://dev.w3.org/fxtf/compositing-1/#mix-blend-mode">
-		<meta name="flags" content="">
-		<meta name="assert" content="Test checks that an element with mix-blend-mode correctly blends with the parent with border radius.">
-		<link rel="match" href="reference/mix-blend-mode-parent-with-border-radius-ref.html">
-		<style>
-			.bodyPlaceholder {
-				margin: 30px;
-				width: 130px;
-				height: 130px;
-				background: aqua;
-			}
-			.parent {
-				position: absolute;
-				z-index: 1;
-				width: 100px;
-				height: 100px;
-				background: lime;
-				border-radius: 10em/10em;
-
-			}
-			.blended {
-				background: red;
-				width: 100px;
-				height: 100px;
-				mix-blend-mode: difference;
-			}
-		</style>
-	</head>
-	<body>
-		<p>Test passes if there is no complete red square on the screen. <br>
-		You should see an yellow circle overlapping a red square on top of an aqua square. </p>
-		<div class="bodyPlaceholder">
-			<div class="parent">
-				<div class="blended"></div>
-			</div>
-		</div>
-	</body>
+    <head>
+        <title>CSS Test: blending with parent having border radius</title>
+        <link rel="author" title="Mirela Budăeș" href="mailto:mbudaes@adobe.com">
+        <link rel="author" title="Mihai Tica" href="mailto:mitica@adobe.com">
+        <link rel="help" href="http://dev.w3.org/fxtf/compositing-1/#mix-blend-mode">
+        <meta name="assert" content="Test checks that an element with mix-blend-mode blends
+        with the parent element having border-radius.">
+        <link rel="match" href="reference/mix-blend-mode-parent-with-border-radius-ref.html">
+        <style type="text/css">
+            .parent {
+                position: absolute;
+                z-index: 1;
+                width: 100px;
+                height: 100px;
+                background: #F00;
+                border-radius: 50px;
+            }
+            .blended {
+                background: #FF0;
+                width: 100px;
+                height: 100px;
+                mix-blend-mode: difference;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if a green circle is drawn on top of a yellow square.</p>
+        <div class="parent">
+            <div class="blended"></div>
+        </div>
+    </body>
 </html>

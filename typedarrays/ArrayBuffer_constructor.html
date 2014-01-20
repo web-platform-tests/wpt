@@ -16,9 +16,7 @@ var args = [
   /* strings */
   ["1", 1], ["1e2", 100],
   /* null, undefined, booleans */
-  [undefined, 0], [null, 0], [false, 0], [true, 1],
-  /* objects */
-  [{}, 0], [{ length: 2, 0: 0, 1: 0 }, 0], [[0, 0], 2]
+  [undefined, 0], [null, 0], [false, 0], [true, 1]
 ];
 
 args.forEach(function (arg, i) {

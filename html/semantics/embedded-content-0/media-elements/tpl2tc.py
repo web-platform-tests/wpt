@@ -57,7 +57,7 @@ def create_test(template_dir, template_filename):
     template_file = open(os.path.join(template_dir, template_filename), 'r')
     file_contents = template_file.read()
     template_file.close()
-    pattern = re.compile('^\$include (.+)$', re.M)
+    pattern = re.compile('^\$include (.+)\n', re.M)
     try:
         file_contents = re.sub(pattern, get_included_template(template_dir), file_contents)
     except IOError as e:
@@ -105,6 +105,8 @@ def create_test(template_dir, template_filename):
 def get_testsuite(template_dir, template_filename):
     if os.path.join(template_dir, template_filename) in common.testsuite:
         testsuite = common.testsuite[os.path.join(template_dir, template_filename)]
+    elif template_dir == '.' and template_filename in common.testsuite:
+        testsuite = common.testsuite[template_filename]
     elif template_dir in common.testsuite:
         testsuite = common.testsuite[template_dir]
     else:

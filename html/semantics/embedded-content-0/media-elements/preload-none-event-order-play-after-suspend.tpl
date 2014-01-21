@@ -1,1 +1,1 @@
-$include ../metadata/preload-metadata-event-order-play-after-suspend.tpl
+$include preload-metadata-event-order-play-after-suspend.tpl

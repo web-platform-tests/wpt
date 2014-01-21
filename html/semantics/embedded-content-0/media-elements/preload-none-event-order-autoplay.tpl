@@ -2,7 +2,7 @@
 <title>HTMLMediaElement.preload:$start_state event order when autoplay content attribute is set - $media_type</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="../resources/common.js"></script>
+<script src="/common/media-common.js"></script>
 <p id="log">FAIL (script didn't run)</p>
 <audio preload="$start_state" autoplay controls></audio>
 <video preload="$start_state" autoplay controls></video>

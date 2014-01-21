@@ -8,7 +8,7 @@ var s;
 var t = async_test(function(t) {
   var v = document.createElement('video');
   s = document.createElement('source');
-  s.src = '/delay/?type=html&delay=50&content-type=video%2Fogg';
+  s.src = 'resources/not-a-video.ogv?pipe=trickle(d0.1)';
   s.onerror = t.step_func(function() { window.onload = null; t.done(); });
   v.appendChild(s); // invokes resource selection
   onload = t.step_func(function() { assert_unreached(); });

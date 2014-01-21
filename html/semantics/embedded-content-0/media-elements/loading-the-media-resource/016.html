@@ -16,11 +16,10 @@ var t = async_test(function(t) {
     assert_equals(v.currentSrc.substr(v.currentSrc.lastIndexOf('#')), '#a');
     t.done();
   }), false);
-  document.body.appendChild(v); // invokes resource selection
-  v.appendChild(createSource('#a'));
+  v.appendChild(createSource('#a')); // invokes resource selection
 });
 </script>
-<!-- now resource selection algorithm will continue its sync section -->
+<!-- now resource selection algorithm will continue its sync section (the </script> tag below provides a stable state) -->
 <!-- #a is candidate -->
 <!-- pointer is between #a and the end of the list -->
 <script>

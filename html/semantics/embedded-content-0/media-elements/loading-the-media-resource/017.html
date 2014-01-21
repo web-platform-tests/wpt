@@ -16,8 +16,8 @@ var t = async_test(function(t) {
 });
 </script>
 <!-- now resource selection algorithm will continue its sync section (the </script> tag below provides a stable state) -->
-<!-- #a is candidate -->
-<!-- pointer is between #a and the end of the list -->
+<!-- the <source> is candidate -->
+<!-- pointer is between the <source> and the end of the list -->
 <script>
 t.step(function() {
   v.removeChild(v.firstChild); // just tests that we don't crash

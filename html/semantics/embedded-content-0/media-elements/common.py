@@ -1,9 +1,10 @@
 #media sources
 dataurl_src = "'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAAAA'"
 
-mp4_src = "/media/preload.mp4?pipe=trickle(100000:d1:r2)&nocache=' + Math.random()";
-ogg_src = "/media/preload.ogv?pipe=trickle(100000:d1:r2)&nocache=' + Math.random()";
-webm_src = "/media/preload.webm?pipe=trickle(100000:d1:r2)&nocache=' + Math.random()";
+throttler = "'/media/preload.%s?pipe=trickle(100000:d1:r2)&nocache=' + Math.random()";
+mp4_src = throttler % 'mp4'
+ogg_src = throttler % 'ogv'
+webm_src = throttler % 'webm'
 
 #preload="auto" event orders
 auto_event_order = '/^loadstart (progress )+loadedmetadata (progress )*loadeddata (progress )*canplay (progress )*canplaythrough $/g'

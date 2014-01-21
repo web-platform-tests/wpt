@@ -6,7 +6,8 @@
 <script>
 async_test(function(t) {
   var a = new Audio();
-  a.onloadstart = t.step_func(function() { assert_unreached(); }); // actually the resource selection algorithm aborts before loadstart is fired, and it's impossible to detect the change in networkState
+  assert_equals(a.networkState, a.NETWORK_EMPTY);
+  a.onloadstart = t.step_func(function() { assert_unreached(); });
   window.onload = t.step_func(function() { a.onloadstart = null; t.done(); });
 });
 </script>

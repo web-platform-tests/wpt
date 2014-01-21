@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Blob slice</title>
+<link rel=help href="http://dev.w3.org/2006/webapi/FileAPI/#slice-method-algo">
+<link rel=author title="Saurabh Anand" href="mailto:saurabhanandiit@gmail.com">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="support/Blob.js"></script>
+<div id="log"></div>
+<script>
+test_blob(function() {
+  var blobTemp = new Blob(["PASS"]);
+  return blobTemp.slice();
+}, {
+  expected: "PASS",
+  type: "",
+  desc: "no-argument Blob slice"
+});
+
+test(function() {
+  var testData = [
+    [
+      ["PASSSTRING"],
+      [{start:  -6, contents: "STRING"},
+       {start: -12, contents: "PASSSTRING"},
+       {start:   4, contents: "STRING"},
+       {start:  12, contents: ""},
+       {start: 0, end:  -6, contents: "PASS"},
+       {start: 0, end: -12, contents: ""},
+       {start: 0, end:   4, contents: "PASS"},
+       {start: 0, end:  12, contents: "PASSSTRING"},
+       {start: 7, end:   4, contents: ""}]
+    ]
+  ];
+
+  testData.forEach(function(data, i) {
+    var blobs = data[0];
+    var tests = data[1];
+    tests.forEach(function(expectations, j) {
+      test(function() {
+        var blob = new Blob(blobs);
+        assert_true(blob instanceof Blob);
+        assert_false(blob instanceof File);
+
+        test_blob(function() {
+          return expectations.end === undefined
+                 ? blob.slice(expectations.start)
+                 : blob.slice(expectations.start, expectations.end);
+        }, {
+          expected: expectations.contents,
+          type: "",
+          desc: "Slicing test: slice (" + i + "," + j + ")."
+        });
+      }, "Slicing test (" + i + "," + j + ").");
+    });
+  });
+}, "Slices");
+
+var invalidTypes = [
+  "\xFF",
+  "te(xt/plain",
+  "te)xt/plain",
+  "te<xt/plain",
+  "te>xt/plain",
+  "te@xt/plain",
+  "te,xt/plain",
+  "te;xt/plain",
+  "te:xt/plain",
+  "te\\xt/plain",
+  "te\"xt/plain",
+  "te/xt/plain",
+  "te[xt/plain",
+  "te]xt/plain",
+  "te?xt/plain",
+  "te=xt/plain",
+  "te{xt/plain",
+  "te}xt/plain",
+  "te\x20xt/plain",
+  "te\x09xt/plain",
+  "te\x00xt/plain",
+  "te\x1Fxt/plain",
+  "te\x7Fxt/plain"
+];
+invalidTypes.forEach(function(type) {
+  test_blob(function() {
+    var blob = new Blob(["PASS"]);
+    return blob.slice(0, 4, type);
+  }, {
+    expected: "PASS",
+    type: "",
+    desc: "Invalid contentType (" + format_value(type) + ")"
+  });
+});
+
+var validTypes = [
+  "TEXT/PLAIN",
+  "text/plain;charset = UTF-8",
+  "text/plain;charset=UTF-8"
+];
+validTypes.forEach(function(type) {
+  test_blob(function() {
+    var blob = new Blob(["PASS"]);
+    return blob.slice(0, 4, type);
+  }, {
+    expected: "PASS",
+    type: type.toLowerCase(),
+    desc: "Valid contentType (" + format_value(type) + ")"
+  });
+});
+</script>

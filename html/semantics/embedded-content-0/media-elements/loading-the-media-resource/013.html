@@ -1,14 +1,12 @@
 <!doctype html>
-<title>invoking resource selection by inserting into a document</title>
+<title>NOT invoking resource selection by inserting into a document</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id=log></div>
 <script>
-async_test(function(t) {
+test(function(t) {
   var v = document.createElement('video');
-  v.onloadstart = t.step_func(function() { window.onload = null; t.done(); });
-  v.setAttribute('src', '');
   document.body.appendChild(v);
-  window.onload = t.step_func(function() { assert_unreached(); });
+  assert_equals(v.networkState, v.NETWORK_EMPTY);
 });
 </script>

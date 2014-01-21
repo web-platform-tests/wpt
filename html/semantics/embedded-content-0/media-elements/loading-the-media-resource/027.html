@@ -10,8 +10,7 @@ var t = async_test(function(t) {
   s = document.createElement('source');
   s.src = '/delay/?type=html&delay=50&content-type=video%2Fogg';
   s.onerror = t.step_func(function() { window.onload = null; t.done(); });
-  v.appendChild(s);
-  document.body.appendChild(v); // invokes resource selection
+  v.appendChild(s); // invokes resource selection
   onload = t.step_func(function() { assert_unreached(); });
 });
 </script>

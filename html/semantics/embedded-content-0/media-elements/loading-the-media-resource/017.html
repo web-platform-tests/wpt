@@ -12,11 +12,10 @@ function createSource(src) {
 }
 var t = async_test(function(t) {
   v = document.createElement('video');
-  document.body.appendChild(v); // invokes resource selection
-  v.appendChild(createSource('/delay/?type=html&delay=50&content-type=video%2Fogg'));
+  v.appendChild(createSource('/delay/?type=html&delay=50&content-type=video%2Fogg')); // invokes resource selection
 });
 </script>
-<!-- now resource selection algorithm will continue its sync section -->
+<!-- now resource selection algorithm will continue its sync section (the </script> tag below provides a stable state) -->
 <!-- #a is candidate -->
 <!-- pointer is between #a and the end of the list -->
 <script>

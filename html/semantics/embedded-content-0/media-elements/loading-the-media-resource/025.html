@@ -7,14 +7,14 @@
 var v;
 var t = async_test(function(t) {
   v = document.createElement('video');
-  assert_equals(v.networkState, 0, 'networkState after creating v');
+  assert_equals(v.networkState, v.NETWORK_EMPTY, 'networkState after creating v');
   v.pause();
-  assert_equals(v.networkState, 3, 'networkState after v.pause()');
+  assert_equals(v.networkState, v.NETWORK_NO_SOURCE, 'networkState after v.pause()');
 });
 </script>
 <script>
 t.step(function() {
-  assert_equals(v.networkState, 0, 'networkState in separate script');
+  assert_equals(v.networkState, v.NETWORK_EMPTY, 'networkState in separate script');
   t.done();
 });
 </script>

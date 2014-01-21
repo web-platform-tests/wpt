@@ -5,9 +5,7 @@
 <div id=log></div>
 <script>
 async_test(function(t) {
-  var fragment = document.createDocumentFragment();
   var v = document.createElement('video');
-  fragment.appendChild(v);
   v.onloadstart = t.step_func(function() { window.onload = null; t.done(); });
   v.appendChild(document.createElement('source'));
   window.onload = t.step_func(function() { assert_unreached(); });

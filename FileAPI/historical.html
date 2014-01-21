@@ -21,6 +21,12 @@
             assert_false(prefixes[i]+'Slice' in Blob.prototype, "'"+prefixes[i]+"Slice in Blob.prototype");
         }
     }, 'Blob should not support slice prefixed');
+    test(function() {
+        var prefixes = ['', 'O', 'Moz', 'WebKit', 'MS'];
+        for (var i = 0; i < prefixes.length; ++i) {
+            assert_false(prefixes[i]+'BlobBuilder' in window, prefixes[i]+'BlobBuilder');
+        }
+    }, 'BlobBuilder should not be supported.');
   </script>
  </body>
 </html>

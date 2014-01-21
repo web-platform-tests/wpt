@@ -18,6 +18,30 @@ test_blob(function() {
 });
 
 test(function() {
+  var blob1, blob2;
+
+  test_blob(function() {
+    return blob1 = new Blob(["squiggle"]);
+  }, {
+    expected: "squiggle",
+    type: "",
+    desc: "blob1."
+  });
+
+  test_blob(function() {
+    return blob2 = new Blob(["steak"], {type: "content/type"});
+  }, {
+    expected: "steak",
+    type: "content/type",
+    desc: "blob2."
+  });
+
+  var arrayBuffer = new ArrayBuffer(16);
+  var int8View = new Int8Array(arrayBuffer);
+  for (var i = 0; i < 16; i++) {
+    int8View[i] = i + 65;
+  }
+
   var testData = [
     [
       ["PASSSTRING"],
@@ -30,6 +54,75 @@ test(function() {
        {start: 0, end:   4, contents: "PASS"},
        {start: 0, end:  12, contents: "PASSSTRING"},
        {start: 7, end:   4, contents: ""}]
+    ],
+
+    // Test 3 strings
+    [
+      ["foo", "bar", "baz"],
+      [{start:  0, end:  9, contents: "foobarbaz"},
+       {start:  0, end:  3, contents: "foo"},
+       {start:  3, end:  9, contents: "barbaz"},
+       {start:  6, end:  9, contents: "baz"},
+       {start:  6, end: 12, contents: "baz"},
+       {start:  0, end:  9, contents: "foobarbaz"},
+       {start:  0, end: 11, contents: "foobarbaz"},
+       {start: 10, end: 15, contents: ""}]
+    ],
+
+    // Test string, Blob, string
+    [
+      ["foo", blob1, "baz"],
+      [{start:  0, end:  3, contents: "foo"},
+       {start:  3, end: 11, contents: "squiggle"},
+       {start:  2, end:  4, contents: "os"},
+       {start: 10, end: 12, contents: "eb"}]
+    ],
+
+    // Test blob, string, blob
+    [
+      [blob1, "foo", blob1],
+      [{start:  0, end:  8, contents: "squiggle"},
+       {start:  7, end:  9, contents: "ef"},
+       {start: 10, end: 12, contents: "os"},
+       {start:  1, end:  4, contents: "qui"},
+       {start: 12, end: 15, contents: "qui"},
+       {start: 40, end: 60, contents: ""}]
+    ],
+
+    // Test blobs all the way down
+    [
+      [blob2, blob1, blob2],
+      [{start: 0,  end:  5, contents: "steak"},
+       {start: 5,  end: 13, contents: "squiggle"},
+       {start: 13, end: 18, contents: "steak"},
+       {start:  1, end:  3, contents: "te"},
+       {start:  6, end: 10, contents: "quig"}]
+    ],
+
+    // Test an ArrayBufferView
+    [
+      [int8View, blob1, "foo"],
+      [{start:  0, end:  8, contents: "ABCDEFGH"},
+       {start:  8, end: 18, contents: "IJKLMNOPsq"},
+       {start: 17, end: 20, contents: "qui"},
+       {start:  4, end: 12, contents: "EFGHIJKL"}]
+    ],
+
+    // Test a partial ArrayBufferView
+    [
+      [new Uint8Array(arrayBuffer, 3, 5), blob1, "foo"],
+      [{start:  0, end:  8, contents: "DEFGHsqu"},
+       {start:  8, end: 18, contents: "igglefoo"},
+       {start:  4, end: 12, contents: "Hsquiggl"}]
+    ],
+
+    // Test type coercion of a number
+    [
+      [3, int8View, "foo"],
+      [{start:  0, end:  8, contents: "3ABCDEFG"},
+       {start:  8, end: 18, contents: "HIJKLMNOPf"},
+       {start: 17, end: 21, contents: "foo"},
+       {start:  4, end: 12, contents: "DEFGHIJK"}]
     ]
   ];
 

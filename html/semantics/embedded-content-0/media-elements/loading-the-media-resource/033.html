@@ -26,10 +26,9 @@ var x4 = 0;
 async_test(function(t) {
   var video = document.querySelector('video');
   // remove the xn elements
-  video.removeChild(video.childNodes[0]);
-  video.removeChild(video.childNodes[1]);
-  video.removeChild(video.childNodes[2]);
-  video.removeChild(video.childNodes[3]);
+  [].forEach.call(document.querySelectorAll('[onerror^="x"]'), function(elm) {
+    video.removeChild(elm);
+  });
   window.onload = t.step_func(function() {
     assert_equals(a, 1, 'error events on a');
     assert_equals(b, 1, 'error events on b');

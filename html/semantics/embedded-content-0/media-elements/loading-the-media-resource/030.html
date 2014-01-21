@@ -18,12 +18,12 @@ var c = 0;
 async_test(function(t) {
   var video = document.querySelector('video');
   // add text nodes
-  var x = document.createTextNode('x');
-  video.insertBefore(x, video.childNodes[0]);
-  video.insertBefore(x.cloneNode(false), video.childNodes[2]);
-  video.insertBefore(x.cloneNode(false), video.childNodes[4]);
-  video.appendChild(x.cloneNode(false));
-  window.onload = t.step_func(function() { 
+  var text = document.createTextNode('x');
+  video.insertBefore(text, video.querySelector('[onerror="a++"]'));
+  video.insertBefore(text.cloneNode(false), video.querySelector('[onerror="b++"]'));
+  video.insertBefore(text.cloneNode(false), video.querySelector('[onerror="c++"]'));
+  video.appendChild(text.cloneNode(false));
+  window.onload = t.step_func(function() {
     assert_equals(a, 1, 'error events on a');
     assert_equals(b, 1, 'error events on b');
     assert_equals(c, 1, 'error events on c');

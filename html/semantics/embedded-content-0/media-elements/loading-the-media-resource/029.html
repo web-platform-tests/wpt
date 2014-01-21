@@ -18,11 +18,12 @@ var c = 0;
 async_test(function(t) {
   var video = document.querySelector('video');
   // remove the text nodes
-  video.removeChild(video.childNodes[0]);
-  video.removeChild(video.childNodes[1]);
-  video.removeChild(video.childNodes[2]);
-  video.removeChild(video.childNodes[3]);
-  window.onload = t.step_func(function() { 
+  [].forEach.call(video.childNodes, function(node) {
+    if (node.nodeType == node.TEXT_NODE) {
+      video.removeChild(node);
+    }
+  });
+  window.onload = t.step_func(function() {
     assert_equals(a, 1, 'error events on a');
     assert_equals(b, 1, 'error events on b');
     assert_equals(c, 1, 'error events on c');

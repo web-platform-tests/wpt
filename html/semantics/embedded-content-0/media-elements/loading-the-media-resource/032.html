@@ -26,9 +26,9 @@ async_test(function(t) {
   var source2 = document.createElement('source'); source2.onerror = function() { x2++; };
   var source3 = document.createElement('source'); source3.onerror = function() { x3++; };
   var source4 = document.createElement('source'); source4.onerror = function() { x4++; };
-  video.insertBefore(source1, video.childNodes[0]);
-  video.insertBefore(source2, video.childNodes[2]);
-  video.insertBefore(source3, video.childNodes[4]);
+  video.insertBefore(source1, video.querySelector('[onerror="a++"]'));
+  video.insertBefore(source2, video.querySelector('[onerror="b++"]'));
+  video.insertBefore(source3, video.querySelector('[onerror="c++"]'));
   video.appendChild(source4);
   window.onload = t.step_func(function() {
     assert_equals(a, 1, 'error events on a');

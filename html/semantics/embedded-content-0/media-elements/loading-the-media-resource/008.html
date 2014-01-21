@@ -7,7 +7,6 @@
 <script>
 async_test(function(t) {
   var v = document.querySelector('video');
-  var passed = false;
   v.onloadstart = t.step_func(function() { window.onload = null; t.done(); });
   v.setAttribute('src', '');
   window.onload = t.step_func(function() { assert_unreached(); });

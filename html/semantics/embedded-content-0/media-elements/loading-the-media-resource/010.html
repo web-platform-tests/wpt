@@ -8,7 +8,6 @@ async_test(function(t) {
   var fragment = document.createDocumentFragment();
   var v = document.createElement('video');
   fragment.appendChild(v);
-  var passed = false;
   v.onloadstart = t.step_func(function() { window.onload = null; t.done(); });
   v.setAttribute('src','');
   window.onload = t.step_func(function() { assert_unreached(); });

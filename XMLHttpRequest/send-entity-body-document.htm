@@ -24,9 +24,9 @@
           client.send(input)
           var exp = expectations[number]
           if(exp.isHTML){
-            assert_regexp_match(client.getResponseHeader('X-Request-Content-Type'), /text\/html;\s?charset=UTF-8/i, 'HTML documents should be serialized and sent as text/html (TEST#'+number+')')
+            assert_equals(client.getResponseHeader('X-Request-Content-Type'), 'text/html;charset=UTF-8', 'HTML documents should be serialized and sent as text/html (TEST#'+number+')')
           }else{
-            assert_regexp_match(client.getResponseHeader('X-Request-Content-Type'), /application\/xml;\s?charset=UTF-8/i, 'XML documents should be serialized and sent as application/xml (TEST #'+number+')')
+            assert_equals(client.getResponseHeader('X-Request-Content-Type'), 'application/xml;charset=UTF-8', 'XML documents should be serialized and sent as application/xml (TEST #'+number+')')
           }
           // The indexOf() assertation will overlook some stuff, i.e. XML prologues that shouldn't be there (looking at you, Presto).
           // However, arguably these things have little to do with the XHR functionality we're testing.

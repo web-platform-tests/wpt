@@ -71,8 +71,8 @@ test(function(){
 test(function(){
     var t = video.addTextTrack('subtitles', undefined, undefined);
     assert_equals(t.kind, 'subtitles');
-    assert_equals(t.label, 'undefined');
-    assert_equals(t.language, 'undefined');
+    assert_equals(t.label, '');
+    assert_equals(t.language, '');
     assert_equals(t.mode, 'hidden');
     assert_true(t.cues instanceof TextTrackCueList);
 }, document.title + ' undefined second and third arg');

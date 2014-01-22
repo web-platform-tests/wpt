@@ -4,7 +4,11 @@
         <title>CSS Reftest Reference</title>
         <link rel="author" title="Mihai Tica" href="mailto:mitica@adobe.com">
         <link rel="reviewer" title="Mihai Balan" href="mailto:mibalan@adobe.com">
+        <link rel="reviewer" title="Horia Olaru" href="mailto:olaru@adobe.com">
         <style type="text/css">
+            body {
+                background: lightgray;
+            }
             .container {
                 position: absolute;
                 z-index: 1;
@@ -28,7 +32,8 @@
         </style>
     </head>
     <body>
-        <p>Test passes if you can see two green squares and a black square as their intersection.</p>
+        <p>Test passes if you can see two green squares and a black square as their intersection,<br>
+            drawn over a light gray background.</p>
         <div class="container">
             <div class="blender"></div>
             <div class="intersection"></div>

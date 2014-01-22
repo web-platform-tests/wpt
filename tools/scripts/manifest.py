@@ -124,6 +124,7 @@ class Manifest(object):
                            "manual", "helper"]
         self._data = dict((item_type, defaultdict(set)) for item_type in self.item_types)
         self.rev = git_rev
+        self.local_changes = LocalChanges()
 
     def contains_path(self, path):
         return any(path in item for item in self._data.itervalues())

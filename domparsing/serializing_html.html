@@ -13,8 +13,8 @@
   <div id="text" style="display:none">This is a &lt;test> &amp; special text</div>
   <div id="cdata-bogus-comment" style="display:none"><![CDATA[This is a <test & special text]]></div>
   <div id="pi-bogus-comment" style="display:none"><?thingy value with <test & special text?></div>
-  <div id="attr-escaping" style="display:none"><elem></elem></div>
-  <div id="attr-escaping2" style="display:none"><elem></elem></div>
+  <div id="attr-escaping" style="display:none"><elem foo='ba"r'></elem></div>
+  <div id="attr-escaping2" style="display:none"><elem foo='ba&r'></elem></div>
   <script>
   test(function(){
     assert_equals(document.getElementById("text").innerHTML,
@@ -30,13 +30,11 @@
   }, "Parsed PI as bogus comment in HTML");
   test(function(){
     var t = document.getElementById("attr-escaping").firstChild;
-    t.setAttribute('foo', 'ba"r');
     assert_equals(document.getElementById("attr-escaping").innerHTML,
                   "<elem foo=\"ba&quot;r\"></elem>");
   }, "Attribute value with quote character inserted is escaped per spec");
   test(function(){
     var t = document.getElementById("attr-escaping2").firstChild;
-    t.setAttribute('foo', 'ba&r');
     assert_equals(document.getElementById("attr-escaping2").innerHTML,
                   "<elem foo=\"ba&amp;r\"></elem>");
   }, "Attribute value with & character inserted is escaped per spec");

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html><head>
         <title>getElementsByClassName</title>
-        <meta content="delete element from collection" name="description">
+        <meta content="multiple defined classes" name="description">
     <link href="http://www.w3.org/TR/domcore/#dom-document-getelementsbyclassname" rel="help">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
@@ -39,16 +39,14 @@
             </tfoot>
         </table>
         <div class="xt te">xt te</div>
-        
+
         <script type="text/javascript">
             test(function()
             {
-                var collection = document.getElementsByClassName("text1");
-                assert_equals(collection.length, 1)
-                document.getElementsByTagName("table")[0].deleteRow(1);
-                    
-                assert_equals(collection.length, 0);
-            }, "delete element from collection");
+                var collection = document.getElementsByClassName("te xt");
+                assert_equals(collection.length, 2);
+                assert_equals(collection[0].parentNode.nodeName, "TR");
+                assert_equals(collection[1].parentNode.nodeName, "BODY");
+            }, "multiple defined classes");
         </script>
-    
 </body></html>

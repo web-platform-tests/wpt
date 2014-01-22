@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html><head>
-        <title>getElementsByClassName</title>
-        <meta content="multiple defined classes" name="description">
+    <title>getElementsByClassName</title>
+    <meta content="get class from children of element" name="description">
     <link href="http://www.w3.org/TR/domcore/#dom-document-getelementsbyclassname" rel="help">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
 </head>
     <body>
-        <div id="log"></div>
+        <div id='log'></div>
         <div>
             <div>
                 <a class="text link" href="#foo">test link #foo</a>
@@ -43,11 +43,9 @@
         <script type="text/javascript">
             test(function()
             {
-                var collection = document.getElementsByClassName("te xt");
-                assert_equals(collection.length, 2);
+                var collection = document.getElementsByTagName("table")[0].getElementsByClassName("te xt");
+                assert_equals(collection.length, 1);
                 assert_equals(collection[0].parentNode.nodeName, "TR");
-                assert_equals(collection[1].parentNode.nodeName, "BODY");
-            }, "multiple defined classes");
+            }, "get class from children of element");
         </script>
-    
 </body></html>

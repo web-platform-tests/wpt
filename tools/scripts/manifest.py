@@ -125,9 +125,6 @@ class Manifest(object):
         self._data = dict((item_type, defaultdict(set)) for item_type in self.item_types)
         self.rev = git_rev
 
-        self._local_changes = None
-        self._committed_changes = None
-
     def contains_path(self, path):
         return any(path in item for item in self._data.itervalues())
 
@@ -184,20 +181,8 @@ class Manifest(object):
             for v in values:
                 manifest_item = item_classes[k].from_json(v)
                 self.add(manifest_item)
-        self.local_changes.update(LocalChanges.from_json(obj["local_changes"]))
+        self.local_changes = LocalChanges.from_json(obj["local_changes"])
         return self
-
-    @property
-    def local_changes(self):
-        if self._local_changes is None:
-            self._local_changes = get_local_changes()
-        return self._local_changes
-
-    @property
-    def committed_changes(self):
-        if self._committed_changes is None:
-            self._committed_changes = get_committed_changes(self.rev)
-        return self._committed_changes
 
 
 class LocalChanges(dict):
@@ -360,6 +345,8 @@ def get_committed_changes(base_rev):
         data  = git("diff", "--name-status", base_rev)
         return [line.split("\t", 1) for line in data.split("\n") if line]
 
+def has_local_changes():
+    return git("status", "--porcelain", "--ignore-submodules=untracked").strip() != ""
 
 def get_local_changes():
     #This doesn't account for whole directories that have been added
@@ -393,10 +380,9 @@ def sync_urls(manifest, updated_files):
             manifest.extend(get_manifest_items(path))
 
 
-def sync_local_changes(manifest):
+def sync_local_changes(manifest, local_changes):
     #If we just refuse to write the manifest in the face of local changes
     #this can be simplified somewhat
-    local_changes = manifest.local_changes
     if local_changes:
         logger.info("Working directory not clean, adding local changes")
     prev_local_changes = manifest.local_changes
@@ -455,8 +441,8 @@ def update(manifest):
 
     import html5lib
 
-    sync_urls(manifest, manifest.committed_changes)
-    sync_local_changes(manifest)
+    sync_urls(manifest, get_committed_changes(manifest.rev))
+    sync_local_changes(manifest, get_local_changes())
 
     manifest.rev = get_current_rev()
 
@@ -473,7 +459,7 @@ def update_manifest(repo_path, opts):
     else:
         manifest = Manifest(None)
 
-    if manifest.local_changes and not opts.experimental_include_local_changes:
+    if has_local_changes() and not opts.experimental_include_local_changes:
         logger.info("Not writing manifest because working directory is not clean.")
     else:
         logger.info("Updating manifest")
@@ -481,7 +467,7 @@ def update_manifest(repo_path, opts):
         write(manifest, opts.path)
 
 
-def get_parser(mach=False, groups=None):
+def get_parser():
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--path", default=os.path.join(get_repo_root(), "MANIFEST.json"),

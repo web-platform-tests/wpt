@@ -7,6 +7,6 @@
 test(function(){
     var track = document.createElement('track');
     assert_equals(track.track, track.track, 'same object should be returned');
-    assert_true('addCue' in track.track, 'returned object should have "addCue" property');
+    assert_true(track.track instanceof TextTrack, 'returned object should be a TextTrack');
 });
 </script>

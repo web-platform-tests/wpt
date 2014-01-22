@@ -1,1 +1,1 @@
-$include preload-auto-to-none-event-order.tpl
+$include preload-none-to-auto-event-order.tpl

@@ -59,7 +59,7 @@
     function TestEvent(evt, i)
     {
         ActualResult.push(evt.currentTarget);         
-        ActualListeners.push(i);
+        ActualListeners.push(i);
         if ((1 == evt.eventPhase) && (TABLE == evt.currentTarget) && (0 == i))
         {
             evt.stopPropagation();

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
     <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#infrastructure-for-the-send()-method" data-tested-assertations="following::dt[4] following::dd[4]/p" />
@@ -23,6 +23,15 @@
                 xhr.send("Test Message");
             });
             assert_equals(xhr.readyState, 4)
+
+            xhr.open("GET", "data:text/html;charset=utf-8;base64,PT0NUWVBFIGh0bWw%2BDQo8", false);
+            
+            assert_throws("NetworkError", function()
+            {
+                xhr.send("Test Message");
+            });
+            assert_equals(xhr.readyState, 4)
+
         });
     </script>
 </body>

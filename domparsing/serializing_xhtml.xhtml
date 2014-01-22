@@ -149,10 +149,6 @@
     assert_equals(document.getElementById("pi").innerHTML,
                   "<?thingy value with <test> & special text?>");
   }, "Parsed PI with '<', '>', and '&' is serialized correctly");
-  test(function(){
-    assert_equals(new XMLSerializer().serializeToString(document.doctype),
-                  "<!DOCTYPE blaHH>");
-  }, "Parsed DOCTYPE serialized correctly");
   // InnerHTML
   test(function() {
     var xmldoc = new DOMParser().parseFromString("<!DOCTYPE foo><foo xmlns=\"myfoo\"/>", "application/xml");
@@ -177,23 +173,6 @@
      assert_equals(xmldoc.documentElement.firstChild.nodeType, Node.CDATA_SECTION_NODE);
      assert_equals(htmldoc.documentElement.firstChild.nodeType, Node.COMMENT_NODE);
   }, "innerHTML parses using an XML or HTML depending on whether the node's document is an XML or HTML document");
-  // Basic Test of XMLSerializer
-  test(function() {
-    var doc = document.implementation.createHTMLDocument("test title");
-    //doc.body.appendChild(document.createCDATASection("cdata test"));
-    var serializedStr = new XMLSerializer().serializeToString(doc);
-    var expected = "<!DOCTYPE html>"+
-                    "<html xmlns=\"http://www.w3.org/1999/xhtml\">" +
-                      "<head>" +
-                        "<title>test title</title>" +
-                      "</head>" +
-                      "<body>" +
-                      "</body>" +
-                    "</html>";
-    assert_equals(serializedStr, expected);
-
-  }, "XML Serializer makes an XML serialization of an HTML-based document");
-
   // ]]>
   </script>
  </body>

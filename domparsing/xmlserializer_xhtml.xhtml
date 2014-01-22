@@ -1,0 +1,31 @@
+<!DOCTYPE   blaHH   >
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>DOM Serialization in XHTML</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+ </head>
+ <body>
+  <div id="log"></div>
+  <script><![CDATA[
+  // Basic Test of XMLSerializer
+  test(function() {
+    var doc = document.implementation.createHTMLDocument("test title");
+    //doc.body.appendChild(document.createCDATASection("cdata test"));
+    var serializedStr = new XMLSerializer().serializeToString(doc);
+    var expected = "<!DOCTYPE html>"+
+                    "<html xmlns=\"http://www.w3.org/1999/xhtml\">" +
+                      "<head>" +
+                        "<title>test title</title>" +
+                      "</head>" +
+                      "<body>" +
+                      "</body>" +
+                    "</html>";
+    assert_equals(serializedStr, expected);
+
+  }, "XML Serializer makes an XML serialization of an HTML-based document");
+
+  // ]]>
+  </script>
+ </body>
+</html>

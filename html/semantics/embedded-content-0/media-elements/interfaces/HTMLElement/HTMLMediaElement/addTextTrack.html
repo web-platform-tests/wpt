@@ -6,19 +6,19 @@
 <script>
 var video = document.createElement('video');
 test(function(){
-    assert_throws('SYNTAX_ERR', function(){
+    assert_throws(new TypeError(), function(){
         video.addTextTrack('foo');
     });
-    assert_throws('SYNTAX_ERR', function(){
+    assert_throws(new TypeError(), function(){
         video.addTextTrack(undefined);
     });
-    assert_throws('SYNTAX_ERR', function(){
+    assert_throws(new TypeError(), function(){
         video.addTextTrack(null);
     });
 }, document.title + ' bogus first arg');
 
 test(function(){
-    assert_throws('SYNTAX_ERR', function(){
+    assert_throws(new TypeError(), function(){
         video.addTextTrack('SUBTITLES');
     });
 }, document.title + ' uppercase first arg');

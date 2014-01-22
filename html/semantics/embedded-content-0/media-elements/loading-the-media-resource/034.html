@@ -26,7 +26,7 @@ var x4 = 0;
 var v;
 var t = async_test(function(t) {
   v = document.querySelector('video');
-  video.removeChild(document.querySelector('[onerror="x1++"]'));
+  v.removeChild(document.querySelector('[onerror="x1++"]'));
   window.onload = t.step_func(function() {
     assert_equals(a, 1, 'error events on a');
     assert_equals(b, 1, 'error events on b');
@@ -41,16 +41,16 @@ var t = async_test(function(t) {
 </script>
 <script>
 t.step(function() {
-  video.removeChild(document.querySelector('[onerror="x2++"]'));
+  v.removeChild(document.querySelector('[onerror="x2++"]'));
 });
 </script>
 <script>
 t.step(function() {
-  video.removeChild(document.querySelector('[onerror="x3++"]'));
+  v.removeChild(document.querySelector('[onerror="x3++"]'));
 });
 </script>
 <script>
 t.step(function() {
-  video.removeChild(document.querySelector('[onerror="x4++"]'));
+  v.removeChild(document.querySelector('[onerror="x4++"]'));
 });
 </script>

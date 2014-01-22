@@ -3,7 +3,7 @@
 <title>HTMLMediaElement.preload:none event order - ogg</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/common/media-common.js"></script>
+<script src="/common/preload.js"></script>
 <p id="log">FAIL (script didn't run)</p>
 <audio preload="none" controls></audio>
 <video preload="none" controls></video>
@@ -22,7 +22,7 @@ tests.forEach(function(vars) {
 	    for (var e in events) {
 		node.addEventListener(events[e], handleEvent, false);
 	    }
-	    node.src = '/media/preload.ogv?pipe=trickle(100000:d1:r2)&nocache=' + Math.random();
+	    node.src = '/media/preload.ogv?pipe=trickle(100000:d1:r2)';
 	}
 
 	function handleEvent(e) {

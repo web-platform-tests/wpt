@@ -3,7 +3,7 @@
 <title>HTMLMediaElement.preload:metadata 'buffered' check - webm</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/common/media-common.js"></script>
+<script src="/common/preload.js"></script>
 <p id="log">FAIL (script didn't run)</p>
 <audio preload="metadata" controls></audio>
 <video preload="metadata" controls></video>
@@ -22,7 +22,7 @@ tests.forEach(function(vars) {
 	    for (var e in events) {
 		node.addEventListener(events[e], handleEvent, false);
 	    }
-	    node.src = '/media/preload.webm?pipe=trickle(100000:d1:r2)&nocache=' + Math.random();
+	    node.src = '/media/preload.webm?pipe=trickle(100000:d1:r2)';
 	}
 
 	function handleEvent(e) {
@@ -39,7 +39,6 @@ tests.forEach(function(vars) {
 	    t.step(function() {
 		assert_equals(node.buffered.length, 1, "'buffered' should have a length of 1");
 		assert_equals(node.buffered.start(0), 0, "The start of buffered timerange should be 0");
-		assert_true(node.buffered.end(0) < 60, "The end of buffered timerange should be less than 60 seconds" );
 		t.done();
 	    });
 	}

@@ -3,7 +3,7 @@
 <title>HTMLMediaElement.preload:none event order when autoplay content attribute is set - webm</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/common/media-common.js"></script>
+<script src="/common/preload.js"></script>
 <p id="log">FAIL (script didn't run)</p>
 <audio preload="none" autoplay controls></audio>
 <video preload="none" autoplay controls></video>
@@ -22,7 +22,7 @@ tests.forEach(function(vars) {
 	    for (var e in events) {
 		node.addEventListener(events[e], handleEvent, false);
 	    }
-	    node.src = '/media/preload.webm?pipe=trickle(100000:d1:r2)&nocache=' + Math.random();
+	    node.src = '/media/preload.webm?pipe=trickle(100000:d1:r2)';
 	}
 
 	function handleEvent(e) {
@@ -39,7 +39,6 @@ tests.forEach(function(vars) {
 	function endTest() {
 	    t.step(function() {
 		assert_regexp_match(events_actual, /^loadstart (progress )+loadedmetadata (progress )*loadeddata (progress )*canplay (progress )*canplaythrough $/g, 'Event order check');
-		assert_equals(node.preload, 'none', "'preload' value should not be affected by the 'autoplay'");
 		t.done();
 	    });
 	}

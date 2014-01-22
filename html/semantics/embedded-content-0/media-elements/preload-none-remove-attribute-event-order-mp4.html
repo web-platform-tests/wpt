@@ -3,7 +3,7 @@
 <title>HTMLMediaElement.preload:none event order when preload is removed after suspend is fired - mp4</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/common/media-common.js"></script>
+<script src="/common/preload.js"></script>
 <p id="log">FAIL (script didn't run)</p>
 <audio preload="none" controls></audio>
 <video preload="none" controls></video>
@@ -29,7 +29,7 @@ tests.forEach(function(vars) {
 		});
 	    }
 	}, false);
-	node.src = '/media/preload.mp4?pipe=trickle(100000:d1:r2)&nocache=' + Math.random();
+	node.src = '/media/preload.mp4?pipe=trickle(100000:d1:r2)';
 
 	function startTest(e) {
 	    node.removeEventListener('suspend', startTest, false);
@@ -47,7 +47,6 @@ tests.forEach(function(vars) {
 	function endTest() {
 	    t.step(function() {
 		assert_regexp_match(events_actual, /^loadstart suspend (progress )+loadedmetadata (progress )*loadeddata (progress )*suspend $/g, 'Event order check');
-		assert_equals(node.preload, 'metadata', "'preload' value should be 'metadata'");
 		t.done();
 	    });
 	}

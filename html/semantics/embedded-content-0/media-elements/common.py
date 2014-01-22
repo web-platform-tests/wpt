@@ -1,7 +1,7 @@
 #media sources
 dataurl_src = "'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAAAA'"
 
-throttler = "'/media/preload.%s?pipe=trickle(100000:d1:r2)&nocache=' + Math.random()";
+throttler = "'/media/preload.%s?pipe=trickle(100000:d1:r2)'";
 mp4_src = throttler % 'mp4'
 ogg_src = throttler % 'ogv'
 webm_src = throttler % 'webm'
@@ -59,18 +59,6 @@ testsuite = {
         {'test_suffix' : 'ogg', 'test_mapping' : {'media_type' : 'ogg', 'media_src' : ogg_src, 'events_expected' : auto_event_order, 'start_state' : 'auto', 'end_event' : 'canplaythrough', 'timeout' : timeout}},
         {'test_suffix' : 'webm', 'test_mapping' : {'media_type' : 'webm', 'media_src' : webm_src, 'events_expected' : auto_event_order, 'start_state' : 'auto', 'end_event' : 'canplaythrough', 'timeout' : timeout}}
         ],
-    'preload-auto-to-none-event-order.tpl' : [
-        {'test_suffix' : 'dataurl', 'test_mapping' : {'media_type' : 'wave', 'media_src' : dataurl_src, 'events_expected' : auto_to_none_event_order_dataurl, 'start_state' : 'auto', 'end_state' : 'none', 'start_event' : 'loadstart', 'end_event' : 'canplaythrough', 'timeout' : timeout_dataurl}},
-        {'test_suffix' : 'mp4', 'test_mapping' : {'media_type' : 'mp4', 'media_src' : mp4_src, 'events_expected' : auto_to_none_event_order, 'start_state' : 'auto', 'end_state' : 'none', 'start_event' : 'loadstart', 'end_event' : 'canplaythrough', 'timeout' : timeout}},
-        {'test_suffix' : 'ogg', 'test_mapping' : {'media_type' : 'ogg', 'media_src' : ogg_src, 'events_expected' : auto_to_none_event_order, 'start_state' : 'auto', 'end_state' : 'none', 'start_event' : 'loadstart', 'end_event' : 'canplaythrough', 'timeout' : timeout}},
-        {'test_suffix' : 'webm', 'test_mapping' : {'media_type' : 'webm', 'media_src' : webm_src, 'events_expected' : auto_to_none_event_order, 'start_state' : 'auto', 'end_state' : 'none', 'start_event' : 'loadstart', 'end_event' : 'canplaythrough', 'timeout' : timeout}}
-        ],
-    'preload-auto-to-metadata-event-order.tpl' : [
-        {'test_suffix' : 'dataurl', 'test_mapping' : {'media_type' : 'wave', 'media_src' : dataurl_src, 'events_expected' : auto_to_none_event_order_dataurl, 'start_state' : 'auto', 'end_state' : 'metadata', 'start_event' : 'loadstart', 'end_event' : 'canplaythrough', 'timeout' : timeout_dataurl}},
-        {'test_suffix' : 'mp4', 'test_mapping' : {'media_type' : 'mp4', 'media_src' : mp4_src, 'events_expected' : auto_to_none_event_order, 'start_state' : 'auto', 'end_state' : 'metadata', 'start_event' : 'loadstart', 'end_event' : 'canplaythrough', 'timeout' : timeout}},
-        {'test_suffix' : 'ogg', 'test_mapping' : {'media_type' : 'ogg', 'media_src' : ogg_src, 'events_expected' : auto_to_none_event_order, 'start_state' : 'auto', 'end_state' : 'metadata', 'start_event' : 'loadstart', 'end_event' : 'canplaythrough', 'timeout' : timeout}},
-        {'test_suffix' : 'webm', 'test_mapping' : {'media_type' : 'webm', 'media_src' : webm_src, 'events_expected' : auto_to_none_event_order, 'start_state' : 'auto', 'end_state' : 'metadata', 'start_event' : 'loadstart', 'end_event' : 'canplaythrough', 'timeout' : timeout}}
-        ],
     #preload="metadata"
     'preload-metadata-event-order.tpl' : [
         {'test_suffix' : 'dataurl', 'test_mapping' : {'media_type' : 'wave', 'media_src' : dataurl_src, 'events_expected' : metadata_event_order_dataurl, 'start_state' : 'metadata', 'end_event' : 'suspend', 'timeout' : timeout_dataurl}},
@@ -106,54 +94,6 @@ testsuite = {
         {'test_suffix' : 'mp4', 'test_mapping' : {'media_type' : 'mp4', 'media_src' : mp4_src, 'events_expected' : metadata_event_order_play_after_suspend, 'start_state' : 'metadata', 'end_state' : 'auto', 'start_event' : 'suspend', 'end_event' : 'canplaythrough', 'timeout' : timeout}},
         {'test_suffix' : 'ogg', 'test_mapping' : {'media_type' : 'ogg', 'media_src' : ogg_src, 'events_expected' : metadata_event_order_play_after_suspend, 'start_state' : 'metadata', 'end_state' : 'auto', 'start_event' : 'suspend', 'end_event' : 'canplaythrough', 'timeout' : timeout}},
         {'test_suffix' : 'webm', 'test_mapping' : {'media_type' : 'webm', 'media_src' : webm_src, 'events_expected' : metadata_event_order_play_after_suspend, 'start_state' : 'metadata', 'end_state' : 'auto', 'start_event' : 'suspend', 'end_event' : 'canplaythrough', 'timeout' : timeout}}
-        ],
-    'preload-metadata-to-none-event-order.tpl' : [
-        {'test_suffix' : 'dataurl', 'test_mapping' : {'media_type' : 'wave', 'media_src' : dataurl_src, 'events_expected' : metadata_event_order_dataurl, 'start_state' : 'metadata', 'end_state' : 'none', 'start_event' : 'loadstart', 'end_event' : 'suspend', 'timeout' : timeout_dataurl}},
-        {'test_suffix' : 'mp4', 'test_mapping' : {'media_type' : 'mp4', 'media_src' : mp4_src, 'events_expected' : metadata_event_order, 'start_state' : 'metadata', 'end_state' : 'none', 'start_event' : 'loadstart', 'end_event' : 'suspend', 'timeout' : timeout}},
-        {'test_suffix' : 'ogg', 'test_mapping' : {'media_type' : 'ogg', 'media_src' : ogg_src, 'events_expected' : metadata_event_order, 'start_state' : 'metadata', 'end_state' : 'none', 'start_event' : 'loadstart', 'end_event' : 'suspend', 'timeout' : timeout}},
-        {'test_suffix' : 'webm', 'test_mapping' : {'media_type' : 'webm', 'media_src' : webm_src, 'events_expected' : metadata_event_order, 'start_state' : 'metadata', 'end_state' : 'none', 'start_event' : 'loadstart', 'end_event' : 'suspend', 'timeout' : timeout}}
-        ],
-    'preload-metadata-to-none-after-src-networkstate.tpl' : [
-        {'test_suffix' : 'dataurl', 'test_mapping' : {'media_type' : 'wave', 'media_src' : dataurl_src, 'state_expected' : metadata_networkstate_after_suspend, 'start_state' : 'metadata', 'end_state' : 'none', 'end_event' : 'suspend', 'test_state_type' : 'networkState', 'timeout' : timeout_dataurl}},
-        {'test_suffix' : 'mp4', 'test_mapping' : {'media_type' : 'mp4', 'media_src' : mp4_src, 'state_expected' : metadata_networkstate_after_suspend, 'start_state' : 'metadata', 'end_state' : 'none', 'end_event' : 'suspend', 'test_state_type' : 'networkState', 'timeout' : timeout}},
-        {'test_suffix' : 'ogg', 'test_mapping' : {'media_type' : 'ogg', 'media_src' : ogg_src, 'state_expected' : metadata_networkstate_after_suspend, 'start_state' : 'metadata', 'end_state' : 'none', 'end_event' : 'suspend', 'test_state_type' : 'networkState', 'timeout' : timeout}},
-        {'test_suffix' : 'webm', 'test_mapping' : {'media_type' : 'webm', 'media_src' : webm_src, 'state_expected' : metadata_networkstate_after_suspend, 'start_state' : 'metadata', 'end_state' : 'none', 'end_event' : 'suspend', 'test_state_type' : 'networkState', 'timeout' : timeout}}
-        ],
-    'preload-metadata-to-none-after-src-readystate.tpl' : [
-        {'test_suffix' : 'dataurl', 'test_mapping' : {'media_type' : 'wave', 'media_src' : dataurl_src, 'state_expected' : metadata_readystate_before_src, 'start_state' : 'metadata', 'end_state' : 'none', 'end_event' : 'suspend', 'test_state_type' : 'readyState', 'timeout' : timeout_dataurl}},
-        {'test_suffix' : 'mp4', 'test_mapping' : {'media_type' : 'mp4', 'media_src' : mp4_src, 'state_expected' : metadata_readystate_before_src, 'start_state' : 'metadata', 'end_state' : 'none', 'end_event' : 'suspend', 'test_state_type' : 'readyState', 'timeout' : timeout}},
-        {'test_suffix' : 'ogg', 'test_mapping' : {'media_type' : 'ogg', 'media_src' : ogg_src, 'state_expected' : metadata_readystate_before_src, 'start_state' : 'metadata', 'end_state' : 'none', 'end_event' : 'suspend', 'test_state_type' : 'readyState', 'timeout' : timeout}},
-        {'test_suffix' : 'webm', 'test_mapping' : {'media_type' : 'webm', 'media_src' : webm_src, 'state_expected' : metadata_readystate_before_src, 'start_state' : 'metadata', 'end_state' : 'none', 'end_event' : 'suspend', 'test_state_type' : 'readyState', 'timeout' : timeout}}
-        ],
-    'preload-metadata-to-none-after-source-readystate.tpl' : [
-        {'test_suffix' : 'dataurl', 'test_mapping' : {'media_type' : 'wave', 'media_src' : dataurl_src, 'state_expected' : metadata_readystate_before_src, 'start_state' : 'metadata', 'end_state' : 'none', 'end_event' : 'suspend', 'test_state_type' : 'readyState', 'timeout' : timeout_dataurl}},
-        {'test_suffix' : 'mp4', 'test_mapping' : {'media_type' : 'mp4', 'media_src' : mp4_src, 'state_expected' : metadata_readystate_before_src, 'start_state' : 'metadata', 'end_state' : 'none', 'end_event' : 'suspend', 'test_state_type' : 'readyState', 'timeout' : timeout}},
-        {'test_suffix' : 'ogg', 'test_mapping' : {'media_type' : 'ogg', 'media_src' : ogg_src, 'state_expected' : metadata_readystate_before_src, 'start_state' : 'metadata', 'end_state' : 'none', 'end_event' : 'suspend', 'test_state_type' : 'readyState', 'timeout' : timeout}},
-        {'test_suffix' : 'webm', 'test_mapping' : {'media_type' : 'webm', 'media_src' : webm_src, 'state_expected' : metadata_readystate_before_src, 'start_state' : 'metadata', 'end_state' : 'none', 'end_event' : 'suspend', 'test_state_type' : 'readyState', 'timeout' : timeout}}
-        ],
-    'preload-metadata-to-none-before-src-readystate.tpl' : [
-        {'test_suffix' : 'dataurl', 'test_mapping' : {'media_type' : 'wave', 'media_src' : dataurl_src, 'state_expected' : metadata_readystate_before_src, 'start_state' : 'metadata', 'end_state' : 'none', 'end_event' : 'suspend', 'test_state_type' : 'readyState', 'timeout' : timeout_dataurl}},
-        {'test_suffix' : 'mp4', 'test_mapping' : {'media_type' : 'mp4', 'media_src' : mp4_src, 'state_expected' : metadata_readystate_before_src, 'start_state' : 'metadata', 'end_state' : 'none', 'end_event' : 'suspend', 'test_state_type' : 'readyState', 'timeout' : timeout}},
-        {'test_suffix' : 'ogg', 'test_mapping' : {'media_type' : 'ogg', 'media_src' : ogg_src, 'state_expected' : metadata_readystate_before_src, 'start_state' : 'metadata', 'end_state' : 'none', 'end_event' : 'suspend', 'test_state_type' : 'readyState', 'timeout' : timeout}},
-        {'test_suffix' : 'webm', 'test_mapping' : {'media_type' : 'webm', 'media_src' : webm_src, 'state_expected' : metadata_readystate_before_src, 'start_state' : 'metadata', 'end_state' : 'none', 'end_event' : 'suspend', 'test_state_type' : 'readyState', 'timeout' : timeout}}
-        ],
-    'preload-metadata-to-none-before-source-readystate.tpl' : [
-        {'test_suffix' : 'dataurl', 'test_mapping' : {'media_type' : 'wave', 'media_src' : dataurl_src, 'state_expected' : metadata_readystate_before_src, 'start_state' : 'metadata', 'end_state' : 'none', 'end_event' : 'suspend', 'test_state_type' : 'readyState', 'timeout' : timeout_dataurl}},
-        {'test_suffix' : 'mp4', 'test_mapping' : {'media_type' : 'mp4', 'media_src' : mp4_src, 'state_expected' : metadata_readystate_before_src, 'start_state' : 'metadata', 'end_state' : 'none', 'end_event' : 'suspend', 'test_state_type' : 'readyState', 'timeout' : timeout}},
-        {'test_suffix' : 'ogg', 'test_mapping' : {'media_type' : 'ogg', 'media_src' : ogg_src, 'state_expected' : metadata_readystate_before_src, 'start_state' : 'metadata', 'end_state' : 'none', 'end_event' : 'suspend', 'test_state_type' : 'readyState', 'timeout' : timeout}},
-        {'test_suffix' : 'webm', 'test_mapping' : {'media_type' : 'webm', 'media_src' : webm_src, 'state_expected' : metadata_readystate_before_src, 'start_state' : 'metadata', 'end_state' : 'none', 'end_event' : 'suspend', 'test_state_type' : 'readyState', 'timeout' : timeout}}
-        ],
-    'preload-metadata-to-none-after-loadstart-networkstate.tpl' : [
-        {'test_suffix' : 'dataurl', 'test_mapping' : {'media_type' : 'wave', 'media_src' : dataurl_src, 'state_expected' : metadata_networkstate_after_suspend, 'start_state' : 'metadata', 'end_state' : 'none', 'start_event' : 'loadstart', 'end_event' : 'suspend', 'test_state_type' : 'networkState', 'timeout' : timeout_dataurl}},
-        {'test_suffix' : 'mp4', 'test_mapping' : {'media_type' : 'mp4', 'media_src' : mp4_src, 'state_expected' : metadata_networkstate_after_suspend, 'start_state' : 'metadata', 'end_state' : 'none', 'start_event' : 'loadstart', 'end_event' : 'suspend', 'test_state_type' : 'networkState', 'timeout' : timeout}},
-        {'test_suffix' : 'ogg', 'test_mapping' : {'media_type' : 'ogg', 'media_src' : ogg_src, 'state_expected' : metadata_networkstate_after_suspend, 'start_state' : 'metadata', 'end_state' : 'none', 'start_event' : 'loadstart', 'end_event' : 'suspend', 'test_state_type' : 'networkState', 'timeout' : timeout}},
-        {'test_suffix' : 'webm', 'test_mapping' : {'media_type' : 'webm', 'media_src' : webm_src, 'state_expected' : metadata_networkstate_after_suspend, 'start_state' : 'metadata', 'end_state' : 'none', 'start_event' : 'loadstart', 'end_event' : 'suspend', 'test_state_type' : 'networkState', 'timeout' : timeout}}
-        ],
-    'preload-metadata-to-none-after-loadstart-readystate.tpl' : [
-        {'test_suffix' : 'dataurl', 'test_mapping' : {'media_type' : 'wave', 'media_src' : dataurl_src, 'state_expected' : metadata_readystate_after_suspend, 'start_state' : 'metadata', 'end_state' : 'none', 'start_event' : 'loadstart', 'end_event' : 'suspend', 'test_state_type' : 'readyState', 'timeout' : timeout_dataurl}},
-        {'test_suffix' : 'mp4', 'test_mapping' : {'media_type' : 'mp4', 'media_src' : mp4_src, 'state_expected' : metadata_readystate_after_suspend, 'start_state' : 'metadata', 'end_state' : 'none', 'start_event' : 'loadstart', 'end_event' : 'suspend', 'test_state_type' : 'readyState', 'timeout' : timeout}},
-        {'test_suffix' : 'ogg', 'test_mapping' : {'media_type' : 'ogg', 'media_src' : ogg_src, 'state_expected' : metadata_readystate_after_suspend, 'start_state' : 'metadata', 'end_state' : 'none', 'start_event' : 'loadstart', 'end_event' : 'suspend', 'test_state_type' : 'readyState', 'timeout' : timeout}},
-        {'test_suffix' : 'webm', 'test_mapping' : {'media_type' : 'webm', 'media_src' : webm_src, 'state_expected' : metadata_readystate_after_suspend, 'start_state' : 'metadata', 'end_state' : 'none', 'start_event' : 'loadstart', 'end_event' : 'suspend', 'test_state_type' : 'readyState', 'timeout' : timeout}}
         ],
     #preload="none"
     'preload-none-event-order.tpl' : [

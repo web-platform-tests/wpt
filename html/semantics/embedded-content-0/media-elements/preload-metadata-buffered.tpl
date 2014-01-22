@@ -2,7 +2,7 @@
 <title>HTMLMediaElement.preload:metadata 'buffered' check - $media_type</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/common/media-common.js"></script>
+<script src="/common/preload.js"></script>
 <p id="log">FAIL (script didn't run)</p>
 <audio preload="metadata" controls></audio>
 <video preload="metadata" controls></video>

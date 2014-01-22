@@ -2,7 +2,7 @@
 <title>HTMLMediaElement.preload:$start_state event order when preload is removed after $start_event is fired - $media_type</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/common/media-common.js"></script>
+<script src="/common/preload.js"></script>
 <p id="log">FAIL (script didn't run)</p>
 <audio preload="$start_state" controls></audio>
 <video preload="$start_state" controls></video>
@@ -46,7 +46,6 @@ tests.forEach(function(vars) {
 	function endTest() {
 	    t.step(function() {
 		assert_regexp_match(events_actual, $events_expected, 'Event order check');
-		assert_equals(node.preload, 'metadata', "'preload' value should be 'metadata'");
 		t.done();
 	    });
 	}

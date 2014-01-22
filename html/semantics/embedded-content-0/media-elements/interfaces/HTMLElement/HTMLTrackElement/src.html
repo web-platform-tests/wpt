@@ -72,6 +72,6 @@ test(function(){
     link.setAttribute('href', '%00');
     assert_equals(track.src, link.href);
     assert_equals(track.getAttribute('src'), '\u0000');
-}, document.title + ' assigning \u0000 to IDL attribute');
+}, document.title + ' assigning \\u0000 to IDL attribute');
 
 </script>

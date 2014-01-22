@@ -28,10 +28,12 @@
     assert_equals(document.getElementById("html-simple").innerHTML,
                   "<meta xmlns=\"http://www.w3.org/1999/xhtml\" />");
   }, "XHTML self-closing element is serialized per spec");
+
   test(function(){
     assert_equals(document.getElementById("self-close-element").innerHTML,
                   "<x xmlns=\"test_ns\"/>");
   }, "Generic XML element is serialized per spec");
+
   test(function(){
     // DOM Context Object: {prefix:null, local:div, ns:xhtml, attrs:[]}
     //                     |
@@ -39,6 +41,7 @@
     assert_equals(document.getElementById("self-close-element1").innerHTML,
                   "<myelement xmlns=\"http://www.w3.org/1999/xhtml\"></myelement>");
   }, "Unknown element in XHTML namespace is serialized with open/close tags");
+
   test(function(){
     // DOM Context Object: {prefix:null, local:div, ns:xhtml, attrs:[]}
     //                     |
@@ -49,6 +52,7 @@
     assert_equals(document.getElementById("open-close-element2").innerHTML,
                   "<c xmlns=\"http://www.w3.org/1999/xhtml\"><d></d><e></e></c>");
   }, "Namespace declarations are not re-serialized on nested element subtrees");
+
   test(function(){
     // DOM Context Object: {prefix:null, local:div, ns:xhtml, attrs:[xmlns:html=xhtml, xmlns:other=test_ns]}
     //                     |
@@ -60,6 +64,7 @@
                   "<html:input xmlns:html=\"http://www.w3.org/1999/xhtml\" />" + // Note the space after the last attribute
                   "<other:foo xmlns:other=\"test_ns\"/>");
   }, "Some specific XHTML elements use self-closing serialization syntax, other xml namespaces serialize to self-closing syntax when childless");
+
   test(function(){
     // <myelement><foo xmlns="test_ns" /></myelement>
     // DOM Context Object: {prefix:null, local:div, ns:xhtml, attrs:[]}
@@ -70,7 +75,7 @@
     assert_equals(document.getElementById("element-nested-ns").innerHTML,
                   "<myelement xmlns=\"http://www.w3.org/1999/xhtml\"><foo xmlns=\"test_ns\"/></myelement>");
   }, "Default namespace change in an element subtree is serialized per spec");
-  // TODO: test the case where the actual element's namespace doesn't match the attribute definition...
+
   test(function(){
     // Source: <c xmlns:one="test_ns"><d xmlns="test2_ns"><one:e/></d></c>
     assert_equals(document.getElementById("element-nested-ns2").innerHTML,
@@ -78,6 +83,7 @@
                   "<d xmlns=\"test2_ns\">" +
                   "<one:e/></d></c>");
   }, "Interleaved namespace prefixed elements with namespace context definitions are serialized per spec");
+
   test(function(){
     // Source (sans white-space):
     // <c xmlns="test_ns" xmlns:Two="test2_ns" xmlns:Three="test3_ns" >
@@ -94,6 +100,7 @@
                   "<Three:f><Three:g/></Three:f>" +
                   "</c>");
   }, "Namespace prefix definitions in attributes are recognized during serialization to avoid re-declaration later");
+
   test(function(){
      var root = document.getElementById("element-nested-ns4");
      var top = root.firstChild;
@@ -114,6 +121,7 @@
                                      "<one:c xmlns:one=\"test_ns\">" + // because it's in the attribute list
                                       "<one:d><one:e/></one:d></one:c></one:f>");
   }, "Attributes (even those containing prefix definitions) are serialized in due process (even when not technically necessary)");
+
   test(function(){
     // Source:
     // (pre-established context): xmlns:x="test_ns_x" xmlns:y="test_ns_y" xmlns:z="test_ns_z"
@@ -128,33 +136,40 @@
                    "<z:two xmlns:z=\"test_ns_z\"/>" +
                    "</container>");
   }, "Namespaced elements without attributes (but with prefixes) cause synthetic prefix declarations to be serialized as needed");
+
   var ns_one = "test_ns";
   var ns_two = "test2_ns";
+
   test(function(){
      var root = document.createElementNS(ns_one, "c");
      assert_true(typeof root.outerHTML != "undefined", "outerHTML needs to exist for this test");
      root.appendChild(document.createElementNS(ns_two, "d"));
      assert_equals(root.outerHTML, "<c xmlns=\""+ns_one+"\"><d xmlns=\""+ns_two+"\"/></c>");
   }, "Dynamic element creation w/namespaces are serialized per spec");
+
   // TEXT ------------------------------
   test(function(){
     assert_equals(document.getElementById("text").innerHTML,
                   "This is a &lt;test&gt; &amp; special text");
   }, "Parsed text with '<', '>', and '&' is serialized correctly");
+
   test(function(){
     assert_equals(document.getElementById("cdata").innerHTML,
                   "<![CDATA[This is a <test> & special text]" + "]>");
   }, "Parsed CDATA with '<', '>', and '&' is serialized correctly");
+
   test(function(){
     assert_equals(document.getElementById("pi").innerHTML,
                   "<?thingy value with <test> & special text?>");
   }, "Parsed PI with '<', '>', and '&' is serialized correctly");
+
   // InnerHTML
   test(function() {
     var xmldoc = new DOMParser().parseFromString("<!DOCTYPE foo><foo xmlns=\"myfoo\"/>", "application/xml");
     assert_equals(xmldoc.documentElement.namespaceURI, "myfoo", "Ensure an XML parser was used in DOMParser");
     assert_equals(typeof xmldoc.documentElement.innerHTML, "string");
   }, "innerHTML exists for pure XML nodes (of type Element)");
+
   test(function() {
     var controlString = "<!DOCTYPE html>" +
                         "<html xmlns=\"http://www.w3.org/1999/xhtml\">" +
@@ -166,12 +181,12 @@
     var xmldoc = new DOMParser().parseFromString(controlString, "application/xhtml+xml");
     assert_equals(xmldoc.documentElement.lastChild.firstChild.namespaceURI, "myfoo", "Ensure an XML parser was used in DOMParser");
     var htmldoc = new DOMParser().parseFromString(controlString, "text/html");
-     assert_equals(htmldoc.documentElement.lastChild.firstChild.namespaceURI, "http://www.w3.org/1999/xhtml", "Ensure an HTML parser was used in DOMParser");
-     // innerHTML will parse using XML or HTML based on the type of document
-     xmldoc.documentElement.innerHTML = "<![CDATA[parsertype]" + "]>";
-     htmldoc.documentElement.innerHTML = "<![CDATA[parsertype]" + "]>";
-     assert_equals(xmldoc.documentElement.firstChild.nodeType, Node.CDATA_SECTION_NODE);
-     assert_equals(htmldoc.documentElement.firstChild.nodeType, Node.COMMENT_NODE);
+    assert_equals(htmldoc.documentElement.lastChild.firstChild.namespaceURI, "http://www.w3.org/1999/xhtml", "Ensure an HTML parser was used in DOMParser");
+    // innerHTML will parse using XML or HTML based on the type of document
+    xmldoc.documentElement.innerHTML = "<![CDATA[parsertype]" + "]>";
+    htmldoc.documentElement.innerHTML = "<![CDATA[parsertype]" + "]>";
+    assert_equals(xmldoc.documentElement.firstChild.nodeType, Node.CDATA_SECTION_NODE);
+    assert_equals(htmldoc.documentElement.firstChild.nodeType, Node.COMMENT_NODE);
   }, "innerHTML parses using an XML or HTML depending on whether the node's document is an XML or HTML document");
   // ]]>
   </script>

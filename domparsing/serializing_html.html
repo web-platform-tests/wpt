@@ -20,19 +20,23 @@
     assert_equals(document.getElementById("text").innerHTML,
                   "This is a &lt;test&gt; &amp; special text");
   }, "Parsed text with '<', '>', and '&' is serialized correctly");
+
   test(function(){
     assert_equals(document.getElementById("cdata-bogus-comment").innerHTML,
                   "<!--[CDATA[This is a <test & special text]]-->");
   }, "Parsed CDATA as bogus comment in HTML");
+
   test(function(){
     assert_equals(document.getElementById("pi-bogus-comment").innerHTML,
                   "<!--?thingy value with <test & special text?-->");
   }, "Parsed PI as bogus comment in HTML");
+
   test(function(){
     var t = document.getElementById("attr-escaping").firstChild;
     assert_equals(document.getElementById("attr-escaping").innerHTML,
                   "<elem foo=\"ba&quot;r\"></elem>");
   }, "Attribute value with quote character inserted is escaped per spec");
+
   test(function(){
     var t = document.getElementById("attr-escaping2").firstChild;
     assert_equals(document.getElementById("attr-escaping2").innerHTML,

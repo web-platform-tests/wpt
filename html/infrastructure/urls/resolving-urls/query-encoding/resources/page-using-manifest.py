@@ -4,9 +4,9 @@ def main(request, response):
     mode = request.GET['mode']
     iframe = ""
     if mode == 'NETWORK':
-        iframe = "<iframe src='stash.py?q=%%C3%%A5&id=%s&action=put'></iframe>" % (id)
+        iframe = "<iframe src='stash.py?q=%%C3%%A5&id=%s&action=put'></iframe>" % id
     doc = """<!doctype html>
 <html manifest="manifest.py?id=%s&encoding=%s&mode=%s">
 %s
 """ % (id, encoding, mode, iframe)
-    return ([("Content-Type", "text/html; charset=%s" % (encoding))], doc.encode(encoding))
+    return [("Content-Type", "text/html; charset=%s" % encoding)], doc.encode(encoding)

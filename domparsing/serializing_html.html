@@ -17,31 +17,31 @@
   <div id="attr-escaping2" style="display:none"><elem></elem></div>
   <script>
   test(function(){
-    assert_equals(document.getElementById("text").innerHTML, 
+    assert_equals(document.getElementById("text").innerHTML,
                   "This is a &lt;test&gt; &amp; special text");
   }, "Parsed text with '<', '>', and '&' is serialized correctly");
   test(function(){
-    assert_equals(document.getElementById("cdata-bogus-comment").innerHTML, 
+    assert_equals(document.getElementById("cdata-bogus-comment").innerHTML,
                   "<!--[CDATA[This is a <test & special text]]-->");
   }, "Parsed CDATA as bogus comment in HTML");
-  test(function(){    
-    assert_equals(document.getElementById("pi-bogus-comment").innerHTML, 
+  test(function(){
+    assert_equals(document.getElementById("pi-bogus-comment").innerHTML,
                   "<!--?thingy value with <test & special text?-->");
   }, "Parsed PI as bogus comment in HTML");
   test(function(){
-    assert_equals(new XMLSerializer().serializeToString(document.doctype), 
+    assert_equals(new XMLSerializer().serializeToString(document.doctype),
                   "<!DOCTYPE html>");
   }, "Parsed DOCTYPE serialized correctly");
   test(function(){
     var t = document.getElementById("attr-escaping").firstChild;
     t.setAttribute('foo', 'ba"r');
-    assert_equals(document.getElementById("attr-escaping").innerHTML, 
+    assert_equals(document.getElementById("attr-escaping").innerHTML,
                   "<elem foo=\"ba&quot;r\"></elem>");
   }, "Attribute value with quote character inserted is escaped per spec");
   test(function(){
     var t = document.getElementById("attr-escaping2").firstChild;
     t.setAttribute('foo', 'ba&r');
-    assert_equals(document.getElementById("attr-escaping2").innerHTML, 
+    assert_equals(document.getElementById("attr-escaping2").innerHTML,
                   "<elem foo=\"ba&amp;r\"></elem>");
   }, "Attribute value with & character inserted is escaped per spec");
   // Basic Test of XMLSerializer

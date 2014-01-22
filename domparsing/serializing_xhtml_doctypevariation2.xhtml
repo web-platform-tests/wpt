@@ -9,7 +9,7 @@
   <div id="log"></div>
   <script><![CDATA[
   test(function(){
-    assert_equals(new XMLSerializer().serializeToString(document.doctype), 
+    assert_equals(new XMLSerializer().serializeToString(document.doctype),
                   "<!DOCTYPE foo SYSTEM \"external.dtd\">");
   }, "Parsed DOCTYPE serialized correctly");
   // ]]>

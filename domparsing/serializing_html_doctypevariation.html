@@ -9,7 +9,7 @@
   <div id="log"></div>
   <script>
   test(function(){
-    assert_equals(new XMLSerializer().serializeToString(document.doctype), 
+    assert_equals(new XMLSerializer().serializeToString(document.doctype),
                   "<!DOCTYPE html SYSTEM \" external.dtd \">");
   }, "Parsed DOCTYPE serialized correctly in HTML");
   </script>

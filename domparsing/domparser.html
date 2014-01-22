@@ -20,7 +20,7 @@
   test(function() {
     var htmldocDOMParsed = new DOMParser().parseFromString(emptyHTML, "text/html");
     var xhtmldocDOMParsed = new DOMParser().parseFromString(emptyHTML, "application/xhtml+xml" );
-    
+
     assert_equals(htmldocDOMParsed.location, xhtmldocDOMParsed.location);
     assert_equals(htmldocDOMParsed.URL, xhtmldocDOMParsed.URL);
     assert_equals(htmldocDOMParsed.documentURI, xhtmldocDOMParsed.documentURI);
@@ -38,7 +38,7 @@
     var htmldocDOMParsed = new DOMParser().parseFromString(emptyHTML, "text/html");
     assert_equals(htmldocDOMParsed.documentURI, document.URL);
   }, "DOMParser parsed documents have a documentURL equal to the document's URL [DOM4]");
-  
+
   </script>
   <div id="log"></div>
  </body>

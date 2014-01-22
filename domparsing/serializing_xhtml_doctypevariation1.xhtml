@@ -13,7 +13,7 @@
     var expectedSerialization = (typeof document.doctype.internalSubset != undefined) ?
         "<!DOCTYPE html SYSTEM \" external.dtd \" [  <!ENTITY   blah    \"val-value \"> ]>" :
         "<!DOCTYPE html SYSTEM \" external.dtd \">";
-    
+
     assert_equals(new XMLSerializer().serializeToString(document.doctype), expectedSerialization);
   }, "Parsed DOCTYPE serialized correctly");
   // ]]>

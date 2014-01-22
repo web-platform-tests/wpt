@@ -1,4 +1,4 @@
-﻿/*_real_assert_throws = assert_throws;
+/*_real_assert_throws = assert_throws;
 function assert_throws(d, func, desc) {
     try {
         func();

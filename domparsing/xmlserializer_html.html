@@ -19,9 +19,9 @@
     doc.body.appendChild(document.createElement("foo:bar"));
     doc.body.appendChild(document.createTextNode("text test"));
     var serializedStr = new XMLSerializer().serializeToString(doc);
-    alert(serializedStr);
-    assert_equals("foo", "");
-  }, "XML Serializer creates an HTML serialization of a document in an HTML-based document");
+    assert_equals(serializedStr, "<!DOCTYPE html><html xmlns=\"http://www.w3.org/1999/xhtml\"><head><title>test title</title></head>" +
+									"<body><foo:bar></foo:bar>text test</body></html>");
+  }, "XML Serializer creates an HTML serialization of a document with XML-like tags");
   </script>
  </body>
 </html>

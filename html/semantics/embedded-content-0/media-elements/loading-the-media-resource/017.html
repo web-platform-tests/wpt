@@ -12,7 +12,7 @@ function createSource(src) {
 }
 var t = async_test(function(t) {
   v = document.createElement('video');
-  v.appendChild(createSource('resources/not-a-video.ogv?pipe=trickle(d0.1)')); // invokes resource selection
+  v.appendChild(createSource('resources/delayed-broken-video.py')); // invokes resource selection
 });
 </script>
 <!-- now resource selection algorithm will continue its sync section (the </script> tag below provides a stable state) -->

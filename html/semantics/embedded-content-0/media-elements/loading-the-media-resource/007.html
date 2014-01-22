@@ -11,7 +11,7 @@ var v = document.createElement('video');
 var t = async_test(function(t) {
   v.onloadstart = function() { loadstartCount++; };
   var s1 = document.createElement('source');
-  s1.src = 'resources/not-a-video.ogv?pipe=trickle(d0.1)';
+  s1.src = 'resources/delayed-broken-video.py';
   s1.onerror = function() { s1ErrorCount++; };
   v.appendChild(s1); // invokes resource selection
   assert_equals(v.networkState, v.NETWORK_NO_SOURCE, 'networkState in first script');

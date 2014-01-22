@@ -23,7 +23,7 @@ test(function(){
     assert_equals(video.textTracks[0], track_before);
 }, document.title+', no indexed set/create');
 test(function(){
-        'use strict';
+    'use strict';
     var track_before = video.textTracks[0];
     assert_throws(new TypeError(), function(){ video.textTracks[0] = 'foo'; });
     assert_equals(video.textTracks[0], track_before);

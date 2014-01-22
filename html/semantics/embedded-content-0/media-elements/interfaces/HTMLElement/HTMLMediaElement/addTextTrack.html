@@ -6,19 +6,19 @@
 <script>
 var video = document.createElement('video');
 test(function(){
-    assert_throws('SYNTAX_ERR', function(){
+    assert_throws(new TypeError(), function(){
         video.addTextTrack('foo');
     });
-    assert_throws('SYNTAX_ERR', function(){
+    assert_throws(new TypeError(), function(){
         video.addTextTrack(undefined);
     });
-    assert_throws('SYNTAX_ERR', function(){
+    assert_throws(new TypeError(), function(){
         video.addTextTrack(null);
     });
 }, document.title + ' bogus first arg');
 
 test(function(){
-    assert_throws('SYNTAX_ERR', function(){
+    assert_throws(new TypeError(), function(){
         video.addTextTrack('SUBTITLES');
     });
 }, document.title + ' uppercase first arg');
@@ -29,7 +29,7 @@ test(function(){
     assert_equals(t.label, '');
     assert_equals(t.language, '');
     assert_equals(t.mode, 'hidden');
-    assert_equals(t.cues.length, 0);
+    assert_true(t.cues instanceof TextTrackCueList);
 }, document.title + ' subtitles first arg');
 
 test(function(){
@@ -38,7 +38,7 @@ test(function(){
     assert_equals(t.label, '');
     assert_equals(t.language, '');
     assert_equals(t.mode, 'hidden');
-    assert_equals(t.cues.length, 0);
+    assert_true(t.cues instanceof TextTrackCueList);
 }, document.title + ' captions first arg');
 
 test(function(){
@@ -47,7 +47,7 @@ test(function(){
     assert_equals(t.label, '');
     assert_equals(t.language, '');
     assert_equals(t.mode, 'hidden');
-    assert_equals(t.cues.length, 0);
+    assert_true(t.cues instanceof TextTrackCueList);
 }, document.title + ' descriptions first arg');
 
 test(function(){
@@ -56,7 +56,7 @@ test(function(){
     assert_equals(t.label, '');
     assert_equals(t.language, '');
     assert_equals(t.mode, 'hidden');
-    assert_equals(t.cues.length, 0);
+    assert_true(t.cues instanceof TextTrackCueList);
 }, document.title + ' chapters first arg');
 
 test(function(){
@@ -65,16 +65,16 @@ test(function(){
     assert_equals(t.label, '');
     assert_equals(t.language, '');
     assert_equals(t.mode, 'hidden');
-    assert_equals(t.cues.length, 0);
+    assert_true(t.cues instanceof TextTrackCueList);
 }, document.title + ' metadata first arg');
 
 test(function(){
     var t = video.addTextTrack('subtitles', undefined, undefined);
     assert_equals(t.kind, 'subtitles');
-    assert_equals(t.label, 'undefined');
-    assert_equals(t.language, 'undefined');
+    assert_equals(t.label, '');
+    assert_equals(t.language, '');
     assert_equals(t.mode, 'hidden');
-    assert_equals(t.cues.length, 0);
+    assert_true(t.cues instanceof TextTrackCueList);
 }, document.title + ' undefined second and third arg');
 
 test(function(){
@@ -83,7 +83,7 @@ test(function(){
     assert_equals(t.label, 'null');
     assert_equals(t.language, 'null');
     assert_equals(t.mode, 'hidden');
-    assert_equals(t.cues.length, 0);
+    assert_true(t.cues instanceof TextTrackCueList);
 }, document.title + ' null second and third arg');
 
 test(function(){
@@ -92,7 +92,7 @@ test(function(){
     assert_equals(t.label, 'foo');
     assert_equals(t.language, 'bar');
     assert_equals(t.mode, 'hidden');
-    assert_equals(t.cues.length, 0);
+    assert_true(t.cues instanceof TextTrackCueList);
 }, document.title + ' foo and bar second and third arg');
 
 test(function(){
@@ -101,7 +101,7 @@ test(function(){
     assert_equals(t.label, 'foo');
     assert_equals(t.language, '');
     assert_equals(t.mode, 'hidden');
-    assert_equals(t.cues.length, 0);
+    assert_true(t.cues instanceof TextTrackCueList);
 }, document.title + ' foo second arg, third arg omitted');
 
 </script>

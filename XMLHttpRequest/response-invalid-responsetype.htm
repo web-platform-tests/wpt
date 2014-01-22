@@ -15,6 +15,7 @@
         test.step(function() {
           var client = new XMLHttpRequest()
           client.responseType = type
+          assert_equals(client.responseType, '')
           client.open("GET", "resources/folder.txt", true)
           client.onload = function(){
             test.step(function(){

@@ -25,7 +25,7 @@
             assert_equals(xhr.readyState, 4)
 
             xhr.open("GET", "data:text/html;charset=utf-8;base64,PT0NUWVBFIGh0bWw%2BDQo8", false);
-            
+
             assert_throws("NetworkError", function()
             {
                 xhr.send("Test Message");

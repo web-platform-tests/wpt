@@ -8,6 +8,8 @@ import json
 import subprocess
 import logging
 
+import argparse
+
 manifest_name = "MANIFEST.json"
 exclude_php_hack = True
 ref_suffixes = ["_ref", "-ref"]
@@ -122,7 +124,9 @@ class Manifest(object):
                            "manual", "helper"]
         self._data = dict((item_type, defaultdict(set)) for item_type in self.item_types)
         self.rev = git_rev
-        self.local_changes = LocalChanges()
+
+        self._local_changes = None
+        self._committed_changes = None
 
     def contains_path(self, path):
         return any(path in item for item in self._data.itervalues())
@@ -180,8 +184,20 @@ class Manifest(object):
             for v in values:
                 manifest_item = item_classes[k].from_json(v)
                 self.add(manifest_item)
-        self.local_changes = LocalChanges.from_json(obj["local_changes"])
+        self.local_changes.update(LocalChanges.from_json(obj["local_changes"]))
         return self
+
+    @property
+    def local_changes(self):
+        if self._local_changes is None:
+            self._local_changes = get_local_changes()
+        return self._local_changes
+
+    @property
+    def committed_changes(self):
+        if self._committed_changes is None:
+            self._committed_changes = get_committed_changes(self.rev)
+        return self._committed_changes
 
 
 class LocalChanges(dict):
@@ -347,7 +363,7 @@ def get_committed_changes(base_rev):
 
 def get_local_changes():
     #This doesn't account for whole directories that have been added
-    data  = git("status", "--porcelain")
+    data  = git("status", "--porcelain", "--ignore-submodules=untracked")
     rv = LocalChanges()
     for line in data.split("\n"):
         line = line.strip()
@@ -359,10 +375,12 @@ def get_local_changes():
             continue
         if status == "??":
             status = "A"
-        if status == "R":
+        elif status == "R":
             old_path, path = tuple(item.strip() for item in path.split("->"))
             rv[old_path] = "D"
             status = "A"
+        elif status == "MM":
+            status = "M"
         rv[path] = status
     return rv
 
@@ -375,9 +393,10 @@ def sync_urls(manifest, updated_files):
             manifest.extend(get_manifest_items(path))
 
 
-def sync_local_changes(manifest, local_changes):
+def sync_local_changes(manifest):
     #If we just refuse to write the manifest in the face of local changes
     #this can be simplified somewhat
+    local_changes = manifest.local_changes
     if local_changes:
         logger.info("Working directory not clean, adding local changes")
     prev_local_changes = manifest.local_changes
@@ -421,6 +440,7 @@ def load(manifest_path):
             manifest = Manifest.from_json(json.load(f))
     except IOError as e:
         manifest = Manifest(None)
+
     return manifest
 
 
@@ -435,14 +455,10 @@ def update(manifest):
 
     import html5lib
 
-    committed_changes = get_committed_changes(manifest.rev)
-    local_changes = get_local_changes()
-
-    sync_urls(manifest, committed_changes)
-    sync_local_changes(manifest, local_changes)
+    sync_urls(manifest, manifest.committed_changes)
+    sync_local_changes(manifest)
 
     manifest.rev = get_current_rev()
-    manifest.local_changes = local_changes
 
 
 def write(manifest, manifest_path):
@@ -450,17 +466,37 @@ def write(manifest, manifest_path):
         json.dump(manifest.to_json(), f, indent=2)
 
 
-def update_manifest(repo_path, out_path):
+def update_manifest(repo_path, opts):
     setup_git(repo_path)
-    manifest = load(out_path)
-    update(manifest)
-    if not manifest.local_changes:
-        write(manifest, out_path)
+    if not opts.rebuild:
+        manifest = load(opts.path)
     else:
-        logging.info("Not writing updated manifest because of local changes")
+        manifest = Manifest(None)
 
+    if manifest.local_changes and not opts.experimental_include_local_changes:
+        logger.info("Not writing manifest because working directory is not clean.")
+    else:
+        logger.info("Updating manifest")
+        update(manifest)
+        write(manifest, opts.path)
+
+
+def get_parser(mach=False, groups=None):
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("--path", default=os.path.join(get_repo_root(), "MANIFEST.json"),
+                        help="Mainifest path")
+    parser.add_argument("--rebuild", action="store_true", default=False,
+                        help="Force a full rebuild of the manifest rather than updating incrementally.")
+    parser.add_argument("--experimental-include-local-changes", action="store_true", default=False,
+                        help="Include local changes in the manifest rather than just committed changes (experimental)")
+
+    return parser
+
+def main():
+    repo_root = get_repo_root()
+    opts = get_parser().parse_args()
+    update_manifest(repo_root, opts)
 
 if __name__ == "__main__":
-    repo_root = get_repo_root()
-    out_dir = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else os.path.join(repo_root, "MANIFEST.json"))
-    update_manifest(repo_root, out_dir)
+    main()

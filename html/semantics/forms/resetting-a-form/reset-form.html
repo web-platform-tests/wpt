@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>HTML Test: Resetting a form</title>
+<link rel="author" title="Intel" href="http://www.intel.com/">
+<link rel="help" href="http://www.w3.org/TR/html51/forms.html#concept-form-reset">
+<link rel="help" href="http://www.w3.org/TR/html51/forms.html#category-reset">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<form name="fm1" style="display:none">
+  <input value="abc" id="ipt1"></input>
+  <input id="ipt2"></input>
+  <input type="radio" id="rd1" checked="checked"></inpt>
+  <input type="radio" id="rd2"></inpt>
+  <input type="checkbox" id="cb1" checked="checked"></inpt>
+  <input type="checkbox" id="cb2"></inpt>
+  <textarea id="ta">abc</textarea>
+  <!--<keygen id="kg"></keygen>-->
+  <output id="opt">5</output>
+  <select id="slt1">
+    <option value="1">ITEM1</option>
+    <option value="2">ITEM2</option>
+  </select>
+  <select id="slt2">
+    <option value="1">ITEM1</option>
+    <option value="2" selected>ITEM2</option>
+  </select>
+  <button  id="rst1" type="reset">Reset1</button>
+  <input id="rst2" type="reset" value="Reset2">
+</form>
+<script>
+
+//reset by form.reset() method
+setPreconditions("Set preconditions 1 reset() method");
+document.forms.fm1.reset();
+runTest("by call reset() method");
+
+//reset by click a button element in reset status
+setPreconditions("Set preconditions 2 reset button");
+document.getElementById("rst1").click();
+runTest("by click reset button.");
+
+//reset by click a input element in reset status
+setPreconditions("Set preconditions 3 reset input");
+document.getElementById("rst2").click();
+runTest("by click reset input.");
+
+function setPreconditions (arg) {
+  document.getElementById("ipt1").value = "123";
+  document.getElementById("ipt2").value = "123";
+  document.getElementById("rd1").checked = false;
+  document.getElementById("rd2").checked = true;
+  document.getElementById("cb1").checked = false;
+  document.getElementById("cb2").checked = true;
+  document.getElementById("ta").value = "123";
+  document.getElementById("opt").textContent = "123";
+  document.getElementById("slt1").value = "2";
+  document.getElementById("slt2").value = "1";
+  
+  test(function () {
+    assert_equals(document.getElementById("ipt1").value, "123", "Precondition 1");
+    assert_equals(document.getElementById("ipt2").value, "123", "Precondition 2");
+    assert_false(document.getElementById("rd1").checked, "Precondition 3");
+    assert_true(document.getElementById("rd2").checked, "Precondition 4");
+    assert_false(document.getElementById("cb1").checked, "Precondition 5");
+    assert_true(document.getElementById("cb2").checked, "Precondition 6");
+    assert_equals(document.getElementById("ta").value, "123", "Precondition 17");
+    assert_equals(document.getElementById("opt").textContent, "123", "Precondition 8");
+    assert_true(document.getElementById("slt1").options[1].selected, "Precondition 9");
+    assert_true(document.getElementById("slt2").options[0].selected, "Precondition 10");
+  }, arg);
+}
+
+function runTest(arg) {
+  test(function () {
+    assert_equals(document.getElementById("ipt1").value, "abc", "The value of the input element in text status should be 'abc'.");
+  }, "The input element in text status must be reset 1 " + arg);
+
+  test(function () {
+    assert_equals(document.getElementById("ipt2").value, "", "The value of the input element in text status should be empty string.");
+  }, "The input element in text status must be reset 2 " + arg);
+
+  test(function () {
+    assert_true(document.getElementById("rd1").checked, "The checked attribute of the input element in radio status should be true.");
+  }, "The input element in radio status must be reset 1 " + arg);
+
+  test(function () {
+    assert_false(document.getElementById("rd2").checked, "The checked attribute of the input element in radio status should be false.");
+  }, "The input element in radio status must be reset 2 " + arg);
+
+  test(function () {
+    assert_true(document.getElementById("cb1").checked, "The checked attribute of the input element in checkbox status should be true.");
+  }, "The input element in checkbox status must be reset 1 " + arg);
+
+  test(function () {
+    assert_false(document.getElementById("cb2").checked, "The checked attribute of the input element in checkbox status should be false.");
+  }, "The input element in checkbox status must be reset 2 " + arg);
+
+  test(function () {
+    assert_equals(document.getElementById("ta").value, document.getElementById("ta").textContent, "The value of the textarea element should be 'abc'.");
+  }, "The textarea element must be reset " + arg);
+
+  test(function () {
+    assert_equals(document.getElementById("opt").textContent, document.getElementById("opt").defaultValue, "The textContent of the output element should be reset.");
+  }, "The output element must be reset " + arg);
+
+  test(function () {
+    assert_true(document.getElementById("slt1").options[0].selected, "The first option in the select element should be selected.");
+  }, "The select element must be reset 1 " + arg);
+
+  test(function () {
+    assert_true(document.getElementById("slt2").options[1].selected, "The second option in the select element should be selected.");
+  }, "The select element must be reset 2 " + arg);
+
+  //ToDo: reset the Keygen element
+  // The reset algorithm of keygen seems ambiguous.
+}
+
+</script>

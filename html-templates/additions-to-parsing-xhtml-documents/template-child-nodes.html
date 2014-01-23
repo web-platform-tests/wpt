@@ -18,7 +18,7 @@
 
 test(function() {
     var doc = newXHTMLDocument();
-
+    doc.documentElement.setAttribute('xmlns', 'http://www.w3.org/1999/xhtml');
     doc.body = doc.createElement('body');
     doc.body.innerHTML = '<template id="tmpl1">'
             + '<div id="div1">This is div inside template</div>'
@@ -38,6 +38,7 @@ test(function() {
 
 test(function() {
     var doc = newXHTMLDocument();
+    doc.documentElement.setAttribute('xmlns', 'http://www.w3.org/1999/xhtml');
     doc.body = doc.createElement('body');
     doc.body.innerHTML = '<template id="tmpl1">'
             + '<div id="div1">This is div inside template</div>'

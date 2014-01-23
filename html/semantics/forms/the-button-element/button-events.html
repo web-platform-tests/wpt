@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>HTML Test: Button - events</title>
+<link rel="author" title="Intel" href="http://www.intel.com/">
+<link rel="help" href="http://www.w3.org/TR/html51/forms.html#the-button-element">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<form name="fm1" style="display:none">
+  <button id="btn">BUTTON</button>
+  <button id="menu_btn" type="menu" menu="menu">MENU BUTTON</button>
+  <menu id="menu" label="MENU">
+    <li>Menu item</li>
+  </menu>
+</form>
+<script>
+
+var btn = document.getElementById("btn"),
+    menu_btn = document.getElementById("menu_btn"),
+    t1 = async_test("The submit event must be fired when click a button in submit status"),
+    t2 = async_test("The reset event must be fired when click a button in reset status"),
+    t3 = async_test("The show event must be fired when click a button in menu status");
+
+document.forms.fm1.onsubmit = function (evt) {
+  t1.step(function () {
+    assert_true(evt.isTrusted, "The isTruested attribute of the submit event shoud be true.");
+    assert_true(evt.bubbles, "The bubbles attribute of the submit event shoud be true.");
+    assert_true(evt.cancelable, "The cancelable attribute of the submit event shoud be true.");
+    assert_true(evt instanceof Event, "The sumbit event is a instance of Event interface.");
+    assert_equals(btn.type, "submit");
+  });
+  t1.done();
+  evt.preventDefault();
+}
+
+document.forms.fm1.onreset = function (evt) {
+  t2.step(function () {
+    assert_true(evt.isTrusted, "The isTruested attribute of the reset event shoud be true..");
+    assert_true(evt.bubbles, "The bubbles attribute of the reset event shoud be true..");
+    assert_true(evt.cancelable, "The cancelable attribute of the reset event shoud be true.");
+    assert_true(evt instanceof Event, "The reset event is a instance of Event interface.");
+    assert_equals(btn.type, "reset");
+  });
+  t2.done();
+}
+
+document.getElementById("menu").addEventListener ("show", function (evt) {
+  t3.step(function () {
+    assert_true(evt.isTrusted, "The isTruested attribute of the show event shoud be true.");
+    assert_equals(evt.relatedTarget, menu_btn,"The relatedTarget attribute of the show event is incorrect.");
+    assert_false(evt.cancelable, "The cancelable attribute of the show event shoud be false.");
+    assert_true(evt instanceof RelatedEvent, "The reset event is a instance of RelatedEvent interface.");
+    assert_equals(document.getElementById("menu").type, "menu");
+  });
+  t3.done();
+});
+
+btn.type = "submit";
+btn.click();
+
+btn.type = "reset";
+btn.click();
+
+btn.type = "button";
+btn.click();          //Do nothing
+
+menu_btn.click();
+
+</script>

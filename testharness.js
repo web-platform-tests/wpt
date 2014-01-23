@@ -1200,8 +1200,10 @@ policies and contribution forms [3].
 
         return function()
         {
-            test_this.step.apply(test_this, [func, this_obj].concat(
-                Array.prototype.slice.call(arguments)));
+            if (func) {
+                test_this.step.apply(test_this, [func, this_obj].concat(
+                    Array.prototype.slice.call(arguments)));
+            }
             test_this.done();
         };
     }

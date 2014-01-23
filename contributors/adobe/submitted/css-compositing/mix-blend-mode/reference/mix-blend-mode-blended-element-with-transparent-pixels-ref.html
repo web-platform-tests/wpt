@@ -4,53 +4,28 @@
         <title>CSS Reftest Reference</title>
         <link rel="author" title="Mihai Tica" href="mailto:mitica@adobe.com">
         <link rel="reviewer" title="Mihai Balan" href="mailto:mibalan@adobe.com">
+        <link rel="reviewer" title="Horia Olaru" href="mailto:olaru@adobe.com">
         <style type="text/css">
             .parent {
                 position: absolute;
                 z-index: 1;
-                background: #FF0;
-                width: 100px;
-                height: 100px;
-            }
-            .blender {
-                width: 100px;
-                height: 100px;
-                background: #FF19FF;
-                margin-top: 10px;
-                margin-left: 10px;
-            }
-            .aquaBlendBox {
-                background: #19FFE6;
-                width: 90px;
-                height: 90px;
+                background: #0FF;
+                width: 120px;
+                height: 120px;
             }
             .child {
-                position: absolute;
-                z-index: 1;
-                background: #F00;
+                background: #0F0;
                 width: 100px;
                 height: 100px;
-                margin-top: -80px;
-                margin-left: 10px;
-            }
-            .limeBlendBox {
-                background: #0F0;
-                width: 80px;
-                height: 80px;
+                margin: 10px;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if a lime square is drawn at the intersection of the squares.<br>
-        The first square should be drawn with yellow, the second one with aqua, having fuchsia corners.<br>
-        Third square should be green, with the right-lower part drawn in red.</p>
+        <p>Test passes if you can see a lime square with aqua borders.<br>
+            If the borders are red, the test fails.</p>
         <div class="parent">
-            <div class="blender">
-                <div class="aquaBlendBox"></div>
-                <div class="child">
-                    <div class="limeBlendBox"></div>
-                </div>
-            </div>
+            <div class="child"></div>
         </div>
     </body>
 </html>

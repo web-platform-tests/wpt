@@ -21,11 +21,30 @@ from wptserve.router import any_method
 sys.path.insert(1, os.path.join(repo_root, "tools", "pywebsocket", "src"))
 from mod_pywebsocket import standalone as pywebsocket
 
+@handlers.handler
+def workers_handler(request, response):
+    worker_path = request.url_parts.path.replace(".html", ".js")
+    return """
+<!doctype html>
+<meta charset=utf-8>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script>
+var w = new Worker("%s");
+w.onmessage = function(e) {
+  receive_message(e.data);
+}
+</script>
+""" % (worker_path,)
+
+
 routes = [("GET", "/tools/runner/*", handlers.file_handler),
           (any_method, "/tools/*", handlers.ErrorHandler(404)),
           (any_method, "/serve.py", handlers.ErrorHandler(404)),
           (any_method, "*.py", handlers.python_script_handler),
           ("GET", "*.asis", handlers.as_is_handler),
+          ("GET", "*-worker.html", workers_handler),
           ("GET", "*", handlers.file_handler),
           ]
 

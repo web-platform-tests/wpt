@@ -20,7 +20,8 @@ from wptserve.router import any_method
 sys.path.insert(1, os.path.join(repo_root, "tools", "pywebsocket", "src"))
 from mod_pywebsocket import standalone as pywebsocket
 
-routes = [(any_method, "/tools/*", handlers.ErrorHandler(404)),
+routes = [("GET", "/tools/runner/*", handlers.file_handler),
+          (any_method, "/tools/*", handlers.ErrorHandler(404)),
           (any_method, "/serve.py", handlers.ErrorHandler(404)),
           (any_method, "*.py", handlers.python_script_handler),
           ("GET", "*.asis", handlers.as_is_handler),
@@ -150,6 +151,7 @@ def start_http_server(config, port):
     return wptserve.WebTestHttpd(host=config["host"],
                                  port=port,
                                  doc_root=repo_root,
+                                 routes=routes,
                                  rewrites=rewrites,
                                  config=config,
                                  use_ssl=False,

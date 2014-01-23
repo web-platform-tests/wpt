@@ -7,7 +7,7 @@
 <meta name="flags" content="">
 <meta name="assert" content="The body attribute must return the notification's body and the empty string otherwise.">
 <body>
-  <p>Test passes if show a notification and the notification's body is "Room 101".</p>
+  <p>Test passes if a notification popups and the notification's body content is "Room 101".</p>
   <script>
     var notification = typeof Notification != "undefined" ? new Notification("New Email Received", {
         body: "Room 101"

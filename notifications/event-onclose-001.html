@@ -4,14 +4,14 @@
 <link rel="author" title="Intel" href="http://www.intel.com/">
 <link rel="author" title="Xin Liu" href="mailto:xinx.liu@intel.com">
 <link rel="help" title="5 API" href="http://www.w3.org/TR/notifications/">
-<meta name="flags" content="">
+<meta name="flags" content="interact">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="support/notifications.js"></script>
 <body>
   <p>Test steps:</p>
     <ol>
-      <li>When show a notification, click the notification's close button.</li>
+      <li>When a notification popups, click the close button within the notification.</li>
     </ol>
   <div id="log"></div>
   <script>
@@ -21,6 +21,7 @@
     notification.onclose = t.step_func(function(e) {
       assert_equals(Object.prototype.toString.call(e), "[object Event]", "the type of event");
       t.done();
-    })
+    });
   </script>
 </body>
+

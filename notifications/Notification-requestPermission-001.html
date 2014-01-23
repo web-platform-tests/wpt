@@ -10,12 +10,11 @@
 <body>
   <div id="log"></div>
   <script>
-    test(function() {
-      var permission_granted;
-      Notification.requestPermission(function(permission) {
-        permission_granted = permission;
-      })
-      assert_in_array(permission_granted, ["default", "denied", "granted"], "notification permission");
-    }, "Test checks that notification the value of permission is granted");
+    t = async_test("the notification the value of permission is granted", {timeout: 50000});
+    Notification.requestPermission(t.step_func(function(permission) {
+       assert_equals(permission, "granted", "notification permission");
+       t.done();
+    }));
   </script>
 </body>
+

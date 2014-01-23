@@ -269,7 +269,7 @@ class Request(object):
         self.server = Server(self)
 
     def __repr__(self):
-        return "<Request %s %s>" % (self.method, self.path)
+        return "<Request %s %s>" % (self.method, self.url)
 
     @property
     def GET(self):

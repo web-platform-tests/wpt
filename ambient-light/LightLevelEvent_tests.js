@@ -99,7 +99,7 @@
       }
     });
     assert_equals(event.type, '123');
-  }, 'type argument is complext object, with toString method');
+  }, 'type argument is complex object, with toString method');
 
   test(function() {
     assert_throws(null, function() {

@@ -1,2 +1,0 @@
-AmbientLight_tests.html							
-idlharness.html

@@ -17,7 +17,7 @@
           assert_equals(e.type, 'abort');
           abortFired = true;
         });
-        client.open("GET", "resources/delay.php?ms=3000", true);
+        client.open("GET", "resources/delay.py?ms=3000", true);
         client.send(null);
         setTimeout(function(){
           test.step(function(){
@@ -25,7 +25,9 @@
             test.done();
           });
         }, 200);
-        window.stop();
+        window.addEventListener("load", function(){
+          setTimeout(function(){window.stop()},1);
+        }, false);
       });
     </script>
   </body>

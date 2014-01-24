@@ -1,7 +1,7 @@
 import time
 
 def main(request, response):
-    response.headers.append(("Content-Type", "text/javascript"))
+    response.headers.append("Content-Type", "text/javascript")
     try:
         script_id = int(request.GET.first("id"))
         delay = int(request.GET.first("sec"))

@@ -28,7 +28,7 @@ test(function() {
             doc.registerElement(value);
         } catch (e) {
             assert_unreached('Exception should not be thrown in case of attempt ' +
-                    'to register a custom element with a name \'' + value + '\'');
+                'to register a custom element with a name \'' + value + '\'');
         }
     });
 }, 'Registering valid custom element types');
@@ -38,7 +38,7 @@ test(function() {
     var doc = newHTMLDocument();
     var invalidNames = [
                       'xframe', 'x_frame', 'x.frame', 'x1frame', '-xframe', '1-frame', '1x-frame',
-                      '.-frame', '_frame', 'x-f!rame'
+                      '.-frame', '_frame', 'x-f!rame', 'x-:frame'
                      ];
     invalidNames.forEach(function(value) {
         //FIXME Should the type of the exception be specified here?

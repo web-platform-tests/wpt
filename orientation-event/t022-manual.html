@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>User agents must also provide an event handler IDL attribute HTML5 named ondevicemotion on the window object</title>
-    <meta name=viewport content="width=device-width, maximum-scale=1.0, user-scalable=no">
+    <title>The corresponding event must be of type DeviceOrientationEvent and must fire on the window object</title>
+    <meta name=viewport content="width=device-width, maximum-scale=1.0">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <link rel="author" title="Mosquito FP7">
@@ -12,22 +12,23 @@
     <p>Move the device to run the test.</p>
     <div id="log"></div>
     <script>
-      var t1 = async_test("User agents provide an event handler IDL attribute HTML5 named ondevicemotion");
-      var t2 = async_test("The type of this event handler must be 'DeviceMotionEvent'");
+      var t1 = async_test("The corresponding event must be of type DeviceMotionEvent");
+      var t2 = async_test("The corresponding event must fire on the window object");
       var run = false;
-      window.ondevicemotion = function(e) {
+      window.addEventListener("devicemotion", function(e) {
         if (!run) {
           run = true;
+          var _this = this;
           t1.step(function() {
             assert_equals(e.type, "devicemotion");
           });
           t1.done();
           t2.step(function() {
-            assert_true(e.constructor.lastIndexOf("DeviceMotionEvent") != -1);
+            assert_equals(_this, window);
           });
           t2.done();
         }
-      };
+      }, false);
     </script>
   </body>
 </html>

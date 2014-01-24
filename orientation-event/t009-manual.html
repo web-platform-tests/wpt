@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Rotate the device frame around its z axis</title>
-    <meta name=viewport content="width=device-width, maximum-scale=1.0, user-scalable=no">
+    <title>Rotate the device frame around its x axis</title>
+    <meta name=viewport content="width=device-width, maximum-scale=1.0">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <link rel="author" title="Mosquito FP7">
@@ -11,24 +11,24 @@
   <body>
     <div id="log"></div>
     <script>
-      var alpha = 0;
+      var beta = 180;
       var run = false;
       window.addEventListener("deviceorientation", function(e) {
         if (!run) {
           run = true;
-          alpha = e.alpha;
+          beta = e.beta;
         }
       }, false);
 
-      alert("Rotate the device frame around its z axis.");
-      
-      test(function() {
-        assert_true(alpha > 0 && alpha < 360);
-      }, "Alpha is between 0 and 360");
+      alert("Rotate the device frame around its x axis.");
 
       test(function() {
-        assert_false(alpha > -2 && alpha < 2);
-      }, "Alpha is not around zero (between 0 and 2)");
+        assert_true(beta > -180 && beta < 180);
+      }, "Beta is between -180 and 180");
+
+      test(function() {
+        assert_false(beta > -2 && beta < 2);
+      }, "Beta is not around zero (between -2 and 2)");
     </script>
   </body>
 </html>

@@ -9,12 +9,9 @@
 <body>
   <p>Test passes if a notification popups and the notification have no body content.</p>
   <script>
-    var notification = typeof Notification != "undefined" ? new Notification("New Email Received", {
-        body: ""
-      })
-      : window.webkitNotifications.createNotification("New Email Received", {
-        body: ""
-      });
+    var notification = new Notification("New Email Received", {
+      body: ""
+    });
     notification.show();
   </script>
 </body>

@@ -9,14 +9,10 @@
 <body>
   <p>Test passes if a notification popups and the notification's direction is the right edge.</p>
   <script>
-    var notification = typeof Notification != "undefined" ? new Notification("New Email Received", {
-        body: "Room 101",
-        dir: "rtl"
-      })
-      : window.webkitNotifications.createNotification("New Email Received", {
-        body: "Room 101",
-        dir: "rtl"
-      });
+    var notification = new Notification("New Email Received", {
+      body: "Room 101",
+      dir: "rtl"
+    });
     notification.show();
   </script>
 </body>

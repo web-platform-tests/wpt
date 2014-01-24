@@ -10,12 +10,9 @@
   <div id="log"></div>
   <script>
     test(function() {
-      var notification = typeof Notification != "undefined" ? new Notification("New Email Received", {
-          body: "Room 101"
-        })
-        : window.webkitNotifications.createNotification("New Email Received", {
-          body: "Room 101"
-        });
+      var notification = new Notification("New Email Received", {
+        body: "Room 101"
+      });
     }, "Test checks that notification constructor is correct");
   </script>
 </body>

@@ -9,14 +9,10 @@
 <body>
   <p>Test passes if a notificaiton popups and notification's icon content show nothing.</p>
   <script>
-    var notification = typeof Notification != "undefined" ? new Notification("New Email Received", {
-        body: "Room 101",
-        icon: ""
-      })
-      : window.webkitNotifications.createNotification("New Email Received", {
-        body: "Room 101",
-        icon: ""
-      });
+    var notification = new Notification("New Email Received", {
+      body: "Room 101",
+      icon: ""
+    });
     notification.show();
   </script>
 </body>

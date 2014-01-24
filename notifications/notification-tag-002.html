@@ -9,24 +9,16 @@
 <body>
   <p>Test passes if two notifications popups and the notification's body are different.</p>
   <script>
-    var notification1 = typeof Notification != "undefined" ? new Notification("New Email Received", {
-        body: "Room 101",
-        tag: "Tom"
-      })
-      : window.webkitNotifications.createNotification("New Email Received", {
-        body: "Room 101",
-        tag: "Tom"
-      });
+    var notification1 = new Notification("New Email Received", {
+      body: "Room 101",
+      tag: "Tom"
+    });
     notification1.show();
 
-    var notification2 = typeof Notification != "undefined" ? new Notification("New Email Received", {
-        body: "Room 202",
-        tag: "Rose"
-      })
-      : window.webkitNotifications.createNotification("New Email Received", {
-        body: "Room 202",
-        tag: "Rose"
-      });
+    var notification2 = new Notification("New Email Received", {
+      body: "Room 202",
+      tag: "Rose"
+    });
     notification2.show();
   </script>
 </body>

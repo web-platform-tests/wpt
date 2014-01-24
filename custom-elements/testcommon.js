@@ -404,3 +404,54 @@ function testInIFrame(url, f, testName, testProps) {
         }), testName, testProps);
     }
 }
+
+// Helper function, which verifies that given custom element name is valid
+function checkValidName(doc, name) {
+    try {
+        doc.registerElement(name);
+    } catch (e) {
+        assert_unreached('The custom element name \'' + name +
+            '\' should be registered without errors');
+    }
+}
+
+// Helper function, which verifies that given custom element name is invalid
+function checkInvalidName(doc, name) {
+    assert_throws(null,
+        function(){ doc.registerElement(name); },
+        'Registering invalid custom element name \'' + name +
+            '\' should fail');
+}
+// Helper function to extract character code from given object
+// expected input: either charater code or one character long string.
+function getCharCode(c) {
+    if (typeof(c) === 'string'){
+        assert_equals(1, c.length, 'Error in test: input string should be one character long');
+        c = c.charCodeAt(0);
+    }
+    assert_equals('number', typeof(c), 'Error in test: unexpected type for charater code');
+    return c;
+}
+
+// check each element of the supplied array with the checkFunction
+// the input array should contain either characters or character codes
+// (mixing is is allowed)
+function testCharCodeArray(doc, charCodeArray, nameFunction, checkFunction) {
+    for (var i = 0; i < charCodeArray.length; i++){
+        var c = getCharCode(charCodeArray[i]);
+        checkFunction(doc, nameFunction(c));
+    }
+}
+
+// check each element of the supplied ranges array with the checkFunction
+// the input array should contain either characters or character codes
+//(mixing is is allowed)
+function testCharCodeRangesArray(doc, charCodeRangesArray, nameFunction, checkFunction) {
+    for (var i = 0; i < charCodeRangesArray.length; i += 2){
+        var rangeStart = getCharCode(charCodeRangesArray[i]);
+        var rangeEnd = getCharCode(charCodeRangesArray[i+1]);
+        for (var c = rangeStart; c <= rangeEnd; c++){
+            checkFunction(doc, nameFunction(c));
+        }
+    }
+}

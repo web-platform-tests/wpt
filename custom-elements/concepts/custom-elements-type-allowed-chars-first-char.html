@@ -15,77 +15,44 @@
 <div id="log"></div>
 <script type="text/javascript">
 
-function checkValidName(doc, name) {
-    try {
-        doc.registerElement(name);
-    } catch (e) {
-        assert_unreached('The custom element name \'' + name +
-               '\' should be registered without errors');
-    }
-}
-
-function checkInvalidName(doc, name) {
-    assert_throws(null,
-        function(){ doc.registerElement(name); },
-        'Registering invalid custom element name \'' + name +
-          '\' should fail');
-}
-
-// check each element of the supplied array with the checkFunction
-function testCharCodeArray(doc, charCodeArray, checkFunction) {
-    for (var i = 0; i < charCodeArray.length; i++){
-        var c = charCodeArray[i];
-        var name = String.fromCharCode(c) + '-x' + c.toString(16);
-        checkFunction(doc, name);
-    }
-}
-
-// check each element of the supplied ranges array with the checkFunction
-function testCharCodeRangesArray(doc, charCodeRangesArray, checkFunction) {
-    for (var i = 0; i < charCodeRangesArray.length; i += 2){
-        var rangeStart = charCodeRangesArray[i];
-        var rangeEnd = charCodeRangesArray[i+1];
-        for (var c = rangeStart; c <= rangeEnd; c++){
-            var name = String.fromCharCode(c) + '-x' + c.toString(16);
-            checkFunction(doc, name);
-        }
-    }
+function composeName(c) {
+    return String.fromCharCode(c) + '-x' + c.toString(16);
 }
 
 test(function(){
-    testCharCodeArray(newHTMLDocument(), ['_'.charCodeAt(0)], checkValidName);
+    testCharCodeArray(newHTMLDocument(), ['_'], composeName, checkValidName);
 }, 'Registering valid custom element name starting with \'_\' char');
 
 test(function(){
-    testCharCodeArray(newHTMLDocument(), BASE_CHARS_SINGLE, checkValidName);
+    testCharCodeArray(newHTMLDocument(), BASE_CHARS_SINGLE, composeName, checkValidName);
 }, 'Registering valid custom element name starting with single base chars');
 
 test(function(){
-    testCharCodeRangesArray(newHTMLDocument(), BASE_CHARS_RANGES, checkValidName);
+    testCharCodeRangesArray(newHTMLDocument(), BASE_CHARS_RANGES, composeName, checkValidName);
 }, 'Registering valid custom element name starting with base chars ranges');
 
 test(function(){
-    testCharCodeArray(newHTMLDocument(), IDEOGRAPHIC_CHARS_SINGLE, checkValidName);
+    testCharCodeArray(newHTMLDocument(), IDEOGRAPHIC_CHARS_SINGLE, composeName, checkValidName);
 }, 'Registering valid custom element name starting with single ideographic chars');
 
 test(function(){
-    testCharCodeRangesArray(newHTMLDocument(), IDEOGRAPHIC_CHARS_RANGES, checkValidName);
+    testCharCodeRangesArray(newHTMLDocument(), IDEOGRAPHIC_CHARS_RANGES, composeName, checkValidName);
 }, 'Registering valid custom element name starting with ideographic chars ranges');
 
 test(function(){
-    testCharCodeArray(newHTMLDocument(), ['.', '-', ':', '+', '='], checkInvalidName);
+    testCharCodeArray(newHTMLDocument(), ['.', '-', ':', '+', '='], composeName, checkInvalidName);
 }, 'Registering custom element starting with invalid character (general) should fail');
 
 test(function(){
-    testCharCodeArray(newHTMLDocument(), COMBINING_CHARS, checkInvalidName);
+    testCharCodeArray(newHTMLDocument(), COMBINING_CHARS, composeName, checkInvalidName);
 }, 'Registering custom element starting with invalid character (combining char) should fail');
 
 test(function(){
-    testCharCodeArray(newHTMLDocument(), EXTENDER_CHARS, checkInvalidName);
+    testCharCodeArray(newHTMLDocument(), EXTENDER_CHARS, composeName, checkInvalidName);
 }, 'Registering custom element starting with invalid character (extender char) should fail');
 
 test(function(){
-    testCharCodeRangesArray(newHTMLDocument(), DIGIT_CHARS_RANGES, checkInvalidName);
+    testCharCodeRangesArray(newHTMLDocument(), DIGIT_CHARS_RANGES, composeName, checkInvalidName);
 }, 'Registering custom element starting with invalid character (digit char) should fail');
 
 

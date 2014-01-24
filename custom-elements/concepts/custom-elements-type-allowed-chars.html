@@ -15,68 +15,40 @@
 <div id="log"></div>
 <script type="text/javascript">
 
-function checkValidName(doc, name) {
-    try {
-        doc.registerElement(name);
-    } catch (e) {
-        assert_unreached('The custom element name \'' + name +
-               '\' should be registered without errors');
-    }
-}
-
-// check each element of the supplied array with the checkFunction
-function testCharCodeArray(doc, charCodeArray, checkFunction) {
-    for (var i = 0; i < charCodeArray.length; i++){
-        var c = charCodeArray[i];
-        var name = 'x-' + String.fromCharCode(c) + '-x' + c.toString(16);
-        checkFunction(doc, name);
-    }
-}
-
-// check each element of the supplied ranges array with the checkFunction
-function testCharCodeRangesArray(doc, charCodeRangesArray, checkFunction) {
-    for (var i = 0; i < charCodeRangesArray.length; i += 2){
-        var rangeStart = charCodeRangesArray[i];
-        var rangeEnd = charCodeRangesArray[i+1];
-        for (var c = rangeStart; c <= rangeEnd; c++){
-            var name = 'x-' + String.fromCharCode(c) + '-x' + c.toString(16);
-            checkFunction(doc, name);
-        }
-    }
+function composeName(c) {
+    return 'x-' + String.fromCharCode(c) + '-x' + c.toString(16);
 }
 
 test(function() {
-    testCharCodeArray(newHTMLDocument(), BASE_CHARS_SINGLE, checkValidName);
+    testCharCodeArray(newHTMLDocument(), BASE_CHARS_SINGLE, composeName, checkValidName);
 }, 'Registering valid custom element types with single base chars');
 
 test(function() {
-    testCharCodeRangesArray(newHTMLDocument(), BASE_CHARS_RANGES, checkValidName);
+    testCharCodeRangesArray(newHTMLDocument(), BASE_CHARS_RANGES, composeName, checkValidName);
 }, 'Registering valid custom element types with base chars ranges');
 
 test(function() {
-    testCharCodeArray(newHTMLDocument(), IDEOGRAPHIC_CHARS_SINGLE, checkValidName);
+    testCharCodeArray(newHTMLDocument(), IDEOGRAPHIC_CHARS_SINGLE, composeName, checkValidName);
 }, 'Registering valid custom element types with single ideographic chars');
 
 test(function() {
-    testCharCodeRangesArray(newHTMLDocument(), IDEOGRAPHIC_CHARS_RANGES, checkValidName);
+    testCharCodeRangesArray(newHTMLDocument(), IDEOGRAPHIC_CHARS_RANGES, composeName, checkValidName);
 }, 'Registering valid custom element types with ideographic chars ranges');
 
 test(function() {
-    testCharCodeRangesArray(newHTMLDocument(), DIGIT_CHARS_RANGES, checkValidName);
+    testCharCodeRangesArray(newHTMLDocument(), DIGIT_CHARS_RANGES, composeName, checkValidName);
 }, 'Registering valid custom element types with digit chars');
 
 test(function() {
-    testCharCodeArray(newHTMLDocument(),
-                      ['.'.charCodeAt(0), '-'.charCodeAt(0), '_'.charCodeAt(0)],
-                      checkValidName);
+    testCharCodeArray(newHTMLDocument(), ['.', '-', '_'], composeName, checkValidName);
 }, 'Registering valid custom element types with characters \'.\', \'-\', \'_\'');
 
 test(function() {
-    testCharCodeArray(newHTMLDocument(), COMBINING_CHARS, checkValidName);
+    testCharCodeArray(newHTMLDocument(), COMBINING_CHARS, composeName, checkValidName);
 }, 'Registering valid custom element types with combining char');
 
 test(function() {
-    testCharCodeArray(newHTMLDocument(), EXTENDER_CHARS, checkValidName);
+    testCharCodeArray(newHTMLDocument(), EXTENDER_CHARS, composeName, checkValidName);
 }, 'Registering valid custom element types with extender char');
 
 </script>

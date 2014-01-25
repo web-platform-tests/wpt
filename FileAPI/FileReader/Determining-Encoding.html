@@ -16,16 +16,12 @@ t.step(function() {
     data.forEach(function(v,i){
         dataView.setInt8(i, v);
     });
-    var testString = "hello";
 
     var blob = new Blob([testStringArray]);
     var reader = new FileReader();
-    var strResult = "";
 
     reader.onloadend = t.step_func_done (function(event) {
-        strResult = reader.result;
-        assert_equals(strResult, testString, "The FileReader should read the ArrayBuffer through UTF-16BE.")
-        t.done();
+        assert_equals(this.result, "hello", "The FileReader should read the ArrayBuffer through UTF-16BE.")
     }, reader);
 
     reader.readAsText(blob, "UTF-16BE");
@@ -39,16 +35,12 @@ t.step(function() {
     data.forEach(function(v,i){
         dataView.setInt8(i, v);
     });
-    var testString = "hello";
 
     var blob = new Blob([testStringArray], {type:"text/plain;charset=UTF-16BE"});
     var reader = new FileReader();
-    var strResult = "";
 
     reader.onloadend = t.step_func_done (function(event) {
-        strResult = reader.result;
-        assert_equals(strResult, testString, "The FileReader should read the ArrayBuffer through UTF-16BE.")
-        t.done();
+        assert_equals(this.result, "hello", "The FileReader should read the ArrayBuffer through UTF-16BE.")
     }, reader);
 
     reader.readAsText(blob);
@@ -63,16 +55,12 @@ t.step(function() {
     data.forEach(function(v,i){
         dataView.setInt8(i, v);
     });
-    var testString = "hello";
 
     var blob = new Blob([testStringArray]);
     var reader = new FileReader();
-    var strResult = "";
 
     reader.onloadend = t.step_func_done (function(event) {
-        strResult = reader.result;
-        assert_equals(strResult, testString, "The FileReader should read the blob with UTF-8.");
-        t.done();
+        assert_equals(this.result, "hello", "The FileReader should read the blob with UTF-8.");
     }, reader);
 
     reader.readAsText(blob);
@@ -86,16 +74,12 @@ t.step(function() {
     data.forEach(function(v,i){
         dataView.setInt8(i, v);
     });
-    var testString = "hello";
 
     var blob = new Blob([testStringArray]);
     var reader = new FileReader();
-    var strResult = "";
 
     reader.onloadend = t.step_func_done (function(event) {
-        strResult = reader.result;
-        assert_equals(strResult, testString, "The FileReader should read the blob by default with UTF-8.");
-        t.done();
+        assert_equals(this.result, "hello", "The FileReader should read the blob by default with UTF-8.");
     }, reader);
 
     reader.readAsText(blob);
@@ -109,16 +93,12 @@ t.step(function() {
     data.forEach(function(v,i){
         dataView.setInt8(i, v);
     });
-    var testString = "hello";
 
     var blob = new Blob([testStringArray]);
     var reader = new FileReader();
-    var strResult = "";
 
     reader.onloadend = t.step_func_done (function(event) {
-        strResult = reader.result;
-        assert_equals(strResult, testString, "The FileReader should read the ArrayBuffer through UTF-16BE.");
-        t.done();
+        assert_equals(this.result, "hello", "The FileReader should read the ArrayBuffer through UTF-16BE.");
     }, reader);
 
     reader.readAsText(blob);
@@ -132,16 +112,12 @@ t.step(function() {
     data.forEach(function(v,i){
         dataView.setInt8(i, v);
     });
-    var testString = "hello";
 
     var blob = new Blob([testStringArray]);
     var reader = new FileReader();
-    var strResult = "";
 
     reader.onloadend = t.step_func_done (function(event) {
-        strResult = reader.result;
-        assert_equals(strResult, testString, "The FileReader should read the ArrayBuffer through UTF-16LE.");
-        t.done();
+        assert_equals(this.result, "hello", "The FileReader should read the ArrayBuffer through UTF-16LE.");
     }, reader);
 
     reader.readAsText(blob);

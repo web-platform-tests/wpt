@@ -2,7 +2,8 @@
 <meta charset=utf-8>
 <title>FileAPI Test: Blob Determining Encoding</title>
 <link ref="author" title="march1993" href="mailto:march511@gmail.com">
-<link rel=help href="http://www.w3.org/TR/FileAPI/#enctypes">
+<link rel=help href="http://dev.w3.org/2006/webapi/FileAPI/#enctype">
+<link rel=help href="http://encoding.spec.whatwg.org/#decode">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
@@ -37,12 +38,12 @@ t.step(function() {
 
 var t = async_test("Blob Determing Encoding with UTF-8 BOM");
 t.step(function() {
-    var data = [0xEF,0xBB,0xBF,0x68,0x65,0x6C,0x6C,0x6F];
+    var data = [0xEF,0xBB,0xBF,0x68,0x65,0x6C,0x6C,0xC3,0xB6];
     var blob = new Blob([new Uint8Array(data)]);
     var reader = new FileReader();
 
     reader.onloadend = t.step_func_done (function(event) {
-        assert_equals(this.result, "hello", "The FileReader should read the blob with UTF-8.");
+        assert_equals(this.result, "hellö", "The FileReader should read the blob with UTF-8.");
     }, reader);
 
     reader.readAsText(blob);
@@ -50,12 +51,12 @@ t.step(function() {
 
 var t = async_test("Blob Determing Encoding without anything implying charset.");
 t.step(function() {
-    var data = [0x68,0x65,0x6C,0x6C,0x6F];
+    var data = [0x68,0x65,0x6C,0x6C,0xC3,0xB6];
     var blob = new Blob([new Uint8Array(data)]);
     var reader = new FileReader();
 
     reader.onloadend = t.step_func_done (function(event) {
-        assert_equals(this.result, "hello", "The FileReader should read the blob by default with UTF-8.");
+        assert_equals(this.result, "hellö", "The FileReader should read the blob by default with UTF-8.");
     }, reader);
 
     reader.readAsText(blob);

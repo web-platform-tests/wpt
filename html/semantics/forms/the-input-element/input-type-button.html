@@ -11,15 +11,15 @@
 <div id="hide" style="display">
   <input type="button"/>
   <input type="button" value="BUTTON"/>
-  <form action="/" method="get" onsubmit="isSubmited = true;return false;">
+  <form action="/" method="get" onsubmit="isSubmitted = true;return false;">
     <input type="button" value="mutable"/>
   </form>
-  <form action="/" method="get" onsubmit="isSubmited = true;return false;">
+  <form action="/" method="get" onsubmit="isSubmitted = true;return false;">
     <input type="button" value="immutable" disabled/>
   </form>
 </div>
 <script>
-var isSubmited = false;
+var isSubmitted = false;
 var buttons = document.getElementsByTagName("input");
 
 test(function() {
@@ -37,15 +37,15 @@ test(function() {
 },"label value");
 
 test(function() {
-  isSubmited = false;
+  isSubmitted = false;
   buttons[2].click();
-  assert_equals(isSubmited, false, "If the element is mutable, the element's activation behavior is to do nothing.");
+  assert_equals(isSubmitted, false, "If the element is mutable, the element's activation behavior is to do nothing.");
 },"mutable element's activation behavior is to do nothing.");
 
 test(function() {
-  isSubmited = false;
+  isSubmitted = false;
   buttons[3].click()
-  assert_equals(isSubmited, false, "If the element is immutable, the element has no activation behavior.");
+  assert_equals(isSubmitted, false, "If the element is immutable, the element has no activation behavior.");
 },"immutable element has no activation behavior.");
 </script>
 </body>

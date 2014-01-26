@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<title>HTMLAnchorElement.text setting</title>
+<link rel="author" title="Tim Denney" href="mailto:timdenney@gmail.com">
+<link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/disabled-elements.html#disabled-elements">
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<div id=log></div>
+
+<button id="test_btn" disabled="disabled" onclick="set_value(this)" >Button</button>
+
+<button id="test_bool_attr1" disabled="" >Button</button>
+<button id="test_bool_attr2" disabled>Button</button>
+<button id="test_bool_attr3" disabled="false" >Button</button>
+<button id="test_bool_attr4" disabled=true >Button</button>
+<button id="test_bool_attr5" disabled=false >Button</button>
+
+<fieldset disabled="disabled">
+  <legend>test
+    <button id="test_fieldset_leg_1" onclick="set_value(this)">Button</button>
+    <legend>test3
+      <button id="test_fieldset_leg_2" onclick="set_value(this)">Button</button>
+    </legend>
+  </legend>
+  <legend>test2
+    <button id="test_fieldset_leg_3" onclick="set_value(this)">Button</button>
+  </legend>
+  <button id="test_fieldset_1" onclick="set_value(this)">Button</button>
+  <input id="test_fieldset_2" onclick="set_value(this)">Button</input>
+  <select id="test_fieldset_4" onclick="set_value(this)">
+    <option>test</option>
+  </select>
+  <input id="test_fieldset_5" type="checkbox" onclick="set_value(this)"></input>
+  <input id="test_fieldset_6" type="radio" name="grp1" onclick="set_value(this)">test</input>
+  <input id="test_fieldset_7" type="radio" name="grp2" onclick="set_value(this)">test</input>
+  <input id="test_fieldset_8" type="password" onclick="set_value(this)">test</input>
+  <fieldset>
+    <legend>test4
+      <button id="test_fieldset_nest_leg_4" onclick="set_value(this)">Button</button>
+    </legend>
+    <button id="test_fieldset_nest_7" onclick="set_value(this)">Button</button>
+  </fieldset>
+</fieldset>
+
+
+<script>
+
+function set_value(e){
+  var btn=document.getElementById(e.id);
+  btn.setAttribute("check","fired");
+}
+
+function eventFire(item, type){
+  if (item!=undefined){
+    var evObj = document.createEvent('Events');
+    evObj.initEvent('click', true, false);
+    item.dispatchEvent(evObj);
+  }
+}
+
+test(function(){
+  var btn=document.getElementById("test_btn");
+  assert_equals(btn.getAttribute("disabled"),'disabled');
+
+},'Disable Attribute Exist');
+
+test(function(){
+  var btn=document.getElementById("test_btn");
+  eventFire(btn,'click');
+  assert_not_equals(btn.getAttribute("check"),'fired');
+
+},'Click Event Triggers on Disabled Element');
+
+
+test(function(){
+  var btn=document.getElementById("test_bool_attr1");
+  eventFire(btn,'click');
+  assert_not_equals(btn.getAttribute("check"),'fired');
+
+},'Boolean Attribute Empty Quotes');
+
+test(function(){
+  var btn=document.getElementById("test_bool_attr2");
+  assert_not_equals(btn.getAttribute("check"),'fired');
+
+},'Boolean Attribute No Value');
+
+test(function(){
+  var btn=document.getElementById("test_bool_attr3");
+  assert_not_equals(btn.getAttribute("check"),'fired');
+
+},'Boolean Attribute False Value');
+
+test(function(){
+  var btn=document.getElementById("test_bool_attr4");
+  assert_not_equals(btn.getAttribute("check"),'fired');
+
+},'Boolean Attribute No Quotes Value (True)');
+
+
+test(function(){
+  var btn=document.getElementById("test_bool_attr5");
+  assert_not_equals(btn.getAttribute("check"),'fired');
+
+},'Boolean Attribute No Quotes Value (False)');
+
+// ------------- FieldSet ------------------- //
+
+test(function(){
+  var btn=document.getElementById("test_fieldset_leg_1");
+  eventFire(btn,'click');
+  assert_equals(btn.getAttribute("check"),'fired');
+
+},'First legend event of a fieldset will fire');
+
+test(function(){
+  var btn=document.getElementById("test_fieldset_leg_2");
+  eventFire(btn,'click');
+  assert_equals(btn.getAttribute("check"),'fired');
+
+},'Nested legend event of the first legend of a fieldset must fire');
+
+test(function(){
+  var btn=document.getElementById("test_fieldset_leg_3");
+  eventFire(btn,'click');
+  assert_not_equals(btn.getAttribute("check"),'fired');
+
+},'Second legend event must not fire');
+
+test(function(){
+  var btn=document.getElementById("test_fieldset_1");
+  eventFire(btn,'click');
+  assert_not_equals(btn.getAttribute("check"),'fired');
+
+},'Fieldset nested events must not fire');
+
+test(function(){
+  var btn=document.getElementById("test_fieldset_2");
+  eventFire(btn,'click');
+  assert_not_equals(btn.getAttribute("check"),'fired');
+
+},'All nested events of a fieldset must not fire');
+
+
+test(function(){
+  var btn=document.getElementById("test_fieldset_nest_leg_4");
+  eventFire(btn,'click');
+  assert_not_equals(btn.getAttribute("check"),'fired');
+
+},'Do not fire events of the first legend of a nested fieldset if that fieldset is disabled.');
+
+test(function(){
+  var btn=document.getElementById("test_fieldset_nest_7");
+  eventFire(btn,'click');
+  assert_not_equals(btn.getAttribute("check"),'fired');
+
+},'Do not fire events of a nested fieldset if that fieldset is disabled.');
+
+
+</script>
+

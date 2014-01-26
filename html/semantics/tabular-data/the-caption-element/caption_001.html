@@ -26,11 +26,11 @@
       <caption>first caption</caption>
     </table>
     <script>
-      test(function () {
+      test(function () { /* 1st Assertion */
         assert_equals(document.getElementById('table1').caption.innerHTML, "first caption");
       }, "first caption element child of the first table element");
 
-      test(function () {
+      test(function () {  /* 2nd Assertion */
         var caption = document.createElement("caption");
         caption.innerHTML = "new caption";
         var table = document.getElementById('table1');
@@ -45,18 +45,18 @@
         assert_equals(captions[1].innerHTML, "second caption");
       }, "setting caption on a table");
 
-      test(function () {
+      test(function () { /* 3rd Assertion */
         assert_equals(document.getElementById('table2').caption, null);
       }, "caption IDL attribute is null");
 
-      test(function () {
+      test(function () { /* 4th Assertion */
         var table = document.getElementById('table3');
         var caption = document.createElement("caption")
         table.rows[0].appendChild(caption);
         assert_equals(table.caption, null);
       }, "caption of the third table element should be null");
 
-      test(function () {
+      test(function () { /* 5th Assertion */
         assert_not_equals(document.getElementById('table4').caption, null);
 
         var parent = document.getElementById('table4').caption.parentNode;

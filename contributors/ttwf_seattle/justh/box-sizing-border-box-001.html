@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<title>box-sizing: border-box all elements sized with percentages</title>
+<link rel="author" title="Justin Hill" href="http://www.justin-hill.com">
+<link rel="help" href="http://www.w3.org/TR/css3-ui/#box-sizing">
+<link rel="match" href="ref/box-sizing-border-box-001-ref.html">
+<meta name="assert" content="Test checks that border-sizing:border-box; draws elements width from left border edge to right border edge and functions when all widths are specified in percentages.">
+<style>
+    .container {
+      width:50%;
+      background: red;
+      position: absolute;
+      left:25%;
+      top:25%;
+    }
+    .child {
+      position:relative;
+      z-index: 1;
+      box-sizing:border-box;
+      width:50%;
+      background:green;
+      border: 10px black solid;
+      float: left;
+      text-align: center;
+    }
+</style>
+<body>
+  <p> Test passes if child divs are side by side with no red visable.</p>
+  <div class="container">
+    <div class="child">
+      <p>left</p>
+    </div>
+    <div class="child">
+      <p>right</p>
+    </div>
+  </div>
+</body>

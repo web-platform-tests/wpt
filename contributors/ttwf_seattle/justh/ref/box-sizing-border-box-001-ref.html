@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<title>box-sizing: border-box Reference File</title>
+<link rel="author" title="Justin Hill" href="http://www.justin-hill.com">
+<style>
+  .container {
+    width:50%;
+    background: red;
+    position: absolute;
+    left:25%;
+    top:25%;
+  }
+  .child {
+    position:relative;
+    z-index: 1;
+    box-shadow: 0 0 0 10px black inset;
+    width:50%;
+    background:green;
+    float: left;
+    text-align: center;
+    padding:10px 0;
+  }
+</style>
+<body>
+  <p> Test passes if child divs are side by side with no red visable.</p>
+  <div class="container">
+    <div class="child">
+      <p>left</p>
+    </div>
+    <div class="child">
+      <p>right</p>
+    </div>
+  </div>
+</body>

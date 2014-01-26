@@ -1,17 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>CSS Variables Test: custom property names are case-sensitive</title>
+    <title>CSS Variables Test: custom property names start with "var-" in lower case</title>
     <link rel="author" title="Noah Collins" href="mailto:noahcollins@gmail.com">
     <link rel="help" href="http://w3c-test.org/csswg/css-variables/">
-    <meta name="assert" content="Child square element is transformed (scaled to zero) along with the parent element">
+    <meta name="assert" content="Custom property names start with var- which must be lower case">
     <link rel="match" href="reference/css-variables-case-sensitive-ref.html">
     <style type="text/css">
         :root {
             /* these should be VALID custom property names */
-            var-verygreen:   #0f0;
-            var-AlsoGreen:   #3e3;
-
+            var-verygreen:   #3e3;
+            var-AlsoGreen:   #5d5;
 
             /* these should be INVALID custom property names */
             VAR-veryred:   #f00;
@@ -25,8 +24,13 @@
     </style>
 </head>
 <body>
+    <h2>Valid CSS Variable Names</h2>
+    <h3>These should be styled green.</h3>
     <p class="green-good-1">This paragraph is styled using a valid CSS Variable name.</p>
     <p class="green-good-2">This paragraph is styled using a valid CSS Variable name.</p>
+
+    <h2>Invalid CSS Variable Names</h2>
+    <h3>These should be unstyled. If any of these paragraphs are red, an invalid property name was applied.</h3>
     <p class="red-bad-1">This paragraph is styled using a valid CSS Variable name.</p>
     <p class="red-bad-2">This paragraph is styled using a valid CSS Variable name.</p>
 </body>

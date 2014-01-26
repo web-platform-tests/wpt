@@ -3,7 +3,7 @@
 <link rel="author" title="Justin Hill" href="http://www.justin-hill.com">
 <link rel="help" href="http://www.w3.org/TR/css3-ui/#box-sizing">
 <link rel="match" href="ref/box-sizing-border-box-001-ref.html">
-<meta name="assert" content="Test checks that border-sizing:border-box; draws elements width from left border edge to right border edge and functions when all widths are specified in percentages.">
+<meta name="assert" content="Test checks that border-sizing:border-box makes element's width distance from left border edge to right border edge when the container's width is specified in percentage.">
 <style>
     .container {
       width:50%;
@@ -13,9 +13,8 @@
       top:25%;
     }
     .child {
-      position:relative;
-      z-index: 1;
       box-sizing:border-box;
+      color:white;
       width:50%;
       background:green;
       border: 10px black solid;
@@ -24,7 +23,7 @@
     }
 </style>
 <body>
-  <p> Test passes if child divs are side by side with no red visable.</p>
+  <p> Test passes if green boxes are side by side with no red visible.</p>
   <div class="container">
     <div class="child">
       <p>left</p>

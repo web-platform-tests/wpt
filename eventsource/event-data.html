@@ -25,20 +25,18 @@ Process the field using the steps described below, using the whole line as the f
         var source = new EventSource("resources/message2.py"),
             counter = 0;
         source.onmessage = test.step_func(function(e) {
-          test.step(function() {
-            if(counter == 0) {
-              assert_equals(e.data,"msg\nmsg");
-            } else if(counter == 1) {
-              assert_equals(e.data,"");
-            } else if(counter == 2) {
-              assert_equals(e.data,"end");
-              source.close();
-              test.done();
-            } else {
-              assert_unreached();
-            }
-            counter++;
-          })
+          if(counter == 0) {
+            assert_equals(e.data,"msg\nmsg");
+          } else if(counter == 1) {
+            assert_equals(e.data,"");
+          } else if(counter == 2) {
+            assert_equals(e.data,"end");
+            source.close();
+            test.done();
+          } else {
+            assert_unreached();
+          }
+          counter++;
         });
       });
     </script>

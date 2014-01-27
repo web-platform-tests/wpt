@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>CSS Variables Test: custom property names start with "var-" in lower case</title>
+    <meta charset="UTF-8">
     <link rel="author" title="Noah Collins" href="mailto:noahcollins@gmail.com">
     <link rel="help" href="http://w3c-test.org/csswg/css-variables/">
     <meta name="assert" content="Custom property names start with var- which must be lower case">
@@ -24,11 +25,11 @@
     </style>
 </head>
 <body>
-    <h2>Valid CSS Variable Names</h2>
-    <p class="green-good-1">This paragraph is styled using a valid CSS Variable name. Pass if green.</p>
-    <p class="green-good-2">This paragraph is styled using a valid CSS Variable name. Pass if green.</p>
+    <h2 class="green-good-1">Valid CSS Variable Names</h2>
+    <p class="green-good-1">This paragraph is styled using a valid CSS Variable name. It should be green</p>
+    <p class="green-good-2">This paragraph is styled using a valid CSS Variable name. It should be green.</p>
     <br>
-    <h2>Invalid CSS Variable Names</h2>
+    <h2 class="red-bad-1">Invalid CSS Variable Names</h2>
     <p class="red-bad-1">This paragraph is styled using an invalid CSS Variable name. Fail if red.</p>
     <p class="red-bad-2">This paragraph is styled using an invalid CSS Variable name. Fail if red.</p>
 </body>

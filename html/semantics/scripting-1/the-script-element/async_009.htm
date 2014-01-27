@@ -11,13 +11,11 @@
         <script type="text/javascript">
         var t = async_test("Document.write() silently fails from an Async script");
 
-        function log(){
+        var log = t.step_func(function() {
           document.write("<span id='writtenText'/>");
-          if(document.getElementById("writtenText")) {
-            t.step(function(){assert_unreached();});
-          }
+          assert_equals(null, document.getElementById('writtenText'));
           t.done();
-        }
+        });
         </script>
     </head>
     <body>

@@ -32,13 +32,7 @@ Object.keys(possiblePositions).forEach(function(position) {
     var heading = document.createElement('h3');
     heading.innerHTML = position;
     assert_equals(el[possiblePositions[position]].nodeName, "H3");
-    assert_equals(el[possiblePositions[position]].firstChild.nodeType, 3);
+    assert_equals(el[possiblePositions[position]].firstChild.nodeType, Node.TEXT_NODE);
   }, 'insertAdjacentHTML(' + position + ', ' + html + ' )');
 });
-
-test(function() {
-  assert_throws('SyntaxError', function() {
-    el.insertAdjacentHTML("giberish", "giberish");
-  });
-}, "Throws a DOM SyntaxError exception if the position argument has an invalid value.");
 </script>

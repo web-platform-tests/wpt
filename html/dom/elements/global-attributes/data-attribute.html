@@ -1,0 +1,83 @@
+<!DOCTYPE HTML>
+<head>
+<title>input type checkbox</title>
+<link rel="author" title="Gary Gao" href="mailto:angrytoast@gmail.com">
+<link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/dom.html#embedding-custom-non-visible-data-with-the-data-*-attributes">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+  <div style="display:none;">
+    <div id="test-element"
+      data-foo="bar"
+      data-empty
+      data-test-unicode="การทดสอบ"
+      data-test-エレメント="いい"
+      xml:lang="en"
+      >
+      This is a proper element with acceptable data attributes.
+    </div>
+
+    <div id="test-element-data" data-="wrong">
+      This element has a malformed data attribute (it has no name after the "data-").
+    </div>
+
+    <div id="test-element-ns" data-wrong:syntax="colon">
+      This element has a malformed data attribute (it contains a colon character).
+    </div>
+  </div>
+
+  <div id="log"></div>
+
+<script>
+  var correct = document.getElementById('test-element'),
+      incorrect_data = document.getElementById('test-element-data'),
+      incorrect_ns = document.getElementById('test-element-ns');
+
+  test(function() {
+    assert_equals(correct.getAttribute('data-foo'), 'bar');
+    assert_equals(correct.getAttribute('data-test-unicode'), 'การทดสอบ');
+    assert_equals(correct.getAttribute('data-test-エレメント'), 'いい');
+    assert_true(correct.hasAttribute('data-empty') && !correct.getAttribute('data-empty').length);
+  }, "every HTML element may have any number of custom data attributes specified, with any value");
+
+  test(function() {
+    var regex = /^data\-\S/i;
+
+    assert_true(checkAttributes(correct.attributes, regex));
+    assert_false(checkAttributes(incorrect_data.attributes, regex));
+  }, "a data attribute starts with the string 'data-' and has at least one character after the hyphen");
+
+  test(function() {
+    var regex = /\u003A/;
+
+    assert_false(checkAttributes(correct.attributes, regex));
+    assert_true(checkAttributes(incorrect_ns.attributes, regex));
+  }, "a data attribute is XML-compatible: contains no ':' (U+003A) characters");
+
+  /**
+   * Checks a DOMElement's data-* attributes against a specified regex.
+   * @param {object} el_attrs This is a DOMElement attributes object.
+   *
+   * @param {regexp} regex This is a regex pattern to match the attribute against.
+   *
+   * @return {boolean} This returns a bool determining if all data-* attributes
+   *    fit within the regex criteria.
+   *
+   */
+  function checkAttributes(el_attrs, regex) {
+    for (var key in el_attrs) {
+      var attr = el_attrs[key].nodeName;
+      // Exists in object and matches on the regex param.
+      if (el_attrs.hasOwnProperty(key) && /^data\-/i.test(attr)) {
+        if (!regex.test(attr)) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+</script>
+
+</body>

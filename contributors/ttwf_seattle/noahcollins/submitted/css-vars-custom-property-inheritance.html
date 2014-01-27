@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>CSS Variables Test: custom properties use normal inheritance and cascade rules</title>
+    <link rel="author" title="Noah Collins" href="mailto:noahcollins@gmail.com">
+    <link rel="help" href="http://w3c-test.org/csswg/css-variables/">
+    <meta name="assert" content="custom properties are resolved with the normal inheritance and cascade rules">
+    <link rel="match" href="reference/css-vars-custom-property-inheritance-ref.html">
+    <style type="text/css">
+        :root  { var-color: #33c; }
+        div    { var-color: #669; }
+        h1     { var-color: #399; }
+        .alert { var-color: #606; }
+
+        .blue-good-1  { color: var(color); }
+        .blue-good-2  { color: var(color); }
+        .red-bad-1    { color: var(color); }
+        .red-bad-2    { color: var(color); }
+    </style>
+</head>
+<body>
+    <h2 class="blue-good-1">Valid CSS Variable Names</h2>
+    <p class="blue-good-1">This paragraph is styled using a valid CSS Variable name. It should be blue.</p>
+    <p class="blue-good-2">This paragraph is styled using a valid CSS Variable name. It should be blue.</p>
+    <br>
+    <h2 class="red-bad-1">Invalid CSS Variable Names</h2>
+    <p class="red-bad-1">This paragraph is styled using an invalid CSS Variable name. Fail if red.</p>
+    <p class="red-bad-2">This paragraph is styled using an invalid CSS Variable name. Fail if red.</p>
+</body>
+</html>

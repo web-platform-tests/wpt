@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>CSS Variables Test: custom properties use normal inheritance and cascade rules</title>
+    <link rel="author" title="Noah Collins" href="mailto:noahcollins@gmail.com">
+    <style type="text/css">
+        :root  { var-color: #33c; }
+        div    { var-color: #669; }
+        h1     { var-color: #399; }
+        #alert { var-color: #606; }
+
+        .blue-good-1  { color: var(color); }
+        .blue-good-2  { color: var(color); }
+        .red-bad-1    { color: var(color); }
+        .red-bad-2    { color: var(color); }
+    </style>
+</head>
+<body>
+    <h1>This paragraph is </h1>
+    <div>
+        <h1>This paragraph is </h1>
+        <h1 id="alert">This paragraph is </h1>
+    </div>
+</body>
+</html>

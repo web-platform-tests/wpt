@@ -12,6 +12,9 @@
 <div id="log"></div>
 
 <script type=text/plain class=untested>
+interface Navigator {
+};
+
 typedef unsigned long long DOMTimeStamp;
 </script>
 
@@ -21,10 +24,10 @@ interface NavigatorGeolocation {
   readonly attribute Geolocation geolocation;
 };
 
-// Navigator implements NavigatorGeolocation;
+Navigator implements NavigatorGeolocation;
 
 [NoInterfaceObject]
-interface Geolocation { 
+interface Geolocation {
   void getCurrentPosition(PositionCallback successCallback,
                           optional PositionErrorCallback errorCallback,
                           optional PositionOptions options);
@@ -78,15 +81,16 @@ interface Coordinates {
 "use strict";
 var idlArray;
 setup(function() {
-	idlArray = new IdlArray();
-	[].forEach.call(document.querySelectorAll("script[type=text\\/plain]"), function(node) {
-		if (node.className == "untested") {
-			idlArray.add_untested_idls(node.textContent);
-		} else {
-			idlArray.add_idls(node.textContent);
-		}
-	});
-	idlArray.add_objects({
+  idlArray = new IdlArray();
+  [].forEach.call(document.querySelectorAll("script[type=text\\/plain]"), function(node) {
+    if (node.className == "untested") {
+      idlArray.add_untested_idls(node.textContent);
+    } else {
+      idlArray.add_idls(node.textContent);
+    }
+  });
+  idlArray.add_objects({
+    Navigator: ["navigator"],
     Geolocation: ["navigator.geolocation"]
   });
 });

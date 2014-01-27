@@ -17,8 +17,16 @@ function check_Blob(msg, input, port) {
         expected = [0x66, 0x6F, 0x6F];
         expected.type = 'text/x-bar';
         break;
-      case 'Blob unpaired surrogate (invalid utf-8)':
-        expected = [0xED, 0xB3, 0xBF];
+      case 'Blob unpaired high surrogate (invalid utf-8)':
+        expected = [0xED, 0xA0, 0x80];
+        expected.type = '';
+        break;
+      case 'Blob unpaired low surrogate (invalid utf-8)':
+        expected = [0xED, 0xB0, 0x80];
+        expected.type = '';
+        break;
+      case 'Blob paired surrogates (invalid utf-8)':
+        expected = [0xED, 0xA0, 0x80, 0xED, 0xB0, 0x80];
         expected.type = '';
         break;
       case 'Blob empty':
@@ -178,8 +186,14 @@ function check(input, port) {
           close();
         }
         break;
-      case 'primitive string, lone surrogate':
+      case 'primitive string, lone high surrogate':
         if (check_true(input === '\uD800', "input === '\uD800'")) {
+          port.postMessage(input);
+          close();
+        }
+        break;
+      case 'primitive string, lone low surrogate':
+        if (check_true(input === '\uDC00', "input === '\uDC00'")) {
           port.postMessage(input);
           close();
         }
@@ -292,7 +306,8 @@ function check(input, port) {
               check_true(input['true'] === true, "input['true'] === true") &&
               check_true(input['false'] === false, "input['false'] === false") &&
               check_true(input['empty'] === '', "input['empty'] === ''") &&
-              check_true(input['surrogate'] === '\uD800', "input['surrogate'] === '\uD800'") &&
+              check_true(input['high surrogate'] === '\uD800', "input['high surrogate'] === '\uD800'") &&
+              check_true(input['low surrogate'] === '\uDC00', "input['low surrogate'] === '\uDC00'") &&
               check_true(input['nul'] === '\u0000', "input['nul'] === '\u0000'") &&
               check_true(input['astral'] === '\uDBFF\uDFFD', "input['astral'] === '\uDBFF\uDFFD'") &&
               check_true(input['0.2'] === 0.2, "input['0.2'] === 0.2") &&
@@ -371,9 +386,16 @@ function check(input, port) {
           close();
         }
         break;
-      case 'String lone surrogate':
+      case 'String lone high surrogate':
         if (check_true(input instanceof String, "input instanceof String") &&
             check_true(String(input) === '\uD800', "String(input) === '\\uD800'")) {
+          port.postMessage(input);
+          close();
+        }
+        break;
+      case 'String lone low surrogate':
+        if (check_true(input instanceof String, "input instanceof String") &&
+            check_true(String(input) === '\uDC00', "String(input) === '\\uDC00'")) {
           port.postMessage(input);
           close();
         }
@@ -414,7 +436,8 @@ function check(input, port) {
           if (check_true(input instanceof Object, 'input instanceof Object') &&
               check_true(!(input instanceof Array), '!(input instanceof Array)') &&
               check_true(String(input['empty']) === '', "String(input['empty']) === ''") &&
-              check_true(String(input['surrogate']) === '\uD800', "String(input['surrogate']) === '\\uD800'") &&
+              check_true(String(input['high surrogate']) === '\uD800', "String(input['high surrogate']) === '\\uD800'") &&
+              check_true(String(input['low surrogate']) === '\uDC00', "String(input['low surrogate']) === '\\uDC00'") &&
               check_true(String(input['nul']) === '\u0000', "String(input['nul']) === '\\u0000'") &&
               check_true(String(input['astral']) === '\uDBFF\uDFFD', "String(input['astral']) === '\\uDBFF\\uDFFD'")) {
             var i = 0;
@@ -654,14 +677,18 @@ function check(input, port) {
         })();
         break;
       case 'Blob basic':
-      case 'Blob unpaired surrogate (invalid utf-8)':
+      case 'Blob unpaired high surrogate (invalid utf-8)':
+      case 'Blob unpaired low surrogate (invalid utf-8)':
+      case 'Blob paired surrogates (invalid utf-8)':
       case 'Blob empty':
       case 'Blob NUL':
         check_Blob(msg, input, port);
         // no postMessage or close here, check_Blob takes care of that
         break;
       case 'Array Blob object, Blob basic':
-      case 'Array Blob object, Blob unpaired surrogate (invalid utf-8)':
+      case 'Array Blob object, Blob unpaired high surrogate (invalid utf-8)':
+      case 'Array Blob object, Blob unpaired low surrogate (invalid utf-8)':
+      case 'Array Blob object, Blob paired surrogates (invalid utf-8)':
       case 'Array Blob object, Blob empty':
       case 'Array Blob object, Blob NUL':
         if (check_true(input instanceof Array, 'input instanceof Array') &&
@@ -671,7 +698,9 @@ function check(input, port) {
         }
         break;
       case 'Object Blob object, Blob basic':
-      case 'Object Blob object, Blob unpaired surrogate (invalid utf-8)':
+      case 'Object Blob object, Blob unpaired high surrogate (invalid utf-8)':
+      case 'Object Blob object, Blob unpaired low surrogate (invalid utf-8)':
+      case 'Object Blob object, Blob paired surrogates (invalid utf-8)':
       case 'Object Blob object, Blob empty':
       case 'Object Blob object, Blob NUL':
         (function() {

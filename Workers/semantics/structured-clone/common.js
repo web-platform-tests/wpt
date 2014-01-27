@@ -64,7 +64,8 @@ check('primitive null', null, compare_primitive);
 check('primitive true', true, compare_primitive);
 check('primitive false', false, compare_primitive);
 check('primitive string, empty string', '', compare_primitive);
-check('primitive string, lone surrogate', '\uD800', compare_primitive);
+check('primitive string, lone high surrogate', '\uD800', compare_primitive);
+check('primitive string, lone low surrogate', '\uDC00', compare_primitive);
 check('primitive string, NUL', '\u0000', compare_primitive);
 check('primitive string, astral character', '\uDBFF\uDFFD', compare_primitive);
 check('primitive number, 0.2', 0.2, compare_primitive);
@@ -101,7 +102,8 @@ check('Object primitives', {'undefined':undefined,
                            'true':true,
                            'false':false,
                            'empty':'',
-                           'surrogate':'\uD800',
+                           'high surrogate':'\uD800',
+                           'low surrogate':'\uDC00',
                            'nul':'\u0000',
                            'astral':'\uDBFF\uDFFD',
                            '0.2':0.2,
@@ -142,7 +144,8 @@ function compare_obj(what) {
   };
 }
 check('String empty string', new String(''), compare_obj('String'));
-check('String lone surrogate', new String('\uD800'), compare_obj('String'));
+check('String lone high surrogate', new String('\uD800'), compare_obj('String'));
+check('String lone low surrogate', new String('\uDC00'), compare_obj('String'));
 check('String NUL', new String('\u0000'), compare_obj('String'));
 check('String astral character', new String('\uDBFF\uDFFD'), compare_obj('String'));
 check('Array String objects', [new String(''),
@@ -150,7 +153,8 @@ check('Array String objects', [new String(''),
                                new String('\u0000'),
                                new String('\uDBFF\uDFFD')], compare_Array(enumerate_props(compare_obj('String'))));
 check('Object String objects', {'empty':new String(''),
-                               'surrogate':new String('\uD800'),
+                               'high surrogate':new String('\uD800'),
+                               'low surrogate':new String('\uDC00'),
                                'nul':new String('\u0000'),
                                'astral':new String('\uDBFF\uDFFD')}, compare_Object(enumerate_props(compare_obj('String'))));
 
@@ -282,16 +286,35 @@ function func_Blob_basic() {
   return new Blob(['foo'], {type:'text/x-bar'});
 }
 check('Blob basic', func_Blob_basic, compare_Blob);
-function func_Blob_surrogate() {
-  var buffer = new ArrayBuffer(3);
-  var view = new DataView(buffer);
-  // U+DCFF as invalid utf-8
-  view.setUint8(0, 0xED);
-  view.setUint8(1, 0xB3);
-  view.setUint8(2, 0xBF);
-  return new Blob([view]);
+
+function b(str) {
+  return parseInt(str, 2);
 }
-check('Blob unpaired surrogate (invalid utf-8)', func_Blob_surrogate, compare_Blob);
+function encode_cesu8(codeunits) {
+  // http://www.unicode.org/reports/tr26/ section 2.2
+  // only the 3-byte form is supported
+  var rv = [];
+  codeunits.forEach(function(codeunit) {
+    rv.push(b('11100000') + ((codeunit & b('1111000000000000')) >> 12));
+    rv.push(b('10000000') + ((codeunit & b('0000111111000000')) >> 6));
+    rv.push(b('10000000') +  (codeunit & b('0000000000111111')));
+  });
+  return rv;
+}
+function func_Blob_bytes(arr) {
+  return function() {
+    var buffer = new ArrayBuffer(arr.length);
+    var view = new DataView(buffer);
+    for (var i = 0; i < arr.length; ++i) {
+      view.setUint8(i, arr[i]);
+    }
+    return new Blob([view]);
+  };
+}
+check('Blob unpaired high surrogate (invalid utf-8)', func_Blob_bytes(encode_cesu8([0xD800])), compare_Blob);
+check('Blob unpaired low surrogate (invalid utf-8)', func_Blob_bytes(encode_cesu8([0xDC00])), compare_Blob);
+check('Blob paired surrogates (invalid utf-8)', func_Blob_bytes(encode_cesu8([0xD800, 0xDC00])), compare_Blob);
+
 function func_Blob_empty() {
   return new Blob(['']);
 }
@@ -305,8 +328,14 @@ async_test(function(test_obj) {
   check(test_obj.name, [test_obj.step(func_Blob_basic)], compare_Array(enumerate_props(compare_Blob)), test_obj);
 }, 'Array Blob object, Blob basic');
 async_test(function(test_obj) {
-  check(test_obj.name, [test_obj.step(func_Blob_surrogate)], compare_Array(enumerate_props(compare_Blob)), test_obj);
-}, 'Array Blob object, Blob unpaired surrogate (invalid utf-8)');
+  check(test_obj.name, [test_obj.step(func_Blob_bytes([0xD800]))], compare_Array(enumerate_props(compare_Blob)), test_obj);
+}, 'Array Blob object, Blob unpaired high surrogate (invalid utf-8)');
+async_test(function(test_obj) {
+  check(test_obj.name, [test_obj.step(func_Blob_bytes([0xDC00]))], compare_Array(enumerate_props(compare_Blob)), test_obj);
+}, 'Array Blob object, Blob unpaired low surrogate (invalid utf-8)');
+async_test(function(test_obj) {
+  check(test_obj.name, [test_obj.step(func_Blob_bytes([0xD800, 0xDC00]))], compare_Array(enumerate_props(compare_Blob)), test_obj);
+}, 'Array Blob object, Blob paired surrogates (invalid utf-8)');
 async_test(function(test_obj) {
   check(test_obj.name, [test_obj.step(func_Blob_empty)], compare_Array(enumerate_props(compare_Blob)), test_obj);
 }, 'Array Blob object, Blob empty');
@@ -318,8 +347,14 @@ async_test(function(test_obj) {
   check(test_obj.name, {'x':test_obj.step(func_Blob_basic)}, compare_Object(enumerate_props(compare_Blob)), test_obj);
 }, 'Object Blob object, Blob basic');
 async_test(function(test_obj) {
-  check(test_obj.name, {'x':test_obj.step(func_Blob_surrogate)}, compare_Object(enumerate_props(compare_Blob)), test_obj);
-}, 'Object Blob object, Blob unpaired surrogate (invalid utf-8)');
+  check(test_obj.name, {'x':test_obj.step(func_Blob_bytes([0xD800]))}, compare_Object(enumerate_props(compare_Blob)), test_obj);
+}, 'Object Blob object, Blob unpaired high surrogate (invalid utf-8)');
+async_test(function(test_obj) {
+  check(test_obj.name, {'x':test_obj.step(func_Blob_bytes([0xDC00]))}, compare_Object(enumerate_props(compare_Blob)), test_obj);
+}, 'Object Blob object, Blob unpaired low surrogate (invalid utf-8)');
+async_test(function(test_obj) {
+  check(test_obj.name, {'x':test_obj.step(func_Blob_bytes([0xD800, 0xDC00]))}, compare_Object(enumerate_props(compare_Blob)), test_obj);
+}, 'Object Blob object, Blob paired surrogates (invalid utf-8)');
 async_test(function(test_obj) {
   check(test_obj.name, {'x':test_obj.step(func_Blob_empty)}, compare_Object(enumerate_props(compare_Blob)), test_obj);
 }, 'Object Blob object, Blob empty');

@@ -19,16 +19,12 @@
         /* test cascade order */
         * { color: var(color); }
 
-        /* test cascade specificity */
-        body p#something { color: red; }
-        body p#something span { color: var(color) } 
-
     </style>
 </head>
 <body>
     <p>Green</p>
     <p>Green</p>
-    <p id="something">Green <span>Green</span></p>
+    <p>Green</p>
     <p>The test passes if everything is green. Any red means the test failed.</p>
 </body>
 </html>

@@ -11,12 +11,12 @@
   <legend>test
     <button id="test_fieldset_leg_1" onclick="set_value(this)">Button</button>
   </legend>
-  <button id="test_fieldset_1" onclick="set_value(this)">Button</button>
+  <button id="test_fieldset_2" onclick="set_value(this)">Button</button>
   <fieldset>
     <legend>test4
-      <button id="test_fieldset_nest_leg_4" onclick="set_value(this)">Button</button>
+      <button id="test_fieldset_nest_leg_1" onclick="set_value(this)">Button</button>
     </legend>
-    <button id="test_fieldset_nest_7" onclick="set_value(this)">Button</button>
+    <button id="test_fieldset_nest_2" onclick="set_value(this)">Button</button>
   </fieldset>
 </fieldset>
 
@@ -29,9 +29,10 @@
 
 	function eventFire(item, type){
 	  if (item!=undefined){
-	    var evObj = document.createEvent('Events');
-	    evObj.initEvent('click', true, false);
-	    item.dispatchEvent(evObj);
+	    // var evObj = document.createEvent('Events');
+	    // evObj.initEvent('click', true, false);
+	    // item.dispatchEvent(evObj);
+	    item.click();
 	  }
 	}
 
@@ -45,29 +46,22 @@
 
 
 	test(function(){
-	  var btn=document.getElementById("test_fieldset_1");
+	  var btn=document.getElementById("test_fieldset_2");
 	  eventFire(btn,'click');
 	  assert_not_equals(btn.getAttribute("check"),'fired');
 
 	},'Fieldset nested events must not fire');
 
-	test(function(){
-	  var btn=document.getElementById("test_fieldset_2");
-	  eventFire(btn,'click');
-	  assert_not_equals(btn.getAttribute("check"),'fired');
-
-	},'All nested events of a fieldset must not fire');
-
 
 	test(function(){
-	  var btn=document.getElementById("test_fieldset_nest_leg_4");
+	  var btn=document.getElementById("test_fieldset_nest_leg_1");
 	  eventFire(btn,'click');
 	  assert_not_equals(btn.getAttribute("check"),'fired');
 
 	},'Do not fire events of the first legend of a nested fieldset if that fieldset is disabled.');
 
 	test(function(){
-	  var btn=document.getElementById("test_fieldset_nest_7");
+	  var btn=document.getElementById("test_fieldset_nest_2");
 	  eventFire(btn,'click');
 	  assert_not_equals(btn.getAttribute("check"),'fired');
 

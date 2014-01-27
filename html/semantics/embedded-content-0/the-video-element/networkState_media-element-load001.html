@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html><head>
+	<title>video.networkState - default state</title>
+	<script src="/resources/testharness.js"></script>
+	<script src="/resources/testharnessreport.js"></script>
+	<script src="../../../../common/media.js"></script>
+</head>
+<body>
+  <p><a href="http://www.w3.org/TR/html5/embedded-content-0.html#media-element-load-algorithm">Spec Reference</a></p>
+  <video id="v" controls>
+  </video>
+  <div id="log"></div>
+<script>
+	/* 4. If the media element's networkState is not set 
+	 * to NETWORK_EMPTY, then run these substeps:
+	 * 	1.Queue a task to fire a simple event named emptied 
+	 *	 at the media element... 
+	 */
+	
+	var trigger_emptied = false;
+	/* async testing is timing out on all browsers, 
+	 * so just test in sync for now
+	
+	var t1 = async_test( "Check videoElement.networkState",
+						{timeout:10000} );
+    var t2 = async_test( "'emptied' event fired", 
+						{timeout:10000} );
+	*/
+	
+	v.addEventListener("emptied", function() {
+		trigger_emptied = true;
+	});
+	
+	v.src = getVideoURI("/media/movie_300") + "?" +
+			new Date() + Math.random();
+					   
+	v.load(); /* load algorithm */
+	
+	//setTimeout(function() {
+		/* Wait 100ms before checking if event was fired */
+		
+		//t1.step(function() {
+		test( function() {
+			/* First determine that networkState
+			 * does NOT have value of NETWORK_EMPTY
+		 	 */
+			assert_not_equals(
+				v.networkState,
+				v.NETWORK_EMPTY,
+				"videoElement.networkState should NOT be NETWORK_EMPTY when the media element load algorithm is initialized."
+			);
+		}, "Check videoElement.networkState" );
+		//t1.done;
+			
+		//t2.step(function() {
+		test( function() {
+			/* Next check if the 'emptied' event was 
+			 * triggered on v
+			 */
+			assert_true(
+				trigger_emptied, "'emptied' was not fired."
+			);
+		}, "'emptied' event fired" );
+		//t2.done;
+		
+	//}, 1000);
+	
+</script>
+	 
+</body></html>

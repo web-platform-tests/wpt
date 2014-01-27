@@ -8,27 +8,18 @@
         <link rel="help" href="http://dev.w3.org/html5/spec/scripting-1.html#execute-the-script-block"/>
         <script src="/resources/testharness.js"></script>
         <script src="/resources/testharnessreport.js"></script>
-        <script type="text/javascript">           
-            
-        
-  
+        <script type="text/javascript">
         var t = async_test("Removing an async script before execution");
-  
+
         function timeout()
         {
             t.step(function(){ assert_equals(document.getElementById("testresult").innerHTML, "4123")});
             t.done();
         }
-  
+
         var timer = setTimeout(timeout, 8000);
-            
-        // This test uses a script (log.py) to change script order execution
-        // See async_003.htm and async_004.htm for how this works
-        // In this test the 'log(4)' script below will run first, then the s1, s2, s3 in order
-        //
-        //  Thus the assert above is to check that the innerHTML == 4123
-        //
-        function log(text) 
+
+        function log(text)
         {
             var textNode = document.createTextNode(text);
             document.getElementById("testresult").appendChild(textNode);
@@ -37,7 +28,7 @@
     </head>
     <body>
         <div id=log></div>
-        <span style="display : none" id="testresult"></span>
+        <span id="testresult"></span>
         <script type="text/javascript">
             var s1 = document.createElement("script");
             s1.src="log.py?sec=2&id=1";
@@ -57,7 +48,6 @@
 
             //Remove s1 (Should still execute)
             document.body.removeChild(s1);
-
         </script>
         <script type="text/javascript">log('4');</script>
     </body>

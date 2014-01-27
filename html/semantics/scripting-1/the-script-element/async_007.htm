@@ -22,11 +22,6 @@
 
         var timer = setTimeout(timeout, 8000);
 
-        // In this test both dynamically created scripts have async set to 'false'
-        // So when they are appended they run syncronously
-        //
-        //  Thus the assert above is to check that the innerHTML == 312
-        //
         function log(text)
         {
             var textNode = document.createTextNode(text);

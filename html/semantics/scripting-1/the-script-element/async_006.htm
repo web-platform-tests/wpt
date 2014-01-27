@@ -22,13 +22,6 @@
 
         var timer = setTimeout(timeout, 4000);
 
-        // In this test
-        //  * The third script tag below should execute first
-        //  * Then second 'two' dynamically created script tag should execute since it only has a one second delay
-        //  * Then first 'one' dynamically created script tag should execute since it has a three second delay
-        //
-        //  Thus the assert above is to check that the innerHTML == 321
-        //
         function log(text)
         {
             var textNode = document.createTextNode(text);

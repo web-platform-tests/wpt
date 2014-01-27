@@ -11,22 +11,17 @@
         <script type="text/javascript">
         var t = async_test("Document.write() silently fails from an Async script");
 
-        function timeout()
-        {
-            t.step(function(){ assert_true(!document.getElementById("writtenText"))});
-            t.done();
-        }
-
-        var timer = setTimeout(timeout, 8000);
-
-        function log(text)
-        {
-            document.write("<span id='writtenText'/>");
+        function log(){
+          document.write("<span id='writtenText'/>");
+          if(document.getElementById("writtenText")) {
+            t.step(function(){assert_unreached();});
+          }
+          t.done();
         }
         </script>
     </head>
     <body>
         <div id=log></div>
-        <script type="text/javascript" src="log.py?sec=2&id=1" async></script>
+        <script type="text/javascript" src="log.py?sec=1&id=1" async></script>
     </body>
 </html>

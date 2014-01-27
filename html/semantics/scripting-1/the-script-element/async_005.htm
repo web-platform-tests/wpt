@@ -22,15 +22,6 @@
 
         var timer = setTimeout(timeout, 5000);
 
-        // In this test
-        //  * The second script tag below should execute first
-        //  * Then then first script tag should execute
-        //  * Then the thirds will run - since it has no async attribute so it blocks further script execution
-        //  * Finally the last script tag will run
-        //
-        //  Thus the assert above is to check that the innerHTML == 2134
-        //
-
         function log(text)
         {
             var textNode = document.createTextNode(text);

@@ -12,13 +12,20 @@
     <body>
         <div id=log></div>
         <script type="text/javascript">
-            test(function() {   var s = document.createElement("script");
-                                s.async = false; s.setAttribute('async', ''); /*Should change s.async to true*/
-                                assert_true(s.async)}, "Test 'async' attribute are reflected in the async property with setAttribute");
-            test(function() {   var s = document.createElement("script");
-                                s.async = false; s.setAttribute('async', ''); /*Should change s.async to false*/
-                                s.removeAttribute('async'); /*Should change s.async to false*/
-                                assert_false(s.async)}, "Test 'async' attribute are reflected in the async property with removeAttribute");
+          test(function() {
+            var s = document.createElement("script");
+            s.async = false;
+            s.setAttribute('async', ''); /*Should change s.async to true*/
+            assert_true(s.async)
+          }, "Test 'async' attribute are reflected in the async property with setAttribute");
+
+          test(function() {
+            var s = document.createElement("script");
+            s.async = false;
+            s.setAttribute('async', ''); /*Should change s.async to true*/
+            s.removeAttribute('async'); /*Should change s.async to false*/
+            assert_false(s.async)
+          }, "Test 'async' attribute are reflected in the async property with removeAttribute");
         </script>
     </body>
 </html>

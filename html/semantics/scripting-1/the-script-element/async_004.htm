@@ -22,12 +22,6 @@
 
         var timer = setTimeout(timeout, 4000);
 
-        // In this case the external tags have the 'async' attribute so the parser doesn't block execution
-        // Because of the sleep in the file the second script below executes before the first
-        //
-        //  Thus the assert above is to check that the innerHTML == 21
-        //
-
         function log(text)
         {
             var textNode = document.createTextNode(text);

@@ -22,13 +22,6 @@
 
         var timer = setTimeout(timeout, 4000);
 
-        // In this case the log.py script tag has the 'async' attribute so the parser doesn't block
-        // Therefore the internal script gets called first and adds a '2' to the testresult tag
-        // Then the external script runs log(1) which appends a '1' to the testresult tag
-        //
-        //  Thus the assert above is to check that the innerHTML == 21
-        //
-
         function log(text)
         {
             var textNode = document.createTextNode(text);

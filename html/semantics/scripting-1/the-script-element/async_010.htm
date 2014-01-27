@@ -19,11 +19,6 @@
 
         var timer = setTimeout(timeout, 8000);
 
-        // This test uses a script (log.py) to change script order execution
-        // See async_003.htm and async_004.htm for how this works
-        // In this test the 'log(4)' script below will run first, then the s1, s2, s3 in order
-        //
-        //  Thus the assert above is to check that the innerHTML == 4123
         function log(text)
         {
             var textNode = document.createTextNode(text);

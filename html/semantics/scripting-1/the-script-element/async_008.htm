@@ -22,10 +22,6 @@
 
         var timer = setTimeout(timeout, 8000);
 
-        // In this test the 'log(2)' should run first, then the 'ordered script' and then the script for the load event
-        //
-        //  Thus the assert above is to check that the innerHTML == 213
-        //
         function log(text)
         {
             var textNode = document.createTextNode(text);
@@ -40,7 +36,6 @@
                 timeout();
             }, false);
 
-            //Ordered Script
             var s1 = document.createElement("script");
             s1.src = "log.py?sec=2&id=1";
             document.head.appendChild(s1);

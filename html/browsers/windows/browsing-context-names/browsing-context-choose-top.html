@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>HTML Test: Choose browsing context - the giving name is _top</title>
+<link rel="author" title="Intel" href="http://www.intel.com/">
+<link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#browsing-context-names">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<iframe id="fr" style="display:none"></iframe>
+<script>
+
+var t = async_test("The top browsing context must be chosen if the giving name is '_top'");
+
+setup(function () {
+  window.name = "topWin";
+  if (document.location.hash === "")
+    document.getElementById("fr").src = "top.html";
+  else
+    document.getElementById("fr").src = "";
+});
+
+window.addEventListener("message", function (e) {
+  t.step(function() {
+    assert_equals(e.data.name, "topWin", "The window context name should be 'topWin'.");
+  });
+  t.done();
+}, false);
+
+</script>

@@ -915,7 +915,7 @@ function check(input, port) {
           close();
         }
         break;
-      case 'Array with indentical property values':
+      case 'Array with identical property values':
         if (check_true(input instanceof Array, 'input instanceof Array') &&
             check_true(input.length === 2, 'input.length === 2') &&
             check_true(input[0] === input[1], "input[0] === input[1]")) {
@@ -923,7 +923,7 @@ function check(input, port) {
           close();
         }
         break;
-      case 'Object with indentical property values':
+      case 'Object with identical property values':
         if (check_true(input instanceof Object, 'input instanceof Object') &&
             check_true(!(input instanceof Array), '!(input instanceof Array)') &&
             check_true(input['x'] === input['y'], "input['x'] === input['y']")) {

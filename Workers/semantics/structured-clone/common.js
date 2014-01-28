@@ -520,11 +520,11 @@ function check_identical_property_values(prop1, prop2) {
     assert_equals(actual[prop1], actual[prop2]);
   };
 }
-check('Array with indentical property values', function() {
+check('Array with identical property values', function() {
   var obj = {}
   return [obj, obj];
 }, compare_Array(check_identical_property_values('0', '1')));
-check('Object with indentical property values', function() {
+check('Object with identical property values', function() {
   var obj = {}
   return {'x':obj, 'y':obj};
 }, compare_Object(check_identical_property_values('x', 'y')));

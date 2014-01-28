@@ -270,7 +270,7 @@ function check(input, port) {
         if (check_true(input === -9007199254740994, "input === -9007199254740994")) {
           port.postMessage(input);
           close();
-          break; 
+          break;
         }
       case 'Array primitives':
         if (check_true(input instanceof Array, 'input instanceof Array') &&
@@ -333,7 +333,7 @@ function check(input, port) {
         })();
         break;
       case 'Boolean true':
-        if (check_true(input instanceof Boolean, "input instanceof Boolean") && 
+        if (check_true(input instanceof Boolean, "input instanceof Boolean") &&
             check_true(String(input) === 'true', "String(input) === 'true'")) {
           port.postMessage(input);
           close();
@@ -470,7 +470,7 @@ function check(input, port) {
         }
         break;
       case 'Number -0':
-        if (check_true(input instanceof Number, "input instanceof Number") && 
+        if (check_true(input instanceof Number, "input instanceof Number") &&
             check_true(1/Number(input) === -Infinity, "1/Number(input) === -Infinity")) {
           port.postMessage(input);
           close();
@@ -498,7 +498,7 @@ function check(input, port) {
         }
         break;
       case 'Number 9007199254740992':
-        if (check_true(input instanceof Number) && 
+        if (check_true(input instanceof Number) &&
             check_true(Number(input) === 9007199254740992, "Number(input) === 9007199254740992")) {
           port.postMessage(input);
           close();
@@ -512,7 +512,7 @@ function check(input, port) {
         }
         break;
       case 'Number 9007199254740994':
-        if (check_true(input instanceof Number, "input instanceof Number") && 
+        if (check_true(input instanceof Number, "input instanceof Number") &&
             check_true(Number(input) === 9007199254740994, "Number(input) === 9007199254740994")) {
           port.postMessage(input);
           close();

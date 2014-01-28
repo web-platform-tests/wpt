@@ -61,7 +61,7 @@ test(unit(function (ctx) {
 			'}';
 	s.appendChild(style);
 
-	assert_equals(s.styleSheets[0].cssRules[1].cssRules, 1,	'Wrong cssRules collection size');
+	assert_equals(s.styleSheets[0].cssRules[1].cssRules.length, 1,	'Wrong cssRules collection size');
 
 }), 'A_10_03_01_01_T02');
 </script>

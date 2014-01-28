@@ -113,6 +113,26 @@ function check_RegExp(msg, input) {
              check_true(input.multiline === true, "input.multiline === true") &&
              check_true(input.lastIndex === 0, "input.lastIndex === 0");
       break;
+    case 'RegExp sticky flag':
+      return check_true(input instanceof RegExp, "input instanceof RegExp") &&
+             check_true(input.source === 'foo', "input.source === 'foo'") &&
+             check_true(input.global === false, "input.global === false") &&
+             check_true(input.ignoreCase === false, "input.ignoreCase === false") &&
+             check_true(input.multiline === false, "input.multiline === false") &&
+             check_true(input.sticky === true, "input.sticky === true") &&
+             check_true(input.unicode === false, "input.unicode === false") &&
+             check_true(input.lastIndex === 0, "input.lastIndex === 0");
+      break;
+    case 'RegExp unicode flag':
+      return check_true(input instanceof RegExp, "input instanceof RegExp") &&
+             check_true(input.source === 'foo', "input.source === 'foo'") &&
+             check_true(input.global === false, "input.global === false") &&
+             check_true(input.ignoreCase === false, "input.ignoreCase === false") &&
+             check_true(input.multiline === false, "input.multiline === false") &&
+             check_true(input.sticky === false, "input.sticky === false") &&
+             check_true(input.unicode === true, "input.unicode === true") &&
+             check_true(input.lastIndex === 0, "input.lastIndex === 0");
+      break;
     case 'RegExp empty':
       return check_true(input instanceof RegExp, "input instanceof RegExp") &&
              check_true(input.source === '(?:)', "input.source === '(?:)'") &&

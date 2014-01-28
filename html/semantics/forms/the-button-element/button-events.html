@@ -23,7 +23,7 @@ var btn = document.getElementById("btn"),
 
 document.forms.fm1.onsubmit = function (evt) {
   t1.step(function () {
-    assert_true(evt.isTrusted, "The isTruested attribute of the submit event shoud be true.");
+    assert_true(evt.isTrusted, "The isTrusted attribute of the submit event shoud be true.");
     assert_true(evt.bubbles, "The bubbles attribute of the submit event shoud be true.");
     assert_true(evt.cancelable, "The cancelable attribute of the submit event shoud be true.");
     assert_true(evt instanceof Event, "The sumbit event is a instance of Event interface.");
@@ -35,8 +35,8 @@ document.forms.fm1.onsubmit = function (evt) {
 
 document.forms.fm1.onreset = function (evt) {
   t2.step(function () {
-    assert_true(evt.isTrusted, "The isTruested attribute of the reset event shoud be true..");
-    assert_true(evt.bubbles, "The bubbles attribute of the reset event shoud be true..");
+    assert_true(evt.isTrusted, "The isTrusted attribute of the reset event shoud be true.");
+    assert_true(evt.bubbles, "The bubbles attribute of the reset event shoud be true.");
     assert_true(evt.cancelable, "The cancelable attribute of the reset event shoud be true.");
     assert_true(evt instanceof Event, "The reset event is a instance of Event interface.");
     assert_equals(btn.type, "reset");
@@ -46,7 +46,7 @@ document.forms.fm1.onreset = function (evt) {
 
 document.getElementById("menu").addEventListener ("show", function (evt) {
   t3.step(function () {
-    assert_true(evt.isTrusted, "The isTruested attribute of the show event shoud be true.");
+    assert_true(evt.isTrusted, "The isTrusted attribute of the show event shoud be true.");
     assert_equals(evt.relatedTarget, menu_btn,"The relatedTarget attribute of the show event is incorrect.");
     assert_false(evt.cancelable, "The cancelable attribute of the show event shoud be false.");
     assert_true(evt instanceof RelatedEvent, "The reset event is a instance of RelatedEvent interface.");

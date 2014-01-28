@@ -103,7 +103,7 @@ function check_ImageBitmap(input, expected) {
 }
 
 function check_RegExp(msg, input) {
-  // XXX ES spec doesn't define exact serialization for `source`
+  // XXX ES6 spec doesn't define exact serialization for `source` (it allows several ways to escape)
   switch (msg) {
     case 'RegExp flags and lastIndex':
       return check_true(input instanceof RegExp, "input instanceof RegExp") &&

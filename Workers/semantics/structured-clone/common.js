@@ -214,7 +214,7 @@ check('Object Date objects', {'0':new Date(0),
                               '8.64e15':new Date(8.64e15)}, compare_Object(enumerate_props(compare_Date)));
 
 function compare_RegExp(expected_source) {
-  // XXX ES spec doesn't define exact serialization for `source`
+  // XXX ES6 spec doesn't define exact serialization for `source` (it allows several ways to escape)
   return function(actual, input, test_obj) {
     if (typeof actual === 'string')
       assert_unreached(actual);

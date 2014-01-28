@@ -47,10 +47,10 @@ document.forms.fm1.addEventListener("reset", function (evt) {
 document.getElementById("menu").addEventListener ("show", function (evt) {
   t3.step(function () {
     assert_true(evt.isTrusted, "The isTrusted attribute of the show event shoud be true.");
-    assert_equals(evt.relatedTarget, menu_btn, "The relatedTarget attribute of the show event is incorrect.");
+    assert_equals(evt.relatedTarget, menu_btn, "The relatedTarget attribute should be initialized to the related button element.");
     assert_true(evt.cancelable, "The cancelable attribute of the show event shoud be true.");
-    assert_true(evt instanceof RelatedEvent, "The reset event is a instance of RelatedEvent interface.");
-    assert_equals(document.getElementById("menu").type, "show");
+    assert_true(evt instanceof RelatedEvent, "The show event is a instance of RelatedEvent interface.");
+    assert_equals(menu_btn.type, "menu");
   });
   t3.done();
 });

@@ -17,7 +17,7 @@
       div { margin: 20px 0px;}
     </style>
   </head>
-  
+
   <body>
     <div>Select and drag the all the text of link below to rectangular box.</div>
     <a href="http://w3.org" title="World Wide Web Consortium">w3.org</a>
@@ -31,7 +31,7 @@
       }, {explicit_done: true, explicit_timeout: true});
 
       on_event(drop, 'drop', function(event) {
-        
+
         test(function() {
           assert_equals(event.dataTransfer.dropEffect, 'link',  'dropzone content attribute value is "link"');
         }, 'dropzone content attribute value is "link"');

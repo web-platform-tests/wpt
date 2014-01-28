@@ -20,7 +20,7 @@
       }
     </style>
   </head>
-  
+
   <body>
     <img src='/images/blue.png' alt='blue image' />
     <div>Save the blue image (image/png) above to your desktop, drag the image from desktop to the blue text to rectangular box in browser.</div>
@@ -32,7 +32,7 @@
       setup(function() {
           drop = document.querySelector('#drop');
       }, {explicit_done: true, explicit_timeout: true});
-      
+
       on_event(drop, 'drop', function(event) {
         var item = event.dataTransfer.items[0];
         test(function() {

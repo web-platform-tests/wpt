@@ -20,7 +20,7 @@
       }
     </style>
   </head>
-  
+
   <body>
     <div>Select and drag the blue text to rectangular box.</div>
     <div id='drag' draggable>blue text</div>
@@ -30,16 +30,16 @@
     <script>
       var drag, element;
       var Events = ['ondragstart', 'ondrag', 'ondragover', 'ondragenter', 'ondragexit', 'ondragleave', 'ondrop', 'ondragend'];
- 
+
       setup(function() {
           drag = document.querySelector('#drag');
           element = document.createElement('div');
         }, {explicit_done: true, explicit_timeout: true});
- 
+
       for(var i=0; i< Events.length; i++) {
         test(function() {
           assert_true(Events[i] in document, 'Check ' + Events[i] + ' in document');
-        }, 'Check ' + Events[i] + ' in document');       
+        }, 'Check ' + Events[i] + ' in document');
       }
 
       test(function() {
@@ -65,7 +65,7 @@
       test(function() {
         assert_inherits(element, 'ondragover', 'Check if have dragover attribute');
       }, 'Check if have dragover attribute');
- 
+
       test(function() {
         assert_inherits(element, 'ondrop', 'Check if have ondrop attribute');
       }, 'Check if have ondrop attribute');
@@ -92,8 +92,8 @@
         }, 'Check if the dragend event captured');
         done();
       });
-      
-      
+
+
     </script>
   </body>
 </html>

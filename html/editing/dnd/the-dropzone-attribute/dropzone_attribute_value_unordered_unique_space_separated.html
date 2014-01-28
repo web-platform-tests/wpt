@@ -20,7 +20,7 @@
       }
     </style>
   </head>
-  
+
   <body>
     <div>Select and drag the blue text to rectangular box.</div>
     <div id='select' draggable>blue text</div>
@@ -34,14 +34,14 @@
       }, {explicit_done: true, explicit_timeout: true});
 
       on_event(drop, 'drop', function(event) {
-        
+
         test(function() {
           assert_equals(event.dataTransfer.dropEffect, 'copy', 'unordered_unique_space_separated "string:text/plain copy", drop effect is copy');
         }, 'dropzone content attribute value is unordered_unique_space_separated "string:text/plain copy", drop effect is copy');
         test(function() {
           item = event.dataTransfer.items[0];
           assert_equals(item.kind, 'string',  'unordered_unique_space_separated "string:text/plain copy", data item kind is string');
-        }, 'dropzone content attribute value is unordered_unique_space_separated "string:text/plain copy", data item kind is string'); 
+        }, 'dropzone content attribute value is unordered_unique_space_separated "string:text/plain copy", data item kind is string');
         test(function() {
           item = event.dataTransfer.items[0];
           assert_equals(item.type, 'text/plain',  'dropzone content attribute value is unordered_unique_space_separated "string:text/plain copy", data item type is "text/plain"');

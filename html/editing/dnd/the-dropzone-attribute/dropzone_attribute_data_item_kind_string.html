@@ -20,7 +20,7 @@
       }
     </style>
   </head>
-  
+
   <body>
     <div>Select and drag the blue text to rectangular box.</div>
     <div id='select' draggable>blue text</div>
@@ -32,7 +32,7 @@
       setup(function() {
           drop = document.querySelector('#drop');
       }, {explicit_done: true, explicit_timeout: true});
-      
+
       on_event(drop, 'drop', function(event) {
         var item = event.dataTransfer.items[0];
         test(function() {

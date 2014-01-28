@@ -274,25 +274,26 @@ function check(input, port) {
         }
       case 'Array primitives':
         if (check_true(input instanceof Array, 'input instanceof Array') &&
-            check_true(input.length === 18, 'input.length === 18') &&
+            check_true(input.length === 19, 'input.length === 19') &&
             check_true(input[0] === undefined, 'input[0] === undefined') &&
             check_true(input[1] === null, 'input[1] === null') &&
             check_true(input[2] === true, 'input[2] === true') &&
             check_true(input[3] === false, 'input[3] === false') &&
             check_true(input[4] === '', "input[4] === ''") &&
             check_true(input[5] === '\uD800', "input[5] === '\\uD800'") &&
-            check_true(input[6] === '\u0000', "input[6] === '\\u0000'") &&
-            check_true(input[7] === '\uDBFF\uDFFD', "input[7] === '\\uDBFF\\uDFFD'") &&
-            check_true(input[8] === 0.2, "input[8] === 0.2") &&
-            check_true(1/input[9] === Infinity, "1/input[9] === Infinity") &&
-            check_true(1/input[10] === -Infinity, "1/input[10] === -Infinity") &&
-            check_true(input[11] !== input[11], "input[11] !== input[11]") &&
-            check_true(input[12] === Infinity, "input[12] === Infinity") &&
-            check_true(input[13] === -Infinity, "input[13] === -Infinity") &&
-            check_true(input[14] === 9007199254740992, "input[14] === 9007199254740992") &&
-            check_true(input[15] === -9007199254740992, "input[15] === -9007199254740992") &&
-            check_true(input[16] === 9007199254740994, "input[16] === 9007199254740994") &&
-            check_true(input[17] === -9007199254740994, "input[17] === -9007199254740994")) {
+            check_true(input[6] === '\uDC00', "input[6] === '\\uDC00'") &&
+            check_true(input[7] === '\u0000', "input[7] === '\\u0000'") &&
+            check_true(input[8] === '\uDBFF\uDFFD', "input[8] === '\\uDBFF\\uDFFD'") &&
+            check_true(input[9] === 0.2, "input[9] === 0.2") &&
+            check_true(1/input[10] === Infinity, "1/input[10] === Infinity") &&
+            check_true(1/input[11] === -Infinity, "1/input[11] === -Infinity") &&
+            check_true(input[12] !== input[11], "input[12] !== input[11]") &&
+            check_true(input[13] === Infinity, "input[13] === Infinity") &&
+            check_true(input[14] === -Infinity, "input[14] === -Infinity") &&
+            check_true(input[15] === 9007199254740992, "input[15] === 9007199254740992") &&
+            check_true(input[16] === -9007199254740992, "input[16] === -9007199254740992") &&
+            check_true(input[17] === 9007199254740994, "input[17] === 9007199254740994") &&
+            check_true(input[18] === -9007199254740994, "input[18] === -9007199254740994")) {
           port.postMessage(input);
           close();
         }
@@ -324,7 +325,7 @@ function check(input, port) {
             for (var x in input) {
               i++;
             }
-            if (check_true(i === 18, 'i === 18')) {
+            if (check_true(i === 19, 'i === 19')) {
               port.postMessage(input);
               close();
             }
@@ -417,11 +418,12 @@ function check(input, port) {
       case 'Array String objects':
         (function() {
           if (check_true(input instanceof Array, 'input instanceof Array') &&
-              check_true(input.length === 4, 'input.length === 4') &&
+              check_true(input.length === 5, 'input.length === 5') &&
               check_true(String(input[0]) === '', "String(input[0]) === ''") &&
               check_true(String(input[1]) === '\uD800', "String(input[1]) === '\\uD800'") &&
-              check_true(String(input[2]) === '\u0000', "String(input[2]) === '\\u0000'") &&
-              check_true(String(input[3]) === '\uDBFF\uDFFD', "String(input[3]) === '\\uDBFF\\uDFFD'")) {
+              check_true(String(input[2]) === '\uDC00', "String(input[1]) === '\\uDC00'") &&
+              check_true(String(input[3]) === '\u0000', "String(input[2]) === '\\u0000'") &&
+              check_true(String(input[4]) === '\uDBFF\uDFFD', "String(input[3]) === '\\uDBFF\\uDFFD'")) {
             for (var i = 0; i < input.length; ++i) {
               if (!check_true(input[i] instanceof String, 'input['+i+'] instanceof String'))
                 return;
@@ -446,7 +448,7 @@ function check(input, port) {
               if (!check_true(input[x] instanceof String, 'input['+x+'] instanceof Boolean'))
                 return;
             }
-            if (check_true(i === 4, 'i === 4')) {
+            if (check_true(i === 5, 'i === 5')) {
               port.postMessage(input);
               close();
             }

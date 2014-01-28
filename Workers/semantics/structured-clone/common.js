@@ -85,6 +85,7 @@ check('Array primitives', [undefined,
                            false,
                            '',
                            '\uD800',
+                           '\uDC00',
                            '\u0000',
                            '\uDBFF\uDFFD',
                            0.2,
@@ -150,6 +151,7 @@ check('String NUL', new String('\u0000'), compare_obj('String'));
 check('String astral character', new String('\uDBFF\uDFFD'), compare_obj('String'));
 check('Array String objects', [new String(''),
                                new String('\uD800'),
+                               new String('\uDC00'),
                                new String('\u0000'),
                                new String('\uDBFF\uDFFD')], compare_Array(enumerate_props(compare_obj('String'))));
 check('Object String objects', {'empty':new String(''),

@@ -21,20 +21,20 @@ var btn = document.getElementById("btn"),
     t2 = async_test("The reset event must be fired when click a button in reset status"),
     t3 = async_test("The show event must be fired when click a button in menu status");
 
-document.forms.fm1.onsubmit = function (evt) {
-  t1.step(function () {
+document.forms.fm1.addEventListener("submit", function (evt) {
+  t1.step(function () {  
     assert_true(evt.isTrusted, "The isTrusted attribute of the submit event shoud be true.");
     assert_true(evt.bubbles, "The bubbles attribute of the submit event shoud be true.");
     assert_true(evt.cancelable, "The cancelable attribute of the submit event shoud be true.");
     assert_true(evt instanceof Event, "The sumbit event is a instance of Event interface.");
-    assert_equals(btn.type, "submit");
+    assert_equals(btn.type, "submit");  
   });
   t1.done();
   evt.preventDefault();
-}
+});
 
-document.forms.fm1.onreset = function (evt) {
-  t2.step(function () {
+document.forms.fm1.addEventListener("reset", function (evt) {
+  t2.step(function () { 
     assert_true(evt.isTrusted, "The isTrusted attribute of the reset event shoud be true.");
     assert_true(evt.bubbles, "The bubbles attribute of the reset event shoud be true.");
     assert_true(evt.cancelable, "The cancelable attribute of the reset event shoud be true.");
@@ -42,15 +42,15 @@ document.forms.fm1.onreset = function (evt) {
     assert_equals(btn.type, "reset");
   });
   t2.done();
-}
+});
 
 document.getElementById("menu").addEventListener ("show", function (evt) {
   t3.step(function () {
     assert_true(evt.isTrusted, "The isTrusted attribute of the show event shoud be true.");
-    assert_equals(evt.relatedTarget, menu_btn,"The relatedTarget attribute of the show event is incorrect.");
-    assert_false(evt.cancelable, "The cancelable attribute of the show event shoud be false.");
+    assert_equals(evt.relatedTarget, menu_btn, "The relatedTarget attribute of the show event is incorrect.");
+    assert_true(evt.cancelable, "The cancelable attribute of the show event shoud be true.");
     assert_true(evt instanceof RelatedEvent, "The reset event is a instance of RelatedEvent interface.");
-    assert_equals(document.getElementById("menu").type, "menu");
+    assert_equals(document.getElementById("menu").type, "show");
   });
   t3.done();
 });

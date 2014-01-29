@@ -26,7 +26,7 @@ document.forms.fm1.addEventListener("submit", t1.step_func(function (evt) {
   assert_true(evt.isTrusted, "The isTrusted attribute of the submit event shoud be true.");
   assert_true(evt.bubbles, "The bubbles attribute of the submit event shoud be true.");
   assert_true(evt.cancelable, "The cancelable attribute of the submit event shoud be true.");
-  assert_true(evt instanceof Event, "The sumbit event is an instance of Event interface.");
+  assert_true(evt instanceof Event, "The submit event is an instance of Event interface.");
   t1.done();
 }));
 

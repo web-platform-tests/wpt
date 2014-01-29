@@ -46,21 +46,21 @@ document.getElementById("menu").addEventListener ("show", t3.step_func(function 
   t3.done();
 }));
 
-test(function () {
+t1.step(function () {
   btn.type = "submit";
   assert_equals(btn.type, "submit", "The button type should be 'submit'.");
   btn.click();
+});
 
+t2.step(function () {
   btn.type = "reset";
   assert_equals(btn.type, "reset", "The button type should be 'reset'.");
   btn.click();
+});
 
-  btn.type = "button";
-  assert_equals(btn.type, "button", "The button type should be 'button'.");
-  btn.click();          //Do nothing
-
+t3.step(function () {
   assert_equals(menu_btn.type, "menu", "The button type should be 'menu'.");
   menu_btn.click();
-}, "Check the type of the button element");
+});
 
 </script>

@@ -122,7 +122,7 @@ var data = [
   ["hgroup", ""],
   ["header", ""],
   ["footer", ""],
-  ["time", "Unknown"],
+  ["time", "Time"],
   ["mark", ""],
   ["progress", "Progress"],
   ["meter", "Meter"],
@@ -152,6 +152,9 @@ test(function() {
   data.forEach(function(a) {
     test(function() {
       var e = document.createElement(a[0]), i = "HTML" + a[1] + "Element";
+      assert_class_string(e, i,
+                          "Element " + a[0] + " should have " + i +
+                          " as its primary interface.");
       assert_true(e instanceof window[i],
                   "Element " + a[0] + " should implement " + i + ".");
       assert_true(e instanceof HTMLElement,
@@ -160,9 +163,6 @@ test(function() {
                   "Element " + a[0] + " should implement Element.");
       assert_true(e instanceof Node,
                   "Element " + a[0] + " should implement Node.");
-      var str = Object.prototype.toString.call(e).substring(8);
-      str = str.substring(0, str.indexOf(' ') !== -1 ? str.indexOf(' ') : str.indexOf(']'));
-      assert_equals(str, i);
     }, "Interfaces for " + a[0])
   })
 })

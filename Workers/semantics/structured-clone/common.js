@@ -261,14 +261,12 @@ check('Object RegExp object, RegExp empty', {'x':new RegExp('')}, compare_Object
 check('Object RegExp object, RegExp slash', {'x':new RegExp('/')}, compare_Object(enumerate_props(compare_RegExp('\\/'))));
 check('Object RegExp object, RegExp new line', {'x':new RegExp('\n')}, compare_Object(enumerate_props(compare_RegExp('\\n'))));
 
-
-// XXX test File when there's a way to construct one
-
-function compare_Blob(actual, input, test_obj) {
+function compare_Blob(actual, input, test_obj, expect_File) {
   if (typeof actual === 'string')
     assert_unreached(actual);
   assert_true(actual instanceof Blob, 'instanceof Blob');
-  assert_false(actual instanceof File, 'instanceof File');
+  if (!expect_File)
+    assert_false(actual instanceof File, 'instanceof File');
   assert_equals(actual.size, input.size, 'size');
   assert_equals(actual.type, input.type, 'type');
   assert_not_equals(actual, input);
@@ -378,13 +376,24 @@ async_test(function(test_obj) {
   check(test_obj.name, {'x':test_obj.step(func_Blob_NUL)}, compare_Object(enumerate_props(compare_Blob)), test_obj);
 }, 'Object Blob object, Blob NUL');
 
+function compare_File(actual, input, test_obj) {
+  assert_true(actual instanceof File, 'instanceof File');
+  assert_equals(actual.name, input.name, 'name');
+  assert_equals(actual.lastModified, input.lastModified, 'lastModified');
+  compare_Blob(actual, input, test_obj, true);
+}
+function func_File_basic() {
+  return new File(['foo'], 'bar', {type:'text/x-bar', lastModified:42});
+}
+check('File basic', func_File_basic, compare_File);
+
 function compare_FileList(actual, input, test_obj) {
   if (typeof actual === 'string')
     assert_unreached(actual);
   assert_true(actual instanceof FileList, 'instanceof FileList');
   assert_equals(actual.length, input.length, 'length');
   assert_not_equals(actual, input);
-  // XXX when there's a way to construct Files and populate or construct a FileList,
+  // XXX when there's a way to populate or construct a FileList,
   // check the items in the FileList
   if (test_obj)
     test_obj.done();

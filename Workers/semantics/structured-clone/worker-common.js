@@ -9,13 +9,19 @@ function check_true(actual, msg) {
   return true;
 }
 
-function check_Blob(msg, input, port) {
+function check_Blob(msg, input, port, expect_File) {
+  expect_File = !!expect_File;
   try {
     var expected;
     switch (msg) {
       case 'Blob basic':
+      case 'File basic':
         expected = [0x66, 0x6F, 0x6F];
         expected.type = 'text/x-bar';
+        if (expect_File) {
+          expected.name = 'bar';
+          expected.lastModified = 42;
+        }
         break;
       case 'Blob unpaired high surrogate (invalid utf-8)':
         expected = [0xED, 0xA0, 0x80];
@@ -43,33 +49,36 @@ function check_Blob(msg, input, port) {
         break;
     }
     if (check_true(input instanceof Blob, 'input instanceof Blob') &&
-        check_true(!(input instanceof File), '!(input instanceof File)') &&
+        check_true((input instanceof File) == expect_File, '(input instanceof File) == expect_File') &&
         check_true(input.size === expected.length, 'input.size === expected.length') &&
         check_true(input.type === expected.type, 'input.type === expected.type')) {
-      var reader = new FileReader();
-      var read_done = function() {
-        try {
-          var result = reader.result;
-          check_true(result.byteLength === expected.length, 'result.byteLength === expected.length')
-          var view = new DataView(result);
-          for (var i = 0; i < result.byteLength; ++i) {
-            check_true(view.getUint8(i) === expected[i], 'view.getUint8('+i+') === expected['+i+']')
+      if (!expect_File || (check_true(input.name === expected.name, 'input.name === expected.name' &&
+                           check_true(input.lastModified === expected.lastModified))) {
+        var reader = new FileReader();
+        var read_done = function() {
+          try {
+            var result = reader.result;
+            check_true(result.byteLength === expected.length, 'result.byteLength === expected.length')
+            var view = new DataView(result);
+            for (var i = 0; i < result.byteLength; ++i) {
+              check_true(view.getUint8(i) === expected[i], 'view.getUint8('+i+') === expected['+i+']')
+            }
+            if (log.length === 0) {
+              port.postMessage(input);
+            } else {
+              port.postMessage('FAIL '+log);
+            }
+            close();
+          } catch(ex) {
+            postMessage('FAIL '+ex);
+            close();
           }
-          if (log.length === 0) {
-            port.postMessage(input);
-          } else {
-            port.postMessage('FAIL '+log);
-          }
-          close();
-        } catch(ex) {
-          postMessage('FAIL '+ex);
-          close();
         }
+        var read_error = function() { port.postMessage('FAIL (got FileReader error)'); close(); };
+        reader.readAsArrayBuffer(input);
+        reader.onload = read_done;
+        reader.onabort = reader.onerror = read_error;
       }
-      var read_error = function() { port.postMessage('FAIL (got FileReader error)'); close(); };
-      reader.readAsArrayBuffer(input);
-      reader.onload = read_done;
-      reader.onabort = reader.onerror = read_error;
     } else {
       port.postMessage('FAIL '+log);
       close();
@@ -738,6 +747,10 @@ function check(input, port) {
             }
           }
         })();
+        break;
+      case 'File basic':
+        check_Blob(msg, input, port, true);
+        // no postMessage or close here, check_Blob takes care of that
         break;
       case 'FileList empty':
         if (check_FileList(msg, input)) {

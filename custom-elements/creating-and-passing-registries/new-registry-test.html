@@ -21,6 +21,7 @@ testInIFrame('../resources/blank.html', function(doc) {
     } catch (e) {
         assert_unreached('Unexpected exception, while registering a valid custom element');
     }
+
 }, 'Document, loaded into browsing context, must have a new empty registry');
 
 
@@ -34,6 +35,7 @@ testInIFrame('../resources/blank.html', function(loadedDocument) {
         assert_unreached('Unexpected exception while registering a custom element ' +
             'in a document, which has it\'s own registry');
     }
+
 }, 'Document, loaded into browsing context, must have a new empty registry, ' +
    'which is different from other document\'s registries');
 

@@ -1,32 +1,31 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>CSS Reftest Reference</title>
-		<link rel="author" title="Mirela Budăeș" href="mailto:mbudaes@adobe.com">
-		<link rel="match" href="">
-		<style>
-			.parent {
-				opacity: 0.9;
-				background: yellow;/*rgb(255,255,0);*/
-				margin: 30px;
-				width: 120px;
-				height: 120px;
-				display: inline-block;
-			}
-			.childBlended {
-				background: lime;/*rgb(0,255,0);*/
-				width: 80px;
-				height: 80px;
-				margin-top: 20px;
-				margin-left: 20px;
-			}
-		</style>
-	</head>
-	<body>
-		<p>Test passes if there is no complete red square on the screen.<br>
-		You should see a lime square with yellow borders.</p>
-		<div class="parent">
-				<div class="childBlended"></div>
-		</div>
-	</body>
+    <head>
+        <title>CSS Reftest Reference</title>
+        <link rel="author" title="Mihai Tica" href="mailto:mitica@adobe.com">
+        <link rel="reviewer" title="Mihai Balan" href="mailto:mibalan@adobe.com">
+        <link rel="reviewer" title="Horia Olaru" href="mailto:olaru@adobe.com">
+        <style type="text/css">
+            .parent {
+                position: absolute;
+                z-index: 1;
+                background: #0FF;
+                width: 120px;
+                height: 120px;
+            }
+            .child {
+                background: #0F0;
+                width: 100px;
+                height: 100px;
+                margin: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if you can see a lime square with aqua borders.<br>
+            If the borders are red, the test fails.</p>
+        <div class="parent">
+            <div class="child"></div>
+        </div>
+    </body>
 </html>

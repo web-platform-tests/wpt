@@ -32,7 +32,7 @@ test(unit(function (ctx) {
 	var d = newRenderedHTMLDocument(ctx);
 
     d.head.innerHTML = '' +
-			'@host {' +
+			':host {' +
 				'div {display:none;}' +
 			'}';
 
@@ -89,16 +89,16 @@ test(unit(function (ctx) {
 
 	var style = d.createElement('style');
     style.innerHTML = '' +
-			'@host {' +
+			':host {' +
 				'ul {display:none;}' +
 			'}';
 	s.appendChild(style);
 
-	assert_true(d.querySelector('#li1').offsetTop, 0,
+	assert_true(d.querySelector('#li1').offsetTop > 0,
 		'Point 1: element should be rendered');
-	assert_true(d.querySelector('#li3').offsetTop, 0,
+	assert_true(d.querySelector('#li3').offsetTop > 0,
 		'Point 2: element should be rendered');
-	assert_true(d.querySelector('#li5').offsetTop, 0,
+	assert_true(d.querySelector('#li5').offsetTop > 0,
 		'Point 3: element should be rendered');
 
 
@@ -127,7 +127,7 @@ test(unit(function (ctx) {
 
 	var style = d.createElement('style');
     style.innerHTML = '' +
-			'@host {' +
+			':host {' +
 				'div{display:none;}' +
 			'}';
 	s2.appendChild(style);

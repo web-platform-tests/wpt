@@ -21,49 +21,46 @@ var btn = document.getElementById("btn"),
     t2 = async_test("The reset event must be fired when click a button in reset status"),
     t3 = async_test("The show event must be fired when click a button in menu status");
 
-document.forms.fm1.addEventListener("submit", function (evt) {
-  t1.step(function () {  
-    assert_true(evt.isTrusted, "The isTrusted attribute of the submit event shoud be true.");
-    assert_true(evt.bubbles, "The bubbles attribute of the submit event shoud be true.");
-    assert_true(evt.cancelable, "The cancelable attribute of the submit event shoud be true.");
-    assert_true(evt instanceof Event, "The sumbit event is a instance of Event interface.");
-    assert_equals(btn.type, "submit");  
-  });
-  t1.done();
+document.forms.fm1.addEventListener("submit", t1.step_func(function (evt) {
   evt.preventDefault();
-});
+  assert_true(evt.isTrusted, "The isTrusted attribute of the submit event shoud be true.");
+  assert_true(evt.bubbles, "The bubbles attribute of the submit event shoud be true.");
+  assert_true(evt.cancelable, "The cancelable attribute of the submit event shoud be true.");
+  assert_true(evt instanceof Event, "The sumbit event is an instance of Event interface.");
+  t1.done();
+}));
 
-document.forms.fm1.addEventListener("reset", function (evt) {
-  t2.step(function () { 
-    assert_true(evt.isTrusted, "The isTrusted attribute of the reset event shoud be true.");
-    assert_true(evt.bubbles, "The bubbles attribute of the reset event shoud be true.");
-    assert_true(evt.cancelable, "The cancelable attribute of the reset event shoud be true.");
-    assert_true(evt instanceof Event, "The reset event is a instance of Event interface.");
-    assert_equals(btn.type, "reset");
-  });
+document.forms.fm1.addEventListener("reset", t2.step_func(function (evt) {
+  assert_true(evt.isTrusted, "The isTrusted attribute of the reset event shoud be true.");
+  assert_true(evt.bubbles, "The bubbles attribute of the reset event shoud be true.");
+  assert_true(evt.cancelable, "The cancelable attribute of the reset event shoud be true.");
+  assert_true(evt instanceof Event, "The reset event is an instance of Event interface.");
   t2.done();
-});
+}));
 
-document.getElementById("menu").addEventListener ("show", function (evt) {
-  t3.step(function () {
-    assert_true(evt.isTrusted, "The isTrusted attribute of the show event shoud be true.");
-    assert_equals(evt.relatedTarget, menu_btn, "The relatedTarget attribute should be initialized to the related button element.");
-    assert_true(evt.cancelable, "The cancelable attribute of the show event shoud be true.");
-    assert_true(evt instanceof RelatedEvent, "The show event is a instance of RelatedEvent interface.");
-    assert_equals(menu_btn.type, "menu");
-  });
+document.getElementById("menu").addEventListener ("show", t3.step_func(function (evt) {
+  assert_true(evt.isTrusted, "The isTrusted attribute of the show event shoud be true.");
+  assert_equals(evt.relatedTarget, menu_btn, "The relatedTarget attribute should be initialized to the related button element.");
+  assert_true(evt.cancelable, "The cancelable attribute of the show event shoud be true.");
+  assert_true(evt instanceof RelatedEvent, "The show event is an instance of RelatedEvent interface.");
   t3.done();
-});
+}));
 
-btn.type = "submit";
-btn.click();
+test(function () {
+  btn.type = "submit";
+  assert_equals(btn.type, "submit", "The button type should be 'submit'.");
+  btn.click();
 
-btn.type = "reset";
-btn.click();
+  btn.type = "reset";
+  assert_equals(btn.type, "reset", "The button type should be 'reset'.");
+  btn.click();
 
-btn.type = "button";
-btn.click();          //Do nothing
+  btn.type = "button";
+  assert_equals(btn.type, "button", "The button type should be 'button'.");
+  btn.click();          //Do nothing
 
-menu_btn.click();
+  assert_equals(menu_btn.type, "menu", "The button type should be 'menu'.");
+  menu_btn.click();
+}, "Check the type of the button element");
 
 </script>

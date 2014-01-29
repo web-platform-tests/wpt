@@ -52,7 +52,7 @@ function check_Blob(msg, input, port, expect_File) {
         check_true((input instanceof File) == expect_File, '(input instanceof File) == expect_File') &&
         check_true(input.size === expected.length, 'input.size === expected.length') &&
         check_true(input.type === expected.type, 'input.type === expected.type')) {
-      if (!expect_File || (check_true(input.name === expected.name, 'input.name === expected.name' &&
+      if (!expect_File || (check_true(input.name === expected.name, 'input.name === expected.name') &&
                            check_true(input.lastModified === expected.lastModified))) {
         var reader = new FileReader();
         var read_done = function() {

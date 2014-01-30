@@ -42,7 +42,7 @@ A_04_04_01_T1.step(function () {
             s.appendChild(subdiv1);
 
             var shadowStyle = d.createElement('style');
-            shadowStyle.innerHTML = '*::distributed(.shadow) { display:none; }';
+            shadowStyle.innerHTML = '*::content > .shadow { display:none; }';
             s.appendChild(shadowStyle);
 
             //The order of DOM elements should be the following:
@@ -59,13 +59,13 @@ A_04_04_01_T1.step(function () {
             var li4 = d.querySelector('#li4');
             var li5 = d.querySelector('#li5');
             assert_not_equals(window.getComputedStyle(li1).display, "none",
-              'Point 3: ::distributed() pseudo-element should be a valid insertion point matching criteria, element should be visible');
+              'Point 3: ::content pseudo-element should be a valid insertion point matching criteria, element should be visible');
             assert_not_equals(window.getComputedStyle(li2).display, "none",
-              'Point 4: ::distributed() pseudo-element should be a valid insertion point matching criteria, element should be visible');
+              'Point 4: ::content pseudo-element should be a valid insertion point matching criteria, element should be visible');
             assert_not_equals(window.getComputedStyle(li4).display, "none",
-              'Point 5: ::distributed() pseudo-element should be a valid insertion point matching criteria, element should be visible');
+              'Point 5: ::content pseudo-element should be a valid insertion point matching criteria, element should be visible');
             assert_not_equals(window.getComputedStyle(li5).display, "none",
-              'Point 6: ::distributed() pseudo-element should be a valid insertion point matching criteria, element should be visible');
+              'Point 6: ::content pseudo-element should be a valid insertion point matching criteria, element should be visible');
         } finally {
             iframe.parentNode.removeChild(iframe);
         }

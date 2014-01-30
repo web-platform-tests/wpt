@@ -42,7 +42,7 @@ A_04_04_01_T1.step(function () {
             s.appendChild(subdiv1);
 
             var shadowStyle = d.createElement('style');
-            shadowStyle.innerHTML = '*::content > .shadow { display:none; }';
+            shadowStyle.innerHTML = '*::content .shadow { display:none; }';
             s.appendChild(shadowStyle);
 
             //The order of DOM elements should be the following:

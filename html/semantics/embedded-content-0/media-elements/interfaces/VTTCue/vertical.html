@@ -26,9 +26,8 @@ test(function(){
     assert_equals(c1.vertical, 'rl');
     c1.vertical = 'lr';
     assert_equals(c1.vertical, 'lr');
-    assert_throws(new TypeError(), function() {
-        c1.vertical = 'rl\u0000';
-    });
+    c1.vertical = 'rl\u0000';
+    assert_equals(c1.vertical, 'lr');
 }, document.title+', script-created cue');
 
 var t_parsed = async_test(document.title+', parsed cue');

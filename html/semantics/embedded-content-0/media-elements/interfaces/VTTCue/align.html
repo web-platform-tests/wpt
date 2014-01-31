@@ -21,9 +21,8 @@ test(function(){
     assert_equals(c1.align, 'start');
     c1.align = 'end';
     assert_equals(c1.align, 'end');
-    assert_throws(new TypeError(), function() {
-        c1.align = 'start\u0000';
-    });
+    c1.align = 'start\u0000';
+    assert_equals(c1.align, 'end');
 }, document.title+', script-created cue');
 
 var t_parsed = async_test(document.title+', parsed cue');

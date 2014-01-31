@@ -25,20 +25,6 @@ var HTML5_ELEMENTS = [ 'a', 'abbr', 'address', 'area', 'article', 'aside',
         'tfoot', 'th', 'thead', 'time', 'title', 'tr', 'track', 'u', 'ul',
         'var', 'video', 'wbr' ];
 
-// self-closing HTML5 elements
-var HTML5_SELF_CLOSING_ELEMENTS = [ 'area', 'base', 'br', 'col', 'command', 'embed',
-        'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source',
-        'track', 'wbr' ];
-
-// http://www.whatwg.org/specs/web-apps/current-work/multipage/forms.html#form-associated-element
-var HTML5_FORM_ASSOCIATED_ELEMENTS = [ 'button', 'fieldset', 'input', 'keygen',
-        'label', 'object', 'output', 'select', 'textarea' ];
-
-var HTML5_DOCUMENT_ELEMENTS = [ 'html', 'head', 'body' ];
-
-var HTML5_TABLE_ELEMENTS = [ 'caption', 'col', 'colgroup', 'tbody', 'td',
-        'tfoot', 'th', 'thead', 'tr' ];
-
 var EXTENDER_CHARS = [ 0x00B7, 0x02D0, 0x02D1, 0x0387, 0x0640, 0x0E46, 0x0EC6,
         0x3005, 0x3031, 0x3032, 0x3033, 0x3034, 0x3035, 0x309D, 0x309E, 0x30FC,
         0x30FD, 0x30FE ];
@@ -186,6 +172,10 @@ var ideographicCharsSingle = new CharsArray(IDEOGRAPHIC_CHARS_SINGLE);
 var ideographicCharsRanges = new CharRangesArray(IDEOGRAPHIC_CHARS_RANGES);
 var digitCharsRanges = new CharRangesArray(DIGIT_CHARS_RANGES);
 
+function newHTMLDocument() {
+    return document.implementation.createHTMLDocument('Test Document');
+}
+
 // Helper function, which verifies that given custom element name is valid
 function checkValidName(name) {
     var doc = newHTMLDocument();
@@ -217,146 +207,30 @@ function getCharCode(c) {
 }
 
 var HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
-var SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
 
 
 function newHTMLDocument() {
     return document.implementation.createHTMLDocument('Test Document');
 }
 
-function newXHTMLDocument() {
-    var doctype = document.implementation.createDocumentType('html',
-            '-//W3C//DTD XHTML 1.0 Transitional//EN',
-            'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd');
-
-    var d = document.implementation.createDocument(
-            'http://www.w3.org/1999/xhtml', 'html', doctype);
-    return d;
-}
-
-function newIFrame(context, src) {
-    if (typeof (context) === 'undefined'
-            || typeof (context.iframes) !== 'object') {
-        assert_unreached('Illegal context object in newIFrame');
-    }
-
-    var iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
-
-    if (typeof (src) != 'undefined') {
-        iframe.src = src;
-    }
-    document.body.appendChild(iframe);
-    context.addIFrame(iframe);
-
-    assert_true(typeof (iframe.contentWindow) != 'undefined'
-            && typeof (iframe.contentWindow.document) != 'undefined'
-            && iframe.contentWindow.document != document,
-            'Failed to create new rendered document');
-    return iframe;
-}
-
-function newHTMLDocumentWithBrowsingContext(context) {
-    var frame = newIFrame(context);
-    var d = frame.contentWindow.document;
-    return d;
-}
-
-function Context() {
-    this.iframes = [];
-}
-
-Context.prototype.clean = function () {
-    this.iframes.forEach(function(e) {
-        e.parentNode.removeChild(e);
-    });
-    this.iframes = [];
-}
-
-Context.prototype.addIFrame = function(iframe){
-    this.iframes.push(iframe)
-}
-
-// run given test function in context
-// the context is cleaned up after test completes.
-function inContext(f) {
-    return function() {
-        var context = new Context();
-        try {
-            f(context);
-        } finally {
-            context.clean();
-        }
-    };
-}
-
-// new context and iframe are created and url (if supplied) is asigned to
-// iframe.src
-// function f is bound to the iframe onload event or executed directly after
-// iframe creation
-// the context is passed to function as argument
+// Creates new iframe and loads given url into it.
+// Function f is bound to the iframe's onload event.
+// Function f receives iframe's contentDocument as argument.
+// The iframe is disposed after function f is executed.
 function testInIFrame(url, f, testName, testProps) {
-    if (url) {
-        var t = async_test(testName, testProps);
-        t.step(function() {
-            var context = new Context();
-            var iframe = newIFrame(context, url);
-            iframe.onload = t.step_func(function() {
-                try {
-                    f(iframe.contentDocument);
-                    t.done();
-                } finally {
-                    context.clean();
-                }
-            });
+    var t = async_test(testName, testProps);
+    t.step(function() {
+        assert_not_equals(url, null, 'argument url should not be null');
+        var iframe = document.createElement('iframe');
+        iframe.src = url;
+        document.body.appendChild(iframe);
+        iframe.onload = t.step_func(function() {
+            try {
+                f(iframe.contentDocument);
+                t.done();
+            } finally {
+                iframe.parentNode.removeChild(iframe);
+            }
         });
-    } else {
-        test(inContext(function(context) {
-            var doc = newHTMLDocumentWithBrowsingContext(context);
-            f(doc);
-        }), testName, testProps);
-    }
+    });
 }
-
-function isVisible(el) {
-    return el.offsetTop != 0;
-}
-
-function isSelfClosingElement(elementName) {
-    return HTML5_SELF_CLOSING_ELEMENTS.indexOf(elementName) >= 0;
-}
-
-function checkTemplateContent(d, obj, html, id, nodeName) {
-
-    obj.innerHTML = '<template id="tmpl">' + html + '</template>';
-
-    var t = d.querySelector('#tmpl');
-
-    if (id != null) {
-        assert_equals(t.content.childNodes.length, 1, 'Element ' + nodeName
-                + ' should present among template nodes');
-        assert_equals(t.content.firstChild.id, id, 'Wrong element ID');
-    }
-    if (nodeName != null) {
-        assert_equals(t.content.firstChild.nodeName, nodeName.toUpperCase(),
-                'Wrong node name');
-    }
-}
-
-function checkBodyTemplateContent(d, html, id, nodeName) {
-    checkTemplateContent(d, d.body, html, id, nodeName);
-}
-
-function checkHeadTemplateContent(d, html, id, nodeName) {
-    checkTemplateContent(d, d.head, html, id, nodeName);
-}
-
-function d2h(d) {
-    var hex = d.toString(16);
-    return hex.length == 1 ? "0" + hex : hex;
-}
-
-function h2d(h) {
-    return parseInt(h, 16);
-}
-

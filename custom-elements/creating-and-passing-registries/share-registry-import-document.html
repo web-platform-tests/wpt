@@ -24,7 +24,6 @@ testInIFrame('../resources/import-master.html', function(doc) {
         function () { doc2.registerElement(name); },
         'Registering a custom element type name that is already registered in a shared ' +
             'registry should throw an exception');
-
 }, 'Registry of the import should share master document registry');
 
 
@@ -38,7 +37,6 @@ testInIFrame('../resources/import-master.html', function(doc) {
         function () { doc.registerElement(name); },
         'Registering a custom element type name that is already registered in a shared ' +
             'registry should throw an exception');
-
 }, 'Registry of the master document should be shared with imported document\'s registry');
 
 </script>

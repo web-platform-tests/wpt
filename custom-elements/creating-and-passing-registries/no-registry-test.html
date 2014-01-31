@@ -21,7 +21,6 @@ test(function() {
         function() { doc.registerElement('x-element'); },
         'Registering valid custom element in a document ' +
             'without registry should fail');
-
 }, 'Document of type other than HTML, not loaded into browsing context, must not have a registry');
 
 
@@ -39,8 +38,8 @@ test(function() {
         function() { doc.registerElement('x-element'); },
         'Registering valid custom element in ' +
             'a XMLHttpRequest\'s response document should fail');
+}, 'XMLHttpRequest\'s synchronous response XML document must not have a registry');
 
-}, 'XMLHttpRequest\'s synchronous response document must not have a registry');
 
 async_test(function(t) {
     var request = new XMLHttpRequest();
@@ -60,8 +59,30 @@ async_test(function(t) {
     request.open('GET', '../resources/blank.xml', true);
     request.overrideMimeType('text/xml');
     request.send();
+}, 'XMLHttpRequest\'s asynchronous response XML document must not have a registry');
 
-}, 'XMLHttpRequest\'s asynchronous response document must not have a registry');
+
+async_test(function(t) {
+    var request = new XMLHttpRequest();
+    request.onreadystatechange = t.step_func(function() {
+        if (request.readyState == 4){
+            assert_equals(200, request.status, 'Test document is not loaded correctly');
+            var doc = request.response;
+            assert_true(doc instanceof Document,
+                'XMLHttpRequest\'s asynchronous response should be HTML document');
+            assert_throws(
+                'NotSupportedError',
+                function() { doc.registerElement('x-element'); },
+                'Registering valid custom element in ' +
+                    'a XMLHttpRequest\'s response document should fail');
+            t.done();
+        }
+    });
+
+    request.open('GET', '../resources/blank.html', true);
+    request.responseType = 'document';
+    request.send();
+}, 'XMLHttpRequest\'s asynchronous response HTML document must not have a registry');
 
 </script>
 </body>

@@ -39,6 +39,9 @@ t.step(function(){
         assert_throws('NOT_FOUND_ERR', function() { t1.removeCue(cue); }, 'standalone, remove from t1');
         t.done();
     });
+    track.onerror = t.step_func(function() {
+      assert_unreached('got error event');
+    });
     track.src= 'data:text/vtt,'+encodeURIComponent('WEBVTT\n\n00:00:00.000 --> 00:00:01.000\ntest\n');
     track.kind = 'subtitles';
     track.track.mode = 'hidden';

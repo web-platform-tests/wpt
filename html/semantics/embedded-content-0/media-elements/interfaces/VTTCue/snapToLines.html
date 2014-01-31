@@ -85,6 +85,9 @@ t_parsed.step(function(){
 
         this.done();
     });
+    t.onerror = this.step_func(function() {
+      assert_unreached('got error event');
+    });
     t.src = 'data:text/vtt,'+encodeURIComponent('WEBVTT\n\n00:00:00.000 --> 00:00:00.001\ntest\n\n'+
                                                 '00:00:00.000 --> 00:00:00.001 line:0\ntest\n\n'+
                                                 '00:00:00.000 --> 00:00:00.001 line:0%\ntest');

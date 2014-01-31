@@ -28,6 +28,9 @@ t_parsed.step(function(){
         assert_equals(c[1].endTime, 3600.001);
         this.done();
     });
+    t.onerror = this.step_func(function() {
+      assert_unreached('got error event');
+    });
     t.src = 'data:text/vtt,'+encodeURIComponent('WEBVTT\n\n00:00:00.000 --> 00:00:00.001\ntest'+
                                                       '\n\nfoobar\n01:00:00.000 --> 01:00:00.001\ntest');
     t.track.mode = 'showing';

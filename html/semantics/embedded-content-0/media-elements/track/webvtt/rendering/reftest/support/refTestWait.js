@@ -4,7 +4,7 @@ function takeScreenshot() {
 	clearTimeout(refTestTimer);
 }
 
-function takeScreenshoDelayed(timeout) {
+function takeScreenshotDelayed(timeout) {
 	setTimeout(function() {
 		clearTimeout(refTestTimer);
 	}, timeout);

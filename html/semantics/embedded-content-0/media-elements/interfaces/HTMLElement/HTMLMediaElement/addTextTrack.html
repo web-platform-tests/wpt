@@ -30,6 +30,7 @@ test(function(){
     assert_equals(t.language, '');
     assert_equals(t.mode, 'hidden');
     assert_true(t.cues instanceof TextTrackCueList);
+    assert_true(t.cues.length, 0);
 }, document.title + ' subtitles first arg');
 
 test(function(){
@@ -39,6 +40,7 @@ test(function(){
     assert_equals(t.language, '');
     assert_equals(t.mode, 'hidden');
     assert_true(t.cues instanceof TextTrackCueList);
+    assert_true(t.cues.length, 0);
 }, document.title + ' captions first arg');
 
 test(function(){
@@ -48,6 +50,7 @@ test(function(){
     assert_equals(t.language, '');
     assert_equals(t.mode, 'hidden');
     assert_true(t.cues instanceof TextTrackCueList);
+    assert_true(t.cues.length, 0);
 }, document.title + ' descriptions first arg');
 
 test(function(){
@@ -57,6 +60,7 @@ test(function(){
     assert_equals(t.language, '');
     assert_equals(t.mode, 'hidden');
     assert_true(t.cues instanceof TextTrackCueList);
+    assert_true(t.cues.length, 0);
 }, document.title + ' chapters first arg');
 
 test(function(){
@@ -66,6 +70,7 @@ test(function(){
     assert_equals(t.language, '');
     assert_equals(t.mode, 'hidden');
     assert_true(t.cues instanceof TextTrackCueList);
+    assert_true(t.cues.length, 0);
 }, document.title + ' metadata first arg');
 
 test(function(){
@@ -75,6 +80,7 @@ test(function(){
     assert_equals(t.language, '');
     assert_equals(t.mode, 'hidden');
     assert_true(t.cues instanceof TextTrackCueList);
+    assert_true(t.cues.length, 0);
 }, document.title + ' undefined second and third arg');
 
 test(function(){
@@ -84,6 +90,7 @@ test(function(){
     assert_equals(t.language, 'null');
     assert_equals(t.mode, 'hidden');
     assert_true(t.cues instanceof TextTrackCueList);
+    assert_true(t.cues.length, 0);
 }, document.title + ' null second and third arg');
 
 test(function(){
@@ -93,6 +100,7 @@ test(function(){
     assert_equals(t.language, 'bar');
     assert_equals(t.mode, 'hidden');
     assert_true(t.cues instanceof TextTrackCueList);
+    assert_true(t.cues.length, 0);
 }, document.title + ' foo and bar second and third arg');
 
 test(function(){
@@ -102,6 +110,7 @@ test(function(){
     assert_equals(t.language, '');
     assert_equals(t.mode, 'hidden');
     assert_true(t.cues instanceof TextTrackCueList);
+    assert_true(t.cues.length, 0);
 }, document.title + ' foo second arg, third arg omitted');
 
 </script>

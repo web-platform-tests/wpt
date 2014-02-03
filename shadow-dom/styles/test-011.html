@@ -188,7 +188,7 @@ test(unit(function (ctx) {
 	assert_equals(d.querySelector('#li5').offsetHeight, defHeight5, 'Point 43: Inherited ' +
 			'element style should be reset');
 
-	assert_equals(d.querySelector('#spn1').offsetHeight, spnHeight, 'Element shouldn\'t ' +
+	assert_equals(s2.querySelector('#spn1').offsetHeight, spnHeight, 'Element shouldn\'t ' +
 		'be affected by resetStyleInheritance flag');
 
 }), 'A_06_00_12_T02');

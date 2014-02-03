@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CSS Test: Shape from image - basic</title>
+    <link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com"/>
+    <link rel="help" href="http://www.w3.org/TR/css-shapes-1/#shapes-from-image"/>
+    <link rel="help" href="http://www.w3.org/TR/css-shapes-1/#shape-outside-property"/>
+    <link rel="match" href="reference/shape-outside-009.html"/>
+    <meta name="flags" content="ahem, svg"/>
+    <meta name="assert" content="This test verifies that TODO"/>
+     <!-- This test is derived from Example 5 in this version of the spec:
+          http://www.w3.org/TR/2013/WD-css-shapes-1-20131203/ -->
+    <style type="text/css">
+        .container {
+          width: 200px;
+          height: 105px;
+          font-family: Ahem;
+          font-size: 10px;
+          line-height: 2em;
+        }
+        #test-content {
+            color: green;
+        }
+        #test-image {
+            float: left;
+            -webkit-shape-outside: attr(src urzzl);
+        }        
+        #test {
+            position: absolute;
+            top: 70px;
+        }
+    </style>
+</head>
+<body>
+    <p>
+        The test passes if the green bars wrap around the cat and do not intersect or cover
+        it up. There should be no red.
+    </p>    
+    <div id="test" class="container">
+        <img id="test-image" src="support/cat.png"/>
+        <div id="test-content">
+            XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX
+            XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX 
+            XXX XXX XXX
+        </div>
+    </div>
+</body>
+</html>

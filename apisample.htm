@@ -61,7 +61,7 @@
         assert_true(false, "false should not be true");
     }
     test(testAssertFalse, "assert_true expected to fail");
-    
+
     function basicAssertArrayEquals()
     {
         assert_array_equals([1, NaN], [1, NaN], "[1, NaN] is equal to [1, NaN]");
@@ -157,19 +157,19 @@
     async_test("async test that is never started, should have status Not Run", {timeout:1000});
 
 
-    test(function() {
+    test(function(t) {
              window.global = 1;
-             this.add_cleanup(function() {delete window.global});
+             t.add_cleanup(function() {delete window.global});
              assert_equals(window.global, 1);
          },
          "Test that defines a global and cleans it up");
 
-   test(function() {assert_equals(window.global, undefined)},
-        "Test that cleanup handlers from previous test ran");
+    test(function() {assert_equals(window.global, undefined)},
+         "Test that cleanup handlers from previous test ran");
 
 </script>
 </body>
 </html>
 
 
- 
+

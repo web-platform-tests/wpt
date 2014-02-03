@@ -439,7 +439,7 @@ policies and contribution forms [3].
         var test_name = name ? name : next_default_name();
         properties = properties ? properties : {};
         var test_obj = new Test(test_name, properties);
-        test_obj.step(func);
+        test_obj.step(func, test_obj, test_obj);
         if (test_obj.phase === test_obj.phases.STARTED) {
             test_obj.done();
         }

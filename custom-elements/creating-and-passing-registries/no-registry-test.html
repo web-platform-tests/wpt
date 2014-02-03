@@ -7,7 +7,7 @@
 <link rel="help" href="http://www.w3.org/TR/custom-elements/#creating-and-passing-registries">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src='../testcommon.js'></script>
+<script src="../testcommon.js"></script>
 <link rel="stylesheet" href="/resources/testharness.css">
 </head>
 <body>
@@ -15,7 +15,7 @@
 <script type="text/javascript">
 
 test(function() {
-    var doc = document.implementation.createDocument(null, "test", null);
+    var doc = document.implementation.createDocument(null, 'test', null);
     assert_throws(
         'NotSupportedError',
         function() { doc.registerElement('x-element'); },
@@ -68,7 +68,7 @@ async_test(function(t) {
         if (request.readyState == 4){
             assert_equals(200, request.status, 'Test document is not loaded correctly');
             var doc = request.response;
-            assert_true(doc instanceof Document,
+            assert_true(doc instanceof HTMLDocument,
                 'XMLHttpRequest\'s asynchronous response should be HTML document');
             assert_throws(
                 'NotSupportedError',

@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>A new document instance must be associated with an existing registry if createDocument or createHTMLDocument methods are invoked</title>
+<title>Document, created with createHTMLDocument or createDocument with HTML namespace, should share registry with the associated document</title>
 <meta name="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
 <meta name="assert" content="When DOMImplementation's createDocument method is invoked with namespace set to HTML Namespace or when the createHTMLDocument method is invoked, use the registry of the associated document to the new instance">
 <link rel="help" href="http://www.w3.org/TR/custom-elements/#creating-and-passing-registries">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src='../testcommon.js'></script>
+<script src="../testcommon.js"></script>
 <link rel="stylesheet" href="/resources/testharness.css">
 </head>
 <body>

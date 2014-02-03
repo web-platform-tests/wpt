@@ -13,7 +13,7 @@ policies and contribution forms [3].
 <title>Shadow DOM Test: A_04_04_01</title>
 <link rel="author" title="Tetsuharu OHZEKI" href="mailto:saneyuki.snyk@gmail.com">
 <link rel="help" href="http://www.w3.org/TR/2013/WD-shadow-dom-20130514/#distributed-pseudo-element">
-<meta name="assert" content="::distributed() pseudo-element, Relative Selector">
+<meta name="assert" content="::content pseudo-element, Relative Selector">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="../../testcommon.js"></script>
@@ -41,7 +41,7 @@ A_04_04_01_T2.step(function () {
             s.appendChild(subdiv1);
 
             var shadowStyle = d.createElement('style');
-            shadowStyle.innerHTML = '*::distributed(>.shadow) { display:none; }';
+            shadowStyle.innerHTML = '*::content > .shadow { display:none; }';
             s.appendChild(shadowStyle);
 
             //The order of DOM elements should be the following:
@@ -55,7 +55,7 @@ A_04_04_01_T2.step(function () {
 
             var a5 = d.querySelector('#a5');
             assert_not_equals(window.getComputedStyle(a5).display, "none",
-              'Point 3: ::distributed() pseudo-element with relative selector should be a valid insertion point matching criteria, element should be visible');
+              'Point 3: ::content pseudo-element with relative selector should be a valid insertion point matching criteria, element should be visible');
         } finally {
             iframe.parentNode.removeChild(iframe);
         }

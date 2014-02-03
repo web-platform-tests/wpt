@@ -28,13 +28,13 @@
             color: green;
         }
         #test-float-left {
-          -webkit-shape-outside: polygon(0 0, 1000px 1000px, 0 1000px);
+          shape-outside: polygon(0 0, 1000px 1000px, 0 1000px);
           float: left;
           width: 200px;
           height: 200px;
         }
         #test-float-right {
-          -webkit-shape-outside: polygon(200px 0, 200px 200px, 0 200px);
+          shape-outside: polygon(200px 0, 200px 200px, 0 200px);
           float: right;
           width: 200px;
           height: 200px;
@@ -62,11 +62,11 @@
             background-color: lightblue;
         }
         #left-triangle {
-            -webkit-clip-path: polygon(0 0, 200px 200px, 0 200px);
+            clip-path: polygon(0 0, 200px 200px, 0 200px);
         }
         #right-triangle {
             left: 200px;
-            -webkit-clip-path: polygon(200px 0, 200px 200px, 0 200px);
+            clip-path: polygon(200px 0, 200px 200px, 0 200px);
         }
     </style>
 </head>

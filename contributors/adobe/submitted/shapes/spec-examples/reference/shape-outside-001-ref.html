@@ -39,15 +39,19 @@
             width: 400px;
             height: 20px;
         }
-        svg {
+        #left-triangle, #right-triangle {
             position: absolute;
             top: 60px;
-            z-index: 10;
+            width: 200px;
+            height: 200px;
+            background-color: lightblue;
         }
-        polygon {
-            stroke: black;
-            stroke-width: 1;
-            fill: white;
+        #left-triangle {
+            -webkit-clip-path: polygon(0 0, 200px 200px, 0 200px);
+        }
+        #right-triangle {
+            left: 200px;
+            -webkit-clip-path: polygon(200px 0, 200px 200px, 0 200px);
         }
     </style>
 </head>
@@ -74,9 +78,7 @@
           XXXXXXXXXXXXXXXXX
         </div>
     </div>
-    <svg>
-         <polygon points="0,0 200,200 0,200" />
-         <polygon points="400,0 400,200 200,200" />
-    </svg>
+    <div id="left-triangle"></div>
+    <div id="right-triangle"></div>
  </body>
 </html>

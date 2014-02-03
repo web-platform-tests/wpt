@@ -7,7 +7,7 @@
     <link rel="help" href="http://www.w3.org/TR/css-shapes-1/#supported-basic-shapes"/>
     <link rel="help" href="http://www.w3.org/TR/css-shapes-1/#shape-outside-property"/>
     <link rel="match" href="reference/shape-outside-001-ref.html"/>
-    <meta name="flags" content="ahem, svg"/>
+    <meta name="flags" content="ahem"/>
     <meta name="assert" content="This test verifies that left floats with a shape-outside 
      only allow content wrapping on the right side, and right floats only allow wrapping on
      the left and that the right float shape is clipped to the float’s margin box"/>
@@ -54,15 +54,19 @@
             position: absolute;
             top: 200px;
         }
-        svg {
+        #left-triangle, #right-triangle {
             position: absolute;
             top: 60px;
-            z-index: 10;
+            width: 200px;
+            height: 200px;
+            background-color: lightblue;
         }
-        polygon, line {
-            stroke: black;
-            stroke-width: 1;
-            fill: none;
+        #left-triangle {
+            -webkit-clip-path: polygon(0 0, 200px 200px, 0 200px);
+        }
+        #right-triangle {
+            left: 200px;
+            -webkit-clip-path: polygon(200px 0, 200px 200px, 0 200px);
         }
     </style>
 </head>
@@ -90,12 +94,7 @@
        <div class="line container">X</div>
        <div class="line container" id="bottom">XXXXXXXXXXXXXXXXX</div>
     </div>
-    <svg height="200px">
-         <polygon points="0,0 200,200 0,200" />
-         <polygon points="400,0 -600,1000 400,1000" />
-    </svg>
-    <svg>
-        <line x1="0" y1="200" x2="400" y2="200" />
-    <svg>
+    <div id="left-triangle"></div>
+    <div id="right-triangle"></div>
 </body>
 </html>

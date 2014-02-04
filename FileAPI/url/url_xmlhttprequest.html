@@ -13,43 +13,41 @@
     <div id="log"></div>
 
     <script>
-      var http = new XMLHttpRequest();
-      http.open("GET", "test.png", true);
-      http.responseType = "blob";
+      async_test(function () {
+        var http = new XMLHttpRequest();
+        http.open("GET", "test.png", true);
+        http.responseType = "blob";
 
-      setup({explicit_done: true});
+        http.loadend = this.step_func(function (evt) {
+          var blobURI = window.URL.createObjectURL(http.response);
+          test(function() {
+            assert_true(http.response instanceof Blob, "XMLHttpRequest returns instanceof Blob");
+          }, "Check if the XMLHttpRequest returns instanceof Blob");
 
-      on_event(http, "loadend", function(evt) {
-        var blobURI = window.URL.createObjectURL(http.response);
+          test(function() {
+            assert_equals(typeof blobURI, "string", "Blob URI is typeof string");
+          }, "Check if Blob URI is typeof string when the Blob returned by XMLHttpRequest");
 
-        test(function() {
-          assert_true(http.response instanceof Blob, "XMLHttpRequest returns instanceof Blob");
-        }, "Check if the XMLHttpRequest returns instanceof Blob");
+          test(function() {
+            assert_equals(blobURI.indexOf("blob"), 0, "Blob URI starts with 'blob'");
+          }, "Check if Blob URI returned by createObjectURL method when blob returned by XMLHttpRequest");
 
-        test(function() {
-          assert_equals(typeof blobURI, "string", "Blob URI is typeof string");
-        }, "Check if Blob URI is typeof string when the Blob returned by XMLHttpRequest");
+          test(function() {
+            assert_equals(http.status, 200, "The status is 200");
+          }, "Check if the status is 200 when XMLHttpRequest returns correct blob");
 
-        test(function() {
-          assert_equals(blobURI.indexOf("blob"), 0, "Blob URI starts with 'blob'");
-        }, "Check if Blob URI returned by createObjectURL method when blob returned by XMLHttpRequest");
+          test(function() {
+            assert_equals(http.statusText, "OK", "The status text is OK when XMLHttpRequest returns correct blob");
+          }, "Check if the status text is OK when XMLHttpRequest returns correct blob");
 
-        test(function() {
-          assert_equals(http.status, 200, "The status is 200");
-        }, "Check if the status is 200 when XMLHttpRequest returns correct blob");
+          test(function() {
+            assert_equals(http.getResponseHeader("Content-Type"), "image/png", "The content type is image/png when set the respnose blob");
+          }, "Check if the content type is image/png when get the image and set the respnose blob");
+          this.done();
+        });
 
-        test(function() {
-          assert_equals(http.statusText, "OK", "The status text is OK when XMLHttpRequest returns correct blob");
-        }, "Check if the status text is OK when XMLHttpRequest returns correct blob");
-
-        test(function() {
-          assert_equals(http.getResponseHeader("Content-Type"), "image/png", "The content type is image/png when set the respnose blob");
-        }, "Check if the content type is image/png when get the image and set the respnose blob");
-
-        done();
+        http.send();
       });
-
-      http.send();
     </script>
   </body>
 </html>

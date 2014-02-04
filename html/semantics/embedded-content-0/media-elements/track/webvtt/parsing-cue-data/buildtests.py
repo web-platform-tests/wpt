@@ -9,8 +9,8 @@ doctmpl = """<!doctype html>
 <style>video { display:none }</style>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
-<script src=/core/standards/html-parsing/html5lib_harness/template.js></script>
-<script src=/core/standards/html-parsing/html5lib_harness/common.js></script>
+<script src=/html/syntax/parsing/template.js></script>
+<script src=/html/syntax/parsing/common.js></script>
 <script src=../common.js></script>
 <div id=log></div>
 <script>

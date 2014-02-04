@@ -72,7 +72,7 @@ async_test(function(t) {
     video.appendChild(elm);
     elm.track.mode = 'showing';
     elm.onerror = t.step_func(function() {
-      elm.readyState, elm.ERROR, 'elm.readyState in onerror');
+      assert_equals(elm.readyState, elm.ERROR, 'elm.readyState in onerror');
       var clone = elm.cloneNode(true);
       assert_equals(clone.readyState, clone.NONE, 'clone.readyState after element creation');
       video.appendChild(clone);
@@ -81,5 +81,6 @@ async_test(function(t) {
       assert_not_equals(clone.track, elm.track, 'clone.track and elm.track');
       clone.onerror = t.step_func_done();
     });
+    elm.src = 'javascript:"network error"';
 }, document.title+', failed to load');
 </script>

@@ -66,7 +66,6 @@
 
                 var e = document.createElement('iframe');
                 e.setAttribute('src', url);
-                e.setAttribute('style', 'width:100px;height:100px;border:0;');
                 document.body.appendChild(e);
 
                 e.contentWindow.document.body.onload = t2.step_func_done(function() {

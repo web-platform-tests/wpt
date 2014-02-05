@@ -35,18 +35,6 @@
 
         on_event(fileChooser, 'change', function() {
 
-
-            test(function() {
-                assert_true("URL" in window, "window should have a 'URL' interface.");
-                assert_true("createObjectURL" in window.URL, "window.URL should have a 'createObjectURL' function.");
-                assert_true("revokeObjectURL" in window.URL, "window.URL should have a 'revokeObjectURL' function.");
-                assert_true(URL.createObjectURL instanceof Function, "URL.createObjectURL should be a function.");
-                assert_true(URL.revokeObjectURL instanceof Function, "URL.revokeObjectURL should be a function.");
-            }, "Check whether Blob/File URL interface is implemented");
-
-
-
-
             var testCount = 10000;
 
             test(function() {

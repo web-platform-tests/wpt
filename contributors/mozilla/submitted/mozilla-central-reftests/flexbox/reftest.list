@@ -1,3 +1,10 @@
+# Tests for absolutely-positioned children of a flex container
+== flexbox-abpos-child-1a.html flexbox-abpos-child-1-ref.html
+== flexbox-abpos-child-1b.html flexbox-abpos-child-1-ref.html
+
+# Tests for handling anonymous flex items
+== flexbox-anonymous-items-1.html flexbox-anonymous-items-1-ref.html
+
 # Tests for alignment of flex lines (align-content property)
 == flexbox-align-content-horiz-1a.xhtml flexbox-align-content-horiz-1-ref.xhtml
 == flexbox-align-content-horiz-1b.xhtml flexbox-align-content-horiz-1-ref.xhtml
@@ -37,6 +44,8 @@
 == flexbox-baseline-multi-line-horiz-2.html flexbox-baseline-multi-line-horiz-2-ref.html
 == flexbox-baseline-multi-line-horiz-3.html flexbox-baseline-multi-line-horiz-3-ref.html
 == flexbox-baseline-multi-line-horiz-4.html flexbox-baseline-multi-line-horiz-4-ref.html
+== flexbox-baseline-multi-line-vert-1.html flexbox-baseline-multi-line-vert-1-ref.html
+== flexbox-baseline-multi-line-vert-2.html flexbox-baseline-multi-line-vert-2-ref.html
 == flexbox-baseline-single-item-1a.html flexbox-baseline-single-item-1-ref.html
 == flexbox-baseline-single-item-1b.html flexbox-baseline-single-item-1-ref.html
 
@@ -67,6 +76,12 @@
 == flexbox-break-request-vert-1b.html  flexbox-break-request-vert-1-ref.html
 == flexbox-break-request-vert-2a.html  flexbox-break-request-vert-2-ref.html
 == flexbox-break-request-vert-2b.html  flexbox-break-request-vert-2-ref.html
+
+# Tests for flex items with "visibility:collapse"
+== flexbox-collapsed-item-baseline-1.html flexbox-collapsed-item-baseline-1-ref.html
+== flexbox-collapsed-item-horiz-1.html flexbox-collapsed-item-horiz-1-ref.html
+== flexbox-collapsed-item-horiz-2.html flexbox-collapsed-item-horiz-2-ref.html
+== flexbox-collapsed-item-horiz-3.html flexbox-collapsed-item-horiz-3-ref.html
 
 # Tests for flex-flow shorthand property
 == flexbox-flex-flow-1.html flexbox-flex-flow-1-ref.html

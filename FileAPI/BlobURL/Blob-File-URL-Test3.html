@@ -43,8 +43,8 @@
                 document.body.appendChild(e);
 
                 e.contentWindow.document.body.onload = t.step_func_done(function() {
-                    assert_equals(this.result, 'OK');
-                }, e.contentWindow);
+                    assert_equals(e.contentWindow.result, 'OK');
+                });
 
             }, 'Check whether the iframe content could be accessed when using Blob/File URL in the same origin.');
 
@@ -58,8 +58,8 @@
                 document.body.appendChild(e);
 
                 e.contentWindow.document.body.onload = t.step_func_done(function() {
-                    assert_equals(this.scrollY.toString(), '5000', '(You should see a green box below)');
-                }, e.contentWindow);
+                    assert_equals(e.contentWindow.scrollY.toString(), '5000', '(You should see a green box below)');
+                });
 
             }, 'Check whether the Blob/File URL fragment is implemented.');
 

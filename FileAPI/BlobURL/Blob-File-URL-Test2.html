@@ -35,7 +35,6 @@
 
         on_event(document.querySelector('#start'), 'click', function() {
 
-
             async_test(function(t) {
 
                 var url = URL.createObjectURL(fileChooser.files[0]);
@@ -43,27 +42,21 @@
                 var xhr = new XMLHttpRequest();
                 xhr.open('GET', url, true);
                 xhr.onreadystatechange = t.step_func(function() {
-
                     switch (xhr.readyState) {
                     case xhr.DONE:
-
                         assert_equals(xhr.status, 500, 'status code should be 500.');
                         t.done();
                         return;
-
                     }
-
                 });
-
+                
                 xhr.send();
 
             }, 'Check whether the browser response 500 in XHR if the selected file which File/Blob URL refered is not found');
 
-
             done();
 
         });
-        
 
     </script>
 </body>

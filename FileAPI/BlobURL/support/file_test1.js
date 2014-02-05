@@ -1,1 +1,1 @@
-var test_result = 'OK';
+var test_result = 'test1_OK';

@@ -56,7 +56,7 @@
             async_test(function(t) {
 
                 var url = URL.createObjectURL(fileChooser.files[0]);
-                var expected_file_content = "var test_result = 'OK';";
+                var expected_file_content = "var test_result = 'test1_OK';";
 
                 var xhr = new XMLHttpRequest();
                 xhr.open('GET', url, true);
@@ -77,10 +77,10 @@
             async_test(function(t) {
 
                 var url = URL.createObjectURL(fileChooser.files[0]);
-                var expected_run_result = "OK";
+                var expected_run_result = "test1_OK";
                 
                 //expected file content:
-                //   var test_result = 'OK';
+                //   var test_result = 'test1_OK';
 
                 var e = document.createElement('script');
                 e.setAttribute('type', 'text/javascript');

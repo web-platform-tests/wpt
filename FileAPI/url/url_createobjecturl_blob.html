@@ -15,31 +15,15 @@
       var blob = new Blob(["Test Blob"]);
 
       test(function() {
-        var temp = window.URL.createObjectURL(blob);
-        assert_equals(typeof temp, "string", "Blob URI is typeof string");
-      }, "Check if the Blob URI is typeof string");
-
-      test(function() {
-        var temp = window.URL.createObjectURL(blob);
-        assert_equals(temp.indexOf("blob"), 0, "Blob URI starts with 'blob'");
+        var testBlob = window.URL.createObjectURL(blob);
+        assert_equals(typeof testBlob, "string", "Blob URI is typeof string");
+        assert_equals(testBlob.indexOf("blob"), 0, "Blob URI starts with 'blob'");
       }, "Check if the Blob URI starts with 'blob' without 'autoRevoke'");
 
       test(function() {
-        try {
-          var temp = window.URL.createObjectURL(blob, {autoRevoke: false});
-           assert_equals(typeof temp, "string", "Blob URI is typeof string");
-        } catch(e) {
-          assert_unreached("Error caught");
-        }
-      }, "Check if the Blob URI is typeof string with autoRevoke is false");
-
-      test(function() {
-        try {
-          var temp = window.URL.createObjectURL(blob, {autoRevoke: false});
-          assert_equals(temp.indexOf("blob"), 0, "Blob URI starts with 'blob'");
-        } catch(e) {
-          assert_unreached("Error caught");
-        }
+        var testBlob = window.URL.createFor(blob);
+        assert_equals(typeof testBlob, "string", "Blob URI is typeof string");
+        assert_equals(testBlob.indexOf("blob"), 0, "Blob URI starts with 'blob'");
       }, "Check if the Blob URI starts with 'blob' with autoRevoke is false");
     </script>
   </body>

@@ -59,7 +59,6 @@
                 reader.onloadend = t.step_func_done(function(event) {
                     assert_equals(event.target.readyState, FileReader.DONE);
                     assert_equals(this.error.code, 8);
-                    t.done();
                 }, reader);
 
             }, 'FileReader.error should be NOT_FOUND_ERR if the file is not found when reading');

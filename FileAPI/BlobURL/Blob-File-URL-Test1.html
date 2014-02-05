@@ -98,10 +98,7 @@
                 e.setAttribute('src', url);
 
                 e.onload = t.step_func_done(function() {
-
                     assert_equals(test_result, expected_run_result);
-                    t.done();
-
                 }, e);
 
                 document.body.appendChild(e);

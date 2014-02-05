@@ -63,21 +63,20 @@
 
                 var xhr = new XMLHttpRequest();
                 xhr.open('GET', url, true);
-                xhr.onreadystatechange = function(e) {
+                xhr.onreadystatechange = t.step_func(function() {
 
-                    if (this.readyState == 4) {
+                    switch (xhr.readyState) {
+                    case xhr.DONE:
 
-                        t.step_func_done(function() {
-
-                            assert_equals(this.status, 200, 'status code should be 200');
-                            assert_equals(this.responseText, expected_file_content);
-
-                            t.done();
-
-                        }, this)();
+                        assert_equals(xhr.status, 200, 'status code should be 200');
+                        assert_equals(xhr.responseText, expected_file_content);
+                        t.done();
+                        return;
 
                     }
-                }
+
+                });
+
                 xhr.send();
 
             }, 'Check whether Blob/File URL could be used in XHR requests and could get expected data');
@@ -119,19 +118,19 @@
 
                 var xhr = new XMLHttpRequest();
                 xhr.open('GET', url, true);
-                xhr.onreadystatechange = function(e) {
+                xhr.onreadystatechange = t.step_func(function() {
 
-                    if (this.readyState == 4) {
+                    switch (xhr.readyState) {
+                    case xhr.DONE:
 
-                        t.step_func_done(function() {
-
-                            assert_equals(this.status, 500, 'status code should be 500 if Blob URI is revoked.');
-                            t.done();
-
-                        }, this)();
+                        assert_equals(xhr.status, 500, 'status code should be 500 if Blob URI is revoked.');
+                        t.done();
+                        return;
 
                     }
-                }
+                    
+                });
+
                 xhr.send();
 
             }, 'Check whether revokeObjectURL works well');

@@ -35,34 +35,30 @@
 
         on_event(document.querySelector('#start'), 'click', function() {
 
-            (function() {
-
-                var t = async_test('Check whether the browser response 500 in XHR if the selected file which File/Blob URL refered is not found');
-                t.step(function() {
+            var t = async_test('Check whether the browser response 500 in XHR if the selected file which File/Blob URL refered is not found');
+            t.step(function() {
 
 
-                    var url = URL.createObjectURL(fileChooser.files[0]);
+                var url = URL.createObjectURL(fileChooser.files[0]);
 
-                    var xhr = new XMLHttpRequest();
-                    xhr.open('GET', url, true);
-                    xhr.onreadystatechange = function(e) {
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', url, true);
+                xhr.onreadystatechange = function(e) {
 
-                        if (this.readyState == 4) {
+                    if (this.readyState == 4) {
 
-                            t.step_func_done(function() {
+                        t.step_func_done(function() {
 
-                                assert_equals(this.status, 500, 'status code should be 500.');
-                                t.done();
+                            assert_equals(this.status, 500, 'status code should be 500.');
+                            t.done();
 
-                            }, this)();
+                        }, this)();
 
-                        }
                     }
-                    xhr.send();
+                }
+                xhr.send();
 
-                });
-
-            })();
+            });
 
 
             done();

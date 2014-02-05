@@ -60,7 +60,7 @@
 
                 reader.onloadend = t.step_func_done(function(event) {
                     assert_equals(event.target.readyState, FileReader.DONE);
-                    assert_equals(this.error.code, 1);
+                    assert_equals(this.error.code, 8);
                     t.done();
                 }, reader);
 

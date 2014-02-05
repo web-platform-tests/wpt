@@ -35,8 +35,7 @@
 
         on_event(fileChooser, 'change', function() {
 
-            var t = async_test('FileReader.error should be null if there are no errors when reading');
-            t.step(function() {
+            async_test(function(t) {
 
                 var reader = new FileReader();
                 reader.readAsArrayBuffer(fileChooser.files[0]);
@@ -46,14 +45,13 @@
                     assert_equals(this.error, null);
                 }, reader);
 
-            });
+            }, 'FileReader.error should be null if there are no errors when reading');
 
         });
 
         on_event(document.querySelector('#start'), 'click', function() {
 
-            var t = async_test('FileReader.error should be NOT_FOUND_ERR if the file is not found when reading');
-            t.step(function() {
+            async_test(function(t) {
 
                 var reader = new FileReader();
                 reader.readAsArrayBuffer(fileChooser.files[0]);
@@ -64,7 +62,7 @@
                     t.done();
                 }, reader);
 
-            });
+            }, 'FileReader.error should be NOT_FOUND_ERR if the file is not found when reading');
 
             done();
 

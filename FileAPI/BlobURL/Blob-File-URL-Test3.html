@@ -34,9 +34,7 @@
         on_event(fileChooser, 'change', function() {
 
 
-            var t1 = async_test('Check whether the iframe content could be accessed when using Blob/File URL in the same origin.');
-            t1.step(function() {
-
+            async_test(function(t) {
 
                 var url = URL.createObjectURL(fileChooser.files[0]);
 
@@ -45,21 +43,19 @@
                 e.setAttribute('style', 'display:none;width:100px;height:100px;border:0;');
                 document.body.appendChild(e);
 
-                e.contentWindow.document.body.onload = t1.step_func_done(function() {
+                e.contentWindow.document.body.onload = t.step_func_done(function() {
 
                     assert_equals(this.result, 'OK');
-                    t1.done();
+                    t.done();
 
                 }, e.contentWindow);
 
-            });
+            }, 'Check whether the iframe content could be accessed when using Blob/File URL in the same origin.');
 
 
 
 
-            var t2 = async_test('Check whether the Blob/File URL fragment is implemented.');
-            t2.step(function() {
-
+            async_test(function(t) {
 
                 var url = URL.createObjectURL(fileChooser.files[0]);
                 url += '#block2';
@@ -68,14 +64,14 @@
                 e.setAttribute('src', url);
                 document.body.appendChild(e);
 
-                e.contentWindow.document.body.onload = t2.step_func_done(function() {
+                e.contentWindow.document.body.onload = t.step_func_done(function() {
 
                     assert_equals(this.scrollY.toString(), '5000', '(You should see a green box below)');
-                    t2.done();
+                    t.done();
 
                 }, e.contentWindow);
 
-            });
+            }, 'Check whether the Blob/File URL fragment is implemented.');
 
 
 

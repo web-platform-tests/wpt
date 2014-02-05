@@ -35,9 +35,8 @@
 
         on_event(document.querySelector('#start'), 'click', function() {
 
-            var t = async_test('Check whether the browser response 500 in XHR if the selected file which File/Blob URL refered is not found');
-            t.step(function() {
 
+            async_test(function(t) {
 
                 var url = URL.createObjectURL(fileChooser.files[0]);
 
@@ -58,7 +57,7 @@
                 }
                 xhr.send();
 
-            });
+            }, 'Check whether the browser response 500 in XHR if the selected file which File/Blob URL refered is not found');
 
 
             done();

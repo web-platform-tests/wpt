@@ -5,24 +5,16 @@
     <title>Test file</title>
     <style> 
         body {
-            margin:0;
+            margin: 0;
         }
-
         .block {
             height: 5000px;
         }
-
-        .block-cont {
-            width: 100px;
-            height: 100px;
+        #block1_block {
+            background: red;
         }
-
-        .block1 .block-cont {
-            background:red;
-        }
-
-        .block2 .block-cont {
-            background:green;
+        #block2_block {
+            background: green;
         }
     </style>
     <script>
@@ -31,9 +23,9 @@
 </head>
 <body>
     <a id="block1"></a>
-    <div class="block1 block"><div class="block-cont"></div></div>
-
+    <div id="block1_block" class="block"></div>
+    
     <a id="block2"></a>
-    <div class="block2 block"><div class="block-cont"></div></div>
+    <div id="block2_block" class="block"></div>
 </body>
 </html>

@@ -24,55 +24,41 @@
     <div id="log"></div>
 
     <script>
+    async_test(function () {
       var fileInput = document.querySelector('#fileChooser');
-
-      setup({explicit_done: true});
-      setup({explicit_timeout: true});
-
-      on_event(fileInput, "change", function(evt) {
+      fileInput.change = this.step_func(function (evt) {
         var file = fileInput.files[0];
-        var temp1 = window.URL.createObjectURL(file)
+        var testBlob = window.URL.createObjectURL(file)
 
         test(function() {
           assert_true(file instanceof File, "FileList returns File");
         }, "Check if FileList returns File");
 
         test(function() {
-          assert_not_equals(temp1, null, "createObjectURL returns not-null when parameter is File");
+          assert_not_equals(testBlob, null, "createObjectURL returns not-null when parameter is File");
         }, "Check if createObjectURL returns not-null when parameter is File");
 
         test(function() {
-          assert_equals(typeof temp1, "string", "Blob URI is typeof string");
-        }, "Check if Blob URI Blob URI is typeof string when parameter is File");
-
-        test(function() {
-          assert_equals(temp1.indexOf("blob"), 0, "Blob URI starts with 'blob'");
+          assert_equals(typeof testBlob, "string", "Blob URI is typeof string");
+          assert_equals(testBlob.indexOf("blob"), 0, "Blob URI starts with 'blob'");
         }, "Check if Blob URI returned by createObjectURL starts with 'blob' when parameter is File");
-
-        try {
-
-          var temp2 = window.URL.createObjectURL(file, {autoRevoke: false});
-
-          test(function() {
-            assert_not_equals(temp2, null, "createObjectURL returns not-null when parameter is File");
-          }, "Check if createObjectURL returns not-null when parameter is File and autoRevoke is false");
-
-          test(function() {
-            assert_equals(typeof temp2, "string", "Blob URI is typeof string");
-          }, "Check if Blob URI Blob URI is typeof string when parameter is File and autoRevoke is false");
-
-          test(function() {
-            assert_equals(temp2.indexOf("blob"), 0, "Blob URI starts with 'blob'");
-          }, "Check if Blob URI returned by createObjectURL starts with 'blob' when parameter is File and autoRevoke is false");
-
-          done();
-        } catch (e) {
-          test(function() {
-            assert_unreached("Error caught");
-          });
-          done();
-        }
       });
+    });
+
+    async_test(function () {
+      var testBlob = window.URL.createFor(file);
+
+      test(function() {
+        assert_not_equals(testBlob, null, "createObjectURL returns not-null when parameter is File");
+      }, "Check if createObjectURL returns not-null when parameter is File and autoRevoke is false");
+
+      test(function() {
+        assert_equals(typeof testBlob, "string", "Blob URI is typeof string");
+        assert_equals(testBlob.indexOf("blob"), 0, "Blob URI starts with 'blob'");
+      }, "Check if Blob URI returned by createObjectURL starts with 'blob' when parameter is File and autoRevoke is false");
+
+      this.done();
+    });
     </script>
   </body>
 </html>

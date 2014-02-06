@@ -6,7 +6,6 @@ import ConfigParser
 from webserver import Httpd
 from selenium import webdriver
 
-
 class WebDriverBaseTest(unittest.TestCase):
 
     @classmethod
@@ -20,5 +19,6 @@ class WebDriverBaseTest(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        cls.driver.quit()
         cls.webserver.stop()
+        if cls.driver:
+            cls.driver.quit()

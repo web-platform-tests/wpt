@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html  lang="en" >
+<head>
+<meta charset="utf-8"/>
+<title>CSS3 Text, text transform: Greek and Coptic, uppercase</title>
+<link rel='author' title='Richard Ishida' href='mailto:ishida@w3.org'>
+<link rel='help' href='http://dev.w3.org/csswg/css-text/#text-transform'>
+<link rel="match" href="reference/css3-text-text-transform-014-ref.html">
+<meta name='flags' content=''>
+<meta name="assert" content="The UA will uppercase all applicable letters in the Greek and Coptic Unicode block when text-transform is set to uppercase.">
+<style type='text/css'>
+/* the CSS below is not part of the test */
+.test, .ref { font-size: 200%; line-height: 2.5em; }
+.test span, .ref span { margin-right: 1em; white-space: nowrap; }
+.test { text-transform: uppercase; }
+@font-face {
+    font-family: 'webfont';
+    src: url('support/GentiumPlus-R.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+	}
+.test, .ref { font-family: webfont, serif; }
+
+</style>
+<script src="support/script.js"> </script>
+
+</head>
+<body>
+<p class="instructions">Test passes if the both characters in each pair match.</p><p class="instructionNote">If you can't see all the glyphs, click on Skip.</p>
+
+
+<div class="test"><span>&#x0371; &#x0370;</span> <span>&#x0373; &#x0372;</span> <span>&#x0377; &#x0376;</span> <span>&#x037B; &#x03FD;</span> <span>&#x037C; &#x03FE;</span> <span>&#x037D; &#x03FF;</span> <span>&#x03AC; &#x0386;</span> <span>&#x03AD; &#x0388;</span> <span>&#x03AE; &#x0389;</span> <span>&#x03AF; &#x038A;</span> <span>&#x03B1; &#x0391;</span> <span>&#x03B2; &#x0392;</span> <span>&#x03B3; &#x0393;</span> <span>&#x03B4; &#x0394;</span> <span>&#x03B5; &#x0395;</span> <span>&#x03B6; &#x0396;</span> <span>&#x03B7; &#x0397;</span> <span>&#x03B8; &#x0398;</span> <span>&#x03B9; &#x0399;</span> <span>&#x03BA; &#x039A;</span> <span>&#x03BB; &#x039B;</span> <span>&#x03BC; &#x039C;</span> <span>&#x03BD; &#x039D;</span> <span>&#x03BE; &#x039E;</span> <span>&#x03BF; &#x039F;</span> <span>&#x03C0; &#x03A0;</span> <span>&#x03C1; &#x03A1;</span> <span>&#x03C2; &#x03A3;</span> <span>&#x03C3; &#x03A3;</span> <span>&#x03C4; &#x03A4;</span> <span>&#x03C5; &#x03A5;</span> <span>&#x03C6; &#x03A6;</span> <span>&#x03C7; &#x03A7;</span> <span>&#x03C8; &#x03A8;</span> <span>&#x03C9; &#x03A9;</span> <span>&#x03CA; &#x03AA;</span> <span>&#x03CB; &#x03AB;</span> <span>&#x03CC; &#x038C;</span> <span>&#x03CD; &#x038E;</span> <span>&#x03CE; &#x038F;</span> <span>&#x03D0; &#x0392;</span> <span>&#x03D1; &#x0398;</span> <span>&#x03D5; &#x03A6;</span> <span>&#x03D6; &#x03A0;</span> <span>&#x03D7; &#x03CF;</span> <span>&#x03D9; &#x03D8;</span> <span>&#x03DB; &#x03DA;</span> <span>&#x03DD; &#x03DC;</span> <span>&#x03DF; &#x03DE;</span> <span>&#x03E1; &#x03E0;</span> <span>&#x03E3; &#x03E2;</span> <span>&#x03E5; &#x03E4;</span> <span>&#x03E7; &#x03E6;</span> <span>&#x03E9; &#x03E8;</span> <span>&#x03EB; &#x03EA;</span> <span>&#x03ED; &#x03EC;</span> <span>&#x03EF; &#x03EE;</span> <span>&#x03F0; &#x039A;</span> <span>&#x03F1; &#x03A1;</span> <span>&#x03F2; &#x03F9;</span> <span>&#x03F5; &#x0395;</span> <span>&#x03F8; &#x03F7;</span> <span>&#x03FB; &#x03FA;</span></div>
+
+
+<!--Notes:
+A downloaded WOFF font is used to maximise the likelihood that the characters can be seen.
+
+-->
+
+
+</body>
+</html>

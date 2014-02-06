@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html  lang="en" >
+<head>
+<meta charset="utf-8"/>
+<title>CSS3 Text, text transform: small kana mappings, hiragana</title>
+<link rel='author' title='Richard Ishida' href='mailto:ishida@w3.org'>
+<link rel='help' href='http://dev.w3.org/csswg/css-text/#text-transform'>
+<link rel="match" href="reference/css3-text-text-transform-044-ref.html">
+<meta name='flags' content=''>
+<meta name="assert" content="The browser will map small hiragana characters to full sized hiragana for display if text-transform is set to full-size-kana.">
+<style type='text/css'>
+/* the CSS below is not part of the test */
+.test, .ref { font-size: 200%; line-height: 2.5em; }
+.test span, .ref span { margin-right: 1em; white-space: nowrap; }
+.test { text-transform: full-size-kana; }
+</style>
+<script src="support/script.js"> </script>
+
+</head>
+<body>
+<p class="instructions">Test passes if the both characters in each pair match.</p><p class="instructionNote">If you can't see all the glyphs, click on Skip.</p>
+
+
+<div class="test" lang="ja"><span>&#x3041; &#x3042;</span> <span>&#x3043; &#x3044;</span> <span>&#x3045; &#x3046;</span> <span>&#x3047; &#x3048;</span> <span>&#x3049; &#x304A;</span> <span>&#x3095; &#x304B;</span> <span>&#x3096; &#x3051;</span> <span>&#x3063; &#x3064;</span> <span>&#x3083; &#x3084;</span> <span>&#x3085; &#x3086;</span> <span>&#x3087; &#x3088;</span> <span>&#x308E; &#x308F;</span></div>
+
+
+<!--Notes:
+A downloaded WOFF font is used to maximise the likelihood that the characters can be seen.
+
+-->
+
+
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html  lang="en" >
+<head>
+<meta charset="utf-8"/>
+<title>CSS3 Text, text transform: Cyrillic Extended, uppercase</title>
+<link rel='author' title='Richard Ishida' href='mailto:ishida@w3.org'>
+<link rel='help' href='http://dev.w3.org/csswg/css-text/#text-transform'>
+<link rel="match" href="reference/css3-text-text-transform-020-ref.html">
+<meta name='flags' content=''>
+<meta name="assert" content="The UA will uppercase all applicable letters in the Cyrillic Extended Unicode block when text-transform is set to uppercase.">
+<style type='text/css'>
+/* the CSS below is not part of the test */
+.test, .ref { font-size: 200%; line-height: 2.5em; }
+.test span, .ref span { margin-right: 1em; white-space: nowrap; }
+.test { text-transform: uppercase;  }
+@font-face {
+    font-family: 'webfont';
+    src: url('support/GentiumPlus-R.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+	}
+.test, .ref { font-family: webfont, serif; }
+
+</style>
+<script src="support/script.js"> </script>
+
+</head>
+<body>
+<p class="instructions">Test passes if the both characters in each pair match.</p><p class="instructionNote">If you can't see all the glyphs, click on Skip.</p>
+
+
+<div class="test"><span>&#x0501; &#x0500;</span> <span>&#x0503; &#x0502;</span> <span>&#x0505; &#x0504;</span> <span>&#x0507; &#x0506;</span> <span>&#x0509; &#x0508;</span> <span>&#x050B; &#x050A;</span> <span>&#x050D; &#x050C;</span> <span>&#x050F; &#x050E;</span> <span>&#x0511; &#x0510;</span> <span>&#x0513; &#x0512;</span> <span>&#x0515; &#x0514;</span> <span>&#x0517; &#x0516;</span> <span>&#x0519; &#x0518;</span> <span>&#x051B; &#x051A;</span> <span>&#x051D; &#x051C;</span> <span>&#x051F; &#x051E;</span> <span>&#x0521; &#x0520;</span> <span>&#x0523; &#x0522;</span> <span>&#x0525; &#x0524;</span> <span>&#x0527; &#x0526;</span></div>
+
+
+<!--Notes:
+A downloaded WOFF font is used to maximise the likelihood that the characters can be seen.
+
+-->
+
+
+</body>
+</html>

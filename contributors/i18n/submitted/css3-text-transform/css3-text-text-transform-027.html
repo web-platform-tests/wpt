@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html  lang="en" >
+<head>
+<meta charset="utf-8"/>
+<title>CSS3 Text, text transform: Enclosed Alphanumerics, lowercase</title>
+<link rel='author' title='Richard Ishida' href='mailto:ishida@w3.org'>
+<link rel='help' href='http://dev.w3.org/csswg/css-text/#text-transform'>
+<link rel="match" href="reference/css3-text-text-transform-027-ref.html">
+<meta name='flags' content=''>
+<meta name="assert" content="The UA will lowercase all applicable letters in the Enclosed Alphanumerics Unicode block when text-transform is set to lowercase.">
+<style type='text/css'>
+/* the CSS below is not part of the test */
+.test, .ref { font-size: 200%; line-height: 2.5em; }
+.test span, .ref span { margin-right: 1em; white-space: nowrap; }
+.test { text-transform: lowercase; }
+@font-face {
+    font-family: 'webfont';
+    src: url('support/GentiumPlus-R.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+	}
+.test, .ref { font-family: webfont, serif; }
+
+</style>
+<script src="support/script.js"> </script>
+
+</head>
+<body>
+<p class="instructions">Test passes if the both characters in each pair match.</p><p class="instructionNote">If you can't see all the glyphs, click on Skip.</p>
+
+
+<div class="test"><span>&#x24B6; &#x24D0;</span> <span>&#x24B7; &#x24D1;</span> <span>&#x24B8; &#x24D2;</span> <span>&#x24B9; &#x24D3;</span> <span>&#x24BA; &#x24D4;</span> <span>&#x24BB; &#x24D5;</span> <span>&#x24BC; &#x24D6;</span> <span>&#x24BD; &#x24D7;</span> <span>&#x24BE; &#x24D8;</span> <span>&#x24BF; &#x24D9;</span> <span>&#x24C0; &#x24DA;</span> <span>&#x24C1; &#x24DB;</span> <span>&#x24C2; &#x24DC;</span> <span>&#x24C3; &#x24DD;</span> <span>&#x24C4; &#x24DE;</span> <span>&#x24C5; &#x24DF;</span> <span>&#x24C6; &#x24E0;</span> <span>&#x24C7; &#x24E1;</span> <span>&#x24C8; &#x24E2;</span> <span>&#x24C9; &#x24E3;</span> <span>&#x24CA; &#x24E4;</span> <span>&#x24CB; &#x24E5;</span> <span>&#x24CC; &#x24E6;</span> <span>&#x24CD; &#x24E7;</span> <span>&#x24CE; &#x24E8;</span> <span>&#x24CF; &#x24E9;</span></div>
+
+
+<!--Notes:
+A downloaded WOFF font is used to maximise the likelihood that the characters can be seen.
+
+-->
+
+
+</body>
+</html>

@@ -21,4 +21,4 @@ class WebDriverBaseTest(unittest.TestCase):
     def tearDownClass(cls):
         cls.webserver.stop()
         if cls.driver:
-        	cls.driver.quit()
+            cls.driver.quit()

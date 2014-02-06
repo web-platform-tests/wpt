@@ -791,6 +791,14 @@ table.simple {
 							<td>The color of the SVG is mixed with the color of the <code>&lt;div&gt;</code>.</td>
 						</tr>
 						<tr>
+							<td>Linking SVG in an image</td>
+							<td>1 element required: <a href="#test_outline" <a href="#test_outline" title="img element">[B]</a> <br>
+								[B] - <code>img</code> linking an <code>svg</code> element that has content with <code>mix-blend-mode</code>. <br>
+								Set the <code>background-color</code> of the <code>body</code> to a value other than default.
+							</td>
+							<td>The contents of the SVG is not mixed with the color of the <code>&lt;body&gt;</code>.</td>
+						</tr>
+						<tr>
 							<td>Paragraph element</td>
 							<td>2 elements required: <a href="#test_outline" title="parent element with a property that creates stacking context">[P]</a> and <a href="#test_outline" title="Element with mix-blend-mode property other than normal">[B]</a> <br>
 								[P] - parent element with a property that creates a stacking context (e.g. <code>position:fixed</code>) <br>

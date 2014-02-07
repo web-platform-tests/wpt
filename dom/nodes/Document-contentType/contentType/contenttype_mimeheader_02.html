@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<title>Custom document.contentType === 'text/html' when explicitly set to this value and an attempt is made to override this value in an HTML meta header</title>
+<p>FAIL: script did not run.</p>
+<iframe style="display:none"></iframe>
+<script type="text/javascript" src="../runner.js"></script>
+<script>
+  var iframe = document.getElementsByTagName('iframe')[0];
+  iframe.addEventListener('load', function() {
+    if(!iframe.contentDocument) return;
+    
+    if(iframe.contentDocument.contentType === "text/html") {
+      setResult(true);
+    } else {
+      setResult(false);
+    }
+  }, false);
+  iframe.src = "../support/contenttype_setter.php?type=text&subtype=html&mimeHead=text%2Fxml";
+
+function setResult(passed) {
+  if(passed === true) {
+    document.getElementsByTagName("p")[0].innerHTML = "PASS";
+  } else {
+    document.getElementsByTagName("p")[0].innerHTML = "FAIL";
+  }
+  runnerResult(passed);
+}
+</script>

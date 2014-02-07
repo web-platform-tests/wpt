@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<title>BMP document.contentType === 'image/x-ms-bmp'</title>
+<p>FAIL: script did not run.</p>
+<iframe style="display:none"></iframe>
+<script type="text/javascript" src="../runner.js"></script>
+<script>
+  var iframe = document.getElementsByTagName('iframe')[0];
+  iframe.addEventListener('load', function() {
+    if(!iframe.contentDocument) return;
+
+    if(iframe.contentDocument.contentType === "image/bmp") {
+      setResult(true);
+    } else {
+      setResult(false);
+    }
+  }, false);
+  iframe.src = "../resources/t.bmp";
+
+function setResult(passed) {
+  if(passed === true) {
+    document.getElementsByTagName("p")[0].innerHTML = "PASS";
+  } else {
+    document.getElementsByTagName("p")[0].innerHTML = "FAIL";
+  }
+  runnerResult(passed);
+}
+</script>

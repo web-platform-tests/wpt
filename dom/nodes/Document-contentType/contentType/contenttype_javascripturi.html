@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<title>Javascript URI document.contentType === 'text/html'</title>
+<p>FAIL: script did not run.</p>
+<script type="text/javascript" src="../runner.js"></script>
+<script>
+function setResult(passed) {
+  if(passed === true) {
+    document.getElementsByTagName("p")[0].innerHTML = "PASS";
+  } else {
+    document.getElementsByTagName("p")[0].innerHTML = "FAIL";
+  }
+  runnerResult(passed);
+}
+
+window.location.href = "javascript:setResult(document.contentType == \"text/html\" ? true : false);";
+</script>

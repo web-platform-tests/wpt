@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<title>window.createDocument: document.contentType === 'application/xml'</title>
+<p>FAIL: script did not run.</p>
+<script type="text/javascript" src="../runner.js"></script>
+<script>
+if(document.implementation) {
+  // Create new HTML Document and append to iframe
+  var doc = document.implementation.createDocument("http://www.w3.org/1999/xhtml", "html", null);
+  if(doc.contentType === "application/xml") {
+    setResult(true);
+  } else {
+    setResult(false);
+  }
+}
+
+function setResult(passed) {
+  if(passed === true) {
+    document.getElementsByTagName("p")[0].innerHTML = "PASS";
+  } else {
+    document.getElementsByTagName("p")[0].innerHTML = "FAIL";
+  }
+  runnerResult(passed);
+}
+</script>

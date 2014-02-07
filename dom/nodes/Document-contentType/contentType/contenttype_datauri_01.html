@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<title>Data URI document.contentType === 'text/plain' when data URI MIME type is not set</title>
+<p>FAIL: script did not run.</p>
+<iframe style="display:none"></iframe>
+<script type="text/javascript" src="../runner.js"></script>
+<script>
+  var iframe = document.getElementsByTagName('iframe')[0];
+  iframe.addEventListener('load', function() {
+    try {
+      setResult(iframe.contentDocument.contentType === "text/plain");
+    } catch (e) {
+      setResult(false, e);
+    }
+  }, false);
+  iframe.src = "data:;,<!DOCTYPE html>";
+
+function setResult(passed, e) {
+  if(passed === true) {
+    document.getElementsByTagName("p")[0].innerHTML = "PASS";
+  } else {
+    document.getElementsByTagName("p")[0].innerHTML = "FAIL" +
+      (e ? " (failed with exception: " + e.message + ")" : "");
+  }
+  runnerResult(passed);
+}
+</script>

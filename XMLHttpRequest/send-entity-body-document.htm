@@ -12,9 +12,11 @@
     <div id="log"></div>
     <script>
      var expectations = [
-      { isHTML: false, responseText : '<\u00FF\/>' },
-      { isHTML: true, responseText : '<body>\uFFFD<\/body>' }, /*invalid character code in document turns into FFFD*/
-      { isHTML: true, responseText : '<body>\u30C6\u30b9\u30c8<\/body>' } /* correctly serialized Shift-JIS */
+      { contentType: 'application/xml;charset=UTF-8', responseText : '<\u00FF\/>' },
+      { contentType: 'text/html;charset=UTF-8', responseText : '<body>\uFFFD<\/body>' }, /*invalid character code in document turns into FFFD*/
+      { contentType: 'text/html;charset=UTF-8', responseText : '<body>\u30C6\u30b9\u30c8<\/body>' } /* correctly serialized Shift-JIS */,
+      { contentType: 'text/html;charset=UTF-8', responseText: 'top' }, /* There's some markup included, but it's not really relevant for this test suite, so we do an indexOf() test */
+      { contentType: 'text/html;charset=UTF-8' }
      ] 
       
       function request(input, number) {
@@ -23,14 +25,10 @@
           client.open("POST", "resources/content.py?response_charset_label=UTF-8", false)
           client.send(input)
           var exp = expectations[number]
-          if(exp.isHTML){
-            assert_equals(client.getResponseHeader('X-Request-Content-Type'), 'text/html;charset=UTF-8', 'HTML documents should be serialized and sent as text/html (TEST#'+number+')')
-          }else{
-            assert_equals(client.getResponseHeader('X-Request-Content-Type'), 'application/xml;charset=UTF-8', 'XML documents should be serialized and sent as application/xml (TEST #'+number+')')
-          }
+          assert_equals(client.getResponseHeader('X-Request-Content-Type'), exp.contentType, 'document should be serialized and sent as '+exp.contentType+' (TEST#'+number+')')
           // The indexOf() assertation will overlook some stuff, i.e. XML prologues that shouldn't be there (looking at you, Presto).
           // However, arguably these things have little to do with the XHR functionality we're testing.
-          assert_true(client.responseText.indexOf(exp.responseText) != -1)
+          if(exp.responseText)assert_true(client.responseText.indexOf(exp.responseText) != -1)
           assert_equals(client.responseXML, null)
         })
       }
@@ -47,5 +45,7 @@
     <iframe src='resources/win-1252-xml.php' onload="init(this, 0)"></iframe>
     <iframe src='resources/invalid-utf8-html.php' onload="init(this, 1)"></iframe>
     <iframe src='resources/shift-jis-html.php' onload="init(this, 2)"></iframe>
+    <iframe src='folder.txt' onload="init(this, 3)"></iframe>
+    <iframe src='resources/image.gif' onload="init(this, 4)"></iframe>
   </body>
 </html>

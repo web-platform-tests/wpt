@@ -27,8 +27,7 @@ Because web-platform-tests uses git submodules, you must ensure that
 these are up to date. In the root of your checkout, run:
 
 ```
-git submodule init
-git submodule update --recursive
+git submodule update --init --recursive
 ```
 
 The test environment can then be started using

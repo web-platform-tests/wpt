@@ -1,24 +1,11 @@
 <!DOCTYPE html>
-<title>window.createHTMLDocument: document.contentType === 'text/html'</title>
-<p>FAIL: script did not run.</p>
-<script type="text/javascript" src="../runner.js"></script>
+<title>document.implementation.createHTMLDocument: document.contentType === 'text/html'</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
 <script>
-if(document.implementation) {
-  // Create new HTML Document and append to iframe
+test(function() {
   var doc = document.implementation.createHTMLDocument("test");
-  if(doc.contentType === "text/html") {
-    setResult(true);
-  } else {
-    setResult(false);
-  }
-}
-
-function setResult(passed) {
-  if(passed === true) {
-    document.getElementsByTagName("p")[0].innerHTML = "PASS";
-  } else {
-    document.getElementsByTagName("p")[0].innerHTML = "FAIL";
-  }
-  runnerResult(passed);
-}
+  assert_equals(doc.contentType, "text/html");
+});
 </script>

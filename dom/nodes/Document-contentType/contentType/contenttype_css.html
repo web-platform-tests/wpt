@@ -1,27 +1,15 @@
 <!DOCTYPE html>
 <title>CSS document.contentType === 'text/css'</title>
-<p>FAIL: script did not run.</p>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
 <iframe style="display:none"></iframe>
-<script type="text/javascript" src="../runner.js"></script>
 <script>
+async_test(function() {
   var iframe = document.getElementsByTagName('iframe')[0];
-  iframe.addEventListener('load', function() {
-    if(!iframe.contentDocument) return;
-    
-    if(iframe.contentDocument.contentType === "text/css") {
-      setResult(true);
-    } else {
-      setResult(false);
-    }
-  }, false);
+  iframe.addEventListener('load', this.step_func_done(function() {
+    assert_equals(iframe.contentDocument.contentType, "text/css");
+  }), false);
   iframe.src = "../resources/style.css";
-
-function setResult(passed) {
-  if(passed === true) {
-    document.getElementsByTagName("p")[0].innerHTML = "PASS";
-  } else {
-    document.getElementsByTagName("p")[0].innerHTML = "FAIL";
-  }
-  runnerResult(passed);
-}
+});
 </script>

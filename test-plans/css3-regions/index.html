@@ -15,6 +15,10 @@
           shortName: "css3-regions-test-strategy",
           editors: [
             {
+              name: "Alan Stearns", mailto: "astearns@adobe.com",
+              company: "Adobe Systems, Inc.", companyURL: "http://www.adobe.com/"
+            },
+            {
               name: "Mihai Balan", mailto: "mibalan@adobe.com",
               company: "Adobe Systems, Inc.", companyURL: "http://www.adobe.com/"
             },
@@ -86,7 +90,7 @@
       <section>
         <h3>Enabling easy test contribution</h3>
         <p>
-          An important vector in creating successfully testing CSS Regions is to
+          An important vector in successfully testing CSS Regions is to
           enable easy test contributions, both from W3C partners and from
           non-W3C members that wish to contribute. This is achieved by clearly
           marking and explaining the areas that need testing, linked to existing
@@ -142,7 +146,7 @@
         <p>
           All the above factors increase the testing surface and the number of
           the possible cases that might need an explicitly specified behavior in
-          order to ensure intuitive and not-unexpected results as well as stable
+          order to ensure intuitive and predictable results as well as stable
           interaction with widely used browser features (that might not be <em>yet</em>
           so strictly specified).
         </p>
@@ -216,7 +220,6 @@
                 <code>flow-into</code> should be tested both with and without
                 the <code>content</code> switch</li>
                 <li><code>region-fragment</code></li>
-                <li>the <code>::region()</code> functional pseudo-element</li>
                 <li>fragmentation additions: <code>region-avoid</code>,
                   <code>region-always</code> &ndash; see [[!css3-break]] for
                   details</li>
@@ -225,10 +228,13 @@
             <li>Nested named flows and cycle detection</li>
             <li>Multi-column regions</li>
             <li>Regions' pseudo-elements</li>
-            <li>Region styling</li>
             <li>Region auto-sizing (regions visual formatting details)</li>
             <li>
               CSSOM - interfaces implemented, behavior according to the spec
+              <div class="note">
+                <code>regionfragmentchange</code> might be removed from this level of the spec.
+                Adjust the contents of the list below accordingly.
+              </div>
               <ul>
                 <li>
                   <code>NamedFlow</code> interface
@@ -259,6 +265,11 @@
             </li>
           </ol>
         </p>
+        <div class="note">
+          Region styling has been removed from the spec waiting for it to be defined in the page
+          styling spec. This is a reminder for adding section here related to page/region styling
+          once this gets specified.
+        </div>
       </section>
       <section>
         <h3>Implicit testing areas</h3>
@@ -281,6 +292,7 @@
               <ul>
                 <li>Floats</li>
                 <li>Positioned elements</li>
+                <li>Intrinsic and extrinsic sizing [[css3-sizing]] and auto-sized regions</li>
                 <li>CSS Flexbox [[css3-flexbox]]</li>
                 <li>CSS Multicolumn [[css3-multicol]] content in named flows</li>
                 <li>CSS Shapes [[css-shapes-1]]</li>
@@ -336,6 +348,11 @@
             <li>Pseudo-elements in named flow contents</li>
           </ol>
         </p>
+        <div class="note">
+          Region styling has been removed from the spec waiting for it to be defined in the page
+          styling spec. This is a reminder for adding section here related to page/region styling
+          interacting with <code>&lt;style scoped&gt;</code> once this gets specified.
+        </div>
       </section>
     </section>
     <section>
@@ -344,8 +361,7 @@
         Below is a list of people you should reach out to if you have any
         questions related to this document or testing CSS Regions in general:
         <ul>
-          <li>Mihai Balan &ndash; test coordinator for CSS Regions</li>
-          <li>Alan Stearns &ndash; editor for CSS Regions spec</li>
+          <li>Alan Stearns &ndash; editor and test coordinator for CSS Regions spec</li>
           <li>Rebecca Hauck &ndash; CSSWG testing owner</li>
         </ul>
       </p>
@@ -354,9 +370,8 @@
       <h2>Test progress tracking</h2>
       <p>
         Currently test progress tracking is done via gitHub
-        <a href="https://github.com/w3c/csswg-test/issues?labels=spec%3Aregions&amp;state=open">milestones
-        and issues</a>.
-        <!-- FIXME: Add more details once issues were created for all test areas. -->
+        <a href="https://github.com/w3c/csswg-test/issues/milestones?with_issues=yes">milestones</a>
+        and <a href="https://github.com/w3c/csswg-test/issues?milestone=9&state=open">issues</a>.
       </p>
     </section>
   </body>

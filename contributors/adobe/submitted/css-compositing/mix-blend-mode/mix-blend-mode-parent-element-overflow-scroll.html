@@ -1,36 +1,32 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>CSS Test: mix-blend-mode between a parent element with overflow:scroll and its child</title>
+		<title>CSS Test: blending between an element with overflow:scroll and its child</title>
 		<link rel="author" title="Mirela Budăeș" href="mailto:mbudaes@adobe.com">
 		<link rel="help" href="http://dev.w3.org/fxtf/compositing-1/#mix-blend-mode">
 		<meta name="flags" content="">
-		<meta name="assert" content="Test checks that the element with mix-blend-mode blends with the parent element with overflow:scroll">
+		<meta name="assert" content="Test checks that an element with mix-blend-mode blends its parent having overflow:scroll">
 		<link rel="match" href="reference/mix-blend-mode-parent-element-overflow-scroll-ref.html">
 		<style>
-			.simple{
+			.normal {
 				background: aqua;/*rgb(0,255,255);*/
 				width: 140px;
 				height: 140px;
-				display:inline-block;
-				position: fixed;
+				position: relative;
+				z-index: 1;
 				overflow:scroll;
 			}
 			.mixed {
 				background: red;/*rgb(255,0,0);*/
-				margin-top: 20px;
-				margin-left: 20px;
 				width: 200px;
 				height: 200px;
 				mix-blend-mode: multiply;
-				}
+			}
 		</style>
 	</head>
 	<body>
-		<p>Test passes if you see a black rectangle with large aqua borders on the top and left. <br>
-			Also, you should see scrollbars on the right and the bottom of the main div.
-		You should not see a red rectangle on the page. </p>
-		<div class="simple">
+		<p>Test passes if you see a scrollable black rectangle.</p>
+		<div class="normal">
 			<div class="mixed"></div>
 		</div>
 	</body>

@@ -4,52 +4,31 @@
 		<title>CSS Reftest Reference</title>
 		<link rel="author" title="Mirela Budăeș" href="mailto:mbudaes@adobe.com">
 		<style>
-			.simple{
+			.normal {
 				background: aqua;/*rgb(0,255,255);*/
-				width: 140px;
-				height: 140px;
-				display: inline-block;
-				position: fixed;
-
+				width: 150px;
+				height: 150px;
+				position: relative;
+				z-index: 1;
 			}
 			.mixed {
-				background: red;/*rgb(255,0,0);*/
-				margin-top: 20px;
-				margin-left: 20px;
-				width: 200px;
-				height: 200px;
+				width: 150px;
+				height: 150px;
 				overflow: hidden;
-				border-radius: 1em 5em;
+				border-radius: 2em 2em;
 			}
-			.childOfMixed1 {
-				background: black;/*rgb(0,0,0);*/
-				width: 120px;
-				height: 120px;
-				display: block;
-			}
-			.childOfMixed21 {
+			.childOfMixed {
 				background: lime;/*rgb(0,255,0);*/
-				width: 100px;
-				height: 100px;
-				position:fixed;
-			}
-			.childOfMixed2 {
-				background: yellow;/*rgb(255,255,0);*/
-				margin-top: -100px;
-				margin-left: 20px;
-				width: 200px;
-				height: 200px;
+				width: 150px;
+				height: 150px;
 			}
 		</style>
 	</head>
 	<body>
-		<p> </p>
-		<div class="simple">
+		<p>The test passes if you see a lime rectangle with aqua rounded corners.</p>
+		<div class="normal">
 			<div class="mixed">
-				<div class="childOfMixed1">
-				</div>
-				<div class="childOfMixed2">
-					<div class="childOfMixed21"></div>
+				<div class="childOfMixed">
 				</div>
 			</div>
 		</div>

@@ -1,12 +1,8 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>CSS Test: blending between an element having overflow:scroll and its child having position: fixed</title>
+		<title>CSS Reftest Reference</title>
 		<link rel="author" title="Mirela Budăeș" href="mailto:mbudaes@adobe.com">
-		<link rel="help" href="http://dev.w3.org/fxtf/compositing-1/#mix-blend-mode">
-		<meta name="flags" content="">
-		<meta name="assert" content="Test checks that an element with mix-blend-mode blends with the parent element with overflow:scroll">
-		<link rel="match" href="reference/mix-blend-mode-parent-element-overflow-scroll-blended-position-fixed-ref.html">
 		<style>
 			.normal {
 				background: aqua;/*rgb(0,255,255);*/
@@ -18,10 +14,9 @@
 			}
 
 			.mixed {
-				background: fuchsia;/*rgb(255,0,255);*/
+				background: blue;/*rgb(255,0,255);*/
 				width: 100px;
 				height: 100px;
-				mix-blend-mode: multiply;
 				position: fixed;
 			}
 

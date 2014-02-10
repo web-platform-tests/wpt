@@ -7,47 +7,41 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <style>
-  iframe {display: none}
+  iframe { display: none }
 </style>
 <body onload="on_load()">
   <div id="log"></div>
   <script>
 
-  var t = async_test("The dcoument base URL must be the document's address");
+  var t1 = async_test("The document base URL must be the value of href attribute of the base element"),
+      t2 = async_test("The document base URL must be document base URL of the container's"),
+      t3 = async_test("The document base URL must be the base URL of the creator's");
 
   function on_load() {
-    t.step(function () {
-      assert_true("baseURI" in document, "The document.baseURI is not supported.");
-      assert_equals(document.baseURI, document.location.href, "The baseURI should be the document's address.");
+    t1.step(function () {
+      var base = document.createElement("base");
+      base.setAttribute("href", "http://www.example.com/");
+      document.head.appendChild(base);
+      assert_equals(base.href, "http://www.example.com/", "The base.href should be 'http://www.example.com/'.");
+      assert_equals(document.baseURI, base.href, "The document.baseURI should equal to base.href.");
     });
+    t1.done();
 
-    t.step(function () {
-      test(function () {
-        var base = document.createElement("base");
-        base.setAttribute("href", "http://www.example.com/");
-        document.head.appendChild(base);
-        assert_equals(base.href, "http://www.example.com/", "The base.href should be 'http://www.example.com/'.");
-        assert_equals(document.baseURI, base.href, "The document.baseURI should equal to base.href.");
-      }, "The dcoument base URL must be the value of href attribute of the base element");
+    t2.step(function () {
+      var fr = document.createElement("iframe");
+      fr.setAttribute("src", "test.html");
+      document.body.appendChild(fr);
+      assert_equals(fr.contentDocument.baseURI, document.baseURI, "The baseURI should equal to the container's document base URL.");
     });
+    t2.done();
 
-    t.step(function () {
-      test(function () {
-        var fr = document.createElement("iframe");
-        fr.setAttribute("src", "test.html");
-        document.body.appendChild(fr);
-        assert_equals(fr.contentDocument.baseURI, document.baseURI, "The baseURI should equal to the container's document base URL.");
-      }, "The dcoument base URL must be document base URL of the container's");
-
-      test(function () {
-        var fr = document.createElement("iframe");
-        fr.setAttribute("src", "about:blank");
-        document.body.appendChild(fr);
-        assert_equals(fr.contentDocument.baseURI, document.baseURI, "The baseURI should equal to the creator's base URL.");
-      }, "The dcoument base URL must be the base URL of the creator's");
+    t3.step(function () {
+      var fr = document.createElement("iframe");
+      fr.setAttribute("src", "about:blank");
+      document.body.appendChild(fr);
+      assert_equals(fr.contentDocument.baseURI, document.baseURI, "The baseURI should equal to the creator's base URL.");
     });
-
-    t.done();
+    t3.done();
   }
 
   </script>

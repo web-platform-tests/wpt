@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <title>HTML Test: The scoped attribute must apply the style information only to its parent element</title>
     <link rel="author" title="Intel" href="http://www.intel.com/">
-    <link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/document-metadata.html#attr-style-scoped">
-    <link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/document-metadata.html#the-style-element">
+    <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/document-metadata.html#attr-style-scoped">
+    <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/document-metadata.html#the-style-element">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <style>
@@ -30,18 +30,13 @@
         var style = document.getElementById("style");
         var width1, width2;
 
-        width1 = getStyle(testElement, "width");
+        width1 = window.getComputedStyle(testElement, false)["width"];
         assert_equals(width1, "100px", "The style 'width' should be applied.");
 
         style.scoped = true;
-        width2 = getStyle(testElement, "width");
+        width2 = window.getComputedStyle(testElement, false)["width"];
         assert_equals(width2, "50px", "The width should not be applied.");
       }, "The scoped attribute is present, the style information must be applied only to its parent element");
-
-      function getStyle(obj, attr) {
-        return document.defaultView.getComputedStyle(obj, false)[attr];
-      }
     </script>
   </body>
 </html>
-

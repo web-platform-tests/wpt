@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <title>HTML Test: Styling</title>
     <link rel="author" title="Intel" href="http://www.intel.com/">
-    <link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/document-metadata.html#styling">
+    <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/document-metadata.html#styling">
     <link id="style1" rel="text" title="Intel" href="./support/unmatch.css">
     <link id="style2" rel="alternate stylesheet" type="text/css" title="" href="./support/emptytitle.css">
     <link id="style3" rel="alternate stylesheet" type="text/css" href="./support/notitle.css">
@@ -32,28 +32,35 @@
       test(function() {
         var style = null,
             i;
-        for (i = 0; i < 4; i++) {
-          style = document.getElementById("style" + (i + 1));
-          assert_equals(style.sheet, null, "The 'linkStyle' of style" + (i + 1) + " should be null.");
-          assert_false(style.disabled, "The disabled attribute of style" + (i + 1) + " should be fasle");
+        for (i = 1; i < 5; i++) {
+          style = document.getElementById("style" + i);
+          assert_equals(style.sheet, null, "The sheet attribute of style" + i + " should be null.");
+          assert_false(style.disabled, "The disabled attribute of style" + i + " should be fasle.");
         }
       }, "The LinkStyle interface's sheet attribute must return null; the disabled attribute must be false");
 
       test(function() {
+        var style = document.createElement("style"),
+            link = document.createElement("link");
+        assert_equals(style.sheet, null, "The sheet attribute of the style element not in a document should be null.");
+        assert_equals(link.sheet, null, "The sheet attribute of the link element not in a document should be null.");
+      }, "The LinkStyle interface's sheet attribute must return null if the corresponding element is not in a Document");
+
+      test(function() {
         var style = null,
             i;
-        for (i = 4; i < 7; i++) {
-          style = document.getElementById("style" + (i + 1));
-          assert_true(style.sheet instanceof StyleSheet, "The linkStyle of style" + (i + 1) + " should be a StyleSheet object.");
-          assert_equals(style.disabled, style.sheet.disabled, "The disabled attribute" + (i + 1) + " should equal to the same attribute of StyleSheet.");
+        for (i = 5; i < 8; i++) {
+          style = document.getElementById("style" + i);
+          assert_true(style.sheet instanceof StyleSheet, "The sheet attribute of style" + i + " should be a StyleSheet object.");
+          assert_equals(style.disabled, style.sheet.disabled, "The disabled attribute of style" + i + " should equal to the same attribute of StyleSheet.");
         }
       }, "The LinkStyle interface's sheet attribute must return StyleSheet object; the disabled attribute must be same as the StyleSheet's disabled attribute");
 
       test(function() {
         assert_equals(document.getElementById("style2").title, "", "The title attribute of style2 is incorrect.");
         assert_equals(document.getElementById("style5").title, "", "The title attribute of style5 is incorrect.");
-        assert_equals(document.getElementById("style6").title, "./support/alternate.css", "The title attribute is incorrect.");
-        assert_equals(document.getElementById("style7").title, "./support/alternate.css", "The title attribute is incorrect.");
+        assert_equals(document.getElementById("style6").title, "./support/alternate.css", "The title attribute of style6 is incorrect.");
+        assert_equals(document.getElementById("style7").title, "./support/alternate.css", "The title attribute of style7 is incorrect.");
       }, "The title must be the same as the value of the element's title content attribute");
 
       test(function() {
@@ -63,4 +70,3 @@
     </script>
   </body>
 </html>
-

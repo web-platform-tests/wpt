@@ -11,11 +11,11 @@
       var tLoad = async_test("If the style is loaded successfully, the 'load' event must be fired");
       var tError = async_test("If the style is loaded unsuccessfully, the 'error' event must be fired");
 
-      function onstyleload() {
+      function onstyleload(e) {
         tLoad.done();
       }
 
-      function onstyleerror() {
+      function onstyleerror(e) {
         tError.done();
       }
     </script>
@@ -34,4 +34,3 @@
     <div id="test"></div>
   </body>
 </html>
-

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <title>HTML Test: The style should not be applied if it is disabled</title>
     <link rel="author" title="Intel" href="http://www.intel.com/">
-    <link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/document-metadata.html#the-style-element">
+    <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/document-metadata.html#the-style-element">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <style>
@@ -27,18 +27,13 @@
         var style = document.getElementById("style");
         var width1, width2;
 
-        width1 = getStyle(testElement, "width");
+        width1 = window.getComputedStyle(testElement, false)["width"];
         assert_equals(width1, "50px", "The style should be applied.");
 
         style.disabled = true;
-        width2 = getStyle(testElement, "width");
+        width2 = window.getComputedStyle(testElement, false)["width"];
         assert_equals(width2, "100px", "The style should not be applied.");
       }, "The style is not applied when it is disabled");
-
-      function getStyle(obj, attr) {
-        return document.defaultView.getComputedStyle(obj, false)[attr];
-      }
     </script>
   </body>
 </html>
-

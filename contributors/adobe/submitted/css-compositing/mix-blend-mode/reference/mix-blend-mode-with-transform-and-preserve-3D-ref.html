@@ -4,33 +4,39 @@
 		<title>CSS Reftest Reference</title>
 		<link rel="author" title="Mirela Budăeș" href="mailto:mbudaes@adobe.com">
 		<style>
-		div {
-		  height: 150px;
-		  width: 150px;
-		}
-		.container {
-		  position: fixed;
-		  background-color: lime;/*rgb(0,255,0);*/
-		}
-		.transformed {
-		  /*-webkit-transform-style: preserve-3d;*/
-		  -webkit-transform: rotateY(50deg);
-		  /*-moz-transform-style: preserve-3d;*/
-		  -moz-transform: rotateY(50deg);
-		  background-color: blue;/*rgb(0,0,255);*/
-		}
-		.child {
-		  -webkit-transform-origin: top left;
-		  -webkit-transform: rotateX(40deg);
-		  -moz-transform-origin: top left;
-		  -moz-transform: rotateX(40deg);
-		  background-color: yellow;/*rgb(255,255,0);*/
-		}
+			div {
+				height: 150px;
+				width: 150px;
+			}
+			.container {
+				position: relative;
+				z-index: 1;
+				background-color: lime;/*rgb(0,255,0);*/
+			}
+			.transformed {
+				/*-webkit-transform-style: preserve-3d;*/
+				/*-moz-transform-style: preserve-3d;*/
+				/*transform-style: preserve-3d;*/
+				-webkit-transform: rotateY(50deg);
+				-moz-transform: rotateY(50deg);
+				transform: rotateY(50deg);
+				background-color: blue;/*rgb(0,0,255);*/
+				/*mix-blend-mode: difference;*/
+			}
+			.child {
+				-webkit-transform-origin: top left;
+				-moz-transform-origin: top left;
+				transform-origin: top left;
+				-webkit-transform: rotateX(40deg);
+				-moz-transform: rotateX(40deg);
+				transform: rotateX(40deg);
+				background-color: yellow;/*rgb(255,255,0);*/
+			}
 		</style>
 	</head>
 	<body>
-		<p>You should see a yellow and a blue rectangle on top of a lime rectangle<br>
-			You should not see a red rectangle on the screeen.</p>
+		<p>You should see 2 small rectangles (yellow and blue) drawn inside a lime container.<br>
+			The edges for all the rectangles should be either horizontal, or vertical (not skewed).</p>
 		<div class="container">
 		  <div class="transformed">
 		      <div class="child"></div>

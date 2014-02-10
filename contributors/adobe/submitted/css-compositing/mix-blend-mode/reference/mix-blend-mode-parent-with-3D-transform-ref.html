@@ -4,13 +4,14 @@
 		<title>CSS Reftest Reference</title>
 		<link rel="author" title="Mirela Budăeș" href="mailto:mbudaes@adobe.com">
 		<style>
-			.simple{
+			.normal {
 				background: aqua;/*rgb(0,255,255);*/
 				width: 140px;
 				height: 140px;
 				display:inline-block;
 				-webkit-transform:rotateX(20deg);
-				moz-transform:rotateX(20deg);
+				-moz-transform:rotateX(20deg);
+				transform:rotateX(20deg);
 			}
 			.mixed {
 				background: fuchsia;/*rgb(255,0,255);*/
@@ -27,9 +28,9 @@
 		</style>
 	</head>
 	<body>
-		<p>You should see a fuchsia square on top of an aqua square <br>
-			An yellow square should appear at the intersection of the two squares. </p>
-		<div class="simple">
+		<p>You should see a fuchsia square overlapping an aqua square. <br>
+			The overlapping area should be yellow. </p>
+		<div class="normal">
 			<div class="mixed">
 				<div class="childOfMixed"></div>
 			</div>

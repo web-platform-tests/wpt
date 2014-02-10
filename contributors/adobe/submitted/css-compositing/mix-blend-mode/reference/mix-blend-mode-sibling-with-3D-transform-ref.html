@@ -1,19 +1,16 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>CSS Test: mix-blend-mode between a parent element with 3D transform and its child</title>
+		<title>CSS Reftest Reference</title>
 		<link rel="author" title="Mirela Budăeș" href="mailto:mbudaes@adobe.com">
-		<link rel="help" href="http://dev.w3.org/fxtf/compositing-1/#mix-blend-mode">
-		<meta name="flags" content="">
-		<meta name="assert" content="Test checks that the element with mix-blend-mode blends with the parent element with 3D transform">
-		<link rel="match" href="">
 		<style>
-			.simple {
+			.normal {
 				background: aqua;/*rgb(0,255,255);*/
 				width: 140px;
 				height: 140px;
 				display:inline-block;
-				position: fixed;
+				position: relative;
+				z-index: 1;
 			}
 			.mixed {
 				background: fuchsia;/*rgb(255,0,255);*/
@@ -21,7 +18,7 @@
 				margin-left: 20px;
 				width: 200px;
 				height: 200px;
-				}
+			}
 			.siblingOfMixed {
 				background: blue;/*rgb(0,0,255);*/
 				margin-top: 20px;
@@ -41,9 +38,9 @@
 		</style>
 	</head>
 	<body>
-		<p>You should see three squares: a blue square on top of a fuchsia square, on top of an aqua square. <br>
-		An yellow square should appear at the intersection of the aqua with the fuchsia square. </p>
-		<div class="simple">
+		<p>You should see three overlapping squares, from back to front, having the following colors: aqua, fuchsia and blue. <br>
+		The intersection area between aqua and fuchsia squares, which is not overlapped by the blue square, should be yellow.</p>
+		<div class="normal">
 			<div class="siblingOfMixed"></div>
 			<div class="mixed"></div>
 			<div class="intersectionOfMixed"></div>

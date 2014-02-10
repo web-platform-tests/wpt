@@ -1,19 +1,16 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>CSS Test: mix-blend-mode for an element with a sibling with 3D transform and transition</title>
+		<title>CSS Test: blending between an element and its sibling having 3D transform and transition</title>
 		<link rel="author" title="Mirela Budăeș" href="mailto:mbudaes@adobe.com">
 		<link rel="help" href="http://dev.w3.org/fxtf/compositing-1/#mix-blend-mode">
 		<meta name="flags" content="">
-		<meta name="assert" content="Test checks that the element with mix-blend-mode blends with the parent element when a sibling with 3D transform and transition appears between the parent and the child">
+		<meta name="assert" content="Test checks that an element having mix-blend-mode blends with an overlapping sibling element having 3D transform and transition">
 		<link rel="match" href="">
 		<style>
-			.simple {
-				background: aqua;/*rgb(0,255,255);*/
-				width: 140px;
-				height: 140px;
-				display:inline-block;
-				position: fixed;
+			.normal {
+				position: relative;
+				z-index: 1;
 			}
 			.mixed {
 				background: fuchsia;/*rgb(255,0,255);*/
@@ -22,7 +19,7 @@
 				width: 100px;
 				height: 100px;
 				mix-blend-mode: difference;
-				}
+			}
 			.siblingOfMixed {
 				background: red;/*rgb(255,0,0);*/
 				margin-top: 20px;
@@ -31,19 +28,19 @@
 				height: 200px;
 				-webkit-transition: -webkit-transform 2s;
 				-moz-transition: -moz-transform 2s;
-
+				transition: transform 2s;
 			}
-			.siblingOfMixed:hover	{
-			    -webkit-transform: rotateX(40deg) ;
+			.siblingOfMixed:hover {
+			    -webkit-transform: rotateX(40deg);
 			    -moz-transform: rotateX(40deg);
+			    transform: rotateX(40deg);
 			}
 		</style>
 	</head>
 	<body>
-		<p>You should see three squares: a blue square on top of a fuchsia square, on top of an aqua square. <br>
-		An yellow square should appear at the intersection of the aqua with the fuchsia square. <br>
-		Hover over the squares. RotateY(40deg) should happen without color changes in the squares.</p>
-		<div class="simple">
+		<p>You should see 2 squares: a blue small square in a red container.<br>
+		When you move the mouse over the red square, it will get rotated and you should see the real color of the uncovered part of the blue rectangle - fuchsia, while the rotated scene should not change the colors.</p>
+		<div class="normal">
 			<div class="siblingOfMixed"></div>
 			<div class="mixed"></div>
 		</div>

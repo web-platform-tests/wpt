@@ -14,6 +14,14 @@
     }, '"toNativeLineEndings" should not be supported');
 
     test(function() {
+        assert_false('FileError' in window);
+    }, '"FileError" should not be supported');
+
+    test(function() {
+        assert_false('FileException' in window);
+    }, '"FileException" should not be supported');
+
+    test(function() {
         var b = new Blob();
         var prefixes = ['op', 'moz', 'webkit', 'ms'];
         for (var i = 0; i < prefixes.length; ++i) {
@@ -21,6 +29,7 @@
             assert_false(prefixes[i]+'Slice' in Blob.prototype, "'"+prefixes[i]+"Slice in Blob.prototype");
         }
     }, 'Blob should not support slice prefixed');
+
     test(function() {
         var prefixes = ['', 'O', 'Moz', 'WebKit', 'MS'];
         for (var i = 0; i < prefixes.length; ++i) {

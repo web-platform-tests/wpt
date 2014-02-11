@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>When an HTML Document is loaded in a browsing context, a new registry must be created and associated with this document.</title>
+<title>When an HTML Document is loaded in a browsing context, a new registry must be created and associated with this document</title>
 <meta name="author" title="Aleksei Yu. Semenov" href="mailto:a.semenov@unipro.ru">
 <meta name="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
 <meta name="assert" content="When an HTML Document is loaded in a browsing context, a new registry must be created and associated with this document.">
@@ -14,7 +14,6 @@
 <body>
 <div id="log"></div>
 <script type="text/javascript">
-
 testInIFrame('../resources/blank.html', function(doc) {
     try {
         doc.registerElement('x-element');
@@ -36,7 +35,6 @@ testInIFrame('../resources/blank.html', function(loadedDocument) {
     }
 }, 'Document, loaded into browsing context, must have a new empty registry, ' +
         'which is different from other documents\' registries');
-
 </script>
 </body>
 </html>

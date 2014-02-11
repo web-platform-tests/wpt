@@ -3,7 +3,7 @@
 <head>
 <title>When creating an import, use the registry of the master document</title>
 <meta name="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
-<meta name="assert" content="When creating an import, use the registry of the master document">
+<meta name="assert" content="When creating an import, use the registry of the master document.">
 <link rel="help" href="http://www.w3.org/TR/custom-elements/#creating-and-passing-registries">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -13,7 +13,6 @@
 <body>
 <div id="log"></div>
 <script type="text/javascript">
-
 var test1 = async_test('Registry of the import should share master document registry');
 test1.step(function() {
     var iframe = document.createElement('iframe');
@@ -29,7 +28,7 @@ test1.step(function() {
                 doc.registerElement(name);
                 assert_throws(
                     'NotSupportedError',
-                    function () { doc2.registerElement(name); },
+                    function() { doc2.registerElement(name); },
                     'Registering a custom element type name that is already registered in a shared ' +
                         'registry should throw an exception');
                 test1.done();
@@ -56,7 +55,7 @@ test2.step(function() {
                 doc2.registerElement(name);
                 assert_throws(
                     'NotSupportedError',
-                    function () { doc.registerElement(name); },
+                    function() { doc.registerElement(name); },
                     'Registering a custom element type name that is already registered in a shared ' +
                         'registry should throw an exception');
                 test2.done();
@@ -66,7 +65,6 @@ test2.step(function() {
         });
     });
 });
-
 </script>
 </body>
 </html>

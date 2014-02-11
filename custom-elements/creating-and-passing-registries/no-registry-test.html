@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>New document without browsing context must not have a registry.</title>
+<title>New document without browsing context must not have a registry</title>
 <meta name="author" title="Aleksei Yu. Semenov" href="mailto:a.semenov@unipro.ru">
 <meta name="assert" content="In all other cases, new documents must not have a registry.">
 <link rel="help" href="http://www.w3.org/TR/custom-elements/#creating-and-passing-registries">
@@ -13,7 +13,6 @@
 <body>
 <div id="log"></div>
 <script type="text/javascript">
-
 test(function() {
     var doc = document.implementation.createDocument(null, 'test', null);
     assert_throws(
@@ -37,7 +36,7 @@ test(function() {
         'NotSupportedError',
         function() { doc.registerElement('x-element'); },
         'Registering valid custom element in ' +
-            'a XMLHttpRequest\'s response document should fail');
+            'an XMLHttpRequest\'s response document should fail');
 }, 'XMLHttpRequest\'s synchronous response XML document must not have a registry');
 
 
@@ -51,7 +50,7 @@ async_test(function(t) {
                 'NotSupportedError',
                 function() { doc.registerElement('x-element'); },
                 'Registering valid custom element in ' +
-                    'a XMLHttpRequest\'s response document should fail');
+                    'an XMLHttpRequest\'s response document should fail');
             t.done();
         }
     });
@@ -74,7 +73,7 @@ async_test(function(t) {
                 'NotSupportedError',
                 function() { doc.registerElement('x-element'); },
                 'Registering valid custom element in ' +
-                    'a XMLHttpRequest\'s response document should fail');
+                    'an XMLHttpRequest\'s response document should fail');
             t.done();
         }
     });
@@ -83,7 +82,6 @@ async_test(function(t) {
     request.responseType = 'document';
     request.send();
 }, 'XMLHttpRequest\'s asynchronous response HTML document must not have a registry');
-
 </script>
 </body>
 </html>

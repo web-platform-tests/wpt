@@ -14,16 +14,16 @@
     <video id="m" loop>The user agent doesn't support media element.</video>
     <script type="text/javascript">
         var media = document.getElementById("m");
-        
+
         test(function() {
             assert_true(media.loop, "media.loop of value");
         }, "Check if video.loop returns true when the loop attribute is present in the video element");
-        
+
         test(function() {
             media.loop = false;
             assert_false(media.loop, "media.loop of value");
         }, "Check if video.loop returns false after the loop attribute is set to false");
-        
+
         test(function() {
             media.loop = true;
             assert_true(media.loop, "media.loop of value");

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Chars allowed for custom element type</title>
+<title>Chars allowed for custom element type </title>
 <meta name="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
 <meta name="author" title="Aleksei Yu. Semenov" href="mailto:a.semenov@unipro.ru">
 <meta name="assert" content="The custom element type identifies a custom element interface and is a sequence of characters that must match the NCName production">
@@ -15,7 +15,6 @@
 <body>
 <div id="log"></div>
 <script type="text/javascript">
-
 function composeName(c) {
     return 'x-' + String.fromCharCode(c) + '-x' + c.toString(16);
 }
@@ -56,7 +55,6 @@ test(function() {
 test(function() {
     testCharCodeArray(newHTMLDocument(), EXTENDER_CHARS, composeName, checkValidName);
 }, 'Registering valid custom element types with extender char');
-
 </script>
 </body>
 </html>

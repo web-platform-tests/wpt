@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>First char allowed for custom element type</title>
+<title>First char allowed for custom element type </title>
 <meta name="author" title="Aleksei Yu. Semenov" href="mailto:a.semenov@unipro.ru">
 <meta name="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
 <meta name="assert" content="The custom element type identifies a custom element interface and is a sequence of characters that must match the NCName production">
@@ -15,7 +15,6 @@
 <body>
 <div id="log"></div>
 <script type="text/javascript">
-
 function composeName(c) {
     return String.fromCharCode(c) + '-x' + c.toString(16);
 }
@@ -60,8 +59,6 @@ test(function(){
 test(function(){
     testCharCodeRangesArray(newHTMLDocument(), DIGIT_CHARS_RANGES, composeName, checkInvalidName);
 }, 'Registering custom element starting with invalid character (digit char) should fail');
-
-
 </script>
 </body>
 </html>

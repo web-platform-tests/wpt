@@ -40,7 +40,7 @@
     //build path to image file
     var path = document.location.pathname;
     var dir = path.substring(path.indexOf('/', 0)+1, path.lastIndexOf('/'));
-    var srcpath =  location.protocol + '//' + location.host + '/' + dir + '/resources/3.jpg'
+    var srcpath =  location.protocol + '//' + location.host + '/' + dir + '/3.jpg'
 
     document.getElementById("imgTestTag3").src = srcpath;
 
@@ -61,9 +61,9 @@
 
   // test: The final task that is queued by the networking task source once the resource has been fetched has been queued, but has not yet been run, and the img element is not in the broken state
   async_test(function(t) {
-    imageInstance.src = 'resources/image-1.jar';
+    imageInstance.src = 'image-1.jar';
     if(imageInstance.complete == false) {
-      imageInstance.src = 'resources/image-1.jpg';
+      imageInstance.src = 'image-1.jpg';
 
       imageInstance.onLoad = t.step_func(function() {
         var startTime = Date.now();
@@ -86,7 +86,7 @@
     //build path to image file
     var path = document.location.pathname;
     var dir = path.substring(path.indexOf('/', 0)+1, path.lastIndexOf('/'));
-    var srcpath =  location.protocol + '//' + location.host + '/' + dir + '/resources/brokenimg.ogg'
+    var srcpath =  location.protocol + '//' + location.host + '/' + dir + '/brokenimg.ogg'
 
     document.getElementById("imgTestTag4").src = srcpath;
 

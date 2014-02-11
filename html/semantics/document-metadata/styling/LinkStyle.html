@@ -35,7 +35,7 @@
         for (i = 1; i < 5; i++) {
           style = document.getElementById("style" + i);
           assert_equals(style.sheet, null, "The sheet attribute of style" + i + " should be null.");
-          assert_false(style.disabled, "The disabled attribute of style" + i + " should be fasle.");
+          assert_false(style.disabled, "The disabled attribute of style" + i + " should be false.");
         }
       }, "The LinkStyle interface's sheet attribute must return null; the disabled attribute must be false");
 
